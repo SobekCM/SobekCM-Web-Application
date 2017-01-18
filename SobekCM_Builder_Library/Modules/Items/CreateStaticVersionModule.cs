@@ -1,8 +1,12 @@
 ﻿#region Using directives
 
-
+using System;
+using System.IO;
+using System.Net;
 
 #endregion
+
+
 
 namespace SobekCM.Builder_Library.Modules.Items
 {
@@ -26,6 +30,55 @@ namespace SobekCM.Builder_Library.Modules.Items
         /// <returns> TRUE if processing can continue, FALSE if a critical error occurred which should stop all processing </returns>
         public override bool DoWork(Incoming_Digital_Resource Resource)
         {
+            string source_url = Settings.Servers.Application_Server_URL + Resource.BibID + "/" + Resource.VID + "/robot";
+
+            try
+            {
+                using (WebClient client = new WebClient())
+                {
+                    string downloadString = client.DownloadString(source_url);
+
+                    // Save the static page and then copy to all the image servers
+                    try
+                    {
+                        if (!Directory.Exists(Resource.Resource_Folder + "\\" + Settings.System))
+                            Directory.CreateDirectory(Resource.Resource_Folder + "\\" + Settings.Resources.Backup_Files_Folder_Name);
+
+                        string static_file = Resource.Resource_Folder + "\\" + Settings.Resources.Backup_Files_Folder_Name + "\\" + Resource.Metadata.BibID + "_" + Resource.Metadata.VID + ".html";
+                        using (StreamWriter writer = new StreamWriter(static_file, false))
+                        {
+                            writer.Write(downloadString);
+                            writer.Flush();
+                            writer.Close();
+                        }
+                        
+                        if (!File.Exists(static_file))
+                        {
+                            OnError("Error creating static page for this resource", Resource.BibID + ":" + Resource.VID, Resource.METS_Type_String, Resource.BuilderLogId);
+                        }
+                        else
+                        {
+                            // Also copy to the static page location server
+                            string web_server_file_version = Settings.Servers.Static_Pages_Location + Resource.File_Root + "\\" + Resource.BibID + "_" + Resource.VID + ".html";
+                            if (!Directory.Exists(Settings.Servers.Static_Pages_Location + Resource.File_Root))
+                                Directory.CreateDirectory(Settings.Servers.Static_Pages_Location + Resource.File_Root);
+                            File.Copy(static_file, web_server_file_version, true);
+                        }
+                    }
+                    catch
+                    {
+                        OnError("Error creating static page for this resource", Resource.BibID + ":" + Resource.VID, Resource.METS_Type_String, Resource.BuilderLogId);
+                    }
+                }
+
+            }
+            catch (Exception ee)
+            {
+                OnProcess("Error pulling the robot version", "CreateStaticVersionModule", Resource.BibID + "_" + Resource.VID, Resource.METS_Type_String, -1);
+            }
+
+
+
             //// Only build the statyic builder when needed 
             //if (staticBuilder == null)
             //{

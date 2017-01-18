@@ -16,6 +16,11 @@ build
 [Oo]bj
 plugins
 
+# ReSharper Cache Folders
+
+_ReSharper.SobekCM Builder
+_ReSharper.SobekCM Web
+
 # MSTest test Results
 [Tt]est[Rr]esult
 [Bb]uild[Ll]og.

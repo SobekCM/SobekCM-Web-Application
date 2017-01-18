@@ -1257,7 +1257,8 @@ namespace SobekCM.Library.HTML
         public override void Write_Within_HTML_Head(TextWriter Output, Custom_Tracer Tracer)
         {
             // ROBOTS SHOULD BE SENT TO THE CMS PAGE FOR THIS
-            Output.WriteLine("  <meta name=\"robots\" content=\"noindex, nofollow\" />");
+            if ( String.Compare(RequestSpecificValues.Current_Mode.ViewerCode, "robot", StringComparison.OrdinalIgnoreCase) != 0 )
+                Output.WriteLine("  <meta name=\"robots\" content=\"noindex, nofollow\" />");
 
             // Write the main SobekCM item style sheet to use 
             Output.WriteLine("  <link href=\"" + Static_Resources_Gateway.Sobekcm_Item_Css + "\" rel=\"stylesheet\" type=\"text/css\" />");
@@ -1276,6 +1277,8 @@ namespace SobekCM.Library.HTML
 
             // This is used for the TOC
             Output.WriteLine("  <link rel=\"stylesheet\" href=\"" + UI_ApplicationCache_Gateway.Configuration.UI.StaticResources.Jstree_Css + "\" />");
+
+
 
         }
 

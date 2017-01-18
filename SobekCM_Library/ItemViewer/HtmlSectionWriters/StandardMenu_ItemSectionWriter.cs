@@ -63,9 +63,11 @@ namespace SobekCM.Library.ItemViewer.HtmlSectionWriters
                 if (Prototyper != null)
                     currentCode = Prototyper.ViewerCode;
 
+                // Should the LINKS be included?
+                bool include_links = !Behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Item_Subwriter_Suppress_Item_Menu_Links);
 
                 // Let the menu provider write the menu
-                menuProvider.Add_Main_Menu(Output, currentCode, RequestSpecificValues.Flags.ItemRestrictedFromUserByIp, RequestSpecificValues.Flags.ItemCheckedOutByOtherUser, CurrentItem, RequestSpecificValues.Current_Mode, RequestSpecificValues.Current_User, RequestSpecificValues.Tracer);
+                menuProvider.Add_Main_Menu(Output, currentCode, RequestSpecificValues.Flags.ItemRestrictedFromUserByIp, RequestSpecificValues.Flags.ItemCheckedOutByOtherUser, CurrentItem, RequestSpecificValues.Current_Mode, RequestSpecificValues.Current_User, include_links, RequestSpecificValues.Tracer);
             }
         }
     }

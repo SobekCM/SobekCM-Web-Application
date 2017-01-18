@@ -1,11 +1,17 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Web.Caching;
 using System.Web.UI.WebControls;
 using SobekCM.Core.BriefItem;
+using SobekCM.Core.Configuration.Localization;
+using SobekCM.Core.FileSystems;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Users;
 using SobekCM.Library.HTML;
 using SobekCM.Library.ItemViewer.Menu;
+using SobekCM.Library.UI;
 using SobekCM.Tools;
 
 namespace SobekCM.Library.ItemViewer.Viewers
@@ -109,7 +115,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             // Set the behavior properties to the empy behaviors ( in the base class )
             Behaviors = new List<HTML.HtmlSubwriter_Behaviors_Enum>();
-            Behaviors.Add( HtmlSubwriter_Behaviors_Enum.Item_Subwriter_Suppress_TOC_Links);
+            Behaviors.Add(HtmlSubwriter_Behaviors_Enum.Item_Subwriter_Suppress_TOC_Links);
+            Behaviors.Add(HtmlSubwriter_Behaviors_Enum.Suppress_Internal_Header);
+            Behaviors.Add(HtmlSubwriter_Behaviors_Enum.Item_Subwriter_Suppress_Item_Menu_Links);
         }
 
         /// <summary> CSS ID for the viewer viewport for this particular viewer </summary>
@@ -131,10 +139,238 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             // Add the HTML for the citation
             Output.WriteLine("        <!-- SEARCH ENGINE INDEXING ITEM VIEWER OUTPUT -->");
-            Output.WriteLine("        <td>");
+            Output.WriteLine("        ");
 
-            Output.WriteLine("  SEARCH INDEXING PAGE");
+            // If this is DARK and the user cannot edit and the flag is not set to show citation, show nothing here
+            if ((BriefItem.Behaviors.Dark_Flag) || (BriefItem.Behaviors.IP_Restriction_Membership != 0))
+            {
+                Output.WriteLine("          <td><div id=\"darkItemSuppressCitationMsg\">This item is DARK and cannot be viewed at this time</div>" + Environment.NewLine + "</td>" + Environment.NewLine + "  <!-- END SEARCH ENGINE VIEWER OUTPUT -->");
+                return;
+            }
+
+            string viewer_code = CurrentRequest.ViewerCode;
+
+            // Add the CITATION 
+            Output.WriteLine("        <td align=\"left\"><span class=\"SobekViewerTitle\">Citation</span></td>");
+            Output.WriteLine("      </tr>");
+            Output.WriteLine("      <tr>");
+            Output.WriteLine("        <td>");
+            // Add the main wrapper division
+            // Determine the material type
+            string microdata_type = "CreativeWork";
+            switch (BriefItem.Type)
+            {
+                case "BOOK":
+                case "SERIAL":
+                case "NEWSPAPER":
+                    microdata_type = "Book";
+                    break;
+
+                case "MAP":
+                    microdata_type = "Map";
+                    break;
+
+                case "PHOTOGRAPH":
+                case "AERIAL":
+                    microdata_type = "Photograph";
+                    break;
+            }
+
+            // Set the width
+            int width = 180;
+            if ((CurrentRequest.Language == Web_Language_Enum.French) || (CurrentRequest.Language == Web_Language_Enum.Spanish))
+                width = 230;
+
+            // Add the main wrapper division, with microdata information
+            Output.WriteLine("          <div id=\"sbkCiv_Citation\" itemprop=\"about\" itemscope itemtype=\"http://schema.org/" + microdata_type + "\">");
+            Output.WriteLine();
+            Output.WriteLine(Citation_Standard_ItemViewer.Standard_Citation_String(BriefItem, CurrentRequest, null, width, false, Tracer));
+            CurrentRequest.ViewerCode = viewer_code;
+
             Output.WriteLine("        </td>");
+            Output.WriteLine("      </tr>");
+            Output.WriteLine("      <tr>");
+
+            // Add the downloads
+            if ((BriefItem.Downloads != null) && (BriefItem.Downloads.Count > 0))
+            {
+                Output.WriteLine("        <td align=\"left\"><span class=\"SobekViewerTitle\">Downloads</span></td>");
+                Output.WriteLine("      </tr>");
+                Output.WriteLine("      <tr>");
+                Output.WriteLine("        <td id=\"sbkDiv_MainArea\">");
+                Downloads_ItemViewer.Add_Download_Links(Output, BriefItem, CurrentRequest, null, Tracer);
+                Output.WriteLine("        </td>");
+            }
+            Output.WriteLine("      </tr>");
+
+            string textLocation = SobekFileSystem.Resource_Network_Uri(BriefItem);
+            Add_Full_Text(Output, textLocation);
+        
+        
+        }
+
+        private void Add_Full_Text(TextWriter Output, string TextFileLocation)
+        {
+            // Is the text file location included, in which case any full text should be appended to the end?
+            if ((TextFileLocation.Length > 0) && (Directory.Exists(TextFileLocation)))
+            {
+                // Get the list of all TXT files in this division
+                string[] text_files = Directory.GetFiles(TextFileLocation, "*.txt");
+                Dictionary<string, string> text_files_existing = new Dictionary<string, string>();
+                foreach (string thisTextFile in text_files)
+                {
+                    string text_filename = (new FileInfo(thisTextFile)).Name.ToUpper();
+                    text_files_existing[text_filename] = text_filename;
+                }
+
+                // Are there ANY text files?
+                if (text_files.Length > 0)
+                {
+                    // If this has page images, check for related text files 
+                    List<string> text_files_included = new List<string>();
+                    bool started = false;
+                    if ((BriefItem.Images != null ) && ( BriefItem.Images.Count > 0 ))
+                    {
+                        // Go through the first 100 text pages
+                        int page_count = 0;
+                        foreach (BriefItem_FileGrouping thisFileGroup in BriefItem.Images)
+                        {
+                            // Keep track of the page count
+                            page_count++;
+
+                            // Look for files in this page
+                            if (thisFileGroup.Files.Count > 0)
+                            {
+                                bool found_non_thumb_file = false;
+                                foreach (BriefItem_File thisFile in thisFileGroup.Files)
+                                {
+                                    // Make sure this is not a thumb
+                                    if (thisFile.Name.ToLower().IndexOf("thm.jpg") < 0)
+                                    {
+                                        found_non_thumb_file = true;
+                                        string root = Path.GetFileNameWithoutExtension(thisFile.Name);
+                                        if (text_files_existing.ContainsKey(root.ToUpper() + ".TXT"))
+                                        {
+                                            string text_file = TextFileLocation + "\\" + root.ToUpper() + ".txt";
+
+                                            // SInce this is marked to be included, save this name
+                                            text_files_included.Add(root.ToUpper() + ".TXT");
+
+                                            // For size reasons, we only include the text from the first 100 pages
+                                            if (page_count <= 100)
+                                            {
+                                                if (!started)
+                                                {
+                                                    Output.WriteLine("       <tr>");
+                                                    Output.WriteLine("         <td align=\"left\"><span class=\"SobekViewerTitle\">Full Text</span></td>");
+                                                    Output.WriteLine("       </tr>");
+                                                    Output.WriteLine("       <tr>");
+                                                    Output.WriteLine("          <td>");
+                                                    Output.WriteLine("            <div style=\"padding: 10px;background-color:white; color:#222; font-size: 0.9em; text-align: left;\">");
+
+                                                    started = true;
+                                                }
+
+                                                try
+                                                {
+                                                    StreamReader reader = new StreamReader(text_file);
+                                                    string text_line = reader.ReadLine();
+                                                    while (text_line != null)
+                                                    {
+                                                        Output.WriteLine(text_line + "<br />");
+                                                        text_line = reader.ReadLine();
+                                                    }
+                                                    reader.Close();
+                                                }
+                                                catch
+                                                {
+                                                    Output.WriteLine("Unable to read file: " + text_file);
+                                                }
+
+                                                Output.WriteLine("<br /><br />");
+                                            }
+                                        }
+
+                                    }
+
+                                    // If a suitable file was found, break here
+                                    if (found_non_thumb_file)
+                                        break;
+                                }
+                            }
+                        }
+
+                        // End this if it was ever started
+                        if (started)
+                        {
+                            Output.WriteLine("            </div>");
+                            Output.WriteLine("          </td>");
+                            Output.WriteLine("       </tr>");
+                        }
+                    }
+
+                    // Now, check for any other valid text files 
+                    List<string> additional_text_files = text_files_existing.Keys.Where(ThisTextFile => (!text_files_included.Contains(ThisTextFile.ToUpper())) && (ThisTextFile.ToUpper() != "AGREEMENT.TXT") && (ThisTextFile.ToUpper().IndexOf("REQUEST") != 0)).ToList();
+
+                    // Now, include any additional text files, which would not be page text files, possiblye 
+                    // full text for included PDFs, Powerpoint, Word Doc, etc..
+                    started = false;
+                    foreach (string thisTextFile in additional_text_files)
+                    {
+                        if (!started)
+                        {
+                            Output.WriteLine("       <tr>");
+                            Output.WriteLine("         <td align=\"left\"><span class=\"SobekViewerTitle\">Full Text</span></td>");
+                            Output.WriteLine("       </tr>");
+                            Output.WriteLine("       <tr>");
+                            Output.WriteLine("          <td>");
+                            Output.WriteLine("            <div style=\"padding: 10px;background-color:white; color:#222; font-size: 0.9em; text-align: left;\">");
+
+                            started = true;
+                        }
+
+                        string text_file = TextFileLocation + "\\" + thisTextFile;
+
+                        try
+                        {
+
+
+                            StreamReader reader = new StreamReader(text_file);
+                            string text_line = reader.ReadLine();
+                            while (text_line != null)
+                            {
+                                Output.WriteLine(text_line + "<br />");
+                                text_line = reader.ReadLine();
+                            }
+                            reader.Close();
+                        }
+                        catch
+                        {
+                            Output.WriteLine("Unable to read file: " + text_file);
+                        }
+
+                        Output.WriteLine("<br /><br />");
+                    }
+
+                    // End this if it was ever started
+                    if (started)
+                    {
+                        Output.WriteLine("            </div>");
+                        Output.WriteLine("          </td>");
+                        Output.WriteLine("       </tr>");
+                    }
+                }
+            }
+        }
+
+        /// <summary> Any additional inline style for this viewer that affects the main box around this</summary>
+        /// <remarks> This returns the width of the image for the width of the viewer port </remarks>
+        public override string ViewerBox_InlineStyle
+        {
+            get
+            {
+                return "width:900px;";
+            }
         }
 
 
@@ -145,11 +381,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
         public override void Add_Main_Viewer_Section(PlaceHolder MainPlaceHolder, Custom_Tracer Tracer)
         {
             // Do nothing
-        }
-
-        public override void Write_Within_HTML_Head(TextWriter Output, Custom_Tracer Tracer)
-        {
-            Output.WriteLine("   <meta name=\"robots\" content=\"nofollow\">");
         }
     }
 }

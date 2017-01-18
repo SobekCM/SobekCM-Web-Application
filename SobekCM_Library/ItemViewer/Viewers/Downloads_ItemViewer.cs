@@ -164,6 +164,19 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 Tracer.Add_Trace("Download_ItemViewer.Write_Main_Viewer_Section", "");
             }
 
+            Output.WriteLine("          <td>");
+            Output.WriteLine("            <div id=\"sbkDiv_MainArea\">");
+            Add_Download_Links(Output, BriefItem, CurrentRequest, CurrentUser, Tracer );
+        }
+
+        /// <summary> Adds the download links directly to the output stream </summary>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        /// <param name="Output"> Response stream for the item viewer to write directly to  </param>
+        /// <param name="BriefItem"> Current item to display </param>
+        /// <param name="CurrentRequest"> Current request object, which has all the basic navigation, mode information for this request </param>
+        /// <param name="CurrentUser"> Current user, if one is logged in, or NULL</param>
+        public static void Add_Download_Links(TextWriter Output, BriefItemInfo BriefItem, Navigation_Object CurrentRequest, User_Object CurrentUser, Custom_Tracer Tracer)
+        {
             // Start the citation table
             string explanation_text = "This item has the following downloads:";
             switch (CurrentRequest.Language)
@@ -182,8 +195,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     break;
             }
 
-            Output.WriteLine("          <td>");
-            Output.WriteLine("            <div id=\"sbkDiv_MainArea\">");
 
             Output.WriteLine("              <br />");
 
@@ -251,7 +262,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
 
             // If this was an aerial, allow each jpeg2000 page to be downloaded
-            if ((BriefItem.Behaviors.Page_File_Extensions_For_Download != null) && (BriefItem.Behaviors.Page_File_Extensions_For_Download.Length > 0) && ( BriefItem.Images != null ))
+            if ((BriefItem.Behaviors.Page_File_Extensions_For_Download != null) && (BriefItem.Behaviors.Page_File_Extensions_For_Download.Length > 0) && (BriefItem.Images != null))
             {
                 List<string> pageDownloads = new List<string>();
 

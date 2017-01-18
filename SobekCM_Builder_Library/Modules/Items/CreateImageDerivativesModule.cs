@@ -226,8 +226,8 @@ namespace SobekCM.Builder_Library.Modules.Items
                                 //if (( jpeg_file_lastModTime.HasValue ) && ( jpeg_file_lastModTime.Value.Month == 9 ) && ( jpeg_file_lastModTime.Value.Day == 6 ))
 
                                 // Now, see if the other derivatives are missing or too old
-                                if (((!jpeg_file_lastModTime.HasValue) || (jpeg_file_lastModTime.Value.CompareTo(jpeg2000_file_lastModTime) < 0)) ||
-                                    ((!jpeg_thumb_file_lastModTime.HasValue) || (jpeg_thumb_file_lastModTime.Value.CompareTo(jpeg2000_file_lastModTime) < 0)))
+                                if (((!jpeg_file_lastModTime.HasValue) || (jpeg_file_lastModTime.Value.CompareTo(jpeg2000_file_lastModTime.Value.AddMinutes(-2)) < 0)) ||
+                                    ((!jpeg_thumb_file_lastModTime.HasValue) || (jpeg_thumb_file_lastModTime.Value.CompareTo(jpeg2000_file_lastModTime.Value.AddMinutes(-2)) < 0)))
                                 {
                                     string name_sans_extension = Path.GetFileNameWithoutExtension(jpeg2000_file);
 

@@ -35,6 +35,9 @@
 		/// <summary> Suppress displaying the item menu for this item view (item viewer likely adds one) </summary>
         Item_Subwriter_Suppress_Item_Menu,
 
+        /// <summary> The main menu will still be displayed, but the links will be suppressed </summary>
+        Item_Subwriter_Suppress_Item_Menu_Links,
+
 		/// <summary> Suppress any possible left navigation/wordmarks bar in this item view </summary>
         Item_Subwriter_Suppress_Left_Navigation_Bar,
 

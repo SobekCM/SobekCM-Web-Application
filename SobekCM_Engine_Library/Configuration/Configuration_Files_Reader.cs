@@ -2405,11 +2405,7 @@ namespace SobekCM.Engine_Library.Configuration
                                 Config.UI.WriterViewers.Clear();
                                 break;
 
-                            case "itemwriter":
-                                if (ReaderXml.MoveToAttribute("class"))
-                                    Config.UI.WriterViewers.Items.Class = ReaderXml.Value.Trim();
-                                if (ReaderXml.MoveToAttribute("assembly"))
-                                    Config.UI.WriterViewers.Items.Assembly = ReaderXml.Value.Trim();
+                            case "itemwriterconfig":
                                 ReaderXml.MoveToElement();
                                 read_item_writer_viewer_configs(ReaderXml.ReadSubtree(), Config.UI.WriterViewers);
                                 break;
@@ -2445,17 +2441,66 @@ namespace SobekCM.Engine_Library.Configuration
                 {
                     switch (ReaderXml.Name.ToLower())
                     {
-                        case "menuprovider":
-                            string menuassembly = null;
-                            if (ReaderXml.MoveToAttribute("assembly"))
-                                menuassembly = ReaderXml.Value.Trim();
+                        case "clearall":
+                            Config.Items.ClearAll();
+                            break;
+
+                        case "itemwriter":
                             if (ReaderXml.MoveToAttribute("class"))
+                                Config.Items.Class = ReaderXml.Value.Trim();
+                            if (ReaderXml.MoveToAttribute("assembly"))
+                                Config.Items.Assembly = ReaderXml.Value.Trim();
+                            break;
+
+                        //case "menuprovider":
+                        //    string menuassembly = null;
+                        //    if (ReaderXml.MoveToAttribute("assembly"))
+                        //        menuassembly = ReaderXml.Value.Trim();
+                        //    if (ReaderXml.MoveToAttribute("class"))
+                        //    {
+                        //        string menuclass = ReaderXml.Value.Trim();
+                        //        if ( !String.IsNullOrEmpty(menuclass))
+                        //            Config.Items.SetMainMenu(menuclass, menuassembly);
+                        //    }
+                        //    break;
+
+                        case "htmlheadwriters":
+                            if (ReaderXml.MoveToAttribute("id"))
                             {
-                                string menuclass = ReaderXml.Value.Trim();
-                                if ( !String.IsNullOrEmpty(menuclass))
-                                    Config.Items.SetMainMenu(menuclass, menuassembly);
+                                string id = ReaderXml.Value.Trim();
+                                if (!String.IsNullOrWhiteSpace(id))
+                                {
+                                    // Collect the data
+                                    string htmlheadwriter_assembly = String.Empty;
+                                    string htmlheadwriter_class = String.Empty;
+                                    if (ReaderXml.MoveToAttribute("class"))
+                                        htmlheadwriter_class = ReaderXml.Value.Trim();
+                                    if (ReaderXml.MoveToAttribute("assembly"))
+                                        htmlheadwriter_assembly = ReaderXml.Value.Trim();
+                                    bool htmlheadwriter_enabled = ((!ReaderXml.MoveToAttribute("enabled")) || (String.Compare(ReaderXml.Value.Trim(), "false", StringComparison.OrdinalIgnoreCase) != 0));
+
+                                    // If a class at least was provided continue
+                                    if (!String.IsNullOrWhiteSpace(htmlheadwriter_class))
+                                    {
+                                        HtmlHeadWriterConfig htmlHeadWriterConfig = Config.Items.GetHtmlHeadWriter(id);
+                                        htmlHeadWriterConfig.Enabled = htmlheadwriter_enabled;
+                                        htmlHeadWriterConfig.Class = htmlheadwriter_class;
+                                        htmlHeadWriterConfig.Assembly = htmlheadwriter_assembly;
+                                    }
+                                }
                             }
                             break;
+
+                        case "layout":
+                            ItemWriterLayoutConfig defaultLayout = Config.Items.Layout;
+                            if (ReaderXml.MoveToAttribute("id"))
+                                defaultLayout.ID = ReaderXml.Value.Trim();
+                            if (ReaderXml.MoveToAttribute("source"))
+                                defaultLayout.Source = ReaderXml.Value.Trim();
+                            ReaderXml.MoveToElement();
+                            read_item_writer_layout_config(ReaderXml.ReadSubtree(), defaultLayout);
+                            break;
+
 
                         case "itemviewer":
                             ItemSubViewerConfig newConfig = new ItemSubViewerConfig();
@@ -2513,11 +2558,45 @@ namespace SobekCM.Engine_Library.Configuration
             }
         }
 
+        private static void read_item_writer_layout_config(XmlReader ReaderXml, ItemWriterLayoutConfig Layout)
+        {
+            while (ReaderXml.Read())
+            {
+                if (ReaderXml.NodeType == XmlNodeType.Element)
+                {
+                    switch (ReaderXml.Name.ToLower())
+                    {
+                        case "stylesheet":
+                            StylesheetConfig newStyleConfig = new StylesheetConfig();
+                            if (ReaderXml.MoveToAttribute("source"))
+                                newStyleConfig.Source = ReaderXml.Value.Trim();
+                            if (ReaderXml.MoveToAttribute("media"))
+                                newStyleConfig.Media = ReaderXml.Value.Trim();
+                            if (!String.IsNullOrWhiteSpace(newStyleConfig.Source))
+                            {
+                                if (Layout.Stylesheets == null) Layout.Stylesheets = new List<StylesheetConfig>();
+                                Layout.Stylesheets.Add(newStyleConfig);
+                            }
+                            break;
+
+                        case "section":
+                            if (ReaderXml.MoveToAttribute("source"))
+                            {
+                                string section_name = ReaderXml.Value.Trim();
+
+                            }
+                            break;
+                    }
+                }
+            }
+        }
+
         #endregion
 
         #region Section reads the citation configuration information
 
-        private static bool read_citation_details(XmlReader ReaderXml, InstanceWide_Configuration Config)
+            private static
+            bool read_citation_details(XmlReader ReaderXml, InstanceWide_Configuration Config)
         {
             bool errorEncountered = false;
 

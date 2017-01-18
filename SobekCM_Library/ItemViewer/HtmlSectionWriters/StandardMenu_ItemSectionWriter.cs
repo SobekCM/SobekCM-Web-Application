@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Reflection;
 using SobekCM.Core.BriefItem;
-using SobekCM.Engine_Library.ApplicationState;
 using SobekCM.Library.HTML;
 using SobekCM.Library.ItemViewer.Menu;
 using SobekCM.Library.ItemViewer.Viewers;
-using SobekCM.Library.UI;
 
 namespace SobekCM.Library.ItemViewer.HtmlSectionWriters
 {
@@ -25,35 +22,38 @@ namespace SobekCM.Library.ItemViewer.HtmlSectionWriters
         /// <param name="Behaviors"> Behaviors for the current view and situation </param>
         public void Write_HTML(TextWriter Output, iItemViewerPrototyper Prototyper, iItemViewer CurrentViewer, BriefItemInfo CurrentItem, RequestCache RequestSpecificValues, List<HtmlSubwriter_Behaviors_Enum> Behaviors)
         {
-            // First, check that the menu provider was created
-            if (menuProvider == null)
-            {
-                // Was there some configuration information?
-                if (UI_ApplicationCache_Gateway.Configuration.UI.WriterViewers.Items.MainMenu != null)
-                {
-                    if ((UI_ApplicationCache_Gateway.Configuration.UI.WriterViewers.Items.MainMenu.Class == "SobekCM.Library.ItemViewer.Menu.StandardItemMenuProvider") && (String.IsNullOrWhiteSpace(UI_ApplicationCache_Gateway.Configuration.UI.WriterViewers.Items.MainMenu.Assembly)))
-                        menuProvider = new StandardItemMenuProvider();
-                    else
-                    {
-                        try
-                        {
-                            string assemblyName = UI_ApplicationCache_Gateway.Configuration.UI.WriterViewers.Items.MainMenu.Assembly;
-                            string assemblyFilePath = Engine_ApplicationCache_Gateway.Configuration.Extensions.Get_Assembly(assemblyName);
-                            Assembly dllAssembly = Assembly.LoadFrom(assemblyFilePath);
-                            Type readerWriterType = dllAssembly.GetType(UI_ApplicationCache_Gateway.Configuration.UI.WriterViewers.Items.MainMenu.Class);
-                            menuProvider = (iItemMenuProvider)Activator.CreateInstance(readerWriterType);
-                        }
-                        catch (Exception)
-                        {
-                            // Do nothing here... will be fixed in the next couple lines of code
-                        }
-                    }
-                }
+            //// First, check that the menu provider was created
+            //if (menuProvider == null)
+            //{
+            //    // Was there some configuration information?
+            //    if (UI_ApplicationCache_Gateway.Configuration.UI.WriterViewers.Items.MainMenu != null)
+            //    {
+            //        if ((UI_ApplicationCache_Gateway.Configuration.UI.WriterViewers.Items.MainMenu.Class == "SobekCM.Library.ItemViewer.Menu.StandardItemMenuProvider") && (String.IsNullOrWhiteSpace(UI_ApplicationCache_Gateway.Configuration.UI.WriterViewers.Items.MainMenu.Assembly)))
+            //            menuProvider = new StandardItemMenuProvider();
+            //        else
+            //        {
+            //            try
+            //            {
+            //                string assemblyName = UI_ApplicationCache_Gateway.Configuration.UI.WriterViewers.Items.MainMenu.Assembly;
+            //                string assemblyFilePath = Engine_ApplicationCache_Gateway.Configuration.Extensions.Get_Assembly(assemblyName);
+            //                Assembly dllAssembly = Assembly.LoadFrom(assemblyFilePath);
+            //                Type readerWriterType = dllAssembly.GetType(UI_ApplicationCache_Gateway.Configuration.UI.WriterViewers.Items.MainMenu.Class);
+            //                menuProvider = (iItemMenuProvider)Activator.CreateInstance(readerWriterType);
+            //            }
+            //            catch (Exception)
+            //            {
+            //                // Do nothing here... will be fixed in the next couple lines of code
+            //            }
+            //        }
+            //    }
 
-                // Finally, just set to the standard if there was a problem
-                if (menuProvider == null)
-                    menuProvider = new StandardItemMenuProvider();
-            }
+            //    // Finally, just set to the standard if there was a problem
+            //    if (menuProvider == null)
+                   
+            //}
+
+            if ( menuProvider == null )
+                menuProvider = new StandardItemMenuProvider();
 
             // The item viewer can choose to override the standard item menu
             if ((!Behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Item_Subwriter_Suppress_Item_Menu)) && (menuProvider != null))

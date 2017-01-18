@@ -51,7 +51,8 @@ namespace SobekCM.Library.ItemViewer.HtmlSectionWriters
                 viewer_code = "#";
 
             Output.WriteLine();
-            Output.WriteLine("  <script type=\"text/javascript\" src=\"" + UI_ApplicationCache_Gateway.Configuration.UI.StaticResources.Jstree_Js + "\"></script>");            Output.WriteLine("  <div class=\"sbkIsw_ShowTocRow\">" + table_of_contents + "</div>");
+            Output.WriteLine("  <script type=\"text/javascript\" src=\"" + UI_ApplicationCache_Gateway.Configuration.UI.StaticResources.Jstree_Js + "\"></script>");
+            Output.WriteLine("  <div class=\"sbkIsw_ShowTocRow\">" + table_of_contents + "</div>");
             Output.WriteLine("  <div id=\"tocTree\" class=\"sbkIsw_TocTreeView\">");
             Output.WriteLine("    <ul>");
 

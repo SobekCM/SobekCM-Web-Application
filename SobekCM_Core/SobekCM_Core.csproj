@@ -152,6 +152,7 @@
     <Compile Include="UI_Configuration\StaticResources\StaticResources_Configuration.cs" />
     <Compile Include="UI_Configuration\Viewers\AggregationWriterConfig.cs" />
     <Compile Include="UI_Configuration\Viewers\ClassAssemblyConfig.cs" />
+    <Compile Include="UI_Configuration\Viewers\HtmlHeadWriterConfig.cs" />
     <Compile Include="UI_Configuration\Viewers\ItemSubViewerConfig.cs" />
     <Compile Include="UI_Configuration\MapEditor_Configuration.cs" />
     <Compile Include="Configuration\Engine\Engine_Component.cs" />
@@ -244,7 +245,11 @@
     <Compile Include="UI_Configuration\Citation\SectionWriter.cs" />
     <Compile Include="UI_Configuration\InstanceWide_UI_Configuration.cs" />
     <Compile Include="UI_Configuration\Viewers\ItemWriterConfig.cs" />
+    <Compile Include="UI_Configuration\Viewers\ItemWriterLayoutConfig.cs" />
     <Compile Include="UI_Configuration\Viewers\OtherWriterConfig.cs" />
+    <Compile Include="UI_Configuration\Viewers\SectionWriterConfig.cs" />
+    <Compile Include="UI_Configuration\Viewers\SectionWriterGroupConfig.cs" />
+    <Compile Include="UI_Configuration\Viewers\StylesheetConfig.cs" />
     <Compile Include="UI_Configuration\Viewers\WebContentWriterConfig.cs" />
     <Compile Include="UI_Configuration\Viewers\WriterViewerConfig.cs" />
     <Compile Include="UI_Configuration\Viewers\SingleSubViewerConfig.cs" />

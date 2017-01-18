@@ -39,9 +39,19 @@ namespace SobekCM.Core.UI_Configuration.Viewers
         [ProtoMember(3)]
         public List<ItemSubViewerConfig> Viewers { get; set; }
 
+        /// <summary> Collection of HTML head writers, used to add metadata (or anything else) into the HTML head </summary>
+        [DataMember(Name = "headwriters")]
+        [XmlArray("headwriters")]
+        [XmlArrayItem("headwriter", typeof(HtmlHeadWriterConfig))]
+        [ProtoMember(4)]
+        public List<HtmlHeadWriterConfig> HtmlHeadWriters { get; set; }
 
-        public ClassAssemblyConfig MainMenu { get; set; }
-
+        /// <summary> Configuration about the current layout, including the source file and which 
+        /// section writers should be able to write to each section </summary>
+        [DataMember(Name = "layout", EmitDefaultValue = false)]
+        [XmlAttribute("layout")]
+        [ProtoMember(5)]
+        public ItemWriterLayoutConfig Layout { get; set; }
 
 
         /// <summary> Constructor for a new instance of the <see cref="ItemWriterConfig"/> class </summary>
@@ -49,8 +59,49 @@ namespace SobekCM.Core.UI_Configuration.Viewers
         {
             Class = "SobekCM.Library.HTML.Item_HtmlSubwriter";
             Viewers = new List<ItemSubViewerConfig>();
+            Layout = new ItemWriterLayoutConfig();
 
             set_default();
+        }
+
+        /// <summary> Gets an existing HTML head writer, by ID, or creates and adds a new HTML head writer 
+        /// with that ID and enabled </summary>
+        /// <param name="ID"> Identifier for this HTML head writer, used to set the enabled flag 
+        /// differently in configuration files read later, such as the plug-ins or user config files </param>
+        /// <returns></returns>
+        public HtmlHeadWriterConfig GetHtmlHeadWriter(string ID)
+        {
+            // At the end of this routine, there should be at least one in the list, so ensure
+            // the list has been initiated
+            if (HtmlHeadWriters == null)
+                HtmlHeadWriters = new List<HtmlHeadWriterConfig>();
+
+            // Does this exist?
+            foreach (HtmlHeadWriterConfig thisConfig in HtmlHeadWriters)
+            {
+                if (String.Compare(thisConfig.ID, ID, StringComparison.Ordinal) == 0)
+                    return thisConfig;
+            }
+
+            // Must not have existed, so add it
+            HtmlHeadWriterConfig newValue = new HtmlHeadWriterConfig { ID = ID, Enabled = true };
+            HtmlHeadWriters.Add(newValue);
+            return newValue;
+        }
+
+
+
+
+        /// <summary> Clears all the previously loaded information, such as the default values </summary>
+        /// <remarks> This clears all the item viewer information, clears the assembly, and sets the class to the
+        /// default item html subwriter class. </remarks>
+        public void ClearAll()
+        {
+            Viewers.Clear();
+            if ( viewersByCode != null ) viewersByCode.Clear();
+            if ( viewersByType != null ) viewersByType.Clear();
+            Assembly = String.Empty;
+            Class = "SobekCM.Library.HTML.Item_HtmlSubwriter";
         }
 
         /// <summary> Add a new item viewer for the writer to use </summary>
@@ -98,15 +149,6 @@ namespace SobekCM.Core.UI_Configuration.Viewers
 
         }
 
-        /// <summary> Clears all the previously loaded information, such as the default values </summary>
-        /// <remarks> This clears all the item viewer information, clears the assembly, and sets the class to the
-        /// default item html subwriter class. </remarks>
-        public void Clear()
-        {
-            Viewers.Clear();
-            Assembly = String.Empty;
-            Class = "SobekCM.Library.HTML.Item_HtmlSubwriter";
-        }
 
         private void set_default()
         {
@@ -251,17 +293,5 @@ namespace SobekCM.Core.UI_Configuration.Viewers
             });
         }
 
-        /// <summary> Sets the main menu provider for this item writer </summary>
-        /// <param name="Class"> Fully qualified (including namespace) name of the class used to display the item main menu </param>
-        /// <param name="Assembly"> Name of the assembly within which this class resides, unless this 
-        /// is one of the default class/assembly included in the core code </param>
-        public void SetMainMenu(string Class, string Assembly)
-        {
-            MainMenu = new ClassAssemblyConfig
-            {
-                Class = Class,
-                Assembly = Assembly
-            };
-        }
     }
 }

@@ -4,6 +4,7 @@ using System.Web.UI.WebControls;
 using SobekCM.Core.BriefItem;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Users;
+using SobekCM.Library.HTML;
 using SobekCM.Library.ItemViewer.Menu;
 using SobekCM.Tools;
 
@@ -107,7 +108,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
             this.CurrentRequest = CurrentRequest;
 
             // Set the behavior properties to the empy behaviors ( in the base class )
-            Behaviors = EmptyBehaviors;
+            Behaviors = new List<HTML.HtmlSubwriter_Behaviors_Enum>();
+            Behaviors.Add( HtmlSubwriter_Behaviors_Enum.Item_Subwriter_Suppress_TOC_Links);
         }
 
         /// <summary> CSS ID for the viewer viewport for this particular viewer </summary>
@@ -143,6 +145,11 @@ namespace SobekCM.Library.ItemViewer.Viewers
         public override void Add_Main_Viewer_Section(PlaceHolder MainPlaceHolder, Custom_Tracer Tracer)
         {
             // Do nothing
+        }
+
+        public override void Write_Within_HTML_Head(TextWriter Output, Custom_Tracer Tracer)
+        {
+            Output.WriteLine("   <meta name=\"robots\" content=\"nofollow\">");
         }
     }
 }

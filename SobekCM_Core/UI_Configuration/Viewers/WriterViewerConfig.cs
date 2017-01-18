@@ -65,8 +65,8 @@ namespace SobekCM.Core.UI_Configuration.Viewers
         /// <summary> Clears all the previously loaded information, such as the default values </summary>
         public void Clear()
         {
-            Items.Clear();
-            Aggregations.Clear();
+            Items.ClearAll();
+            Aggregations.ClearAll();
             WebContent.Clear();
         }
     }

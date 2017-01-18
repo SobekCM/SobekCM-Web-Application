@@ -35,6 +35,13 @@ namespace SobekCM.Core.UI_Configuration.Viewers
         [ProtoMember(3)]
         public List<SingleSubViewerConfig> Viewers { get; set; }
 
+        /// <summary> Collection of HTML head writers, used to add metadata (or anything else) into the HTML head </summary>
+        [DataMember(Name = "headwriters")]
+        [XmlArray("headwriters")]
+        [XmlArrayItem("headwriter", typeof(HtmlHeadWriterConfig))]
+        [ProtoMember(4)]
+        public List<HtmlHeadWriterConfig> HtmlHeadWriters { get; set; }
+
         /// <summary> Constructor for a new instance of the <see cref="AggregationWriterConfig"/> class </summary>
         public AggregationWriterConfig()
         {
@@ -45,7 +52,7 @@ namespace SobekCM.Core.UI_Configuration.Viewers
         /// <summary> Clears all the previously loaded information, such as the default values </summary>
         /// <remarks> This clears all the item viewer information, clears the assembly, and sets the class to the
         /// default aggregation html subwriter class. </remarks>
-        public void Clear()
+        public void ClearAll()
         {
             Viewers.Clear();
             Assembly = String.Empty;

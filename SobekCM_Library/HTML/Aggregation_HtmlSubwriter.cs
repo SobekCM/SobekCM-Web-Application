@@ -337,14 +337,14 @@ namespace SobekCM.Library.HTML
 					case Aggregation_Type_Enum.Home_Edit:
 				        if (!hierarchyObject.Custom_Home_Page)
 				        {
-                            //// Are there tiles here?
-                            //string aggregation_tile_directory = Path.Combine(UI_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location, hierarchyObject.ObjDirectory, "images", "tiles");
-                            //if (Directory.Exists(aggregation_tile_directory))
-                            //{
-                            //    string[] jpeg_tiles = Directory.GetFiles(aggregation_tile_directory, "*.jpg");
-                            //    if (jpeg_tiles.Length > 0)
-                            //        collectionViewer = new Tiles_Home_AggregationViewer(RequestSpecificValues, viewBag);
-                            //}
+                            // Are there tiles here?
+                            string aggregation_tile_directory = Path.Combine(UI_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location, hierarchyObject.ObjDirectory, "images", "tiles");
+                            if (Directory.Exists(aggregation_tile_directory))
+                            {
+                                string[] jpeg_tiles = Directory.GetFiles(aggregation_tile_directory, "*.jpg");
+                                if (jpeg_tiles.Length > 0)
+                                    collectionViewer = new Tiles_Home_AggregationViewer(RequestSpecificValues, viewBag);
+                            }
 
                             // If the tiles home page as not built, build the standard viewer
                             if ( collectionViewer == null )

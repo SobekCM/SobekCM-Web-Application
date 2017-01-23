@@ -204,7 +204,7 @@ namespace SobekCM.Builder_Library.Modules.Schedulable
                 return;
 
             // Refresh the items
- //           Engine_ApplicationCache_Gateway.RefreshItems();
+            Engine_ApplicationCache_Gateway.RefreshItems();
 
             // Create the processor
             SobekCM_Stats_Reader_Processor processor = new SobekCM_Stats_Reader_Processor(log_directory, temporary_workspace, sobekcm_directory, year_month);

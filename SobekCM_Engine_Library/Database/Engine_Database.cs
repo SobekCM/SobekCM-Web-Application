@@ -1847,6 +1847,94 @@ namespace SobekCM.Engine_Library.Database
 			// Return the built result arguments
 			return returnArgs;
 		}
+        
+
+        /// <summary> Returns the basic metadata ( as if it was a search ) when searching by BibID/VID pairs </summary>
+        /// <param name="AggregationCode"> Code for the aggregation of interest ( or empty string to search all aggregationPermissions )</param>
+        /// <param name="BibID1"> BibID for the first BibID/VID pair to search for </param>
+        /// <param name="VID1"> VID for the first BibID/VID pair to search for </param>
+        /// <param name="BibID2"> BibID for the second BibID/VID pair to search for </param>
+        /// <param name="VID2"> VID for the second BibID/VID pair to search for </param>
+        /// <param name="BibID3"> BibID for the third BibID/VID pair to search for </param>
+        /// <param name="VID3"> VID for the third BibID/VID pair to search for </param>
+        /// <param name="BibID4"> BibID for the fourth BibID/VID pair to search for </param>
+        /// <param name="VID4"> VID for the fourth BibID/VID pair to search for </param>
+        /// <param name="BibID5"> BibID for the fifth BibID/VID pair to search for </param>
+        /// <param name="VID5"> VID for the fifth BibID/VID pair to search for </param>
+        /// <param name="BibID6"> BibID for the sixth BibID/VID pair to search for </param>
+        /// <param name="VID6"> VID for the sixth BibID/VID pair to search for </param>
+        /// <param name="BibID7"> BibID for the seventh BibID/VID pair to search for </param>
+        /// <param name="VID7"> VID for the seventh BibID/VID pair to search for </param>
+        /// <param name="BibID8"> BibID for the eighth BibID/VID pair to search for </param>
+        /// <param name="VID8"> VID for the eighth BibID/VID pair to search for </param>
+        /// <param name="BibID9"> BibID for the ninth BibID/VID pair to search for </param>
+        /// <param name="VID9"> VID for the ninth BibID/VID pair to search for </param>
+        /// <param name="BibID10"> BibID for the last BibID/VID pair to search for </param>
+        /// <param name="VID10"> VID for the last BibID/VID pair to search for </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <returns> Small arguments object which contains the page of results and optionally statistics about results for the entire search, including complete counts and facet information </returns>
+        /// <remarks> This calls the 'SobekCM_Metadata_By_Bib_Vid' stored procedure </remarks>
+        public static Multiple_Paged_Results_Args SobekCM_Metadata_By_Bib_Vid(string AggregationCode, string BibID1, string VID1, string BibID2, string VID2, 
+            string BibID3, string VID3, string BibID4, string VID4, string BibID5, string VID5, string BibID6, string VID6, string BibID7, string VID7,
+            string BibID8, string VID8, string BibID9, string VID9, string BibID10, string VID10, Custom_Tracer Tracer)
+        {
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("Engine_Database.SobekCM_Metadata_By_Bib_Vid", "Performing basic search in database  ( stored procedure SobekCM_Metadata_By_Bib_Vid )");
+            }
+
+            if (AggregationCode.ToUpper() == "ALL")
+                AggregationCode = String.Empty;
+
+            // Build the list of parameters
+            List<EalDbParameter> parameters = new List<EalDbParameter>
+			{
+                new EalDbParameter("@aggregationcode", AggregationCode), 
+                new EalDbParameter("@bibid1", BibID1), 
+                new EalDbParameter("@vid1", VID1), 
+                new EalDbParameter("@bibid2", BibID2), 
+                new EalDbParameter("@vid2", VID2),
+                new EalDbParameter("@bibid3", BibID3), 
+                new EalDbParameter("@vid3", VID3),
+                new EalDbParameter("@bibid4", BibID4), 
+                new EalDbParameter("@vid4", VID4),
+                new EalDbParameter("@bibid5", BibID5), 
+                new EalDbParameter("@vid5", VID5),
+                new EalDbParameter("@bibid6", BibID6), 
+                new EalDbParameter("@vid6", VID6),
+                new EalDbParameter("@bibid7", BibID7), 
+                new EalDbParameter("@vid7", VID7),
+                new EalDbParameter("@bibid8", BibID8), 
+                new EalDbParameter("@vid8", VID8),
+                new EalDbParameter("@bibid9", BibID9), 
+                new EalDbParameter("@vid9", VID9),
+                new EalDbParameter("@bibid10", BibID10), 
+                new EalDbParameter("@vid10", VID10)
+			};
+
+            // Create the database agnostic reader
+            EalDbReaderWrapper readerWrapper = EalDbAccess.ExecuteDataReader(DatabaseType, Connection_String + "Connection Timeout=45", CommandType.StoredProcedure, "SobekCM_Metadata_By_Bib_Vid", parameters);
+
+            // Pull out the database reader
+            DbDataReader reader = readerWrapper.Reader;
+
+            // Create the return argument object
+            List<string> metadataLabels = new List<string>();
+            Multiple_Paged_Results_Args returnArgs = new Multiple_Paged_Results_Args
+            {
+                Paged_Results = DataReader_To_Result_List_With_LookAhead2(reader, 100, metadataLabels)
+            };
+
+            // Save the metadata labels in the stats portion
+            Search_Results_Statistics stats = new Search_Results_Statistics(reader, null, metadataLabels);
+            returnArgs.Statistics = stats;
+
+            // Close the reader
+            readerWrapper.Close();
+
+            // Return the built result arguments
+            return returnArgs;
+        }
 
 		private static List<List<iSearch_Title_Result>> DataReader_To_Result_List_With_LookAhead2(DbDataReader Reader, int ResultsPerPage, List<string> MetadataFieldNames )
 		{

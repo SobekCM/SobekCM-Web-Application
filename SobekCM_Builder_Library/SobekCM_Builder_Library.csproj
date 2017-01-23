@@ -53,6 +53,7 @@
     <Compile Include="Modules\Items\AttachImagesAllModule.cs" />
     <Compile Include="Modules\Items\CreateImageDerivativesLegacyModule.cs" />
     <Compile Include="Modules\Items\TesseractOcrModule.cs" />
+    <Compile Include="Modules\Schedulable\CacheAggregationTileMetadataModule.cs" />
     <Compile Include="Modules\Schedulable\CalculateUsageStatisticsModule.cs" />
     <Compile Include="Settings\MultiInstance_Builder_Settings_Reader.cs" />
     <Compile Include="Settings\Single_Instance_Configuration.cs" />

@@ -284,31 +284,6 @@ namespace SobekCM.Library.ResultsViewer
 
                 resultsBldr.AppendLine("\t\t\t</table>");
 
-                // End this row
-     //           resultsBldr.AppendLine("\t\t<br />");
-
-                //// Add children, if there are some
-                //if (multiple_title)
-                //{
-                //    // Add this to the place holder
-                //    Literal thisLiteral = new Literal
-                //                              { Text = resultsBldr.ToString().Replace("&lt;role&gt;", "<i>").Replace( "&lt;/role&gt;", "</i>") };
-                //    MainPlaceHolder.Controls.Add(thisLiteral);
-                //    resultsBldr.Remove(0, resultsBldr.Length);
-
-                //    Add_Issue_Tree(MainPlaceHolder, titleResult, current_row, textRedirectStem, base_url);
-                //}
-
-                //resultsBldr.AppendLine("\t\t</td>");
-                //resultsBldr.AppendLine("\t</tr>");
-
-                // Add a horizontal line
-         //       resultsBldr.AppendLine("\t<tr><td bgcolor=\"#e7e7e7\" colspan=\"3\"></td></tr>");
-
- 
-       
-            // End this table
- //           resultsBldr.AppendLine("</table>");
             resultsBldr.AppendLine("</div></td></tr>");
 
 

@@ -155,10 +155,18 @@ namespace SobekCM.Builder_Library
             // Run the usage stats module first
             if (firstrun)
             {
+                // Run the usage stats
                 CalculateUsageStatisticsModule statsModule = new CalculateUsageStatisticsModule();
                 statsModule.Process += module_Process;
                 statsModule.Error += module_Error;
                 statsModule.DoWork(settings);
+
+                // Look for any aggregation tiles and cache the metadat for them
+                CacheAggregationTileMetadataModule tileModule = new CacheAggregationTileMetadataModule();
+                tileModule.Process += module_Process;
+                statsModule.Error += module_Error;
+                statsModule.DoWork(settings);
+
                 firstrun = false;
             }
 

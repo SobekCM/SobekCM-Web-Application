@@ -70,6 +70,9 @@
         /// <summary> This viewer uses the JQuery datatables plug-in </summary>
         Use_Jquery_DataTables,
 
+        /// <summary> This viewer uses the JQuery qtip plug-in </summary>
+        Use_Jquery_Qtip,
+
         /// <summary> Include the link to skip to the main content at the top of this </summary>
         Include_Skip_To_Main_Content_Link
     }

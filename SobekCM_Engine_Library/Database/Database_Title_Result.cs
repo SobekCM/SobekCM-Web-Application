@@ -15,71 +15,52 @@ namespace SobekCM.Engine_Library.Database
     [Serializable]
     public class Database_Title_Result : iSearch_Title_Result
     {
-        private string bibid;
-        private readonly List<Database_Item_Result> itemList;
         private Search_Result_Item_Tree itemTree;
-        private string materialtype;
 
         /// <summary> Constructor for a new instance of the Database_Title_Result class </summary>
         public Database_Title_Result()
         {
-            itemList = new List<Database_Item_Result>();
+            Items = new List<Database_Item_Result>();
         }
 
+        /// <summary> List of items within this title </summary>
+        public List<Database_Item_Result> Items { get; set; }
+
+
         /// <summary> Row number of this title within a larger page of results from the database </summary>
-        public int RowNumber { get; internal set; }
+        public int RowNumber { get; set; }
 
         #region Basic properties the implement the iSearch_Title_Result interface
 
         /// <summary> Bibliographic identifier (BibID) for this title result </summary>
-        public string BibID
-        {
-            get
-            {
-                return bibid ?? String.Empty;
-            }
-            internal set
-            {
-                bibid = value;
-            }
-        }
+        public string BibID { get; set; }
 
         /// <summary> Group title for this title result </summary>
-        public string GroupTitle { get; internal set; }
+        public string GroupTitle { get; set; }
 
 		/// <summary> Local OPAC cataloging number for this title result </summary>
-		public long OPAC_Number { get; internal set; }
+		public long OPAC_Number { get; set; }
 
 		/// <summary> OCLC cataloging number for this title result </summary>
-		public long OCLC_Number { get; internal set; }
+		public long OCLC_Number { get; set; }
 
 		/// <summary> Group-wide thumbnail for this title result </summary>
-		public string GroupThumbnail { get; internal set; }
+		public string GroupThumbnail { get; set; }
 
 		/// <summary> Material type for this title result </summary>
-		public string MaterialType
-		{
-			get
-			{
-				return materialtype ?? String.Empty;
-			}
-			internal set
-			{
-				materialtype = value;
-			}
-		}
+        public string MaterialType { get; set; }
 
 		/// <summary> Type of the primary alternate identifier for this resource ( i.e. 'Accession Number', etc.. )</summary>
-		public string Primary_Identifier_Type { get; internal set; }
+		public string Primary_Identifier_Type { get; set; }
 
 		/// <summary> Primary alternate identifier for this resource</summary>
-		public string Primary_Identifier { get; internal set; }
+		public string Primary_Identifier { get; set; }
 
         /// <summary> Spatial coverage for this title result in terms of coordinates for map display </summary>
-        public string Spatial_Coordinates { get; internal set; }
+        public string Spatial_Coordinates { get; set; }
 
 		/// <summary> User notes for this title result, if it is in a bookshelf </summary>
-		public string UserNotes { get; internal set; }
+		public string UserNotes { get; set; }
 
 		/// <summary> Highlighted snippet of text from this document </summary>
 		public string Snippet
@@ -91,7 +72,7 @@ namespace SobekCM.Engine_Library.Database
 		}
 
 		/// <summary> Metadata values to display for this item title result </summary>
-		public string[] Metadata_Display_Values { get; internal set; }
+		public string[] Metadata_Display_Values { get; set; }
 
         #endregion
 
@@ -99,8 +80,8 @@ namespace SobekCM.Engine_Library.Database
 
         /// <summary> Gets the number of items contained within this title result </summary>
         public int Item_Count 
-        { 
-            get { return itemList.Count; } 
+        {
+            get { return Items.Count; } 
         }
 
         /// <summary> Gets the item indicated by the provided index </summary>
@@ -108,7 +89,7 @@ namespace SobekCM.Engine_Library.Database
         /// <returns> Item result requested, or NULL </returns>
         public iSearch_Item_Result Get_Item(int Index)
         {
-            return itemList[Index];
+            return Items[Index];
         }
 
         /// <summary> Gets the item tree view used for showing all the items under this title in a tree type html display </summary>
@@ -128,23 +109,24 @@ namespace SobekCM.Engine_Library.Database
             itemTree = new Search_Result_Item_Tree();
 
             // Add a root node
-            Search_Result_Item_TreeNode myRootNode = itemTree.Add_Root_Node("ROOT", String.Empty, bibid);
+            Search_Result_Item_TreeNode myRootNode = itemTree.Add_Root_Node("ROOT", String.Empty, BibID);
 
             // Is this a newspaper type (handles display slightly differently)
-            bool newspaper = materialtype.ToUpper().IndexOf("NEWSPAPER") >= 0;
+            string materialType = MaterialType ?? String.Empty;
+            bool newspaper = materialType.ToUpper().IndexOf("NEWSPAPER") >= 0;
 
             // Placeholders for the day that we begin having four levels of serial hierarchy
             string thischildLevel4Text = String.Empty;
-            const int thischildLevel4Index = -1;
+            const int THISCHILD_LEVEL4_INDEX = -1;
 
             // Add each seperate child row to the Items_Within_Title set
             Dictionary<string, Search_Result_Item_TreeNode> level1Nodes = new Dictionary<string, Search_Result_Item_TreeNode>();
             Dictionary<string, Search_Result_Item_TreeNode> level2Nodes = new Dictionary<string, Search_Result_Item_TreeNode>();
             Dictionary<string, Search_Result_Item_TreeNode> level3Nodes = new Dictionary<string, Search_Result_Item_TreeNode>();
-            foreach( iSearch_Item_Result thisChild in itemList )
+            foreach (iSearch_Item_Result thisChild in Items)
             {
                 // Determine the final link for this item
-                string itemLink = bibid + "/" + thisChild.VID;
+                string itemLink = BibID + "/" + thisChild.VID;
 
                 string level1Text = thisChild.Level1_Text;
                 string level2Text = thisChild.Level2_Text;
@@ -157,7 +139,7 @@ namespace SobekCM.Engine_Library.Database
                 {
                     if (level3Nodes.ContainsKey(level1Text + "_" + level2Text + "_" + level3Text))
                     {
-                        level3Nodes[level1Text + "_" + level2Text + "_" + level3Text].Add_Child_Node(level4Text, itemLink, thischildLevel4Index);
+                        level3Nodes[level1Text + "_" + level2Text + "_" + level3Text].Add_Child_Node(level4Text, itemLink, THISCHILD_LEVEL4_INDEX);
                     }
                     else
                     {
@@ -178,7 +160,7 @@ namespace SobekCM.Engine_Library.Database
                             }
                             level3Nodes[level1Text + "_" + level2Text + "_" + level3Text] = level2Nodes[level1Text + "_" + level2Text].Add_Child_Node(level3Text, String.Empty, thisChild.Level3_Index);
                         }
-                        level3Nodes[level1Text + "_" + level2Text + "_" + level3Text].Add_Child_Node(level4Text, itemLink, thischildLevel4Index);
+                        level3Nodes[level1Text + "_" + level2Text + "_" + level3Text].Add_Child_Node(level4Text, itemLink, THISCHILD_LEVEL4_INDEX);
                     }
                 }
                 else
@@ -266,7 +248,7 @@ namespace SobekCM.Engine_Library.Database
         /// <param name="Item_Result"> Display and identification information for a single item within this title </param>
         internal void Add_Item_Result(Database_Item_Result Item_Result)
         {
-            itemList.Add(Item_Result);
+            Items.Add(Item_Result);
         }
     }
 }

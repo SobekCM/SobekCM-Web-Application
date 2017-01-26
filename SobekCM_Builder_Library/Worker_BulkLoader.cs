@@ -164,8 +164,8 @@ namespace SobekCM.Builder_Library
                 // Look for any aggregation tiles and cache the metadat for them
                 CacheAggregationTileMetadataModule tileModule = new CacheAggregationTileMetadataModule();
                 tileModule.Process += module_Process;
-                statsModule.Error += module_Error;
-                statsModule.DoWork(settings);
+                tileModule.Error += module_Error;
+                tileModule.DoWork(settings);
 
                 firstrun = false;
             }

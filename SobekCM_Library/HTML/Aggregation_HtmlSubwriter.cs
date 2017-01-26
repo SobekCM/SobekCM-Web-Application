@@ -620,7 +620,16 @@ namespace SobekCM.Library.HTML
                 Output.WriteLine("  <script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Jquery_Datatables_Js + "\" ></script>");
             }
 
+
+            if ((collectionViewer != null) && (collectionViewer.AggregationViewer_Behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Use_Jquery_Qtip)))
+            {
+                Output.WriteLine("  <link href=\"" + Static_Resources_Gateway.Jquery_Qtip_Css + "\" rel=\"stylesheet\" type=\"text/css\" />");
+                Output.WriteLine("  <script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Jquery_Qtip_Js + "\" ></script>");
+            }
+
             Output.WriteLine();
+
+
 
             // Add the aggregation html head writers
             DublinCore_AggregationHtmlHeadWriter dcWriter = new DublinCore_AggregationHtmlHeadWriter();

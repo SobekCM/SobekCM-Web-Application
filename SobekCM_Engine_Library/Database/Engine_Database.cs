@@ -1874,13 +1874,13 @@ namespace SobekCM.Engine_Library.Database
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
         /// <returns> Small arguments object which contains the page of results and optionally statistics about results for the entire search, including complete counts and facet information </returns>
         /// <remarks> This calls the 'SobekCM_Metadata_By_Bib_Vid' stored procedure </remarks>
-        public static Multiple_Paged_Results_Args SobekCM_Metadata_By_Bib_Vid(string AggregationCode, string BibID1, string VID1, string BibID2, string VID2, 
+        public static Database_Results_Info Metadata_By_Bib_Vid(string AggregationCode, string BibID1, string VID1, string BibID2, string VID2, 
             string BibID3, string VID3, string BibID4, string VID4, string BibID5, string VID5, string BibID6, string VID6, string BibID7, string VID7,
             string BibID8, string VID8, string BibID9, string VID9, string BibID10, string VID10, Custom_Tracer Tracer)
         {
             if (Tracer != null)
             {
-                Tracer.Add_Trace("Engine_Database.SobekCM_Metadata_By_Bib_Vid", "Performing basic search in database  ( stored procedure SobekCM_Metadata_By_Bib_Vid )");
+                Tracer.Add_Trace("Engine_Database.Metadata_By_Bib_Vid", "Performing basic search in database  ( stored procedure SobekCM_Metadata_By_Bib_Vid )");
             }
 
             if (AggregationCode.ToUpper() == "ALL")
@@ -1920,14 +1920,23 @@ namespace SobekCM.Engine_Library.Database
 
             // Create the return argument object
             List<string> metadataLabels = new List<string>();
-            Multiple_Paged_Results_Args returnArgs = new Multiple_Paged_Results_Args
+            List<List<iSearch_Title_Result>> results = DataReader_To_Result_List_With_LookAhead2(reader, 100, metadataLabels);
+
+            // Copy this over
+            Database_Results_Info returnArgs = new Database_Results_Info();
+            if ((results != null) && (results.Count != 0))
             {
-                Paged_Results = DataReader_To_Result_List_With_LookAhead2(reader, 100, metadataLabels)
-            };
+                foreach (List<iSearch_Title_Result> resultsPage in results)
+                {
+                    foreach (Database_Title_Result thisResult in resultsPage)
+                    {
+                        returnArgs.Results.Add(thisResult);
+                    }
+                }
+            }
 
             // Save the metadata labels in the stats portion
-            Search_Results_Statistics stats = new Search_Results_Statistics(reader, null, metadataLabels);
-            returnArgs.Statistics = stats;
+            returnArgs.Metadata_Labels = metadataLabels;
 
             // Close the reader
             readerWrapper.Close();

@@ -41,5 +41,24 @@ namespace SobekCM.Core.UI_Configuration.Viewers
             this.Name = Name;
             Writers = new List<SectionWriterConfig>();
         }
+
+        /// <summary> Gets an existing writer, or creates a new one with that ID and adds to the writer list </summary>
+        /// <param name="ID"> Identifier for this section writer </param>
+        /// <returns> Either the existing, or a new, section writer </returns>
+        public SectionWriterConfig GetOrCreateWriter(string ID)
+        {
+            // Look for a match
+            foreach (SectionWriterConfig thisWriter in Writers)
+            {
+                if (String.Compare(ID, thisWriter.ID, StringComparison.Ordinal) == 0)
+                    return thisWriter;
+
+            }
+
+            // Didn't return anything, so must be a new ID
+            SectionWriterConfig newSection = new SectionWriterConfig {ID = ID, Enabled = true};
+            Writers.Add(newSection);
+            return newSection;
+        }
     }
 }

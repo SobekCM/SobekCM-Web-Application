@@ -1,4 +1,4 @@
-#region Using directives
+ï»¿#region Using directives
 
 using System;
 using System.Collections.Generic;
@@ -27,7 +27,6 @@ using SobekCM.Library.Database;
 using SobekCM.Library.Email;
 using SobekCM.Library.HtmlLayout;
 using SobekCM.Library.ItemViewer;
-using SobekCM.Library.ItemViewer.HtmlHeadWriters;
 using SobekCM.Library.ItemViewer.HtmlSectionWriters;
 using SobekCM.Library.ItemViewer.Menu;
 using SobekCM.Library.ItemViewer.Viewers;
@@ -42,10 +41,10 @@ namespace SobekCM.Library.HTML
 {
     /// <summary> Item html subwriter renders views on a single digital resource </summary>
     /// <remarks> This class extends the <see cref="abstractHtmlSubwriter"/> abstract class. </remarks>
-    public class Item_HtmlSubwriter : abstractHtmlSubwriter
+    public class Item_HtmlSubwriter_Last : abstractHtmlSubwriter
     {
-        #region Private class members 
-        
+        #region Private class members
+
         private readonly int searchResultsCount;
         private readonly bool showZoomable;
         private bool tocSelectedComplete;
@@ -77,7 +76,8 @@ namespace SobekCM.Library.HTML
 
         /// <summary> Constructor for a new instance of the Item_HtmlSubwriter class </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
-        public Item_HtmlSubwriter( RequestCache RequestSpecificValues) : base(RequestSpecificValues)
+        public Item_HtmlSubwriter_Last(RequestCache RequestSpecificValues)
+            : base(RequestSpecificValues)
         {
 
             // Add the trace 
@@ -118,7 +118,7 @@ namespace SobekCM.Library.HTML
             userCanEditItem = false;
             if (RequestSpecificValues.Current_User != null)
             {
-                userCanEditItem = RequestSpecificValues.Current_User.Can_Edit_This_Item(currentItem.BibID, currentItem.Type, currentItem.Behaviors.Source_Institution_Aggregation, currentItem.Behaviors.Holding_Location_Aggregation, currentItem.Behaviors.Aggregation_Code_List );
+                userCanEditItem = RequestSpecificValues.Current_User.Can_Edit_This_Item(currentItem.BibID, currentItem.Type, currentItem.Behaviors.Source_Institution_Aggregation, currentItem.Behaviors.Holding_Location_Aggregation, currentItem.Behaviors.Aggregation_Code_List);
             }
 
             // Check that this item is not checked out by another user
@@ -382,8 +382,8 @@ namespace SobekCM.Library.HTML
             // Get the valid viewer code
             RequestSpecificValues.Tracer.Add_Trace("Item_HtmlSubwriter.Constructor", "Getting the appropriate item viewer");
             prototyper = ItemViewer_Factory.Get_Item_Viewer(currentItem, RequestSpecificValues.Current_Mode.ViewerCode);
-            if (( prototyper != null ) && ( prototyper.Has_Access(currentItem, RequestSpecificValues.Current_User, !String.IsNullOrEmpty(restriction_message))))
-                pageViewer = prototyper.Create_Viewer(currentItem, RequestSpecificValues.Current_User, RequestSpecificValues.Current_Mode, RequestSpecificValues.Tracer );
+            if ((prototyper != null) && (prototyper.Has_Access(currentItem, RequestSpecificValues.Current_User, !String.IsNullOrEmpty(restriction_message))))
+                pageViewer = prototyper.Create_Viewer(currentItem, RequestSpecificValues.Current_User, RequestSpecificValues.Current_Mode, RequestSpecificValues.Tracer);
             else
             {
                 // Since the user did not have access to THAT viewer, try to find one that he does have access to
@@ -418,7 +418,7 @@ namespace SobekCM.Library.HTML
             {
                 // Get the list of any special behaviors
                 pageViewerBehaviors = pageViewer.ItemViewer_Behaviors;
-                if ( pageViewerBehaviors != null )
+                if (pageViewerBehaviors != null)
                     behaviors.AddRange(pageViewerBehaviors);
                 else
                     pageViewerBehaviors = new List<HtmlSubwriter_Behaviors_Enum>();
@@ -448,19 +448,31 @@ namespace SobekCM.Library.HTML
             //}
 
 
-            // Get the item layout configuration information (from config files)
-            itemLayoutConfig = UI_ApplicationCache_Gateway.Configuration.UI.WriterViewers.Items.Layout;
-
-
-            // Get the item layout and set the index (from the HTMl template file)
+            // Get the item layot and set the index
             RequestSpecificValues.Tracer.Add_Trace("Item_HtmlSubwriter.Constructor", "Get the item layout from the HTML template");
-            itemLayout = HtmlLayoutManager.GetItemLayout(itemLayoutConfig.ID);
+            itemLayout = HtmlLayoutManager.GetItemLayout(String.Empty);
             itemLayoutIndex = 0;
 
 
         }
 
         #endregion
+
+        /// <summary> Flag indicates this item is currently checked out by another user </summary>
+        public bool Item_Checked_Out_By_Other_User
+        {
+            set
+            {
+                //// Override the page viewer at this point
+                //if ((value) && (pageViewer.Override_On_Checked_Out))
+                //{
+                //    pageViewer = new Checked_Out_ItemViewer();
+                //}
+                RequestSpecificValues.Flags.ItemCheckedOutByOtherUser = value;
+
+            }
+            get { return RequestSpecificValues.Flags.ItemCheckedOutByOtherUser; }
+        }
 
         /// <summary> Gets the collection of special behaviors which this subwriter
         /// requests from the main HTML subwriter. </summary>
@@ -547,7 +559,7 @@ namespace SobekCM.Library.HTML
                         RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Edit_Item_Metadata;
                         RequestSpecificValues.Current_Mode.My_Sobek_SubMode = "1";
                         Output.WriteLine("          <button title=\"Edit Metadata\" class=\"sbkIsw_intheader_button edit_metadata_button\" onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "';return false;\"></button>");
- 
+
                     }
 
                     // Add ability to edit behaviors for this item
@@ -558,7 +570,7 @@ namespace SobekCM.Library.HTML
 
 
                     // Add ability to edit behaviors for this item
-                    if ((currentItem.Images == null ) || ( currentItem.Images.Count == 0 ))
+                    if ((currentItem.Images == null) || (currentItem.Images.Count == 0))
                     {
                         RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.My_Sobek;
                         RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Page_Images_Management;
@@ -748,17 +760,36 @@ namespace SobekCM.Library.HTML
             HeaderFooter_Helper_HtmlSubWriter.Add_Header(Output, RequestSpecificValues, Container_CssClass, WebPage_Title, Subwriter_Behaviors, null, currentItem);
         }
 
-	    /// <summary> Writes the HTML generated by this item html subwriter directly to the response stream </summary>
-	    /// <param name="Output"> Stream to which to write the HTML for this subwriter </param>
-	    /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-	    /// <returns> Value indicating if html writer should finish the page immediately after this, or if there are other controls or routines which need to be called first </returns>
-	    /// <remarks> This begins writing this page, up to the item-level main menu</remarks>
-	    public override bool Write_HTML(TextWriter Output, Custom_Tracer Tracer)
-	    {
-		    Tracer.Add_Trace("Item_HtmlSubwriter.Write_HTML", "Do Nothing");
+        /// <summary> Writes the HTML generated by this item html subwriter directly to the response stream </summary>
+        /// <param name="Output"> Stream to which to write the HTML for this subwriter </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        /// <returns> Value indicating if html writer should finish the page immediately after this, or if there are other controls or routines which need to be called first </returns>
+        /// <remarks> This begins writing this page, up to the item-level main menu</remarks>
+        public override bool Write_HTML(TextWriter Output, Custom_Tracer Tracer)
+        {
+            Tracer.Add_Trace("Item_HtmlSubwriter.Write_HTML", "Begin writing the item viewer, up to the item-level main menu");
+
+            Tracer.Add_Trace("Item_HtmlSubwriter.Write_HTML", "Begin writing the item viewer, up to the item-level main menu");
+
+
+            Output.WriteLine();
+
+            // Put an itemscope div around here for micro-data purposes
+            Output.WriteLine("<!-- Unstyled div placed around entire item information to support schema.org microdata -->");
+            Output.WriteLine("<section itemscope itemtype=\"http:schema.org/ItemPage\">");
+            Output.WriteLine();
+
+            // Add the title bar
+            TitleBar_ItemSectionWriter tb_sectionwriter = new TitleBar_ItemSectionWriter();
+            tb_sectionwriter.Write_HTML(Output, prototyper, pageViewer, currentItem, RequestSpecificValues, behaviors);
+
+            // Add the standard menu
+            StandardMenu_ItemSectionWriter menu_sectionwriter = new StandardMenu_ItemSectionWriter();
+            menu_sectionwriter.Write_HTML(Output, prototyper, pageViewer, currentItem, RequestSpecificValues, behaviors);
+
 
             return true;
-	    }
+        }
 
 
         /// <summary> Writes the html to the output stream open the itemNavForm, which appears just before the TocPlaceHolder </summary>
@@ -766,58 +797,63 @@ namespace SobekCM.Library.HTML
         /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
         public override void Write_ItemNavForm_Opening(TextWriter Output, Custom_Tracer Tracer)
         {
-            Tracer.Add_Trace("Item_HtmlSubwriter.Write_ItemNavForm_Opening", "Write the area up and including the start of the viewer area");
+            Tracer.Add_Trace("Item_HtmlSubwriter.Write_ItemNavForm_Opening", "Start the left navigational bar");
 
-            // Write from the layout
-            if (itemLayout == null) return;
+            // Add the divs for loading the pop-up forms
+            Output.WriteLine("<!-- Place holders for pop-up forms which load dynamically if required -->");
+            Output.WriteLine("<div class=\"print_popup_div\" id=\"form_print\" style=\"display:none;\"></div>");
+            Output.WriteLine("<div class=\"email_popup_div\" id=\"form_email\" style=\"display:none;\"></div>");
+            Output.WriteLine("<div class=\"add_popup_div\" id=\"add_item_form\" style=\"display:none;\"></div>");
+            Output.WriteLine("<div class=\"share_popup_div\" id=\"share_form\" style=\"display:none;\"></div>");
+            Output.WriteLine();
 
-            // Step through all the sections 
-            while (itemLayoutIndex < itemLayout.Sections.Count)
+            if (ShouldLeftNavigationBarBeShown)
             {
-                if (itemLayout.Sections[itemLayoutIndex].Type == HtmlLayoutSectionTypeEnum.Viewer_Section)
+                // Show the entire item viewer in a presentation table.  Tried using divs, but continued to have problems
+                // especially with smaller screens
+                Output.WriteLine("<!-- Presentation table to enforce layout -->");
+                Output.WriteLine("<table role=\"presentation\" id=\"sbkIsw_PresentationTable\">");
+                Output.WriteLine("<tr style=\"vertical-align:top;\">");
+
+                if (pageViewerBehaviors.Contains(HtmlSubwriter_Behaviors_Enum.Item_Subwriter_Requires_Left_Navigation_Bar))
                 {
-                    add_viewer_area_start(Output, Tracer);
-                    return;
+                    Output.WriteLine("<td id=\"sbkIsw_LeftnavbarTd_hack\">");
+                    Output.WriteLine("<!-- Begin the left navigational bar -->");
+                    Output.WriteLine("<nav id=\"sbkIsw_Leftnavbar_hack\" role=\"complementary\">");
                 }
-                else if (itemLayout.Sections[itemLayoutIndex].Type == HtmlLayoutSectionTypeEnum.Static_HTML)
+                else
                 {
-                    Output.WriteLine(itemLayout.Sections[itemLayoutIndex].HTML);
-                }
-                else if (itemLayout.Sections[itemLayoutIndex].Type == HtmlLayoutSectionTypeEnum.Dynamic_Section)
-                {
-                    string section_name = itemLayout.Sections[itemLayoutIndex].Name;
-                    Tracer.Add_Trace("Item_HtmlSubwriter.Write_ItemNavForm_Opening", "Adding html into the " + section_name + " section");
-
-                    // Get the writer list to write here
-                    SectionWriterGroupConfig config = itemLayoutConfig.GetSection(section_name);
-                    if ((config != null) && (config.Writers != null))
-                    {
-                        // Step through each writer in the config
-                        foreach (SectionWriterConfig thisWriterConfig in config.Writers)
-                        {
-                            // Only continue if it is enabled
-                            if (!thisWriterConfig.Enabled) continue;
-
-                            // Get the writer
-                            iItemSectionWriter writer = ItemSectionWriter_Factory.Get_ItemSectionWriter(thisWriterConfig.Assembly, thisWriterConfig.Class);
-                            if (writer == null)
-                            {
-                                Tracer.Add_Trace("Item_HtmlSubwriter.Write_ItemNavForm_Opening", "Writer returned from factory was null for " + thisWriterConfig.ID);
-                                continue;
-                            }
-
-                            // Add the HTML
-                            writer.Write_HTML(Output, prototyper, pageViewer, currentItem, RequestSpecificValues, behaviors);
-                        }
-                    }
+                    Output.WriteLine("<td id=\"sbkIsw_LeftnavbarTd\">");
+                    Output.WriteLine("<!-- Begin the left navigational bar -->");
+                    Output.WriteLine("<nav id=\"sbkIsw_Leftnavbar\" role=\"complementary\">");
                 }
 
-                itemLayoutIndex++;
+
+                // Add the item viewer nav section ( like the thumbnail for JPEG2000 )
+                ViewerNav_ItemSectionWriter nav_sectionwriter = new ViewerNav_ItemSectionWriter();
+                nav_sectionwriter.Write_HTML(Output, prototyper, pageViewer, currentItem, RequestSpecificValues, behaviors);
+
+                // Add the table of contents
+                TOC_ItemSectionWriter toc_sectionwriter = new TOC_ItemSectionWriter();
+                toc_sectionwriter.Write_HTML(Output, prototyper, pageViewer, currentItem, RequestSpecificValues, behaviors);
+
+                // Add the wordmarks
+                Wordmarks_ItemSectionWriter wordmarks_sectionwriter = new Wordmarks_ItemSectionWriter();
+                wordmarks_sectionwriter.Write_HTML(Output, prototyper, pageViewer, currentItem, RequestSpecificValues, behaviors);
+
+
+
+                Output.WriteLine("</nav>");
+                Output.WriteLine();
+
+                Output.WriteLine("<!-- Presentation table first cell ends and next will begin-->");
+                Output.WriteLine("</td><td>");
             }
-        }
 
-        private void add_viewer_area_start(TextWriter Output, Custom_Tracer Tracer)
-        {
+
+            // Begin the document display portion
+            Output.WriteLine("<!-- Begin the main item viewing area -->");
+            Output.WriteLine("<section id=\"main-content\" role=\"main\" class=\"sbkIsw_MainContentSection\">");
             if (behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Item_Subwriter_NonWindowed_Mode))
             {
                 //if (pageViewer != null && pageViewer.Viewer_Height > 0)
@@ -891,25 +927,25 @@ namespace SobekCM.Library.HTML
                         if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.Spanish)
                         {
                             go_to = "Ir a:";
-                            first_page = "Primera Página";
-                            previous_page = "Página Anterior";
-                            next_page = "Página Siguiente";
-                            last_page = "Última Página";
+                            first_page = "Primera PÃ¡gina";
+                            previous_page = "PÃ¡gina Anterior";
+                            next_page = "PÃ¡gina Siguiente";
+                            last_page = "Ãšltima PÃ¡gina";
                             first_page_text = "Primero";
                             previous_page_text = "Anterior";
                             next_page_text = "Proximo";
-                            last_page_text = "Último";
+                            last_page_text = "Ãšltimo";
                         }
 
                         if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.French)
                         {
-                            go_to = "Aller à:";
-                            first_page = "Première Page";
-                            previous_page = "Page Précédente";
+                            go_to = "Aller Ã :";
+                            first_page = "PremiÃ¨re Page";
+                            previous_page = "Page PrÃ©cÃ©dente";
                             next_page = "Page Suivante";
-                            last_page = "Dernière Page";
-                            first_page_text = "Première";
-                            previous_page_text = "Précédente";
+                            last_page = "DerniÃ¨re Page";
+                            first_page_text = "PremiÃ¨re";
+                            previous_page_text = "PrÃ©cÃ©dente";
                             next_page_text = "Suivante";
                             last_page_text = "Derniere";
                         }
@@ -1103,14 +1139,24 @@ namespace SobekCM.Library.HTML
             // Add the main viewer section
             if (pageViewer != null)
             {
-                Tracer.Add_Trace("Item_HtmlSubwriter.Add_Main_Viewer_Section", "Allowing page viewer to add main viewer section to <i>mainPlaceHolder</i>");
+                Tracer.Add_Trace("Html_MainWriter.Add_Controls", "Allowing page viewer to add main viewer section to <i>mainPlaceHolder</i>");
                 pageViewer.Add_Main_Viewer_Section(Main_PlaceHolder, Tracer);
             }
         }
 
-        private void add_viewer_area_end(TextWriter Output, Custom_Tracer Tracer)
+        /// <summary> Writes final HTML to the output stream after all the placeholders and just before the itemNavForm is closed.  </summary>
+        /// <param name="Output"> Stream to which to write the text for this main writer </param>
+        /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
+        public override void Write_ItemNavForm_Closing(TextWriter Output, Custom_Tracer Tracer)
         {
-            Tracer.Add_Trace("Item_HtmlSubwriter.add_viewer_area_end", "Close the item viewer and add final pagination");
+            Tracer.Add_Trace("Item_HtmlSubwriter.Write_ItemNavForm_Closing", "Close the item viewer and add final pagination");
+
+            // If this is the page turner viewer, don't draw anything else
+            //if ((pageViewer != null) && (pageViewer.ItemViewer_Type == ItemViewer_Type_Enum.GnuBooks_PageTurner))
+            //{
+            //    return;
+            //}
+
 
             Output.WriteLine("\t</tr>");
 
@@ -1141,67 +1187,49 @@ namespace SobekCM.Library.HTML
 
             // Close the item viewer table and section for main viewering
             Output.WriteLine("</table>");
-        }
+            Output.WriteLine("</section>");
 
-        /// <summary> Writes final HTML to the output stream after all the placeholders and just before the itemNavForm is closed.  </summary>
-        /// <param name="Output"> Stream to which to write the text for this main writer </param>
-        /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
-        public override void Write_ItemNavForm_Closing(TextWriter Output, Custom_Tracer Tracer)
-        {
-            Tracer.Add_Trace("Item_HtmlSubwriter.Write_ItemNavForm_Closing", "Write the area after the controls placeholder of the viewer area");
-
-            // Write from the layout
-            if (itemLayout == null) return;
-
-            // Step through all the sections 
-            while (itemLayoutIndex < itemLayout.Sections.Count)
+            // Only need extra padding if the left nav bar was shown
+            if (ShouldLeftNavigationBarBeShown)
             {
-                if (itemLayout.Sections[itemLayoutIndex].Type == HtmlLayoutSectionTypeEnum.Viewer_Section)
-                {
-                    add_viewer_area_end(Output, Tracer);
-                }
-                else if (itemLayout.Sections[itemLayoutIndex].Type == HtmlLayoutSectionTypeEnum.Static_HTML)
-                {
-                    Output.WriteLine(itemLayout.Sections[itemLayoutIndex].HTML);
-                }
-                else if (itemLayout.Sections[itemLayoutIndex].Type == HtmlLayoutSectionTypeEnum.Dynamic_Section)
-                {
-                    string section_name = itemLayout.Sections[itemLayoutIndex].Name;
-                    Tracer.Add_Trace("Item_HtmlSubwriter.Write_ItemNavForm_Opening", "Adding html into the " + section_name + " section");
+                // Add a spot for padding
+                Output.WriteLine();
+                Output.WriteLine("<!-- Division is used to add extra bottom padding, if the left nav bar is taller than the item viewer -->");
+                Output.WriteLine("<div id=\"sbkIsw_BottomPadding\"></div>");
+                Output.WriteLine();
 
-                    // Get the writer list to write here
-                    SectionWriterGroupConfig config = itemLayoutConfig.GetSection(section_name);
-                    if ((config != null) && (config.Writers != null))
-                    {
-                        // Step through each writer in the config
-                        foreach (SectionWriterConfig thisWriterConfig in config.Writers)
-                        {
-                            // Only continue if it is enabled
-                            if (!thisWriterConfig.Enabled) continue;
-
-                            // Get the writer
-                            iItemSectionWriter writer = ItemSectionWriter_Factory.Get_ItemSectionWriter(thisWriterConfig.Assembly, thisWriterConfig.Class);
-                            if (writer == null)
-                            {
-                                Tracer.Add_Trace("Item_HtmlSubwriter.Write_ItemNavForm_Opening", "Writer returned from factory was null for " + thisWriterConfig.ID);
-                                continue;
-                            }
-
-                            // Add the HTML
-                            writer.Write_HTML(Output, prototyper, pageViewer, currentItem, RequestSpecificValues, behaviors);
-                        }
-                    }
-                }
-
-                itemLayoutIndex++;
+                // Close the presentation table
+                Output.WriteLine("<!-- Close the presentation table -->");
+                Output.WriteLine("</td></tr></table>");
             }
 
+            // None of the sharing options are available if the user is restricted from this item
+            // or if we are generating this as a static page source for robots
+            if ((!RequestSpecificValues.Flags.ItemRestrictedFromUserByIp) && (!RequestSpecificValues.Flags.ItemCheckedOutByOtherUser) && (!RequestSpecificValues.Current_Mode.Is_Robot))
+            {
+                // Add the hidden field
+                Output.WriteLine("<!-- Hidden field is used for postbacks to indicate what to save and reset -->");
+                Output.WriteLine("<input type=\"hidden\" id=\"item_action\" name=\"item_action\" value=\"\" />");
+                Output.WriteLine();
+            }
+        }
+
+        /// <summary> Spot to write any final HTML to the response stream  </summary>
+        /// <param name="Output"> Stream to which to write the HTML for this subwriter </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        public override void Write_Final_HTML(TextWriter Output, Custom_Tracer Tracer)
+        {
+            Tracer.Add_Trace("Item_HtmlSubwriter.Write_Final_Html", "Add reference to draggable jquery ui");
             if (!behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Item_Subwriter_Full_JQuery_UI))
             {
                 Output.WriteLine("<script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Jquery_Ui_1_10_3_Draggable_Js + "\"></script>");
             }
-        }
 
+            // Close the item scope div
+            Output.WriteLine("<!-- Close microdata itemscope div -->");
+            Output.WriteLine("</section>");
+            Output.WriteLine();
+        }
 
         /// <summary> Gets the collection of body attributes to be included 
         /// within the HTML body tag (usually to add events to the body) </summary>
@@ -1241,7 +1269,7 @@ namespace SobekCM.Library.HTML
         public override void Write_Within_HTML_Head(TextWriter Output, Custom_Tracer Tracer)
         {
             // ROBOTS SHOULD BE SENT TO THE CMS PAGE FOR THIS
-            if ( String.Compare(RequestSpecificValues.Current_Mode.ViewerCode, "robot", StringComparison.OrdinalIgnoreCase) != 0 )
+            if (String.Compare(RequestSpecificValues.Current_Mode.ViewerCode, "robot", StringComparison.OrdinalIgnoreCase) != 0)
                 Output.WriteLine("  <meta name=\"robots\" content=\"noindex, nofollow\" />");
 
             // Write the main SobekCM item style sheet to use 
@@ -1252,7 +1280,7 @@ namespace SobekCM.Library.HTML
                 pageViewer.Write_Within_HTML_Head(Output, Tracer);
 
             // Add a thumbnail to this item
-            if ((currentItem != null) && ( !String.IsNullOrEmpty(currentItem.Behaviors.Main_Thumbnail)))
+            if ((currentItem != null) && (!String.IsNullOrEmpty(currentItem.Behaviors.Main_Thumbnail)))
             {
                 string image_src = currentItem.Web.Source_URL + "/" + currentItem.Behaviors.Main_Thumbnail;
 
@@ -1262,55 +1290,49 @@ namespace SobekCM.Library.HTML
             // This is used for the TOC
             Output.WriteLine("  <link rel=\"stylesheet\" href=\"" + UI_ApplicationCache_Gateway.Configuration.UI.StaticResources.Jstree_Css + "\" />");
 
-            // Also, add any stylehsheets in the layout
-            if ((itemLayoutConfig != null) && (itemLayoutConfig.Stylesheets != null) && (itemLayoutConfig.Stylesheets.Count > 0))
-            {
-                Output.WriteLine();
 
-                // Add each stylesheet
-                foreach (StylesheetConfig cssConfig in itemLayoutConfig.Stylesheets)
-                {
-                    if (!String.IsNullOrEmpty(cssConfig.Media))
-                    {
-                        Output.WriteLine("  <link rel=\"stylesheet\" href=\"" + cssConfig.Source + "\" media=\"" + cssConfig.Media + "\" />");
-                    }
-                    else
-                    {
-                        Output.WriteLine("  <link rel=\"stylesheet\" href=\"" + cssConfig.Source + "\" />");
-                    }
-                }
-            }
 
-            // Add any additional things into the head
-            if ((UI_ApplicationCache_Gateway.Configuration.UI.WriterViewers.Items.HtmlHeadWriters != null) && (UI_ApplicationCache_Gateway.Configuration.UI.WriterViewers.Items.HtmlHeadWriters.Count > 0 ))
-            {
-                Output.WriteLine();
-
-                // Step through each config
-                foreach (HtmlHeadWriterConfig thisWriterConfig in UI_ApplicationCache_Gateway.Configuration.UI.WriterViewers.Items.HtmlHeadWriters)
-                {
-                    // If disabled, skip it
-                    if (!thisWriterConfig.Enabled) continue;
-
-                    // Get the writer
-                    iItemHtmlHeadWriter writer = ItemHtmlHeadWriter_Factory.Get_ItemHtmlHeadWriter(thisWriterConfig.Assembly, thisWriterConfig.Class);
-                    if (writer == null)
-                    {
-                        Tracer.Add_Trace("Item_HtmlSubwriter.Write_Within_HTML_Head", "Writer returned from factory was null for " + thisWriterConfig.ID);
-                        continue;
-                    }
-
-                    // Add the HTML
-                    writer.Write_Within_HTML_Head(Output, pageViewer, currentItem, RequestSpecificValues);
-                }
-            }
         }
 
-		/// <summary> Gets the CSS class of the container that the page is wrapped within </summary>
-		/// <value> Always returns an empty string </value>
-		public override string Container_CssClass
-		{
-			get { return String.Empty; }
-		}
+        /// <summary> Gets the CSS class of the container that the page is wrapped within </summary>
+        /// <value> Always returns an empty string </value>
+        public override string Container_CssClass
+        {
+            get { return String.Empty; }
+        }
+
+        private bool ShouldLeftNavigationBarBeShown
+        {
+            get
+            {
+                // If this is for a fragment, do nothing
+                if (!String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.Fragment))
+                    return false;
+
+                if (behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Item_Subwriter_Suppress_Left_Navigation_Bar))
+                    return false;
+
+                if (behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Item_Subwriter_Requires_Left_Navigation_Bar))
+                    return true;
+
+                // If there are any icons, need to show the bar
+                if ((currentItem.Behaviors.Wordmarks != null) && (currentItem.Behaviors.Wordmarks.Count > 0))
+                    return true;
+
+                //// If the item can be described, include the quick links still
+                //if (currentItem.Behaviors.Can_Be_Described)
+                //    return true;
+
+                // If a TOC could be shown for this item, need a navigation bar
+                if ((currentItem.Images_TOC != null) && (currentItem.Images_TOC.Count > 1))
+                    return true;
+
+                // Search results are also included in the left navigation bar
+                if (searchResultsCount > 0)
+                    return true;
+
+                return false;
+            }
+        }
     }
 }

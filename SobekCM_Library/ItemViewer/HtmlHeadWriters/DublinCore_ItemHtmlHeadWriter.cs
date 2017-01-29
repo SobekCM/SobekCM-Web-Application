@@ -18,8 +18,9 @@ namespace SobekCM.Library.ItemViewer.HtmlHeadWriters
             if (CurrentItem == null)
                 return;
 
-            Output.WriteLine("     <link title=\"Dublin Core Metadata Schema\" rel=\"schema.DC\" href=\"http://purl.org/DC/elements/1.1/\" />");
-            Output.WriteLine("     <meta name=\"DC.title\" content=\"" + CurrentItem.Title.Replace("\"", "'") + "\" />");
+            Output.WriteLine("  <link title=\"Dublin Core Metadata Schema\" rel=\"schema.DC\" href=\"http://purl.org/DC/elements/1.1/\" />");
+            Output.WriteLine("  <meta name=\"DC.title\" content=\"" + CurrentItem.Title.Replace("\"", "'") + "\" />");
+            Output.WriteLine();
         }
     }
 }

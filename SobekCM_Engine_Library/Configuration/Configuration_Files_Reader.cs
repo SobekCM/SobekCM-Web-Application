@@ -2464,7 +2464,7 @@ namespace SobekCM.Engine_Library.Configuration
                         //    }
                         //    break;
 
-                        case "htmlheadwriters":
+                        case "htmlheadwriter":
                             if (ReaderXml.MoveToAttribute("id"))
                             {
                                 string id = ReaderXml.Value.Trim();
@@ -2482,6 +2482,7 @@ namespace SobekCM.Engine_Library.Configuration
                                     // If a class at least was provided continue
                                     if (!String.IsNullOrWhiteSpace(htmlheadwriter_class))
                                     {
+
                                         HtmlHeadWriterConfig htmlHeadWriterConfig = Config.Items.GetHtmlHeadWriter(id);
                                         htmlHeadWriterConfig.Enabled = htmlheadwriter_enabled;
                                         htmlHeadWriterConfig.Class = htmlheadwriter_class;
@@ -2580,11 +2581,54 @@ namespace SobekCM.Engine_Library.Configuration
                             break;
 
                         case "section":
-                            if (ReaderXml.MoveToAttribute("source"))
+                            if (ReaderXml.MoveToAttribute("name"))
                             {
+                                // Get the name and either create a new section, or get the existing section
                                 string section_name = ReaderXml.Value.Trim();
+                                SectionWriterGroupConfig section = Layout.GetOrCreateSection(section_name);
+
+                                // Read the secion details
+                                ReaderXml.MoveToElement();
+                                read_layout_section_config(ReaderXml.ReadSubtree(), section);
 
                             }
+                            break;
+                    }
+                }
+            }
+        }
+
+        private static void read_layout_section_config(XmlReader ReaderXml, SectionWriterGroupConfig Section)
+        {
+            while (ReaderXml.Read())
+            {
+                if (ReaderXml.NodeType == XmlNodeType.Element)
+                {
+                    switch (ReaderXml.Name.ToLower())
+                    {
+                        case "sectionwriter":
+                            // Did this exist already in this section?
+                            if (ReaderXml.MoveToAttribute("id"))
+                            {
+                                // Get the ID for this section writer
+                                string id = ReaderXml.Value.Trim();
+                                
+                                // Get or create the section writer in this section with that id
+                                SectionWriterConfig newStyleConfig = Section.GetOrCreateWriter(id);
+
+                                // Look for the other values
+                                if (ReaderXml.MoveToAttribute("assembly"))
+                                    newStyleConfig.Assembly = ReaderXml.Value.Trim();
+                                if (ReaderXml.MoveToAttribute("class"))
+                                    newStyleConfig.Class = ReaderXml.Value.Trim();
+                                if (ReaderXml.MoveToAttribute("enabled"))
+                                {
+                                    string enabled_string = ReaderXml.Value.Trim();
+                                    if (String.Compare(enabled_string, "false", StringComparison.OrdinalIgnoreCase) == 0)
+                                        newStyleConfig.Enabled = false;
+                                }
+                            }
+
                             break;
                     }
                 }

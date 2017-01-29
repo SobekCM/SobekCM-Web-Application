@@ -18,8 +18,9 @@ namespace SobekCM.Library.ItemViewer.HtmlHeadWriters
             if (CurrentItem == null)
                 return;
 
-            Output.WriteLine("     <link title=\"MODS Metadata Schema\" rel=\"schema.mods\" href=\"http://www.loc.gov/standards/mods/mods.xsd\" />");
-            Output.WriteLine("     <meta name=\"mods.title\" content=\"" + CurrentItem.Title.Replace("\"", "'") + "\" />");
+            Output.WriteLine("  <link title=\"MODS Metadata Schema\" rel=\"schema.mods\" href=\"http://www.loc.gov/standards/mods/mods.xsd\" />");
+            Output.WriteLine("  <meta name=\"mods.title\" content=\"" + CurrentItem.Title.Replace("\"", "'") + "\" />");
+            Output.WriteLine();
         }
     }
 }

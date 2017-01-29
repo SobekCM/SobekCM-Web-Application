@@ -462,7 +462,7 @@ namespace SobekCM.Library.MainWriters
 					if (itemWriter != null )
                     {
                         // Add the TOC section
-                        Tracer.Add_Trace("Html_MainWriter.Add_Controls", "Allowing item viewer to add table of contents to <i>tocPlaceHolder</i>");
+                        Tracer.Add_Trace("Html_MainWriter.Add_Controls", "Allowing item viewer to add controls to main PlaceHolder");
 
                         // Add the main viewer section
                         itemWriter.Add_Main_Viewer_Section(Main_Place_Holder, Tracer);

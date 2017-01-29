@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Mime;
 using System.Web.Caching;
 using System.Web.UI.WebControls;
 using SobekCM.Core.BriefItem;
@@ -266,7 +267,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                                                     Output.WriteLine("       </tr>");
                                                     Output.WriteLine("       <tr>");
                                                     Output.WriteLine("          <td>");
-                                                    Output.WriteLine("            <div style=\"padding: 10px;background-color:white; color:#222; font-size: 0.9em; text-align: left;\">");
+                                                    Output.WriteLine("            <div style=\"padding: 10px;background-color:white; color:#222; font-size: 0.9em; text-align: left;\" itemprop=\"text\">");
 
                                                     started = true;
                                                 }

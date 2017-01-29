@@ -5,6 +5,7 @@ using SobekCM.Library.ItemViewer.Viewers;
 namespace SobekCM.Library.ItemViewer.HtmlHeadWriters
 {
     /// <summary> Defines the interface for the objects that can write into the HTML head during item display </summary>
+    /// <remarks> This object should be thread safe and not contain any state information </remarks>
     public interface iItemHtmlHeadWriter
     {
         /// <summary> Write anything within the HTML head while displaying an item </summary>

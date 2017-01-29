@@ -8,6 +8,7 @@ namespace SobekCM.Library.ItemViewer.HtmlSectionWriters
 {
     /// <summary> Defines the interface for the objects that write small sections
     /// within the item HTML writer </summary>
+    /// <remarks> This object should be thread safe and not contain any state information </remarks>
     public interface iItemSectionWriter
     {
         /// <summary> Write HTML within the body of the item page </summary>

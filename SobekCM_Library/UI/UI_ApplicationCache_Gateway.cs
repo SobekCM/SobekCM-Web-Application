@@ -11,6 +11,7 @@ using SobekCM.Core.Skins;
 using SobekCM.Core.Users;
 using SobekCM.Core.WebContent.Hierarchy;
 using SobekCM.Engine_Library.ApplicationState;
+using SobekCM.Library.HtmlLayout;
 using SobekCM.Library.ItemViewer;
 
 #endregion
@@ -28,6 +29,8 @@ namespace SobekCM.Library.UI
             WebContent_Hierarchy_Clear();
 
             ItemViewer_Factory.Clear();
+
+            HtmlLayoutManager.Clear();
         }
 
         /// <summary> Refresh the settings object by pulling the data back from the database </summary>

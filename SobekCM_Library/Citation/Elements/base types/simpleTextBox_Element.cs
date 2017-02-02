@@ -7,7 +7,6 @@ using System.IO;
 using System.Web;
 using System.Xml;
 using SobekCM.Core.ApplicationState;
-using SobekCM.Core.Configuration;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Users;
 
@@ -47,68 +46,68 @@ namespace SobekCM.Library.Citation.Elements
         }
 
         /// <summary> Adds a new default value for this multiple text box type element </summary>
-        /// <param name="defaultValue"> New default value</param>
-        public void Add_Default_Value(string defaultValue)
+        /// <param name="DefaultValue"> New default value</param>
+        public void Add_Default_Value(string DefaultValue)
         {
-            default_values.Add(defaultValue);
+            default_values.Add(DefaultValue);
         }
 
         /// <summary> Method helps to render all simple text box based elements </summary>
         /// <param name="Output"> Output for the generated html for this element </param>
-        /// <param name="instance_values"> Value(s) for the current digital resource to display</param>
+        /// <param name="InstanceValues"> Value(s) for the current digital resource to display</param>
         /// <param name="Skin_Code"> Code for the current html skin </param>
         /// <param name="Current_User"> Current user, who's rights may impact the way an element is rendered </param>
         /// <param name="CurrentLanguage"> Current user-interface language </param>
         /// <param name="Translator"> Language support object which handles simple translational duties </param>
         /// <param name="Base_URL"> Base URL for the current request </param>
-        protected void render_helper(TextWriter Output, ReadOnlyCollection<string> instance_values, string Skin_Code, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL)
+        protected void render_helper(TextWriter Output, ReadOnlyCollection<string> InstanceValues, string Skin_Code, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL)
         {
             string id_name = html_element_name.Replace("_", "");
-            render_helper(Output, instance_values, Skin_Code, Current_User, CurrentLanguage, Translator, Base_URL, id_name);
+            render_helper(Output, InstanceValues, Skin_Code, Current_User, CurrentLanguage, Translator, Base_URL, id_name);
         }
 
         /// <summary> Method helps to render all simple text box based elements </summary>
         /// <param name="Output"> Output for the generated html for this element </param>
-        /// <param name="instance_values"> Value(s) for the current digital resource to display</param>
+        /// <param name="InstanceValues"> Value(s) for the current digital resource to display</param>
         /// <param name="Skin_Code"> Code for the current html skin </param>
         /// <param name="Current_User"> Current user, who's rights may impact the way an element is rendered </param>
         /// <param name="CurrentLanguage"> Current user-interface language </param>
         /// <param name="Translator"> Language support object which handles simple translational duties </param>
         /// <param name="Base_URL"> Base URL for the current request </param>
-        protected void render_helper(TextWriter Output, List<string> instance_values, string Skin_Code, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL)
+        protected void render_helper(TextWriter Output, List<string> InstanceValues, string Skin_Code, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL)
         {
             string id_name = html_element_name.Replace("_", "");
-            render_helper(Output, new ReadOnlyCollection<string>(instance_values), Skin_Code, Current_User, CurrentLanguage, Translator, Base_URL, id_name);
+            render_helper(Output, new ReadOnlyCollection<string>(InstanceValues), Skin_Code, Current_User, CurrentLanguage, Translator, Base_URL, id_name);
         }
 
         /// <summary> Method helps to render all simple text box based elements </summary>
         /// <param name="Output"> Output for the generated html for this element </param>
-        /// <param name="instance_values"> Value(s) for the current digital resource to display</param>
+        /// <param name="InstanceValues"> Value(s) for the current digital resource to display</param>
         /// <param name="Skin_Code"> Code for the current html skin </param>
         /// <param name="Current_User"> Current user, who's rights may impact the way an element is rendered </param>
         /// <param name="CurrentLanguage"> Current user-interface language </param>
         /// <param name="Translator"> Language support object which handles simple translational duties </param>
         /// <param name="HTML_ID_Name"> ID name used for these elements.  This is usually provided when there are multiple fixed-roles or fixed-type elements </param>
         /// <param name="Base_URL"> Base URL for the current request </param>
-        protected void render_helper(TextWriter Output, List<string> instance_values, string Skin_Code, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL, string HTML_ID_Name)
+        protected void render_helper(TextWriter Output, List<string> InstanceValues, string Skin_Code, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL, string HTML_ID_Name)
         {
-            render_helper(Output, new ReadOnlyCollection<string>(instance_values), Skin_Code, Current_User, CurrentLanguage, Translator, Base_URL, HTML_ID_Name);
+            render_helper(Output, new ReadOnlyCollection<string>(InstanceValues), Skin_Code, Current_User, CurrentLanguage, Translator, Base_URL, HTML_ID_Name);
         }
 
         /// <summary> Method helps to render all simple text box based elements </summary>
         /// <param name="Output"> Output for the generated html for this element </param>
-        /// <param name="instance_values"> Value(s) for the current digital resource to display</param>
+        /// <param name="InstanceValues"> Value(s) for the current digital resource to display</param>
         /// <param name="Skin_Code"> Code for the current html skin </param>
         /// <param name="Current_User"> Current user, who's rights may impact the way an element is rendered </param>
         /// <param name="CurrentLanguage"> Current user-interface language </param>
         /// <param name="Translator"> Language support object which handles simple translational duties </param>
         /// <param name="Base_URL"> Base URL for the current request </param>
         /// <param name="HTML_ID_Name"> ID name used for these elements.  This is usually provided when there are multiple fixed-roles or fixed-type elements </param>
-        protected void render_helper(TextWriter Output, ReadOnlyCollection<string> instance_values, string Skin_Code, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL, string HTML_ID_Name)
+        protected void render_helper(TextWriter Output, ReadOnlyCollection<string> InstanceValues, string Skin_Code, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL, string HTML_ID_Name)
         {
             List<string> allValues = new List<string>();
             allValues.AddRange(default_values);
-            allValues.AddRange(instance_values);
+            allValues.AddRange(InstanceValues);
 
             if (allValues.Count == 0)
             {
@@ -155,10 +154,10 @@ namespace SobekCM.Library.Citation.Elements
                 Output.WriteLine("      <table>");
                 Output.WriteLine("        <tr>");
                 Output.Write("          <td><div class=\"" + HTML_ID_Name + "_div\">");
-                for (int i = 0; i < instance_values.Count; i++)
+                for (int i = 0; i < InstanceValues.Count; i++)
                 {
-                    Output.Write(instance_values[i]);
-                    if (i < (instance_values.Count - 1))
+                    Output.Write(InstanceValues[i]);
+                    if (i < (InstanceValues.Count - 1))
                         Output.Write("<br />");
                 }
                 Output.WriteLine("</div></td>");
@@ -181,11 +180,19 @@ namespace SobekCM.Library.Citation.Elements
                 {
                     if (i == allValues.Count)
                     {
-                        Output.WriteLine("              <input name=\"" + HTML_ID_Name + i + "\" id=\"" + HTML_ID_Name + i + "\" class=\"" + html_element_name + "_input sbk_Focusable\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(allValues[i - 1].Replace("<i>", "").Replace("</i>", "")) + "\" />");
+                        Output.Write("              <input name=\"" + HTML_ID_Name + i + "\" id=\"" + HTML_ID_Name + i + "\" class=\"" + html_element_name + "_input sbk_Focusable\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(allValues[i - 1].Replace("<i>", "").Replace("</i>", "")) + "\" ");
+                        if (textBoxEvents != null) 
+                            textBoxEvents.Add_Events(Output);
+                        Output.WriteLine(" />");
+
                     }
                     else
                     {
-						Output.WriteLine("              <input name=\"" + HTML_ID_Name + i + "\" id=\"" + HTML_ID_Name + i + "\" class=\"" + html_element_name + "_input sbk_Focusable\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(allValues[i - 1].Replace("<i>", "").Replace("</i>", "")) + "\" /><br />");
+						Output.Write("              <input name=\"" + HTML_ID_Name + i + "\" id=\"" + HTML_ID_Name + i + "\" class=\"" + html_element_name + "_input sbk_Focusable\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(allValues[i - 1].Replace("<i>", "").Replace("</i>", "")) + "\" ");
+                        if (textBoxEvents != null)
+                            textBoxEvents.Add_Events(Output);
+                        Output.WriteLine(" /><br />");
+
                     }
                 }
 
@@ -218,28 +225,28 @@ namespace SobekCM.Library.Citation.Elements
 
         /// <summary> Method helps to render all multiple text box based elements </summary>
         /// <param name="Output"> Output for the generated html for this element </param>
-        /// <param name="instance_value"> Value for the current digital resource to display</param>
+        /// <param name="InstanceValue"> Value for the current digital resource to display</param>
         /// <param name="Skin_Code"> Code for the current html skin </param>
         /// <param name="Current_User"> Current user, who's rights may impact the way an element is rendered </param>
         /// <param name="CurrentLanguage"> Current user-interface language </param>
         /// <param name="Translator"> Language support object which handles simple translational duties </param>
         /// <param name="Base_URL"> Base URL for the current request </param>
-        protected void render_helper(TextWriter Output, string instance_value, string Skin_Code, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL )
+        protected void render_helper(TextWriter Output, string InstanceValue, string Skin_Code, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL )
         {
             string id_name = html_element_name.Replace("_", "");
-            render_helper(Output, instance_value, Skin_Code, Current_User, CurrentLanguage, Translator, Base_URL, id_name);
+            render_helper(Output, InstanceValue, Skin_Code, Current_User, CurrentLanguage, Translator, Base_URL, id_name);
         }
 
         /// <summary> Method helps to render all multiple text box based elements </summary>
         /// <param name="Output"> Output for the generated html for this element </param>
-        /// <param name="instance_value"> Value for the current digital resource to display</param>
+        /// <param name="InstanceValue"> Value for the current digital resource to display</param>
         /// <param name="Skin_Code"> Code for the current html skin </param>
         /// <param name="Current_User"> Current user, who's rights may impact the way an element is rendered </param>
         /// <param name="CurrentLanguage"> Current user-interface language </param>
         /// <param name="Translator"> Language support object which handles simple translational duties </param>
         /// <param name="Base_URL"> Base URL for the current request </param>
         /// <param name="HTML_ID_Name"> ID name used for these elements.  This is usually provided when there are multiple fixed-roles or fixed-type elements </param>
-        protected void render_helper(TextWriter Output, string instance_value, string Skin_Code, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL, string HTML_ID_Name)
+        protected void render_helper(TextWriter Output, string InstanceValue, string Skin_Code, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL, string HTML_ID_Name)
         {
             Output.WriteLine("  <!-- " + Title + " Element -->");
             Output.WriteLine("  <tr>");
@@ -264,7 +271,7 @@ namespace SobekCM.Library.Citation.Elements
                 Output.WriteLine("    <td>");
                 Output.WriteLine("      <table>");
                 Output.WriteLine("        <tr>");
-                Output.WriteLine("          <td><div class=\"" + HTML_ID_Name + "_div\">" + instance_value + "</div></td>");
+                Output.WriteLine("          <td><div class=\"" + HTML_ID_Name + "_div\">" + InstanceValue + "</div></td>");
                 Output.WriteLine("          <td style=\"vertical-align:bottom\" >");
                 Output.WriteLine("            <a target=\"_" + html_element_name.ToUpper() + "\"  title=\"" + Translator.Get_Translation("Get help.", CurrentLanguage) + "\" href=\"" + Help_URL(Skin_Code, Base_URL) + "\" ><img border=\"0px\" class=\"help_button\" src=\"" + HELP_BUTTON_URL + "\" /></a>");
                 Output.WriteLine("          </td>");
@@ -280,7 +287,12 @@ namespace SobekCM.Library.Citation.Elements
                 Output.WriteLine("        <tr>");
                 Output.WriteLine("          <td>");
                 Output.WriteLine("            <div id=\"" + HTML_ID_Name + "_div\">");
-                Output.WriteLine("              <input name=\"" + HTML_ID_Name + "1\" id=\"" + HTML_ID_Name + "1\" class=\"" + html_element_name + "_input sbk_Focusable\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(instance_value.Replace("<i>", "").Replace("</i>", "")) + "\" />");
+
+                Output.Write("              <input name=\"" + HTML_ID_Name + "1\" id=\"" + HTML_ID_Name + "1\" class=\"" + html_element_name + "_input sbk_Focusable\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(InstanceValue.Replace("<i>", "").Replace("</i>", "")) + "\" ");
+                if (textBoxEvents != null)
+                    textBoxEvents.Add_Events(Output);
+                Output.WriteLine(" />");
+
                 Output.WriteLine("            </div>");
                 Output.WriteLine("          </td>");
                 Output.WriteLine("          <td style=\"vertical-align:bottom\" >");
@@ -335,6 +347,32 @@ namespace SobekCM.Library.Citation.Elements
                     fixed_type_from_template_file = XMLReader.Value.Trim();
                 }
             }
+        }
+
+        #endregion
+
+        #region Methods and properties exposing events for the HTML elements in this base type
+
+        private HtmlEventsHelper textBoxEvents;
+
+        /// <summary> Access to the complete text box events object </summary>
+        /// <remarks> Requesting this property will create a new object, if one does not already exist </remarks>
+        public HtmlEventsHelper TextBoxEvents
+        {
+            get { return textBoxEvents ?? (textBoxEvents = new HtmlEventsHelper()); }
+        }
+
+        /// <summary> Add some event text to an event on the primary text box for the citation control </summary>
+        /// <param name="Event"> Type of the event to add text to </param>
+        /// <param name="EventText"> Text (html format) to add to the event, such as "getElementById('demo').innerHTML = Date()", or "myFunction();return false;", etc.. </param>
+        public void Add_TextBox_Event(HtmlEventsEnum Event, string EventText)
+        {
+            // If the events is null, create it
+            if (textBoxEvents == null)
+                textBoxEvents = new HtmlEventsHelper();
+
+            // Add this event
+            textBoxEvents.Add_Event(Event, EventText);
         }
 
         #endregion

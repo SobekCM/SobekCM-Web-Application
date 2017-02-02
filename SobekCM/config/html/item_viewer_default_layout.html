@@ -7,11 +7,23 @@
     <!-- Presentation table to enforce layout -->
     <table role="presentation" id="sbkIsw_PresentationTable">
         <tr style="vertical-align: top;">
-            <td id="sbkIsw_LeftnavbarTd_hack">
+            <td id="sbkIsw_LeftnavbarTd">
+			
+			    <nav id="sbkIsw_Leftnavbar" role="complementary">
                 
                 [%SECTION:LEFTNAV%]
                 
                 <!-- Add javascript here to squish this column if it is empty -->
+				
+				</nav>
+				
+				<script type="text/javascript">
+
+				var messages = $('#sbkIsw_Leftnavbar');
+				if (messages.children().length < 1) {
+					messages.slideUp('normal', function () { $(this).remove(); });
+				}   
+				</script>
 
                 <!-- Presentation table first cell ends and next will begin-->
             </td>
@@ -24,7 +36,9 @@
                     [%SECTION:POSTVIEWER%]
 
                 </section>
+				
 
+				
                 <!-- Close the presentation table -->
             </td>
         </tr>

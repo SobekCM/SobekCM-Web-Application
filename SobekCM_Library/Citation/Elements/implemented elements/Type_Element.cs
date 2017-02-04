@@ -6,7 +6,6 @@ using System.Linq;
 using System.Text;
 using System.Web;
 using SobekCM.Core.ApplicationState;
-using SobekCM.Core.Configuration;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Users;
 using SobekCM.Resource_Object;
@@ -17,8 +16,8 @@ using SobekCM.Resource_Object.Bib_Info;
 namespace SobekCM.Library.Citation.Elements
 {
     /// <summary> Element allows simple entry of material type for an item </summary>
-    /// <remarks> This class extends the <see cref="comboBox_Element"/> class. </remarks>
-    public class Type_Element : comboBox_Element
+    /// <remarks> This class extends the <see cref="ComboBox_Element"/> class. </remarks>
+    public class Type_Element : ComboBox_Element
     {
         /// <summary> Constructor for a new instance of the Type_Element class </summary>
         public Type_Element() : base("Resource Type", "type")
@@ -28,10 +27,10 @@ namespace SobekCM.Library.Citation.Elements
         }
 
         /// <summary> Sets the postback javascript, if the combo box requires a post back onChange </summary>
-        /// <param name="postback_call"> Javascript call to perform onChange </param>
-        public void Set_Postback(string postback_call)
+        /// <param name="PostbackCall"> Javascript call to perform onChange </param>
+        public void Set_Postback(string PostbackCall)
         {
-            onChange = postback_call; 
+            Add_ComboBox_Event(HtmlEventsEnum.onchange, PostbackCall);
         }
 
         /// <summary> Renders the HTML for this element </summary>
@@ -50,23 +49,23 @@ namespace SobekCM.Library.Citation.Elements
             // Check that an acronym exists
             if (Acronym.Length == 0)
             {
-                const string defaultAcronym = "Select the resource type information which best describes this material.";
+                const string DEFAULT_ACRONYM = "Select the resource type information which best describes this material.";
                 switch (CurrentLanguage)
                 {
                     case Web_Language_Enum.English:
-                        Acronym = defaultAcronym;
+                        Acronym = DEFAULT_ACRONYM;
                         break;
 
                     case Web_Language_Enum.Spanish:
-                        Acronym = defaultAcronym;
+                        Acronym = DEFAULT_ACRONYM;
                         break;
 
                     case Web_Language_Enum.French:
-                        Acronym = defaultAcronym;
+                        Acronym = DEFAULT_ACRONYM;
                         break;
 
                     default:
-                        Acronym = defaultAcronym;
+                        Acronym = DEFAULT_ACRONYM;
                         break;
                 }
             }
@@ -77,7 +76,7 @@ namespace SobekCM.Library.Citation.Elements
                 thisType = String.Empty;
                 if (Bib.Bib_Info.Notes_Count > 0)
                 {
-                    foreach (Note_Info thisNote in Bib.Bib_Info.Notes.Where(thisNote => thisNote.Note_Type == Note_Type_Enum.DefaultType))
+                    foreach (Note_Info thisNote in Bib.Bib_Info.Notes.Where(ThisNote => ThisNote.Note_Type == Note_Type_Enum.DefaultType))
                     {
                         thisType = thisNote.Note;
                         break;
@@ -108,7 +107,7 @@ namespace SobekCM.Library.Citation.Elements
                 if (Bib.Bib_Info.Notes_Count > 0)
                 {
                     Note_Info deleteNote = null;
-                    foreach (Note_Info thisNote in Bib.Bib_Info.Notes.Where(thisNote => thisNote.Note_Type == Note_Type_Enum.DefaultType))
+                    foreach (Note_Info thisNote in Bib.Bib_Info.Notes.Where(ThisNote => ThisNote.Note_Type == Note_Type_Enum.DefaultType))
                     {
                         deleteNote = thisNote;
                     }
@@ -152,9 +151,9 @@ namespace SobekCM.Library.Citation.Elements
         /// <param name="Bib"> Object into which to save this element's constant data </param>
         public override void Save_Constant_To_Bib(SobekCM_Item Bib)
         {
-            if (default_values.Count > 0)
+            if (DefaultValues.Count > 0)
             {
-                Bib.Bib_Info.SobekCM_Type_String = default_values[0];
+                Bib.Bib_Info.SobekCM_Type_String = DefaultValues[0];
             }
         }
     }

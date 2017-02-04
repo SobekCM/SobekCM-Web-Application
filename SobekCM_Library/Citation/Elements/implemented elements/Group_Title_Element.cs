@@ -14,8 +14,8 @@ using SobekCM.Resource_Object;
 namespace SobekCM.Library.Citation.Elements
 {
     /// <summary> Element allows entry of the group title for an item group </summary>
-    /// <remarks> This class extends the <see cref="simpleTextBox_Element"/> class. </remarks>
-    public class Group_Title_Element : simpleTextBox_Element
+    /// <remarks> This class extends the <see cref="SimpleTextBox_Element"/> class. </remarks>
+    public class Group_Title_Element : SimpleTextBox_Element
     {
         /// <summary> Constructor for a new instance of the Group_Title_Element class </summary>
         public Group_Title_Element()
@@ -61,8 +61,8 @@ namespace SobekCM.Library.Citation.Elements
                 }
             }
 
-            if (label_from_template_file.Length > 0)
-                Title = label_from_template_file;
+            if (LabelFromTemplateFile.Length > 0)
+                Title = LabelFromTemplateFile;
 
             render_helper(Output, Bib.Behaviors.GroupTitle, Skin_Code, Current_User, CurrentLanguage, Translator, Base_URL);
         }

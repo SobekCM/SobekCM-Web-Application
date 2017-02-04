@@ -16,17 +16,17 @@ using SobekCM.Resource_Object.Metadata_Modules;
 namespace SobekCM.Library.Citation.Elements
 {
 	/// <summary> Element allows entry of the ETD degree discipline metadata for an item </summary>
-	/// <remarks> This class extends the <see cref="multipleTextBox_Element"/> class. </remarks>
-	public class ETD_DegreeDiscipline_Element : multipleTextBox_Element
+	/// <remarks> This class extends the <see cref="MultipleTextBox_Element"/> class. </remarks>
+	public class ETD_DegreeDiscipline_Element : MultipleTextBox_Element
 	{
 		/// <summary> Constructor for a new instance of the ETD_DegreeDiscipline_Element class </summary>
 		public ETD_DegreeDiscipline_Element() : base("Degree Discipline", "etd_discipline")
 		{
 			Repeatable = true;
-			view_choices_string = String.Empty;
+			ViewChoicesString = String.Empty;
 
-			boxes_per_line = 3;
-			max_boxes = 9;
+			BoxesPerLine = 3;
+			MaxBoxes = 9;
 		}
 
 		/// <summary> Renders the HTML for this element </summary>

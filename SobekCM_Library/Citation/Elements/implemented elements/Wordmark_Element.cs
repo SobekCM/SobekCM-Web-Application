@@ -18,25 +18,25 @@ using SobekCM.Resource_Object;
 namespace SobekCM.Library.Citation.Elements
 {
     /// <summary> Element allows entry of the wordmarks/icons for an item </summary>
-    /// <remarks> This class extends the <see cref="multipleTextBox_Element"/> class. </remarks>
-    public class Wordmark_Element : multipleTextBox_Element
+    /// <remarks> This class extends the <see cref="MultipleTextBox_Element"/> class. </remarks>
+    public class Wordmark_Element : MultipleTextBox_Element
     {
         /// <summary> Constructor for a new instance of the Wordmark_Element class </summary>
         public Wordmark_Element()
             : base("Wordmark", "wordmark")
         {
             Repeatable = true;
-            view_choices_string = String.Empty;
+            ViewChoicesString = String.Empty;
 
-            max_boxes = 5;
-            boxes_per_line = 5;
+            MaxBoxes = 5;
+            BoxesPerLine = 5;
         }
 
         /// <summary> Sets the base url for the current request </summary>
         /// <param name="Base_URL"> Current Base URL for this request </param>
         public override void Set_Base_URL(string Base_URL)
         {
-            view_choices_string = "<a href=\"" + Base_URL + "l/internal/wordmarks<%?URLOPTS%>\" title=\"View all wordmarks\" target=\"_WORDMARKLIST\"><img src=\"" + Base_URL + "design/skins/<%WEBSKIN%>/buttons/magnify.jpg\" /></a>";
+            ViewChoicesString = "<a href=\"" + Base_URL + "l/internal/wordmarks<%?URLOPTS%>\" title=\"View all wordmarks\" target=\"_WORDMARKLIST\"><img src=\"" + Base_URL + "design/skins/<%WEBSKIN%>/buttons/magnify.jpg\" /></a>";
         }
 
         /// <summary> Renders the HTML for this element </summary>

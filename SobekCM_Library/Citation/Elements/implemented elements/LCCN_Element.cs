@@ -18,8 +18,8 @@ using SobekCM.Resource_Object.Bib_Info;
 namespace SobekCM.Library.Citation.Elements
 {
 	/// <summary> Element allows entry of the Library of Congress Control Number </summary>
-	/// <remarks> This class extends the <see cref="simpleTextBox_Element"/> class. </remarks>
-	public class LCCN_Element : simpleTextBox_Element
+	/// <remarks> This class extends the <see cref="SimpleTextBox_Element"/> class. </remarks>
+	public class LCCN_Element : SimpleTextBox_Element
 	{
 		/// <summary> Constructor for a new instance of the LCCN_Element class </summary>
 		public LCCN_Element() : base("LCCN", "lccn")

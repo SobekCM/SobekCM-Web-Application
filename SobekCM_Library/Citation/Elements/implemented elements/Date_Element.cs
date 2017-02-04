@@ -14,8 +14,8 @@ using SobekCM.Resource_Object;
 namespace SobekCM.Library.Citation.Elements
 {
     /// <summary> Element allows entry of the date for an item </summary>
-    /// <remarks> This class extends the <see cref="simpleTextBox_Element"/> class. </remarks>
-    public class Date_Element : simpleTextBox_Element
+    /// <remarks> This class extends the <see cref="SimpleTextBox_Element"/> class. </remarks>
+    public class Date_Element : SimpleTextBox_Element
     {
         /// <summary> Constructor for a new instance of the Date_Element class </summary>
         public Date_Element()
@@ -66,8 +66,8 @@ namespace SobekCM.Library.Citation.Elements
             if (date.Length == 0)
                 date = Bib.Bib_Info.Origin_Info.MARC_DateIssued;
 
-            if (label_from_template_file.Length > 0)
-                Title = label_from_template_file;
+            if (LabelFromTemplateFile.Length > 0)
+                Title = LabelFromTemplateFile;
 
             render_helper(Output, date, Skin_Code, Current_User, CurrentLanguage, Translator, Base_URL);
         }

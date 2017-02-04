@@ -19,24 +19,24 @@ using SobekCM.Resource_Object;
 namespace SobekCM.Library.Citation.Elements
 {
     /// <summary> Element allows entry of the disposition advice, both the controlled field and free-text field</summary>
-    /// <remarks> This class extends the <see cref="comboBox_TextBox_Element"/> class. </remarks>
-    public class Disposition_Advice_Element : comboBox_TextBox_Element
+    /// <remarks> This class extends the <see cref="ComboBox_TextBox_Element"/> class. </remarks>
+    public class Disposition_Advice_Element : ComboBox_TextBox_Element
     {
         /// <summary> Constructor for a new instance of the Disposition_Advice_Element class </summary>
         public Disposition_Advice_Element()
             : base("Disposition Advice", "disposition_advice")
         {
             Repeatable = false;
-            possible_select_items.Clear();
+            PossibleSelectItems.Clear();
 
             List<Disposition_Option> futureTypes = UI_ApplicationCache_Gateway.Settings.Disposition_Options;
-            possible_select_items.Add(String.Empty);
+            PossibleSelectItems.Add(String.Empty);
             foreach (Disposition_Option thisType in futureTypes)
             {
-                possible_select_items.Add(thisType.Future);
+                PossibleSelectItems.Add(thisType.Future);
             }
 
-            second_label = "Notes";
+            SecondLabel = "Notes";
         }
 
 

@@ -17,8 +17,8 @@ using SobekCM.Resource_Object;
 namespace SobekCM.Library.Citation.Elements
 {
     /// <summary> Element allows entry of the main thumbnail for an item </summary>
-    /// <remarks> This class extends the <see cref="comboBox_Element"/> class. </remarks>
-    public class Main_Thumbnail_Element : comboBox_Element
+    /// <remarks> This class extends the <see cref="ComboBox_Element"/> class. </remarks>
+    public class Main_Thumbnail_Element : ComboBox_Element
     {
         /// <summary> Constructor for a new instance of the Main_Thumbnail_Element class </summary>
         public Main_Thumbnail_Element()
@@ -26,7 +26,7 @@ namespace SobekCM.Library.Citation.Elements
         {
             Repeatable = false;
 
-            items.Clear();
+            Items.Clear();
         }
 
 
@@ -68,11 +68,11 @@ namespace SobekCM.Library.Citation.Elements
             }
 
             // Add all the possible thumbnail files
-            items.Clear();
+            Items.Clear();
             ReadOnlyCollection<string> files = Bib.Web.Get_Thumbnail_Files(UI_ApplicationCache_Gateway.Settings.Servers.Image_Server_Network + Bib.Web.AssocFilePath);
             foreach (string thisFile in files)
             {
-                items.Add(thisFile);
+                Items.Add(thisFile);
             }
 
             render_helper(Output, Bib.Behaviors.Main_Thumbnail, Skin_Code, Current_User, CurrentLanguage, Translator, Base_URL);

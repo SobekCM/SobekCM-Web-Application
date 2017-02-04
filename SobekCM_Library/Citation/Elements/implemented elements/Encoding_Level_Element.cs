@@ -15,20 +15,20 @@ using SobekCM.Resource_Object;
 namespace SobekCM.Library.Citation.Elements
 {
     /// <summary> Element allows entry of the encoding level for an item </summary>
-    /// <remarks> This class extends the <see cref="comboBox_Element"/> class. </remarks>
-    public class Encoding_Level_Element : comboBox_Element
+    /// <remarks> This class extends the <see cref="ComboBox_Element"/> class. </remarks>
+    public class Encoding_Level_Element : ComboBox_Element
     {
         /// <summary> Constructor for a new instance of the Encoding_Level_Element class </summary>
         public Encoding_Level_Element() : base("Encoding Level", "encoding_level")
         {
             Repeatable = false;
 
-            items.Clear();
-            items.Add("(none)");
-            items.Add("#");
-            items.Add("3");
-            items.Add("K");
-            items.Add("I");
+            Items.Clear();
+            Items.Add("(none)");
+            Items.Add("#");
+            Items.Add("3");
+            Items.Add("K");
+            Items.Add("I");
         }
 
 

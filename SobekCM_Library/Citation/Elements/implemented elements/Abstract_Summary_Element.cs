@@ -16,8 +16,8 @@ using SobekCM.Resource_Object;
 namespace SobekCM.Library.Citation.Elements
 {
     /// <summary> Element allows simple entry of the abstract/summary information for an item </summary>
-    /// <remarks> This class extends the <see cref="textArea_Element"/> class. </remarks>
-    public class Abstract_Summary_Element : textArea_Element
+    /// <remarks> This class extends the <see cref="TextArea_Element"/> class. </remarks>
+    public class Abstract_Summary_Element : TextArea_Element
     {
         /// <summary> Constructor for a new instance of the Abstract_Summary_Element class </summary>
         public Abstract_Summary_Element() : base("Abstract", "abstract")

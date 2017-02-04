@@ -7,7 +7,6 @@ using System.IO;
 using System.Linq;
 using System.Xml;
 using SobekCM.Core.ApplicationState;
-using SobekCM.Core.Configuration;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Users;
 
@@ -17,39 +16,39 @@ namespace SobekCM.Library.Citation.Elements
 {
     /// <summary> Abstract base class for all elements which are made up of multiple small combo/select boxes </summary>
     /// <remarks> This class implements the <see cref="iElement"/> interface and extends the <see cref="abstract_Element"/> class. </remarks>
-    public abstract class multipleComboBox_Element : abstract_Element
+    public abstract class MultipleComboBox_Element : abstract_Element
 	{
         /// <summary> Protected field holds how many boxes are allowed per line, or -1 if there is no limit </summary>
-        protected int boxes_per_line = -1;
+        protected int BoxesPerLine = -1;
 
         /// <summary> Protected field holds all the possible, selectable values </summary>
-        protected List<string> items;
+        protected List<string> Items;
 
         /// <summary> Protected field holds how many boxes are allowed total for this element, or -1 if there is no limit </summary>
-        protected int max_boxes = -1;
+        protected int MaxBoxes = -1;
 
         /// <summary> Protected field holds any html to insert as the view choices option after the boxes </summary>
-        protected string view_choices_string;
+        protected string ViewChoicesString;
 
-        /// <summary> Constructor for a new instance of the multipleComboBox_Element class </summary>
+        /// <summary> Constructor for a new instance of the MultipleComboBox_Element class </summary>
         /// <param name="Title"> Title for this element </param>
         /// <param name="Html_Element_Name"> Name for the html components and styles for this element </param>
-        protected multipleComboBox_Element(string Title, string Html_Element_Name)
+        protected MultipleComboBox_Element(string Title, string Html_Element_Name)
 		{
 			base.Title = Title;
             html_element_name = Html_Element_Name;
-            view_choices_string = String.Empty;
+            ViewChoicesString = String.Empty;
 
-            items = new List<string>();
+            Items = new List<string>();
 		}
 
         /// <summary> Adds a possible, selectable value to the combo/select box </summary>
-        /// <param name="newItem"> New possible, selectable value </param>
-        public void Add_Item(string newItem)
+        /// <param name="NewItem"> New possible, selectable value </param>
+        public void Add_Item(string NewItem)
         {
-            if (!items.Contains(newItem))
+            if (!Items.Contains(NewItem))
             {
-                items.Add(newItem);
+                Items.Add(NewItem);
             }
         }
 
@@ -65,80 +64,80 @@ namespace SobekCM.Library.Citation.Elements
 
         /// <summary> Method helps to render all multiple combo box based elements </summary>
         /// <param name="Output"> Output for the generated html for this element </param>
-        /// <param name="instance_values"> Value(s) for the current digital resource to display</param>
+        /// <param name="InstanceValues"> Value(s) for the current digital resource to display</param>
         /// <param name="Skin_Code"> Code for the current html skin </param>
         /// <param name="Current_User"> Current user, who's rights may impact the way an element is rendered </param>
         /// <param name="CurrentLanguage"> Current user-interface language </param>
         /// <param name="Translator"> Language support object which handles simple translational duties </param>
         /// <param name="Base_URL"> Base URL for the current request </param>
-        protected void render_helper(TextWriter Output, List<string> instance_values, string Skin_Code, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL)
+        protected void render_helper(TextWriter Output, List<string> InstanceValues, string Skin_Code, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL)
         {
-            render_helper(Output, new ReadOnlyCollection<string>(instance_values), items, Skin_Code, Current_User, CurrentLanguage, Translator, Base_URL );
+            render_helper(Output, new ReadOnlyCollection<string>(InstanceValues), Items, Skin_Code, Current_User, CurrentLanguage, Translator, Base_URL );
         }
 
         /// <summary> Method helps to render all multiple combo box based elements </summary>
         /// <param name="Output"> Output for the generated html for this element </param>
-        /// <param name="instance_values"> Value(s) for the current digital resource to display</param>
+        /// <param name="InstanceValues"> Value(s) for the current digital resource to display</param>
         /// <param name="Skin_Code"> Code for the current html skin </param>
         /// <param name="Current_User"> Current user, who's rights may impact the way an element is rendered </param>
         /// <param name="CurrentLanguage"> Current user-interface language </param>
         /// <param name="Translator"> Language support object which handles simple translational duties </param>
         /// <param name="Base_URL"> Base URL for the current request </param>
-        protected void render_helper(TextWriter Output, ReadOnlyCollection<string> instance_values, string Skin_Code, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL)
+        protected void render_helper(TextWriter Output, ReadOnlyCollection<string> InstanceValues, string Skin_Code, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL)
         {
-            render_helper(Output, instance_values, items, Skin_Code, Current_User, CurrentLanguage, Translator, Base_URL);
+            render_helper(Output, InstanceValues, Items, Skin_Code, Current_User, CurrentLanguage, Translator, Base_URL);
         }
 
         /// <summary> Method helps to render all multiple combo box based elements </summary>
         /// <param name="Output"> Output for the generated html for this element </param>
-        /// <param name="instance_values"> Value(s) for the current digital resource to display</param>
-        /// <param name="possible_values"> Possible vlaues for the combo boxes </param>
+        /// <param name="InstanceValues"> Value(s) for the current digital resource to display</param>
+        /// <param name="PossibleValues"> Possible vlaues for the combo boxes </param>
         /// <param name="Skin_Code"> Code for the current html skin </param>
         /// <param name="Current_User"> Current user, who's rights may impact the way an element is rendered </param>
         /// <param name="CurrentLanguage"> Current user-interface language </param>
         /// <param name="Translator"> Language support object which handles simple translational duties </param>
         /// <param name="Base_URL"> Base URL for the current request </param>
-        protected void render_helper(TextWriter Output, List<string> instance_values, List<string> possible_values, string Skin_Code, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL)
+        protected void render_helper(TextWriter Output, List<string> InstanceValues, List<string> PossibleValues, string Skin_Code, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL)
         {
-            render_helper(Output, new ReadOnlyCollection<string>(instance_values), possible_values, Skin_Code, Current_User, CurrentLanguage, Translator, Base_URL);
+            render_helper(Output, new ReadOnlyCollection<string>(InstanceValues), PossibleValues, Skin_Code, Current_User, CurrentLanguage, Translator, Base_URL);
         }
 
         /// <summary> Method helps to render all multiple combo box based elements </summary>
         /// <param name="Output"> Output for the generated html for this element </param>
-        /// <param name="instance_value"> Value for the current digital resource to display</param>
+        /// <param name="InstanceValue"> Value for the current digital resource to display</param>
         /// <param name="Skin_Code"> Code for the current html skin </param>
         /// <param name="Current_User"> Current user, who's rights may impact the way an element is rendered </param>
         /// <param name="CurrentLanguage"> Current user-interface language </param>
         /// <param name="Translator"> Language support object which handles simple translational duties </param>
         /// <param name="Base_URL"> Base URL for the current request </param>
-        protected void render_helper(TextWriter Output, string instance_value, string Skin_Code, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL)
+        protected void render_helper(TextWriter Output, string InstanceValue, string Skin_Code, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL)
         {
-            render_helper(Output, instance_value, items, Skin_Code, Current_User, CurrentLanguage, Translator, Base_URL);
+            render_helper(Output, InstanceValue, Items, Skin_Code, Current_User, CurrentLanguage, Translator, Base_URL);
         }
 
         /// <summary> Method helps to render all multiple combo box based elements </summary>
         /// <param name="Output"> Output for the generated html for this element </param>
-        /// <param name="instance_values"> Value(s) for the current digital resource to display</param>
-        /// <param name="possible_values"> Possible vlaues for the combo boxes </param>
+        /// <param name="InstanceValues"> Value(s) for the current digital resource to display</param>
+        /// <param name="PossibleValues"> Possible vlaues for the combo boxes </param>
         /// <param name="Skin_Code"> Code for the current html skin </param>
         /// <param name="Current_User"> Current user, who's rights may impact the way an element is rendered </param>
         /// <param name="CurrentLanguage"> Current user-interface language </param>
         /// <param name="Translator"> Language support object which handles simple translational duties </param>
         /// <param name="Base_URL"> Base URL for the current request </param>
-        protected void render_helper(TextWriter Output, ReadOnlyCollection<string> instance_values, List<string> possible_values, string Skin_Code, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL )
+        protected void render_helper(TextWriter Output, ReadOnlyCollection<string> InstanceValues, List<string> PossibleValues, string Skin_Code, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL )
         {
             List<string> allValues = new List<string>();
-            allValues.AddRange(instance_values);
+            allValues.AddRange(InstanceValues);
 
             if (allValues.Count == 0)
             {
-                render_helper(Output, String.Empty, possible_values, Skin_Code, Current_User, CurrentLanguage, Translator, Base_URL);
+                render_helper(Output, String.Empty, PossibleValues, Skin_Code, Current_User, CurrentLanguage, Translator, Base_URL);
                 return;
             }
 
             if (allValues.Count == 1)
             {
-                render_helper(Output, allValues[0], possible_values, Skin_Code, Current_User, CurrentLanguage, Translator, Base_URL);
+                render_helper(Output, allValues[0], PossibleValues, Skin_Code, Current_User, CurrentLanguage, Translator, Base_URL);
                 return;
             }
 
@@ -160,10 +159,10 @@ namespace SobekCM.Library.Citation.Elements
             if (Read_Only)
             {
                 Output.Write("    <td>");
-                for (int i = 0; i < instance_values.Count; i++)
+                for (int i = 0; i < InstanceValues.Count; i++)
                 {
-                    Output.Write(instance_values[i]);
-                    if (i < (instance_values.Count - 1))
+                    Output.Write(InstanceValues[i]);
+                    if (i < (InstanceValues.Count - 1))
                         Output.Write("<br />");
                 }
                 Output.WriteLine("</td>");
@@ -178,7 +177,12 @@ namespace SobekCM.Library.Citation.Elements
                 for (int i = 1; i <= allValues.Count; i++)
                 {
                     string value = allValues[i - 1];
-                    Output.WriteLine("              <select name=\"" + id_name + i + "\" id=\"" + id_name + i + "\" class=\"" + html_element_name + "_input\" type=\"text\" >");
+                    Output.Write("              <select name=\"" + id_name + i + "\" id=\"" + id_name + i + "\" class=\"" + html_element_name + "_input\" type=\"text\" ");
+                    if (comboBoxEvents != null)
+                        comboBoxEvents.Add_Events_HTML(Output);
+                    Output.WriteLine(" >");
+
+
                     bool found = false;
                     if (value.Length == 0)
                     {
@@ -189,7 +193,7 @@ namespace SobekCM.Library.Citation.Elements
                     {
                         Output.WriteLine("                <option value=\"\">&nbsp;</option>");
                     }
-                    foreach (string item in possible_values)
+                    foreach (string item in PossibleValues)
                     {
                         if (item.ToUpper() == value.ToUpper())
                         {
@@ -216,14 +220,14 @@ namespace SobekCM.Library.Citation.Elements
                 Output.WriteLine("          </td>");
                 Output.WriteLine("          <td style=\"vertical-align:bottom\" >");
 
-                if ( !String.IsNullOrEmpty(view_choices_string))
+                if ( !String.IsNullOrEmpty(ViewChoicesString))
                 {
-                    Output.WriteLine("            " + view_choices_string.Replace("<%WEBSKIN%>", Skin_Code).Replace("<%?URLOPTS%>", "") + "&nbsp; ");
+                    Output.WriteLine("            " + ViewChoicesString.Replace("<%WEBSKIN%>", Skin_Code).Replace("<%?URLOPTS%>", "") + "&nbsp; ");
                 }
 
-                if ((Repeatable) && ((max_boxes < 0) || (allValues.Count < max_boxes)))
+                if ((Repeatable) && ((MaxBoxes < 0) || (allValues.Count < MaxBoxes)))
                 {
-                    Output.WriteLine("          <span id=\"" + html_element_name + "_repeaticon\" name=\"" + html_element_name + "_repeaticon\"><img title=\"" + Translator.Get_Translation("Click to add another " + Title.ToLower(), CurrentLanguage) + ".\" alt=\"+\" class=\"repeat_button\" src=\"" + REPEAT_BUTTON_URL + "\" onmousedown=\"add_new_multi_combo_element('" + html_element_name + "', " + allValues.Count + "," + max_boxes + "," + boxes_per_line + "); return false;\" /></span>");
+                    Output.WriteLine("          <span id=\"" + html_element_name + "_repeaticon\" name=\"" + html_element_name + "_repeaticon\"><img title=\"" + Translator.Get_Translation("Click to add another " + Title.ToLower(), CurrentLanguage) + ".\" alt=\"+\" class=\"repeat_button\" src=\"" + REPEAT_BUTTON_URL + "\" onmousedown=\"add_new_multi_combo_element('" + html_element_name + "', " + allValues.Count + "," + MaxBoxes + "," + BoxesPerLine + "); return false;\" /></span>");
                 }
 
                 Output.WriteLine("            <a target=\"_" + html_element_name.ToUpper() + "\"  title=\"" + Translator.Get_Translation("Get help.", CurrentLanguage) + "\" href=\"" + Help_URL(Skin_Code, Base_URL) + "\" ><img class=\"help_button\" src=\"" + HELP_BUTTON_URL + "\" /></a>");
@@ -241,14 +245,14 @@ namespace SobekCM.Library.Citation.Elements
 
         /// <summary> Method helps to render all multiple combo box based elements </summary>
         /// <param name="Output"> Output for the generated html for this element </param>
-        /// <param name="instance_value"> Value for the current digital resource to display</param>
-        /// <param name="possible_values"> Possible vlaues for this combo boxes </param>
+        /// <param name="InstanceValue"> Value for the current digital resource to display</param>
+        /// <param name="PossibleValues"> Possible vlaues for this combo boxes </param>
         /// <param name="Skin_Code"> Code for the current html skin </param>
         /// <param name="Current_User"> Current user, who's rights may impact the way an element is rendered </param>
         /// <param name="CurrentLanguage"> Current user-interface language </param>
         /// <param name="Translator"> Language support object which handles simple translational duties </param>
         /// <param name="Base_URL"> Base URL for the current request </param>
-        protected void render_helper(TextWriter Output, string instance_value, List<string> possible_values, string Skin_Code, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL )
+        protected void render_helper(TextWriter Output, string InstanceValue, List<string> PossibleValues, string Skin_Code, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL )
         {
             string id_name = html_element_name.Replace("_", "");
 
@@ -268,7 +272,7 @@ namespace SobekCM.Library.Citation.Elements
             if (Read_Only)
             {
                 Output.Write("    <td>");
-                Output.Write(instance_value);
+                Output.Write(InstanceValue);
                 Output.WriteLine("</td>");
             }
             else
@@ -281,8 +285,12 @@ namespace SobekCM.Library.Citation.Elements
                 
                 const int i = 1;
 
-                string value = instance_value;
-                    Output.WriteLine("              <select name=\"" + id_name + i + "\" id=\"" + id_name + i + "\" class=\"" + html_element_name + "_input\" type=\"text\" >");
+                string value = InstanceValue;
+                    Output.Write("             <select name=\"" + id_name + i + "\" id=\"" + id_name + i + "\" class=\"" + html_element_name + "_input\" type=\"text\" ");
+                    if (comboBoxEvents != null)
+                        comboBoxEvents.Add_Events_HTML(Output);
+                    Output.WriteLine(" >");
+
                     bool found = false;
                     if (value.Length == 0)
                     {
@@ -293,7 +301,7 @@ namespace SobekCM.Library.Citation.Elements
                     {
                         Output.WriteLine("                <option value=\"\">&nbsp;</option>");
                     }
-                    foreach (string item in possible_values)
+                    foreach (string item in PossibleValues)
                     {
                         if (item.ToUpper() == value.ToUpper())
                         {
@@ -317,14 +325,14 @@ namespace SobekCM.Library.Citation.Elements
                 Output.WriteLine("          </td>");
                 Output.WriteLine("          <td style=\"vertical-align:bottom\" >");
 
-                if (!String.IsNullOrEmpty(view_choices_string))
+                if (!String.IsNullOrEmpty(ViewChoicesString))
                 {
-                    Output.WriteLine("            " + view_choices_string.Replace("<%WEBSKIN%>", Skin_Code).Replace("<%?URLOPTS%>","") + "&nbsp; ");
+                    Output.WriteLine("            " + ViewChoicesString.Replace("<%WEBSKIN%>", Skin_Code).Replace("<%?URLOPTS%>","") + "&nbsp; ");
                 }
 
                 if (Repeatable)
                 {
-                    Output.WriteLine("          <span id=\"" + html_element_name + "_repeaticon\" name=\"" + html_element_name + "_repeaticon\"><img title=\"" + Translator.Get_Translation("Click to add another " + Title.ToLower(), CurrentLanguage) + ".\" alt=\"+\" class=\"repeat_button\" src=\"" + REPEAT_BUTTON_URL + "\" onmousedown=\"add_new_multi_combo_element('" + html_element_name + "', 1," + max_boxes + "," + boxes_per_line + "); return false;\" /></span>");
+                    Output.WriteLine("          <span id=\"" + html_element_name + "_repeaticon\" name=\"" + html_element_name + "_repeaticon\"><img title=\"" + Translator.Get_Translation("Click to add another " + Title.ToLower(), CurrentLanguage) + ".\" alt=\"+\" class=\"repeat_button\" src=\"" + REPEAT_BUTTON_URL + "\" onmousedown=\"add_new_multi_combo_element('" + html_element_name + "', 1," + MaxBoxes + "," + BoxesPerLine + "); return false;\" /></span>");
                 }
 
                 Output.WriteLine("            <a target=\"_" + html_element_name.ToUpper() + "\"  title=\"" + Translator.Get_Translation("Get help.", CurrentLanguage) + "\" href=\"" + Help_URL(Skin_Code, Base_URL) + "\" ><img class=\"help_button\" src=\"" + HELP_BUTTON_URL + "\" /></a>");
@@ -354,24 +362,50 @@ namespace SobekCM.Library.Citation.Elements
                     if (XMLReader.Name.ToLower() == "value")
                     {
                         XMLReader.Read();
-                        items.Add(XMLReader.Value.Trim());
+                        Items.Add(XMLReader.Value.Trim());
                     }
                     if (XMLReader.Name.ToLower() == "options")
                     {
                         XMLReader.Read();
                         string options = XMLReader.Value.Trim();
-                        items.Clear();
+                        Items.Clear();
                         if (options.Length > 0)
                         {
                             string[] options_parsed = options.Split(",".ToCharArray());
-                            foreach (string thisOption in options_parsed.Where(thisOption => !items.Contains(thisOption.Trim())))
+                            foreach (string thisOption in options_parsed.Where(ThisOption => !Items.Contains(ThisOption.Trim())))
                             {
-                                items.Add(thisOption.Trim());
+                                Items.Add(thisOption.Trim());
                             }
                         }
                     }
                 }
             }
+        }
+
+        #endregion
+
+        #region Methods and properties exposing events for the HTML elements in this base type
+
+        private HtmlEventsHelper comboBoxEvents;
+
+        /// <summary> Access to the complete combo box events object </summary>
+        /// <remarks> Requesting this property will create a new object, if one does not already exist </remarks>
+        protected HtmlEventsHelper ComboBoxEvents
+        {
+            get { return comboBoxEvents ?? (comboBoxEvents = new HtmlEventsHelper()); }
+        }
+
+        /// <summary> Add some event text to an event on the primary combo box for the citation control </summary>
+        /// <param name="Event"> Type of the event to add text to </param>
+        /// <param name="EventText"> Text (html format) to add to the event, such as "getElementById('demo').innerHTML = Date()", or "myFunction();return false;", etc.. </param>
+        protected void Add_ComboBox_Event(HtmlEventsEnum Event, string EventText)
+        {
+            // If the events is null, create it
+            if (comboBoxEvents == null)
+                comboBoxEvents = new HtmlEventsHelper();
+
+            // Add this event
+            comboBoxEvents.Add_Event(Event, EventText);
         }
 
         #endregion

@@ -14,8 +14,8 @@ using SobekCM.Resource_Object;
 namespace SobekCM.Library.Citation.Elements
 {
     /// <summary> Element allows entry of the individual creator notes for an item </summary>
-    /// <remarks> This class extends the <see cref="simpleTextBox_Element"/> class. </remarks>
-    public class Creator_Notes_Element : simpleTextBox_Element
+    /// <remarks> This class extends the <see cref="SimpleTextBox_Element"/> class. </remarks>
+    public class Creator_Notes_Element : SimpleTextBox_Element
     {
         /// <summary> Constructor for a new instance of the Creator_Notes_Element class </summary>
         public Creator_Notes_Element()

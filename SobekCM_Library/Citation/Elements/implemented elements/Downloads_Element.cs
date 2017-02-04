@@ -20,17 +20,17 @@ using SobekCM.Resource_Object.Divisions;
 namespace SobekCM.Library.Citation.Elements
 {
     /// <summary> Element allows entry of the downloads for an item </summary>
-    /// <remarks> This class extends the <see cref="comboBox_TextBox_Element"/> class. </remarks>
-    public class Downloads_Element : comboBox_TextBox_Element
+    /// <remarks> This class extends the <see cref="ComboBox_TextBox_Element"/> class. </remarks>
+    public class Downloads_Element : ComboBox_TextBox_Element
     {
         /// <summary> Constructor for a new instance of the Downloads_Element class </summary>
         public Downloads_Element()
             : base("Downloads", "download")
         {
             Repeatable = true;
-            possible_select_items.Clear();
+            PossibleSelectItems.Clear();
 
-            second_label = "Label";
+            SecondLabel = "Label";
             
         }
 
@@ -74,8 +74,8 @@ namespace SobekCM.Library.Citation.Elements
             }
 
             // Clear the list of possible download-eligible files
-            possible_select_items.Clear();
-            possible_select_items.Add(String.Empty);
+            PossibleSelectItems.Clear();
+            PossibleSelectItems.Add(String.Empty);
 
             // Add the actual downloads from this package
             List<string> files = new List<string>();
@@ -86,9 +86,9 @@ namespace SobekCM.Library.Citation.Elements
                 if (thisDownload.Files.Count > 0)
                 {
                     string base_file = thisDownload.Files[0].File_Name_Sans_Extension.ToLower();
-                    if (!possible_select_items.Contains(base_file + ".*"))
+                    if (!PossibleSelectItems.Contains(base_file + ".*"))
                     {
-                        possible_select_items.Add(base_file + ".*");
+                        PossibleSelectItems.Add(base_file + ".*");
                     }
 
                     if (!files.Contains(base_file + ".*"))
@@ -103,8 +103,8 @@ namespace SobekCM.Library.Citation.Elements
             ReadOnlyCollection<string> otherFiles = Bib.Web.Get_Download_Eligible_Files(UI_ApplicationCache_Gateway.Settings.Servers.Image_Server_Network + Bib.Web.AssocFilePath);
             foreach (string thisOtherFile in otherFiles)
             {
-                if (!possible_select_items.Contains(thisOtherFile))
-                    possible_select_items.Add(thisOtherFile);
+                if (!PossibleSelectItems.Contains(thisOtherFile))
+                    PossibleSelectItems.Add(thisOtherFile);
             }
 
             if (files.Count == 0)

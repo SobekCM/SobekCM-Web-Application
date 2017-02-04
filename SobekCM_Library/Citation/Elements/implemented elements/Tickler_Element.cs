@@ -15,8 +15,8 @@ using SobekCM.Resource_Object;
 namespace SobekCM.Library.Citation.Elements
 {
     /// <summary> Element allows simple entry of the ticklers for an item </summary>
-    /// <remarks> This class extends the <see cref="multipleTextBox_Element"/> class. </remarks>
-    public class Tickler_Element : multipleTextBox_Element
+    /// <remarks> This class extends the <see cref="MultipleTextBox_Element"/> class. </remarks>
+    public class Tickler_Element : MultipleTextBox_Element
     {
         /// <summary> Constructor for a new instance of the Tickler_Element class </summary>
         public Tickler_Element()
@@ -24,8 +24,8 @@ namespace SobekCM.Library.Citation.Elements
         {
             Repeatable = true;
             
-            max_boxes = -1;
-            boxes_per_line = 3;
+            MaxBoxes = -1;
+            BoxesPerLine = 3;
         }
 
 

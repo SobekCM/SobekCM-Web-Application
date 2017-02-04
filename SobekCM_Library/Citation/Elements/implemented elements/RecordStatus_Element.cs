@@ -13,8 +13,8 @@ using SobekCM.Resource_Object;
 namespace SobekCM.Library.Citation.Elements
 {
     /// <summary> Element allows entry of the record status for an item </summary>
-    /// <remarks> This class extends the <see cref="comboBox_Element"/> class. </remarks>
-    public class RecordStatus_Element : comboBox_Element
+    /// <remarks> This class extends the <see cref="ComboBox_Element"/> class. </remarks>
+    public class RecordStatus_Element : ComboBox_Element
     {
         /// <summary> Constructor for a new instance of the RecordStatus_Element class </summary>
         public RecordStatus_Element()
@@ -23,8 +23,8 @@ namespace SobekCM.Library.Citation.Elements
             Repeatable = false;
             Read_Only = true;
 
-            items.Clear();
-            items.Add("METADATA UPDATE");
+            Items.Clear();
+            Items.Add("METADATA UPDATE");
         }
 
 

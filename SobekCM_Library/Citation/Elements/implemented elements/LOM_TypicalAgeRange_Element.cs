@@ -18,8 +18,8 @@ using SobekCM.Resource_Object.Metadata_Modules.LearningObjects;
 namespace SobekCM.Library.Citation.Elements
 {
     /// <summary> Element allows entry of the learning object metadata typical age range field </summary>
-    /// <remarks> This class extends the <see cref="simpleTextBox_Element"/> class. </remarks>
-    public class LOM_TypicalAgeRange_Element : simpleTextBox_Element
+    /// <remarks> This class extends the <see cref="SimpleTextBox_Element"/> class. </remarks>
+    public class LOM_TypicalAgeRange_Element : SimpleTextBox_Element
     {
         /// <summary> Constructor for a new instance of the LOM_TypicalAgeRange_Element class </summary>
         public LOM_TypicalAgeRange_Element() : base("Typical Age Range:", "lom_agerange")

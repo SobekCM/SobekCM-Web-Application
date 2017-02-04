@@ -18,15 +18,15 @@ using SobekCM.Resource_Object.Metadata_Modules.GeoSpatial;
 namespace SobekCM.Library.Citation.Elements
 {
     /// <summary> Element allows simple entry of the coordinates (latitude/longitude) for an item </summary>
-    /// <remarks> This class extends the <see cref="textBox_TextBox_Element"/> class. </remarks>
-    public class Coordinates_Point_Element : textBox_TextBox_Element
+    /// <remarks> This class extends the <see cref="TextBox_TextBox_Element"/> class. </remarks>
+    public class Coordinates_Point_Element : TextBox_TextBox_Element
     {
         /// <summary> Constructor for a new instance of the Coordinates_Point_Element class </summary>
         public Coordinates_Point_Element()
             : base("Coordinates:", "coordinate_point")
         {
-            first_label = "Latitude";
-            second_label = "Longitude";
+            FirstLabel = "Latitude";
+            SecondLabel = "Longitude";
             Repeatable = true;
         }
 

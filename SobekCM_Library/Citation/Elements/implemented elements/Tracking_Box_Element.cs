@@ -15,8 +15,8 @@ using SobekCM.Resource_Object;
 namespace SobekCM.Library.Citation.Elements
 {
     /// <summary> Element allows entry of the tracking box for an item </summary>
-    /// <remarks> This class extends the <see cref="simpleTextBox_Element"/> class. </remarks>
-    public class Tracking_Box_Element : simpleTextBox_Element
+    /// <remarks> This class extends the <see cref="SimpleTextBox_Element"/> class. </remarks>
+    public class Tracking_Box_Element : SimpleTextBox_Element
     {
         /// <summary> Constructor for a new instance of the Tracking_Box_Element class </summary>
         public Tracking_Box_Element()

@@ -16,14 +16,14 @@ using SobekCM.Resource_Object.Bib_Info;
 namespace SobekCM.Library.Citation.Elements
 {
     /// <summary> Element allows entry of the classifications ( classifications and authority) for an item </summary>
-    /// <remarks> This class extends the <see cref="textBox_ComboBox_Element"/> class. </remarks>
-    public class Classification_Element : textBox_ComboBox_Element
+    /// <remarks> This class extends the <see cref="TextBox_ComboBox_Element"/> class. </remarks>
+    public class Classification_Element : TextBox_ComboBox_Element
     {
         /// <summary> Constructor for a new instance of the Classification_Element class </summary>
         public Classification_Element()
             : base("Classification", "classification")
         {
-            second_label = "Authority";
+            SecondLabel = "Authority";
             Repeatable = true;
 
             Add_Select_Item("", "");            

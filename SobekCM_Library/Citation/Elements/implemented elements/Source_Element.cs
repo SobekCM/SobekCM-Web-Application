@@ -20,8 +20,8 @@ using SobekCM.Resource_Object;
 namespace SobekCM.Library.Citation.Elements
 {
     /// <summary> Element allows entry of the source institution (code and statement) for an item </summary>
-    /// <remarks> This class extends the <see cref="comboBox_TextBox_Element"/> class. </remarks>
-    public class Source_Element : comboBox_TextBox_Element
+    /// <remarks> This class extends the <see cref="ComboBox_TextBox_Element"/> class. </remarks>
+    public class Source_Element : ComboBox_TextBox_Element
     {
         private readonly Dictionary<string, string> codeToNameDictionary;
 
@@ -29,9 +29,9 @@ namespace SobekCM.Library.Citation.Elements
         public Source_Element() : base("Source Institution", "source")
         {
             Repeatable = false;
-            possible_select_items.Add("");
+            PossibleSelectItems.Add("");
 
-            clear_textbox_on_combobox_change = true;
+            ClearTextboxOnComboboxChange = true;
 
             // Get the codes to display in the source
             codeToNameDictionary = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
@@ -71,7 +71,7 @@ namespace SobekCM.Library.Citation.Elements
                 IList<string> keys = tempItemList.Keys;
                 foreach (string thisKey in keys)
                 {
-                    possible_select_items.Add(tempItemList[thisKey].ToUpper());
+                    PossibleSelectItems.Add(tempItemList[thisKey].ToUpper());
                     if (codeToNameDictionary.ContainsKey(thisKey))
                     {
                         Add_Code_Statement_Link(thisKey, codeToNameDictionary[thisKey]);
@@ -131,7 +131,7 @@ namespace SobekCM.Library.Citation.Elements
                     string code = thisAggr.Code.ToUpper();
                     if ((code.Length > 1) && (code[0] == 'I'))
                         code = code.Substring(1);
-                    if ((possible_select_items.Contains(code)) && (!possibles.Contains(code)))
+                    if ((PossibleSelectItems.Contains(code)) && (!possibles.Contains(code)))
                         possibles.Add(code);
                 }
             }
@@ -199,12 +199,12 @@ namespace SobekCM.Library.Citation.Elements
         /// <param name="Bib"> Object into which to save this element's constant data </param>
         public override void Save_Constant_To_Bib(SobekCM_Item Bib)
         {
-            if ((default_codes.Count > 0 ) || ( default_values.Count > 0 ))
+            if ((DefaultCodes.Count > 0 ) || ( DefaultValues.Count > 0 ))
             {
-                if ((default_codes.Count > 0) && (default_codes[0].Length > 0))
-                    Bib.Bib_Info.Source.Code = default_codes[0];
-                if ((default_values.Count > 0) && (default_values[0].Length > 0))
-                    Bib.Bib_Info.Source.Statement = default_values[0];
+                if ((DefaultCodes.Count > 0) && (DefaultCodes[0].Length > 0))
+                    Bib.Bib_Info.Source.Code = DefaultCodes[0];
+                if ((DefaultValues.Count > 0) && (DefaultValues[0].Length > 0))
+                    Bib.Bib_Info.Source.Statement = DefaultValues[0];
             }
         }
     }

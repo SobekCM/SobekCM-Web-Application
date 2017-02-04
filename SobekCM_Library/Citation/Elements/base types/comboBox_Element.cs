@@ -6,7 +6,6 @@ using System.IO;
 using System.Linq;
 using System.Xml;
 using SobekCM.Core.ApplicationState;
-using SobekCM.Core.Configuration;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Users;
 
@@ -16,90 +15,85 @@ namespace SobekCM.Library.Citation.Elements
 {
 	/// <summary> Abstract base class for all elements which are made up of a single combo/select box </summary>
     /// <remarks> This class implements the <see cref="iElement"/> interface and extends the <see cref="abstract_Element"/> class. </remarks>
-	public abstract class comboBox_Element : abstract_Element
+	public abstract class ComboBox_Element : abstract_Element
 	{
 	    /// <summary> Protected field holds the default value(s) </summary>
-        protected List<string> default_values;
+        protected List<string> DefaultValues;
 
         /// <summary> Protected field holds all the possible, selectable values </summary>
-        protected List<string> items;
-
-        /// <summary> Protected field holds the onchange event text to add to the html </summary>
-        protected string onChange;
+        protected List<string> Items;
 
 	    /// <summary> Protected field holds the flag that tells if a value from the package which is not in the
 	    /// provided options should be discarded or permitted </summary>
-	    protected bool restrict_values;
+	    protected bool RestrictValues;
 
-	    /// <summary> Constructor for a new instance of the comboBox_Element class </summary>
+        /// <summary> Constructor for a new instance of the ComboBox_Element class </summary>
         /// <param name="Title"> Title for this element </param>
         /// <param name="Html_Element_Name"> Name for the html components and styles for this element </param>
-	    protected comboBox_Element(string Title, string Html_Element_Name)
+	    protected ComboBox_Element(string Title, string Html_Element_Name)
 		{
             // Set default title to blank           
             base.Title = Title;
             html_element_name = Html_Element_Name;
 
-            items = new List<string>();
-            default_values = new List<string>();
-
-            onChange = String.Empty;
+            Items = new List<string>();
+            DefaultValues = new List<string>();
 		}
 
         /// <summary> Adds a default value for this combo box based element </summary>
-        /// <param name="defaultValue"> New default value </param>
-        public void Add_Default_Value(string defaultValue)
+        /// <param name="DefaultValue"> New default value </param>
+        public void Add_Default_Value(string DefaultValue)
         {
-            default_values.Add(defaultValue);
+            DefaultValues.Add(DefaultValue);
         }
 
         /// <summary> Sets all of the possible, selectable values </summary>
-        /// <param name="values"> Array of possible, selectable values </param>
-        public void Set_Values(string[] values)
+        /// <param name="Values"> Array of possible, selectable values </param>
+        public void Set_Values(string[] Values)
         {
-            items.Clear();
-            items.AddRange(values);
+            Items.Clear();
+            Items.AddRange(Values);
         }
 
 		/// <summary> Add a new possible, selectable value to this combo box </summary>
-		/// <param name="newItem"> New possible, selectable value </param>
-		public void Add_Item( string newItem )
+		/// <param name="NewItem"> New possible, selectable value </param>
+		public void Add_Item( string NewItem )
 		{
-			if ( !items.Contains( newItem ))
+			if ( !Items.Contains( NewItem ))
 			{
-				items.Add( newItem );
+				Items.Add( NewItem );
 			}
 		}
 
         /// <summary> Method helps to render all single combo box based elements </summary>
         /// <param name="Output"> Output for the generated html for this element </param>
-        /// <param name="instance_value"> Value for the current digital resource to display </param>
+        /// <param name="InstanceValue"> Value for the current digital resource to display </param>
         /// <param name="Skin_Code"> Code for the current html skin </param>
         /// <param name="Current_User"> Current user, who's rights may impact the way an element is rendered </param>
         /// <param name="CurrentLanguage"> Current user-interface language </param>
         /// <param name="Translator"> Language support object which handles simple translational duties </param>
         /// <param name="Base_URL"> Base URL for the current request </param>
-        protected void render_helper(TextWriter Output, string instance_value, string Skin_Code, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL )
+        protected void render_helper(TextWriter Output, string InstanceValue, string Skin_Code, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL )
         {
-            render_helper(Output, instance_value, Skin_Code, Current_User, CurrentLanguage, Translator, Base_URL, false);
+            render_helper(Output, InstanceValue, Skin_Code, Current_User, CurrentLanguage, Translator, Base_URL, false);
         }
         
         /// <summary> Method helps to render all single combo box based elements </summary>
         /// <param name="Output"> Output for the generated html for this element </param>
-        /// <param name="instance_value"> Value for the current digital resource to display </param>
+        /// <param name="InstanceValue"> Value for the current digital resource to display </param>
         /// <param name="Skin_Code"> Code for the current html skin </param>
         /// <param name="Current_User"> Current user, who's rights may impact the way an element is rendered </param>
         /// <param name="CurrentLanguage"> Current user-interface language </param>
         /// <param name="Translator"> Language support object which handles simple translational duties </param>
         /// <param name="Base_URL"> Base URL for the current request </param>
-        /// <param name="initial_value"> Flag indicates if the value in the instance_value param is actually instructional text, and not a true value</param>
-        protected void render_helper(TextWriter Output, string instance_value, string Skin_Code, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL, bool initial_value)
+        /// <param name="InitialValue"> Flag indicates if the value in the instance_value param is actually instructional text, and not a true value</param>
+        protected void render_helper(TextWriter Output, string InstanceValue, string Skin_Code, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL, bool InitialValue)
         {
             string id_name = html_element_name.Replace("_", "");
 
-            if (( String.IsNullOrWhiteSpace(instance_value)) && (default_values.Count > 0))
+            if (( String.IsNullOrWhiteSpace(InstanceValue)) && (DefaultValues.Count > 0))
             {
-                instance_value = default_values[0];
+                InstanceValue = DefaultValues[0];
             }
 
             Output.WriteLine("  <!-- " + Title + " Element -->");
@@ -119,33 +113,29 @@ namespace SobekCM.Library.Citation.Elements
             Output.WriteLine("        <tr>");
             Output.WriteLine("          <td>");
             Output.WriteLine("            <div id=\"" + html_element_name + "_div\">");
-            if (onChange.Length > 0)
-            {
-                if (initial_value)
+
+
+                if (InitialValue)
                 {
-                    Output.WriteLine("              <select class=\"" + html_element_name + "_select_init\" name=\"" + id_name + "1\" id=\"" + id_name + "1\" onblur=\"javascript:selectbox_leave('" + id_name + "1', '" + html_element_name + "_select', '" + html_element_name + "_select_init')\" onChange=\"" + onChange + "\" >");
+                    Output.Write("              <select class=\"" + html_element_name + "_select_init\" name=\"" + id_name + "1\" id=\"" + id_name + "1\" onblur=\"javascript:selectbox_leave('" + id_name + "1', '" + html_element_name + "_select', '" + html_element_name + "_select_init')\" ");
+                    if (comboBoxEvents != null)
+                        comboBoxEvents.Add_Events_HTML(Output);
+                    Output.WriteLine(" >");
                 }
                 else
                 {
-                    Output.WriteLine("              <select class=\"" + html_element_name + "_select\" name=\"" + id_name + "1\" id=\"" + id_name + "1\" onblur=\"javascript:selectbox_leave('" + id_name + "1', '" + html_element_name + "_select', '" + html_element_name + "_select_init')\" onChange=\"" + onChange + "\" >");
+                    Output.Write("              <select class=\"" + html_element_name + "_select\" name=\"" + id_name + "1\" id=\"" + id_name + "1\" onblur=\"javascript:selectbox_leave('" + id_name + "1', '" + html_element_name + "_select', '" + html_element_name + "_select_init')\" ");
+                    if (comboBoxEvents != null)
+                        comboBoxEvents.Add_Events_HTML(Output);
+                    Output.WriteLine(" >");
                 }
-            }
-            else
-            {
-                if (initial_value)
-                {
-                    Output.WriteLine("              <select class=\"" + html_element_name + "_select_init\" name=\"" + id_name + "1\" id=\"" + id_name + "1\" onblur=\"javascript:selectbox_leave('" + id_name + "1', '" + html_element_name + "_select', '" + html_element_name + "_select_init')\" >");
-                }
-                else
-                {
-                    Output.WriteLine("              <select class=\"" + html_element_name + "_select\" name=\"" + id_name + "1\" id=\"" + id_name + "1\" onblur=\"javascript:selectbox_leave('" + id_name + "1', '" + html_element_name + "_select', '" + html_element_name + "_select_init')\" >");
-                }
-            }
+
+
 
             bool found_option = false;
-            foreach (string thisOption in items)
+            foreach (string thisOption in Items)
             {
-                if (thisOption == instance_value)
+                if (thisOption == InstanceValue)
                 {
                     Output.WriteLine("                <option selected=\"selected=\" value=\"" + thisOption + "\">" + thisOption + "</option>");
                     found_option = true;
@@ -155,9 +145,9 @@ namespace SobekCM.Library.Citation.Elements
                     Output.WriteLine("                <option value=\"" + thisOption + "\">" + thisOption + "</option>");
                 }
             }
-            if (( !String.IsNullOrWhiteSpace(instance_value)) && (!restrict_values) && (!found_option))
+            if (( !String.IsNullOrWhiteSpace(InstanceValue)) && (!RestrictValues) && (!found_option))
             {
-                Output.WriteLine("                <option selected=\"selected=\" value=\"" + instance_value + "\">" + instance_value + "</option>");
+                Output.WriteLine("                <option selected=\"selected=\" value=\"" + InstanceValue + "\">" + InstanceValue + "</option>");
             }
             Output.WriteLine("              </select>");
             Output.WriteLine("            </div>");
@@ -187,7 +177,7 @@ namespace SobekCM.Library.Citation.Elements
 	    /// <remarks> This reads the possible values for the combo box from a <i>options</i> subelement and the default value from a <i>value</i> subelement </remarks>
 	    protected override void Inner_Read_Data( XmlTextReader XMLReader )
 	    {
-	        default_values.Clear();
+	        DefaultValues.Clear();
 	        while ( XMLReader.Read() )
 	        {
 	            if (( XMLReader.NodeType == XmlNodeType.Element ) && (( XMLReader.Name.ToLower() == "value" ) || ( XMLReader.Name.ToLower() == "options" ))) 
@@ -195,19 +185,19 @@ namespace SobekCM.Library.Citation.Elements
 	                if ( XMLReader.Name.ToLower() == "value" )
 	                {
 	                    XMLReader.Read();
-	                    default_values.Add(XMLReader.Value.Trim());
+	                    DefaultValues.Add(XMLReader.Value.Trim());
 	                }
 	                else
 	                {
 	                    XMLReader.Read();
 	                    string options = XMLReader.Value.Trim();
-	                    items.Clear();
+	                    Items.Clear();
 	                    if ( options.Length > 0 )
 	                    {
 	                        string[] options_parsed = options.Split(",".ToCharArray());
-	                        foreach (string thisOption in options_parsed.Where(thisOption => !items.Contains(thisOption.Trim())))
+	                        foreach (string thisOption in options_parsed.Where(ThisOption => !Items.Contains(ThisOption.Trim())))
 	                        {
-	                            items.Add( thisOption.Trim() );
+	                            Items.Add( thisOption.Trim() );
 	                        }
 	                    }
 	                }
@@ -216,5 +206,31 @@ namespace SobekCM.Library.Citation.Elements
 	    }
 
 	    #endregion
+
+        #region Methods and properties exposing events for the HTML elements in this base type
+
+        private HtmlEventsHelper comboBoxEvents;
+
+        /// <summary> Access to the complete combo box events object </summary>
+        /// <remarks> Requesting this property will create a new object, if one does not already exist </remarks>
+        protected HtmlEventsHelper ComboBoxEvents
+        {
+            get { return comboBoxEvents ?? (comboBoxEvents = new HtmlEventsHelper()); }
+        }
+
+        /// <summary> Add some event text to an event on the primary combo box for the citation control </summary>
+        /// <param name="Event"> Type of the event to add text to </param>
+        /// <param name="EventText"> Text (html format) to add to the event, such as "getElementById('demo').innerHTML = Date()", or "myFunction();return false;", etc.. </param>
+        protected void Add_ComboBox_Event(HtmlEventsEnum Event, string EventText)
+        {
+            // If the events is null, create it
+            if (comboBoxEvents == null)
+                comboBoxEvents = new HtmlEventsHelper();
+
+            // Add this event
+            comboBoxEvents.Add_Event(Event, EventText);
+        }
+
+        #endregion
 	}
 }

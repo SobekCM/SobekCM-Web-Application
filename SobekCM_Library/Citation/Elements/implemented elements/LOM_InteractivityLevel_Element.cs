@@ -17,8 +17,8 @@ using SobekCM.Resource_Object.Metadata_Modules.LearningObjects;
 namespace SobekCM.Library.Citation.Elements
 {
     /// <summary> Element allows entry of the learning object metadata interactivity level field </summary>
-    /// <remarks> This class extends the <see cref="comboBox_Element"/> class. </remarks>
-    public class LOM_InteractivityLevel_Element : comboBox_Element
+    /// <remarks> This class extends the <see cref="ComboBox_Element"/> class. </remarks>
+    public class LOM_InteractivityLevel_Element : ComboBox_Element
     {
         private const string LEVEL1_TEXT = "very low";
         private const string LEVEL2_TEXT = "low";
@@ -32,13 +32,13 @@ namespace SobekCM.Library.Citation.Elements
         {
             Repeatable = false;
 
-            items.Clear();
-            items.Add(String.Empty);
-            items.Add(LEVEL1_TEXT);
-            items.Add(LEVEL2_TEXT);
-            items.Add(LEVEL3_TEXT);
-            items.Add(LEVEL4_TEXT);
-            items.Add(LEVEL5_TEXT);
+            Items.Clear();
+            Items.Add(String.Empty);
+            Items.Add(LEVEL1_TEXT);
+            Items.Add(LEVEL2_TEXT);
+            Items.Add(LEVEL3_TEXT);
+            Items.Add(LEVEL4_TEXT);
+            Items.Add(LEVEL5_TEXT);
         }
 
 

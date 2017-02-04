@@ -17,8 +17,8 @@ using SobekCM.Resource_Object.Bib_Info;
 namespace SobekCM.Library.Citation.Elements
 {
     /// <summary> Element allows simple entry of the FAST term subject keywords </summary>
-    /// <remarks> This class extends the <see cref="textBox_ComboBox_Element"/> class. </remarks>
-    public class FAST_Subject_Element: textBox_ComboBox_Element
+    /// <remarks> This class extends the <see cref="TextBox_ComboBox_Element"/> class. </remarks>
+    public class FAST_Subject_Element: TextBox_ComboBox_Element
     {
         /// <summary> Constructor for a new instance of the FAST_Subject_Element class </summary>
         public FAST_Subject_Element()

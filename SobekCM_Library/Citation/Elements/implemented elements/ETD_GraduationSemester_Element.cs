@@ -16,8 +16,8 @@ using SobekCM.Resource_Object.Metadata_Modules;
 namespace SobekCM.Library.Citation.Elements
 {
 	/// <summary> Element allows entry of the ETD graduation semester ( i.e., 'Fall 2012') for an item </summary>
-	/// <remarks> This class extends the <see cref="simpleTextBox_Element"/> class. </remarks>
-	public class ETD_GraduationSemester_Element : simpleTextBox_Element
+	/// <remarks> This class extends the <see cref="SimpleTextBox_Element"/> class. </remarks>
+	public class ETD_GraduationSemester_Element : SimpleTextBox_Element
 	{
 		/// <summary> Constructor for a new instance of the ETD_GraduationSemester_Element class </summary>
 		public ETD_GraduationSemester_Element()

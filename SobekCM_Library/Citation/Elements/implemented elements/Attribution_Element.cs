@@ -15,8 +15,8 @@ using SobekCM.Resource_Object.Bib_Info;
 namespace SobekCM.Library.Citation.Elements
 {
     /// <summary> Element allows simple entry of the attribution for an item </summary>
-    /// <remarks> This class extends the <see cref="simpleTextBox_Element"/> class. </remarks>
-    public class Attribution_Element : simpleTextBox_Element
+    /// <remarks> This class extends the <see cref="SimpleTextBox_Element"/> class. </remarks>
+    public class Attribution_Element : SimpleTextBox_Element
     {
         /// <summary> Constructor for a new instance of the Attribution_Element class </summary>
         public Attribution_Element()
@@ -106,7 +106,7 @@ namespace SobekCM.Library.Citation.Elements
         /// <param name="Bib"> Object into which to save this element's constant data </param>
         public override void Save_Constant_To_Bib(SobekCM_Item Bib)
         {
-            if (default_values.Count > 0)
+            if (DefaultValues.Count > 0)
             {
                 // Look for an existing attribution statement
                 if (Bib.Bib_Info.Notes_Count > 0)
@@ -115,14 +115,14 @@ namespace SobekCM.Library.Citation.Elements
                     {
                         if (thisNote.Note_Type == Note_Type_Enum.Funding)
                         {
-                            thisNote.Note = default_values[0];
+                            thisNote.Note = DefaultValues[0];
                             return;
                         }
                     }
                 }
 
                 // None was found, so just add it
-                Bib.Bib_Info.Add_Note(default_values[0], Note_Type_Enum.Funding);
+                Bib.Bib_Info.Add_Note(DefaultValues[0], Note_Type_Enum.Funding);
             }
         }
     }

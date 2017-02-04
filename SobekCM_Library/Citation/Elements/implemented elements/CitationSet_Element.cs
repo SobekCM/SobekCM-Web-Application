@@ -12,24 +12,24 @@ using SobekCM.Resource_Object;
 namespace SobekCM.Library.Citation.Elements
 {
     /// <summary> Element allows user to select the citation set that this item should appear under </summary>
-    /// <remarks> This class extends the <see cref="comboBox_Element"/> class. </remarks>
-    public class CitationSet_Element : comboBox_Element
+    /// <remarks> This class extends the <see cref="ComboBox_Element"/> class. </remarks>
+    public class CitationSet_Element : ComboBox_Element
     {
         /// <summary> Constructor for a new instance of the CitationSet_Element class </summary>
         public CitationSet_Element() : base("Citation Set", "citation")
         {
             Repeatable = false;
 
-            items.Add("");
+            Items.Add("");
 
             string defaultSet = UI_ApplicationCache_Gateway.Configuration.UI.CitationViewer.DefaultCitationSet;
             if (!String.IsNullOrEmpty(defaultSet))
-                items.Add(defaultSet);
+                Items.Add(defaultSet);
 
             foreach (CitationSet citationSet in UI_ApplicationCache_Gateway.Configuration.UI.CitationViewer.CitationSets)
             {
                 if (( String.IsNullOrEmpty(defaultSet)) || ( String.Compare(defaultSet, citationSet.Name, StringComparison.OrdinalIgnoreCase ) != 0 ))
-                    items.Add(citationSet.Name);
+                    Items.Add(citationSet.Name);
             }
         }
 

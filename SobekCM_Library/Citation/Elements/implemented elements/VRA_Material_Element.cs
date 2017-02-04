@@ -18,13 +18,13 @@ using SobekCM.Resource_Object.Metadata_Modules.VRACore;
 namespace SobekCM.Library.Citation.Elements
 {
     /// <summary> Element allows entry of the VRACore material field </summary>
-    /// <remarks> This class extends the <see cref="textBox_TextBox_Element"/> class. </remarks>
-    public class VRA_Material_Element : textBox_TextBox_Element
+    /// <remarks> This class extends the <see cref="TextBox_TextBox_Element"/> class. </remarks>
+    public class VRA_Material_Element : TextBox_TextBox_Element
     {
         /// <summary> Constructor for a new instance of the VRA_Material_Element class </summary>
         public VRA_Material_Element() : base("Materials:", "vra_materials")
         {
-            second_label = "Element described";
+            SecondLabel = "Element described";
             Repeatable = true;
         }
 

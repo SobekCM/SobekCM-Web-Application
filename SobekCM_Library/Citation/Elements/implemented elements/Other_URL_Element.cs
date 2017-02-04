@@ -15,8 +15,8 @@ using SobekCM.Resource_Object;
 namespace SobekCM.Library.Citation.Elements
 {
     /// <summary> Element displays a form to allow for simple entry of a related URL for an item </summary>
-    /// <remarks> This class extends the <see cref="simpleTextBox_Element"/> class. </remarks>
-    public class Other_URL_Element : simpleTextBox_Element
+    /// <remarks> This class extends the <see cref="SimpleTextBox_Element"/> class. </remarks>
+    public class Other_URL_Element : SimpleTextBox_Element
     {
         /// <summary> Constructor for a new instance of the Identifier_Fixed_Type_Element class </summary>
         public Other_URL_Element()
@@ -63,19 +63,19 @@ namespace SobekCM.Library.Citation.Elements
                 }
             }
 
-            if ((label_from_template_file.Length > 0) && (fixed_type_from_template_file.Length == 0))
+            if ((LabelFromTemplateFile.Length > 0) && (FixedTypeFromTemplateFile.Length == 0))
             {
-                fixed_type_from_template_file = label_from_template_file;
+                FixedTypeFromTemplateFile = LabelFromTemplateFile;
             }
-            if ((label_from_template_file.Length == 0) && (fixed_type_from_template_file.Length > 0))
+            if ((LabelFromTemplateFile.Length == 0) && (FixedTypeFromTemplateFile.Length > 0))
             {
-                label_from_template_file = fixed_type_from_template_file;
+                LabelFromTemplateFile = FixedTypeFromTemplateFile;
             }
 
-            if (label_from_template_file.Length > 0)
-                Title = label_from_template_file;
+            if (LabelFromTemplateFile.Length > 0)
+                Title = LabelFromTemplateFile;
 
-            render_helper(Output, Bib.Bib_Info.Location.Other_URL, Skin_Code, Current_User, CurrentLanguage, Translator, Base_URL, "fixed" + fixed_type_from_template_file.Replace(" ", "_").Replace("'","").ToLower() + "other_url");
+            render_helper(Output, Bib.Bib_Info.Location.Other_URL, Skin_Code, Current_User, CurrentLanguage, Translator, Base_URL, "fixed" + FixedTypeFromTemplateFile.Replace(" ", "_").Replace("'","").ToLower() + "other_url");
         }
 
         /// <summary> Prepares the bib object for the save, by clearing any existing data in this element's related field(s) </summary>
@@ -91,7 +91,7 @@ namespace SobekCM.Library.Citation.Elements
         /// <param name="Bib"> Object into which to save the user's data, entered into the html rendered by this element </param>
         public override void Save_To_Bib(SobekCM_Item Bib)
         {
-            string form_id = "fixed" + label_from_template_file.Replace(" ", "_").Replace("'", "").ToLower() + "other_url1";
+            string form_id = "fixed" + LabelFromTemplateFile.Replace(" ", "_").Replace("'", "").ToLower() + "other_url1";
             Bib.Bib_Info.Location.Other_URL = HttpContext.Current.Request.Form[form_id];
             if (Bib.Bib_Info.Location.Other_URL.Length == 0)
             {
@@ -100,7 +100,7 @@ namespace SobekCM.Library.Citation.Elements
             }
             else
             {
-                Bib.Bib_Info.Location.Other_URL_Display_Label = fixed_type_from_template_file;
+                Bib.Bib_Info.Location.Other_URL_Display_Label = FixedTypeFromTemplateFile;
                 Bib.Bib_Info.Location.Other_URL_Note = String.Empty;
             }
         }

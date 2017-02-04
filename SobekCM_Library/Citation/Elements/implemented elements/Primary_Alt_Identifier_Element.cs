@@ -15,13 +15,13 @@ using SobekCM.Resource_Object;
 namespace SobekCM.Library.Citation.Elements
 {
     /// <summary> Element allows entry of the primary alternate identifier ( identifier and identifier type) associated with an item group </summary>
-    /// <remarks> This class extends the <see cref="textBox_TextBox_Element"/> class. </remarks>
-    public class Primary_Alt_Identifier_Element : textBox_TextBox_Element
+    /// <remarks> This class extends the <see cref="TextBox_TextBox_Element"/> class. </remarks>
+    public class Primary_Alt_Identifier_Element : TextBox_TextBox_Element
     {
         /// <summary> Constructor for a new instance of the Primary_Alt_Identifier_Element class </summary>
         public Primary_Alt_Identifier_Element() : base("Primary Identifier", "primid")
         {
-            second_label = "Identifier Type";
+            SecondLabel = "Identifier Type";
             Repeatable = false;
         }
 

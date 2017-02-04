@@ -17,8 +17,8 @@ using SobekCM.Resource_Object.Metadata_Modules.LearningObjects;
 namespace SobekCM.Library.Citation.Elements
 {
     /// <summary> Element allows entry of the learning object metadata aggregation level field </summary>
-    /// <remarks> This class extends the <see cref="comboBox_Element"/> class. </remarks>
-    public class LOM_AggregationLevel_Element : comboBox_Element
+    /// <remarks> This class extends the <see cref="ComboBox_Element"/> class. </remarks>
+    public class LOM_AggregationLevel_Element : ComboBox_Element
     {
         private const string level1_text = "level 1 - a single, atomic object";
         private const string level2_text = "level 2 - a lesson plan";
@@ -30,12 +30,12 @@ namespace SobekCM.Library.Citation.Elements
         {
             Repeatable = false;
 
-            items.Clear();
-            items.Add(String.Empty);
-            items.Add(level1_text);
-            items.Add(level2_text);
-            items.Add(level3_text);
-            items.Add(level4_text);
+            Items.Clear();
+            Items.Add(String.Empty);
+            Items.Add(level1_text);
+            Items.Add(level2_text);
+            Items.Add(level3_text);
+            Items.Add(level4_text);
         }
 
 

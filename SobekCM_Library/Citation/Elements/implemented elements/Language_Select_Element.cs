@@ -16,16 +16,16 @@ using SobekCM.Resource_Object;
 namespace SobekCM.Library.Citation.Elements
 {
     /// <summary> Element allows users to select from a restricted list of languages </summary>
-    /// <remarks> This class extends the <see cref="multipleComboBox_Element"/> class. </remarks>
-    public class Language_Select_Element : multipleComboBox_Element
+    /// <remarks> This class extends the <see cref="MultipleComboBox_Element"/> class. </remarks>
+    public class Language_Select_Element : MultipleComboBox_Element
     {
         /// <summary> Constructor for a new instance of the Language_Select_Element class </summary>
         public Language_Select_Element() : base("Language", "language")
         {
             Repeatable = true;
 
-            boxes_per_line = 3;
-            max_boxes = 3;
+            BoxesPerLine = 3;
+            MaxBoxes = 3;
         }
 
            /// <summary> Renders the HTML for this element </summary>

@@ -18,23 +18,23 @@ using SobekCM.Resource_Object.Bib_Info;
 namespace SobekCM.Library.Citation.Elements
 {
     /// <summary> Element allows entry of the physical container for an item (as if in an EAD)</summary>
-    /// <remarks> This class extends the <see cref="comboBox_TextBox_Element"/> class. </remarks>
-    public class Container_Element : comboBox_TextBox_Element
+    /// <remarks> This class extends the <see cref="ComboBox_TextBox_Element"/> class. </remarks>
+    public class Container_Element : ComboBox_TextBox_Element
     {
         /// <summary> Constructor for a new instance of the Container_Element class </summary>
         public Container_Element()
             : base("Physical Container", "container")
         {
             Repeatable = true;
-            possible_select_items.Clear();
-            possible_select_items.Add(String.Empty);
-            possible_select_items.Add("Folder");
-            possible_select_items.Add("Divider");
-            possible_select_items.Add("Box");
-            possible_select_items.Add("Shelf");
-            possible_select_items.Add("Room");
+            PossibleSelectItems.Clear();
+            PossibleSelectItems.Add(String.Empty);
+            PossibleSelectItems.Add("Folder");
+            PossibleSelectItems.Add("Divider");
+            PossibleSelectItems.Add("Box");
+            PossibleSelectItems.Add("Shelf");
+            PossibleSelectItems.Add("Room");
 
-            second_label = "Label";
+            SecondLabel = "Label";
 
         }
 

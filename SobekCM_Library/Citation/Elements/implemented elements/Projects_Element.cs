@@ -14,18 +14,18 @@ using SobekCM.Resource_Object;
 namespace SobekCM.Library.Citation.Elements.implemented_elements
 {
     /// <summary> Element allows entry of the aggregationPermissions for an item to be linked </summary>
-    /// <remarks> This class extends the <see cref="multipleComboBox_Element"/> class. </remarks>
-    public class Projects_Element : multipleComboBox_Element
+    /// <remarks> This class extends the <see cref="MultipleComboBox_Element"/> class. </remarks>
+    public class Projects_Element : MultipleComboBox_Element
     {
         /// <summary> Constructor for a new instance of the Projects_Element class </summary>
         public Projects_Element()
             : base("Projects", "collection")
         {
             Repeatable = true;
-            view_choices_string = String.Empty;
+            ViewChoicesString = String.Empty;
 
-            boxes_per_line = 3;
-            max_boxes = 9;
+            BoxesPerLine = 3;
+            MaxBoxes = 9;
         }
 
         /// <summary> Sets the base url for the current request </summary>

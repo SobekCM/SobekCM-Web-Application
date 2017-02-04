@@ -19,8 +19,8 @@ using SobekCM.Resource_Object.Bib_Info;
 namespace SobekCM.Library.Citation.Elements
 {
     /// <summary> Element allows simple entry of the publication place(s) for an item </summary>
-    /// <remarks> This class extends the <see cref="simpleTextBox_Element"/> class. </remarks>
-    class Publication_Place_Element : simpleTextBox_Element
+    /// <remarks> This class extends the <see cref="SimpleTextBox_Element"/> class. </remarks>
+    class Publication_Place_Element : SimpleTextBox_Element
     {
         /// <summary> Constructor for a new instance of the Publication_Place_Element class </summary>
         public Publication_Place_Element()

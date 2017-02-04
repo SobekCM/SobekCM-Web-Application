@@ -15,15 +15,15 @@ using SobekCM.Resource_Object;
 namespace SobekCM.Library.Citation.Elements
 {
     /// <summary> Element allows entry of the date the material was received and any associated notes </summary>
-    /// <remarks> This class extends the <see cref="textBox_TextBox_Element"/> class. </remarks>
-    public class Material_Received_Date : textBox_TextBox_Element
+    /// <remarks> This class extends the <see cref="TextBox_TextBox_Element"/> class. </remarks>
+    public class Material_Received_Date : TextBox_TextBox_Element
     {
         /// <summary> Constructor for a new instance of the Material_Received_Date class </summary>
         public Material_Received_Date()
             : base("Material Recd:", "material_recd")
         {
-            first_label = "Date";
-            second_label = "Notes";
+            FirstLabel = "Date";
+            SecondLabel = "Notes";
             Repeatable = false;
         }
 

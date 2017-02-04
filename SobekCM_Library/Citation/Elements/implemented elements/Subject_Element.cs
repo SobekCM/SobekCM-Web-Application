@@ -18,8 +18,8 @@ using SobekCM.Resource_Object.Bib_Info;
 namespace SobekCM.Library.Citation.Elements
 {
     /// <summary> Element allows simple entry of subject terms for an item </summary>
-    /// <remarks> This class extends the <see cref="simpleTextBox_Element"/> class. </remarks>
-    public class Subject_Element : simpleTextBox_Element
+    /// <remarks> This class extends the <see cref="SimpleTextBox_Element"/> class. </remarks>
+    public class Subject_Element : SimpleTextBox_Element
     {
         /// <summary> Constructor for a new instance of the Subject_Element class </summary>
         public Subject_Element()

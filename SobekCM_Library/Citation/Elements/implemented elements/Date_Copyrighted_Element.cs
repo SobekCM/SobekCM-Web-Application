@@ -14,8 +14,8 @@ using SobekCM.Resource_Object;
 namespace SobekCM.Library.Citation.Elements
 {
     /// <summary> Element allows entry of the date copyrighted for an item </summary>
-    /// <remarks> This class extends the <see cref="simpleTextBox_Element"/> class. </remarks>
-    public class Date_Copyrighted_Element : simpleTextBox_Element
+    /// <remarks> This class extends the <see cref="SimpleTextBox_Element"/> class. </remarks>
+    public class Date_Copyrighted_Element : SimpleTextBox_Element
     {
         /// <summary> Constructor for a new instance of the Date_Copyrighted_Element class </summary>
         public Date_Copyrighted_Element()

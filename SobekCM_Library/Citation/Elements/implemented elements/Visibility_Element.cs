@@ -15,17 +15,17 @@ using SobekCM.Resource_Object;
 namespace SobekCM.Library.Citation.Elements
 {
     /// <summary> Element allows simple entry of the visibility of this item ( i.e., PRIVATE, PUBLIC, RESTRICTED ) </summary>
-    /// <remarks> This class extends the <see cref="comboBox_Element"/> class. </remarks>
-    public class Visibility_Element : comboBox_Element
+    /// <remarks> This class extends the <see cref="ComboBox_Element"/> class. </remarks>
+    public class Visibility_Element : ComboBox_Element
     {
         /// <summary> Constructor for a new instance of the Visibility_Element class </summary>
         public Visibility_Element() : base("Visibility", "visibility")
         {
             Repeatable = false;
 
-            items.Add("PRIVATE");
-            items.Add("IP RESTRICTED");
-            items.Add("PUBLIC");
+            Items.Add("PRIVATE");
+            Items.Add("IP RESTRICTED");
+            Items.Add("PUBLIC");
         }
 
         /// <summary> Renders the HTML for this element </summary>

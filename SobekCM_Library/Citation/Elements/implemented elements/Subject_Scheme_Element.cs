@@ -18,14 +18,14 @@ using SobekCM.Resource_Object.Bib_Info;
 namespace SobekCM.Library.Citation.Elements
 {
     /// <summary> Element allows entry of subject terms and a subject scheme for an item </summary>
-    /// <remarks> This class extends the <see cref="textBox_TextBox_Element"/> class. </remarks>
-    public class Subject_Scheme_Element : textBox_TextBox_Element
+    /// <remarks> This class extends the <see cref="TextBox_TextBox_Element"/> class. </remarks>
+    public class Subject_Scheme_Element : TextBox_TextBox_Element
     {
         /// <summary> Constructor for a new instance of the Subject_Scheme_Element class </summary>
         public Subject_Scheme_Element()
             : base("Subject Keywords:", "subject_scheme")
         {
-            second_label = "Scheme";
+            SecondLabel = "Scheme";
             Repeatable = true;
 	        help_page = "subject";
         }

@@ -17,8 +17,8 @@ using SobekCM.Resource_Object.Bib_Info;
 namespace SobekCM.Library.Citation.Elements
 {
     /// <summary> Element allows simple entry of the creator(s) name with a fixed role, which appears as the title </summary>
-    /// <remarks> This class extends the <see cref="simpleTextBox_Element"/> class. </remarks>
-    public class Creator_Fixed_Role_Element : simpleTextBox_Element
+    /// <remarks> This class extends the <see cref="SimpleTextBox_Element"/> class. </remarks>
+    public class Creator_Fixed_Role_Element : SimpleTextBox_Element
     {
         /// <summary> Constructor for a new instance of the Creator_Fixed_Role_Element class </summary>
         public Creator_Fixed_Role_Element()
@@ -66,13 +66,13 @@ namespace SobekCM.Library.Citation.Elements
                 }
             }
 
-            if (( label_from_template_file.Length > 0 ) && ( fixed_type_from_template_file.Length == 0 ))
+            if (( LabelFromTemplateFile.Length > 0 ) && ( FixedTypeFromTemplateFile.Length == 0 ))
             {
-                fixed_type_from_template_file = label_from_template_file;
+                FixedTypeFromTemplateFile = LabelFromTemplateFile;
             }
-            if ((label_from_template_file.Length == 0) && (fixed_type_from_template_file.Length > 0))
+            if ((LabelFromTemplateFile.Length == 0) && (FixedTypeFromTemplateFile.Length > 0))
             {
-                label_from_template_file = fixed_type_from_template_file;
+                LabelFromTemplateFile = FixedTypeFromTemplateFile;
             }
 
                 List<string> instanceValues = new List<string>();
@@ -81,7 +81,7 @@ namespace SobekCM.Library.Citation.Elements
                     string main_name_as_string = Bib.Bib_Info.Main_Entity_Name.ToString(false);
                     if ((main_name_as_string != "unknown") && (main_name_as_string.Length > 0))
                     {
-                        if (Bib.Bib_Info.Main_Entity_Name.Roles.Any(thisRole => thisRole.Role.ToUpper() == label_from_template_file.ToUpper()))
+                        if (Bib.Bib_Info.Main_Entity_Name.Roles.Any(thisRole => thisRole.Role.ToUpper() == LabelFromTemplateFile.ToUpper()))
                         {
                             instanceValues.Add(main_name_as_string);
                         }
@@ -89,16 +89,16 @@ namespace SobekCM.Library.Citation.Elements
                 }
                 if (Bib.Bib_Info.Names_Count > 0)
                 {
-                    instanceValues.AddRange(from thisName in Bib.Bib_Info.Names let name_as_string = thisName.ToString(false) where (name_as_string != "unknown") && (name_as_string.Length > 0) where thisName.Roles.Any(thisRole => thisRole.Role.ToUpper() == label_from_template_file.ToUpper()) select name_as_string);
+                    instanceValues.AddRange(from thisName in Bib.Bib_Info.Names let name_as_string = thisName.ToString(false) where (name_as_string != "unknown") && (name_as_string.Length > 0) where thisName.Roles.Any(thisRole => thisRole.Role.ToUpper() == LabelFromTemplateFile.ToUpper()) select name_as_string);
                 }
 
-                Title = label_from_template_file;
-                if (label_from_template_file.Length == 0)
+                Title = LabelFromTemplateFile;
+                if (LabelFromTemplateFile.Length == 0)
                     Title = "MISSING LABEL!";
 
 
 
-                render_helper(Output, instanceValues, Skin_Code, Current_User, CurrentLanguage, Translator, Base_URL, fixed_type_from_template_file.Replace(" ", "").Replace("_", "").ToLower() + "fixedcreator");
+                render_helper(Output, instanceValues, Skin_Code, Current_User, CurrentLanguage, Translator, Base_URL, FixedTypeFromTemplateFile.Replace(" ", "").Replace("_", "").ToLower() + "fixedcreator");
         }
 
         /// <summary> Prepares the bib object for the save, by clearing any existing data in this element's related field(s) </summary>
@@ -113,7 +113,7 @@ namespace SobekCM.Library.Citation.Elements
                 string main_name_as_string = Bib.Bib_Info.Main_Entity_Name.ToString();
                 if ((main_name_as_string != "unknown") && (main_name_as_string.Length > 0))
                 {
-                    if (Bib.Bib_Info.Main_Entity_Name.Roles.Any(thisRole => thisRole.Role.ToUpper() == fixed_type_from_template_file.ToUpper()))
+                    if (Bib.Bib_Info.Main_Entity_Name.Roles.Any(thisRole => thisRole.Role.ToUpper() == FixedTypeFromTemplateFile.ToUpper()))
                     {
                         Bib.Bib_Info.Main_Entity_Name.Clear();
                     }
@@ -122,7 +122,7 @@ namespace SobekCM.Library.Citation.Elements
 
             if (Bib.Bib_Info.Names_Count > 0)
             {
-                List<Name_Info> deleteNames = (from thisName in Bib.Bib_Info.Names let name_as_string = thisName.ToString() where (name_as_string != "unknown") && (name_as_string.Length > 0) where thisName.Roles.Any(thisRole => thisRole.Role.ToUpper() == fixed_type_from_template_file.ToUpper()) select thisName).ToList();
+                List<Name_Info> deleteNames = (from thisName in Bib.Bib_Info.Names let name_as_string = thisName.ToString() where (name_as_string != "unknown") && (name_as_string.Length > 0) where thisName.Roles.Any(thisRole => thisRole.Role.ToUpper() == FixedTypeFromTemplateFile.ToUpper()) select thisName).ToList();
 
                 foreach (Name_Info thisName in deleteNames)
                 {
@@ -135,13 +135,13 @@ namespace SobekCM.Library.Citation.Elements
         /// <param name="Bib"> Object into which to save the user's data, entered into the html rendered by this element </param>
         public override void Save_To_Bib(SobekCM_Item Bib)
         {
-            string special_id = label_from_template_file.Replace(" ", "").Replace("_","").ToLower() + "fixedcreator";
+            string special_id = LabelFromTemplateFile.Replace(" ", "").Replace("_","").ToLower() + "fixedcreator";
             string[] getKeys = HttpContext.Current.Request.Form.AllKeys;
             foreach (string thisKey in getKeys)
             {
                 if (thisKey.IndexOf(special_id) == 0)
                 {
-                    Bib.Bib_Info.Add_Named_Entity(new Name_Info(HttpContext.Current.Request.Form[thisKey], fixed_type_from_template_file));
+                    Bib.Bib_Info.Add_Named_Entity(new Name_Info(HttpContext.Current.Request.Form[thisKey], FixedTypeFromTemplateFile));
                 }
             }
         }

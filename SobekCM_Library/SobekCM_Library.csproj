@@ -124,7 +124,7 @@
     <Compile Include="AggregationViewer\Viewers\Tiles_Home_AggregationViewer.cs" />
     <Compile Include="AggregationViewer\Viewers\User_Permissions_AggregationViewer.cs" />
     <Compile Include="AggregationViewer\Viewers\Work_History_AggregationViewer.cs" />
-    <Compile Include="Citation\Elements\base types\checkBox_Element.cs" />
+    <Compile Include="Citation\Elements\base types\CheckBox_Element.cs" />
     <Compile Include="Citation\Elements\HtmlEventsHelper.cs" />
     <Compile Include="Citation\Elements\implemented elements\Additional_Work_Needed_Element.cs" />
     <Compile Include="Citation\Elements\implemented elements\Born_Digital_Element.cs" />
@@ -396,7 +396,7 @@
     <Compile Include="Citation\Elements\implemented elements\Other_URL_Element.cs" />
     <Compile Include="Citation\Elements\nonstandard elements\Abstract_Complex_Element.cs" />
     <Compile Include="Citation\Elements\abstract_Element.cs" />
-    <Compile Include="Citation\Elements\base types\multipleComboBox_Element.cs" />
+    <Compile Include="Citation\Elements\base types\MultipleComboBox_Element.cs" />
     <Compile Include="Citation\Elements\implemented elements\Attribution_Element.cs" />
     <Compile Include="Citation\Elements\implemented elements\Coordinates_Point_Element.cs" />
     <Compile Include="Citation\Elements\implemented elements\Creator_Complex_Element.cs" />
@@ -404,11 +404,11 @@
     <Compile Include="Citation\Elements\implemented elements\Encoding_Level_Element.cs" />
     <Compile Include="Citation\Elements\implemented elements\Aggregations_Element.cs" />
     <Compile Include="Citation\Elements\implemented elements\Abstract_Summary_Element.cs" />
-    <Compile Include="Citation\Elements\base types\comboBox_Element.cs" />
-    <Compile Include="Citation\Elements\base types\comboBox_TextBox_Element.cs" />
-    <Compile Include="Citation\Elements\base types\multipleTextBox_Element.cs" />
-    <Compile Include="Citation\Elements\base types\simpleTextBox_Element.cs" />
-    <Compile Include="Citation\Elements\base types\textBox_TextBox_Element.cs" />
+    <Compile Include="Citation\Elements\base types\ComboBox_Element.cs" />
+    <Compile Include="Citation\Elements\base types\ComboBox_TextBox_Element.cs" />
+    <Compile Include="Citation\Elements\base types\MultipleTextBox_Element.cs" />
+    <Compile Include="Citation\Elements\base types\SimpleTextBox_Element.cs" />
+    <Compile Include="Citation\Elements\base types\TextBox_TextBox_Element.cs" />
     <Compile Include="Citation\Elements\implemented elements\BibID_Element.cs" />
     <Compile Include="Citation\Elements\implemented elements\Creator_Notes_Element.cs" />
     <Compile Include="Citation\Elements\implemented elements\Genre_Element.cs" />
@@ -420,8 +420,8 @@
     <Compile Include="Citation\Elements\implemented elements\Subject_Element.cs" />
     <Compile Include="Citation\Elements\implemented elements\Subject_Scheme_Element.cs" />
     <Compile Include="Citation\Elements\implemented elements\Temporal_Coverage_Element.cs" />
-    <Compile Include="Citation\Elements\base types\textArea_Element.cs" />
-    <Compile Include="Citation\Elements\base types\textBox_ComboBox_Element.cs" />
+    <Compile Include="Citation\Elements\base types\TextArea_Element.cs" />
+    <Compile Include="Citation\Elements\base types\TextBox_ComboBox_Element.cs" />
     <Compile Include="Citation\Elements\implemented elements\Creator_Element.cs" />
     <Compile Include="Citation\Elements\implemented elements\Date_Copyrighted_Element.cs" />
     <Compile Include="Citation\Elements\implemented elements\Date_Element.cs" />

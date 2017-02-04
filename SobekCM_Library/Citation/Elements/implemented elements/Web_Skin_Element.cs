@@ -16,8 +16,8 @@ using SobekCM.Resource_Object;
 namespace SobekCM.Library.Citation.Elements
 {
     /// <summary> Element allows entry of the html web skins for an item </summary>
-    /// <remarks> This class extends the <see cref="multipleTextBox_Element"/> class. </remarks>
-    public class Web_Skin_Element : multipleTextBox_Element
+    /// <remarks> This class extends the <see cref="MultipleTextBox_Element"/> class. </remarks>
+    public class Web_Skin_Element : MultipleTextBox_Element
     {
         /// <summary> Constructor for a new instance of the Web_Skin_Element class </summary>
         public Web_Skin_Element()
@@ -25,8 +25,8 @@ namespace SobekCM.Library.Citation.Elements
         {
             Repeatable = true;
 
-            max_boxes = 10;
-            boxes_per_line = 5;
+            MaxBoxes = 10;
+            BoxesPerLine = 5;
         }
 
 

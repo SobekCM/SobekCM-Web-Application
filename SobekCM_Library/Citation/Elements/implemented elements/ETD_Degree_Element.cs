@@ -16,8 +16,8 @@ using SobekCM.Resource_Object.Metadata_Modules;
 namespace SobekCM.Library.Citation.Elements
 {
 	/// <summary> Element allows entry of the ETD degree metadata for an item </summary>
-	/// <remarks> This class extends the <see cref="simpleTextBox_Element"/> class. </remarks>
-	public class ETD_Degree_Element : simpleTextBox_Element
+	/// <remarks> This class extends the <see cref="SimpleTextBox_Element"/> class. </remarks>
+	public class ETD_Degree_Element : SimpleTextBox_Element
 	{
 		/// <summary> Constructor for a new instance of the ETD_Degree_Element class </summary>
 		public ETD_Degree_Element()

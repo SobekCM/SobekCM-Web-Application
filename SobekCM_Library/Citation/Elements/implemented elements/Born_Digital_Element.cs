@@ -14,14 +14,14 @@ using SobekCM.Resource_Object;
 namespace SobekCM.Library.Citation.Elements
 {
     /// <summary> Element allows entry of the flag that indicates an item is born digital</summary>
-    /// <remarks> This class extends the <see cref="checkBox_Element"/> class. </remarks>
-    public class Born_Digital_Element : checkBox_Element
+    /// <remarks> This class extends the <see cref="CheckBox_Element"/> class. </remarks>
+    public class Born_Digital_Element : CheckBox_Element
     {
         /// <summary> Constructor for a new instance of the Born_Digital_Element class  </summary>
         public Born_Digital_Element()
             : base("Born Digital", "bornDigital", "Item is born digital")
         {
-            default_value = false;
+            DefaultValue = false;
         }
 
         /// <summary> Renders the HTML for this element </summary>

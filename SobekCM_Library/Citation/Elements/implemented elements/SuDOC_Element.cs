@@ -18,8 +18,8 @@ using SobekCM.Resource_Object.Bib_Info;
 namespace SobekCM.Library.Citation.Elements
 {
 	/// <summary> Element allows entry of the Supervisor of Documents Classification Number </summary>
-	/// <remarks> This class extends the <see cref="simpleTextBox_Element"/> class. </remarks>
-	public class SuDOC_Element : simpleTextBox_Element
+	/// <remarks> This class extends the <see cref="SimpleTextBox_Element"/> class. </remarks>
+	public class SuDOC_Element : SimpleTextBox_Element
 	{
 		/// <summary> Constructor for a new instance of the SuDOC_Element class </summary>
 		public SuDOC_Element() : base("SuDoc Number", "sudoc")

@@ -14,14 +14,14 @@ using SobekCM.Resource_Object;
 namespace SobekCM.Library.Citation.Elements
 {
     /// <summary> Element allows entry of the flag that indicates if an item should be reprocessed by the builder </summary>
-    /// <remarks> This class extends the <see cref="checkBox_Element"/> class. </remarks>
-    public class Additional_Work_Needed_Element : checkBox_Element
+    /// <remarks> This class extends the <see cref="CheckBox_Element"/> class. </remarks>
+    public class Additional_Work_Needed_Element : CheckBox_Element
     {
         /// <summary> Constructor for a new instance of the Additional_Work_Needed_Element class  </summary>
         public Additional_Work_Needed_Element()
             : base("AdditionalWorkNeeded", "additionalWorkNeeded", "Reprocess through the builder")
         {
-            default_value = false;
+            DefaultValue = false;
         }
 
         /// <summary> Renders the HTML for this element </summary>

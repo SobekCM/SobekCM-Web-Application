@@ -1404,8 +1404,28 @@ namespace SobekCM.Library.AdminViewer
                         Output.WriteLine(indent + "</optgroup>");
 
 				    }
-				    else
-				    {
+                    else if (Value.Options[0] == "{STATIC_SOURCE_CODES}")
+                    {
+                        foreach (string thisValue in UI_ApplicationCache_Gateway.Configuration.UI.StaticResources.Static_Resource_Codes)
+                        {
+                            if (String.Compare(thisValue, setting_value, StringComparison.OrdinalIgnoreCase) == 0)
+                            {
+                                option_found = true;
+                                Output.WriteLine("                      <option selected=\"selected\">" + setting_value + "</option>");
+                            }
+                            else
+                            {
+                                Output.WriteLine("                      <option>" + thisValue + "</option>");
+                            }
+                        }
+
+                        if (!option_found)
+                        {
+                            Output.WriteLine("                      <option selected=\"selected\">" + setting_value + "</option>");
+                        }
+                    }
+                    else
+                    {
                         foreach (string thisValue in Value.Options)
                         {
                             if (String.Compare(thisValue, setting_value, StringComparison.OrdinalIgnoreCase) == 0)
@@ -1422,12 +1442,12 @@ namespace SobekCM.Library.AdminViewer
                         if (!option_found)
                         {
                             Output.WriteLine("                      <option selected=\"selected\">" + setting_value + "</option>");
-                        } 
-				    }
+                        }
+                    }
 
 
 
-					Output.WriteLine("                    </select>");
+				    Output.WriteLine("                    </select>");
 				}
 				else
 				{

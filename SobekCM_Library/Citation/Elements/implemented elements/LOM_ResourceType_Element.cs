@@ -18,8 +18,8 @@ using SobekCM.Resource_Object.Metadata_Modules.LearningObjects;
 namespace SobekCM.Library.Citation.Elements
 {
     /// <summary> Element allows entry of the learning object metadata resource type field </summary>
-    /// <remarks> This class extends the <see cref="simpleTextBox_Element"/> class. </remarks>
-    public class LOM_ResourceType_Element : simpleTextBox_Element
+    /// <remarks> This class extends the <see cref="SimpleTextBox_Element"/> class. </remarks>
+    public class LOM_ResourceType_Element : SimpleTextBox_Element
     {
         /// <summary> Constructor for a new instance of the LOM_ResourceType_Element class </summary>
         public LOM_ResourceType_Element() : base("Resource Type:", "lom_type")

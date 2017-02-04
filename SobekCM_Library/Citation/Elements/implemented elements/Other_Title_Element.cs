@@ -18,8 +18,8 @@ using SobekCM.Resource_Object.Bib_Info;
 namespace SobekCM.Library.Citation.Elements
 {
     /// <summary> Element allows simple entry of the other title(s) for an item, including title type </summary>
-    /// <remarks> This class extends the <see cref="textBox_ComboBox_Element"/> class. </remarks>
-    public class Other_Title_Element : textBox_ComboBox_Element
+    /// <remarks> This class extends the <see cref="TextBox_ComboBox_Element"/> class. </remarks>
+    public class Other_Title_Element : TextBox_ComboBox_Element
     {
         /// <summary> Constructor for a new instance of the Other_Title_Element class </summary>
         public Other_Title_Element() : base( "Other Titles", "othertitle")

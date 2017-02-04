@@ -19,16 +19,16 @@ using SobekCM.Resource_Object.Metadata_Modules.LearningObjects;
 namespace SobekCM.Library.Citation.Elements
 {
     /// <summary> Element allows entry of the learning object metadata context field </summary>
-    /// <remarks> This class extends the <see cref="comboBox_TextBox_Element"/> class. </remarks>
-    public class LOM_Context_Element : comboBox_TextBox_Element
+    /// <remarks> This class extends the <see cref="ComboBox_TextBox_Element"/> class. </remarks>
+    public class LOM_Context_Element : ComboBox_TextBox_Element
     {
         /// <summary> Constructor for a new instance of the LOM_Context_Element class </summary>
         public LOM_Context_Element() : base("Context", "lom_context")
         {
             Repeatable = false;
-            possible_select_items.Clear();
-            possible_select_items.Add("Group");
-            second_label = String.Empty;
+            PossibleSelectItems.Clear();
+            PossibleSelectItems.Add("Group");
+            SecondLabel = String.Empty;
         }
 
 

@@ -15,22 +15,22 @@ using SobekCM.Resource_Object;
 namespace SobekCM.Library.Citation.Elements
 {
     /// <summary> Element allows entry of the description standard used when encoding this record </summary>
-    /// <remarks> This class extends the <see cref="comboBox_Element"/> class. </remarks>
-    public class Description_Standard_Element : comboBox_Element
+    /// <remarks> This class extends the <see cref="ComboBox_Element"/> class. </remarks>
+    public class Description_Standard_Element : ComboBox_Element
     {
         /// <summary> Constructor for a new instance of the Description_Standard_Element class </summary>
         public Description_Standard_Element() : base("Description Standard", "desc_standard")
         {
             Repeatable = false;
-            items.Clear();
-            items.Add("(none)");
-            items.Add("AACR2");
-            items.Add("APPM");
-            items.Add("DACS");
-            items.Add("ISAD(G)");
-            items.Add("MAD");
-            items.Add("RAD");
-            items.Add("RDA");
+            Items.Clear();
+            Items.Add("(none)");
+            Items.Add("AACR2");
+            Items.Add("APPM");
+            Items.Add("DACS");
+            Items.Add("ISAD(G)");
+            Items.Add("MAD");
+            Items.Add("RAD");
+            Items.Add("RDA");
         }
 
 

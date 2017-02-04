@@ -16,8 +16,8 @@ using SobekCM.Resource_Object.Metadata_Modules;
 namespace SobekCM.Library.Citation.Elements
 {
 	/// <summary> Element allows entry of the ETD degree level metadata for an item </summary>
-	/// <remarks> This class extends the <see cref="comboBox_Element"/> class. </remarks>
-	public class ETD_DegreeLevel_Element : comboBox_Element
+	/// <remarks> This class extends the <see cref="ComboBox_Element"/> class. </remarks>
+	public class ETD_DegreeLevel_Element : ComboBox_Element
 	{
 		/// <summary> Constructor for a new instance of the ETD_DegreeLevel_Element class </summary>
 		public ETD_DegreeLevel_Element()
@@ -25,12 +25,12 @@ namespace SobekCM.Library.Citation.Elements
         {
             Repeatable = false;
 
-            items.Clear();
-            items.Add(String.Empty);
-            items.Add("Bachelors");
-            items.Add("Doctorate");
-            items.Add("Masters");
-            items.Add("Post-Doctorate");
+            Items.Clear();
+            Items.Add(String.Empty);
+            Items.Add("Bachelors");
+            Items.Add("Doctorate");
+            Items.Add("Masters");
+            Items.Add("Post-Doctorate");
         }
 
 		/// <summary> Renders the HTML for this element </summary>

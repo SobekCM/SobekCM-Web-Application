@@ -21,7 +21,7 @@ namespace SobekCM.Library.Citation.Elements
 {
     /// <summary> Element displays a form to allow for complete entry of the type information and access to many of the fields present in the MARC leader and 006-008 fields for an item </summary>
     /// <remarks> This class implements the <see cref="iElement"/> interface and extends the <see cref="abstract_Element"/> class. </remarks>
-    public class Type_Format_Form_Element : simpleTextBox_Element
+    public class Type_Format_Form_Element : SimpleTextBox_Element
     {
         ///// <summary> Protected field holds the default value(s) </summary>
         //protected List<string> default_values;
@@ -34,7 +34,7 @@ namespace SobekCM.Library.Citation.Elements
             : base("Resource Type", "type_format_form")
         {
             items = new List<string>();
-            default_values = new List<string>();
+            DefaultValues = new List<string>();
 
             Repeatable = false;
 
@@ -108,9 +108,9 @@ namespace SobekCM.Library.Citation.Elements
                 }
             }
 
-            if ((instance_value.Length == 0) && (default_values.Count > 0))
+            if ((instance_value.Length == 0) && (DefaultValues.Count > 0))
             {
-                instance_value = default_values[0];
+                instance_value = DefaultValues[0];
             }
 
             // Render the title
@@ -1639,7 +1639,7 @@ namespace SobekCM.Library.Citation.Elements
         /// <remarks> This reads the possible values for the type combo box from a <i>options</i> subelement and the default value from a <i>value</i> subelement </remarks>
         protected override void Inner_Read_Data(XmlTextReader XMLReader)
         {
-            default_values.Clear();
+            DefaultValues.Clear();
             while (XMLReader.Read())
             {
                 if ((XMLReader.NodeType == XmlNodeType.Element) && ((XMLReader.Name.ToLower() == "value") || (XMLReader.Name.ToLower() == "options")))
@@ -1647,7 +1647,7 @@ namespace SobekCM.Library.Citation.Elements
                     if (XMLReader.Name.ToLower() == "value")
                     {
                         XMLReader.Read();
-                        default_values.Add(XMLReader.Value.Trim());
+                        DefaultValues.Add(XMLReader.Value.Trim());
                     }
                     else
                     {

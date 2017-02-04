@@ -18,8 +18,8 @@ using SobekCM.Resource_Object.Metadata_Modules.LearningObjects;
 namespace SobekCM.Library.Citation.Elements
 {
     /// <summary> Element allows entry of the learning object metadata intended end user field </summary>
-    /// <remarks> This class extends the <see cref="multipleComboBox_Element"/> class. </remarks>
-    public class LOM_IntendedUser_Element : multipleComboBox_Element
+    /// <remarks> This class extends the <see cref="MultipleComboBox_Element"/> class. </remarks>
+    public class LOM_IntendedUser_Element : MultipleComboBox_Element
     {
         private const string level1_text = "teacher";
         private const string level2_text = "author";
@@ -31,16 +31,16 @@ namespace SobekCM.Library.Citation.Elements
         {
             Repeatable = true;
 
-            view_choices_string = String.Empty;
+            ViewChoicesString = String.Empty;
 
-            boxes_per_line = 4;
-            max_boxes = 4;
+            BoxesPerLine = 4;
+            MaxBoxes = 4;
 
-            items.Clear();
-            items.Add(level1_text);
-            items.Add(level2_text);
-            items.Add(level3_text);
-            items.Add(level4_text);
+            Items.Clear();
+            Items.Add(level1_text);
+            Items.Add(level2_text);
+            Items.Add(level3_text);
+            Items.Add(level4_text);
         }
 
         /// <summary> Renders the HTML for this element </summary>

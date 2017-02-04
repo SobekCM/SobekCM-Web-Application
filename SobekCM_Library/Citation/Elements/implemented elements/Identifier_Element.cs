@@ -17,14 +17,14 @@ using SobekCM.Resource_Object.Bib_Info;
 namespace SobekCM.Library.Citation.Elements
 {
     /// <summary> Element allows entry of the identifiers ( identifier and identifier type) for an item </summary>
-    /// <remarks> This class extends the <see cref="textBox_TextBox_Element"/> class. </remarks>
-    public class Identifier_Element : textBox_TextBox_Element
+    /// <remarks> This class extends the <see cref="TextBox_TextBox_Element"/> class. </remarks>
+    public class Identifier_Element : TextBox_TextBox_Element
     {
         /// <summary> Constructor for a new instance of the Identifier_Element class </summary>
         public Identifier_Element()
             : base("Identifier", "identifier")
         {
-            second_label = "Identifier Type";
+            SecondLabel = "Identifier Type";
             Repeatable = true;
         }
 

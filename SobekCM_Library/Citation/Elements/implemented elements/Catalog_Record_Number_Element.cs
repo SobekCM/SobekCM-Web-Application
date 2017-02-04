@@ -18,8 +18,8 @@ using SobekCM.Resource_Object.Bib_Info;
 namespace SobekCM.Library.Citation.Elements
 {
     /// <summary> Element allows entry of the identifier for this item in the primary catalog record system </summary>
-    /// <remarks> This class extends the <see cref="simpleTextBox_Element"/> class. </remarks>
-    public class Catalog_Record_Number_Element : simpleTextBox_Element
+    /// <remarks> This class extends the <see cref="SimpleTextBox_Element"/> class. </remarks>
+    public class Catalog_Record_Number_Element : SimpleTextBox_Element
     {
         /// <summary> Constructor for a new instance of the Catalog_Record_Number_Element class </summary>
         public Catalog_Record_Number_Element() : base("Catalog Number:", "catalognum")
@@ -67,9 +67,9 @@ namespace SobekCM.Library.Citation.Elements
 
             const string identifierType1 = "CATRECORDNUM";
             string identifier_type2 = identifierType1;
-            if (label_from_template_file.Length > 0)
+            if (LabelFromTemplateFile.Length > 0)
             {
-                identifier_type2 = label_from_template_file.Replace(" Number", "").Trim().ToUpper();
+                identifier_type2 = LabelFromTemplateFile.Replace(" Number", "").Trim().ToUpper();
             }
             string identifier_value = String.Empty;
             foreach (Identifier_Info thisIdentifier in Bib.Bib_Info.Identifiers.Where(thisIdentifier => (thisIdentifier.Type.ToUpper() == identifierType1) || (thisIdentifier.Type.ToUpper() == identifier_type2)))
@@ -89,9 +89,9 @@ namespace SobekCM.Library.Citation.Elements
         {
             const string identifierType1 = "CATRECORDNUM";
             string identifier_type2 = identifierType1;
-            if (label_from_template_file.Length > 0)
+            if (LabelFromTemplateFile.Length > 0)
             {
-                identifier_type2 = label_from_template_file.Replace(" Number", "").Trim().ToUpper();
+                identifier_type2 = LabelFromTemplateFile.Replace(" Number", "").Trim().ToUpper();
             }
 
             List<Identifier_Info> deletes = Bib.Bib_Info.Identifiers.Where(thisIdentifier => (thisIdentifier.Type.ToUpper() == identifierType1) || (thisIdentifier.Type.ToUpper() == identifier_type2)).ToList();
@@ -111,9 +111,9 @@ namespace SobekCM.Library.Citation.Elements
                 if (thisKey.IndexOf(html_element_name.Replace("_", "")) == 0)
                 {
                     string identifier_type = "CATRECORDNUM";
-                    if (label_from_template_file.Length > 0)
+                    if (LabelFromTemplateFile.Length > 0)
                     {
-                        identifier_type = label_from_template_file.Replace(" Number", "").Trim().ToUpper();
+                        identifier_type = LabelFromTemplateFile.Replace(" Number", "").Trim().ToUpper();
                     }
 
                     string newNumber = HttpContext.Current.Request.Form[thisKey];

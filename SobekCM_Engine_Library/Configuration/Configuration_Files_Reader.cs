@@ -448,7 +448,8 @@ namespace SobekCM.Engine_Library.Configuration
                             case "file":
                                 string key = (ReaderXml.MoveToAttribute("key")) ? ReaderXml.Value.Trim() : null;
                                 string source = (ReaderXml.MoveToAttribute("source")) ? ReaderXml.Value.Trim() : null;
-                                if ((!String.IsNullOrEmpty(key)) && (!String.IsNullOrEmpty(source))) config.Add_File(key.ToLower(), source.Replace("[%BASEURL%]", Base_URL));
+                                if ((!String.IsNullOrEmpty(key)) && (!String.IsNullOrEmpty(source))) 
+                                    config.Add_File(key.ToLower(), source.Replace("[%BASEURL%]", Base_URL));
                                 break;
                         }
                     }

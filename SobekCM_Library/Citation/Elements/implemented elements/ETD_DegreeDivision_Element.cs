@@ -16,18 +16,18 @@ using SobekCM.Resource_Object.Metadata_Modules;
 namespace SobekCM.Library.Citation.Elements
 {
 	/// <summary> Element allows entry of the ETD degree division metadata for an item </summary>
-	/// <remarks> This class extends the <see cref="multipleTextBox_Element"/> class. </remarks>
-	public class ETD_DegreeDivision_Element : multipleTextBox_Element
+	/// <remarks> This class extends the <see cref="MultipleTextBox_Element"/> class. </remarks>
+	public class ETD_DegreeDivision_Element : MultipleTextBox_Element
 	{
 		/// <summary> Constructor for a new instance of the ETD_DegreeDivision_Element class </summary>
 		public ETD_DegreeDivision_Element()
 			: base("Degree Division", "etd_division")
 		{
 			Repeatable = true;
-			view_choices_string = String.Empty;
+			ViewChoicesString = String.Empty;
 
-			boxes_per_line = 3;
-			max_boxes = 9;
+			BoxesPerLine = 3;
+			MaxBoxes = 9;
 		}
 
 		/// <summary> Renders the HTML for this element </summary>

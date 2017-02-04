@@ -16,40 +16,40 @@ namespace SobekCM.Library.Citation.Elements
 {
     /// <summary> Abstract base class for all elements which are made up of a simple text box</summary>
     /// <remarks> This class implements the <see cref="iElement"/> interface and extends the <see cref="abstract_Element"/> class. </remarks>
-    public abstract class simpleTextBox_Element : abstract_Element
+    public abstract class SimpleTextBox_Element : abstract_Element
     {
         /// <summary> Protected field holds all the default values to display </summary>
-        protected List<string> default_values;
+        protected List<string> DefaultValues;
 
         /// <summary> Protected field holds the fixed type field from the template file </summary>
-        protected string fixed_type_from_template_file;
+        protected string FixedTypeFromTemplateFile;
 
         /// <summary> Protected field holds the label field from the template file </summary>
-        protected string label_from_template_file;
+        protected string LabelFromTemplateFile;
 
         /// <summary> Protected field holds any html to insert as the view choices option after the boxes </summary>
-        protected string view_choices_string;
+        protected string ViewChoicesString;
 
 
-        /// <summary> Constructor for a new instance of the simpleTextBox_Element class </summary>
+        /// <summary> Constructor for a new instance of the SimpleTextBox_Element class </summary>
         /// <param name="Title"> Title for this element </param>
         /// <param name="Html_Element_Name"> Name for the html components and styles for this element </param>
-        protected simpleTextBox_Element( string Title, string Html_Element_Name )
+        protected SimpleTextBox_Element( string Title, string Html_Element_Name )
         {
             base.Title = Title;
             html_element_name = Html_Element_Name;
-            view_choices_string = String.Empty;
-            label_from_template_file = String.Empty;
-            fixed_type_from_template_file = String.Empty;
+            ViewChoicesString = String.Empty;
+            LabelFromTemplateFile = String.Empty;
+            FixedTypeFromTemplateFile = String.Empty;
 
-            default_values = new List<string>();
+            DefaultValues = new List<string>();
         }
 
         /// <summary> Adds a new default value for this multiple text box type element </summary>
         /// <param name="DefaultValue"> New default value</param>
         public void Add_Default_Value(string DefaultValue)
         {
-            default_values.Add(DefaultValue);
+            DefaultValues.Add(DefaultValue);
         }
 
         /// <summary> Method helps to render all simple text box based elements </summary>
@@ -106,7 +106,7 @@ namespace SobekCM.Library.Citation.Elements
         protected void render_helper(TextWriter Output, ReadOnlyCollection<string> InstanceValues, string Skin_Code, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL, string HTML_ID_Name)
         {
             List<string> allValues = new List<string>();
-            allValues.AddRange(default_values);
+            allValues.AddRange(DefaultValues);
             allValues.AddRange(InstanceValues);
 
             if (allValues.Count == 0)
@@ -182,7 +182,7 @@ namespace SobekCM.Library.Citation.Elements
                     {
                         Output.Write("              <input name=\"" + HTML_ID_Name + i + "\" id=\"" + HTML_ID_Name + i + "\" class=\"" + html_element_name + "_input sbk_Focusable\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(allValues[i - 1].Replace("<i>", "").Replace("</i>", "")) + "\" ");
                         if (textBoxEvents != null) 
-                            textBoxEvents.Add_Events(Output);
+                            textBoxEvents.Add_Events_HTML(Output);
                         Output.WriteLine(" />");
 
                     }
@@ -190,7 +190,7 @@ namespace SobekCM.Library.Citation.Elements
                     {
 						Output.Write("              <input name=\"" + HTML_ID_Name + i + "\" id=\"" + HTML_ID_Name + i + "\" class=\"" + html_element_name + "_input sbk_Focusable\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(allValues[i - 1].Replace("<i>", "").Replace("</i>", "")) + "\" ");
                         if (textBoxEvents != null)
-                            textBoxEvents.Add_Events(Output);
+                            textBoxEvents.Add_Events_HTML(Output);
                         Output.WriteLine(" /><br />");
 
                     }
@@ -200,9 +200,9 @@ namespace SobekCM.Library.Citation.Elements
                 Output.WriteLine("          </td>");
                 Output.WriteLine("          <td style=\"vertical-align:bottom\" >");
 
-                if (view_choices_string.Length > 0)
+                if (ViewChoicesString.Length > 0)
                 {
-                    Output.WriteLine("            " + view_choices_string.Replace("<%INTERFACE%>", Skin_Code) + "&nbsp; ");
+                    Output.WriteLine("            " + ViewChoicesString.Replace("<%INTERFACE%>", Skin_Code) + "&nbsp; ");
                 }
 
                 if (Repeatable)
@@ -254,8 +254,8 @@ namespace SobekCM.Library.Citation.Elements
 
             // Get the label to show
             string label_to_show = Title.Replace(":", "");
-            if (label_from_template_file.Length > 0)
-                label_to_show = label_from_template_file;
+            if (LabelFromTemplateFile.Length > 0)
+                label_to_show = LabelFromTemplateFile;
 
             if (Acronym.Length > 0)
             {
@@ -290,16 +290,16 @@ namespace SobekCM.Library.Citation.Elements
 
                 Output.Write("              <input name=\"" + HTML_ID_Name + "1\" id=\"" + HTML_ID_Name + "1\" class=\"" + html_element_name + "_input sbk_Focusable\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(InstanceValue.Replace("<i>", "").Replace("</i>", "")) + "\" ");
                 if (textBoxEvents != null)
-                    textBoxEvents.Add_Events(Output);
+                    textBoxEvents.Add_Events_HTML(Output);
                 Output.WriteLine(" />");
 
                 Output.WriteLine("            </div>");
                 Output.WriteLine("          </td>");
                 Output.WriteLine("          <td style=\"vertical-align:bottom\" >");
 
-                if (view_choices_string.Length > 0)
+                if (ViewChoicesString.Length > 0)
                 {
-                    Output.WriteLine("            " + view_choices_string.Replace("<%INTERFACE%>", Skin_Code) + "&nbsp; ");
+                    Output.WriteLine("            " + ViewChoicesString.Replace("<%INTERFACE%>", Skin_Code) + "&nbsp; ");
                 }
 
                 if (Repeatable)
@@ -332,19 +332,19 @@ namespace SobekCM.Library.Citation.Elements
                 if ((XMLReader.NodeType == XmlNodeType.Element) && (XMLReader.Name.ToLower() == "value"))
                 {
                     XMLReader.Read();
-                    default_values.Add(XMLReader.Value.Trim());
+                    DefaultValues.Add(XMLReader.Value.Trim());
                 }
 
                 if ((XMLReader.NodeType == XmlNodeType.Element) && (XMLReader.Name.ToLower() == "label"))
                 {
                     XMLReader.Read();
-                    label_from_template_file = XMLReader.Value.Trim();
+                    LabelFromTemplateFile = XMLReader.Value.Trim();
                 }
 
                 if ((XMLReader.NodeType == XmlNodeType.Element) && (XMLReader.Name.ToLower() == "fixed_type"))
                 {
                     XMLReader.Read();
-                    fixed_type_from_template_file = XMLReader.Value.Trim();
+                    FixedTypeFromTemplateFile = XMLReader.Value.Trim();
                 }
             }
         }
@@ -357,7 +357,7 @@ namespace SobekCM.Library.Citation.Elements
 
         /// <summary> Access to the complete text box events object </summary>
         /// <remarks> Requesting this property will create a new object, if one does not already exist </remarks>
-        public HtmlEventsHelper TextBoxEvents
+        protected HtmlEventsHelper TextBoxEvents
         {
             get { return textBoxEvents ?? (textBoxEvents = new HtmlEventsHelper()); }
         }
@@ -365,7 +365,7 @@ namespace SobekCM.Library.Citation.Elements
         /// <summary> Add some event text to an event on the primary text box for the citation control </summary>
         /// <param name="Event"> Type of the event to add text to </param>
         /// <param name="EventText"> Text (html format) to add to the event, such as "getElementById('demo').innerHTML = Date()", or "myFunction();return false;", etc.. </param>
-        public void Add_TextBox_Event(HtmlEventsEnum Event, string EventText)
+        protected void Add_TextBox_Event(HtmlEventsEnum Event, string EventText)
         {
             // If the events is null, create it
             if (textBoxEvents == null)

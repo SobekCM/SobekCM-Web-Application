@@ -7,7 +7,6 @@ using System.IO;
 using System.Web;
 using System.Xml;
 using SobekCM.Core.ApplicationState;
-using SobekCM.Core.Configuration;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Users;
 
@@ -17,55 +16,55 @@ namespace SobekCM.Library.Citation.Elements
 {
     /// <summary> Abstract base class for all elements which are made up of multiple small text boxes </summary>
     /// <remarks> This class implements the <see cref="iElement"/> interface and extends the <see cref="abstract_Element"/> class. </remarks>
-    public abstract class multipleTextBox_Element : abstract_Element
+    public abstract class MultipleTextBox_Element : abstract_Element
     {
         /// <summary> Protected field holds how many boxes are allowed per line, or -1 if there is no limit </summary>
-        protected int boxes_per_line = -1;
+        protected int BoxesPerLine = -1;
 
         /// <summary> Protected field holds all the default values to display </summary>
-        protected List<string> default_values;
+        protected List<string> DefaultValues;
 
         /// <summary> Protected field holds how many boxes are allowed total for this element, or -1 if there is no limit </summary>
-        protected int max_boxes = -1;
+        protected int MaxBoxes = -1;
 
         /// <summary> Protected field holds any html to insert as the view choices option after the boxes </summary>
-        protected string view_choices_string;
+        protected string ViewChoicesString;
 
         /// <summary> Protected field holds the label field from the template file </summary>
-        protected string label_from_template_file;
+        protected string LabelFromTemplateFile;
 
-        /// <summary> Constructor for a new instance of the multipleTextBox_Element class </summary>
+        /// <summary> Constructor for a new instance of the MultipleTextBox_Element class </summary>
         /// <param name="Title"> Title for this element </param>
         /// <param name="Html_Element_Name"> Name for the html components and styles for this element </param>
-        protected multipleTextBox_Element(string Title, string Html_Element_Name)
+        protected MultipleTextBox_Element(string Title, string Html_Element_Name)
         {
             base.Title = Title;
             html_element_name = Html_Element_Name;
-            view_choices_string = String.Empty;
-            label_from_template_file = String.Empty;
+            ViewChoicesString = String.Empty;
+            LabelFromTemplateFile = String.Empty;
 
-            default_values = new List<string>();
+            DefaultValues = new List<string>();
         }
 
         /// <summary> Adds a new default value for this multiple text box type element </summary>
-        /// <param name="defaultValue"> New default value</param>
-        public void Add_Default_Value(string defaultValue)
+        /// <param name="DefaultValue"> New default value</param>
+        public void Add_Default_Value(string DefaultValue)
         {
-            default_values.Add(defaultValue);
+            DefaultValues.Add(DefaultValue);
         }
 
         /// <summary> Method helps to render all multiple text box based elements </summary>
         /// <param name="Output"> Output for the generated html for this element </param>
-        /// <param name="instance_values"> Value(s) for the current digital resource to display</param>
+        /// <param name="InstanceValues"> Value(s) for the current digital resource to display</param>
         /// <param name="Skin_Code"> Code for the current html skin </param>
         /// <param name="Current_User"> Current user, who's rights may impact the way an element is rendered </param>
         /// <param name="CurrentLanguage"> Current user-interface language </param>
         /// <param name="Translator"> Language support object which handles simple translational duties </param>
         /// <param name="Base_URL"> Base URL for the current request </param>
-        protected void render_helper(TextWriter Output, ReadOnlyCollection<string> instance_values, string Skin_Code, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL )
+        protected void render_helper(TextWriter Output, ReadOnlyCollection<string> InstanceValues, string Skin_Code, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL )
         {
             List<string> allValues = new List<string>();
-            allValues.AddRange(instance_values);
+            allValues.AddRange(InstanceValues);
 
             if (allValues.Count == 0)
             {
@@ -81,8 +80,8 @@ namespace SobekCM.Library.Citation.Elements
 
             // Get the label to show
             string label_to_show = Title.Replace(":", "");
-            if (label_from_template_file.Length > 0)
-                label_to_show = label_from_template_file;
+            if (LabelFromTemplateFile.Length > 0)
+                label_to_show = LabelFromTemplateFile;
 
             string id_name = html_element_name.Replace("_", "");
 
@@ -105,10 +104,10 @@ namespace SobekCM.Library.Citation.Elements
             if (Read_Only)
             {
                 Output.Write("    <td>");
-                for (int i = 0; i < instance_values.Count; i++)
+                for (int i = 0; i < InstanceValues.Count; i++)
                 {
-                    Output.Write(instance_values[i]);
-                    if (i < (instance_values.Count - 1))
+                    Output.Write(InstanceValues[i]);
+                    if (i < (InstanceValues.Count - 1))
                         Output.Write("<br />");
                 }
                 Output.WriteLine("</td>");
@@ -124,25 +123,34 @@ namespace SobekCM.Library.Citation.Elements
                 {
                     if (i == allValues.Count)
                     {
-                        Output.WriteLine("              <input name=\"" + id_name + i + "\" id=\"" + id_name + i + "\" class=\"" + html_element_name + "_input sbk_Focusable\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(allValues[i - 1].Replace("<i>", "").Replace("</i>", "")) + "\" /></div>");
+                        Output.Write("              <input name=\"" + id_name + i + "\" id=\"" + id_name + i + "\" class=\"" + html_element_name + "_input sbk_Focusable\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(allValues[i - 1].Replace("<i>", "").Replace("</i>", "")) + "\" ");
+                        if (textBoxEvents != null)
+                            textBoxEvents.Add_Events_HTML(Output);
+                        Output.WriteLine("/></div>");
                     }
                     else
                     {
-						Output.WriteLine("              <input name=\"" + id_name + i + "\" id=\"" + id_name + i + "\" class=\"" + html_element_name + "_input sbk_Focusable\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(allValues[i - 1].Replace("<i>", "").Replace("</i>", "")) + "\" />");
+						Output.Write("              <input name=\"" + id_name + i + "\" id=\"" + id_name + i + "\" class=\"" + html_element_name + "_input sbk_Focusable\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(allValues[i - 1].Replace("<i>", "").Replace("</i>", "")) + "\" ");
+                        if (textBoxEvents != null)
+                            textBoxEvents.Add_Events_HTML(Output);
+                        Output.WriteLine("/>>");
                     }
+
+
+
                 }
 
                 Output.WriteLine("          </td>");
                 Output.WriteLine("          <td style=\"vertical-align:bottom\" >");
 
-                if (!String.IsNullOrEmpty(view_choices_string))
+                if (!String.IsNullOrEmpty(ViewChoicesString))
                 {
-                    Output.WriteLine("            " + view_choices_string.Replace("<%WEBSKIN%>", Skin_Code).Replace("<%?URLOPTS%>", "") + "&nbsp; ");
+                    Output.WriteLine("            " + ViewChoicesString.Replace("<%WEBSKIN%>", Skin_Code).Replace("<%?URLOPTS%>", "") + "&nbsp; ");
                 }
 
-                if ((Repeatable) && (( max_boxes < 0 ) || ( allValues.Count < max_boxes )))
+                if ((Repeatable) && (( MaxBoxes < 0 ) || ( allValues.Count < MaxBoxes )))
                 {
-                    Output.WriteLine("          <span id=\"" + html_element_name + "_repeaticon\" name=\"" + html_element_name + "_repeaticon\"><img title=\"" + Translator.Get_Translation("Click to add another " + Title.ToLower(), CurrentLanguage) + ".\" alt=\"+\" class=\"repeat_button\" src=\"" + REPEAT_BUTTON_URL + "\" onmousedown=\"add_new_multi_element('" + html_element_name + "', " + instance_values.Count + "," + max_boxes + "," + boxes_per_line + "); return false;\" /></span>");
+                    Output.WriteLine("          <span id=\"" + html_element_name + "_repeaticon\" name=\"" + html_element_name + "_repeaticon\"><img title=\"" + Translator.Get_Translation("Click to add another " + Title.ToLower(), CurrentLanguage) + ".\" alt=\"+\" class=\"repeat_button\" src=\"" + REPEAT_BUTTON_URL + "\" onmousedown=\"add_new_multi_element('" + html_element_name + "', " + InstanceValues.Count + "," + MaxBoxes + "," + BoxesPerLine + "); return false;\" /></span>");
                 }
 
                 Output.WriteLine("            <a target=\"_" + html_element_name.ToUpper() + "\"  title=\"" + Translator.Get_Translation("Get help.", CurrentLanguage) + "\" href=\"" + Help_URL(Skin_Code, Base_URL) + "\" ><img class=\"help_button\" src=\"" + HELP_BUTTON_URL + "\" /></a>");
@@ -161,20 +169,20 @@ namespace SobekCM.Library.Citation.Elements
 
         /// <summary> Method helps to render all multiple text box based elements </summary>
         /// <param name="Output"> Output for the generated html for this element </param>
-        /// <param name="instance_value"> Value for the current digital resource to display</param>
+        /// <param name="InstanceValue"> Value for the current digital resource to display</param>
         /// <param name="Skin_Code"> Code for the current html skin </param>
         /// <param name="Current_User"> Current user, who's rights may impact the way an element is rendered </param>
         /// <param name="CurrentLanguage"> Current user-interface language </param>
         /// <param name="Translator"> Language support object which handles simple translational duties </param>
         /// <param name="Base_URL"> Base URL for the current request </param>
-        protected void render_helper(TextWriter Output, string instance_value, string Skin_Code, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL )
+        protected void render_helper(TextWriter Output, string InstanceValue, string Skin_Code, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL )
         {
             string id_name = html_element_name.Replace("_", "");
 
             // Get the label to show
             string label_to_show = Title.Replace(":", "");
-            if (label_from_template_file.Length > 0)
-                label_to_show = label_from_template_file;
+            if (LabelFromTemplateFile.Length > 0)
+                label_to_show = LabelFromTemplateFile;
 
             Output.WriteLine("  <!-- " + label_to_show + " Element -->");
             Output.WriteLine("  <tr align=\"left\">");
@@ -197,7 +205,7 @@ namespace SobekCM.Library.Citation.Elements
 
             if (Read_Only)
             {
-                Output.WriteLine("    <td>" + instance_value + "</td>");
+                Output.WriteLine("    <td>" + InstanceValue + "</td>");
             }
             else
             {
@@ -206,18 +214,25 @@ namespace SobekCM.Library.Citation.Elements
                 Output.WriteLine("        <tr>");
                 Output.WriteLine("          <td>");
                 Output.WriteLine("            <div id=\"" + html_element_name + "_div\">");
-                Output.WriteLine("              <input name=\"" + id_name + "1\" id=\"" + id_name + "1\" class=\"" + html_element_name + "_input sbk_Focusable\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(instance_value.Replace("<i>", "").Replace("</i>", "")) + "\" /></div>");
+
+                Output.Write("              <input name=\"" + id_name + "1\" id=\"" + id_name + "1\" class=\"" + html_element_name + "_input sbk_Focusable\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(InstanceValue.Replace("<i>", "").Replace("</i>", "")) + "\" ");
+
+                if (textBoxEvents != null)
+                    textBoxEvents.Add_Events_HTML(Output);
+                Output.WriteLine("/></div>");
+
+
                 Output.WriteLine("          </td>");
                 Output.WriteLine("          <td valign=\"bottom\" >");
 
-                if (!String.IsNullOrEmpty(view_choices_string))
+                if (!String.IsNullOrEmpty(ViewChoicesString))
                 {
-                    Output.WriteLine("            " + view_choices_string.Replace("<%WEBSKIN%>", Skin_Code).Replace("<%?URLOPTS%>", "") + "&nbsp; ");
+                    Output.WriteLine("            " + ViewChoicesString.Replace("<%WEBSKIN%>", Skin_Code).Replace("<%?URLOPTS%>", "") + "&nbsp; ");
                 }
 
                 if (Repeatable)
                 {
-                    Output.WriteLine("          <span id=\"" + html_element_name + "_repeaticon\" name=\"" + html_element_name + "_repeaticon\"><img title=\"" + Translator.Get_Translation("Click to add another " + Title.ToLower(), CurrentLanguage) + ".\" alt=\"+\" border=\"0px\" class=\"repeat_button\" src=\"" + REPEAT_BUTTON_URL + "\" onmousedown=\"add_new_multi_element('" + html_element_name + "', 1," + max_boxes + "," + boxes_per_line + "); return false;\" /></span>");
+                    Output.WriteLine("          <span id=\"" + html_element_name + "_repeaticon\" name=\"" + html_element_name + "_repeaticon\"><img title=\"" + Translator.Get_Translation("Click to add another " + Title.ToLower(), CurrentLanguage) + ".\" alt=\"+\" border=\"0px\" class=\"repeat_button\" src=\"" + REPEAT_BUTTON_URL + "\" onmousedown=\"add_new_multi_element('" + html_element_name + "', 1," + MaxBoxes + "," + BoxesPerLine + "); return false;\" /></span>");
                 }
 
                 Output.WriteLine("            <a target=\"_" + html_element_name.ToUpper() + "\"  title=\"" + Translator.Get_Translation("Get help.", CurrentLanguage) + "\" href=\"" + Help_URL(Skin_Code, Base_URL) + "\" ><img border=\"0px\" class=\"help_button\" src=\"" + HELP_BUTTON_URL + "\" /></a>");
@@ -245,15 +260,41 @@ namespace SobekCM.Library.Citation.Elements
                 if (( XMLReader.NodeType == XmlNodeType.Element ) && ( XMLReader.Name.ToLower() == "value" ))
                 {
                     XMLReader.Read();
-                    default_values.Add(XMLReader.Value.Trim());
+                    DefaultValues.Add(XMLReader.Value.Trim());
                 }
 
                 if ((XMLReader.NodeType == XmlNodeType.Element) && (XMLReader.Name.ToLower() == "label"))
                 {
                     XMLReader.Read();
-                    label_from_template_file = XMLReader.Value.Trim();
+                    LabelFromTemplateFile = XMLReader.Value.Trim();
                 }
             }
+        }
+
+        #endregion
+
+        #region Methods and properties exposing events for the HTML elements in this base type
+
+        private HtmlEventsHelper textBoxEvents;
+
+        /// <summary> Access to the complete text box events object </summary>
+        /// <remarks> Requesting this property will create a new object, if one does not already exist </remarks>
+        protected HtmlEventsHelper TextBoxEvents
+        {
+            get { return textBoxEvents ?? (textBoxEvents = new HtmlEventsHelper()); }
+        }
+
+        /// <summary> Add some event text to an event on the primary text box for the citation control </summary>
+        /// <param name="Event"> Type of the event to add text to </param>
+        /// <param name="EventText"> Text (html format) to add to the event, such as "getElementById('demo').innerHTML = Date()", or "myFunction();return false;", etc.. </param>
+        protected void Add_TextBox_Event(HtmlEventsEnum Event, string EventText)
+        {
+            // If the events is null, create it
+            if (textBoxEvents == null)
+                textBoxEvents = new HtmlEventsHelper();
+
+            // Add this event
+            textBoxEvents.Add_Event(Event, EventText);
         }
 
         #endregion

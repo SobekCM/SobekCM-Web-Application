@@ -17,8 +17,8 @@ using SobekCM.Resource_Object.Bib_Info;
 namespace SobekCM.Library.Citation.Elements
 {
     /// <summary> Element allows simple entry of frequency for a continuing resource type of item </summary>
-    /// <remarks> This class extends the <see cref="comboBox_Element"/> class. </remarks>
-    public class Frequency_Element: multipleComboBox_Element
+    /// <remarks> This class extends the <see cref="ComboBox_Element"/> class. </remarks>
+    public class Frequency_Element: MultipleComboBox_Element
     {
         /// <summary> Constructor for a new instance of the Frequency_Element class </summary>
         public Frequency_Element()
@@ -29,8 +29,8 @@ namespace SobekCM.Library.Citation.Elements
             Add_Items(new[] { "", "annual", "biennial", "bimonthly", "biweekly","continuously updated","daily","monthly","other",
                 "quarterly","regular", "semiannual","semimonthly","semiweekly","three times a month","three times a week","three times a year","triennial","weekly" });
 
-            boxes_per_line = 3;
-            max_boxes = 6;
+            BoxesPerLine = 3;
+            MaxBoxes = 6;
         }
 
         /// <summary> Renders the HTML for this element </summary>

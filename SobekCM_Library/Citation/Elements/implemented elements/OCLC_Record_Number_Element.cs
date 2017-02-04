@@ -18,8 +18,8 @@ using SobekCM.Resource_Object.Bib_Info;
 namespace SobekCM.Library.Citation.Elements
 {
     /// <summary> Element allows entry of the identifier for this item in the OCLC system </summary>
-    /// <remarks> This class extends the <see cref="simpleTextBox_Element"/> class. </remarks>
-    public class OCLC_Record_Number_Element : simpleTextBox_Element
+    /// <remarks> This class extends the <see cref="SimpleTextBox_Element"/> class. </remarks>
+    public class OCLC_Record_Number_Element : SimpleTextBox_Element
     {
         /// <summary> Constructor for a new instance of the OCLC_Record_Number_Element class </summary>
         public OCLC_Record_Number_Element() : base("OCLC Number", "oclcnum")

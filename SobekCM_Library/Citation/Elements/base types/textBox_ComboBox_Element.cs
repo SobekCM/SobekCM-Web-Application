@@ -6,7 +6,6 @@ using System.IO;
 using System.Web;
 using System.Xml;
 using SobekCM.Core.ApplicationState;
-using SobekCM.Core.Configuration;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Users;
 
@@ -16,59 +15,59 @@ namespace SobekCM.Library.Citation.Elements
 {
     /// <summary> Abstract base class for all elements which are made up of a text box followed by a combo/select box </summary>
     /// <remarks> This class implements the <see cref="iElement"/> interface and extends the <see cref="abstract_Element"/> class. </remarks>
-    public abstract class textBox_ComboBox_Element : abstract_Element
+    public abstract class TextBox_ComboBox_Element : abstract_Element
     {
         /// <summary> Protected field contains all the possible strings for the combo/select box </summary>
-        protected List<string> possible_select_items_text;
+        protected List<string> PossibleSelectItemsText;
 
         /// <summary> Protected field contains all the values for the possible strings for the combo/select box </summary>
-        protected List<string> possible_select_items_value;
+        protected List<string> PossibleSelectItemsValue;
 
         /// <summary> Protected field contains a possible second label to show before the combo box </summary>
-        protected string second_label;
+        protected string SecondLabel;
 
 
-        /// <summary> Constructor for a new instance of the textBox_ComboBox_Element class </summary>
+        /// <summary> Constructor for a new instance of the TextBox_ComboBox_Element class </summary>
         /// <param name="Title"> Title for this element </param>
         /// <param name="Html_Element_Name"> Name for the html components and styles for this element </param>
-        protected textBox_ComboBox_Element(string Title, string Html_Element_Name)
+        protected TextBox_ComboBox_Element(string Title, string Html_Element_Name)
         {
             base.Title = Title;
             html_element_name = Html_Element_Name;
-            second_label = String.Empty;
+            SecondLabel = String.Empty;
 
-            possible_select_items_text = new List<string>();
-            possible_select_items_value = new List<string>();
+            PossibleSelectItemsText = new List<string>();
+            PossibleSelectItemsValue = new List<string>();
         }
 
         /// <summary> Flag indicates if values are limited to those in the drop down list. </summary>
         protected bool Restrict_Values { get; set; }
 
         /// <summary> Adds a new possible string for the combo/select box, along with associated value </summary>
-        /// <param name="text"> Text to display in the combo/select box</param>
-        /// <param name="value"> Associated value for this option </param>
-        public void Add_Select_Item(string text, string value )
+        /// <param name="Text"> Text to display in the combo/select box</param>
+        /// <param name="Value"> Associated value for this option </param>
+        public void Add_Select_Item(string Text, string Value )
         {
-            possible_select_items_text.Add(text);
-            possible_select_items_value.Add(value);
+            PossibleSelectItemsText.Add(Text);
+            PossibleSelectItemsValue.Add(Value);
         }
 
 
-        /// <summary> Method helps to render the html for all elements based on textBox_ComboBox_Element class </summary>
+        /// <summary> Method helps to render the html for all elements based on TextBox_ComboBox_Element class </summary>
         /// <param name="Output"> Output for the generate html for this element </param>
-        /// <param name="text_values"> Value(s) for the current digital resource to display in the text box </param>
-        /// <param name="select_values"> Value(s) for the current digital resource to display in the combo box</param>
+        /// <param name="TextValues"> Value(s) for the current digital resource to display in the text box </param>
+        /// <param name="SelectValues"> Value(s) for the current digital resource to display in the combo box</param>
         /// <param name="Skin_Code"> Code for the current html skin </param>
         /// <param name="Current_User"> Current user, who's rights may impact the way an element is rendered </param>
         /// <param name="CurrentLanguage"> Current user-interface language </param>
         /// <param name="Translator"> Language support object which handles simple translational duties </param>
         /// <param name="Base_URL"> Base URL for the current request </param>
-        protected void render_helper(TextWriter Output, List<string> text_values, List<string> select_values, string Skin_Code, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL )
+        protected void render_helper(TextWriter Output, List<string> TextValues, List<string> SelectValues, string Skin_Code, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL )
         {
-            if (text_values.Count == 0)
+            if (TextValues.Count == 0)
             {
-                text_values.Add(String.Empty);
-                select_values.Add(String.Empty);
+                TextValues.Add(String.Empty);
+                SelectValues.Add(String.Empty);
             }
 
             string id_name = html_element_name.Replace("_", "");
@@ -87,15 +86,18 @@ namespace SobekCM.Library.Citation.Elements
             Output.WriteLine("    <td>");
             Output.WriteLine("      <table><tr><td>");
             Output.WriteLine("      <div id=\"" + html_element_name + "_div\">");
-            for (int i = 1; i <= text_values.Count; i++)
+            for (int i = 1; i <= TextValues.Count; i++)
             {
                 // Write the text box
-                Output.Write("        <input name=\"" + id_name + "_text" + i + "\" id=\"" + id_name + "_text" + i + "\" class=\"" + html_element_name + "_input sbk_Focusable\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(text_values[i - 1]) + "\" />");
+                Output.Write("        <input name=\"" + id_name + "_text" + i + "\" id=\"" + id_name + "_text" + i + "\" class=\"" + html_element_name + "_input sbk_Focusable\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(TextValues[i - 1]) + "\" ");
+                if (textBoxEvents != null)
+                    textBoxEvents.Add_Events_HTML(Output);
+                Output.Write(" />");
 
                 // If there is a second label, draw that
-                if (second_label.Length > 0)
+                if (SecondLabel.Length > 0)
                 {
-                    Output.WriteLine("<span class=\"metadata_sublabel\">" + Translator.Get_Translation(second_label, CurrentLanguage) + ":</span>");
+                    Output.WriteLine("<span class=\"metadata_sublabel\">" + Translator.Get_Translation(SecondLabel, CurrentLanguage) + ":</span>");
                 }
                 else
                 {
@@ -103,43 +105,48 @@ namespace SobekCM.Library.Citation.Elements
                 }
 
                 // Write the combo box
-                Output.WriteLine("        <select class=\"" + html_element_name + "_select\" name=\"" + id_name + "_select" + i + "\" id=\"" + id_name + "_select" + i + "\" >");
+                Output.Write("        <select class=\"" + html_element_name + "_select\" name=\"" + id_name + "_select" + i + "\" id=\"" + id_name + "_select" + i + "\" ");
+                if (comboBoxEvents != null)
+                    comboBoxEvents.Add_Events_HTML(Output);
+                Output.WriteLine(" >");
+
             
+
                 bool found_option = false;
-                for ( int j = 0 ; j < possible_select_items_text.Count ; j++ )
+                for ( int j = 0 ; j < PossibleSelectItemsText.Count ; j++ )
                 {
-                    if ((i < possible_select_items_text.Count) && (possible_select_items_text[j] == select_values[i - 1]))
+                    if ((i < PossibleSelectItemsText.Count) && (PossibleSelectItemsText[j] == SelectValues[i - 1]))
                     {
-                        if (possible_select_items_value.Count > j)
+                        if (PossibleSelectItemsValue.Count > j)
                         {
-                            Output.WriteLine("          <option selected=\"selected=\" value=\"" + possible_select_items_value[j] + "\">" + possible_select_items_text[j] + "</option>");
+                            Output.WriteLine("          <option selected=\"selected=\" value=\"" + PossibleSelectItemsValue[j] + "\">" + PossibleSelectItemsText[j] + "</option>");
                         }
                         else
                         {
-                            Output.WriteLine("          <option selected=\"selected=\" value=\"" + possible_select_items_text[j] + "\">" + possible_select_items_text[j] + "</option>");
+                            Output.WriteLine("          <option selected=\"selected=\" value=\"" + PossibleSelectItemsText[j] + "\">" + PossibleSelectItemsText[j] + "</option>");
                         }
                         found_option = true;
                     }
                     else
                     {
-                        if (possible_select_items_value.Count > j)
+                        if (PossibleSelectItemsValue.Count > j)
                         {
-                            Output.WriteLine("          <option value=\"" + possible_select_items_value[j] + "\">" + possible_select_items_text[j] + "</option>");
+                            Output.WriteLine("          <option value=\"" + PossibleSelectItemsValue[j] + "\">" + PossibleSelectItemsText[j] + "</option>");
                         }
                         else
                         {
-                            Output.WriteLine("          <option value=\"" + possible_select_items_text[j] + "\">" + possible_select_items_text[j] + "</option>");
+                            Output.WriteLine("          <option value=\"" + PossibleSelectItemsText[j] + "\">" + PossibleSelectItemsText[j] + "</option>");
                         }
                     }
                 }
 
-                if (( i <= select_values.Count ) && ( select_values[i-1].Length > 0  ) && ( !Restrict_Values ) && ( !found_option ))
+                if (( i <= SelectValues.Count ) && ( SelectValues[i-1].Length > 0  ) && ( !Restrict_Values ) && ( !found_option ))
                 {
-                    Output.WriteLine("          <option value=\"" + select_values[i-1] + "\" selected=\"selected=\">" + select_values[i-1] + "</option>");
+                    Output.WriteLine("          <option value=\"" + SelectValues[i-1] + "\" selected=\"selected=\">" + SelectValues[i-1] + "</option>");
                 }
                 Output.Write("        </select>");
 
-                if (i == text_values.Count )
+                if (i == TextValues.Count )
                 {
                     Output.WriteLine();
                     Output.WriteLine("      </div>");
@@ -155,7 +162,7 @@ namespace SobekCM.Library.Citation.Elements
 
             if (Repeatable)
             {
-                Output.WriteLine("            <a title=\"" + Translator.Get_Translation("Click to add another " + Title.ToLower(), CurrentLanguage) + ".\" href=\"" + Base_URL + "l/technical/javascriptrequired\" onmousedown=\"return add_text_box_select_element('" + html_element_name + "', '" + second_label + "');\"><img class=\"repeat_button\" src=\"" + REPEAT_BUTTON_URL + "\" /></a>");
+                Output.WriteLine("            <a title=\"" + Translator.Get_Translation("Click to add another " + Title.ToLower(), CurrentLanguage) + ".\" href=\"" + Base_URL + "l/technical/javascriptrequired\" onmousedown=\"return add_text_box_select_element('" + html_element_name + "', '" + SecondLabel + "');\"><img class=\"repeat_button\" src=\"" + REPEAT_BUTTON_URL + "\" /></a>");
             }
             Output.WriteLine("            <a target=\"_" + html_element_name.ToUpper() + "\"  title=\"" + Translator.Get_Translation("Get help.", CurrentLanguage) + "\" href=\"" + Help_URL(Skin_Code, Base_URL) + "\" ><img class=\"help_button\" src=\"" + HELP_BUTTON_URL + "\" /></a>");
             Output.WriteLine("    </td>");
@@ -177,22 +184,70 @@ namespace SobekCM.Library.Citation.Elements
                 {
                     XMLReader.Read();
                     string options = XMLReader.Value.Trim();
-                    possible_select_items_text.Clear();
-                    possible_select_items_value.Clear();
+                    PossibleSelectItemsText.Clear();
+                    PossibleSelectItemsValue.Clear();
                     if (options.Length > 0)
                     {
                         string[] options_parsed = options.Split(",".ToCharArray());
                         foreach (string thisOption in options_parsed)
                         {
-                            if (!possible_select_items_text.Contains(thisOption.Trim()))
+                            if (!PossibleSelectItemsText.Contains(thisOption.Trim()))
                             {
-                                possible_select_items_text.Add(thisOption.Trim());
+                                PossibleSelectItemsText.Add(thisOption.Trim());
 
                             }
                         }
                     }
                 }
             }
+        }
+
+        #endregion
+
+        #region Methods and properties exposing events for the HTML elements in this base type
+
+        private HtmlEventsHelper textBoxEvents;
+
+        /// <summary> Access to the complete text box events object </summary>
+        /// <remarks> Requesting this property will create a new object, if one does not already exist </remarks>
+        protected HtmlEventsHelper TextBoxEvents
+        {
+            get { return textBoxEvents ?? (textBoxEvents = new HtmlEventsHelper()); }
+        }
+
+        /// <summary> Add some event text to an event on the primary text box for the citation control </summary>
+        /// <param name="Event"> Type of the event to add text to </param>
+        /// <param name="EventText"> Text (html format) to add to the event, such as "getElementById('demo').innerHTML = Date()", or "myFunction();return false;", etc.. </param>
+        protected void Add_TextBox_Event(HtmlEventsEnum Event, string EventText)
+        {
+            // If the events is null, create it
+            if (textBoxEvents == null)
+                textBoxEvents = new HtmlEventsHelper();
+
+            // Add this event
+            textBoxEvents.Add_Event(Event, EventText);
+        }
+
+        private HtmlEventsHelper comboBoxEvents;
+
+        /// <summary> Access to the complete combo box events object </summary>
+        /// <remarks> Requesting this property will create a new object, if one does not already exist </remarks>
+        protected HtmlEventsHelper ComboBoxEvents
+        {
+            get { return comboBoxEvents ?? (comboBoxEvents = new HtmlEventsHelper()); }
+        }
+
+        /// <summary> Add some event text to an event on the primary combo box for the citation control </summary>
+        /// <param name="Event"> Type of the event to add text to </param>
+        /// <param name="EventText"> Text (html format) to add to the event, such as "getElementById('demo').innerHTML = Date()", or "myFunction();return false;", etc.. </param>
+        protected void Add_ComboBox_Event(HtmlEventsEnum Event, string EventText)
+        {
+            // If the events is null, create it
+            if (comboBoxEvents == null)
+                comboBoxEvents = new HtmlEventsHelper();
+
+            // Add this event
+            comboBoxEvents.Add_Event(Event, EventText);
         }
 
         #endregion

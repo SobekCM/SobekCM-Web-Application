@@ -17,21 +17,21 @@ using SobekCM.Resource_Object;
 namespace SobekCM.Library.Citation.Elements
 {
     /// <summary> Element allows entry of the aggregationPermissions for an item to be linked </summary>
-    /// <remarks> This class extends the <see cref="multipleComboBox_Element"/> class. </remarks>
-    public class Aggregations_Element : multipleComboBox_Element
+    /// <remarks> This class extends the <see cref="MultipleComboBox_Element"/> class. </remarks>
+    public class Aggregations_Element : MultipleComboBox_Element
     {
         /// <summary> Constructor for a new instance of the Aggregations_Element class </summary>
         public Aggregations_Element()
             : base("Aggregation", "collection")
         {
             Repeatable = true;
-            view_choices_string = String.Empty;
+            ViewChoicesString = String.Empty;
 
-            boxes_per_line = 3;
-            max_boxes = 9;
+            BoxesPerLine = 3;
+            MaxBoxes = 9;
 
             // Get the codes for the aggregation 
-            if ((items.Count == 0) && ( UI_ApplicationCache_Gateway.Aggregations != null ))
+            if ((Items.Count == 0) && ( UI_ApplicationCache_Gateway.Aggregations != null ))
             {
                 SortedList<string, string> tempItemList = new SortedList<string, string>();
                 List<Item_Aggregation_Related_Aggregations> subcollections = UI_ApplicationCache_Gateway.Aggregations.All_Aggregations;
@@ -45,7 +45,7 @@ namespace SobekCM.Library.Citation.Elements
                 IList<string> keys = tempItemList.Keys;
                 foreach (string thisKey in keys)
                 {
-                    items.Add(tempItemList[thisKey].ToUpper());
+                    Items.Add(tempItemList[thisKey].ToUpper());
                 }
             }
         }
@@ -54,7 +54,7 @@ namespace SobekCM.Library.Citation.Elements
         /// <param name="Base_URL"> Current Base URL for this request </param>
         public override void  Set_Base_URL(string Base_URL)
         {
-            view_choices_string = "<a href=\"" + Base_URL + "l/internal/colls<%?URLOPTS%>\" title=\"View all collections\" target=\"_COLLECTIONLIST\"><img src=\"" + Base_URL + "design/skins/<%WEBSKIN%>/buttons/magnify.jpg\" /></a>";
+            ViewChoicesString = "<a href=\"" + Base_URL + "l/internal/colls<%?URLOPTS%>\" title=\"View all collections\" target=\"_COLLECTIONLIST\"><img src=\"" + Base_URL + "design/skins/<%WEBSKIN%>/buttons/magnify.jpg\" /></a>";
         }
 
         /// <summary> Renders the HTML for this element </summary>
@@ -115,7 +115,7 @@ namespace SobekCM.Library.Citation.Elements
                         if (thisAggr.CanSelect)
                         {
                             some_set_as_selectable = true;
-                            if ((items.Contains(thisAggr.Code)) && (!possibles.Contains(thisAggr.Code)))
+                            if ((Items.Contains(thisAggr.Code)) && (!possibles.Contains(thisAggr.Code)))
                                 possibles.Add(thisAggr.Code);
                         }
                     }

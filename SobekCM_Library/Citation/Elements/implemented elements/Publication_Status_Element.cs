@@ -17,8 +17,8 @@ using SobekCM.Resource_Object.Bib_Info;
 namespace SobekCM.Library.Citation.Elements
 {
     /// <summary> Element allows entry of the publication status for an item </summary>
-    /// <remarks> This class extends the <see cref="comboBox_Element"/> class. </remarks>
-    public class Publication_Status_Element : comboBox_Element
+    /// <remarks> This class extends the <see cref="ComboBox_Element"/> class. </remarks>
+    public class Publication_Status_Element : ComboBox_Element
     {
         /// <summary> Constructor for a new instance of the Publication_Status_Element class </summary>
         public Publication_Status_Element() : base("Publication Status", "pub_status")

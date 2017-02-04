@@ -18,8 +18,8 @@ using SobekCM.Resource_Object.Metadata_Modules.VRACore;
 namespace SobekCM.Library.Citation.Elements
 {
     /// <summary> Element allows entry of the VRACore cultural context field </summary>
-    /// <remarks> This class extends the <see cref="simpleTextBox_Element"/> class. </remarks>
-    public class VRA_CulturalContext_Element : simpleTextBox_Element
+    /// <remarks> This class extends the <see cref="SimpleTextBox_Element"/> class. </remarks>
+    public class VRA_CulturalContext_Element : SimpleTextBox_Element
     {
         /// <summary> Constructor for a new instance of the VRA_CulturalContext_Element class </summary>
         public VRA_CulturalContext_Element() : base("Cultural Context:", "vra_culturalcontext")

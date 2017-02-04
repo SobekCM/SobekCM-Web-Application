@@ -15,8 +15,8 @@ using SobekCM.Resource_Object;
 namespace SobekCM.Library.Citation.Elements
 {
     /// <summary> Element allows simple entry of a main title for an item </summary>
-    /// <remarks> This class extends the <see cref="simpleTextBox_Element"/> class. </remarks>
-    public class Title_Main_Element : simpleTextBox_Element
+    /// <remarks> This class extends the <see cref="SimpleTextBox_Element"/> class. </remarks>
+    public class Title_Main_Element : SimpleTextBox_Element
     {
         /// <summary> Constructor for a new instance of the Title_Main_Element class </summary>
         public Title_Main_Element() : base("Main Title", "title_main" )
@@ -63,8 +63,8 @@ namespace SobekCM.Library.Citation.Elements
                 }
             }
 
-            if (label_from_template_file.Length > 0)
-                Title = label_from_template_file;
+            if (LabelFromTemplateFile.Length > 0)
+                Title = LabelFromTemplateFile;
 
             render_helper(Output, Bib.Bib_Info.Main_Title.ToString(), Skin_Code, Current_User, CurrentLanguage, Translator, Base_URL);
         }

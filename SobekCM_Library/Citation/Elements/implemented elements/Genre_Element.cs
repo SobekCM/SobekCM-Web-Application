@@ -17,14 +17,14 @@ using SobekCM.Resource_Object.Bib_Info;
 namespace SobekCM.Library.Citation.Elements
 {
     /// <summary> Element allows simple entry of the genre keywords for an item </summary>
-    /// <remarks> This class extends the <see cref="textBox_TextBox_Element"/> class. </remarks>
-    public class Genre_Element : textBox_TextBox_Element
+    /// <remarks> This class extends the <see cref="TextBox_TextBox_Element"/> class. </remarks>
+    public class Genre_Element : TextBox_TextBox_Element
     {
         /// <summary> Constructor for a new instance of the Genre_Element class </summary>
         public Genre_Element()
             : base("Genre", "genre")
         {
-            second_label = "Authority";
+            SecondLabel = "Authority";
             Repeatable = true;
         }
 

@@ -16,7 +16,7 @@ using SobekCM.Resource_Object;
 namespace SobekCM.Library.Citation.Elements
 {
     /// <summary> Element to allow users to enter a URL for an embedded video to display within a digital resource </summary>
-    public class EmbeddedVideo_Element: textArea_Element
+    public class EmbeddedVideo_Element: TextArea_Element
     {
         /// <summary> Constructor for a new instance of the Note_Element class </summary>
         public EmbeddedVideo_Element()

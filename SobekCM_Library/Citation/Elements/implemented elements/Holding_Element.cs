@@ -18,8 +18,8 @@ using SobekCM.Resource_Object;
 namespace SobekCM.Library.Citation.Elements
 {
     /// <summary> Element allows entry of the holding location (code and statement) for an item </summary>
-    /// <remarks> This class extends the <see cref="comboBox_TextBox_Element"/> class. </remarks>
-    public class Holding_Element : comboBox_TextBox_Element
+    /// <remarks> This class extends the <see cref="ComboBox_TextBox_Element"/> class. </remarks>
+    public class Holding_Element : ComboBox_TextBox_Element
     {
         private readonly Dictionary<string, string> codeToNameDictionary;
 
@@ -28,8 +28,8 @@ namespace SobekCM.Library.Citation.Elements
             : base("Holding Location", "holding")
         {
             Repeatable = false;
-            possible_select_items.Add("");
-            clear_textbox_on_combobox_change = true;
+            PossibleSelectItems.Add("");
+            ClearTextboxOnComboboxChange = true;
 
             // Get the codes to display in the source
             codeToNameDictionary = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
@@ -69,7 +69,7 @@ namespace SobekCM.Library.Citation.Elements
                 IList<string> keys = tempItemList.Keys;
                 foreach (string thisKey in keys)
                 {
-                    possible_select_items.Add(tempItemList[thisKey].ToUpper());
+                    PossibleSelectItems.Add(tempItemList[thisKey].ToUpper());
                     if (codeToNameDictionary.ContainsKey(thisKey))
                     {
                         Add_Code_Statement_Link(thisKey, codeToNameDictionary[thisKey]);
@@ -117,8 +117,8 @@ namespace SobekCM.Library.Citation.Elements
             }
 
             // This should always have a blank value
-            if (!possible_select_items.Contains(String.Empty))
-                possible_select_items.Insert(0,String.Empty);
+            if (!PossibleSelectItems.Contains(String.Empty))
+                PossibleSelectItems.Insert(0,String.Empty);
 
             // Check the user to see if this should be limited
             bool some_set_as_selectable = false;
@@ -136,7 +136,7 @@ namespace SobekCM.Library.Citation.Elements
                         string code = thisAggr.Code.ToUpper();
                         if ((code.Length > 1) && (code[0] == 'I'))
                             code = code.Substring(1);
-                        if ((possible_select_items.Contains(code)) && (!possibles.Contains(code)))
+                        if ((PossibleSelectItems.Contains(code)) && (!possibles.Contains(code)))
                             possibles.Add(code);
                     }
                 }

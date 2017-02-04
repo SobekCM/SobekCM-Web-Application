@@ -17,8 +17,8 @@ using SobekCM.Resource_Object.Bib_Info;
 namespace SobekCM.Library.Citation.Elements
 {
     /// <summary> Element allows entry of the creator(s) name and role for an item </summary>
-    /// <remarks> This class extends the <see cref="textBox_ComboBox_Element"/> class. </remarks>
-    public class Creator_Complex_Element : textBox_ComboBox_Element
+    /// <remarks> This class extends the <see cref="TextBox_ComboBox_Element"/> class. </remarks>
+    public class Creator_Complex_Element : TextBox_ComboBox_Element
     {
         /// <summary> Constructor for a new instance of the Creator_Complex_Element class </summary>
         public Creator_Complex_Element()
@@ -227,10 +227,10 @@ namespace SobekCM.Library.Citation.Elements
 
                     if (creator_text.Trim().Length > 0)
                     {
-                        int index = possible_select_items_value.IndexOf(creator_type);
+                        int index = PossibleSelectItemsValue.IndexOf(creator_type);
                         if (index > 0)
                         {
-                            string text_role = possible_select_items_text[index];
+                            string text_role = PossibleSelectItemsText[index];
                             if (creator_type != text_role)
                             {
                                 Bib.Bib_Info.Add_Named_Entity(creator_text, text_role, creator_type);

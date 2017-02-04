@@ -17,8 +17,8 @@ using SobekCM.Resource_Object.Bib_Info;
 namespace SobekCM.Library.Citation.Elements
 {
     /// <summary> Element allows simple entry of the note(s) for an item </summary>
-    /// <remarks> This class extends the <see cref="textArea_Element"/> class. </remarks>
-    public class Note_Element : textArea_Element
+    /// <remarks> This class extends the <see cref="TextArea_Element"/> class. </remarks>
+    public class Note_Element : TextArea_Element
     {
         /// <summary> Constructor for a new instance of the Note_Element class </summary>
         public Note_Element()

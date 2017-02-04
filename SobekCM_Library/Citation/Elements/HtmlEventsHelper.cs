@@ -199,7 +199,7 @@ namespace SobekCM.Library.Citation.Elements
             StringBuilder builder = new StringBuilder();
             using (StringWriter writer = new StringWriter(builder))
             {
-                Add_Events(writer);
+                Add_Events_HTML(writer);
                 writer.Flush();
                 writer.Close();
             }
@@ -208,7 +208,7 @@ namespace SobekCM.Library.Citation.Elements
 
         /// <summary> Adds the events for this html element directly to the text writer output </summary>
         /// <param name="Output"> Output to write directly to </param>
-        public void Add_Events(TextWriter Output)
+        public void Add_Events_HTML(TextWriter Output)
         {
             if ( !String.IsNullOrWhiteSpace(OnClick))
                 Output.Write("onclick=\"" + OnClick.Replace("\"","'") + "\" ");

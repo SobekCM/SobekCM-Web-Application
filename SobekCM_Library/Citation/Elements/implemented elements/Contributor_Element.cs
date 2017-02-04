@@ -18,8 +18,8 @@ using SobekCM.Resource_Object.Bib_Info;
 namespace SobekCM.Library.Citation.Elements
 {
     /// <summary> Element allows simple entry of the contributor(s) name for an item </summary>
-    /// <remarks> This class extends the <see cref="simpleTextBox_Element"/> class. </remarks>
-    public class Contributor_Element : simpleTextBox_Element
+    /// <remarks> This class extends the <see cref="SimpleTextBox_Element"/> class. </remarks>
+    public class Contributor_Element : SimpleTextBox_Element
     {
         /// <summary> Constructor for a new instance of the Contributor_Element class </summary>
         public Contributor_Element() : base("Contributor", "contributor")

@@ -16,8 +16,8 @@ using SobekCM.Resource_Object;
 namespace SobekCM.Library.Citation.Elements
 {
     /// <summary> Element allows entry of an identifier with a fixed type, which also appears as the title for the metadata element </summary>
-    /// <remarks> This class extends the <see cref="simpleTextBox_Element"/> class. </remarks>
-    public class Identifier_Fixed_Type_Element : simpleTextBox_Element
+    /// <remarks> This class extends the <see cref="SimpleTextBox_Element"/> class. </remarks>
+    public class Identifier_Fixed_Type_Element : SimpleTextBox_Element
     {
         /// <summary> Constructor for a new instance of the Identifier_Fixed_Type_Element class </summary>
         public Identifier_Fixed_Type_Element()
@@ -64,13 +64,13 @@ namespace SobekCM.Library.Citation.Elements
                 }
             }
 
-            if ((label_from_template_file.Length > 0) && (fixed_type_from_template_file.Length == 0))
+            if ((LabelFromTemplateFile.Length > 0) && (FixedTypeFromTemplateFile.Length == 0))
             {
-                fixed_type_from_template_file = label_from_template_file;
+                FixedTypeFromTemplateFile = LabelFromTemplateFile;
             }
-            if ((label_from_template_file.Length == 0) && (fixed_type_from_template_file.Length > 0))
+            if ((LabelFromTemplateFile.Length == 0) && (FixedTypeFromTemplateFile.Length > 0))
             {
-                label_from_template_file = fixed_type_from_template_file;
+                LabelFromTemplateFile = FixedTypeFromTemplateFile;
             }
 
             List<string> terms = new List<string>();
@@ -79,11 +79,11 @@ namespace SobekCM.Library.Citation.Elements
                 terms.AddRange(Bib.Bib_Info.Identifiers.Select(thisIdentifier => thisIdentifier.Identifier));
             }
  
-            Title = label_from_template_file;
-            if (label_from_template_file.Length == 0)
+            Title = LabelFromTemplateFile;
+            if (LabelFromTemplateFile.Length == 0)
                 Title = "MISSING LABEL!";
 
-            render_helper(Output, terms, Skin_Code, Current_User, CurrentLanguage, Translator, Base_URL,  fixed_type_from_template_file.Replace(" ", "_").ToLower() + "fixedidentifier");
+            render_helper(Output, terms, Skin_Code, Current_User, CurrentLanguage, Translator, Base_URL,  FixedTypeFromTemplateFile.Replace(" ", "_").ToLower() + "fixedidentifier");
         }
 
         /// <summary> Prepares the bib object for the save, by clearing any existing data in this element's related field(s) </summary>
@@ -99,11 +99,11 @@ namespace SobekCM.Library.Citation.Elements
         /// <param name="Bib"> Object into which to save the user's data, entered into the html rendered by this element </param>
         public override void Save_To_Bib(SobekCM_Item Bib)
         {
-            string special_id = fixed_type_from_template_file.Replace(" ", "_").ToLower() + "fixedidentifier";
+            string special_id = FixedTypeFromTemplateFile.Replace(" ", "_").ToLower() + "fixedidentifier";
             string[] getKeys = HttpContext.Current.Request.Form.AllKeys;
             foreach (string thisKey in getKeys.Where(thisKey => thisKey.IndexOf(special_id) == 0))
             {
-                Bib.Bib_Info.Add_Identifier(HttpContext.Current.Request.Form[thisKey], fixed_type_from_template_file);
+                Bib.Bib_Info.Add_Identifier(HttpContext.Current.Request.Form[thisKey], FixedTypeFromTemplateFile);
             }
         }
     }

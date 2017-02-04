@@ -19,8 +19,8 @@ using SobekCM.Resource_Object;
 namespace SobekCM.Library.Citation.Elements
 {
     /// <summary> Element allows simple entry of the rights for an item </summary>
-    /// <remarks> This class extends the <see cref="textArea_Element"/> class. </remarks>
-    public class Rights_Element : textArea_Element
+    /// <remarks> This class extends the <see cref="TextArea_Element"/> class. </remarks>
+    public class Rights_Element : TextArea_Element
     {
         private string baseURL;
 
@@ -80,9 +80,9 @@ namespace SobekCM.Library.Citation.Elements
 
             string id_name = html_element_name.Replace("_", "");
 
-            int actual_cols = cols;
+            int actual_cols = Cols;
             if (IsMozilla)
-                actual_cols = cols_mozilla;
+                actual_cols = ColsMozilla;
 
             Output.WriteLine("  <!-- " + Title + " Element -->");
             Output.WriteLine("  <tr align=\"left\">");
@@ -107,7 +107,7 @@ namespace SobekCM.Library.Citation.Elements
             Output.WriteLine("        <tr>");
             Output.WriteLine("          <td>");
             Output.WriteLine("            <div id=\"" + html_element_name + "_div\">");
-            Output.WriteLine("              <textarea rows=\"" + rows + "\" cols=\"" + actual_cols + "\" name=\"" + id_name + "1\" id=\"" + id_name + "1\" class=\"" + html_element_name + "_input\" onfocus=\"javascript:textbox_enter('" + id_name + "1','" + html_element_name + "_input_focused')\" onblur=\"javascript:textbox_leave('" + id_name + "1','" + html_element_name + "_input')\">" + HttpUtility.HtmlEncode(Bib.Bib_Info.Access_Condition.Text.Trim()) + "</textarea>");
+            Output.WriteLine("              <textarea rows=\"" + Rows + "\" cols=\"" + actual_cols + "\" name=\"" + id_name + "1\" id=\"" + id_name + "1\" class=\"" + html_element_name + "_input\" onfocus=\"javascript:textbox_enter('" + id_name + "1','" + html_element_name + "_input_focused')\" onblur=\"javascript:textbox_leave('" + id_name + "1','" + html_element_name + "_input')\">" + HttpUtility.HtmlEncode(Bib.Bib_Info.Access_Condition.Text.Trim()) + "</textarea>");
             Output.WriteLine("              <div class=\"ShowOptionsRow\">");
 			Output.WriteLine("                <ul class=\"sbk_FauxDownwardTabsList\">");
 			Output.WriteLine("                  <li><a href=\"\" onclick=\"return open_cc_rights();\">CREATIVE COMMONS</a></li>");

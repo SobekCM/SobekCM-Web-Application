@@ -706,6 +706,9 @@ namespace SobekCM.Engine_Library.Configuration
         /// <summary> URL for the default resource 'open_folder_public.jpg' file ( http://cdn.sobekrepository.org/images/misc/open_folder_public.jpg by default)</summary>
         public static string Open_Folder_Public_Jpg { get { return config.Open_Folder_Public_Jpg; } }
 
+        /// <summary> URL for the included OpenSeaDragon image library javascript file ( http://cdn.sobekrepository.org/includes/openseadragon/1.2.1/openseadragon.min.js by default)</summary>
+        public static string OpenSeaDragon_Js { get { return config.OpenSeaDragon_Js; } }
+
         /// <summary> URL for the default resource 'pagenumbg.gif' file ( http://cdn.sobekrepository.org/images/bookturner/pageNumBg.gif by default)</summary>
         public static string Pagenumbg_Gif { get { return config.Pagenumbg_Gif; } }
 
@@ -1137,6 +1140,9 @@ namespace SobekCM.Engine_Library.Configuration
 
         /// <summary> URL for the default resource 'zoomout.png' file ( http://cdn.sobekrepository.org/images/bookturner/zoomout.png by default)</summary>
         public static string Zoomout_Png { get { return config.Zoomout_Png; } }
+
+        /// <summary> OpenSeaDragon image prefix URL, used to load the zooming images in the OpenSeaDragon JPEG2000 viewer ( http://cdn.sobekrepository.org/includes/openseadragon/1.2.1/images/ by default)</summary>
+        public static string OpenSeaDragon_Image_Prefix { get { return config.OpenSeaDragon_Image_Prefix;  } }
 
     }
 }

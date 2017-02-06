@@ -524,21 +524,21 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 switch (size_of_thumbnails)
                 {
                     case 2:
-                        image_url = (briefItem.Web.Source_URL + "/" + jpeg).Replace("\\", "/").Replace("//", "/").Replace("http:/", "http://");
+                        image_url = (briefItem.Web.Source_URL + "/" + jpeg).Replace("\\", "/").Replace("//", "/").Replace("http:/", "http://").Replace("https:/", "https://");
                         width = 315;
                         break;
 
                     case 3:
-                        image_url = (briefItem.Web.Source_URL + "/" + jpeg).Replace("\\", "/").Replace("//", "/").Replace("http:/", "http://");
+                        image_url = (briefItem.Web.Source_URL + "/" + jpeg).Replace("\\", "/").Replace("//", "/").Replace("http:/", "http://").Replace("https:/", "https://");
                         width = 472;
                         break;
 
                     case 4:
-                        image_url = (briefItem.Web.Source_URL + "/" + jpeg).Replace("\\", "/").Replace("//", "/").Replace("http:/", "http://");
+                        image_url = (briefItem.Web.Source_URL + "/" + jpeg).Replace("\\", "/").Replace("//", "/").Replace("http:/", "http://").Replace("https:/", "https://");
                         break;
 
                     default:
-                        image_url = (briefItem.Web.Source_URL + "/" + thumbnail).Replace("\\", "/").Replace("//", "/").Replace("http:/", "http://");
+                        image_url = (briefItem.Web.Source_URL + "/" + thumbnail).Replace("\\", "/").Replace("//", "/").Replace("http:/", "http://").Replace("https:/", "https://");
                         width = 150;
                         break;
 

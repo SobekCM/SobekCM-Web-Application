@@ -1820,7 +1820,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 }
 
                 // Compute the thumbnail and regular URLs
-                string thumbnail_url = (qc_item.Web.Source_URL + "/" + thumbnail_filename).Replace("\\", "/").Replace("//", "/").Replace("http:/", "http://");
+                string thumbnail_url = (qc_item.Web.Source_URL + "/" + thumbnail_filename).Replace("\\", "/").Replace("//", "/").Replace("http:/", "http://").Replace("https:/", "https://");
                 // If nothing found (but this is a page division) use the no thumbs image
                 if (thumbnail_filename.Length == 0)
                 {
@@ -1840,7 +1840,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                         }
                     }
 
-                    image_url = (qc_item.Web.Source_URL + "/" + filename).Replace("\\", "/").Replace("//", "/").Replace("http:/", "http://");
+                    image_url = (qc_item.Web.Source_URL + "/" + filename).Replace("\\", "/").Replace("//", "/").Replace("http:/", "http://").Replace("https:/", "https://");
                     if (filename.Length == 0)
                     {
                         image_url = Static_Resources_Gateway.Missingimage_Jpg;
@@ -2377,7 +2377,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
         public void Write_Left_Nav_Menu_Section(TextWriter Output, Custom_Tracer Tracer)
         {
-            throw new NotImplementedException();
+            // do nothing
         }
 
         /// <summary> Allows controls to be added directory to a place holder, rather than just writing to the output HTML stream </summary>

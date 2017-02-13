@@ -207,6 +207,12 @@ namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
                 GeoSpatial_Information geoInfo2 = pageNode.Get_Metadata_Module(GlobalVar.GEOSPATIAL_METADATA_MODULE_KEY) as GeoSpatial_Information;
                 if ((geoInfo2 != null) && (geoInfo2.hasData))
                 {
+                    // Since some data was found, make sure the geospatial object exists
+                    // Ensure the brief item has a geospatial object
+                    if (New.GeoSpatial == null)
+                        New.GeoSpatial = new BriefItem_GeoSpatial();
+
+                    // Any polygons exist at this page level?
                     if (geoInfo2.Polygon_Count > 0)
                     {
                         foreach (Coordinate_Polygon thisPolygon in geoInfo2.Polygons)
@@ -218,7 +224,7 @@ namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
                                 New.GeoSpatial.Polygons = new List<BriefItem_Coordinate_Polygon>();
 
                             // Get the collection of polygons and step through them
-                            ReadOnlyCollection<Coordinate_Polygon> origPolys = geoInfo.Polygons;
+                            ReadOnlyCollection<Coordinate_Polygon> origPolys = geoInfo2.Polygons;
                             foreach (Coordinate_Polygon thisPoly in origPolys)
                             {
                                 // Start to build the new poly

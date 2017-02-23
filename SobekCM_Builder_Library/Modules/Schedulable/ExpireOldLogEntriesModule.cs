@@ -1,5 +1,6 @@
 ﻿#region Using directives
 
+using System;
 using SobekCM.Core.Settings;
 
 #endregion
@@ -14,11 +15,11 @@ namespace SobekCM.Builder_Library.Modules.Schedulable
         /// <param name="Settings"> Instance-wide settings which may be required for this process </param>
         public override void DoWork(InstanceWide_Settings Settings)
         {
-            // CLear the old logs
-            //Console.WriteLine(dbInstance.Name + " - Expiring old log entries");
-            //preloader_logger.AddNonError(dbInstance.Name + " - Expiring old log entries");
-            //Library.Database.SobekCM_Database.Builder_Add_Log_Entry(-1, String.Empty, "Standard", "Expiring old log entries", String.Empty);
-            //Library.Database.SobekCM_Database.Builder_Expire_Log_Entries(InstanceWide_Settings_Singleton.Settings.Builder_Log_Expiration_Days);
+            // Clear the old logs
+            OnProcess("ExpireOldLogEntriesModule : Expiring old log entries", "Standard", null, null, -1);
+
+            // Clear the logs
+            Library.Database.SobekCM_Database.Builder_Expire_Log_Entries(Settings.Builder.Log_Expiration_Days);
         }
     }
 }

@@ -370,20 +370,6 @@ namespace SobekCM.Builder_Library
 						{
 							if (firstRun)
 							{
-
-								//    // Always build an endeca feed first (so it occurs once a day)
-								//    if (Engine_ApplicationCache_Gateway.Settings.Build_MARC_Feed_By_Default)
-								//    {
-								//        Create_Complete_MarcXML_Feed(false);
-								//    }
-								//}
-								
-								// CLear the old logs
-								Console.WriteLine(dbInstance.Name + " - Expiring old log entries");
-								preloader_logger.AddNonError(dbInstance.Name + " - Expiring old log entries");
-								Library.Database.SobekCM_Database.Builder_Add_Log_Entry(-1, String.Empty, "Standard", "Expiring old log entries", String.Empty);
-								Library.Database.SobekCM_Database.Builder_Expire_Log_Entries(Engine_ApplicationCache_Gateway.Settings.Builder.Log_Expiration_Days);
-
 								// Rebuild all the static pages
 								Console.WriteLine(dbInstance.Name + " - Rebuilding all static pages");
 								preloader_logger.AddNonError(dbInstance.Name + " - Rebuilding all static pages");

@@ -152,7 +152,8 @@ namespace SobekCM.Builder_Library
 	        // Set to standard operation then
 			Abort_Database_Mechanism.Builder_Operation_Flag = Builder_Operation_Flag_Enum.STANDARD_OPERATION;
 
-            // Run the usage stats module first
+            // Run some processes the first time it runs
+            // These will be converted to scheduled tasks by version 5.0
             if (firstrun)
             {
                 // Run the usage stats
@@ -166,6 +167,14 @@ namespace SobekCM.Builder_Library
                 tileModule.Process += module_Process;
                 tileModule.Error += module_Error;
                 tileModule.DoWork(settings);
+
+                // Clear the old logs files
+                ExpireOldLogEntriesModule logsModule = new ExpireOldLogEntriesModule();
+                logsModule.Process += module_Process;
+                logsModule.Error += module_Error;
+                logsModule.DoWork(settings);
+
+
 
                 firstrun = false;
             }

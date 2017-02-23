@@ -189,7 +189,7 @@ namespace SobekCM.Library
 	    /// <param name="InstanceName"> Name of this instance </param>
 	    /// <param name="PrimaryLogId"> Log ID in the case this is the builder and it has been pre-logged </param>
 	    /// <returns> The number of encountered errors </returns>
-	    public int Rebuild_All_Static_Pages(LogFileXhtml Logger, bool BuildAllCitationPages, string InstanceName, long PrimaryLogId )
+	    public int Rebuild_All_Static_Pages( LogFileXhtml Logger, bool BuildAllCitationPages, string InstanceName, long PrimaryLogId )
         {
 	        if (InstanceName.Length > 0)
 		        InstanceName = InstanceName + " - ";
@@ -197,7 +197,6 @@ namespace SobekCM.Library
 	        if (PrimaryLogId < 0)
 	        {
 				Console.WriteLine("Rebuilding all static pages");
-		        Logger.AddNonError(InstanceName + "Rebuilding all static pages");
 		        PrimaryLogId = SobekCM_Database.Builder_Add_Log_Entry(-1, String.Empty, "Standard", "Rebuilding all static pages", String.Empty);
 	        }
 
@@ -1395,6 +1394,7 @@ namespace SobekCM.Library
 		/// <param name="HTMLSkin"> Default html web skin/interface</param>
 		public void Display_Footer(TextWriter Writer, Web_Skin_Object HTMLSkin)
         {
+
             // Get the current contact URL
             Display_Mode_Enum thisMode = currentMode.Mode;
             currentMode.Mode = Display_Mode_Enum.Contact;

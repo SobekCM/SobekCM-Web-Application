@@ -194,6 +194,8 @@ namespace SobekCM.Library.HTML
 
             // Look for some basic mode data
             string collection_code = String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.Aggregation) ? String.Empty : RequestSpecificValues.Current_Mode.Aggregation;
+            if (String.Compare(collection_code, "ALL", StringComparison.OrdinalIgnoreCase) == 0)
+                collection_code = String.Empty;
             string bibid = String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.BibID) ? String.Empty : RequestSpecificValues.Current_Mode.BibID;
             string vid = String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.BibID) ? String.Empty : RequestSpecificValues.Current_Mode.BibID;
             string mode = String.Empty;

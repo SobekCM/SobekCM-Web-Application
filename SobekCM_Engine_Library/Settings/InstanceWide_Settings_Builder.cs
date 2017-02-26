@@ -113,7 +113,7 @@ namespace SobekCM.Engine_Library.Settings
             // Set some values that used to be constants in the original settings object.  
             // These are all canidates to be pushed into the database at some point
             SettingsObject.Static.Reserved_Keywords = new List<string> {
-                    "l", "my", "fragment", "json",
+                    "l", "my", "fragment", "json", "empty",
                     "dataset", "dataprovider", "xml", "textonly", "shibboleth", "internal",
                     "contact", "folder", "admin", "preferences", "stats", "statistics", "adminhelp",
                     "partners", "tree", "brief", "personalized", "all", "new", "map", "advanced",

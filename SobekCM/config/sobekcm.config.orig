@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<SobekCM_Config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://sobekrepository.org/schemas/sobekcm_config"
+	xsi:schemaLocation="http://sobekrepository.org/schemas/sobekcm_config
+		http://sobekrepository.org/schemas/sobekcm_config.xsd">
+	<Connections>
+		<!-- NOTE: If you change the database connection string in production, you need to restart the app pool/iis. -->
+		<!--       If you change the database connection string in Visual Studio, you need to restart Visual Studio. -->
+<<<<<<< Updated upstream
+		<Connection_String type="MSSQL" isHosted="true">data source=SOB-SQL01\SOBEK2;initial catalog=middlesexcc;integrated security=Yes;</Connection_String>
+=======
+		<Connection_String type="MSSQL" isHosted="true">data source=MARK_LAPTOP\SOBEKCM;initial catalog=Develop;integrated security=Yes;</Connection_String>
+>>>>>>> Stashed changes
+	</Connections>
+
+	<ErrorHandling>
+		<ErrorEmails>[EmailAddress]</ErrorEmails>
+		<ErrorPage>http://sobekdigital.com</ErrorPage>
+	</ErrorHandling>
+
+</SobekCM_Config>

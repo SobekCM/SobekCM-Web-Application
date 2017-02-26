@@ -42,8 +42,13 @@ namespace SobekCM.Library.Helpers.CKEditor
                 return;
             }
 
-            if ( Include_Script_Reference )
-                Output.WriteLine("  <script type=\"text/javascript\" src=\"" + UI_ApplicationCache_Gateway.Settings.Servers.Application_Server_URL + "default/ckeditor/4.4.7/ckeditor.js\"></script>");
+            if (Include_Script_Reference)
+            {
+                if ( !String.IsNullOrEmpty(BaseUrl))
+                    Output.WriteLine("  <script type=\"text/javascript\" src=\"" + BaseUrl + "default/ckeditor/4.4.7/ckeditor.js\"></script>");
+                else
+                    Output.WriteLine("  <script type=\"text/javascript\" src=\"" + UI_ApplicationCache_Gateway.Settings.Servers.Application_Server_URL + "default/ckeditor/4.4.7/ckeditor.js\"></script>");
+            }
 
             Output.WriteLine("  <script type=\"text/javascript\">");
 

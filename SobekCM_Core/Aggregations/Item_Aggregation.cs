@@ -45,7 +45,7 @@ namespace SobekCM.Core.Aggregations
             Browseable_Fields = new List<Item_Aggregation_Metadata_Type>();
             Facets = new List<short>();
             Views_And_Searches = new List<Item_Aggregation_Views_Searches_Enum>();
-            Result_Views = new List<Result_Display_Type_Enum>();
+            Result_Views = new List<string>();
 
             Custom_Home_Page = false;
         }
@@ -63,7 +63,7 @@ namespace SobekCM.Core.Aggregations
             Browseable_Fields = new List<Item_Aggregation_Metadata_Type>();
             Facets = new List<short>();
             Views_And_Searches = new List<Item_Aggregation_Views_Searches_Enum>();
-            Result_Views = new List<Result_Display_Type_Enum>();
+            Result_Views = new List<string>();
 
             Custom_Home_Page = false;
         }
@@ -149,14 +149,14 @@ namespace SobekCM.Core.Aggregations
         [DataMember(Name = "defaultResultView")]
         [XmlElement("defaultResultView")]
         [ProtoMember(10)]
-        public Result_Display_Type_Enum Default_Result_View { get; set; }
+        public string Default_Result_View { get; set; }
 
         /// <summary> Gets the list of all result views present in this item aggregation </summary>
         [DataMember(Name = "resultsViews")]
         [XmlArray("resultsViews")]
-        [XmlArrayItem("resultView", typeof(Result_Display_Type_Enum))]
+        [XmlArrayItem("resultView", typeof(string))]
         [ProtoMember(11)]
-        public List<Result_Display_Type_Enum> Result_Views { get; set; }
+        public List<string> Result_Views { get; set; }
 
         /// <summary> Statistical information about this aggregation ( i.e., item, title, and page count ) </summary>
         [DataMember(EmitDefaultValue = false, Name = "statistics")]

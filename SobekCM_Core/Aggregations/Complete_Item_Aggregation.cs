@@ -9,7 +9,6 @@ using System.Runtime.Serialization;
 using System.Text;
 using System.Xml.Serialization;
 using ProtoBuf;
-using SobekCM.Core.BriefItem;
 using SobekCM.Core.Configuration;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Navigation;
@@ -57,15 +56,9 @@ namespace SobekCM.Core.Aggregations
 			Browseable_Fields = new List<Complete_Item_Aggregation_Metadata_Type>();
 			Facets = new List<short> { 3, 5, 7, 10, 8 };
 
-			// Add the default result views
-			Result_Views = new List<Result_Display_Type_Enum>
-							  {
-								  Result_Display_Type_Enum.Brief,
-								  Result_Display_Type_Enum.Table,
-								  Result_Display_Type_Enum.Thumbnails,
-								  Result_Display_Type_Enum.Full_Citation
-							  };
-			Default_Result_View = Result_Display_Type_Enum.Brief;
+            // Add the default result views
+            Result_Views = new List<string> { "BRIEF", "TABLE", "THUMBNAIL" };
+            Default_Result_View = "BRIEF";
 		}
 
 	    /// <summary> Constructor for a new instance of the Item_Aggregation_Complete class  </summary>
@@ -88,15 +81,9 @@ namespace SobekCM.Core.Aggregations
 			Browseable_Fields = new List<Complete_Item_Aggregation_Metadata_Type>();
 			Facets = new List<short> {3, 5, 7, 10, 8};
 
-			// Add the default result views
-			Result_Views = new List<Result_Display_Type_Enum>
-							  {
-								  Result_Display_Type_Enum.Brief,
-								  Result_Display_Type_Enum.Table,
-								  Result_Display_Type_Enum.Thumbnails,
-								  Result_Display_Type_Enum.Full_Citation
-							  };
-			Default_Result_View = Result_Display_Type_Enum.Brief;
+            // Add the default result views
+            Result_Views = new List<string> { "BRIEF", "TABLE", "THUMBNAIL" };
+            Default_Result_View = "BRIEF";
 		}
 
 	    /// <summary> Constructor for a new instance of the Item_Aggregation_Complete class </summary>
@@ -224,14 +211,8 @@ namespace SobekCM.Core.Aggregations
 			}
 
 			// Add the default result views
-			Result_Views = new List<Result_Display_Type_Enum>
-							  {
-								  Result_Display_Type_Enum.Brief,
-								  Result_Display_Type_Enum.Table,
-								  Result_Display_Type_Enum.Thumbnails,
-								  Result_Display_Type_Enum.Full_Citation
-							  };
-			Default_Result_View = Result_Display_Type_Enum.Brief;
+            Result_Views = new List<string> { "BRIEF", "TABLE", "THUMBNAIL" };
+            Default_Result_View = "BRIEF";
 		}
 
 		#endregion
@@ -302,12 +283,12 @@ namespace SobekCM.Core.Aggregations
 		/// <summary> Gets the default results view mode for this item aggregation </summary>
 		[DataMember(Name = "defaultResultView")]
 		[ProtoMember(10)]
-		public Result_Display_Type_Enum Default_Result_View { get; set; }
+		public string Default_Result_View { get; set; }
 
 		/// <summary> Gets the list of all result views present in this item aggregation </summary>
 		[DataMember(Name = "resultsViews")]
 		[ProtoMember(11)]
-		public List<Result_Display_Type_Enum> Result_Views { get; set; }
+		public List<string> Result_Views { get; set; }
 
 		/// <summary> Statistical information about this aggregation ( i.e., item, title, and page count ) </summary>
 		[DataMember(EmitDefaultValue = false, Name = "statistics")]
@@ -1314,97 +1295,6 @@ namespace SobekCM.Core.Aggregations
 	                }
 	            }
 	            writer.WriteLine("</hi:banner>");
-	            writer.WriteLine();
-
-	            // Add any changes to the standard views during browses or search results
-	            List<string> adds = new List<string>();
-	            List<string> deletes = new List<string>
-	            {
-	                "<hi:remove type=\"BRIEF\" />",
-	                "<hi:remove type=\"FULL\" />",
-	                "<hi:remove type=\"TABLE\" />",
-	                "<hi:remove type=\"THUMBNAIL\" />"
-	            };
-	            if (Result_Views != null)
-	            {
-	                foreach (Result_Display_Type_Enum thisType in Result_Views)
-	                {
-	                    switch (thisType)
-	                    {
-	                        case Result_Display_Type_Enum.Brief:
-	                            deletes.Remove("<hi:remove type=\"BRIEF\" />");
-	                            break;
-
-	                        case Result_Display_Type_Enum.Full_Citation:
-	                        case Result_Display_Type_Enum.Full_Image:
-	                            deletes.Remove("<hi:remove type=\"FULL\" />");
-	                            break;
-
-	                        case Result_Display_Type_Enum.Map:
-	                            adds.Add("<hi:remove type=\"MAP\" />");
-	                            break;
-
-	                        case Result_Display_Type_Enum.Map_Beta:
-	                            adds.Add("<hi:remove type=\"MAP_BETA\" />");
-	                            break;
-
-	                        case Result_Display_Type_Enum.Table:
-	                            deletes.Remove("<hi:remove type=\"TABLE\" />");
-	                            break;
-
-	                        case Result_Display_Type_Enum.Thumbnails:
-	                            deletes.Remove("<hi:remove type=\"THUMBNAIL\" />");
-	                            break;
-	                    }
-	                }
-	            }
-
-	            switch (Default_Result_View)
-	            {
-	                case Result_Display_Type_Enum.Brief:
-	                    adds.Add("<hi:add type=\"BRIEF\" default=\"DEFAULT\" />");
-	                    break;
-
-	                case Result_Display_Type_Enum.Full_Citation:
-	                case Result_Display_Type_Enum.Full_Image:
-	                    adds.Add("<hi:add type=\"FULL\" default=\"DEFAULT\" />");
-	                    break;
-
-	                case Result_Display_Type_Enum.Map:
-	                    adds.Remove("<hi:add type=\"MAP\" />");
-	                    adds.Add("<hi:add type=\"MAP\" default=\"DEFAULT\" />");
-	                    break;
-
-	                case Result_Display_Type_Enum.Map_Beta:
-	                    adds.Remove("<hi:add type=\"MAP_BETA\" />");
-	                    adds.Add("<hi:add type=\"MAP_BETA\" default=\"DEFAULT\" />");
-	                    break;
-
-	                case Result_Display_Type_Enum.Table:
-	                    adds.Add("<hi:add type=\"TABLE\" default=\"DEFAULT\" />");
-	                    break;
-
-	                case Result_Display_Type_Enum.Thumbnails:
-	                    adds.Add("<hi:add type=\"THUMBNAIL\" default=\"DEFAULT\" />");
-	                    break;
-	            }
-
-
-	            if ((adds.Count > 0) || (deletes.Count > 0))
-	            {
-	                writer.WriteLine("  <hi:results>");
-	                writer.WriteLine("    <hi:views>");
-	                foreach (string thisDelete in deletes)
-	                    writer.WriteLine("      " + thisDelete);
-	                foreach (string thisAdd in adds)
-	                    writer.WriteLine("      " + thisAdd);
-	                writer.WriteLine("    </hi:views>");
-	                writer.WriteLine("  </hi:results>");
-	            }
-	            else
-	            {
-	                writer.WriteLine("  <hi:results></hi:results>");
-	            }
 	            writer.WriteLine();
 
 	            // Add the custom derivative information here, if there are some

@@ -5,9 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Xml;
 using SobekCM.Core.Aggregations;
-using SobekCM.Core.Configuration;
 using SobekCM.Core.Configuration.Localization;
-using SobekCM.Core.Navigation;
 
 #endregion
 
@@ -74,148 +72,11 @@ namespace SobekCM.Engine_Library.Aggregations
                             read_browse(false, nodeReader, HierarchyObject);
                             break;
 
-                        case "HI:RESULTS":
-                            read_results_specs(nodeReader, HierarchyObject);
-                            break;
                     }
                 }
             }
         }
 
-        private static void read_results_specs(XmlNodeReader NodeReader, Complete_Item_Aggregation HierarchyObject)
-        {
-            bool inViews = false;
-            while (NodeReader.Read())
-            {
-                // If this is the beginning tag for an element, assign the next values accordingly
-                string nodeName;
-                if (NodeReader.NodeType == XmlNodeType.Element)
-                {
-                    // Get the node name, trimmed and to upper
-                    nodeName = NodeReader.Name.Trim().ToUpper();
-
-                    switch (nodeName)
-                    {
-                        case "HI:VIEWS":
-                            inViews = true;
-                            break;
-
-                        case "HI:ADD":
-                            if ( inViews )
-                            {
-                                bool isDefault = false;
-                                string type = String.Empty;
-                                if (NodeReader.MoveToAttribute("default"))
-                                {
-                                    isDefault = true;
-                                }
-                                if (NodeReader.MoveToAttribute("type"))
-                                {
-                                    type = NodeReader.Value.ToUpper();
-                                }
-                                if (type.Length > 0)
-                                {
-                                    Result_Display_Type_Enum displayType = Result_Display_Type_Enum.Default;
-                                    switch (type)
-                                    {
-                                        case "BRIEF":
-                                            displayType = Result_Display_Type_Enum.Brief;
-                                            break;
-
-                                        case "FULL":
-                                            displayType = Result_Display_Type_Enum.Full_Citation;
-                                            break;
-
-                                        case "THUMBNAIL":
-                                            displayType = Result_Display_Type_Enum.Thumbnails;
-                                            break;
-
-                                        case "TABLE":
-                                            displayType = Result_Display_Type_Enum.Table;
-                                            break;
-
-                                        case "MAP":
-                                            displayType = Result_Display_Type_Enum.Map;
-                                            break;
-                                    }
-                                    if (displayType != Result_Display_Type_Enum.Default)
-                                    {
-                                        if (!HierarchyObject.Result_Views.Contains(displayType))
-                                        {
-                                            HierarchyObject.Result_Views.Add(displayType);
-                                        }
-                                        if (isDefault)
-                                        {
-                                            HierarchyObject.Default_Result_View = displayType;
-                                        }
-                                    }
-                                }
-                            }
-                            break;
-
-                        case "HI:REMOVE":
-                            if (inViews)
-                            {
-                                string type = String.Empty;
-                                if (NodeReader.MoveToAttribute("type"))
-                                {
-                                    type = NodeReader.Value.ToUpper();
-                                }
-                                if (type.Length > 0)
-                                {
-                                    Result_Display_Type_Enum displayType = Result_Display_Type_Enum.Default;
-                                    switch (type)
-                                    {
-                                        case "BRIEF":
-                                            displayType = Result_Display_Type_Enum.Brief;
-                                            break;
-
-                                        case "FULL":
-                                            displayType = Result_Display_Type_Enum.Full_Citation;
-                                            break;
-
-                                        case "THUMBNAIL":
-                                            displayType = Result_Display_Type_Enum.Thumbnails;
-                                            break;
-
-                                        case "TABLE":
-                                            displayType = Result_Display_Type_Enum.Table;
-                                            break;
-
-                                        case "MAP":
-                                            displayType = Result_Display_Type_Enum.Map;
-                                            break;
-                                    }
-                                    if (displayType != Result_Display_Type_Enum.Default)
-                                    {
-                                        if (HierarchyObject.Result_Views.Contains(displayType))
-                                        {
-                                            HierarchyObject.Result_Views.Remove(displayType);
-                                        }
-                                    }
-                                }
-                            }
-                            break;
-                    }
-                }
-
-                // If this is not an end element, continue
-                if (NodeReader.NodeType != XmlNodeType.EndElement) continue;
-
-                // Get the node name, trimmed and to upper
-                nodeName = NodeReader.Name.Trim().ToUpper();
-
-                switch ( nodeName )
-                {
-                    case "HI:VIEWS":
-                        inViews = false;
-                        break;
-
-                    case "HI:RESULTS":
-                        return;
-                }
-            }
-        }
 
         private static void read_settings(XmlNodeReader NodeReader, Complete_Item_Aggregation HierarchyObject)
         {

@@ -20,7 +20,8 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Debug\SobekCM_Engine_Library.XML</DocumentationFile>
+    <DocumentationFile>
+    </DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -167,7 +168,7 @@
       <Name>EngineAgnosticLayerDbAccess</Name>
     </ProjectReference>
     <ProjectReference Include="..\SobekCM_Core\SobekCM_Core.csproj">
-      <Project>{849C78A5-C60B-4FAF-9EFB-943753F64E56}</Project>
+      <Project>{849c78a5-c60b-4faf-9efb-943753f64e56}</Project>
       <Name>SobekCM_Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\SobekCM_Resource_Database\SobekCM_Resource_Database.csproj">

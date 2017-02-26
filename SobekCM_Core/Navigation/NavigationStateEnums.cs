@@ -67,6 +67,9 @@
         /// <summary>Displays the congratulations screen after the user submits a contact us email</summary>
         Contact_Sent,
 
+        /// <summary>Empty writer just provides the basic look and feel of the indicated web skin </summary>
+        Empty,
+
         /// <summary>Display internal information about this digital library</summary>
         Internal,
 
@@ -158,49 +161,6 @@
         /// <summary> Results must exactly match the search term (which does not use the full-text indexing) </summary>
         Exact_Match
     }
-
-    /// <summary> Format to display search or browse results </summary>
-    /// <remarks> This roughly corresponds to the result viewer used by the results (or collection) html subwriter</remarks>
-    public enum Result_Display_Type_Enum : byte
-    {
-        /// <summary> No result display type specified, not applicable </summary>
-        NONE,
-
-        /// <summary> Default result display type means that not particular type was selected
-        /// and the item aggregation default is utilized </summary>
-        Default,
-
-        /// <summary> Displays the results in the bookshelf view, which allows the user to remove the item
-        /// from the bookshelf, move the item, or edit the user notes </summary>
-        Bookshelf,
-
-        /// <summary> Display the results in a brief metadata format (with thumbnails) </summary>
-        Brief,
-
-        /// <summary> Allows results to be exported as CSV or excel files </summary>
-        Export,
-
-        /// <summary> Display the full citation of a single result</summary>
-        Full_Citation,
-
-        /// <summary> Display the main image of a single result</summary>
-        Full_Image,
-
-        /// <summary> Display the results according to their main coordinate information</summary>
-        Map,
-
-        /// <summary> Display the results according to their main coordinate information</summary>
-        Map_Beta,
-
-        /// <summary> Static text-type browse/info mode </summary>
-        Static_Text,
-
-        /// <summary> Display the results in a simple table format </summary>
-        Table,
-
-        /// <summary> Display the results in a thumbnail format</summary>
-        Thumbnails
-    };
 
     /// <summary> Type of administrative information requested for display </summary>
     public enum Internal_Type_Enum : byte

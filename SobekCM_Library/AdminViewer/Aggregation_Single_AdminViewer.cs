@@ -2459,7 +2459,7 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine("     </td>");
 			Output.WriteLine("  </tr>");
 
-
+            /*
 			// Add all the possible result views
 			Output.WriteLine("  <tr class=\"sbkSaav_TallRow\">");
 			Output.WriteLine("    <td style=\"width:50px\">&nbsp;</td>");
@@ -2490,12 +2490,15 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine("       </table>");
 			Output.WriteLine("     </td>");
 			Output.WriteLine("  </tr>");
+             * */
+
 			Output.WriteLine("</table>");
 
 		}
 
-		private void Result_Writer_Helper( TextWriter Output, string FieldName, string NoOption, Result_Display_Type_Enum Result_Type, string HtmlClass )
+		private void Result_Writer_Helper( TextWriter Output, string FieldName, string NoOption, string Result_Type, string HtmlClass )
 		{
+            /*
 			// Start the select box
 			Output.Write("<select class=\"" + HtmlClass + "\" name=\"" + FieldName + "\" id=\"" + FieldName + "\">");
 
@@ -2518,6 +2521,8 @@ namespace SobekCM.Library.AdminViewer
 
 			//Output.Write(Result_Type == Result_Display_Type_Enum.Full_Citation ? "<option value=\"full\" selected=\"selected\" >Full View</option>" : "<option value=\"full\">Full View</option>");
 			Output.WriteLine("</select>");
+             * 
+             * */
 		}
 
 		private void Facet_Writer_Helper(  TextWriter Output, short FacetID, int FacetCounter )

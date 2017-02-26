@@ -128,39 +128,11 @@ namespace SobekCM.Core.Navigation
                     if (Current_Mode.FolderID > 0)
                     {
                         StringBuilder folderBuilder = new StringBuilder(this_base_url + "folder/" + Current_Mode.FolderID);
-                        switch (Current_Mode.Result_Display_Type)
-                        {
-                            case Result_Display_Type_Enum.Brief:
-                                folderBuilder.Append("/brief");
-                                break;
-                            case Result_Display_Type_Enum.Export:
-                                folderBuilder.Append("/export");
-                                break;
-                            case Result_Display_Type_Enum.Full_Citation:
-                                folderBuilder.Append("/citation");
-                                break;
-                            case Result_Display_Type_Enum.Full_Image:
-                                folderBuilder.Append("/image");
-                                break;
-                            case Result_Display_Type_Enum.Map:
-                                folderBuilder.Append("/map");
-                                break;
-                            case Result_Display_Type_Enum.Map_Beta:
-                                folderBuilder.Append("/mapbeta");
-                                break;
-                            case Result_Display_Type_Enum.Table:
-                                folderBuilder.Append("/table");
-                                break;
-                            case Result_Display_Type_Enum.Thumbnails:
-                                folderBuilder.Append("/thumbs");
-                                break;
-                            default:
-                                folderBuilder.Append("/brief");
-                                break;
-                        }
+                        if (!String.IsNullOrEmpty(Current_Mode.Result_Display_Type))
+                            folderBuilder.Append("/" + Current_Mode.Result_Display_Type.ToLower());
                         if (Current_Mode.Page > 1)
                         {
-                            folderBuilder.Append("/" + Current_Mode.Page.ToString());
+                            folderBuilder.Append("/" + Current_Mode.Page);
                         }
                         return folderBuilder + urlOptions1;
                     }
@@ -275,86 +247,30 @@ namespace SobekCM.Core.Navigation
                             return this_base_url + "my/massupdate/" + Current_Mode.BibID + urlOptions1;
 
                         case My_Sobek_Type_Enum.Folder_Management:
-                            switch (Current_Mode.Result_Display_Type)
+                            if (!String.IsNullOrEmpty(Current_Mode.Result_Display_Type))
                             {
-                                case Result_Display_Type_Enum.Brief:
-                                    if (!String.IsNullOrEmpty(Current_Mode.My_Sobek_SubMode))
+                                if (!String.IsNullOrEmpty(Current_Mode.My_Sobek_SubMode))
+                                {
+                                    if (Current_Mode.Page > 1)
                                     {
-                                        if (Current_Mode.Page > 1)
-                                        {
-                                            return this_base_url + "my/bookshelf/brief/" + Current_Mode.My_Sobek_SubMode + "/" + Current_Mode.Page + urlOptions1;
-                                        }
-                                        return this_base_url + "my/bookshelf/brief/" + Current_Mode.My_Sobek_SubMode + urlOptions1;
+                                        return this_base_url + "my/bookshelf/" + Current_Mode.Result_Display_Type.ToLower() + "/" + Current_Mode.My_Sobek_SubMode + "/" + Current_Mode.Page + urlOptions1;
                                     }
-                                    return this_base_url + "my/bookshelf" + urlOptions1;
-
-                                case Result_Display_Type_Enum.Export:
-                                    if (!String.IsNullOrEmpty(Current_Mode.My_Sobek_SubMode))
-                                    {
-                                        if (Current_Mode.Page > 1)
-                                        {
-                                            return this_base_url + "my/bookshelf/export/" + Current_Mode.My_Sobek_SubMode + "/" + Current_Mode.Page + urlOptions1;
-                                        }
-                                        return this_base_url + "my/bookshelf/export/" + Current_Mode.My_Sobek_SubMode + urlOptions1;
-                                    }
-                                    return this_base_url + "my/bookshelf" + urlOptions1;
-
-                                case Result_Display_Type_Enum.Full_Citation:
-                                    if (!String.IsNullOrEmpty(Current_Mode.My_Sobek_SubMode))
-                                    {
-                                        if (Current_Mode.Page > 1)
-                                        {
-                                            return this_base_url + "my/bookshelf/citation/" + Current_Mode.My_Sobek_SubMode + "/" + Current_Mode.Page + urlOptions1;
-                                        }
-                                        return this_base_url + "my/bookshelf/citation/" + Current_Mode.My_Sobek_SubMode + urlOptions1;
-                                    }
-                                    return this_base_url + "my/bookshelf" + urlOptions1;
-
-                                case Result_Display_Type_Enum.Full_Image:
-                                    if (!String.IsNullOrEmpty(Current_Mode.My_Sobek_SubMode))
-                                    {
-                                        if (Current_Mode.Page > 1)
-                                        {
-                                            return this_base_url + "my/bookshelf/image/" + Current_Mode.My_Sobek_SubMode + "/" + Current_Mode.Page + urlOptions1;
-                                        }
-                                        return this_base_url + "my/bookshelf/image/" + Current_Mode.My_Sobek_SubMode + urlOptions1;
-                                    }
-                                    return this_base_url + "my/bookshelf" + urlOptions1;
-
-                                case Result_Display_Type_Enum.Table:
-                                    if (!String.IsNullOrEmpty(Current_Mode.My_Sobek_SubMode))
-                                    {
-                                        if (Current_Mode.Page > 1)
-                                        {
-                                            return this_base_url + "my/bookshelf/table/" + Current_Mode.My_Sobek_SubMode + "/" + Current_Mode.Page + urlOptions1;
-                                        }
-                                        return this_base_url + "my/bookshelf/table/" + Current_Mode.My_Sobek_SubMode + urlOptions1;
-                                    }
-                                    return this_base_url + "my/bookshelf" + urlOptions1;
-
-                                case Result_Display_Type_Enum.Thumbnails:
-                                    if (!String.IsNullOrEmpty(Current_Mode.My_Sobek_SubMode))
-                                    {
-                                        if (Current_Mode.Page > 1)
-                                        {
-                                            return this_base_url + "my/bookshelf/thumbs/" + Current_Mode.My_Sobek_SubMode + "/" + Current_Mode.Page + urlOptions1;
-                                        }
-                                        return this_base_url + "my/bookshelf/thumbs/" + Current_Mode.My_Sobek_SubMode + urlOptions1;
-                                    }
-                                    return this_base_url + "my/bookshelf" + urlOptions1;
-
-                                default:
-                                    if (!String.IsNullOrEmpty(Current_Mode.My_Sobek_SubMode))
-                                    {
-                                        if (Current_Mode.Page > 1)
-                                        {
-                                            return this_base_url + "my/bookshelf/" + Current_Mode.My_Sobek_SubMode + "/" + Current_Mode.Page + urlOptions1;
-                                        }
-                                        return this_base_url + "my/bookshelf/" + Current_Mode.My_Sobek_SubMode + urlOptions1;
-                                    }
-                                    return this_base_url + "my/bookshelf" + urlOptions1;
+                                    return this_base_url + "my/bookshelf/" + Current_Mode.Result_Display_Type.ToLower() + "/" + Current_Mode.My_Sobek_SubMode + urlOptions1;
+                                }
+                                return this_base_url + "my/bookshelf/" + Current_Mode.Result_Display_Type.ToLower() + urlOptions1;
                             }
-
+                            else
+                            {
+                                if (!String.IsNullOrEmpty(Current_Mode.My_Sobek_SubMode))
+                                {
+                                    if (Current_Mode.Page > 1)
+                                    {
+                                        return this_base_url + "my/bookshelf/" + Current_Mode.My_Sobek_SubMode + "/" + Current_Mode.Page + urlOptions1;
+                                    }
+                                    return this_base_url + "my/bookshelf/" + Current_Mode.My_Sobek_SubMode + urlOptions1;
+                                }
+                                return this_base_url + "my/bookshelf" + urlOptions1;                              
+                            }
 
                         case My_Sobek_Type_Enum.Preferences:
                             return this_base_url + "my/preferences" + urlOptions1;
@@ -756,33 +672,9 @@ namespace SobekCM.Core.Navigation
                     }
 
                     // Add the results display type into the search results URL
-                    switch (Current_Mode.Result_Display_Type)
-                    {
-                        case Result_Display_Type_Enum.Brief:
-                            results_url_builder.Append("brief/");
-                            break;
-                        case Result_Display_Type_Enum.Export:
-                            results_url_builder.Append("export/");
-                            break;
-                        case Result_Display_Type_Enum.Full_Citation:
-                            results_url_builder.Append("citation/");
-                            break;
-                        case Result_Display_Type_Enum.Full_Image:
-                            results_url_builder.Append("image/");
-                            break;
-                        case Result_Display_Type_Enum.Map:
-                            results_url_builder.Append("map/");
-                            break;
-                        case Result_Display_Type_Enum.Map_Beta:
-                            results_url_builder.Append("mapbeta/");
-                            break;
-                        case Result_Display_Type_Enum.Table:
-                            results_url_builder.Append("table/");
-                            break;
-                        case Result_Display_Type_Enum.Thumbnails:
-                            results_url_builder.Append("thumbs/");
-                            break;
-                    }
+                    if (!String.IsNullOrEmpty(Current_Mode.Result_Display_Type))
+                        results_url_builder.Append(Current_Mode.Result_Display_Type.ToLower() + "/");
+
                     // Add the page into the search results URL
                     if ((Current_Mode.Page.HasValue ) && ( Current_Mode.Page.Value > 1))
                     {
@@ -1046,48 +938,23 @@ namespace SobekCM.Core.Navigation
 
                                 if (Current_Mode.Page > 1)
                                 {
-                                    switch (Current_Mode.Result_Display_Type)
+                                    if (!String.IsNullOrEmpty(Current_Mode.Result_Display_Type))
                                     {
-                                        case Result_Display_Type_Enum.Brief:
-                                            return this_base_url + adjusted_aggregation + "/" + current_info_browse_mode + "/brief/" + Current_Mode.Page + urlOptions1;
-                                        case Result_Display_Type_Enum.Export:
-                                            return this_base_url + adjusted_aggregation + "/" + current_info_browse_mode + "/export/" + Current_Mode.Page + urlOptions1;
-                                        case Result_Display_Type_Enum.Full_Citation:
-                                            return this_base_url + adjusted_aggregation + "/" + current_info_browse_mode + "/citation/" + Current_Mode.Page + urlOptions1;
-                                        case Result_Display_Type_Enum.Full_Image:
-                                            return this_base_url + adjusted_aggregation + "/" + current_info_browse_mode + "/image/" + Current_Mode.Page + urlOptions1;
-                                        case Result_Display_Type_Enum.Map:
-                                            return this_base_url + adjusted_aggregation + "/" + current_info_browse_mode + "/map/" + Current_Mode.Page + urlOptions1;
-                                        case Result_Display_Type_Enum.Map_Beta:
-                                            return this_base_url + adjusted_aggregation + "/" + current_info_browse_mode + "/mapbeta/" + Current_Mode.Page + urlOptions1;
-                                        case Result_Display_Type_Enum.Table:
-                                            return this_base_url + adjusted_aggregation + "/" + current_info_browse_mode + "/table/" + Current_Mode.Page + urlOptions1;
-                                        case Result_Display_Type_Enum.Thumbnails:
-                                            return this_base_url + adjusted_aggregation + "/" + current_info_browse_mode + "/thumbs/" + Current_Mode.Page + urlOptions1;
-                                        default:
-                                            return this_base_url + adjusted_aggregation + "/" + current_info_browse_mode + "/" + Current_Mode.Page + urlOptions1;
+                                        return this_base_url + adjusted_aggregation + "/" + current_info_browse_mode + "/" + Current_Mode.Result_Display_Type.ToLower() + "/" + Current_Mode.Page + urlOptions1;
+                                    }
+                                    else
+                                    {
+                                        return this_base_url + adjusted_aggregation + "/" + current_info_browse_mode + "/" + Current_Mode.Page + urlOptions1;                                      
                                     }
                                 }
-                                switch (Current_Mode.Result_Display_Type)
+
+                                if (!String.IsNullOrEmpty(Current_Mode.Result_Display_Type))
                                 {
-                                    case Result_Display_Type_Enum.Brief:
-                                        return this_base_url + adjusted_aggregation + "/" + current_info_browse_mode + "/brief" + urlOptions1;
-                                    case Result_Display_Type_Enum.Export:
-                                        return this_base_url + adjusted_aggregation + "/" + current_info_browse_mode + "/export" + urlOptions1;
-                                    case Result_Display_Type_Enum.Full_Citation:
-                                        return this_base_url + adjusted_aggregation + "/" + current_info_browse_mode + "/citation" + urlOptions1;
-                                    case Result_Display_Type_Enum.Full_Image:
-                                        return this_base_url + adjusted_aggregation + "/" + current_info_browse_mode + "/image" + urlOptions1;
-                                    case Result_Display_Type_Enum.Map:
-                                        return this_base_url + adjusted_aggregation + "/" + current_info_browse_mode + "/map" + urlOptions1;
-                                    case Result_Display_Type_Enum.Map_Beta:
-                                        return this_base_url + adjusted_aggregation + "/" + current_info_browse_mode + "/mapbeta" + urlOptions1;
-                                    case Result_Display_Type_Enum.Table:
-                                        return this_base_url + adjusted_aggregation + "/" + current_info_browse_mode + "/table" + urlOptions1;
-                                    case Result_Display_Type_Enum.Thumbnails:
-                                        return this_base_url + adjusted_aggregation + "/" + current_info_browse_mode + "/thumbs" + urlOptions1;
-                                    default:
-                                        return this_base_url + adjusted_aggregation + "/" + current_info_browse_mode + urlOptions1;
+                                    return this_base_url + adjusted_aggregation + "/" + current_info_browse_mode + "/" + Current_Mode.Result_Display_Type.ToLower() + urlOptions1;
+                                }
+                                else
+                                {
+                                    return this_base_url + adjusted_aggregation + "/" + current_info_browse_mode + urlOptions1;
                                 }
                             }
                             // See if you need to include 'info' here
@@ -1096,50 +963,26 @@ namespace SobekCM.Core.Navigation
                                 pre_mode_string = String.Empty;
                             if (Current_Mode.Page > 1)
                             {
-                                switch (Current_Mode.Result_Display_Type)
+                                if (!String.IsNullOrEmpty(Current_Mode.Result_Display_Type))
                                 {
-                                    case Result_Display_Type_Enum.Brief:
-                                        return this_base_url + pre_mode_string + Current_Mode.Info_Browse_Mode + "/brief/" + Current_Mode.Page + urlOptions1;
-                                    case Result_Display_Type_Enum.Export:
-                                        return this_base_url + pre_mode_string + Current_Mode.Info_Browse_Mode + "/export/" + Current_Mode.Page + urlOptions1;
-                                    case Result_Display_Type_Enum.Full_Citation:
-                                        return this_base_url + pre_mode_string + Current_Mode.Info_Browse_Mode + "/citation/" + Current_Mode.Page + urlOptions1;
-                                    case Result_Display_Type_Enum.Full_Image:
-                                        return this_base_url + pre_mode_string + Current_Mode.Info_Browse_Mode + "/image/" + Current_Mode.Page + urlOptions1;
-                                    case Result_Display_Type_Enum.Map:
-                                        return this_base_url + pre_mode_string + Current_Mode.Info_Browse_Mode + "/map/" + Current_Mode.Page + urlOptions1;
-                                    case Result_Display_Type_Enum.Map_Beta:
-                                        return this_base_url + pre_mode_string + Current_Mode.Info_Browse_Mode + "/mapsearch/" + Current_Mode.Page + urlOptions1;
-                                    case Result_Display_Type_Enum.Table:
-                                        return this_base_url + pre_mode_string + Current_Mode.Info_Browse_Mode + "/table/" + Current_Mode.Page + urlOptions1;
-                                    case Result_Display_Type_Enum.Thumbnails:
-                                        return this_base_url + pre_mode_string + Current_Mode.Info_Browse_Mode + "/thumbs/" + Current_Mode.Page + urlOptions1;
-                                    default:
-                                        return this_base_url + pre_mode_string + Current_Mode.Info_Browse_Mode + "/" + Current_Mode.Page + urlOptions1;
+                                    return this_base_url + pre_mode_string + Current_Mode.Info_Browse_Mode + "/" + Current_Mode.Result_Display_Type.ToLower() + "/" + Current_Mode.Page + urlOptions1;
+                                }
+                                else
+                                {
+                                    return this_base_url + pre_mode_string + Current_Mode.Info_Browse_Mode + "/" + Current_Mode.Page + urlOptions1;
                                 }
                             }
-                            switch (Current_Mode.Result_Display_Type)
+
+                            if (!String.IsNullOrEmpty(Current_Mode.Result_Display_Type))
                             {
-                                case Result_Display_Type_Enum.Brief:
-                                    return this_base_url + pre_mode_string + Current_Mode.Info_Browse_Mode + "/brief" + urlOptions1;
-                                case Result_Display_Type_Enum.Export:
-                                    return this_base_url + pre_mode_string + Current_Mode.Info_Browse_Mode + "/export" + urlOptions1;
-                                case Result_Display_Type_Enum.Full_Citation:
-                                    return this_base_url + pre_mode_string + Current_Mode.Info_Browse_Mode + "/citation" + urlOptions1;
-                                case Result_Display_Type_Enum.Full_Image:
-                                    return this_base_url + pre_mode_string + Current_Mode.Info_Browse_Mode + "/image" + urlOptions1;
-                                case Result_Display_Type_Enum.Map:
-                                    return this_base_url + pre_mode_string + Current_Mode.Info_Browse_Mode + "/map" + urlOptions1;
-                                case Result_Display_Type_Enum.Map_Beta:
-                                    return this_base_url + pre_mode_string + Current_Mode.Info_Browse_Mode + "/mapsearch" + urlOptions1;
-                                case Result_Display_Type_Enum.Table:
-                                    return this_base_url + pre_mode_string + Current_Mode.Info_Browse_Mode + "/table" + urlOptions1;
-                                case Result_Display_Type_Enum.Thumbnails:
-                                    return this_base_url + pre_mode_string + Current_Mode.Info_Browse_Mode + "/thumbs" + urlOptions1;
-                                default:
-                                    return this_base_url + pre_mode_string + Current_Mode.Info_Browse_Mode + urlOptions1;
+                                return this_base_url + pre_mode_string + Current_Mode.Info_Browse_Mode + "/" + Current_Mode.Result_Display_Type.ToLower() + urlOptions1;
+                            }
+                            else
+                            {
+                                return this_base_url + pre_mode_string + Current_Mode.Info_Browse_Mode + urlOptions1;
                             }
 
+                            
                         case Aggregation_Type_Enum.Child_Page_Edit:
                             // If somehow the info browse code is NULL or EMPTY, just go to the aggregation again
                             if (String.IsNullOrEmpty(Current_Mode.Info_Browse_Mode))

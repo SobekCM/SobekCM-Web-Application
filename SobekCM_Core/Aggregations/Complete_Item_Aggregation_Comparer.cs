@@ -547,11 +547,11 @@ namespace SobekCM.Core.Aggregations
             }
 
             // result views
-            List<Result_Display_Type_Enum> removedResultsDisplay = new List<Result_Display_Type_Enum>();
-            List<Result_Display_Type_Enum> addedResultsDisplays = new List<Result_Display_Type_Enum>();
+            List<string> removedResultsDisplay = new List<string>();
+            List<string> addedResultsDisplays = new List<string>();
             if (Base.Result_Views != null)
             {
-                foreach (Result_Display_Type_Enum thisSearch in Base.Result_Views)
+                foreach (string thisSearch in Base.Result_Views)
                 {
                     // Look in compared for a match
                     if ((Compared.Result_Views == null) || (Compared.Result_Views.All(CompareSearch => thisSearch != CompareSearch)))
@@ -562,7 +562,7 @@ namespace SobekCM.Core.Aggregations
             }
             if (Compared.Search_Types != null)
             {
-                foreach (Result_Display_Type_Enum thisSearch in Compared.Result_Views)
+                foreach (string thisSearch in Compared.Result_Views)
                 {
                     // Look in base for a match
                     if ((Base.Result_Views == null) || (Base.Result_Views.All(CompareSearch => thisSearch != CompareSearch)))
@@ -579,9 +579,9 @@ namespace SobekCM.Core.Aggregations
                 }
                 else
                 {
-                    StringBuilder builder = new StringBuilder("Removed " + removedResultsDisplay[0].ToString());
+                    StringBuilder builder = new StringBuilder("Removed " + removedResultsDisplay[0]);
                     for (int i = 1; i < removedResultsDisplay.Count; i++)
-                        builder.Append(", " + removedResultsDisplay[i].ToString());
+                        builder.Append(", " + removedResultsDisplay[i]);
                     changes.Add(builder + " result display types");
                 }
             }

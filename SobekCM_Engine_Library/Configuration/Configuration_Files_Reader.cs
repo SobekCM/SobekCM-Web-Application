@@ -2410,6 +2410,11 @@ namespace SobekCM.Engine_Library.Configuration
                                 ReaderXml.MoveToElement();
                                 read_item_writer_viewer_configs(ReaderXml.ReadSubtree(), Config.UI.WriterViewers);
                                 break;
+
+                            case "resultswriterconfig":
+                                ReaderXml.MoveToElement();
+                                read_results_writer_viewer_configs(ReaderXml.ReadSubtree(), Config.UI.WriterViewers);
+                                break;
                         }
                     }
                 }

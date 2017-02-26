@@ -971,7 +971,6 @@
     </Content>
     <Content Include="config\default\sobekcm_citation.config" />
     <Content Include="config\default\sobekcm_template_elements.config" />
-    <Content Include="config\default\sobekcm_viewers.config" />
     <Content Include="config\default\sobekcm_item_viewers.config">
       <SubType>Designer</SubType>
     </Content>
@@ -982,6 +981,10 @@
     <Content Include="config\samples\sobekcm_shibboleth_example.config" />
     <Content Include="config\samples\sobekcm_static_resources_example.config" />
     <Content Include="plugins\EbscoServices\sobekcm_engine.config" />
+    <Content Include="config\default\sobekcm_aggregation_viewers.config" />
+    <Content Include="config\default\sobekcm_other_viewers.config" />
+    <Content Include="config\default\sobekcm_static_resources_cdn_secure.config" />
+    <Content Include="config\default\sobekcm_results_viewers.config" />
     <None Include="Properties\PublishProfiles\U262189 USF SobekCM local instance.pubxml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>

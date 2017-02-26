@@ -40,7 +40,6 @@ namespace SobekCM.Core.Navigation
 		    Admin_Type = Admin_Type_Enum.NONE;
 			Mode = Display_Mode_Enum.Error;
             Search_Type = Search_Type_Enum.NONE;
-            Result_Display_Type = Result_Display_Type_Enum.NONE;
             Statistics_Type = Statistics_Type_Enum.NONE;
             Internal_Type = Internal_Type_Enum.NONE;
             My_Sobek_Type = My_Sobek_Type_Enum.NONE;
@@ -418,7 +417,7 @@ namespace SobekCM.Core.Navigation
         [DataMember(EmitDefaultValue = false, Name = "resultType")]
         [XmlElement("resultType")]
         [ProtoMember(40)]
-        public Result_Display_Type_Enum Result_Display_Type { get; set; }
+        public string Result_Display_Type { get; set; }
 
         /// <summary> Return url value from the url string </summary>
         /// <remarks>This is primarily used by the mySobek feature, to return a user to their previously

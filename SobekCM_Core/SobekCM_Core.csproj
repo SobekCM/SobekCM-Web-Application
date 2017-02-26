@@ -20,7 +20,8 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Debug\SobekCM_Core.XML</DocumentationFile>
+    <DocumentationFile>
+    </DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -247,6 +248,8 @@
     <Compile Include="UI_Configuration\Viewers\ItemWriterConfig.cs" />
     <Compile Include="UI_Configuration\Viewers\ItemWriterLayoutConfig.cs" />
     <Compile Include="UI_Configuration\Viewers\OtherWriterConfig.cs" />
+    <Compile Include="UI_Configuration\Viewers\ResultsSubViewerConfig.cs" />
+    <Compile Include="UI_Configuration\Viewers\ResultsWriterConfig.cs" />
     <Compile Include="UI_Configuration\Viewers\SectionWriterConfig.cs" />
     <Compile Include="UI_Configuration\Viewers\SectionWriterGroupConfig.cs" />
     <Compile Include="UI_Configuration\Viewers\StylesheetConfig.cs" />

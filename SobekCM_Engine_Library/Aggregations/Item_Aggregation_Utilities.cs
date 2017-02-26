@@ -494,7 +494,7 @@ namespace SobekCM.Engine_Library.Aggregations
             {
                 Tracer.Add_Trace("Item_Aggregation_Utilities.Get_Item_Aggregation", "...Copying result views");
             }
-            foreach (Result_Display_Type_Enum display in CompAggr.Result_Views)
+            foreach (string display in CompAggr.Result_Views)
             {
                 returnValue.Result_Views.Add(display);
             }

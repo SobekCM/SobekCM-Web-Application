@@ -91,6 +91,15 @@ namespace SobekCM.Library.HTML
             // Try to get the current item
             RequestSpecificValues.Tracer.Add_Trace("Item_HtmlSubwriter.Constructor", "Get the item information from the engine");
             currentItem = SobekEngineClient.Items.Get_Item_Brief(RequestSpecificValues.Current_Mode.BibID, RequestSpecificValues.Current_Mode.VID, true, RequestSpecificValues.Tracer);
+
+            // If this is an empty item, than an error occurred
+            if (String.IsNullOrEmpty(currentItem.BibID))
+            {
+                currentItem.Title = "ERROR READING METADATA FILE";
+                currentItem.BibID = RequestSpecificValues.Current_Mode.BibID;
+                currentItem.VID = RequestSpecificValues.Current_Mode.VID;
+            }
+
             RequestSpecificValues.Current_Mode.VID = currentItem.VID;
 
             // Ensure the UI portion has been configured for this user interface

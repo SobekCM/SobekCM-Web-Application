@@ -74,6 +74,13 @@
         Use_Jquery_Qtip,
 
         /// <summary> Include the link to skip to the main content at the top of this </summary>
-        Include_Skip_To_Main_Content_Link
+        Include_Skip_To_Main_Content_Link,
+
+        /// <summary> Instructs the main HTML writer to not include the main placeholder, used to add controls within the page </summary>
+        Omit_Main_PlaceHolder,
+
+        /// <summary> Instructs the main HTML writer to not include the main (itemNavForm) form </summary>
+        Omit_Main_Navigation_Form
+
     }
 }

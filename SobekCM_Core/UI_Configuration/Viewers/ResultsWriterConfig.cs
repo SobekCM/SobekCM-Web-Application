@@ -54,6 +54,59 @@ namespace SobekCM.Core.UI_Configuration.Viewers
             set_default();
         }
 
+        /// <summary> Get the configuration about the results viewer, by viewer code (usually from the URL) </summary>
+        /// <param name="Code"> Viewer code </param>
+        /// <returns> Matching results configuration, or NULL </returns>
+        public ResultsSubViewerConfig GetViewerByCode(string Code)
+        {
+            // Ensure the dictionaries are built
+            if (viewersByCode == null) viewersByCode = new Dictionary<string, ResultsSubViewerConfig>(StringComparer.InvariantCultureIgnoreCase);
+            if (viewersByType == null) viewersByType = new Dictionary<string, ResultsSubViewerConfig>(StringComparer.InvariantCultureIgnoreCase);
+
+            // Check for the count of items in the dictionaries
+            if (viewersByCode.Count != Viewers.Count)
+            {
+                viewersByCode.Clear();
+                foreach (ResultsSubViewerConfig existingConfig in Viewers)
+                    viewersByCode[existingConfig.ViewerCode] = existingConfig;
+            }
+            if (viewersByType.Count != Viewers.Count)
+            {
+                viewersByType.Clear();
+                foreach (ResultsSubViewerConfig existingConfig in Viewers)
+                    viewersByType[existingConfig.ViewerType] = existingConfig;
+            }
+
+            return viewersByCode.ContainsKey(Code) ? viewersByCode[Code] : null;
+        }
+
+
+        /// <summary> Get the configuration about the results viewer, by viewer type, which matches back to the database </summary>
+        /// <param name="Type"> Viewer type </param>
+        /// <returns> Matching results configuration, or NULL </returns>
+        public ResultsSubViewerConfig GetViewerByType(string Type)
+        {
+            // Ensure the dictionaries are built
+            if (viewersByCode == null) viewersByCode = new Dictionary<string, ResultsSubViewerConfig>(StringComparer.InvariantCultureIgnoreCase);
+            if (viewersByType == null) viewersByType = new Dictionary<string, ResultsSubViewerConfig>(StringComparer.InvariantCultureIgnoreCase);
+
+            // Check for the count of items in the dictionaries
+            if (viewersByCode.Count != Viewers.Count)
+            {
+                viewersByCode.Clear();
+                foreach (ResultsSubViewerConfig existingConfig in Viewers)
+                    viewersByCode[existingConfig.ViewerCode] = existingConfig;
+            }
+            if (viewersByType.Count != Viewers.Count)
+            {
+                viewersByType.Clear();
+                foreach (ResultsSubViewerConfig existingConfig in Viewers)
+                    viewersByType[existingConfig.ViewerType] = existingConfig;
+            }
+
+            return viewersByType.ContainsKey(Type) ? viewersByType[Type] : null;
+        }
+
         /// <summary> Clears all the previously loaded information, such as the default values </summary>
         /// <remarks> This clears all the item viewer information, clears the assembly, and sets the class to the
         /// default item html subwriter class. </remarks>

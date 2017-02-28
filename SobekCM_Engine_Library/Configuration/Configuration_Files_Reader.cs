@@ -2439,6 +2439,78 @@ namespace SobekCM.Engine_Library.Configuration
             return !errorEncountered;
         }
 
+        private static void read_results_writer_viewer_configs(XmlReader ReaderXml, WriterViewerConfig Config)
+        {
+            while (ReaderXml.Read())
+            {
+                if (ReaderXml.NodeType == XmlNodeType.Element)
+                {
+                    switch (ReaderXml.Name.ToLower())
+                    {
+                        case "clearall":
+                            Config.Results.ClearAll();
+                            break;
+
+                        case "resultswriter":
+                            if (ReaderXml.MoveToAttribute("class"))
+                                Config.Results.Class = ReaderXml.Value.Trim();
+                            if (ReaderXml.MoveToAttribute("assembly"))
+                                Config.Results.Assembly = ReaderXml.Value.Trim();
+                            break;
+
+
+                        case "resultsviewer":
+                            ResultsSubViewerConfig newConfig = new ResultsSubViewerConfig();
+                            if (ReaderXml.MoveToAttribute("type"))
+                                newConfig.ViewerType = ReaderXml.Value.Trim();
+                            if (ReaderXml.MoveToAttribute("viewerCode"))
+                                newConfig.ViewerCode = ReaderXml.Value.Trim();
+                            if (ReaderXml.MoveToAttribute("assembly"))
+                                newConfig.Assembly = ReaderXml.Value.Trim();
+                            if (ReaderXml.MoveToAttribute("class"))
+                                newConfig.Class = ReaderXml.Value.Trim();
+                            if (ReaderXml.MoveToAttribute("icon"))
+                                newConfig.Icon = ReaderXml.Value.Trim();
+                            if (ReaderXml.MoveToAttribute("label"))
+                                newConfig.Label = ReaderXml.Value.Trim();
+                            if (ReaderXml.MoveToAttribute("description"))
+                                newConfig.Description = ReaderXml.Value.Trim();
+                            if (ReaderXml.MoveToAttribute("enabled"))
+                            {
+                                bool tempValue;
+                                if (bool.TryParse(ReaderXml.Value, out tempValue))
+                                {
+                                    newConfig.Enabled = tempValue;
+                                }
+                            }
+
+                            // Was this a special viewer?
+                            string specialViewer = null;
+                            if (ReaderXml.MoveToAttribute("special"))
+                                specialViewer = ReaderXml.Value.Trim();
+
+                            // If this was a special viewer, assign it
+                            if (!String.IsNullOrEmpty(specialViewer))
+                            {
+                                switch (specialViewer.ToLower())
+                                {
+                                    case "noresults":
+                                        Config.Results.NoResultsViewer = newConfig;
+                                        break;
+                                }
+                            }
+                            else
+                            {
+                                // Check for minimum requirements
+                                if ((!String.IsNullOrEmpty(newConfig.ViewerType)) && (!String.IsNullOrEmpty(newConfig.ViewerCode)))
+                                    Config.Results.Add_Viewer(newConfig);
+                            }
+                            break;
+                    }
+                }
+            }
+        }
+
         private static void read_item_writer_viewer_configs(XmlReader ReaderXml, WriterViewerConfig Config)
         {
             while (ReaderXml.Read())

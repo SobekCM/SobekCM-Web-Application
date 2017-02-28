@@ -602,7 +602,7 @@ namespace SobekCM.Library.HTML
             // If this is the thumbnails results, add the QTIP script and css
             if ((datasetBrowseResultsStats != null ) && 
                 ( datasetBrowseResultsStats.Total_Items > 0) &&
-                ( RequestSpecificValues.Current_Mode.Result_Display_Type == Result_Display_Type_Enum.Thumbnails ))
+                ( String.Equals(RequestSpecificValues.Current_Mode.Result_Display_Type, "thumbs", StringComparison.OrdinalIgnoreCase)))
             {
                 Output.WriteLine("  <script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Jquery_Qtip_Js + "\"></script>");
                 Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + Static_Resources_Gateway.Jquery_Qtip_Css + "\" /> ");
@@ -733,7 +733,7 @@ namespace SobekCM.Library.HTML
 					switch (RequestSpecificValues.Current_Mode.Aggregation_Type)
 					{
 						case Aggregation_Type_Enum.Browse_Info:
-							if (RequestSpecificValues.Current_Mode.Result_Display_Type == Result_Display_Type_Enum.Map)
+							if ( String.Equals(RequestSpecificValues.Current_Mode.Result_Display_Type, "map", StringComparison.OrdinalIgnoreCase))
 							{
 								returnValue.Add(new Tuple<string, string>("onload", "load();"));
 							}
@@ -2082,7 +2082,7 @@ namespace SobekCM.Library.HTML
             // Were there any public folders
             SortedList<string, string> public_folder_list = new SortedList<string, string>();
             RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Public_Folder;
-            RequestSpecificValues.Current_Mode.Result_Display_Type = Result_Display_Type_Enum.Brief;
+            RequestSpecificValues.Current_Mode.Result_Display_Type = "brief";
             RequestSpecificValues.Current_Mode.Aggregation = String.Empty;
             foreach (User_Folder thisFolder in RequestSpecificValues.Current_User.All_Folders.Where(ThisFolder => ThisFolder.IsPublic))
             {

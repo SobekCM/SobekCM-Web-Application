@@ -13,13 +13,10 @@ using System.Web.UI.WebControls;
 using SobekCM.Core.Items;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
-using SobekCM.Core.UI_Configuration;
-using SobekCM.Core.UI_Configuration.StaticResources;
 using SobekCM.Core.Users;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Engine_Library.Database;
 using SobekCM.Library.Database;
-using SobekCM.Library.Email;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
 using SobekCM.Library.UI;
@@ -537,8 +534,8 @@ namespace SobekCM.Library.MySobekViewer
             {
                 // Determine the redirect
                 RequestSpecificValues.Current_Mode.My_Sobek_SubMode = "XXXXXXXXXXXXXXXXXX";
-                Result_Display_Type_Enum currentDisplayType = RequestSpecificValues.Current_Mode.Result_Display_Type;
-                RequestSpecificValues.Current_Mode.Result_Display_Type = Result_Display_Type_Enum.Bookshelf;
+                string currentDisplayType = RequestSpecificValues.Current_Mode.Result_Display_Type;
+                RequestSpecificValues.Current_Mode.Result_Display_Type = "bookshelf";
                 redirect_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
                 RequestSpecificValues.Current_Mode.My_Sobek_SubMode = String.Empty;
                 RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Saved_Searches;

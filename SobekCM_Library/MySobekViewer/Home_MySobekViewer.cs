@@ -5,8 +5,6 @@
 using System;
 using System.IO;
 using SobekCM.Core.Navigation;
-using SobekCM.Core.UI_Configuration;
-using SobekCM.Core.UI_Configuration.StaticResources;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
@@ -109,7 +107,7 @@ namespace SobekCM.Library.MySobekViewer
             if (RequestSpecificValues.Current_User.Items_Submitted_Count > 0)
             {
                 RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Folder_Management;
-                RequestSpecificValues.Current_Mode.Result_Display_Type = Result_Display_Type_Enum.Brief;
+                RequestSpecificValues.Current_Mode.Result_Display_Type = "brief";
                 RequestSpecificValues.Current_Mode.My_Sobek_SubMode = "Submitted Items";
 				Output.WriteLine("    <tr><td style=\"width:35px\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.Submitted_Items_Gif + "\" /></a></td><td><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">View all my submitted items</a></td></tr>");
 
@@ -119,7 +117,7 @@ namespace SobekCM.Library.MySobekViewer
                 if (RequestSpecificValues.Current_User.Can_Submit)
                 {
                     RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Folder_Management;
-                    RequestSpecificValues.Current_Mode.Result_Display_Type = Result_Display_Type_Enum.Brief;
+                    RequestSpecificValues.Current_Mode.Result_Display_Type = "brief";
                     RequestSpecificValues.Current_Mode.My_Sobek_SubMode = "Submitted Items";
 					Output.WriteLine("    <tr><td style=\"width:35px\"><img src=\"" + Static_Resources_Gateway.Submitted_Items_Gif + "\" /></td><td><span style=\"color:Gray\">View all my submitted items</span></td></tr>");
                 }
@@ -147,7 +145,7 @@ namespace SobekCM.Library.MySobekViewer
             // Add link to folder management
             RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Folder_Management;
             RequestSpecificValues.Current_Mode.My_Sobek_SubMode = String.Empty;
-            RequestSpecificValues.Current_Mode.Result_Display_Type = Result_Display_Type_Enum.Bookshelf;
+            RequestSpecificValues.Current_Mode.Result_Display_Type = "bookshelf";
 			Output.WriteLine("    <tr><td style=\"width:35px\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.Bookshelf_Img + "\" /></a></td><td><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">View and organize my bookshelves</a></td></tr>");
 
             // Add a link to view all saved searches

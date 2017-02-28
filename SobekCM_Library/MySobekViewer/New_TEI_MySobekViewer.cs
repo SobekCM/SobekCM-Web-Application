@@ -12,32 +12,22 @@ using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
-using Microsoft.SqlServer.Server;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.BriefItem;
-using SobekCM.Core.Configuration;
-using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
-using SobekCM.Core.UI_Configuration;
 using SobekCM.Core.UI_Configuration.Citation;
-using SobekCM.Core.UI_Configuration.StaticResources;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Engine_Library.Email;
 using SobekCM.Engine_Library.Items.BriefItems;
-using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library.AdminViewer;
 using SobekCM.Library.Citation;
-using SobekCM.Library.Citation.Elements;
 using SobekCM.Library.Citation.SectionWriter;
 using SobekCM.Library.Citation.Template;
 using SobekCM.Library.Database;
 using SobekCM.Library.Helpers.UploadiFive;
-using SobekCM.Library.HTML;
-using SobekCM.Library.MainWriters;
 using SobekCM.Library.UI;
 using SobekCM.Resource_Object;
-using SobekCM.Resource_Object.Behaviors;
 using SobekCM.Resource_Object.Bib_Info;
 using SobekCM.Resource_Object.Divisions;
 using SobekCM.Resource_Object.GenericXml.Reader;
@@ -53,6 +43,7 @@ using Image = System.Drawing.Image;
 
 namespace SobekCM.Library.MySobekViewer
 {
+    /// <summary> TEI MySobek viewer is used to submit a new TEI type digital resource to the SobekCM repository </summary>
     public class New_TEI_MySobekViewer : abstract_MySobekViewer
     {
         private bool criticalErrorEncountered;
@@ -382,8 +373,6 @@ namespace SobekCM.Library.MySobekViewer
                 if (currentProcessStep == 3)
                 {
                     string[] getKeys = HttpContext.Current.Request.Form.AllKeys;
-                    string file_name_from_keys = String.Empty;
-                    string label_from_keys = String.Empty;
                     foreach (string thisKey in getKeys)
                     {
                         if (thisKey.IndexOf("mapping_select") == 0)
@@ -725,7 +714,6 @@ namespace SobekCM.Library.MySobekViewer
         {
             // Set an initial flag 
             criticalErrorEncountered = false;
-            bool xml_found = false;
 
             string[] all_files = Directory.GetFiles(userInProcessDirectory);
             SortedList<string, List<string>> image_files = new SortedList<string, List<string>>();
@@ -808,8 +796,6 @@ namespace SobekCM.Library.MySobekViewer
                     bool error_reading_file_occurred = false;
 
                     // Add the image files first
-                    bool jpeg_added = false;
-                    bool jp2_added = false;
                     foreach (string thisFileKey in image_files.Keys)
                     {
                         // Get the list of files
@@ -841,7 +827,6 @@ namespace SobekCM.Library.MySobekViewer
                                     if (!newFile.Compute_Jpeg2000_Attributes(userInProcessDirectory))
                                         error_reading_file_occurred = true;
                                 }
-                                jp2_added = true;
                             }
                             else
                             {
@@ -850,7 +835,6 @@ namespace SobekCM.Library.MySobekViewer
                                     if (!newFile.Compute_Jpeg_Attributes(userInProcessDirectory))
                                         error_reading_file_occurred = true;
                                 }
-                                jpeg_added = true;
                             }
                         }
                     }
@@ -2655,7 +2639,7 @@ namespace SobekCM.Library.MySobekViewer
                 Output.WriteLine("<a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">Add another TEI</a><br /><br />");
             }
             RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Folder_Management;
-            RequestSpecificValues.Current_Mode.Result_Display_Type = Result_Display_Type_Enum.Brief;
+            RequestSpecificValues.Current_Mode.Result_Display_Type = "brief";
             RequestSpecificValues.Current_Mode.My_Sobek_SubMode = "Submitted Items";
             Output.WriteLine("<a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">View all my submitted items</a><br /><br />");
 

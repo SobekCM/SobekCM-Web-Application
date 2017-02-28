@@ -365,6 +365,7 @@
     <Compile Include="MySobekViewer\New_TEI_MySobekViewer.cs" />
     <Compile Include="RequestCache.cs" />
     <Compile Include="ResultsViewer\Google_Map_ResultsViewer_Beta.cs" />
+    <Compile Include="ResultsViewer\ResultsViewer_Factory.cs" />
     <Compile Include="TEI\TEI_Configuration.cs" />
     <Compile Include="UI\UI_ApplicationCache_Gateway.cs" />
     <Compile Include="Helpers\UploadiFive\UploadiFive_Settings.cs" />
@@ -515,7 +516,7 @@
     <Compile Include="MySobekViewer\NewPassword_MySobekViewer.cs" />
     <Compile Include="MySobekViewer\New_Group_And_Item_MySobekViewer.cs" />
     <Compile Include="MySobekViewer\Preferences_MySobekViewer.cs" />
-    <Compile Include="ResultsViewer\Export_View_ResultsViewer.cs" />
+    <Compile Include="ResultsViewer\Export_ResultsViewer.cs" />
     <Compile Include="HTML\Contact_HtmlSubwriter.cs" />
     <Compile Include="HTML\Error_HtmlSubwriter.cs" />
     <Compile Include="HTML\Item_HtmlSubwriter.cs" />

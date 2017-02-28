@@ -38,7 +38,7 @@ namespace SobekCM.Core.UI_Configuration.StaticResources
             Blue_Pin_Img = "http://cdn.sobekrepository.org/images/mapsearch/blue-pin.png";
             Bookshelf_Img = "http://cdn.sobekrepository.org/images/misc/bookshelf.png";
             Bookturner_Js = "http://cdn.sobekrepository.org/includes/bookturner/1.0.0/bookturner.js";
-            Brief_Blue_Img = "http://cdn.sobekrepository.org/images/misc/aggregations.png";
+            Brief_Blue_Img = "http://cdn.sobekrepository.org/images/misc/brief_blue.png";
             Aggregations_Img = "http://cdn.sobekrepository.org/images/misc/building.gif";
             Button_Down_Arrow_Png = "http://cdn.sobekrepository.org/images/misc/button_down_arrow.png";
             Button_First_Arrow_Png = "http://cdn.sobekrepository.org/images/misc/button_first_arrow.png";
@@ -520,7 +520,7 @@ namespace SobekCM.Core.UI_Configuration.StaticResources
         [ProtoMember(20)]
         public string Bookturner_Js { get; set; }
 
-        /// <summary> URL for the default resource 'brief_blue.png' file ( http://cdn.sobekrepository.org/images/mapsearch/brief_blue.png by default)</summary>
+        /// <summary> URL for the default resource 'brief_blue.png' file ( http://cdn.sobekrepository.org/images/misc/brief_blue.png by default)</summary>
         [DataMember]
         [XmlElement]
         [ProtoMember(21)]

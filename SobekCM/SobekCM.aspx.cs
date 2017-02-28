@@ -81,7 +81,7 @@ namespace SobekCM
                         ((pageGlobals.currentMode.Mode != Display_Mode_Enum.Aggregation) || (pageGlobals.currentMode.Aggregation_Type != Aggregation_Type_Enum.User_Permissions)) &&
 						((pageGlobals.currentMode.Mode != Display_Mode_Enum.Aggregation) || (pageGlobals.currentMode.Aggregation_Type != Aggregation_Type_Enum.Child_Page_Edit)) &&
 						((pageGlobals.currentMode.Mode != Display_Mode_Enum.Aggregation) || (pageGlobals.currentMode.Aggregation_Type != Aggregation_Type_Enum.Home) || (pageGlobals.currentMode.Home_Type != Home_Type_Enum.Personalized)) &&
-						(pageGlobals.currentMode.Result_Display_Type != Result_Display_Type_Enum.Export) &&
+                        (String.Equals(pageGlobals.currentMode.Result_Display_Type, "export", StringComparison.OrdinalIgnoreCase)) &&
 						((pageGlobals.currentMode.Mode != Display_Mode_Enum.Item_Display) || (( !String.IsNullOrEmpty(pageGlobals.currentMode.ViewerCode)) && (pageGlobals.currentMode.ViewerCode.ToUpper().IndexOf("citation") < 0) && (pageGlobals.currentMode.ViewerCode.ToUpper().IndexOf("allvolumes3") < 0))))
 					{
 						Response.Cache.SetCacheability(HttpCacheability.Private);

@@ -1212,7 +1212,7 @@ namespace SobekCM
 				// For EXPORT option, include ALL the items
 				int results_per_page = 20;
 				int current_page = currentMode.Page.HasValue ? currentMode.Page.Value : 1;
-				if (currentMode.Result_Display_Type == Result_Display_Type_Enum.Export)
+				if ( String.Equals(currentMode.Result_Display_Type, "export", StringComparison.OrdinalIgnoreCase))
 				{
 					results_per_page = 10000;
 					current_page = 1;

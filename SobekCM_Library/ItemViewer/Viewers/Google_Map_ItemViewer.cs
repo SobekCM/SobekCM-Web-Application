@@ -1,14 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Web.UI.WebControls;
 using SobekCM.Core.BriefItem;
 using SobekCM.Core.Navigation;
-using SobekCM.Core.UI_Configuration;
-using SobekCM.Core.UI_Configuration.StaticResources;
 using SobekCM.Core.Users;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Library.ItemViewer.Menu;
@@ -72,6 +68,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <param name="CurrentItem"> Digital resource object, which can be used to ensure if and how this viewer should appear 
         /// in the main item (digital resource) menu </param>
         /// <param name="CurrentUser"> Current user, who may or may not be logged on </param>
+        /// <param name="CurrentRequest"> Information about the current request </param>
         /// <param name="MenuItems"> List of menu items, to which this method may add one or more menu items </param>
         /// <param name="IpRestricted"> Flag indicates if this item is IP restricted AND if the current user is outside the ranges </param>
         public void Add_Menu_items(BriefItemInfo CurrentItem, User_Object CurrentUser, Navigation_Object CurrentRequest, List<Item_MenuItem> MenuItems, bool IpRestricted )
@@ -275,7 +272,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                         string currentViewerCode = CurrentRequest.ViewerCode;
                         CurrentRequest.ViewerCode = "XXXXXXXX";
                         string redirect_url = UrlWriterHelper.Redirect_URL(CurrentRequest);
-                        ;
+                       
                         CurrentRequest.ViewerCode = currentViewerCode;
 
                         // Add each polygon 
@@ -354,7 +351,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                         }
 
                         // Add any matching polygons last
-                        mapBuilder.Append(matchingPolygonsBuilder.ToString());
+                        mapBuilder.Append(matchingPolygonsBuilder);
                     }
 
                     // Draw all the single points 
@@ -508,7 +505,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                                 Output.WriteLine("            <br /><br />");
                                 CurrentRequest.Mode = Display_Mode_Enum.Results;
                                 CurrentRequest.Search_Type = Search_Type_Enum.Map;
-                                CurrentRequest.Result_Display_Type = Result_Display_Type_Enum.Map;
+                                CurrentRequest.Result_Display_Type = "map";
                                 if ((providedMinLat > 0) && (providedMinLong > 0) && (providedMaxLat != providedMinLat) &&
                                     (providedMaxLong != providedMinLong))
                                 {
@@ -625,7 +622,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                             {
                                 CurrentRequest.Mode = Display_Mode_Enum.Results;
                                 CurrentRequest.Search_Type = Search_Type_Enum.Map;
-                                CurrentRequest.Result_Display_Type = Result_Display_Type_Enum.Map;
+                                CurrentRequest.Result_Display_Type = "map";
                                 if ((providedMinLat > 0) && (providedMinLong > 0) && (providedMaxLat != providedMinLat) && (providedMaxLong != providedMinLong))
                                 {
                                     CurrentRequest.Search_String = providedMaxLat.ToString() + "," + providedMaxLong + "," + providedMinLat + "," + providedMinLong;

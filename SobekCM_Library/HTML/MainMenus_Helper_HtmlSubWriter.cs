@@ -10,8 +10,7 @@ using SobekCM.Core.Aggregations;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Search;
-using SobekCM.Core.UI_Configuration;
-using SobekCM.Core.UI_Configuration.StaticResources;
+using SobekCM.Core.UI_Configuration.Viewers;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Library.AggregationViewer;
 using SobekCM.Library.UI;
@@ -81,7 +80,7 @@ namespace SobekCM.Library.HTML
             Aggregation_Type_Enum thisAggrType = RequestSpecificValues.Current_Mode.Aggregation_Type;
             Search_Type_Enum thisSearch = RequestSpecificValues.Current_Mode.Search_Type;
             Home_Type_Enum thisHomeType = RequestSpecificValues.Current_Mode.Home_Type;
-            Result_Display_Type_Enum resultsType = RequestSpecificValues.Current_Mode.Result_Display_Type;
+            string resultsType = RequestSpecificValues.Current_Mode.Result_Display_Type;
             ushort? page = RequestSpecificValues.Current_Mode.Page;
             string browse_code = RequestSpecificValues.Current_Mode.Info_Browse_Mode;
             string aggregation = RequestSpecificValues.Current_Mode.Aggregation;
@@ -380,7 +379,7 @@ namespace SobekCM.Library.HTML
                 }
             }
 
-            RequestSpecificValues.Current_Mode.Result_Display_Type = Result_Display_Type_Enum.NONE;
+            RequestSpecificValues.Current_Mode.Result_Display_Type = String.Empty;
             redirect_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
 
             // Are there any additional browses to include?
@@ -652,11 +651,6 @@ namespace SobekCM.Library.HTML
             const string brief_view_text = "Brief View";
             const string tree_view_text = "Tree View";
             const string partners_text = "Browse Partners";
-            string bookshelf_view = "Bookshelf View";
-            string brief_view = "Brief View";
-            string map_view = "Map View";
-            string table_view = "Table View";
-            string thumbnail_view = "Thumbnail View";
             const string EXPORT_VIEW = "Export";
 
 
@@ -666,22 +660,22 @@ namespace SobekCM.Library.HTML
                 collection_home = "INICIO " + UI_ApplicationCache_Gateway.Translation.Get_Translation(Hierarchy_Object.ShortName, RequestSpecificValues.Current_Mode.Language);
                 sobek_home_text = "INICIO " + RequestSpecificValues.Current_Mode.Instance_Abbreviation.ToUpper();
                 myCollections = "MIS COLECCIONES";
-                bookshelf_view = "VISTA BIBLIOTECA";
-                map_view = "VISTA MAPA";
-                brief_view = "VISTA BREVE";
-                table_view = "VISTA TABLERA";
-                thumbnail_view = "VISTA MINIATURA";
+                //bookshelf_view = "VISTA BIBLIOTECA";
+                //map_view = "VISTA MAPA";
+                //brief_view = "VISTA BREVE";
+                //table_view = "VISTA TABLERA";
+                //thumbnail_view = "VISTA MINIATURA";
             }
 
             if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.French)
             {
                 home = "PAGE D'ACCUEIL";
                 sobek_home_text = "PAGE D'ACCUEIL";
-                bookshelf_view = "MODE MA BIBLIOTHEQUE";
-                map_view = "MODE CARTE";
-                brief_view = "MODE SIMPLE";
-                table_view = "MODE DE TABLE";
-                thumbnail_view = "MODE IMAGETTE";
+                //bookshelf_view = "MODE MA BIBLIOTHEQUE";
+                //map_view = "MODE CARTE";
+                //brief_view = "MODE SIMPLE";
+                //table_view = "MODE DE TABLE";
+                //thumbnail_view = "MODE IMAGETTE";
             }
 
             // Add the sharing buttons if this is not restricted by IP address or checked out
@@ -731,7 +725,7 @@ namespace SobekCM.Library.HTML
             Aggregation_Type_Enum thisAggrType = RequestSpecificValues.Current_Mode.Aggregation_Type;
             Search_Type_Enum thisSearch = RequestSpecificValues.Current_Mode.Search_Type;
             Home_Type_Enum thisHomeType = RequestSpecificValues.Current_Mode.Home_Type;
-            Result_Display_Type_Enum resultsType = RequestSpecificValues.Current_Mode.Result_Display_Type;
+            string resultsType = RequestSpecificValues.Current_Mode.Result_Display_Type;
             ushort? page = RequestSpecificValues.Current_Mode.Page;
             string browse_code = RequestSpecificValues.Current_Mode.Info_Browse_Mode;
             string aggregation = RequestSpecificValues.Current_Mode.Aggregation;
@@ -914,85 +908,71 @@ namespace SobekCM.Library.HTML
             RequestSpecificValues.Current_Mode.Aggregation = aggregation;
             RequestSpecificValues.Current_Mode.Page = page;
 
-            Result_Display_Type_Enum resultView = RequestSpecificValues.Current_Mode.Result_Display_Type;
-            if (Include_Bookshelf_View)
+            string resultView = RequestSpecificValues.Current_Mode.Result_Display_Type;
+            if ((Include_Bookshelf_View) && ( UI_ApplicationCache_Gateway.Configuration.UI.WriterViewers.Results.GetViewerByCode("bookshelf") != null ))
             {
-                if (resultView == Result_Display_Type_Enum.Bookshelf)
+                ResultsSubViewerConfig bookshelfConfig = UI_ApplicationCache_Gateway.Configuration.UI.WriterViewers.Results.GetViewerByCode("bookshelf");
+                string bookshelf_label = UI_ApplicationCache_Gateway.Translation.Get_Translation(bookshelfConfig.Label, RequestSpecificValues.Current_Mode.Language);
+                string bookshelf_hover = UI_ApplicationCache_Gateway.Translation.Get_Translation(bookshelfConfig.Description, RequestSpecificValues.Current_Mode.Language);
+
+
+                if ( String.Equals(resultView, "bookshelf", StringComparison.OrdinalIgnoreCase))
                 {
-                    Output.WriteLine("    <li class=\"selected-sf-menu-item-link\"><a href=\"\">" + bookshelf_view + "</a></li>");
+                    Output.WriteLine("    <li class=\"selected-sf-menu-item-link\"><a href=\"\">" + bookshelf_label + "</a></li>");
                 }
                 else
                 {
-                    RequestSpecificValues.Current_Mode.Result_Display_Type = Result_Display_Type_Enum.Bookshelf;
-                    Output.WriteLine("    <li><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode).Replace("&", "&amp;") + "\">" + bookshelf_view + "</a></li>");
+                    RequestSpecificValues.Current_Mode.Result_Display_Type = "bookshelf";
+                    Output.WriteLine("    <li><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode).Replace("&", "&amp;") + "\" title=\"" + bookshelf_hover + "\">" + bookshelf_label + "</a></li>");
                 }
             }
 
-            if (( !String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.Coordinates)) || (Hierarchy_Object.Result_Views.Contains(Result_Display_Type_Enum.Map)))
+            // There SHOULD be results views here
+            if (Hierarchy_Object.Result_Views != null)
             {
-                if (resultView == Result_Display_Type_Enum.Map)
+                // Step through all enabled viewers
+                foreach (string resultWriterType in Hierarchy_Object.Result_Views)
                 {
-                    Output.WriteLine("    <li class=\"selected-sf-menu-item-link\"><a href=\"\">" + map_view + "</a></li>");
-                }
-                else
-                {
-                    RequestSpecificValues.Current_Mode.Result_Display_Type = Result_Display_Type_Enum.Map;
-                    Output.WriteLine("    <li><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode).Replace("&", "&amp;") + "\">" + map_view + "</a></li>");
+                    // Get the corresponding config
+                    ResultsSubViewerConfig resultConfig = UI_ApplicationCache_Gateway.Configuration.UI.WriterViewers.Results.GetViewerByType(resultWriterType);
+
+                    // Must exist and be enabled here
+                    if ((resultConfig == null) || (!resultConfig.Enabled)) continue;
+
+                    // Get the label and description
+                    string view_label = UI_ApplicationCache_Gateway.Translation.Get_Translation(resultConfig.Label, RequestSpecificValues.Current_Mode.Language);
+                    string view_hover = UI_ApplicationCache_Gateway.Translation.Get_Translation(resultConfig.Description, RequestSpecificValues.Current_Mode.Language);
+
+                    // For now, only show the map if there was a coordinate search
+                    if ((String.Equals("map", resultConfig.ViewerCode, StringComparison.OrdinalIgnoreCase)) && (String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.Coordinates)))
+                        continue;
+
+                    // is this the current view?
+                    if ( String.Equals(resultView, resultConfig.ViewerCode, StringComparison.OrdinalIgnoreCase))
+                    {
+                        Output.WriteLine("    <li class=\"selected-sf-menu-item-link\"><a href=\"\">" + view_label + "</a></li>");
+                    }
+                    else
+                    {
+                        RequestSpecificValues.Current_Mode.Result_Display_Type = resultConfig.ViewerCode;
+                        Output.WriteLine("    <li><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode).Replace("&", "&amp;") + "\" title=\"" + view_hover + "\">" + view_label + "</a></li>");
+                    }
                 }
             }
 
-            if (Hierarchy_Object.Result_Views.Contains(Result_Display_Type_Enum.Brief))
-            {
-                if (resultView == Result_Display_Type_Enum.Brief)
-                {
-                    Output.WriteLine("    <li class=\"selected-sf-menu-item-link\"><a href=\"\">" + brief_view + "</a></li>");
-                }
-                else
-                {
-                    RequestSpecificValues.Current_Mode.Result_Display_Type = Result_Display_Type_Enum.Brief;
-                    Output.WriteLine("    <li><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode).Replace("&", "&amp;") + "\">" + brief_view + "</a></li>");
-                }
-            }
-
-            if (Hierarchy_Object.Result_Views.Contains(Result_Display_Type_Enum.Table))
-            {
-                if (resultView == Result_Display_Type_Enum.Table)
-                {
-                    Output.WriteLine("    <li class=\"selected-sf-menu-item-link\"><a href=\"\">" + table_view + "</a></li>");
-                }
-                else
-                {
-                    RequestSpecificValues.Current_Mode.Result_Display_Type = Result_Display_Type_Enum.Table;
-                    Output.WriteLine("    <li><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode).Replace("&", "&amp;") + "\">" + table_view + "</a></li>");
-                }
-            }
-
-            if (Hierarchy_Object.Result_Views.Contains(Result_Display_Type_Enum.Thumbnails))
-            {
-                if (resultView == Result_Display_Type_Enum.Thumbnails)
-                {
-                    Output.WriteLine("    <li class=\"selected-sf-menu-item-link\"><a href=\"\">" + thumbnail_view + "</a></li>");
-                }
-                else
-                {
-                    RequestSpecificValues.Current_Mode.Result_Display_Type = Result_Display_Type_Enum.Thumbnails;
-                    Output.WriteLine("    <li><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode).Replace("&", "&amp;") + "\">" + thumbnail_view + "</a></li>");
-                }
-            }
-
-            if ((Include_Bookshelf_View) && ((resultView == Result_Display_Type_Enum.Export) || (RequestSpecificValues.Current_Mode.Writer_Type == Writer_Type_Enum.HTML_LoggedIn)))
-            {
-                RequestSpecificValues.Current_Mode.Page = 1;
-                if (resultView == Result_Display_Type_Enum.Export)
-                {
-                    Output.WriteLine("    <li class=\"selected-sf-menu-item-link\"><a href=\"\">" + EXPORT_VIEW + "</a></li>");
-                }
-                else
-                {
-                    RequestSpecificValues.Current_Mode.Result_Display_Type = Result_Display_Type_Enum.Export;
-                    Output.WriteLine("    <li><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode).Replace("&", "&amp;") + "\">" + EXPORT_VIEW + "</a></li>");
-                }
-            }
+            //if ((Include_Bookshelf_View) && ((resultView == Result_Display_Type_Enum.Export) || (RequestSpecificValues.Current_Mode.Writer_Type == Writer_Type_Enum.HTML_LoggedIn)))
+            //{
+            //    RequestSpecificValues.Current_Mode.Page = 1;
+            //    if (resultView == Result_Display_Type_Enum.Export)
+            //    {
+            //        Output.WriteLine("    <li class=\"selected-sf-menu-item-link\"><a href=\"\">" + EXPORT_VIEW + "</a></li>");
+            //    }
+            //    else
+            //    {
+            //        RequestSpecificValues.Current_Mode.Result_Display_Type = Result_Display_Type_Enum.Export;
+            //        Output.WriteLine("    <li><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode).Replace("&", "&amp;") + "\">" + EXPORT_VIEW + "</a></li>");
+            //    }
+            //}
 
             // Return the code and mode back
             RequestSpecificValues.Current_Mode.Info_Browse_Mode = browse_code;
@@ -1053,7 +1033,7 @@ namespace SobekCM.Library.HTML
             Admin_Type_Enum adminType = RequestSpecificValues.Current_Mode.Admin_Type;
             My_Sobek_Type_Enum mySobekType = RequestSpecificValues.Current_Mode.My_Sobek_Type;
             Internal_Type_Enum internalType = RequestSpecificValues.Current_Mode.Internal_Type;
-            Result_Display_Type_Enum resultType = RequestSpecificValues.Current_Mode.Result_Display_Type;
+            string resultType = RequestSpecificValues.Current_Mode.Result_Display_Type;
             string mySobekSubmode = RequestSpecificValues.Current_Mode.My_Sobek_SubMode;
             ushort? page = RequestSpecificValues.Current_Mode.Page;
 
@@ -1154,7 +1134,7 @@ namespace SobekCM.Library.HTML
                 if (RequestSpecificValues.Current_User.Items_Submitted_Count > 0)
                 {
                     RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Folder_Management;
-                    RequestSpecificValues.Current_Mode.Result_Display_Type = Result_Display_Type_Enum.Brief;
+                    RequestSpecificValues.Current_Mode.Result_Display_Type = "brief";
                     RequestSpecificValues.Current_Mode.My_Sobek_SubMode = "Submitted Items";
                     Output.WriteLine("      <li id=\"sbkUsm_MySubmittedItems\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.Submitted_Items_Gif + "\" /> <div class=\"sbkUsm_TextWithImage\">View my submitted items</div></a></li>");
                 }
@@ -1181,7 +1161,7 @@ namespace SobekCM.Library.HTML
                 // Add link to folder management
                 RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Folder_Management;
                 RequestSpecificValues.Current_Mode.My_Sobek_SubMode = String.Empty;
-                RequestSpecificValues.Current_Mode.Result_Display_Type = Result_Display_Type_Enum.Bookshelf;
+                RequestSpecificValues.Current_Mode.Result_Display_Type = "bookshelf";
                 Output.WriteLine("      <li id=\"sbkUsm_MyBookshelf\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.Bookshelf_Img + "\" /> <div class=\"sbkUsm_TextWithImage\">View my bookshelves</div></a></li>");
 
                 // Add a link to view all saved searches
@@ -1416,7 +1396,7 @@ namespace SobekCM.Library.HTML
             RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.My_Sobek;
             RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Folder_Management;
             RequestSpecificValues.Current_Mode.My_Sobek_SubMode = String.Empty;
-            RequestSpecificValues.Current_Mode.Result_Display_Type = Result_Display_Type_Enum.Bookshelf;
+            RequestSpecificValues.Current_Mode.Result_Display_Type = "bookshelf";
             Output.WriteLine("    <li id=\"sbkUsm_Bookshelf\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + myLibrary + "</a></li>");
 
             // Add a link to my account (repeat of option in mySobek menu)

@@ -19,13 +19,13 @@ namespace SobekCM.Library.ResultsViewer
     /// <summary> Results viewer allows the results to exported into either an Excel file or a CSV file for temporary download.  </summary>
     /// <remarks> This class extends the abstract class <see cref="abstract_ResultsViewer"/> and implements the 
     /// <see cref="iResultsViewer" /> interface. </remarks>
-    public class Export_File_ResultsViewer : abstract_ResultsViewer
+    public class Export_ResultsViewer : abstract_ResultsViewer
     {
-        /// <summary> Constructor for a new instance of the Export_File_ResultsViewer class </summary>
+        /// <summary> Constructor for a new instance of the Export_ResultsViewer class </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
         /// <param name="ResultsStats"> Statistics about the results to display including the facets </param>
         /// <param name="PagedResults"> Actual pages of results </param>
-        public Export_File_ResultsViewer(RequestCache RequestSpecificValues, Search_Results_Statistics ResultsStats, List<iSearch_Title_Result> PagedResults)
+        public Export_ResultsViewer(RequestCache RequestSpecificValues, Search_Results_Statistics ResultsStats, List<iSearch_Title_Result> PagedResults)
             : base(RequestSpecificValues, ResultsStats, PagedResults)
         {
             Results_Per_Page = 1000;

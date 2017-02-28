@@ -306,7 +306,7 @@ namespace SobekCM.Library.ItemViewer
             {
                 // Try to find the file/path for this assembly then
                 Assembly dllAssembly = null;
-                string assemblyFilePath = Engine_ApplicationCache_Gateway.Configuration.Extensions.Get_Assembly(assembly);
+                string assemblyFilePath = UI_ApplicationCache_Gateway.Configuration.Extensions.Get_Assembly(assembly);
                 if (assemblyFilePath != null)
                 {
                     dllAssembly = Assembly.LoadFrom(assemblyFilePath);

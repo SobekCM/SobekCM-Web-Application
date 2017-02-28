@@ -17,6 +17,7 @@ using SobekCM.Core.Navigation;
 using SobekCM.Core.Search;
 using SobekCM.Core.UI_Configuration;
 using SobekCM.Core.UI_Configuration.StaticResources;
+using SobekCM.Core.UI_Configuration.Viewers;
 using SobekCM.Core.WebContent;
 using SobekCM.Engine_Library.Aggregations;
 using SobekCM.Engine_Library.ApplicationState;
@@ -2347,67 +2348,35 @@ namespace SobekCM.Library.AdminViewer
 
 			// Reset the result views
 			itemAggregation.Result_Views.Clear();
-			itemAggregation.Default_Result_View = Result_Display_Type_Enum.Default;
+            itemAggregation.Default_Result_View = String.Empty;
 
 			// Add the default result view
 			if (Form["admin_add_default_view"] != null)
 			{
-				switch( Form["admin_add_default_view"])
-				{
-					case "brief":
-						itemAggregation.Default_Result_View = Result_Display_Type_Enum.Brief;
-						itemAggregation.Result_Views.Add( Result_Display_Type_Enum.Brief );
-						break;
+			    string thisView = Form["admin_add_default_view"];
 
-					case "thumbnails":
-						itemAggregation.Default_Result_View = Result_Display_Type_Enum.Thumbnails;
-						itemAggregation.Result_Views.Add( Result_Display_Type_Enum.Thumbnails );
-						break;
-
-					case "table":
-						itemAggregation.Default_Result_View = Result_Display_Type_Enum.Table;
-						itemAggregation.Result_Views.Add( Result_Display_Type_Enum.Table );
-						break;
-
-                    //case "full":
-                    //    itemAggregation.Default_Result_View = Result_Display_Type_Enum.Full_Citation;
-                    //    itemAggregation.Result_Views.Add( Result_Display_Type_Enum.Full_Citation );
-                    //    break;
-				}
+                itemAggregation.Default_Result_View = thisView;
+			    if (!itemAggregation.Result_Views.Contains(thisView))
+			        itemAggregation.Result_Views.Add(thisView);
 			}
 
 			// Add the result views
-			if ( Form["admin_aggr_result_view1"] != null ) add_result_view( Form["admin_aggr_result_view1"] );
-			if ( Form["admin_aggr_result_view2"] != null ) add_result_view( Form["admin_aggr_result_view2"] );
-			if ( Form["admin_aggr_result_view3"] != null ) add_result_view( Form["admin_aggr_result_view3"] );
-			if ( Form["admin_aggr_result_view4"] != null ) add_result_view( Form["admin_aggr_result_view4"] );
-			if ( Form["admin_aggr_result_view5"] != null ) add_result_view( Form["admin_aggr_result_view5"] );
+			if (Form["admin_aggr_result_view1"] != null) add_result_view( Form["admin_aggr_result_view1"] );
+			if (Form["admin_aggr_result_view2"] != null) add_result_view( Form["admin_aggr_result_view2"] );
+			if (Form["admin_aggr_result_view3"] != null) add_result_view( Form["admin_aggr_result_view3"] );
+			if (Form["admin_aggr_result_view4"] != null) add_result_view( Form["admin_aggr_result_view4"] );
+			if (Form["admin_aggr_result_view5"] != null) add_result_view( Form["admin_aggr_result_view5"] );
+            if (Form["admin_aggr_result_view6"] != null) add_result_view(Form["admin_aggr_result_view6"]);
+            if (Form["admin_aggr_result_view7"] != null) add_result_view(Form["admin_aggr_result_view7"]);
+            if (Form["admin_aggr_result_view8"] != null) add_result_view(Form["admin_aggr_result_view8"]);
+            if (Form["admin_aggr_result_view9"] != null) add_result_view(Form["admin_aggr_result_view9"]);
+            if (Form["admin_aggr_result_view10"] != null) add_result_view(Form["admin_aggr_result_view10"]);
 		}
 
 		private void add_result_view( string Result )
 		{
-			switch( Result )
-				{
-					case "brief":
-						if ( !itemAggregation.Result_Views.Contains( Result_Display_Type_Enum.Brief ))
-							itemAggregation.Result_Views.Add( Result_Display_Type_Enum.Brief );
-						break;
-
-					case "thumbnails":
-						if ( !itemAggregation.Result_Views.Contains( Result_Display_Type_Enum.Thumbnails ))
-							itemAggregation.Result_Views.Add( Result_Display_Type_Enum.Thumbnails );
-						break;
-
-					case "table":
-						if ( !itemAggregation.Result_Views.Contains( Result_Display_Type_Enum.Table ))
-							itemAggregation.Result_Views.Add( Result_Display_Type_Enum.Table );
-						break;
-
-                //case "full":
-                //        if ( !itemAggregation.Result_Views.Contains( Result_Display_Type_Enum.Full_Citation ))
-                //            itemAggregation.Result_Views.Add( Result_Display_Type_Enum.Full_Citation );
-                //        break;
-				}
+            if ( !itemAggregation.Result_Views.Contains( Result ))
+                itemAggregation.Result_Views.Add(Result);
 		}
 
 		private void Add_Page_3( TextWriter Output )
@@ -2498,12 +2467,12 @@ namespace SobekCM.Library.AdminViewer
 
 		private void Result_Writer_Helper( TextWriter Output, string FieldName, string NoOption, string Result_Type, string HtmlClass )
 		{
-            /*
+            
 			// Start the select box
 			Output.Write("<select class=\"" + HtmlClass + "\" name=\"" + FieldName + "\" id=\"" + FieldName + "\">");
 
 			// Add the NONE option first
-			if (Result_Type ==  Result_Display_Type_Enum.Default )
+			if ( String.IsNullOrEmpty( Result_Type ))
 			{
 				Output.Write("<option value=\"\" selected=\"selected\" >" + NoOption + "</option>");
 			}
@@ -2513,16 +2482,35 @@ namespace SobekCM.Library.AdminViewer
 			}
 
 			// Add each result view to the select boxes ( brief, map, table, thumbnails, full )
-			Output.Write(Result_Type == Result_Display_Type_Enum.Brief ? "<option value=\"brief\" selected=\"selected\" >Brief View</option>" : "<option value=\"brief\">Brief View</option>");
+		    foreach (ResultsSubViewerConfig possibleView in UI_ApplicationCache_Gateway.Configuration.UI.WriterViewers.Results.Viewers)
+		    {
+		        if (String.Compare(Result_Type, possibleView.ViewerCode, StringComparison.OrdinalIgnoreCase) == 0)
+		        {
 
-			Output.Write(Result_Type == Result_Display_Type_Enum.Table ? "<option value=\"table\" selected=\"selected\" >Table View</option>" : "<option value=\"table\">Table View</option>");
+		        }
+		        else
+		        {
+		            
+		        }
+		    }
 
-			Output.Write(Result_Type == Result_Display_Type_Enum.Thumbnails ? "<option value=\"thumbnails\" selected=\"selected\" >Thumbnail View</option>" : "<option value=\"thumbnails\">Thumbnail View</option>");
 
-			//Output.Write(Result_Type == Result_Display_Type_Enum.Full_Citation ? "<option value=\"full\" selected=\"selected\" >Full View</option>" : "<option value=\"full\">Full View</option>");
+		    foreach (ResultsSubViewerConfig resultsConfig in UI_ApplicationCache_Gateway.Configuration.UI.WriterViewers.Results.Viewers)
+		    {
+		        // Skip un-enabled ones
+                if ( !resultsConfig.Enabled ) continue;
+
+                // Bookshelf doesn't make sense here either
+                if ( String.Equals("bookshelf", resultsConfig.ViewerCode, StringComparison.OrdinalIgnoreCase)) continue;
+
+                // Add all these options
+                if ( String.Equals(Result_Type, resultsConfig.ViewerCode ))
+                    Output.Write("<option value=\"" + resultsConfig.ViewerCode + "\" selected=\"selected\" >" + resultsConfig.Label + "</option>");
+                else
+                    Output.Write("<option value=\"" + resultsConfig.ViewerCode + "\">" + resultsConfig.Label + "</option>");
+		    }
+
 			Output.WriteLine("</select>");
-             * 
-             * */
 		}
 
 		private void Facet_Writer_Helper(  TextWriter Output, short FacetID, int FacetCounter )

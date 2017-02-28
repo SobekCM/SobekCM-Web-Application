@@ -832,7 +832,7 @@ namespace SobekCM.Library
 	        if (Current_Mode.Search_Type == Search_Type_Enum.Map)
 	        {
                 // If this is showing in the map, only allow sot zero, which is by coordinates
-	            if ((Current_Mode.Result_Display_Type == Result_Display_Type_Enum.Map) || (Current_Mode.Result_Display_Type == Result_Display_Type_Enum.Default))
+	            if ((Current_Mode.Result_Display_Type == "map") || ( String.IsNullOrEmpty(Current_Mode.Result_Display_Type)))
 	            {
 	                Current_Mode.Sort = 0;
 	                sort = 0;

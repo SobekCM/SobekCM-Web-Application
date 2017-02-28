@@ -45,7 +45,7 @@ namespace SobekCM.Library.HTML
             // If this is the thumbnails results, add the QTIP script and css
             if ((RequestSpecificValues.Results_Statistics != null) &&
                 (RequestSpecificValues.Results_Statistics.Total_Items > 0) &&
-                (RequestSpecificValues.Current_Mode.Result_Display_Type == Result_Display_Type_Enum.Thumbnails))
+                ( String.Equals(RequestSpecificValues.Current_Mode.Result_Display_Type, "thumbs", StringComparison.OrdinalIgnoreCase)))
             {
                 Output.WriteLine("  <script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Jquery_Qtip_Js + "\"></script>");
                 Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + Static_Resources_Gateway.Jquery_Qtip_Css + "\" /> ");
@@ -72,13 +72,7 @@ namespace SobekCM.Library.HTML
         {
             get
             {
-                if (RequestSpecificValues.Current_Mode.Result_Display_Type == Result_Display_Type_Enum.Map)
-                {
-                    List<Tuple<string, string>> returnValue = new List<Tuple<string, string>> { new Tuple<string, string>("onload", "load();") };
-
-                    return returnValue;
-                }
-                if (RequestSpecificValues.Current_Mode.Result_Display_Type == Result_Display_Type_Enum.Map_Beta)
+                if (String.Equals(RequestSpecificValues.Current_Mode.Result_Display_Type, "map", StringComparison.OrdinalIgnoreCase))
                 {
                     List<Tuple<string, string>> returnValue = new List<Tuple<string, string>> { new Tuple<string, string>("onload", "load();") };
 

@@ -40,12 +40,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <returns> TRUE if this viewer should generally be included with this item, otherwise FALSE </returns>
         public bool Include_Viewer(BriefItemInfo CurrentItem)
         {
-            // If the downloads is null, then return FALSE
-            if (CurrentItem.Downloads == null)
-                return false;
-
             // Any download files are really good enoughh
-            if (CurrentItem.Downloads.Any(DownloadGroup => DownloadGroup.Files.Count > 0))
+            if (( CurrentItem.Downloads != null ) && (CurrentItem.Downloads.Any(DownloadGroup => DownloadGroup.Files.Count > 0)))
                 return true;
 
             // Otherwise, if there are JPEG2000 files, add it
@@ -274,11 +270,11 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     foreach (BriefItem_File thisFile in pageNode.Files)
                     {
                         string file_extension = Path.GetExtension(thisFile.Name);
-                        if ((!String.IsNullOrEmpty(file_extension)) && (String.Compare(file_extension, ".jp2", StringComparison.OrdinalIgnoreCase ) == 0 ))
+                        if ((!String.IsNullOrEmpty(file_extension)) && (String.Equals(file_extension, ".jp2", StringComparison.OrdinalIgnoreCase )))
                         {
-                                pageDownloads.Add("<a href=\"" + (BriefItem.Web.Source_URL + "/" + thisFile.Name).Replace("\\", "/").Replace("//", "/").Replace("http:/", "http://") + "\">" + pageNode.Label + "</a>");
+                            pageDownloads.Add("<a href=\"" + (BriefItem.Web.Source_URL + "/" + thisFile.Name).Replace("\\", "/").Replace("//", "/").Replace("http:/", "http://") + "\">" + pageNode.Label + "</a>");
+                            break;
                         }
-                        break;
                     }
                 }
 

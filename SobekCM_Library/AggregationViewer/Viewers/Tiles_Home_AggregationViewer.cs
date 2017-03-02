@@ -92,20 +92,6 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 }
             }
 
-            // If less than or equal to fifteen, copy over as is.. otherwise, choose random ones
-            if ( allTiles.Count <= 15 )
-                selectedTiles.AddRange(allTiles);
-            else
-            {
-                Random randomGen = new Random();
-                while (selectedTiles.Count < 15)
-                {
-                    int random_index = randomGen.Next(0, allTiles.Count);
-                    selectedTiles.Add(allTiles[random_index]);
-                    allTiles.RemoveAt(random_index);
-                }
-            }
-
             // Is the metadata cached?
             string cache_key = ViewBag.Hierarchy_Object.Code + ":TILE METADATA";
             tileMetadata = HttpContext.Current.Cache.Get(cache_key) as Database_Results_Info;
@@ -197,6 +183,20 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                     {
                         tileMetadata = null;
                     }
+                }
+            }
+
+            // If less than or equal to fifteen, copy over as is.. otherwise, choose random ones
+            if (allTiles.Count <= 15)
+                selectedTiles.AddRange(allTiles);
+            else
+            {
+                Random randomGen = new Random();
+                while (selectedTiles.Count < 15)
+                {
+                    int random_index = randomGen.Next(0, allTiles.Count);
+                    selectedTiles.Add(allTiles[random_index]);
+                    allTiles.RemoveAt(random_index);
                 }
             }
         }

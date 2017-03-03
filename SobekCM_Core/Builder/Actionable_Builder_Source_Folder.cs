@@ -8,7 +8,6 @@ using SobekCM.Builder_Library.Modules.Folders;
 using SobekCM.Builder_Library.Settings;
 using SobekCM.Core.Builder;
 using SobekCM.Core.Settings;
-using SobekCM.Engine_Library.ApplicationState;
 using SobekCM.Tools;
 
 #endregion
@@ -28,9 +27,9 @@ namespace SobekCM.Builder_Library
 
         /// <summary> Constructor for a new instance of the Actionable_Builder_Source_Folder class </summary>
         /// <param name="ExistingBaseInstance"> An existing base instance used to populate this class with data </param>
-        /// <param name="BuilderModulesConfig"> Builder module configuration to use to process this incoming folder structure </param>
+        /// <param name="AssemblyClassToModule"> Dictionary to all the built folder builder modules </param>
         /// <remarks> This extends the core class <see cref="Builder_Source_Folder"/> and adds some methods to perform work </remarks>
-        public Actionable_Builder_Source_Folder(Builder_Source_Folder ExistingBaseInstance, Builder_Modules BuilderModulesConfig )
+        public Actionable_Builder_Source_Folder(Builder_Source_Folder ExistingBaseInstance, Dictionary<string, iFolderModule> AssemblyClassToModule)
         {
             Allow_Deletes = ExistingBaseInstance.Allow_Deletes;
             Allow_Folders_No_Metadata = ExistingBaseInstance.Allow_Folders_No_Metadata;
@@ -49,9 +48,12 @@ namespace SobekCM.Builder_Library
             // Copy over the folder modules
             foreach (Builder_Module_Setting settings in ExistingBaseInstance.Builder_Module_Set.Builder_Modules)
             {
-                iFolderModule module = BuilderModulesConfig.Get_Folder_Module_By_Key(settings.Key);
-                if (module != null)
-                    BuilderModules.Add(module);
+                if (AssemblyClassToModule.ContainsKey(settings.Key))
+                {
+                    iFolderModule module = AssemblyClassToModule[settings.Key];
+                    if (module != null)
+                        BuilderModules.Add(module);
+                }
             }
         }
 
@@ -143,7 +145,7 @@ namespace SobekCM.Builder_Library
         /// to queue them for loading into the library  </summary>
         /// <param name="Message"> Message to be passed out if something occurred during this attempted move </param>
         /// <returns> TRUE if successful, or FALSE if an error occurs </returns>
-        public bool Move_From_Inbound_To_Processing(out string Message)
+        public bool Move_From_Inbound_To_Processing(InstanceWide_Settings Settings, out string Message)
         {
             Message = String.Empty;
 
@@ -228,7 +230,7 @@ namespace SobekCM.Builder_Library
             {
                 // Is this resource a candidate to move for continued processing?
                 long resource_age = resource.AgeInTicks;
-                if ((resource_age > Engine_ApplicationCache_Gateway.Settings.Builder.Complete_Package_Required_Aging) || ((resource_age > Engine_ApplicationCache_Gateway.Settings.Builder.METS_Only_Package_Required_Aging) && (resource.METS_Only_Package)))
+                if ((resource_age > Settings.Builder.Complete_Package_Required_Aging) || ((resource_age > Settings.Builder.METS_Only_Package_Required_Aging) && (resource.METS_Only_Package)))
                 {
                     if (!resource.Move(Processing_Folder))
                     {

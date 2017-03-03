@@ -34,7 +34,7 @@ namespace SobekCM.Builder_Library.Modules.Folders
                         OnProcess("Checking inbound packages for aging and possibly moving to processing", String.Empty, String.Empty, String.Empty, -1);
 
                     String outMessage;
-                    if (!BuilderFolder.Move_From_Inbound_To_Processing(out outMessage))
+                    if (!BuilderFolder.Move_From_Inbound_To_Processing(Settings, out outMessage))
                     {
                         if (outMessage.Length > 0) OnError(outMessage, String.Empty, String.Empty, -1);
                         OnError("Unspecified error moving files from inbound to processing", String.Empty, String.Empty, -1);

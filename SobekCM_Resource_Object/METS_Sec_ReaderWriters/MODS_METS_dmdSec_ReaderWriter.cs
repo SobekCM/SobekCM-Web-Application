@@ -770,7 +770,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
 
                                     while (R.Read())
                                     {
-                                        if ((R.NodeType == XmlNodeType.EndElement) && ((R.Name == "mods:relatedItem") || (R.Name == "mods:relatedItem")))
+                                        if ((R.NodeType == XmlNodeType.EndElement) && ((R.Name == "mods:relatedItem") || (R.Name == "relatedItem")))
                                         {
                                             break;
                                         }

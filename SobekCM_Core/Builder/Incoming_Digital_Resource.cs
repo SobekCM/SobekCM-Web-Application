@@ -5,8 +5,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
-using SobekCM.Engine_Library.ApplicationState;
-using SobekCM.Library;
+using SobekCM.Core.Settings;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Bib_Info;
 using SobekCM.Resource_Object.Database;
@@ -252,36 +251,15 @@ namespace SobekCM.Builder_Library
         }
 
 
-        /// <summary> Creates the static HTML file for this incoming digital resource </summary>
-        /// <param name="StaticBuilder"> Builder object helps to build the static pages </param>
-        /// <returns> The name (including directory) for the resultant static html page </returns>
-        public string Save_Static_HTML(Static_Pages_Builder StaticBuilder)
-        {
-            try
-            {
-                if (!Directory.Exists(Resource_Folder + "\\" + Engine_ApplicationCache_Gateway.Settings.Resources.Backup_Files_Folder_Name))
-                    Directory.CreateDirectory(Resource_Folder + "\\" + Engine_ApplicationCache_Gateway.Settings.Resources.Backup_Files_Folder_Name);
-
-                string filename = Resource_Folder + "\\" + Engine_ApplicationCache_Gateway.Settings.Resources.Backup_Files_Folder_Name + "\\" + Metadata.BibID + "_" + Metadata.VID + ".html";
-                StaticBuilder.Create_Item_Citation_HTML(Metadata, filename, resourceFolder);
-
-                return filename;
-            }
-            catch
-            {
-                return String.Empty;
-            }
-        }
-
         /// <summary> Saves the MarcXML file, used for creating MARC feeds, for this incoming digital resource </summary>
         /// <param name="CollectionCodes"> Collection codes to include in the resultant MarcXML file </param>
         /// <returns> TRUE if successful, otherwise FALSE </returns>
-        public bool Save_MARC_XML( DataTable CollectionCodes )
+        public bool Save_MARC_XML( DataTable CollectionCodes, InstanceWide_Settings Settings )
         {
             try
             {
                 // Set the image location
-                Metadata.Web.Image_Root = Engine_ApplicationCache_Gateway.Settings.Servers.Image_URL + Metadata.Web.File_Root.Replace("\\", "/");
+                Metadata.Web.Image_Root = Settings.Servers.Image_URL + Metadata.Web.File_Root.Replace("\\", "/");
                 Metadata.Web.Set_BibID_VID(Metadata.BibID, Metadata.VID);
 
 
@@ -294,16 +272,16 @@ namespace SobekCM.Builder_Library
 
                 // Create the options dictionary used when saving information to the database, or writing MarcXML
                 Dictionary<string, object> options = new Dictionary<string, object>();
-                if (Engine_ApplicationCache_Gateway.Settings.MarcGeneration != null)
+                if (Settings.MarcGeneration != null)
                 {
-                    options["MarcXML_File_ReaderWriter:MARC Cataloging Source Code"] = Engine_ApplicationCache_Gateway.Settings.MarcGeneration.Cataloging_Source_Code;
-                    options["MarcXML_File_ReaderWriter:MARC Location Code"] = Engine_ApplicationCache_Gateway.Settings.MarcGeneration.Location_Code;
-                    options["MarcXML_File_ReaderWriter:MARC Reproduction Agency"] = Engine_ApplicationCache_Gateway.Settings.MarcGeneration.Reproduction_Agency;
-                    options["MarcXML_File_ReaderWriter:MARC Reproduction Place"] = Engine_ApplicationCache_Gateway.Settings.MarcGeneration.Reproduction_Place;
-                    options["MarcXML_File_ReaderWriter:MARC XSLT File"] = Engine_ApplicationCache_Gateway.Settings.MarcGeneration.XSLT_File;
+                    options["MarcXML_File_ReaderWriter:MARC Cataloging Source Code"] = Settings.MarcGeneration.Cataloging_Source_Code;
+                    options["MarcXML_File_ReaderWriter:MARC Location Code"] = Settings.MarcGeneration.Location_Code;
+                    options["MarcXML_File_ReaderWriter:MARC Reproduction Agency"] = Settings.MarcGeneration.Reproduction_Agency;
+                    options["MarcXML_File_ReaderWriter:MARC Reproduction Place"] = Settings.MarcGeneration.Reproduction_Place;
+                    options["MarcXML_File_ReaderWriter:MARC XSLT File"] = Settings.MarcGeneration.XSLT_File;
                 }
-                options["MarcXML_File_ReaderWriter:System Name"] = Engine_ApplicationCache_Gateway.Settings.System.System_Name;
-                options["MarcXML_File_ReaderWriter:System Abbreviation"] = Engine_ApplicationCache_Gateway.Settings.System.System_Abbreviation;
+                options["MarcXML_File_ReaderWriter:System Name"] = Settings.System.System_Name;
+                options["MarcXML_File_ReaderWriter:System Abbreviation"] = Settings.System.System_Abbreviation;
 
                 // Save the marc xml file
                 MarcXML_File_ReaderWriter marcWriter = new MarcXML_File_ReaderWriter();
@@ -320,7 +298,7 @@ namespace SobekCM.Builder_Library
         /// <summary> Saves this item to the SobekCM database </summary>
          /// <param name="NewItem"> Flag indicates this is an entirely new item </param>
         /// <returns> TRUE if successful, otherwise FALSE </returns>
-        public bool Save_to_Database(bool NewItem)
+        public bool Save_to_Database(bool NewItem, InstanceWide_Settings Settings)
         {
             if (Metadata == null)
                 return false;
@@ -334,16 +312,16 @@ namespace SobekCM.Builder_Library
 
                 // Create the options dictionary used when saving information to the database, or writing MarcXML
                 Dictionary<string, object> options = new Dictionary<string, object>();
-                if (Engine_ApplicationCache_Gateway.Settings.MarcGeneration != null)
+                if (Settings.MarcGeneration != null)
                 {
-                    options["MarcXML_File_ReaderWriter:MARC Cataloging Source Code"] = Engine_ApplicationCache_Gateway.Settings.MarcGeneration.Cataloging_Source_Code;
-                    options["MarcXML_File_ReaderWriter:MARC Location Code"] = Engine_ApplicationCache_Gateway.Settings.MarcGeneration.Location_Code;
-                    options["MarcXML_File_ReaderWriter:MARC Reproduction Agency"] = Engine_ApplicationCache_Gateway.Settings.MarcGeneration.Reproduction_Agency;
-                    options["MarcXML_File_ReaderWriter:MARC Reproduction Place"] = Engine_ApplicationCache_Gateway.Settings.MarcGeneration.Reproduction_Place;
-                    options["MarcXML_File_ReaderWriter:MARC XSLT File"] = Engine_ApplicationCache_Gateway.Settings.MarcGeneration.XSLT_File;
+                    options["MarcXML_File_ReaderWriter:MARC Cataloging Source Code"] = Settings.MarcGeneration.Cataloging_Source_Code;
+                    options["MarcXML_File_ReaderWriter:MARC Location Code"] = Settings.MarcGeneration.Location_Code;
+                    options["MarcXML_File_ReaderWriter:MARC Reproduction Agency"] = Settings.MarcGeneration.Reproduction_Agency;
+                    options["MarcXML_File_ReaderWriter:MARC Reproduction Place"] = Settings.MarcGeneration.Reproduction_Place;
+                    options["MarcXML_File_ReaderWriter:MARC XSLT File"] = Settings.MarcGeneration.XSLT_File;
                 }
-                options["MarcXML_File_ReaderWriter:System Name"] = Engine_ApplicationCache_Gateway.Settings.System.System_Name;
-                options["MarcXML_File_ReaderWriter:System Abbreviation"] = Engine_ApplicationCache_Gateway.Settings.System.System_Abbreviation;
+                options["MarcXML_File_ReaderWriter:System Name"] = Settings.System.System_Name;
+                options["MarcXML_File_ReaderWriter:System Abbreviation"] = Settings.System.System_Abbreviation;
 
                 // Set the file root again
                 Metadata.Web.File_Root = fileRoot;
@@ -466,14 +444,14 @@ namespace SobekCM.Builder_Library
             set { vid = value; }
         }
 
-        /// <summary> Gets the permanent link associated with this incoming digital resource </summary>
-        public string Permanent_Link
-        {
-            get
-            {
-                return Engine_ApplicationCache_Gateway.Settings.Servers.System_Base_URL + "/" + Metadata.BibID + "/" + Metadata.VID;
-            }
-        }
+        ///// <summary> Gets the permanent link associated with this incoming digital resource </summary>
+        //public string Permanent_Link
+        //{
+        //    get
+        //    {
+        //        return Engine_ApplicationCache_Gateway.Settings.Servers.System_Base_URL + "/" + Metadata.BibID + "/" + Metadata.VID;
+        //    }
+        //}
 
         /// <summary> Gets the age in TICKS of this resource folder and files </summary>
         /// <remarks> This is read from the last write time for the folder </remarks>

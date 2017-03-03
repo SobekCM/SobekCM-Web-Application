@@ -26,7 +26,7 @@ namespace SobekCM.Builder_Library.Settings
         private readonly List<iPostProcessModule> postProcessModules;
 
         private readonly List<iFolderModule> allFolderModules;
-        private readonly Dictionary<string, iFolderModule> assemblyClassToModule;
+        public Dictionary<string, iFolderModule> AssemblyClassToModule { get; private set; }
 
 
         /// <summary> Constructor for a new instance of the Builder_Modules class </summary>
@@ -41,7 +41,7 @@ namespace SobekCM.Builder_Library.Settings
             postProcessModules = new List<iPostProcessModule>();
 
             allFolderModules = new List<iFolderModule>();
-            assemblyClassToModule = new Dictionary<string, iFolderModule>();
+            AssemblyClassToModule = new Dictionary<string, iFolderModule>();
         }
 
         /// <summary> Clear all the settings and the list of modules </summary>
@@ -70,7 +70,7 @@ namespace SobekCM.Builder_Library.Settings
             deleteItemModules.Clear();
             postProcessModules.Clear();
             allFolderModules.Clear();
-            assemblyClassToModule.Clear();
+            AssemblyClassToModule.Clear();
 
             // Create all the pre-process modules
             foreach (Builder_Module_Setting preSetting in settings.PreProcessModulesSettings)
@@ -211,8 +211,15 @@ namespace SobekCM.Builder_Library.Settings
                     string key = folderSetting.Key;
                     iFolderModule thisModule = null;
 
+                    // For testing purposes
+                    if ((folderSetting.Assembly == "WolfsonianBuilderModule.dll") || (folderSetting.Assembly == "WolfsonianBuilderModule"))
+                    {
+                        folderSetting.Assembly = null;
+                        thisModule = new WolfsonianBuilderModule.WolfsonianObjectProcessorModule();
+                    }
+
                     // Does this already exist?
-                    if (!assemblyClassToModule.ContainsKey(key))
+                    if (!AssemblyClassToModule.ContainsKey(key))
                     {
                         // Look for the standard options
                         if (String.IsNullOrEmpty(folderSetting.Assembly))
@@ -249,7 +256,7 @@ namespace SobekCM.Builder_Library.Settings
                                     thisModule.Arguments.Add(String.IsNullOrEmpty(folderSetting.Argument3) ? String.Empty : folderSetting.Argument3);
                                 }
                                 allFolderModules.Add(thisModule);
-                                assemblyClassToModule[folderSetting.Key] = thisModule;
+                                AssemblyClassToModule[folderSetting.Key] = thisModule;
                                 continue;
                             }
                         }
@@ -278,7 +285,7 @@ namespace SobekCM.Builder_Library.Settings
                                 }
 
                                 allFolderModules.Add(folderAsFolder);
-                                assemblyClassToModule[folderSetting.Key] = folderAsFolder;
+                                AssemblyClassToModule[folderSetting.Key] = folderAsFolder;
                             }
                         }
                     }
@@ -551,7 +558,7 @@ namespace SobekCM.Builder_Library.Settings
         /// <returns> Folder module, or NULL if not found </returns>
         public iFolderModule Get_Folder_Module_By_Key(string Key)
         {
-            return assemblyClassToModule[Key];
+            return AssemblyClassToModule[Key];
         }
     }
 }

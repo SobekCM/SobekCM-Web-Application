@@ -241,7 +241,7 @@ namespace SobekCM.Builder_Library
 
                 foreach (Builder_Source_Folder folder in builderSettings.IncomingFolders)
                 {
-                    Actionable_Builder_Source_Folder actionFolder = new Actionable_Builder_Source_Folder(folder, builderModules);
+                    Actionable_Builder_Source_Folder actionFolder = new Actionable_Builder_Source_Folder(folder, builderModules.AssemblyClassToModule);
 
                     foreach (iFolderModule thisModule in actionFolder.BuilderModules)
                     {

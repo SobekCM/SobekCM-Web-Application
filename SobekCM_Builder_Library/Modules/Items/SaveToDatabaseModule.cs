@@ -43,7 +43,7 @@ namespace SobekCM.Builder_Library.Modules.Items
             Resource.Metadata.Behaviors.Views = null;
 
             // Save this package to the database
-            if (!Resource.Save_to_Database(Resource.NewPackage))
+            if (!Resource.Save_to_Database(Resource.NewPackage, Settings))
             {
                 OnError("Error saving data to SobekCM database.  The database may not reflect the most recent data in the METS.", Resource.BibID + ":" + Resource.VID, Resource.METS_Type_String, Resource.BuilderLogId);
                 return true;

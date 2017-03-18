@@ -11,6 +11,7 @@ using System.Web.UI;
 using System.Web.UI.WebControls;
 using SobekCM.Core.Navigation;
 using SobekCM.Engine_Library.Configuration;
+using SobekCM.Engine_Library.Database;
 using SobekCM.Library.Database;
 using SobekCM.Library.Helpers.UploadiFive;
 using SobekCM.Library.HTML;
@@ -78,7 +79,7 @@ namespace SobekCM.Library.AdminViewer
             if (teiUserSettings == null)
             {
                 // Get all the settings from the database thne
-                teiUserSettings = SobekCM_Database.Get_All_User_Settings_Like("TEI.%", "true");
+                teiUserSettings = Engine_Database.Get_All_User_Settings_Like("TEI.%", "true");
 
                 // Store on the cache for several minutes
                 HttpContext.Current.Cache.Insert("TEI.UserSettings", teiUserSettings, null, Cache.NoAbsoluteExpiration, TimeSpan.FromMinutes(2));
@@ -145,7 +146,7 @@ namespace SobekCM.Library.AdminViewer
                                         // If the setting is already the same, no need to update the database
                                         if (teiUserSettings.Select("UserID=" + thisUser.Item2 + " and Setting_Key='TEI.XSLT." + thisFileName.ToUpper() + "'").Length > 0)
                                         {
-                                            SobekCM_Database.Set_User_Setting(thisUser.Item2, "TEI.XSLT." + thisFileName.ToUpper(), "false");
+                                            Engine_Database.Set_User_Setting(thisUser.Item2, "TEI.XSLT." + thisFileName.ToUpper(), "false");
                                             values_changed = true;
                                         }
                                     }
@@ -154,7 +155,7 @@ namespace SobekCM.Library.AdminViewer
                                         // If the setting is already the same, no need to update the database
                                         if (teiUserSettings.Select("UserID=" + thisUser.Item2 + " and Setting_Key='TEI.XSLT." + thisFileName.ToUpper() + "'").Length == 0)
                                         {
-                                            SobekCM_Database.Set_User_Setting(thisUser.Item2, "TEI.XSLT." + thisFileName.ToUpper(), "true");
+                                            Engine_Database.Set_User_Setting(thisUser.Item2, "TEI.XSLT." + thisFileName.ToUpper(), "true");
                                             values_changed = true;
                                         }
                                     }
@@ -177,7 +178,7 @@ namespace SobekCM.Library.AdminViewer
                                         // If the setting is already the same, no need to update the database
                                         if (teiUserSettings.Select("UserID=" + thisUser.Item2 + " and Setting_Key='TEI.CSS." + thisFileName.ToUpper() + "'").Length > 0)
                                         {
-                                            SobekCM_Database.Set_User_Setting(thisUser.Item2, "TEI.CSS." + thisFileName.ToUpper(), "false");
+                                            Engine_Database.Set_User_Setting(thisUser.Item2, "TEI.CSS." + thisFileName.ToUpper(), "false");
                                             values_changed = true;
                                         }
                                     }
@@ -186,7 +187,7 @@ namespace SobekCM.Library.AdminViewer
                                         // If the setting is already the same, no need to update the database
                                         if (teiUserSettings.Select("UserID=" + thisUser.Item2 + " and Setting_Key='TEI.CSS." + thisFileName.ToUpper() + "'").Length == 0)
                                         {
-                                            SobekCM_Database.Set_User_Setting(thisUser.Item2, "TEI.CSS." + thisFileName.ToUpper(), "true");
+                                            Engine_Database.Set_User_Setting(thisUser.Item2, "TEI.CSS." + thisFileName.ToUpper(), "true");
                                             values_changed = true;
                                         }
                                     }
@@ -209,7 +210,7 @@ namespace SobekCM.Library.AdminViewer
                                         // If the setting is already the same, no need to update the database
                                         if (teiUserSettings.Select("UserID=" + thisUser.Item2 + " and Setting_Key='TEI.MAPPING." + thisFileName.ToUpper() + "'").Length > 0)
                                         {
-                                            SobekCM_Database.Set_User_Setting(thisUser.Item2, "TEI.MAPPING." + thisFileName.ToUpper(), "false");
+                                            Engine_Database.Set_User_Setting(thisUser.Item2, "TEI.MAPPING." + thisFileName.ToUpper(), "false");
                                             values_changed = true;
                                         }
                                     }
@@ -218,7 +219,7 @@ namespace SobekCM.Library.AdminViewer
                                         // If the setting is already the same, no need to update the database
                                         if (teiUserSettings.Select("UserID=" + thisUser.Item2 + " and Setting_Key='TEI.MAPPING." + thisFileName.ToUpper() + "'").Length == 0)
                                         {
-                                            SobekCM_Database.Set_User_Setting(thisUser.Item2, "TEI.MAPPING." + thisFileName.ToUpper(), "true");
+                                            Engine_Database.Set_User_Setting(thisUser.Item2, "TEI.MAPPING." + thisFileName.ToUpper(), "true");
                                             values_changed = true;
                                         }
                                     }
@@ -231,7 +232,7 @@ namespace SobekCM.Library.AdminViewer
                     if (values_changed)
                     {
                         // Get all the settings from the database thne
-                        teiUserSettings = SobekCM_Database.Get_All_User_Settings_Like("TEI.%", "true");
+                        teiUserSettings = Engine_Database.Get_All_User_Settings_Like("TEI.%", "true");
 
                         // Store on the cache for several minutes
                         HttpContext.Current.Cache.Insert("TEI.UserSettings", teiUserSettings, null, Cache.NoAbsoluteExpiration, TimeSpan.FromMinutes(2));

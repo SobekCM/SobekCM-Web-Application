@@ -10,6 +10,7 @@ using SobekCM.Core.Navigation;
 using SobekCM.Core.UI_Configuration;
 using SobekCM.Core.UI_Configuration.StaticResources;
 using SobekCM.Engine_Library.Configuration;
+using SobekCM.Engine_Library.Database;
 using SobekCM.Library.Database;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
@@ -89,7 +90,7 @@ namespace SobekCM.Library.AdminViewer
 	                if (RequestSpecificValues.Current_User != null)
 	                {
 	                    RequestSpecificValues.Current_User.Add_Setting("Home_AdminViewer:View Preference", menu_preference);
-	                    SobekCM_Database.Set_User_Setting(RequestSpecificValues.Current_User.UserID, "Home_AdminViewer:View Preference", menu_preference);
+                        Engine_Database.Set_User_Setting(RequestSpecificValues.Current_User.UserID, "Home_AdminViewer:View Preference", menu_preference);
 	                }
 	            }
 	        }

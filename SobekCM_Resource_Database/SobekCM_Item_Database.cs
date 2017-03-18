@@ -4117,5 +4117,59 @@ namespace SobekCM_Resource_Database
         }
         #endregion
 
+
+        /// <summary> Update the additional work neeed flag, which flag an item for additional follow up work in the builder </summary>
+        /// <param name="ItemID"> Primary key for the item for which to update the additional work needed flag</param>
+        /// <param name="NewFlag"> New flag for the additional follow up work </param>
+        /// <returns> TRUE if successul, otherwise FALSE </returns>
+        /// <remarks> This calls the 'SobekCM_Update_Additional_Work_Needed_Flag' stored procedure</remarks> 
+        public static bool Update_Additional_Work_Needed_Flag(int ItemID, bool NewFlag)
+        {
+            try
+            {
+                // Execute this non-query stored procedure
+                EalDbParameter[] paramList = new EalDbParameter[2];
+                paramList[0] = new EalDbParameter("@itemid", ItemID);
+                paramList[1] = new EalDbParameter("@newflag", NewFlag);
+
+                EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Update_Additional_Work_Needed_Flag", paramList);
+
+                // Return TRUE
+                return true;
+
+            }
+            catch (Exception ee)
+            {
+                return false;
+            }
+        }
+
+        /// <summary> Sets the main thumbnail for a given digital resource </summary>
+        /// <param name="BibID"> Bibliographic identifier for the item </param>
+        /// <param name="VID"> Volume identifier for the item </param>
+        /// <param name="MainThumbnail"> Filename for the new main thumbnail </param>
+        /// <returns>TRUE if successful, otherwise FALSE</returns>
+        /// <remarks> This calls the 'SobekCM_Set_Main_Thumbnail' stored procedure </remarks>
+        public static bool Set_Item_Main_Thumbnail(string BibID, string VID, string MainThumbnail)
+        {
+
+            try
+            {
+                // build the parameter list
+                EalDbParameter[] paramList = new EalDbParameter[3];
+                paramList[0] = new EalDbParameter("@bibid", BibID);
+                paramList[1] = new EalDbParameter("@vid", VID);
+                paramList[2] = new EalDbParameter("@mainthumb", MainThumbnail);
+
+                //Execute this non-query stored procedure
+                EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Set_Main_Thumbnail", paramList);
+                return true;
+            }
+            catch (Exception ee)
+            {
+                return false;
+            }
+        }
+
     }
 }

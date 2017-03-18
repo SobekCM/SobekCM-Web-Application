@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using SobekCM.Builder_Library.Settings;
-using SobekCM.Library.Database;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Utilities;
 using SobekCM.Tools.Logs;
@@ -89,7 +88,7 @@ namespace SobekCM.Builder_Library.Modules.Folders
                                     {
                                         if (itemTable == null)
                                         {
-                                            DataSet itemListFromDb = SobekCM_Database.Get_Item_List(true, null);
+                                            DataSet itemListFromDb = Engine_Library.Database.Engine_Database.Item_List(true, null);
 
                                             // Reload the settings
                                             if (itemListFromDb == null)

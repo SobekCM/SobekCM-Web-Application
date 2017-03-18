@@ -95,7 +95,7 @@ namespace SobekCM.Library.Citation.Elements
 
         /// <summary> Reads from the template XML format </summary>
         /// <param name="xmlReader"> Current template xml configuration reader </param>
-        public void Read_XML( XmlTextReader xmlReader )
+        public void Read_XML( XmlReader xmlReader )
         {
             Inner_Read_Data( xmlReader );
         }
@@ -162,7 +162,7 @@ namespace SobekCM.Library.Citation.Elements
 
         /// <summary> Reads the inner data from the CompleteTemplate XML format </summary>
         /// <param name="XMLReader"> Current template xml configuration reader </param>
-        protected abstract void Inner_Read_Data( XmlTextReader XMLReader );
+        protected abstract void Inner_Read_Data( XmlReader XMLReader );
 
         #endregion
     }

@@ -1,7 +1,7 @@
 ﻿#region Using directives
 
 using System;
-using SobekCM.Library.Database;
+using SobekCM.Engine_Library.Database;
 using SobekCM.Resource_Object.Metadata_Modules;
 
 #endregion
@@ -29,7 +29,7 @@ namespace SobekCM.Builder_Library.Modules.Items
             // Add thumbnail, aggregation informaiton, and dark/access information from the database 
             if (!Resource.NewPackage)
             {
-                SobekCM_Database.Add_Minimum_Builder_Information(Resource.Metadata);
+                Engine_Database.Add_Minimum_Builder_Information(Resource.Metadata);
             }
             else
             {

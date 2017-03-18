@@ -2,6 +2,7 @@
 
 using System;
 using SobekCM.Core.Settings;
+using SobekCM.Engine_Library.Database;
 
 #endregion
 
@@ -19,7 +20,7 @@ namespace SobekCM.Builder_Library.Modules.Schedulable
             OnProcess("ExpireOldLogEntriesModule : Expiring old log entries", "Standard", null, null, -1);
 
             // Clear the logs
-            Library.Database.SobekCM_Database.Builder_Expire_Log_Entries(Settings.Builder.Log_Expiration_Days);
+            Engine_Database.Builder_Expire_Log_Entries(Settings.Builder.Log_Expiration_Days);
         }
     }
 }

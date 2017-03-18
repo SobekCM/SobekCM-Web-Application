@@ -2,8 +2,8 @@
 
 using System;
 using System.IO;
+using SobekCM.Engine_Library.Database;
 using SobekCM.Engine_Library.Solr;
-using SobekCM.Library.Database;
 
 #endregion
 
@@ -22,11 +22,11 @@ namespace SobekCM.Builder_Library.Modules.Items
         {
             // Read the METS and load the basic information before continuing
             Resource.Load_METS();
-            SobekCM_Database.Add_Minimum_Builder_Information(Resource.Metadata);
+            Engine_Database.Add_Minimum_Builder_Information(Resource.Metadata);
 
             Resource.BuilderLogId = OnProcess("........Processing '" + Resource.Folder_Name + "'", "Standard", Resource.BibID + ":" + Resource.VID, Resource.METS_Type_String, -1);
 
-            SobekCM_Database.Builder_Clear_Item_Error_Log(Resource.BibID, Resource.VID, "SobekCM Builder");
+            Engine_Database.Builder_Clear_Item_Error_Log(Resource.BibID, Resource.VID, "SobekCM Builder");
 
             Resource.File_Root = Resource.BibID.Substring(0, 2) + "\\" + Resource.BibID.Substring(2, 2) + "\\" + Resource.BibID.Substring(4, 2) + "\\" + Resource.BibID.Substring(6, 2) + "\\" + Resource.BibID.Substring(8);
             string existing_folder = Settings.Servers.Image_Server_Network + Resource.File_Root + "\\" + Resource.VID;
@@ -80,7 +80,7 @@ namespace SobekCM.Builder_Library.Modules.Items
             }
 
             // Delete the file from the database
-            SobekCM_Database.Delete_SobekCM_Item(Resource.BibID, Resource.VID, true, "Deleted upon request by builder");
+            Engine_Database.Delete_SobekCM_Item(Resource.BibID, Resource.VID, true, "Deleted upon request by builder");
 
             // Delete from the solr/lucene indexes
             if (Settings.Servers.Document_Solr_Index_URL.Length > 0)

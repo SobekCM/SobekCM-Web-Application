@@ -847,33 +847,33 @@ namespace SobekCM.Library.MySobekViewer
                 Item_To_Complete.Web.File_Root = Item_To_Complete.BibID.Substring(0, 2) + "\\" + Item_To_Complete.BibID.Substring(2, 2) + "\\" + Item_To_Complete.BibID.Substring(4, 2) + "\\" + Item_To_Complete.BibID.Substring(6, 2) + "\\" + Item_To_Complete.BibID.Substring(8, 2);
                 Item_To_Complete.Web.AssocFilePath = Item_To_Complete.Web.File_Root + "\\" + Item_To_Complete.VID + "\\";
 
-                // Create the static html pages
-                string base_url = RequestSpecificValues.Current_Mode.Base_URL;
-                try
-                {
-                    Static_Pages_Builder staticBuilder = new Static_Pages_Builder(UI_ApplicationCache_Gateway.Settings.Servers.System_Base_URL, UI_ApplicationCache_Gateway.Settings.Servers.Base_Data_Directory, RequestSpecificValues.HTML_Skin.Skin_Code);
-                    string filename = userInProcessDirectory + "\\" + Item_To_Complete.BibID + "_" + Item_To_Complete.VID + ".html";
-                    staticBuilder.Create_Item_Citation_HTML(Item_To_Complete, filename, String.Empty);
+                //// Create the static html pages
+                //string base_url = RequestSpecificValues.Current_Mode.Base_URL;
+                //try
+                //{
+                //    Static_Pages_Builder staticBuilder = new Static_Pages_Builder(UI_ApplicationCache_Gateway.Settings.Servers.System_Base_URL, UI_ApplicationCache_Gateway.Settings.Servers.Base_Data_Directory, RequestSpecificValues.HTML_Skin.Skin_Code);
+                //    string filename = userInProcessDirectory + "\\" + Item_To_Complete.BibID + "_" + Item_To_Complete.VID + ".html";
+                //    staticBuilder.Create_Item_Citation_HTML(Item_To_Complete, filename, String.Empty);
 
-					// Copy the static HTML file to the web server
-					try
-					{
-						if (!Directory.Exists(UI_ApplicationCache_Gateway.Settings.Servers.Static_Pages_Location + item.BibID.Substring(0, 2) + "\\" + item.BibID.Substring(2, 2) + "\\" + item.BibID.Substring(4, 2) + "\\" + item.BibID.Substring(6, 2) + "\\" + item.BibID.Substring(8)))
-							Directory.CreateDirectory(UI_ApplicationCache_Gateway.Settings.Servers.Static_Pages_Location + item.BibID.Substring(0, 2) + "\\" + item.BibID.Substring(2, 2) + "\\" + item.BibID.Substring(4, 2) + "\\" + item.BibID.Substring(6, 2) + "\\" + item.BibID.Substring(8));
-						if (File.Exists(userInProcessDirectory + "\\" + item.BibID + "_" + item.VID + ".html"))
-							File.Copy(userInProcessDirectory + "\\" + item.BibID + "_" + item.VID + ".html", UI_ApplicationCache_Gateway.Settings.Servers.Static_Pages_Location + item.BibID.Substring(0, 2) + "\\" + item.BibID.Substring(2, 2) + "\\" + item.BibID.Substring(4, 2) + "\\" + item.BibID.Substring(6, 2) + "\\" + item.BibID.Substring(8) + "\\" + item.BibID + "_" + item.VID + ".html", true);
-					}
-					catch (Exception)
-					{
-						// This is not critical
-					}
-                }
-                catch (Exception)
-                {
-                    // An error here is not catastrophic
-                }
+                //    // Copy the static HTML file to the web server
+                //    try
+                //    {
+                //        if (!Directory.Exists(UI_ApplicationCache_Gateway.Settings.Servers.Static_Pages_Location + item.BibID.Substring(0, 2) + "\\" + item.BibID.Substring(2, 2) + "\\" + item.BibID.Substring(4, 2) + "\\" + item.BibID.Substring(6, 2) + "\\" + item.BibID.Substring(8)))
+                //            Directory.CreateDirectory(UI_ApplicationCache_Gateway.Settings.Servers.Static_Pages_Location + item.BibID.Substring(0, 2) + "\\" + item.BibID.Substring(2, 2) + "\\" + item.BibID.Substring(4, 2) + "\\" + item.BibID.Substring(6, 2) + "\\" + item.BibID.Substring(8));
+                //        if (File.Exists(userInProcessDirectory + "\\" + item.BibID + "_" + item.VID + ".html"))
+                //            File.Copy(userInProcessDirectory + "\\" + item.BibID + "_" + item.VID + ".html", UI_ApplicationCache_Gateway.Settings.Servers.Static_Pages_Location + item.BibID.Substring(0, 2) + "\\" + item.BibID.Substring(2, 2) + "\\" + item.BibID.Substring(4, 2) + "\\" + item.BibID.Substring(6, 2) + "\\" + item.BibID.Substring(8) + "\\" + item.BibID + "_" + item.VID + ".html", true);
+                //    }
+                //    catch (Exception)
+                //    {
+                //        // This is not critical
+                //    }
+                //}
+                //catch (Exception)
+                //{
+                //    // An error here is not catastrophic
+                //}
 
-                RequestSpecificValues.Current_Mode.Base_URL = base_url;
+                //RequestSpecificValues.Current_Mode.Base_URL = base_url;
 
                 // Save the rest of the metadata
                 Item_To_Complete.Save_SobekCM_METS();
@@ -950,7 +950,7 @@ namespace SobekCM.Library.MySobekViewer
                 }
 
                 // Always set the additional work needed flag, to give the builder a  chance to look at it
-                SobekCM_Database.Update_Additional_Work_Needed_Flag(Item_To_Complete.Web.ItemID, true, Tracer);
+                SobekCM_Item_Database.Update_Additional_Work_Needed_Flag(Item_To_Complete.Web.ItemID, true);
 
                 // Clear any temporarily assigned current project and CompleteTemplate
                 RequestSpecificValues.Current_User.Current_Default_Metadata = null;

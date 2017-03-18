@@ -10,7 +10,7 @@ using SobekCM.Engine_Library.Email;
 
 #endregion
 
-namespace SobekCM.Library.Email
+namespace SobekCM.Builder_Library.Statistics
 {
     /// <summary> Static helper class assists with sending usage statistics emails for
     /// the monthly emails regarding individual usage on items which are linked to users </summary>

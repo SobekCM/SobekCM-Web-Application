@@ -13,6 +13,7 @@ using SobekCM.Core.Navigation;
 using SobekCM.Core.UI_Configuration;
 using SobekCM.Core.UI_Configuration.StaticResources;
 using SobekCM.Engine_Library.Configuration;
+using SobekCM.Engine_Library.Database;
 using SobekCM.Library.Database;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
@@ -53,7 +54,7 @@ namespace SobekCM.Library.HTML
                             if (option.ToString() != RequestSpecificValues.Current_User.Get_Setting("Statistics_HtmlSubwriter:ItemCountReportOption", "NULL"))
                             {
                                 RequestSpecificValues.Current_User.Add_Setting("Statistics_HtmlSubwriter:ItemCountReportOption", option);
-                                SobekCM_Database.Set_User_Setting(RequestSpecificValues.Current_User.UserID, "Statistics_HtmlSubwriter:ItemCountReportOption", option.ToString());
+                                Engine_Database.Set_User_Setting(RequestSpecificValues.Current_User.UserID, "Statistics_HtmlSubwriter:ItemCountReportOption", option.ToString());
                             }
                         }
                     }

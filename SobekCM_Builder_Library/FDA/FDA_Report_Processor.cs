@@ -3,13 +3,13 @@
 using System.Collections.Generic;
 using System.IO;
 using SobekCM.Engine_Library.ApplicationState;
-using SobekCM.Library.Database;
+using SobekCM.Engine_Library.Database;
 using SobekCM.Tools.FDA;
 
 #endregion
 
 
-namespace SobekCM.Builder_Library.Tools
+namespace SobekCM.Builder_Library.FDA
 {
     /// <summary> Processor class steps through and processes all the <a href="http://fclaweb.fcla.edu/FDA_landing_page">Florida Digital Archive</a> reports under a given directory, 
     /// reading the FDA reports and saving the pertinent information into the SobekCM database </summary>
@@ -100,8 +100,12 @@ namespace SobekCM.Builder_Library.Tools
                                     // Did the user ask to save to the database?
                                     if (save_to_db)
                                     {
+                                        // Ensure the database connection is correct
+                                        FDA_Database_Gateway.Connection_String = Engine_Database.Connection_String;
+                                        FDA_Database_Gateway.DatabaseType = Engine_Database.DatabaseType;
+
                                         // Save to the database
-                                        if (!SobekCM_Database.FDA_Report_Save( data ))
+                                        if (!FDA_Database_Gateway.FDA_Report_Save(data))
                                         {
                                             // If unsuccessful, set unsuccessful flag
                                             database_successful = false;

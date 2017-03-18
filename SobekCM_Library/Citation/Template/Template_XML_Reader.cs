@@ -318,14 +318,8 @@ namespace SobekCM.Library.Citation.Template
                 nodeReader.Read();
                 if (( nodeReader.NodeType == XmlNodeType.Element ) && ( nodeReader.Name.ToLower() == "element_data" ))
                 {
-                    // Create the new tree
-                    StringWriter sw = new StringWriter();
-                    XmlTextWriter tw = new XmlTextWriter( sw );
-                    tw.WriteNode( nodeReader, true );
-                    tw.Close();
-
                     // Let the element process this inner data
-                    newElement.Read_XML( new XmlTextReader( new StringReader( sw.ToString() )));
+                    newElement.Read_XML( nodeReader.ReadSubtree());
                 }
             }
 

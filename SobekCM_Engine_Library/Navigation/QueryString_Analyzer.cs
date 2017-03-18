@@ -1275,7 +1275,9 @@ namespace SobekCM.Engine_Library.Navigation
 			{
 				switch (RemainingURLRedirectList[0])
 				{
-
+                    case "empty":
+                        Navigator.Aggregation_Type = Aggregation_Type_Enum.Empty;
+                        break;
 
 					case "edit":
 						Navigator.Aggregation_Type = Aggregation_Type_Enum.Home_Edit;

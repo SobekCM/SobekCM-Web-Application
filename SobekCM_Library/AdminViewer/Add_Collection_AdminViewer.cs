@@ -634,7 +634,7 @@ namespace SobekCM.Library.AdminViewer
             if (do_not_show_flag)
             {
                 RequestSpecificValues.Current_User.Add_Setting("Add_Collection_AdminViewer:Skip Welcome", "true");
-                SobekCM_Database.Set_User_Setting(RequestSpecificValues.Current_User.UserID, "Add_Collection_AdminViewer:Skip Welcome", "true");
+                Engine_Database.Set_User_Setting(RequestSpecificValues.Current_User.UserID, "Add_Collection_AdminViewer:Skip Welcome", "true");
             }
         }
 

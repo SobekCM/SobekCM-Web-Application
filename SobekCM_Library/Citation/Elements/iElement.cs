@@ -38,7 +38,7 @@ namespace SobekCM.Library.Citation.Elements
 
 	    /// <summary> Reads from the template XML format </summary>
         /// <param name="xmlReader"> Current template xml configuration reader </param>
-		void Read_XML( XmlTextReader xmlReader );
+		void Read_XML( XmlReader xmlReader );
 
         /// <summary> Prepares the bib object for the save, by clearing any existing data in this element's related field(s) </summary>
         /// <param name="Bib"> Existing digital resource object which may already have values for this element's data field(s) </param>

@@ -130,7 +130,6 @@
 				<name>Basic Information</name>
 				<element type="Aggregations" />
 				<element type="Wordmark" repeatable="true" />
-				<element type="Viewer"  repeatable="true" />
 				<element type="Tickler" />
 				<element type="Web_Skin" />
 			</panel>

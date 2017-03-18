@@ -1,7 +1,7 @@
 ﻿#region Using directives
 
 using System;
-using SobekCM.Library.Database;
+using SobekCM.Engine_Library.Database;
 using SobekCM_Resource_Database;
 
 #endregion
@@ -18,7 +18,7 @@ namespace SobekCM.Builder_Library.Modules.Items
         public override bool DoWork(Incoming_Digital_Resource Resource)
         {
             // Clear the flag for additional work
-            SobekCM_Database.Update_Additional_Work_Needed_Flag(Resource.Metadata.Web.ItemID, false, null);
+            SobekCM_Item_Database.Update_Additional_Work_Needed_Flag(Resource.Metadata.Web.ItemID, false);
 
             // Mark a log in the database that this was handled as well
             SobekCM_Item_Database.Add_Workflow(Resource.Metadata.Web.ItemID, "Bulk Loaded", String.Empty, "SobekCM Bulk Loader", String.Empty);

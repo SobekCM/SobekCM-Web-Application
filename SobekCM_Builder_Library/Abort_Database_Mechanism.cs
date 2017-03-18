@@ -1,7 +1,7 @@
 ﻿#region Using directives
 
 using System.Collections.Generic;
-using SobekCM.Library.Database;
+using SobekCM.Engine_Library.Database;
 
 #endregion
 
@@ -46,7 +46,7 @@ namespace SobekCM.Builder_Library
 		{
 			get
 			{
-				Dictionary<string, string> builder_settings = SobekCM_Database.Get_Settings(null);
+                Dictionary<string, string> builder_settings = Engine_Database.Get_Settings(null);
 				if (builder_settings.ContainsKey(setting_key))
 				{
 					switch( builder_settings[setting_key].ToUpper().Replace("_"," "))
@@ -92,7 +92,7 @@ namespace SobekCM.Builder_Library
 						newValue = "LAST EXECUTION ABORTED";
 						break;
 				}
-				SobekCM_Database.Set_Setting(setting_key, newValue);
+				Engine_Database.Set_Setting(setting_key, newValue);
 
 			}
 		}
@@ -101,7 +101,7 @@ namespace SobekCM.Builder_Library
 		/// <returns> TRUE if the flag is currently ABORT REQUESTED, ABORTING, or NO BUILDER REQUESTED</returns>
 		public static bool Abort_Requested()
 		{
-			Dictionary<string, string> builder_settings = SobekCM_Database.Get_Settings(null);
+            Dictionary<string, string> builder_settings = Engine_Database.Get_Settings(null);
 			if (builder_settings.ContainsKey(setting_key))
 			{
 				switch (builder_settings[setting_key].ToUpper().Replace("_", " "))

@@ -7,7 +7,7 @@ using System.IO;
 using System.Text;
 using System.Windows.Forms;
 using SobekCM.Engine_Library.ApplicationState;
-using SobekCM.Library.Database;
+using SobekCM.Engine_Library.Database;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Configuration;
 using SobekCM.Resource_Object.METS_Sec_ReaderWriters;
@@ -184,12 +184,12 @@ namespace SobekCM.Builder
             // Assign the connection string and test the connection (if only a single connection listed)
 	        if ( MultiInstance_Builder_Settings.Instances.Count == 1)
 	        {
-		        SobekCM_Database.Connection_String = MultiInstance_Builder_Settings.Instances[0].DatabaseConnection.Connection_String;
-		        if (!SobekCM_Database.Test_Connection())
+		        Engine_Database.Connection_String = MultiInstance_Builder_Settings.Instances[0].DatabaseConnection.Connection_String;
+                if (!Engine_Database.Test_Connection())
 		        {
 			        Console.WriteLine("Unable to connect to the database using provided connection string:");
 			        Console.WriteLine();
-			        Console.WriteLine(SobekCM_Database.Connection_String);
+                    Console.WriteLine(Engine_Database.Connection_String);
 			        return;
 		        }
 	        }

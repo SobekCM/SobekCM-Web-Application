@@ -13,6 +13,7 @@ using SobekCM.Core.Navigation;
 using SobekCM.Core.UI_Configuration;
 using SobekCM.Core.UI_Configuration.StaticResources;
 using SobekCM.Engine_Library.Configuration;
+using SobekCM.Engine_Library.Database;
 using SobekCM.Engine_Library.Solr;
 using SobekCM.Library.AdminViewer;
 using SobekCM.Library.Database;
@@ -185,7 +186,7 @@ namespace SobekCM.Library.MySobekViewer
 
 		        // Perform the database delete
 		        RequestSpecificValues.Tracer.Add_Trace("Delete_Item_MySobekViewer.Constructor", "Perform database update");
-		        bool database_result2 = SobekCM_Database.Delete_SobekCM_Item(RequestSpecificValues.Current_Mode.BibID, RequestSpecificValues.Current_Mode.VID, RequestSpecificValues.Current_User.Is_System_Admin, String.Empty);
+                bool database_result2 = Engine_Database.Delete_SobekCM_Item(RequestSpecificValues.Current_Mode.BibID, RequestSpecificValues.Current_Mode.VID, RequestSpecificValues.Current_User.Is_System_Admin, String.Empty);
 
 		        // Perform the SOLR delete
 		        RequestSpecificValues.Tracer.Add_Trace("Delete_Item_MySobekViewer.Constructor", "Perform solr delete");

@@ -479,7 +479,7 @@ namespace SobekCM.Library.MySobekViewer
                 // Finally, set the currentItem for more processing if there were any files
                 if ((image_files.Length > 0) && ( Item_To_Complete.Web.ItemID > 0 ))
                 {
-                    Database.SobekCM_Database.Update_Additional_Work_Needed_Flag(Item_To_Complete.Web.ItemID, true, Tracer);
+                    SobekCM_Item_Database.Update_Additional_Work_Needed_Flag(Item_To_Complete.Web.ItemID, true);
                 }
 
                 foreach (string thisFile in image_files)

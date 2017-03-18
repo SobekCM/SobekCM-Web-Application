@@ -406,6 +406,10 @@ namespace SobekCM.Library.HTML
                     case Aggregation_Type_Enum.Work_History:
                         collectionViewer = new Work_History_AggregationViewer(RequestSpecificValues, viewBag);
                         break;
+
+                    case Aggregation_Type_Enum.Empty:
+				        collectionViewer = new Empty_AggregationViewer(RequestSpecificValues, viewBag);
+                        break;
 				}
 			}
 

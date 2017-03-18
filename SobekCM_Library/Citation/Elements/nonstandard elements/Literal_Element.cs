@@ -63,7 +63,7 @@ namespace SobekCM.Library.Citation.Elements
 
 		/// <summary> Read inner data for this XML  </summary>
 		/// <param name="XMLReader"> Current reader for the template configuration XML file </param>
-		protected override void Inner_Read_Data(XmlTextReader XMLReader)
+		protected override void Inner_Read_Data( XmlReader XMLReader )
 		{
 			while (XMLReader.Read())
 			{

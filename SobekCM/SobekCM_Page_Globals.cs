@@ -105,7 +105,7 @@ namespace SobekCM
 			            baseDir = baseDir + "\\";
                     UI_ApplicationCache_Gateway.Settings.Servers.Base_Directory = baseDir;
 
-                    SobekCM_Database.Set_Setting("Application Server Network", baseDir);
+                    Engine_Database.Set_Setting("Application Server Network", baseDir);
 			    }
 
                 // Ensure the web server IP address is set correctly
@@ -116,7 +116,7 @@ namespace SobekCM
 			        {
                         UI_ApplicationCache_Gateway.Settings.Servers.SobekCM_Web_Server_IP = ip;
 
-                        SobekCM_Database.Set_Setting("SobekCM Web Server IP", ip);
+                        Engine_Database.Set_Setting("SobekCM Web Server IP", ip);
 			        }
 			    }
 

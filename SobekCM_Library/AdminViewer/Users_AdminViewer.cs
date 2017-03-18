@@ -668,7 +668,7 @@ namespace SobekCM.Library.AdminViewer
                                 // If the setting is already the same, no need to update the database
 					            if (editUser.Get_Setting("TEI.Enabled", "false") != "false")
 					            {
-					                if ( SobekCM_Database.Set_User_Setting(editUser.UserID, "TEI.Enabled", "false") )
+                                    if (Engine_Database.Set_User_Setting(editUser.UserID, "TEI.Enabled", "false"))
                                         editUser.Add_Setting("TEI.Enabled", "false");
 					            }
 					        }
@@ -677,7 +677,7 @@ namespace SobekCM.Library.AdminViewer
                                 // If the setting is already the same, no need to update the database
 					            if (editUser.Get_Setting("TEI.Enabled", "false") != "true")
 					            {
-					                if ( SobekCM_Database.Set_User_Setting(editUser.UserID, "TEI.Enabled", "true"))
+                                    if (Engine_Database.Set_User_Setting(editUser.UserID, "TEI.Enabled", "true"))
                                         editUser.Add_Setting("TEI.Enabled", "true");
 					            }
 					        }
@@ -691,7 +691,7 @@ namespace SobekCM.Library.AdminViewer
                                     // If the setting is already the same, no need to update the database
                                     if (editUser.Get_Setting("TEI.XSLT." + thisFileName.ToUpper(), "false") != "false")
                                     {
-                                        if ( SobekCM_Database.Set_User_Setting(editUser.UserID, "TEI.XSLT." + thisFileName.ToUpper(), "false"))
+                                        if (Engine_Database.Set_User_Setting(editUser.UserID, "TEI.XSLT." + thisFileName.ToUpper(), "false"))
                                             editUser.Add_Setting("TEI.XSLT." + thisFileName.ToUpper(), "false");
                                     }
                                 }
@@ -700,7 +700,7 @@ namespace SobekCM.Library.AdminViewer
                                     // If the setting is already the same, no need to update the database
                                     if (editUser.Get_Setting("TEI.XSLT." + thisFileName.ToUpper(), "false") != "true")
                                     {
-                                        if ( SobekCM_Database.Set_User_Setting(editUser.UserID, "TEI.XSLT." + thisFileName.ToUpper(), "true"))
+                                        if (Engine_Database.Set_User_Setting(editUser.UserID, "TEI.XSLT." + thisFileName.ToUpper(), "true"))
                                             editUser.Add_Setting("TEI.XSLT." + thisFileName.ToUpper(), "true");
                                     }
                                 }
@@ -715,7 +715,7 @@ namespace SobekCM.Library.AdminViewer
                                     // If the setting is already the same, no need to update the database
                                     if (editUser.Get_Setting("TEI.CSS." + thisFileName.ToUpper(), "false") != "false")
                                     {
-                                       if ( SobekCM_Database.Set_User_Setting(editUser.UserID, "TEI.CSS." + thisFileName.ToUpper(), "false") )
+                                        if (Engine_Database.Set_User_Setting(editUser.UserID, "TEI.CSS." + thisFileName.ToUpper(), "false"))
                                            editUser.Add_Setting("TEI.CSS." + thisFileName.ToUpper(), "false");
                                     }
                                 }
@@ -724,7 +724,7 @@ namespace SobekCM.Library.AdminViewer
                                     // If the setting is already the same, no need to update the database
                                     if (editUser.Get_Setting("TEI.CSS." + thisFileName.ToUpper(), "false") != "true")
                                     {
-                                        if ( SobekCM_Database.Set_User_Setting(editUser.UserID, "TEI.CSS." + thisFileName.ToUpper(), "true"))
+                                        if (Engine_Database.Set_User_Setting(editUser.UserID, "TEI.CSS." + thisFileName.ToUpper(), "true"))
                                             editUser.Add_Setting("TEI.CSS." + thisFileName.ToUpper(), "true");
                                     }
                                 }
@@ -739,7 +739,7 @@ namespace SobekCM.Library.AdminViewer
                                     // If the setting is already the same, no need to update the database
                                     if (editUser.Get_Setting("TEI.MAPPING." + thisFileName.ToUpper(), "false") != "false")
                                     {
-                                        if ( SobekCM_Database.Set_User_Setting(editUser.UserID, "TEI.MAPPING." + thisFileName.ToUpper(), "false"))
+                                        if (Engine_Database.Set_User_Setting(editUser.UserID, "TEI.MAPPING." + thisFileName.ToUpper(), "false"))
                                             editUser.Add_Setting("TEI.MAPPING." + thisFileName.ToUpper(), "false");
                                     }
                                 }
@@ -748,7 +748,7 @@ namespace SobekCM.Library.AdminViewer
                                     // If the setting is already the same, no need to update the database
                                     if (editUser.Get_Setting("TEI.MAPPING." + thisFileName.ToUpper(), "false") != "true")
                                     {
-                                        if ( SobekCM_Database.Set_User_Setting(editUser.UserID, "TEI.MAPPING." + thisFileName.ToUpper(), "true"))
+                                        if (Engine_Database.Set_User_Setting(editUser.UserID, "TEI.MAPPING." + thisFileName.ToUpper(), "true"))
                                             editUser.Add_Setting("TEI.MAPPING." + thisFileName.ToUpper(), "true");
                                     }
                                 }

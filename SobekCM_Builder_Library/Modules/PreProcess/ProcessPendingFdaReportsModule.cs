@@ -2,9 +2,10 @@
 
 using System;
 using System.IO;
+using SobekCM.Builder_Library.FDA;
 using SobekCM.Builder_Library.Tools;
 using SobekCM.Core.Settings;
-using SobekCM.Library.Database;
+using SobekCM.Engine_Library.Database;
 
 #endregion
 
@@ -31,7 +32,7 @@ namespace SobekCM.Builder_Library.Modules.PreProcess
                 if ((fdaProcessor.Error_Count > 0) || (fdaProcessor.Success_Count > 0))
                 {
                     // Clear any previous report
-                    SobekCM_Database.Builder_Clear_Item_Error_Log("FDA REPORT", "", "SobekCM Builder");
+                    Engine_Database.Builder_Clear_Item_Error_Log("FDA REPORT", "", "SobekCM Builder");
 
                     if (fdaProcessor.Error_Count > 0)
                     {

@@ -445,6 +445,10 @@
         /// <summary>Ability to edit the static html aggregation child pages</summary>
         Child_Page_Edit,
 
+        /// <summary> Empty viewer shows a mostly empty page, but with the web skin and aggregation branding </summary>
+        /// <remarks> This is primarily used by external systems, such as the SobekCM Builder </remarks>
+        Empty,
+
         /// <summary>Display the home page for an aggregation (and default search option)</summary>
         Home,
 

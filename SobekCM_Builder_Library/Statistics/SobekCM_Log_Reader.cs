@@ -8,7 +8,6 @@ using System.IO;
 using SobekCM.Core.Navigation;
 using SobekCM.Engine_Library.ApplicationState;
 using SobekCM.Engine_Library.Navigation;
-using SobekCM.Library.UI;
 
 #endregion
 
@@ -31,7 +30,7 @@ namespace SobekCM.Builder_Library.Statistics
             itemList = Item_List;
 
             // Set the constant settings base directory value to the production location
-            UI_ApplicationCache_Gateway.Settings.Servers.Base_Directory = SobekCM_Web_App_Directory;
+            Engine_ApplicationCache_Gateway.Settings.Servers.Base_Directory = SobekCM_Web_App_Directory;
 
             // Build the BibiD/VID dictionary
             bib_vid_itemid_dictionary = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);

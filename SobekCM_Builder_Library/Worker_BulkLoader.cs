@@ -174,7 +174,11 @@ namespace SobekCM.Builder_Library
                 logsModule.Error += module_Error;
                 logsModule.DoWork(settings);
 
-
+                // Rebuild all the static pages
+                RebuildAllAggregationBrowsesModule rebuildModule = new RebuildAllAggregationBrowsesModule();
+                rebuildModule.Process += module_Process;
+                rebuildModule.Error += module_Error;
+                rebuildModule.DoWork(settings);
 
                 firstrun = false;
             }
@@ -355,9 +359,9 @@ namespace SobekCM.Builder_Library
         private void ReportLastRun()
         {
             // Save information about this last run
-            Library.Database.SobekCM_Database.Set_Setting("Builder Version", Engine_ApplicationCache_Gateway.Settings.Static.Current_Builder_Version);
-            Library.Database.SobekCM_Database.Set_Setting("Builder Last Run Finished", DateTime.Now.ToString());
-            Library.Database.SobekCM_Database.Set_Setting("Builder Last Message", finalmessage);
+            Engine_Database.Set_Setting("Builder Version", Engine_ApplicationCache_Gateway.Settings.Static.Current_Builder_Version);
+            Engine_Database.Set_Setting("Builder Last Run Finished", DateTime.Now.ToString());
+            Engine_Database.Set_Setting("Builder Last Message", finalmessage);
         }
 
         /// <summary> Release all the resources held in this class and all the related builder modules </summary>
@@ -400,7 +404,6 @@ namespace SobekCM.Builder_Library
             // Set all the database strings appropriately
             Engine_Database.Connection_String = instanceInfo.DatabaseConnection.Connection_String;
             SobekCM_Item_Database.Connection_String = instanceInfo.DatabaseConnection.Connection_String;
-            Library.Database.SobekCM_Database.Connection_String = instanceInfo.DatabaseConnection.Connection_String;
 
             // Get the settings values directly from the database
             settings = InstanceWide_Settings_Builder.Build_Settings(instanceInfo.DatabaseConnection);
@@ -624,7 +627,7 @@ namespace SobekCM.Builder_Library
         private void Complete_Any_Recent_Loads_Requiring_Additional_Work()
         {
             // Get the list of recent loads requiring additional work
-            DataTable additionalWorkRequired = Library.Database.SobekCM_Database.Items_Needing_Aditional_Work;
+            DataTable additionalWorkRequired = Engine_Database.Items_Needing_Aditional_Work;
             if ((additionalWorkRequired != null) && (additionalWorkRequired.Rows.Count > 0))
             {
 	            Add_NonError_To_Log("Processing recently loaded items needing additional work", "Standard", String.Empty, String.Empty, -1);
@@ -661,9 +664,9 @@ namespace SobekCM.Builder_Library
                     {
 	                    Add_Error_To_Log("Unable to find valid resource files for reprocessing " + bibID + ":" + vid, bibID + ":" + vid, "Reprocess", -1);
 
-	                    int itemID = Library.Database.SobekCM_Database.Get_ItemID_From_Bib_VID(bibID, vid);
+                        int itemID = Engine_Database.Get_ItemID_From_Bib_VID(bibID, vid);
 
-						Library.Database.SobekCM_Database.Update_Additional_Work_Needed_Flag(itemID, false, null);
+                        SobekCM_Item_Database.Update_Additional_Work_Needed_Flag(itemID, false);
                     }
                 }
             }
@@ -686,7 +689,7 @@ namespace SobekCM.Builder_Library
                 AdditionalWorkResource.METS_Type_String = "Reprocess";
 
                 // Add thumbnail and aggregation informaiton from the database 
-                Library.Database.SobekCM_Database.Add_Minimum_Builder_Information(AdditionalWorkResource.Metadata);
+                Engine_Database.Add_Minimum_Builder_Information(AdditionalWorkResource.Metadata);
 
                 // Do all the item processing per instance config
                 foreach (iSubmissionPackageModule thisModule in builderModules.ItemProcessModules)
@@ -772,7 +775,7 @@ namespace SobekCM.Builder_Library
             ResourcePackage.BuilderLogId = Add_NonError_To_Log("........Processing '" + ResourcePackage.Folder_Name + "'", "Standard", ResourcePackage.BibID + ":" + ResourcePackage.VID, ResourcePackage.METS_Type_String, -1);
 
             // Clear any existing error linked to this item
-			Library.Database.SobekCM_Database.Builder_Clear_Item_Error_Log(ResourcePackage.BibID, ResourcePackage.VID, "SobekCM Builder");
+            Engine_Database.Builder_Clear_Item_Error_Log(ResourcePackage.BibID, ResourcePackage.VID, "SobekCM Builder");
 
             // Before we save this or anything, let's see if this is truly a new resource
             ResourcePackage.NewPackage = (Engine_Database.Get_Item_Information(ResourcePackage.BibID, ResourcePackage.VID, null ) == null );
@@ -920,7 +923,7 @@ namespace SobekCM.Builder_Library
 				Console.WriteLine( LogStatement);
 				logger.AddNonError( LogStatement.Replace("\t", "....."));
 			}
-			return Library.Database.SobekCM_Database.Builder_Add_Log_Entry(RelatedLogID, BibID_VID, DbLogType, LogStatement.Replace("\t", ""), MetsType);
+            return Engine_Database.Builder_Add_Log_Entry(RelatedLogID, BibID_VID, DbLogType, LogStatement.Replace("\t", ""), MetsType);
         }
 
 		private long Add_NonError_To_Log(string LogStatement, bool IsVerbose, string BibID_VID, string MetsType, long RelatedLogID)
@@ -937,7 +940,7 @@ namespace SobekCM.Builder_Library
 					Console.WriteLine( LogStatement);
 					logger.AddNonError( LogStatement.Replace("\t", "....."));
 				}
-	            return Library.Database.SobekCM_Database.Builder_Add_Log_Entry(RelatedLogID, BibID_VID, "Verbose", LogStatement.Replace("\t", ""), MetsType);
+                return Engine_Database.Builder_Add_Log_Entry(RelatedLogID, BibID_VID, "Verbose", LogStatement.Replace("\t", ""), MetsType);
             }
 			return -1;
         }
@@ -954,7 +957,7 @@ namespace SobekCM.Builder_Library
 				Console.WriteLine( LogStatement);
 				logger.AddError( LogStatement.Replace("\t", "....."));
 			}
-			return Library.Database.SobekCM_Database.Builder_Add_Log_Entry(RelatedLogID, BibID_VID, "Error", LogStatement.Replace("\t", ""), MetsType);
+            return Engine_Database.Builder_Add_Log_Entry(RelatedLogID, BibID_VID, "Error", LogStatement.Replace("\t", ""), MetsType);
         }
 
         private void Add_Error_To_Log(string LogStatement, string BibID_VID, string MetsType, long RelatedLogID, Exception Ee)
@@ -969,13 +972,13 @@ namespace SobekCM.Builder_Library
                 Console.WriteLine(LogStatement);
                 logger.AddError(LogStatement.Replace("\t", "....."));
             }
-            long mainErrorId = Library.Database.SobekCM_Database.Builder_Add_Log_Entry(RelatedLogID, BibID_VID, "Error", LogStatement.Replace("\t", ""), MetsType);
+            long mainErrorId = Engine_Database.Builder_Add_Log_Entry(RelatedLogID, BibID_VID, "Error", LogStatement.Replace("\t", ""), MetsType);
 
 
             string[] split = Ee.ToString().Split("\n".ToCharArray());
             foreach (string thisSplit in split)
             {
-                Library.Database.SobekCM_Database.Builder_Add_Log_Entry(mainErrorId, BibID_VID, "Error", thisSplit, MetsType);
+                Engine_Database.Builder_Add_Log_Entry(mainErrorId, BibID_VID, "Error", thisSplit, MetsType);
             }
 
 
@@ -1010,7 +1013,7 @@ namespace SobekCM.Builder_Library
 				Console.WriteLine( LogStatement);
 				logger.AddComplete( LogStatement.Replace("\t", "....."));
 			}
-	        Library.Database.SobekCM_Database.Builder_Add_Log_Entry(RelatedLogID, BibID_VID, DbLogType, LogStatement.Replace("\t", ""), MetsType);
+            Engine_Database.Builder_Add_Log_Entry(RelatedLogID, BibID_VID, DbLogType, LogStatement.Replace("\t", ""), MetsType);
         }
 
         #endregion

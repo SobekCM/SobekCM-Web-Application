@@ -4,8 +4,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using SobekCM.Builder_Library.Settings;
-using SobekCM.Library.Database;
+using SobekCM.Engine_Library.Database;
 using SobekCM.Resource_Object.Divisions;
+using SobekCM_Resource_Database;
 
 #endregion
 
@@ -59,7 +60,7 @@ namespace SobekCM.Builder_Library.Modules.Items
                 // Should this be saved?
                 if ((Resource.Metadata.Web.ItemID > 0) && (Resource.Metadata.Behaviors.Main_Thumbnail.Length > 0))
                 {
-                    SobekCM_Database.Set_Item_Main_Thumbnail(Resource.BibID, Resource.VID, Resource.Metadata.Behaviors.Main_Thumbnail);
+                    SobekCM_Item_Database.Set_Item_Main_Thumbnail(Resource.BibID, Resource.VID, Resource.Metadata.Behaviors.Main_Thumbnail);
                 }
             }
 

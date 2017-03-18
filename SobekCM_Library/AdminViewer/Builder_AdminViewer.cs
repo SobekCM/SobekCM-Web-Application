@@ -13,6 +13,7 @@ using SobekCM.Core.Navigation;
 using SobekCM.Core.UI_Configuration;
 using SobekCM.Core.UI_Configuration.StaticResources;
 using SobekCM.Engine_Library.Configuration;
+using SobekCM.Engine_Library.Database;
 using SobekCM.Library.Database;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
@@ -65,7 +66,7 @@ namespace SobekCM.Library.AdminViewer
                     if (save_value.Length > 0)
                     {
                         // Set this value
-                        SobekCM_Database.Set_Setting("Builder Operation Flag", save_value);
+                        Engine_Database.Set_Setting("Builder Operation Flag", save_value);
                         UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
                     }
                 }

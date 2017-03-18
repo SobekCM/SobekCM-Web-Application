@@ -57,6 +57,10 @@ namespace SobekCM.Core.Aggregations
         /// <summary> dLOC search is a basic search which also includes a check box to exclude or include newspapers </summary>
         DLOC_FullText_Search,
 
+        /// <summary> Empty viewer shows a mostly empty page, but with the web skin and aggregation branding </summary>
+        /// <remarks> This is primarily used by external systems, such as the SobekCM Builder </remarks>
+        Empty,
+
         /// <summary> Full text search allows the full text of the documents to be searched </summary>
         FullText_Search,
 

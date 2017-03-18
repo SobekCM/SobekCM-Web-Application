@@ -1,6 +1,7 @@
 ﻿#region Using directives
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
@@ -581,17 +582,20 @@ namespace SobekCM.Library.MySobekViewer
                 sortList.Add(itemRowView.VID, itemRowView.VID);
 	        }
 
-	        foreach (string thisVid in sortList.Values)
+            // Select the LAST vid by default
+	        int i = 1;
+            IList<string> sortListValues = sortList.Values;
+            foreach (string thisVid in sortListValues)
 		    {
-			    if (first)
+                if (i == sortListValues.Count )
 			    {
                     Output.WriteLine("          <option value=\"" + thisVid + "\" selected=\"selected\">" + thisVid + "</option>");
-				    first = false;
 			    }
 			    else
 			    {
                     Output.WriteLine("          <option value=\"" + thisVid + "\">" + thisVid + "</option>");
 			    }
+		        i++;
 		    }
 		    Output.WriteLine("        </select>");
 		    Output.WriteLine("      </div>");

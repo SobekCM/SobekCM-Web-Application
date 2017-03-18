@@ -72,6 +72,10 @@ namespace SobekCM.Library.AggregationViewer
                 case Item_Aggregation_Views_Searches_Enum.DLOC_FullText_Search:
                     return new dLOC_Search_AggregationViewer(RequestSpecificValues, ViewBag);
 
+                case Item_Aggregation_Views_Searches_Enum.Empty:
+                    return new Empty_AggregationViewer(RequestSpecificValues, ViewBag);
+                    
+
                 default:
                     return null;
             }

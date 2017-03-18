@@ -4,19 +4,11 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
+using System.Net;
 using System.Text;
-using SobekCM.Core.Aggregations;
-using SobekCM.Core.Client;
-using SobekCM.Core.Configuration.Localization;
-using SobekCM.Core.Navigation;
+using SobekCM.Builder_Library.Tools;
 using SobekCM.Core.Settings;
-using SobekCM.Core.Skins;
-using SobekCM.Engine_Library.ApplicationState;
 using SobekCM.Engine_Library.Database;
-using SobekCM.Library;
-using SobekCM.Library.Database;
-using SobekCM.Library.UI;
-using SobekCM.Tools;
 
 #endregion
 
@@ -24,320 +16,274 @@ namespace SobekCM.Builder_Library.Modules.Schedulable
 {
     /// <summary> Schedulable builder module rebuilds the static browse pages for the instance and aggregations  </summary>
     /// <remarks> This class implements the <see cref="abstractSchedulableModule" /> abstract class and implements the <see cref="iSchedulableModule" /> interface. </remarks>
- public class RebuildAllAggregationBrowsesModule : abstractSchedulableModule
+    public class RebuildAllAggregationBrowsesModule : abstractSchedulableModule
     {
         /// <summary> Rebuilds the static browse pages for the instance and aggregations </summary>
         /// <param name="Settings"> Instance-wide settings which may be required for this process </param>
         public override void DoWork(InstanceWide_Settings Settings)
         {
-            //long staticRebuildLogId = OnProcess("RebuildAllAggregationBrowsesModule : Rebuilding all static pages", "Standard", null, null, -1);
+            // Add the primary log entry
+            long updatedId = OnProcess("RebuildAllAggregationBrowsesModule:Performing some aggregation update functions", "Aggregation Updates", String.Empty, String.Empty, -1);
 
-            //// Pull out some values
-            //string primaryWebServerUrl = Settings.Servers.Application_Server_URL;
-            //string staticSobekcmDataLocation = Settings.Servers.Static_Pages_Location;
-            //string staticSobekcmLocation = Settings.Servers.Application_Server_Network;
+            // Create a list of all the collection codes
+            DataTable allCollections = Engine_Database.Get_Codes_Item_Aggregations(null);
+            DataView collectionView = new DataView(allCollections) { Sort = "Name ASC" };
+            List<string> allCodes = new List<string>();
+            foreach( DataRowView collectionRow in collectionView )
+            {
+                bool hidden = bool.Parse(collectionRow["Hidden"].ToString());
+                bool active = bool.Parse(collectionRow["isActive"].ToString());
 
-            //// Create some useful objects
-            //Custom_Tracer tracer = new Custom_Tracer();
-            //SobekCM_Assistant assistant = new SobekCM_Assistant();
+                if ((!hidden) && (active))
+                {
+                    allCodes.Add(collectionRow["Code"].ToString().ToLower());
+                }
+            }
 
+            // Create the (new) helper class
+            Aggregation_Static_Page_Writer staticWriter = new Aggregation_Static_Page_Writer();
+            staticWriter.Process += staticWriter_Process;
+            staticWriter.Error += staticWriter_Error;
 
-            //// Is this right?
-            //string defaultSkin = Engine_ApplicationCache_Gateway.URL_Portals.Default_Portal.Default_Web_Skin;
+            // IN THIS CASE, WE DO NEED TO SET THE SINGLETON, SINCE THIS CALLS THE LIBRARIES
+            //Engine_ApplicationCache_Gateway.Settings = Settings;
 
-            //// Set the correct base directory
-            //if (staticSobekcmLocation.Length > 0)
-            //    Settings.Servers.Base_Directory = staticSobekcmLocation;
+            // Build the aggregation browses
+            staticWriter.ReCreate_Aggregation_Level_Pages(allCodes, Settings, updatedId);
 
-            //// Create the mode object
-            //Navigation_Object currentMode = new Navigation_Object
-            //{
-            //    Skin = defaultSkin,
-            //    Mode = Display_Mode_Enum.Aggregation,
-            //    Aggregation_Type = Aggregation_Type_Enum.Home,
-            //    Language = Web_Language_Enum.English,
-            //    Base_URL = primaryWebServerUrl
-            //};
+            // Build the primary URL 
+            string primaryUrl = Settings.Servers.Application_Server_URL;
+            if (String.IsNullOrEmpty(primaryUrl))
+            {
+                OnError("Primary system URL is not set", null, null, updatedId);
+                return;
+            }
+            if (primaryUrl[primaryUrl.Length - 1] != '/')
+                primaryUrl = primaryUrl + "/";
 
-            //// Get the default web skin
-            //Web_Skin_Object defaultSkinObject = assistant.Get_HTML_Skin(currentMode, Engine_ApplicationCache_Gateway.Web_Skin_Collection, false, null);
+            // Find the data source
+            string staticSobekcmDataLocation = Settings.Servers.Base_Data_Directory;
 
-            //// Get the list of all collections
-            //DataTable allCollections = Engine_Database.Get_Codes_Item_Aggregations(null);
-            //DataView collectionView = new DataView(allCollections) { Sort = "Name ASC" };
-
-            //// Build the basic site map first
-            //StreamWriter sitemap_writer = new StreamWriter(staticSobekcmDataLocation + "sitemap_collections.xml", false);
-            //sitemap_writer.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-            //sitemap_writer.WriteLine("<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">");
-            //sitemap_writer.WriteLine("\t<url>");
-            //sitemap_writer.WriteLine("\t\t<loc>" + primaryWebServerUrl + "</loc>");
-            //sitemap_writer.WriteLine("\t</url>");
-
-            //// Prepare to build all the links to static pages
-            //StringBuilder static_browse_links = new StringBuilder();
-            //StringBuilder recent_rss_link_builder = new StringBuilder();
-            //StringBuilder all_rss_link_builder = new StringBuilder();
-            //int col = 2;
-            //DataSet items;
-            //List<string> processed_codes = new List<string>();
-            //foreach (DataRowView thisCollectionView in collectionView)
-            //{
-            //    // Clear the tracer
-            //    tracer.Clear();
-
-            //    if (!Convert.ToBoolean(thisCollectionView.Row["Hidden"]))
-            //    {
-            //        // Build the static links pages
-            //        string code = thisCollectionView.Row["Code"].ToString().ToLower();
-            //        if ((!processed_codes.Contains(code)) && (code != "all"))
-            //        {
-            //            processed_codes.Add(code);
-
-            //            // Add this to the sitemap
-            //            sitemap_writer.WriteLine("\t<url>");
-            //            sitemap_writer.WriteLine("\t\t<loc>" + primaryWebServerUrl + code + "</loc>");
-            //            sitemap_writer.WriteLine("\t</url>");
-
-            //            OnProcess("RebuildAllAggregationBrowsesModule : Building static links page for " + code, "Standard", null, null, staticRebuildLogId);
-
-            //            //Get the list of items for this collection
-            //            items = Engine_Database.Simple_Item_List(code, tracer);
-
-            //            // Get the item aggregation object
-            //            Item_Aggregation aggregation = SobekEngineClient.Aggregations.Get_Aggregation(code.ToLower(), UI_ApplicationCache_Gateway.Settings.System.Default_UI_Language, UI_ApplicationCache_Gateway.Settings.System.Default_UI_Language, tracer);
+            OnProcess("Creating sitemaps and top-level link pages", "Aggregation Updates", String.Empty, String.Empty, updatedId);
 
 
-            //            // Build the static browse pages
-            //            if (Build_All_Browse(aggregation, items))
-            //            {
-            //                static_browse_links.Append("<td><a href=\"" + code + "_all.html\">" + code + "</a></td>" + Environment.NewLine);
-            //                col++;
-            //            }
+            // Build the sitemap for all the collections
+            StreamWriter sitemap_writer = new StreamWriter( Path.Combine(staticSobekcmDataLocation, "sitemap_collections.xml"), false);
+            sitemap_writer.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+            sitemap_writer.WriteLine("<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">");
+            sitemap_writer.WriteLine("\t<url>");
+            sitemap_writer.WriteLine("\t\t<loc>" + primaryUrl + "</loc>");
+            sitemap_writer.WriteLine("\t</url>");
 
-            //            if (col > 5)
-            //            {
-            //                static_browse_links.Append("</tr>" + Environment.NewLine + "<tr>");
-            //                col = 1;
-            //            }
+            // Prepare to build all the links to static pages
+            StringBuilder static_browse_links = new StringBuilder();
+            StringBuilder recent_rss_link_builder = new StringBuilder();
+            StringBuilder all_rss_link_builder = new StringBuilder();
+            int col = 2;
+            foreach (DataRowView collectionRow in collectionView)
+            {
+                // If hidden or in active, skip this
+                bool hidden = bool.Parse(collectionRow["Hidden"].ToString());
+                bool active = bool.Parse(collectionRow["isActive"].ToString());
+                if ((hidden) || (!active))
+                {
+                    continue;
+                }
 
-            //            // Build the RSS feeds
-            //            OnProcess("RebuildAllAggregationBrowsesModule : Building RSS feeds for " + code, "Standard", null, null, staticRebuildLogId);
+                string code = collectionRow["Code"].ToString().ToLower();
 
+                // Add this to the sitemap
+                sitemap_writer.WriteLine("\t<url>");
+                sitemap_writer.WriteLine("\t\t<loc>" + primaryUrl + code + "</loc>");
+                sitemap_writer.WriteLine("\t</url>");
 
-            //            if (Create_RSS_Feed(code, staticSobekcmDataLocation + "rss\\", thisCollectionView.Row["Name"].ToString(), items))
-            //            {
-            //                recent_rss_link_builder.Append("<img src=\"http://cdn.sobekrepository.org/images/misc/16px-Feed-icon.svg.png\" alt=\"RSS\" width=\"16\" height=\"16\">&nbsp;<a href=\"" + primaryWebServerUrl + "rss/" + code + "_short_rss.xml\">" + thisCollectionView.Row["Name"] + "</a><br />" + Environment.NewLine);
-            //                all_rss_link_builder.Append("<img src=\"http://cdn.sobekrepository.org/images/misc/16px-Feed-icon.svg.png\" alt=\"RSS\" width=\"16\" height=\"16\">&nbsp;<a href=\"" + primaryWebServerUrl + "rss/" + code + "_rss.xml\">" + thisCollectionView.Row["Name"] + "</a><br />" + Environment.NewLine);
-            //            }
-            //        }
-            //    }
-            //}
+                // build the HTML section for the page that links to all the collections
+                if (File.Exists(Path.Combine(staticSobekcmDataLocation, code + "_all.html")))
+                {
+                    static_browse_links.Append("<td><a href=\"" + code + "_all.html\">" + code + "</a></td>" + Environment.NewLine);
+                    col++;
+                    if (col > 5)
+                    {
+                        static_browse_links.Append("</tr>" + Environment.NewLine + "<tr>");
+                        col = 1;
+                    }
+                }
 
-            //// Finish out the collection sitemap
-            //sitemap_writer.WriteLine("</urlset>");
-            //sitemap_writer.Flush();
-            //sitemap_writer.Close();
+                // Also, we will link to each collections' rss feed
+                if (File.Exists(Path.Combine(staticSobekcmDataLocation, "rss", code + "_rss.xml")))
+                {
+                    recent_rss_link_builder.Append("<img src=\"http://cdn.sobekrepository.org/images/misc/16px-Feed-icon.svg.png\" alt=\"RSS\" width=\"16\" height=\"16\">&nbsp;<a href=\"" + primaryUrl + "rss/" + code + "_short_rss.xml\">" + collectionRow["Name"] + "</a><br />" + Environment.NewLine);
+                    all_rss_link_builder.Append("<img src=\"http://cdn.sobekrepository.org/images/misc/16px-Feed-icon.svg.png\" alt=\"RSS\" width=\"16\" height=\"16\">&nbsp;<a href=\"" + primaryUrl + "rss/" + code + "_rss.xml\">" + collectionRow["Name"] + "</a><br />" + Environment.NewLine);
+                }
+            }
 
-            //items = Engine_Database.Simple_Item_List(String.Empty, tracer);
-            //OnProcess("RebuildAllAggregationBrowsesModule : Building static links page for ALL ITEMS", "Standard", null, null, staticRebuildLogId);
+            // Finish out the collection sitemap
+            sitemap_writer.WriteLine("</urlset>");
+            sitemap_writer.Flush();
+            sitemap_writer.Close();
 
-            //Item_Aggregation allAggregation = SobekEngineClient.Aggregations.Get_Aggregation("all", Settings.System.Default_UI_Language, Settings.System.Default_UI_Language, tracer);
+            // Build the indiviual site maps
+            int sitemaps = staticWriter.Build_Site_Maps(staticSobekcmDataLocation, primaryUrl);
 
-            //Build_All_Browse(allAggregation, items);
+            // Create the sitemaps collection index
+            StreamWriter sitemap_collections_writer = new StreamWriter(Path.Combine(staticSobekcmDataLocation, "sitemaps.xml"), false);
+            sitemap_collections_writer.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+            sitemap_collections_writer.WriteLine("<sitemapindex xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">");
+            string current_date = DateTime.Now.Year + "-" + DateTime.Now.Month.ToString().PadLeft(2, '0') + "-" + DateTime.Now.Day.ToString().PadLeft(2, '0');
+            sitemap_collections_writer.WriteLine("  <sitemap>");
+            sitemap_collections_writer.WriteLine("    <loc>" + primaryUrl + "data/sitemap_collections.xml</loc>");
+            sitemap_collections_writer.WriteLine("    <lastmod>" + current_date + "</lastmod>");
+            sitemap_collections_writer.WriteLine("  </sitemap>");
+            for (int i = 1; i <= sitemaps; i++)
+            {
+                sitemap_collections_writer.WriteLine("  <sitemap>");
+                sitemap_collections_writer.WriteLine("    <loc>" + primaryUrl + "data/sitemap" + i + ".xml</loc>");
+                sitemap_collections_writer.WriteLine("    <lastmod>" + current_date + "</lastmod>");
+                sitemap_collections_writer.WriteLine("  </sitemap>");
+            }
+            sitemap_collections_writer.WriteLine("</sitemapindex>");
+            sitemap_collections_writer.Flush();
+            sitemap_collections_writer.Close();
 
-            //OnProcess("RebuildAllAggregationBrowsesModule : Building RSS feeds ALL ITEMS", "Standard", null, null, staticRebuildLogId);
+            // Get the top-level html windows
+            const string TOKEN = "<div id=\"empty\"></div>";
 
-            //Create_RSS_Feed("all", staticSobekcmDataLocation + "rss\\", "All " + Settings.System.System_Abbreviation + " Items", items);
+            // Try to get the collection empty page
+            string empty_page_source;
+            try
+            {
+                using (WebClient client = new WebClient())
+                {
+                    string empty_page = primaryUrl + "empty";
+                    empty_page_source = client.DownloadString(empty_page);
+                }
+            }
+            catch (Exception ee)
+            {
+                OnError("RebuildAllAggregationBrowsesModule:Unable to pull the top-level empty page", null, null, updatedId);
+                return;
+            }
 
-            //// Build the site maps
-            //OnProcess("RebuildAllAggregationBrowsesModule : Building site maps", "Standard", null, null, staticRebuildLogId);
+            // Ensure this has length and has the token to replace
+            if ((String.IsNullOrEmpty(empty_page_source)) || (empty_page_source.IndexOf(TOKEN) < 0))
+            {
+                OnError("RebuildAllAggregationBrowsesModule:Top-level empty page content is invalid", null, null, updatedId);
+                return;
+            }
 
-            //int sitemaps = Build_Site_Maps();
+            // Build the main HTML page linking to all RSS feeds
+            OnProcess("Building HTML page with links to all the RSS feeds", "Aggregation Updates", null, null, updatedId);
+            using (StreamWriter main_rss_writer = new StreamWriter(Path.Combine(staticSobekcmDataLocation, "rss", "index.htm"), false))
+            {
+                StringBuilder main_rss_builder = new StringBuilder(2000);
+                main_rss_builder.AppendLine("<div id=\"pagecontainer\">");
+                main_rss_builder.AppendLine("<div class=\"SobekText\" role=\"main\" id=\"main-content\">");
+                main_rss_builder.AppendLine("<h1><strong>RSS Feeds for the " + Settings.System.System_Name + "</strong></h1>");
+                main_rss_builder.AppendLine();
 
-            //// Output the main browse and rss links pages
-            //OnProcess("RebuildAllAggregationBrowsesModule : Building main sitemaps and links page", "Standard", null, null, staticRebuildLogId);
+                main_rss_builder.AppendLine("<div class=\"SobekHomeText\">");
+                main_rss_builder.AppendLine("  <p>This page provides links to RSS feeds for items within " + Settings.System.System_Name + ".  The first group of RSS feeds below contains the last 20 items added to the collection.  The second group of items contains links to every item in a collection.  These rss feeds can grow quite lengthy and the load time is often non-trivial.</p>");
+                main_rss_builder.AppendLine("  <p>In addition, the following three RSS feeds are provided:</p>");
+                main_rss_builder.AppendLine("  <blockquote>");
+                main_rss_builder.AppendLine("    <img src=\"http://cdn.sobekrepository.org/images/misc/16px-Feed-icon.svg.png\" alt=\"RSS\" width=\"16\" height=\"16\">&nbsp;<a href=\"" + primaryUrl + "rss/all_rss.xml\">All items in " + Settings.System.System_Abbreviation + "</a><br />");
+                main_rss_builder.AppendLine("    <img src=\"http://cdn.sobekrepository.org/images/misc/16px-Feed-icon.svg.png\" alt=\"RSS\" width=\"16\" height=\"16\">&nbsp;<a href=\"" + primaryUrl + "rss/all_short_rss.xml\">Most recently added items in " + Settings.System.System_Abbreviation + " (last 100)</a><br />");
+                main_rss_builder.AppendLine("  </blockquote>");
+                main_rss_builder.AppendLine("  <p>RSS feeds are a way to keep up-to-date on new materials that are added to the Digital Collections. RSS feeds are written in XML    and require a news reader to access.</p>");
+                main_rss_builder.AppendLine("  <p>You can download and install a <a href=\"http://dmoz.org/Reference/Libraries/Library_and_Information_Science/Technical_Services/Cataloguing/Metadata/RDF/Applications/RSS/News_Readers/\">news reader</a>.  Or, you can use a Web-based reader such as <a href=\"http://www.google.com/reader\">Google Reader </a>or <a href=\"http://my.yahoo.com/\">My Yahoo!</a>.</p>");
+                main_rss_builder.AppendLine("  <p>Follow the instructions in your reader to subscribe to the feed of   your choice. You will usually need to copy and paste the feed URL into the reader. </p>");
+                main_rss_builder.AppendLine("</div>");
+                main_rss_builder.AppendLine();
+                main_rss_builder.AppendLine("<h2>Most Recent Items (By Collection)</h2>");
+                main_rss_builder.AppendLine();
+                main_rss_builder.AppendLine("<div class=\"SobekHomeText\">");
+                main_rss_builder.AppendLine("  <blockquote>");
+                main_rss_builder.AppendLine(recent_rss_link_builder.ToString());
+                main_rss_builder.AppendLine("  </blockquote>");
+                main_rss_builder.AppendLine("</div>");
 
+                main_rss_builder.AppendLine("<h2>All Items (By Collection)</h2>");
 
-            //StreamWriter allListWriter = new StreamWriter(staticSobekcmDataLocation + "index.html", false);
-            //allListWriter.WriteLine("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">");
-            //allListWriter.WriteLine("<html xmlns=\"http://www.w3.org/1999/xhtml\" >");
-            //allListWriter.WriteLine("<head>");
-            //allListWriter.WriteLine("  <title>" + UI_ApplicationCache_Gateway.Settings.System.System_Name + " Site Map Links</title>");
-            //allListWriter.WriteLine();
-            //allListWriter.WriteLine("  <meta name=\"robots\" content=\"index, follow\">");
-            //allListWriter.WriteLine("  <link href=\"" + primaryWebServerUrl + "default/SobekCM.css\" rel=\"stylesheet\" type=\"text/css\" title=\"standard\" />");
-            //if (!String.IsNullOrEmpty(defaultSkinObject.CSS_Style))
-            //{
-            //    allListWriter.WriteLine("  <link href=\"" + UI_ApplicationCache_Gateway.Settings.Servers.System_Base_URL + defaultSkinObject.CSS_Style + "\" rel=\"stylesheet\" type=\"text/css\" />");
-            //}
+                main_rss_builder.AppendLine("<div class=\"SobekHomeText\">");
+                main_rss_builder.AppendLine("  <blockquote>");
+                main_rss_builder.AppendLine(all_rss_link_builder.ToString());
+                main_rss_builder.AppendLine("  </blockquote>");
+                main_rss_builder.AppendLine("</div>");
 
-            //allListWriter.WriteLine("</head>");
-            //allListWriter.WriteLine("<body>");
+                main_rss_builder.AppendLine("</div>");
+                main_rss_builder.AppendLine("</div>");
 
-            //allListWriter.WriteLine("<div id=\"container-inner\">");
+                // Now, use this to replace the token
+                main_rss_writer.WriteLine(empty_page_source.Replace(TOKEN, main_rss_builder.ToString()));
 
-            //string banner = "<div id=\"sbkHmw_BannerDiv\"><a alt=\"All Collections\" href=\"" + primaryWebServerUrl + "\" style=\"padding-bottom:0px;margin-bottom:0px\"><img id=\"mainBanner\" src=\"" + primaryWebServerUrl + "design/aggregations/all/images/banners/coll.jpg\" alt=\"\" /></a></div>";
-            //Display_Header(allListWriter, defaultSkinObject, banner);
+                main_rss_writer.Flush();
+                main_rss_writer.Close();
+            }
 
-            //allListWriter.WriteLine("<br /><br />This page is to provide static links to all resources in " + UI_ApplicationCache_Gateway.Settings.System.System_Abbreviation + ". <br />");
-            //allListWriter.WriteLine("Click <a href=\"" + primaryWebServerUrl + "\">HERE</a> to return to main library. <br />");
-            //allListWriter.WriteLine("<br />");
-            //allListWriter.WriteLine("<br />");
-            //allListWriter.WriteLine("SITE MAPS<br />");
-            //allListWriter.WriteLine("<br />");
-            //allListWriter.WriteLine("<a href=\"sitemap_collections.xml\">Map to all the collection home pages</a><br />");
-            //if (sitemaps > 0)
-            //{
-            //    for (int i = 1; i <= sitemaps; i++)
-            //    {
-            //        allListWriter.WriteLine("<a href=\"sitemap" + i + ".xml\">Site Map File " + i + "</a><br />");
-            //    }
-            //    allListWriter.WriteLine("<br />");
-            //    allListWriter.WriteLine("<br />");
-            //}
-            //else
-            //{
-            //    allListWriter.WriteLine("NO SITE MAPS GENERATED!");
-            //}
-
-            //Display_Footer(allListWriter, defaultSkinObject);
-            //allListWriter.WriteLine("</div>");
-            //allListWriter.WriteLine("</body>");
-            //allListWriter.WriteLine("</html>");
-            //allListWriter.Flush();
-            //allListWriter.Close();
-
-            //// Create the list of all the RSS feeds
-            //try
-            //{
-            //    OnProcess("RebuildAllAggregationBrowsesModule : Building main rss feed page", "Standard", null, null, staticRebuildLogId);
-
-            //    StreamWriter writer = new StreamWriter(staticSobekcmDataLocation + "rss\\index.htm", false);
-            //    writer.WriteLine("<!DOCTYPE html>");
-            //    writer.WriteLine("<html>");
-            //    writer.WriteLine("<head>");
-            //    writer.WriteLine("  <title>RSS Feeds for " + UI_ApplicationCache_Gateway.Settings.System.System_Abbreviation + "</title>");
-            //    writer.WriteLine();
-            //    writer.WriteLine("  <meta name=\"robots\" content=\"index, follow\">");
-            //    writer.WriteLine("  <link href=\"" + primaryWebServerUrl + "default/SobekCM.css\" rel=\"stylesheet\" type=\"text/css\" title=\"standard\" />");
-            //    if (!String.IsNullOrEmpty(defaultSkinObject.CSS_Style))
-            //    {
-            //        writer.WriteLine("  <link href=\"" + UI_ApplicationCache_Gateway.Settings.Servers.System_Base_URL + defaultSkinObject.CSS_Style + "\" rel=\"stylesheet\" type=\"text/css\" />");
-            //    }
-            //    writer.WriteLine("</head>");
-            //    writer.WriteLine("<body>");
-
-            //    writer.WriteLine("<div id=\"container-inner\">");
-
-            //    string banner2 = "<div id=\"sbkHmw_BannerDiv\"><a alt=\"All Collections\" href=\"" + primaryWebServerUrl + "\" style=\"padding-bottom:0px;margin-bottom:0px\"><img id=\"mainBanner\" src=\"" + primaryWebServerUrl + "design/aggregations/all/images/banners/coll.jpg\" alt=\"\" /></a></div>";
-            //    Display_Header(writer, defaultSkinObject, banner2);
-
-            //    writer.WriteLine("<div id=\"pagecontainer\">");
-
-
-            //    writer.WriteLine("<div class=\"ViewsBrowsesRow\">");
-            //    writer.WriteLine("  <ul class=\"sbk_FauxUpwardTabsList\">");
-            //    writer.WriteLine("    <li><a href=\"" + primaryWebServerUrl + "\">" + UI_ApplicationCache_Gateway.Settings.System.System_Abbreviation + " HOME</a></li>");
-            //    writer.WriteLine("    <li class=\"current\">RSS FEEDS</li>");
-            //    writer.WriteLine("  </ul>");
-            //    writer.WriteLine("</div>");
-            //    writer.WriteLine();
-            //    writer.WriteLine("<div class=\"SobekSearchPanel\">");
-            //    writer.WriteLine("  <h1>RSS Feeds for the " + UI_ApplicationCache_Gateway.Settings.System.System_Name + "</h1>");
-            //    writer.WriteLine("</div>");
-            //    writer.WriteLine();
-
-            //    writer.WriteLine("<div class=\"SobekHomeText\">");
-            //    writer.WriteLine("<table width=\"700\" border=\"0\" align=\"center\">");
-            //    writer.WriteLine("  <tr>");
-            //    writer.WriteLine("    <td>");
-            //    writer.WriteLine("      <br />");
-            //    writer.WriteLine("      This page provides links to RSS feeds for items within " + UI_ApplicationCache_Gateway.Settings.System.System_Name + ".  The first group of RSS feeds below contains the last 20 items added to the collection.  The second group of items contains links to every item in a collection.  These rss feeds can grow quite lengthy and the load time is often non-trivial.<br />");
-            //    writer.WriteLine("      <br />");
-            //    writer.WriteLine("      In addition, the following three RSS feeds are provided:");
-            //    writer.WriteLine("      <blockquote>");
-            //    writer.WriteLine("        <img src=\"http://cdn.sobekrepository.org/images/misc/16px-Feed-icon.svg.png\" alt=\"RSS\" width=\"16\" height=\"16\">&nbsp;<a href=\"" + primaryWebServerUrl + "rss/all_rss.xml\">All items in " + UI_ApplicationCache_Gateway.Settings.System.System_Abbreviation + "</a><br />");
-            //    writer.WriteLine("        <img src=\"http://cdn.sobekrepository.org/images/misc/16px-Feed-icon.svg.png\" alt=\"RSS\" width=\"16\" height=\"16\">&nbsp;<a href=\"" + primaryWebServerUrl + "rss/all_short_rss.xml\">Most recently added items in " + UI_ApplicationCache_Gateway.Settings.System.System_Abbreviation + " (last 100)</a><br />");
-            //    writer.WriteLine("      </blockquote>");
-            //    writer.WriteLine("      RSS feeds	are a way to keep up-to-date on new materials that are added to the Digital Collections. RSS feeds are written in XML    and require a news reader to access.<br />");
-            //    writer.WriteLine("      <br />");
-            //    writer.WriteLine("      You can download and install a <a href=\"http://dmoz.org/Reference/Libraries/Library_and_Information_Science/Technical_Services/Cataloguing/Metadata/RDF/Applications/RSS/News_Readers/\">news reader</a>.  Or, you can use a Web-based reader such as <a href=\"http://www.google.com/reader\">Google Reader </a>or <a href=\"http://my.yahoo.com/\">My Yahoo!</a>.");
-            //    writer.WriteLine("      Follow the instructions in your reader to subscribe to the feed of   your choice. You will usually need to copy and paste the feed URL into the reader. <br />");
-            //    writer.WriteLine("      <br />");
-            //    writer.WriteLine("    </td>");
-            //    writer.WriteLine("  </tr>");
-            //    writer.WriteLine("</table>");
-
-            //    writer.WriteLine("<table width=\"750\" border=\"0\" align=\"center\" cellpadding=\"1\" cellspacing=\"0\">");
-            //    writer.WriteLine("	<tr>");
-            //    writer.WriteLine("    <td bgcolor=\"#cccccc\">");
-            //    writer.WriteLine("      <table width=\"100%\" border=\"0\" align=\"center\" cellpadding=\"2\" cellspacing=\"0\">");
-            //    writer.WriteLine("		  <tr>");
-            //    writer.WriteLine("          <td bgcolor=\"#f4f4f4\"><span class=\"groupname\"><span class=\"groupnamecaps\"> &nbsp; M</span>OST <span class=\"groupnamecaps\">R</span>ECENT <span class=\"groupnamecaps\">I</span>TEMS (BY COLLECTION)</span></td>");
-            //    writer.WriteLine("        </tr>");
-            //    writer.WriteLine("      </table>");
-            //    writer.WriteLine("    </td>");
-            //    writer.WriteLine("  </tr>");
-            //    writer.WriteLine("<table>");
-
-            //    writer.WriteLine("<div class=\"SobekHomeText\">");
-            //    writer.WriteLine("<table width=\"700\" border=\"0\" align=\"center\">");
-            //    writer.WriteLine("  <tr>");
-            //    writer.WriteLine("    <td>");
-            //    writer.WriteLine(recent_rss_link_builder.ToString());
-            //    writer.WriteLine("      <br />");
-            //    writer.WriteLine("    </td>");
-            //    writer.WriteLine("  </tr>");
-            //    writer.WriteLine("</table>");
-
-            //    writer.WriteLine("<table width=\"750\" border=\"0\" align=\"center\" cellpadding=\"1\" cellspacing=\"0\">");
-            //    writer.WriteLine("	<tr>");
-            //    writer.WriteLine("    <td bgcolor=\"#cccccc\">");
-            //    writer.WriteLine("      <table width=\"100%\" border=\"0\" align=\"center\" cellpadding=\"2\" cellspacing=\"0\">");
-            //    writer.WriteLine("		  <tr>");
-            //    writer.WriteLine("          <td bgcolor=\"#f4f4f4\"><span class=\"groupname\"><span class=\"groupnamecaps\"> &nbsp; A</span>LL <span class=\"groupnamecaps\">I</span>TEMS (BY COLLECTION) </span></td>");
-            //    writer.WriteLine("        </tr>");
-            //    writer.WriteLine("      </table>");
-            //    writer.WriteLine("    </td>");
-            //    writer.WriteLine("  </tr>");
-            //    writer.WriteLine("<table>");
-
-            //    writer.WriteLine("<div class=\"SobekHomeText\">");
-            //    writer.WriteLine("<table width=\"700\" border=\"0\" align=\"center\">");
-            //    writer.WriteLine("  <tr>");
-            //    writer.WriteLine("    <td>");
-            //    writer.WriteLine(all_rss_link_builder.ToString());
-            //    writer.WriteLine("      <br />");
-            //    writer.WriteLine("    </td>");
-            //    writer.WriteLine("  </tr>");
-            //    writer.WriteLine("</table>");
+            // Create the HTML page with links to the sitemap pages
+            OnProcess("Building HTML page with links to all the sitemaps", "Aggregation Updates", null, null, updatedId);
+            using (StreamWriter main_html_sitemap_writer = new StreamWriter(Path.Combine(staticSobekcmDataLocation, "sitemaps.htm"), false))
+            {
+                StringBuilder main_html_subwriter_builder = new StringBuilder(2000);
+                main_html_subwriter_builder.AppendLine("<div id=\"pagecontainer\">");
+                main_html_subwriter_builder.AppendLine("<div class=\"SobekText\" role=\"main\" id=\"main-content\">");
+                main_html_subwriter_builder.AppendLine("<h1><strong>Sitemaps for the " + Settings.System.System_Name + "</strong></h1>");
+                main_html_subwriter_builder.AppendLine();
 
 
-            //    writer.WriteLine("<br />");
+                main_html_subwriter_builder.AppendLine("<div class=\"SobekHomeText\">");
+                main_html_subwriter_builder.AppendLine("  <p>This page provides links to all the sitemaps with links for " + Settings.System.System_Name + ".</p>");
+                main_html_subwriter_builder.AppendLine("  <p>Sitemaps are a primary source of links to index for search engines.  Inclusion of your collections materials in these sitemaps facilitates indexing by search engines and ensures your material will be included in searches from Google, Bing, etc.. </p>");
+                main_html_subwriter_builder.AppendLine("  <br />");
+                main_html_subwriter_builder.AppendLine("</div>");
+                main_html_subwriter_builder.AppendLine();
+                main_html_subwriter_builder.AppendLine("<h2>Sitemap Collection</h2>");
+                main_html_subwriter_builder.AppendLine();
+                main_html_subwriter_builder.AppendLine("<div class=\"SobekHomeText\">");
+                main_html_subwriter_builder.AppendLine("  <p>This is a sitemap which includes links to all the other sitemaps in your digital repository.  This is generally the sitemap that should be referenced in your robots.txt file.</p>");
+                main_html_subwriter_builder.AppendLine("  <blockquote>");
+                main_html_subwriter_builder.AppendLine("    <a href=\"" + primaryUrl + "data/sitemaps.xml\">Collection of all sitemaps</a><br />");
+                main_html_subwriter_builder.AppendLine("  </blockquote>");
+                main_html_subwriter_builder.AppendLine("</div>");
+                main_html_subwriter_builder.AppendLine();
+
+                main_html_subwriter_builder.AppendLine("<h2>Individual Sitemaps</h2>");
+                main_html_subwriter_builder.AppendLine();
+                main_html_subwriter_builder.AppendLine("<div class=\"SobekHomeText\">");
+                main_html_subwriter_builder.AppendLine("  <p>These sitemaps link to your individual collections and digital resources.  Sitemaps are generally limited to 30,000 links each, so you may have many sitemaps linked to your individual digital resources.</p>");
+                main_html_subwriter_builder.AppendLine("  <blockquote>");
+                main_html_subwriter_builder.AppendLine("  <a href=\"" + primaryUrl + "data/sitemap_collections.xml\">Sitemap pointing to all the collections</a><br />");
+
+                for (int i = 1; i <= sitemaps; i++)
+                {
+                    main_html_subwriter_builder.AppendLine("  <a href=\"" + primaryUrl + "data/sitemap" + i + ".xml\">Sitemap #" + i + "</a><br />");
+                }
+
+                main_html_subwriter_builder.AppendLine("  </blockquote>");
+                main_html_subwriter_builder.AppendLine("</div>");
+                main_html_subwriter_builder.AppendLine();
+
+                main_html_subwriter_builder.AppendLine("</div>");
+                main_html_subwriter_builder.AppendLine("</div>");
+
+                // Now, use this to replace the token
+                main_html_sitemap_writer.WriteLine(empty_page_source.Replace(TOKEN, main_html_subwriter_builder.ToString()));
+
+                main_html_sitemap_writer.Flush();
+                main_html_sitemap_writer.Close();
+            }
 
 
-            //    writer.WriteLine("</div>");
-            //    writer.WriteLine("</div>");
-            //    Display_Footer(writer, defaultSkinObject);
-            //    writer.WriteLine("</div>");
-            //    writer.WriteLine("</body>");
-            //    writer.WriteLine("</html>");
-
-            //    writer.Flush();
-            //    writer.Close();
-            //}
-            //catch
-            //{
-            //    OnError("RebuildAllAggregationBrowsesModule : Error building main RSS index.htm file", null, null, staticRebuildLogId);
-            //}
-
-            //return errors;
+        }
 
 
-            //Static_Pages_Builder builder = new Static_Pages_Builder(Settings.Servers.Application_Server_URL, Settings.Servers.Static_Pages_Location, Engine_ApplicationCache_Gateway.URL_Portals.Default_Portal.Default_Web_Skin);
+        void staticWriter_Error(string Message, long UpdateID)
+        {
+            OnError(Message, null, null, UpdateID);
+        }
 
-            //builder.Rebuild_All_Static_Pages(preloader_logger, false, dbInstance.Name, staticRebuildLogId);
+        void staticWriter_Process(string Message, long UpdateID)
+        {
+            OnProcess(Message, "Aggregation Updates", null, null, UpdateID);
         }
     }
 }

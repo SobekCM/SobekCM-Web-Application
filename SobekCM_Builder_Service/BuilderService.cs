@@ -1,19 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.ServiceProcess;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.Win32;
 using SobekCM.Builder_Library;
 using SobekCM.Builder_Library.Settings;
 using SobekCM.Engine_Library.ApplicationState;
-using SobekCM.Library.Database;
-using SobekCM.Resource_Object.Configuration;
+using SobekCM.Engine_Library.Database;
 
 namespace SobekCM_Builder_Service
 {
@@ -60,13 +53,13 @@ namespace SobekCM_Builder_Service
             // Assign the connection string and test the connection (if only a single connection listed)
             if ( MultiInstance_Builder_Settings.Instances.Count == 1)
             {
-                SobekCM_Database.Connection_String = MultiInstance_Builder_Settings.Instances[0].DatabaseConnection.Connection_String;
-                if (!SobekCM_Database.Test_Connection())
+                Engine_Database.Connection_String = MultiInstance_Builder_Settings.Instances[0].DatabaseConnection.Connection_String;
+                if (!Engine_Database.Test_Connection())
                 {
-                    if ( SobekCM_Database.Last_Exception != null )
-                        EventLog.WriteEntry("SobekCM Builder Service", "Unable to connect to the database using provided connection string:\n\n"+ SobekCM_Database.Connection_String + "\n\n" + SobekCM_Database.Last_Exception.Message, EventLogEntryType.Error);
+                    if (Engine_Database.Last_Exception != null)
+                        EventLog.WriteEntry("SobekCM Builder Service", "Unable to connect to the database using provided connection string:\n\n" + Engine_Database.Connection_String + "\n\n" + Engine_Database.Last_Exception.Message, EventLogEntryType.Error);
                     else
-                        EventLog.WriteEntry("SobekCM Builder Service", "Unable to connect to the database using provided connection string:\n\n" + SobekCM_Database.Connection_String, EventLogEntryType.Error);
+                        EventLog.WriteEntry("SobekCM Builder Service", "Unable to connect to the database using provided connection string:\n\n" + Engine_Database.Connection_String, EventLogEntryType.Error);
 
                     return;
                 }

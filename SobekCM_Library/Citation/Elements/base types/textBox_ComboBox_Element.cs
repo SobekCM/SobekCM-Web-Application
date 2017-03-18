@@ -176,7 +176,7 @@ namespace SobekCM.Library.Citation.Elements
         /// <summary> Reads the inner data from the CompleteTemplate XML format </summary>
         /// <param name="XMLReader"> Current template xml configuration reader </param>
         /// <remarks> This reads the possible values for the combo box from a <i>options</i> subelement </remarks>
-        protected override void Inner_Read_Data(XmlTextReader XMLReader)
+        protected override void Inner_Read_Data( XmlReader XMLReader )
         {
             while (XMLReader.Read())
             {

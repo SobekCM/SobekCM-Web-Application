@@ -7,7 +7,7 @@ using System.IO;
 using System.Text;
 using System.Xml;
 using System.Xml.Schema;
-using SobekCM.Library.Database;
+using SobekCM.Engine_Library.Database;
 
 #endregion
 
@@ -37,12 +37,12 @@ namespace SobekCM.Builder_Library.Tools
         /// <remarks> This first creates the MarcXML file, and then validates it against the schema </remarks>
         public bool Create_MarcXML_Data_File(bool Test_Feed_Flag, string XML_File)
         {
-            DataTable endecaItemList = Test_Feed_Flag ? SobekCM_Database.MarcXML_Test_Feed_Records : SobekCM_Database.MarcXML_Production_Feed_Records;
+            DataTable endecaItemList = Test_Feed_Flag ? Engine_Database.MarcXML_Test_Feed_Records : Engine_Database.MarcXML_Production_Feed_Records;
 
             if (endecaItemList == null)
             {
-                if (SobekCM_Database.Last_Exception != null)
-                    Errors = "Error pulling list for the feed: " + SobekCM_Database.Last_Exception.Message;
+                if (Engine_Database.Last_Exception != null)
+                    Errors = "Error pulling list for the feed: " + Engine_Database.Last_Exception.Message;
                 else
                     Errors = "Error pulling list for the feed, NULL was returned";
                 return false;

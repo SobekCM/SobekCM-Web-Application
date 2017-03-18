@@ -232,7 +232,7 @@ namespace SobekCM.Core.Users
             aggregationPermissions = new User_Aggregation_Permissions();
             editableRegexes = new List<string>();
             folders = new SortedList<string, User_Folder>();
-            Default_Rights = "All rights reserved by the submitter.";
+            Default_Rights = String.Empty;
             Is_System_Admin = false;
             Is_Portal_Admin = false;
             Has_Descriptive_Tags = false;

@@ -352,7 +352,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 if (makeSortable.ToString() != CurrentUser.Get_Setting("QC_ItemViewer:SortableMode", "NULL"))
                 {
                     CurrentUser.Add_Setting("QC_ItemViewer:SortableMode", makeSortable);
-                    SobekCM_Database.Set_User_Setting(CurrentUser.UserID, "QC_ItemViewer:SortableMode", makeSortable.ToString());
+                    Engine_Database.Set_User_Setting(CurrentUser.UserID, "QC_ItemViewer:SortableMode", makeSortable.ToString());
                 }
             }
 
@@ -363,7 +363,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 if (autonumber_mode.ToString() != CurrentUser.Get_Setting("QC_ItemViewer:AutonumberingMode", "NULL"))
                 {
                     CurrentUser.Add_Setting("QC_ItemViewer:AutonumberingMode", autonumber_mode);
-                    SobekCM_Database.Set_User_Setting(CurrentUser.UserID, "QC_ItemViewer:AutonumberingMode", autonumber_mode.ToString());
+                    Engine_Database.Set_User_Setting(CurrentUser.UserID, "QC_ItemViewer:AutonumberingMode", autonumber_mode.ToString());
                 }
             }
 
@@ -373,7 +373,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 if (CurrentRequest.Size_Of_Thumbnails.ToString() != CurrentUser.Get_Setting("QC_ItemViewer:ThumbnailSize", "NULL"))
                 {
                     CurrentUser.Add_Setting("QC_ItemViewer:ThumbnailSize", CurrentRequest.Size_Of_Thumbnails);
-                    SobekCM_Database.Set_User_Setting(CurrentUser.UserID, "QC_ItemViewer:ThumbnailSize", CurrentRequest.Size_Of_Thumbnails.ToString());
+                    Engine_Database.Set_User_Setting(CurrentUser.UserID, "QC_ItemViewer:ThumbnailSize", CurrentRequest.Size_Of_Thumbnails.ToString());
                 }
             }
 

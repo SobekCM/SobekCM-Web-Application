@@ -9,21 +9,18 @@ using System.Linq;
 using System.Text;
 using System.Web;
 using Jil;
-using SobekCM.Core.ApplicationState;
 using SobekCM.Core.BriefItem;
 using SobekCM.Core.EAD;
 using SobekCM.Core.FileSystems;
 using SobekCM.Core.Items;
 using SobekCM.Core.MARC;
 using SobekCM.Core.MemoryMgmt;
-using SobekCM.Core.UI_Configuration.StaticResources;
 using SobekCM.Engine_Library.ApplicationState;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Engine_Library.Database;
 using SobekCM.Engine_Library.Items;
 using SobekCM.Engine_Library.Items.BriefItems;
 using SobekCM.Core.Configuration.Engine;
-using SobekCM.Core.UI_Configuration;
 using SobekCM.Core.Users;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.MARC;
@@ -64,21 +61,72 @@ namespace SobekCM.Engine_Library.Endpoints
                     {
                         // Get the brief item
                         tracer.Add_Trace("ItemServices.GetItemCitation", "Build full brief item");
-                        BriefItemInfo returnValue = GetBriefItem(bibid, vid, null, tracer);
 
-                        // Was the item null?
+                        // Get the current item first
+                        Tuple<BriefItemInfo, SobekCM_Item_Error> itemAndError = GetBriefItem(bibid, vid, null, tracer);
+                        BriefItemInfo returnValue = itemAndError.Item1;
+
+                        // If null, return
                         if (returnValue == null)
                         {
+                            Response.ContentType = "text/plain";
+
                             // If this was debug mode, then just write the tracer
                             if (IsDebug)
                             {
-                                tracer.Add_Trace("ItemServices.GetItemCitation", "NULL value returned from getBriefItem method");
+                                tracer.Add_Trace("ItemServices.GetItemCitation", "Could not retrieve the full SobekCM_Item object");
+
+                                if (itemAndError.Item2 != null)
+                                {
+                                    switch (itemAndError.Item2.Type)
+                                    {
+                                        case SobekCM_Item_Error_Type_Enum.System_Error:
+                                            tracer.Add_Trace("ItemServices.GetItemCitation", itemAndError.Item2.Message ?? "Unknown error completing request");
+                                            break;
+
+                                        case SobekCM_Item_Error_Type_Enum.Invalid_BibID:
+                                            tracer.Add_Trace("ItemServices.GetItemCitation", itemAndError.Item2.Message ?? "Invalid BibID requested");
+                                            break;
+
+                                        case SobekCM_Item_Error_Type_Enum.Invalid_VID:
+                                            tracer.Add_Trace("ItemServices.GetItemCitation", "Invalid VID, use vid " + itemAndError.Item2.FirstValidVid);
+                                            break;
+                                    }
+                                }
 
                                 Response.ContentType = "text/plain";
                                 Response.Output.WriteLine("DEBUG MODE DETECTED");
                                 Response.Output.WriteLine();
                                 Response.Output.WriteLine(tracer.Text_Trace);
+                                return;
                             }
+
+                            if (itemAndError.Item2 == null)
+                            {
+                                Response.Output.WriteLine("Unknown error completing request");
+                                Response.StatusCode = 500;
+                            }
+                            else
+                            {
+                                switch (itemAndError.Item2.Type)
+                                {
+                                    case SobekCM_Item_Error_Type_Enum.System_Error:
+                                        Response.Output.WriteLine(itemAndError.Item2.Message ?? "Unknown error completing request");
+                                        Response.StatusCode = 500;
+                                        break;
+
+                                    case SobekCM_Item_Error_Type_Enum.Invalid_BibID:
+                                        Response.Output.WriteLine(itemAndError.Item2.Message ?? "Invalid BibID requested");
+                                        Response.StatusCode = 404;
+                                        break;
+
+                                    case SobekCM_Item_Error_Type_Enum.Invalid_VID:
+                                        Response.Output.WriteLine(itemAndError.Item2.FirstValidVid + " - Invalid VID, use vid " + itemAndError.Item2.FirstValidVid);
+                                        Response.StatusCode = 303;
+                                        break;
+                                }
+                            }
+
                             return;
                         }
 
@@ -227,23 +275,75 @@ namespace SobekCM.Engine_Library.Endpoints
                     if ((vid.Length > 0) && (vid != "00000"))
                     {
                         tracer.Add_Trace("ItemServices.GetItemBrief", "Build full brief item using " + Mapping + " mapping");
-                        BriefItemInfo returnValue = GetBriefItem(bibid, vid, Mapping, tracer);
 
-                        // Was the item null?
+                        // Get the current item first
+                        Tuple<BriefItemInfo, SobekCM_Item_Error> itemAndError = GetBriefItem(bibid, vid, null, tracer);
+                        BriefItemInfo returnValue = itemAndError.Item1;
+
+                        // If null, return
                         if (returnValue == null)
                         {
+                            Response.ContentType = "text/plain";
+
                             // If this was debug mode, then just write the tracer
                             if (IsDebug)
                             {
-                                tracer.Add_Trace("ItemServices.GetItemBrief", "NULL value returned from getBriefItem method");
+                                tracer.Add_Trace("ItemServices.GetItemBrief", "Could not retrieve the full SobekCM_Item object");
+
+                                if (itemAndError.Item2 != null)
+                                {
+                                    switch (itemAndError.Item2.Type)
+                                    {
+                                        case SobekCM_Item_Error_Type_Enum.System_Error:
+                                            tracer.Add_Trace("ItemServices.GetItemBrief", itemAndError.Item2.Message ?? "Unknown error completing request");
+                                            break;
+
+                                        case SobekCM_Item_Error_Type_Enum.Invalid_BibID:
+                                            tracer.Add_Trace("ItemServices.GetItemBrief", itemAndError.Item2.Message ?? "Invalid BibID requested");
+                                            break;
+
+                                        case SobekCM_Item_Error_Type_Enum.Invalid_VID:
+                                            tracer.Add_Trace("ItemServices.GetItemBrief", "Invalid VID, use vid " + itemAndError.Item2.FirstValidVid);
+                                            break;
+                                    }
+                                }
 
                                 Response.ContentType = "text/plain";
                                 Response.Output.WriteLine("DEBUG MODE DETECTED");
                                 Response.Output.WriteLine();
                                 Response.Output.WriteLine(tracer.Text_Trace);
+                                return;
                             }
+
+                            if (itemAndError.Item2 == null)
+                            {
+                                Response.Output.WriteLine("Unknown error completing request");
+                                Response.StatusCode = 500;
+                            }
+                            else
+                            {
+                                switch (itemAndError.Item2.Type)
+                                {
+                                    case SobekCM_Item_Error_Type_Enum.System_Error:
+                                        Response.Output.WriteLine(itemAndError.Item2.Message ?? "Unknown error completing request");
+                                        Response.StatusCode = 500;
+                                        break;
+
+                                    case SobekCM_Item_Error_Type_Enum.Invalid_BibID:
+                                        Response.Output.WriteLine(itemAndError.Item2.Message ?? "Invalid BibID requested");
+                                        Response.StatusCode = 404;
+                                        break;
+
+                                    case SobekCM_Item_Error_Type_Enum.Invalid_VID:
+                                        Response.Output.WriteLine(itemAndError.Item2.FirstValidVid + " - Invalid VID, use vid " + itemAndError.Item2.FirstValidVid);
+                                        Response.StatusCode = 303;
+                                        break;
+                                }
+                            }
+
                             return;
                         }
+
 
                         // If this was debug mode, then just write the tracer
                         if (IsDebug)
@@ -368,23 +468,74 @@ namespace SobekCM.Engine_Library.Endpoints
                     if ((vid.Length > 0) && (vid != "00000"))
                     {
                         tracer.Add_Trace("ItemServices.Get_Item_Info_Legacy", "Build full brief item");
-                        BriefItemInfo returnValue = GetBriefItem(bibid, vid, null, tracer);
+                        // Get the current item first
+                        Tuple<BriefItemInfo, SobekCM_Item_Error> itemAndError = GetBriefItem(bibid, vid, null, tracer);
+                        BriefItemInfo returnValue = itemAndError.Item1;
 
-                        // Was the item null?
+                        // If null, return
                         if (returnValue == null)
                         {
+                            Response.ContentType = "text/plain";
+
                             // If this was debug mode, then just write the tracer
                             if (IsDebug)
                             {
-                                tracer.Add_Trace("ItemServices.Get_Item_Info_Legacy", "NULL value returned from getBriefItem method");
+                                tracer.Add_Trace("ItemServices.GetItemBrief", "Could not retrieve the full SobekCM_Item object");
+
+                                if (itemAndError.Item2 != null)
+                                {
+                                    switch (itemAndError.Item2.Type)
+                                    {
+                                        case SobekCM_Item_Error_Type_Enum.System_Error:
+                                            tracer.Add_Trace("ItemServices.GetItemBrief", itemAndError.Item2.Message ?? "Unknown error completing request");
+                                            break;
+
+                                        case SobekCM_Item_Error_Type_Enum.Invalid_BibID:
+                                            tracer.Add_Trace("ItemServices.GetItemBrief", itemAndError.Item2.Message ?? "Invalid BibID requested");
+                                            break;
+
+                                        case SobekCM_Item_Error_Type_Enum.Invalid_VID:
+                                            tracer.Add_Trace("ItemServices.GetItemBrief", "Invalid VID, use vid " + itemAndError.Item2.FirstValidVid);
+                                            break;
+                                    }
+                                }
 
                                 Response.ContentType = "text/plain";
                                 Response.Output.WriteLine("DEBUG MODE DETECTED");
                                 Response.Output.WriteLine();
                                 Response.Output.WriteLine(tracer.Text_Trace);
+                                return;
                             }
+
+                            if (itemAndError.Item2 == null)
+                            {
+                                Response.Output.WriteLine("Unknown error completing request");
+                                Response.StatusCode = 500;
+                            }
+                            else
+                            {
+                                switch (itemAndError.Item2.Type)
+                                {
+                                    case SobekCM_Item_Error_Type_Enum.System_Error:
+                                        Response.Output.WriteLine(itemAndError.Item2.Message ?? "Unknown error completing request");
+                                        Response.StatusCode = 500;
+                                        break;
+
+                                    case SobekCM_Item_Error_Type_Enum.Invalid_BibID:
+                                        Response.Output.WriteLine(itemAndError.Item2.Message ?? "Invalid BibID requested");
+                                        Response.StatusCode = 404;
+                                        break;
+
+                                    case SobekCM_Item_Error_Type_Enum.Invalid_VID:
+                                        Response.Output.WriteLine(itemAndError.Item2.FirstValidVid + " - Invalid VID, use vid " + itemAndError.Item2.FirstValidVid);
+                                        Response.StatusCode = 303;
+                                        break;
+                                }
+                            }
+
                             return;
                         }
+
 
                         // If this was debug mode, then just write the tracer
                         if (IsDebug)
@@ -541,90 +692,86 @@ namespace SobekCM.Engine_Library.Endpoints
 
         #region Helper methods for getting the items
 
-        public SobekCM_Item getSobekItem(string BibID, string VID, Custom_Tracer Tracer)
+        public Tuple<SobekCM_Item, SobekCM_Item_Error> getSobekItem(string BibID, string VID, Custom_Tracer Tracer)
         {
             Tracer.Add_Trace("ItemServices.getSobekItem", "Try to retrieve the item from the cache");
 
-                // Try to get this from the cache
-                SobekCM_Item currentItem = CachedDataManager.Items.Retrieve_Digital_Resource_Object(BibID, VID, Tracer);
+            // Try to get this from the cache
+            SobekCM_Item currentItem = CachedDataManager.Items.Retrieve_Digital_Resource_Object(BibID, VID, Tracer);
+            if (currentItem != null)
+            {
+                Tracer.Add_Trace("ItemServices.getSobekItem", "Found the digital resource object on the cache");
+                return new Tuple<SobekCM_Item, SobekCM_Item_Error>(currentItem, null);
+            }
 
-                // If not pulled from the cache, then we will have to build the item
-                if (currentItem == null)
-                {
-                    Tracer.Add_Trace("ItemServices.getSobekItem", "Unable to find the digital resource on the cache.. will build");
-                    currentItem = SobekCM_Item_Factory.Get_Item(BibID, VID, Engine_ApplicationCache_Gateway.Icon_List, Tracer);
-                    if (currentItem != null)
-                    {
-                        Tracer.Add_Trace("ItemServices.getSobekItem", "Store the digital resource object to the cache");
-                        CachedDataManager.Items.Store_Digital_Resource_Object(BibID, VID, currentItem, Tracer);
-                    }
-                    else
-                    {
-                        Tracer.Add_Trace("ItemServices.getSobekItem", "Call to the SobekCM_Item_Factory returned NULL");
-                        return null;
-                    }
-                }
-                else
-                {
-                    Tracer.Add_Trace("ItemServices.getSobekItem", "Found the digital resource object on the cache");
-                }
+            // If not pulled from the cache, then we will have to build the item
+            Tracer.Add_Trace("ItemServices.getSobekItem", "Unable to find the digital resource on the cache.. will build");
 
-                return currentItem;
+            Tuple<SobekCM_Item, SobekCM_Item_Error> itemAndErrorTuple = SobekCM_Item_Factory.Get_Item(BibID, VID, Engine_ApplicationCache_Gateway.Icon_List, Tracer);
+            currentItem = itemAndErrorTuple.Item1;
+            if (currentItem != null)
+            {
+                Tracer.Add_Trace("ItemServices.getSobekItem", "Store the digital resource object to the cache");
+                CachedDataManager.Items.Store_Digital_Resource_Object(BibID, VID, currentItem, Tracer);
+                return itemAndErrorTuple;
+            }
+
+            Tracer.Add_Trace("ItemServices.getSobekItem", "Call to the SobekCM_Item_Factory returned NULL");
+            return itemAndErrorTuple;
         }
 
-        public SobekCM_Item getSobekItem(string BibID, string VID, int UserID, Custom_Tracer Tracer)
+        public Tuple<SobekCM_Item, SobekCM_Item_Error> getSobekItem(string BibID, string VID, int UserID, Custom_Tracer Tracer)
         {
             Tracer.Add_Trace("ItemServices.getSobekItem", "Try to retrieve the item from the cache");
 
-                // Try to get this from the cache
-                SobekCM_Item currentItem = CachedDataManager.Items.Retrieve_Digital_Resource_Object(UserID, BibID, VID, Tracer);
+            // Try to get this from the cache
+            SobekCM_Item currentItem = CachedDataManager.Items.Retrieve_Digital_Resource_Object(UserID, BibID, VID, Tracer);
+            if (currentItem != null)
+            {
+                Tracer.Add_Trace("ItemServices.getSobekItem", "Found the digital resource object on the cache");
+                return new Tuple<SobekCM_Item, SobekCM_Item_Error>(currentItem, null);
+            }
 
-                // If not pulled from the cache, then we will have to build the item
-                if (currentItem == null)
-                {
-                    Tracer.Add_Trace("ItemServices.getSobekItem", "Unable to find the digital resource on the cache.. will build");
-                    currentItem = SobekCM_Item_Factory.Get_Item(BibID, VID, Engine_ApplicationCache_Gateway.Icon_List, Tracer);
-                    if (currentItem != null)
-                    {
-                        Tracer.Add_Trace("ItemServices.getSobekItem", "Store the digital resource object to the cache");
-                        CachedDataManager.Items.Store_Digital_Resource_Object(UserID, BibID, VID, currentItem, Tracer);
-                    }
-                    else
-                    {
-                        Tracer.Add_Trace("ItemServices.getSobekItem", "Call to the SobekCM_Item_Factory returned NULL");
-                        return null;
-                    }
-                }
-                else
-                {
-                    Tracer.Add_Trace("ItemServices.getSobekItem", "Found the digital resource object on the cache");
-                }
+            // If not pulled from the cache, then we will have to build the item
+            Tracer.Add_Trace("ItemServices.getSobekItem", "Unable to find the digital resource on the cache.. will build");
+            Tuple<SobekCM_Item, SobekCM_Item_Error> itemAndErrorTuple = SobekCM_Item_Factory.Get_Item(BibID, VID, Engine_ApplicationCache_Gateway.Icon_List, Tracer);
+            currentItem = itemAndErrorTuple.Item1;
+            if (currentItem != null)
+            {
+                Tracer.Add_Trace("ItemServices.getSobekItem", "Store the digital resource object to the cache");
+                CachedDataManager.Items.Store_Digital_Resource_Object(UserID, BibID, VID, currentItem, Tracer);
+            }
+            else
+            {
+                Tracer.Add_Trace("ItemServices.getSobekItem", "Call to the SobekCM_Item_Factory returned NULL");
+                return null;
+            }
 
-                return currentItem;
+            return itemAndErrorTuple;
         }
 
-        private BriefItemInfo GetBriefItem(string BibID, string VID, string MappingSet, Custom_Tracer Tracer)
+        private Tuple<BriefItemInfo,SobekCM_Item_Error> GetBriefItem(string BibID, string VID, string MappingSet, Custom_Tracer Tracer)
         {
             // Get the full SOobekCM_Item object for the provided BibID / VID
             Tracer.Add_Trace("ItemServices.getBriefItem", "Get the full SobekCM_Item object for this BibID / VID");
-            SobekCM_Item currentItem = getSobekItem(BibID, VID, Tracer);
-            if (currentItem == null)
+            Tuple<SobekCM_Item, SobekCM_Item_Error> itemAndError = getSobekItem(BibID, VID, Tracer);
+            if (itemAndError.Item1 == null)
             {
                 Tracer.Add_Trace("ItemServices.getBriefItem", "Could not retrieve the full SobekCM_Item object");
-                return null;
+                return new Tuple<BriefItemInfo, SobekCM_Item_Error>(null, itemAndError.Item2);
             }
 
             // Was there a mapping set indicated?
             if (String.IsNullOrEmpty(MappingSet))
             {
                 Tracer.Add_Trace("ItemServices.getBriefItem", "Map to the brief item, using the default mapping set");
-                BriefItemInfo item = BriefItem_Factory.Create(currentItem, Tracer);
-                return item;
+                BriefItemInfo item = BriefItem_Factory.Create(itemAndError.Item1, Tracer);
+                return new Tuple<BriefItemInfo, SobekCM_Item_Error>(item, null);
             }
 
             Tracer.Add_Trace("ItemServices.getBriefItem", "Map to the brief item, using mapping set '" + MappingSet + "'");
-            BriefItemInfo item2 = BriefItem_Factory.Create(currentItem, MappingSet, Tracer);
-            return item2;
+            BriefItemInfo item2 = BriefItem_Factory.Create(itemAndError.Item1, MappingSet, Tracer);
+            return new Tuple<BriefItemInfo, SobekCM_Item_Error>(item2, null);
         }
 
 
@@ -782,12 +929,42 @@ namespace SobekCM.Engine_Library.Endpoints
                         vid = UrlSegments[2];
 
                     // Get the current item first
-                    SobekCM_Item sobekItem = getSobekItem(bibid, vid, tracer);
+                    Tuple<SobekCM_Item, SobekCM_Item_Error> itemAndError = getSobekItem(bibid, vid, tracer);
+                    SobekCM_Item sobekItem = itemAndError.Item1;
 
                     // If null, return
                     if (sobekItem == null)
-                        return;
+                    {
+                        Response.ContentType = "text/plain";
 
+                        if (itemAndError.Item2 == null)
+                        {
+                            Response.Output.WriteLine("Unknown error completing request");
+                            Response.StatusCode = 500;
+                        }
+                        else
+                        {
+                            switch (itemAndError.Item2.Type)
+                            {
+                                case SobekCM_Item_Error_Type_Enum.System_Error:
+                                    Response.Output.WriteLine( itemAndError.Item2.Message ?? "Unknown error completing request");
+                                    Response.StatusCode = 500;
+                                    break;
+
+                                case SobekCM_Item_Error_Type_Enum.Invalid_BibID:
+                                    Response.Output.WriteLine(itemAndError.Item2.Message ?? "Invalid BibID requested");
+                                    Response.StatusCode = 404;
+                                    break;
+
+                                case SobekCM_Item_Error_Type_Enum.Invalid_VID:
+                                    Response.Output.WriteLine(itemAndError.Item2.FirstValidVid + " - Invalid VID, use vid " + itemAndError.Item2.FirstValidVid );
+                                    Response.StatusCode = 303;
+                                    break;
+                            }
+                        }
+
+                        return;
+                    }
 
                     string errorMessage;
                     Dictionary<string, object> options_rdf = new Dictionary<string, object>();
@@ -821,11 +998,42 @@ namespace SobekCM.Engine_Library.Endpoints
                         vid = UrlSegments[2];
 
                     // Get the current item first
-                    SobekCM_Item sobekItem = getSobekItem(bibid, vid, tracer);
+                    Tuple<SobekCM_Item, SobekCM_Item_Error> itemAndError = getSobekItem(bibid, vid, tracer);
+                    SobekCM_Item sobekItem = itemAndError.Item1;
 
                     // If null, return
                     if (sobekItem == null)
+                    {
+                        Response.ContentType = "text/plain";
+
+                        if (itemAndError.Item2 == null)
+                        {
+                            Response.Output.WriteLine("Unknown error completing request");
+                            Response.StatusCode = 500;
+                        }
+                        else
+                        {
+                            switch (itemAndError.Item2.Type)
+                            {
+                                case SobekCM_Item_Error_Type_Enum.System_Error:
+                                    Response.Output.WriteLine(itemAndError.Item2.Message ?? "Unknown error completing request");
+                                    Response.StatusCode = 500;
+                                    break;
+
+                                case SobekCM_Item_Error_Type_Enum.Invalid_BibID:
+                                    Response.Output.WriteLine(itemAndError.Item2.Message ?? "Invalid BibID requested");
+                                    Response.StatusCode = 404;
+                                    break;
+
+                                case SobekCM_Item_Error_Type_Enum.Invalid_VID:
+                                    Response.Output.WriteLine(itemAndError.Item2.FirstValidVid + " - Invalid VID, use vid " + itemAndError.Item2.FirstValidVid);
+                                    Response.StatusCode = 303;
+                                    break;
+                            }
+                        }
+
                         return;
+                    }
 
 
                     string errorMessage;
@@ -928,19 +1136,72 @@ namespace SobekCM.Engine_Library.Endpoints
 
                         // Get the full SOobekCM_Item object for the provided BibID / VID
                         tracer.Add_Trace("ItemServices.GetItemEAD", "Get the full SobekCM_Item object for this BibID / VID");
-                        SobekCM_Item currentItem = getSobekItem(bibid, vid, tracer);
-                        if (currentItem == null)
+
+                        // Get the current item first
+                        Tuple<SobekCM_Item, SobekCM_Item_Error> itemAndError = getSobekItem(bibid, vid, tracer);
+                        SobekCM_Item sobekItem = itemAndError.Item1;
+
+                        // If null, return
+                        if (sobekItem == null)
                         {
+                            Response.ContentType = "text/plain";
+
                             // If this was debug mode, then just write the tracer
                             if (IsDebug)
                             {
                                 tracer.Add_Trace("ItemServices.GetItemEAD", "Could not retrieve the full SobekCM_Item object");
 
+                                if (itemAndError.Item2 != null)
+                                {
+                                    switch (itemAndError.Item2.Type)
+                                    {
+                                        case SobekCM_Item_Error_Type_Enum.System_Error:
+                                            tracer.Add_Trace("ItemServices.GetItemEAD", itemAndError.Item2.Message ?? "Unknown error completing request");
+                                            break;
+
+                                        case SobekCM_Item_Error_Type_Enum.Invalid_BibID:
+                                            tracer.Add_Trace("ItemServices.GetItemEAD", itemAndError.Item2.Message ?? "Invalid BibID requested");
+                                            break;
+
+                                        case SobekCM_Item_Error_Type_Enum.Invalid_VID:
+                                            tracer.Add_Trace("ItemServices.GetItemEAD", "Invalid VID, use vid " + itemAndError.Item2.FirstValidVid);
+                                            break;
+                                    }
+                                }
+
                                 Response.ContentType = "text/plain";
                                 Response.Output.WriteLine("DEBUG MODE DETECTED");
                                 Response.Output.WriteLine();
                                 Response.Output.WriteLine(tracer.Text_Trace);
+                                return;
                             }
+
+                            if (itemAndError.Item2 == null)
+                            {
+                                Response.Output.WriteLine("Unknown error completing request");
+                                Response.StatusCode = 500;
+                            }
+                            else
+                            {
+                                switch (itemAndError.Item2.Type)
+                                {
+                                    case SobekCM_Item_Error_Type_Enum.System_Error:
+                                        Response.Output.WriteLine(itemAndError.Item2.Message ?? "Unknown error completing request");
+                                        Response.StatusCode = 500;
+                                        break;
+
+                                    case SobekCM_Item_Error_Type_Enum.Invalid_BibID:
+                                        Response.Output.WriteLine(itemAndError.Item2.Message ?? "Invalid BibID requested");
+                                        Response.StatusCode = 404;
+                                        break;
+
+                                    case SobekCM_Item_Error_Type_Enum.Invalid_VID:
+                                        Response.Output.WriteLine(itemAndError.Item2.FirstValidVid + " - Invalid VID, use vid " + itemAndError.Item2.FirstValidVid);
+                                        Response.StatusCode = 303;
+                                        break;
+                                }
+                            }
+
                             return;
                         }
 
@@ -949,7 +1210,7 @@ namespace SobekCM.Engine_Library.Endpoints
                         EAD_Transfer_Object responder = new EAD_Transfer_Object();
 
                         // Transfer all the data over to the EAD transfer object
-                        EAD_Info eadInfo = currentItem.Get_Metadata_Module(GlobalVar.PALMM_RIGHTSMD_METADATA_MODULE_KEY) as EAD_Info;
+                        EAD_Info eadInfo = itemAndError.Item1.Get_Metadata_Module(GlobalVar.PALMM_RIGHTSMD_METADATA_MODULE_KEY) as EAD_Info;
                         if (eadInfo != null)
                         {
                             tracer.Add_Trace("ItemServices.GetItemEAD", "Copy all the source EAD information into the transfer EAD object");
@@ -1124,25 +1385,70 @@ namespace SobekCM.Engine_Library.Endpoints
                 tracer.Add_Trace("ItemServices.GetItemMarcRecord", "Requested MARC record for " + bibid + ":" + vid);
 
                 // Get the current item first
-                SobekCM_Item sobekItem = getSobekItem(bibid, vid, tracer);
+                Tuple<SobekCM_Item, SobekCM_Item_Error> itemAndError = getSobekItem(bibid, vid, tracer);
+                SobekCM_Item sobekItem = itemAndError.Item1;
 
                 // If null, return
                 if (sobekItem == null)
                 {
-                    tracer.Add_Trace("ItemServices.GetItemMarcRecord", "Unable to retrieve the indicated digital resource ( " + bibid + ":" + vid + " )");
-
                     Response.ContentType = "text/plain";
-                    Response.StatusCode = 500;
-                    Response.Output.WriteLine("Unable to retrieve the indicated digital resource ( " + bibid + ":" + vid + " )");
-                    Response.Output.WriteLine();
 
                     // If this was debug mode, then just write the tracer
                     if (IsDebug)
                     {
+                        tracer.Add_Trace("ItemServices.GetItemMarcRecord", "Could not retrieve the full SobekCM_Item object");
+
+                        if (itemAndError.Item2 != null)
+                        {
+                            switch (itemAndError.Item2.Type)
+                            {
+                                case SobekCM_Item_Error_Type_Enum.System_Error:
+                                    tracer.Add_Trace("ItemServices.GetItemMarcRecord", itemAndError.Item2.Message ?? "Unknown error completing request");
+                                    break;
+
+                                case SobekCM_Item_Error_Type_Enum.Invalid_BibID:
+                                    tracer.Add_Trace("ItemServices.GetItemMarcRecord", itemAndError.Item2.Message ?? "Invalid BibID requested");
+                                    break;
+
+                                case SobekCM_Item_Error_Type_Enum.Invalid_VID:
+                                    tracer.Add_Trace("ItemServices.GetItemMarcRecord", "Invalid VID, use vid " + itemAndError.Item2.FirstValidVid);
+                                    break;
+                            }
+                        }
+
+                        Response.ContentType = "text/plain";
                         Response.Output.WriteLine("DEBUG MODE DETECTED");
                         Response.Output.WriteLine();
                         Response.Output.WriteLine(tracer.Text_Trace);
+                        return;
                     }
+
+                    if (itemAndError.Item2 == null)
+                    {
+                        Response.Output.WriteLine("Unknown error completing request");
+                        Response.StatusCode = 500;
+                    }
+                    else
+                    {
+                        switch (itemAndError.Item2.Type)
+                        {
+                            case SobekCM_Item_Error_Type_Enum.System_Error:
+                                Response.Output.WriteLine(itemAndError.Item2.Message ?? "Unknown error completing request");
+                                Response.StatusCode = 500;
+                                break;
+
+                            case SobekCM_Item_Error_Type_Enum.Invalid_BibID:
+                                Response.Output.WriteLine(itemAndError.Item2.Message ?? "Invalid BibID requested");
+                                Response.StatusCode = 404;
+                                break;
+
+                            case SobekCM_Item_Error_Type_Enum.Invalid_VID:
+                                Response.Output.WriteLine(itemAndError.Item2.FirstValidVid + " - Invalid VID, use vid " + itemAndError.Item2.FirstValidVid);
+                                Response.StatusCode = 303;
+                                break;
+                        }
+                    }
+
                     return;
                 }
 
@@ -1475,23 +1781,75 @@ namespace SobekCM.Engine_Library.Endpoints
 
                     // Build the brief item
                     tracer.Add_Trace("ItemServices.GetItemFiles", "Building the brief item");
-                    BriefItemInfo briefItem = GetBriefItem(bibid, vid, null, tracer);
 
-                    // Was the item null?
+                    // Get the current item first
+                    Tuple<BriefItemInfo, SobekCM_Item_Error> itemAndError = GetBriefItem(bibid, vid, null, tracer);
+                    BriefItemInfo briefItem = itemAndError.Item1;
+
+                    // If null, return
                     if (briefItem == null)
                     {
+                        Response.ContentType = "text/plain";
+
                         // If this was debug mode, then just write the tracer
                         if (IsDebug)
                         {
-                            tracer.Add_Trace("ItemServices.GetItemFiles", "NULL value returned from getBriefItem method");
+                            tracer.Add_Trace("ItemServices.GetItemFiles", "Could not retrieve the full SobekCM_Item object");
+
+                            if (itemAndError.Item2 != null)
+                            {
+                                switch (itemAndError.Item2.Type)
+                                {
+                                    case SobekCM_Item_Error_Type_Enum.System_Error:
+                                        tracer.Add_Trace("ItemServices.GetItemFiles", itemAndError.Item2.Message ?? "Unknown error completing request");
+                                        break;
+
+                                    case SobekCM_Item_Error_Type_Enum.Invalid_BibID:
+                                        tracer.Add_Trace("ItemServices.GetItemFiles", itemAndError.Item2.Message ?? "Invalid BibID requested");
+                                        break;
+
+                                    case SobekCM_Item_Error_Type_Enum.Invalid_VID:
+                                        tracer.Add_Trace("ItemServices.GetItemFiles", "Invalid VID, use vid " + itemAndError.Item2.FirstValidVid);
+                                        break;
+                                }
+                            }
 
                             Response.ContentType = "text/plain";
                             Response.Output.WriteLine("DEBUG MODE DETECTED");
                             Response.Output.WriteLine();
                             Response.Output.WriteLine(tracer.Text_Trace);
+                            return;
                         }
+
+                        if (itemAndError.Item2 == null)
+                        {
+                            Response.Output.WriteLine("Unknown error completing request");
+                            Response.StatusCode = 500;
+                        }
+                        else
+                        {
+                            switch (itemAndError.Item2.Type)
+                            {
+                                case SobekCM_Item_Error_Type_Enum.System_Error:
+                                    Response.Output.WriteLine(itemAndError.Item2.Message ?? "Unknown error completing request");
+                                    Response.StatusCode = 500;
+                                    break;
+
+                                case SobekCM_Item_Error_Type_Enum.Invalid_BibID:
+                                    Response.Output.WriteLine(itemAndError.Item2.Message ?? "Invalid BibID requested");
+                                    Response.StatusCode = 404;
+                                    break;
+
+                                case SobekCM_Item_Error_Type_Enum.Invalid_VID:
+                                    Response.Output.WriteLine(itemAndError.Item2.FirstValidVid + " - Invalid VID, use vid " + itemAndError.Item2.FirstValidVid);
+                                    Response.StatusCode = 303;
+                                    break;
+                            }
+                        }
+
                         return;
                     }
+
 
                     // Look in the cache
                     tracer.Add_Trace("ItemServices.GetItemFiles", "Requesting files from SobekFileSystem");
@@ -1744,25 +2102,71 @@ namespace SobekCM.Engine_Library.Endpoints
                 }
 
                 tracer.Add_Trace("ItemServices.Print_HTML_Snippet", "Get the brief digital resource object for " + bibid + ":" + vid);
-                BriefItemInfo sobekItem = GetBriefItem(bibid, vid, null, tracer);
+                // Get the current item first
+                Tuple<BriefItemInfo, SobekCM_Item_Error> itemAndError = GetBriefItem(bibid, vid, null, tracer);
+                BriefItemInfo sobekItem = itemAndError.Item1;
 
-                // If this item was NULL, there was an error
+                // If null, return
                 if (sobekItem == null)
                 {
-                    tracer.Add_Trace("ItemServices.Print_HTML_Snippet", "Unable to retrieve the indicated digital resource ( " + bibid + ":" + vid + " )");
-
                     Response.ContentType = "text/plain";
-                    Response.StatusCode = 500;
-                    Response.Output.WriteLine("Unable to retrieve the indicated digital resource ( " + bibid + ":" + vid + " )");
-                    Response.Output.WriteLine();
 
                     // If this was debug mode, then just write the tracer
                     if (IsDebug)
                     {
+                        tracer.Add_Trace("ItemServices.Print_HTML_Snippet", "Could not retrieve the full SobekCM_Item object");
+
+                        if (itemAndError.Item2 != null)
+                        {
+                            switch (itemAndError.Item2.Type)
+                            {
+                                case SobekCM_Item_Error_Type_Enum.System_Error:
+                                    tracer.Add_Trace("ItemServices.Print_HTML_Snippet", itemAndError.Item2.Message ?? "Unknown error completing request");
+                                    break;
+
+                                case SobekCM_Item_Error_Type_Enum.Invalid_BibID:
+                                    tracer.Add_Trace("ItemServices.Print_HTML_Snippet", itemAndError.Item2.Message ?? "Invalid BibID requested");
+                                    break;
+
+                                case SobekCM_Item_Error_Type_Enum.Invalid_VID:
+                                    tracer.Add_Trace("ItemServices.Print_HTML_Snippet", "Invalid VID, use vid " + itemAndError.Item2.FirstValidVid);
+                                    break;
+                            }
+                        }
+
+                        Response.ContentType = "text/plain";
                         Response.Output.WriteLine("DEBUG MODE DETECTED");
                         Response.Output.WriteLine();
                         Response.Output.WriteLine(tracer.Text_Trace);
+                        return;
                     }
+
+                    if (itemAndError.Item2 == null)
+                    {
+                        Response.Output.WriteLine("Unknown error completing request");
+                        Response.StatusCode = 500;
+                    }
+                    else
+                    {
+                        switch (itemAndError.Item2.Type)
+                        {
+                            case SobekCM_Item_Error_Type_Enum.System_Error:
+                                Response.Output.WriteLine(itemAndError.Item2.Message ?? "Unknown error completing request");
+                                Response.StatusCode = 500;
+                                break;
+
+                            case SobekCM_Item_Error_Type_Enum.Invalid_BibID:
+                                Response.Output.WriteLine(itemAndError.Item2.Message ?? "Invalid BibID requested");
+                                Response.StatusCode = 404;
+                                break;
+
+                            case SobekCM_Item_Error_Type_Enum.Invalid_VID:
+                                Response.Output.WriteLine(itemAndError.Item2.FirstValidVid + " - Invalid VID, use vid " + itemAndError.Item2.FirstValidVid);
+                                Response.StatusCode = 303;
+                                break;
+                        }
+                    }
+
                     return;
                 }
 
@@ -1990,25 +2394,71 @@ namespace SobekCM.Engine_Library.Endpoints
                 string vid = (UrlSegments.Count > 1) ? UrlSegments[1] : "00001";
 
                 tracer.Add_Trace("ItemServices.Share_HTTP_Snippet", "Get the full SobekCM_Item object for " + bibid + ":" + vid );
-                SobekCM_Item sobekItem = getSobekItem(bibid, vid, tracer);
+                // Get the current item first
+                Tuple<SobekCM_Item, SobekCM_Item_Error> itemAndError = getSobekItem(bibid, vid, tracer);
+                SobekCM_Item sobekItem = itemAndError.Item1;
 
-                // If this item was NULL, there was an error
+                // If null, return
                 if (sobekItem == null)
                 {
-                    tracer.Add_Trace("ItemServices.Share_HTTP_Snippet", "Unable to retrieve the indicated digital resource ( " + bibid + ":" + vid + " )");
-
                     Response.ContentType = "text/plain";
-                    Response.StatusCode = 500;
-                    Response.Output.WriteLine("Unable to retrieve the indicated digital resource ( " + bibid + ":" + vid + " )");
-                    Response.Output.WriteLine();
 
                     // If this was debug mode, then just write the tracer
                     if (IsDebug)
                     {
+                        tracer.Add_Trace("ItemServices.Share_HTTP_Snippet", "Could not retrieve the full SobekCM_Item object");
+
+                        if (itemAndError.Item2 != null)
+                        {
+                            switch (itemAndError.Item2.Type)
+                            {
+                                case SobekCM_Item_Error_Type_Enum.System_Error:
+                                    tracer.Add_Trace("ItemServices.Share_HTTP_Snippet", itemAndError.Item2.Message ?? "Unknown error completing request");
+                                    break;
+
+                                case SobekCM_Item_Error_Type_Enum.Invalid_BibID:
+                                    tracer.Add_Trace("ItemServices.Share_HTTP_Snippet", itemAndError.Item2.Message ?? "Invalid BibID requested");
+                                    break;
+
+                                case SobekCM_Item_Error_Type_Enum.Invalid_VID:
+                                    tracer.Add_Trace("ItemServices.Share_HTTP_Snippet", "Invalid VID, use vid " + itemAndError.Item2.FirstValidVid);
+                                    break;
+                            }
+                        }
+
+                        Response.ContentType = "text/plain";
                         Response.Output.WriteLine("DEBUG MODE DETECTED");
                         Response.Output.WriteLine();
                         Response.Output.WriteLine(tracer.Text_Trace);
+                        return;
                     }
+
+                    if (itemAndError.Item2 == null)
+                    {
+                        Response.Output.WriteLine("Unknown error completing request");
+                        Response.StatusCode = 500;
+                    }
+                    else
+                    {
+                        switch (itemAndError.Item2.Type)
+                        {
+                            case SobekCM_Item_Error_Type_Enum.System_Error:
+                                Response.Output.WriteLine(itemAndError.Item2.Message ?? "Unknown error completing request");
+                                Response.StatusCode = 500;
+                                break;
+
+                            case SobekCM_Item_Error_Type_Enum.Invalid_BibID:
+                                Response.Output.WriteLine(itemAndError.Item2.Message ?? "Invalid BibID requested");
+                                Response.StatusCode = 404;
+                                break;
+
+                            case SobekCM_Item_Error_Type_Enum.Invalid_VID:
+                                Response.Output.WriteLine(itemAndError.Item2.FirstValidVid + " - Invalid VID, use vid " + itemAndError.Item2.FirstValidVid);
+                                Response.StatusCode = 303;
+                                break;
+                        }
+                    }
+
                     return;
                 }
                 

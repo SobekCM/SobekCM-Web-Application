@@ -174,6 +174,18 @@ namespace SobekCM.Core.MicroservicesClient
                                         Tracer.Add_Trace("MicroservicesClientBase.Deserialize", "Bad request sent to microservice URL", Custom_Trace_Type_Enum.Error);
                                     throw new ApplicationException("Bad request sent to microservice URL ( '" + MicroserviceUri + "' )", ee);
 
+                                case HttpStatusCode.NotFound:
+                                    if (Tracer != null)
+                                        Tracer.Add_Trace("MicroservicesClientBase.Deserialize", "404 - Resource not found: " + ee.Message, Custom_Trace_Type_Enum.Error);
+                                    throw new ApplicationException("404 - Resource not found ( '" + MicroserviceUri + "' ): " + ee.Message, ee);
+
+                                case HttpStatusCode.SeeOther:
+                                    Stream dataStream = response.GetResponseStream();
+                                    TextReader error_reader = new StreamReader(dataStream);
+                                    string msg = error_reader.ReadToEnd();
+                                    if (Tracer != null)
+                                        Tracer.Add_Trace("MicroservicesClientBase.Deserialize", "303 - See Other URL redirect: " + msg, Custom_Trace_Type_Enum.Error);
+                                    throw new ApplicationException("303 - " + msg + " - See Other URL redirect ( '" + MicroserviceUri + "' ) ", ee);
 
                                 default:
                                     if (Tracer != null)

@@ -25,7 +25,7 @@ namespace SobekCM.Engine_Library.Items
 	    /// <returns> Fully built digital resource object for a single volume </returns>
 	    /// <remarks> This method relies heavily upon the <see cref="SobekCM_METS_Based_ItemBuilder"/> class to actually
 	    /// read the METS files and build the items. </remarks>
-	    public static SobekCM_Item Get_Item(string BibID, string VID, Dictionary<string, Wordmark_Icon> Icon_Dictionary, Custom_Tracer Tracer)
+        public static Tuple<SobekCM_Item, SobekCM_Item_Error> Get_Item(string BibID, string VID, Dictionary<string, Wordmark_Icon> Icon_Dictionary, Custom_Tracer Tracer)
         {
             if (Tracer != null)
             {
@@ -48,7 +48,7 @@ namespace SobekCM.Engine_Library.Items
 	    /// <returns> Fully built digital resource object for a single volume </returns>
 	    /// <remarks> This method relies heavily upon the <see cref="SobekCM_METS_Based_ItemBuilder"/> class to actually
 	    /// read the METS files and build the items. </remarks>
-	    public static SobekCM_Item Get_Item(string METS_Location, string BibID, string VID, Dictionary<string, Wordmark_Icon> Icon_Dictionary, Custom_Tracer Tracer)
+        public static Tuple<SobekCM_Item, SobekCM_Item_Error> Get_Item(string METS_Location, string BibID, string VID, Dictionary<string, Wordmark_Icon> Icon_Dictionary, Custom_Tracer Tracer)
         {
             if (Tracer != null)
             {

@@ -90,7 +90,57 @@ namespace SobekCM.Library.HTML
 
             // Try to get the current item
             RequestSpecificValues.Tracer.Add_Trace("Item_HtmlSubwriter.Constructor", "Get the item information from the engine");
-            currentItem = SobekEngineClient.Items.Get_Item_Brief(RequestSpecificValues.Current_Mode.BibID, RequestSpecificValues.Current_Mode.VID, true, RequestSpecificValues.Tracer);
+            int status_code = 0;
+            try
+            {
+                currentItem = SobekEngineClient.Items.Get_Item_Brief(RequestSpecificValues.Current_Mode.BibID, RequestSpecificValues.Current_Mode.VID, true, RequestSpecificValues.Tracer, out status_code);
+            }
+            catch (Exception ee)
+            {
+                string ee_message = ee.Message;
+                if (ee_message.IndexOf("404") == 0)
+                {
+                    string base_source = Engine_ApplicationCache_Gateway.Settings.Servers.Base_Directory + "design\\webcontent";
+
+                    // Set the source location
+                    RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Simple_HTML_CMS;
+                    RequestSpecificValues.Current_Mode.Missing = true;
+                    RequestSpecificValues.Current_Mode.Info_Browse_Mode = RequestSpecificValues.Current_Mode.BibID;
+                    RequestSpecificValues.Current_Mode.WebContent_Type = WebContent_Type_Enum.Display;
+                    RequestSpecificValues.Current_Mode.Page_By_FileName = base_source + "\\missing.html";
+                    RequestSpecificValues.Current_Mode.WebContentID = -1;
+                    return;
+                }
+
+                if (ee_message.IndexOf("303") == 0)
+                {
+                    string vid = ee_message.Substring(6, 5);
+                    RequestSpecificValues.Current_Mode.VID = vid;
+
+                    UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                    return;
+                }
+
+                RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Error;
+                RequestSpecificValues.Current_Mode.Error_Message = ee_message;
+                return;
+            }
+
+            // Finally, if no error but it is NULL, return
+            if (currentItem == null)
+            {
+                string base_source = Engine_ApplicationCache_Gateway.Settings.Servers.Base_Directory + "design\\webcontent";
+
+                // Set the source location
+                RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Simple_HTML_CMS;
+                RequestSpecificValues.Current_Mode.Missing = true;
+                RequestSpecificValues.Current_Mode.Info_Browse_Mode = RequestSpecificValues.Current_Mode.BibID;
+                RequestSpecificValues.Current_Mode.WebContent_Type = WebContent_Type_Enum.Display;
+                RequestSpecificValues.Current_Mode.Page_By_FileName = base_source + "\\missing.html";
+                RequestSpecificValues.Current_Mode.WebContentID = -1;
+                return;
+            }
+
 
             // If this is an empty item, than an error occurred
             if (String.IsNullOrEmpty(currentItem.BibID))

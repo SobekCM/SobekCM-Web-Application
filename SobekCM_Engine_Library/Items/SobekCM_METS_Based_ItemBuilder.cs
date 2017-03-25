@@ -226,7 +226,7 @@ namespace SobekCM.Engine_Library.Items
 	    /// <param name="Icon_Dictionary"> Dictionary of information about every wordmark/icon in this digital library, used to build the HTML for the icons linked to this digital resource</param>
 	    /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 	    /// <returns> Fully built version of a digital resource </returns>
-	    public SobekCM_Item Build_Item(string BibID, string VID, Dictionary<string, Wordmark_Icon> Icon_Dictionary, Custom_Tracer Tracer)
+	    public Tuple<SobekCM_Item,SobekCM_Item_Error> Build_Item(string BibID, string VID, Dictionary<string, Wordmark_Icon> Icon_Dictionary, Custom_Tracer Tracer)
 		{
 			if (Tracer != null)
 				{
@@ -238,9 +238,41 @@ namespace SobekCM.Engine_Library.Items
 				// Get the basic information about this item
 				DataSet itemDetails = Engine_Database.Get_Item_Details(BibID, VID, Tracer);
 
-				// If the itemdetails was null, this item is somehow invalid item then
-				if ( itemDetails == null )
-					return null;
+				// If the item details was null, this item is somehow invalid item then
+                // and we did not get a valid error message either
+			    if (itemDetails == null)
+			    {
+                    SobekCM_Item_Error itemError = new SobekCM_Item_Error(SobekCM_Item_Error_Type_Enum.System_Error);
+			        if (Engine_Database.Last_Exception != null)
+			            itemError.Message = Engine_Database.Last_Exception.Message;
+
+			        return new Tuple<SobekCM_Item, SobekCM_Item_Error>(null, itemError);
+			    }
+
+                // Was this an error returned though?
+                if ((itemDetails.Tables.Count == 1) && (itemDetails.Tables[0].Rows.Count > 0) && (itemDetails.Tables[0].Columns[0].ColumnName == "ErrorMsg"))
+			    {
+                    // Was a VID provided?
+			        if ((itemDetails.Tables[0].Rows[0]["VID"] != DBNull.Value) && (itemDetails.Tables[0].Rows[0]["VID"].ToString().Length > 0))
+			        {
+                        SobekCM_Item_Error itemError = new SobekCM_Item_Error(SobekCM_Item_Error_Type_Enum.Invalid_VID)
+                        {
+                            Message = itemDetails.Tables[0].Rows[0]["ErrorMsg"].ToString(), 
+                            FirstValidVid = itemDetails.Tables[0].Rows[0]["VID"].ToString()
+                        };
+
+			            return new Tuple<SobekCM_Item, SobekCM_Item_Error>(null, itemError);
+			        }
+			        else
+			        {
+                        SobekCM_Item_Error itemError = new SobekCM_Item_Error(SobekCM_Item_Error_Type_Enum.Invalid_BibID)
+                        {
+                            Message = itemDetails.Tables[0].Rows[0]["ErrorMsg"].ToString()
+                        };
+
+                        return new Tuple<SobekCM_Item, SobekCM_Item_Error>(null, itemError);
+			        }
+			    }
 
 				// Get the location for this METS file from the returned value
 				DataRow mainItemRow = itemDetails.Tables[2].Rows[0];
@@ -285,9 +317,9 @@ namespace SobekCM.Engine_Library.Items
 				bool multiple_volumes_exist = Convert.ToInt32(mainItemRow["Total_Volumes"]) > 1;
 
 				// Now finish building the object from the application state values
-				Finish_Building_Item(thisPackage, itemDetails, multiple_volumes_exist, Tracer);              
+				Finish_Building_Item(thisPackage, itemDetails, multiple_volumes_exist, Tracer);
 
-				return thisPackage;
+                return new Tuple<SobekCM_Item, SobekCM_Item_Error>(thisPackage, null);
 			}
 			catch (Exception ee)
 			{
@@ -304,7 +336,7 @@ namespace SobekCM.Engine_Library.Items
 	    /// <param name="Icon_Dictionary"> Dictionary of information about every wordmark/icon in this digital library, used to build the HTML for the icons linked to this digital resource</param>
 	    /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 	    /// <returns> Fully built version of a digital resource </returns>
-	    public SobekCM_Item Build_Item(string METS_Location, string BibID, String VID, Dictionary<string, Wordmark_Icon> Icon_Dictionary, Custom_Tracer Tracer)
+	    public Tuple<SobekCM_Item,SobekCM_Item_Error> Build_Item(string METS_Location, string BibID, String VID, Dictionary<string, Wordmark_Icon> Icon_Dictionary, Custom_Tracer Tracer)
 		{
 			if (Tracer != null)
 			{
@@ -317,9 +349,41 @@ namespace SobekCM.Engine_Library.Items
 				DataSet itemDetails = Engine_Database.Get_Item_Details(BibID, VID, Tracer);
 
 				// If the itemdetails was null, this item is somehow invalid item then
-				if (itemDetails == null)
-					return null;
+                // If the item details was null, this item is somehow invalid item then
+                // and we did not get a valid error message either
+                if (itemDetails == null)
+                {
+                    SobekCM_Item_Error itemError = new SobekCM_Item_Error(SobekCM_Item_Error_Type_Enum.System_Error);
+                    if (Engine_Database.Last_Exception != null)
+                        itemError.Message = Engine_Database.Last_Exception.Message;
 
+                    return new Tuple<SobekCM_Item, SobekCM_Item_Error>(null, itemError);
+                }
+
+                // Was this an error returned though?
+                if ((itemDetails.Tables.Count == 1) && (itemDetails.Tables[0].Rows.Count > 0) && (itemDetails.Tables[0].Columns[0].ColumnName == "ErrorMsg"))
+                {
+                    // Was a VID provided?
+                    if ((itemDetails.Tables[0].Rows[0]["VID"] != DBNull.Value) && (itemDetails.Tables[0].Rows[0]["VID"].ToString().Length > 0))
+                    {
+                        SobekCM_Item_Error itemError = new SobekCM_Item_Error(SobekCM_Item_Error_Type_Enum.Invalid_VID)
+                        {
+                            Message = itemDetails.Tables[0].Rows[0]["ErrorMsg"].ToString(),
+                            FirstValidVid = itemDetails.Tables[0].Rows[0]["VID"].ToString()
+                        };
+
+                        return new Tuple<SobekCM_Item, SobekCM_Item_Error>(null, itemError);
+                    }
+                    else
+                    {
+                        SobekCM_Item_Error itemError = new SobekCM_Item_Error(SobekCM_Item_Error_Type_Enum.Invalid_BibID)
+                        {
+                            Message = itemDetails.Tables[0].Rows[0]["ErrorMsg"].ToString()
+                        };
+
+                        return new Tuple<SobekCM_Item, SobekCM_Item_Error>(null, itemError);
+                    }
+                }
 
 				// Try to read the service METS
 				SobekCM_Item thisPackage = Build_Item_From_METS(METS_Location, String.Empty, Tracer);
@@ -342,7 +406,7 @@ namespace SobekCM.Engine_Library.Items
 				// Now finish building the object from the application state values
 				Finish_Building_Item(thisPackage, itemDetails, false, Tracer);
 
-				return thisPackage;
+                return new Tuple<SobekCM_Item, SobekCM_Item_Error>(thisPackage, null);
 			}
 			catch (Exception ee)
 			{

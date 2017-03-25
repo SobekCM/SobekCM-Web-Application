@@ -134,6 +134,7 @@
     <Compile Include="Items\BriefItems\Mappers\VRACore_BriefItemMapper.cs" />
     <Compile Include="Items\BriefItems\Mappers\Web_BriefItemMapper.cs" />
     <Compile Include="Items\BriefItems\Mappers\Zoological_Taxonomy_BriefItemMapper.cs" />
+    <Compile Include="Items\SobekCM_Item_Error.cs" />
     <Compile Include="Items\SobekCM_Item_Updater.cs" />
     <Compile Include="Database\Database_Item_Result.cs" />
     <Compile Include="Database\Database_Title_Result.cs" />

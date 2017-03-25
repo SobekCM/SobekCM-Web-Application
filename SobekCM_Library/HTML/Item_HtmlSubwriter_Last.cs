@@ -90,7 +90,8 @@ namespace SobekCM.Library.HTML
 
             // Try to get the current item
             RequestSpecificValues.Tracer.Add_Trace("Item_HtmlSubwriter.Constructor", "Get the item information from the engine");
-            currentItem = SobekEngineClient.Items.Get_Item_Brief(RequestSpecificValues.Current_Mode.BibID, RequestSpecificValues.Current_Mode.VID, true, RequestSpecificValues.Tracer);
+            int statusCode;
+            currentItem = SobekEngineClient.Items.Get_Item_Brief(RequestSpecificValues.Current_Mode.BibID, RequestSpecificValues.Current_Mode.VID, true, RequestSpecificValues.Tracer, out statusCode);
             RequestSpecificValues.Current_Mode.VID = currentItem.VID;
 
             // Ensure the UI portion has been configured for this user interface

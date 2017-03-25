@@ -24,6 +24,7 @@ using SobekCM.Library.Helpers.CKEditor;
 using SobekCM.Library.UI;
 using SobekCM.Library.WebContentViewer;
 using SobekCM.Library.WebContentViewer.Viewers;
+using SobekCM.Resource_Object;
 using SobekCM.Tools;
 
 #endregion
@@ -517,7 +518,7 @@ namespace SobekCM.Library.HTML
                 // Add new digital resource
                 if (( !contains_slash ) && ( UI_ApplicationCache_Gateway.Settings.Resources.Online_Item_Submit_Enabled))
                 {
-                    if (RequestSpecificValues.Current_Mode.Info_Browse_Mode.Length == 10)
+                    if ((RequestSpecificValues.Current_Mode.Info_Browse_Mode.Length == 10) && (SobekCM_Item.is_bibid_format(RequestSpecificValues.Current_Mode.Info_Browse_Mode)))
                     {
                         RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.My_Sobek;
                         RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.New_Item;

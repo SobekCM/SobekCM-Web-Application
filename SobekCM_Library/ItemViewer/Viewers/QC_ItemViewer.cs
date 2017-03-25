@@ -28,6 +28,7 @@ using SobekCM.Library.ItemViewer.Menu;
 using SobekCM.Library.UI;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Divisions;
+using SobekCM.Resource_Object.Utilities;
 using SobekCM.Tools;
 using SobekCM_Resource_Database;
 
@@ -272,13 +273,15 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     (File.GetLastWriteTime(metsInProcessFile).Subtract(DateTime.Now).Hours < 8))
                 {
                     // Read the temporary METS file, and use that to build the qc_item
-                    qc_item = SobekCM_Item_Factory.Get_Item(metsInProcessFile, BriefItem.BibID, BriefItem.VID, null, Tracer);
+                    Tuple<SobekCM_Item, SobekCM_Item_Error> itemAndError = SobekCM_Item_Factory.Get_Item(metsInProcessFile, BriefItem.BibID, BriefItem.VID, null, Tracer);
+                    qc_item = itemAndError.Item1;
                     qc_item.Source_Directory = SobekFileSystem.Resource_Network_Uri(BriefItem);
                 }
                 else
                 {
                     // Just read the normal otherwise ( if we had the ability to deep copy a SobekCM_Item, we could skip this )
-                    qc_item = SobekCM_Item_Factory.Get_Item(BriefItem.BibID, BriefItem.VID, null, Tracer);
+                    Tuple<SobekCM_Item, SobekCM_Item_Error> itemAndError = SobekCM_Item_Factory.Get_Item(BriefItem.BibID, BriefItem.VID, null, Tracer);
+                    qc_item = itemAndError.Item1;
                 }
 
                 // Save to the session, so it is easily available for next time

@@ -88,7 +88,6 @@ namespace SobekCM.Library.MainWriters
 
             try
             {
-
                 // Create the html sub writer now
                 switch (RequestSpecificValues.Current_Mode.Mode)
                 {
@@ -128,8 +127,6 @@ namespace SobekCM.Library.MainWriters
                         break;
 
                     case Display_Mode_Enum.Contact:
-
-
                         StringBuilder builder = new StringBuilder();
                         builder.Append("\n\nSUBMISSION INFORMATION\n");
                         builder.Append("\tDate:\t\t\t\t" + DateTime.Now.ToString() + "\n");
@@ -218,7 +215,30 @@ namespace SobekCM.Library.MainWriters
                             subwriter = new Error_HtmlSubwriter(true, RequestSpecificValues);
                         }
                         break;
+                }
 
+                // Might be redirected
+                if (RequestSpecificValues.Current_Mode.Request_Completed)
+                    return;
+
+                // Now, look for error or the web content, which is also often
+                // used for resource missing type errors
+                switch (RequestSpecificValues.Current_Mode.Mode)
+                {
+                    case Display_Mode_Enum.Error:
+                        subwriter = new Error_HtmlSubwriter(false, RequestSpecificValues);
+                        // Send the email now
+                        if (RequestSpecificValues.Current_Mode.Caught_Exception != null)
+                        {
+                            if (String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.Error_Message))
+                                RequestSpecificValues.Current_Mode.Error_Message = "Unknown exception caught";
+                            Email_Information(RequestSpecificValues.Current_Mode.Error_Message, RequestSpecificValues.Current_Mode.Caught_Exception, RequestSpecificValues.Tracer, false);
+                        }
+                        break;
+
+                    case Display_Mode_Enum.Simple_HTML_CMS:
+                        subwriter = new Web_Content_HtmlSubwriter(RequestSpecificValues);
+                        break;
                 }
 
                 // Now, pull the web skin

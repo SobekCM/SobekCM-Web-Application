@@ -140,6 +140,8 @@ namespace SobekCM.Engine_Library.Database
 				Tracer.Add_Trace("Engine_Database.Get_Item_Details", "");
 			}
 
+		    Last_Exception = null;
+
 			try
 			{
 				EalDbParameter[] parameters = new EalDbParameter[2];

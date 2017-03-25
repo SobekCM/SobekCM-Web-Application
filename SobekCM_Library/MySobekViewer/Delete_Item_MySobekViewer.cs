@@ -64,7 +64,8 @@ namespace SobekCM.Library.MySobekViewer
             
             // Try to pull the item
             RequestSpecificValues.Tracer.Add_Trace("Delete_Item_MySobekViewer.Constructor", "Try to pull this brief item");
-            itemToDelete = SobekEngineClient.Items.Get_Item_Brief(RequestSpecificValues.Current_Mode.BibID, RequestSpecificValues.Current_Mode.VID, true, RequestSpecificValues.Tracer);
+            int statusCode;
+            itemToDelete = SobekEngineClient.Items.Get_Item_Brief(RequestSpecificValues.Current_Mode.BibID, RequestSpecificValues.Current_Mode.VID, true, RequestSpecificValues.Tracer, out statusCode);
             if (itemToDelete == null)
             {
                 RequestSpecificValues.Tracer.Add_Trace("Delete_Item_MySobekViewer.Constructor", "Unable to pull brief item from the engine");

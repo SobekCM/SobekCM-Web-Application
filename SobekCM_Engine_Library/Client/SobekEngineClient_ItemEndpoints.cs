@@ -31,9 +31,12 @@ namespace SobekCM.Core.Client
         /// <param name="VID"> Volume identifier (VID) for the digital resource to retrieve </param>
         /// <param name="UseCache"> Flag indicates if the cache should be used to check for a built copy or store the final product </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        /// <param name="StatusCode"> [OUT] Status code from this request ( 200 = success, 404 = not a valid item, 500 = server error, etc. ) </param>
         /// <returns> Fully built brief digital item object </returns>
-        public BriefItemInfo Get_Item_Brief(string BibID, string VID, bool UseCache, Custom_Tracer Tracer)
+        public BriefItemInfo Get_Item_Brief(string BibID, string VID, bool UseCache, Custom_Tracer Tracer, out int StatusCode )
         {
+            StatusCode = 200;
+
             // Add a beginning trace
             Tracer.Add_Trace("SobekEngineClient_ItemEndpoints.Get_Item_Brief", "Get brief item information by bibid/vid");
 
@@ -317,13 +320,13 @@ namespace SobekCM.Core.Client
         public SobekCM_Item Get_Sobek_Item(string BibID, string VID, Custom_Tracer Tracer)
         {
             ItemServices srvcs = new ItemServices();
-            return srvcs.getSobekItem(BibID, VID, Tracer);
+            return srvcs.getSobekItem(BibID, VID, Tracer).Item1;
         }
 
         public SobekCM_Item Get_Sobek_Item(string BibID, string VID, int UserID, Custom_Tracer Tracer)
         {
             ItemServices srvcs = new ItemServices();
-            return srvcs.getSobekItem(BibID, VID, UserID, Tracer);
+            return srvcs.getSobekItem(BibID, VID, UserID, Tracer).Item1;
         }
 
         public SobekCM_Item Get_Sobek_Item_Group(string BibID, Custom_Tracer Tracer)

@@ -198,7 +198,8 @@ namespace SobekCM.Library.MySobekViewer
                     try
                     {
                         // Get a new instance of this item
-                        SobekCM_Item saveItem = SobekCM_Item_Factory.Get_Item(RequestSpecificValues.Current_Mode.BibID, vid, UI_ApplicationCache_Gateway.Icon_List, RequestSpecificValues.Tracer);
+                        Tuple<SobekCM_Item, SobekCM_Item_Error> itemAndError = SobekCM_Item_Factory.Get_Item(RequestSpecificValues.Current_Mode.BibID, vid, UI_ApplicationCache_Gateway.Icon_List, RequestSpecificValues.Tracer);
+                        SobekCM_Item saveItem = itemAndError.Item1;
                         
                         // Clear some values for this item
                         saveItem.VID = String.Empty;

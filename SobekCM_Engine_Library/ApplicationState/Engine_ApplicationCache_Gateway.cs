@@ -46,7 +46,6 @@ namespace SobekCM.Engine_Library.ApplicationState
             error = error | !RefreshTranslations();
             error = error | !RefreshWebSkins();
             error = error | !RefreshCodes();
-            error = error | !RefreshItems();
             error = error | !RefreshStopWords();
             error = error | !RefreshIP_Restrictions();
             error = error | !RefreshThematicHeadings();
@@ -73,7 +72,6 @@ namespace SobekCM.Engine_Library.ApplicationState
             error = error | !RefreshTranslations();
             error = error | !RefreshWebSkins();
             error = error | !RefreshCodes();
-            error = error | !RefreshItems();
             error = error | !RefreshStopWords();
             error = error | !RefreshIP_Restrictions();
             error = error | !RefreshThematicHeadings();
@@ -352,60 +350,6 @@ namespace SobekCM.Engine_Library.ApplicationState
             set
             {
                 codes = value;
-            }
-        }
-
-        #endregion
-
-        #region Properties and methods for the item lookup object
-
-        private static Item_Lookup_Object itemLookup;
-
-        private static readonly Object itemLookupLock = new Object();
-
-        /// <summary> Refresh the item lookup object by pulling the data back from the database </summary>
-        /// <returns> TRUE if successful, otherwise FALSE </returns>
-        public static bool RefreshItems()
-        {
-            try
-            {
-                lock (itemLookupLock)
-                {
-                    if (itemLookup == null)
-                    {
-                        itemLookup = new Item_Lookup_Object();
-                    }
-
-                    Engine_Database.Verify_Item_Lookup_Object(true, true, itemLookup, null);
-                }
-
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
-        }
-
-        /// <summary> Get the item lookup object (or build the object and return it) </summary>
-        public static Item_Lookup_Object Items
-        {
-            get
-            {
-                lock (itemLookupLock)
-                {
-                    if (itemLookup == null)
-                    {
-                        itemLookup = new Item_Lookup_Object();
-                        Engine_Database.Verify_Item_Lookup_Object(false, true, itemLookup, null);
-                    }
-                    
-                    return itemLookup;
-                }
-            }
-            set
-            {
-                itemLookup = value;
             }
         }
 

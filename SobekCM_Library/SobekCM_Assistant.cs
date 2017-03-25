@@ -499,299 +499,298 @@ namespace SobekCM.Library
 
         #region Method to pull the static HTML for an item when a robot requests a single item for view
 
-        /// <summary> Find the static html file to display for an item view request, when requested by a search engine robot for indexing </summary>
-        /// <param name="Current_Mode"> Mode / navigation information for the current request</param>
-        /// <param name="All_Items_Lookup"> Lookup object used to pull basic information about any item loaded into this library </param>
-        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        /// <returns> Location for the static html file to display for this item view request </returns>
-        public string Get_Item_Static_HTML(Navigation_Object Current_Mode, Item_Lookup_Object All_Items_Lookup, Custom_Tracer Tracer)
-        {
-            // Must at least have a bib id of the proper length
-            if (Current_Mode.BibID.Length < 10)
-            {
-                Current_Mode.Invalid_Item = true;
-                return String.Empty;
-            }
+        ///// <summary> Find the static html file to display for an item view request, when requested by a search engine robot for indexing </summary>
+        ///// <param name="Current_Mode"> Mode / navigation information for the current request</param>
+        ///// <param name="All_Items_Lookup"> Lookup object used to pull basic information about any item loaded into this library </param>
+        ///// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        ///// <returns> Location for the static html file to display for this item view request </returns>
+        //public string Get_Item_Static_HTML(Navigation_Object Current_Mode, Item_Lookup_Object All_Items_Lookup, Custom_Tracer Tracer)
+        //{
+        //    // Must at least have a bib id of the proper length
+        //    if (Current_Mode.BibID.Length < 10)
+        //    {
+        //        Current_Mode.Invalid_Item = true;
+        //        return String.Empty;
+        //    }
 
-            // Get the title object for this
-            Multiple_Volume_Item dbTitle = All_Items_Lookup.Title_By_Bib(Current_Mode.BibID);
-            if (dbTitle == null)
-            {
-                Current_Mode.Invalid_Item = true;
-                return String.Empty;
-            }
+        //    // Get the title object for this
+        //    Multiple_Volume_Item dbTitle = All_Items_Lookup.Title_By_Bib(Current_Mode.BibID);
+        //    if (dbTitle == null)
+        //    {
+        //        Current_Mode.Invalid_Item = true;
+        //        return String.Empty;
+        //    }
 
-            // Try to get the very basic information about this item, to determine if the 
-            // bib / vid combination is valid
-            Single_Item selected_item = null;
-            if (Current_Mode.VID.Length > 0)
-            {
-                selected_item = All_Items_Lookup.Item_By_Bib_VID(Current_Mode.BibID, Current_Mode.VID, Tracer);
-            }
-            else
-            {
-                if (dbTitle.Item_Count == 1)
-                {
-                    selected_item = All_Items_Lookup.Item_By_Bib_Only(Current_Mode.BibID);
-                }
-            }
+        //    // Try to get the very basic information about this item, to determine if the 
+        //    // bib / vid combination is valid
+        //    Single_Item selected_item = null;
+        //    if (Current_Mode.VID.Length > 0)
+        //    {
+        //        selected_item = All_Items_Lookup.Item_By_Bib_VID(Current_Mode.BibID, Current_Mode.VID, Tracer);
+        //    }
+        //    else
+        //    {
+        //        if (dbTitle.Item_Count == 1)
+        //        {
+        //            selected_item = All_Items_Lookup.Item_By_Bib_Only(Current_Mode.BibID);
+        //        }
+        //    }
 
-            // If no valid item and not a valid item group display either, return
-            if (selected_item == null)
-            {
-                Current_Mode.Invalid_Item = true;
-                return String.Empty;
-            }
+        //    // If no valid item and not a valid item group display either, return
+        //    if (selected_item == null)
+        //    {
+        //        Current_Mode.Invalid_Item = true;
+        //        return String.Empty;
+        //    }
 
-            // Set the title to the info browse, just to store it somewhere
-            Current_Mode.Info_Browse_Mode = selected_item.Title;
+        //    // Set the title to the info browse, just to store it somewhere
+        //    Current_Mode.Info_Browse_Mode = selected_item.Title;
 
-            // Get the text for this item
-            string bibid = Current_Mode.BibID;
-            string vid = selected_item.VID.PadLeft(5, '0');
-            Current_Mode.VID = vid;
-            string base_image_url = UI_ApplicationCache_Gateway.Settings.Servers.Base_Data_Directory + bibid.Substring(0, 2) + "\\" + bibid.Substring(2, 2) + "\\" + bibid.Substring(4, 2) + "\\" + bibid.Substring(6, 2) + "\\" + bibid.Substring(8, 2) + "\\" + bibid + "_" + vid + ".html";
-            return base_image_url;
-        }
+        //    // Get the text for this item
+        //    string bibid = Current_Mode.BibID;
+        //    string vid = selected_item.VID.PadLeft(5, '0');
+        //    Current_Mode.VID = vid;
+        //    string base_image_url = UI_ApplicationCache_Gateway.Settings.Servers.Base_Data_Directory + bibid.Substring(0, 2) + "\\" + bibid.Substring(2, 2) + "\\" + bibid.Substring(4, 2) + "\\" + bibid.Substring(6, 2) + "\\" + bibid.Substring(8, 2) + "\\" + bibid + "_" + vid + ".html";
+        //    return base_image_url;
+        //}
 
         #endregion
 
         #region Method to pull an item for display (or edit)
 
-        /// <summary> Get a digital resource for display or for editing </summary>
-        /// <param name="Current_Mode"> Mode / navigation information for the current request</param>
-        /// <param name="All_Items_Lookup"> Lookup object used to pull basic information about any item loaded into this library </param>
-        /// <param name="Base_URL"> Base URL for all the digital resource files for items to display </param>
-        /// <param name="Icon_Table"> Dictionary of all the wordmark/icons which can be tagged to the items </param>
-        /// <param name="Current_User"> Currently logged on user information (used when editing an item)</param>
-        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        /// <param name="Current_Item"> [OUT] Built single digital resource ready for displaying or editing </param>
-        /// <param name="Current_Page"> [OUT] Build current page for display </param>
-        /// <param name="Items_In_Title"> [OUT] List of all the items in this title </param>
-        /// <returns> TRUE if successful, otherwise FALSE </returns>
-        /// <remarks> This attempts to pull the objects from the cache.  If unsuccessful, it builds the objects from the
-        /// database and hands off to the <see cref="CachedDataManager" /> to store in the cache.  If the item must be 
-        /// built from scratch, the <see cref="SobekCM_Item_Factory"/> class is utilized. </remarks>
-        public bool Get_Item(Navigation_Object Current_Mode,
-                             Item_Lookup_Object All_Items_Lookup,
-                             string Base_URL, 
-                             Dictionary<string, Wordmark_Icon> Icon_Table,
-							 User_Object Current_User,
-                             Custom_Tracer Tracer, 
-                             out SobekCM_Item Current_Item, 
-                             out Page_TreeNode Current_Page,
-                             out SobekCM_Items_In_Title Items_In_Title )
-        {
-            return Get_Item(String.Empty, Current_Mode, All_Items_Lookup, Base_URL, Icon_Table, Tracer, Current_User, out Current_Item, out Current_Page, out Items_In_Title);
-        }
+        ///// <summary> Get a digital resource for display or for editing </summary>
+        ///// <param name="Current_Mode"> Mode / navigation information for the current request</param>
+        ///// <param name="All_Items_Lookup"> Lookup object used to pull basic information about any item loaded into this library </param>
+        ///// <param name="Base_URL"> Base URL for all the digital resource files for items to display </param>
+        ///// <param name="Icon_Table"> Dictionary of all the wordmark/icons which can be tagged to the items </param>
+        ///// <param name="Current_User"> Currently logged on user information (used when editing an item)</param>
+        ///// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        ///// <param name="Current_Item"> [OUT] Built single digital resource ready for displaying or editing </param>
+        ///// <param name="Current_Page"> [OUT] Build current page for display </param>
+        ///// <param name="Items_In_Title"> [OUT] List of all the items in this title </param>
+        ///// <returns> TRUE if successful, otherwise FALSE </returns>
+        ///// <remarks> This attempts to pull the objects from the cache.  If unsuccessful, it builds the objects from the
+        ///// database and hands off to the <see cref="CachedDataManager" /> to store in the cache.  If the item must be 
+        ///// built from scratch, the <see cref="SobekCM_Item_Factory"/> class is utilized. </remarks>
+        //public bool Get_Item(Navigation_Object Current_Mode,
+        //                     string Base_URL, 
+        //                     Dictionary<string, Wordmark_Icon> Icon_Table,
+        //                     User_Object Current_User,
+        //                     Custom_Tracer Tracer, 
+        //                     out SobekCM_Item Current_Item, 
+        //                     out Page_TreeNode Current_Page,
+        //                     out SobekCM_Items_In_Title Items_In_Title )
+        //{
+        //    return Get_Item(String.Empty, Current_Mode, All_Items_Lookup, Base_URL, Icon_Table, Tracer, Current_User, out Current_Item, out Current_Page, out Items_In_Title);
+        //}
 
-        /// <summary> Get a digital resource for display or for editing </summary>
-        /// <param name="Collection_Code"> Collection code to which this item must belong </param>
-        /// <param name="Current_Mode"> Mode / navigation information for the current request</param>
-        /// <param name="All_Items_Lookup"> Lookup object used to pull basic information about any item loaded into this library </param>
-        /// <param name="Base_URL"> Base URL for all the digital resource files for items to display </param>
-        /// <param name="Icon_Table"> Dictionary of all the wordmark/icons which can be tagged to the items </param>
-        /// <param name="Current_User"> Currently logged on user information (used when editing an item)</param>
-        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        /// <param name="Current_Item"> [OUT] Built single digital resource ready for displaying or editing </param>
-        /// <param name="Current_Page"> [OUT] Build current page for display </param>
-        /// <param name="Items_In_Title"> [OUT] List of all the items in this title </param>
-        /// <returns> TRUE if successful, otherwise FALSE </returns>
-        /// <remarks> This attempts to pull the objects from the cache.  If unsuccessful, it builds the objects from the
-        /// database and hands off to the <see cref="CachedDataManager" /> to store in the cache.  If the item must be 
-        /// built from scratch, the <see cref="SobekCM_Item_Factory"/> class is utilized. </remarks>
-        public bool Get_Item(string Collection_Code, 
-                             Navigation_Object Current_Mode, 
-                             Item_Lookup_Object All_Items_Lookup, 
-                             string Base_URL, 
-                             Dictionary<string, Wordmark_Icon> Icon_Table, 
-							 Custom_Tracer Tracer, 
-                             User_Object Current_User,
-                             out SobekCM_Item Current_Item,
-                             out Page_TreeNode Current_Page,
-                             out SobekCM_Items_In_Title Items_In_Title)
-        {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("SobekCM_Assistant.Get_Item", String.Empty);
-            }
+        ///// <summary> Get a digital resource for display or for editing </summary>
+        ///// <param name="Collection_Code"> Collection code to which this item must belong </param>
+        ///// <param name="Current_Mode"> Mode / navigation information for the current request</param>
+        ///// <param name="All_Items_Lookup"> Lookup object used to pull basic information about any item loaded into this library </param>
+        ///// <param name="Base_URL"> Base URL for all the digital resource files for items to display </param>
+        ///// <param name="Icon_Table"> Dictionary of all the wordmark/icons which can be tagged to the items </param>
+        ///// <param name="Current_User"> Currently logged on user information (used when editing an item)</param>
+        ///// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        ///// <param name="Current_Item"> [OUT] Built single digital resource ready for displaying or editing </param>
+        ///// <param name="Current_Page"> [OUT] Build current page for display </param>
+        ///// <param name="Items_In_Title"> [OUT] List of all the items in this title </param>
+        ///// <returns> TRUE if successful, otherwise FALSE </returns>
+        ///// <remarks> This attempts to pull the objects from the cache.  If unsuccessful, it builds the objects from the
+        ///// database and hands off to the <see cref="CachedDataManager" /> to store in the cache.  If the item must be 
+        ///// built from scratch, the <see cref="SobekCM_Item_Factory"/> class is utilized. </remarks>
+        //public bool Get_Item(string Collection_Code, 
+        //                     Navigation_Object Current_Mode, 
+        //                     Item_Lookup_Object All_Items_Lookup, 
+        //                     string Base_URL, 
+        //                     Dictionary<string, Wordmark_Icon> Icon_Table, 
+        //                     Custom_Tracer Tracer, 
+        //                     User_Object Current_User,
+        //                     out SobekCM_Item Current_Item,
+        //                     out Page_TreeNode Current_Page,
+        //                     out SobekCM_Items_In_Title Items_In_Title)
+        //{
+        //    if (Tracer != null)
+        //    {
+        //        Tracer.Add_Trace("SobekCM_Assistant.Get_Item", String.Empty);
+        //    }
 
-            // Initially assign nulls
-            Current_Item = null;
-            Current_Page = null;
-            Items_In_Title = null;
+        //    // Initially assign nulls
+        //    Current_Item = null;
+        //    Current_Page = null;
+        //    Items_In_Title = null;
 
-            // Check for legacy reference by itemid
-            if ((Current_Mode.BibID.Length == 0) && (Current_Mode.ItemID_DEPRECATED.HasValue))
-            {
-                DataRow thisRowInfo = SobekCM_Database.Lookup_Item_By_ItemID(Current_Mode.ItemID_DEPRECATED.Value, Tracer);
-                if (thisRowInfo == null)
-                {
-                    Current_Mode.Invalid_Item = true;
-                    return false;
-                }
+        //    // Check for legacy reference by itemid
+        //    if ((Current_Mode.BibID.Length == 0) && (Current_Mode.ItemID_DEPRECATED.HasValue))
+        //    {
+        //        DataRow thisRowInfo = SobekCM_Database.Lookup_Item_By_ItemID(Current_Mode.ItemID_DEPRECATED.Value, Tracer);
+        //        if (thisRowInfo == null)
+        //        {
+        //            Current_Mode.Invalid_Item = true;
+        //            return false;
+        //        }
                 
-                Current_Mode.Mode = Display_Mode_Enum.Legacy_URL;
-                Current_Mode.Error_Message = Current_Mode.Base_URL + thisRowInfo["BibID"] + "/" + thisRowInfo["VID"];
-                return false;
-            }
+        //        Current_Mode.Mode = Display_Mode_Enum.Legacy_URL;
+        //        Current_Mode.Error_Message = Current_Mode.Base_URL + thisRowInfo["BibID"] + "/" + thisRowInfo["VID"];
+        //        return false;
+        //    }
 
-            // Must at least have a bib id of the proper length
-            if (Current_Mode.BibID.Length < 10)
-            {
-                Current_Mode.Invalid_Item = true;
-                return false;
-            }
+        //    // Must at least have a bib id of the proper length
+        //    if (Current_Mode.BibID.Length < 10)
+        //    {
+        //        Current_Mode.Invalid_Item = true;
+        //        return false;
+        //    }
 
-            // Get the title object for this
-            bool item_group_display = false;
-            Multiple_Volume_Item dbTitle = All_Items_Lookup.Title_By_Bib(Current_Mode.BibID);
-            if (dbTitle == null) 
-            {
-                Current_Mode.Invalid_Item = true;
-                return false;
-            }
+        //    // Get the title object for this
+        //    bool item_group_display = false;
+        //    Multiple_Volume_Item dbTitle = All_Items_Lookup.Title_By_Bib(Current_Mode.BibID);
+        //    if (dbTitle == null) 
+        //    {
+        //        Current_Mode.Invalid_Item = true;
+        //        return false;
+        //    }
 
-            // Try to get the very basic information about this item, to determine if the 
-            // bib / vid combination is valid
-            Single_Item selected_item = null;
-
-
-            // Certain mySobek modes only need the item group
-            if (( Current_Mode.Mode == Display_Mode_Enum.My_Sobek ) && (( Current_Mode.My_Sobek_Type == My_Sobek_Type_Enum.Edit_Group_Behaviors ) || ( Current_Mode.My_Sobek_Type == My_Sobek_Type_Enum.Edit_Group_Serial_Hierarchy ) || ( Current_Mode.My_Sobek_Type == My_Sobek_Type_Enum.Group_Add_Volume ) || ( Current_Mode.My_Sobek_Type == My_Sobek_Type_Enum.Group_AutoFill_Volumes ) || ( Current_Mode.My_Sobek_Type == My_Sobek_Type_Enum.Group_Mass_Update_Items )))
-            {
-                item_group_display = true;
-            }
-
-            // If this is not a mode that is only item group display, try to pull the item
-            if (!item_group_display)
-            {
-                if (( !String.IsNullOrEmpty(Current_Mode.VID)) && (Current_Mode.VID != "00000"))
-                {
-                    selected_item = All_Items_Lookup.Item_By_Bib_VID(Current_Mode.BibID, Current_Mode.VID, Tracer);
-                }
-                else
-                {
-                    if ((dbTitle.Item_Count == 1) && (( String.IsNullOrEmpty(Current_Mode.VID)) || ( Current_Mode.VID != "00000")))
-                    {
-                        selected_item = All_Items_Lookup.Item_By_Bib_Only(Current_Mode.BibID);
-                    }
-                    else
-                    {
-                        item_group_display = true;
-                    }
-                }
-            }
-
-            // If no valid item and not a valid item group display either, return
-            if ((selected_item == null) && (!item_group_display))
-            {                
-                Current_Mode.Invalid_Item = true;
-                return false;
-            }
-
-            // If this is for a single item, return that
-            if (selected_item != null)
-            {
-                // Make sure the VID is set
-                Current_Mode.VID = selected_item.VID;
-
-                // Try to get this from the cache
-                if ((Current_Mode.Mode == Display_Mode_Enum.My_Sobek) && ( Current_Mode.My_Sobek_Type == My_Sobek_Type_Enum.Edit_Item_Metadata ) && (Current_User != null))
-                    Current_Item = CachedDataManager.Items.Retrieve_Digital_Resource_Object(Current_User.UserID, Current_Mode.BibID, Current_Mode.VID, Tracer);
-                else
-                    Current_Item = CachedDataManager.Items.Retrieve_Digital_Resource_Object( Current_Mode.BibID, Current_Mode.VID, Tracer);
-
-                // If not pulled from the cache, then we will have to build the item
-                if (Current_Item == null)
-                {
-                    if (Tracer != null)
-                    {
-                        Tracer.Add_Trace("SobekCM_Assistant.Get_Item", "Build the item");
-                    }
-
-                    Current_Item = SobekCM_Item_Factory.Get_Item(Current_Mode.BibID, Current_Mode.VID, Icon_Table, Tracer);
-                    if (Current_Item != null)
-                    {
-                        if ((Current_Mode.Mode == Display_Mode_Enum.My_Sobek) && (Current_Mode.My_Sobek_Type == My_Sobek_Type_Enum.Edit_Item_Metadata) && (Current_User != null))
-                        {
-                            string note_to_add = "Online edit by " + Current_User.Full_Name + " ( " + DateTime.Now.ToShortDateString() + " )";
-                            Current_Item.METS_Header.Add_Creator_Individual_Notes( note_to_add );
-                            CachedDataManager.Items.Store_Digital_Resource_Object(Current_User.UserID, Current_Mode.BibID, Current_Mode.VID, Current_Item, Tracer);
-                        }
-                        else
-                            CachedDataManager.Items.Store_Digital_Resource_Object(Current_Mode.BibID, Current_Mode.VID, Current_Item, Tracer);
-                    }
-                }
-                else
-                {
-                    if (Tracer != null)
-                    {
-                        Tracer.Add_Trace("SobekCM_Assistant.Get_Item", "Item found in the cache");
-                    }
-                }
-
-                // If an item was requested and none was found, go to the current home
-                if ((Current_Item == null))
-                {
-                    if (Tracer != null && !Tracer.Enabled)
-                    {
-	                    Current_Mode.Mode = Display_Mode_Enum.Aggregation;
-						Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Home;
-                        return false;
-                    }
-                    return false;
-                }
-
-                // Get the page to display (printing has its own specification of page(s) to display)
-                if (Current_Mode.Mode != Display_Mode_Enum.Item_Print)
-                {
-                    if (Tracer != null)
-                    {
-                        Tracer.Add_Trace("SobekCM_Assistant.Get_Item", "Get the current page");
-                    }
-
-                    // Get the page count in the results
-                    int current_page_index = Current_Mode.Page.HasValue ? Math.Max(Current_Mode.Page.Value, ((ushort)1)) : 1;
-                    Current_Page = SobekCM_Item_Factory.Get_Current_Page(Current_Item, current_page_index, Tracer);
-                }
-            }
-            else
-            {
-	            // Try to get this from the cache
-	            Current_Item = CachedDataManager.Items.Retrieve_Digital_Resource_Object(Current_Mode.BibID, Tracer);
-
-	            // Have to build this item group information then
-	            if (Current_Item == null)
-	            {
-		            string bibID = Current_Mode.BibID;
-                    Current_Item = SobekCM_Item_Factory.Get_Item_Group(bibID, Icon_Table, Tracer);
-		            if (Tracer != null)
-		            {
-			            Tracer.Add_Trace("SobekCM_Assistant.Get_Item", "TEST LOG ENTRY");
-		            }
-
-		            if (Current_Item == null)
-		            {
-			            Exception ee = SobekCM_Database.Last_Exception;
-			            if (Tracer != null)
-				            Tracer.Add_Trace("SobekCM_Assistant.Get_Item", ee != null ? ee.Message : "NO DATABASE EXCEPTION", Custom_Trace_Type_Enum.Error);
-
-			            Current_Mode.Invalid_Item = true;
-			            return false;
-		            }
+        //    // Try to get the very basic information about this item, to determine if the 
+        //    // bib / vid combination is valid
+        //    Single_Item selected_item = null;
 
 
+        //    // Certain mySobek modes only need the item group
+        //    if (( Current_Mode.Mode == Display_Mode_Enum.My_Sobek ) && (( Current_Mode.My_Sobek_Type == My_Sobek_Type_Enum.Edit_Group_Behaviors ) || ( Current_Mode.My_Sobek_Type == My_Sobek_Type_Enum.Edit_Group_Serial_Hierarchy ) || ( Current_Mode.My_Sobek_Type == My_Sobek_Type_Enum.Group_Add_Volume ) || ( Current_Mode.My_Sobek_Type == My_Sobek_Type_Enum.Group_AutoFill_Volumes ) || ( Current_Mode.My_Sobek_Type == My_Sobek_Type_Enum.Group_Mass_Update_Items )))
+        //    {
+        //        item_group_display = true;
+        //    }
 
-		            // Put this back on the cache
-		            Current_Item.METS_Header.RecordStatus_Enum = METS_Record_Status.BIB_LEVEL;
-		            CachedDataManager.Items.Store_Digital_Resource_Object(bibID, Current_Item, Tracer);
-		            CachedDataManager.Items.Store_Items_In_Title(bibID, Items_In_Title, Tracer);
-	            }
-            }
+        //    // If this is not a mode that is only item group display, try to pull the item
+        //    if (!item_group_display)
+        //    {
+        //        if (( !String.IsNullOrEmpty(Current_Mode.VID)) && (Current_Mode.VID != "00000"))
+        //        {
+        //            selected_item = All_Items_Lookup.Item_By_Bib_VID(Current_Mode.BibID, Current_Mode.VID, Tracer);
+        //        }
+        //        else
+        //        {
+        //            if ((dbTitle.Item_Count == 1) && (( String.IsNullOrEmpty(Current_Mode.VID)) || ( Current_Mode.VID != "00000")))
+        //            {
+        //                selected_item = All_Items_Lookup.Item_By_Bib_Only(Current_Mode.BibID);
+        //            }
+        //            else
+        //            {
+        //                item_group_display = true;
+        //            }
+        //        }
+        //    }
 
-	        return true;
-        }
+        //    // If no valid item and not a valid item group display either, return
+        //    if ((selected_item == null) && (!item_group_display))
+        //    {                
+        //        Current_Mode.Invalid_Item = true;
+        //        return false;
+        //    }
+
+        //    // If this is for a single item, return that
+        //    if (selected_item != null)
+        //    {
+        //        // Make sure the VID is set
+        //        Current_Mode.VID = selected_item.VID;
+
+        //        // Try to get this from the cache
+        //        if ((Current_Mode.Mode == Display_Mode_Enum.My_Sobek) && ( Current_Mode.My_Sobek_Type == My_Sobek_Type_Enum.Edit_Item_Metadata ) && (Current_User != null))
+        //            Current_Item = CachedDataManager.Items.Retrieve_Digital_Resource_Object(Current_User.UserID, Current_Mode.BibID, Current_Mode.VID, Tracer);
+        //        else
+        //            Current_Item = CachedDataManager.Items.Retrieve_Digital_Resource_Object( Current_Mode.BibID, Current_Mode.VID, Tracer);
+
+        //        // If not pulled from the cache, then we will have to build the item
+        //        if (Current_Item == null)
+        //        {
+        //            if (Tracer != null)
+        //            {
+        //                Tracer.Add_Trace("SobekCM_Assistant.Get_Item", "Build the item");
+        //            }
+
+        //            Current_Item = SobekCM_Item_Factory.Get_Item(Current_Mode.BibID, Current_Mode.VID, Icon_Table, Tracer);
+        //            if (Current_Item != null)
+        //            {
+        //                if ((Current_Mode.Mode == Display_Mode_Enum.My_Sobek) && (Current_Mode.My_Sobek_Type == My_Sobek_Type_Enum.Edit_Item_Metadata) && (Current_User != null))
+        //                {
+        //                    string note_to_add = "Online edit by " + Current_User.Full_Name + " ( " + DateTime.Now.ToShortDateString() + " )";
+        //                    Current_Item.METS_Header.Add_Creator_Individual_Notes( note_to_add );
+        //                    CachedDataManager.Items.Store_Digital_Resource_Object(Current_User.UserID, Current_Mode.BibID, Current_Mode.VID, Current_Item, Tracer);
+        //                }
+        //                else
+        //                    CachedDataManager.Items.Store_Digital_Resource_Object(Current_Mode.BibID, Current_Mode.VID, Current_Item, Tracer);
+        //            }
+        //        }
+        //        else
+        //        {
+        //            if (Tracer != null)
+        //            {
+        //                Tracer.Add_Trace("SobekCM_Assistant.Get_Item", "Item found in the cache");
+        //            }
+        //        }
+
+        //        // If an item was requested and none was found, go to the current home
+        //        if ((Current_Item == null))
+        //        {
+        //            if (Tracer != null && !Tracer.Enabled)
+        //            {
+        //                Current_Mode.Mode = Display_Mode_Enum.Aggregation;
+        //                Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Home;
+        //                return false;
+        //            }
+        //            return false;
+        //        }
+
+        //        // Get the page to display (printing has its own specification of page(s) to display)
+        //        if (Current_Mode.Mode != Display_Mode_Enum.Item_Print)
+        //        {
+        //            if (Tracer != null)
+        //            {
+        //                Tracer.Add_Trace("SobekCM_Assistant.Get_Item", "Get the current page");
+        //            }
+
+        //            // Get the page count in the results
+        //            int current_page_index = Current_Mode.Page.HasValue ? Math.Max(Current_Mode.Page.Value, ((ushort)1)) : 1;
+        //            Current_Page = SobekCM_Item_Factory.Get_Current_Page(Current_Item, current_page_index, Tracer);
+        //        }
+        //    }
+        //    else
+        //    {
+        //        // Try to get this from the cache
+        //        Current_Item = CachedDataManager.Items.Retrieve_Digital_Resource_Object(Current_Mode.BibID, Tracer);
+
+        //        // Have to build this item group information then
+        //        if (Current_Item == null)
+        //        {
+        //            string bibID = Current_Mode.BibID;
+        //            Current_Item = SobekCM_Item_Factory.Get_Item_Group(bibID, Icon_Table, Tracer);
+        //            if (Tracer != null)
+        //            {
+        //                Tracer.Add_Trace("SobekCM_Assistant.Get_Item", "TEST LOG ENTRY");
+        //            }
+
+        //            if (Current_Item == null)
+        //            {
+        //                Exception ee = SobekCM_Database.Last_Exception;
+        //                if (Tracer != null)
+        //                    Tracer.Add_Trace("SobekCM_Assistant.Get_Item", ee != null ? ee.Message : "NO DATABASE EXCEPTION", Custom_Trace_Type_Enum.Error);
+
+        //                Current_Mode.Invalid_Item = true;
+        //                return false;
+        //            }
+
+
+
+        //            // Put this back on the cache
+        //            Current_Item.METS_Header.RecordStatus_Enum = METS_Record_Status.BIB_LEVEL;
+        //            CachedDataManager.Items.Store_Digital_Resource_Object(bibID, Current_Item, Tracer);
+        //            CachedDataManager.Items.Store_Items_In_Title(bibID, Items_In_Title, Tracer);
+        //        }
+        //    }
+
+        //    return true;
+        //}
 
         #endregion
 
@@ -799,14 +798,12 @@ namespace SobekCM.Library
 
         /// <summary> Performs a search ( or retrieves the search results from the cache ) and outputs the results and search url used  </summary>
         /// <param name="Current_Mode"> Mode / navigation information for the current request</param>
-        /// <param name="All_Items_Lookup"> Lookup object used to pull basic information about any item loaded into this library </param>
         /// <param name="Aggregation_Object"> Object for the current aggregation object, against which this search is performed </param>
         /// <param name="Search_Stop_Words"> List of search stop workds </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         /// <param name="Complete_Result_Set_Info"> [OUT] Information about the entire set of results </param>
         /// <param name="Paged_Results"> [OUT] List of search results for the requested page of results </param>
         public void Get_Search_Results(Navigation_Object Current_Mode,
-                                       Item_Lookup_Object All_Items_Lookup,
                                        Item_Aggregation Aggregation_Object, 
                                        List<string> Search_Stop_Words,
                                        Custom_Tracer Tracer,
@@ -1063,7 +1060,7 @@ namespace SobekCM.Library
                         try
                         {
                             Search_Results_Statistics recomputed_search_statistics;
-                            Perform_Database_Search(Tracer, terms, web_fields, date1, date2, actualCount, Current_Mode, sort, Aggregation_Object, All_Items_Lookup, results_per_page, !special_search_type, out recomputed_search_statistics, out pagesOfResults, need_search_statistics);
+                            Perform_Database_Search(Tracer, terms, web_fields, date1, date2, actualCount, Current_Mode, sort, Aggregation_Object, results_per_page, !special_search_type, out recomputed_search_statistics, out pagesOfResults, need_search_statistics);
                             if (need_search_statistics)
                                 Complete_Result_Set_Info = recomputed_search_statistics;
 
@@ -1239,7 +1236,7 @@ namespace SobekCM.Library
             }
         }
 
-        private void Perform_Database_Search(Custom_Tracer Tracer, List<string> Terms, List<string> Web_Fields, long Date1, long Date2, int ActualCount, Navigation_Object Current_Mode, int Current_Sort, Item_Aggregation Aggregation_Object, Item_Lookup_Object All_Items_Lookup, int Results_Per_Page, bool Potentially_Include_Facets, out Search_Results_Statistics Complete_Result_Set_Info, out List<List<iSearch_Title_Result>> Paged_Results, bool Need_Search_Statistics)
+        private void Perform_Database_Search(Custom_Tracer Tracer, List<string> Terms, List<string> Web_Fields, long Date1, long Date2, int ActualCount, Navigation_Object Current_Mode, int Current_Sort, Item_Aggregation Aggregation_Object, int Results_Per_Page, bool Potentially_Include_Facets, out Search_Results_Statistics Complete_Result_Set_Info, out List<List<iSearch_Title_Result>> Paged_Results, bool Need_Search_Statistics)
         {
             if (Tracer != null)
             {
@@ -1287,8 +1284,6 @@ namespace SobekCM.Library
                     {
                         if (vid.Length == 5)
                         {
-                            if (All_Items_Lookup.Contains_BibID_VID(bibid, vid))
-                            {
                                 string redirect_url = Current_Mode.Base_URL + bibid + "/" + vid;
                                 if ( Current_Mode.Writer_Type == Writer_Type_Enum.HTML_LoggedIn )
                                     redirect_url = Current_Mode.Base_URL + "l/" + bibid + "/" + vid;
@@ -1297,12 +1292,9 @@ namespace SobekCM.Library
                                 Current_Mode.Request_Completed = true;
                                 Paged_Results = null;
                                 return;
-                            }
                         }
                         else
                         {
-                            if (All_Items_Lookup.Contains_BibID(bibid))
-                            {
                                 string redirect_url = Current_Mode.Base_URL + bibid;
                                 if (Current_Mode.Writer_Type == Writer_Type_Enum.HTML_LoggedIn)
                                     redirect_url = Current_Mode.Base_URL + "l/" + bibid;
@@ -1311,7 +1303,6 @@ namespace SobekCM.Library
                                 Current_Mode.Request_Completed = true;
                                 Paged_Results = null;
                                 return;
-                            }
                         }
                     }
                 }

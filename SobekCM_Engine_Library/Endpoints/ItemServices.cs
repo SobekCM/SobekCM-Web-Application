@@ -543,12 +543,8 @@ namespace SobekCM.Engine_Library.Endpoints
 
         public SobekCM_Item getSobekItem(string BibID, string VID, Custom_Tracer Tracer)
         {
-            Tracer.Add_Trace("ItemServices.getSobekItem", "Get the Single_Item object from the Item_Lookup_Object from the cache");
-            Single_Item selected_item = Engine_ApplicationCache_Gateway.Items.Item_By_Bib_VID(BibID, VID, Tracer);
+            Tracer.Add_Trace("ItemServices.getSobekItem", "Try to retrieve the item from the cache");
 
-            // If this is for a single item, return that
-            if (selected_item != null)
-            {
                 // Try to get this from the cache
                 SobekCM_Item currentItem = CachedDataManager.Items.Retrieve_Digital_Resource_Object(BibID, VID, Tracer);
 
@@ -574,21 +570,12 @@ namespace SobekCM.Engine_Library.Endpoints
                 }
 
                 return currentItem;
-            }
-
-            Tracer.Add_Trace("ItemServices.getSobekItem", "Could not locate the object from the Item_Lookup_Object.. may not be a valid bibid/vid combination");
-
-            return null;
         }
 
         public SobekCM_Item getSobekItem(string BibID, string VID, int UserID, Custom_Tracer Tracer)
         {
-            Tracer.Add_Trace("ItemServices.getSobekItem", "Get the Single_Item object from the Item_Lookup_Object from the cache");
-            Single_Item selected_item = Engine_ApplicationCache_Gateway.Items.Item_By_Bib_VID(BibID, VID, Tracer);
+            Tracer.Add_Trace("ItemServices.getSobekItem", "Try to retrieve the item from the cache");
 
-            // If this is for a single item, return that
-            if (selected_item != null)
-            {
                 // Try to get this from the cache
                 SobekCM_Item currentItem = CachedDataManager.Items.Retrieve_Digital_Resource_Object(UserID, BibID, VID, Tracer);
 
@@ -614,11 +601,6 @@ namespace SobekCM.Engine_Library.Endpoints
                 }
 
                 return currentItem;
-            }
-
-            Tracer.Add_Trace("ItemServices.getSobekItem", "Could not locate the object from the Item_Lookup_Object.. may not be a valid bibid/vid combination");
-
-            return null;
         }
 
         private BriefItemInfo GetBriefItem(string BibID, string VID, string MappingSet, Custom_Tracer Tracer)
@@ -706,14 +688,7 @@ namespace SobekCM.Engine_Library.Endpoints
 
         public SobekCM_Item getSobekTitle(string BibID, Custom_Tracer Tracer)
         {
-            Tracer.Add_Trace("ItemServices.getSobekTitle", "Verify this BibID exists in the repository");
-
-            // Is this a valid BibID?
-            if (!Engine_ApplicationCache_Gateway.Items.Contains_BibID(BibID))
-            {
-                Tracer.Add_Trace("ItemServices.getSobekTitle", "ERROR: Invalid BibID indicated!");
-                return null;
-            }
+            Tracer.Add_Trace("ItemServices.getSobekTitle", "Try to get the title from the cache first");
 
             // Try to get this from the cache
             SobekCM_Item currentItem = CachedDataManager.Items.Retrieve_Digital_Resource_Object(BibID, "00000", Tracer);

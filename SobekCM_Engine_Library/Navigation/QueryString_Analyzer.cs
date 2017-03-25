@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Security.Policy;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Web;
 using SobekCM.Core.ApplicationState;
 using SobekCM.Core.Configuration;
@@ -15,6 +16,7 @@ using SobekCM.Core.Navigation;
 using SobekCM.Core.WebContent.Hierarchy;
 using SobekCM.Engine_Library.ApplicationState;
 using SobekCM.Engine_Library.Database;
+using SobekCM.Resource_Object;
 using SobekCM.Tools;
 
 #endregion
@@ -41,7 +43,7 @@ namespace SobekCM.Engine_Library.Navigation
 	    /// <param name="User_Languages"> Languages preferred by user, per their browser settings </param>
 	    /// <param name="Code_Manager"> List of valid collection codes, including mapping from the Sobek collections to Greenstone collections </param>
 	    /// <param name="Aggregation_Aliases"> List of all existing aliases for existing aggregationPermissions</param>
-	    /// <param name="All_Items_Lookup"> [REF] Lookup object used to pull basic information about any item loaded into this library</param>
+        /// <param name="Custom_BibID_RegEx"> Custom regular expression which can be used for BibID checks, rather than the default checks </param>
 	    /// <param name="URL_Portals"> List of all web portals into this system </param>
 	    /// <param name="WebHierarchy"> Hierarchy of all non-aggregational web content pages and redirects </param>
 	    /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
@@ -51,9 +53,9 @@ namespace SobekCM.Engine_Library.Navigation
 			string[] User_Languages,
 			Aggregation_Code_Manager Code_Manager,
 			Dictionary<string, string> Aggregation_Aliases,
-			Item_Lookup_Object All_Items_Lookup,
 			Portal_List URL_Portals,
             WebContent_Hierarchy WebHierarchy,
+            string Custom_BibID_RegEx,
 			Custom_Tracer Tracer )
 		{
 		    if (Tracer != null)
@@ -1061,7 +1063,7 @@ namespace SobekCM.Engine_Library.Navigation
 									// Perform all aggregation_style checks next
 									aggregation_querystring_analyze( Navigator, QueryString, url_relative_list[0], url_relative_list.GetRange(1, url_relative_list.Count - 1 ));
 								}
-								else if (All_Items_Lookup.Contains_BibID(url_relative_list[0].ToUpper()))
+                                else if (is_bibid_format(url_relative_list[0], Custom_BibID_RegEx))
 								{
 									// This is a BibID for an existing title with at least one public item
 									Navigator.BibID = url_relative_list[0].ToUpper();
@@ -1071,10 +1073,25 @@ namespace SobekCM.Engine_Library.Navigation
 									int current_list_index = 1;
 									if (url_relative_list.Count > 1)
 									{
-										string possible_vid = url_relative_list[1].Trim().PadLeft(5, '0');
-										if ((All_Items_Lookup.Contains_BibID_VID(Navigator.BibID, possible_vid)) || ( possible_vid == "00000" ))
+									    string possible_vid = url_relative_list[1].Trim();
+									    bool success = true;
+									    foreach (char thisChar in possible_vid)
+									    {
+									        if (!Char.IsNumber(thisChar))
+									        {
+									            possible_vid = "00000";
+									            success = false;
+									            break;
+									        }
+									    }
+
+									    if (possible_vid.Length == 5)
+									        Navigator.VID = possible_vid;
+									    else
+									        Navigator.VID = possible_vid.PadLeft(5, '0');
+
+										if ( success )
 										{
-											Navigator.VID = possible_vid;
 											current_list_index++;
 										}                                            
 									}
@@ -1228,6 +1245,29 @@ namespace SobekCM.Engine_Library.Navigation
 		}
 
 		#endregion
+
+	    private static bool is_bibid_format(string BibID, string Custom_BibID_RegEx)
+	    {
+	        // Is there a custom BibID regex?
+	        if (!String.IsNullOrEmpty(Custom_BibID_RegEx))
+	        {
+	            try
+	            {
+                    // Instantiate the regular expression object.
+                    Regex r = new Regex(Custom_BibID_RegEx, RegexOptions.IgnoreCase);
+
+                    // Match the regular expression pattern against a text string.
+                    Match m = r.Match(BibID);
+	                return m.Success;
+	            }
+	            catch (Exception)
+	            {
+	                // Do nothing here.. will use the old format
+	            }
+	        }
+
+	        return SobekCM_Item.is_bibid_format(BibID);
+	    }
 
 	    private static string[] copy_remaining_segments_as_array(List<string> url_relative_list, int start_index)
 	    {

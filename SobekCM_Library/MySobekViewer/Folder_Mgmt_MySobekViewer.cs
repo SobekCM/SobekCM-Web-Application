@@ -203,29 +203,29 @@ namespace SobekCM.Library.MySobekViewer
                         }
                     }
 
-                    if ( item_action == "EMAIL" )
-                    {
-                        string comments = form["email_comments"].Trim().Replace(">",")").Replace("<","(");
-                        string email = form["email_address"].Trim();
-                        string format = HttpContext.Current.Request.Form["email_format"].Trim().ToUpper();
+                    //if ( item_action == "EMAIL" )
+                    //{
+                    //    string comments = form["email_comments"].Trim().Replace(">",")").Replace("<","(");
+                    //    string email = form["email_address"].Trim();
+                    //    string format = HttpContext.Current.Request.Form["email_format"].Trim().ToUpper();
 
-                            string[] split = bookshelf_items.Split("_".ToCharArray());
-                            if (split.Length == 2)
-                            {
-                                SobekCM_Assistant newAssistant = new SobekCM_Assistant();
-                                SobekCM_Item newItem;
-                                Page_TreeNode newPage;
-                                SobekCM_Items_In_Title itemsInTitle;
-	                            newAssistant.Get_Item(RequestSpecificValues.Current_Mode, UI_ApplicationCache_Gateway.Items, UI_ApplicationCache_Gateway.Settings.Servers.Image_URL, null, RequestSpecificValues.Current_User, RequestSpecificValues.Tracer, out newItem, out newPage, out itemsInTitle );
-                                SobekCM_Database.Add_Item_To_User_Folder(RequestSpecificValues.Current_User.UserID, add_bookshelf, split[0], split[1], 1, comments, RequestSpecificValues.Tracer);
+                    //        string[] split = bookshelf_items.Split("_".ToCharArray());
+                    //        if (split.Length == 2)
+                    //        {
+                    //            SobekCM_Assistant newAssistant = new SobekCM_Assistant();
+                    //            SobekCM_Item newItem;
+                    //            Page_TreeNode newPage;
+                    //            SobekCM_Items_In_Title itemsInTitle;
+                    //            newAssistant.Get_Item(RequestSpecificValues.Current_Mode, UI_ApplicationCache_Gateway.Items, UI_ApplicationCache_Gateway.Settings.Servers.Image_URL, null, RequestSpecificValues.Current_User, RequestSpecificValues.Tracer, out newItem, out newPage, out itemsInTitle );
+                    //            SobekCM_Database.Add_Item_To_User_Folder(RequestSpecificValues.Current_User.UserID, add_bookshelf, split[0], split[1], 1, comments, RequestSpecificValues.Tracer);
 
-                                // Determine the email format
-                                bool is_html_format = (format != "TEXT");
+                    //            // Determine the email format
+                    //            bool is_html_format = (format != "TEXT");
 
-                                // Send this email
-                              //  Item_Email_Helper.Send_Email(email, String.Empty, comments, RequestSpecificValues.Current_User.Full_Name, RequestSpecificValues.Current_Mode.Instance_Abbreviation, newItem, is_html_format, RequestSpecificValues.Current_Mode.Base_URL + newItem.BibID + "/" + newItem.VID, RequestSpecificValues.Current_User.UserID);
-                            }
-                    }
+                    //            // Send this email
+                    //          //  Item_Email_Helper.Send_Email(email, String.Empty, comments, RequestSpecificValues.Current_User.Full_Name, RequestSpecificValues.Current_Mode.Instance_Abbreviation, newItem, is_html_format, RequestSpecificValues.Current_Mode.Base_URL + newItem.BibID + "/" + newItem.VID, RequestSpecificValues.Current_User.UserID);
+                    //        }
+                    //}
 
                     if ( item_action == "EDIT_NOTES" )
                     {

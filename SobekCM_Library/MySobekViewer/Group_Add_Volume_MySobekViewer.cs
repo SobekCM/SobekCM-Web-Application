@@ -94,16 +94,6 @@ namespace SobekCM.Library.MySobekViewer
                 return;
             }
 
-            // Ensure the item is valid
-            RequestSpecificValues.Tracer.Add_Trace("Group_Add_Volume_MySobekViewer.Constructor", "Validate bibid exists");
-            if (!UI_ApplicationCache_Gateway.Items.Contains_BibID(RequestSpecificValues.Current_Mode.BibID))
-            {
-                RequestSpecificValues.Tracer.Add_Trace("Group_Add_Volume_MySobekViewer.Constructor", "BibID indicated is not valid", Custom_Trace_Type_Enum.Error);
-                RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Error;
-                RequestSpecificValues.Current_Mode.Error_Message = "Invalid Request : BibID indicated is not valid";
-                return;
-            }
-
             RequestSpecificValues.Tracer.Add_Trace("Group_Add_Volume_MySobekViewer.Constructor", "Try to pull this sobek complete item group");
             currentItem = SobekEngineClient.Items.Get_Sobek_Item_Group(RequestSpecificValues.Current_Mode.BibID, RequestSpecificValues.Tracer);
             if (currentItem == null)
@@ -407,9 +397,6 @@ namespace SobekCM.Library.MySobekViewer
             Item_To_Complete.Source_Directory = user_in_process_directory;
             Item_To_Complete.Save_SobekCM_METS();
 
-            // Add this to the cache
-            UI_ApplicationCache_Gateway.Items.Add_SobekCM_Item(Item_To_Complete);
-
             Database.SobekCM_Database.Add_Item_To_User_Folder(RequestSpecificValues.Current_User.UserID, "Submitted Items", Item_To_Complete.BibID, Item_To_Complete.VID, 0, String.Empty, Tracer);
 
             // Save Bib_Level METS?
@@ -460,9 +447,6 @@ namespace SobekCM.Library.MySobekViewer
                 string destination_file = serverNetworkFolder + "\\" + (new FileInfo(thisFile)).Name;
                 File.Copy(thisFile, destination_file, true);
             }
-
-            // Add this to the cache
-            UI_ApplicationCache_Gateway.Items.Add_SobekCM_Item(Item_To_Complete);
 
             // Incrememnt the count of number of items submitted by this user
             RequestSpecificValues.Current_User.Items_Submitted_Count++;

@@ -175,9 +175,6 @@ namespace SobekCM.Engine_Library.Items
                 File.Copy(thisFile, destination_file, true);
             }
 
-            // Add this to the cache
-            Engine_ApplicationCache_Gateway.Items.Add_SobekCM_Item(Item, false);
-
             // Now, delete all the files here
             string[] all_files = Directory.GetFiles(user_bib_vid_process_directory);
             foreach (string thisFile in all_files)

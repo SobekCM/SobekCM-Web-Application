@@ -44,17 +44,6 @@ namespace SobekCM.Library.HTML
                 return;
             }
 
-            // Ensure the item is valid
-            RequestSpecificValues.Tracer.Add_Trace("Print_Item_HtmlSubwriter.Constructor", "Validate bibid/vid exists");
-            if (!UI_ApplicationCache_Gateway.Items.Contains_BibID_VID(RequestSpecificValues.Current_Mode.BibID, RequestSpecificValues.Current_Mode.VID))
-            {
-                RequestSpecificValues.Tracer.Add_Trace("Edit_Item_Behaviors_MySobekViewer.Constructor", "BibID/VID indicated is not valid", Custom_Trace_Type_Enum.Error);
-                RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Error;
-                RequestSpecificValues.Current_Mode.Error_Message = "Invalid Request : BibID/VID indicated is not valid";
-                return;
-            }
-
-
 
             RequestSpecificValues.Tracer.Add_Trace("Print_Item_HtmlSubwriter.Constructor", "Try to pull this brief item");
             currentItem = SobekEngineClient.Items.Get_Item_Brief(RequestSpecificValues.Current_Mode.BibID, RequestSpecificValues.Current_Mode.VID, true, RequestSpecificValues.Tracer);

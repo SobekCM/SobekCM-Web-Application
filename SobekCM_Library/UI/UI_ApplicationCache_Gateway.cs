@@ -154,12 +154,6 @@ namespace SobekCM.Library.UI
             get { return Engine_ApplicationCache_Gateway.Configuration; }
         }
 
-        /// <summary> Get the item lookup object (or build the object and return it) </summary>
-        public static Item_Lookup_Object Items
-        {
-            get { return Engine_ApplicationCache_Gateway.Items; }
-        }
-
 
         private static WebContent_Hierarchy webContentHierarchy;
 

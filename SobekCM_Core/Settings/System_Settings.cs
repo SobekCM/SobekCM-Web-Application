@@ -78,8 +78,6 @@ namespace SobekCM.Core.Settings
         [ProtoMember(9)]
         public List<string> Page_Image_Extensions { get; set; }
 
-        #region Properties and derivative methods about the help page URLs
-
         /// <summary> Base URL for the metadata help </summary>
         [DataMember(Name = "metadataHelpUrlBase", EmitDefaultValue = false)]
         [XmlElement("metadataHelpUrlBase")]
@@ -91,12 +89,6 @@ namespace SobekCM.Core.Settings
         [XmlElement("helpUrlBase")]
         [ProtoMember(11)]
         public string Help_URL_Base { get; set; }
-
-        /// <summary> API Key for the Google Map display features within SobekCM </summary>
-        [DataMember(Name = "googleMapApiKey", EmitDefaultValue = false)]
-        [XmlElement("googleMapApiKey")]
-        [ProtoMember(12)]
-        public string Google_Map_API_Key { get; set; }
 
         /// <summary> Get the URL for all metadata help pages which are used when users request 
         /// help while submitting a new item or editing an existing item </summary>
@@ -115,7 +107,17 @@ namespace SobekCM.Core.Settings
             return String.IsNullOrEmpty(Help_URL_Base) ? Current_Base_URL : Help_URL_Base; 
         }
 
-        #endregion
+        /// <summary> API Key for the Google Map display features within SobekCM </summary>
+        [DataMember(Name = "googleMapApiKey", EmitDefaultValue = false)]
+        [XmlElement("googleMapApiKey")]
+        [ProtoMember(12)]
+        public string Google_Map_API_Key { get; set; }
+
+        /// <summary> Custom regular expression used to check if a string is a valid BibID </summary>
+        [DataMember(Name = "customBibIdRegex", EmitDefaultValue = false)]
+        [XmlElement("customBibIdRegex")]
+        [ProtoMember(13)]
+        public string Custom_BibID_RegEx { get; set; }
 
         /// <summary> Set the default UI language, by passing in a string </summary>
         [XmlIgnore]

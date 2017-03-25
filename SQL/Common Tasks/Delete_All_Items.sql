@@ -18,6 +18,7 @@
 	delete from Tracking_Archive_Item_Link;
 	delete from SobekCM_QC_Errors;
 	delete from SobekCM_QC_Errors_History;
+	delete from SobekCM_Item_Settings;
 	delete from SobekCM_Item;
 
 

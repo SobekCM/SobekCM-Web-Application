@@ -194,7 +194,7 @@ namespace SobekCM
 			    currentMode = new Navigation_Object();
 			    NameValueCollection queryString = request.QueryString;
 
-			    QueryString_Analyzer.Parse_Query(queryString, currentMode, base_url, request.UserLanguages, UI_ApplicationCache_Gateway.Aggregations, UI_ApplicationCache_Gateway.Collection_Aliases, UI_ApplicationCache_Gateway.Items, UI_ApplicationCache_Gateway.URL_Portals, UI_ApplicationCache_Gateway.WebContent_Hierarchy, tracer);
+			    QueryString_Analyzer.Parse_Query(queryString, currentMode, base_url, request.UserLanguages, UI_ApplicationCache_Gateway.Aggregations, UI_ApplicationCache_Gateway.Collection_Aliases, UI_ApplicationCache_Gateway.URL_Portals, UI_ApplicationCache_Gateway.WebContent_Hierarchy, UI_ApplicationCache_Gateway.Settings.System.Custom_BibID_RegEx, tracer);
 
                 currentMode.Base_URL=base_url;
 			    currentMode.isPostBack = isPostBack;
@@ -1136,7 +1136,7 @@ namespace SobekCM
 
 
 				SobekCM_Assistant assistant = new SobekCM_Assistant();
-                assistant.Get_Search_Results(currentMode, UI_ApplicationCache_Gateway.Items, hierarchyObject, UI_ApplicationCache_Gateway.Search_Stop_Words, tracer, out searchResultStatistics, out pagedSearchResults);
+                assistant.Get_Search_Results(currentMode, hierarchyObject, UI_ApplicationCache_Gateway.Search_Stop_Words, tracer, out searchResultStatistics, out pagedSearchResults);
 
 				if ((!currentMode.isPostBack) && (UI_ApplicationCache_Gateway.Search_History != null))
 				{

@@ -113,16 +113,6 @@ namespace SobekCM.Library.MySobekViewer
             bibid = RequestSpecificValues.Current_Mode.BibID;
             vid = RequestSpecificValues.Current_Mode.VID;
 
-            // Ensure the item is valid
-            RequestSpecificValues.Tracer.Add_Trace("Edit_Item_Metadata_MySobekViewer.Constructor", "Validate bibid/vid exists");
-            if (!UI_ApplicationCache_Gateway.Items.Contains_BibID_VID(bibid, vid))
-            {
-                RequestSpecificValues.Tracer.Add_Trace("Edit_Item_Metadata_MySobekViewer.Constructor", "BibID/VID indicated is not valid", Custom_Trace_Type_Enum.Error);
-                RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Error;
-                RequestSpecificValues.Current_Mode.Error_Message = "Invalid Request : BibID/VID indicated is not valid";
-                return;
-            }
-
             // Determine the in process directory for this
             if (RequestSpecificValues.Current_User.ShibbID.Trim().Length > 0)
                 userInProcessDirectory = Path.Combine(UI_ApplicationCache_Gateway.Settings.Servers.In_Process_Submission_Location, RequestSpecificValues.Current_User.ShibbID, "teiedit", bibid + "_" + vid);
@@ -703,9 +693,6 @@ namespace SobekCM.Library.MySobekViewer
                     string destination_file = serverNetworkFolder + "\\" + (new FileInfo(thisFile)).Name;
                     File.Copy(thisFile, destination_file, true);
                 }
-
-                // Add this to the cache
-                UI_ApplicationCache_Gateway.Items.Add_SobekCM_Item(Item_To_Complete);
 
                 // Now, delete all the files here
                 string[] all_files = Directory.GetFiles(userInProcessDirectory);

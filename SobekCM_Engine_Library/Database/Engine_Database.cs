@@ -1231,47 +1231,6 @@ namespace SobekCM.Engine_Library.Database
 			}
 		}
 
-		/// <summary> Verified the item lookup object is filled, or populates the item lookup object with all the valid bibids and vids in the system </summary>
-		/// <param name="AlwaysRefresh"> Flag indicates if this should be refreshed, whether or not the item lookup object is filled </param>
-		/// <param name="IncludePrivate"> Flag indicates whether to include private items in this list </param>
-		/// <param name="ItemLookupObject"> Item lookup object to directly populate from the database </param>
-		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-		/// <returns> TRUE if successful or if the object is already filled, otherwise FALSE </returns>
-		/// <remarks> This calls the 'SobekCM_Item_List_Web' stored procedure </remarks> 
-		internal static bool Verify_Item_Lookup_Object(bool AlwaysRefresh, bool IncludePrivate, Item_Lookup_Object ItemLookupObject, Custom_Tracer Tracer)
-		{
-			if (Tracer != null)
-			{
-				Tracer.Add_Trace("Engine_Database.Verify_Item_Lookup_Object", String.Empty);
-			}
-
-			// If no database string, don't try to connect
-			if (String.IsNullOrEmpty(Connection_String))
-				return false;
-
-			lock (itemListPopulationLock)
-			{
-				bool updateList = true;
-				if (( !AlwaysRefresh ) && ( ItemLookupObject != null))
-				{
-					TimeSpan sinceLastUpdate = DateTime.Now.Subtract(ItemLookupObject.Last_Updated);
-					if (sinceLastUpdate.TotalMinutes <= 1)
-						updateList = false;
-				}
-
-				if (!updateList)
-				{
-					return true;
-				}
-
-				// Have the database popoulate the little bit of bibid/vid information we retain
-				bool returnValue = Populate_Item_Lookup_Object(IncludePrivate, ItemLookupObject, Tracer);
-				if ((returnValue) && ( ItemLookupObject != null ))
-					ItemLookupObject.Last_Updated = DateTime.Now;
-				return returnValue;
-			}
-		}
-
         /// <summary> Gets the item dataset, usually used to populate the item list </summary>
         /// <param name="IncludePrivate"> Flag indicates whether to include private items in this list </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
@@ -1308,77 +1267,6 @@ namespace SobekCM.Engine_Library.Database
                 return null;
             }
         }
-
-		/// <summary> Populates the item lookup object with all the valid bibids and vids in the system </summary>
-		/// <param name="IncludePrivate"> Flag indicates whether to include private items in this list </param>
-		/// <param name="ItemLookupObject"> Item lookup object to directly populate from the database </param>
-		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-		/// <returns> TRUE if successful, otherwise FALSE </returns>
-		/// <remarks> This calls the 'SobekCM_Item_List_Web' stored procedure </remarks> 
-		public static bool Populate_Item_Lookup_Object(bool IncludePrivate, Item_Lookup_Object ItemLookupObject, Custom_Tracer Tracer)
-		{
-			if (Tracer != null)
-			{
-				Tracer.Add_Trace("Engine_Database.Populate_Item_Lookup_Object", String.Empty);
-			}
-
-			try
-			{
-				// Create the parameter list
-				EalDbParameter[] parameters = new EalDbParameter[1];
-				parameters[0] = new EalDbParameter("@include_private", IncludePrivate);
-
-				// Get the data reader (wrapper)
-				EalDbReaderWrapper readerWrapper = EalDbAccess.ExecuteDataReader(DatabaseType, Connection_String + "Connection Timeout=45", CommandType.StoredProcedure, "SobekCM_Item_List", parameters);
-
-				// Pull out the database reader
-				DbDataReader reader = readerWrapper.Reader;
-
-				// Clear existing volumes
-				ItemLookupObject.Clear();
-				ItemLookupObject.Last_Updated = DateTime.Now;
-
-				string currentBibid = String.Empty;
-				Multiple_Volume_Item currentVolume = null;
-				while (reader.Read())
-				{
-					// Grab the values out
-					string newBib = reader.GetString(0);
-					string newVid = reader.GetString(1);
-					short newMask = reader.GetInt16(2);
-					string title = reader.GetString(3);
-
-					// Create a new multiple volume object?
-					if (newBib != currentBibid)
-					{
-						currentBibid = newBib;
-						currentVolume = new Multiple_Volume_Item(newBib);
-						ItemLookupObject.Add_Title(currentVolume);
-					}
-
-					// Add this volume
-					Single_Item newItem = new Single_Item(newVid, newMask, title);
-					if (currentVolume != null) currentVolume.Add_Item(newItem);
-				}
-
-				// Close the reader (which also closes the connection)
-				readerWrapper.Close();
-
-				// Return the first table from the returned dataset
-				return true;
-			}
-			catch (Exception ee)
-			{
-				Last_Exception = ee;
-				if (Tracer != null)
-				{
-					Tracer.Add_Trace("Engine_Database.Populate_Item_Lookup_Object", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
-					Tracer.Add_Trace("Engine_Database.Populate_Item_Lookup_Object", ee.Message, Custom_Trace_Type_Enum.Error);
-					Tracer.Add_Trace("Engine_Database.Populate_Item_Lookup_Object", ee.StackTrace, Custom_Trace_Type_Enum.Error);
-				}
-				return false;
-			}
-		}
 
 		#region Methods to perform database searches
 

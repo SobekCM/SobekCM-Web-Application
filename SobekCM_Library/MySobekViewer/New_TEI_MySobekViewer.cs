@@ -954,9 +954,6 @@ namespace SobekCM.Library.MySobekViewer
                 // Save the rest of the metadata
                 Item_To_Complete.Save_SobekCM_METS();
 
-                // Add this to the cache
-                UI_ApplicationCache_Gateway.Items.Add_SobekCM_Item(Item_To_Complete);
-
                 // Create the options dictionary used when saving information to the database, or writing MarcXML
                 Dictionary<string, object> options = new Dictionary<string, object>();
                 if (UI_ApplicationCache_Gateway.Settings.MarcGeneration != null)
@@ -1008,9 +1005,6 @@ namespace SobekCM.Library.MySobekViewer
                     string destination_file = serverNetworkFolder + "\\" + (new FileInfo(thisFile)).Name;
                     File.Copy(thisFile, destination_file, true);
                 }
-
-                // Add this to the cache
-                UI_ApplicationCache_Gateway.Items.Add_SobekCM_Item(Item_To_Complete);
 
                 // Incrememnt the count of number of items submitted by this RequestSpecificValues.Current_User
                 RequestSpecificValues.Current_User.Items_Submitted_Count++;

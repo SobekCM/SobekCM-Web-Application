@@ -49,7 +49,7 @@ namespace SobekCM.Library.MainWriters
                 case Display_Mode_Enum.Results:
                 case Display_Mode_Enum.Aggregation:
                     if (RequestSpecificValues.Paged_Results != null)
-                        display_search_results(Output, UI_ApplicationCache_Gateway.Items);
+                        display_search_results(Output );
                     break;
                 case Display_Mode_Enum.Item_Display:
                     display_item_info(Output);
@@ -152,7 +152,7 @@ namespace SobekCM.Library.MainWriters
         /// <summary> Writes the search or browse information in JSON format directly to the output stream  </summary>
         /// <param name="Output"> Stream to which to write the JSON search or browse information </param>
         /// <param name="All_Items_Lookup"> Lookup object used to pull basic information about any item loaded into this library </param>
-        protected internal void display_search_results(TextWriter Output, Item_Lookup_Object All_Items_Lookup)
+        protected internal void display_search_results(TextWriter Output )
         {
             // If results are null, or no results, return empty string
             if ((RequestSpecificValues.Paged_Results == null) || (RequestSpecificValues.Results_Statistics == null) || (RequestSpecificValues.Results_Statistics.Total_Items <= 0))

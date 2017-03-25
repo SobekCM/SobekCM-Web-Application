@@ -60,7 +60,6 @@
     <Compile Include="ApplicationState\Checked_Out_Item.cs" />
     <Compile Include="ApplicationState\Checked_Out_Items_List.cs" />
     <Compile Include="ApplicationState\Engine_ApplicationCache_Gateway.cs" />
-    <Compile Include="ApplicationState\Item_Lookup_Object.cs" />
     <Compile Include="Client\SobekEngineClient_AdminEndpoints.cs" />
     <Compile Include="Client\SobekEngineClient.cs" />
     <Compile Include="Client\SobekEngineClient_AggregationEndpoints.cs" />

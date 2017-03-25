@@ -62,16 +62,6 @@ namespace SobekCM.Library.MySobekViewer
                 return;
             }
             
-            // Ensure the item is valid
-            RequestSpecificValues.Tracer.Add_Trace("Delete_Item_MySobekViewer.Constructor", "Validate item exists");
-            if (!UI_ApplicationCache_Gateway.Items.Contains_BibID_VID(RequestSpecificValues.Current_Mode.BibID, RequestSpecificValues.Current_Mode.VID))
-            {
-                RequestSpecificValues.Tracer.Add_Trace("Delete_Item_MySobekViewer.Constructor", "Item indicated is not valid", Custom_Trace_Type_Enum.Error);
-                RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Error;
-                RequestSpecificValues.Current_Mode.Error_Message = "Invalid Request : Item indicated is not valid";
-                return;
-            }
-
             // Try to pull the item
             RequestSpecificValues.Tracer.Add_Trace("Delete_Item_MySobekViewer.Constructor", "Try to pull this brief item");
             itemToDelete = SobekEngineClient.Items.Get_Item_Brief(RequestSpecificValues.Current_Mode.BibID, RequestSpecificValues.Current_Mode.VID, true, RequestSpecificValues.Tracer);
@@ -242,9 +232,6 @@ namespace SobekCM.Library.MySobekViewer
 		                RequestSpecificValues.Tracer.Add_Trace("Delete_Item_MySobekViewer.Constructor", ee.StackTrace, Custom_Trace_Type_Enum.Error);
 		                errorCode = 4;
 		            }
-
-		            // Remove from the item list
-		            UI_ApplicationCache_Gateway.Items.Remove_Item(RequestSpecificValues.Current_Mode.BibID, RequestSpecificValues.Current_Mode.VID);
 
 		            // Also remove from the cache
 		            CachedDataManager.Items.Remove_Digital_Resource_Object(RequestSpecificValues.Current_Mode.BibID, RequestSpecificValues.Current_Mode.VID, RequestSpecificValues.Tracer);

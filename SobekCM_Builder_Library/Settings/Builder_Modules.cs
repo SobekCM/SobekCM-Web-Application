@@ -211,12 +211,12 @@ namespace SobekCM.Builder_Library.Settings
                     string key = folderSetting.Key;
                     iFolderModule thisModule = null;
 
-                    // For testing purposes
-                    if ((folderSetting.Assembly == "WolfsonianBuilderModule.dll") || (folderSetting.Assembly == "WolfsonianBuilderModule"))
-                    {
-                        folderSetting.Assembly = null;
-                        thisModule = new WolfsonianBuilderModule.WolfsonianObjectProcessorModule();
-                    }
+                    //// For testing purposes
+                    //if ((folderSetting.Assembly == "WolfsonianBuilderModule.dll") || (folderSetting.Assembly == "WolfsonianBuilderModule"))
+                    //{
+                    //    folderSetting.Assembly = null;
+                    //    thisModule = new WolfsonianBuilderModule.WolfsonianObjectProcessorModule();
+                    //}
 
                     // Does this already exist?
                     if (!AssemblyClassToModule.ContainsKey(key))

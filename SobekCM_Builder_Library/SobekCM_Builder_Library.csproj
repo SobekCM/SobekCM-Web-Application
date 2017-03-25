@@ -111,10 +111,6 @@
     <Compile Include="Worker_Controller.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\SobekCM-plugin-builder-wolf-sample\Source\WolfsonianBuilderModule\WolfsonianBuilderModule.csproj">
-      <Project>{90833f1b-553d-41b2-bc72-4eb76877cdc5}</Project>
-      <Name>WolfsonianBuilderModule</Name>
-    </ProjectReference>
     <ProjectReference Include="..\EngineAgnosticLayerDbAccess\EngineAgnosticLayerDbAccess.csproj">
       <Project>{b481ce6e-05fd-4336-9524-64d057aab107}</Project>
       <Name>EngineAgnosticLayerDbAccess</Name>

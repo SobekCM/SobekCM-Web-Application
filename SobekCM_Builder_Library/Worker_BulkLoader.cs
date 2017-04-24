@@ -111,6 +111,8 @@ namespace SobekCM.Builder_Library
         public bool Perform_BulkLoader(bool Verbose)
         {
 
+            var maxThreadCount = 0;
+
             // Run the usage stats module first
             //CalculateUsageStatisticsModule statsModule2 = new CalculateUsageStatisticsModule();
             //statsModule2.Process += module_Process;
@@ -246,7 +248,6 @@ namespace SobekCM.Builder_Library
 
                 foreach (Builder_Source_Folder folder in builderSettings.IncomingFolders)
                 {
-                    var maxThreadCount = 0;
                     if (maxThreadCount > 0)
                     {
                         var currentThreadCount = 0;
@@ -382,7 +383,71 @@ namespace SobekCM.Builder_Library
 
             // Iterate through all non-delete resources ready for processing
             Add_NonError_To_Log("Process any incoming packages", verbose, String.Empty, String.Empty, -1);
-            Process_All_Incoming_Packages(incoming_packages);
+            if (maxThreadCount <= 0) {
+                Process_All_Incoming_Packages(incoming_packages);
+            }
+            else
+            {
+                var currentWorkerCount = 0;
+                var currentWorkerCountLock = new object();
+                var numberProcessed = 0;
+                var numberProcessedLock = new object();
+
+                Add_NonError_To_Log("....Processing incoming packages", "Standard", String.Empty, String.Empty, -1);
+                incoming_packages.Sort();
+                foreach ( Incoming_Digital_Resource package in incoming_packages)
+                {
+                    if (CheckForAbort())
+                    {
+                        Abort_Database_Mechanism.Builder_Operation_Flag = Builder_Operation_Flag_Enum.ABORTING;
+                        break;
+                    }
+                    //Wait for a new thread slot to open up
+                    while (currentWorkerCount >= maxThreadCount)
+                    {
+                        Thread.Sleep(1000);
+                    }
+                    lock (numberProcessedLock)
+                    {
+                        numberProcessed++;
+                    }
+                    lock (currentWorkerCountLock)
+                    {
+                        currentWorkerCount++;
+                    }
+                    //Assign the work to be done
+                    new Thread(delegate ()
+                    {
+                        try {
+                            Process_Single_Incoming_Package(package);
+                        }
+                        catch(Exception ee)
+                        {
+
+                            StreamWriter errorWriter = new StreamWriter(logFileDirectory + "\\error.log", true);
+                            errorWriter.WriteLine("Message: " + ee.Message);
+                            errorWriter.WriteLine("Stack Trace: " + ee.StackTrace);
+                            errorWriter.Flush();
+                            errorWriter.Close();
+
+                            Add_Error_To_Log("Unable to process all of the NEW and REPLACEMENT packages.", String.Empty, String.Empty, -1, ee);
+                        }
+                        lock (currentWorkerCountLock)
+                        {
+                            currentWorkerCount--;
+                        }
+                    });
+                    if (newItemLimit > 0 && newItemLimit <= numberProcessed)
+                    {
+                        break;
+                    }
+                }
+                while(currentWorkerCount > 0)
+                {
+                    Thread.Sleep(1000);
+                }
+            }
+            
 
             // Can now release these resources
             foreach (iSubmissionPackageModule thisModule in builderModules.ItemProcessModules)

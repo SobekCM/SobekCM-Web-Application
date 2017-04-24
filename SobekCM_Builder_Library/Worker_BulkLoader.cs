@@ -24,6 +24,7 @@ using SobekCM.Resource_Object.Configuration;
 using SobekCM.Tools;
 using SobekCM.Tools.Logs;
 using SobekCM_Resource_Database;
+using System.Threading;
 
 #endregion
 
@@ -42,16 +43,16 @@ namespace SobekCM.Builder_Library
         private readonly LogFileXhtml logger;
         private readonly string logFileDirectory;
         private readonly string pluginRootDirectory;
-        
+
         private bool aborted;
         private bool verbose;
         private bool refreshed;
         private bool firstrun;
-        
-	    private readonly bool multiInstanceBuilder;
 
-	    private string finalmessage;
-        
+        private readonly bool multiInstanceBuilder;
+
+        private string finalmessage;
+
         private readonly List<string> aggregationsToRefresh;
         private readonly List<BibVidStruct> processedItems;
         private readonly List<BibVidStruct> deletedItems;
@@ -70,29 +71,29 @@ namespace SobekCM.Builder_Library
         /// <param name="InstanceInfo"> Information for the instance of SobekCM to be processed by this bulk loader </param>
         /// <param name="LogFileDirectory"> Directory where any log files would be written </param>
         /// <param name="PluginRootDirectory"> Root directory where all the plug-ins are stored locally for the builder </param>
-        public Worker_BulkLoader(LogFileXhtml Logger, Single_Instance_Configuration InstanceInfo, bool Verbose, string LogFileDirectory, string PluginRootDirectory )
+        public Worker_BulkLoader(LogFileXhtml Logger, Single_Instance_Configuration InstanceInfo, bool Verbose, string LogFileDirectory, string PluginRootDirectory)
         {
             // Save the log file and verbose flag
             logger = Logger;
             verbose = Verbose;
-	        multiInstanceBuilder = ( MultiInstance_Builder_Settings.Instances.Count > 1);
+            multiInstanceBuilder = (MultiInstance_Builder_Settings.Instances.Count > 1);
             logFileDirectory = LogFileDirectory;
             pluginRootDirectory = PluginRootDirectory;
             instanceInfo = InstanceInfo;
 
             // If this is processing multiple instances, limit the numbe of packages that should be processed
             // before allowing the builder to move to the next instance and poll
-	        if (multiInstanceBuilder)
-	            newItemLimit = 100;
-	        else
-	            newItemLimit = -1;
- 
+            if (multiInstanceBuilder)
+                newItemLimit = 100;
+            else
+                newItemLimit = -1;
+
             Add_NonError_To_Log("Worker_BulkLoader.Constructor: Start", verbose, String.Empty, String.Empty, -1);
 
             // Create new list of collections to build
             aggregationsToRefresh = new List<string>();
-	        processedItems = new List<BibVidStruct>();
-	        deletedItems = new List<BibVidStruct>();
+            processedItems = new List<BibVidStruct>();
+            deletedItems = new List<BibVidStruct>();
 
             // Set some defaults
             aborted = false;
@@ -107,7 +108,7 @@ namespace SobekCM.Builder_Library
 
         /// <summary> Performs the bulk loader process and handles any incoming digital resources </summary>
         /// <returns> TRUE if there are still pending items to be processed, otherwise FALSE </returns>
-        public bool Perform_BulkLoader( bool Verbose )
+        public bool Perform_BulkLoader(bool Verbose)
         {
 
             // Run the usage stats module first
@@ -140,17 +141,17 @@ namespace SobekCM.Builder_Library
             Add_NonError_To_Log("Refreshed settings and item list", verbose, String.Empty, String.Empty, -1);
 
             // Check for abort
-            if (CheckForAbort()) 
+            if (CheckForAbort())
             {
                 Add_NonError_To_Log("Aborted (Worker_BulkLoader line 137)", verbose, String.Empty, String.Empty, -1);
                 finalmessage = "Aborted per database request";
                 ReportLastRun();
-                return false; 
+                return false;
             }
 
 
-	        // Set to standard operation then
-			Abort_Database_Mechanism.Builder_Operation_Flag = Builder_Operation_Flag_Enum.STANDARD_OPERATION;
+            // Set to standard operation then
+            Abort_Database_Mechanism.Builder_Operation_Flag = Builder_Operation_Flag_Enum.STANDARD_OPERATION;
 
             // Run some processes the first time it runs
             // These will be converted to scheduled tasks by version 5.0
@@ -245,29 +246,118 @@ namespace SobekCM.Builder_Library
 
                 foreach (Builder_Source_Folder folder in builderSettings.IncomingFolders)
                 {
-                    Actionable_Builder_Source_Folder actionFolder = new Actionable_Builder_Source_Folder(folder, builderModules.AssemblyClassToModule);
-
-                    foreach (iFolderModule thisModule in actionFolder.BuilderModules)
+                    var maxThreadCount = 0;
+                    if (maxThreadCount > 0)
                     {
-                        // Check for abort
-                        if (CheckForAbort())
+                        var currentThreadCount = 0;
+                        var currentThreadCountLock = new object();
+                        var allFinished = false;
+                        Actionable_Builder_Source_Folder actionFolder = new Actionable_Builder_Source_Folder(folder, builderModules.AssemblyClassToModule);
+
+                        foreach (iFolderModule thisModule in actionFolder.BuilderModules)
                         {
-                            Add_NonError_To_Log("Aborted (Worker_BulkLoader line 151)", verbose, String.Empty, String.Empty, -1);
-                            finalmessage = "Aborted per database request";
-                            ReleaseResources();
-                            ReportLastRun();
-                            return false;
+                            //Before we spawn an event, make sure we weren't asked to stop
+                            if (CheckForAbort())
+                            {
+                                allFinished = false;
+                                while (!allFinished)
+                                {
+                                    lock (currentThreadCountLock)
+                                    {
+                                        allFinished = currentThreadCount <= 0;
+                                    }
+                                    System.Threading.Thread.Sleep(1000);
+                                }
+                                Add_NonError_To_Log("Aborted (Worker_BulkLoader line 151)", verbose, String.Empty, String.Empty, -1);
+                                finalmessage = "Aborted per database request";
+                                ReleaseResources();
+                                ReportLastRun();
+                                return false;
+                            }
+
+                            lock (currentThreadCountLock)
+                            {
+                                currentThreadCount++;
+                            }
+                            new Thread(delegate ()
+                            {
+                                try
+                                {
+                                    thisModule.DoWork(actionFolder, incoming_packages, deletes);
+                                }
+                                catch (Exception ex)
+                                {
+
+                                }
+                                finally
+                                {
+                                    lock (currentThreadCountLock)
+                                    {
+                                        currentThreadCount--;
+                                    }
+                                }
+                            }).Start();
+
+                            var canStartNewTask = false;
+                            while (!canStartNewTask)
+                            {
+                                System.Threading.Thread.Sleep(1000);
+                                lock (currentThreadCountLock)
+                                {
+                                    canStartNewTask = currentThreadCount >= maxThreadCount;
+
+                                }
+                            }
+                            // Check for abort
+                            if (CheckForAbort())
+                            {
+                                Add_NonError_To_Log("Aborted (Worker_BulkLoader line 151)", verbose, String.Empty, String.Empty, -1);
+                                finalmessage = "Aborted per database request";
+                                ReleaseResources();
+                                ReportLastRun();
+                                return false;
+                            }
                         }
 
-                        thisModule.DoWork(actionFolder, incoming_packages, deletes);
+                        //Check if we were aborted by any of the remaining threads
+                        var allThreadsFinished = false;
+                        while (!allThreadsFinished)
+                        {
+                            System.Threading.Thread.Sleep(1000);
+                            lock (currentThreadCountLock)
+                            {
+                                allThreadsFinished = currentThreadCount <= 0;
+                            }
+                        }
+
                     }
+                    else
+                    {
+                        Actionable_Builder_Source_Folder actionFolder = new Actionable_Builder_Source_Folder(folder, builderModules.AssemblyClassToModule);
+
+                        foreach (iFolderModule thisModule in actionFolder.BuilderModules)
+                        {
+                            // Check for abort
+                            if (CheckForAbort())
+                            {
+                                Add_NonError_To_Log("Aborted (Worker_BulkLoader line 151)", verbose, String.Empty, String.Empty, -1);
+                                finalmessage = "Aborted per database request";
+                                ReleaseResources();
+                                ReportLastRun();
+                                return false;
+                            }
+
+                            thisModule.DoWork(actionFolder, incoming_packages, deletes);
+                        }
+                    }
+
                 }
 
                 // Since all folder processing is complete, release resources
                 foreach (iFolderModule thisModule in builderModules.AllFolderModules)
                     thisModule.ReleaseResources();
             }
-            
+
 
             // Check for abort
             if (CheckForAbort())
@@ -282,7 +372,7 @@ namespace SobekCM.Builder_Library
             // If there were no packages to process further stop here
             if ((incoming_packages.Count == 0) && (deletes.Count == 0))
             {
-	            Add_Complete_To_Log("No New Packages - Process Complete", "No Work", String.Empty, String.Empty, -1);
+                Add_Complete_To_Log("No New Packages - Process Complete", "No Work", String.Empty, String.Empty, -1);
                 if (finalmessage.Length == 0)
                     finalmessage = "No New Packages - Process Complete";
                 ReleaseResources();
@@ -391,12 +481,12 @@ namespace SobekCM.Builder_Library
 
         #region Refresh any settings and item lists and clear the item list
 
-		/// <summary> Refresh the settings and item list from the database </summary>
-		/// <returns> TRUE if successful, otherwise FALSE </returns>
+        /// <summary> Refresh the settings and item list from the database </summary>
+        /// <returns> TRUE if successful, otherwise FALSE </returns>
         public bool Refresh_Settings_And_Item_List()
         {
             // Create the tracer for this
-		    Custom_Tracer tracer = new Custom_Tracer();
+            Custom_Tracer tracer = new Custom_Tracer();
 
             // Disable the cache
             CachedDataManager.Settings.Disabled = true;
@@ -407,42 +497,42 @@ namespace SobekCM.Builder_Library
 
             // Get the settings values directly from the database
             settings = InstanceWide_Settings_Builder.Build_Settings(instanceInfo.DatabaseConnection);
-		    if (settings == null)
-		    {
-	            Add_Error_To_Log("Unable to pull the newest settings from the database", String.Empty, String.Empty, -1);
+            if (settings == null)
+            {
+                Add_Error_To_Log("Unable to pull the newest settings from the database", String.Empty, String.Empty, -1);
                 return false;
-		    }
+            }
 
             // If this was not refreshed yet, ensure [BASEURL] is replaced
-		    if (!refreshed)
-		    {
+            if (!refreshed)
+            {
                 // Determine the base url
                 string baseUrl = String.IsNullOrWhiteSpace(settings.Servers.Base_URL) ? settings.Servers.Application_Server_URL : settings.Servers.Base_URL;
-		        List<MicroservicesClient_Endpoint> endpoints = instanceInfo.Microservices.Endpoints;
-		        foreach (MicroservicesClient_Endpoint thisEndpoint in endpoints)
-		        {
-		            if (thisEndpoint.URL.IndexOf("[BASEURL]") > 0)
+                List<MicroservicesClient_Endpoint> endpoints = instanceInfo.Microservices.Endpoints;
+                foreach (MicroservicesClient_Endpoint thisEndpoint in endpoints)
+                {
+                    if (thisEndpoint.URL.IndexOf("[BASEURL]") > 0)
                         thisEndpoint.URL = thisEndpoint.URL.Replace("[BASEURL]", baseUrl).Replace("//", "/").Replace("http:/", "http://").Replace("https:/", "https://");
-                    else if (( thisEndpoint.URL.IndexOf("http:/") < 0 ) && ( thisEndpoint.URL.IndexOf("https:/") < 0 ))
-                        thisEndpoint.URL = ( baseUrl + thisEndpoint.URL).Replace("//", "/").Replace("http:/", "http://").Replace("https:/", "https://");
-		        }
+                    else if ((thisEndpoint.URL.IndexOf("http:/") < 0) && (thisEndpoint.URL.IndexOf("https:/") < 0))
+                        thisEndpoint.URL = (baseUrl + thisEndpoint.URL).Replace("//", "/").Replace("http:/", "http://").Replace("https:/", "https://");
+                }
                 refreshed = true;
-		    }
+            }
 
             // Set the microservice endpoints
-		    SobekEngineClient.Set_Endpoints(instanceInfo.Microservices);
+            SobekEngineClient.Set_Endpoints(instanceInfo.Microservices);
 
             // Load the necessary configuration objects into the engine application cache gateway
-		    try
-		    {
-		        Engine_ApplicationCache_Gateway.Configuration.OAI_PMH = SobekEngineClient.Admin.Get_OAI_PMH_Configuration(tracer);
-		    }
-		    catch (Exception ee)
-		    {
+            try
+            {
+                Engine_ApplicationCache_Gateway.Configuration.OAI_PMH = SobekEngineClient.Admin.Get_OAI_PMH_Configuration(tracer);
+            }
+            catch (Exception ee)
+            {
                 Add_Error_To_Log("Unable to pull the OAI-PMH settings from the engine", String.Empty, String.Empty, -1);
                 Add_Error_To_Log(ee.Message, String.Empty, String.Empty, -1);
                 return false;
-		    }
+            }
 
             try
             {
@@ -468,102 +558,102 @@ namespace SobekCM.Builder_Library
 
 
             // Check for any enabled extensions with assemblies
-		    ResourceObjectSettings.Clear_Assemblies();
-		    try
-		    {
-		        if ((Engine_ApplicationCache_Gateway.Configuration.Extensions.Extensions != null) && (Engine_ApplicationCache_Gateway.Configuration.Extensions.Extensions.Count > 0))
-		        {
-		            // Step through each extension
-		            foreach (ExtensionInfo extensionInfo in Engine_ApplicationCache_Gateway.Configuration.Extensions.Extensions)
-		            {
-		                // If not enabled, skip it
-		                if (!extensionInfo.Enabled) continue;
+            ResourceObjectSettings.Clear_Assemblies();
+            try
+            {
+                if ((Engine_ApplicationCache_Gateway.Configuration.Extensions.Extensions != null) && (Engine_ApplicationCache_Gateway.Configuration.Extensions.Extensions.Count > 0))
+                {
+                    // Step through each extension
+                    foreach (ExtensionInfo extensionInfo in Engine_ApplicationCache_Gateway.Configuration.Extensions.Extensions)
+                    {
+                        // If not enabled, skip it
+                        if (!extensionInfo.Enabled) continue;
 
-		                // Look for assemblies
-		                if ((extensionInfo.Assemblies != null) && (extensionInfo.Assemblies.Count > 0))
-		                {
-		                    // Step through each assembly
-		                    foreach (ExtensionAssembly assembly in extensionInfo.Assemblies)
-		                    {
-		                        // Find the relative file name
-		                        if (assembly.FilePath.IndexOf("plugins", StringComparison.OrdinalIgnoreCase) > 0)
-		                        {
-		                            // Determine the network way to get there
-		                            string from_plugins = assembly.FilePath.Substring(assembly.FilePath.IndexOf("plugins", StringComparison.OrdinalIgnoreCase));
-		                            string network_plugin_file = Path.Combine(settings.Servers.Application_Server_Network, from_plugins);
+                        // Look for assemblies
+                        if ((extensionInfo.Assemblies != null) && (extensionInfo.Assemblies.Count > 0))
+                        {
+                            // Step through each assembly
+                            foreach (ExtensionAssembly assembly in extensionInfo.Assemblies)
+                            {
+                                // Find the relative file name
+                                if (assembly.FilePath.IndexOf("plugins", StringComparison.OrdinalIgnoreCase) > 0)
+                                {
+                                    // Determine the network way to get there
+                                    string from_plugins = assembly.FilePath.Substring(assembly.FilePath.IndexOf("plugins", StringComparison.OrdinalIgnoreCase));
+                                    string network_plugin_file = Path.Combine(settings.Servers.Application_Server_Network, from_plugins);
 
-		                            // Get the plugin filename
-		                            string plugin_filename = Path.GetFileName(assembly.FilePath);
+                                    // Get the plugin filename
+                                    string plugin_filename = Path.GetFileName(assembly.FilePath);
 
-		                            // Does this local plugin directory exist for this extension?
-		                            string local_path = Path.Combine(pluginRootDirectory, instanceInfo.Name, extensionInfo.Code);
-		                            if (!Directory.Exists(local_path))
-		                            {
-		                                try
-		                                {
-		                                    Directory.CreateDirectory(local_path);
-		                                }
-		                                catch (Exception ee)
-		                                {
-		                                    Add_Error_To_Log("Error creating the necessary plug-in subdirectory", String.Empty, String.Empty, -1);
-		                                    Add_Error_To_Log(ee.Message, String.Empty, String.Empty, -1);
-		                                    return false;
-		                                }
-		                            }
+                                    // Does this local plugin directory exist for this extension?
+                                    string local_path = Path.Combine(pluginRootDirectory, instanceInfo.Name, extensionInfo.Code);
+                                    if (!Directory.Exists(local_path))
+                                    {
+                                        try
+                                        {
+                                            Directory.CreateDirectory(local_path);
+                                        }
+                                        catch (Exception ee)
+                                        {
+                                            Add_Error_To_Log("Error creating the necessary plug-in subdirectory", String.Empty, String.Empty, -1);
+                                            Add_Error_To_Log(ee.Message, String.Empty, String.Empty, -1);
+                                            return false;
+                                        }
+                                    }
 
-		                            // Determine if the assembly is here
-		                            string local_file = Path.Combine(local_path, plugin_filename);
-		                            if (!File.Exists(local_file))
-		                            {
-		                                File.Copy(network_plugin_file, local_file);
-		                            }
-		                            else
-		                            {
-		                                // Do a date check
-		                                DateTime webFileDate = File.GetLastWriteTime(network_plugin_file);
-		                                DateTime localFileDate = File.GetLastWriteTime(local_file);
+                                    // Determine if the assembly is here
+                                    string local_file = Path.Combine(local_path, plugin_filename);
+                                    if (!File.Exists(local_file))
+                                    {
+                                        File.Copy(network_plugin_file, local_file);
+                                    }
+                                    else
+                                    {
+                                        // Do a date check
+                                        DateTime webFileDate = File.GetLastWriteTime(network_plugin_file);
+                                        DateTime localFileDate = File.GetLastWriteTime(local_file);
 
-		                                if (webFileDate.CompareTo(localFileDate) > 0)
-		                                {
-		                                    File.Copy(network_plugin_file, local_file, true);
-		                                }
-		                            }
+                                        if (webFileDate.CompareTo(localFileDate) > 0)
+                                        {
+                                            File.Copy(network_plugin_file, local_file, true);
+                                        }
+                                    }
 
-		                            // Also, point the assembly to use the local file
-		                            assembly.FilePath = local_file;
-		                        }
-		                    }
-		                }
-		            }
+                                    // Also, point the assembly to use the local file
+                                    assembly.FilePath = local_file;
+                                }
+                            }
+                        }
+                    }
 
-		            // Now, also set this all in the metadata portion
-		            // Copy over all the extension information
-		            foreach (ExtensionInfo thisExtension in Engine_ApplicationCache_Gateway.Configuration.Extensions.Extensions)
-		            {
-		                if ((thisExtension.Enabled) && (thisExtension.Assemblies != null))
-		                {
-		                    foreach (ExtensionAssembly thisAssembly in thisExtension.Assemblies)
-		                    {
-		                        ResourceObjectSettings.Add_Assembly(thisAssembly.ID, thisAssembly.FilePath);
-		                    }
-		                }
-		            }
-		        }
-		    }
-		    catch (Exception ee)
-		    {
-		        Add_Error_To_Log("Unable to copy the extension files from the web", String.Empty, String.Empty, -1);
-		        Add_Error_To_Log(ee.Message, String.Empty, String.Empty, -1);
-		        return false;
-		    }
-            
+                    // Now, also set this all in the metadata portion
+                    // Copy over all the extension information
+                    foreach (ExtensionInfo thisExtension in Engine_ApplicationCache_Gateway.Configuration.Extensions.Extensions)
+                    {
+                        if ((thisExtension.Enabled) && (thisExtension.Assemblies != null))
+                        {
+                            foreach (ExtensionAssembly thisAssembly in thisExtension.Assemblies)
+                            {
+                                ResourceObjectSettings.Add_Assembly(thisAssembly.ID, thisAssembly.FilePath);
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ee)
+            {
+                Add_Error_To_Log("Unable to copy the extension files from the web", String.Empty, String.Empty, -1);
+                Add_Error_To_Log(ee.Message, String.Empty, String.Empty, -1);
+                return false;
+            }
+
             // Finalize the metadata config
             Engine_ApplicationCache_Gateway.Configuration.Metadata.Finalize_Metadata_Configuration();
 
             // Set the metadata preferences for writing
             ResourceObjectSettings.MetadataConfig = Engine_ApplicationCache_Gateway.Configuration.Metadata;
 
-		    // Also, load the builder configuration this way
+            // Also, load the builder configuration this way
             try
             {
                 builderSettings = SobekEngineClient.Builder.Get_Builder_Settings(false, tracer);
@@ -577,10 +667,10 @@ namespace SobekCM.Builder_Library
 
 
             // Build the modules
-		    builderModules = new Builder_Modules(builderSettings);
+            builderModules = new Builder_Modules(builderSettings);
             List<string> errors = builderModules.Builder_Modules_From_Settings(instanceInfo.Name);
 
-            if (( errors != null ) && ( errors.Count > 0 ))
+            if ((errors != null) && (errors.Count > 0))
             {
                 long logId = Add_Error_To_Log("Error(s) builder the modules from the settings", String.Empty, String.Empty, -1);
                 foreach (string thisError in errors)
@@ -630,7 +720,7 @@ namespace SobekCM.Builder_Library
             DataTable additionalWorkRequired = Engine_Database.Items_Needing_Aditional_Work;
             if ((additionalWorkRequired != null) && (additionalWorkRequired.Rows.Count > 0))
             {
-	            Add_NonError_To_Log("Processing recently loaded items needing additional work", "Standard", String.Empty, String.Empty, -1);
+                Add_NonError_To_Log("Processing recently loaded items needing additional work", "Standard", String.Empty, String.Empty, -1);
 
                 // Create the incoming digital folder object which will be used for all these
                 Actionable_Builder_Source_Folder sourceFolder = new Actionable_Builder_Source_Folder();
@@ -642,7 +732,7 @@ namespace SobekCM.Builder_Library
                     string bibID = thisRow["BibID"].ToString();
                     string vid = thisRow["VID"].ToString();
 
-	                // Determine the file root for this
+                    // Determine the file root for this
                     string file_root = bibID.Substring(0, 2) + "\\" + bibID.Substring(2, 2) + "\\" + bibID.Substring(4, 2) + "\\" + bibID.Substring(6, 2) + "\\" + bibID.Substring(8, 2);
 
                     // Determine the source folder for this resource
@@ -655,14 +745,14 @@ namespace SobekCM.Builder_Library
                     if ((Directory.Exists(resource_folder)) && (File.Exists(mets_file)))
                     {
                         // Create the incoming digital resource object
-                        Incoming_Digital_Resource additionalWorkResource = new Incoming_Digital_Resource(resource_folder, sourceFolder) 
-							{BibID = bibID, VID = vid, File_Root = bibID.Substring(0, 2) + "\\" + bibID.Substring(2, 2) + "\\" + bibID.Substring(4, 2) + "\\" + bibID.Substring(6, 2) + "\\" + bibID.Substring(8, 2)};
+                        Incoming_Digital_Resource additionalWorkResource = new Incoming_Digital_Resource(resource_folder, sourceFolder)
+                        { BibID = bibID, VID = vid, File_Root = bibID.Substring(0, 2) + "\\" + bibID.Substring(2, 2) + "\\" + bibID.Substring(4, 2) + "\\" + bibID.Substring(6, 2) + "\\" + bibID.Substring(8, 2) };
 
-	                    Complete_Single_Recent_Load_Requiring_Additional_Work( additionalWorkResource);
+                        Complete_Single_Recent_Load_Requiring_Additional_Work(additionalWorkResource);
                     }
                     else
                     {
-	                    Add_Error_To_Log("Unable to find valid resource files for reprocessing " + bibID + ":" + vid, bibID + ":" + vid, "Reprocess", -1);
+                        Add_Error_To_Log("Unable to find valid resource files for reprocessing " + bibID + ":" + vid, bibID + ":" + vid, "Reprocess", -1);
 
                         int itemID = Engine_Database.Get_ItemID_From_Bib_VID(bibID, vid);
 
@@ -672,10 +762,10 @@ namespace SobekCM.Builder_Library
             }
         }
 
-        private void Complete_Single_Recent_Load_Requiring_Additional_Work( Incoming_Digital_Resource AdditionalWorkResource)
+        private void Complete_Single_Recent_Load_Requiring_Additional_Work(Incoming_Digital_Resource AdditionalWorkResource)
         {
-	        AdditionalWorkResource.METS_Type_String = "Reprocess";
-            AdditionalWorkResource.BuilderLogId = Add_NonError_To_Log("Reprocessing '" + AdditionalWorkResource.BibID + ":" + AdditionalWorkResource.VID + "'", "Standard",  AdditionalWorkResource.BibID + ":" + AdditionalWorkResource.VID, AdditionalWorkResource.METS_Type_String, -1);
+            AdditionalWorkResource.METS_Type_String = "Reprocess";
+            AdditionalWorkResource.BuilderLogId = Add_NonError_To_Log("Reprocessing '" + AdditionalWorkResource.BibID + ":" + AdditionalWorkResource.VID + "'", "Standard", AdditionalWorkResource.BibID + ":" + AdditionalWorkResource.VID, AdditionalWorkResource.METS_Type_String, -1);
 
             try
             {
@@ -722,7 +812,7 @@ namespace SobekCM.Builder_Library
 
         #region Process any complete packages, whether a new resource or a replacement
 
-        private void Process_All_Incoming_Packages(List<Incoming_Digital_Resource> IncomingPackages )
+        private void Process_All_Incoming_Packages(List<Incoming_Digital_Resource> IncomingPackages)
         {
             if (IncomingPackages.Count == 0)
                 return;
@@ -778,7 +868,7 @@ namespace SobekCM.Builder_Library
             Engine_Database.Builder_Clear_Item_Error_Log(ResourcePackage.BibID, ResourcePackage.VID, "SobekCM Builder");
 
             // Before we save this or anything, let's see if this is truly a new resource
-            ResourcePackage.NewPackage = (Engine_Database.Get_Item_Information(ResourcePackage.BibID, ResourcePackage.VID, null ) == null );
+            ResourcePackage.NewPackage = (Engine_Database.Get_Item_Information(ResourcePackage.BibID, ResourcePackage.VID, null) == null);
             ResourcePackage.Package_Time = DateTime.Now;
 
             try
@@ -807,7 +897,7 @@ namespace SobekCM.Builder_Library
                         }
                         catch
                         {
-                            
+
                         }
                         return;
                     }
@@ -911,52 +1001,52 @@ namespace SobekCM.Builder_Library
 
         #region Log-supporting methods
 
-		private long Add_NonError_To_Log(string LogStatement, string DbLogType, string BibID_VID, string MetsType, long RelatedLogID )
+        private long Add_NonError_To_Log(string LogStatement, string DbLogType, string BibID_VID, string MetsType, long RelatedLogID)
         {
-			if (multiInstanceBuilder)
-			{
-				Console.WriteLine( instanceInfo.Name + " - " + LogStatement);
+            if (multiInstanceBuilder)
+            {
+                Console.WriteLine(instanceInfo.Name + " - " + LogStatement);
                 logger.AddNonError(instanceInfo.Name + " - " + LogStatement.Replace("\t", "....."));
-			}
-			else
-			{
-				Console.WriteLine( LogStatement);
-				logger.AddNonError( LogStatement.Replace("\t", "....."));
-			}
+            }
+            else
+            {
+                Console.WriteLine(LogStatement);
+                logger.AddNonError(LogStatement.Replace("\t", "....."));
+            }
             return Engine_Database.Builder_Add_Log_Entry(RelatedLogID, BibID_VID, DbLogType, LogStatement.Replace("\t", ""), MetsType);
         }
 
-		private long Add_NonError_To_Log(string LogStatement, bool IsVerbose, string BibID_VID, string MetsType, long RelatedLogID)
+        private long Add_NonError_To_Log(string LogStatement, bool IsVerbose, string BibID_VID, string MetsType, long RelatedLogID)
         {
             if (IsVerbose)
             {
-	            if (multiInstanceBuilder)
-	            {
+                if (multiInstanceBuilder)
+                {
                     Console.WriteLine(instanceInfo.Name + " - " + LogStatement);
                     logger.AddNonError(instanceInfo.Name + " - " + LogStatement.Replace("\t", "....."));
-	            }
-	            else
-				{
-					Console.WriteLine( LogStatement);
-					logger.AddNonError( LogStatement.Replace("\t", "....."));
-				}
+                }
+                else
+                {
+                    Console.WriteLine(LogStatement);
+                    logger.AddNonError(LogStatement.Replace("\t", "....."));
+                }
                 return Engine_Database.Builder_Add_Log_Entry(RelatedLogID, BibID_VID, "Verbose", LogStatement.Replace("\t", ""), MetsType);
             }
-			return -1;
+            return -1;
         }
 
-		private long Add_Error_To_Log(string LogStatement, string BibID_VID, string MetsType, long RelatedLogID)
+        private long Add_Error_To_Log(string LogStatement, string BibID_VID, string MetsType, long RelatedLogID)
         {
-			if (multiInstanceBuilder)
-			{
+            if (multiInstanceBuilder)
+            {
                 Console.WriteLine(instanceInfo.Name + " - " + LogStatement);
                 logger.AddError(instanceInfo.Name + " - " + LogStatement.Replace("\t", "....."));
-			}
-			else
-			{
-				Console.WriteLine( LogStatement);
-				logger.AddError( LogStatement.Replace("\t", "....."));
-			}
+            }
+            else
+            {
+                Console.WriteLine(LogStatement);
+                logger.AddError(LogStatement.Replace("\t", "....."));
+            }
             return Engine_Database.Builder_Add_Log_Entry(RelatedLogID, BibID_VID, "Error", LogStatement.Replace("\t", ""), MetsType);
         }
 
@@ -1001,18 +1091,18 @@ namespace SobekCM.Builder_Library
             exception_writer.Close();
         }
 
-        private void Add_Complete_To_Log(string LogStatement, string DbLogType, string BibID_VID, string MetsType, long RelatedLogID )
+        private void Add_Complete_To_Log(string LogStatement, string DbLogType, string BibID_VID, string MetsType, long RelatedLogID)
         {
-	        if (multiInstanceBuilder)
-	        {
+            if (multiInstanceBuilder)
+            {
                 Console.WriteLine(instanceInfo.Name + " - " + LogStatement);
                 logger.AddComplete(instanceInfo.Name + " - " + LogStatement.Replace("\t", "....."));
-	        }
-	        else
-			{
-				Console.WriteLine( LogStatement);
-				logger.AddComplete( LogStatement.Replace("\t", "....."));
-			}
+            }
+            else
+            {
+                Console.WriteLine(LogStatement);
+                logger.AddComplete(LogStatement.Replace("\t", "....."));
+            }
             Engine_Database.Builder_Add_Log_Entry(RelatedLogID, BibID_VID, DbLogType, LogStatement.Replace("\t", ""), MetsType);
         }
 
@@ -1053,7 +1143,7 @@ namespace SobekCM.Builder_Library
 
         #region Methods to handle checking for abort requests
 
-		/// <summary> Flag indicates if the last run of the bulk loader was ABORTED </summary>
+        /// <summary> Flag indicates if the last run of the bulk loader was ABORTED </summary>
         public bool Aborted
         {
             get { return aborted; }
@@ -1066,18 +1156,18 @@ namespace SobekCM.Builder_Library
                 return true;
 
             bool returnValue = Abort_Database_Mechanism.Abort_Requested();
-            if (returnValue )
+            if (returnValue)
             {
                 aborted = true;
-                
+
                 logger.AddError("ABORT REQUEST RECEIVED VIA DATABASE KEY");
             }
             return returnValue;
         }
 
         #endregion
-        
-		/// <summary> Gets the message to sum up this execution  </summary>
+
+        /// <summary> Gets the message to sum up this execution  </summary>
         public string Final_Message
         {
             get { return finalmessage; }

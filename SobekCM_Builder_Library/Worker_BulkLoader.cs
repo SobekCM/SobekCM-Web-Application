@@ -311,6 +311,10 @@ namespace SobekCM.Builder_Library
                             // Check for abort
                             if (CheckForAbort())
                             {
+                                while (currentThreadCount > 0)
+                                {
+                                    System.Threading.Thread.Sleep(1000);
+                                }
                                 Add_NonError_To_Log("Aborted (Worker_BulkLoader line 151)", verbose, String.Empty, String.Empty, -1);
                                 finalmessage = "Aborted per database request";
                                 ReleaseResources();

@@ -306,7 +306,6 @@ namespace SobekCM.Builder_Library
                                 lock (currentThreadCountLock)
                                 {
                                     canStartNewTask = currentThreadCount >= maxThreadCount;
-
                                 }
                             }
                             // Check for abort
@@ -321,14 +320,9 @@ namespace SobekCM.Builder_Library
                         }
 
                         //Check if we were aborted by any of the remaining threads
-                        var allThreadsFinished = false;
-                        while (!allThreadsFinished)
+                        while (currentThreadCount > 0)
                         {
                             System.Threading.Thread.Sleep(1000);
-                            lock (currentThreadCountLock)
-                            {
-                                allThreadsFinished = currentThreadCount <= 0;
-                            }
                         }
 
                     }
@@ -432,11 +426,14 @@ namespace SobekCM.Builder_Library
 
                             Add_Error_To_Log("Unable to process all of the NEW and REPLACEMENT packages.", String.Empty, String.Empty, -1, ee);
                         }
-                        lock (currentWorkerCountLock)
+                        finally
                         {
-                            currentWorkerCount--;
+                            lock (currentWorkerCountLock)
+                            {
+                                currentWorkerCount--;
+                            }
                         }
-                    });
+                    }).Start();
                     if (newItemLimit > 0 && newItemLimit <= numberProcessed)
                     {
                         break;

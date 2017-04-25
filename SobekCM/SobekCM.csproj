@@ -19,6 +19,7 @@
     <IISExpressAnonymousAuthentication>enabled</IISExpressAnonymousAuthentication>
     <IISExpressWindowsAuthentication>enabled</IISExpressWindowsAuthentication>
     <IISExpressUseClassicPipelineMode />
+    <UseGlobalApplicationHostFile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -985,6 +986,7 @@
     <Content Include="config\default\sobekcm_other_viewers.config" />
     <Content Include="config\default\sobekcm_static_resources_cdn_secure.config" />
     <Content Include="config\default\sobekcm_results_viewers.config" />
+    <Content Include="config\user\BuilderLogSummaryServices.config" />
     <None Include="Properties\PublishProfiles\U262189 USF SobekCM local instance.pubxml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
@@ -1020,7 +1022,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="config\user\" />
     <Folder Include="default\includes\datatables\1.11.1\scroller\css\" />
     <Folder Include="default\includes\datatables\1.11.1\scroller\images\" />
     <Folder Include="default\includes\datatables\1.11.1\scroller\js\" />

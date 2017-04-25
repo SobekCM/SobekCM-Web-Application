@@ -76,6 +76,7 @@
     <Compile Include="Email\Email_Helper.cs" />
     <Compile Include="Endpoints\AdministrativeServices.cs" />
     <Compile Include="Endpoints\AggregationServices.cs" />
+    <Compile Include="Endpoints\BuilderLogSummaryServices.cs" />
     <Compile Include="Endpoints\BuilderServices.cs" />
     <Compile Include="Endpoints\CacheServices.cs" />
     <Compile Include="Endpoints\CustomServices.cs" />
@@ -139,12 +140,8 @@
     <Compile Include="Database\Database_Item_Result.cs" />
     <Compile Include="Database\Database_Title_Result.cs" />
     <Compile Include="Database\Engine_Database.cs" />
-    <Compile Include="Items\Authority\Map_Features_DataSet.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Items\Authority\Map_Streets_DataSet.cs">
-      <SubType>Component</SubType>
-    </Compile>
+    <Compile Include="Items\Authority\Map_Features_DataSet.cs" />
+    <Compile Include="Items\Authority\Map_Streets_DataSet.cs" />
     <Compile Include="Items\SobekCM_Item_Factory.cs" />
     <Compile Include="Items\SobekCM_METS_Based_ItemBuilder.cs" />
     <Compile Include="JSON Client Helpers\UploadedFileFolderInfo.cs" />

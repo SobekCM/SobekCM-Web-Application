@@ -47,7 +47,7 @@ namespace SobekCM.Engine_Library.Endpoints
             Solr_Exception
         }
 
-        private const bool INCLUDE_PRIVATE = false;
+        protected const bool INCLUDE_PRIVATE = false;
 
         /// <summary> Get just the search statistics information for a search or browse </summary>
         /// <param name="Response"></param>
@@ -540,7 +540,7 @@ namespace SobekCM.Engine_Library.Endpoints
             Output.WriteLine("</ResultSet>");
         }
 
-        private static void Write_XML(TextWriter Output, string Value)
+        protected static void Write_XML(TextWriter Output, string Value)
         {
             foreach (char thisChar in Value)
             {
@@ -1062,7 +1062,7 @@ namespace SobekCM.Engine_Library.Endpoints
             }
         }
 
-        private void Perform_Database_Search(Custom_Tracer Tracer, List<string> Terms, List<string> Web_Fields, long Date1, long Date2, int ActualCount, Results_Arguments Current_Mode, int Current_Sort, Complete_Item_Aggregation Aggregation_Object, int Results_Per_Page, bool Potentially_Include_Facets, bool Include_Private_Items, out Search_Results_Statistics Complete_Result_Set_Info, out List<List<iSearch_Title_Result>> Paged_Results, bool Need_Search_Statistics)
+        protected void Perform_Database_Search(Custom_Tracer Tracer, List<string> Terms, List<string> Web_Fields, long Date1, long Date2, int ActualCount, Results_Arguments Current_Mode, int Current_Sort, Complete_Item_Aggregation Aggregation_Object, int Results_Per_Page, bool Potentially_Include_Facets, bool Include_Private_Items, out Search_Results_Statistics Complete_Result_Set_Info, out List<List<iSearch_Title_Result>> Paged_Results, bool Need_Search_Statistics)
         {
             if (Tracer != null)
             {
@@ -1239,13 +1239,13 @@ namespace SobekCM.Engine_Library.Endpoints
             }
         }
 
-        private static short Metadata_Field_Number(string FieldCode)
+        protected static short Metadata_Field_Number(string FieldCode)
         {
             Metadata_Search_Field field = Engine_ApplicationCache_Gateway.Settings.Metadata_Search_Field_By_Code(FieldCode);
             return (field == null) ? (short)-1 : field.ID;
         }
 
-        private static void Perform_Solr_Search(Custom_Tracer Tracer, List<string> Terms, List<string> Web_Fields, int ActualCount, string Current_Aggregation, int Current_Page, int Current_Sort, int Results_Per_Page, out Search_Results_Statistics Complete_Result_Set_Info, out List<iSearch_Title_Result> Paged_Results)
+        protected static void Perform_Solr_Search(Custom_Tracer Tracer, List<string> Terms, List<string> Web_Fields, int ActualCount, string Current_Aggregation, int Current_Page, int Current_Sort, int Results_Per_Page, out Search_Results_Statistics Complete_Result_Set_Info, out List<iSearch_Title_Result> Paged_Results)
         {
             if (Tracer != null)
             {

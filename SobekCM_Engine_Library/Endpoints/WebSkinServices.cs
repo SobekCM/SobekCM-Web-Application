@@ -218,13 +218,13 @@ namespace SobekCM.Engine_Library.Endpoints
             }
         }
 
-        #region Helper methods, destined to be private
+        #region Helper methods, destined to be protected
 
         /// <summary> [HELPER] Gets the complete (language agnostic) web skin, by web skin code </summary>
         /// <param name="SkinCode"> Web skin code </param>
         /// <param name="Tracer"></param>
         /// <returns> A built complete web skin </returns>
-        /// <remarks> This may be public now, but this will be converted into a private helped class with 
+        /// <remarks> This may be public now, but this will be converted into a protected helped class with 
         /// the release of SobekCM 5.0 </remarks>
         public static Complete_Web_Skin_Object get_complete_web_skin(string SkinCode, Custom_Tracer Tracer)
         {
@@ -271,7 +271,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="DefaultLanguage"> Default language, in case the requested web language does nto exist </param>
         /// <param name="Tracer"></param>
         /// <returns> A build language-specific web skin </returns>
-        /// <remarks> This may be public now, but this will be converted into a private helped class with 
+        /// <remarks> This may be public now, but this will be converted into a protected helped class with 
         /// the release of SobekCM 5.0 </remarks>
         public static Web_Skin_Object get_web_skin(string SkinCode, Web_Language_Enum RequestedLanguage, Web_Language_Enum DefaultLanguage, Custom_Tracer Tracer)
         {

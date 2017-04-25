@@ -454,7 +454,7 @@ namespace SobekCM.Engine_Library.Endpoints
             Response.Output.WriteLine("}");
         }
 
-        private DataSet get_recent_builder_logs(DateTime? StartDate, DateTime? EndDate, string Filter, bool Include_No_Work, Custom_Tracer Tracer)
+        protected DataSet get_recent_builder_logs(DateTime? StartDate, DateTime? EndDate, string Filter, bool Include_No_Work, Custom_Tracer Tracer)
         {
             // Look in the cache first
             DataSet fromCache = CachedDataManager.Builder.Retrieve_Builder_Logs(StartDate, EndDate, Filter, Include_No_Work, Tracer);

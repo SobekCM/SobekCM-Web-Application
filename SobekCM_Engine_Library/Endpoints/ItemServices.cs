@@ -750,7 +750,7 @@ namespace SobekCM.Engine_Library.Endpoints
             return itemAndErrorTuple;
         }
 
-        private Tuple<BriefItemInfo,SobekCM_Item_Error> GetBriefItem(string BibID, string VID, string MappingSet, Custom_Tracer Tracer)
+        protected Tuple<BriefItemInfo,SobekCM_Item_Error> GetBriefItem(string BibID, string VID, string MappingSet, Custom_Tracer Tracer)
         {
             // Get the full SOobekCM_Item object for the provided BibID / VID
             Tracer.Add_Trace("ItemServices.getBriefItem", "Get the full SobekCM_Item object for this BibID / VID");
@@ -802,13 +802,13 @@ namespace SobekCM.Engine_Library.Endpoints
 
             return currentItem;
         }
-        
-        
+
+
         #endregion
 
         #region Methods related to pulling information about a single item group
 
-        private BriefItemInfo GetBriefTitle(string BibID, string MappingSet, Custom_Tracer Tracer)
+        protected BriefItemInfo GetBriefTitle(string BibID, string MappingSet, Custom_Tracer Tracer)
         {
             // Get the full SOobekCM_Item object for the provided BibID / VID
             Tracer.Add_Trace("ItemServices.getBriefTitle", "Get the full SobekCM_Item object for this BibID-level resource");
@@ -1301,7 +1301,7 @@ namespace SobekCM.Engine_Library.Endpoints
             }
         }
 
-        private EAD_Transfer_Descriptive_Identification ead_copy_did_to_transfer(Descriptive_Identification Source)
+        protected EAD_Transfer_Descriptive_Identification ead_copy_did_to_transfer(Descriptive_Identification Source)
         {
             // If null, just return null
             if (Source == null)
@@ -1330,7 +1330,7 @@ namespace SobekCM.Engine_Library.Endpoints
             return returnObj;
         }
 
-        private EAD_Transfer_Container_Info ead_copy_container_to_transfer(Container_Info Source)
+        protected EAD_Transfer_Container_Info ead_copy_container_to_transfer(Container_Info Source)
         {
             // If null, just return null
             if (Source == null)

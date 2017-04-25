@@ -894,7 +894,7 @@ namespace SobekCM.Engine_Library.Endpoints
             Serialize(message, Response, Protocol, null);
         }
 
-        private static bool AreEqual(string a, string b)
+        protected static bool AreEqual(string a, string b)
         {
             if (String.IsNullOrEmpty(a))
             {
@@ -2367,7 +2367,7 @@ namespace SobekCM.Engine_Library.Endpoints
             Serialize(userList, Response, Protocol, json_callback);
         }
 
-        private WebContent_Recent_Changed_Page datarow_to_webcontent_recent_changed_page(DataRow ChangeRow)
+        protected WebContent_Recent_Changed_Page datarow_to_webcontent_recent_changed_page(DataRow ChangeRow)
         {
             // Start to buid the object to report this work
             WebContent_Recent_Changed_Page recentChange = new WebContent_Recent_Changed_Page
@@ -2417,7 +2417,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <summary> Get the full data set of all global recent updates to any top-level static pages </summary>
         /// <param name="Tracer"> Custom tracer </param>
         /// <returns></returns>
-        private DataSet get_global_recent_updates_set(Custom_Tracer Tracer)
+        protected DataSet get_global_recent_updates_set(Custom_Tracer Tracer)
         {
             // Look in the cache first
             DataSet fromCache = CachedDataManager.WebContent.Retrieve_Global_Recent_Updates(Tracer);
@@ -2633,9 +2633,9 @@ namespace SobekCM.Engine_Library.Endpoints
             Serialize(returnValue, Response, Protocol, json_callback);
         }
 
- 
 
-        private WebContent_Page_Usage datarow_to_page_usage(DataRow ChangeRow)
+
+        protected WebContent_Page_Usage datarow_to_page_usage(DataRow ChangeRow)
         {
             // Start to buid the object to report this work
             WebContent_Page_Usage usedPage = new WebContent_Page_Usage
@@ -3077,7 +3077,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="Month1"></param>
         /// <param name="Year2"></param>
         /// <returns></returns>
-        private DataSet get_global_usage_report_dataset(int Year1, int Month1, int Year2, int Month2, Custom_Tracer Tracer)
+        protected DataSet get_global_usage_report_dataset(int Year1, int Month1, int Year2, int Month2, Custom_Tracer Tracer)
         {
             // Look in the cache first
             DataSet fromCache = CachedDataManager.WebContent.Retrieve_Global_Usage_Report(Year1, Month1, Year2, Month2, Tracer);
@@ -3643,7 +3643,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <summary> Get the full data set of all global redirects </summary>
         /// <param name="Tracer"> Custom tracer </param>
         /// <returns></returns>
-        private DataSet get_all_redirects(Custom_Tracer Tracer)
+        protected DataSet get_all_redirects(Custom_Tracer Tracer)
         {
             // Look in the cache first
             DataSet fromCache = CachedDataManager.WebContent.Retrieve_Redirects(Tracer);
@@ -4208,7 +4208,7 @@ namespace SobekCM.Engine_Library.Endpoints
             Serialize(returnValue, Response, Protocol, json_callback);
         }
 
-        private WebContent_Basic_Info datarow_to_basic_info(DataRow ChangeRow)
+        protected WebContent_Basic_Info datarow_to_basic_info(DataRow ChangeRow)
         {
             // Start to buid the object to report this work
             WebContent_Basic_Info recentChange = new WebContent_Basic_Info
@@ -4258,7 +4258,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <summary> Get the full data set of all top-level static pages (excluding redirects) </summary>
         /// <param name="Tracer"> Custom tracer </param>
         /// <returns></returns>
-        private DataSet get_all_content_pages(Custom_Tracer Tracer)
+        protected DataSet get_all_content_pages(Custom_Tracer Tracer)
         {
             // Look in the cache first
             DataSet fromCache = CachedDataManager.WebContent.Retrieve_All_Web_Content_Pages(Tracer);
@@ -4830,7 +4830,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <summary> Get the full data set of all top-level web content entities, including pages and redirects </summary>
         /// <param name="Tracer"> Custom tracer </param>
         /// <returns></returns>
-        private DataSet get_all_content_entities(Custom_Tracer Tracer)
+        protected DataSet get_all_content_entities(Custom_Tracer Tracer)
         {
             // Look in the cache first
             DataSet fromCache = CachedDataManager.WebContent.Retrieve_All_Web_Content(Tracer);
@@ -5134,14 +5134,14 @@ namespace SobekCM.Engine_Library.Endpoints
 
         #endregion
 
-        #region Helper methods (ultimately destined to be private)
+        #region Helper methods (ultimately destined to be protected)
 
         /// <summary> Helper method retrieves HTML web content </summary>
         /// <param name="BasicInfo"> Basic information from the database for this endpoint, including the URL segments </param>
         /// <param name="Tracer"></param>
         /// <param name="ErrorType"> Any error enocuntered during the process </param>
         /// <returns> Built HTML content object, or NULL </returns>
-        private static HTML_Based_Content read_source_file(WebContent_Basic_Info BasicInfo, Custom_Tracer Tracer, out WebContentEndpointErrorEnum ErrorType)
+        protected static HTML_Based_Content read_source_file(WebContent_Basic_Info BasicInfo, Custom_Tracer Tracer, out WebContentEndpointErrorEnum ErrorType)
         {
             // Set a default error message first
             ErrorType = WebContentEndpointErrorEnum.NONE;

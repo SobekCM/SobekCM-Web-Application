@@ -159,7 +159,7 @@ namespace SobekCM.Library.ItemViewer.Menu
                 iItemViewerPrototyper prototyper = ItemViewer_Factory.Get_Viewer_By_ViewType(viewType);
                 if (prototyper.Has_Access(CurrentItem, CurrentUser, ItemRestrictedFromUserByIP))
                 {
-                    prototyper.Add_Menu_items(CurrentItem, CurrentUser, CurrentMode, menuItems, ItemRestrictedFromUserByIP);
+                    prototyper.Add_Menu_Items(CurrentItem, CurrentUser, CurrentMode, menuItems, ItemRestrictedFromUserByIP);
                 }
             }
 

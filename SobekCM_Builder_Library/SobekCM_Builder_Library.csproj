@@ -50,8 +50,10 @@
     <Compile Include="Abort_Database_Mechanism.cs" />
     <Compile Include="FDA\FDA_Database_Gateway.cs" />
     <Compile Include="Modules\Folders\ConvertLargeJpegsModule.cs" />
+    <Compile Include="Modules\Folders\CustomNonBibFolders.cs" />
     <Compile Include="Modules\Items\AttachImagesAllModule.cs" />
     <Compile Include="Modules\Items\CreateImageDerivativesLegacyModule.cs" />
+    <Compile Include="Modules\Items\ExternallyLogBuilderWork.cs" />
     <Compile Include="Modules\Items\TesseractOcrModule.cs" />
     <Compile Include="Modules\Schedulable\CacheAggregationTileMetadataModule.cs" />
     <Compile Include="Modules\Schedulable\CalculateUsageStatisticsModule.cs" />

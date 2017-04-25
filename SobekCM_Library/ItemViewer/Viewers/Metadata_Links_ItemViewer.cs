@@ -39,7 +39,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// if this viewer should be ignored for this item </summary>
         /// <param name="CurrentItem"> Digital resource to examine to see if this viewer really should be included </param>
         /// <returns> TRUE if this viewer should generally be included with this item, otherwise FALSE </returns>
-        public bool Include_Viewer(BriefItemInfo CurrentItem)
+        public virtual bool Include_Viewer(BriefItemInfo CurrentItem)
         {
             // If not dark, always show
             if (!CurrentItem.Behaviors.Dark_Flag) return true;
@@ -51,7 +51,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <summary> Flag indicates if this viewer should be override on checkout </summary>
         /// <param name="CurrentItem"> Digital resource to examine to see if this viewer should really be overriden </param>
         /// <returns> FALSE always, since citation type information should always be shown, even if an item is checked out </returns>
-        public bool Override_On_Checkout(BriefItemInfo CurrentItem)
+        public virtual bool Override_On_Checkout(BriefItemInfo CurrentItem)
         {
             return false;
         }
@@ -61,7 +61,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <param name="CurrentUser"> Current user, who may or may not be logged on </param>
         /// <param name="IpRestricted"> Flag indicates if this item is IP restricted AND if the current user is outside the ranges </param>
         /// <returns> TRUE if the user has access to use this viewer, otherwise FALSE </returns>
-        public bool Has_Access(BriefItemInfo CurrentItem, User_Object CurrentUser, bool IpRestricted)
+        public virtual bool Has_Access(BriefItemInfo CurrentItem, User_Object CurrentUser, bool IpRestricted)
         {
             // It can always be shown
             return true;
@@ -74,7 +74,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <param name="CurrentRequest"> Information about the current request </param>
         /// <param name="MenuItems"> List of menu items, to which this method may add one or more menu items </param>
         /// <param name="IpRestricted"> Flag indicates if this item is IP restricted AND if the current user is outside the ranges </param>
-        public void Add_Menu_items(BriefItemInfo CurrentItem, User_Object CurrentUser, Navigation_Object CurrentRequest, List<Item_MenuItem> MenuItems, bool IpRestricted)
+        public virtual void Add_Menu_Items(BriefItemInfo CurrentItem, User_Object CurrentUser, Navigation_Object CurrentRequest, List<Item_MenuItem> MenuItems, bool IpRestricted)
         {
             // Get the URL for this
             string previous_code = CurrentRequest.ViewerCode;
@@ -97,7 +97,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <returns> Fully built and initialized <see cref="Metadata_Links_ItemViewer"/> object </returns>
         /// <remarks> This method is called whenever a request requires the actual viewer to be created to render the HTML for
         /// the digital resource requested.  The created viewer is then destroyed at the end of the request </remarks>
-        public iItemViewer Create_Viewer(BriefItemInfo CurrentItem, User_Object CurrentUser, Navigation_Object CurrentRequest, Custom_Tracer Tracer)
+        public virtual iItemViewer Create_Viewer(BriefItemInfo CurrentItem, User_Object CurrentUser, Navigation_Object CurrentRequest, Custom_Tracer Tracer)
         {
             return new Metadata_Links_ItemViewer(CurrentItem, CurrentUser, CurrentRequest);
         }

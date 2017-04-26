@@ -19,11 +19,7 @@ namespace SobekCM.Library.ResultsViewer
     public class Table_ResultsViewer : abstract_ResultsViewer
     {
         /// <summary> Constructor for a new instance of the Table_ResultsViewer class </summary>
-        /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
-        /// <param name="ResultsStats"> Statistics about the results to display including the facets </param>
-        /// <param name="PagedResults"> Actual pages of results </param>
-        public Table_ResultsViewer(RequestCache RequestSpecificValues, Search_Results_Statistics ResultsStats, List<iSearch_Title_Result> PagedResults)
-            : base(RequestSpecificValues, ResultsStats, PagedResults)
+        public Table_ResultsViewer() : base()
         {
             // Do nothing
         }

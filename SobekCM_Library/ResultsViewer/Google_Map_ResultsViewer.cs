@@ -28,12 +28,8 @@ namespace SobekCM.Library.ResultsViewer
         private StringBuilder mapScriptHtml;
         private int polyCount;
 
-        /// <summary> Constructor for a new instance of the Full_ResultsViewer class </summary>
-        /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
-        /// <param name="ResultsStats"> Statistics about the results to display including the facets </param>
-        /// <param name="PagedResults"> Actual pages of results </param>
-        public Google_Map_ResultsViewer(RequestCache RequestSpecificValues, Search_Results_Statistics ResultsStats, List<iSearch_Title_Result> PagedResults)
-            : base(RequestSpecificValues, ResultsStats, PagedResults)
+        /// <summary> Constructor for a new instance of the Google_Map_ResultsViewer class </summary>
+        public Google_Map_ResultsViewer() : base()
         {
             // Do nothing
         }

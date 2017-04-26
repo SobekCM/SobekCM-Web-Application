@@ -1,29 +1,23 @@
-#region Using directives
-
+﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.UI.WebControls;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Results;
 using SobekCM.Core.Search;
-using SobekCM.Core.UI_Configuration;
-using SobekCM.Core.UI_Configuration.StaticResources;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
 
-#endregion
-
 namespace SobekCM.Library.ResultsViewer
 {
-    /// <summary> Results viewer shows just the thumbnails for each item in a large grid.  </summary>
-    /// <remarks> This class extends the abstract class <see cref="abstract_ResultsViewer"/> and implements the 
-    /// <see cref="iResultsViewer" /> interface. </remarks>
-    public class Thumbnail_ResultsViewer : abstract_ResultsViewer
+    public class Custom_Thumbnail_ResultsViewer: abstract_ResultsViewer
     {
-        /// <summary> Constructor for a new instance of the Thumbnail_ResultsViewer class </summary>
-        public Thumbnail_ResultsViewer() : base()
+        /// <summary> Constructor for a new instance of the Custom_Thumbnail_ResultsViewer class </summary>
+        public Custom_Thumbnail_ResultsViewer() : base()
         {
             // Do nothing
         }
@@ -36,7 +30,7 @@ namespace SobekCM.Library.ResultsViewer
         {
             if (Tracer != null)
             {
-                Tracer.Add_Trace("Thumbnail_ResultsWriter.Add_HTML", "Rendering results in thumbnail view");
+                Tracer.Add_Trace("Custom_Thumbnail_ResultsViewer.Add_HTML", "Rendering results in thumbnail view");
             }
 
             // If results are null, or no results, return empty string
@@ -60,12 +54,10 @@ namespace SobekCM.Library.ResultsViewer
 
 
             // Start this table
-            resultsBldr.AppendLine("<table align=\"center\" width=\"100%\" cellspacing=\"15px\">");
+            resultsBldr.AppendLine("<table align=\"center\" width=\"60%\" cellspacing=\"15px\">");
             resultsBldr.AppendLine("\t<tr>");
-            resultsBldr.AppendLine("\t\t<td width=\"25%\">&nbsp;</td>");
-            resultsBldr.AppendLine("\t\t<td width=\"25%\">&nbsp;</td>");
-            resultsBldr.AppendLine("\t\t<td width=\"25%\">&nbsp;</td>");
-            resultsBldr.AppendLine("\t\t<td width=\"25%\">&nbsp;</td>");
+            resultsBldr.AppendLine("\t\t<td width=\"50%\">&nbsp;</td>");
+            resultsBldr.AppendLine("\t\t<td width=\"50%\">&nbsp;</td>");
             resultsBldr.AppendLine("\t</tr>");
             resultsBldr.AppendLine("\t<tr valign=\"top\">");
 
@@ -77,12 +69,12 @@ namespace SobekCM.Library.ResultsViewer
             {
                 title_count++;
                 // Should a new row be started
-                if (col == 4)
+                if (col == 2)
                 {
                     col = 0;
                     resultsBldr.AppendLine("\t</tr>");
                     // Horizontal Line
-                    resultsBldr.AppendLine("\t<tr><td bgcolor=\"#e7e7e7\" colspan=\"4\"></td></tr>");
+                    resultsBldr.AppendLine("\t<tr><td bgcolor=\"#e7e7e7\" colspan=\"2\"></td></tr>");
                     resultsBldr.AppendLine("\t<tr valign=\"top\">");
                 }
 
@@ -301,7 +293,7 @@ namespace SobekCM.Library.ResultsViewer
             }
 
             // Finish this row out
-            while (col < 4)
+            while (col < 2)
             {
                 resultsBldr.AppendLine("\t\t<td>&nbsp;</td>");
                 col++;

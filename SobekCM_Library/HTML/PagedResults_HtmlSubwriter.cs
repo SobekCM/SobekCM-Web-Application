@@ -202,7 +202,10 @@ namespace SobekCM.Library.HTML
 		{
 			if ( resultsStatistics.Total_Items == 0)
 			{
-                resultWriter = new No_Results_ResultsViewer(RequestSpecificValues, resultsStatistics, pagedResults);
+                resultWriter = new No_Results_ResultsViewer();
+			    resultWriter.PagedResults = pagedResults;
+			    resultWriter.ResultsStats = resultsStatistics;
+			    resultWriter.RequestSpecificValues = RequestSpecificValues;
 				return;
 			}
 

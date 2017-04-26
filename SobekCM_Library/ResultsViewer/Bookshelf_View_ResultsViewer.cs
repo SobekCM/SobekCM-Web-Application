@@ -18,11 +18,7 @@ namespace SobekCM.Library.ResultsViewer
     public class Bookshelf_View_ResultsViewer : abstract_ResultsViewer
     {
         /// <summary> Constructor for a new instance of the Bookshelf_View_ResultsViewer class </summary>
-        /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
-        /// <param name="ResultsStats"> Statistics about the results to display including the facets </param>
-        /// <param name="PagedResults"> Actual pages of results </param>
-        public Bookshelf_View_ResultsViewer(RequestCache RequestSpecificValues, Search_Results_Statistics ResultsStats, List<iSearch_Title_Result> PagedResults)
-            : base(RequestSpecificValues, ResultsStats, PagedResults)
+        public Bookshelf_View_ResultsViewer()
         {
             // do nothing
         }
@@ -104,7 +100,7 @@ namespace SobekCM.Library.ResultsViewer
             MainPlaceHolder.Controls.Add(mainLiteral);
         }
 
-        private void Write_Single_Row(StringBuilder resultsBldr, iSearch_Title_Result titleRow, int index_in_page, string textRedirectStem, string base_url, bool internal_user)
+        protected void Write_Single_Row(StringBuilder resultsBldr, iSearch_Title_Result titleRow, int index_in_page, string textRedirectStem, string base_url, bool internal_user)
         {
             // Start this row
             resultsBldr.AppendLine("\t<tr valign=\"top\">");

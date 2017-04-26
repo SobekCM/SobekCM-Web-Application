@@ -24,11 +24,7 @@ namespace SobekCM.Library.ResultsViewer
     public class No_Results_ResultsViewer : abstract_ResultsViewer
     {
         /// <summary> Constructor for a new instance of the No_Results_ResultsViewer class </summary>
-        /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
-        /// <param name="ResultsStats"> Statistics about the results to display including the facets </param>
-        /// <param name="PagedResults"> Actual pages of results </param>
-        public No_Results_ResultsViewer(RequestCache RequestSpecificValues, Search_Results_Statistics ResultsStats, List<iSearch_Title_Result> PagedResults)
-            : base(RequestSpecificValues, ResultsStats, PagedResults)
+        public No_Results_ResultsViewer() : base()
         {
             // Do nothing
         }
@@ -198,7 +194,7 @@ namespace SobekCM.Library.ResultsViewer
             return noResultsText;
         }
 
-        private static string number_to_string(int Number)
+        protected static string number_to_string(int Number)
         {
             switch (Number)
             {
@@ -219,7 +215,7 @@ namespace SobekCM.Library.ResultsViewer
             }
         }
 
-        private static string number_to_string(int? Number)
+        protected static string number_to_string(int? Number)
         {
             if (!Number.HasValue)
                 return "No";

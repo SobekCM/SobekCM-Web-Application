@@ -35,46 +35,72 @@ namespace SobekCM.Library.ResultsViewer
             // Was an assembly indicated
             if (String.IsNullOrEmpty(config.Assembly))
             {
+                iResultsViewer returnValue = null;
 
                 // Return a standard class
                 switch (config.Class)
                 {
                     case "SobekCM.Library.ResultsViewer.Bookshelf_ResultsViewer":
-                        return new Bookshelf_View_ResultsViewer(RequestSpecificValues, ResultsStats, PagedResults);
+                        returnValue = new Bookshelf_View_ResultsViewer();
+                        break;
 
                     case "SobekCM.Library.ResultsViewer.Brief_ResultsViewer":
-                        return new Brief_ResultsViewer(RequestSpecificValues, ResultsStats, PagedResults);
+                        returnValue = new Brief_ResultsViewer();
+                        break;
 
                     case "SobekCM.Library.ResultsViewer.Export_ResultsViewer":
-                        return new Export_ResultsViewer(RequestSpecificValues, ResultsStats, PagedResults);
+                        returnValue = new Export_ResultsViewer();
+                        break;
 
                     case "SobekCM.Library.ResultsViewer.Google_Map_ResultsViewer":
-                        return new Google_Map_ResultsViewer(RequestSpecificValues, ResultsStats, PagedResults);
+                        returnValue = new Google_Map_ResultsViewer();
+                        break;
 
                     case "SobekCM.Library.ResultsViewer.Table_ResultsViewer":
-                        return new Table_ResultsViewer(RequestSpecificValues, ResultsStats, PagedResults);
+                        returnValue = new Table_ResultsViewer();
+                        break;
 
                     case "SobekCM.Library.ResultsViewer.Thumbnail_ResultsViewer":
-                        return new Thumbnail_ResultsViewer(RequestSpecificValues, ResultsStats, PagedResults);
+                        returnValue = new Thumbnail_ResultsViewer();
+                        break;
 
                     case "SobekCM.Library.ResultsViewer.No_Results_ResultsViewer":
-                        return new No_Results_ResultsViewer(RequestSpecificValues, ResultsStats, PagedResults);
+                        returnValue = new No_Results_ResultsViewer();
+                        break;
                 }
 
-                // If it made it here, there is no assembly, but it is an unexpected type.  
-                // Just create it from the same assembly then
-                try
+                if (returnValue == null)
                 {
-                    Assembly dllAssembly = Assembly.GetCallingAssembly();
-                    Type prototyperType = dllAssembly.GetType(config.Class);
-                    iResultsViewer returnObj = (iResultsViewer)Activator.CreateInstance(prototyperType);
-                    return returnObj;
+                    // If it made it here, there is no assembly, but it is an unexpected type.  
+                    // Just create it from the same assembly then
+                    try
+                    {
+                        Assembly dllAssembly = Assembly.GetCallingAssembly();
+                        Type prototyperType = dllAssembly.GetType(config.Class);
+                        returnValue = (iResultsViewer) Activator.CreateInstance(prototyperType);
+                    }
+                    catch (Exception ee)
+                    {
+                        RequestSpecificValues.Tracer.Add_Trace("ResultsViewer_Factory", "Exception when creating a results viewer from the current assembly via reflection");
+                        RequestSpecificValues.Tracer.Add_Trace("ResultsViewer_Factory", ee.Message);
+
+                        // Not sure exactly what to do here, honestly
+                        return null;
+                    }
                 }
-                catch (Exception)
+
+                // If a results viewer was created, finish the construction and return it
+                if (returnValue != null)
                 {
-                    // Not sure exactly what to do here, honestly
-                    return null;
+                    returnValue.RequestSpecificValues = RequestSpecificValues;
+                    returnValue.ResultsStats = ResultsStats;
+                    returnValue.PagedResults = PagedResults;
+                    return returnValue;
                 }
+
+                // Return value must be NULL
+                RequestSpecificValues.Tracer.Add_Trace("ResultsViewer_Factory", "NULL value when creating a results viewer from the current assembly (via reflection)");
+                return null;
             }
 
 
@@ -90,13 +116,25 @@ namespace SobekCM.Library.ResultsViewer
                 }
                 Type prototyperType = dllAssembly.GetType(config.Class);
                 iResultsViewer returnObj = (iResultsViewer)Activator.CreateInstance(prototyperType);
-                return returnObj;
+
+                // If a results viewer was created, finish the construction and return it
+                if (returnObj != null)
+                {
+                    returnObj.RequestSpecificValues = RequestSpecificValues;
+                    returnObj.ResultsStats = ResultsStats;
+                    returnObj.PagedResults = PagedResults;
+                    return returnObj;
+                }
+
+                // Return value must be NULL
+                RequestSpecificValues.Tracer.Add_Trace("ResultsViewer_Factory", "NULL value when creating a results viewer from a separate assembly via reflection");
+                return null;
             }
             catch (Exception ee)
             {
-                // Not sure exactly what to do here, honestly
-                if (ee.Message.Length > 0)
-                    return null;
+                RequestSpecificValues.Tracer.Add_Trace("ResultsViewer_Factory", "Exception when creating a results viewer from a separate assembly via reflection");
+                RequestSpecificValues.Tracer.Add_Trace("ResultsViewer_Factory", ee.Message);
+
                 return null;
             }
         }

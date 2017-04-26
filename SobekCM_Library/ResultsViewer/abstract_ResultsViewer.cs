@@ -30,21 +30,18 @@ namespace SobekCM.Library.ResultsViewer
 
         private string textRedirectStem;
 
-        /// <summary> Values specific to the current HTML request </summary>
-        protected readonly RequestCache RequestSpecificValues;
-        protected readonly Search_Results_Statistics ResultsStats;
-        protected readonly List<iSearch_Title_Result> PagedResults;
+        /// <summary> All the necessary, non-global data specific to the current request </summary>
+        public RequestCache RequestSpecificValues { get; set; }
+
+        /// <summary> Statistics about the results to display including the facets </summary>
+        public Search_Results_Statistics ResultsStats { get; set; }
+
+        /// <summary> Actual pages of results  </summary>
+        public List<iSearch_Title_Result> PagedResults { get; set; }
 
         /// <summary> Constructor for a new instance of the abstract_ResultsViewer class  </summary>
-        /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
-        /// <param name="ResultsStats"> Statistics about the results to display including the facets </param>
-        /// <param name="PagedResults"> Actual pages of results </param>
-        protected abstract_ResultsViewer(RequestCache RequestSpecificValues, Search_Results_Statistics ResultsStats, List<iSearch_Title_Result> PagedResults)
+        protected abstract_ResultsViewer()
         {
-            this.RequestSpecificValues = RequestSpecificValues;
-            this.ResultsStats = ResultsStats;
-            this.PagedResults = PagedResults;
-
             // Determine the current user mask
             CurrentUserMask = 0;
             if ((HttpContext.Current != null) && ( HttpContext.Current.Session["IP_Range_Membership"] != null ))

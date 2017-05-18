@@ -26,6 +26,10 @@ namespace SobekCM.Library.ItemViewer.HtmlSectionWriters
             if ((CurrentItem == null) || (CurrentItem.Images_TOC == null) || (CurrentItem.Images_TOC.Count <= 1))
                 return;
 
+            // If there are certain thing set in the behavior, return
+            if (( Behaviors != null ) && ( Behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Item_Subwriter_Suppress_Left_Navigation_Bar)))
+                return;
+
             string table_of_contents = "TABLE OF CONTENTS";
             //string hide_toc = "HIDE TABLE OF CONTENTS";
             //string show_toc_text = "SHOW TABLE OF CONTENTS";
@@ -46,7 +50,11 @@ namespace SobekCM.Library.ItemViewer.HtmlSectionWriters
 
             // Get the item URL
             string item_url = RequestSpecificValues.Current_Mode.Base_URL + CurrentItem.BibID + "/" + CurrentItem.VID;
-            string viewer_code = RequestSpecificValues.Current_Mode.ViewerCode.Replace(RequestSpecificValues.Current_Mode.Page.ToString(), "#");
+            string viewer_code = RequestSpecificValues.Current_Mode.ViewerCode;
+            if (RequestSpecificValues.Current_Mode.Page.HasValue)
+            {
+                viewer_code = viewer_code.Replace(RequestSpecificValues.Current_Mode.Page.ToString(), "#");
+            }
             if (viewer_code.IndexOf("#") < 0)
                 viewer_code = "#";
 

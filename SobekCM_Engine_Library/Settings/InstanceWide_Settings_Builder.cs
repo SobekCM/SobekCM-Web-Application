@@ -165,6 +165,7 @@ namespace SobekCM.Engine_Library.Settings
                 Get_String_Value(settingsDictionary, "Email Default From Address", SettingsObject.Email.Setup, X => X.DefaultFromAddress, ref error);
                 Get_String_Value(settingsDictionary, "Email Default From Name", SettingsObject.Email.Setup, X => X.DefaultFromDisplay, ref error);
                 Get_String_Value(settingsDictionary, "Email Method", SettingsObject.Email.Setup, X => X.MethodString, "DATABASE MAIL");
+                Get_String_Value(settingsDictionary, "Email On User Registration", SettingsObject.Email, X => X.User_Registration_Email, ref error);
                 Get_Integer_Value(settingsDictionary, "Email SMTP Port", SettingsObject.Email.Setup, X => X.SmtpPort, ref error, 25);
                 Get_String_Value(settingsDictionary, "Email SMTP Server", SettingsObject.Email.Setup, X => X.SmtpServer, ref error);
                 Get_Boolean_Value(settingsDictionary, "Facets Collapsible", SettingsObject.Search, X => X.Facets_Collapsible, ref error, false);

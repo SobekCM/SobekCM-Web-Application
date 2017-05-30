@@ -9,6 +9,7 @@ using System.Xml;
 using SobekCM.Core.ApplicationState;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Users;
+using SobekCM.Resource_Object;
 
 #endregion
 
@@ -24,11 +25,16 @@ namespace SobekCM.Library.Citation.Elements
         /// <summary> Protected field holds all the possible, selectable values </summary>
         protected List<string> Items;
 
+        /// <summary> Protected field holds the defauls, if this is set as a constant </summary>
+        protected List<string> Defaults;
+
         /// <summary> Protected field holds how many boxes are allowed total for this element, or -1 if there is no limit </summary>
         protected int MaxBoxes = -1;
 
         /// <summary> Protected field holds any html to insert as the view choices option after the boxes </summary>
         protected string ViewChoicesString;
+
+
 
         /// <summary> Constructor for a new instance of the MultipleComboBox_Element class </summary>
         /// <param name="Title"> Title for this element </param>
@@ -40,6 +46,7 @@ namespace SobekCM.Library.Citation.Elements
             ViewChoicesString = String.Empty;
 
             Items = new List<string>();
+            Defaults = new List<string>();
 		}
 
         /// <summary> Adds a possible, selectable value to the combo/select box </summary>
@@ -362,7 +369,13 @@ namespace SobekCM.Library.Citation.Elements
                     if (XMLReader.Name.ToLower() == "value")
                     {
                         XMLReader.Read();
-                        Items.Add(XMLReader.Value.Trim());
+                        string inner_data = XMLReader.Value.Trim();
+                        Add_Item(inner_data);
+
+                        // If this not set as a default already, add it
+                        if ( !Defaults.Contains(inner_data))
+                            Defaults.Add(inner_data);
+
                     }
                     if (XMLReader.Name.ToLower() == "options")
                     {

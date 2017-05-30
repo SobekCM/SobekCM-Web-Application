@@ -47,7 +47,11 @@ namespace SobekCM.Core.Settings
         [ProtoMember(5)]
         public Email_Setup_Settings Setup { get; set; }
 
-
+        /// <summary> Email address used for when a new user registers </summary>
+        [DataMember(Name = "userRegisrationEmail", EmitDefaultValue = false)]
+        [XmlElement("userRegisrationEmail")]
+        [ProtoMember(6)]
+        public string User_Registration_Email { get; set; }
 
     }
 }

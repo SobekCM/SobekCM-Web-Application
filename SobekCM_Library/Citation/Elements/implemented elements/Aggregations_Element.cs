@@ -155,5 +155,18 @@ namespace SobekCM.Library.Citation.Elements
                 }
             }
         }
+
+        /// <summary> Saves the constants to the bib id </summary>
+        /// <param name="Bib"> Object into which to save this element's constant data </param>
+        public override void Save_Constant_To_Bib(SobekCM_Item Bib)
+        {
+            // if the aggregation isn't already added, add it
+            if (Defaults.Count > 0)
+            {
+                foreach( string thisAggr in Defaults )
+                    Bib.Behaviors.Add_Aggregation(thisAggr);
+            }
+
+        }
     }
 }

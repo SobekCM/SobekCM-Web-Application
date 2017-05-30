@@ -7,6 +7,7 @@ using System.Data;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Web;
 using SobekCM.Core.Configuration;
 using SobekCM.Core.Configuration.Localization;
@@ -480,23 +481,48 @@ namespace SobekCM.Library.MySobekViewer
 						user.Is_Just_Registered = true;
 						HttpContext.Current.Session["user"] = user;
 
-						// If they want to be able to contribue, send an email
-						if (desire_to_upload)
-						{
-                            Email_Helper.SendEmail(UI_ApplicationCache_Gateway.Settings.Email.System_Email, "Submittal rights requested by " + user.Full_Name, "New user requested ability to submit new items.<br /><br /><blockquote>Name: " + user.Full_Name + "<br />Email: " + user.Email + "<br />Organization: " + user.Organization + "<br />User ID: " + user.UserID + "<br />System Name: " + RequestSpecificValues.Current_Mode.Instance_Name + "<br />System URL: " + RequestSpecificValues.Current_Mode.Base_URL + "</blockquote>", true, RequestSpecificValues.Current_Mode.Instance_Name);
-						}
+                        // Will we be sending an email?
+					    if ((!String.IsNullOrEmpty(UI_ApplicationCache_Gateway.Settings.Email.User_Registration_Email)) || (desire_to_upload))
+					    {
+                            // Build the information about this registrant
+					        StringBuilder builder = new StringBuilder();
+					        builder.Append("Name: " + user.Full_Name + "<br />");
+					        builder.Append("Email: " + user.Email + "<br />");
+                            builder.Append("UserName: " + user.UserName + "<br />");
+					        if (!String.IsNullOrEmpty(user.Organization))
+					            builder.Append("Organization: " + user.Organization + "<br />");
+					        builder.Append("System Name: " + RequestSpecificValues.Current_Mode.Instance_Name + "<br />");
+					        builder.Append("System URL: " + RequestSpecificValues.Current_Mode.Base_URL + "</br />");
+                            
+					        // If they want to be able to contribue, send an email
+					        if (!String.IsNullOrEmpty(UI_ApplicationCache_Gateway.Settings.Email.User_Registration_Email))
+					        {
+					            if (desire_to_upload)
+					            {
+					                Email_Helper.SendEmail(UI_ApplicationCache_Gateway.Settings.Email.User_Registration_Email, "New user registered " + user.Full_Name, "New user requested ability to submit new items to " + UI_ApplicationCache_Gateway.Settings.System.System_Abbreviation + ".<br /><br /><blockquote>" + builder + "</blockquote>", true, RequestSpecificValues.Current_Mode.Instance_Name);
+					            }
+					            else
+					            {
+                                    Email_Helper.SendEmail(UI_ApplicationCache_Gateway.Settings.Email.User_Registration_Email, "New user registered " + user.Full_Name, "A new user registered to use " + UI_ApplicationCache_Gateway.Settings.System.System_Abbreviation + ".<br /><br /><blockquote>" + builder + "</blockquote>", true, RequestSpecificValues.Current_Mode.Instance_Name);
+					            }
+					        }
+					        else if (desire_to_upload)
+					        {
+                                Email_Helper.SendEmail(UI_ApplicationCache_Gateway.Settings.Email.System_Email, "Submittal rights requested by " + user.Full_Name, "New user requested ability to submit new items.<br /><br /><blockquote>" + builder + "</blockquote>", true, RequestSpecificValues.Current_Mode.Instance_Name);
+					        }
+					    }
 
-						// Email the user their registation information
-						if (desire_to_upload)
-						{
+                        // Email the user their registation information
+                        if (desire_to_upload)
+                        {
                             Email_Helper.SendEmail(email, "Welcome to " + mySobekText, "<strong>Thank you for registering for " + mySobekText + "</strong><br /><br />You can access this directly through the following link: <a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "/my\">" + RequestSpecificValues.Current_Mode.Base_URL + "/my</a><br /><br />Full Name: " + user.Full_Name + "<br />User Name: " + user.UserName + "<br /><br />You will receive an email when your request to submit items has been processed.", true, RequestSpecificValues.Current_Mode.Instance_Name);
-						}
-						else
-						{
+                        }
+                        else
+                        {
                             Email_Helper.SendEmail(email, "Welcome to " + mySobekText, "<strong>Thank you for registering for " + mySobekText + "</strong><br /><br />You can access this directly through the following link: <a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "/my\">" + RequestSpecificValues.Current_Mode.Base_URL + "/my</a><br /><br />Full Name: " + user.Full_Name + "<br />User Name: " + user.UserName, true, RequestSpecificValues.Current_Mode.Instance_Name);
-						}
+                        }
 
-						// Now, forward back to the My Sobek home page
+					    // Now, forward back to the My Sobek home page
 						RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
 
 						// If this is the first user to register (who would have been set to admin), send to the 

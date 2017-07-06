@@ -458,7 +458,6 @@ namespace SobekCM.Library.HTML
                         }
                     }
                 }
-
             }
 
             // If execution should end, do it now

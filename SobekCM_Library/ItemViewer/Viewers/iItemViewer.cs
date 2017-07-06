@@ -39,6 +39,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// requests from the main HTML subwriter. </summary>
         List<HtmlSubwriter_Behaviors_Enum> ItemViewer_Behaviors { get; }
 
+        /// <summary> Layout for this item viewer to use, which overrides the default viewer </summary>
+        string Layout_Override { get; }
+
         #region Methods used to write HTML directly to the output stream in various locations
 
         /// <summary> Write any additional values within the HTML Head of the final served page </summary>

@@ -57,6 +57,11 @@ namespace SobekCM.Library.ItemViewer.Viewers
             get { return Behaviors;  }
         }
 
+        /// <summary> Layout for this item viewer to use, which overrides the default viewer </summary>
+        /// <remarks> This item viewer does not override the current item layout, but can be overriden
+        /// by any class that extends this abstract class </remarks>
+        public virtual string Layout_Override { get { return String.Empty; } }
+
         /// <summary> Write any additional values within the HTML Head of the final served page </summary>
         /// <param name="Output"> Output stream currently within the HTML head tags </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>

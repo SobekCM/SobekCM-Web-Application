@@ -1,0 +1,25 @@
+
+<!-- Unstyled div placed around entire item information to support schema.org microdata -->
+<section itemscope itemtype="http:schema.org/ItemPage">
+    
+    [%SECTION:TOP%]
+	
+	<!-- Place holders for pop-up forms which load dynamically if required -->
+	<div class="print_popup_div" id="form_print" style="display:none;"></div>
+	<div class="email_popup_div" id="form_email" style="display:none;"></div>
+	<div class="add_popup_div" id="add_item_form" style="display:none;"></div>
+	<div class="share_popup_div" id="share_form" style="display:none;"></div>
+
+    <!-- Begin the main item viewing area -->
+    <section id="main-content" role="main" class="sbkIsw_MainContentSection">
+            
+        [%SECTION:VIEWER%]
+                            
+    </section>
+
+    <!-- Hidden field is used for postbacks to indicate what to save and reset -->
+    <input type="hidden" id="item_action" name="item_action" value="" />
+
+    <!-- Close microdata itemscope div -->
+</section>
+

@@ -58,6 +58,8 @@
     <Reference Include="System.EnterpriseServices" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="config\html\item_viewer_default_layout.html" />
+    <Content Include="config\html\item_viewer_no_leftnav_layout.html" />
     <Content Include="config\samples\readme.txt" />
     <Content Include="Dashboard.aspx" />
     <Content Include="default\banner_images\1.jpg" />

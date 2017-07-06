@@ -39,11 +39,18 @@ namespace SobekCM.Core.UI_Configuration.Viewers
         [ProtoMember(4)]
         public List<SectionWriterGroupConfig> Sections { get; set; }
 
+        /// <summary> Flag indicates if this is the default item layout </summary>
+        [DataMember(Name = "default")]
+        [XmlAttribute("default")]
+        [ProtoMember(5)]
+        public bool Default { get; set; }
+
         /// <summary> Constructor for a new instance of the ItemWriterLayoutConfig class </summary>
         public ItemWriterLayoutConfig()
         {
             Stylesheets = new List<StylesheetConfig>();
             Sections = new List<SectionWriterGroupConfig>();
+            Default = false;
         }
 
         /// <param name="Name"> Name of this section, which can include section writers and should 

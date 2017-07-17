@@ -2571,6 +2571,7 @@ namespace SobekCM.Engine_Library.Configuration
                             break;
 
                         case "layout":
+
                             ItemWriterLayoutConfig defaultLayout = new ItemWriterLayoutConfig();
                             if (ReaderXml.MoveToAttribute("id"))
                                 defaultLayout.ID = ReaderXml.Value.Trim();

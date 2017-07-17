@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using SobekCM.Core.UI_Configuration.Viewers;
 using SobekCM.Library.UI;
 
 namespace SobekCM.Library.HtmlLayout
@@ -8,51 +10,64 @@ namespace SobekCM.Library.HtmlLayout
     /// them to be created only once and repeatedly used </summary>
     public static class HtmlLayoutManager
     {
-        private static HtmlLayoutInfo itemLayout;
+        private static Dictionary<string, HtmlLayoutInfo> itemLayout;
         private static readonly Object itemLayoutLock = new Object();
 
+        /// <summary> Static constructor for the <see cref="HtmlLayoutManager"/> class </summary>
+        static HtmlLayoutManager()
+        {
+            itemLayout = new Dictionary<string, HtmlLayoutInfo>(StringComparer.OrdinalIgnoreCase);
+        }
+
         /// <summary> Get the indicated item layour objecty </summary>
-        /// <param name="LayoutName"> Name of the layout to get </param>
+        /// <param name="LayoutConfig"> Configuration for this layout </param>
         /// <returns> Either the indicated layout, or the default, if the indicated one does not exist </returns>
-        public static HtmlLayoutInfo GetItemLayout(string LayoutName)
+        public static HtmlLayoutInfo GetItemLayout(ItemWriterLayoutConfig LayoutConfig)
         {
             lock (itemLayoutLock)
             {
                 // Does this already exist?
-                if (itemLayout != null)
+                if (itemLayout.ContainsKey(LayoutConfig.ID))
                 {
-                    return itemLayout;
+                    return itemLayout[LayoutConfig.ID];
                 }
 
+                // Get the lay
+
                 // Did not exist, so parse it
-                string source_file_name = UI_ApplicationCache_Gateway.Configuration.UI.WriterViewers.Items.Layout.Source;
+                string source_file_name = LayoutConfig.Source;
                 string source_file = Path.Combine(UI_ApplicationCache_Gateway.Settings.Servers.Application_Server_Network, "config", "html", source_file_name);
 
                 // If the source file is missing, make an error template
                 if (!File.Exists(source_file))
                 {
                     // Just create a dummy here
-                    itemLayout = new HtmlLayoutInfo();
+                    HtmlLayoutInfo thisItemLayout = new HtmlLayoutInfo();
                     HtmlLayoutSection errorSection = new HtmlLayoutSection
                     {
                         Name = "Error", 
                         Type = HtmlLayoutSectionTypeEnum.Static_HTML, 
                         HTML = "Unable to find the HTML source template file under the web application ( config/html/" + source_file_name + " )"
                     };
-                    itemLayout.Sections.Add(errorSection);
-                    return itemLayout;
+                    thisItemLayout.Sections.Add(errorSection);
+                    return thisItemLayout;
                 }
 
                 // Use the HTML layout parser to read this
-                itemLayout = HtmlLayoutParser.Parse(source_file);
-                return itemLayout;
+                HtmlLayoutInfo readItemLayout = HtmlLayoutParser.Parse(source_file);
+
+                // Save this
+                itemLayout[LayoutConfig.ID] = readItemLayout;
+
+                // Also return this
+                return readItemLayout;
             }
         }
 
         /// <summary> Clear all the cached layout information </summary>
         public static void Clear()
         {
-            itemLayout = null;
+            itemLayout.Clear();
         }
     }
 }

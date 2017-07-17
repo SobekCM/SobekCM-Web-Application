@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.Serialization;
 using System.Web.UI.WebControls;
 using System.Xml.Serialization;
@@ -109,6 +110,79 @@ namespace SobekCM.Core.UI_Configuration.Viewers
             defaultLayout = null;
         }
 
+        /// <summary> Get a specific item layout configuration, by code </summary>
+        /// <param name="Code"> Code from the configuration for this layout </param>
+        /// <returns> The requested layout, or the default layout </returns>
+        public ItemWriterLayoutConfig Get_Layout(string Code)
+        {
+            // Ensure the dictionary is built
+            if (layoutsLookup == null) layoutsLookup = new Dictionary<string, ItemWriterLayoutConfig>(StringComparer.OrdinalIgnoreCase);
+
+            // Ensure all items in the list are in the dictionary
+            if (layoutsLookup.Count != Layouts.Count)
+            {
+                layoutsLookup.Clear();
+                foreach (ItemWriterLayoutConfig exstingConfig in Layouts)
+                {
+                    layoutsLookup[exstingConfig.ID] = exstingConfig;
+
+                    if (exstingConfig.Default)
+                        defaultLayout = exstingConfig;
+                }
+            }
+            
+            // Try to find this, by code
+            if (layoutsLookup.ContainsKey(Code))
+                return layoutsLookup[Code];
+
+            // If there is a default, return that
+            if (defaultLayout != null)
+                return defaultLayout;
+
+            // Return the first, if no default
+            if (layoutsLookup.Count > 0)
+                return layoutsLookup[layoutsLookup.Keys.First()];
+
+            // Finally, return NULL
+            return null;
+        }
+
+        /// <summary> Get the default item page layout </summary>
+        public ItemWriterLayoutConfig DefaultLayout
+        {
+            get
+            {
+                // If there is a default set, easy!
+                if (defaultLayout != null)
+                    return defaultLayout;
+
+                // Ensure the dictionary is built
+                if (layoutsLookup == null) layoutsLookup = new Dictionary<string, ItemWriterLayoutConfig>(StringComparer.OrdinalIgnoreCase);
+
+                // Ensure all items in the list are in the dictionary
+                if (layoutsLookup.Count != Layouts.Count)
+                {
+                    layoutsLookup.Clear();
+                    foreach (ItemWriterLayoutConfig exstingConfig in Layouts)
+                    {
+                        layoutsLookup[exstingConfig.ID] = exstingConfig;
+
+                        if (exstingConfig.Default)
+                            defaultLayout = exstingConfig;
+                    }
+                }
+
+                // Return the first, if no default
+                if (layoutsLookup.Count > 0)
+                    return layoutsLookup[layoutsLookup.Keys.First()];
+
+                // Finally, return NULL
+                return null;
+            }
+        }
+
+        /// <summary> Add a new item layout configuration </summary>
+        /// <param name="Layout"> Object with all the layout details </param>
         public void Add_Layout(ItemWriterLayoutConfig Layout)
         {
             // Ensure the dictionary is built

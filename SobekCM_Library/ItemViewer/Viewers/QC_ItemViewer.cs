@@ -2862,6 +2862,11 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
         }
 
+        /// <summary> Layout for this item viewer to use, which overrides the default viewer </summary>
+        /// <remarks> This viewer uses the special item viewer which suppresses the left nav bar </remarks>
+        /// <value> NOLEFTNAV </value>
+        public string Layout_Override { get { return "NOLEFTNAV"; } }
+
         #region Support for Roman Numerals
 
         /// <summary> Converts an integer to a roman number, in either upper or lower case. Default returned in lowercase. </summary>

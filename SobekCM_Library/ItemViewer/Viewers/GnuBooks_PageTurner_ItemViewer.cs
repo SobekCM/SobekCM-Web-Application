@@ -358,6 +358,11 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
         }
 
+        /// <summary> Layout for this item viewer to use, which overrides the default viewer </summary>
+        /// <remarks> This viewer uses the special item viewer which suppresses the left nav bar </remarks>
+        /// <value> NOLEFTNAV </value>
+        public override string Layout_Override { get { return "NOLEFTNAV"; } }
+
 
         /// <summary> Gets the collection of body attributes to be included 
         /// within the HTML body tag (usually to add events to the body) </summary>

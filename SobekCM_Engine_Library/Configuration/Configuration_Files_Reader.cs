@@ -2571,13 +2571,17 @@ namespace SobekCM.Engine_Library.Configuration
                             break;
 
                         case "layout":
-                            ItemWriterLayoutConfig defaultLayout = Config.Items.Layout;
+
+                            ItemWriterLayoutConfig defaultLayout = new ItemWriterLayoutConfig();
                             if (ReaderXml.MoveToAttribute("id"))
                                 defaultLayout.ID = ReaderXml.Value.Trim();
                             if (ReaderXml.MoveToAttribute("source"))
                                 defaultLayout.Source = ReaderXml.Value.Trim();
+                            if ((ReaderXml.MoveToAttribute("default")) && (String.Equals(ReaderXml.Value, "true", StringComparison.OrdinalIgnoreCase)))
+                                defaultLayout.Default = true;
                             ReaderXml.MoveToElement();
                             read_item_writer_layout_config(ReaderXml.ReadSubtree(), defaultLayout);
+                            Config.Items.Add_Layout(defaultLayout);
                             break;
 
 

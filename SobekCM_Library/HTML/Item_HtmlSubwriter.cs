@@ -458,7 +458,6 @@ namespace SobekCM.Library.HTML
                         }
                     }
                 }
-
             }
 
             // If execution should end, do it now
@@ -507,16 +506,27 @@ namespace SobekCM.Library.HTML
             //}
 
 
-            // Get the item layout configuration information (from config files)
-            itemLayoutConfig = UI_ApplicationCache_Gateway.Configuration.UI.WriterViewers.Items.Layout;
+            // If the page viewer was created, check for the layout, otherwise use the default
+            if (pageViewer != null)
+            {
+                string pageViewerLayout = pageViewer.Layout_Override;
+                if (!String.IsNullOrEmpty(pageViewerLayout))
+                {
+                    itemLayoutConfig = UI_ApplicationCache_Gateway.Configuration.UI.WriterViewers.Items.Get_Layout(pageViewerLayout);
+                }
+            }
 
-
+            // If still null, try to get the default layout
+            if (itemLayoutConfig == null)
+            {
+                // Get the item layout configuration information (from config files)
+                itemLayoutConfig = UI_ApplicationCache_Gateway.Configuration.UI.WriterViewers.Items.DefaultLayout;
+            }
+            
             // Get the item layout and set the index (from the HTMl template file)
             RequestSpecificValues.Tracer.Add_Trace("Item_HtmlSubwriter.Constructor", "Get the item layout from the HTML template");
-            itemLayout = HtmlLayoutManager.GetItemLayout(itemLayoutConfig.ID);
+            itemLayout = HtmlLayoutManager.GetItemLayout(itemLayoutConfig);
             itemLayoutIndex = 0;
-
-
         }
 
         #endregion

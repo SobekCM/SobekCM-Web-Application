@@ -451,10 +451,8 @@ namespace SobekCM.Library.HTML
 
             // Get the item layot and set the index
             RequestSpecificValues.Tracer.Add_Trace("Item_HtmlSubwriter.Constructor", "Get the item layout from the HTML template");
-            itemLayout = HtmlLayoutManager.GetItemLayout(String.Empty);
+            itemLayout = HtmlLayoutManager.GetItemLayout(null);
             itemLayoutIndex = 0;
-
-
         }
 
         #endregion

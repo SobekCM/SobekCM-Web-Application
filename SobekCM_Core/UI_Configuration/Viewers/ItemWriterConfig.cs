@@ -63,7 +63,7 @@ namespace SobekCM.Core.UI_Configuration.Viewers
         {
             Class = "SobekCM.Library.HTML.Item_HtmlSubwriter";
             Viewers = new List<ItemSubViewerConfig>();
-            
+            Layouts = new List<ItemWriterLayoutConfig>();
 
             set_default();
         }

@@ -1313,7 +1313,15 @@ namespace SobekCM.Engine_Library.Navigation
 			// Look for any more url information
 			if (RemainingURLRedirectList.Count > 0)
 			{
-				switch (RemainingURLRedirectList[0])
+                // Not sure why I have to write specific code for this...
+			    if ((RemainingURLRedirectList.Count > 1) && (RemainingURLRedirectList[1] == "empty") && (Aggregation == "all"))
+			    {
+			        Navigator.Aggregation_Type = Aggregation_Type_Enum.Empty;
+                    return;
+			    }
+
+
+			    switch (RemainingURLRedirectList[0])
 				{
                     case "empty":
                         Navigator.Aggregation_Type = Aggregation_Type_Enum.Empty;

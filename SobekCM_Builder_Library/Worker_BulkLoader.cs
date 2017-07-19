@@ -716,6 +716,9 @@ namespace SobekCM.Builder_Library
             {
                 Add_Error_To_Log("Unable to complete additional work for " + AdditionalWorkResource.BibID + ":" + AdditionalWorkResource.VID, AdditionalWorkResource.BibID + ":" + AdditionalWorkResource.VID, AdditionalWorkResource.METS_Type_String, AdditionalWorkResource.BuilderLogId, ee);
             }
+
+            // Clear the additional work needed flag eithe way, so the same items are reprocessed over and over
+            SobekCM_Item_Database.Update_Additional_Work_Needed_Flag(AdditionalWorkResource.Metadata.Web.ItemID, false);
         }
 
         #endregion

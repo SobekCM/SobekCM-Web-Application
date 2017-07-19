@@ -248,6 +248,17 @@ namespace SobekCM.Builder_Library.Modules.Items
                                     //}
                                 }
                             }
+                            else if (!String.IsNullOrEmpty(jpeg_file))
+                            {
+                                // Now, see if the jpeg thumbnail derivative is missing or too old
+                                if ((!jpeg_thumb_file_lastModTime.HasValue) || (jpeg_thumb_file_lastModTime.Value.CompareTo(jpeg_file_lastModTime.Value.AddMinutes(-2)) < 0))
+                                {
+                                    string name_sans_extension = Path.GetFileNameWithoutExtension(jpeg_file);
+
+                                    // Create the JPEG thumbnail derivatives from the JPEG
+                                    imageProcessor.ImageMagick_Create_JPEG(jpeg_file, resourceFolder + "\\" + name_sans_extension + "thm.jpg", Settings.Resources.Thumbnail_Width, Settings.Resources.Thumbnail_Height, Resource.BuilderLogId, Resource.BibID + ":" + Resource.VID);
+                                }
+                            }
                         }
                     }
                 }

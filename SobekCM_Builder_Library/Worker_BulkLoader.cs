@@ -865,9 +865,6 @@ namespace SobekCM.Builder_Library
                     return;
                 }
 
-                // Save these collections to mark them for search index building
-                Add_Delete_Info_To_PostProcess_Lists(deleteResource.BibID, deleteResource.VID, deleteResource.Metadata.Behaviors.Aggregation_Code_List);
-
                 // Only continue if this bibid/vid exists
                 if (Engine_Database.Get_Item_Information(deleteResource.BibID, deleteResource.VID, null) != null)
                 {
@@ -896,6 +893,13 @@ namespace SobekCM.Builder_Library
                             return;
                         }
                     }
+
+                    // Save these collections to mark them for search index building
+                    if ((deleteResource.Metadata != null) || (deleteResource.Metadata.Behaviors != null))
+                    {
+                        Add_Delete_Info_To_PostProcess_Lists(deleteResource.BibID, deleteResource.VID, deleteResource.Metadata.Behaviors.Aggregation_Code_List);
+                    }
+
                 }
                 else
                 {
@@ -1036,18 +1040,24 @@ namespace SobekCM.Builder_Library
 
         private void Add_Process_Info_To_PostProcess_Lists(string BibID, string VID, IEnumerable<string> Codes)
         {
-            foreach (string collectionCode in Codes)
+            if (Codes != null)
             {
-                Add_Aggregation_To_Refresh_List(collectionCode);
+                foreach (string collectionCode in Codes)
+                {
+                    Add_Aggregation_To_Refresh_List(collectionCode);
+                }
             }
             processedItems.Add(new BibVidStruct(BibID, VID));
         }
 
         private void Add_Delete_Info_To_PostProcess_Lists(string BibID, string VID, IEnumerable<string> Codes)
         {
-            foreach (string collectionCode in Codes)
+            if (Codes != null)
             {
-                Add_Aggregation_To_Refresh_List(collectionCode);
+                foreach (string collectionCode in Codes)
+                {
+                    Add_Aggregation_To_Refresh_List(collectionCode);
+                }
             }
             deletedItems.Add(new BibVidStruct(BibID, VID));
         }

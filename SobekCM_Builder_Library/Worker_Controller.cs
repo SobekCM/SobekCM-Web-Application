@@ -3,10 +3,10 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
 using System.Threading;
 using Microsoft.Win32;
 using SobekCM.Builder_Library.Settings;
-using SobekCM.Builder_Library.Tools;
 using SobekCM.Engine_Library.ApplicationState;
 using SobekCM.Engine_Library.Database;
 using SobekCM.Tools.Logs;
@@ -22,110 +22,170 @@ namespace SobekCM.Builder_Library
     {
         private bool aborted;
         private DateTime controllerStarted;
+        private DateTime configReadTime;
+        private string configurationFile;
         private const int BULK_LOADER_END_HOUR = 23;
         private DateTime feedNextBuildTime;
         private readonly bool verbose;
 
         private readonly List<Single_Instance_Configuration> instances;
+        private readonly List<Worker_BulkLoader> loaders;
+
         private readonly string logFileDirectory;
         private readonly string pluginRootDirectory;
 
+
         /// <summary> Constructor for a new instance of the Worker_Controller class </summary>
         /// <param name="Verbose"> Flag indicates if this should be verbose in the log file and console </param>
-        /// <param name="StartUpDirectory"> Local startup directory </param>
         public Worker_Controller( bool Verbose )
         {
             verbose = Verbose;
             controllerStarted = DateTime.Now;
             aborted = false;
-
-
-            // Save the list of instances
             instances = new List<Single_Instance_Configuration>();
-            foreach (Single_Instance_Configuration dbInfo in MultiInstance_Builder_Settings.Instances)
-            {
-                instances.Add(dbInfo);
-            }
+            loaders = new List<Worker_BulkLoader>();
 
-            // Determine, and create the local work space
-            try
+
+            // Determine the directory this is runnin in
+            string startupDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            MultiInstance_Builder_Settings.Builder_Executable_Directory = startupDirectory;
+
+            logFileDirectory = Path.Combine(MultiInstance_Builder_Settings.Builder_Executable_Directory ?? String.Empty, "logs");
+            pluginRootDirectory = Path.Combine(MultiInstance_Builder_Settings.Builder_Executable_Directory ?? String.Empty, "plugins");
+
+
+        }
+
+        private void write_error(string Message, LogFileXhtml PreloaderLogger)
+        {
+            Console.WriteLine(Message + "\n");
+            PreloaderLogger.AddError(Message);
+        }
+
+        private void write_nonerror(string Message, LogFileXhtml PreloaderLogger)
+        {
+            Console.WriteLine(Message + "\n");
+            PreloaderLogger.AddNonError(Message);
+        }
+
+        #region Method to load and test the original data
+
+        private bool Configure_Builders_To_Run(LogFileXhtml PreloaderLogger)
+        {
+            // Verify connectivity and rights on the logs subfolder
+            if (!Directory.Exists(logFileDirectory))
             {
-                logFileDirectory = Path.Combine(MultiInstance_Builder_Settings.Builder_Executable_Directory, "logs");
-                if (!Directory.Exists(logFileDirectory))
+                try
                 {
-                    Console.WriteLine("Creating local log directory: " + logFileDirectory);
                     Directory.CreateDirectory(logFileDirectory);
                 }
+                catch
+                {
+                    Console.WriteLine("Error creating necessary logs subfolder under the application folder.\n");
+                    Console.WriteLine("Please create manually.\n");
+                    Console.WriteLine(logFileDirectory);
+                    return false;
+                }
+            }
+            try
+            {
+                StreamWriter testWriter = new StreamWriter(Path.Combine(logFileDirectory, "test.log"), false);
+                testWriter.WriteLine("TEST");
+                testWriter.Flush();
+                testWriter.Close();
+
+                File.Delete(Path.Combine(logFileDirectory, "test.log"));
             }
             catch
             {
-                Console.WriteLine("Error creating the temporary log directory: " + logFileDirectory, null, null, -1);
-                return;
+                Console.WriteLine("The service account needs modify rights on the logs subfolder.\n");
+                Console.WriteLine("Please correct manually.\n");
+                Console.WriteLine(logFileDirectory);
+                return false;
             }
 
-            // Determine and create the plugins work space
-            pluginRootDirectory = Path.Combine(MultiInstance_Builder_Settings.Builder_Executable_Directory, "plugins");
-            try
+            // Verify connectivity and rights on the plugins subfolder
+            if (!Directory.Exists(pluginRootDirectory))
             {
-                if (!Directory.Exists(pluginRootDirectory))
+                try
                 {
-                    Console.WriteLine("Creating local plugin directory: " + pluginRootDirectory);
                     Directory.CreateDirectory(pluginRootDirectory);
                 }
+                catch
+                {
+                    Console.WriteLine("Error creating necessary plugins subfolder under the application folder.\n");
+                    Console.WriteLine("Please create manually.\n");
+                    Console.WriteLine(pluginRootDirectory);
+                    return false;
+                }
+            }
+            try
+            {
+                StreamWriter testWriter = new StreamWriter(Path.Combine(pluginRootDirectory, "test.log"), false);
+                testWriter.WriteLine("TEST");
+                testWriter.Flush();
+                testWriter.Close();
+
+                File.Delete(Path.Combine(pluginRootDirectory, "test.log"));
             }
             catch
             {
-                Console.WriteLine("Error creating the temporary plugin directory: " + pluginRootDirectory, null, null, -1);
-                return;
+                Console.WriteLine("The service account needs modify rights on the plugins subfolder.\n");
+                Console.WriteLine("Please correct manually.\n");
+                Console.WriteLine(pluginRootDirectory);
+                return false;
             }
 
-            // This is as good a time as any to get rid of the old log files
-            try
+            // Now, veryify the configuration file exists
+            configurationFile = Path.Combine(MultiInstance_Builder_Settings.Builder_Executable_Directory, "config", "sobekcm.config");
+            if (!File.Exists(configurationFile))
             {
-                // Collect list of log files to delete
-                List<string> log_files = new List<string>();
-                log_files.AddRange(Directory.GetFiles(logFileDirectory, "*.html"));
-                log_files.AddRange(Directory.GetFiles(logFileDirectory, "*.log"));
+                write_error("The configuration file is missing!!", PreloaderLogger);
+                write_error("Execution aborted due to missing configuration file.", PreloaderLogger);
+                return false;
+            }
 
-                // Check age of each and delete
-                int deleted_logs = 0;
-                foreach (string thisLogFile in log_files)
+            // Should be a config file now, so read it
+            if (!MultiInstance_Builder_Settings_Reader.Read_Config(configurationFile))
+            {
+                write_error("Error encountered reading the configuration file!!", PreloaderLogger);
+                write_error("Execution aborted due to incorrect configuration file.", PreloaderLogger);
+                return false;
+            }
+
+            // Since the configuration was read, save the time
+            configReadTime = DateTime.Now;
+
+            // If no instances exist, then the builder has nothing to do
+            if ((MultiInstance_Builder_Settings.Instances.Count == 0) || (String.IsNullOrEmpty(MultiInstance_Builder_Settings.Instances[0].DatabaseConnection.Connection_String)))
+            {
+                write_error("No instances listed in the congfiguration file", PreloaderLogger);
+                write_error("Execution aborted due to configuration file not including any instances to process", PreloaderLogger);
+                return false;
+            }
+
+            // This is a bit of shortcut in the case there is only one instance
+            if (MultiInstance_Builder_Settings.Instances.Count == 1)
+            {
+                // If no database connection on the single instance, return
+                if (String.IsNullOrEmpty(MultiInstance_Builder_Settings.Instances[0].DatabaseConnection.Connection_String))
                 {
-                    TimeSpan logFileAge = DateTime.Now.Subtract((new FileInfo(thisLogFile)).LastWriteTime);
-                    if (logFileAge.TotalDays > 30)
-                    {
-                        File.Delete(thisLogFile);
-                        deleted_logs++;
-                    }
+                    write_error("Single instance configuration is missing the database connection string", PreloaderLogger);
+                    write_error("Execution aborted", PreloaderLogger);
+                    return false;
                 }
 
-                // Add a message to the console
-                if (deleted_logs > 0)
+                Engine_Database.Connection_String = MultiInstance_Builder_Settings.Instances[0].DatabaseConnection.Connection_String;
+                if (!Engine_Database.Test_Connection())
                 {
-                    Console.WriteLine("Deleted " + deleted_logs + " log files that were older than 30 days");
+                    write_error("Unable to connect to the database using provided connection string:", PreloaderLogger);
+                    write_error(Engine_Database.Connection_String, PreloaderLogger);
+                    write_error("Execution aborted", PreloaderLogger);
+                    return false;
                 }
-
-            }
-            catch (Exception ee)
-            {
-                Console.WriteLine("ERROR expiring logs older than 30 days: " + ee.Message);
-                Console.WriteLine("Execution will continue as non-fatal error");
             }
 
-            // Pull the values from the database and assign other setting values
-            //DataSet settings = Engine_Database.Get_Settings_Complete(false, null);
-            //if (settings == null)
-            //{
-            //    Console.WriteLine("FATAL ERROR pulling latest settings from the database: " + Library.Database.SobekCM_Database.Last_Exception.Message);
-            //    return;
-            //}
-            //if (!Engine_ApplicationCache_Gateway.RefreshAll())
-            //{
-            //    Console.WriteLine("Error using database settings to refresh SobekCM_Library_Settings in Worker_Controller constructor");
-            //}
-
-
-            // start with warnings on imagemagick and ghostscript not being installed
+            // Look for the valid Image magick file information in the registry and configuration
             if ((String.IsNullOrEmpty(Engine_ApplicationCache_Gateway.Settings.Builder.ImageMagick_Executable)) || (!File.Exists(Engine_ApplicationCache_Gateway.Settings.Builder.ImageMagick_Executable)))
             {
                 string possible_imagemagick = Look_For_Variable_Registry_Key("SOFTWARE\\ImageMagick", "BinPath");
@@ -139,6 +199,13 @@ namespace SobekCM.Builder_Library
                 MultiInstance_Builder_Settings.ImageMagick_Executable = Engine_ApplicationCache_Gateway.Settings.Builder.ImageMagick_Executable;
             }
 
+            // If no ImageMagick file found, add a warning
+            if ((String.IsNullOrEmpty(MultiInstance_Builder_Settings.ImageMagick_Executable)) || (!File.Exists(MultiInstance_Builder_Settings.ImageMagick_Executable)))
+            {
+                write_nonerror("WARNING: Could not find ImageMagick installed.  Some image processing will be unavailable.", PreloaderLogger);
+            }
+
+            // Look for a valid ghostscript file information in the registry and configuration
             if ((String.IsNullOrEmpty(Engine_ApplicationCache_Gateway.Settings.Builder.Ghostscript_Executable)) || (!File.Exists(Engine_ApplicationCache_Gateway.Settings.Builder.Ghostscript_Executable)))
             {
                 string possible_ghost = Look_For_Variable_Registry_Key("SOFTWARE\\GPL Ghostscript", "GS_DLL");
@@ -158,55 +225,31 @@ namespace SobekCM.Builder_Library
             {
                 MultiInstance_Builder_Settings.Ghostscript_Executable = Engine_ApplicationCache_Gateway.Settings.Builder.Ghostscript_Executable;
             }
-        }
 
-        #region Method to execute processes in background
-
-        /// <summary> Continuously execute the processes in a recurring background thread </summary>
-        public void Execute_In_Background()
-        {
-
-            // Set the variable which will control background execution
-	        int time_between_polls = Engine_ApplicationCache_Gateway.Settings.Builder.Override_Seconds_Between_Polls.HasValue ? Engine_ApplicationCache_Gateway.Settings.Builder.Override_Seconds_Between_Polls.Value : 60;
-			if (( time_between_polls < 0 ) || ( MultiInstance_Builder_Settings.Instances.Count == 1 ))
-				time_between_polls = Convert.ToInt32(Engine_ApplicationCache_Gateway.Settings.Builder.Seconds_Between_Polls);
-
-            // Determine the new log name
-            string log_name = "incoming_" + controllerStarted.Year + "_" + controllerStarted.Month.ToString().PadLeft(2, '0') + "_" + controllerStarted.Day.ToString().PadLeft(2, '0') + ".html";
-            string local_log_name = Path.Combine(logFileDirectory, log_name);
-
-            // Create the new log file
-            LogFileXhtml preloader_logger = new LogFileXhtml(local_log_name, "SobekCM Incoming Packages Log", "UFDC_Builder.exe", true);
-
-            // start with warnings on imagemagick and ghostscript not being installed
-            if ((String.IsNullOrEmpty(MultiInstance_Builder_Settings.ImageMagick_Executable)) || (!File.Exists(MultiInstance_Builder_Settings.ImageMagick_Executable)))
-            {
-                Console.WriteLine("WARNING: Could not find ImageMagick installed.  Some image processing will be unavailable.");
-                preloader_logger.AddNonError("WARNING: Could not find ImageMagick installed.  Some image processing will be unavailable.");
-            }
-
+            // If no Ghostscript file found, add a warning
             if ((String.IsNullOrEmpty(MultiInstance_Builder_Settings.Ghostscript_Executable)) || (!File.Exists(MultiInstance_Builder_Settings.Ghostscript_Executable)))
             {
-                Console.WriteLine("WARNING: Could not find GhostScript installed.  Some PDF processing will be unavailable.");
-                preloader_logger.AddNonError("WARNING: Could not find GhostScript installed.  Some PDF processing will be unavailable.");
+                write_nonerror("WARNING: Could not find GhostScript installed.  Some PDF processing will be unavailable.", PreloaderLogger);
+            }
+            
+            // Save the list of instances
+            instances.Clear();
+            foreach (Single_Instance_Configuration dbInfo in MultiInstance_Builder_Settings.Instances)
+            {
+                instances.Add(dbInfo);
             }
 
-			// Set the time for the next feed building event to 10 minutes from now
-			feedNextBuildTime = DateTime.Now.Add(new TimeSpan(0, 10, 0));
-
-			// First, step through each active configuration and see if building is currently aborted 
-			// while doing very minimal processes
-			aborted = false;
-			Console.WriteLine("Checking for initial abort condition");
-			preloader_logger.AddNonError("Checking for initial abort condition");
-	        string abort_message = String.Empty;
+            // First, step through each active configuration and see if building is currently aborted 
+            // while doing very minimal processes
+            aborted = false;
+            write_nonerror("Checking for initial abort condition", PreloaderLogger);
+            string abort_message = String.Empty;
             int build_instances = 0;
             foreach (Single_Instance_Configuration dbConfig in instances)
             {
                 if (!dbConfig.Is_Active)
                 {
-                    Console.WriteLine(dbConfig.Name + " is set to INACTIVE");
-                    preloader_logger.AddNonError(dbConfig.Name + " is set to INACTIVE");
+                    write_nonerror(dbConfig.Name + " is set to INACTIVE", PreloaderLogger);
                 }
                 else
                 {
@@ -227,8 +270,7 @@ namespace SobekCM.Builder_Library
 
                         case Builder_Operation_Flag_Enum.NO_BUILDING_REQUESTED:
                             abort_message = "PREVIOUS NO BUILDING flag found in " + dbConfig.Name;
-                            Console.WriteLine(abort_message);
-                            preloader_logger.AddNonError(abort_message);
+                            write_nonerror(abort_message, PreloaderLogger);
                             break;
 
                         default:
@@ -242,31 +284,30 @@ namespace SobekCM.Builder_Library
 
             // If no instances to run just abort
             if (build_instances == 0)
-			{
-				// Add messages in each active instance
-				foreach (Single_Instance_Configuration dbConfig in instances)
-				{
-					if (dbConfig.Is_Active) 
-					{
-                        Console.WriteLine("No active databases set for building in the config file");
-                        preloader_logger.AddError("No active databases set for building in config file... Aborting");
+            {
+                // Add messages in each active instance
+                foreach (Single_Instance_Configuration dbConfig in instances)
+                {
+                    if (dbConfig.Is_Active)
+                    {
+                        write_error("No active databases set for building in config file... Aborting", PreloaderLogger);
                         SobekCM_Item_Database.Connection_String = dbConfig.DatabaseConnection.Connection_String;
                         Engine_Database.Connection_String = dbConfig.DatabaseConnection.Connection_String;
                         Engine_Database.Builder_Add_Log_Entry(-1, String.Empty, "Standard", abort_message, String.Empty);
 
-						// Save information about this last run
+                        // Save information about this last run
                         Engine_Database.Set_Setting("Builder Version", Engine_ApplicationCache_Gateway.Settings.Static.Current_Builder_Version);
                         Engine_Database.Set_Setting("Builder Last Run Finished", DateTime.Now.ToString());
                         Engine_Database.Set_Setting("Builder Last Message", abort_message);
-					}
-				}
+                    }
+                }
 
-				// Do nothing else
-				return;
-			}
+                // Do nothing else
+                return false;
+            }
 
-	        // Build all the bulk loader objects
-	        List<Worker_BulkLoader> loaders = new List<Worker_BulkLoader>();
+            // Build all the bulk loader objects
+            loaders.Clear();
             foreach (Single_Instance_Configuration dbConfig in instances)
             {
                 if (!dbConfig.Is_Active)
@@ -289,38 +330,70 @@ namespace SobekCM.Builder_Library
                     Engine_Database.Builder_Add_Log_Entry(-1, String.Empty, "Standard", "WARNING: Could not find GhostScript installed.  Some PDF processing will be unavailable.", String.Empty);
                 }
 
-                Console.WriteLine(dbConfig.Name + " - Preparing to begin polling");
-                preloader_logger.AddNonError(dbConfig.Name + " - Preparing to begin polling");
+                write_nonerror(dbConfig.Name + " - Preparing to begin polling", PreloaderLogger);
                 Engine_Database.Builder_Add_Log_Entry(-1, String.Empty, "Standard", "Preparing to begin polling", String.Empty);
 
                 // Create the new bulk loader
-                Worker_BulkLoader newLoader = new Worker_BulkLoader(preloader_logger, dbConfig, verbose, logFileDirectory, pluginRootDirectory);
+                Worker_BulkLoader newLoader = new Worker_BulkLoader(PreloaderLogger, dbConfig, verbose, logFileDirectory, pluginRootDirectory);
 
                 // Try to refresh to test database and engine connectivity
                 if (newLoader.Refresh_Settings_And_Item_List())
                     loaders.Add(newLoader);
                 else
                 {
-                    Console.WriteLine(dbConfig.Name + " - Error pulling setting of configuration information");
-                    preloader_logger.AddError(dbConfig.Name + " - Error pulling setting of configuration information");
+                    write_error(dbConfig.Name + " - Error pulling setting of configuration information", PreloaderLogger);
                 }
             }
 
             // If no loaders past the tests above, done
             if (loaders.Count == 0)
             {
-                Console.WriteLine("Aborting since no valid instances found to process");
-                preloader_logger.AddError("Aborting since no valid instances found to process");
-                return;
+                write_error("Aborting since no valid instances found to process", PreloaderLogger);
+                return false;
             }
 
             // Set the maximum number of packages to process before moving to the next instance
             if (loaders.Count > 1)
                 MultiInstance_Builder_Settings.Instance_Package_Limit = 100;
 
-	        bool firstRun = true;
+            return true;
+        }
 
 
+        #endregion
+
+        #region Method to execute processes in background
+
+        /// <summary> Continuously execute the processes in a recurring background thread </summary>
+        public void Execute_In_Background()
+        {
+            // Determine the new log name
+            string log_name = "incoming_" + controllerStarted.Year + "_" + controllerStarted.Month.ToString().PadLeft(2, '0') + "_" + controllerStarted.Day.ToString().PadLeft(2, '0') + ".html";
+            string local_log_name = Path.Combine(logFileDirectory, log_name);
+
+            // Create the new log file
+            LogFileXhtml preloader_logger = null;
+            try
+            {
+                preloader_logger = new LogFileXhtml(local_log_name, "SobekCM Incoming Packages Log", "UFDC_Builder.exe", true);
+            }
+            catch ( Exception ee )
+            {
+                Console.WriteLine("Error creating logfile: " + ee.Message);
+            }
+
+            // Configure builders to run and run some basic tests
+            if ((!Configure_Builders_To_Run(preloader_logger)) || ( preloader_logger == null ))
+                return;
+
+            // Set the variable which will control background execution
+	        int time_between_polls = Engine_ApplicationCache_Gateway.Settings.Builder.Override_Seconds_Between_Polls.HasValue ? Engine_ApplicationCache_Gateway.Settings.Builder.Override_Seconds_Between_Polls.Value : 60;
+			if (( time_between_polls < 0 ) || ( MultiInstance_Builder_Settings.Instances.Count == 1 ))
+				time_between_polls = Convert.ToInt32(Engine_ApplicationCache_Gateway.Settings.Builder.Seconds_Between_Polls);
+
+			// Set the time for the next feed building event to 10 minutes from now
+			feedNextBuildTime = DateTime.Now.Add(new TimeSpan(0, 10, 0));
+            
             // Loop continually until the end hour is achieved
             Builder_Operation_Flag_Enum abort_flag = Builder_Operation_Flag_Enum.STANDARD_OPERATION;
             do
@@ -509,7 +582,7 @@ namespace SobekCM.Builder_Library
 
                 return returnValue;
             }
-            catch ( Exception ee )
+            catch 
             {
                 return false;
             }
@@ -604,58 +677,58 @@ namespace SobekCM.Builder_Library
 
         #region Method to create the mango/sus feed
 
-        private void Create_Complete_MarcXML_Feed( bool Test_Feed_Flag )
-        {
-            // Determine some values based on whether this is for thr test feed or something else
-            string feed_name = "Production MarcXML Feed";
-            string file_name = "complete_marc.xml";
-            string error_file_name = "complete_marc_last_error.html";
-            if (Test_Feed_Flag)
-            {
-                feed_name = "Test MarcXML Feed";
-                file_name = "test_marc.xml";
-                error_file_name = "test_marc_last_error.html";
-            }
+        //private void Create_Complete_MarcXML_Feed( bool Test_Feed_Flag )
+        //{
+        //    // Determine some values based on whether this is for thr test feed or something else
+        //    string feed_name = "Production MarcXML Feed";
+        //    string file_name = "complete_marc.xml";
+        //    string error_file_name = "complete_marc_last_error.html";
+        //    if (Test_Feed_Flag)
+        //    {
+        //        feed_name = "Test MarcXML Feed";
+        //        file_name = "test_marc.xml";
+        //        error_file_name = "test_marc_last_error.html";
+        //    }
 
-            // Before doing this, create the Mango load
-            try
-            {
-                // Create the Mango load stuff
-                Console.WriteLine("Building " + feed_name);
-                MarcXML_Load_Creator createEndeca = new MarcXML_Load_Creator();
-                bool reportSuccess = createEndeca.Create_MarcXML_Data_File(Test_Feed_Flag, Path.Combine(logFileDirectory, file_name));
+        //    // Before doing this, create the Mango load
+        //    try
+        //    {
+        //        // Create the Mango load stuff
+        //        Console.WriteLine("Building " + feed_name);
+        //        MarcXML_Load_Creator createEndeca = new MarcXML_Load_Creator();
+        //        bool reportSuccess = createEndeca.Create_MarcXML_Data_File(Test_Feed_Flag, Path.Combine(logFileDirectory, file_name));
 
-                // Publish this feed
-                if (reportSuccess)
-                {
-                    Engine_Database.Builder_Clear_Item_Error_Log(feed_name.ToUpper(), "", "UFDC Builder");
-                    File.Copy(Path.Combine(logFileDirectory, file_name), Engine_ApplicationCache_Gateway.Settings.MarcGeneration.MarcXML_Feed_Location + file_name, true);
-                }
-                else
-                {
-                    string errors = createEndeca.Errors;
-                    if (errors.Length > 0)
-                    {
-                        StreamWriter writer = new StreamWriter(Engine_ApplicationCache_Gateway.Settings.MarcGeneration.MarcXML_Feed_Location + error_file_name, false);
-                        writer.WriteLine("<html><head><title>" + feed_name + " Errors</title></head><body><h1>" + feed_name + " Errors</h1>");
-                        writer.Write(errors.Replace("\r\n","<br />").Replace("\n","<br />").Replace("<br />", "<br />\r\n"));
-                        writer.Write("</body></html>");
-                        writer.Flush();
-                        writer.Close();
+        //        // Publish this feed
+        //        if (reportSuccess)
+        //        {
+        //            Engine_Database.Builder_Clear_Item_Error_Log(feed_name.ToUpper(), "", "UFDC Builder");
+        //            File.Copy(Path.Combine(logFileDirectory, file_name), Engine_ApplicationCache_Gateway.Settings.MarcGeneration.MarcXML_Feed_Location + file_name, true);
+        //        }
+        //        else
+        //        {
+        //            string errors = createEndeca.Errors;
+        //            if (errors.Length > 0)
+        //            {
+        //                StreamWriter writer = new StreamWriter(Engine_ApplicationCache_Gateway.Settings.MarcGeneration.MarcXML_Feed_Location + error_file_name, false);
+        //                writer.WriteLine("<html><head><title>" + feed_name + " Errors</title></head><body><h1>" + feed_name + " Errors</h1>");
+        //                writer.Write(errors.Replace("\r\n","<br />").Replace("\n","<br />").Replace("<br />", "<br />\r\n"));
+        //                writer.Write("</body></html>");
+        //                writer.Flush();
+        //                writer.Close();
 
-                        Engine_Database.Builder_Add_Log_Entry(-1, feed_name.ToUpper(), "Error", "Resulting file failed validation", "");
+        //                Engine_Database.Builder_Add_Log_Entry(-1, feed_name.ToUpper(), "Error", "Resulting file failed validation", "");
 
-                        File.Copy(Path.Combine(logFileDirectory, file_name), Engine_ApplicationCache_Gateway.Settings.MarcGeneration.MarcXML_Feed_Location + file_name.Replace(".xml", "_error.xml"), true);
-                    }
-                }
-            }
-            catch 
-            {
-                Engine_Database.Builder_Add_Log_Entry(-1, feed_name.ToUpper(), "Error", "Unknown exception caught", "");
+        //                File.Copy(Path.Combine(logFileDirectory, file_name), Engine_ApplicationCache_Gateway.Settings.MarcGeneration.MarcXML_Feed_Location + file_name.Replace(".xml", "_error.xml"), true);
+        //            }
+        //        }
+        //    }
+        //    catch 
+        //    {
+        //        Engine_Database.Builder_Add_Log_Entry(-1, feed_name.ToUpper(), "Error", "Unknown exception caught", "");
 
-                Console.WriteLine("ERROR BUILDING THE " + feed_name.ToUpper());
-            }
-        }
+        //        Console.WriteLine("ERROR BUILDING THE " + feed_name.ToUpper());
+        //    }
+        //}
 
         #endregion
 
@@ -671,9 +744,11 @@ namespace SobekCM.Builder_Library
                 foreach (string thisSubKey in subkeys)
                 {
                     RegistryKey subKey = localKey.OpenSubKey(thisSubKey);
-                    string value64 = subKey.GetValue(KeyName) as string;
-                    if (!String.IsNullOrEmpty(value64))
-                        return value64;
+                    if (subKey != null) {
+                        string value64 = subKey.GetValue(KeyName) as string;
+                        if (!String.IsNullOrEmpty(value64))
+                            return value64;
+                    }
                 }
             }
             RegistryKey localKey32 = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32);
@@ -684,37 +759,13 @@ namespace SobekCM.Builder_Library
                 foreach (string thisSubKey in subkeys)
                 {
                     RegistryKey subKey = localKey32.OpenSubKey(thisSubKey);
-                    string value32 = subKey.GetValue(KeyName) as string;
-                    if (!String.IsNullOrEmpty(value32))
-                        return value32;
+                    if (subKey != null) {
+                        string value32 = subKey.GetValue(KeyName) as string;
+                        if (!String.IsNullOrEmpty(value32))
+                            return value32;
+                    }
                 }
             }
-            return null;
-        }
-
-        private static string Get_Registry_Value(string KeyPath, string KeyName)
-        {
-            RegistryKey localKey = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64);
-            localKey = localKey.OpenSubKey(KeyPath);
-            if (localKey != null)
-            {
-                string tomcat6_value64 = localKey.GetValue(KeyName) as string;
-                if (tomcat6_value64 != null)
-                {
-                    return tomcat6_value64;
-                }
-            }
-            RegistryKey localKey32 = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32);
-            localKey32 = localKey32.OpenSubKey(KeyPath);
-            if (localKey32 != null)
-            {
-                string tomcat6_value32 = localKey32.GetValue(KeyName) as string;
-                if (tomcat6_value32 != null)
-                {
-                    return tomcat6_value32;
-                }
-            }
-
             return null;
         }
 

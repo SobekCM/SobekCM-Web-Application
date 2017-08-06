@@ -981,7 +981,7 @@
     <Content Include="config\samples\sobekcm_aggregation_viewers.config" />
     <Content Include="config\samples\sobekcm_contactform_example.config" />
     <Content Include="config\samples\sobekcm_engine_example.config" />
-    <Content Include="config\samples\sobekcm_shibboleth_example.config" />
+    <Content Include="config\user\sobekcm_shibboleth_example.config" />
     <Content Include="config\samples\sobekcm_static_resources_example.config" />
     <Content Include="plugins\EbscoServices\sobekcm_engine.config" />
     <Content Include="config\default\sobekcm_aggregation_viewers.config" />

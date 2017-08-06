@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using SobekCM.Core.Navigation;
 using SobekCM.Core.Results;
 using SobekCM.Core.UI_Configuration.Viewers;
 using SobekCM.Library.UI;
@@ -19,13 +20,23 @@ namespace SobekCM.Library.ResultsViewer
         /// <returns> Either the results vieweer, or NULL </returns>
         public static iResultsViewer Get_Results_Viewer(string ViewerCode, RequestCache RequestSpecificValues, Search_Results_Statistics ResultsStats, List<iSearch_Title_Result> PagedResults)
         {
+            // Determine the actual viewercode
+            string viewerCode = ViewerCode;
+            if (RequestSpecificValues.Current_Mode.Mode == Display_Mode_Enum.My_Sobek)
+            {
+                if (!String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.ViewerCode))
+                    viewerCode = RequestSpecificValues.Current_Mode.ViewerCode;
+                else
+                    viewerCode = "brief";
+            }
+
             // Get the match by viewer code
-            ResultsSubViewerConfig config = UI_ApplicationCache_Gateway.Configuration.UI.WriterViewers.Results.GetViewerByCode(ViewerCode);
+            ResultsSubViewerConfig config = UI_ApplicationCache_Gateway.Configuration.UI.WriterViewers.Results.GetViewerByCode(viewerCode);
 
             // If no match, just try by viewer type then
             if (config == null)
             {
-                config = UI_ApplicationCache_Gateway.Configuration.UI.WriterViewers.Results.GetViewerByType(ViewerCode);
+                config = UI_ApplicationCache_Gateway.Configuration.UI.WriterViewers.Results.GetViewerByType(viewerCode);
             }
 
             // If still null, return NULL

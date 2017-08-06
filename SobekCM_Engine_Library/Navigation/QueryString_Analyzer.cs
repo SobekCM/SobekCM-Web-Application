@@ -516,6 +516,7 @@ namespace SobekCM.Engine_Library.Navigation
 											if (url_relative_list.Count > 2)
 											{
 												Navigator.My_Sobek_SubMode = url_relative_list[2];
+                                                Navigator.ViewerCode = url_relative_list[2];
 												if (url_relative_list.Count > 3)
 												{
 												    if (is_String_Number(url_relative_list[3]))
@@ -527,7 +528,7 @@ namespace SobekCM.Engine_Library.Navigation
 												    else
 												    {
 												        Navigator.Result_Display_Type = url_relative_list[3];
-												        Navigator.My_Sobek_SubMode = url_relative_list[3];
+                                                        Navigator.My_Sobek_SubMode = url_relative_list[3];
 												    }
 												}
 												if ((url_relative_list.Count > 4) && ( is_String_Number( url_relative_list[4] )))

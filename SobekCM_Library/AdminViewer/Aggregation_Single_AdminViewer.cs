@@ -2351,9 +2351,9 @@ namespace SobekCM.Library.AdminViewer
             itemAggregation.Default_Result_View = String.Empty;
 
 			// Add the default result view
-			if (Form["admin_add_default_view"] != null)
+            if (Form["admin_aggr_default_view"] != null)
 			{
-			    string thisView = Form["admin_add_default_view"];
+                string thisView = Form["admin_aggr_default_view"];
 
                 itemAggregation.Default_Result_View = thisView;
 			    if (!itemAggregation.Result_Views.Contains(thisView))
@@ -2375,7 +2375,7 @@ namespace SobekCM.Library.AdminViewer
 
 		private void add_result_view( string Result )
 		{
-            if ( !itemAggregation.Result_Views.Contains( Result ))
+            if (( !String.IsNullOrEmpty(Result)) && ( !itemAggregation.Result_Views.Contains( Result )))
                 itemAggregation.Result_Views.Add(Result);
 		}
 
@@ -2428,7 +2428,7 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine("     </td>");
 			Output.WriteLine("  </tr>");
 
-            /*
+            
 			// Add all the possible result views
 			Output.WriteLine("  <tr class=\"sbkSaav_TallRow\">");
 			Output.WriteLine("    <td style=\"width:50px\">&nbsp;</td>");
@@ -2437,9 +2437,9 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine("      <table class=\"sbkSaav_InnerTable2\">");
 			Output.WriteLine("        <tr style=\"vertical-align:top\">");
 			Output.WriteLine("          <td>");
-			for (int i = 0; i < 5; i++)
+			for (int i = 0; i < 6; i++)
 			{
-				Result_Display_Type_Enum thisResult = Result_Display_Type_Enum.Default;
+			    string thisResult = String.Empty;
 				if (itemAggregation.Result_Views.Count > i)
 					thisResult = itemAggregation.Result_Views[i];
 				if (i == 2)
@@ -2459,7 +2459,7 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine("       </table>");
 			Output.WriteLine("     </td>");
 			Output.WriteLine("  </tr>");
-             * */
+             
 
 			Output.WriteLine("</table>");
 
@@ -2481,33 +2481,19 @@ namespace SobekCM.Library.AdminViewer
 				Output.Write("<option value=\"\">" + NoOption + "</option>");
 			}
 
-			// Add each result view to the select boxes ( brief, map, table, thumbnails, full )
-		    foreach (ResultsSubViewerConfig possibleView in UI_ApplicationCache_Gateway.Configuration.UI.WriterViewers.Results.Viewers)
-		    {
-		        if (String.Compare(Result_Type, possibleView.ViewerCode, StringComparison.OrdinalIgnoreCase) == 0)
-		        {
-
-		        }
-		        else
-		        {
-		            
-		        }
-		    }
-
-
 		    foreach (ResultsSubViewerConfig resultsConfig in UI_ApplicationCache_Gateway.Configuration.UI.WriterViewers.Results.Viewers)
 		    {
 		        // Skip un-enabled ones
                 if ( !resultsConfig.Enabled ) continue;
 
                 // Bookshelf doesn't make sense here either
-                if ( String.Equals("bookshelf", resultsConfig.ViewerCode, StringComparison.OrdinalIgnoreCase)) continue;
+                if ( String.Equals("bookshelf", resultsConfig.ViewerType, StringComparison.OrdinalIgnoreCase)) continue;
 
                 // Add all these options
-                if ( String.Equals(Result_Type, resultsConfig.ViewerCode ))
-                    Output.Write("<option value=\"" + resultsConfig.ViewerCode + "\" selected=\"selected\" >" + resultsConfig.Label + "</option>");
+                if (String.Equals(Result_Type, resultsConfig.ViewerType, StringComparison.OrdinalIgnoreCase))
+                    Output.Write("<option value=\"" + resultsConfig.ViewerType + "\" selected=\"selected\" >" + resultsConfig.Label + "</option>");
                 else
-                    Output.Write("<option value=\"" + resultsConfig.ViewerCode + "\">" + resultsConfig.Label + "</option>");
+                    Output.Write("<option value=\"" + resultsConfig.ViewerType + "\">" + resultsConfig.Label + "</option>");
 		    }
 
 			Output.WriteLine("</select>");

@@ -387,11 +387,30 @@ namespace SobekCM.Engine_Library.Aggregations
             }
 
 
-            return Engine_Database.Save_Item_Aggregation(ItemAggr.ID, ItemAggr.Code, ItemAggr.Name, ItemAggr.ShortName,
+            bool returnValue = Engine_Database.Save_Item_Aggregation(ItemAggr.ID, ItemAggr.Code, ItemAggr.Name, ItemAggr.ShortName,
                 ItemAggr.Description, ItemAggr.Thematic_Heading, ItemAggr.Type, ItemAggr.Active, ItemAggr.Hidden,
                 ItemAggr.Display_Options, 0, ItemAggr.Map_Search_Beta, 0, ItemAggr.Map_Display_Beta,
                 ItemAggr.OAI_Enabled, ItemAggr.OAI_Metadata, ItemAggr.Contact_Email, String.Empty, ItemAggr.External_Link, -1, Username,
                 languageVariantsBuilder.ToString(), Tracer);
+
+            // If this is NOT a new one, save the views
+	        if (ItemAggr.ID > 0)
+	        {
+	            List<string> resultsViews = new List<string>();
+	            if (ItemAggr.Result_Views != null)
+	            {
+	                resultsViews.AddRange(ItemAggr.Result_Views);
+	            }
+	            for (int i = resultsViews.Count; i < 10; i++)
+	            {
+	                resultsViews.Add(String.Empty);
+	            }
+
+                bool returnValue2 = Engine_Database.Save_Item_Aggregation_ResultViews(ItemAggr.Code, resultsViews[0], resultsViews[1], resultsViews[2], 
+                    resultsViews[3], resultsViews[4], resultsViews[5], resultsViews[6], resultsViews[7], resultsViews[8], resultsViews[9], ItemAggr.Default_Result_View, Tracer);
+	        }
+
+            return returnValue;
         }
 
         #endregion

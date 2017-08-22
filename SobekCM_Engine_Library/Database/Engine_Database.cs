@@ -3124,6 +3124,19 @@ namespace SobekCM.Engine_Library.Database
 			        }
 			    }
 
+                // Add the results views from the database
+			    if ((tempSet.Tables.Count > 6) && (tempSet.Tables[6].Rows.Count > 0))
+			    {
+			        aggrInfo.Result_Views.Clear();
+			        foreach (DataRow resultsViewRow in tempSet.Tables[6].Rows)
+			        {
+			            if (bool.Parse(resultsViewRow["DefaultView"].ToString()))
+			                aggrInfo.Default_Result_View = resultsViewRow["ResultType"].ToString();
+
+                        aggrInfo.Result_Views.Add(resultsViewRow["ResultType"].ToString());
+			        }
+			    }
+
 				// Return the built argument set
 				return aggrInfo;
 			}
@@ -3555,7 +3568,51 @@ namespace SobekCM.Engine_Library.Database
 			}
 		}
 
-		#endregion
+        public static bool Save_Item_Aggregation_ResultViews(string AggregationCode, string ResultsViewer1, string ResultsViewer2, string ResultsViewer3,
+            string ResultsViewer4, string ResultsViewer5, string ResultsViewer6, string ResultsViewer7, string ResultsViewer8, string ResultsViewer9,
+            string ResultsViewer10, string DefaultViewer, Custom_Tracer Tracer)
+        {
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("Engine_Database.Save_Item_Aggregation_ResultViews", String.Empty);
+            }
+
+            try
+            {
+                // Build the parameter list
+                EalDbParameter[] paramList = new EalDbParameter[21];
+                paramList[0] = new EalDbParameter("@code", AggregationCode);
+                paramList[1] = new EalDbParameter("@results1", ResultsViewer1);
+                paramList[2] = new EalDbParameter("@results2", ResultsViewer2);
+                paramList[3] = new EalDbParameter("@results3", ResultsViewer3);
+                paramList[4] = new EalDbParameter("@results4", ResultsViewer4);
+                paramList[5] = new EalDbParameter("@results5", ResultsViewer5);
+                paramList[6] = new EalDbParameter("@results6", ResultsViewer6);
+                paramList[7] = new EalDbParameter("@results7", ResultsViewer7);
+                paramList[8] = new EalDbParameter("@results8", ResultsViewer8);
+                paramList[9] = new EalDbParameter("@results9", ResultsViewer9);
+                paramList[10] = new EalDbParameter("@results10", ResultsViewer10);
+                paramList[11] = new EalDbParameter("@default", DefaultViewer ?? String.Empty);
+
+                // Execute this query stored procedure
+                EalDbAccess.ExecuteNonQuery(DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_Save_Item_Aggregation_ResultViews", paramList);
+
+                // Succesful, so return true
+                return true;
+            }
+            catch (Exception ee)
+            {
+                if (Tracer != null)
+                {
+                    Tracer.Add_Trace("Engine_Database.Save_Item_Aggregation_ResultViews", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("Engine_Database.Save_Item_Aggregation_ResultViews", ee.Message, Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("Engine_Database.Save_Item_Aggregation_ResultViews", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                }
+                return false;
+            }
+        }
+
+        #endregion
 
 		#region Methods relating to sending emails from and logging emails in the database
 

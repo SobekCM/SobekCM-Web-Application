@@ -367,6 +367,7 @@
     <Compile Include="ResultsViewer\Custom_Thumbnail_ResultsViewer.cs" />
     <Compile Include="ResultsViewer\Google_Map_ResultsViewer_Beta.cs" />
     <Compile Include="ResultsViewer\ResultsViewer_Factory.cs" />
+    <Compile Include="ResultsViewer\Timeline_ResultsViewer.cs" />
     <Compile Include="TEI\TEI_Configuration.cs" />
     <Compile Include="UI\UI_ApplicationCache_Gateway.cs" />
     <Compile Include="Helpers\UploadiFive\UploadiFive_Settings.cs" />

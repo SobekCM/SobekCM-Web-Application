@@ -3217,6 +3217,28 @@ namespace SobekCM.Engine_Library.Database
 
                 }
 
+                // Add any setting key/value pairs from the database
+                if ((tempSet.Tables.Count > 3) && (tempSet.Tables[3].Rows.Count > 0))
+                {
+                    foreach (DataRow settingRow in tempSet.Tables[3].Rows)
+                    {
+                        aggrInfo.Add_Setting(settingRow["Setting_Key"].ToString(), settingRow["Setting_Value"].ToString());
+                    }
+                }
+
+                // Add the results views from the database
+                if ((tempSet.Tables.Count > 4) && (tempSet.Tables[4].Rows.Count > 0))
+                {
+                    aggrInfo.Result_Views.Clear();
+                    foreach (DataRow resultsViewRow in tempSet.Tables[4].Rows)
+                    {
+                        if (bool.Parse(resultsViewRow["DefaultView"].ToString()))
+                            aggrInfo.Default_Result_View = resultsViewRow["ResultType"].ToString();
+
+                        aggrInfo.Result_Views.Add(resultsViewRow["ResultType"].ToString());
+                    }
+                }
+
 				// Return the built argument set
 				return aggrInfo;
 			}

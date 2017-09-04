@@ -582,7 +582,7 @@ namespace SobekCM.Builder_Library
 
                 return returnValue;
             }
-            catch 
+            catch ( Exception ee )
             {
                 return false;
             }

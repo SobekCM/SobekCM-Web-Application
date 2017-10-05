@@ -45,6 +45,67 @@ namespace SobekCM.Resource_Object.OAI.Writer
                 writer.WriteLine("<dc:identifier>" + Item_To_Save.Web.Service_URL + "</dc:identifier>");
             }
 
+            //modified by Keven for FIU dPanther, 09/05/2017
+            //check files and find the first jpeg file 
+            // and user this one for the thumbnail file
+            foreach (Divisions.SobekCM_File_Info file in Item_To_Save.Divisions.Files)
+            {
+                if (file.File_Extension.ToLower() == "jpg")
+                {
+                    if (File.Exists(Item_To_Save.Source_Directory + "\\" + file.File_Name_Sans_Extension + "_thm.jpg"))
+                    {
+                        writer.WriteLine("<dc:identifier.thumbnail>" + Item_To_Save.Web.Source_URL + "/" + file.File_Name_Sans_Extension + "_thm.jpg" + "</dc:identifier.thumbnail>");
+                    }
+                    else if (File.Exists(Item_To_Save.Source_Directory + "\\" + file.File_Name_Sans_Extension + "thm.jpg"))
+                    {
+                        writer.WriteLine("<dc:identifier.thumbnail>" + Item_To_Save.Web.Source_URL + "/" + file.File_Name_Sans_Extension + "thm.jpg" + "</dc:identifier.thumbnail>");
+                    }
+                    break;
+                }
+                else if (file.File_Extension.ToLower() == "pdf")
+                {
+                    if (File.Exists(Item_To_Save.Source_Directory + "\\" + file.File_Name_Sans_Extension + "_thm.jpg"))
+                    {
+                        writer.WriteLine("<dc:identifier.thumbnail>" + Item_To_Save.Web.Source_URL + "/" + file.File_Name_Sans_Extension + "_thm.jpg" + "</dc:identifier.thumbnail>");
+                    }
+                    else if (File.Exists(Item_To_Save.Source_Directory + "\\" + file.File_Name_Sans_Extension + "thm.jpg"))
+                    {
+                        writer.WriteLine("<dc:identifier.thumbnail>" + Item_To_Save.Web.Source_URL + "/" + file.File_Name_Sans_Extension + "thm.jpg" + "</dc:identifier.thumbnail>");
+                    }
+
+                    break;
+                }
+                else if (file.File_Extension.ToLower() == "jp2")
+                {
+                    if (File.Exists(Item_To_Save.Source_Directory + "\\" + file.File_Name_Sans_Extension + "_thm.jpg"))
+                    {
+                        writer.WriteLine("<dc:identifier.thumbnail>" + Item_To_Save.Web.Source_URL + "/" + file.File_Name_Sans_Extension + "_thm.jpg" + "</dc:identifier.thumbnail>");
+                    }
+                    else if (File.Exists(Item_To_Save.Source_Directory + "\\" + file.File_Name_Sans_Extension + "thm.jpg"))
+                    {
+                        writer.WriteLine("<dc:identifier.thumbnail>" + Item_To_Save.Web.Source_URL + "/" + file.File_Name_Sans_Extension + "thm.jpg" + "</dc:identifier.thumbnail>");
+                    }
+
+                    break;
+                }
+            }
+
+            // add by Keven for FIU dPanther, 10/05/2017
+            // if no files recorded in structure map,
+            // try to check if a thumbnail is available in the folder
+            if (Item_To_Save.Divisions.Files.Count == 0)
+            {
+                string bib = Item_To_Save.BibID.Split('_')[0];
+                if (File.Exists(Item_To_Save.Source_Directory + "\\" + bib + "_thm.jpg"))
+                {
+                    writer.WriteLine("<dc:identifier.thumbnail>" + Item_To_Save.Web.Source_URL + "/" + bib + "_thm.jpg" + "</dc:identifier.thumbnail>");
+                }
+                else if (File.Exists(Item_To_Save.Source_Directory + "\\" + bib + "thm.jpg"))
+                {
+                    writer.WriteLine("<dc:identifier.thumbnail>" + Item_To_Save.Web.Source_URL + "/" + bib + "thm.jpg" + "</dc:identifier.thumbnail>");
+                }
+            }
+
             // Finish this OAI
             writer.WriteLine("</oai_dc:dc>");
 

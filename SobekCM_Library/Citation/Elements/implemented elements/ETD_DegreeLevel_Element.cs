@@ -140,5 +140,42 @@ namespace SobekCM.Library.Citation.Elements
 				}
 			}
 		}
+
+        /// <summary> Saves the constants to the bib id </summary>
+        /// <param name="Bib"> Object into which to save this element's constant data </param>
+        public override void Save_Constant_To_Bib(SobekCM_Item Bib)
+        {
+            if ((DefaultValues != null) && (DefaultValues.Count > 0))
+            {
+                Thesis_Dissertation_Info etdInfo = Bib.Get_Metadata_Module(GlobalVar.THESIS_METADATA_MODULE_KEY) as Thesis_Dissertation_Info;
+                if (etdInfo == null)
+                {
+                    etdInfo = new Thesis_Dissertation_Info();
+                    Bib.Add_Metadata_Module(GlobalVar.THESIS_METADATA_MODULE_KEY, etdInfo);
+                }
+                switch (DefaultValues[0].ToLower())
+                {
+                    case "bachelors":
+                        etdInfo.Degree_Level = Thesis_Dissertation_Info.Thesis_Degree_Level_Enum.Bachelors;
+                        break;
+
+                    case "doctorate":
+                        etdInfo.Degree_Level = Thesis_Dissertation_Info.Thesis_Degree_Level_Enum.Doctorate;
+                        break;
+
+                    case "masters":
+                        etdInfo.Degree_Level = Thesis_Dissertation_Info.Thesis_Degree_Level_Enum.Masters;
+                        break;
+
+                    case "post-doctoratee":
+                        etdInfo.Degree_Level = Thesis_Dissertation_Info.Thesis_Degree_Level_Enum.PostDoctorate;
+                        break;
+
+                    default:
+                        etdInfo.Degree_Level = Thesis_Dissertation_Info.Thesis_Degree_Level_Enum.Unknown;
+                        break;
+                }
+            }
+        }
 	}
 }

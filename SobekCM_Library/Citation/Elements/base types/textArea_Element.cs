@@ -23,7 +23,7 @@ namespace SobekCM.Library.Citation.Elements
         /// <summary> Protected field holds the number of columns (width) to display in Mozilla Firefox </summary>
         protected int ColsMozilla;
 
-        private readonly List<string> defaultValues;
+        protected readonly List<string> DefaultValues;
 
         /// <summary> Protected field holds the number of rows for the text area to display </summary>
         protected int Rows = 3;
@@ -36,7 +36,7 @@ namespace SobekCM.Library.Citation.Elements
             base.Title = Title;
             html_element_name = Html_Element_Name;
 
-            defaultValues = new List<string>();
+            DefaultValues = new List<string>();
             Cols = TEXT_AREA_COLUMNS;
             ColsMozilla = MOZILLA_TEXT_AREA_COLUMNS;
         }
@@ -45,7 +45,7 @@ namespace SobekCM.Library.Citation.Elements
         /// <param name="DefaultValue"> New default value </param>
         public void Add_Default_Value(string DefaultValue)
         {
-            defaultValues.Add(DefaultValue);
+            DefaultValues.Add(DefaultValue);
         }
 
         /// <summary> Method helps to render all simple text area based elements </summary>
@@ -60,7 +60,7 @@ namespace SobekCM.Library.Citation.Elements
         protected void render_helper(TextWriter Output, List<string> InstanceValues, string Skin_Code, bool IsMozilla, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL)
         {
             List<string> allValues = new List<string>();
-            allValues.AddRange(defaultValues);
+            allValues.AddRange(DefaultValues);
             allValues.AddRange(InstanceValues);
 
             if (allValues.Count == 0)
@@ -214,7 +214,7 @@ namespace SobekCM.Library.Citation.Elements
                 if (( XMLReader.NodeType == XmlNodeType.Element ) && ( XMLReader.Name.ToLower() == "value" ))
                 {
                     XMLReader.Read();
-                    defaultValues.Add(XMLReader.Value.Trim());
+                    DefaultValues.Add(XMLReader.Value.Trim());
                     return;
                 }
             }

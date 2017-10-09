@@ -31,27 +31,35 @@ namespace SobekCM.Builder_Library.Modules.Items
                 // Exclude thumbnails
                 if (thisJpeg.IndexOf("thm.jpg", StringComparison.InvariantCultureIgnoreCase) > 0) continue;
 
-                                    string extension = Path.GetExtension(thisJpeg);
-                    string name = Path.GetFileName(thisJpeg);
+                string extension = Path.GetExtension(thisJpeg);
+                string name = Path.GetFileName(thisJpeg);
 
                 // Check the size
                 // Load the JPEG
-                Image jpegSourceImg = SafeImageFromFile(thisJpeg, ref reuseStream);
-                if ((jpegSourceImg.Width > Engine_ApplicationCache_Gateway.Settings.Resources.JPEG_Maximum_Width) || (jpegSourceImg.Height > Engine_ApplicationCache_Gateway.Settings.Resources.JPEG_Maximum_Height))
+                try
                 {
-                    // Copy the JPEG
-                    string final_destination = Path.Combine(resourceFolder, Engine_ApplicationCache_Gateway.Settings.Resources.Backup_Files_Folder_Name);
-                    if (!Directory.Exists(final_destination))
-                        Directory.CreateDirectory(final_destination);
-                    string copy_file = final_destination + "\\" + name.Replace(extension, "") + "_ORIG.jpg";
-                    File.Copy(thisJpeg, copy_file, true);
+                    Image jpegSourceImg = SafeImageFromFile(thisJpeg, ref reuseStream);
+                    if ((jpegSourceImg.Width > Engine_ApplicationCache_Gateway.Settings.Resources.JPEG_Maximum_Width) || (jpegSourceImg.Height > Engine_ApplicationCache_Gateway.Settings.Resources.JPEG_Maximum_Height))
+                    {
+                        // Copy the JPEG
+                        string final_destination = Path.Combine(resourceFolder, Engine_ApplicationCache_Gateway.Settings.Resources.Backup_Files_Folder_Name);
+                        if (!Directory.Exists(final_destination))
+                            Directory.CreateDirectory(final_destination);
+                        string copy_file = final_destination + "\\" + name.Replace(extension, "") + "_ORIG.jpg";
+                        File.Copy(thisJpeg, copy_file, true);
 
-                    // Create the TIFF
-                    string tiff_file = resourceFolder + "\\" + name.Replace(extension, "") + ".tif";
-                    jpegSourceImg.Save(tiff_file, ImageFormat.Tiff);
+                        // Create the TIFF
+                        string tiff_file = resourceFolder + "\\" + name.Replace(extension, "") + ".tif";
+                        jpegSourceImg.Save(tiff_file, ImageFormat.Tiff);
 
-                    // Delete the original JPEG file
-                    File.Delete(thisJpeg);
+                        // Delete the original JPEG file
+                        File.Delete(thisJpeg);
+                    }
+                }
+                catch (Exception ee)
+                {
+                    OnError("Error checking JPEG in ConvertLargeJpegItemModule : " + ee.Message, Resource.BibID + ":" + Resource.VID, Resource.METS_Type_String, Resource.BuilderLogId);
+                    return true;
                 }
             }
 
@@ -63,7 +71,6 @@ namespace SobekCM.Builder_Library.Modules.Items
         private static Image SafeImageFromFile(string FilePath, ref FileStream ReuseStream)
         {
             // http://stackoverflow.com/questions/18250848/how-to-prevent-the-image-fromfile-method-to-lock-the-file
-
             Bitmap img;
             ReuseStream = new FileStream(FilePath, FileMode.Open, FileAccess.Read);
             using (Bitmap b = new Bitmap(ReuseStream))

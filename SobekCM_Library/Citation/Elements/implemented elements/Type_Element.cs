@@ -71,7 +71,7 @@ namespace SobekCM.Library.Citation.Elements
             }
 
             string thisType = Bib.Bib_Info.SobekCM_Type_String;
-            if ( Bib.Bib_Info.SobekCM_Type == TypeOfResource_SobekCM_Enum.Project )
+            if (Bib.Bib_Info.SobekCM_Type == TypeOfResource_SobekCM_Enum.Project)
             {
                 thisType = String.Empty;
                 if (Bib.Bib_Info.Notes_Count > 0)
@@ -82,6 +82,13 @@ namespace SobekCM.Library.Citation.Elements
                         break;
                     }
                 }
+            }
+
+            // Apply a default here
+            if ((String.IsNullOrEmpty(thisType)) || (String.Equals(thisType, "Unknown", StringComparison.OrdinalIgnoreCase)))
+            {
+                if ((DefaultValues != null) && (DefaultValues.Count > 0))
+                    thisType = DefaultValues[0];
             }
 
             // Determine the material type

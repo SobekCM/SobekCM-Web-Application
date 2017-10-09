@@ -1556,6 +1556,17 @@ namespace SobekCM.Resource_Object.Bib_Info
         {
             get
             {
+                // Look in the SobekCM genre FIRST
+                if (genres != null)
+                {
+                    List<Genre_Info> sobekcmGenres = genres.Where(ThisGenre => String.Compare(ThisGenre.Authority, "sobekcm", StringComparison.OrdinalIgnoreCase) == 0).ToList();
+                    foreach (Genre_Info thisGenre in sobekcmGenres)
+                    {
+                        return thisGenre.Genre_Term;
+                    }
+                }
+
+                // Otherwise, look for the standard ones by enum
                 TypeOfResource_SobekCM_Enum sobekcmType = SobekCM_Type;
                 switch (sobekcmType)
                 {
@@ -1620,6 +1631,12 @@ namespace SobekCM.Resource_Object.Bib_Info
             }
             set
             {
+                if (String.IsNullOrEmpty(value))
+                {
+                    SobekCM_Type = TypeOfResource_SobekCM_Enum.UNKNOWN;
+                    return;
+                }
+
                 switch (value.ToUpper().Trim().Replace("_"," "))
                 {
                     case "AERIAL":
@@ -1709,7 +1726,22 @@ namespace SobekCM.Resource_Object.Bib_Info
                         return;
 
                     default:
-                        SobekCM_Type = TypeOfResource_SobekCM_Enum.UNKNOWN;
+                        SobekCM_Type = TypeOfResource_SobekCM_Enum.Archival;
+
+                        // Delete any existing sobekcm genre first
+                        if (genres != null)
+                        {
+                            List<Genre_Info> sobekcmGenres = genres.Where(ThisGenre => String.Compare(ThisGenre.Authority, "sobekcm", StringComparison.OrdinalIgnoreCase) == 0).ToList();
+                            foreach (Genre_Info thisGenre in sobekcmGenres)
+                            {
+                                genres.Remove(thisGenre);
+                            }
+                        }
+
+                        // Add this one back
+                        Add_Genre(value, "sobekcm");
+
+
                         return;
                 }
             }

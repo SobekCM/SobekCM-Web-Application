@@ -11,7 +11,7 @@ using SolrNet.Commands.Parameters;
 
 #endregion
 
-namespace SobekCM.Engine_Library.Solr
+namespace SobekCM.Engine_Library.Solr.Legacy
 {
     /// <summary> Stores a group of page results from an in-document search against a Solr full text index </summary>
     [Serializable]

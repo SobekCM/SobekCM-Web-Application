@@ -6,7 +6,7 @@ using SolrNet.Attributes;
 
 #endregion
 
-namespace SobekCM.Engine_Library.Solr
+namespace SobekCM.Engine_Library.Solr.Legacy
 {
     /// <summary> Stores the information relating to a single result from ansearch within a Solr index  </summary>
     /// <remarks> This is populated by the Solr query through SolrNet, using the SolrNet property attributes as guides.  The highlighted snippet

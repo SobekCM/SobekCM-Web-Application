@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Begin the XML for this input template -->
+<input_template
+  xmlns="http://digital.uflib.ufl.edu/metadata/sobekcm_template/"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://digital.uflib.ufl.edu/metadata/sobekcm_template/
+		http://digital.uflib.ufl.edu/metadata/sobekcm_template/sobekcm_template.xsd">
+	
+	<!-- Define the information about this input template -->
+	<name>Master's Thesis Self-Submittal Tool</name>
+	<notes>Template is used for self-submittal of master theses</notes>
+	<permissions>I, as copyright holder or licensee with the authority to grant copyright permissions for the title, hereby authorize the [%SYSTEMNAME%] to digitize and distribute the title for nonprofit, educational purposes via the Internet or successive technologies. This is a non-exclusive grant of permissions for on-line and off-line use for an indefinite term. Off-line uses shall be consistent either, for educational uses, with the terms of U.S. copyright legislation's &quot;fair use&quot; provisions or, by the [%SYSTEMNAME%], with the maintenance and preservation of an archival copy. Digitization allows the [%SYSTEMNAME%] to generate image- and text-based versions as appropriate and to provide and enhance access using search software. This grant of permissions prohibits use of the digitized versions for commercial use or profit unless I specifically grant rights for those uses in the rights field for this item.</permissions>
+	<dateCreated>September 12, 2017</dateCreated>
+	<lastModified>September 24, 2017</lastModified>
+	<creator>Mark V Sullivan</creator>
+	<includeUserAsAuthor>false</includeUserAsAuthor>
+	<uploads>FILE</uploads>
+	<uploadMandatory>false</uploadMandatory>
+	<bibidRoot>MT</bibidRoot>
+<!-- <emailUponSubmit>name@email.edu</emailUponSubmit>  -->
+
+
+	<!-- This defines the inputs which are available for the user -->
+	<inputs>
+		<page>
+			<name language="eng">Thesis Metadata</name>
+			<panel>
+				<name language="eng">Material Information</name>
+				<element type="Title" subtype="simple" acronym="Enter the title of your chapter, article, report, or other material here." mandatory="true"/>
+				<element type="Type" subtype="simple" mandatory="true" acronym="Select the type which best categorizes this material.">
+					<element_data>
+						<value>Thesis</value>
+						<options>Aerial, Archival, Artifact, Audio, Book, Dataset, Map, Newspaper, Photograph, Postcard, Serial, Thesis, Video</options>
+					</element_data>
+				</element>
+				<element type="Creator" subtype="simple" acronym="Enter each person or group which created this material. Personal names should be entered as [Family Name], [Given Name]." repeatable="true"/>
+				<element type="Date" acronym="Enter the year in which your material was published.  If your material has not been published, enter the current year or leave the field blank."/>								
+			</panel>
+			<panel>
+				<name language="eng">Subjects &amp; Notes</name>
+				<element type="Subject" subtype="scheme" repeatable="true"/>
+				<element type="Abstract" repeatable="true" subtype="simple" acronym="Enter your abstract here.  If your material does not have an abstract, you may include a summary of your document here."/>
+				<element type="Note" repeatable="true" subtype="simple" acronym="Enter any additional information that is important for describing your material.  Include significant keywords or other data useful for finding your material in a citation-only search."/>
+			</panel>
+			<panel>
+				<name language="eng">Degree Information</name>
+				<element type="ETD Degree" acronym="Enter the earned degree for this student." />
+        <element type="ETD Degree Division" acronym="Enter the college from which this degree was earned." />
+        <element type="ETD Graduation Semester" acronym="Enter the semester for the graduating student." />
+			</panel>
+		</page>
+	</inputs>
+
+  <!-- This defines the constants which can not be edited by the user -->
+  <constants>
+    <element type="Acquisition">
+      <element_data>
+        <value>Collected for Queens University Institutional Repository by the online thesis submission tool.</value>
+      </element_data>
+    </element>
+    <element type="Source" subtype="complex">
+      <element_data>
+        <code>QUC</code>
+        <statement>Queens University of Charlotte</statement>
+        <options>QUC</options>
+      </element_data>
+    </element>
+    <element type="Holding" subtype="complex">
+      <element_data>
+        <code>QUC</code>
+        <statement>Queens University of Charlotte</statement>
+        <options>QUC</options>
+      </element_data>
+    </element>
+    <element type="Rights">
+      <element_data>
+        <value>Copyright Creator/Publisher. Permission granted to the University to digitize, archive and distribute this item for non-profit research and educational purposes. Any reuse of this item in excess of fair use or other copyright exemptions requires permission of the copyright holder.</value>
+      </element_data>
+    </element>
+    <element type="Aggregations">
+      <element_data>
+        <value>IR</value>
+      </element_data>
+    </element>
+    <element type="ETD Degree Grantor">
+      <element_data>
+        <value>Queens University of Charlotte</value>
+      </element_data>
+    </element>
+    <element type="ETD Degree Level">
+      <element_data>
+        <value>Masters</value>
+      </element_data>
+    </element>
+  </constants>
+  
+  
+</input_template>
+<!-- End of input template XML -->
+
+<!--
+
+QUESTIONS/COMMENTS:
+
+1) Do you want to get an email from this?
+2) You don't really need the Source or Holding 
+3) Do you want the current user to populate in the creator by default?
+4) Aggregations discussions
+5) Rights statement?
+
+-->

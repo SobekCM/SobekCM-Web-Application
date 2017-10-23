@@ -11,7 +11,7 @@ using SolrNet.Commands.Parameters;
 
 #endregion
 
-namespace SobekCM.Engine_Library.Solr
+namespace SobekCM.Engine_Library.Solr.Legacy
 {
 	/// <summary> Static class performs a search against a set of documents within a Solr/Lucene index </summary>
 	[Serializable]

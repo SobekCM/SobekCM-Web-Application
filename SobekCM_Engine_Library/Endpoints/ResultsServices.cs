@@ -18,6 +18,7 @@ using SobekCM.Engine_Library.ApplicationState;
 using SobekCM.Engine_Library.Database;
 using SobekCM.Core.Configuration.Engine;
 using SobekCM.Engine_Library.Solr;
+using SobekCM.Engine_Library.Solr.Legacy;
 using SobekCM.Tools;
 
 #endregion

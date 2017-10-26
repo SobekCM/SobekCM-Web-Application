@@ -239,6 +239,93 @@ namespace SobekCM.Resource_Object
             }
         }
 
+        /// <summary> Dictionary of all search terms related to this digital resource, which includes standard
+        /// metadata, any additional metadata modules, behaviors, administrative information, etc.. </summary>
+        /// <remarks> This data is used to index all the metadata (for searching and browsing) for this digital resource </remarks>
+        public List<KeyValuePair<string, string>> Search_Terms
+        {
+            get
+            {
+                // Build lists of the metadata now
+                List<KeyValuePair<string, string>> metadataTerms = new List<KeyValuePair<string, string>>();
+
+                // Add the BibID
+                metadataTerms.Add(new KeyValuePair<string, string>("BibID", BibID));
+
+                // Add the main bibliographic terms
+                metadataTerms.AddRange(Bib_Info.Metadata_Search_Terms);
+
+                // Step through all the metadata modules and add any additional metadata search terms
+                if (Metadata_Modules != null)
+                {
+                    foreach (iMetadata_Module thisModule in Metadata_Modules)
+                    {
+                        List<KeyValuePair<string, string>> moduleMetadata = thisModule.Metadata_Search_Terms;
+                        if (moduleMetadata != null)
+                            metadataTerms.AddRange(moduleMetadata);
+                    }
+                }
+
+                // Add serial information
+                if (Behaviors.hasSerialInformation)
+                {
+                    if (Behaviors.Serial_Info.Count > 0)
+                    {
+                        metadataTerms.Add(new KeyValuePair<string, string>("Other Citation", Behaviors.Serial_Info[0].Display));
+                    }
+
+                    if (Behaviors.Serial_Info.Count > 1)
+                    {
+                        metadataTerms.Add(new KeyValuePair<string, string>("Other Citation", Behaviors.Serial_Info[1].Display));
+                    }
+
+                    if (Behaviors.Serial_Info.Count > 2)
+                    {
+                        metadataTerms.Add(new KeyValuePair<string, string>("Other Citation", Behaviors.Serial_Info[2].Display));
+                    }
+
+                    if (Behaviors.Serial_Info.Count > 3)
+                    {
+                        metadataTerms.Add(new KeyValuePair<string, string>("Other Citation", Behaviors.Serial_Info[3].Display));
+                    }
+
+                    if (Behaviors.Serial_Info.Count > 4)
+                    {
+                        metadataTerms.Add(new KeyValuePair<string, string>("Other Citation", Behaviors.Serial_Info[4].Display));
+                    }
+                }
+
+                // Add in the ticklers
+                if (Behaviors.Ticklers_Count > 0)
+                {
+                    foreach (string thisTickler in Behaviors.Ticklers)
+                    {
+                        metadataTerms.Add(new KeyValuePair<string, string>("Tickler", thisTickler));
+                    }
+                }
+
+                // Allow the division/file tree to save metadata here 
+                metadataTerms.AddRange(Divisions.Metadata_Search_Terms);
+
+                //modify by Keven for dPanther            
+                string source_code = Bib_Info.Source.Code;
+
+                if ((source_code.Length > 0) && (source_code[0] != 'i') && (source_code[0] != 'I'))
+                {
+                    source_code = "i" + source_code;
+                }
+                if ((source_code.Length > 2) && (source_code.ToUpper().IndexOf("II") == 0))
+                    source_code = source_code.Substring(1);
+
+                for (int aggNum = 0; aggNum < Behaviors.Aggregation_Code_List.Count; aggNum++)
+                {
+                    metadataTerms.Add(new KeyValuePair<string, string>("Aggregation", Behaviors.Aggregation_Code_List[aggNum]));
+                }
+
+                return metadataTerms;
+            }
+        }
+
         /// <summary> Get the pairtree folder structure from a provided BibID / VID pair </summary>
         /// <param name="BaseDirectory"> Base directory </param>
         /// <param name="BibID"> Provided BibID to use for creating the folder structure </param>

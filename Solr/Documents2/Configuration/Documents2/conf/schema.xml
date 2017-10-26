@@ -27,52 +27,48 @@
   <field name="_root_" type="string" indexed="true" stored="false"/>
 
   <!-- Unique key for this document (defined as unique key below) -->
-  <field name="itemid" type="string" indexed="true" stored="true" required="true" multiValued="false" />
+  <field name="did" type="string" indexed="true" stored="true" required="true" multiValued="false" />
 
 
   <!-- Administrative fields -->
-  <field name="aggregations" type="text_general" indexed="true" stored="true" />
-  <field name="bibid" type="text_general" indexed="true" stored="true" />
+  <field name="aggregations" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="bibid" type="text_general" indexed="true" stored="true" multiValued="false" />
+  <field name="vid" type="text_general" indexed="true" stored="true" multiValued="false" />
 
   <!-- Main metadata fields -->
-  <field name="title" type="text_general" indexed="true" stored="true" />
-  <field name="type" type="text_general" indexed="true" stored="true" />
-
-
+  <field name="title" type="text_general" indexed="true" stored="true" multiValued="false" />
+  <field name="sorttitle" type="text_general" indexed="true" stored="false" multiValued="false" />
+  <field name="alttitle" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="type" type="text_general" indexed="true" stored="true" multiValued="true" />
   <field name="language" type="text_general" indexed="true" stored="true" multiValued="true" />
   <field name="creator" type="text_general" indexed="true" stored="true" multiValued="true" />
   <field name="affiliation" type="text_general" indexed="true" stored="true"  multiValued="true" />
-  <field name="publisher" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="publisher" type="text_general" indexed="true" stored="false" multiValued="true" />
   <field name="publisher.display" type="text_general" indexed="false" stored="true" multiValued="true" />
   <field name="publication_place" type="text_general" indexed="true" stored="true" multiValued="true" />
-
   <field name="audience" type="text_general" indexed="true" stored="true"  multiValued="true" />
-
-
-
-  <field name="source" type="text_general" indexed="true" stored="true"  multiValued="true" />
-  <field name="holding" type="text_general" indexed="true" stored="true"  multiValued="true" />
+  <field name="source" type="text_general" indexed="true" stored="true"  multiValued="false" />
+  <field name="holding" type="text_general" indexed="true" stored="true"  multiValued="false" />
   <field name="identifier" type="text_general" indexed="true" stored="true"  multiValued="true" />
   <field name="notes" type="text_general" indexed="true" stored="true"  multiValued="true" />
-  <field name="other" type="text_general" indexed="true" stored="true"  multiValued="true" />
   <field name="tickler" type="text_general" indexed="true" stored="true"  multiValued="true" />
-  <field name="donor" type="text_general" indexed="true" stored="true"  multiValued="true" />
-  <field name="format" type="text_general" indexed="true" stored="true"  multiValued="true" />
-
-  <field name="date" type="text_general" indexed="true" stored="true" />
-
+  <field name="donor" type="text_general" indexed="true" stored="true"  multiValued="false" />
+  <field name="format" type="text_general" indexed="true" stored="true"  multiValued="false" />
   <field name="frequency" type="text_general" indexed="true" stored="true"  multiValued="true" />
   <field name="genre" type="text_general" indexed="true" stored="true"  multiValued="true" />
+  
+  <!-- Date fields -->
+  <field name="date" type="text_general" indexed="true" stored="true" />
 
   <!-- Subject fields for searching and display -->
   <field name="subject" type="text_general" indexed="true" stored="true" multiValued="true" />
-  <field name="subject.display" type="text_general" indexed="false" stored="true" multiValued="true" />
+  <field name="topics" type="text_general" indexed="true" stored="true" multiValued="true" />
   <field name="name_as_subject" type="text_general" indexed="true" stored="true"  multiValued="true" />
   <field name="title_as_subject" type="text_general" indexed="true" stored="true"  multiValued="true" />
 
   <!-- Spatial fields for searching -->
-  <field name="spatial" type="text_general" indexed="true" stored="true"  multiValued="true" />
-  <field name="spatial.display" type="text_general" indexed="false" stored="true" />
+  <field name="spatial_standard" type="text_general" indexed="true" stored="true"  multiValued="true" />
+  <field name="spatial_hierarchical" type="text_general" indexed="false" stored="true" multiValued="true" />
   <field name="country" type="text_general" indexed="true" stored="true"  multiValued="true" />
   <field name="state" type="text_general" indexed="true" stored="true"  multiValued="true" />
   <field name="county" type="text_general" indexed="true" stored="true"  multiValued="true" />
@@ -83,21 +79,18 @@
   <field name="temporal_decade" type="text_general" indexed="true" stored="true"  multiValued="true" />
   <field name="temporal_year" type="text_general" indexed="true" stored="true" />
 
-  <field name="attribution" type="text_general" indexed="true" stored="true"  multiValued="true" />
-
-
-  <field name="mime_type" type="text_general" indexed="true" stored="true"  multiValued="true" />
-  <field name="tracking_box" type="text_general" indexed="true" stored="true"  multiValued="true" />
-  <field name="abstract" type="text_general" indexed="true" stored="true"  multiValued="true" />
-  <field name="edition" type="text_general" indexed="true" stored="true"  multiValued="true" />
-  <field name="toc" type="text_general" indexed="true" stored="true"  multiValued="true" />
-
-
-
-  <field name="accession_number" type="text_general" indexed="true" stored="true" />
-  <field name="interviewee" type="text_general" indexed="true" stored="true" />
-  <field name="interviewer" type="text_general" indexed="true" stored="true" />
-
+  <!-- Other standard metadata fields -->
+  <field name="attribution" type="text_general" indexed="true" stored="true" multiValued="false" />
+  <field name="mime_type" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="tracking_box" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="abstract" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="edition" type="text_general" indexed="true" stored="true" multiValued="false" />
+  <field name="toc" type="text_general" indexed="true" stored="false" multiValued="true" />
+  <field name="accession_number" type="text_general" indexed="true" stored="true" multiValued="false" />
+  
+  <!-- Oral history metadata fields -->
+  <field name="interviewee" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="interviewer" type="text_general" indexed="true" stored="true" multiValued="true" />
 
   <!-- VRA Core (visual resource) metadata fields -->
   <field name="measurements" type="text_general" indexed="true" stored="true" multiValued="true" />
@@ -108,89 +101,92 @@
   <field name="technique" type="text_general" indexed="true" stored="true" multiValued="true" />
 
   <!-- Zoological Taxonomy metadata fields -->
-  <field name="zt_kingdom" type="text_general" indexed="true" stored="true" />
-  <field name="zt_phylum" type="text_general" indexed="true" stored="true" />
-  <field name="zt_class" type="text_general" indexed="true" stored="true" />
-  <field name="zt_order" type="text_general" indexed="true" stored="true" />
-  <field name="zt_family" type="text_general" indexed="true" stored="true" />
-  <field name="zt_genus" type="text_general" indexed="true" stored="true" />
-  <field name="zt_species" type="text_general" indexed="true" stored="true" />
-  <field name="zt_common_name" type="text_general" indexed="true" stored="true" />
-  <field name="zt_scientific_name" type="text_general" indexed="true" stored="true" />
+  <field name="zt_hierarchical" type="text_general" indexed="false" stored="true" multiValued="true" />
+  <field name="zt_kingdom" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="zt_phylum" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="zt_class" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="zt_order" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="zt_family" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="zt_genus" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="zt_species" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="zt_common_name" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="zt_scientific_name" type="text_general" indexed="true" stored="true" multiValued="true" />
 
   <!-- (Electronic) Thesis and Dissertation metadata fields -->
-  <field name="etd_committee" type="text_general" indexed="true" stored="true" />
-  <field name="etd_degree" type="text_general" indexed="true" stored="true" />
-  <field name="etd_degree_discipline" type="text_general" indexed="true" stored="true" />
-  <field name="etd_degree_grantor" type="text_general" indexed="true" stored="true" />
-  <field name="etd_degree_level" type="text_general" indexed="true" stored="true" />
-  <field name="etd_degree_division" type="text_general" indexed="true" stored="true" />
+  <field name="etd_committee" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="etd_degree" type="text_general" indexed="true" stored="true" multiValued="false" />
+  <field name="etd_degree_discipline" type="text_general" indexed="true" stored="true" multiValued="false" />
+  <field name="etd_degree_grantor" type="text_general" indexed="true" stored="true" multiValued="false" />
+  <field name="etd_degree_level" type="text_general" indexed="true" stored="true" multiValued="false" />
+  <field name="etd_degree_division" type="text_general" indexed="true" stored="true" multiValued="false" />
 
   <!-- Learning Object metadata fields -->
-  <field name="lom_aggregation" type="text_general" indexed="true" stored="true" />
-  <field name="lom_context" type="text_general" indexed="true" stored="true" />
-  <field name="lom_classification" type="text_general" indexed="true" stored="true" />
-  <field name="lom_difficulty" type="text_general" indexed="true" stored="true" />
-  <field name="lom_intended_end_user" type="text_general" indexed="true" stored="true" />
-  <field name="lom_interactivity_level" type="text_general" indexed="true" stored="true" />
-  <field name="lom_interactivity_type" type="text_general" indexed="true" stored="true" />
-  <field name="lom_status" type="text_general" indexed="true" stored="true" />
-  <field name="lom_requirement" type="text_general" indexed="true" stored="true" />
-  <field name="lom_age_range" type="text_general" indexed="true" stored="true" />
+  <field name="lom_aggregation" type="text_general" indexed="true" stored="true" multiValued="false" />
+  <field name="lom_context" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="lom_classification" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="lom_difficulty" type="text_general" indexed="true" stored="true" multiValued="false" />
+  <field name="lom_intended_end_user" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="lom_interactivity_level" type="text_general" indexed="true" stored="true" multiValued="false" />
+  <field name="lom_interactivity_type" type="text_general" indexed="true" stored="true" multiValued="false" />
+  <field name="lom_status" type="text_general" indexed="true" stored="true" multiValued="false" />
+  <field name="lom_requirement" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="lom_age_range" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="lom_resource_type" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="lom_learning_time" type="text_general" indexed="true" stored="true" multiValued="false" />
 
   <!-- User defined metadata fields, used by plug-ins, etc.. -->
-  <field name="user_defined_01" type="text_general" indexed="true" stored="true" />
-  <field name="user_defined_02" type="text_general" indexed="true" stored="true" />
-  <field name="user_defined_03" type="text_general" indexed="true" stored="true" />
-  <field name="user_defined_04" type="text_general" indexed="true" stored="true" />
-  <field name="user_defined_05" type="text_general" indexed="true" stored="true" />
-  <field name="user_defined_06" type="text_general" indexed="true" stored="true" />
-  <field name="user_defined_07" type="text_general" indexed="true" stored="true" />
-  <field name="user_defined_08" type="text_general" indexed="true" stored="true" />
-  <field name="user_defined_09" type="text_general" indexed="true" stored="true" />
-  <field name="user_defined_10" type="text_general" indexed="true" stored="true" />
-  <field name="user_defined_11" type="text_general" indexed="true" stored="true" />
-  <field name="user_defined_12" type="text_general" indexed="true" stored="true" />
-  <field name="user_defined_13" type="text_general" indexed="true" stored="true" />
-  <field name="user_defined_14" type="text_general" indexed="true" stored="true" />
-  <field name="user_defined_15" type="text_general" indexed="true" stored="true" />
-  <field name="user_defined_16" type="text_general" indexed="true" stored="true" />
-  <field name="user_defined_17" type="text_general" indexed="true" stored="true" />
-  <field name="user_defined_18" type="text_general" indexed="true" stored="true" />
-  <field name="user_defined_19" type="text_general" indexed="true" stored="true" />
-  <field name="user_defined_20" type="text_general" indexed="true" stored="true" />
-  <field name="user_defined_21" type="text_general" indexed="true" stored="true" />
-  <field name="user_defined_22" type="text_general" indexed="true" stored="true" />
-  <field name="user_defined_23" type="text_general" indexed="true" stored="true" />
-  <field name="user_defined_24" type="text_general" indexed="true" stored="true" />
-  <field name="user_defined_25" type="text_general" indexed="true" stored="true" />
-  <field name="user_defined_26" type="text_general" indexed="true" stored="true" />
-  <field name="user_defined_27" type="text_general" indexed="true" stored="true" />
-  <field name="user_defined_28" type="text_general" indexed="true" stored="true" />
-  <field name="user_defined_29" type="text_general" indexed="true" stored="true" />
-  <field name="user_defined_30" type="text_general" indexed="true" stored="true" />
-  <field name="user_defined_31" type="text_general" indexed="true" stored="true" />
-  <field name="user_defined_32" type="text_general" indexed="true" stored="true" />
-  <field name="user_defined_33" type="text_general" indexed="true" stored="true" />
-  <field name="user_defined_34" type="text_general" indexed="true" stored="true" />
-  <field name="user_defined_35" type="text_general" indexed="true" stored="true" />
-  <field name="user_defined_36" type="text_general" indexed="true" stored="true" />
-  <field name="user_defined_37" type="text_general" indexed="true" stored="true" />
-  <field name="user_defined_38" type="text_general" indexed="true" stored="true" />
-  <field name="user_defined_39" type="text_general" indexed="true" stored="true" />
-  <field name="user_defined_40" type="text_general" indexed="true" stored="true" />
-  <field name="user_defined_41" type="text_general" indexed="true" stored="true" />
-  <field name="user_defined_42" type="text_general" indexed="true" stored="true" />
-  <field name="user_defined_43" type="text_general" indexed="true" stored="true" />
-  <field name="user_defined_44" type="text_general" indexed="true" stored="true" />
-  <field name="user_defined_45" type="text_general" indexed="true" stored="true" />
-  <field name="user_defined_46" type="text_general" indexed="true" stored="true" />
-  <field name="user_defined_47" type="text_general" indexed="true" stored="true" />
-  <field name="user_defined_48" type="text_general" indexed="true" stored="true" />
-  <field name="user_defined_49" type="text_general" indexed="true" stored="true" />
-  <field name="user_defined_50" type="text_general" indexed="true" stored="true" />
-  <field name="user_defined_51" type="text_general" indexed="true" stored="true" />
-  <field name="user_defined_52" type="text_general" indexed="true" stored="true" />
+  <field name="user_defined_01" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_02" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_03" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_04" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_05" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_06" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_07" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_08" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_09" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_10" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_11" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_12" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_13" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_14" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_15" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_16" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_17" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_18" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_19" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_20" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_21" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_22" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_23" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_24" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_25" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_26" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_27" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_28" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_29" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_30" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_31" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_32" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_33" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_34" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_35" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_36" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_37" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_38" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_39" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_40" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_41" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_42" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_43" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_44" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_45" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_46" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_47" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_48" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_49" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_50" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_51" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_52" type="text_general" indexed="true" stored="true" multiValued="true" />
 
 
   <!-- Subject field aggregations all subject fields -->
@@ -198,7 +194,7 @@
   <copyField source="subject" dest="subject_all" />
   <copyField source="name_as_subject" dest="subject_all" />
   <copyField source="title_as_subject" dest="subject_all" />
-  <copyField source="spatial" dest="subject_all" />
+  <copyField source="spatial_standard" dest="subject_all" />
   <copyField source="temporal_subject" dest="subject_all" />
 
   <!-- Zoological taxonomy aggregates all ZT fields -->
@@ -241,7 +237,7 @@
   <field name="textXX" type="text_general" indexed="true" stored="false" multiValued="true"/>
 
   <!-- Unique key field - required -->
-  <uniqueKey>itemid</uniqueKey>
+  <uniqueKey>did</uniqueKey>
 
   <fieldType name="string" class="solr.StrField" sortMissingLast="true" />
 

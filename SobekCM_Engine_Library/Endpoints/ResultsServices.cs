@@ -1020,7 +1020,7 @@ namespace SobekCM.Engine_Library.Endpoints
             // If this is basic, do some other preparation
             if (Search_Type == Search_Type_Enum.Full_Text)
             {
-                Solr_Documents_Searcher.Split_Multi_Terms(Search_String, default_index, Output_Terms, Output_Fields);
+                Legacy_Solr_Documents_Searcher.Split_Multi_Terms(Search_String, default_index, Output_Terms, Output_Fields);
             }
             else
             {
@@ -1358,7 +1358,7 @@ namespace SobekCM.Engine_Library.Endpoints
             }
 
             // Use this built query to query against Solr
-            Solr_Documents_Searcher.Search(Current_Aggregation, queryStringBuilder.ToString(), Results_Per_Page, Current_Page, (ushort)Current_Sort, Tracer, out Complete_Result_Set_Info, out Paged_Results);
+            Legacy_Solr_Documents_Searcher.Search(Current_Aggregation, queryStringBuilder.ToString(), Results_Per_Page, Current_Page, (ushort)Current_Sort, Tracer, out Complete_Result_Set_Info, out Paged_Results);
         }
 
         #endregion

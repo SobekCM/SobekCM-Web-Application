@@ -157,12 +157,18 @@
     <Compile Include="Settings\InstanceWide_Settings_Builder.cs" />
     <Compile Include="SiteMap\SobekCM_SiteMap_Reader.cs" />
     <Compile Include="Skins\Web_Skin_Utilities.cs" />
+    <Compile Include="Solr\iSolr_Controller.cs" />
+    <Compile Include="Solr\Legacy\Legacy_SolrDocument.cs" />
+    <Compile Include="Solr\Legacy\Legacy_SolrPage.cs" />
+    <Compile Include="Solr\Legacy\Legacy_Solr_Controller.cs" />
+    <Compile Include="Solr\Legacy\Legacy_Solr_Documents_Searcher.cs" />
+    <Compile Include="Solr\Legacy\Legacy_Solr_Document_Result.cs" />
     <Compile Include="Solr\Solr_Controller.cs" />
-    <Compile Include="Solr\Legacy\Solr_Documents_Searcher.cs" />
-    <Compile Include="Solr\Legacy\Solr_Document_Result.cs" />
     <Compile Include="Solr\Solr_Operations_Cache.cs" />
-    <Compile Include="Solr\Legacy\Solr_Page_Result.cs" />
-    <Compile Include="Solr\Legacy\Solr_Page_Results.cs" />
+    <Compile Include="Solr\Legacy\Legacy_Solr_Page_Result.cs" />
+    <Compile Include="Solr\Legacy\Legacy_Solr_Page_Results.cs" />
+    <Compile Include="Solr\v5\v5_Solr_Controller.cs" />
+    <Compile Include="Solr\v5\v5_SolrDocument.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\EngineAgnosticLayerDbAccess\EngineAgnosticLayerDbAccess.csproj">

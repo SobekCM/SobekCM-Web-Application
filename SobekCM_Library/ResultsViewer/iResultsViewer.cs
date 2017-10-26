@@ -1,6 +1,7 @@
 #region Using directives
 
 using System.Collections.Generic;
+using System.IO;
 using System.Web.UI.WebControls;
 using SobekCM.Core.Results;
 using SobekCM.Tools;
@@ -32,5 +33,12 @@ namespace SobekCM.Library.ResultsViewer
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         /// <returns> Sorted tree with the results in hierarchical structure with volumes and issues under the titles and sorted by serial hierarchy </returns>
         void Add_HTML(PlaceHolder MainPlaceHolder, Custom_Tracer Tracer);
+        
+        /// <summary> Write any additional values within the HTML Head of the final served page </summary>
+        /// <param name="Output"> Output stream currently within the HTML head tags </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        /// <returns> TRUE if this should completely override the default added by the admin or mySobek viewer </returns>
+        /// <remarks> By default this does nothing, but can be overwritten by all the individual html subwriters </remarks>
+        bool Write_Within_HTML_Head(TextWriter Output, Custom_Tracer Tracer);
     }
 }

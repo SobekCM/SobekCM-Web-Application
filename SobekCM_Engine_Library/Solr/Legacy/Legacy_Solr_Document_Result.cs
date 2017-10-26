@@ -15,7 +15,7 @@ namespace SobekCM.Engine_Library.Solr.Legacy
     /// Solr/Lucene search results are a flattened, non-hierarchical structure.  Each result contains all the title and item information within
     /// a single result object.</remarks>
     [Serializable]
-    public class Solr_Document_Result : iSearch_Title_Result, iSearch_Item_Result
+    public class Legacy_Solr_Document_Result : iSearch_Title_Result, iSearch_Item_Result
     {
         private string author;
         private string did;
@@ -29,7 +29,7 @@ namespace SobekCM.Engine_Library.Solr.Legacy
         private string url;
 
         /// <summary> Constructor for a new instance of the Solr_Document_Result class </summary>
-        public Solr_Document_Result()
+        public Legacy_Solr_Document_Result()
         {
             // Do nothing
             OPAC_Number = -1;

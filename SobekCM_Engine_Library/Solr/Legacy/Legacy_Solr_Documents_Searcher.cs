@@ -15,7 +15,7 @@ namespace SobekCM.Engine_Library.Solr.Legacy
 {
 	/// <summary> Static class performs a search against a set of documents within a Solr/Lucene index </summary>
 	[Serializable]
-	public class Solr_Documents_Searcher
+	public class Legacy_Solr_Documents_Searcher
 	{
 		#region Static method to query the Solr/Lucene for a collection of results
 
@@ -47,7 +47,7 @@ namespace SobekCM.Engine_Library.Solr.Legacy
 					Page_Number = 1;
 
 				// Create the solr worker to query the document index
-				var solrWorker = Solr_Operations_Cache<Solr_Document_Result>.GetSolrOperations(Engine_ApplicationCache_Gateway.Settings.Servers.Document_Solr_Index_URL);
+				var solrWorker = Solr_Operations_Cache<Legacy_Solr_Document_Result>.GetSolrOperations(Engine_ApplicationCache_Gateway.Settings.Servers.Document_Solr_Index_URL);
 
 				// Create the query options
 				QueryOptions options = new QueryOptions
@@ -95,7 +95,7 @@ namespace SobekCM.Engine_Library.Solr.Legacy
 				}
 
 				// Perform this search
-				SolrQueryResults<Solr_Document_Result> results = solrWorker.Query(QueryString, options);
+				SolrQueryResults<Legacy_Solr_Document_Result> results = solrWorker.Query(QueryString, options);
 
 				// Create the search statistcs
 				List<string> metadataLabels = new List<string> {"Author", "Publisher", "Format", "Edition", "Institution", "Donor"};
@@ -108,7 +108,7 @@ namespace SobekCM.Engine_Library.Solr.Legacy
 											   };
 
 				// Pass all the results into the List and add the highlighted text to each result as well
-				foreach (Solr_Document_Result thisResult in results)
+				foreach (Legacy_Solr_Document_Result thisResult in results)
 				{
 					// Add the highlight snipper
 					if ((results.Highlights.ContainsKey(thisResult.DID)) && (results.Highlights[thisResult.DID].Count > 0) && (results.Highlights[thisResult.DID].ElementAt(0).Value.Count > 0))

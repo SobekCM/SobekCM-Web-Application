@@ -2,17 +2,12 @@
 
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Web;
 using SobekCM.Core.Aggregations;
-using SobekCM.Core.ApplicationState;
 using SobekCM.Core.Client;
-using SobekCM.Core.Configuration;
-using SobekCM.Core.Configuration.Localization;
-using SobekCM.Core.Items;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Results;
@@ -22,15 +17,11 @@ using SobekCM.Core.Skins;
 using SobekCM.Core.Users;
 using SobekCM.Core.WebContent;
 using SobekCM.Engine_Library.Aggregations;
-using SobekCM.Engine_Library.ApplicationState;
 using SobekCM.Engine_Library.Database;
-using SobekCM.Engine_Library.Items;
 using SobekCM.Engine_Library.SiteMap;
-using SobekCM.Engine_Library.Solr;
+using SobekCM.Engine_Library.Solr.Legacy;
 using SobekCM.Library.Database;
 using SobekCM.Library.UI;
-using SobekCM.Resource_Object;
-using SobekCM.Resource_Object.Divisions;
 using SobekCM.Tools;
 
 #endregion
@@ -950,6 +941,10 @@ namespace SobekCM.Library
 			        special_search_type = true;
 			        sort = 2; // Sort by BibID always for these
 		        }
+	            if (String.Equals(Current_Mode.Result_Display_Type, "timeline", StringComparison.OrdinalIgnoreCase))
+	            {
+	                results_per_page = 1000;
+	            }
 
 		        // Determine if a date range was provided
 		        long date1 = -1;
@@ -1193,7 +1188,7 @@ namespace SobekCM.Library
             // If this is basic, do some other preparation
             if ( Search_Type == Search_Type_Enum.Full_Text )
             {
-                Solr_Documents_Searcher.Split_Multi_Terms(Search_String, default_index, Output_Terms, Output_Fields);
+                Legacy_Solr_Documents_Searcher.Split_Multi_Terms(Search_String, default_index, Output_Terms, Output_Fields);
             }
             else
             {
@@ -1618,7 +1613,7 @@ namespace SobekCM.Library
             }
 
             // Use this built query to query against Solr
-            Solr_Documents_Searcher.Search(Current_Aggregation, queryStringBuilder.ToString(), Results_Per_Page, Current_Page, (ushort) Current_Sort, Tracer, out Complete_Result_Set_Info, out Paged_Results);
+            Legacy_Solr_Documents_Searcher.Search(Current_Aggregation, queryStringBuilder.ToString(), Results_Per_Page, Current_Page, (ushort) Current_Sort, Tracer, out Complete_Result_Set_Info, out Paged_Results);
         }
 
 

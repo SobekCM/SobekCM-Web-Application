@@ -131,7 +131,7 @@ namespace SobekCM.Library.ResultsViewer
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         /// <returns> TRUE if this should completely override the default added by the admin or mySobek viewer </returns>
         /// <remarks> By default this does nothing, but can be overwritten by all the individual html subwriters </remarks>
-        public bool Write_Within_HTML_Head(TextWriter Output, Custom_Tracer Tracer)
+        public virtual bool Write_Within_HTML_Head(TextWriter Output, Custom_Tracer Tracer)
         {
             // Do nothing by default
             return false;

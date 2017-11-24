@@ -944,6 +944,7 @@ namespace SobekCM.Library
 	            if (String.Equals(Current_Mode.Result_Display_Type, "timeline", StringComparison.OrdinalIgnoreCase))
 	            {
 	                results_per_page = 1000;
+	                sort = 10;
 	            }
 
 		        // Determine if a date range was provided

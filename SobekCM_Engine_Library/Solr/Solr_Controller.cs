@@ -18,7 +18,7 @@ namespace SobekCM.Engine_Library.Solr
         /// <summary> Static constructor for the <see cref="Solr_Controller"/> class </summary>
         static Solr_Controller()
         {
-            solrController = new v5_Solr_Controller();
+            solrController = new Legacy_Solr_Controller();
         }
 
 

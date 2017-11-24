@@ -478,9 +478,10 @@ namespace SobekCM.Core.MemoryMgmt
         /// <param name="Browse_Name"> Name of this browse (or info) </param>
         /// <param name="Page"> Page of the browse results to retrieve </param>
         /// <param name="Sort"> Sort type for the current browse results to retrieve </param>
+        /// <param name="Results_Per_Page"> Number of results per page of results </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
         /// <returns> Either NULL or the item browse from the cache  </returns>
-        public static List<iSearch_Title_Result> Retrieve_Browse_Results(string Aggregation_Code, string Browse_Name, int Page, int Sort, Custom_Tracer Tracer)
+        public static List<iSearch_Title_Result> Retrieve_Browse_Results(string Aggregation_Code, string Browse_Name, int Page, int Sort, uint Results_Per_Page, Custom_Tracer Tracer)
         {
             // If the cache is disabled, just return before even tracing
             if (Settings.Disabled)
@@ -492,7 +493,7 @@ namespace SobekCM.Core.MemoryMgmt
             }
 
             // Determine the key
-            string key = "PAGEDBROWSE_" + Aggregation_Code.ToUpper() + "_" + Browse_Name.ToUpper() + "_" + Sort + "_" + Page;
+            string key = "PAGEDBROWSE_" + Aggregation_Code.ToUpper() + "_" + Browse_Name.ToUpper() + "_" + Sort + "_" + Results_Per_Page + "_" + Page;
 
             // Try to get this object from the local cache first
             object returnValue = HttpContext.Current.Cache.Get(key);
@@ -515,9 +516,10 @@ namespace SobekCM.Core.MemoryMgmt
         /// <param name="Browse_Name"> Name of this browse (or info)</param>
         /// <param name="Page"> Page of the browse results to store </param>
         /// <param name="Sort"> Sort type for the current browse results to store </param>
+        /// <param name="Results_Per_Page"> Number of results per page of results </param>
         /// <param name="StoreObject"> Result set of items and titles for this browse </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-        public static void Store_Browse_Results(string Aggregation_Code, string Browse_Name, int Page, int Sort, List<List<iSearch_Title_Result>> StoreObject, Custom_Tracer Tracer)
+        public static void Store_Browse_Results(string Aggregation_Code, string Browse_Name, int Page, int Sort, uint Results_Per_Page, List<List<iSearch_Title_Result>> StoreObject, Custom_Tracer Tracer)
         {
             // If the cache is disabled, just return before even tracing
             if (Settings.Disabled)
@@ -528,7 +530,7 @@ namespace SobekCM.Core.MemoryMgmt
             foreach (List<iSearch_Title_Result> pageOfResults in StoreObject)
             {
                 // Determine the key 
-                string key = "PAGEDBROWSE_" + Aggregation_Code.ToUpper() + "_" + Browse_Name.ToUpper() + "_" + + Sort + "_" + currentpage;
+                string key = "PAGEDBROWSE_" + Aggregation_Code.ToUpper() + "_" + Browse_Name.ToUpper() + "_" + Sort + "_" + Results_Per_Page + "_" + currentpage;
 
                 // Store this on the local cache, if not there and storing on the cache server failed
                 if (HttpContext.Current.Cache[key] == null)

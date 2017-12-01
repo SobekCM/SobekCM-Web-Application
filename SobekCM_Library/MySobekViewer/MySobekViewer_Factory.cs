@@ -1,13 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using SobekCM.Core.Items;
-using SobekCM.Core.MemoryMgmt;
-using SobekCM.Core.Navigation;
-using SobekCM.Engine_Library.Database;
+﻿using SobekCM.Core.Navigation;
 using SobekCM.Library.AdminViewer;
 
 namespace SobekCM.Library.MySobekViewer

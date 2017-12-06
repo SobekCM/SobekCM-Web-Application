@@ -1,0 +1,7 @@
+
+
+Configuration is put under the solr home (  C:\solr-7.0.1\server\solr ) in a sobekcm subfolder.  
+The core.properties file points to a data folder where all the actual indexes reside.
+
+So, the files on this computer are under C:\solr-7.0.1\server\solr\sobekcm  and c:\solr\Documents2
+

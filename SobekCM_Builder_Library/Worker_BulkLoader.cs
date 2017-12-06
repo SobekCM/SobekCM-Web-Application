@@ -676,6 +676,7 @@ namespace SobekCM.Builder_Library
         {
 	        AdditionalWorkResource.METS_Type_String = "Reprocess";
             AdditionalWorkResource.BuilderLogId = Add_NonError_To_Log("Reprocessing '" + AdditionalWorkResource.BibID + ":" + AdditionalWorkResource.VID + "'", "Standard",  AdditionalWorkResource.BibID + ":" + AdditionalWorkResource.VID, AdditionalWorkResource.METS_Type_String, -1);
+            int itemid = -1;
 
             try
             {
@@ -690,6 +691,7 @@ namespace SobekCM.Builder_Library
 
                 // Add thumbnail and aggregation informaiton from the database 
                 Engine_Database.Add_Minimum_Builder_Information(AdditionalWorkResource.Metadata);
+                itemid = AdditionalWorkResource.Metadata.Web.ItemID;
 
                 // Do all the item processing per instance config
                 foreach (iSubmissionPackageModule thisModule in builderModules.ItemProcessModules)
@@ -700,7 +702,7 @@ namespace SobekCM.Builder_Library
                     }
                     if (!thisModule.DoWork(AdditionalWorkResource))
                     {
-                        Add_Error_To_Log("Unable to complete additional work for " + AdditionalWorkResource.BibID + ":" + AdditionalWorkResource.VID, AdditionalWorkResource.BibID + ":" + AdditionalWorkResource.VID, String.Empty, AdditionalWorkResource.BuilderLogId);
+                        Add_Error_To_Log("....Unable to complete additional work for " + AdditionalWorkResource.BibID + ":" + AdditionalWorkResource.VID, AdditionalWorkResource.BibID + ":" + AdditionalWorkResource.VID, String.Empty, AdditionalWorkResource.BuilderLogId);
 
                         return;
                     }
@@ -714,11 +716,12 @@ namespace SobekCM.Builder_Library
             }
             catch (Exception ee)
             {
-                Add_Error_To_Log("Unable to complete additional work for " + AdditionalWorkResource.BibID + ":" + AdditionalWorkResource.VID, AdditionalWorkResource.BibID + ":" + AdditionalWorkResource.VID, AdditionalWorkResource.METS_Type_String, AdditionalWorkResource.BuilderLogId, ee);
+                Add_Error_To_Log("....Unable to complete additional work for " + AdditionalWorkResource.BibID + ":" + AdditionalWorkResource.VID, AdditionalWorkResource.BibID + ":" + AdditionalWorkResource.VID, AdditionalWorkResource.METS_Type_String, AdditionalWorkResource.BuilderLogId, ee);
             }
 
             // Clear the additional work needed flag eithe way, so the same items are reprocessed over and over
-            SobekCM_Item_Database.Update_Additional_Work_Needed_Flag(AdditionalWorkResource.Metadata.Web.ItemID, false);
+            if ( itemid > 0 )
+                SobekCM_Item_Database.Update_Additional_Work_Needed_Flag(itemid, false);
         }
 
         #endregion

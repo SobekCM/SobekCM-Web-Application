@@ -197,6 +197,19 @@ namespace SobekCM.Library.HTML
         
         #endregion
 
+        /// <summary> Write any additional values within the HTML Head of the
+        /// final served page </summary>
+        /// <param name="Output"> Output stream currently within the HTML head tags </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        /// <remarks> By default this does nothing, but can be overwritten by all the individual html subwriters </remarks>
+        public void Write_Within_HTML_Head(TextWriter Output, Custom_Tracer Tracer)
+        {
+            if (resultWriter != null)
+            {
+                resultWriter.Write_Within_HTML_Head(Output, Tracer);
+            }
+        }
+
         /// <summary> Creates the specific results viewer according the user's preferences in the current request mode </summary>
 		private void create_resultwriter()
 		{

@@ -496,7 +496,7 @@ namespace SobekCM.Library.HTML
                             need_browse_statistics = false;
 
                         // Look to see if the paged results are available on any cache..
-                        Paged_Results = CachedDataManager.Retrieve_Browse_Results(Aggregation_Object.Code, browse_code, current_page_index, sort, Tracer);
+                        Paged_Results = CachedDataManager.Retrieve_Browse_Results(Aggregation_Object.Code, browse_code, current_page_index, sort, (uint)results_per_page,Tracer);
                         if (Paged_Results != null)
                             need_paged_results = false;
                     }
@@ -540,7 +540,7 @@ namespace SobekCM.Library.HTML
                             // Save the overall result set statistics to the cache if something was pulled
                             if ((need_paged_results) && (Paged_Results != null))
                             {
-                                CachedDataManager.Store_Browse_Results(Aggregation_Object.Code, browse_code, current_page_index, sort, pagesOfResults, Tracer);
+                                CachedDataManager.Store_Browse_Results(Aggregation_Object.Code, browse_code, current_page_index, sort, (uint)results_per_page, pagesOfResults, Tracer);
                             }
                         }
                     }

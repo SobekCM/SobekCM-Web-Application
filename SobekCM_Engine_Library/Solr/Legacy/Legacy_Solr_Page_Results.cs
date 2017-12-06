@@ -11,18 +11,18 @@ using SolrNet.Commands.Parameters;
 
 #endregion
 
-namespace SobekCM.Engine_Library.Solr
+namespace SobekCM.Engine_Library.Solr.Legacy
 {
     /// <summary> Stores a group of page results from an in-document search against a Solr full text index </summary>
     [Serializable]
-    public class Solr_Page_Results
+    public class Legacy_Solr_Page_Results
     {
-        private readonly List<Solr_Page_Result> results;
+        private readonly List<Legacy_Solr_Page_Result> results;
 
         /// <summary> Constructor for a new instance of the Solr_Page_Results class </summary>
-        public Solr_Page_Results()
+        public Legacy_Solr_Page_Results()
         {
-            results = new List<Solr_Page_Result>();
+            results = new List<Legacy_Solr_Page_Result>();
             Page_Number = -1;
             TotalResults = 0;
             QueryTime = -1;
@@ -30,11 +30,11 @@ namespace SobekCM.Engine_Library.Solr
         }
 
         /// <summary> Gets the collection of single page search results associated with this search </summary>
-        public ReadOnlyCollection<Solr_Page_Result> Results
+        public ReadOnlyCollection<Legacy_Solr_Page_Result> Results
         {
             get
             {
-                return new ReadOnlyCollection<Solr_Page_Result>(results);
+                return new ReadOnlyCollection<Legacy_Solr_Page_Result>(results);
             }
         }
 
@@ -56,7 +56,7 @@ namespace SobekCM.Engine_Library.Solr
 
         /// <summary> Add the next single page result from an in-document search against a Solr full-text index </summary>
         /// <param name="Result"></param>
-        internal void Add_Result(Solr_Page_Result Result)
+        internal void Add_Result(Legacy_Solr_Page_Result Result)
         {
             results.Add(Result);
         }
@@ -69,14 +69,14 @@ namespace SobekCM.Engine_Library.Solr
         /// <param name="ResultsPage"> Which page of results to return ( one-based, so the first page is page number of one )</param>
         /// <param name="Sort_By_Score"> Flag indicates whether to sort the results by relevancy score, rather than the default page order </param>
         /// <returns> Page search result object with all relevant result information </returns>
-        public static Solr_Page_Results Search(string BibID, string VID, List<string> Search_Terms, int ResultsPerPage, int ResultsPage, bool Sort_By_Score)
+        public static Legacy_Solr_Page_Results Search(string BibID, string VID, List<string> Search_Terms, int ResultsPerPage, int ResultsPage, bool Sort_By_Score)
         {
             // Ensure page is not erroneously set to zero or negative
             if (ResultsPage <= 0)
                 ResultsPage = 1;
 
             // Create the solr worker to query the page index
-            var solrWorker = Solr_Operations_Cache<Solr_Page_Result>.GetSolrOperations(Engine_ApplicationCache_Gateway.Settings.Servers.Page_Solr_Index_URL);
+            var solrWorker = Solr_Operations_Cache<Legacy_Solr_Page_Result>.GetSolrOperations(Engine_ApplicationCache_Gateway.Settings.Servers.Page_Solr_Index_URL);
 
             // Create the query options
             QueryOptions options = new QueryOptions
@@ -163,10 +163,10 @@ namespace SobekCM.Engine_Library.Solr
 
 
             // Perform this search
-            SolrQueryResults<Solr_Page_Result> results = solrWorker.Query(queryStringBuilder.ToString(), options);
+            SolrQueryResults<Legacy_Solr_Page_Result> results = solrWorker.Query(queryStringBuilder.ToString(), options);
 
             // Create the results object to pass back out
-            var searchResults = new Solr_Page_Results
+            var searchResults = new Legacy_Solr_Page_Results
             {
                 QueryTime = results.Header.QTime,
                 TotalResults = results.NumFound,
@@ -176,7 +176,7 @@ namespace SobekCM.Engine_Library.Solr
             };
 
             // Pass all the results into the List and add the highlighted text to each result as well
-            foreach (Solr_Page_Result thisResult in results)
+            foreach (Legacy_Solr_Page_Result thisResult in results)
             {
                 // Add the highlight snipper
                 if ((results.Highlights.ContainsKey(thisResult.PageID)) && (results.Highlights[thisResult.PageID].Count > 0) && (results.Highlights[thisResult.PageID].ElementAt(0).Value.Count > 0))

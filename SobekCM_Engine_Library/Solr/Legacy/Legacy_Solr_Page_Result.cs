@@ -5,19 +5,19 @@ using SolrNet.Attributes;
 
 #endregion
 
-namespace SobekCM.Engine_Library.Solr
+namespace SobekCM.Engine_Library.Solr.Legacy
 {
     /// <summary> Stores the information relating to a single page result from an in-document search against a Solr index  </summary>
     /// <remarks> This is populated by the Solr query through SolrNet, using the SolrNet property attributes as guides.  The highlighted snippet
     /// containing the search term(s) for this page is also loaded into this object </remarks>
     [Serializable]
-    public class Solr_Page_Result
+    public class Legacy_Solr_Page_Result
     {
         private string pageid, pagename;
         private string snippet, thumbnail;
 
         /// <summary> Constructor for a new instancee of the Solr_Page_Result class </summary>
-        public Solr_Page_Result()
+        public Legacy_Solr_Page_Result()
         {
             PageOrder = -1;
         }

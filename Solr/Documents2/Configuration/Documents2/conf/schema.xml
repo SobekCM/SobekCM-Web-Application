@@ -1,0 +1,409 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+ Licensed to the Apache Software Foundation (ASF) under one or more
+ contributor license agreements.  See the NOTICE file distributed with
+ this work for additional information regarding copyright ownership.
+ The ASF licenses this file to You under the Apache License, Version 2.0
+ (the "License"); you may not use this file except in compliance with
+ the License.  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+
+
+<schema name="sobekcm_documents" version="1.6">
+
+
+  <!-- Required for the update log referenced in solrconfig.xml -->
+  <field name="_version_" type="long" indexed="true" stored="true"/>
+
+  <!-- Root document of a block of nested documents. Required for nested document support -->
+  <field name="_root_" type="string" indexed="true" stored="false"/>
+
+  <!-- Unique key for this document (defined as unique key below) -->
+  <field name="did" type="string" indexed="true" stored="true" required="true" multiValued="false" />
+
+
+  <!-- Administrative fields -->
+  <field name="aggregations" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="bibid" type="text_general" indexed="true" stored="true" multiValued="false" />
+  <field name="vid" type="text_general" indexed="true" stored="true" multiValued="false" />
+
+  <!-- Main metadata fields -->
+  <field name="title" type="text_general" indexed="true" stored="true" multiValued="false" />
+  <field name="sorttitle" type="text_general" indexed="true" stored="false" multiValued="false" />
+  <field name="alttitle" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="type" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="language" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="creator" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="affiliation" type="text_general" indexed="true" stored="true"  multiValued="true" />
+  <field name="publisher" type="text_general" indexed="true" stored="false" multiValued="true" />
+  <field name="publisher.display" type="text_general" indexed="false" stored="true" multiValued="true" />
+  <field name="publication_place" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="audience" type="text_general" indexed="true" stored="true"  multiValued="true" />
+  <field name="source" type="text_general" indexed="true" stored="true"  multiValued="false" />
+  <field name="holding" type="text_general" indexed="true" stored="true"  multiValued="false" />
+  <field name="identifier" type="text_general" indexed="true" stored="true"  multiValued="true" />
+  <field name="notes" type="text_general" indexed="true" stored="true"  multiValued="true" />
+  <field name="tickler" type="text_general" indexed="true" stored="true"  multiValued="true" />
+  <field name="donor" type="text_general" indexed="true" stored="true"  multiValued="false" />
+  <field name="format" type="text_general" indexed="true" stored="true"  multiValued="false" />
+  <field name="frequency" type="text_general" indexed="true" stored="true"  multiValued="true" />
+  <field name="genre" type="text_general" indexed="true" stored="true"  multiValued="true" />
+  
+  <!-- Date fields -->
+  <field name="date" type="text_general" indexed="true" stored="true" />
+
+  <!-- Subject fields for searching and display -->
+  <field name="subject" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="topics" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="name_as_subject" type="text_general" indexed="true" stored="true"  multiValued="true" />
+  <field name="title_as_subject" type="text_general" indexed="true" stored="true"  multiValued="true" />
+
+  <!-- Spatial fields for searching -->
+  <field name="spatial_standard" type="text_general" indexed="true" stored="true"  multiValued="true" />
+  <field name="spatial_hierarchical" type="text_general" indexed="false" stored="true" multiValued="true" />
+  <field name="country" type="text_general" indexed="true" stored="true"  multiValued="true" />
+  <field name="state" type="text_general" indexed="true" stored="true"  multiValued="true" />
+  <field name="county" type="text_general" indexed="true" stored="true"  multiValued="true" />
+  <field name="city" type="text_general" indexed="true" stored="true"  multiValued="true" />
+
+  <!-- Temporal subect metadata fields -->
+  <field name="temporal_subject" type="text_general" indexed="true" stored="true"  multiValued="true" />
+  <field name="temporal_decade" type="text_general" indexed="true" stored="true"  multiValued="true" />
+  <field name="temporal_year" type="text_general" indexed="true" stored="true" />
+
+  <!-- Other standard metadata fields -->
+  <field name="attribution" type="text_general" indexed="true" stored="true" multiValued="false" />
+  <field name="mime_type" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="tracking_box" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="abstract" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="edition" type="text_general" indexed="true" stored="true" multiValued="false" />
+  <field name="toc" type="text_general" indexed="true" stored="false" multiValued="true" />
+  <field name="accession_number" type="text_general" indexed="true" stored="true" multiValued="false" />
+  
+  <!-- Oral history metadata fields -->
+  <field name="interviewee" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="interviewer" type="text_general" indexed="true" stored="true" multiValued="true" />
+
+  <!-- VRA Core (visual resource) metadata fields -->
+  <field name="measurements" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="cultural_context" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="inscription" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="material" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="style_period" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="technique" type="text_general" indexed="true" stored="true" multiValued="true" />
+
+  <!-- Zoological Taxonomy metadata fields -->
+  <field name="zt_hierarchical" type="text_general" indexed="false" stored="true" multiValued="true" />
+  <field name="zt_kingdom" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="zt_phylum" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="zt_class" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="zt_order" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="zt_family" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="zt_genus" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="zt_species" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="zt_common_name" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="zt_scientific_name" type="text_general" indexed="true" stored="true" multiValued="true" />
+
+  <!-- (Electronic) Thesis and Dissertation metadata fields -->
+  <field name="etd_committee" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="etd_degree" type="text_general" indexed="true" stored="true" multiValued="false" />
+  <field name="etd_degree_discipline" type="text_general" indexed="true" stored="true" multiValued="false" />
+  <field name="etd_degree_grantor" type="text_general" indexed="true" stored="true" multiValued="false" />
+  <field name="etd_degree_level" type="text_general" indexed="true" stored="true" multiValued="false" />
+  <field name="etd_degree_division" type="text_general" indexed="true" stored="true" multiValued="false" />
+
+  <!-- Learning Object metadata fields -->
+  <field name="lom_aggregation" type="text_general" indexed="true" stored="true" multiValued="false" />
+  <field name="lom_context" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="lom_classification" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="lom_difficulty" type="text_general" indexed="true" stored="true" multiValued="false" />
+  <field name="lom_intended_end_user" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="lom_interactivity_level" type="text_general" indexed="true" stored="true" multiValued="false" />
+  <field name="lom_interactivity_type" type="text_general" indexed="true" stored="true" multiValued="false" />
+  <field name="lom_status" type="text_general" indexed="true" stored="true" multiValued="false" />
+  <field name="lom_requirement" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="lom_age_range" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="lom_resource_type" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="lom_learning_time" type="text_general" indexed="true" stored="true" multiValued="false" />
+
+  <!-- User defined metadata fields, used by plug-ins, etc.. -->
+  <field name="user_defined_01" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_02" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_03" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_04" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_05" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_06" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_07" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_08" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_09" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_10" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_11" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_12" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_13" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_14" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_15" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_16" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_17" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_18" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_19" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_20" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_21" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_22" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_23" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_24" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_25" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_26" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_27" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_28" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_29" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_30" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_31" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_32" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_33" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_34" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_35" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_36" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_37" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_38" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_39" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_40" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_41" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_42" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_43" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_44" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_45" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_46" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_47" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_48" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_49" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_50" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_51" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_52" type="text_general" indexed="true" stored="true" multiValued="true" />
+
+
+  <!-- Subject field aggregations all subject fields -->
+  <field name="subject_all" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <copyField source="subject" dest="subject_all" />
+  <copyField source="name_as_subject" dest="subject_all" />
+  <copyField source="title_as_subject" dest="subject_all" />
+  <copyField source="spatial_standard" dest="subject_all" />
+  <copyField source="temporal_subject" dest="subject_all" />
+
+  <!-- Zoological taxonomy aggregates all ZT fields -->
+  <field name="zt_all" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <copyField source="zt_kingdom" dest="zt_all" />
+  <copyField source="zt_phylum" dest="zt_all" />
+  <copyField source="zt_class" dest="zt_all" />
+  <copyField source="zt_order" dest="zt_all" />
+  <copyField source="zt_family" dest="zt_all" />
+  <copyField source="zt_genus" dest="zt_all" />
+  <copyField source="zt_species" dest="zt_all" />
+  <copyField source="zt_common_name" dest="zt_all" />
+  <copyField source="zt_scientific_name" dest="zt_all" />
+
+
+
+  <!-- Special metadata fields including the source, last modified date, and field for searching all -->
+  <!-- the citation fields -->
+
+
+
+  <field name="fullcitation" type="text_general" indexed="true" stored="false" multiValued="true" />
+  <field name="last_modified" type="date" indexed="true" stored="true"/>
+  <field name="_src_" type="string" indexed="false" stored="true"/>
+
+  <!-- Not sure what to do with this -->
+  <field name="User_Description" type="text_general" indexed="true" stored="true"  multiValued="true" />
+
+
+
+  <!-- Main body of document extracted by SolrCell.
+        NOTE: This field is not indexed by default, since it is also copied to "text"
+        using copyField below. This is to save space. Use this field for returning and
+        highlighting document content. Use the "text" field to search the content. -->
+  <field name="content" type="text_general" indexed="false" stored="true" multiValued="true"/>
+
+
+  <!-- catchall field, containing all other searchable text fields (implemented
+        via copyField further on in this schema  -->
+  <field name="textXX" type="text_general" indexed="true" stored="false" multiValued="true"/>
+
+  <!-- Unique key field - required -->
+  <uniqueKey>did</uniqueKey>
+
+  <fieldType name="string" class="solr.StrField" sortMissingLast="true" />
+
+  <!-- boolean type: "true" or "false" -->
+  <fieldType name="boolean" class="solr.BoolField" sortMissingLast="true"/>
+
+
+  <!-- Numeric field types that index values using KD-trees.  Point fields don't support FieldCache, so they must have docValues="true" if needed for sorting, faceting, functions, etc. -->
+  <fieldType name="int" class="solr.IntPointField" docValues="true"/>
+  <fieldType name="float" class="solr.FloatPointField" docValues="true"/>
+  <fieldType name="long" class="solr.LongPointField" docValues="true"/>
+  <fieldType name="double" class="solr.DoublePointField" docValues="true"/>
+
+  <!-- KD-tree versions of date fields -->
+  <fieldType name="date" class="solr.DatePointField" docValues="true"/>
+  <fieldType name="dates" class="solr.DatePointField" docValues="true" multiValued="true"/>
+
+
+  <!--Binary data type. The data should be sent/retrieved in as Base64 encoded Strings -->
+  <fieldType name="binary" class="solr.BinaryField"/>
+
+  <!-- A text field that only splits on whitespace for exact matching of words -->
+  <fieldType name="text_ws" class="solr.TextField" positionIncrementGap="100">
+    <analyzer>
+      <tokenizer class="solr.WhitespaceTokenizerFactory"/>
+    </analyzer>
+  </fieldType>
+
+
+  <!-- A general text field that has reasonable, generic  cross-language defaults: it tokenizes with StandardTokenizer,
+   removes stop words from case-insensitive "stopwords.txt" (empty by default), and down cases.  At query time only, it
+   also applies synonyms. -->
+  <fieldType name="text_general" class="solr.TextField" positionIncrementGap="100">
+    <analyzer type="index">
+      <tokenizer class="solr.StandardTokenizerFactory"/>
+      <filter class="solr.StopFilterFactory" ignoreCase="true" words="stopwords.txt" />
+      <!-- in this example, we will only use synonyms at query time
+        <filter class="solr.SynonymGraphFilterFactory" synonyms="index_synonyms.txt" ignoreCase="true" expand="false"/>
+        <filter class="solr.FlattenGraphFilterFactory"/>  -->
+      <filter class="solr.LowerCaseFilterFactory"/>
+    </analyzer>
+    <analyzer type="query">
+      <tokenizer class="solr.StandardTokenizerFactory"/>
+      <filter class="solr.StopFilterFactory" ignoreCase="true" words="stopwords.txt" />
+      <filter class="solr.SynonymGraphFilterFactory" synonyms="synonyms.txt" ignoreCase="true" expand="true"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+    </analyzer>
+  </fieldType>
+
+
+  <!-- A text field with defaults appropriate for English: it tokenizes with StandardTokenizer, removes English stop words
+         (lang/stopwords_en.txt), down cases, protects words from protwords.txt, and finally applies Porter's stemming.  The query time analyzer
+         also applies synonyms from synonyms.txt. -->
+  <fieldType name="text_en" class="solr.TextField" positionIncrementGap="100">
+    <analyzer type="index">
+      <tokenizer class="solr.StandardTokenizerFactory"/>
+      <!-- in this example, we will only use synonyms at query time
+        <filter class="solr.SynonymGraphFilterFactory" synonyms="index_synonyms.txt" ignoreCase="true" expand="false"/>
+        <filter class="solr.FlattenGraphFilterFactory"/>
+        -->
+      <!-- Case insensitive stop word removal. -->
+      <filter class="solr.StopFilterFactory" ignoreCase="true" words="lang/stopwords_en.txt" />
+      <filter class="solr.LowerCaseFilterFactory"/>
+      <filter class="solr.EnglishPossessiveFilterFactory"/>
+      <filter class="solr.KeywordMarkerFilterFactory" protected="protwords.txt"/>
+      <!-- Optionally you may want to use this less aggressive stemmer instead of PorterStemFilterFactory:
+        <filter class="solr.EnglishMinimalStemFilterFactory"/> -->
+      <filter class="solr.PorterStemFilterFactory"/>
+    </analyzer>
+    <analyzer type="query">
+      <tokenizer class="solr.StandardTokenizerFactory"/>
+      <filter class="solr.SynonymGraphFilterFactory" synonyms="synonyms.txt" ignoreCase="true" expand="true"/>
+      <filter class="solr.StopFilterFactory" ignoreCase="true" words="lang/stopwords_en.txt" />
+      <filter class="solr.LowerCaseFilterFactory"/>
+      <filter class="solr.EnglishPossessiveFilterFactory"/>
+      <filter class="solr.KeywordMarkerFilterFactory" protected="protwords.txt"/>
+      <!-- Optionally you may want to use this less aggressive stemmer instead of PorterStemFilterFactory:
+        <filter class="solr.EnglishMinimalStemFilterFactory"/>  -->
+      <filter class="solr.PorterStemFilterFactory"/>
+    </analyzer>
+  </fieldType>
+
+  <!-- A text field with defaults appropriate for English, plus aggressive word-splitting and autophrase features enabled.
+   This field is just like text_en, except it adds WordDelimiterGraphFilter to enable splitting and matching of
+   words on case-change, alpha numeric boundaries, and non-alphanumeric chars.  This means certain compound word
+   cases will work, for example query "wi fi" will match document "WiFi" or "wi-fi". -->
+  <fieldType name="text_en_splitting" class="solr.TextField" positionIncrementGap="100" autoGeneratePhraseQueries="true">
+    <analyzer type="index">
+      <tokenizer class="solr.WhitespaceTokenizerFactory"/>
+      <!-- in this example, we will only use synonyms at query time
+        <filter class="solr.SynonymGraphFilterFactory" synonyms="index_synonyms.txt" ignoreCase="true" expand="false"/> -->
+      <!-- Case insensitive stop word removal. -->
+      <filter class="solr.StopFilterFactory" ignoreCase="true" words="lang/stopwords_en.txt" />
+      <filter class="solr.WordDelimiterGraphFilterFactory" generateWordParts="1" generateNumberParts="1" catenateWords="1" catenateNumbers="1" catenateAll="0" splitOnCaseChange="1"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+      <filter class="solr.KeywordMarkerFilterFactory" protected="protwords.txt"/>
+      <filter class="solr.PorterStemFilterFactory"/>
+      <filter class="solr.FlattenGraphFilterFactory" />
+    </analyzer>
+    <analyzer type="query">
+      <tokenizer class="solr.WhitespaceTokenizerFactory"/>
+      <filter class="solr.SynonymGraphFilterFactory" synonyms="synonyms.txt" ignoreCase="true" expand="true"/>
+      <filter class="solr.StopFilterFactory" ignoreCase="true" words="lang/stopwords_en.txt" />
+      <filter class="solr.WordDelimiterGraphFilterFactory" generateWordParts="1" generateNumberParts="1" catenateWords="0" catenateNumbers="0" catenateAll="0" splitOnCaseChange="1"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+      <filter class="solr.KeywordMarkerFilterFactory" protected="protwords.txt"/>
+      <filter class="solr.PorterStemFilterFactory"/>
+    </analyzer>
+  </fieldType>
+
+  <!-- Less flexible matching, but less false matches.  Probably not ideal for product names,
+         but may be good for SKUs.  Can insert dashes in the wrong place and still match. -->
+  <fieldType name="text_en_splitting_tight" class="solr.TextField" positionIncrementGap="100" autoGeneratePhraseQueries="true">
+    <analyzer type="index">
+      <tokenizer class="solr.WhitespaceTokenizerFactory"/>
+      <filter class="solr.SynonymGraphFilterFactory" synonyms="synonyms.txt" ignoreCase="true" expand="false"/>
+      <filter class="solr.StopFilterFactory" ignoreCase="true" words="lang/stopwords_en.txt"/>
+      <filter class="solr.WordDelimiterGraphFilterFactory" generateWordParts="0" generateNumberParts="0" catenateWords="1" catenateNumbers="1" catenateAll="0"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+      <filter class="solr.KeywordMarkerFilterFactory" protected="protwords.txt"/>
+      <filter class="solr.EnglishMinimalStemFilterFactory"/>
+      <!-- this filter can remove any duplicate tokens that appear at the same position - sometimes
+             possible with WordDelimiterGraphFilter in conjuncton with stemming. -->
+      <filter class="solr.RemoveDuplicatesTokenFilterFactory"/>
+      <filter class="solr.FlattenGraphFilterFactory" />
+    </analyzer>
+    <analyzer type="query">
+      <tokenizer class="solr.WhitespaceTokenizerFactory"/>
+      <filter class="solr.SynonymGraphFilterFactory" synonyms="synonyms.txt" ignoreCase="true" expand="false"/>
+      <filter class="solr.StopFilterFactory" ignoreCase="true" words="lang/stopwords_en.txt"/>
+      <filter class="solr.WordDelimiterGraphFilterFactory" generateWordParts="0" generateNumberParts="0" catenateWords="1" catenateNumbers="1" catenateAll="0"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+      <filter class="solr.KeywordMarkerFilterFactory" protected="protwords.txt"/>
+      <filter class="solr.EnglishMinimalStemFilterFactory"/>
+      <!-- this filter can remove any duplicate tokens that appear at the same position - sometimes
+             possible with WordDelimiterGraphFilter in conjuncton with stemming. -->
+      <filter class="solr.RemoveDuplicatesTokenFilterFactory"/>
+    </analyzer>
+  </fieldType>
+
+  <!-- Just like text_general except it reverses the characters of each token, to enable more efficient leading wildcard queries. -->
+  <fieldType name="text_general_rev" class="solr.TextField" positionIncrementGap="100">
+    <analyzer type="index">
+      <tokenizer class="solr.StandardTokenizerFactory"/>
+      <filter class="solr.StopFilterFactory" ignoreCase="true" words="stopwords.txt" />
+      <filter class="solr.LowerCaseFilterFactory"/>
+      <filter class="solr.ReversedWildcardFilterFactory" withOriginal="true" maxPosAsterisk="3" maxPosQuestion="2" maxFractionAsterisk="0.33"/>
+    </analyzer>
+    <analyzer type="query">
+      <tokenizer class="solr.StandardTokenizerFactory"/>
+      <filter class="solr.SynonymGraphFilterFactory" synonyms="synonyms.txt" ignoreCase="true" expand="true"/>
+      <filter class="solr.StopFilterFactory" ignoreCase="true" words="stopwords.txt" />
+      <filter class="solr.LowerCaseFilterFactory"/>
+    </analyzer>
+  </fieldType>
+
+
+  <!-- lowercases the entire field value, keeping it as a single token.  -->
+  <fieldType name="lowercase" class="solr.TextField" positionIncrementGap="100">
+    <analyzer>
+      <tokenizer class="solr.KeywordTokenizerFactory"/>
+      <filter class="solr.LowerCaseFilterFactory" />
+    </analyzer>
+  </fieldType>
+
+  <!-- since fields of this type are by default not stored or indexed, any data added to them will be ignored outright.  -->
+  <fieldType name="ignored" stored="false" indexed="false" multiValued="true" class="solr.StrField" />
+
+</schema>

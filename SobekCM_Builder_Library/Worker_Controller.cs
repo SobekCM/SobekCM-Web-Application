@@ -390,9 +390,6 @@ namespace SobekCM.Builder_Library
 	        int time_between_polls = Engine_ApplicationCache_Gateway.Settings.Builder.Override_Seconds_Between_Polls.HasValue ? Engine_ApplicationCache_Gateway.Settings.Builder.Override_Seconds_Between_Polls.Value : 60;
 			if (( time_between_polls < 0 ) || ( MultiInstance_Builder_Settings.Instances.Count == 1 ))
 				time_between_polls = Convert.ToInt32(Engine_ApplicationCache_Gateway.Settings.Builder.Seconds_Between_Polls);
-
-			// Set the time for the next feed building event to 10 minutes from now
-			feedNextBuildTime = DateTime.Now.Add(new TimeSpan(0, 10, 0));
             
             // Loop continually until the end hour is achieved
             Builder_Operation_Flag_Enum abort_flag = Builder_Operation_Flag_Enum.STANDARD_OPERATION;
@@ -409,11 +406,12 @@ namespace SobekCM.Builder_Library
                     }
                 }
 
-				// Is it time to build any RSS/XML feeds?
-				if (DateTime.Compare(DateTime.Now, feedNextBuildTime) >= 0)
-				{
-					feedNextBuildTime = DateTime.Now.Add(new TimeSpan(0, 10, 0));
-				}
+                {
+                    // RE-Configure builders to run and run some basic tests
+                    if ((!Configure_Builders_To_Run(preloader_logger)) || (preloader_logger == null))
+                        return;
+                }
+
 
                 bool skip_sleep = false;
 

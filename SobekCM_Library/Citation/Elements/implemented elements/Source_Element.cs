@@ -37,7 +37,7 @@ namespace SobekCM.Library.Citation.Elements
             codeToNameDictionary = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
             if (UI_ApplicationCache_Gateway.Aggregations != null )
             {
-                SortedList<string, string> tempItemList = new SortedList<string, string>();
+                SortedList<string, string> tempItemList = new SortedList<string, string>(StringComparer.OrdinalIgnoreCase);
                 foreach (string thisType in UI_ApplicationCache_Gateway.Aggregations.All_Types)
                 {
                     if (thisType.IndexOf("Institution") >= 0)

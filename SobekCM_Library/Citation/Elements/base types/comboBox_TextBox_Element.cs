@@ -344,7 +344,30 @@ namespace SobekCM.Library.Citation.Elements
             // Start the select box
             Output.Write("            <select class=\"" + html_element_name + "_select\" name=\"" + id_name + "_select" + i + "\" id=\"" + id_name + "_select" + i + "\" onblur=\"javascript:selectbox_leave('" + id_name + "_select" + i + "','" + html_element_name + "_select', '" + html_element_name + "_select_init')\"" + javascript + " >");
 
-
+            // Apply any default
+            if ((String.IsNullOrEmpty(SelectValue)) && (PossibleSelectItems.Count > 0 ))
+            {
+                if ((DefaultCodes != null) && (DefaultCodes.Count > 0))
+                {
+                    SelectValue = DefaultCodes[0];
+                    if ((DefaultValues != null) && (DefaultValues.Count > 0))
+                    {
+                        TextValue = DefaultValues[0];
+                    }
+                    else if ((codeStatementMappingPresent) && (CodeToStatementDictionary.ContainsKey(SelectValue)))
+                    {
+                        TextValue = CodeToStatementDictionary[SelectValue];
+                    }
+                }
+                else if (!PossibleSelectItems.Contains(SelectValue ?? String.Empty))
+                {
+                    SelectValue = PossibleSelectItems[0];
+                    if ((codeStatementMappingPresent) && ( CodeToStatementDictionary.ContainsKey(SelectValue)))
+                    {
+                        TextValue = CodeToStatementDictionary[SelectValue];
+                    }
+                }
+            }
 
             bool found_option = false;
             foreach (string thisOption in PossibleSelectItems)

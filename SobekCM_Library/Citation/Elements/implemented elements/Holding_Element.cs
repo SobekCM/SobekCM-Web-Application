@@ -197,5 +197,18 @@ namespace SobekCM.Library.Citation.Elements
                 }
             }
         }
+
+        /// <summary> Saves the constants to the bib id </summary>
+        /// <param name="Bib"> Object into which to save this element's constant data </param>
+        public override void Save_Constant_To_Bib(SobekCM_Item Bib)
+        {
+            if ((DefaultCodes.Count > 0) || (DefaultValues.Count > 0))
+            {
+                if ((DefaultCodes.Count > 0) && (DefaultCodes[0].Length > 0))
+                    Bib.Bib_Info.Location.Holding_Code = DefaultCodes[0];
+                if ((DefaultValues.Count > 0) && (DefaultValues[0].Length > 0))
+                    Bib.Bib_Info.Location.Holding_Name = DefaultValues[0];
+            }
+        }
     }
 }

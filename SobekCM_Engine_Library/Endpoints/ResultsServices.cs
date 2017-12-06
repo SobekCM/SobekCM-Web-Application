@@ -18,6 +18,7 @@ using SobekCM.Engine_Library.ApplicationState;
 using SobekCM.Engine_Library.Database;
 using SobekCM.Core.Configuration.Engine;
 using SobekCM.Engine_Library.Solr;
+using SobekCM.Engine_Library.Solr.Legacy;
 using SobekCM.Tools;
 
 #endregion
@@ -616,7 +617,7 @@ namespace SobekCM.Engine_Library.Endpoints
                         need_browse_statistics = false;
 
                     // Look to see if the paged results are available on any cache..
-                    Paged_Results = CachedDataManager.Retrieve_Browse_Results(Aggregation_Object.Code, "all", current_page_index, sort, Tracer);
+                    Paged_Results = CachedDataManager.Retrieve_Browse_Results(Aggregation_Object.Code, "all", current_page_index, sort, Current_Mode.ResultsPerPage, Tracer);
                     if (Paged_Results != null)
                         need_paged_results = false;
                 }
@@ -665,7 +666,7 @@ namespace SobekCM.Engine_Library.Endpoints
                         // Save the overall result set statistics to the cache if something was pulled
                         if ((need_paged_results) && (Paged_Results != null))
                         {
-                            CachedDataManager.Store_Browse_Results(Aggregation_Object.Code, "all", current_page_index, sort, pagesOfResults, Tracer);
+                            CachedDataManager.Store_Browse_Results(Aggregation_Object.Code, "all", current_page_index, sort, Current_Mode.ResultsPerPage, pagesOfResults, Tracer);
                         }
                     }
                 }
@@ -1019,7 +1020,7 @@ namespace SobekCM.Engine_Library.Endpoints
             // If this is basic, do some other preparation
             if (Search_Type == Search_Type_Enum.Full_Text)
             {
-                Solr_Documents_Searcher.Split_Multi_Terms(Search_String, default_index, Output_Terms, Output_Fields);
+                Legacy_Solr_Documents_Searcher.Split_Multi_Terms(Search_String, default_index, Output_Terms, Output_Fields);
             }
             else
             {
@@ -1357,7 +1358,7 @@ namespace SobekCM.Engine_Library.Endpoints
             }
 
             // Use this built query to query against Solr
-            Solr_Documents_Searcher.Search(Current_Aggregation, queryStringBuilder.ToString(), Results_Per_Page, Current_Page, (ushort)Current_Sort, Tracer, out Complete_Result_Set_Info, out Paged_Results);
+            Legacy_Solr_Documents_Searcher.Search(Current_Aggregation, queryStringBuilder.ToString(), Results_Per_Page, Current_Page, (ushort)Current_Sort, Tracer, out Complete_Result_Set_Info, out Paged_Results);
         }
 
         #endregion

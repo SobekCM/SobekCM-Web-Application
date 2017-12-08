@@ -17,6 +17,11 @@ namespace SobekCM.Engine_Library.Solr.v5
         /// <param name="Include_Text"> Flag indicates whether to look for and include full text </param>
         public void Update_Index(string SolrDocumentUrl, string SolrPageUrl, SobekCM_Item Resource, bool Include_Text)
         {
+            // Get rid of trailling '/' in solr document url
+            if ((!String.IsNullOrEmpty(SolrDocumentUrl)) && (SolrDocumentUrl[SolrDocumentUrl.Length - 1] == '/'))
+                SolrDocumentUrl = SolrDocumentUrl.Substring(0, SolrDocumentUrl.Length - 1);
+
+
             // Create the solr workers
             var solrDocumentWorker = Solr_Operations_Cache<v5_SolrDocument>.GetSolrOperations(SolrDocumentUrl);
      //       var solrPageWorker = Solr_Operations_Cache<Legacy_SolrPage>.GetSolrOperations(SolrPageUrl);

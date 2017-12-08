@@ -28,6 +28,12 @@ namespace SobekCM.Library.ResultsViewer
             // Do nothing
         }
 
+        public override bool Write_Within_HTML_Head(System.IO.TextWriter Output, Custom_Tracer Tracer)
+        {
+            Output.WriteLine("<!-- comments -->");
+            return false;
+        }
+
         /// <summary> Adds the controls for this result viewer to the place holder on the main form </summary>
         /// <param name="MainPlaceHolder"> Main place holder ( &quot;mainPlaceHolder&quot; ) in the itemNavForm form into which the the bulk of the result viewer's output is displayed</param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>

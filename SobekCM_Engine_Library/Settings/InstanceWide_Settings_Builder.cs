@@ -27,6 +27,7 @@ namespace SobekCM.Engine_Library.Settings
     /// returned from the database </summary>
     public static  class InstanceWide_Settings_Builder
     {
+
         #region Constant values 
 
         /// <summary> Name for the backup files folder within each digital resource </summary>
@@ -410,7 +411,10 @@ namespace SobekCM.Engine_Library.Settings
             SettingsObject.Metadata_Search_Fields.Clear();
 
             // Add ANYWHERE
-            SettingsObject.Metadata_Search_Fields.Add(new Metadata_Search_Field(-1, String.Empty, "Anywhere", "ZZ", "all", "Anywhere"));
+            if (SettingsObject.VERSION5_SOLR)
+                SettingsObject.Metadata_Search_Fields.Add(new Metadata_Search_Field(-1, String.Empty, "Anywhere", "ZZ", "fullcitation", "Anywhere"));
+            else
+                SettingsObject.Metadata_Search_Fields.Add(new Metadata_Search_Field(-1, String.Empty, "Anywhere", "ZZ", "all", "Anywhere"));
 
             // Add OCLC
             SettingsObject.Metadata_Search_Fields.Add(new Metadata_Search_Field(-2, String.Empty, "OCLC", "OC", "oclc", "OCLC"));

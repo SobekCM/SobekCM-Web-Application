@@ -15,7 +15,9 @@ namespace SobekCM.Engine_Library.Solr.v5
         /// <summary> Constructor for a new instance of the v5_SolrDocument class </summary>
         public v5_SolrDocument()
         {
-            // Empty (required)
+            // Set default title and type
+            Title = "Missing Title";
+          //  Type = "Unkown";
         }
 
 
@@ -37,16 +39,190 @@ namespace SobekCM.Engine_Library.Solr.v5
             VID = Digital_Object.VID;
 
             // Get the rest of the metadata, from the item
-            List<KeyValuePair<string, string>> searchTerms = new List<KeyValuePair<string, string>>();
+            List<KeyValuePair<string, string>> searchTerms = Digital_Object.Search_Terms;
 
             foreach (KeyValuePair<string, string> searchTerm in searchTerms)
             {
+                // Ensure there is a value here
+                if (String.IsNullOrWhiteSpace(searchTerm.Value))
+                    continue;
+
+                // Assign based on the key term
                 switch (searchTerm.Key.ToLower())
                 {
                     case "title":
                         Title = searchTerm.Value;
                         break;
 
+                    case "sort title":
+                        SortTitle = searchTerm.Value;
+                        break;
+
+                    case "other title":
+                        if (AltTitle == null) AltTitle = new List<string>();
+                        AltTitle.Add(searchTerm.Value);
+                        break;
+
+                    case "series title":
+                        SeriesTitle = searchTerm.Value;
+                        break;
+
+                    case "other citation":
+                        if (OtherCitation == null) OtherCitation = new List<string>();
+                        OtherCitation.Add(searchTerm.Value);
+                        break;
+
+                    case "tickler":
+                        if (Tickler == null) Tickler = new List<string>();
+                        Tickler.Add(searchTerm.Value);
+                        break;
+
+                    case "abstract":
+                        if (Abstract == null) Abstract = new List<string>();
+                        Abstract.Add(searchTerm.Value);
+                        break;
+                        
+                    case "affililation":
+                        if (Affiliation == null) Affiliation = new List<string>();
+                        Affiliation.Add(searchTerm.Value);
+                        break;
+
+                    case "genre":
+                        if (Genre == null) Genre = new List<string>();
+                        Genre.Add(searchTerm.Value);
+                        break;
+
+                    case "donor":
+                        Donor = searchTerm.Value;
+                        break;
+
+                    case "identifier":
+                        if (Identifier == null) Identifier = new List<string>();
+                        Identifier.Add(searchTerm.Value);
+                        break;
+
+                    case "accession number":
+                        AccessionNumber = searchTerm.Value;
+                        break;
+
+                    case "language":
+                        if (Language == null) Language = new List<string>();
+                        Language.Add(searchTerm.Value);
+                        break;
+
+                    case "creator":
+                        if (Creator == null) Creator = new List<string>();
+                        Creator.Add(searchTerm.Value);
+                        break;
+
+                    case "creator.display":
+                        if (Creator_Display == null) Creator_Display = new List<string>();
+                        Creator_Display.Add(searchTerm.Value);
+                        break;
+
+                    case "publisher":
+                        if (Publisher == null) Publisher = new List<string>();
+                        Publisher.Add(searchTerm.Value);
+                        break;
+
+                    case "publisher.display":
+                        if (Publisher_Display == null) Publisher_Display = new List<string>();
+                        Publisher_Display.Add(searchTerm.Value);
+                        break;
+
+                    case "holding location":
+                        Holding = searchTerm.Value;
+                        break;
+
+                    case "notes":
+                        if (Notes == null) Notes = new List<string>();
+                        Notes.Add(searchTerm.Value);
+                        break;
+
+                    case "frequency":
+                        if (Frequency == null) Frequency = new List<string>();
+                        Frequency.Add(searchTerm.Value);
+                        break;
+
+                    case "edition":
+                        Edition = searchTerm.Value;
+                        break;
+
+                    case "publication place":
+                        if (PubPlace == null) PubPlace = new List<string>();
+                        PubPlace.Add(searchTerm.Value);
+                        break;
+
+                    case "format":
+                        Format = searchTerm.Value;
+                        break;
+
+                    case "source institution":
+                        Source = searchTerm.Value;
+                        break;
+
+                    case "target audience":
+                        if (Audience == null) Audience = new List<string>();
+                        Audience.Add(searchTerm.Value);
+                        break;
+
+                    case "type":
+                        if (Type == null) Type = new List<string>();
+                        Type.Add(searchTerm.Value);
+                       // Type = searchTerm.Value;
+                        break;
+
+                    case "name as subject":
+                        if (NameAsSubject == null) NameAsSubject = new List<string>();
+                        NameAsSubject.Add(searchTerm.Value);
+                        break;
+
+                    case "title as subject":
+                        if (TitleAsSubject == null) TitleAsSubject = new List<string>();
+                        TitleAsSubject.Add(searchTerm.Value);
+                        break;
+                        
+                    case "spatial coverage":
+                        if (Spatial == null) Spatial = new List<string>();
+                        Spatial.Add(searchTerm.Value);
+                        break;
+
+                    case "country":
+                        if (Country == null) Country = new List<string>();
+                        Country.Add(searchTerm.Value);
+                        break;
+
+                    case "state":
+                        if (State == null) State = new List<string>();
+                        State.Add(searchTerm.Value);
+                        break;
+
+                    case "county":
+                        if (County == null) County = new List<string>();
+                        County.Add(searchTerm.Value);
+                        break;
+
+                    case "city":
+                        if (City == null) City = new List<string>();
+                        City.Add(searchTerm.Value);
+                        break;
+
+                    case "subject keyword":
+                        if (Subject == null) Subject = new List<string>();
+                        Subject.Add(searchTerm.Value.Trim());
+                        break;
+
+                    // Not handled yet
+                    case "publication date":
+                    case "temporal year":
+                    case "ead name":
+                        break;
+                        
+
+                    // Ignore these
+                    case "bibid":
+                        break;
+                        
 
 
                 }
@@ -273,9 +449,13 @@ namespace SobekCM.Engine_Library.Solr.v5
         [SolrField("alttitle")]
         public List<string> AltTitle { get; set; }
 
+        /// <summary> Series titles for this document </summary>
+        [SolrField("seriestitle")]
+        public string SeriesTitle { get; set; }
+
         /// <summary> Overall resource type for this document </summary>
         [SolrField("type")]
-        public string Type { get; set; }
+        public List<string> Type { get; set; }
 
         /// <summary> Languages for this document </summary>
         [SolrField("language")]
@@ -284,6 +464,10 @@ namespace SobekCM.Engine_Library.Solr.v5
         /// <summary> Creators (and contributors) for this document </summary>
         [SolrField("creator")]
         public List<string> Creator { get; set; }
+
+        /// <summary> Creators (and contributors) for this document for display purposes, which includes the role </summary>
+        [SolrField("creator.display")]
+        public List<string> Creator_Display { get; set; }
 
         /// <summary> Affiliations for this document </summary>
         [SolrField("affiliation")]
@@ -340,6 +524,10 @@ namespace SobekCM.Engine_Library.Solr.v5
         /// <summary> Genres for this document </summary>
         [SolrField("genre")]
         public List<string> Genre { get; set; }
+
+        /// <summary> Other citation fields </summary>
+        [SolrField("other")]
+        public List<string> OtherCitation { get; set; }
 
         #endregion
 
@@ -809,6 +997,11 @@ namespace SobekCM.Engine_Library.Solr.v5
         public List<string> UserDefined52 { get; set; }
 
         #endregion
+
+        /// <summary> Highlighted snippet of text from this document </summary>
+        public string Snippet { get; set; }
+
+
 
     }
 }

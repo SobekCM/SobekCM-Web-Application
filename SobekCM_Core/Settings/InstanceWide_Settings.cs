@@ -35,6 +35,9 @@ namespace SobekCM.Core.Settings
     [XmlRoot("Settings")]
     public class InstanceWide_Settings : iSerializationEvents
     {
+        public readonly bool VERSION5_SOLR = true;
+
+
         private readonly Dictionary<int, Disposition_Option> dispositionLookup;
         private readonly Dictionary<string, Metadata_Search_Field> metadataFieldsByCode;
         private readonly Dictionary<short, Metadata_Search_Field> metadataFieldsByID;

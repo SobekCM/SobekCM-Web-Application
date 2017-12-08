@@ -169,6 +169,7 @@
     <Compile Include="Solr\Legacy\Legacy_Solr_Page_Results.cs" />
     <Compile Include="Solr\v5\v5_Solr_Controller.cs" />
     <Compile Include="Solr\v5\v5_SolrDocument.cs" />
+    <Compile Include="Solr\v5\v5_Solr_Document_Searcher.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\EngineAgnosticLayerDbAccess\EngineAgnosticLayerDbAccess.csproj">

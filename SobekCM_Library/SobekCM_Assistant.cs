@@ -20,6 +20,7 @@ using SobekCM.Engine_Library.Aggregations;
 using SobekCM.Engine_Library.Database;
 using SobekCM.Engine_Library.SiteMap;
 using SobekCM.Engine_Library.Solr.Legacy;
+using SobekCM.Engine_Library.Solr.v5;
 using SobekCM.Library.Database;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
@@ -1018,7 +1019,7 @@ namespace SobekCM.Library
                             // Get the page count in the results
                             int current_page_index = Current_Mode.Page.HasValue ? Math.Max(Current_Mode.Page.Value, ((ushort)1)) : 1;
 
-                            // Perform the search against greenstone
+                            // Perform the search against solr
                             Search_Results_Statistics recomputed_search_statistics;
                             Perform_Solr_Search(Tracer, terms, web_fields, actualCount, Current_Mode.Aggregation, current_page_index, sort, results_per_page, out recomputed_search_statistics, out Paged_Results);
                             if (need_search_statistics)
@@ -1056,12 +1057,18 @@ namespace SobekCM.Library
                         try
                         {
                             Search_Results_Statistics recomputed_search_statistics;
-                            Perform_Database_Search(Tracer, terms, web_fields, date1, date2, actualCount, Current_Mode, sort, Aggregation_Object, results_per_page, !special_search_type, out recomputed_search_statistics, out pagesOfResults, need_search_statistics);
+
+                            // Get the page count in the results
+                            int current_page_index = Current_Mode.Page.HasValue ? Math.Max(Current_Mode.Page.Value, ((ushort)1)) : 1;
+                            Perform_Solr_Search(Tracer, terms, web_fields, actualCount, Current_Mode.Aggregation, current_page_index, sort, results_per_page, out recomputed_search_statistics, out Paged_Results);
+
+
+                        //    Perform_Database_Search(Tracer, terms, web_fields, date1, date2, actualCount, Current_Mode, sort, Aggregation_Object, results_per_page, !special_search_type, out recomputed_search_statistics, out pagesOfResults, need_search_statistics);
                             if (need_search_statistics)
                                 Complete_Result_Set_Info = recomputed_search_statistics;
 
-                            if ((pagesOfResults != null) && (pagesOfResults.Count > 0))
-                                Paged_Results = pagesOfResults[0];
+                           // if ((pagesOfResults != null) && (pagesOfResults.Count > 0))
+                           //     Paged_Results = pagesOfResults[0];
                         }
                         catch (Exception ee)
                         {
@@ -1088,7 +1095,9 @@ namespace SobekCM.Library
                             // Cache the search results
                             if ((need_paged_results) && (pagesOfResults != null))
                             {
-                                CachedDataManager.Store_Search_Results(Current_Mode, sort, actualCount, web_fields, terms, date1, date2, pagesOfResults, Tracer);
+                               // CachedDataManager.Store_Search_Results(Current_Mode, sort, actualCount, web_fields, terms, date1, date2, pagesOfResults, Tracer);
+
+                                CachedDataManager.Store_Search_Results(Current_Mode, sort, actualCount, web_fields, terms, date1, date2, Paged_Results, Tracer);
                             }
                         }
                     }
@@ -1366,6 +1375,8 @@ namespace SobekCM.Library
                     db_fields.Add(Metadata_Field_Number(Web_Fields[i]));
                 }
 
+
+
                 // Also add starting and ending quotes to all the valid searches
                 if (db_terms[i].Length > 0)
                 {
@@ -1614,7 +1625,11 @@ namespace SobekCM.Library
             }
 
             // Use this built query to query against Solr
-            Legacy_Solr_Documents_Searcher.Search(Current_Aggregation, queryStringBuilder.ToString(), Results_Per_Page, Current_Page, (ushort) Current_Sort, Tracer, out Complete_Result_Set_Info, out Paged_Results);
+            if (UI_ApplicationCache_Gateway.Settings.VERSION5_SOLR)
+                v5_Solr_Document_Searcher.Search(Current_Aggregation, queryStringBuilder.ToString(), Results_Per_Page, Current_Page, (ushort) Current_Sort, Tracer, out Complete_Result_Set_Info, out Paged_Results);
+            else
+                Legacy_Solr_Documents_Searcher.Search(Current_Aggregation, queryStringBuilder.ToString(), Results_Per_Page, Current_Page, (ushort)Current_Sort, Tracer, out Complete_Result_Set_Info, out Paged_Results);
+
         }
 
 

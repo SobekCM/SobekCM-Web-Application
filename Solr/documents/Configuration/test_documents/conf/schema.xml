@@ -39,9 +39,11 @@
   <field name="title" type="text_general" indexed="true" stored="true" multiValued="false" />
   <field name="sorttitle" type="text_general" indexed="true" stored="false" multiValued="false" />
   <field name="alttitle" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="seriestitle" type="text_general" indexed="true" stored="true" multiValued="false" />
   <field name="type" type="text_general" indexed="true" stored="true" multiValued="true" />
   <field name="language" type="text_general" indexed="true" stored="true" multiValued="true" />
   <field name="creator" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="creator.display" type="text_general" indexed="true" stored="true" multiValued="true" />
   <field name="affiliation" type="text_general" indexed="true" stored="true"  multiValued="true" />
   <field name="publisher" type="text_general" indexed="true" stored="false" multiValued="true" />
   <field name="publisher.display" type="text_general" indexed="false" stored="true" multiValued="true" />
@@ -56,6 +58,7 @@
   <field name="format" type="text_general" indexed="true" stored="true"  multiValued="false" />
   <field name="frequency" type="text_general" indexed="true" stored="true"  multiValued="true" />
   <field name="genre" type="text_general" indexed="true" stored="true"  multiValued="true" />
+  <field name="other" type="text_general" indexed="true" stored="false"  multiValued="true" />
   
   <!-- Date fields -->
   <field name="date" type="text_general" indexed="true" stored="true" />
@@ -190,12 +193,13 @@
 
 
   <!-- Subject field aggregations all subject fields -->
-  <field name="subject_all" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="subject_all" type="text_general" indexed="true" stored="false" multiValued="true" />
   <copyField source="subject" dest="subject_all" />
   <copyField source="name_as_subject" dest="subject_all" />
   <copyField source="title_as_subject" dest="subject_all" />
   <copyField source="spatial_standard" dest="subject_all" />
   <copyField source="temporal_subject" dest="subject_all" />
+  <copyField source="topics" dest="subject_all" />
 
   <!-- Zoological taxonomy aggregates all ZT fields -->
   <field name="zt_all" type="text_general" indexed="true" stored="true" multiValued="true" />
@@ -209,14 +213,45 @@
   <copyField source="zt_common_name" dest="zt_all" />
   <copyField source="zt_scientific_name" dest="zt_all" />
 
-
-
-  <!-- Special metadata fields including the source, last modified date, and field for searching all -->
-  <!-- the citation fields -->
-
-
-
+  <!-- Full citation holds everything -->
   <field name="fullcitation" type="text_general" indexed="true" stored="false" multiValued="true" />
+  <copyField source="bibid" dest="fullcitation" />
+  <copyField source="vid" dest="fullcitation" />
+  <copyField source="title" dest="fullcitation" />
+  <copyField source="alttitle" dest="fullcitation" />
+  <copyField source="seriestitle" dest="fullcitation" />
+  <copyField source="type" dest="fullcitation" />
+  <copyField source="language" dest="fullcitation" />
+  <copyField source="creator" dest="fullcitation" />
+  <copyField source="affiliation" dest="fullcitation" />
+  <copyField source="publisher" dest="fullcitation" />
+  <copyField source="publication_place" dest="fullcitation" />
+  <copyField source="audience" dest="fullcitation" />
+  <copyField source="source" dest="fullcitation" />
+  <copyField source="holding" dest="fullcitation" />
+  <copyField source="identifier" dest="fullcitation" />
+  <copyField source="notes" dest="fullcitation" />
+  <copyField source="tickler" dest="fullcitation" />
+  <copyField source="donor" dest="fullcitation" />
+  <copyField source="format" dest="fullcitation" />
+  <copyField source="frequency" dest="fullcitation" />
+  <copyField source="genre" dest="fullcitation" />
+  <copyField source="other" dest="fullcitation" />
+  <copyField source="subject" dest="fullcitation" />
+  <copyField source="title_as_subject" dest="fullcitation" />  
+  <copyField source="name_as_subject" dest="fullcitation" />
+  <copyField source="title_as_subject" dest="fullcitation" />
+  <copyField source="spatial_standard" dest="fullcitation" />
+  <copyField source="temporal_subject" dest="fullcitation" />
+  <copyField source="topics" dest="fullcitation" />
+  <copyField source="spatial_hierarchical" dest="fullcitation" />
+  <copyField source="country" dest="fullcitation" />
+  <copyField source="state" dest="fullcitation" />
+  <copyField source="county" dest="fullcitation" />
+  <copyField source="city" dest="fullcitation" />
+
+
+  <!-- Special metadata fields including the source, last modified date the citation fields -->
   <field name="last_modified" type="date" indexed="true" stored="true"/>
   <field name="_src_" type="string" indexed="false" stored="true"/>
 

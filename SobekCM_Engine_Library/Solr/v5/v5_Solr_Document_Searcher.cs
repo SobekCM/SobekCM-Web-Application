@@ -56,7 +56,7 @@ namespace SobekCM.Engine_Library.Solr.v5
                 {
                     Rows = ResultsPerPage,
                     Start = (Page_Number - 1)*ResultsPerPage,
-                    Fields = new[] {"did", "title", "donor", "edition", "format", "holding", "source", "type", "creator.display", "publisher.display", "genre", "subject"} //,
+                    Fields = new[] {"did", "mainthumb", "title", "donor", "edition", "format", "holding", "source", "type", "creator.display", "publisher.display", "genre", "subject"} //,
 //                    Highlight = new HighlightingParameters { Fields = new[] { "fulltext" }, },
                     //                  ExtraParams = new Dictionary<string, string> { { "hl.useFastVectorHighlighter", "true" } }
                 };
@@ -74,7 +74,7 @@ namespace SobekCM.Engine_Library.Solr.v5
                 options.Facet = new FacetParameters();
                 foreach (Metadata_Search_Field facet in facets)
                 {
-                    options.Facet.Queries.Add(new SolrFacetFieldQuery(facet.Solr_Field) {MinCount = 1});
+                    options.Facet.Queries.Add(new SolrFacetFieldQuery(facet.Solr_Facet_Term) {MinCount = 1});
                 }
 
                 //// Set the sort value
@@ -135,7 +135,7 @@ namespace SobekCM.Engine_Library.Solr.v5
                     Search_Facet_Collection thisCollection = new Search_Facet_Collection(facetTerm.ID);
 
                     // Add each value
-                    foreach (var facet in results.FacetFields[facetTerm.Solr_Field])
+                    foreach (var facet in results.FacetFields[facetTerm.Solr_Facet_Term])
                     {
                         thisCollection.Facets.Add(new Search_Facet(facet.Key, facet.Value));
                     }
@@ -156,15 +156,14 @@ namespace SobekCM.Engine_Library.Solr.v5
                     resultConverted.Title = thisResult.Title ?? "NO TITLE";
                     resultConverted.HoldingLocation = thisResult.Holding;
                     resultConverted.SourceInstitution = thisResult.Source;
-
-                    if ((thisResult.Type != null) && (thisResult.Type.Count > 0))
-                        resultConverted.MaterialType = thisResult.Type[0];
+                    resultConverted.MaterialType = thisResult.Type;
+                    resultConverted.MainThumbnail = thisResult.MainThumbnail;
 
                     resultConverted.Metadata_Display_Values = new string[]
                     {
                         collection_to_string(thisResult.Creator_Display),
                         collection_to_string(thisResult.Publisher_Display),
-                        collection_to_string(thisResult.Type),
+                        (thisResult.Type ?? String.Empty ),
                         (thisResult.Format ?? String.Empty),
                         (thisResult.Edition ?? String.Empty),
                         (thisResult.Source ?? String.Empty),

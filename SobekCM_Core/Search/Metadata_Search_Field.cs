@@ -52,6 +52,15 @@ namespace SobekCM.Core.Search
         [ProtoMember(6)]
         public string Name { get; set; }
 
+        /// <summary> Term used for this metadata field when displaying facets </summary>
+        //[DataMember(Name = "solrFacet", EmitDefaultValue = false)]
+        //[XmlAttribute("solrFacet")]
+        //[ProtoMember(7)]
+        public string Solr_Facet_Term
+        {
+            get { return Solr_Field + "_facets"; }
+        }
+
         /// <summary> Constructor for a new instance of the Metadata_Search_Field class </summary>
         /// <remarks> Empty constructor for serialization purposes </remarks>
         public Metadata_Search_Field()

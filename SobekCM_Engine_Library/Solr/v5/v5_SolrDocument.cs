@@ -37,6 +37,7 @@ namespace SobekCM.Engine_Library.Solr.v5
             Aggregations.AddRange(Digital_Object.Behaviors.Aggregation_Code_List);
             BibID = Digital_Object.BibID;
             VID = Digital_Object.VID;
+            MainThumbnail = Digital_Object.Behaviors.Main_Thumbnail;
 
             // Get the rest of the metadata, from the item
             List<KeyValuePair<string, string>> searchTerms = Digital_Object.Search_Terms;
@@ -61,6 +62,11 @@ namespace SobekCM.Engine_Library.Solr.v5
                     case "other title":
                         if (AltTitle == null) AltTitle = new List<string>();
                         AltTitle.Add(searchTerm.Value);
+                        break;
+
+                    case "translated title":
+                        if (TranslatedTitle == null) TranslatedTitle = new List<string>();
+                        TranslatedTitle.Add(searchTerm.Value);
                         break;
 
                     case "series title":
@@ -167,9 +173,7 @@ namespace SobekCM.Engine_Library.Solr.v5
                         break;
 
                     case "type":
-                        if (Type == null) Type = new List<string>();
-                        Type.Add(searchTerm.Value);
-                       // Type = searchTerm.Value;
+                        Type = searchTerm.Value;
                         break;
 
                     case "name as subject":
@@ -211,9 +215,53 @@ namespace SobekCM.Engine_Library.Solr.v5
                         if (Subject == null) Subject = new List<string>();
                         Subject.Add(searchTerm.Value.Trim());
                         break;
+                    
+                    case "publication date":
+                        Date = searchTerm.Value;
+                        break;
+
+                    case "toc":
+                        if (TableOfContents == null) TableOfContents = new List<string>();
+                        TableOfContents.Add(searchTerm.Value.Trim());
+                        break;
+
+                    case "mime type":
+                        if (MimeType == null) MimeType = new List<string>();
+                        MimeType.Add(searchTerm.Value.Trim());
+                        break;
+
+                    case "cultural context":
+                        if ( CulturalContext == null ) CulturalContext = new List<string>();
+                        CulturalContext.Add(searchTerm.Value.Trim());
+                        break;
+
+                    case "inscription":
+                        if (Inscription == null) Inscription = new List<string>();
+                        Inscription.Add(searchTerm.Value.Trim());
+                        break;
+
+                    case "materials":
+                        if (Material == null) Material = new List<string>();
+                        Material.Add(searchTerm.Value.Trim());
+                        break;
+
+                    case "measurements":
+                        if (Measurements == null) Measurements = new List<string>();
+                        Measurements.Add(searchTerm.Value.Trim());
+                        break;
+
+                    case "style period":
+                        if (StylePeriod == null) StylePeriod = new List<string>();
+                        StylePeriod.Add(searchTerm.Value.Trim());
+                        break;
+
+                    case "technique":
+                        if (Technique == null) Technique = new List<string>();
+                        Technique.Add(searchTerm.Value.Trim());
+                        break;
+
 
                     // Not handled yet
-                    case "publication date":
                     case "temporal year":
                     case "ead name":
                         break;
@@ -429,9 +477,13 @@ namespace SobekCM.Engine_Library.Solr.v5
         [SolrField("bibid")]
         public string BibID { get; set; }
 
-        /// <summary> </summary>
+        /// <summary> Volume identifier </summary>
         [SolrField("vid")]
         public string VID { get; set; }
+
+        /// <summary> Main thumbnail for this item </summary>
+        [SolrField("mainthumb")]
+        public string MainThumbnail { get; set; }
 
         #endregion
 
@@ -449,13 +501,17 @@ namespace SobekCM.Engine_Library.Solr.v5
         [SolrField("alttitle")]
         public List<string> AltTitle { get; set; }
 
+        /// <summary> Translated titles for this document (mostly used for display purposes)</summary>
+        [SolrField("transtitle")]
+        public List<string> TranslatedTitle { get; set; }
+
         /// <summary> Series titles for this document </summary>
         [SolrField("seriestitle")]
         public string SeriesTitle { get; set; }
 
         /// <summary> Overall resource type for this document </summary>
         [SolrField("type")]
-        public List<string> Type { get; set; }
+        public string Type { get; set; }
 
         /// <summary> Languages for this document </summary>
         [SolrField("language")]
@@ -532,6 +588,10 @@ namespace SobekCM.Engine_Library.Solr.v5
         #endregion
 
         #region Date metadata fields - STILL NEED TO REVIEW THIS!!!
+
+        /// <summary> Date this material was published </summary>
+        [SolrField("date.display")]
+        public string Date { get; set; }
 
         #endregion
 

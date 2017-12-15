@@ -299,6 +299,10 @@ namespace SobekCM.Resource_Object.Bib_Info
                         if (thisTitle.Title.Length > 0)
                         {
                             metadataTerms.Add(new KeyValuePair<string, string>("Other Title", thisTitle.ToString().Replace("<i>", " ").Replace("</i>", " ")));
+
+                            // Was this a translated title?
+                            if ( thisTitle.Title_Type == Title_Type_Enum.Translated)
+                                metadataTerms.Add(new KeyValuePair<string, string>("Translated Title", thisTitle.ToString().Replace("<i>", " ").Replace("</i>", " ")));
                         }
                     }
                 }

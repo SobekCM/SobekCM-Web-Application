@@ -34,13 +34,15 @@
   <field name="aggregations" type="text_general" indexed="true" stored="true" multiValued="true" />
   <field name="bibid" type="text_general" indexed="true" stored="true" multiValued="false" />
   <field name="vid" type="text_general" indexed="true" stored="true" multiValued="false" />
+  <field name="mainthumb" type="text_general" indexed="true" stored="true" multiValued="false" />
 
   <!-- Main metadata fields -->
   <field name="title" type="text_general" indexed="true" stored="true" multiValued="false" />
   <field name="sorttitle" type="text_general" indexed="true" stored="false" multiValued="false" />
   <field name="alttitle" type="text_general" indexed="true" stored="true" multiValued="true" />
   <field name="seriestitle" type="text_general" indexed="true" stored="true" multiValued="false" />
-  <field name="type" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="transtitle" type="text_general" indexed="true" stored="true" multiValued="false" />
+  <field name="type" type="text_general" indexed="true" stored="true" multiValued="false" />
   <field name="language" type="text_general" indexed="true" stored="true" multiValued="true" />
   <field name="creator" type="text_general" indexed="true" stored="true" multiValued="true" />
   <field name="creator.display" type="text_general" indexed="true" stored="true" multiValued="true" />
@@ -52,6 +54,7 @@
   <field name="source" type="text_general" indexed="true" stored="true"  multiValued="false" />
   <field name="holding" type="text_general" indexed="true" stored="true"  multiValued="false" />
   <field name="identifier" type="text_general" indexed="true" stored="true"  multiValued="true" />
+  <field name="accession_number" type="text_general" indexed="true" stored="true" multiValued="true" />
   <field name="notes" type="text_general" indexed="true" stored="true"  multiValued="true" />
   <field name="tickler" type="text_general" indexed="true" stored="true"  multiValued="true" />
   <field name="donor" type="text_general" indexed="true" stored="true"  multiValued="false" />
@@ -60,27 +63,92 @@
   <field name="genre" type="text_general" indexed="true" stored="true"  multiValued="true" />
   <field name="other" type="text_general" indexed="true" stored="false"  multiValued="true" />
   
+  <!-- Main metadata facet fields -->
+  <field name="type_facets" type="text_facets" indexed="true" stored="false" multiValued="false" />
+  <field name="language_facets" type="text_facets" indexed="true" stored="false" multiValued="true" />
+  <field name="creator_facets" type="text_facets" indexed="true" stored="false" multiValued="true" />
+  <field name="affiliation_facets" type="text_facets" indexed="true" stored="false"  multiValued="true" />
+  <field name="publisher_facets" type="text_facets" indexed="true" stored="false" multiValued="true" />
+  <field name="publication_place_facets" type="text_facets" indexed="true" stored="false" multiValued="true" />
+  <field name="audience_facets" type="text_facets" indexed="true" stored="false"  multiValued="true" />
+  <field name="source_facets" type="text_facets" indexed="true" stored="false"  multiValued="false" />
+  <field name="holding_facets" type="text_facets" indexed="true" stored="false"  multiValued="false" />
+  <field name="identifier_facets" type="text_facets" indexed="true" stored="false"  multiValued="true" />
+  <field name="accession_number_facets" type="text_facets" indexed="true" stored="false" multiValued="true" />
+  <field name="tickler_facets" type="text_facets" indexed="true" stored="false"  multiValued="true" />
+  <field name="donor_facets" type="text_facets" indexed="true" stored="false"  multiValued="false" />
+  <field name="format_facets" type="text_facets" indexed="true" stored="false"  multiValued="false" />
+  <field name="frequency_facets" type="text_facets" indexed="true" stored="false"  multiValued="true" />
+  <field name="genre_facets" type="text_facets" indexed="true" stored="false"  multiValued="true" />
+  <copyField source="type" dest="type_facets" />
+  <copyField source="language" dest="language_facets" />
+  <copyField source="creator" dest="creator_facets" />
+  <copyField source="affiliation" dest="affiliation_facets" />
+  <copyField source="publisher" dest="publisher_facets" />
+  <copyField source="publication_place" dest="publication_place_facets" />
+  <copyField source="audience" dest="audience_facets" />
+  <copyField source="source" dest="source_facets" />
+  <copyField source="holding" dest="holding_facets" />
+  <copyField source="identifier" dest="identifier_facets" />
+  <copyField source="accession_number" dest="accession_number_facets" />
+  <copyField source="tickler" dest="tickler_facets" />
+  <copyField source="donor" dest="donor_facets" />
+  <copyField source="format" dest="format_facets" />
+  <copyField source="frequency" dest="frequency_facets" />
+  <copyField source="genre" dest="genre_facets" />
+  
   <!-- Date fields -->
-  <field name="date" type="text_general" indexed="true" stored="true" />
+  <field name="date.display" type="text_general" indexed="true" stored="true" multiValued="false" />
+  <field name="date_facets" type="text_facets" indexed="true" stored="true" multiValued="false" />
+  <copyField source="date.display" dest="date_facets" />
 
   <!-- Subject fields for searching and display -->
   <field name="subject" type="text_general" indexed="true" stored="true" multiValued="true" />
   <field name="topics" type="text_general" indexed="true" stored="true" multiValued="true" />
   <field name="name_as_subject" type="text_general" indexed="true" stored="true"  multiValued="true" />
-  <field name="title_as_subject" type="text_general" indexed="true" stored="true"  multiValued="true" />
+  <field name="title_as_subject" type="text_general" indexed="true" stored="true"  multiValued="true" /> 
+  <field name="subject_facets" type="text_facets" indexed="true" stored="false" multiValued="true" />
+  <field name="topics_facets" type="text_facets" indexed="true" stored="false" multiValued="true" />
+  <field name="name_as_subject_facets" type="text_facets" indexed="true" stored="false"  multiValued="true" />
+  <field name="title_as_subject_facets" type="text_facets" indexed="true" stored="false"  multiValued="true" />
+  <copyField source="subject" dest="subject_facets" />
+  <copyField source="topics" dest="topics_facets" />
+  <copyField source="name_as_subject" dest="name_as_subject_facets" />
+  <copyField source="title_as_subject" dest="title_as_subject_facets" />
 
   <!-- Spatial fields for searching -->
   <field name="spatial_standard" type="text_general" indexed="true" stored="true"  multiValued="true" />
-  <field name="spatial_hierarchical" type="text_general" indexed="false" stored="true" multiValued="true" />
+  <field name="spatial_hierarchical" type="text_general" indexed="true" stored="true" multiValued="true" />
   <field name="country" type="text_general" indexed="true" stored="true"  multiValued="true" />
   <field name="state" type="text_general" indexed="true" stored="true"  multiValued="true" />
   <field name="county" type="text_general" indexed="true" stored="true"  multiValued="true" />
   <field name="city" type="text_general" indexed="true" stored="true"  multiValued="true" />
+  <field name="spatial_standard_facets" type="text_facets" indexed="true" stored="false"  multiValued="true" />
+  <field name="spatial_hierarchical_facets" type="text_facets" indexed="true" stored="false" multiValued="true" />
+  <field name="country_facets" type="text_facets" indexed="true" stored="false"  multiValued="true" />
+  <field name="state_facets" type="text_facets" indexed="true" stored="false"  multiValued="true" />
+  <field name="county_facets" type="text_facets" indexed="true" stored="false"  multiValued="true" />
+  <field name="city_facets" type="text_facets" indexed="true" stored="false"  multiValued="true" />
+  <copyField source="spatial_standard" dest="spatial_standard_facets" />
+  <copyField source="spatial_hierarchical" dest="spatial_hierarchical_facets" />
+  <copyField source="country" dest="country_facets" />
+  <copyField source="state" dest="state_facets" />
+  <copyField source="county" dest="county_facets" />
+  <copyField source="city" dest="city_facets" />
+  
+  <!-- Facet field for all subjects -->
+  <field name="subjects_all_facets" type="text_facets" indexed="true" stored="false" multiValued="true" />  
+  <copyField source="subject" dest="subjects_all_facets" />
+  <copyField source="topics" dest="subjects_all_facets" />
+  <copyField source="name_as_subject" dest="subjects_all_facets" />
+  <copyField source="title_as_subject" dest="subjects_all_facets" />
+  <copyField source="spatial_standard" dest="subjects_all_facets" />
+  <copyField source="spatial_hierarchical" dest="subjects_all_facets" />
 
   <!-- Temporal subect metadata fields -->
   <field name="temporal_subject" type="text_general" indexed="true" stored="true"  multiValued="true" />
   <field name="temporal_decade" type="text_general" indexed="true" stored="true"  multiValued="true" />
-  <field name="temporal_year" type="text_general" indexed="true" stored="true" />
+  <field name="temporal_year" type="text_general" indexed="true" stored="true" multiValued="false" />
 
   <!-- Other standard metadata fields -->
   <field name="attribution" type="text_general" indexed="true" stored="true" multiValued="false" />
@@ -89,11 +157,20 @@
   <field name="abstract" type="text_general" indexed="true" stored="true" multiValued="true" />
   <field name="edition" type="text_general" indexed="true" stored="true" multiValued="false" />
   <field name="toc" type="text_general" indexed="true" stored="false" multiValued="true" />
-  <field name="accession_number" type="text_general" indexed="true" stored="true" multiValued="false" />
+  <field name="mime_type_facets" type="text_facets" indexed="true" stored="false" multiValued="true" />
+  <field name="tracking_box_facets" type="text_facets" indexed="true" stored="false" multiValued="true" />
+  <field name="edition_facets" type="text_facets" indexed="true" stored="false" multiValued="false" />
+  <copyField source="mime_type" dest="mime_type_facets" />
+  <copyField source="tracking_box" dest="tracking_box_facets" />
+  <copyField source="edition" dest="edition_facets" />
   
   <!-- Oral history metadata fields -->
   <field name="interviewee" type="text_general" indexed="true" stored="true" multiValued="true" />
   <field name="interviewer" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="interviewee_facets" type="text_facets" indexed="true" stored="false" multiValued="true" />
+  <field name="interviewer_facets" type="text_facets" indexed="true" stored="false" multiValued="true" />
+  <copyField source="interviewee" dest="interviewee_facets" />
+  <copyField source="interviewer" dest="interviewer_facets" />  
 
   <!-- VRA Core (visual resource) metadata fields -->
   <field name="measurements" type="text_general" indexed="true" stored="true" multiValued="true" />
@@ -102,6 +179,16 @@
   <field name="material" type="text_general" indexed="true" stored="true" multiValued="true" />
   <field name="style_period" type="text_general" indexed="true" stored="true" multiValued="true" />
   <field name="technique" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="measurements_facets" type="text_facets" indexed="true" stored="false" multiValued="true" />
+  <field name="cultural_context_facets" type="text_facets" indexed="true" stored="false" multiValued="true" />
+  <field name="material_facets" type="text_facets" indexed="true" stored="false" multiValued="true" />
+  <field name="style_period_facets" type="text_facets" indexed="true" stored="false" multiValued="true" />
+  <field name="technique_facets" type="text_facets" indexed="true" stored="false" multiValued="true" />
+  <copyField source="measurements" dest="measurements_facets" />
+  <copyField source="cultural_context" dest="cultural_context_facets" />  
+  <copyField source="material" dest="material_facets" />
+  <copyField source="style_period" dest="style_period_facets" />  
+  <copyField source="technique" dest="technique_facets" />
 
   <!-- Zoological Taxonomy metadata fields -->
   <field name="zt_hierarchical" type="text_general" indexed="false" stored="true" multiValued="true" />
@@ -190,16 +277,28 @@
   <field name="user_defined_50" type="text_general" indexed="true" stored="true" multiValued="true" />
   <field name="user_defined_51" type="text_general" indexed="true" stored="true" multiValued="true" />
   <field name="user_defined_52" type="text_general" indexed="true" stored="true" multiValued="true" />
-
-
-  <!-- Subject field aggregations all subject fields -->
+  
+  <!-- Title field aggregates all title fields -->
+  <field name="title_all" type="text_general" indexed="true" stored="false" multiValued="true" />
+  <copyField source="title" dest="title_all" />
+  <copyField source="alttitle" dest="title_all" />
+  <copyField source="seriestitle" dest="title_all" />
+  <copyField source="transtitle" dest="title_all" />
+  
+  <!-- Subject field aggregates all subject fields -->
   <field name="subject_all" type="text_general" indexed="true" stored="false" multiValued="true" />
   <copyField source="subject" dest="subject_all" />
   <copyField source="name_as_subject" dest="subject_all" />
   <copyField source="title_as_subject" dest="subject_all" />
   <copyField source="spatial_standard" dest="subject_all" />
+  <copyField source="spatial_hierarchical" dest="subject_all" />
   <copyField source="temporal_subject" dest="subject_all" />
   <copyField source="topics" dest="subject_all" />
+  
+  <!-- Subject field aggregates all subject fields -->
+  <field name="spatial_all" type="text_general" indexed="true" stored="false" multiValued="true" />
+  <copyField source="spatial_standard" dest="spatial_all" />
+  <copyField source="spatial_hierarchical" dest="spatial_all" />
 
   <!-- Zoological taxonomy aggregates all ZT fields -->
   <field name="zt_all" type="text_general" indexed="true" stored="true" multiValued="true" />
@@ -435,6 +534,16 @@
     <analyzer>
       <tokenizer class="solr.KeywordTokenizerFactory"/>
       <filter class="solr.LowerCaseFilterFactory" />
+    </analyzer>
+  </fieldType>
+  
+    <!-- This is used for faceting, so the entire term is tokenized, not broken down or anything  -->
+  <fieldType name="text_facets" class="solr.TextField" positionIncrementGap="100">
+    <analyzer type="index">
+      <tokenizer class="solr.KeywordTokenizerFactory"/>
+    </analyzer>
+    <analyzer type="query">
+      <tokenizer class="solr.KeywordTokenizerFactory"/>
     </analyzer>
   </fieldType>
 

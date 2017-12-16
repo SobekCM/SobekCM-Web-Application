@@ -149,7 +149,33 @@ namespace SobekCM.Resource_Object.Metadata_Modules
         /// to allow searching to occur over the data in this metadata module </summary>
         public List<KeyValuePair<string, string>> Metadata_Search_Terms
         {
-            get { return null; }
+            get
+            {
+                List<KeyValuePair<string, string>> metadataTerms = new List<KeyValuePair<string, string>>();
+
+                // Add the performance name
+                if (!String.IsNullOrEmpty(Performance))
+                {
+                    metadataTerms.Add(new KeyValuePair<string, string>("Performance", Performance));
+                }
+
+                // Add the performance date
+                if (!String.IsNullOrEmpty(Performance_Date))
+                {
+                    metadataTerms.Add(new KeyValuePair<string, string>("Performance Date", Performance_Date));
+                }
+
+                // Add the performers
+                if (Performers_Count > 0)
+                {
+                    foreach (Performer thisPerformer in performers)
+                    {
+                        metadataTerms.Add(new KeyValuePair<string, string>("Performer", thisPerformer.Name));
+                    }
+                }
+
+                return metadataTerms;
+            }
         }
 
         /// <summary> Chance for this metadata module to perform any additional database work

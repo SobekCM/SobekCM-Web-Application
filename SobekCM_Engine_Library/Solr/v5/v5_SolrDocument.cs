@@ -1,14 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using SobekCM.Resource_Object;
-using SobekCM.Resource_Object.Bib_Info;
 using SobekCM.Resource_Object.Solr;
 using SolrNet.Attributes;
 
 namespace SobekCM.Engine_Library.Solr.v5
 {
+    /// <summary> Represents a solr document in the version 5.0 and on solr/lucene indexes </summary>
     public class v5_SolrDocument
     {
+
+        // IN DATABASE HANDLE NEW FIELDS:
+        //   Translated Title
+        //   ZT Hierarchical
+        //   LOM fields (and remove underscore in db metadata type names and learning time and resource type)
 
         #region Constructors for this class 
 
@@ -260,6 +265,175 @@ namespace SobekCM.Engine_Library.Solr.v5
                         Technique.Add(searchTerm.Value.Trim());
                         break;
 
+                    case "interviewee":
+                        if (Interviewee == null) Interviewee = new List<string>();
+                        Interviewee.Add(searchTerm.Value.Trim());
+                        break;
+
+                    case "interviewer":
+                        if (Interviewer == null) Interviewer = new List<string>();
+                        Interviewer.Add(searchTerm.Value.Trim());
+                        break;
+
+                    case "performance":
+                        Performance = searchTerm.Value.Trim();
+                        break;
+                        
+                    case "performance date":
+                        PerformanceDate = searchTerm.Value.Trim();
+                        break;
+
+                    case "performer":
+                        if (Performer == null) Performer = new List<string>();
+                        Performer.Add(searchTerm.Value.Trim());
+                        break;
+
+                    case "etd committee":
+                        if (EtdCommittee == null) EtdCommittee = new List<string>();
+                        EtdCommittee.Add(searchTerm.Value.Trim());
+                        break;
+
+                    case "etd degree":
+                        EtdDegree = searchTerm.Value.Trim();
+                        break;
+
+                    case "etd degree discipline":
+                        EtdDegreeDiscipline = searchTerm.Value.Trim();
+                        break;
+
+                    case "etd degree division":
+                        EtdDegreeDivision = searchTerm.Value.Trim();
+                        break;
+
+                    case "etd degree grantor":
+                        EtdDegreeGrantor = searchTerm.Value.Trim();
+                        break;
+
+                    case "etd degree level":
+                        EtdDegreeLevel = searchTerm.Value.Trim();
+                        break;
+
+                    case "zt kingdom":
+                        if (ZoologicalKingdom == null) ZoologicalKingdom = new List<string>();
+                        ZoologicalKingdom.Add(searchTerm.Value.Trim());
+                        break;
+
+                    case "zt phylum":
+                        if (ZoologicalPhylum == null) ZoologicalPhylum = new List<string>();
+                        ZoologicalPhylum.Add(searchTerm.Value.Trim());
+                        break;
+
+                    case "zt class":
+                        if (ZoologicalClass == null) ZoologicalClass = new List<string>();
+                        ZoologicalClass.Add(searchTerm.Value.Trim());
+                        break;
+
+                    case "zt order":
+                        if (ZoologicalOrder == null) ZoologicalOrder = new List<string>();
+                        ZoologicalOrder.Add(searchTerm.Value.Trim());
+                        break;
+
+                    case "zt family":
+                        if (ZoologicalFamily == null) ZoologicalFamily = new List<string>();
+                        ZoologicalFamily.Add(searchTerm.Value.Trim());
+                        break;
+
+                    case "zt genus":
+                        if (ZoologicalGenus == null) ZoologicalGenus = new List<string>();
+                        ZoologicalGenus.Add(searchTerm.Value.Trim());
+                        break;
+
+                    case "zt species":
+                        if (ZoologicalSpecies == null) ZoologicalSpecies = new List<string>();
+                        ZoologicalSpecies.Add(searchTerm.Value.Trim());
+                        break;
+
+                    case "zt common name":
+                        if (ZoologicalCommonName == null) ZoologicalCommonName = new List<string>();
+                        ZoologicalCommonName.Add(searchTerm.Value.Trim());
+                        break;
+
+                    case "zt scientific name":
+                        if (ZoologicalScientificName == null) ZoologicalScientificName = new List<string>();
+                        ZoologicalScientificName.Add(searchTerm.Value.Trim());
+                        break;
+
+                    case "zt hierarchical":
+                        if (ZoologicalHierarchical == null) ZoologicalHierarchical = new List<string>();
+                        ZoologicalHierarchical.Add(searchTerm.Value.Trim());
+                        break;
+
+                    // Solr already rolls up to a zt_all field, so ignore this
+                    case "zt all taxonomy":
+                        break;
+
+                    case "lom aggregation":
+                        LomAggregation = searchTerm.Value.Trim();
+                        break;
+
+                    case "lom context":
+                        if (LomContext == null) LomContext = new List<string>();
+                        LomContext.Add(searchTerm.Value.Trim());
+                        break;
+
+                    case "lom context display":
+                        if (LomContextDisplay == null) LomContextDisplay = new List<string>();
+                        LomContextDisplay.Add(searchTerm.Value.Trim());
+                        break;
+
+                    case "lom difficulty":
+                        LomDifficulty = searchTerm.Value.Trim();
+                        break;
+
+                    case "lom intended end user":
+                        if (LomIntendedEndUser == null) LomIntendedEndUser = new List<string>();
+                        LomIntendedEndUser.Add(searchTerm.Value.Trim());
+                        break;
+
+                    case "lom intended end user display":
+                        LomIntendedEndUserDisplay = searchTerm.Value.Trim();
+                        break;
+
+                    case "lom interactivity level":
+                        LomInteractivityLevel = searchTerm.Value.Trim();
+                        break;
+
+                    case "lom interactivity type":
+                        LomInteractivityType = searchTerm.Value.Trim();
+                        break;
+
+                    case "lom status":
+                        LomStatus = searchTerm.Value.Trim();
+                        break;
+
+                    case "lom requirement":
+                        if (LomRequirement == null) LomRequirement = new List<string>();
+                        LomRequirement.Add(searchTerm.Value.Trim());
+                        break;
+
+                    case "lom requirement display":
+                        if (LomRequirementDisplay == null) LomRequirementDisplay = new List<string>();
+                        LomRequirementDisplay.Add(searchTerm.Value.Trim());
+                        break;
+
+                    case "lom age range":
+                        if ( LomAgeRange == null ) LomAgeRange = new List<string>();
+                        LomAgeRange.Add(searchTerm.Value.Trim());
+                        break;
+
+                    case "lom resource type":
+                        if (LomResourceType == null) LomResourceType = new List<string>();
+                        LomResourceType.Add(searchTerm.Value.Trim());
+                        break;
+
+                    case "lom resource type display":
+                        if (LomResourceTypeDisplay == null) LomResourceTypeDisplay = new List<string>();
+                        LomResourceTypeDisplay.Add(searchTerm.Value.Trim());
+                        break;
+
+                    case "lom learning time":
+                        LomLearningTime = searchTerm.Value.Trim();
+                        break;
 
                     // Not handled yet
                     case "temporal year":
@@ -269,6 +443,7 @@ namespace SobekCM.Engine_Library.Solr.v5
 
                     // Ignore these
                     case "bibid":
+                    case "vid":
                         break;
                         
 
@@ -682,6 +857,22 @@ namespace SobekCM.Engine_Library.Solr.v5
 
         #endregion
 
+        #region Performing Arts metadata fields
+
+        /// <summary> Name of the performance </summary>
+        [SolrField("performance")]
+        public string Performance { get; set; }
+
+        /// <summary> Date of the performance </summary>
+        [SolrField("performance_date")]
+        public string PerformanceDate { get; set; }
+
+        /// <summary> Performer from a performance </summary>
+        [SolrField("performer")]
+        public List<string> Performer { get; set; }
+
+        #endregion
+
         #region Oral history metadata fields 
 
         /// <summary> Interviewee with this oral history interview </summary>
@@ -730,7 +921,7 @@ namespace SobekCM.Engine_Library.Solr.v5
 
         /// <summary> Kingdom zoological taxonomic (DarwinCore) data for this resource </summary>
         [SolrField("zt_kingdom")]
-        public List<string> ZoologicalKingdon { get; set; }
+        public List<string> ZoologicalKingdom { get; set; }
 
         /// <summary> Phylum zoological taxonomic (DarwinCore) data for this resource </summary>
         [SolrField("zt_phylum")]
@@ -800,9 +991,13 @@ namespace SobekCM.Engine_Library.Solr.v5
         [SolrField("lom_aggregation")]
         public string LomAggregation { get; set; }
 
-        /// <summary> Context information for this learning object resource </summary>
+        /// <summary> Context information for finding this learning object resource </summary>
         [SolrField("lom_context")]
         public List<string> LomContext { get; set; }
+
+        /// <summary> Context information for displaying this learning object resource </summary>
+        [SolrField("lom_context.display")]
+        public List<string> LomContextDisplay { get; set; }
 
         /// <summary> Classification information for this learning object resource </summary>
         [SolrField("lom_classification")]
@@ -815,6 +1010,10 @@ namespace SobekCM.Engine_Library.Solr.v5
         /// <summary> Intended end user information for this learning object resource </summary>
         [SolrField("lom_intended_end_user")]
         public List<string> LomIntendedEndUser { get; set; }
+
+        /// <summary> Display version of all the intended end user roles for this learning object resource </summary>
+        [SolrField("lom_intended_end_user.display")]
+        public string LomIntendedEndUserDisplay { get; set; }
 
         /// <summary> Interactivity level information for this learning object resource </summary>
         [SolrField("lom_interactivity_level")]
@@ -832,6 +1031,10 @@ namespace SobekCM.Engine_Library.Solr.v5
         [SolrField("lom_requirement")]
         public List<string> LomRequirement { get; set; }
 
+        /// <summary> Display version of the system requirements information for this learning object resource </summary>
+        [SolrField("lom_requirement.display")]
+        public List<string> LomRequirementDisplay { get; set; }
+
         /// <summary> Age range information for this learning object resource </summary>
         [SolrField("lom_age_range")]
         public List<string> LomAgeRange { get; set; }
@@ -839,6 +1042,10 @@ namespace SobekCM.Engine_Library.Solr.v5
         /// <summary> Resource type information for this learning object resource </summary>
         [SolrField("lom_resource_type")]
         public List<string> LomResourceType { get; set; }
+
+        /// <summary> Display version of the resource type information for this learning object resource </summary>
+        [SolrField("lom_resource_type.display")]
+        public List<string> LomResourceTypeDisplay { get; set; }
 
         /// <summary> Learning time information for this learning object resource </summary>
         [SolrField("lom_learning_time")]

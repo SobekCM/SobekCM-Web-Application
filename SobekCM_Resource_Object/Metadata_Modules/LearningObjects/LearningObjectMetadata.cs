@@ -1,8 +1,10 @@
 ﻿#region Using directives
 
 using System;
+using System.CodeDom;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Text;
 
 #endregion
 
@@ -438,7 +440,283 @@ namespace SobekCM.Resource_Object.Metadata_Modules.LearningObjects
         /// to allow searching to occur over the data in this metadata module </summary>
         public List<KeyValuePair<string, string>> Metadata_Search_Terms
         {
-            get { return null; }
+            get
+            {
+                List<KeyValuePair<string, string>> metadataTerms = new List<KeyValuePair<string, string>>();
+
+                // Add the LOM aggregation (level)
+                if (AggregationLevel != AggregationLevelEnum.UNDEFINED)
+                {
+                    switch (AggregationLevel)
+                    {
+                        case AggregationLevelEnum.level1:
+                            metadataTerms.Add(new KeyValuePair<string, string>("LOM Aggregation", "Level 1"));
+                            break;
+
+                        case AggregationLevelEnum.level2:
+                            metadataTerms.Add(new KeyValuePair<string, string>("LOM Aggregation", "Level 2"));
+                            break;
+
+                        case AggregationLevelEnum.level3:
+                            metadataTerms.Add(new KeyValuePair<string, string>("LOM Aggregation", "Level 3"));
+                            break;
+
+                        case AggregationLevelEnum.level4:
+                            metadataTerms.Add(new KeyValuePair<string, string>("LOM Aggregation", "Level 4"));
+                            break;
+                    }
+                }
+
+                // Add the LOM context
+                if ((context != null) && (context.Count > 0))
+                {
+                    foreach (LOM_VocabularyState thisContext in context)
+                    {
+                        // If no value, sip it
+                        if (String.IsNullOrEmpty(thisContext.Value)) continue;
+
+                        // Add the value itself, for searching and faceting
+                        metadataTerms.Add(new KeyValuePair<string, string>("LOM Context", thisContext.Value));
+
+                        // For display, include the source, if there is one
+                        if ( String.IsNullOrEmpty(thisContext.Source))
+                            metadataTerms.Add(new KeyValuePair<string, string>("LOM Context Display", thisContext.Value));
+                        else
+                            metadataTerms.Add(new KeyValuePair<string, string>("LOM Context Display", thisContext.Value + " (" + thisContext.Source + ")"));
+                    }
+                }
+
+                // WITHOUT A GOOD EXAMPLE, I CAN'T ADD THE LOM classification  :(
+
+                // Add the LOM difficulty
+                if (DifficultyLevel != DifficultyLevelEnum.UNDEFINED)
+                {
+                    switch (DifficultyLevel)
+                    {
+                        case DifficultyLevelEnum.very_easy:
+                            metadataTerms.Add(new KeyValuePair<string, string>("LOM Difficulty", "Very easy"));
+                            break;
+
+                        case DifficultyLevelEnum.easy:
+                            metadataTerms.Add(new KeyValuePair<string, string>("LOM Difficulty", "Easy"));
+                            break;
+
+                        case DifficultyLevelEnum.medium:
+                            metadataTerms.Add(new KeyValuePair<string, string>("LOM Difficulty", "Medium"));
+                            break;
+
+                        case DifficultyLevelEnum.difficult:
+                            metadataTerms.Add(new KeyValuePair<string, string>("LOM Difficulty", "Difficult"));
+                            break;
+
+                        case DifficultyLevelEnum.very_difficult:
+                            metadataTerms.Add(new KeyValuePair<string, string>("LOM Difficulty", "Very difficult"));
+                            break;
+                    }
+                }
+
+                // Add the intended users
+                if ((IntendedEndUserRoles != null) && (IntendedEndUserRoles.Count > 0))
+                {
+                    StringBuilder displayBuilder = new StringBuilder();
+
+                    // Add each role independently first
+                    foreach (IntendedEndUserRoleEnum userRol in IntendedEndUserRoles)
+                    {
+                        // Skip any undefined that may sneak in
+                        if (userRol == IntendedEndUserRoleEnum.UNDEFINED) continue;
+
+                        switch (userRol)
+                        {
+                            case IntendedEndUserRoleEnum.author:
+                                metadataTerms.Add(new KeyValuePair<string, string>("LOM Intended End User", "Author"));
+                                displayBuilder.Append("Author, ");
+                                break;
+
+                            case IntendedEndUserRoleEnum.learner:
+                                metadataTerms.Add(new KeyValuePair<string, string>("LOM Intended End User", "Learner"));
+                                displayBuilder.Append("Learner, ");
+                                break;
+
+                            case IntendedEndUserRoleEnum.manager:
+                                metadataTerms.Add(new KeyValuePair<string, string>("LOM Intended End User", "Manager"));
+                                displayBuilder.Append("Manager, ");
+                                break;
+
+                            case IntendedEndUserRoleEnum.teacher:
+                                metadataTerms.Add(new KeyValuePair<string, string>("LOM Intended End User", "Teacher"));
+                                displayBuilder.Append("Teacher, ");
+                                break;
+                        }
+                    }
+
+                    // Add the dispay role
+                    if (displayBuilder.Length > 2)
+                    {
+                        string displayRoles = displayBuilder.ToString().Substring(0, displayBuilder.Length - 2);
+                        metadataTerms.Add(new KeyValuePair<string, string>("LOM Intended End User Display", displayRoles));
+                    }
+                }
+
+                // Add lom interactivity level
+                if (InteractivityLevel != InteractivityLevelEnum.UNDEFINED)
+                {
+                    switch (InteractivityLevel)
+                    {
+                        case InteractivityLevelEnum.very_low:
+                            metadataTerms.Add(new KeyValuePair<string, string>("LOM Interactivity Level", "Very low"));
+                            break;
+
+                        case InteractivityLevelEnum.low:
+                            metadataTerms.Add(new KeyValuePair<string, string>("LOM Interactivity Level", "Low"));
+                            break;
+
+                        case InteractivityLevelEnum.medium:
+                            metadataTerms.Add(new KeyValuePair<string, string>("LOM Interactivity Level", "Medium"));
+                            break;
+
+                        case InteractivityLevelEnum.high:
+                            metadataTerms.Add(new KeyValuePair<string, string>("LOM Interactivity Level", "High"));
+                            break;
+
+                        case InteractivityLevelEnum.very_high:
+                            metadataTerms.Add(new KeyValuePair<string, string>("LOM Interactivity Level", "Very high"));
+                            break;
+                    }
+                }
+
+                // Add lom interactivity type
+                if (InteractivityType != InteractivityTypeEnum.UNDEFINED)
+                {
+                    switch (InteractivityType)
+                    {
+                        case InteractivityTypeEnum.active:
+                            metadataTerms.Add(new KeyValuePair<string, string>("LOM Interactivity Type", "Active"));
+                            break;
+
+                        case InteractivityTypeEnum.expositive:
+                            metadataTerms.Add(new KeyValuePair<string, string>("LOM Interactivity Type", "Expositive"));
+                            break;
+
+                        case InteractivityTypeEnum.mixed:
+                            metadataTerms.Add(new KeyValuePair<string, string>("LOM Interactivity Type", "Mixed"));
+                            break;
+                    }
+                }
+
+                // Add the lom status 
+                if (Status != StatusEnum.UNDEFINED)
+                {
+                    switch (Status)
+                    {
+                        case StatusEnum.draft:
+                            metadataTerms.Add(new KeyValuePair<string, string>("LOM Status", "Draft"));
+                            break;
+
+                        case StatusEnum.final:
+                            metadataTerms.Add(new KeyValuePair<string, string>("LOM Status", "Final"));
+                            break;
+
+                        case StatusEnum.revised:
+                            metadataTerms.Add(new KeyValuePair<string, string>("LOM Status", "Revised"));
+                            break;
+
+                        case StatusEnum.unavailable:
+                            metadataTerms.Add(new KeyValuePair<string, string>("LOM Status", "Unavailable"));
+                            break;
+                    }
+                }
+
+                // Add the lom requirements
+                if ((SystemRequirements != null) && (SystemRequirements.Count > 0))
+                {
+                    foreach (LOM_System_Requirements requirements in SystemRequirements)
+                    {
+                        // If there is no name, skip it
+                        if (( requirements.Name == null ) || ( String.IsNullOrEmpty(requirements.Name.Value))) continue;
+
+                        // Start to build this requirements
+                        StringBuilder reqBuilder = new StringBuilder();
+                        switch (requirements.RequirementType)
+                        {
+                            case RequirementTypeEnum.browser:
+                                reqBuilder.Append("Browser: ");
+                                break;
+
+                            case RequirementTypeEnum.hardware:
+                                reqBuilder.Append("Hardware: ");
+                                break;
+
+                            case RequirementTypeEnum.operating_system:
+                                reqBuilder.Append("OS: ");
+                                break;
+
+                            case RequirementTypeEnum.software:
+                                reqBuilder.Append("Software: ");
+                                break;
+                        }
+
+                        // Add the name 
+                        reqBuilder.Append(requirements.Name.Value.Trim());
+
+                        // This is good to add for the non-display version
+                        metadataTerms.Add(new KeyValuePair<string, string>("LOM Requirement", reqBuilder.ToString()));
+
+                        // Now, for the display versin, include any versions
+                        if ((!String.IsNullOrEmpty(requirements.MaximumVersion)) || (!String.IsNullOrEmpty(requirements.MinimumVersion)))
+                        {
+                            reqBuilder.Append(" ( ");
+                            if (!String.IsNullOrEmpty(requirements.MinimumVersion))
+                                reqBuilder.Append(requirements.MinimumVersion + "-");
+                            else
+                                reqBuilder.Append(" - ");
+
+                            if (!String.IsNullOrEmpty(requirements.MinimumVersion))
+                                reqBuilder.Append(requirements.MinimumVersion);
+
+                            reqBuilder.Append(" )");
+                        }
+
+                        // Add the display version
+                        metadataTerms.Add(new KeyValuePair<string, string>("LOM Requirement Display", reqBuilder.ToString()));
+                    }
+                }
+
+                // Add the age range
+                if ((TypicalAgeRanges != null) && (TypicalAgeRanges.Count > 0))
+                {
+                    foreach (LOM_LanguageString ageRange in TypicalAgeRanges)
+                    {
+                        metadataTerms.Add(new KeyValuePair<string, string>("LOM Age Range", ageRange.Value));
+                    }
+                }
+
+                // Add the resource type
+                if ((LearningResourceTypes != null) && (LearningResourceTypes.Count > 0))
+                {
+                    foreach (LOM_VocabularyState type in LearningResourceTypes)
+                    {
+                        // If no value, sip it
+                        if (String.IsNullOrEmpty(type.Value)) continue;
+
+                        // Add the value itself, for searching and faceting
+                        metadataTerms.Add(new KeyValuePair<string, string>("LOM Resource Type", type.Value));
+
+                        // For display, include the source, if there is one
+                        if (String.IsNullOrEmpty(type.Source))
+                            metadataTerms.Add(new KeyValuePair<string, string>("LOM Resource Type Display", type.Value));
+                        else
+                            metadataTerms.Add(new KeyValuePair<string, string>("LOM Resource Type Display", type.Value + " (" + type.Source + ")"));
+
+                    }
+                }
+
+                // Add the learning time
+                if ( !String.IsNullOrEmpty(TypicalLearningTime))
+                    metadataTerms.Add(new KeyValuePair<string, string>("LOM Requirement Display", TypicalLearningTime));
+
+                return metadataTerms;
+            }
         }
 
         /// <summary> Chance for this metadata module to perform any additional database work

@@ -147,8 +147,8 @@
 
   <!-- Temporal subect metadata fields -->
   <field name="temporal_subject" type="text_general" indexed="true" stored="true"  multiValued="true" />
-  <field name="temporal_decade" type="text_general" indexed="true" stored="true"  multiValued="true" />
-  <field name="temporal_year" type="text_general" indexed="true" stored="true" multiValued="false" />
+  <field name="temporal_decade" type="text_facets" indexed="true" stored="false"  multiValued="true" />
+  <field name="temporal_year" type="text_facets" indexed="true" stored="false" multiValued="false" />
 
   <!-- Other standard metadata fields -->
   <field name="attribution" type="text_general" indexed="true" stored="true" multiValued="false" />
@@ -171,6 +171,17 @@
   <field name="interviewer_facets" type="text_facets" indexed="true" stored="false" multiValued="true" />
   <copyField source="interviewee" dest="interviewee_facets" />
   <copyField source="interviewer" dest="interviewer_facets" />  
+  
+  <!-- Performing arts metadata fields -->
+  <field name="performance" type="text_general" indexed="true" stored="true" multiValued="false" />
+  <field name="performance_date" type="text_general" indexed="true" stored="true" multiValued="false" />
+  <field name="performer" type="text_facets" indexed="true" stored="false" multiValued="true" />
+  <field name="performance_facets" type="text_facets" indexed="true" stored="false" multiValued="false" />
+  <field name="performance_date_facets" type="text_facets" indexed="true" stored="false" multiValued="false" />
+  <field name="performer_facets" type="text_facets" indexed="true" stored="false" multiValued="true" />
+  <copyField source="performance" dest="performance_facets" />
+  <copyField source="performance_date" dest="performance_date_facets" />
+  <copyField source="performer" dest="performer_facets" />  
 
   <!-- VRA Core (visual resource) metadata fields -->
   <field name="measurements" type="text_general" indexed="true" stored="true" multiValued="true" />
@@ -201,7 +212,25 @@
   <field name="zt_species" type="text_general" indexed="true" stored="true" multiValued="true" />
   <field name="zt_common_name" type="text_general" indexed="true" stored="true" multiValued="true" />
   <field name="zt_scientific_name" type="text_general" indexed="true" stored="true" multiValued="true" />
-
+  <field name="zt_kingdom_facets" type="text_facets" indexed="true" stored="false" multiValued="true" />
+  <field name="zt_phylum_facets" type="text_facets" indexed="true" stored="false" multiValued="true" />
+  <field name="zt_class_facets" type="text_facets" indexed="true" stored="false" multiValued="true" />
+  <field name="zt_order_facets" type="text_facets" indexed="true" stored="false" multiValued="true" />
+  <field name="zt_family_facets" type="text_facets" indexed="true" stored="false" multiValued="true" />
+  <field name="zt_genus_facets" type="text_facets" indexed="true" stored="false" multiValued="true" />
+  <field name="zt_species_facets" type="text_facets" indexed="true" stored="false" multiValued="true" />
+  <field name="zt_common_name_facets" type="text_facets" indexed="true" stored="false" multiValued="true" />
+  <field name="zt_scientific_name_facets" type="text_facets" indexed="true" stored="false" multiValued="true" />
+  <copyField source="zt_kingdom" dest="zt_kingdom_facets" />
+  <copyField source="zt_phylum" dest="zt_phylum_facets" />
+  <copyField source="zt_class" dest="zt_class_facets" />
+  <copyField source="zt_order" dest="zt_order_facets" />
+  <copyField source="zt_family" dest="zt_family_facets" />
+  <copyField source="zt_genus" dest="zt_genus_facets" />
+  <copyField source="zt_species" dest="zt_species_facets" />
+  <copyField source="zt_common_name" dest="zt_common_name_facets" />
+  <copyField source="zt_scientific_name" dest="zt_scientific_name_facets" />
+  
   <!-- (Electronic) Thesis and Dissertation metadata fields -->
   <field name="etd_committee" type="text_general" indexed="true" stored="true" multiValued="true" />
   <field name="etd_degree" type="text_general" indexed="true" stored="true" multiValued="false" />
@@ -209,20 +238,61 @@
   <field name="etd_degree_grantor" type="text_general" indexed="true" stored="true" multiValued="false" />
   <field name="etd_degree_level" type="text_general" indexed="true" stored="true" multiValued="false" />
   <field name="etd_degree_division" type="text_general" indexed="true" stored="true" multiValued="false" />
-
+  <field name="etd_committee_facets" type="text_facets" indexed="true" stored="false" multiValued="true" />
+  <field name="etd_degree_facets" type="text_facets" indexed="true" stored="false" multiValued="false" />
+  <field name="etd_degree_discipline_facets" type="text_facets" indexed="true" stored="false" multiValued="false" />
+  <field name="etd_degree_grantor_facets" type="text_facets" indexed="true" stored="false" multiValued="false" />
+  <field name="etd_degree_level_facets" type="text_facets" indexed="true" stored="false" multiValued="false" />
+  <field name="etd_degree_division_facets" type="text_facets" indexed="true" stored="false" multiValued="false" />
+  <copyField source="etd_committee" dest="etd_committee_facets" />
+  <copyField source="etd_degree" dest="etd_degree_facets" />
+  <copyField source="etd_degree_discipline" dest="etd_degree_discipline_facets" />
+  <copyField source="etd_degree_grantor" dest="etd_degree_grantor_facets" />
+  <copyField source="etd_degree_level" dest="etd_degree_level_facets" />
+  <copyField source="etd_degree_division" dest="etd_degree_division_facets" />
+  
   <!-- Learning Object metadata fields -->
   <field name="lom_aggregation" type="text_general" indexed="true" stored="true" multiValued="false" />
-  <field name="lom_context" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="lom_context" type="text_general" indexed="true" stored="false" multiValued="true" />
+  <field name="lom_context.display" type="text_general" indexed="false" stored="true" multiValued="true" />
   <field name="lom_classification" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="lom_classification.display" type="text_general" indexed="false" stored="true" multiValued="true" />
   <field name="lom_difficulty" type="text_general" indexed="true" stored="true" multiValued="false" />
   <field name="lom_intended_end_user" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="lom_intended_end_user.display" type="text_general" indexed="false" stored="true" multiValued="false" />
   <field name="lom_interactivity_level" type="text_general" indexed="true" stored="true" multiValued="false" />
   <field name="lom_interactivity_type" type="text_general" indexed="true" stored="true" multiValued="false" />
   <field name="lom_status" type="text_general" indexed="true" stored="true" multiValued="false" />
   <field name="lom_requirement" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="lom_requirement.display" type="text_general" indexed="false" stored="true" multiValued="true" />
   <field name="lom_age_range" type="text_general" indexed="true" stored="true" multiValued="true" />
   <field name="lom_resource_type" type="text_general" indexed="true" stored="true" multiValued="true" />
-  <field name="lom_learning_time" type="text_general" indexed="true" stored="true" multiValued="false" />
+  <field name="lom_resource_type.display" type="text_general" indexed="false" stored="true" multiValued="true" />
+  <field name="lom_learning_time" type="text_general" indexed="true" stored="true" multiValued="false" />  
+  <field name="lom_aggregation_facets" type="text_facets" indexed="true" stored="false" multiValued="false" />
+  <field name="lom_context_facets" type="text_facets" indexed="true" stored="false" multiValued="true" />
+  <field name="lom_classification_facets" type="text_facets" indexed="true" stored="false" multiValued="true" />
+  <field name="lom_difficulty_facets" type="text_facets" indexed="true" stored="false" multiValued="false" />
+  <field name="lom_intended_end_user_facets" type="text_facets" indexed="true" stored="false" multiValued="true" />
+  <field name="lom_interactivity_level_facets" type="text_facets" indexed="true" stored="false" multiValued="false" />
+  <field name="lom_interactivity_type_facets" type="text_facets" indexed="true" stored="false" multiValued="false" />
+  <field name="lom_status_facets" type="text_facets" indexed="true" stored="false" multiValued="false" />
+  <field name="lom_requirement_facets" type="text_facets" indexed="true" stored="false" multiValued="true" />
+  <field name="lom_age_range_facets" type="text_facets" indexed="true" stored="false" multiValued="true" />
+  <field name="lom_resource_type_facets" type="text_facets" indexed="true" stored="false" multiValued="true" />
+  <field name="lom_learning_time_facets" type="text_facets" indexed="true" stored="false" multiValued="false" />
+  <copyField source="lom_aggregation" dest="lom_aggregation_facets" />
+  <copyField source="lom_context" dest="lom_context_facets" />
+  <copyField source="lom_classification" dest="lom_classification_facets" />
+  <copyField source="lom_difficulty" dest="lom_difficulty_facets" />
+  <copyField source="lom_intended_end_user" dest="lom_intended_end_user_facets" />
+  <copyField source="lom_interactivity_level" dest="lom_interactivity_level_facets" />
+  <copyField source="lom_interactivity_type" dest="lom_interactivity_type_facets" />
+  <copyField source="lom_status" dest="lom_status_facets" />
+  <copyField source="lom_requirement" dest="lom_requirement_facets" />
+  <copyField source="lom_age_range" dest="lom_age_range_facets" />
+  <copyField source="lom_resource_type" dest="lom_resource_type_facets" />
+  <copyField source="lom_learning_time" dest="lom_learning_time_facets" />  
 
   <!-- User defined metadata fields, used by plug-ins, etc.. -->
   <field name="user_defined_01" type="text_general" indexed="true" stored="true" multiValued="true" />
@@ -301,7 +371,7 @@
   <copyField source="spatial_hierarchical" dest="spatial_all" />
 
   <!-- Zoological taxonomy aggregates all ZT fields -->
-  <field name="zt_all" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="zt_all" type="text_general" indexed="true" stored="false" multiValued="true" />
   <copyField source="zt_kingdom" dest="zt_all" />
   <copyField source="zt_phylum" dest="zt_all" />
   <copyField source="zt_class" dest="zt_all" />
@@ -314,21 +384,27 @@
 
   <!-- Full citation holds everything -->
   <field name="fullcitation" type="text_general" indexed="true" stored="false" multiValued="true" />
+  <copyField source="aggregations" dest="fullcitation" />
   <copyField source="bibid" dest="fullcitation" />
   <copyField source="vid" dest="fullcitation" />
+  <copyField source="mainthumb" dest="fullcitation" />
   <copyField source="title" dest="fullcitation" />
+  <copyField source="sorttitle" dest="fullcitation" />
   <copyField source="alttitle" dest="fullcitation" />
   <copyField source="seriestitle" dest="fullcitation" />
+  <copyField source="transtitle" dest="fullcitation" />
   <copyField source="type" dest="fullcitation" />
-  <copyField source="language" dest="fullcitation" />
+  <copyField source="language" dest="fullcitation" /> 
   <copyField source="creator" dest="fullcitation" />
+  <copyField source="creator.display" dest="fullcitation" />
   <copyField source="affiliation" dest="fullcitation" />
   <copyField source="publisher" dest="fullcitation" />
   <copyField source="publication_place" dest="fullcitation" />
   <copyField source="audience" dest="fullcitation" />
-  <copyField source="source" dest="fullcitation" />
+  <copyField source=source" dest="fullcitation" />
   <copyField source="holding" dest="fullcitation" />
   <copyField source="identifier" dest="fullcitation" />
+  <copyField source="accession_number" dest="fullcitation" />
   <copyField source="notes" dest="fullcitation" />
   <copyField source="tickler" dest="fullcitation" />
   <copyField source="donor" dest="fullcitation" />
@@ -336,18 +412,114 @@
   <copyField source="frequency" dest="fullcitation" />
   <copyField source="genre" dest="fullcitation" />
   <copyField source="other" dest="fullcitation" />
+  <copyField source="date.display" dest="fullcitation" />
   <copyField source="subject" dest="fullcitation" />
-  <copyField source="title_as_subject" dest="fullcitation" />  
+  <copyField source="topics" dest="fullcitation" />
   <copyField source="name_as_subject" dest="fullcitation" />
   <copyField source="title_as_subject" dest="fullcitation" />
   <copyField source="spatial_standard" dest="fullcitation" />
-  <copyField source="temporal_subject" dest="fullcitation" />
-  <copyField source="topics" dest="fullcitation" />
   <copyField source="spatial_hierarchical" dest="fullcitation" />
   <copyField source="country" dest="fullcitation" />
   <copyField source="state" dest="fullcitation" />
   <copyField source="county" dest="fullcitation" />
   <copyField source="city" dest="fullcitation" />
+  <copyField source="temporal_subject" dest="fullcitation" />
+  <copyField source="attribution" dest="fullcitation" />
+  <copyField source="mime_type" dest="fullcitation" />
+  <copyField source="tracking_box" dest="fullcitation" />
+  <copyField source="abstract" dest="fullcitation" />
+  <copyField source="edition" dest="fullcitation" />
+  <copyField source="toc" dest="fullcitation" />
+  <copyField source="interviewee" dest="fullcitation" />
+  <copyField source="interviewer" dest="fullcitation" />
+  <copyField source="performance" dest="fullcitation" />
+  <copyField source="performance_date" dest="fullcitation" />
+  <copyField source="measurements" dest="fullcitation" />
+  <copyField source="cultural_context" dest="fullcitation" />
+  <copyField source="inscription" dest="fullcitation" />
+  <copyField source="material" dest="fullcitation" />
+  <copyField source="style_period" dest="fullcitation" />
+  <copyField source="technique" dest="fullcitation" />
+  <copyField source="zt_kingdom" dest="fullcitation" />
+  <copyField source="zt_phylum" dest="fullcitation" />
+  <copyField source="zt_class" dest="fullcitation" />
+  <copyField source="zt_order" dest="fullcitation" />
+  <copyField source="zt_family" dest="fullcitation" />
+  <copyField source="zt_genus" dest="fullcitation" />
+  <copyField source="zt_species" dest="fullcitation" />
+  <copyField source="zt_common_name" dest="fullcitation" />
+  <copyField source="zt_scientific_name" dest="fullcitation" />
+  <copyField source="etd_committee" dest="fullcitation" />
+  <copyField source="etd_degree" dest="fullcitation" />
+  <copyField source="etd_degree_discipline" dest="fullcitation" />
+  <copyField source="etd_degree_grantor" dest="fullcitation" />
+  <copyField source="etd_degree_level" dest="fullcitation" />
+  <copyField source="etd_degree_division" dest="fullcitation" />
+  <copyField source="lom_aggregation" dest="fullcitation" />
+  <copyField source="lom_context" dest="fullcitation" />
+  <copyField source="lom_classification" dest="fullcitation" />
+  <copyField source="lom_difficulty" dest="fullcitation" />
+  <copyField source="lom_intended_end_user" dest="fullcitation" />
+  <copyField source="lom_interactivity_level" dest="fullcitation" />
+  <copyField source="lom_interactivity_type" dest="fullcitation" />
+  <copyField source="lom_status" dest="fullcitation" />
+  <copyField source="lom_requirement" dest="fullcitation" />
+  <copyField source="lom_age_range" dest="fullcitation" />
+  <copyField source="lom_resource_type" dest="fullcitation" />
+  <copyField source="lom_learning_time" dest="fullcitation" />
+  <copyField source="user_defined_01" dest="fullcitation" />
+  <copyField source="user_defined_02" dest="fullcitation" />
+  <copyField source="user_defined_03" dest="fullcitation" />
+  <copyField source="user_defined_04" dest="fullcitation" />
+  <copyField source="user_defined_05" dest="fullcitation" />
+  <copyField source="user_defined_06" dest="fullcitation" />
+  <copyField source="user_defined_07" dest="fullcitation" />
+  <copyField source="user_defined_08" dest="fullcitation" />
+  <copyField source="user_defined_09" dest="fullcitation" />
+  <copyField source="user_defined_10" dest="fullcitation" />
+  <copyField source="user_defined_11" dest="fullcitation" />
+  <copyField source="user_defined_12" dest="fullcitation" />
+  <copyField source="user_defined_13" dest="fullcitation" />
+  <copyField source="user_defined_14" dest="fullcitation" />
+  <copyField source="user_defined_15" dest="fullcitation" />
+  <copyField source="user_defined_16" dest="fullcitation" />
+  <copyField source="user_defined_17" dest="fullcitation" />
+  <copyField source="user_defined_18" dest="fullcitation" />
+  <copyField source="user_defined_19" dest="fullcitation" />
+  <copyField source="user_defined_20" dest="fullcitation" />
+  <copyField source="user_defined_21" dest="fullcitation" />
+  <copyField source="user_defined_22" dest="fullcitation" />
+  <copyField source="user_defined_23" dest="fullcitation" />
+  <copyField source="user_defined_24" dest="fullcitation" />
+  <copyField source="user_defined_25" dest="fullcitation" />
+  <copyField source="user_defined_26" dest="fullcitation" />
+  <copyField source="user_defined_27" dest="fullcitation" />
+  <copyField source="user_defined_28" dest="fullcitation" />
+  <copyField source="user_defined_29" dest="fullcitation" />
+  <copyField source="user_defined_30" dest="fullcitation" />
+  <copyField source="user_defined_31" dest="fullcitation" />
+  <copyField source="user_defined_32" dest="fullcitation" />
+  <copyField source="user_defined_33" dest="fullcitation" />
+  <copyField source="user_defined_34" dest="fullcitation" />
+  <copyField source="user_defined_35" dest="fullcitation" />
+  <copyField source="user_defined_36" dest="fullcitation" />
+  <copyField source="user_defined_37" dest="fullcitation" />
+  <copyField source="user_defined_38" dest="fullcitation" />
+  <copyField source="user_defined_39" dest="fullcitation" />
+  <copyField source="user_defined_40" dest="fullcitation" />
+  <copyField source="user_defined_41" dest="fullcitation" />
+  <copyField source="user_defined_42" dest="fullcitation" />
+  <copyField source="user_defined_43" dest="fullcitation" />
+  <copyField source="user_defined_44" dest="fullcitation" />
+  <copyField source="user_defined_45" dest="fullcitation" />
+  <copyField source="user_defined_46" dest="fullcitation" />
+  <copyField source="user_defined_47" dest="fullcitation" />
+  <copyField source="user_defined_48" dest="fullcitation" />
+  <copyField source="user_defined_49" dest="fullcitation" />
+  <copyField source="user_defined_50" dest="fullcitation" />
+  <copyField source="user_defined_51" dest="fullcitation" />
+  <copyField source="user_defined_52" dest="fullcitation" />
+
 
 
   <!-- Special metadata fields including the source, last modified date the citation fields -->

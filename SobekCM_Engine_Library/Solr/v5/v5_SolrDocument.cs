@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using SobekCM.Resource_Object;
+using SobekCM.Resource_Object.Metadata_Modules;
+using SobekCM.Resource_Object.Metadata_Modules.GeoSpatial;
 using SobekCM.Resource_Object.Solr;
 using SolrNet.Attributes;
 
@@ -14,6 +16,12 @@ namespace SobekCM.Engine_Library.Solr.v5
         //   Translated Title
         //   ZT Hierarchical
         //   LOM fields (and remove underscore in db metadata type names and learning time and resource type)
+
+        // Add VRA core Materials display
+        // Add VRA Core Measurements display
+
+        // Performance
+
 
         #region Constructors for this class 
 
@@ -43,6 +51,50 @@ namespace SobekCM.Engine_Library.Solr.v5
             BibID = Digital_Object.BibID;
             VID = Digital_Object.VID;
             MainThumbnail = Digital_Object.Behaviors.Main_Thumbnail;
+
+            // Add Serial hierarchy fields
+            Level1_Text = String.Empty;
+            Level1_Index = -1;
+            Level2_Text = String.Empty;
+            Level2_Index = -1;
+            Level3_Text = String.Empty;
+            Level3_Index = -1;
+            if (Digital_Object.Behaviors != null)
+            {
+                if (Digital_Object.Behaviors.Serial_Info.Count > 0)
+                {
+                    Level1_Index = Digital_Object.Behaviors.Serial_Info[0].Order;
+                    Level1_Text = Digital_Object.Behaviors.Serial_Info[0].Display;
+                }
+                if (Digital_Object.Behaviors.Serial_Info.Count > 1)
+                {
+                    Level1_Index = Digital_Object.Behaviors.Serial_Info[1].Order;
+                    Level1_Text = Digital_Object.Behaviors.Serial_Info[1].Display;
+                }
+                if (Digital_Object.Behaviors.Serial_Info.Count > 2)
+                {
+                    Level1_Index = Digital_Object.Behaviors.Serial_Info[2].Order;
+                    Level1_Text = Digital_Object.Behaviors.Serial_Info[2].Display;
+                }
+
+                Dark = Digital_Object.Behaviors.Dark_Flag;
+            }
+
+            // Some defaults
+            Discover_Groups = new List<int> {-1};
+            Discover_Users = new List<int> { -1 };
+            Discover_IPs = new List<int> { -1 };
+            RestrictedMsg = String.Empty;
+
+            // Set the spatial KML
+            GeoSpatial_Information geo = Digital_Object.Get_Metadata_Module(GlobalVar.GEOSPATIAL_METADATA_MODULE_KEY) as GeoSpatial_Information;
+            if (geo != null)
+            {
+                if (SpatialFootprint == null) SpatialFootprint = new List<string>();
+                SpatialFootprint.Add(geo.SobekCM_Main_Spatial_String);
+
+                SpatialDistance = (int) geo.SobekCM_Main_Spatial_Distance;
+            }
 
             // Get the rest of the metadata, from the item
             List<KeyValuePair<string, string>> searchTerms = Digital_Object.Search_Terms;
@@ -103,6 +155,11 @@ namespace SobekCM.Engine_Library.Solr.v5
                         Genre.Add(searchTerm.Value);
                         break;
 
+                    case "genre display":
+                        if (GenreDisplay == null) GenreDisplay = new List<string>();
+                        GenreDisplay.Add(searchTerm.Value);
+                        break;
+
                     case "donor":
                         Donor = searchTerm.Value;
                         break;
@@ -110,6 +167,11 @@ namespace SobekCM.Engine_Library.Solr.v5
                     case "identifier":
                         if (Identifier == null) Identifier = new List<string>();
                         Identifier.Add(searchTerm.Value);
+                        break;
+
+                    case "identifier display":
+                        if (IdentifierDisplay == null) IdentifierDisplay = new List<string>();
+                        IdentifierDisplay.Add(searchTerm.Value);
                         break;
 
                     case "accession number":
@@ -186,14 +248,29 @@ namespace SobekCM.Engine_Library.Solr.v5
                         NameAsSubject.Add(searchTerm.Value);
                         break;
 
+                    case "name as subject dispay":
+                        if (NameAsSubjectDisplay == null) NameAsSubjectDisplay = new List<string>();
+                        NameAsSubjectDisplay.Add(searchTerm.Value);
+                        break;
+
                     case "title as subject":
                         if (TitleAsSubject == null) TitleAsSubject = new List<string>();
                         TitleAsSubject.Add(searchTerm.Value);
+                        break;
+
+                    case "title as subject display":
+                        if (TitleAsSubjectDisplay == null) TitleAsSubjectDisplay = new List<string>();
+                        TitleAsSubjectDisplay.Add(searchTerm.Value);
                         break;
                         
                     case "spatial coverage":
                         if (Spatial == null) Spatial = new List<string>();
                         Spatial.Add(searchTerm.Value);
+                        break;
+
+                    case "spatial coverage.dispay":
+                        if (SpatialDisplay == null) SpatialDisplay = new List<string>();
+                        SpatialDisplay.Add(searchTerm.Value);
                         break;
 
                     case "country":
@@ -219,6 +296,11 @@ namespace SobekCM.Engine_Library.Solr.v5
                     case "subject keyword":
                         if (Subject == null) Subject = new List<string>();
                         Subject.Add(searchTerm.Value.Trim());
+                        break;
+
+                    case "subjects.display":
+                        if (SubjectDisplay == null) SubjectDisplay = new List<string>();
+                        SubjectDisplay.Add(searchTerm.Value.Trim());
                         break;
                     
                     case "publication date":
@@ -451,116 +533,7 @@ namespace SobekCM.Engine_Library.Solr.v5
                 }
             }
 
-            //// Add the main metadata fields
-            //Title = Digital_Object.Bib_Info.Main_Title.ToString();
-            //SortTitle = Digital_Object.Bib_Info.SortTitle;
-            //if ((Digital_Object.Bib_Info.Other_Titles_Count > 0) || ((Digital_Object.Bib_Info.SeriesTitle != null) && ( !String.IsNullOrEmpty(Digital_Object.Bib_Info.SeriesTitle.Title ))))
-            //AltTitle = new List<string>();
-            //if (Digital_Object.Bib_Info.Other_Titles_Count > 0)
-            //{
-            //    foreach (Title_Info altTitle in Digital_Object.Bib_Info.Other_Titles)
-            //    {
-            //        AltTitle.Add(altTitle.ToString());
-            //    }
-            //}
-            //if ((Digital_Object.Bib_Info.SeriesTitle != null) && (!String.IsNullOrEmpty(Digital_Object.Bib_Info.SeriesTitle.Title)))
-            //    AltTitle.Add(Digital_Object.Bib_Info.SeriesTitle.ToString());
-            //Type = Digital_Object.Bib_Info.SobekCM_Type_String;
-            //if (Digital_Object.Bib_Info.Languages_Count > 0)
-            //{
-            //    Language = new List<string>();
-            //    foreach (Language_Info language in Digital_Object.Bib_Info.Languages)
-            //    {
-            //        if (!String.IsNullOrEmpty(language.Language_Text))
-            //            Language.Add(language.Language_Text);
-            //        else if (!String.IsNullOrEmpty(language.Language_ISO_Code))
-            //        {
-            //            string possLanguage = language.Get_Language_By_Code(language.Language_ISO_Code);
-            //            if (!String.IsNullOrEmpty(possLanguage))
-            //                Language.Add(possLanguage);
-            //        }
-            //    }
-            //}
-            //if (Digital_Object.Bib_Info.Names_Count > 0)
-            //{
-            //    Creator = new List<string>();
-            //    foreach (Name_Info thisName in Digital_Object.Bib_Info.Names)
-            //    {
-            //        Creator.Add(thisName.ToString(true));
-            //    }
-            //}
-            //if (Digital_Object.Bib_Info.Publishers_Count > 0)
-            //{
-            //    Publisher = new List<string>();
-            //    Publisher_Display = new List<string>();
-            //    PubPlace = new List<string>();
-            //    foreach (Publisher_Info publisher in Digital_Object.Bib_Info.Publishers)
-            //    {
-            //        Publisher.Add(publisher.Name);
-            //        Publisher_Display.Add(publisher.ToString());
-            //        if (publisher.Places_Count > 0)
-            //        {
-            //            foreach (Origin_Info_Place pubPlace in publisher.Places)
-            //            {
-            //                if ( !String.IsNullOrEmpty(pubPlace.Place_Text))
-            //                    PubPlace.Add(pubPlace.Place_Text);
-            //            }
-            //        }
-            //    }
-            //}
-            //if (Digital_Object.Bib_Info.Target_Audiences_Count > 0)
-            //{
-            //    Audience = new List<string>();
-            //    foreach (TargetAudience_Info audience in Digital_Object.Bib_Info.Target_Audiences)
-            //        Audience.Add(audience.Audience);
-            //}
-            //if (!String.IsNullOrEmpty(Digital_Object.Bib_Info.Source.Statement))
-            //    Source = Digital_Object.Bib_Info.Source.Statement;
-            //if (!String.IsNullOrEmpty(Digital_Object.Bib_Info.Location.Holding_Name))
-            //    Holding = Digital_Object.Bib_Info.Location.Holding_Name;
-            //if (Digital_Object.Bib_Info.Identifiers_Count > 0)
-            //{
-            //    Identifier = new List<string>();
-            //    foreach( Identifier_Info identifier in Digital_Object.Bib_Info.Identifiers )
-            //        Identifier.Add(identifier.ToString());
-            //}
-            //if (Digital_Object.Bib_Info.Notes_Count > 0)
-            //{
-            //    Notes = new List<string>();
-            //    foreach (Note_Info thisNote in Digital_Object.Bib_Info.Notes)
-            //    {
-            //        Notes.Add(thisNote.Note);
-            //    }
-            //}
-            //if (Digital_Object.Behaviors.Ticklers_Count > 0)
-            //{
-            //    Tickler = new List<string>();
-            //    Tickler.AddRange(Digital_Object.Behaviors.Ticklers);
-            //}
-            //if (Digital_Object.Bib_Info.hasDonor)
-            //    Donor = Digital_Object.Bib_Info.Donor.ToString();
-            //if (!String.IsNullOrEmpty(Digital_Object.Bib_Info.Original_Description.Extent))
-            //    Format = Digital_Object.Bib_Info.Original_Description.Extent;
-            //if (Digital_Object.Bib_Info.Origin_Info.Frequencies_Count > 0)
-            //{
-            //    Frequency = new List<string>();
-            //    foreach (Origin_Info_Frequency frequency in Digital_Object.Bib_Info.Origin_Info.Frequencies)
-            //    {
-            //        Frequency.Add(frequency.Term);
-            //    }
-            //}
-            //if (Digital_Object.Bib_Info.Genres_Count > 0)
-            //{
-            //    Genre = new List<string>();
-            //    foreach (Genre_Info thisGenre in Digital_Object.Bib_Info.Genres)
-            //    {
-            //        if ( !String.Equals(thisGenre.Authority, "sobekcm", StringComparison.OrdinalIgnoreCase))
-            //            Genre.Add(thisGenre.ToString());
-            //    }
-            //}
-
-            //// Date fields - STILL NEED TO REVIEW THIS!!
-
+ 
             //// Subject metadata fields ( and also same spatial information )
             //List<string> spatials = new List<string>();
             //List<Subject_Info_HierarchicalGeographic> hierarhicals = new List<Subject_Info_HierarchicalGeographic>();
@@ -616,15 +589,7 @@ namespace SobekCM.Engine_Library.Solr.v5
             //    }
             //}
 
-            // Spatial metadata fields
-            // Copy individual portions of the hierarchical over to the spatials
 
-                // spatial_standard
-            // spatial_hierarchical
-            // country
-            // state 
-            // county
-            // city
 
 
             // Add the empty solr pages for now
@@ -659,6 +624,78 @@ namespace SobekCM.Engine_Library.Solr.v5
         /// <summary> Main thumbnail for this item </summary>
         [SolrField("mainthumb")]
         public string MainThumbnail { get; set; }
+
+        #endregion
+
+        #region Serial hierarchy fields
+
+        /// <summary> Text for the serial hierarchy level 1 for this item </summary>
+        [SolrField("level1text")]
+        public string Level1_Text { get; set; }
+
+        /// <summary> Index for the serial hierarchy level 1 for this item </summary>
+        [SolrField("level1index")]
+        public int Level1_Index { get; set; }
+
+        /// <summary> Text for the serial hierarchy level 2 for this item </summary>
+        [SolrField("level2text")]
+        public string Level2_Text { get; set; }
+
+        /// <summary> Index for the serial hierarchy level 2 for this item </summary>
+        [SolrField("level2index")]
+        public int Level2_Index { get; set; }
+
+        /// <summary> Text for the serial hierarchy level 3 for this item </summary>
+        [SolrField("level3text")]
+        public string Level3_Text { get; set; }
+
+        /// <summary> Index for the serial hierarchy level 3 for this item </summary>
+        [SolrField("level3index")]
+        public int Level3_Index { get; set; }
+
+        #endregion
+
+        #region Authority system ID's for use in the local authority system
+
+        /// <summary> Creator authority ids related to this digital resource </summary>
+        [SolrField("creator.authid")]
+        public List<int> Creator_AuthID { get; set; }
+
+        /// <summary> Publisher authority ids related to this digital resource </summary>
+        [SolrField("publisher.authid")]
+        public List<int> Publisher_AuthID { get; set; }
+
+        /// <summary> Subject authority ids related to this digital resource </summary>
+        [SolrField("subject.authid")]
+        public List<int> Subject_AuthID { get; set; }
+
+        /// <summary> Spatial authority ids related to this digital resource </summary>
+        [SolrField("spatial.authid")]
+        public List<int> Spatial_AuthID { get; set; }
+
+        #endregion
+
+        #region Some basic behavior fields related to discoverability and access
+
+        /// <summary> UserIDs which can discover this digital resource ( or -1 otherwise ) </summary>
+        [SolrField("discover_users")]
+        public List<int> Discover_Users { get; set; }
+
+        /// <summary> GroupIDs which can discover this digital resource ( or -1 otherwise ) </summary>
+        [SolrField("discover_groups")]
+        public List<int> Discover_Groups { get; set; }
+
+        /// <summary> Primary keys to the IP address ranges which can discover this digital resource ( or -1 otherwise ) </summary>
+        [SolrField("discover_ips")]
+        public List<int> Discover_IPs { get; set; }
+
+        /// <summary> Dark flag indicates if this digital resource is considered "dark" or largely inaccessible </summary>
+        [SolrField("dark")]
+        public bool Dark { get; set; }
+
+        /// <summary> Restricted message to display with this item - generally describes accessibility permissions </summary>
+        [SolrField("restricted_msg")]
+        public string RestrictedMsg { get; set; }
 
         #endregion
 
@@ -732,6 +769,10 @@ namespace SobekCM.Engine_Library.Solr.v5
         [SolrField("identifier")]
         public List<string> Identifier { get; set; }
 
+        /// <summary> Display version of the identifiers for this document, including identifier type </summary>
+        [SolrField("identifier.display")]
+        public List<string> IdentifierDisplay { get; set; }
+
         /// <summary> Notes for this document </summary>
         [SolrField("notes")]
         public List<string> Notes { get; set; }
@@ -756,6 +797,10 @@ namespace SobekCM.Engine_Library.Solr.v5
         [SolrField("genre")]
         public List<string> Genre { get; set; }
 
+        /// <summary> Display version of the genres for this document including the authority </summary>
+        [SolrField("genre.display")]
+        public List<string> GenreDisplay { get; set; }
+
         /// <summary> Other citation fields </summary>
         [SolrField("other")]
         public List<string> OtherCitation { get; set; }
@@ -776,13 +821,25 @@ namespace SobekCM.Engine_Library.Solr.v5
         [SolrField("subject")]
         public List<string> Subject { get; set; }
 
+        /// <summary> DIsplay version of subjects and subject keywords for this document </summary>
+        [SolrField("subject.display")]
+        public List<string> SubjectDisplay { get; set; }
+
         /// <summary> Name (corporate or personal) as subject for this document </summary>
         [SolrField("name_as_subject")]
         public List<string> NameAsSubject { get; set; }
 
+        /// <summary> Display version of name (corporate or personal) as subject for this document </summary>
+        [SolrField("name_as_subject.display")]
+        public List<string> NameAsSubjectDisplay { get; set; }
+
         /// <summary> Title of a work as subject for this document </summary>
         [SolrField("title_as_subject")]
         public List<string> TitleAsSubject { get; set; }
+
+        /// <summary> Dispay version of title of a work as subject for this document </summary>
+        [SolrField("title_as_subject.display")]
+        public List<string> TitleAsSubjectDisplay { get; set; }
 
         #endregion
 
@@ -791,6 +848,18 @@ namespace SobekCM.Engine_Library.Solr.v5
         /// <summary> Standard spatial subjects for this document </summary>
         [SolrField("spatial_standard")]
         public List<string> Spatial { get; set; }
+
+        /// <summary> Spatial footprint to display this item on a map </summary>
+        [SolrField("spatial_footprint")]
+        public List<string> SpatialFootprint { get; set; }
+
+        /// <summary> Distance of the spatial footprint for this item on the map </summary>
+        [SolrField("spatial_footprint_distance")]
+        public int SpatialDistance { get; set; }
+
+        /// <summary> Display version of the standard spatial subjects for this document </summary>
+        [SolrField("spatial_standard.display")]
+        public List<string> SpatialDisplay { get; set; }
 
         /// <summary> Hierarchical spatial subjects for this document </summary>
         /// <remarks> Some individual components are also broken out below </remarks>

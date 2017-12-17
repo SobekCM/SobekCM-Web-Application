@@ -29,12 +29,39 @@
   <!-- Unique key for this document (defined as unique key below) -->
   <field name="did" type="string" indexed="true" stored="true" required="true" multiValued="false" />
 
+  <!-- all the text for this document -->
+  <field name="fulltext" type="text_fulltext" indexed="true" stored="true" termVectors="true" termPositions="true" termOffsets="true" />
 
   <!-- Administrative fields -->
   <field name="aggregations" type="text_general" indexed="true" stored="true" multiValued="true" />
   <field name="bibid" type="text_general" indexed="true" stored="true" multiValued="false" />
   <field name="vid" type="text_general" indexed="true" stored="true" multiValued="false" />
-  <field name="mainthumb" type="text_general" indexed="true" stored="true" multiValued="false" />
+  <field name="mainthumb" type="text_general" indexed="false" stored="true" multiValued="false" />
+  
+  <!-- Spatial footprint used to display this item in a Google map -->
+  <field name="spatial_footprint" type="text_general" indexed="false" stored="true" multiValued="true" />
+  <field name="spatial_footprint_distance" type="int" indexed="true" stored="true" multiValued="false" />
+  
+   <!-- Some basic behavior fields related to discoverability and access -->
+   <field name="dark" type="boolean" indexed="true" stored="false" multiValued="false" />    
+   <field name="discover_users" type="int" indexed="true" stored="false" multiValued="true" />
+   <field name="discover_groups" type="int" indexed="true" stored="false" multiValued="true" />
+   <field name="discover_ips" type="int" indexed="true" stored="false" multiValued="true" />
+   <field name="restricted_msg" type="text_general" indexed="false" stored="true" multiValued="false" />   
+   
+   <!-- Authority ids that this resource is related to -->
+   <field name="creator.authid" type="int" indexed="true" stored="int" multiValued="true" />
+   <field name="publisher.authid" type="int" indexed="true" stored="int" multiValued="true" />
+   <field name="subject.authid" type="int" indexed="true" stored="int" multiValued="true" />
+   <field name="spatial.authid" type="int" indexed="true" stored="int" multiValued="true" />
+     
+   <!-- Serial hierarchy fields, used for display purposes -->
+   <field name="level1text" type="string" indexed="false" stored="true" multiValued="false" />
+   <field name="level1index" type="int" indexed="false" stored="true" multiValued="false" />
+   <field name="level2text" type="string" indexed="false" stored="true" multiValued="false" />
+   <field name="level2index" type="int" indexed="false" stored="true" multiValued="false" />
+   <field name="level3text" type="string" indexed="false" stored="true" multiValued="false" />
+   <field name="level3index" type="int" indexed="false" stored="true" multiValued="false" />
 
   <!-- Main metadata fields -->
   <field name="title" type="text_general" indexed="true" stored="true" multiValued="false" />
@@ -54,6 +81,7 @@
   <field name="source" type="text_general" indexed="true" stored="true"  multiValued="false" />
   <field name="holding" type="text_general" indexed="true" stored="true"  multiValued="false" />
   <field name="identifier" type="text_general" indexed="true" stored="true"  multiValued="true" />
+  <field name="identifier.display" type="text_general" indexed="false" stored="true"  multiValued="true" />
   <field name="accession_number" type="text_general" indexed="true" stored="true" multiValued="true" />
   <field name="notes" type="text_general" indexed="true" stored="true"  multiValued="true" />
   <field name="tickler" type="text_general" indexed="true" stored="true"  multiValued="true" />
@@ -61,6 +89,7 @@
   <field name="format" type="text_general" indexed="true" stored="true"  multiValued="false" />
   <field name="frequency" type="text_general" indexed="true" stored="true"  multiValued="true" />
   <field name="genre" type="text_general" indexed="true" stored="true"  multiValued="true" />
+  <field name="genre.display" type="text_general" indexed="true" stored="false"  multiValued="true" />
   <field name="other" type="text_general" indexed="true" stored="false"  multiValued="true" />
   
   <!-- Main metadata facet fields -->
@@ -98,15 +127,24 @@
   <copyField source="genre" dest="genre_facets" />
   
   <!-- Date fields -->
-  <field name="date.display" type="text_general" indexed="true" stored="true" multiValued="false" />
+  <field name="date" type="text_general" indexed="true" stored="true" multiValued="false" />
+  <field name="date.year" type="text_general" indexed="true" stored="true" multiValued="false" />
+  <field name="date.gregorian" type="text_general" indexed="true" stored="true" multiValued="false" />
+  <field name="date.sort" type="text_general" indexed="true" stored="false" multiValued="false" />
+  <field name="date.display" type="text_general" indexed="false" stored="true" multiValued="false" />
   <field name="date_facets" type="text_facets" indexed="true" stored="true" multiValued="false" />
-  <copyField source="date.display" dest="date_facets" />
+  <field name="date.year_facets" type="text_facets" indexed="true" stored="true" multiValued="false" />
+  <copyField source="date" dest="date_facets" />
+  <copyField source="date.year" dest="date.year_facets" />
 
   <!-- Subject fields for searching and display -->
   <field name="subject" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="subject.display" type="text_general" indexed="false" stored="true" multiValued="true" />
   <field name="topics" type="text_general" indexed="true" stored="true" multiValued="true" />
   <field name="name_as_subject" type="text_general" indexed="true" stored="true"  multiValued="true" />
+  <field name="name_as_subject.display" type="text_general" indexed="false" stored="true"  multiValued="true" />
   <field name="title_as_subject" type="text_general" indexed="true" stored="true"  multiValued="true" /> 
+  <field name="title_as_subject.display" type="text_general" indexed="false" stored="true"  multiValued="true" /> 
   <field name="subject_facets" type="text_facets" indexed="true" stored="false" multiValued="true" />
   <field name="topics_facets" type="text_facets" indexed="true" stored="false" multiValued="true" />
   <field name="name_as_subject_facets" type="text_facets" indexed="true" stored="false"  multiValued="true" />
@@ -118,6 +156,7 @@
 
   <!-- Spatial fields for searching -->
   <field name="spatial_standard" type="text_general" indexed="true" stored="true"  multiValued="true" />
+  <field name="spatial_standard.display" type="text_general" indexed="false" stored="true"  multiValued="true" />
   <field name="spatial_hierarchical" type="text_general" indexed="true" stored="true" multiValued="true" />
   <field name="country" type="text_general" indexed="true" stored="true"  multiValued="true" />
   <field name="state" type="text_general" indexed="true" stored="true"  multiValued="true" />
@@ -347,6 +386,112 @@
   <field name="user_defined_50" type="text_general" indexed="true" stored="true" multiValued="true" />
   <field name="user_defined_51" type="text_general" indexed="true" stored="true" multiValued="true" />
   <field name="user_defined_52" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="user_defined_01.display" type="text_general" indexed="false" stored="true" multiValued="true" />
+  <field name="user_defined_02.display" type="text_general" indexed="false" stored="true" multiValued="true" />
+  <field name="user_defined_03.display" type="text_general" indexed="false" stored="true" multiValued="true" />
+  <field name="user_defined_04.display" type="text_general" indexed="false" stored="true" multiValued="true" />
+  <field name="user_defined_05.display" type="text_general" indexed="false" stored="true" multiValued="true" />
+  <field name="user_defined_06.display" type="text_general" indexed="false" stored="true" multiValued="true" />
+  <field name="user_defined_07.display" type="text_general" indexed="false" stored="true" multiValued="true" />
+  <field name="user_defined_08.display" type="text_general" indexed="false" stored="true" multiValued="true" />
+  <field name="user_defined_09.display" type="text_general" indexed="false" stored="true" multiValued="true" />
+  <field name="user_defined_10.display" type="text_general" indexed="false" stored="true" multiValued="true" />
+  <field name="user_defined_11.display" type="text_general" indexed="false" stored="true" multiValued="true" />
+  <field name="user_defined_12.display" type="text_general" indexed="false" stored="true" multiValued="true" />
+  <field name="user_defined_13.display" type="text_general" indexed="false" stored="true" multiValued="true" />
+  <field name="user_defined_14.display" type="text_general" indexed="false" stored="true" multiValued="true" />
+  <field name="user_defined_15.display" type="text_general" indexed="false" stored="true" multiValued="true" />
+  <field name="user_defined_16.display" type="text_general" indexed="false" stored="true" multiValued="true" />
+  <field name="user_defined_17.display" type="text_general" indexed="false" stored="true" multiValued="true" />
+  <field name="user_defined_18.display" type="text_general" indexed="false" stored="true" multiValued="true" />
+  <field name="user_defined_19.display" type="text_general" indexed="false" stored="true" multiValued="true" />
+  <field name="user_defined_20.display" type="text_general" indexed="false" stored="true" multiValued="true" />
+  <field name="user_defined_21.display" type="text_general" indexed="false" stored="true" multiValued="true" />
+  <field name="user_defined_22.display" type="text_general" indexed="false" stored="true" multiValued="true" />
+  <field name="user_defined_23.display" type="text_general" indexed="false" stored="true" multiValued="true" />
+  <field name="user_defined_24.display" type="text_general" indexed="false" stored="true" multiValued="true" />
+  <field name="user_defined_25.display" type="text_general" indexed="false" stored="true" multiValued="true" />
+  <field name="user_defined_26.display" type="text_general" indexed="false" stored="true" multiValued="true" />
+  <field name="user_defined_27.display" type="text_general" indexed="false" stored="true" multiValued="true" />
+  <field name="user_defined_28.display" type="text_general" indexed="false" stored="true" multiValued="true" />
+  <field name="user_defined_29.display" type="text_general" indexed="false" stored="true" multiValued="true" />
+  <field name="user_defined_30.display" type="text_general" indexed="false" stored="true" multiValued="true" />
+  <field name="user_defined_31.display" type="text_general" indexed="false" stored="true" multiValued="true" />
+  <field name="user_defined_32.display" type="text_general" indexed="false" stored="true" multiValued="true" />
+  <field name="user_defined_33.display" type="text_general" indexed="false" stored="true" multiValued="true" />
+  <field name="user_defined_34.display" type="text_general" indexed="false" stored="true" multiValued="true" />
+  <field name="user_defined_35.display" type="text_general" indexed="false" stored="true" multiValued="true" />
+  <field name="user_defined_36.display" type="text_general" indexed="false" stored="true" multiValued="true" />
+  <field name="user_defined_37.display" type="text_general" indexed="false" stored="true" multiValued="true" />
+  <field name="user_defined_38.display" type="text_general" indexed="false" stored="true" multiValued="true" />
+  <field name="user_defined_39.display" type="text_general" indexed="false" stored="true" multiValued="true" />
+  <field name="user_defined_40.display" type="text_general" indexed="false" stored="true" multiValued="true" />
+  <field name="user_defined_41.display" type="text_general" indexed="false" stored="true" multiValued="true" />
+  <field name="user_defined_42.display" type="text_general" indexed="false" stored="true" multiValued="true" />
+  <field name="user_defined_43.display" type="text_general" indexed="false" stored="true" multiValued="true" />
+  <field name="user_defined_44.display" type="text_general" indexed="false" stored="true" multiValued="true" />
+  <field name="user_defined_45.display" type="text_general" indexed="false" stored="true" multiValued="true" />
+  <field name="user_defined_46.display" type="text_general" indexed="false" stored="true" multiValued="true" />
+  <field name="user_defined_47.display" type="text_general" indexed="false" stored="true" multiValued="true" />
+  <field name="user_defined_48.display" type="text_general" indexed="false" stored="true" multiValued="true" />
+  <field name="user_defined_49.display" type="text_general" indexed="false" stored="true" multiValued="true" />
+  <field name="user_defined_50.display" type="text_general" indexed="false" stored="true" multiValued="true" />
+  <field name="user_defined_51.display" type="text_general" indexed="false" stored="true" multiValued="true" />
+  <field name="user_defined_52.display" type="text_general" indexed="false" stored="true" multiValued="true" />
+  <field name="user_defined_01_facets" type="text_general" indexed="true" stored="false" multiValued="true" />
+  <field name="user_defined_02_facets" type="text_general" indexed="true" stored="false" multiValued="true" />
+  <field name="user_defined_03_facets" type="text_general" indexed="true" stored="false" multiValued="true" />
+  <field name="user_defined_04_facets" type="text_general" indexed="true" stored="false" multiValued="true" />
+  <field name="user_defined_05_facets" type="text_general" indexed="true" stored="false" multiValued="true" />
+  <field name="user_defined_06_facets" type="text_general" indexed="true" stored="false" multiValued="true" />
+  <field name="user_defined_07_facets" type="text_general" indexed="true" stored="false" multiValued="true" />
+  <field name="user_defined_08_facets" type="text_general" indexed="true" stored="false" multiValued="true" />
+  <field name="user_defined_09_facets" type="text_general" indexed="true" stored="false" multiValued="true" />
+  <field name="user_defined_10_facets" type="text_general" indexed="true" stored="false" multiValued="true" />
+  <field name="user_defined_11_facets" type="text_general" indexed="true" stored="false" multiValued="true" />
+  <field name="user_defined_12_facets" type="text_general" indexed="true" stored="false" multiValued="true" />
+  <field name="user_defined_13_facets" type="text_general" indexed="true" stored="false" multiValued="true" />
+  <field name="user_defined_14_facets" type="text_general" indexed="true" stored="false" multiValued="true" />
+  <field name="user_defined_15_facets" type="text_general" indexed="true" stored="false" multiValued="true" />
+  <field name="user_defined_16_facets" type="text_general" indexed="true" stored="false" multiValued="true" />
+  <field name="user_defined_17_facets" type="text_general" indexed="true" stored="false" multiValued="true" />
+  <field name="user_defined_18_facets" type="text_general" indexed="true" stored="false" multiValued="true" />
+  <field name="user_defined_19_facets" type="text_general" indexed="true" stored="false" multiValued="true" />
+  <field name="user_defined_20_facets" type="text_general" indexed="true" stored="false" multiValued="true" />
+  <field name="user_defined_21_facets" type="text_general" indexed="true" stored="false" multiValued="true" />
+  <field name="user_defined_22_facets" type="text_general" indexed="true" stored="false" multiValued="true" />
+  <field name="user_defined_23_facets" type="text_general" indexed="true" stored="false" multiValued="true" />
+  <field name="user_defined_24_facets" type="text_general" indexed="true" stored="false" multiValued="true" />
+  <field name="user_defined_25_facets" type="text_general" indexed="true" stored="false" multiValued="true" />
+  <field name="user_defined_26_facets" type="text_general" indexed="true" stored="false" multiValued="true" />
+  <field name="user_defined_27_facets" type="text_general" indexed="true" stored="false" multiValued="true" />
+  <field name="user_defined_28_facets" type="text_general" indexed="true" stored="false" multiValued="true" />
+  <field name="user_defined_29_facets" type="text_general" indexed="true" stored="false" multiValued="true" />
+  <field name="user_defined_30_facets" type="text_general" indexed="true" stored="false" multiValued="true" />
+  <field name="user_defined_31_facets" type="text_general" indexed="true" stored="false" multiValued="true" />
+  <field name="user_defined_32_facets" type="text_general" indexed="true" stored="false" multiValued="true" />
+  <field name="user_defined_33_facets" type="text_general" indexed="true" stored="false" multiValued="true" />
+  <field name="user_defined_34_facets" type="text_general" indexed="true" stored="false" multiValued="true" />
+  <field name="user_defined_35_facets" type="text_general" indexed="true" stored="false" multiValued="true" />
+  <field name="user_defined_36_facets" type="text_general" indexed="true" stored="false" multiValued="true" />
+  <field name="user_defined_37_facets" type="text_general" indexed="true" stored="false" multiValued="true" />
+  <field name="user_defined_38_facets" type="text_general" indexed="true" stored="false" multiValued="true" />
+  <field name="user_defined_39_facets" type="text_general" indexed="true" stored="false" multiValued="true" />
+  <field name="user_defined_40_facets" type="text_general" indexed="true" stored="false" multiValued="true" />
+  <field name="user_defined_41_facets" type="text_general" indexed="true" stored="false" multiValued="true" />
+  <field name="user_defined_42_facets" type="text_general" indexed="true" stored="false" multiValued="true" />
+  <field name="user_defined_43_facets" type="text_general" indexed="true" stored="false" multiValued="true" />
+  <field name="user_defined_44_facets" type="text_general" indexed="true" stored="false" multiValued="true" />
+  <field name="user_defined_45_facets" type="text_general" indexed="true" stored="false" multiValued="true" />
+  <field name="user_defined_46_facets" type="text_general" indexed="true" stored="false" multiValued="true" />
+  <field name="user_defined_47_facets" type="text_general" indexed="true" stored="false" multiValued="true" />
+  <field name="user_defined_48_facets" type="text_general" indexed="true" stored="false" multiValued="true" />
+  <field name="user_defined_49_facets" type="text_general" indexed="true" stored="false" multiValued="true" />
+  <field name="user_defined_50_facets" type="text_general" indexed="true" stored="false" multiValued="true" />
+  <field name="user_defined_51_facets" type="text_general" indexed="true" stored="false" multiValued="true" />
+  <field name="user_defined_52_facets" type="text_general" indexed="true" stored="false" multiValued="true" />
+  
+  
   
   <!-- Title field aggregates all title fields -->
   <field name="title_all" type="text_general" indexed="true" stored="false" multiValued="true" />
@@ -401,7 +546,7 @@
   <copyField source="publisher" dest="fullcitation" />
   <copyField source="publication_place" dest="fullcitation" />
   <copyField source="audience" dest="fullcitation" />
-  <copyField source=source" dest="fullcitation" />
+  <copyField source="source" dest="fullcitation" />
   <copyField source="holding" dest="fullcitation" />
   <copyField source="identifier" dest="fullcitation" />
   <copyField source="accession_number" dest="fullcitation" />
@@ -520,27 +665,12 @@
   <copyField source="user_defined_51" dest="fullcitation" />
   <copyField source="user_defined_52" dest="fullcitation" />
 
-
-
   <!-- Special metadata fields including the source, last modified date the citation fields -->
   <field name="last_modified" type="date" indexed="true" stored="true"/>
   <field name="_src_" type="string" indexed="false" stored="true"/>
 
   <!-- Not sure what to do with this -->
   <field name="User_Description" type="text_general" indexed="true" stored="true"  multiValued="true" />
-
-
-
-  <!-- Main body of document extracted by SolrCell.
-        NOTE: This field is not indexed by default, since it is also copied to "text"
-        using copyField below. This is to save space. Use this field for returning and
-        highlighting document content. Use the "text" field to search the content. -->
-  <field name="content" type="text_general" indexed="false" stored="true" multiValued="true"/>
-
-
-  <!-- catchall field, containing all other searchable text fields (implemented
-        via copyField further on in this schema  -->
-  <field name="textXX" type="text_general" indexed="true" stored="false" multiValued="true"/>
 
   <!-- Unique key field - required -->
   <uniqueKey>did</uniqueKey>
@@ -577,6 +707,26 @@
    removes stop words from case-insensitive "stopwords.txt" (empty by default), and down cases.  At query time only, it
    also applies synonyms. -->
   <fieldType name="text_general" class="solr.TextField" positionIncrementGap="100">
+    <analyzer type="index">
+      <tokenizer class="solr.StandardTokenizerFactory"/>
+      <filter class="solr.StopFilterFactory" ignoreCase="true" words="stopwords.txt" />
+      <!-- in this example, we will only use synonyms at query time
+        <filter class="solr.SynonymGraphFilterFactory" synonyms="index_synonyms.txt" ignoreCase="true" expand="false"/>
+        <filter class="solr.FlattenGraphFilterFactory"/>  -->
+      <filter class="solr.LowerCaseFilterFactory"/>
+    </analyzer>
+    <analyzer type="query">
+      <tokenizer class="solr.StandardTokenizerFactory"/>
+      <filter class="solr.StopFilterFactory" ignoreCase="true" words="stopwords.txt" />
+      <filter class="solr.SynonymGraphFilterFactory" synonyms="synonyms.txt" ignoreCase="true" expand="true"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+    </analyzer>
+  </fieldType>
+  
+    <!-- A general text field that has reasonable, generic  cross-language defaults: it tokenizes with StandardTokenizer,
+   removes stop words from case-insensitive "stopwords.txt" (empty by default), and down cases.  At query time only, it
+   also applies synonyms. -->
+  <fieldType name="text_fulltext" class="solr.TextField" positionIncrementGap="100">
     <analyzer type="index">
       <tokenizer class="solr.StandardTokenizerFactory"/>
       <filter class="solr.StopFilterFactory" ignoreCase="true" words="stopwords.txt" />

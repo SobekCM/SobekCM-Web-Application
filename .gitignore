@@ -20,6 +20,7 @@ plugins
 
 _ReSharper.SobekCM Builder
 _ReSharper.SobekCM Web
+_ReSharper.SolrServiceWrapper
 
 # MSTest test Results
 [Tt]est[Rr]esult

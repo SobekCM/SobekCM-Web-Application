@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{76938670-22A8-4490-88D5-AC6D036970A2}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <ProjectGuid>{8827E54C-0234-4489-85A9-43629BD3F530}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Solr_Test</RootNamespace>
-    <AssemblyName>Solr_Test</AssemblyName>
+    <RootNamespace>SolrServiceMonitor</RootNamespace>
+    <AssemblyName>SolrServiceMonitor</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -33,9 +33,17 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Configuration.Install" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Management" />
+    <Reference Include="System.ServiceProcess" />
+    <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -44,32 +52,30 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Program.cs" />
+    <Compile Include="ProjectInstaller.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ProjectInstaller.Designer.cs">
+      <DependentUpon>ProjectInstaller.cs</DependentUpon>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SolrService.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="SolrService.Designer.cs">
+      <DependentUpon>SolrService.cs</DependentUpon>
+    </Compile>
+    <Compile Include="StartUp.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\EngineAgnosticLayerDbAccess\EngineAgnosticLayerDbAccess.csproj">
-      <Project>{b481ce6e-05fd-4336-9524-64d057aab107}</Project>
-      <Name>EngineAgnosticLayerDbAccess</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\SobekCM_Core\SobekCM_Core.csproj">
-      <Project>{849c78a5-c60b-4faf-9efb-943753f64e56}</Project>
-      <Name>SobekCM_Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\SobekCM_Engine_Library\SobekCM_Engine_Library.csproj">
-      <Project>{c5d75f1a-c5d8-428d-bba3-ea946fd539e1}</Project>
-      <Name>SobekCM_Engine_Library</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\SobekCM_Resource_Object\SobekCM_Resource_Object.csproj">
-      <Project>{395c2621-ce19-41e0-aa1a-abdb37f6e815}</Project>
-      <Name>SobekCM_Resource_Object</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\SobekCM_Tools\SobekCM_Tools.csproj">
-      <Project>{a511ce4c-7bd6-4446-bca8-ab71f7aa8078}</Project>
-      <Name>SobekCM_Tools</Name>
+    <ProjectReference Include="..\SolrMonitorModels\SolrMonitorModels.csproj">
+      <Project>{b2f9aa0d-bdf9-42bb-b25b-a0ac94315ce5}</Project>
+      <Name>SolrMonitorModels</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

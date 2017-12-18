@@ -1,0 +1,65 @@
+To setup the event log source, use the following, with elevated access as ADMIN
+
+
+eventcreate /ID 1 /L APPLICATION /T INFORMATION  /SO MYEVENTSOURCE /D "Establishing source during installation"
+
+Event log source restrictions:
+   21 characters or shorter
+   Cannot be hierarchical ( no / or \ )
+   Must not be already used  ( HKEY_LOCAL_MACHINE/SYSTEM/CurrentControlSet/Services/EventLog/Application)
+
+Make sure to check that the source does not exist before calling CreateEventSource, otherwise it will throw an exception.
+
+EventSourceCreationData sourceData = new EventSourceCreationData("MyApp1", "Application");
+		sourceData.MachineName = "myserver";
+		if (!System.Diagnostics.EventLog.SourceExists("MyApp1", "myserver"))
+			System.Diagnostics.EventLog.CreateEventSource(sourceData);
+
+HKEY_LOCAL_MACHINE
+   SYSTEM
+      CurrentControlSet
+         Services
+            EventLog
+               Application
+                  AppName
+               Security
+               System
+                  DriverName
+               CustomLog
+                  AppName
+
+
+-----------------------------------
+
+Copy the solr files over (save the old CORES!!) from the ZIP file.
+
+And.. that is it!
+
+-----------------------------------
+
+Don't need to "mount" the core or anything.. just copy over.
+
+-----------------------------------
+
+Ensure JAVA_HOME is set correctly ( to c:\Program Files\Java\jdk**)
+Also had to add java/jdk/bin to the path
+
+
+-----------------------------------
+If error during java install, try this..
+
+https://social.technet.microsoft.com/Forums/office/en-US/78ac199b-316b-4fbc-8b2b-2c90e5425ff0/java-install-errors?forum=w7itproappcompat
+
+This is what worked for me:
+
+* Close the installer when you see Java error 1603
+
+* Open javacpl.exe from C:\Program Files (x86)\Java\jre1.8.0_31\bin
+
+* Uncheck Enable Java content in browser on security tab and click OK to close Java control panel
+
+* Retry installing Java. Mine succeeded this time.
+
+* Open javacpl.exe from C:\Program Files (x86)\Java\jre1.8.0_31\bin
+
+* Check Enable Java content in browser on security tab and click OK to close Java control panel

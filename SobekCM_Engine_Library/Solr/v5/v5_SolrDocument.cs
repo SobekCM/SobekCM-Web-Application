@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Text;
 using SobekCM.Resource_Object;
+using SobekCM.Resource_Object.Divisions;
 using SobekCM.Resource_Object.Metadata_Modules;
 using SobekCM.Resource_Object.Metadata_Modules.GeoSpatial;
 using SobekCM.Resource_Object.Solr;
@@ -22,6 +25,8 @@ namespace SobekCM.Engine_Library.Solr.v5
 
         // Performance
 
+        private readonly List<string> additional_text_files = new List<string>();
+        private readonly string fileLocation;
 
         #region Constructors for this class 
 
@@ -42,6 +47,8 @@ namespace SobekCM.Engine_Library.Solr.v5
         /// This includes subject keywords, spatial information, genres, and information from the table of contents </remarks>
         public v5_SolrDocument(SobekCM_Item Digital_Object, string File_Location)
         {
+            fileLocation = File_Location;
+
             // Set the unique key
             DID = Digital_Object.BibID + ":" + Digital_Object.VID;
 
@@ -595,6 +602,81 @@ namespace SobekCM.Engine_Library.Solr.v5
             // Add the empty solr pages for now
             Solr_Pages = new List<Legacy_SolrPage>();
 
+            // Prepare to step through all the divisions/pages in this item
+            int pageorder = 1;
+            List<abstract_TreeNode> divsAndPages = Digital_Object.Divisions.Physical_Tree.Divisions_PreOrder;
+
+            // Get the list of all TXT files in this division
+            string[] text_files = Directory.GetFiles(File_Location, "*.txt");
+            Dictionary<string, string> text_files_existing = new Dictionary<string, string>();
+            foreach (string thisTextFile in text_files)
+            {
+                string filename = (new FileInfo(thisTextFile)).Name.ToUpper();
+                text_files_existing[filename] = filename;
+            }
+
+            // Get the list of all THM.JPG files in this division
+            string[] thumbnail_files = Directory.GetFiles(File_Location, "*thm.jpg");
+            Dictionary<string, string> thumbnail_files_existing = new Dictionary<string, string>();
+            foreach (string thisTextFile in thumbnail_files)
+            {
+                string filename = (new FileInfo(thisTextFile)).Name;
+                thumbnail_files_existing[filename.ToUpper().Replace("THM.JPG", "")] = filename;
+            }
+
+            // Step through all division nodes from the physical tree here
+            List<string> text_files_included = new List<string>();
+            foreach (abstract_TreeNode thisNode in divsAndPages)
+            {
+                if (thisNode.Page)
+                {
+                    // Cast to a page to continnue
+                    Page_TreeNode pageNode = (Page_TreeNode)thisNode;
+
+                    // Look for the root filename and then look for a matching TEXT file
+                    if (pageNode.Files.Count > 0)
+                    {
+                        string root = pageNode.Files[0].File_Name_Sans_Extension;
+                        if (text_files_existing.ContainsKey(root.ToUpper() + ".TXT"))
+                        {
+                            try
+                            {
+                                // SInce this is marked to be included, save this name
+                                text_files_included.Add(root.ToUpper() + ".TXT");
+
+                                // Read the page text
+                                StreamReader reader = new StreamReader(File_Location + "\\" + root + ".txt");
+                                string pageText = reader.ReadToEnd().Trim();
+                                reader.Close();
+
+                                // Look for a matching thumbnail
+                                string thumbnail = String.Empty;
+                                if (thumbnail_files_existing.ContainsKey(root.ToUpper()))
+                                    thumbnail = thumbnail_files_existing[root.ToUpper()];
+
+                                Legacy_SolrPage newPage = new Legacy_SolrPage(Digital_Object.BibID, Digital_Object.VID, pageorder, pageNode.Label, pageText, thumbnail);
+                                Solr_Pages.Add(newPage);
+                            }
+                            catch
+                            {
+                            }
+                        }
+                    }
+
+                    // Increment the page order for the next page irregardless
+                    pageorder++;
+                }
+            }
+
+            // Now, check for any other valid text files 
+            additional_text_files = new List<string>();
+            foreach (string thisTextFile in text_files_existing.Keys)
+            {
+                if ((!text_files_included.Contains(thisTextFile.ToUpper())) && (thisTextFile.ToUpper() != "AGREEMENT.TXT") && (thisTextFile.ToUpper().IndexOf("REQUEST") != 0))
+                {
+                    additional_text_files.Add(thisTextFile);
+                }
+            }
         }
 
         #endregion
@@ -602,6 +684,49 @@ namespace SobekCM.Engine_Library.Solr.v5
 
         /// <summary> Gets the collection of page objects for Solr indexing </summary>
         public List<Legacy_SolrPage> Solr_Pages { get; set; }
+
+        /// <summary> Returns the full text for all the pages within this document for the Solr engine to index for this document </summary>
+        [SolrField("fulltext")]
+        public string FullText
+        {
+            get
+            {
+                if (((Solr_Pages == null) || (Solr_Pages.Count == 0)) && (additional_text_files.Count == 0))
+                    return null;
+
+                StringBuilder builder = new StringBuilder(10000);
+
+                // Add the text for each page 
+                if (Solr_Pages != null)
+                {
+                    foreach (Legacy_SolrPage thisPage in Solr_Pages)
+                    {
+                        builder.Append(thisPage.PageText);
+                        builder.Append(" ");
+                    }
+                }
+
+                // Also add the text from any other text files
+                if (additional_text_files != null)
+                {
+                    foreach (string textFile in additional_text_files)
+                    {
+                        try
+                        {
+                            StreamReader reader = new StreamReader(fileLocation + "\\" + textFile);
+                            builder.Append(reader.ReadToEnd() + " ");
+                            reader.Close();
+                        }
+                        catch
+                        {
+                            // do nothing
+                        }
+                    }
+                }
+
+                return builder.ToString();
+            }
+        }
 
         /// <summary> Unique key for this document</summary>
         [SolrUniqueKey("did")]

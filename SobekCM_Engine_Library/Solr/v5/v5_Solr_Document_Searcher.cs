@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using SobekCM.Core.Results;
 using SobekCM.Core.Search;
+using SobekCM.Core.Settings;
 using SobekCM.Engine_Library.ApplicationState;
 using SobekCM.Engine_Library.Solr.Legacy;
-using SobekCM.Engine_Library.Solr.v5;
 using SobekCM.Tools;
 using SolrNet;
 using SolrNet.Commands.Parameters;
@@ -18,20 +19,133 @@ namespace SobekCM.Engine_Library.Solr.v5
 
         /// <summary> Perform an search for documents with matching parameters </summary>
         /// <param name="AggregationCode"> Aggregation code within which to search </param>
-        /// <param name="QueryString"> Quert string for the actual search to perform aggainst the Solr/Lucene engine </param>
-        /// <param name="ResultsPerPage"> Number of results to display per a "page" of results </param>
+        /// <param name="Terms"> List of the search terms </param>
+        /// <param name="Web_Fields"> List of the web fields associate with the search terms </param>        /// <param name="ResultsPerPage"> Number of results to display per a "page" of results </param>
         /// <param name="Page_Number"> Which page of results to return ( one-based, so the first page is page number of one )</param>
         /// <param name="Sort"> Sort to apply before returning the results of the search </param>
+        /// <param name="Need_Search_Statistics"> Flag indicates if the search statistics are needed </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         /// <param name="Complete_Result_Set_Info"> [OUT] Information about the entire set of results </param>
         /// <param name="Paged_Results"> [OUT] List of search results for the requested page of results </param>
         /// <returns> Page search result object with all relevant result information </returns>
-        public static bool Search(string AggregationCode, string QueryString, int ResultsPerPage, int Page_Number, ushort Sort, Custom_Tracer Tracer, out Search_Results_Statistics Complete_Result_Set_Info, out List<iSearch_Title_Result> Paged_Results)
+        public static bool Search(string AggregationCode, List<string> Terms, List<string> Web_Fields, int ResultsPerPage, int Page_Number, ushort Sort, bool Need_Search_Statistics, Custom_Tracer Tracer, out Search_Results_Statistics Complete_Result_Set_Info, out List<iSearch_Title_Result> Paged_Results)
         {
             if (Tracer != null)
             {
-                Tracer.Add_Trace("Solr_Documents_Searcher.Search", String.Empty);
+                Tracer.Add_Trace("v5_Solr_Documents_Searcher.Search", "Build the Solr query");
             }
+
+            // Step through all the terms and fields
+            StringBuilder queryStringBuilder = new StringBuilder();
+            for (int i = 0; i < Math.Min(Terms.Count, Web_Fields.Count); i++)
+            {
+                string web_field = Web_Fields[i];
+                string searchTerm = Terms[i];
+                string solr_field;
+
+                if (i == 0)
+                {
+                    // Skip any joiner for the very first field indicated
+                    if ((web_field[0] == '+') || (web_field[0] == '=') || (web_field[0] == '-'))
+                    {
+                        web_field = web_field.Substring(1);
+                    }
+
+                    // Try to get the solr field
+                    if (web_field == "TX")
+                    {
+                        solr_field = "fulltext:";
+                    }
+                    else
+                    {
+                        Metadata_Search_Field field = Engine_ApplicationCache_Gateway.Settings.Metadata_Search_Field_By_Code(web_field.ToUpper());
+                        if (field != null)
+                        {
+                            solr_field = field.Solr_Field + ":";
+                        }
+                        else
+                        {
+                            solr_field = String.Empty;
+                        }
+                    }
+
+                    // Add the solr search string
+                    if (searchTerm.IndexOf(" ") > 0)
+                    {
+                        queryStringBuilder.Append("(" + solr_field + "\"" + searchTerm.Replace(":", "") + "\")");
+                    }
+                    else
+                    {
+                        queryStringBuilder.Append("(" + solr_field + searchTerm.Replace(":", "") + ")");
+                    }
+                }
+                else
+                {
+                    // Add the joiner for this subsequent terms
+                    if ((web_field[0] == '+') || (web_field[0] == '=') || (web_field[0] == '-'))
+                    {
+                        switch (web_field[0])
+                        {
+                            case '=':
+                                queryStringBuilder.Append(" OR ");
+                                break;
+
+                            case '+':
+                                queryStringBuilder.Append(" AND ");
+                                break;
+
+                            case '-':
+                                queryStringBuilder.Append(" NOT ");
+                                break;
+
+                            default:
+                                queryStringBuilder.Append(" AND ");
+                                break;
+                        }
+                        web_field = web_field.Substring(1);
+                    }
+                    else
+                    {
+                        queryStringBuilder.Append(" AND ");
+                    }
+
+                    // Try to get the solr field
+                    if (web_field == "TX")
+                    {
+                        solr_field = "fulltext:";
+                    }
+                    else
+                    {
+                        Metadata_Search_Field field = Engine_ApplicationCache_Gateway.Settings.Metadata_Search_Field_By_Code(web_field.ToUpper());
+                        if (field != null)
+                        {
+                            solr_field = field.Solr_Field + ":";
+                        }
+                        else
+                        {
+                            solr_field = String.Empty;
+                        }
+                    }
+
+                    // Add the solr search string
+                    if (searchTerm.IndexOf(" ") > 0)
+                    {
+                        queryStringBuilder.Append("(" + solr_field + "\"" + searchTerm.Replace(":", "") + "\")");
+                    }
+                    else
+                    {
+                        queryStringBuilder.Append("(" + solr_field + searchTerm.Replace(":", "") + ")");
+                    }
+                }
+            }
+
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("v5_Solr_Documents_Searcher.Search", "Perform the search");
+            }
+
+            // Get the query string value
+            string queryString = queryStringBuilder.ToString();
 
             // Set output initially to null
             Paged_Results = new List<iSearch_Title_Result>();
@@ -61,20 +175,24 @@ namespace SobekCM.Engine_Library.Solr.v5
                     //                  ExtraParams = new Dictionary<string, string> { { "hl.useFastVectorHighlighter", "true" } }
                 };
 
-                // Hard-coded for now
+                // If the search stats are needed, let's get the facets
                 List<Metadata_Search_Field> facets = new List<Metadata_Search_Field>();
-                facets.Add(new Metadata_Search_Field(3, "Language", "Language", "LA", "language", "Language"));
-                facets.Add(new Metadata_Search_Field(4, "Creator", "Creator", "AU", "creator", "Creator"));
-                facets.Add(new Metadata_Search_Field(5, "Publisher", "Publisher", "PU", "publisher", "Publisher"));
-                facets.Add(new Metadata_Search_Field(8, "Genre", "Genre", "GE", "genre", "Genre"));
-                facets.Add(new Metadata_Search_Field(7, "Subject: Topic", "Subject Keyword", "TO", "subject", "Subject Keyword"));
-                facets.Add(new Metadata_Search_Field(10, "Subject: Geographic Area", "Spatial Coverage", "SP", "spatial_standard", "Spatial Coverage"));
-
-                // Create the query facters
-                options.Facet = new FacetParameters();
-                foreach (Metadata_Search_Field facet in facets)
+                if (Need_Search_Statistics)
                 {
-                    options.Facet.Queries.Add(new SolrFacetFieldQuery(facet.Solr_Facet_Term) {MinCount = 1});
+                    // Hard-coded for now
+                    facets.Add(new Metadata_Search_Field(3, "Language", "Language", "LA", "language", "Language", "language_facets", String.Empty, String.Empty));
+                    facets.Add(new Metadata_Search_Field(4, "Creator", "Creator", "AU", "creator", "Creator", "creator_facets", String.Empty, String.Empty));
+                    facets.Add(new Metadata_Search_Field(5, "Publisher", "Publisher", "PU", "publisher", "Publisher", "publisher_facets", String.Empty, String.Empty));
+                    facets.Add(new Metadata_Search_Field(8, "Genre", "Genre", "GE", "genre", "Genre", "genre_facets", String.Empty, String.Empty));
+                    facets.Add(new Metadata_Search_Field(7, "Subject: Topic", "Subject Keyword", "TO", "subject", "Subject Keyword", "subject_facets", String.Empty, String.Empty));
+                    facets.Add(new Metadata_Search_Field(10, "Subject: Geographic Area", "Spatial Coverage", "SP", "spatial_standard", "Spatial Coverage", "spatial_standard_facets", String.Empty, String.Empty));
+
+                    // Create the query facters
+                    options.Facet = new FacetParameters();
+                    foreach (Metadata_Search_Field facet in facets)
+                    {
+                        options.Facet.Queries.Add(new SolrFacetFieldQuery(facet.Solr_Facet_Code) {MinCount = 1});
+                    }
                 }
 
                 //// Set the sort value
@@ -109,14 +227,14 @@ namespace SobekCM.Engine_Library.Solr.v5
                 // If there was an aggregation code included, put that at the beginning of the search
                 if ((AggregationCode.Length > 0) && (AggregationCode.ToUpper() != "ALL"))
                 {
-                    QueryString = "(aggregations:" + AggregationCode.ToUpper() + ")AND(" + QueryString + ")";
+                    queryString = "(aggregations:" + AggregationCode.ToUpper() + ")AND(" + queryString + ")";
                 }
 
                 // We need to instruct SOLR to return the results as XML for solr to parse it
                 options.ExtraParams = new KeyValuePair<string, string>[] { new KeyValuePair<string,string>("wt", "xml") };
 
                 // Perform this search
-                SolrQueryResults<v5_SolrDocument> results = solrWorker.Query(QueryString, options);
+                SolrQueryResults<v5_SolrDocument> results = solrWorker.Query(queryString, options);
 
                 // Create the search statistcs
                 List<string> metadataLabels = new List<string> { "Creator", "Publisher", "Type", "Format", "Edition", "Institution", "Holding Location", "Donor", "Genre", "Subject" };
@@ -128,22 +246,26 @@ namespace SobekCM.Engine_Library.Solr.v5
                     QueryTime = results.Header.QTime
                 };
 
-                // Copy over all the facets
-                foreach (Metadata_Search_Field facetTerm in facets)
+                // If the search stats were needed, get the facets out
+                if (Need_Search_Statistics)
                 {
-                    // Create the collection and and assifn the metadata type id
-                    Search_Facet_Collection thisCollection = new Search_Facet_Collection(facetTerm.ID);
-
-                    // Add each value
-                    foreach (var facet in results.FacetFields[facetTerm.Solr_Facet_Term])
+                    // Copy over all the facets
+                    foreach (Metadata_Search_Field facetTerm in facets)
                     {
-                        thisCollection.Facets.Add(new Search_Facet(facet.Key, facet.Value));
-                    }
+                        // Create the collection and and assifn the metadata type id
+                        Search_Facet_Collection thisCollection = new Search_Facet_Collection(facetTerm.ID);
 
-                    // If there was an id and facets added, save this to the search statistics
-                    if ((thisCollection.MetadataTypeID > 0) && (thisCollection.Facets.Count > 0))
-                    {
-                        Complete_Result_Set_Info.Facet_Collections.Add(thisCollection);
+                        // Add each value
+                        foreach (var facet in results.FacetFields[facetTerm.Solr_Facet_Code])
+                        {
+                            thisCollection.Facets.Add(new Search_Facet(facet.Key, facet.Value));
+                        }
+
+                        // If there was an id and facets added, save this to the search statistics
+                        if ((thisCollection.MetadataTypeID > 0) && (thisCollection.Facets.Count > 0))
+                        {
+                            Complete_Result_Set_Info.Facet_Collections.Add(thisCollection);
+                        }
                     }
                 }
 

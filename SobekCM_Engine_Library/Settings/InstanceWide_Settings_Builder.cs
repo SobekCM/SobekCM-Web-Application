@@ -163,6 +163,7 @@ namespace SobekCM.Engine_Library.Settings
                 Get_Boolean_Value(settingsDictionary, "Disable Standard User Logon Flag", SettingsObject.System, X => X.Disable_Standard_User_Logon_Flag, ref error, false);
                 Get_String_Value(settingsDictionary, "Disable Standard User Logon Message", SettingsObject.System, X => X.Disable_Standard_User_Logon_Message, ref error);
                 Get_String_Value(settingsDictionary, "Document Solr Index URL", SettingsObject.Servers, X => X.Document_Solr_Index_URL, ref error);
+                Get_String_Value(settingsDictionary, "Document Solr Legacy Index", SettingsObject.Servers, X => X.Document_Solr_Legacy_URL, ref error);
                 Get_String_Value(settingsDictionary, "Email Default From Address", SettingsObject.Email.Setup, X => X.DefaultFromAddress, ref error);
                 Get_String_Value(settingsDictionary, "Email Default From Name", SettingsObject.Email.Setup, X => X.DefaultFromDisplay, ref error);
                 Get_String_Value(settingsDictionary, "Email Method", SettingsObject.Email.Setup, X => X.MethodString, "DATABASE MAIL");
@@ -194,9 +195,11 @@ namespace SobekCM.Engine_Library.Settings
                 Get_String_Value(settingsDictionary, "Mango Union Search Text", SettingsObject.Florida, X => X.Mango_Union_Search_Text, ref error);
                 Get_String_Value(settingsDictionary, "OCR Engine Command", SettingsObject.Builder, X => X.OCR_Command_Prompt, String.Empty);
                 Get_String_Value(settingsDictionary, "Page Solr Index URL", SettingsObject.Servers, X => X.Page_Solr_Index_URL, String.Empty);
+                Get_String_Value(settingsDictionary, "Page Solr Legacy Index", SettingsObject.Servers, X => X.Page_Solr_Legacy_URL, String.Empty);
                 Get_String_Value(settingsDictionary, "PostArchive Files To Delete", SettingsObject.Archive, X => X.PostArchive_Files_To_Delete, String.Empty);
                 Get_String_Value(settingsDictionary, "PreArchive Files To Delete", SettingsObject.Archive, X => X.PreArchive_Files_To_Delete, String.Empty);
                 Get_String_Value(settingsDictionary, "Privacy Email Address", SettingsObject.Email, X => X.Privacy_Email, String.Empty);
+                Get_String_Value(settingsDictionary, "Search System", SettingsObject.System, X => X.Search_System_String, "Legacy");
                 Get_String_Value(settingsDictionary, "Send Email On Added Aggregation", SettingsObject.Email, X => X.Send_On_Added_Aggregation, "Always");
                 Get_Boolean_Value(settingsDictionary, "Show Citation For Dark Items", SettingsObject.Resources, X => X.Show_Citation_For_Dark_Items, ref error, true);
                 Get_String_Value(settingsDictionary, "SobekCM Image Server", SettingsObject.Servers, X => X.SobekCM_ImageServer, String.Empty);
@@ -411,20 +414,16 @@ namespace SobekCM.Engine_Library.Settings
             SettingsObject.Metadata_Search_Fields.Clear();
 
             // Add ANYWHERE
-            if (SettingsObject.VERSION5_SOLR)
-                SettingsObject.Metadata_Search_Fields.Add(new Metadata_Search_Field(-1, String.Empty, "Anywhere", "ZZ", "fullcitation", "Anywhere"));
-            else
-                SettingsObject.Metadata_Search_Fields.Add(new Metadata_Search_Field(-1, String.Empty, "Anywhere", "ZZ", "all", "Anywhere"));
+            SettingsObject.Metadata_Search_Fields.Add(new Metadata_Search_Field(-1, String.Empty, "Anywhere", "ZZ", "fullcitation", "Anywhere", String.Empty, String.Empty, "all"));
 
             // Add OCLC
-            SettingsObject.Metadata_Search_Fields.Add(new Metadata_Search_Field(-2, String.Empty, "OCLC", "OC", "oclc", "OCLC"));
-
+            SettingsObject.Metadata_Search_Fields.Add(new Metadata_Search_Field(-2, String.Empty, "OCLC", "OC", "oclc", "OCLC", String.Empty, String.Empty, "oclc"));
 
             // Add ALEPH
-            SettingsObject.Metadata_Search_Fields.Add(new Metadata_Search_Field(-3, String.Empty, "ALEPH", "AL", "aleph", "ALEPH"));
+            SettingsObject.Metadata_Search_Fields.Add(new Metadata_Search_Field(-3, String.Empty, "ALEPH", "AL", "aleph", "ALEPH", String.Empty, String.Empty, "aleph"));
 
             // Add Full Text
-            SettingsObject.Metadata_Search_Fields.Add(new Metadata_Search_Field(-4, String.Empty, "Full Text", "TX", "fulltext", "Full Text"));
+            SettingsObject.Metadata_Search_Fields.Add(new Metadata_Search_Field(-4, String.Empty, "Full Text", "TX", "fulltext", "Full Text", String.Empty, String.Empty, "fulltext"));
 
 
             // Get the data columns
@@ -434,6 +433,10 @@ namespace SobekCM.Engine_Library.Settings
             DataColumn facetColumn = MetadataTypesTable.Columns["FacetTerm"];
             DataColumn solrColumn = MetadataTypesTable.Columns["SolrCode"];
             DataColumn nameColumn = MetadataTypesTable.Columns["MetadataName"];
+
+            DataColumn legacySolrColumn = MetadataTypesTable.Columns["LegacySolrCode"];
+            DataColumn solrFacetColumn = MetadataTypesTable.Columns["SolrCode_Facets"];
+            DataColumn solrDisplayColumn = MetadataTypesTable.Columns["SolrCode_Display"];
 
             // Now add the rest of the fields
             foreach (DataRow thisRow in MetadataTypesTable.Rows)
@@ -448,13 +451,18 @@ namespace SobekCM.Engine_Library.Settings
                 string facet = thisRow[facetColumn].ToString();
                 string solr = thisRow[solrColumn].ToString();
                 string name = thisRow[nameColumn].ToString();
+                string legacy_solr = thisRow[legacySolrColumn].ToString();
+                string solr_facet = thisRow[solrFacetColumn].ToString();
+                string solr_display = thisRow[solrDisplayColumn].ToString();
+
+                
 
                 // Also, only continue if the name is NOT user defined
                 if (name.IndexOf("UserDefined", StringComparison.OrdinalIgnoreCase) == 0)
                     continue;
 
                 // Create the new field object
-                Metadata_Search_Field newField = new Metadata_Search_Field(id, facet, display, code, solr, name);
+                Metadata_Search_Field newField = new Metadata_Search_Field(id, facet, display, code, solr, name, solr_facet, solr_display, legacy_solr);
 
                 // Add this to the collections
                 SettingsObject.Metadata_Search_Fields.Add(newField);

@@ -22,6 +22,12 @@ namespace SobekCM.Engine_Library.Configuration
         {
             // Get the static resource configuration from the engine 
             Custom_Tracer tracer = new Custom_Tracer();
+
+            if (SobekEngineClient.Admin == null)
+            {
+                throw new SobekCM_Traced_Exception("SobekEngineClient.Admin is null in Static_Resources_Gateway", null, tracer );
+            }
+
             config = SobekEngineClient.Admin.Get_Static_Resources_Configuration(tracer);
         }
 

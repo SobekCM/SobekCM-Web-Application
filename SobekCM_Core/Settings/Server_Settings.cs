@@ -26,6 +26,18 @@ namespace SobekCM.Core.Settings
             isHosted = false;
         }
 
+        /// <summary> Legacy URL for the old-style Solr/Lucene index for the document metadata and text </summary>
+        [DataMember(Name = "documentSolrLegacyUrl", EmitDefaultValue = false)]
+        [XmlElement("documentSolrLegacyUrl")]
+        [ProtoMember(100)]
+        public string Document_Solr_Legacy_URL { get; set; }
+
+        /// <summary> Legacy URL for the old-style Solr/Lucene index for the page text </summary>
+        [DataMember(Name = "pageSolrLegacyUrl", EmitDefaultValue = false)]
+        [XmlElement("pageSolrLegacyUrl")]
+        [ProtoMember(101)]
+        public string Page_Solr_Legacy_URL { get; set; }
+
         /// <summary> Network directory for the SobekCM web application server </summary>
         [DataMember(Name = "applicationServerNetwork")]
         [XmlElement("applicationServerNetwork")]
@@ -47,7 +59,7 @@ namespace SobekCM.Core.Settings
         /// <summary> Gets the URL for the SobekCM engine for this instance </summary>
         [DataMember(Name = "engineUrl")]
         [XmlElement("engineUrl")]
-     //   [ProtoMember(4)]
+        [ProtoMember(4)]
         public string Engine_URL { get { return System_Base_URL + "engine/"; } }
 
         /// <summary> Network directory for the image server which holds all the resource files </summary>

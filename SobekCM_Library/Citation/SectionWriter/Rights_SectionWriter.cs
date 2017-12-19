@@ -2,6 +2,7 @@
 using System.IO;
 using System.Text;
 using SobekCM.Core.BriefItem;
+using SobekCM.Core.Navigation;
 using SobekCM.Core.UI_Configuration.Citation;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
@@ -14,9 +15,10 @@ namespace SobekCM.Library.Citation.SectionWriter
     public class Rights_SectionWriter : iCitationSectionWriter
     {
         /// <summary> Returns flag that indicates this citation section writer 
-        /// will be writing alues to the output stream </summary>
+        /// will be writing values to the output stream </summary>
         /// <param name="ElementInfo"> Additional possible data about this citation element </param>
         /// <param name="Item"> Digital resource to analyze for data to write </param>
+        /// <returns>TRUE if there is a value to write</returns>
         public bool Has_Data_To_Write(CitationElement ElementInfo, BriefItemInfo Item)
         {
             // Always show SOME rights
@@ -31,7 +33,7 @@ namespace SobekCM.Library.Citation.SectionWriter
         /// <param name="SearchLink"> Beginning of the search link that can be used to allow the web patron to select a term and run a search against this instance </param>
         /// <param name="SearchLinkEnd"> End of the search link that can be used to allow the web patron to select a term and run a search against this instance  </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        public void Write_Citation_Section(CitationElement ElementInfo, StringBuilder Output, BriefItemInfo Item, int LeftColumnWidth, string SearchLink, string SearchLinkEnd, Custom_Tracer Tracer)
+        public void Write_Citation_Section(CitationElement ElementInfo, StringBuilder Output, BriefItemInfo Item, int LeftColumnWidth, string SearchLink, string SearchLinkEnd, Custom_Tracer Tracer, Navigation_Object CurrentRequest)
         {
             // Set the default (since this always displays)
             string rights_statement = "All applicable rights reserved by the source institution and holding location.";

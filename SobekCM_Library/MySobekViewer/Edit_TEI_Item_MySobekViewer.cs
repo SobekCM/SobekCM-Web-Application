@@ -1609,7 +1609,7 @@ namespace SobekCM.Library.MySobekViewer
                         // If it was found and there is data, then we found some
                         if ((sectionWriter != null) && (sectionWriter.Has_Data_To_Write(thisField, BriefItem)))
                         {
-                            sectionWriter.Write_Citation_Section(thisField, result, BriefItem, 180, search_link, search_link_end, Tracer);
+                            sectionWriter.Write_Citation_Section(thisField, result, BriefItem, 180, search_link, search_link_end, Tracer, CurrentRequest);
                         }
                     }
                     else // Not a custom writer

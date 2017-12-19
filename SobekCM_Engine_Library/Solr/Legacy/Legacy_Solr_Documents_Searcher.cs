@@ -3,7 +3,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using SobekCM.Core.Results;
+using SobekCM.Core.Search;
+using SobekCM.Core.Settings;
 using SobekCM.Engine_Library.ApplicationState;
 using SobekCM.Tools;
 using SolrNet;
@@ -19,22 +22,136 @@ namespace SobekCM.Engine_Library.Solr.Legacy
 	{
 		#region Static method to query the Solr/Lucene for a collection of results
 
-		/// <summary> Perform an search for documents with matching parameters </summary>
-		/// <param name="AggregationCode"> Aggregation code within which to search </param>
-		/// <param name="QueryString"> Quert string for the actual search to perform aggainst the Solr/Lucene engine </param>
-		/// <param name="ResultsPerPage"> Number of results to display per a "page" of results </param>
-		/// <param name="Page_Number"> Which page of results to return ( one-based, so the first page is page number of one )</param>
-		/// <param name="Sort"> Sort to apply before returning the results of the search </param>
-		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-		/// <param name="Complete_Result_Set_Info"> [OUT] Information about the entire set of results </param>
-		/// <param name="Paged_Results"> [OUT] List of search results for the requested page of results </param>
-		/// <returns> Page search result object with all relevant result information </returns>
-		public static bool Search(string AggregationCode, string QueryString, int ResultsPerPage, int Page_Number, ushort Sort, Custom_Tracer Tracer, out Search_Results_Statistics Complete_Result_Set_Info, out List<iSearch_Title_Result> Paged_Results)
+	    /// <summary> Perform an search for documents with matching parameters </summary>
+	    /// <param name="AggregationCode"> Aggregation code within which to search </param>
+	    /// <param name="Terms"> List of the search terms </param>
+	    /// <param name="Web_Fields"> List of the web fields associate with the search terms </param>
+	    /// <param name="ResultsPerPage"> Number of results to display per a "page" of results </param>
+	    /// <param name="Page_Number"> Which page of results to return ( one-based, so the first page is page number of one )</param>
+	    /// <param name="Sort"> Sort to apply before returning the results of the search </param>
+	    /// <param name="Need_Search_Statistics"> Flag indicates if the search statistics are needed </param>
+	    /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+	    /// <param name="Complete_Result_Set_Info"> [OUT] Information about the entire set of results </param>
+	    /// <param name="Paged_Results"> [OUT] List of search results for the requested page of results </param>
+	    /// <returns> Page search result object with all relevant result information </returns>
+	    public static bool Search(string AggregationCode, List<string> Terms, List<string> Web_Fields, int ResultsPerPage, int Page_Number, ushort Sort, bool Need_Search_Statistics, Custom_Tracer Tracer, out Search_Results_Statistics Complete_Result_Set_Info, out List<iSearch_Title_Result> Paged_Results)
 		{
-			if (Tracer != null)
-			{
-				Tracer.Add_Trace("Solr_Documents_Searcher.Search", String.Empty);
-			}
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("Legacy_Solr_Documents_Searcher.Search", "Build the Solr query");
+            }
+
+            // Step through all the terms and fields
+            StringBuilder queryStringBuilder = new StringBuilder();
+            for (int i = 0; i < Math.Min(Terms.Count, Web_Fields.Count); i++)
+            {
+                string web_field = Web_Fields[i];
+                string searchTerm = Terms[i];
+                string solr_field;
+
+                if (i == 0)
+                {
+                    // Skip any joiner for the very first field indicated
+                    if ((web_field[0] == '+') || (web_field[0] == '=') || (web_field[0] == '-'))
+                    {
+                        web_field = web_field.Substring(1);
+                    }
+
+                    // Try to get the solr field
+                    if (web_field == "TX")
+                    {
+                        solr_field = "fulltext:";
+                    }
+                    else
+                    {
+                        Metadata_Search_Field field = Engine_ApplicationCache_Gateway.Settings.Metadata_Search_Field_By_Code(web_field.ToUpper());
+                        if (field != null)
+                        {
+                            solr_field = field.Legacy_Solr_Code + ":";
+                        }
+                        else
+                        {
+                            solr_field = String.Empty;
+                        }
+                    }
+
+                    // Add the solr search string
+                    if (searchTerm.IndexOf(" ") > 0)
+                    {
+                        queryStringBuilder.Append("(" + solr_field + "\"" + searchTerm.Replace(":", "") + "\")");
+                    }
+                    else
+                    {
+                        queryStringBuilder.Append("(" + solr_field + searchTerm.Replace(":", "") + ")");
+                    }
+                }
+                else
+                {
+                    // Add the joiner for this subsequent terms
+                    if ((web_field[0] == '+') || (web_field[0] == '=') || (web_field[0] == '-'))
+                    {
+                        switch (web_field[0])
+                        {
+                            case '=':
+                                queryStringBuilder.Append(" OR ");
+                                break;
+
+                            case '+':
+                                queryStringBuilder.Append(" AND ");
+                                break;
+
+                            case '-':
+                                queryStringBuilder.Append(" NOT ");
+                                break;
+
+                            default:
+                                queryStringBuilder.Append(" AND ");
+                                break;
+                        }
+                        web_field = web_field.Substring(1);
+                    }
+                    else
+                    {
+                        queryStringBuilder.Append(" AND ");
+                    }
+
+                    // Try to get the solr field
+                    if (web_field == "TX")
+                    {
+                        solr_field = "fulltext:";
+                    }
+                    else
+                    {
+                        Metadata_Search_Field field = Engine_ApplicationCache_Gateway.Settings.Metadata_Search_Field_By_Code(web_field.ToUpper());
+                        if (field != null)
+                        {
+                            solr_field = field.Legacy_Solr_Code + ":";
+                        }
+                        else
+                        {
+                            solr_field = String.Empty;
+                        }
+                    }
+
+                    // Add the solr search string
+                    if (searchTerm.IndexOf(" ") > 0)
+                    {
+                        queryStringBuilder.Append("(" + solr_field + "\"" + searchTerm.Replace(":", "") + "\")");
+                    }
+                    else
+                    {
+                        queryStringBuilder.Append("(" + solr_field + searchTerm.Replace(":", "") + ")");
+                    }
+                }
+            }
+
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("Legacy_Solr_Documents_Searcher.Search", "Perform the search");
+            }
+
+            // Get the query string value
+            string queryString = queryStringBuilder.ToString();
 
 			// Set output initially to null
 			Paged_Results = new List<iSearch_Title_Result>();
@@ -47,7 +164,7 @@ namespace SobekCM.Engine_Library.Solr.Legacy
 					Page_Number = 1;
 
 				// Create the solr worker to query the document index
-				var solrWorker = Solr_Operations_Cache<Legacy_Solr_Document_Result>.GetSolrOperations(Engine_ApplicationCache_Gateway.Settings.Servers.Document_Solr_Index_URL);
+				var solrWorker = Solr_Operations_Cache<Legacy_Solr_Document_Result>.GetSolrOperations(Engine_ApplicationCache_Gateway.Settings.Servers.Document_Solr_Legacy_URL);
 
 				// Create the query options
 				QueryOptions options = new QueryOptions
@@ -91,11 +208,11 @@ namespace SobekCM.Engine_Library.Solr.Legacy
 				// If there was an aggregation code included, put that at the beginning of the search
 				if ((AggregationCode.Length > 0) && (AggregationCode.ToUpper() != "ALL"))
 				{
-					QueryString = "(aggregation_code:" + AggregationCode.ToUpper() + ")AND(" + QueryString + ")";
+					queryString = "(aggregation_code:" + AggregationCode.ToUpper() + ")AND(" + queryString + ")";
 				}
 
 				// Perform this search
-				SolrQueryResults<Legacy_Solr_Document_Result> results = solrWorker.Query(QueryString, options);
+				SolrQueryResults<Legacy_Solr_Document_Result> results = solrWorker.Query(queryString, options);
 
 				// Create the search statistcs
 				List<string> metadataLabels = new List<string> {"Author", "Publisher", "Format", "Edition", "Institution", "Donor"};

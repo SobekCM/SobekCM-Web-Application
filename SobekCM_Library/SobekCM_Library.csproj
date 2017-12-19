@@ -180,6 +180,7 @@
     <Compile Include="Citation\Elements\implemented elements\VRA_Technique_Element.cs" />
     <Compile Include="Citation\Elements\nonstandard elements\Serial_Hierarchy_Panel_Element.cs" />
     <Compile Include="Citation\Elements\nonstandard elements\Zoological_Taxonomy_Form_Element.cs" />
+    <Compile Include="Citation\SectionWriter\Aggregation_SectionWriter.cs" />
     <Compile Include="Citation\SectionWriter\Coordinates_SectionWriter.cs" />
     <Compile Include="Citation\SectionWriter\Creator_SectionWriter.cs" />
     <Compile Include="Citation\SectionWriter\iCitationSectionWriter.cs" />

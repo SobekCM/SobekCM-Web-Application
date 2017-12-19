@@ -8,7 +8,6 @@ using System.Xml.Serialization;
 using ProtoBuf;
 using SobekCM.Core.Configuration;
 using SobekCM.Core.Configuration.Extensions;
-using SobekCM.Core.MicroservicesClient;
 using SobekCM.Core.Search;
 using SobekCM.Core.Settings.DbItemViewers;
 using SobekCM.Core.Users;
@@ -28,16 +27,12 @@ namespace SobekCM.Core.Settings
     }
 
 
-
     /// <summary> Class provides context to constant settings from the database,
     /// based on the basic information about this instance of the application and server information </summary>
     [Serializable, DataContract, ProtoContract]
     [XmlRoot("Settings")]
     public class InstanceWide_Settings : iSerializationEvents
     {
-        public readonly bool VERSION5_SOLR = true;
-
-
         private readonly Dictionary<int, Disposition_Option> dispositionLookup;
         private readonly Dictionary<string, Metadata_Search_Field> metadataFieldsByCode;
         private readonly Dictionary<short, Metadata_Search_Field> metadataFieldsByID;
@@ -75,7 +70,6 @@ namespace SobekCM.Core.Settings
             Static = new Static_Settings();
             System = new System_Settings();
             UI = new UI_Settings();
-
         }
 
         /// <summary> Settings from the database for built-in archiving functionality </summary>

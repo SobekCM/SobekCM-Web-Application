@@ -1397,6 +1397,8 @@ namespace SobekCM.Library.HTML
 	                }
 	                RequestSpecificValues.Current_Mode.Search_Fields = field_builder.ToString();
 	                RequestSpecificValues.Current_Mode.Search_String = term_builder.ToString();
+	                ushort? page = RequestSpecificValues.Current_Mode.Page;
+                    RequestSpecificValues.Current_Mode.Page = 1;
 
 	                RequestSpecificValues.Current_Mode.Search_Fields = RequestSpecificValues.Current_Mode.Search_Fields + ",<%CODE%>";
 	                RequestSpecificValues.Current_Mode.Search_String = RequestSpecificValues.Current_Mode.Search_String + ",<%VALUE%>";
@@ -1405,7 +1407,7 @@ namespace SobekCM.Library.HTML
 	                RequestSpecificValues.Current_Mode.Search_Type = Search_Type_Enum.Basic;
 	                RequestSpecificValues.Current_Mode.Search_Fields = String.Empty;
 	                RequestSpecificValues.Current_Mode.Search_String = original_search;
-
+	                RequestSpecificValues.Current_Mode.Page = page;
 	            }
 	        }
 	        builder.AppendLine("      var stem_url = '" + url + "';");

@@ -50,6 +50,9 @@ namespace SobekCM.Library.Citation.SectionWriter
                     case "SobekCM.Library.Citation.SectionWriter.UserTags_SectionWriter":
                         returnValue = new UserTags_SectionWriter();
                         break;
+                    case "SobekCM.Library.Citation.SectionWriter.Aggregation_SectionWriter":
+                        returnValue = new Aggregation_SectionWriter();
+                        break;
                 }
 
                 // Was it found?

@@ -970,17 +970,18 @@ namespace SobekCM.Core.MemoryMgmt
 
 		#region Static methods relating to storing and retrieving a single page of search results
 
-		/// <summary> Retrieves the table of search results from the cache  </summary>
-		/// <param name="Current_Mode"> Mode / navigation information for the current request</param>
-		/// <param name="Terms"> List of all search terms for the search result to retrieve </param>
-		/// <param name="Fields"> List of all search fields for the search result to retrieve </param>
-		/// <param name="Sort"> Sort for the current search results to retrieve </param>
-		/// <param name="Count"> Number of fields or terms to include in the key for this result </param>
-		/// <param name="DateRange_Start"> Beginning of a date range search, or -1 </param>
-		/// <param name="DateRange_End"> End of a date range search, or -1 </param>
-		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-		/// <returns> Either NULL or the search results item/title list </returns>
-		public static List<iSearch_Title_Result> Retrieve_Search_Results(Navigation_Object Current_Mode, int Sort, int Count, List<string> Fields, List<string> Terms, long DateRange_Start, long DateRange_End, Custom_Tracer Tracer)
+        /// <summary> Retrieves the table of search results from the cache  </summary>
+        /// <param name="Current_Mode"> Mode / navigation information for the current request</param>
+        /// <param name="Terms"> List of all search terms for the search result to retrieve </param>
+        /// <param name="Fields"> List of all search fields for the search result to retrieve </param>
+        /// <param name="Sort"> Sort for the current search results to retrieve </param>
+        /// <param name="Count"> Number of fields or terms to include in the key for this result </param>
+        /// <param name="DateRange_Start"> Beginning of a date range search, or -1 </param>
+        /// <param name="DateRange_End"> End of a date range search, or -1 </param>
+        /// <param name="ResultsPerPage"> Results per page </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <returns> Either NULL or the search results item/title list </returns>
+        public static List<iSearch_Title_Result> Retrieve_Search_Results(Navigation_Object Current_Mode, int Sort, int Count, List<string> Fields, List<string> Terms, long DateRange_Start, long DateRange_End, int ResultsPerPage, Custom_Tracer Tracer)
 		{
 			// If the cache is disabled, just return before even tracing
 			if ( Settings.Disabled )
@@ -1037,7 +1038,7 @@ namespace SobekCM.Core.MemoryMgmt
 				}
 			}
 
-			string key = keyBuilder.ToString();
+            string key = keyBuilder + "_" + ResultsPerPage + "rpp";
 
 			//if (Current_Mode.SubAggregation.Length > 0)
 			//{
@@ -1152,17 +1153,18 @@ namespace SobekCM.Core.MemoryMgmt
             return null;
         }
 
-		/// <summary> Stores a single page of search results to the cache  </summary>
-		/// <param name="Current_Mode"> Mode / navigation information for the current request</param>
-		/// <param name="Terms"> List of all search terms for the search result to store </param>
-		/// <param name="Fields"> List of all search fields for the search result to store </param>
-		/// <param name="Sort"> Sort for the current search results to store </param>
-		/// <param name="Count"> Number of fields or terms to include in the key for this result </param>
-		/// <param name="DateRange_Start"> Beginning of a date range search, or -1 </param>
-		/// <param name="DateRange_End"> End of a date range search, or -1 </param>
-		/// <param name="StoreObject"> Search results item/title list </param>
-		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-		public static void Store_Search_Results(Navigation_Object Current_Mode, int Sort, int Count, List<string> Fields, List<string> Terms, long DateRange_Start, long DateRange_End, List<iSearch_Title_Result> StoreObject, Custom_Tracer Tracer)
+        /// <summary> Stores a single page of search results to the cache  </summary>
+        /// <param name="Current_Mode"> Mode / navigation information for the current request</param>
+        /// <param name="Terms"> List of all search terms for the search result to store </param>
+        /// <param name="Fields"> List of all search fields for the search result to store </param>
+        /// <param name="Sort"> Sort for the current search results to store </param>
+        /// <param name="Count"> Number of fields or terms to include in the key for this result </param>
+        /// <param name="DateRange_Start"> Beginning of a date range search, or -1 </param>
+        /// <param name="DateRange_End"> End of a date range search, or -1 </param>
+        /// <param name="ResultsPerPage"> Results per page </param>
+        /// <param name="StoreObject"> Search results item/title list </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        public static void Store_Search_Results(Navigation_Object Current_Mode, int Sort, int Count, List<string> Fields, List<string> Terms, long DateRange_Start, long DateRange_End, int ResultsPerPage, List<iSearch_Title_Result> StoreObject, Custom_Tracer Tracer)
 		{
 			// If the cache is disabled, just return before even tracing
 			if ( Settings.Disabled )
@@ -1214,7 +1216,7 @@ namespace SobekCM.Core.MemoryMgmt
 				}
 			}
 
-			string key = keyBuilder.ToString();
+            string key = keyBuilder + "_" + ResultsPerPage + "rpp";
 
 			//if (Current_Mode.SubAggregation.Length > 0)
 			//{

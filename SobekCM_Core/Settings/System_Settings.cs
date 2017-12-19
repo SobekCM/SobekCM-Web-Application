@@ -8,6 +8,16 @@ using SobekCM.Core.Configuration.Localization;
 
 namespace SobekCM.Core.Settings
 {
+    /// <summary> Eumeration of the two different search systems </summary>
+    public enum Search_System_Enum : byte
+    {
+        /// <summary> Legacy search system used up through verrsion 4 </summary>
+        Legacy = 0,
+
+        /// <summary> Beta of the search system that will be used version 5 </summary>
+        Beta
+    }
+
     /// <summary> Top-level settings that control basic operation and appearance of the entire SobekCM instance </summary>
     [Serializable, DataContract, ProtoContract]
     [XmlRoot("SystemSettings")]
@@ -21,6 +31,8 @@ namespace SobekCM.Core.Settings
             Default_UI_Language = Web_Language_Enum.English;
             Metadata_Help_URL_Base = String.Empty;
             Help_URL_Base = String.Empty;
+
+            Search_System = Search_System_Enum.Legacy;
         }
 
         /// <summary> Returns the default user interface language </summary>
@@ -90,6 +102,32 @@ namespace SobekCM.Core.Settings
         [ProtoMember(11)]
         public string Help_URL_Base { get; set; }
 
+        /// <summary> Overall search system to be used ( i.e., Legacy or Beta version 5 ) </summary>
+        [DataMember(Name = "searchSystem", EmitDefaultValue = false)]
+        [XmlElement("searchSystem")]
+        [ProtoMember(17)]
+        public Search_System_Enum Search_System { get; set; }
+
+        /// <summary> Set the search system, by passing in a string </summary>
+        [XmlIgnore]
+        public string Search_System_String
+        {
+            set {
+                Search_System = String.Equals(value, "beta", StringComparison.OrdinalIgnoreCase) ? Search_System_Enum.Beta : Search_System_Enum.Legacy;
+            }
+            get
+            {
+                switch (Search_System)
+                {
+                    case Search_System_Enum.Beta:
+                        return "Beta";
+
+                    default:
+                        return "Legacy";
+                }
+            }
+        }
+
         /// <summary> Get the URL for all metadata help pages which are used when users request 
         /// help while submitting a new item or editing an existing item </summary>
         /// <param name="Current_Base_URL"> Current base url for the current user's request </param>
@@ -129,9 +167,7 @@ namespace SobekCM.Core.Settings
             }
             get { return Web_Language_Enum_Converter.Enum_To_Name(Default_UI_Language); }
         }
-
-
-
+        
         #region Methods that controls XML serialization
 
         /// <summary> Method suppresses XML Serialization of the Disable_Standard_User_Logon_Message property if it is empty </summary>

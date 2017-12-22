@@ -35,117 +35,129 @@ namespace SobekCM.Engine_Library.Solr.v5
                 Tracer.Add_Trace("v5_Solr_Documents_Searcher.Search", "Build the Solr query");
             }
 
-            // Step through all the terms and fields
+            // Start to build the query
             StringBuilder queryStringBuilder = new StringBuilder();
-            for (int i = 0; i < Math.Min(Terms.Count, Web_Fields.Count); i++)
+
+            // If no query, this is an ALL browse
+            if (((Web_Fields == null) || (Web_Fields.Count == 0)) || ((Terms == null) || (Terms.Count == 0)))
             {
-                string web_field = Web_Fields[i];
-                string searchTerm = Terms[i];
-                string solr_field;
-
-                if (i == 0)
+                queryStringBuilder.Append("(*:*)");
+            }
+            else
+            {
+                // Step through all the terms and fields
+                for (int i = 0; i < Math.Min(Terms.Count, Web_Fields.Count); i++)
                 {
-                    // Skip any joiner for the very first field indicated
-                    if ((web_field[0] == '+') || (web_field[0] == '=') || (web_field[0] == '-'))
-                    {
-                        web_field = web_field.Substring(1);
-                    }
+                    string web_field = Web_Fields[i];
+                    string searchTerm = Terms[i];
+                    string solr_field;
 
-                    // Try to get the solr field
-                    if (web_field == "TX")
+                    if (i == 0)
                     {
-                        solr_field = "fulltext:";
-                    }
-                    else
-                    {
-                        Metadata_Search_Field field = Engine_ApplicationCache_Gateway.Settings.Metadata_Search_Field_By_Code(web_field.ToUpper());
-                        if (field != null)
+                        // Skip any joiner for the very first field indicated
+                        if ((web_field[0] == '+') || (web_field[0] == '=') || (web_field[0] == '-'))
                         {
-                            solr_field = field.Solr_Field + ":";
+                            web_field = web_field.Substring(1);
+                        }
+
+                        // Try to get the solr field
+                        if (web_field == "TX")
+                        {
+                            solr_field = "fulltext:";
                         }
                         else
                         {
-                            solr_field = String.Empty;
+                            Metadata_Search_Field field = Engine_ApplicationCache_Gateway.Settings.Metadata_Search_Field_By_Code(web_field.ToUpper());
+                            if (field != null)
+                            {
+                                solr_field = field.Solr_Field + ":";
+                            }
+                            else
+                            {
+                                solr_field = String.Empty;
+                            }
                         }
-                    }
 
-                    // Add the solr search string
-                    if (searchTerm.IndexOf(" ") > 0)
-                    {
-                        queryStringBuilder.Append("(" + solr_field + "\"" + searchTerm.Replace(":", "") + "\")");
-                    }
-                    else
-                    {
-                        queryStringBuilder.Append("(" + solr_field + searchTerm.Replace(":", "") + ")");
-                    }
-                }
-                else
-                {
-                    // Add the joiner for this subsequent terms
-                    if ((web_field[0] == '+') || (web_field[0] == '=') || (web_field[0] == '-'))
-                    {
-                        switch (web_field[0])
+                        // Add the solr search string
+                        if (searchTerm.IndexOf(" ") > 0)
                         {
-                            case '=':
-                                queryStringBuilder.Append(" OR ");
-                                break;
-
-                            case '+':
-                                queryStringBuilder.Append(" AND ");
-                                break;
-
-                            case '-':
-                                queryStringBuilder.Append(" NOT ");
-                                break;
-
-                            default:
-                                queryStringBuilder.Append(" AND ");
-                                break;
-                        }
-                        web_field = web_field.Substring(1);
-                    }
-                    else
-                    {
-                        queryStringBuilder.Append(" AND ");
-                    }
-
-                    // Try to get the solr field
-                    if (web_field == "TX")
-                    {
-                        solr_field = "fulltext:";
-                    }
-                    else
-                    {
-                        Metadata_Search_Field field = Engine_ApplicationCache_Gateway.Settings.Metadata_Search_Field_By_Code(web_field.ToUpper());
-                        if (field != null)
-                        {
-                            solr_field = field.Solr_Field + ":";
+                            queryStringBuilder.Append("(" + solr_field + "\"" + searchTerm.Replace(":", "") + "\")");
                         }
                         else
                         {
-                            solr_field = String.Empty;
+                            queryStringBuilder.Append("(" + solr_field + searchTerm.Replace(":", "") + ")");
                         }
-                    }
-
-                    // Add the solr search string
-                    if (searchTerm.IndexOf(" ") > 0)
-                    {
-                        queryStringBuilder.Append("(" + solr_field + "\"" + searchTerm.Replace(":", "") + "\")");
                     }
                     else
                     {
-                        queryStringBuilder.Append("(" + solr_field + searchTerm.Replace(":", "") + ")");
+                        // Add the joiner for this subsequent terms
+                        if ((web_field[0] == '+') || (web_field[0] == '=') || (web_field[0] == '-'))
+                        {
+                            switch (web_field[0])
+                            {
+                                case '=':
+                                    queryStringBuilder.Append(" OR ");
+                                    break;
+
+                                case '+':
+                                    queryStringBuilder.Append(" AND ");
+                                    break;
+
+                                case '-':
+                                    queryStringBuilder.Append(" NOT ");
+                                    break;
+
+                                default:
+                                    queryStringBuilder.Append(" AND ");
+                                    break;
+                            }
+                            web_field = web_field.Substring(1);
+                        }
+                        else
+                        {
+                            queryStringBuilder.Append(" AND ");
+                        }
+
+                        // Try to get the solr field
+                        if (web_field == "TX")
+                        {
+                            solr_field = "fulltext:";
+                        }
+                        else
+                        {
+                            Metadata_Search_Field field = Engine_ApplicationCache_Gateway.Settings.Metadata_Search_Field_By_Code(web_field.ToUpper());
+                            if (field != null)
+                            {
+                                solr_field = field.Solr_Field + ":";
+                            }
+                            else
+                            {
+                                solr_field = String.Empty;
+                            }
+                        }
+
+                        // Add the solr search string
+                        if (searchTerm.IndexOf(" ") > 0)
+                        {
+                            queryStringBuilder.Append("(" + solr_field + "\"" + searchTerm.Replace(":", "") + "\")");
+                        }
+                        else
+                        {
+                            queryStringBuilder.Append("(" + solr_field + searchTerm.Replace(":", "") + ")");
+                        }
                     }
                 }
             }
 
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("v5_Solr_Documents_Searcher.Search", "Perform the search");
-            }
 
             // Get the query string value
             string queryString = queryStringBuilder.ToString();
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("v5_Solr_Documents_Searcher.Search", "Solr Query: " + queryString);
+            }
+
+
 
             // Set output initially to null
             Paged_Results = new List<iSearch_Title_Result>();
@@ -233,8 +245,19 @@ namespace SobekCM.Engine_Library.Solr.v5
                 // We need to instruct SOLR to return the results as XML for solr to parse it
                 options.ExtraParams = new KeyValuePair<string, string>[] { new KeyValuePair<string,string>("wt", "xml") };
 
+
+                if (Tracer != null)
+                {
+                    Tracer.Add_Trace("v5_Solr_Documents_Searcher.Search", "Perform the search");
+                }
+
                 // Perform this search
                 SolrQueryResults<v5_SolrDocument> results = solrWorker.Query(queryString, options);
+
+                if (Tracer != null)
+                {
+                    Tracer.Add_Trace("v5_Solr_Documents_Searcher.Search", "Build the results object");
+                }
 
                 // Create the search statistcs
                 List<string> metadataLabels = new List<string> { "Creator", "Publisher", "Type", "Format", "Edition", "Institution", "Holding Location", "Donor", "Genre", "Subject" };

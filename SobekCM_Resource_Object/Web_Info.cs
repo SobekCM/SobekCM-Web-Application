@@ -208,6 +208,8 @@ namespace SobekCM.Resource_Object
 
         #region Simple properties
 
+        /// <summary> Date this item was first made public and non-dark </summary>
+        public DateTime? MadePublicDate { get; set; }
 
         /// <summary> Gets or sets the GUID for this item </summary>
         public string GUID

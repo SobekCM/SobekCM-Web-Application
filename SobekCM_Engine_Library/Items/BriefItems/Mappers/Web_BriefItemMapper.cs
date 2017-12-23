@@ -37,6 +37,10 @@ namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
             New.Web.Siblings = Original.Web.Siblings;
             New.Web.Source_URL = Original.Web.Source_URL;
 
+            // Copy the first made non-dark and non-private flag
+            if (Original.Web.MadePublicDate.HasValue)
+                New.Web.Made_Public_Date = Original.Web.MadePublicDate.Value;
+
             // Step through all the files and collection file extensions
             if (!Original.Behaviors.Dark_Flag)
             {

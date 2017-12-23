@@ -87,6 +87,27 @@ namespace SobekCM.Core.BriefItem
         [ProtoMember(11)]
         public List<BriefItem_UserTag> User_Tags { get; set; }
 
+        /// <summary> Date this item was first marked as public or non-dark </summary>
+        [DataMember(Name = "madePublicDate")]
+        [XmlIgnore]
+        [ProtoMember(12)]
+        public DateTime? Made_Public_Date { get; set; }
+
+        /// <summary> Date this item was first marked as public or non-dark (for XML serialization)</summary>
+        /// <remarks> This property is only exposed to allow for XML serialization of the nullable datetime </remarks>
+        [IgnoreDataMember]
+        [XmlAttribute("madePublicDate")]
+        public DateTime Made_Public_Date_XML
+        {
+            get { return Made_Public_Date.HasValue ? Made_Public_Date.Value : DateTime.MaxValue; }
+            set { if (value != DateTime.MaxValue) Made_Public_Date = value; }
+        }
+
+        /// <summary> Property controls if the associated property is serialized during XML serialization </summary>
+        public bool ShouldSerializeMade_Public_Date_XML
+        {
+            get { return Made_Public_Date.HasValue; }
+        }
 
         /// <summary> Add a new user tag to this item </summary>
         /// <param name="UserID"> Primary key for the user who entered this tag </param>

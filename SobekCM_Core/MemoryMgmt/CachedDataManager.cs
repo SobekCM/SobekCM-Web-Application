@@ -877,10 +877,10 @@ namespace SobekCM.Core.MemoryMgmt
 			{
 				if (Tracer != null)
 				{
-					Tracer.Add_Trace("CachedDataManager.Store_Search_Result_Statistics", "Adding object '" + key + "' to the local cache with expiration of 3 minutes");
+					Tracer.Add_Trace("CachedDataManager.Store_Search_Result_Statistics", "Adding object '" + key + "' to the local cache with expiration of 1 minute");
 				}
 
-				HttpContext.Current.Cache.Insert(key, StoreObject, null, Cache.NoAbsoluteExpiration, TimeSpan.FromMinutes(3));
+				HttpContext.Current.Cache.Insert(key, StoreObject, null, Cache.NoAbsoluteExpiration, TimeSpan.FromMinutes(1));
 			}
 		}
 
@@ -959,10 +959,10 @@ namespace SobekCM.Core.MemoryMgmt
             {
                 if (Tracer != null)
                 {
-                    Tracer.Add_Trace("CachedDataManager.Store_Search_Result_Statistics", "Adding object '" + key + "' to the local cache with expiration of 3 minutes");
+                    Tracer.Add_Trace("CachedDataManager.Store_Search_Result_Statistics", "Adding object '" + key + "' to the local cache with expiration of 1 minute");
                 }
 
-                HttpContext.Current.Cache.Insert(key, StoreObject, null, Cache.NoAbsoluteExpiration, TimeSpan.FromMinutes(3));
+                HttpContext.Current.Cache.Insert(key, StoreObject, null, Cache.NoAbsoluteExpiration, TimeSpan.FromMinutes(1));
             }
         }
 
@@ -1232,10 +1232,10 @@ namespace SobekCM.Core.MemoryMgmt
 			{
 				if (Tracer != null)
 				{
-					Tracer.Add_Trace("CachedDataManager.Store_Search_Results", "Adding object '" + key + "' to the local cache with expiration of 3 minutes");
+					Tracer.Add_Trace("CachedDataManager.Store_Search_Results", "Adding object '" + key + "' to the local cache with expiration of 1 minute");
 				}
 
-				HttpContext.Current.Cache.Insert(key, StoreObject, null, Cache.NoAbsoluteExpiration, TimeSpan.FromMinutes(3));
+				HttpContext.Current.Cache.Insert(key, StoreObject, null, Cache.NoAbsoluteExpiration, TimeSpan.FromMinutes(1));
 			}
 		}
 
@@ -1317,10 +1317,10 @@ namespace SobekCM.Core.MemoryMgmt
             {
                 if (Tracer != null)
                 {
-                    Tracer.Add_Trace("CachedDataManager.Store_Search_Results", "Adding object '" + key + "' to the local cache with expiration of 3 minutes");
+                    Tracer.Add_Trace("CachedDataManager.Store_Search_Results", "Adding object '" + key + "' to the local cache with expiration of 1 minute");
                 }
 
-                HttpContext.Current.Cache.Insert(key, StoreObject, null, Cache.NoAbsoluteExpiration, TimeSpan.FromMinutes(3));
+                HttpContext.Current.Cache.Insert(key, StoreObject, null, Cache.NoAbsoluteExpiration, TimeSpan.FromMinutes(1));
             }
         }
 
@@ -1500,7 +1500,7 @@ namespace SobekCM.Core.MemoryMgmt
                 {
                     if (Tracer != null)
                     {
-                        Tracer.Add_Trace("CachedDataManager.Store_Search_Results", "Adding object '" + key + "' to the local cache with expiration of 1 minutes");
+                        Tracer.Add_Trace("CachedDataManager.Store_Search_Results", "Adding object '" + key + "' to the local cache with expiration of 1 minute");
                     }
 
                     HttpContext.Current.Cache.Insert(key, pageOfResults, null, Cache.NoAbsoluteExpiration, TimeSpan.FromMinutes(1));

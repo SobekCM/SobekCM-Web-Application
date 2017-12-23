@@ -725,12 +725,11 @@ namespace SobekCM.Library.HTML
 
             if (hierarchy != null)
             {
-                RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Aggregation;
-
                 // Add the text
                 Output.WriteLine("<div class=\"sbkIhsw_HomeText\">");
                 Output.WriteLine("<p>Below is the complete master tree of all aggregations within this library.  This includes all active aggregations, as well as all hidden or inactive collections.</p>");
                 Output.WriteLine("<br />");
+
 
                 RequestSpecificValues.Current_Mode.Internal_Type = Internal_Type_Enum.Aggregations_List;
                 string url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
@@ -749,6 +748,8 @@ namespace SobekCM.Library.HTML
                 Output.WriteLine("  <div id=\"aggregationTree\">");
                 Output.WriteLine("    <ul>");
                 Output.WriteLine("      <li>Collection Hierarchy");
+
+                RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Aggregation;
 
                 // Step through each node under this
                 if (hierarchy.Collections.Count > 0)
@@ -889,6 +890,7 @@ namespace SobekCM.Library.HTML
             Output.WriteLine("    <tbody>");
 
             // Show all the aggregations
+            RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Aggregation;
             string last_code = String.Empty;
             foreach (Item_Aggregation_Related_Aggregations thisAggr in UI_ApplicationCache_Gateway.Aggregations.All_Aggregations)
             {
@@ -910,10 +912,13 @@ namespace SobekCM.Library.HTML
                         code = "i" + code.Substring(1);
                     }
 
+                    // Get the URL
+                    string link_url = RequestSpecificValues.Current_Mode.Base_URL + "/" + code.ToLower();
+
                     // Add the rest of the row with data
-                    Output.WriteLine("        <td>" + code + "</td>");
+                    Output.WriteLine("        <td><a href=\"" + link_url + "\">" + code + "</a></td>");
                     Output.WriteLine("        <td>" + thisAggr.Type + "</td>");
-                    Output.WriteLine("        <td>" + thisAggr.Name + "</td>");
+                    Output.WriteLine("        <td><a href=\"" + link_url + "\">" + thisAggr.Name + "</a></td>");
 
                     Output.WriteLine(thisAggr.Active ? "        <td>Y</td>" : "        <td>N</td>");
 

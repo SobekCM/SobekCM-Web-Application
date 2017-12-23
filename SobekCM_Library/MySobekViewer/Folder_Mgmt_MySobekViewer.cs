@@ -79,9 +79,11 @@ namespace SobekCM.Library.MySobekViewer
                         return;
                     }
 
-
                     // Save this to the RequestSpecificValues.Current_User so this does not have to happen again
                     RequestSpecificValues.Current_User.Add_Folder(userFolder);
+
+                    // If the display format and the folder name are the same, then make one the default 'brief'
+
                 }
 
                 // Get the proper name and folder id

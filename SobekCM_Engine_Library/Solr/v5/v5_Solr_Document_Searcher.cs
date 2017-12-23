@@ -152,6 +152,14 @@ namespace SobekCM.Engine_Library.Solr.v5
 
             // Get the query string value
             string queryString = queryStringBuilder.ToString();
+
+            // If there was an aggregation code included, put that at the beginning of the search
+            if ((AggregationCode.Length > 0) && (AggregationCode.ToUpper() != "ALL"))
+            {
+                queryString = "(aggregations:" + AggregationCode + ") AND (" + queryString + ")";
+            }
+
+            // Log the search term
             if (Tracer != null)
             {
                 Tracer.Add_Trace("v5_Solr_Documents_Searcher.Search", "Solr Query: " + queryString);
@@ -236,11 +244,7 @@ namespace SobekCM.Engine_Library.Solr.v5
                 //    }
                 //}
 
-                // If there was an aggregation code included, put that at the beginning of the search
-                if ((AggregationCode.Length > 0) && (AggregationCode.ToUpper() != "ALL"))
-                {
-                    queryString = "(aggregations:" + AggregationCode.ToUpper() + ")AND(" + queryString + ")";
-                }
+
 
                 // We need to instruct SOLR to return the results as XML for solr to parse it
                 options.ExtraParams = new KeyValuePair<string, string>[] { new KeyValuePair<string,string>("wt", "xml") };

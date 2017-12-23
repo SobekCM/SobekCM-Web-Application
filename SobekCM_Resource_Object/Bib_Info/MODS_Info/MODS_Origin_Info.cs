@@ -113,6 +113,9 @@ namespace SobekCM.Resource_Object.Bib_Info
         private string dateCreated;
         private string dateIssued;
         private string dateReprinted;
+        private string dateCaptured;
+        private string dateValid;
+        private string dateModified;
         private string edition;
         private List<Origin_Info_Frequency> frequencies;
         private List<Origin_Info_Issuance_Enum> issuances;
@@ -234,6 +237,27 @@ namespace SobekCM.Resource_Object.Bib_Info
         {
             get { return dateCopyrighted ?? String.Empty; }
             set { dateCopyrighted = value; }
+        }
+
+        /// <summary> Get and sets the date this item was captured </summary>
+        public string Date_Captured
+        {
+            get { return dateCaptured ?? String.Empty; }
+            set { dateCaptured = value; }
+        }
+
+        /// <summary> Get and sets the date this item was determined to be valid(?) </summary>
+        public string Date_Valid
+        {
+            get { return dateValid ?? String.Empty; }
+            set { dateValid = value; }
+        }
+
+        /// <summary> Get and sets the date this item was modified </summary>
+        public string Date_Modified
+        {
+            get { return dateModified ?? String.Empty; }
+            set { dateModified = value; }
         }
 
         /// <summary> Gets and sets the marc encoded date issued from the 260 |c </summary>
@@ -375,6 +399,18 @@ namespace SobekCM.Resource_Object.Bib_Info
                 if ((!String.IsNullOrEmpty(dateCopyrighted)) && (dateCopyrighted != "-1"))
                     return true;
 
+                // Is the captured date exist?
+                if ((!String.IsNullOrEmpty(dateCaptured)) && (dateCaptured != "-1"))
+                    return true;
+
+                // Is the valid date exist?
+                if ((!String.IsNullOrEmpty(dateValid)) && (dateValid != "-1"))
+                    return true;
+
+                // Is the modified date exist?
+                if ((!String.IsNullOrEmpty(dateModified)) && (dateModified != "-1"))
+                    return true;
+
                 // Does the edition exist?
                 if (!String.IsNullOrEmpty(edition))
                     return true;
@@ -498,6 +534,18 @@ namespace SobekCM.Resource_Object.Bib_Info
             // Does the marc end date exist?
             if (!String.IsNullOrEmpty(marcDateIssuedEnd))
                 Results.Write("<mods:dateIssued encoding=\"marc\" point=\"end\">" + marcDateIssuedEnd + "</mods:dateIssued>\r\n");
+
+            // Is the date captured exist?
+            if ((!String.IsNullOrEmpty(dateCaptured)) && (dateCaptured != "-1"))
+                Results.Write("<mods:dateCaptured>" + Convert_String_To_XML_Safe(dateCaptured) + "</mods:dateCaptured>\r\n");
+
+            // Is the date vaid exist?
+            if ((!String.IsNullOrEmpty(dateValid)) && (dateValid != "-1"))
+                Results.Write("<mods:dateValid>" + Convert_String_To_XML_Safe(dateValid) + "</mods:dateValid>\r\n");
+
+            // Is the date modified exist?
+            if ((!String.IsNullOrEmpty(dateModified)) && (dateModified != "-1"))
+                Results.Write("<mods:dateModified>" + Convert_String_To_XML_Safe(dateModified) + "</mods:dateModified>\r\n");
 
             // Is the date created exist?
             if ((!String.IsNullOrEmpty(dateCreated)) && (dateCreated != "-1"))

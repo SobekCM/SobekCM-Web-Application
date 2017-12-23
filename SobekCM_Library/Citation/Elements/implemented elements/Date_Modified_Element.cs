@@ -1,24 +1,19 @@
-﻿#region Using directives
-
-using System.IO;
+﻿using System.IO;
 using System.Text;
 using System.Web;
 using SobekCM.Core.ApplicationState;
-using SobekCM.Core.Configuration;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Users;
 using SobekCM.Resource_Object;
 
-#endregion
-
-namespace SobekCM.Library.Citation.Elements
+namespace SobekCM.Library.Citation.Elements.implemented_elements
 {
-    /// <summary> Element allows entry of the date issued or publication date for an item </summary>
+    /// <summary> Element allows entry of the modified date for an item </summary>
     /// <remarks> This class extends the <see cref="SimpleTextBox_Element"/> class. </remarks>
-    public class Date_Element : SimpleTextBox_Element
+    public class Date_Modified_Element : SimpleTextBox_Element
     {
-        /// <summary> Constructor for a new instance of the Date_Element class </summary>
-        public Date_Element() : base("Publication Date", "pub_date")
+        /// <summary> Constructor for a new instance of the Date_Modified_Element class </summary>
+        public Date_Modified_Element() : base("Modified Date", "modify_date")
         {
             Repeatable = false;
         }
@@ -40,7 +35,7 @@ namespace SobekCM.Library.Citation.Elements
             // Check that an acronym exists
             if (Acronym.Length == 0)
             {
-                const string defaultAcronym = "Enter the date this item was published, issued, or created.";
+                const string defaultAcronym = "Enter the date this item was modified, after creation.";
                 switch (CurrentLanguage)
                 {
                     case Web_Language_Enum.English:
@@ -61,9 +56,7 @@ namespace SobekCM.Library.Citation.Elements
                 }
             }
 
-            string date = Bib.Bib_Info.Origin_Info.Date_Issued;
-            if (date.Length == 0)
-                date = Bib.Bib_Info.Origin_Info.MARC_DateIssued;
+            string date = Bib.Bib_Info.Origin_Info.Date_Modified;
 
             if (LabelFromTemplateFile.Length > 0)
                 Title = LabelFromTemplateFile;
@@ -89,12 +82,10 @@ namespace SobekCM.Library.Citation.Elements
             {
                 if (thisKey.IndexOf(html_element_name.Replace("_","")) == 0)
                 {
-                    Bib.Bib_Info.Origin_Info.Date_Issued = HttpContext.Current.Request.Form[thisKey];
+                    Bib.Bib_Info.Origin_Info.Date_Modified = HttpContext.Current.Request.Form[thisKey];
                     return;
                 }
             }
         }
-
-
     }
 }

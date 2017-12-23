@@ -536,7 +536,10 @@ namespace SobekCM.Library.AdminViewer
                         try
                         {
                             string usage_email_content = form["usage_email_content"].Trim();
-                            string file_name = Path.Combine(UI_ApplicationCache_Gateway.Settings.Servers.Application_Server_Network, "design", "extra", "stats", "stats_email_body.txt");
+                            string email_dir = Path.Combine(UI_ApplicationCache_Gateway.Settings.Servers.Application_Server_Network, "design", "extra", "stats");
+                            if (!Directory.Exists(email_dir))
+                                Directory.CreateDirectory(email_dir);
+                            string file_name = Path.Combine(email_dir, "stats_email_body.txt");
                             StreamWriter writer = new StreamWriter(file_name, false);
                             writer.Write(usage_email_content.Replace("[%", "<%").Replace("%]", "%>"));
                             writer.Flush();
@@ -4017,31 +4020,35 @@ namespace SobekCM.Library.AdminViewer
 
 	    private void add_html_usage_email_info(TextWriter Output)
 	    {
-            Output.WriteLine("  <h2>Usage Statistics Email Body</h2>");
-            Output.WriteLine("  <p>The system can be configured to email submittors with their month usage statistics on a monthly basis.  This HTML snippet is the body of the usage email that is sent.</p>");
-            Output.WriteLine("  <p>This email contains many very specific directives as well.</p>");
+	        Output.WriteLine("  <h2>Usage Statistics Email Body</h2>");
+	        Output.WriteLine("  <p>The system can be configured to email submittors with their month usage statistics on a monthly basis.  This HTML snippet is the body of the usage email that is sent.</p>");
+	        Output.WriteLine("  <p>This email contains many very specific directives as well.</p>");
 
 
-            Output.WriteLine("  <div id=\"sbkSeav_SmallerPageWrapper\">");
+	        Output.WriteLine("  <div id=\"sbkSeav_SmallerPageWrapper\">");
 
-            // Add the buttons
-            add_buttons(Output);
+	        // Add the buttons
+	        add_buttons(Output);
 
-            Output.WriteLine();
-            Output.WriteLine("<br /><br />");
-            Output.WriteLine();
+	        Output.WriteLine();
+	        Output.WriteLine("<br /><br />");
+	        Output.WriteLine();
 
-            string file_name = Path.Combine(UI_ApplicationCache_Gateway.Settings.Servers.Application_Server_Network, "design", "extra", "stats", "stats_email_body.txt");
-	        string noResultsSnippet = File.ReadAllText(file_name);
+	        string emailSnippet = String.Empty;
+	        string file_name = Path.Combine(UI_ApplicationCache_Gateway.Settings.Servers.Application_Server_Network, "design", "extra", "stats", "stats_email_body.txt");
+	        if (File.Exists(file_name))
+	        {
+                emailSnippet = File.ReadAllText(file_name);
+	        }
 
-            // Add the ace editor for editing this HTML
+	        // Add the ace editor for editing this HTML
             AceEditor aceEditor = new AceEditor(AceEditor_Mode.HTML)
             {
                 ContentsId = "usage_email_content",
                 EditorId = "sbkSeav_HtmlEdit",
                 BaseUrl = RequestSpecificValues.Current_Mode.Base_URL
             };
-            aceEditor.Add_To_Stream(Output, noResultsSnippet.Replace("<%", "[%").Replace("%>", "%]"));
+            aceEditor.Add_To_Stream(Output, emailSnippet.Replace("<%", "[%").Replace("%>", "%]"));
 
             Output.WriteLine("<br />");
             Output.WriteLine();

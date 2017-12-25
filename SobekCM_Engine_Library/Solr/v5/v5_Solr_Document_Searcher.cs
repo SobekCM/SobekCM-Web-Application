@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using SobekCM.Core.Results;
 using SobekCM.Core.Search;
-using SobekCM.Core.Settings;
 using SobekCM.Engine_Library.ApplicationState;
 using SobekCM.Engine_Library.Solr.Legacy;
 using SobekCM.Tools;
@@ -13,6 +12,7 @@ using SolrNet.Commands.Parameters;
 
 namespace SobekCM.Engine_Library.Solr.v5
 {
+
     public class v5_Solr_Document_Searcher
     {
         #region Static method to query the Solr/Lucene for a collection of results
@@ -149,9 +149,11 @@ namespace SobekCM.Engine_Library.Solr.v5
                 }
             }
 
-
             // Get the query string value
             string queryString = queryStringBuilder.ToString();
+
+            // Exclude dark and private
+            queryString = "(dark:0) AND (" + queryString + ")";
 
             // If there was an aggregation code included, put that at the beginning of the search
             if ((AggregationCode.Length > 0) && (AggregationCode.ToUpper() != "ALL"))
@@ -159,13 +161,61 @@ namespace SobekCM.Engine_Library.Solr.v5
                 queryString = "(aggregations:" + AggregationCode + ") AND (" + queryString + ")";
             }
 
+            // Set output initially to null
+            return Run_Query(queryString, ResultsPerPage, Page_Number, Sort, Need_Search_Statistics, Tracer, out Complete_Result_Set_Info, out Paged_Results);
+        }
+
+        public static bool All_Browse(string AggregationCode, int ResultsPerPage, int Page_Number, ushort Sort, bool Need_Search_Statistics, Custom_Tracer Tracer, out Search_Results_Statistics Complete_Result_Set_Info, out List<iSearch_Title_Result> Paged_Results)
+        {
+            // Get the query string value
+            string queryString = "(dark:0)";
+
+            // If there was an aggregation code included, put that at the beginning of the search
+            if ((AggregationCode.Length > 0) && (AggregationCode.ToUpper() != "ALL"))
+            {
+                queryString = "(aggregations:" + AggregationCode + ") AND " + queryString;
+            }
+
+            // Set output initially to null
+            return Run_Query(queryString, ResultsPerPage, Page_Number, Sort, Need_Search_Statistics, Tracer, out Complete_Result_Set_Info, out Paged_Results);
+        }
+
+        public static bool New_Browse(string AggregationCode, int ResultsPerPage, int Page_Number, ushort Sort, bool Need_Search_Statistics, Custom_Tracer Tracer, out Search_Results_Statistics Complete_Result_Set_Info, out List<iSearch_Title_Result> Paged_Results)
+        {
+            // Computer the datetime for this
+            DateTime two_weeks_ago = DateTime.Now.Subtract(new TimeSpan(14, 0, 0, 0));
+            string date_string = two_weeks_ago.Year + "-" + two_weeks_ago.Month.ToString().PadLeft(2, '0') + "-" + two_weeks_ago.Day.ToString().PadLeft(2, '0') + "T00:00:00Z";
+
+            // Get the query string value
+            string queryString = "(dark:0) AND ( made_public_date:[" + date_string + " TO *] )";
+
+            // If there was an aggregation code included, put that at the beginning of the search
+            if ((AggregationCode.Length > 0) && (AggregationCode.ToUpper() != "ALL"))
+            {
+                queryString = "(aggregations:" + AggregationCode + ") AND " + queryString;
+            }
+
+            // Set output initially to null
+            return Run_Query(queryString, ResultsPerPage, Page_Number, Sort, Need_Search_Statistics, Tracer, out Complete_Result_Set_Info, out Paged_Results);
+        }
+
+        /// <summary> Run a solr query against the solr document index </summary>
+        /// <param name="QueryString"></param>
+        /// <param name="ResultsPerPage"> Results to retrieve per 'page' of results</param>
+        /// <param name="Page_Number"> Page number within the results, which along with with results per page, determines which results to return </param>
+        /// <param name="Sort"> Sort to apply before returning the results of the search </param>
+        /// <param name="Need_Search_Statistics"> Flag indicates if the search statistics are needed </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        /// <param name="Complete_Result_Set_Info"> [OUT] Information about the entire set of results </param>
+        /// <param name="Paged_Results"> [OUT] List of search results for the requested page of results </param>
+        /// <returns> Page search result object with all relevant result information </returns>
+        public static bool Run_Query(string QueryString, int ResultsPerPage, int Page_Number, ushort Sort, bool Need_Search_Statistics, Custom_Tracer Tracer, out Search_Results_Statistics Complete_Result_Set_Info, out List<iSearch_Title_Result> Paged_Results)
+        {
             // Log the search term
             if (Tracer != null)
             {
-                Tracer.Add_Trace("v5_Solr_Documents_Searcher.Search", "Solr Query: " + queryString);
+                Tracer.Add_Trace("v5_Solr_Documents_Searcher.Run_Query", "Solr Query: " + QueryString);
             }
-
-
 
             // Set output initially to null
             Paged_Results = new List<iSearch_Title_Result>();
@@ -252,15 +302,15 @@ namespace SobekCM.Engine_Library.Solr.v5
 
                 if (Tracer != null)
                 {
-                    Tracer.Add_Trace("v5_Solr_Documents_Searcher.Search", "Perform the search");
+                    Tracer.Add_Trace("v5_Solr_Documents_Searcher.Run_Query", "Perform the search");
                 }
 
                 // Perform this search
-                SolrQueryResults<v5_SolrDocument> results = solrWorker.Query(queryString, options);
+                SolrQueryResults<v5_SolrDocument> results = solrWorker.Query(QueryString, options);
 
                 if (Tracer != null)
                 {
-                    Tracer.Add_Trace("v5_Solr_Documents_Searcher.Search", "Build the results object");
+                    Tracer.Add_Trace("v5_Solr_Documents_Searcher.Run_Query", "Build the results object");
                 }
 
                 // Create the search statistcs
@@ -331,8 +381,6 @@ namespace SobekCM.Engine_Library.Solr.v5
                     // Add this results as is for now
                     Paged_Results.Add(resultConverted);
                 }
-
-
 
                 return true;
             }

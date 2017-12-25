@@ -17,7 +17,7 @@
 -->
 
 
-<schema name="sobekcm_documents" version="1.6">
+<schema name="sobekcm_documents" version="4.11">
 
 
   <!-- Required for the update log referenced in solrconfig.xml -->
@@ -37,6 +37,9 @@
   <field name="bibid" type="text_general" indexed="true" stored="true" multiValued="false" />
   <field name="vid" type="text_general" indexed="true" stored="true" multiValued="false" />
   <field name="mainthumb" type="text_general" indexed="false" stored="true" multiValued="false" />
+  
+  <!-- Fied is used to pull the items added recently -->
+  <field name="made_public_date" type="date" indexed="true" stored="false" multiValued="false" />
   
   <!-- Spatial footprint used to display this item in a Google map -->
   <field name="spatial_footprint" type="text_general" indexed="false" stored="true" multiValued="true" />
@@ -129,8 +132,7 @@
   <!-- Date fields -->
   <field name="date" type="text_general" indexed="true" stored="true" multiValued="false" />
   <field name="date.year" type="text_general" indexed="true" stored="true" multiValued="false" />
-  <field name="date.gregorian" type="text_general" indexed="true" stored="true" multiValued="false" />
-  <field name="date.sort" type="text_general" indexed="true" stored="false" multiValued="false" />
+  <field name="date.gregorian" type="date" indexed="true" stored="true" multiValued="false" />
   <field name="date.display" type="text_general" indexed="false" stored="true" multiValued="false" />
   <field name="date_facets" type="text_facets" indexed="true" stored="true" multiValued="false" />
   <field name="date.year_facets" type="text_facets" indexed="true" stored="true" multiValued="false" />

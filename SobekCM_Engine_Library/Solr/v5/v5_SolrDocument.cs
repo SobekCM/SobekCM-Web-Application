@@ -28,7 +28,7 @@ namespace SobekCM.Engine_Library.Solr.v5
         private readonly List<string> additional_text_files = new List<string>();
         private readonly string fileLocation;
 
-        #region Constructors for this class 
+        #region Constructors for this class - also handle the mappings
 
         /// <summary> Constructor for a new instance of the v5_SolrDocument class </summary>
         public v5_SolrDocument()
@@ -59,6 +59,17 @@ namespace SobekCM.Engine_Library.Solr.v5
             VID = Digital_Object.VID;
             MainThumbnail = Digital_Object.Behaviors.Main_Thumbnail;
 
+            // Add the made public field
+            if (Digital_Object.Web.MadePublicDate.HasValue)
+                MadePublicDate = Digital_Object.Web.MadePublicDate.Value;
+            else
+            {
+                // If this is public and non-dark, but no date for made
+                // public exists, make it today
+                if ((!Digital_Object.Behaviors.Dark_Flag) && (Digital_Object.Behaviors.IP_Restriction_Membership >= 0))
+                    Digital_Object.Web.MadePublicDate = DateTime.Now;
+            }
+
             // Add Serial hierarchy fields
             Level1_Text = String.Empty;
             Level1_Index = -1;
@@ -88,10 +99,23 @@ namespace SobekCM.Engine_Library.Solr.v5
             }
 
             // Some defaults
-            Discover_Groups = new List<int> {-1};
-            Discover_Users = new List<int> { -1 };
-            Discover_IPs = new List<int> { -1 };
+            Discover_Groups = new List<int> {0};
+            Discover_Users = new List<int> {0};
             RestrictedMsg = String.Empty;
+
+            // Set the IP restrictions based on PRIVATE or NOT
+            if (Digital_Object.Behaviors.IP_Restriction_Membership == -1)
+                Discover_IPs = new List<int> {-1};
+            else
+            {
+                Discover_IPs = new List<int> {0};
+
+                // If some restrictions, set the restriction message
+                if (Digital_Object.Behaviors.IP_Restriction_Membership > 0)
+                {
+                    RestrictedMsg = "Access Restrictions Apply";
+                }
+            }
 
             // Set the spatial KML
             GeoSpatial_Information geo = Digital_Object.Get_Metadata_Module(GlobalVar.GEOSPATIAL_METADATA_MODULE_KEY) as GeoSpatial_Information;
@@ -749,6 +773,10 @@ namespace SobekCM.Engine_Library.Solr.v5
         /// <summary> Main thumbnail for this item </summary>
         [SolrField("mainthumb")]
         public string MainThumbnail { get; set; }
+
+        /// <summary> Main thumbnail for this item </summary>
+        [SolrField("made_public_date")]
+        public DateTime MadePublicDate { get; set; }
 
         #endregion
 

@@ -263,15 +263,22 @@ namespace SobekCM.Engine_Library.Aggregations
                 facetsList = null;
 
             // Pull data from the database if necessary
-            if ((ChildPageObject.Code == "all") || (ChildPageObject.Code == "new"))
+            if ((String.Equals(ChildPageObject.Code, "all", StringComparison.OrdinalIgnoreCase)) || (String.Equals(ChildPageObject.Code, "new", StringComparison.OrdinalIgnoreCase)))
             {
-                	        // Determine where to pull the data, based on search type
+                // Determine where to pull the data, based on search type
                 if (Engine_ApplicationCache_Gateway.Settings.System.Search_System == Search_System_Enum.Beta)
                 {
                     Search_Results_Statistics stats;
                     List<iSearch_Title_Result> results;
 
-                    v5_Solr_Document_Searcher.Search(ItemAggr.Code, null, null, Results_Per_Page, Page, (ushort) Sort, Need_Browse_Statistics, Tracer, out stats, out results);
+                    if (String.Equals(ChildPageObject.Code, "new", StringComparison.OrdinalIgnoreCase))
+                    {
+                        v5_Solr_Document_Searcher.New_Browse(ItemAggr.Code, Results_Per_Page, Page, (ushort) Sort, Need_Browse_Statistics, Tracer, out stats, out results);
+                    }
+                    else
+                    {
+                        v5_Solr_Document_Searcher.All_Browse(ItemAggr.Code, Results_Per_Page, Page, (ushort)Sort, Need_Browse_Statistics, Tracer, out stats, out results);
+                    }
 
                     Multiple_Paged_Results_Args returnValue = new Multiple_Paged_Results_Args(stats, results);
 

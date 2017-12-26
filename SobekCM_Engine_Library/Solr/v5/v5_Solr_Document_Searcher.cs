@@ -153,7 +153,7 @@ namespace SobekCM.Engine_Library.Solr.v5
             string queryString = queryStringBuilder.ToString();
 
             // Exclude dark and private
-            queryString = "(dark:0) AND (" + queryString + ")";
+            queryString = "(dark:0) AND (discover_ips:0) AND (" + queryString + ")";
 
             // If there was an aggregation code included, put that at the beginning of the search
             if ((AggregationCode.Length > 0) && (AggregationCode.ToUpper() != "ALL"))
@@ -168,7 +168,7 @@ namespace SobekCM.Engine_Library.Solr.v5
         public static bool All_Browse(string AggregationCode, int ResultsPerPage, int Page_Number, ushort Sort, bool Need_Search_Statistics, Custom_Tracer Tracer, out Search_Results_Statistics Complete_Result_Set_Info, out List<iSearch_Title_Result> Paged_Results)
         {
             // Get the query string value
-            string queryString = "(dark:0)";
+            string queryString = "(dark:0) AND (discover_ips:0)";
 
             // If there was an aggregation code included, put that at the beginning of the search
             if ((AggregationCode.Length > 0) && (AggregationCode.ToUpper() != "ALL"))
@@ -187,7 +187,7 @@ namespace SobekCM.Engine_Library.Solr.v5
             string date_string = two_weeks_ago.Year + "-" + two_weeks_ago.Month.ToString().PadLeft(2, '0') + "-" + two_weeks_ago.Day.ToString().PadLeft(2, '0') + "T00:00:00Z";
 
             // Get the query string value
-            string queryString = "(dark:0) AND ( made_public_date:[" + date_string + " TO *] )";
+            string queryString = "(dark:0) AND (discover_ips:0) AND ( made_public_date:[" + date_string + " TO *] )";
 
             // If there was an aggregation code included, put that at the beginning of the search
             if ((AggregationCode.Length > 0) && (AggregationCode.ToUpper() != "ALL"))

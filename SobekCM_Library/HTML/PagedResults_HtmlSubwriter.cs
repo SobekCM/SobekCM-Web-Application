@@ -1104,11 +1104,11 @@ namespace SobekCM.Library.HTML
 							        // Add the term
 							        if (terms[i].Contains(" "))
 							        {
-                                        Output.Write("\"" + HttpUtility.UrlEncode(terms[i].Replace("''''", "'").Replace("''", "'")).Replace("%2c", ",").Replace("+", " ") + "\" ");
+                                        Output.Write("\"" + HttpUtility.HtmlEncode(terms[i].Replace("''''", "'").Replace("''", "'")).Replace("%2c", ",").Replace("+", " ") + "\" ");
 							        }
 							        else
 							        {
-                                        Output.Write("'" + HttpUtility.UrlEncode(terms[i].Replace("''''", "'").Replace("''", "'")).Replace("%2c", ",").Replace("+", " ") + "' ");
+                                        Output.Write("'" + HttpUtility.HtmlEncode(terms[i].Replace("''''", "'").Replace("''", "'")).Replace("%2c", ",").Replace("+", " ") + "' ");
 							        }
 
 							        // Does the field start with a negative?

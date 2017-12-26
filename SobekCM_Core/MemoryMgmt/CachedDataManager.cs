@@ -545,8 +545,6 @@ namespace SobekCM.Core.MemoryMgmt
 
                 currentpage++;
             }
-
-
         }
 
         #endregion

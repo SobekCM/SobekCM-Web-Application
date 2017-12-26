@@ -541,6 +541,44 @@ namespace SobekCM.Library.MainWriters
         /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
         public void Write_Within_HTML_Head(TextWriter Output, Custom_Tracer Tracer)
         {
+            //if (String.Equals(Current_Mode.Result_Display_Type, "timeline", StringComparison.OrdinalIgnoreCase))
+            if (String.Equals(RequestSpecificValues.Current_Mode.Result_Display_Type, "timeline", StringComparison.OrdinalIgnoreCase))
+            {
+                // RRB
+
+                Tracer.Add_Trace("Html_MainWriter.Write-Within_HTML_Head", "Timeline - RequestSpecificValues.Current_Mode.Base_URL=[" + RequestSpecificValues.Current_Mode.Base_URL + "].");
+                Tracer.Add_Trace("Html_Mainwriter.Write_Within_HTML_Head", "Timeline.");
+
+                String base_url;
+                base_url = RequestSpecificValues.Current_Mode.Base_URL;
+                //= "test.richardbernardy.com";
+
+                Output.WriteLine("<link rel=\"stylesheet\" href=\"" + base_url + "/plugins/Timeline/css/SimileTimeline.css\" type=\"text/css\">");
+
+                Output.WriteLine("<link rel=\"stylesheet\" href=\"http://yui.yahooapis.com/2.7.0/build/reset-fonts-grids/reset-fonts-grids.css\" type = \"text/css\">");
+                Output.WriteLine("<link rel=\"stylesheet\" type=\"text/css\" href=\"http://yui.yahooapis.com/2.7.0/build/base/base-min.css\">");
+                Output.WriteLine("<link rel=\"stylesheet\" type=\"text/css\" href=\"" + base_url + "/plugins/Timeline/css/simile-widgets-org_timeline_examples_styles.css\">");
+
+                Output.WriteLine("<script type=\"text/javascript\" src=\"https://unpkg.com/xregexp/xregexp-all.js\"></script>");
+
+                Output.WriteLine("<script type=\"text/javascript\">");
+                Output.WriteLine("Timeline_ajax_url='" + base_url + "/plugins/Timeline/js/timeline_2.3.0/timeline_ajax/simile-ajax-api.js';");
+                Output.WriteLine("Timeline_urlPrefix='" + base_url + "/plugins/Timeline/js/timeline_2.3.0/timeline_js/';");
+                Output.WriteLine("Timeline_parameters='bundle=true';");
+                Output.WriteLine("</script>");
+
+                Output.WriteLine("<script src=\"" + base_url + "/plugins/Timeline/js/timeline_2.3.0/timeline_js/timeline-api.js?bundle=true\" type=\"text/javascript\"></script>");
+
+                // additional controls
+                Output.WriteLine("<script src=\"" + base_url + "/plugins/Timeline/js/simile-widgets-org_timeline_examples.js\" type=\"text/javascript\"></script>");
+
+                Output.WriteLine("<script src=\"" + base_url + "/plugins/Timeline/js/simile-widgets-org_timeline_customization.js\" type=\"text/javascript\"></script>");
+
+                Tracer.Add_Trace("Html_Mainwriter.Write_Within_HTML_Head", "RRB - end of temporary for SOAS project.");
+
+                // end rrb
+            }
+            
             Tracer.Add_Trace("Html_MainWriter.Add_Style_References", "Adding style references and apple touch icon to HTML");
 
             // A couple extraordinary cases

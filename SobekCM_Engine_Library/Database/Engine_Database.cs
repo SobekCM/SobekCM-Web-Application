@@ -7510,6 +7510,10 @@ namespace SobekCM.Engine_Library.Database
                 Resource.Web.Siblings = Convert.ToInt32(tempSet.Tables[0].Rows[0][4]) - 1;
                 Resource.Behaviors.Dark_Flag = Convert.ToBoolean(tempSet.Tables[0].Rows[0]["Dark"]);
 
+                // Copy the made public date, if there is one
+                if (tempSet.Tables[0].Rows[0]["MadePublicDate"] != DBNull.Value)
+                    Resource.Web.MadePublicDate = DateTime.Parse(tempSet.Tables[0].Rows[0]["MadePublicDate"].ToString());
+
                 // Add the aggregation codes
                 Resource.Behaviors.Clear_Aggregations();
                 foreach (DataRow thisRow in tempSet.Tables[1].Rows)

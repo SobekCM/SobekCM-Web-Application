@@ -2532,12 +2532,12 @@ namespace SobekCM.Library.HTML
 
             // Determine the date
             DataTable itemCount = null;
-            string possible_source_file = UI_ApplicationCache_Gateway.Settings.Servers.Base_Temporary_Directory + "item_count.xml";
-            string possible_source_url = RequestSpecificValues.Current_Mode.Base_URL + "temp/item_count.xml";
+            string possible_source_file = UI_ApplicationCache_Gateway.Settings.Servers.Base_Temporary_Directory + "item_count_opt" + option + ".xml";
+            string possible_source_url = RequestSpecificValues.Current_Mode.Base_URL + "temp/item_count_opt" + option + ".xml";
             if (IncludesFytd)
             {
-                possible_source_file = UI_ApplicationCache_Gateway.Settings.Servers.Base_Temporary_Directory + "item_count_growth.xml";
-                possible_source_url = RequestSpecificValues.Current_Mode.Base_URL + "temp/item_count_growth.xml";
+                possible_source_file = UI_ApplicationCache_Gateway.Settings.Servers.Base_Temporary_Directory + "item_count_growth_opt" + option + ".xml";
+                possible_source_url = RequestSpecificValues.Current_Mode.Base_URL + "temp/item_count_growth_opt" + option + ".xml";
             }
 
             try

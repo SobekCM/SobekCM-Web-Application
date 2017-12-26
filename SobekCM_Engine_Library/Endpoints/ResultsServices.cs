@@ -13,12 +13,14 @@ using SobekCM.Core.Navigation;
 using SobekCM.Core.Results;
 using SobekCM.Core.ResultTitle;
 using SobekCM.Core.Search;
+using SobekCM.Core.Settings;
 using SobekCM.Engine_Library.Aggregations;
 using SobekCM.Engine_Library.ApplicationState;
 using SobekCM.Engine_Library.Database;
 using SobekCM.Core.Configuration.Engine;
 using SobekCM.Engine_Library.Solr;
 using SobekCM.Engine_Library.Solr.Legacy;
+using SobekCM.Engine_Library.Solr.v5;
 using SobekCM.Tools;
 
 #endregion
@@ -1253,112 +1255,11 @@ namespace SobekCM.Engine_Library.Endpoints
                 Tracer.Add_Trace("SobekCM_Assistant.Perform_Solr_Search", "Build the Solr query");
             }
 
-            // Step through all the terms and fields
-            StringBuilder queryStringBuilder = new StringBuilder();
-            for (int i = 0; i < ActualCount; i++)
-            {
-                string web_field = Web_Fields[i];
-                string searchTerm = Terms[i];
-                string solr_field;
-
-                if (i == 0)
-                {
-                    // Skip any joiner for the very first field indicated
-                    if ((web_field[0] == '+') || (web_field[0] == '=') || (web_field[0] == '-'))
-                    {
-                        web_field = web_field.Substring(1);
-                    }
-
-                    // Try to get the solr field
-                    if (web_field == "TX")
-                    {
-                        solr_field = "fulltext:";
-                    }
-                    else
-                    {
-                        Metadata_Search_Field field = Engine_ApplicationCache_Gateway.Settings.Metadata_Search_Field_By_Code(web_field.ToUpper());
-                        if (field != null)
-                        {
-                            solr_field = field.Solr_Field + ":";
-                        }
-                        else
-                        {
-                            solr_field = String.Empty;
-                        }
-                    }
-
-                    // Add the solr search string
-                    if (searchTerm.IndexOf(" ") > 0)
-                    {
-                        queryStringBuilder.Append("(" + solr_field + "\"" + searchTerm.Replace(":", "") + "\")");
-                    }
-                    else
-                    {
-                        queryStringBuilder.Append("(" + solr_field + searchTerm.Replace(":", "") + ")");
-                    }
-                }
-                else
-                {
-                    // Add the joiner for this subsequent terms
-                    if ((web_field[0] == '+') || (web_field[0] == '=') || (web_field[0] == '-'))
-                    {
-                        switch (web_field[0])
-                        {
-                            case '=':
-                                queryStringBuilder.Append(" OR ");
-                                break;
-
-                            case '+':
-                                queryStringBuilder.Append(" AND ");
-                                break;
-
-                            case '-':
-                                queryStringBuilder.Append(" NOT ");
-                                break;
-
-                            default:
-                                queryStringBuilder.Append(" AND ");
-                                break;
-                        }
-                        web_field = web_field.Substring(1);
-                    }
-                    else
-                    {
-                        queryStringBuilder.Append(" AND ");
-                    }
-
-                    // Try to get the solr field
-                    if (web_field == "TX")
-                    {
-                        solr_field = "fulltext:";
-                    }
-                    else
-                    {
-                        Metadata_Search_Field field = Engine_ApplicationCache_Gateway.Settings.Metadata_Search_Field_By_Code(web_field.ToUpper());
-                        if (field != null)
-                        {
-                            solr_field = field.Solr_Field + ":";
-                        }
-                        else
-                        {
-                            solr_field = String.Empty;
-                        }
-                    }
-
-                    // Add the solr search string
-                    if (searchTerm.IndexOf(" ") > 0)
-                    {
-                        queryStringBuilder.Append("(" + solr_field + "\"" + searchTerm.Replace(":", "") + "\")");
-                    }
-                    else
-                    {
-                        queryStringBuilder.Append("(" + solr_field + searchTerm.Replace(":", "") + ")");
-                    }
-                }
-            }
-
             // Use this built query to query against Solr
-            Legacy_Solr_Documents_Searcher.Search(Current_Aggregation, queryStringBuilder.ToString(), Results_Per_Page, Current_Page, (ushort)Current_Sort, Tracer, out Complete_Result_Set_Info, out Paged_Results);
+            if (Engine_ApplicationCache_Gateway.Settings.System.Search_System == Search_System_Enum.Beta)
+                v5_Solr_Document_Searcher.Search(Current_Aggregation, Terms, Web_Fields, Results_Per_Page, Current_Page, (ushort)Current_Sort, true, Tracer, out Complete_Result_Set_Info, out Paged_Results);
+            else
+                Legacy_Solr_Documents_Searcher.Search(Current_Aggregation, Terms, Web_Fields, Results_Per_Page, Current_Page, (ushort)Current_Sort, true, Tracer, out Complete_Result_Set_Info, out Paged_Results);
         }
 
         #endregion

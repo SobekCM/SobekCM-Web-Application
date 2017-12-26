@@ -523,6 +523,9 @@ namespace SobekCM.Engine_Library.Items
 		        Package_To_Finalize.Web.Image_Root = Engine_ApplicationCache_Gateway.Settings.Servers.Image_URL;
 		        if (Multiple)
 		            Package_To_Finalize.Web.Siblings = 2;
+		        if (mainItemRow["MadePublicDate"] != DBNull.Value)
+		            Package_To_Finalize.Web.MadePublicDate = DateTime.Parse(mainItemRow["MadePublicDate"].ToString());
+		        ;
 
 		        // Set the serial hierarchy from the database (if multiple)
 		        if ((Multiple) && (mainItemRow["Level1_Text"].ToString().Length > 0))

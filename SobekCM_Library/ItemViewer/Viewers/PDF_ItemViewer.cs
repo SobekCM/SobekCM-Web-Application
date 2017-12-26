@@ -236,7 +236,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			}
 
             // Ensure all the slashes are going the right way (had issues with this in the past)
-			displayFileName = displayFileName.Replace("\\", "/").Replace("//", "/").Replace("http:/", "http://");
+            displayFileName = displayFileName.Replace("\\", "/").Replace("//", "/").Replace("http:/", "http://").Replace("https:/", "https://");
 
             //replace single & double quote with ascII characters
             if (displayFileName.Contains("'") || displayFileName.Contains("\""))

@@ -274,6 +274,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             Output.WriteLine("<div class=\"SobekText\">");
             Output.WriteLine("<br />");
             Output.WriteLine("<p>Below is the list of all items linked to this aggregation which are either private (in process) or dark.</p>");
+
             if (privateItems.TotalItems == 1)
                 Output.WriteLine("<p>There is only one matching item.</p>");
             else
@@ -291,9 +292,30 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                         Output.WriteLine(privateItems.TotalTitles + " titles.</p>");
                 }
             }
+            
+            Output.WriteLine("</div>");
+
+            // Add the checkbox to open in a new window
+            Output.WriteLine("<div id=\"sbkIhsw_PrivateItemNewWinDiv\">");
+            Output.WriteLine("    <input type=\"checkbox\" id=\"sbkIhsw_PrivateItemNewWindow\" name=\"new_window\" value=\"new_window\">");
+            Output.WriteLine("    <label for=\"sbkIhsw_PrivateItemNewWindow\">Open items in new window?</label>");
+            Output.WriteLine("</div>");
 
             Output.WriteLine("<br />");
-            Output.WriteLine("</div>");
+            Output.WriteLine("<br />");
+
+            Output.WriteLine("<script type=\"text/javascript\">");
+
+            Output.WriteLine("    function open_pi_link(url) {");
+            Output.WriteLine("        if($(\"#sbkIhsw_PrivateItemNewWindow\").is(':checked')) {");
+            Output.WriteLine("            window.open(url,'_blank');");
+            Output.WriteLine("        } ");
+            Output.WriteLine("        else {");
+            Output.WriteLine("            window.location.href=url;");
+            Output.WriteLine("        } ");
+            Output.WriteLine("    }");
+
+            Output.WriteLine("</script>");
 
             // Should buttons be added here for additional pages?
             if (privateItems.TotalTitles > RESULTS_PER_PAGE)
@@ -375,6 +397,8 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             }
 
             Output.WriteLine("<br />");
+
+
            
             // Start the table to display
             Output.WriteLine("</div>");
@@ -395,7 +419,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 if (thisTitle.Item_Count > 1)
                 {
                     // Draw the title row individually first
-                    Output.WriteLine("  <tr align=\"left\" onmouseover=\"this.className='tableRowHighlight'\" onmouseout=\"this.className='tableRowNormal'\" onmousedown=\"window.location.href='" + RequestSpecificValues.Current_Mode.Base_URL + thisTitle.BibID + "'\">");
+                    Output.WriteLine("  <tr align=\"left\" class=\"sbkIhsw_PrivateItemRow\" onmousedown=\"open_pi_link('" + RequestSpecificValues.Current_Mode.Base_URL + thisTitle.BibID + "');\">");
                     Output.WriteLine("    <td width=\"700px\" colspan=\"2\">");
                     Output.WriteLine("      <table>");
                     Output.WriteLine("        <tr><td colspan=\"3\"><a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + thisTitle.BibID + "\"><span class=\"privateTableBibTitle\">" + thisTitle.Group_Title + "</span></a></td></tr>");
@@ -410,7 +434,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                     foreach (Private_Items_List_Item thisItem in thisTitle.Items)
                     {
                         Output.WriteLine("  <tr><td width=\"125px\"></td><td bgcolor=\"#e7e7e7\" colspan=\"3\"></td></tr>");
-                        Output.WriteLine("  <tr align=\"left\" onmouseover=\"this.className='tableRowHighlight'\" onmouseout=\"this.className='tableRowNormal'\" onmousedown=\"window.location.href='" + RequestSpecificValues.Current_Mode.Base_URL + thisTitle.BibID + "/" + thisItem.VID + "'\">");
+                        Output.WriteLine("  <tr align=\"left\" class=\"sbkIhsw_PrivateItemRow\" onmousedown=\"open_pi_link('" + RequestSpecificValues.Current_Mode.Base_URL + thisTitle.BibID + "/" + thisItem.VID + "');\">");
                         Output.WriteLine("    <td width=\"125px\">");
                         Output.WriteLine("    <td width=\"575px\">");
                         Output.WriteLine("      <table>");
@@ -441,7 +465,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                     Private_Items_List_Item thisItem = thisTitle.Items[0];
 
                     // Draw the integrated title/item row
-                    Output.WriteLine("  <tr align=\"left\" onmouseover=\"this.className='tableRowHighlight'\" onmouseout=\"this.className='tableRowNormal'\" onmousedown=\"window.location.href='" + RequestSpecificValues.Current_Mode.Base_URL + thisTitle.BibID + "/" + thisItem.VID + "'\">");
+                    Output.WriteLine("  <tr align=\"left\" class=\"sbkIhsw_PrivateItemRow\" onmousedown=\"open_pi_link('" + RequestSpecificValues.Current_Mode.Base_URL + thisTitle.BibID + "/" + thisItem.VID + "');\">");
                     Output.WriteLine("      <td width=\"700px\" colspan=\"2\">");
                     Output.WriteLine("          <table>");
                     Output.WriteLine("              <tr><td colspan=\"3\"><a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + thisTitle.BibID + "/" + thisItem.VID + "\"><span class=\"privateTableBibTitle\">" + thisItem.Title + "</span></a>");

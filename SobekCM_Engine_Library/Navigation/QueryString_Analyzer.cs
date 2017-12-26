@@ -527,7 +527,7 @@ namespace SobekCM.Engine_Library.Navigation
 												    }
 												    else
 												    {
-												        Navigator.Result_Display_Type = url_relative_list[3];
+												        Navigator.Result_Display_Type = url_relative_list[2];
                                                         Navigator.My_Sobek_SubMode = url_relative_list[3];
 												    }
 												}

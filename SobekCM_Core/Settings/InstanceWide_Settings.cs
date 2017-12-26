@@ -8,7 +8,6 @@ using System.Xml.Serialization;
 using ProtoBuf;
 using SobekCM.Core.Configuration;
 using SobekCM.Core.Configuration.Extensions;
-using SobekCM.Core.MicroservicesClient;
 using SobekCM.Core.Search;
 using SobekCM.Core.Settings.DbItemViewers;
 using SobekCM.Core.Users;
@@ -26,7 +25,6 @@ namespace SobekCM.Core.Settings
         /// <summary> Send directly to the SMTP server </summary>
         SmtpDirect
     }
-
 
 
     /// <summary> Class provides context to constant settings from the database,
@@ -72,7 +70,6 @@ namespace SobekCM.Core.Settings
             Static = new Static_Settings();
             System = new System_Settings();
             UI = new UI_Settings();
-
         }
 
         /// <summary> Settings from the database for built-in archiving functionality </summary>

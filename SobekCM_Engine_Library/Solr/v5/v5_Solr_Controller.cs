@@ -17,9 +17,20 @@ namespace SobekCM.Engine_Library.Solr.v5
         /// <param name="Include_Text"> Flag indicates whether to look for and include full text </param>
         public void Update_Index(string SolrDocumentUrl, string SolrPageUrl, SobekCM_Item Resource, bool Include_Text)
         {
+            // Get rid of trailling '/' in solr document url
+            SolrDocumentUrl = SolrDocumentUrl.Trim();
+            if ((!String.IsNullOrEmpty(SolrDocumentUrl)) && (SolrDocumentUrl[SolrDocumentUrl.Length - 1] == '/'))
+                SolrDocumentUrl = SolrDocumentUrl.Substring(0, SolrDocumentUrl.Length - 1);
+
+            // Get rid of trailling '/' in solr page url
+            SolrPageUrl = SolrPageUrl.Trim();
+            if ((!String.IsNullOrEmpty(SolrPageUrl)) && (SolrPageUrl[SolrPageUrl.Length - 1] == '/'))
+                SolrPageUrl = SolrPageUrl.Substring(0, SolrPageUrl.Length - 1);
+
+
             // Create the solr workers
             var solrDocumentWorker = Solr_Operations_Cache<v5_SolrDocument>.GetSolrOperations(SolrDocumentUrl);
-     //       var solrPageWorker = Solr_Operations_Cache<Legacy_SolrPage>.GetSolrOperations(SolrPageUrl);
+            var solrPageWorker = Solr_Operations_Cache<Legacy_SolrPage>.GetSolrOperations(SolrPageUrl);
 
             // Get the list of all items in this collection
             List<v5_SolrDocument> index_files = new List<v5_SolrDocument>();
@@ -49,51 +60,51 @@ namespace SobekCM.Engine_Library.Solr.v5
                 }
             }
 
-            //// Add each page to be indexed
-            //foreach (v5_SolrDocument document in index_files)
-            //{
-            //    index_pages.AddRange(document.Solr_Pages);
-            //}
+            // Add each page to be indexed
+            foreach (v5_SolrDocument document in index_files)
+            {
+                index_pages.AddRange(document.Solr_Pages);
+            }
 
 
-            //bool page_success = false;
-            //int page_attempts = 0;
-            //while (!page_success)
-            //{
-            //    try
-            //    {
-            //        solrPageWorker.Add(index_pages);
-            //        page_success = true;
-            //    }
-            //    catch (Exception)
-            //    {
-            //        if (page_attempts > 5)
-            //        {
-            //            throw;
-            //        }
-            //        page_attempts++;
-            //        Thread.Sleep(page_attempts * 1000);
-            //    }
-            //}
+            bool page_success = false;
+            int page_attempts = 0;
+            while (!page_success)
+            {
+                try
+                {
+                    solrPageWorker.Add(index_pages);
+                    page_success = true;
+                }
+                catch (Exception ee)
+                {
+                    if (page_attempts > 5)
+                    {
+                        throw;
+                    }
+                    page_attempts++;
+                    Thread.Sleep(page_attempts * 1000);
+                }
+            }
 
             // Comit the changes to the solr/lucene index
             try
             {
                 solrDocumentWorker.Commit();
             }
-            catch
+            catch (Exception ee)
             {
                 Thread.Sleep(10 * 60 * 1000);
             }
 
-            //try
-            //{
-            //    solrPageWorker.Commit();
-            //}
-            //catch
-            //{
-            //    Thread.Sleep(10 * 60 * 1000);
-            //}
+            try
+            {
+                solrPageWorker.Commit();
+            }
+            catch (Exception ee)
+            {
+                Thread.Sleep(10 * 60 * 1000);
+            }
         }
 
         /// <summary> Deletes an existing resource from both solr/lucene core indexes </summary>

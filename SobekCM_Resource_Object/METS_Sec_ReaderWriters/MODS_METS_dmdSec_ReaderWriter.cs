@@ -521,6 +521,33 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                                             }
                                             break;
 
+                                        case "mods:dateCaptured":
+                                        case "dateCaptured":
+                                            R.Read();
+                                            if (R.NodeType == XmlNodeType.Text)
+                                            {
+                                                ThisBibInfo.Origin_Info.Date_Captured = R.Value;
+                                            }
+                                            break;
+
+                                        case "mods:dateValid":
+                                        case "dateValid":
+                                            R.Read();
+                                            if (R.NodeType == XmlNodeType.Text)
+                                            {
+                                                ThisBibInfo.Origin_Info.Date_Valid = R.Value;
+                                            }
+                                            break;
+
+                                        case "mods:dateModified":
+                                        case "dateModified":
+                                            R.Read();
+                                            if (R.NodeType == XmlNodeType.Text)
+                                            {
+                                                ThisBibInfo.Origin_Info.Date_Modified = R.Value;
+                                            }
+                                            break;
+
                                         case "mods:copyrightDate":
                                         case "copyrightDate":
                                             R.Read();

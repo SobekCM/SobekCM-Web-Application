@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 
 #endregion
@@ -138,9 +139,13 @@ namespace SobekCM.Resource_Object.Metadata_Modules
             {
                 List<KeyValuePair<string, string>> metadataTerms = new List<KeyValuePair<string, string>>();
 
+                // Also, build a hierarchical version
+                StringBuilder builder = new StringBuilder();
+
                 // Add the kingdom
                 if ( !String.IsNullOrEmpty(kingdom))
                 {
+                    builder.Append(kingdom + " -- ");
                     metadataTerms.Add(new KeyValuePair<string, string>("ZT Kingdom", kingdom));
                     metadataTerms.Add(new KeyValuePair<string, string>("ZT All Taxonomy", kingdom));
                 }
@@ -148,6 +153,7 @@ namespace SobekCM.Resource_Object.Metadata_Modules
                 // Add the phylum
                 if (!String.IsNullOrEmpty(phylum))
                 {
+                    builder.Append(phylum + " -- ");
                     metadataTerms.Add(new KeyValuePair<string, string>("ZT Phylum", phylum));
                     metadataTerms.Add(new KeyValuePair<string, string>("ZT All Taxonomy", phylum));
                 }
@@ -155,6 +161,7 @@ namespace SobekCM.Resource_Object.Metadata_Modules
                 // Add the class
                 if (!String.IsNullOrEmpty(classs))
                 {
+                    builder.Append(classs + " -- ");
                     metadataTerms.Add(new KeyValuePair<string, string>("ZT Class", classs));
                     metadataTerms.Add(new KeyValuePair<string, string>("ZT All Taxonomy", classs));
                 }
@@ -162,6 +169,7 @@ namespace SobekCM.Resource_Object.Metadata_Modules
                 // Add the order
                 if (!String.IsNullOrEmpty(order))
                 {
+                    builder.Append(order + " -- ");
                     metadataTerms.Add(new KeyValuePair<string, string>("ZT Order", order));
                     metadataTerms.Add(new KeyValuePair<string, string>("ZT All Taxonomy", order));
                 }
@@ -169,6 +177,7 @@ namespace SobekCM.Resource_Object.Metadata_Modules
                 // Add the kingdom
                 if (!String.IsNullOrEmpty(family))
                 {
+                    builder.Append(family + " -- ");
                     metadataTerms.Add(new KeyValuePair<string, string>("ZT Family", family));
                     metadataTerms.Add(new KeyValuePair<string, string>("ZT All Taxonomy", family));
                 }
@@ -176,6 +185,7 @@ namespace SobekCM.Resource_Object.Metadata_Modules
                 // Add the genus
                 if (!String.IsNullOrEmpty(genus))
                 {
+                    builder.Append(genus + " -- ");
                     metadataTerms.Add(new KeyValuePair<string, string>("ZT Genus", genus));
                     metadataTerms.Add(new KeyValuePair<string, string>("ZT All Taxonomy", genus));
                 }
@@ -183,6 +193,7 @@ namespace SobekCM.Resource_Object.Metadata_Modules
                 // Add the species
                 if (!String.IsNullOrEmpty(specificEpithet))
                 {
+                    builder.Append(specificEpithet);
                     metadataTerms.Add(new KeyValuePair<string, string>("ZT Species", specificEpithet));
                     metadataTerms.Add(new KeyValuePair<string, string>("ZT All Taxonomy", specificEpithet));
                 }
@@ -194,12 +205,20 @@ namespace SobekCM.Resource_Object.Metadata_Modules
                     metadataTerms.Add(new KeyValuePair<string, string>("ZT All Taxonomy", commonName));
                 }
 
-                // Add the common name
+                // Add the scientific name
                 if ((!String.IsNullOrEmpty(genus)) && (!String.IsNullOrEmpty(specificEpithet)))
                 {
                     metadataTerms.Add(new KeyValuePair<string, string>("ZT Scientific Name", genus + " " + specificEpithet ));
                     metadataTerms.Add(new KeyValuePair<string, string>("ZT All Taxonomy", genus + " " + specificEpithet));
                 }
+
+                // Add the full hierarchical name, as one field
+                if (builder.ToString().Length > 5)
+                {
+                    string full_hierarchical = builder.ToString().Substring(0, builder.Length - 3);
+                    metadataTerms.Add(new KeyValuePair<string, string>("ZT Hierarchical", full_hierarchical));
+                }
+
 
                 return metadataTerms;
             }

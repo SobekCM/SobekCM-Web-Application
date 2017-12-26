@@ -352,7 +352,7 @@ namespace SobekCM.Builder_Library
                 //}
                 return true;
             }
-            catch (Exception )
+            catch (Exception ee )
             {
                 return false;
             }

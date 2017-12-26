@@ -28,6 +28,8 @@ namespace SobekCM.Engine_Library.Solr.Legacy
         private string sourceinstitution;
         private string url;
 
+        private string[] metadataValues;
+
         /// <summary> Constructor for a new instance of the Solr_Document_Result class </summary>
         public Legacy_Solr_Document_Result()
         {
@@ -231,6 +233,9 @@ namespace SobekCM.Engine_Library.Solr.Legacy
 	    {
 		    get
 		    {
+		        if (metadataValues != null)
+		            return metadataValues;
+
 				string[] returnVal = new string[6];
 			    returnVal[0] = Author;
 			    returnVal[1] = Publisher;
@@ -240,6 +245,7 @@ namespace SobekCM.Engine_Library.Solr.Legacy
 			    returnVal[5] = Donor;
 			    return returnVal;
 		    }
+	        set { metadataValues = value; }
 
 	    }
 

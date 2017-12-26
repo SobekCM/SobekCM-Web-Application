@@ -95,7 +95,13 @@ namespace SobekCM.Resource_Object.Bib_Info
                 {
                     foreach (Genre_Info thisGenre in Genres)
                     {
-                        metadataTerms.Add(new KeyValuePair<string, string>("Genre", thisGenre.Genre_Term.ToLower()));
+                        metadataTerms.Add(new KeyValuePair<string, string>("Genre", thisGenre.Genre_Term));
+
+                        if ( !String.IsNullOrEmpty(thisGenre.Authority))
+                            metadataTerms.Add(new KeyValuePair<string, string>("Genre Display", thisGenre.Genre_Term + " (" + thisGenre.Authority + ")"));
+                        else
+                            metadataTerms.Add(new KeyValuePair<string, string>("Genre Display", thisGenre.Genre_Term));
+
                     }
                 }
 
@@ -105,6 +111,12 @@ namespace SobekCM.Resource_Object.Bib_Info
                     foreach (Identifier_Info thisIdentifier in Identifiers)
                     {
                         metadataTerms.Add(new KeyValuePair<string, string>("Identifier", thisIdentifier.Identifier));
+
+                        if ( !String.IsNullOrEmpty(thisIdentifier.Type))
+                            metadataTerms.Add(new KeyValuePair<string, string>("Identifier Display", thisIdentifier.Identifier + " (" + thisIdentifier.Type + ")"));
+                        else
+                            metadataTerms.Add(new KeyValuePair<string, string>("Identifier Display", thisIdentifier.Identifier));
+
 
                         if ((thisIdentifier.Type.IndexOf("ACCESSION", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
                             (thisIdentifier.Type.IndexOf("ACCN", StringComparison.InvariantCultureIgnoreCase) >= 0))
@@ -158,21 +170,31 @@ namespace SobekCM.Resource_Object.Bib_Info
                 // Add the main entry here
                 if ((hasMainEntityName) && (Main_Entity_Name.hasData))
                 {
-                    metadataTerms.Add(new KeyValuePair<string, string>("Creator", Main_Entity_Name.ToString(true).Replace("<i>", " ").Replace("</i>", " ")));
+                    metadataTerms.Add(new KeyValuePair<string, string>("Creator", Main_Entity_Name.ToString(false).Replace("<i>", " ").Replace("</i>", " ")));
+
+                    metadataTerms.Add(new KeyValuePair<string, string>("Creator.Display", Main_Entity_Name.ToString(true).Replace("<i>", " ").Replace("</i>", " ")));
                 }
 
                 // Add the main title here
                 if (( Main_Title != null ) && ( !String.IsNullOrEmpty(Main_Title.Title)))
                 {
-                    metadataTerms.Add(new KeyValuePair<string, string>("Title", Main_Title.ToString()));
+
 
                     // Add the subtitle here as well
                     if (!String.IsNullOrEmpty(Main_Title.Subtitle))
                     {
-                        metadataTerms.Add(new KeyValuePair<string, string>("Title", Main_Title.Subtitle ));
+                        metadataTerms.Add(new KeyValuePair<string, string>("Title", Main_Title.ToString() + " : " + Main_Title.Subtitle));
+                    }
+                    else
+                    {
+                        metadataTerms.Add(new KeyValuePair<string, string>("Title", Main_Title.ToString()));
                     }
 
+                    // Add the sort title
+                    metadataTerms.Add(new KeyValuePair<string, string>("Sort Title", SortSafeTitle(Main_Title.ToString(), true)));
                 }
+
+
 
                 // Add any manufacturers here
                 if (Manufacturers_Count > 0)
@@ -190,7 +212,9 @@ namespace SobekCM.Resource_Object.Bib_Info
                     {
                         if (thisName.hasData)
                         {
-                            metadataTerms.Add(new KeyValuePair<string, string>("Creator", thisName.ToString(true).Replace("<i>", " ").Replace("</i>", " ")));
+                            metadataTerms.Add(new KeyValuePair<string, string>("Creator", thisName.ToString(false).Replace("<i>", " ").Replace("</i>", " ")));
+
+                            metadataTerms.Add(new KeyValuePair<string, string>("Creator.Display", thisName.ToString(true).Replace("<i>", " ").Replace("</i>", " ")));
                         }
                     }
                 }
@@ -286,7 +310,11 @@ namespace SobekCM.Resource_Object.Bib_Info
                     {
                         if (thisTitle.Title.Length > 0)
                         {
-                            metadataTerms.Add(new KeyValuePair<string, string>("Title", thisTitle.ToString().Replace("<i>", " ").Replace("</i>", " ")));
+                            metadataTerms.Add(new KeyValuePair<string, string>("Other Title", thisTitle.ToString().Replace("<i>", " ").Replace("</i>", " ")));
+
+                            // Was this a translated title?
+                            if ( thisTitle.Title_Type == Title_Type_Enum.Translated)
+                                metadataTerms.Add(new KeyValuePair<string, string>("Translated Title", thisTitle.ToString().Replace("<i>", " ").Replace("</i>", " ")));
                         }
                     }
                 }
@@ -294,7 +322,7 @@ namespace SobekCM.Resource_Object.Bib_Info
                 // Add the series title
                 if ((hasSeriesTitle) && (SeriesTitle.Title.Length > 0))
                 {
-                    metadataTerms.Add(new KeyValuePair<string, string>("Title", SeriesTitle.ToString().Replace("<i>", " ").Replace("</i>", " ")));
+                    metadataTerms.Add(new KeyValuePair<string, string>("Series Title", SeriesTitle.ToString().Replace("<i>", " ").Replace("</i>", " ")));
                 }
 
                 // Add the source statement
@@ -323,6 +351,8 @@ namespace SobekCM.Resource_Object.Bib_Info
                         if (thisSubject.Class_Type == Subject_Info_Type.Name)
                         {
                             metadataTerms.Add(new KeyValuePair<string, string>("Name as Subject", thisSubject.ToString(false)));
+                            metadataTerms.Add(new KeyValuePair<string, string>("Name as Subject Display", thisSubject.ToString(true)));
+	                        
 	                        string complete = thisSubject.ToString(false);
 	                        if ((complete.Length > 0) && (!subjects_display.Contains(complete)))
 		                        subjects_display.Add(complete);
@@ -332,6 +362,8 @@ namespace SobekCM.Resource_Object.Bib_Info
                         if (thisSubject.Class_Type == Subject_Info_Type.TitleInfo)
                         {
                             metadataTerms.Add(new KeyValuePair<string, string>("Title as Subject", thisSubject.ToString(false)));
+                            metadataTerms.Add(new KeyValuePair<string, string>("Title as Subject Display", thisSubject.ToString(true)));
+
 							string complete = thisSubject.ToString(false);
 							if ((complete.Length > 0) && (!subjects_display.Contains(complete)))
 								subjects_display.Add(complete);
@@ -1254,7 +1286,7 @@ namespace SobekCM.Resource_Object.Bib_Info
 	    /// <returns>Sortable title value for this resource</returns>
 	    public string SortSafeTitle(string TitleString, bool UsePredeterminedSortTitle)
         {
-            if ((UsePredeterminedSortTitle) && (SortTitle.Length > 0))
+            if ((UsePredeterminedSortTitle) && (!String.IsNullOrEmpty(SortTitle)))
                 return sortTitle;
 
             // Remove all punctuation first

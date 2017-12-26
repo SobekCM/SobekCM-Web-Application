@@ -10,10 +10,12 @@ using SobekCM.Core.Configuration;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Results;
+using SobekCM.Core.Settings;
 using SobekCM.Core.WebContent;
 using SobekCM.Engine_Library.ApplicationState;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Engine_Library.Database;
+using SobekCM.Engine_Library.Solr.v5;
 using SobekCM.Tools;
 
 #endregion
@@ -261,21 +263,43 @@ namespace SobekCM.Engine_Library.Aggregations
                 facetsList = null;
 
             // Pull data from the database if necessary
-            if ((ChildPageObject.Code == "all") || (ChildPageObject.Code == "new"))
+            if ((String.Equals(ChildPageObject.Code, "all", StringComparison.OrdinalIgnoreCase)) || (String.Equals(ChildPageObject.Code, "new", StringComparison.OrdinalIgnoreCase)))
             {
-                // Get this browse from the database
-                if ((ItemAggr.ID < 0) || (ItemAggr.Code.ToUpper() == "ALL"))
+                // Determine where to pull the data, based on search type
+                if (Engine_ApplicationCache_Gateway.Settings.System.Search_System == Search_System_Enum.Beta)
                 {
-                    if (ChildPageObject.Code == "new")
-                        return Engine_Database.Get_All_Browse_Paged(true, false, Results_Per_Page, Page, Sort, Need_Browse_Statistics, facetsList, Need_Browse_Statistics, Tracer);
-                    return Engine_Database.Get_All_Browse_Paged(false, false, Results_Per_Page, Page, Sort, Need_Browse_Statistics, facetsList, Need_Browse_Statistics, Tracer);
-                }
+                    Search_Results_Statistics stats;
+                    List<iSearch_Title_Result> results;
 
-                if (ChildPageObject.Code == "new")
-                {
-                    return Engine_Database.Get_Item_Aggregation_Browse_Paged(ItemAggr.Code, true, false, Results_Per_Page, Page, Sort, Need_Browse_Statistics, facetsList, Need_Browse_Statistics, Tracer);
+                    if (String.Equals(ChildPageObject.Code, "new", StringComparison.OrdinalIgnoreCase))
+                    {
+                        v5_Solr_Document_Searcher.New_Browse(ItemAggr.Code, Results_Per_Page, Page, (ushort) Sort, Need_Browse_Statistics, Tracer, out stats, out results);
+                    }
+                    else
+                    {
+                        v5_Solr_Document_Searcher.All_Browse(ItemAggr.Code, Results_Per_Page, Page, (ushort)Sort, Need_Browse_Statistics, Tracer, out stats, out results);
+                    }
+
+                    Multiple_Paged_Results_Args returnValue = new Multiple_Paged_Results_Args(stats, results);
+
+                    return returnValue;
                 }
-                return Engine_Database.Get_Item_Aggregation_Browse_Paged(ItemAggr.Code, false, false, Results_Per_Page, Page, Sort, Need_Browse_Statistics, facetsList, Need_Browse_Statistics, Tracer);
+                else
+                {
+                    // Get this browse from the database
+                    if ((ItemAggr.ID < 0) || (ItemAggr.Code.ToUpper() == "ALL"))
+                    {
+                        if (ChildPageObject.Code == "new")
+                            return Engine_Database.Get_All_Browse_Paged(true, false, Results_Per_Page, Page, Sort, Need_Browse_Statistics, facetsList, Need_Browse_Statistics, Tracer);
+                        return Engine_Database.Get_All_Browse_Paged(false, false, Results_Per_Page, Page, Sort, Need_Browse_Statistics, facetsList, Need_Browse_Statistics, Tracer);
+                    }
+
+                    if (ChildPageObject.Code == "new")
+                    {
+                        return Engine_Database.Get_Item_Aggregation_Browse_Paged(ItemAggr.Code, true, false, Results_Per_Page, Page, Sort, Need_Browse_Statistics, facetsList, Need_Browse_Statistics, Tracer);
+                    }
+                    return Engine_Database.Get_Item_Aggregation_Browse_Paged(ItemAggr.Code, false, false, Results_Per_Page, Page, Sort, Need_Browse_Statistics, facetsList, Need_Browse_Statistics, Tracer);
+                }
             }
 
             // Default return NULL
@@ -306,15 +330,30 @@ namespace SobekCM.Engine_Library.Aggregations
 	        if (!Potentially_Include_Facets)
 	            facetsList = null;
 
-	        // Pull data from the database if necessary
-
-	        // Get this browse from the database
-	        if ((ItemAggr.ID < 0) || (ItemAggr.Code.ToUpper() == "ALL"))
+	        // Determine where to pull the data, based on search type
+	        if (Engine_ApplicationCache_Gateway.Settings.System.Search_System == Search_System_Enum.Beta)
 	        {
-	            return Engine_Database.Get_All_Browse_Paged(false, false, Results_Per_Page, Page, Sort, Need_Browse_Statistics, facetsList, Need_Browse_Statistics, Tracer);
+                Search_Results_Statistics stats;
+	            List<iSearch_Title_Result> results;
+
+	            v5_Solr_Document_Searcher.Search(ItemAggr.Code, null, null, Results_Per_Page, Page, (ushort) Sort, Need_Browse_Statistics, Tracer, out stats, out results);
+
+	            Multiple_Paged_Results_Args returnValue = new Multiple_Paged_Results_Args(stats, results);
+
+	            return returnValue;
+	        }
+	        else
+	        {
+                // Get this browse from the database
+                if ((ItemAggr.ID < 0) || (ItemAggr.Code.ToUpper() == "ALL"))
+                {
+                    return Engine_Database.Get_All_Browse_Paged(false, false, Results_Per_Page, Page, Sort, Need_Browse_Statistics, facetsList, Need_Browse_Statistics, Tracer);
+                }
+
+                return Engine_Database.Get_Item_Aggregation_Browse_Paged(ItemAggr.Code, false, false, Results_Per_Page, Page, Sort, Need_Browse_Statistics, facetsList, Need_Browse_Statistics, Tracer);
+
 	        }
 
-	        return Engine_Database.Get_Item_Aggregation_Browse_Paged(ItemAggr.Code, false, false, Results_Per_Page, Page, Sort, Need_Browse_Statistics, facetsList, Need_Browse_Statistics, Tracer);
 	    }
 
 

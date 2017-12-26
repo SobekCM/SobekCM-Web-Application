@@ -20,6 +20,25 @@ namespace SobekCM.Engine_Library.Items
     /// <remarks> This is used by the Edit_Item_Metadata_MySobekViewer, and will be exposed via a REST API </remarks>
     public static class SobekCM_Item_Updater
     {
+        /// <summary> Update the flag which indicates the builder should relook 
+        /// at the item and reuild it. </summary>
+        /// <param name="Item"> Item to update the flag for </param>
+        /// <param name="NewFlag"> New flag for the additional work flag </param>
+        /// <returns> TRUE if successful, otherwise FALSE </returns>
+        public static bool Set_Item_Rebuild_Flag(SobekCM_Item Item, bool NewFlag)
+        {
+            try
+            {
+                SobekCM_Item_Database.Update_Additional_Work_Needed_Flag(Item.Web.ItemID, NewFlag);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+
         /// <summary> Update the exsting digital resource, by saving the changes to the database and rewriting metadata files </summary>
         /// <param name="Item"> Digital resource object with all the updated metadata </param>
         /// <param name="User"> User who performed the update, for the item milestones </param>

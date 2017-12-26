@@ -70,8 +70,12 @@ namespace SobekCM.Library.ItemViewer.Viewers
         public override void Add_Menu_Items(BriefItemInfo CurrentItem, User_Object CurrentUser, Navigation_Object CurrentRequest, List<Item_MenuItem> MenuItems, bool IpRestricted )
         {
             // Get the URL for this
-            string previous_code = CurrentRequest.ViewerCode;
-            CurrentRequest.ViewerCode = ViewerCode.Replace("#","1");
+            string previous_code = CurrentRequest.ViewerCode.Replace("x", "").Replace("j", "");
+            int current_page;
+            if (!int.TryParse(previous_code, out current_page))
+                current_page = 1;
+
+            CurrentRequest.ViewerCode = ViewerCode.Replace("#", current_page.ToString());
             string url = UrlWriterHelper.Redirect_URL(CurrentRequest);
             CurrentRequest.ViewerCode = previous_code;
 

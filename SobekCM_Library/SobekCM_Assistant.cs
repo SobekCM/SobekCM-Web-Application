@@ -12,6 +12,7 @@ using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Results;
 using SobekCM.Core.Search;
+using SobekCM.Core.Settings;
 using SobekCM.Core.SiteMap;
 using SobekCM.Core.Skins;
 using SobekCM.Core.Users;
@@ -20,6 +21,7 @@ using SobekCM.Engine_Library.Aggregations;
 using SobekCM.Engine_Library.Database;
 using SobekCM.Engine_Library.SiteMap;
 using SobekCM.Engine_Library.Solr.Legacy;
+using SobekCM.Engine_Library.Solr.v5;
 using SobekCM.Library.Database;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
@@ -1018,7 +1020,7 @@ namespace SobekCM.Library
                         need_search_statistics = false;
 
                     // Look to see if the paged results are available on any cache..
-                    Paged_Results = CachedDataManager.Retrieve_Search_Results(Current_Mode, sort, actualCount, web_fields, terms, date1, date2, Tracer);
+                    Paged_Results = CachedDataManager.Retrieve_Search_Results(Current_Mode, sort, actualCount, web_fields, terms, date1, date2, results_per_page, Tracer);
                     if (Paged_Results != null)
                         need_paged_results = false;
                 }
@@ -1034,9 +1036,9 @@ namespace SobekCM.Library
                             // Get the page count in the results
                             int current_page_index = Current_Mode.Page.HasValue ? Math.Max(Current_Mode.Page.Value, ((ushort)1)) : 1;
 
-                            // Perform the search against greenstone
+                            // Perform the search against solr
                             Search_Results_Statistics recomputed_search_statistics;
-                            Perform_Solr_Search(Tracer, terms, web_fields, actualCount, Current_Mode.Aggregation, current_page_index, sort, results_per_page, out recomputed_search_statistics, out Paged_Results);
+                            Perform_Solr_Search(Tracer, terms, web_fields, actualCount, Current_Mode.Aggregation, current_page_index, sort, results_per_page, out recomputed_search_statistics, out Paged_Results, need_search_statistics);
                             if (need_search_statistics)
                                 Complete_Result_Set_Info = recomputed_search_statistics;
                         }
@@ -1059,7 +1061,7 @@ namespace SobekCM.Library
                             // Cache the search results
                             if ((need_paged_results) && (Paged_Results != null))
                             {
-                                CachedDataManager.Store_Search_Results(Current_Mode, sort, actualCount, web_fields, terms, date1, date2, Paged_Results, Tracer);
+                                CachedDataManager.Store_Search_Results(Current_Mode, sort, actualCount, web_fields, terms, date1, date2, results_per_page, Paged_Results, Tracer);
                             }
                         }
                     }
@@ -1072,12 +1074,21 @@ namespace SobekCM.Library
                         try
                         {
                             Search_Results_Statistics recomputed_search_statistics;
-                            Perform_Database_Search(Tracer, terms, web_fields, date1, date2, actualCount, Current_Mode, sort, Aggregation_Object, results_per_page, !special_search_type, out recomputed_search_statistics, out pagesOfResults, need_search_statistics);
+
+                            // Get the page count in the results
+                            int current_page_index = Current_Mode.Page.HasValue ? Math.Max(Current_Mode.Page.Value, ((ushort)1)) : 1;
+
+                            // Use solr or database, depending on the search type
+                            if ( UI_ApplicationCache_Gateway.Settings.System.Search_System == Search_System_Enum.Beta )
+                                Perform_Solr_Search(Tracer, terms, web_fields, actualCount, Current_Mode.Aggregation, current_page_index, sort, results_per_page, out recomputed_search_statistics, out Paged_Results, need_search_statistics);
+                            else
+                                Perform_Database_Search(Tracer, terms, web_fields, date1, date2, actualCount, Current_Mode, sort, Aggregation_Object, results_per_page, !special_search_type, out recomputed_search_statistics, out pagesOfResults, need_search_statistics);
+
                             if (need_search_statistics)
                                 Complete_Result_Set_Info = recomputed_search_statistics;
 
-                            if ((pagesOfResults != null) && (pagesOfResults.Count > 0))
-                                Paged_Results = pagesOfResults[0];
+                           // if ((pagesOfResults != null) && (pagesOfResults.Count > 0))
+                           //     Paged_Results = pagesOfResults[0];
                         }
                         catch (Exception ee)
                         {
@@ -1104,7 +1115,9 @@ namespace SobekCM.Library
                             // Cache the search results
                             if ((need_paged_results) && (pagesOfResults != null))
                             {
-                                CachedDataManager.Store_Search_Results(Current_Mode, sort, actualCount, web_fields, terms, date1, date2, pagesOfResults, Tracer);
+                               // CachedDataManager.Store_Search_Results(Current_Mode, sort, actualCount, web_fields, terms, date1, date2, pagesOfResults, Tracer);
+
+                                CachedDataManager.Store_Search_Results(Current_Mode, sort, actualCount, web_fields, terms, date1, date2, results_per_page, Paged_Results, Tracer);
                             }
                         }
                     }
@@ -1382,6 +1395,8 @@ namespace SobekCM.Library
                     db_fields.Add(Metadata_Field_Number(Web_Fields[i]));
                 }
 
+
+
                 // Also add starting and ending quotes to all the valid searches
                 if (db_terms[i].Length > 0)
                 {
@@ -1518,119 +1533,19 @@ namespace SobekCM.Library
             return (field == null) ? (short) -1 : field.ID;
         }
 
-        private static void Perform_Solr_Search(Custom_Tracer Tracer, List<string> Terms, List<string> Web_Fields, int ActualCount, string Current_Aggregation, int Current_Page, int Current_Sort, int Results_Per_Page, out Search_Results_Statistics Complete_Result_Set_Info, out List<iSearch_Title_Result> Paged_Results)
+        private static void Perform_Solr_Search(Custom_Tracer Tracer, List<string> Terms, List<string> Web_Fields, int ActualCount, string Current_Aggregation, int Current_Page, int Current_Sort, int Results_Per_Page, out Search_Results_Statistics Complete_Result_Set_Info, out List<iSearch_Title_Result> Paged_Results, bool Need_Search_Statistics)
         {
             if (Tracer != null)
             {
                 Tracer.Add_Trace("SobekCM_Assistant.Perform_Solr_Search", "Build the Solr query");
             }
 
-            // Step through all the terms and fields
-            StringBuilder queryStringBuilder = new StringBuilder();
-            for (int i = 0; i < ActualCount; i++)
-            {
-                string web_field = Web_Fields[i];
-                string searchTerm = Terms[i];
-                string solr_field;
-
-                if (i == 0)
-                {
-                    // Skip any joiner for the very first field indicated
-                    if ((web_field[0] == '+') || (web_field[0] == '=') || (web_field[0] == '-'))
-                    {
-                        web_field = web_field.Substring(1);
-                    }
-
-                    // Try to get the solr field
-                    if (web_field == "TX")
-                    {
-                        solr_field = "fulltext:";
-                    }
-                    else
-                    {
-                        Metadata_Search_Field field = UI_ApplicationCache_Gateway.Settings.Metadata_Search_Field_By_Code(web_field.ToUpper());
-                        if (field != null)
-                        {
-                            solr_field = field.Solr_Field + ":";
-                        }
-                        else
-                        {
-                            solr_field = String.Empty;
-                        }
-                    }
-
-                    // Add the solr search string
-                    if (searchTerm.IndexOf(" ") > 0)
-                    {
-                        queryStringBuilder.Append("(" + solr_field + "\"" + searchTerm.Replace(":","") + "\")");
-                    }
-                    else
-                    {
-                        queryStringBuilder.Append("(" + solr_field + searchTerm.Replace(":", "") + ")");
-                    }
-                }
-                else
-                {
-                    // Add the joiner for this subsequent terms
-                    if ((web_field[0] == '+') || (web_field[0] == '=') || (web_field[0] == '-'))
-                    {
-                        switch (web_field[0])
-                        {
-                            case '=':
-                                queryStringBuilder.Append(" OR ");
-                                break;
-
-                            case '+':
-                                queryStringBuilder.Append(" AND ");
-                                break;
-
-                            case '-':
-                                queryStringBuilder.Append(" NOT ");
-                                break;
-
-                            default:
-                                queryStringBuilder.Append(" AND ");
-                                break;
-                        }
-                        web_field = web_field.Substring(1);
-                    }
-                    else
-                    {
-                        queryStringBuilder.Append(" AND ");
-                    }
-
-                    // Try to get the solr field
-                    if (web_field == "TX")
-                    {
-                        solr_field = "fulltext:";
-                    }
-                    else
-                    {
-                        Metadata_Search_Field field = UI_ApplicationCache_Gateway.Settings.Metadata_Search_Field_By_Code(web_field.ToUpper());
-                        if (field != null)
-                        {
-                            solr_field = field.Solr_Field + ":";
-                        }
-                        else
-                        {
-                            solr_field = String.Empty;
-                        }
-                    }
-
-                    // Add the solr search string
-                    if (searchTerm.IndexOf(" ") > 0)
-                    {
-                        queryStringBuilder.Append("(" + solr_field + "\"" + searchTerm.Replace(":", "") + "\")");
-                    }
-                    else
-                    {
-                        queryStringBuilder.Append("(" + solr_field + searchTerm.Replace(":", "") + ")");
-                    }
-                }
-            }
-
             // Use this built query to query against Solr
-            Legacy_Solr_Documents_Searcher.Search(Current_Aggregation, queryStringBuilder.ToString(), Results_Per_Page, Current_Page, (ushort) Current_Sort, Tracer, out Complete_Result_Set_Info, out Paged_Results);
+            if (UI_ApplicationCache_Gateway.Settings.System.Search_System == Search_System_Enum.Beta)
+                v5_Solr_Document_Searcher.Search(Current_Aggregation, Terms, Web_Fields, Results_Per_Page, Current_Page, (ushort)Current_Sort, Need_Search_Statistics, Tracer, out Complete_Result_Set_Info, out Paged_Results);
+            else
+                Legacy_Solr_Documents_Searcher.Search(Current_Aggregation, Terms, Web_Fields, Results_Per_Page, Current_Page, (ushort)Current_Sort, Need_Search_Statistics, Tracer, out Complete_Result_Set_Info, out Paged_Results);
+
         }
 
 

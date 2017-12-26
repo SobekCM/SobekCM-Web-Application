@@ -3,6 +3,7 @@
 using System;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
+using Microsoft.SqlServer.Server;
 using ProtoBuf;
 
 #endregion
@@ -52,6 +53,30 @@ namespace SobekCM.Core.Search
         [ProtoMember(6)]
         public string Name { get; set; }
 
+        /// <summary> Special facet field name used for this metadata field when displaying facets in 
+        /// the solr indexes for the beta/version 5 searching system  </summary>
+        [DataMember(Name = "solrFacet", EmitDefaultValue = false)]
+        [XmlAttribute("solrFacet")]
+        [ProtoMember(7)]
+        public string Solr_Facet_Code { get; set; }
+
+        /// <summary> Special display field name for this metadata type in the solr indexes 
+        /// for the beta/version 5 searching system </summary>
+        [DataMember(Name = "solrDisplay", EmitDefaultValue = false)]
+        [XmlAttribute("solrDisplay")]
+        [ProtoMember(8)]
+        public string Solr_Display_Code { get; set; }
+
+        /// <summary> Legacy solr field name for this search field in the Solr search indexes </summary>
+        /// <remarks> The field names for the new beta/version 5 searching system are different. </remarks>
+        [DataMember(Name = "solrLegacy", EmitDefaultValue = false)]
+        [XmlAttribute("solrLegacy")]
+        [ProtoMember(9)]
+        public string Legacy_Solr_Code { get; set; }
+
+
+
+
         /// <summary> Constructor for a new instance of the Metadata_Search_Field class </summary>
         /// <remarks> Empty constructor for serialization purposes </remarks>
         public Metadata_Search_Field()
@@ -66,7 +91,11 @@ namespace SobekCM.Core.Search
         /// <param name="Web_Code">Code used within the web application for searches against this field (particularly in the URLs)</param>
         /// <param name="Solr_Field">Field name for this search field in the Solr search indexes</param>
         /// <param name="Name"> Name of this metadata search field (remains fairly constant, and links back to database name)</param>
-        public Metadata_Search_Field(short ID, string Facet_Term, string Display_Term, string Web_Code, string Solr_Field, string Name )
+        /// <param name="Solr_Facet_Code"> Special facet field name used for this metadata field when displaying facets in the solr indexes for the beta/version 5 searching system </param>
+        /// <param name="Solr_Display_Code"> Special display field name for this metadata type in the solr indexes for the beta/version 5 searching system</param>
+        /// <param name="Legacy_Solr_Code"> Legacy solr field name for this search field in the Solr search indexes  </param>
+        public Metadata_Search_Field(short ID, string Facet_Term, string Display_Term, string Web_Code, string Solr_Field, string Name,
+            string Solr_Facet_Code, string Solr_Display_Code, string Legacy_Solr_Code)
         {
             this.ID = ID;
             this.Facet_Term = Facet_Term;
@@ -74,6 +103,9 @@ namespace SobekCM.Core.Search
             this.Web_Code = Web_Code;
             this.Solr_Field = Solr_Field;
             this.Name = Name;
+            this.Solr_Facet_Code = Solr_Facet_Code;
+            this.Solr_Display_Code = Solr_Display_Code;
+            this.Legacy_Solr_Code = Legacy_Solr_Code;
         }
     }
 }

@@ -13,13 +13,12 @@ using SobekCM.Resource_Object;
 
 namespace SobekCM.Library.Citation.Elements
 {
-    /// <summary> Element allows entry of the date for an item </summary>
+    /// <summary> Element allows entry of the date issued or publication date for an item </summary>
     /// <remarks> This class extends the <see cref="SimpleTextBox_Element"/> class. </remarks>
     public class Date_Element : SimpleTextBox_Element
     {
         /// <summary> Constructor for a new instance of the Date_Element class </summary>
-        public Date_Element()
-            : base("Publication Date", "pub_date")
+        public Date_Element() : base("Publication Date", "pub_date")
         {
             Repeatable = false;
         }
@@ -41,7 +40,7 @@ namespace SobekCM.Library.Citation.Elements
             // Check that an acronym exists
             if (Acronym.Length == 0)
             {
-                const string defaultAcronym = "Enter the date this item was published or created.";
+                const string defaultAcronym = "Enter the date this item was published, issued, or created.";
                 switch (CurrentLanguage)
                 {
                     case Web_Language_Enum.English:

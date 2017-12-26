@@ -395,9 +395,17 @@ namespace SobekCM.Builder_Library
             Builder_Operation_Flag_Enum abort_flag = Builder_Operation_Flag_Enum.STANDARD_OPERATION;
             do
             {
-                // Look to see if the config file has changed
-                DateTime lastConfigWrite = File.GetLastWriteTime(configurationFile);
-                if (lastConfigWrite > configReadTime)
+                // Check the current last write time on the config file versus the last read
+                if (File.Exists(configurationFile))
+                {
+                    DateTime lastWriteTime = (new FileInfo(configurationFile)).LastWriteTime;
+                    if (lastWriteTime > configReadTime)
+                    {
+                        write_nonerror("Configuration file change detected ... reloading", preloader_logger);
+                        Configure_Builders_To_Run(preloader_logger);
+                    }
+                }
+
                 {
                     // RE-Configure builders to run and run some basic tests
                     if ((!Configure_Builders_To_Run(preloader_logger)) || (preloader_logger == null))
@@ -472,6 +480,8 @@ namespace SobekCM.Builder_Library
                 // Sleep for correct number of milliseconds
                 if ( !skip_sleep )
                     Thread.Sleep(1000 * time_between_polls);
+
+
 
 
             } while (DateTime.Now.Hour < BULK_LOADER_END_HOUR);

@@ -484,6 +484,17 @@ namespace SobekCM.Library.HTML
                         sort = 2; // Sort by BibID always for these
                     }
 
+                    Tracer.Add_Trace("abstractHtmlSubwriter.Get_Browse_Info", "Current_Mode.Writer_Type=[" + Current_Mode.Writer_Type.ToString() + "].");
+                    Tracer.Add_Trace("abstractHtmlSubwriter.Get_Browse_Info", "Current_Mode.Results_Display_Type=[" + Current_Mode.Result_Display_Type + "].");
+
+                    if (String.Equals(Current_Mode.Result_Display_Type, "timeline", StringComparison.OrdinalIgnoreCase))
+                    {
+                        Tracer.Add_Trace("abstractHtmlSubwriter.Get_Browse_Info", "Is timeline, setting browse results_per_page and sort.");
+
+                        results_per_page = 1000;
+                        sort = 10;
+                    }
+
                     // Set the flags for how much data is needed.  (i.e., do we need to pull ANYTHING?  or
                     // perhaps just the next page of results ( as opposed to pulling facets again).
                     bool need_browse_statistics = true;

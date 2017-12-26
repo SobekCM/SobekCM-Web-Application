@@ -342,7 +342,7 @@ namespace SobekCM.Library
         {
             if (Tracer != null)
             {
-                Tracer.Add_Trace("SobekCM_Assistant.Get_Browse_Info", String.Empty);
+                Tracer.Add_Trace("SobekCM_Assistant.Get_Browse_Info", "RRB: Start of Get_Browse_Info...");
             }
 
             // Set output initially to null
@@ -350,7 +350,6 @@ namespace SobekCM.Library
             Paged_Results = null;
             Complete_Result_Set_Info = null;
             Browse_Info_Display_Text = null;
-
 
             // First, make sure the browse submode is valid
             if ((Aggregation_Object.ID == -1) && (Current_Mode.Mode == Display_Mode_Enum.Simple_HTML_CMS))
@@ -376,6 +375,8 @@ namespace SobekCM.Library
             switch (Browse_Object.Source_Data_Type)
             {
                 case Item_Aggregation_Child_Source_Data_Enum.Database_Table:
+
+                    Tracer.Add_Trace("SobekCM_Assistant.Get_Browse_Info", "Browse_Object.Source_Data_Type is Item_Aggregation_Child_Source_Data_Enum.Database_Table.");
 
                     // Set the current sort to ZERO, if currently set to ONE and this is an ALL BROWSE.
                     // Those two sorts are the same in this case
@@ -403,6 +404,17 @@ namespace SobekCM.Library
                         results_per_page = 1000000;
                         special_search_type = true;
                         sort = 2; // Sort by BibID always for these
+                    }
+
+                    Tracer.Add_Trace("SobekCM_Assistant.Get_Browse_Info", "Current_Mode.Writer_Type=[" + Current_Mode.Writer_Type.ToString() + "].");
+                    Tracer.Add_Trace("SobekCM_Assistant.Get_Browse_Info", "Current_Mode.Results_Display_Type=[" + Current_Mode.Result_Display_Type + "].");
+
+                    if (String.Equals(Current_Mode.Result_Display_Type, "timeline", StringComparison.OrdinalIgnoreCase))
+                    {
+                        Tracer.Add_Trace("SobekCM_Assistant.Get_Browse_Info", "Is timeline, setting browse results_per_page and sort.");
+
+                        results_per_page = 1000;
+                        sort = 10;
                     }
 
                     // Set the flags for how much data is needed.  (i.e., do we need to pull ANYTHING?  or
@@ -482,6 +494,7 @@ namespace SobekCM.Library
                     break;
 
                 case Item_Aggregation_Child_Source_Data_Enum.Static_HTML:
+                    Tracer.Add_Trace("SobekCM_Assistant.Get_Browse_Info", "Browse_Object.Source_Data_Type is Item_Aggregation_Child_Source_Data_Enum.Static_HTML.");
                     Browse_Info_Display_Text = SobekEngineClient.Aggregations.Get_Aggregation_HTML_Child_Page(Aggregation_Object.Code, Aggregation_Object.Language, UI_ApplicationCache_Gateway.Settings.System.Default_UI_Language, Browse_Object.Code, Tracer);
                     break;
             }
@@ -937,6 +950,7 @@ namespace SobekCM.Library
 		        // This is used to return the results as XML and DATASET
 		        bool special_search_type = false;
 		        int results_per_page = 20;
+
 		        if ((Current_Mode.Writer_Type == Writer_Type_Enum.XML) || (Current_Mode.Writer_Type == Writer_Type_Enum.DataSet))
 		        {
 			        results_per_page = 1000000;
@@ -945,7 +959,9 @@ namespace SobekCM.Library
 		        }
 	            if (String.Equals(Current_Mode.Result_Display_Type, "timeline", StringComparison.OrdinalIgnoreCase))
 	            {
-	                results_per_page = 1000;
+                    Tracer.Add_Trace("Get_Search_Results", "Is timeline, setting results_per_page and sort.");
+
+                    results_per_page = 1000;
 	                sort = 10;
 	            }
 

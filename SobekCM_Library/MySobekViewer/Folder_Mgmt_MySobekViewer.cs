@@ -274,6 +274,26 @@ namespace SobekCM.Library.MySobekViewer
             }
         }
 
+        /// <summary> Write any additional values within the HTML Head of the final served page </summary>
+        /// <param name="Output"> Output stream currently within the HTML head tags </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        /// <returns> TRUE if this should completely override the default added by the admin or mySobek viewer </returns>
+        /// <remarks> By default this does nothing, but can be overwritten by all the individual html subwriters </remarks>
+        public override bool Write_Within_HTML_Head(TextWriter Output, Custom_Tracer Tracer)
+        {
+            return false;
+        }
+
+        public override List<HtmlSubwriter_Behaviors_Enum> Viewer_Behaviors
+        {
+            get
+            {
+                List<HtmlSubwriter_Behaviors_Enum> returnValue = new List<HtmlSubwriter_Behaviors_Enum>();
+                returnValue.Add(HtmlSubwriter_Behaviors_Enum.Use_Jquery_Qtip);
+                return returnValue;
+            }
+        }
+
         private void refresh_user_folders(User_Object User, Custom_Tracer Tracer )
         {
             DataSet thisSet = SobekCM_Database.Get_Folder_Search_Information(User.UserID, Tracer);

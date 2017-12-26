@@ -167,6 +167,12 @@ namespace SobekCM.Library.HTML
                     Output.WriteLine("  <script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Jquery_Datatables_Js + "\" ></script>");
                 }
 
+                if (mySobekViewer.Viewer_Behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Use_Jquery_Qtip))
+                {
+                    Output.WriteLine("  <link href=\"" + Static_Resources_Gateway.Jquery_Qtip_Css + "\" rel=\"stylesheet\" type=\"text/css\" />");
+                    Output.WriteLine("  <script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Jquery_Qtip_Js + "\" ></script>");
+                }
+
                 // Allow the admin viewer to also write into the header
                 if (builder.Length > 0)
                 {

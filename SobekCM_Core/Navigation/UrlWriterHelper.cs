@@ -247,9 +247,9 @@ namespace SobekCM.Core.Navigation
                             return this_base_url + "my/massupdate/" + Current_Mode.BibID + urlOptions1;
 
                         case My_Sobek_Type_Enum.Folder_Management:
-                            if (!String.IsNullOrEmpty(Current_Mode.Result_Display_Type))
+                            if (!String.IsNullOrEmpty(Current_Mode.My_Sobek_SubMode))
                             {
-                                if (!String.IsNullOrEmpty(Current_Mode.My_Sobek_SubMode))
+                                if (!String.IsNullOrEmpty(Current_Mode.Result_Display_Type))
                                 {
                                     if (Current_Mode.Page > 1)
                                     {
@@ -257,11 +257,7 @@ namespace SobekCM.Core.Navigation
                                     }
                                     return this_base_url + "my/bookshelf/" + Current_Mode.Result_Display_Type.ToLower() + "/" + Current_Mode.My_Sobek_SubMode + urlOptions1;
                                 }
-                                return this_base_url + "my/bookshelf/" + Current_Mode.Result_Display_Type.ToLower() + urlOptions1;
-                            }
-                            else
-                            {
-                                if (!String.IsNullOrEmpty(Current_Mode.My_Sobek_SubMode))
+                                else
                                 {
                                     if (Current_Mode.Page > 1)
                                     {
@@ -269,8 +265,12 @@ namespace SobekCM.Core.Navigation
                                     }
                                     return this_base_url + "my/bookshelf/" + Current_Mode.My_Sobek_SubMode + urlOptions1;
                                 }
-                                return this_base_url + "my/bookshelf" + urlOptions1;                              
                             }
+                            else
+                            {
+                                return this_base_url + "my/bookshelf" + urlOptions1;  
+                            }
+
 
                         case My_Sobek_Type_Enum.Preferences:
                             return this_base_url + "my/preferences" + urlOptions1;

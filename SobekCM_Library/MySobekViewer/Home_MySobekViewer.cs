@@ -145,7 +145,6 @@ namespace SobekCM.Library.MySobekViewer
             // Add link to folder management
             RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Folder_Management;
             RequestSpecificValues.Current_Mode.My_Sobek_SubMode = String.Empty;
-            RequestSpecificValues.Current_Mode.Result_Display_Type = "bookshelf";
 			Output.WriteLine("    <tr><td style=\"width:35px\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.Bookshelf_Img + "\" /></a></td><td><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">View and organize my bookshelves</a></td></tr>");
 
             // Add a link to view all saved searches

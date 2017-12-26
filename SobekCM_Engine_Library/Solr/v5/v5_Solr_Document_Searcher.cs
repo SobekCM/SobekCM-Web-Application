@@ -265,34 +265,34 @@ namespace SobekCM.Engine_Library.Solr.v5
                     }
                 }
 
-                //// Set the sort value
-                //if (Sort != 0)
-                //{
-                //    options.OrderBy.Clear();
-                //    switch (Sort)
-                //    {
-                //        case 1:
-                //            options.OrderBy.Add(new SortOrder("title"));
-                //            break;
+                // Set the sort value
+                if (Sort != 0)
+                {
+                    options.OrderBy.Clear();
+                    switch (Sort)
+                    {
+                        case 1:
+                            options.OrderBy.Add(new SortOrder("title.sort", Order.ASC));
+                            break;
 
-                //        case 2:
-                //            options.OrderBy.Add(new SortOrder("bibid", Order.ASC));
-                //            break;
+                        case 2:
+                            options.OrderBy.Add(new SortOrder("bibid", Order.ASC));
+                            break;
 
-                //        case 3:
-                //            options.OrderBy.Add(new SortOrder("bibid", Order.DESC));
-                //            break;
+                        case 3:
+                            options.OrderBy.Add(new SortOrder("bibid", Order.DESC));
+                            break;
 
-                //        case 10:
-                //            options.OrderBy.Add(new SortOrder("pubdate", Order.ASC));
-                //            break;
+                        case 10:
+                            options.OrderBy.Add(new SortOrder("date.gregorian", Order.ASC));
+                            break;
 
-                //        case 11:
-                //            options.OrderBy.Add(new SortOrder("pubdate", Order.DESC));
-                //            break;
+                        case 11:
+                            options.OrderBy.Add(new SortOrder("date.gregorian", Order.DESC));
+                            break;
 
-                //    }
-                //}
+                    }
+                }
 
 
 

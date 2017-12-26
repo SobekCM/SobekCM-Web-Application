@@ -103,6 +103,14 @@ namespace SobekCM.Engine_Library.Solr.v5
             Discover_Users = new List<int> {0};
             RestrictedMsg = String.Empty;
 
+            // Find the Gregorian date issues value
+            string pub_date = Digital_Object.Bib_Info.Origin_Info.Date_Check_All_Fields;
+            DateTime gregDate;
+            if (DateTime.TryParse(pub_date, out gregDate))
+            {
+                GregorianDate = gregDate;
+            }
+
             // Set the IP restrictions based on PRIVATE or NOT
             if (Digital_Object.Behaviors.IP_Restriction_Membership == -1)
                 Discover_IPs = new List<int> {-1};
@@ -130,6 +138,7 @@ namespace SobekCM.Engine_Library.Solr.v5
             // Get the rest of the metadata, from the item
             List<KeyValuePair<string, string>> searchTerms = Digital_Object.Search_Terms;
 
+            // Loop through and add each data field
             foreach (KeyValuePair<string, string> searchTerm in searchTerms)
             {
                 // Ensure there is a value here
@@ -859,7 +868,7 @@ namespace SobekCM.Engine_Library.Solr.v5
         public string Title { get; set; }
 
         /// <summary> Sort title for this document </summary>
-        [SolrField("sorttitle")]
+        [SolrField("title.sort")]
         public string SortTitle { get; set; }
 
         /// <summary> Alternate titles for this document </summary>
@@ -965,6 +974,9 @@ namespace SobekCM.Engine_Library.Solr.v5
         /// <summary> Date this material was published </summary>
         [SolrField("date.display")]
         public string Date { get; set; }
+
+        [SolrField("date.gregorian")]
+        public DateTime? GregorianDate { get; set; }
 
         #endregion
 

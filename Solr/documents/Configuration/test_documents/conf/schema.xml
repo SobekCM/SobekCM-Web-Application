@@ -68,7 +68,7 @@
 
   <!-- Main metadata fields -->
   <field name="title" type="text_general" indexed="true" stored="true" multiValued="false" />
-  <field name="sorttitle" type="text_general" indexed="true" stored="false" multiValued="false" />
+  <field name="title.sort" type="text_facets" indexed="true" stored="false" multiValued="false" />
   <field name="alttitle" type="text_general" indexed="true" stored="true" multiValued="true" />
   <field name="seriestitle" type="text_general" indexed="true" stored="true" multiValued="false" />
   <field name="transtitle" type="text_general" indexed="true" stored="true" multiValued="false" />
@@ -536,7 +536,7 @@
   <copyField source="vid" dest="fullcitation" />
   <copyField source="mainthumb" dest="fullcitation" />
   <copyField source="title" dest="fullcitation" />
-  <copyField source="sorttitle" dest="fullcitation" />
+  <copyField source="title.sort" dest="fullcitation" />
   <copyField source="alttitle" dest="fullcitation" />
   <copyField source="seriestitle" dest="fullcitation" />
   <copyField source="transtitle" dest="fullcitation" />

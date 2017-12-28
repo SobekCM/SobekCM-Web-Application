@@ -494,11 +494,11 @@ namespace SobekCM.Core.Aggregations
             }
 
             // facets
-            List<Metadata_Search_Field> addedFacets = new List<Metadata_Search_Field>();
-            List<Metadata_Search_Field> removedFacets = new List<Metadata_Search_Field>();
+            List<Complete_Item_Aggregation_Metadata_Type> addedFacets = new List<Complete_Item_Aggregation_Metadata_Type>();
+            List<Complete_Item_Aggregation_Metadata_Type> removedFacets = new List<Complete_Item_Aggregation_Metadata_Type>();
             if (Base.Facets != null)
             {
-                foreach (Metadata_Search_Field thisFacet in Base.Facets)
+                foreach (Complete_Item_Aggregation_Metadata_Type thisFacet in Base.Facets)
                 {
                     // Look in compared for a match
                     if ((Compared.Facets == null) || (Compared.Facets.All(CompareFacet => thisFacet.ID != CompareFacet.ID)))
@@ -509,7 +509,7 @@ namespace SobekCM.Core.Aggregations
             }
             if (Compared.Facets != null)
             {
-                foreach (Metadata_Search_Field thisFacet in Compared.Facets)
+                foreach (Complete_Item_Aggregation_Metadata_Type thisFacet in Compared.Facets)
                 {
                     // Look in base for a match
                     if ((Base.Facets == null) || (Base.Facets.All(CompareFacet => thisFacet.ID != CompareFacet.ID)))

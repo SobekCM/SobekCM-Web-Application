@@ -456,7 +456,7 @@ namespace SobekCM.Library
                         if (Current_Mode.Writer_Type == Writer_Type_Enum.JSON)
                         {
                             List<short> facetsList = new List<short>();
-                            foreach(Metadata_Search_Field facet in Aggregation_Object.Facets)
+                            foreach(Complete_Item_Aggregation_Metadata_Type facet in Aggregation_Object.Facets)
                                 facetsList.Add(facet.ID);
 
                             Multiple_Paged_Results_Args returnArgs = Engine_Database.Get_Item_Aggregation_Browse_Paged(Current_Mode.Aggregation, "1900-01-01", false, 20, current_page_index, 0, need_browse_statistics, facetsList, need_browse_statistics, Tracer);
@@ -1274,7 +1274,7 @@ namespace SobekCM.Library
 
             // Get the list of facets first
             List<short> facetsList = new List<short>();
-            foreach (Metadata_Search_Field facet in Aggregation_Object.Facets)
+            foreach (Complete_Item_Aggregation_Metadata_Type facet in Aggregation_Object.Facets)
                 facetsList.Add(facet.ID);
             if (!Potentially_Include_Facets)
                 facetsList.Clear();

@@ -3137,8 +3137,28 @@ namespace SobekCM.Engine_Library.Database
 			        }
 			    }
 
-				// Return the built argument set
-				return aggrInfo;
+                // Add the facet fields from the database
+                if ((tempSet.Tables.Count > 7) && (tempSet.Tables[7].Rows.Count > 0))
+                {
+                    add_facet_fields(aggrInfo, tempSet.Tables[7]);
+                }
+                else
+                {
+                    add_default_facets(aggrInfo);
+                }
+
+                // Add the results fields from the database
+                if ((tempSet.Tables.Count > 8) && (tempSet.Tables[8].Rows.Count > 0))
+                {
+                    add_result_fields(aggrInfo, tempSet.Tables[8]);
+                }
+                else
+                {
+                    add_default_result_fields(aggrInfo);
+                }
+
+                // Return the built argument set
+                return aggrInfo;
 			}
 			catch (Exception ee)
 			{
@@ -3239,8 +3259,28 @@ namespace SobekCM.Engine_Library.Database
                     }
                 }
 
-				// Return the built argument set
-				return aggrInfo;
+                // Add the facet fields from the database
+			    if ((tempSet.Tables.Count > 5) && (tempSet.Tables[5].Rows.Count > 0))
+			    {
+			        add_facet_fields(aggrInfo, tempSet.Tables[5]);
+			    }
+			    else
+			    {
+			        add_default_facets(aggrInfo);
+			    }
+
+                // Add the results fields from the database
+                if ((tempSet.Tables.Count > 6) && (tempSet.Tables[6].Rows.Count > 0))
+                {
+                    add_result_fields(aggrInfo, tempSet.Tables[6]);
+                }
+                else
+                {
+                    add_default_result_fields(aggrInfo);
+                }
+
+                // Return the built argument set
+                return aggrInfo;
 			}
 			catch (Exception ee)
 			{
@@ -3254,11 +3294,107 @@ namespace SobekCM.Engine_Library.Database
 			}
 		}
 
-		/// <summary> Creates the item aggregation object from the datatable extracted from the database </summary>
-		/// <param name="BasicInfo">Datatable from database calls ( either SobekCM_Get_Item_Aggregation or SobekCM_Get_All_Groups )</param>
-		/// <returns>Minimally built aggregation object</returns>
-		/// <remarks>The child and parent information is not yet added to the returned object </remarks>
-		private static Complete_Item_Aggregation create_basic_aggregation_from_datatable(DataTable BasicInfo)
+        private static void add_facet_fields(Complete_Item_Aggregation AggrInfo, DataTable FacetTable)
+        {
+            // Clear any existing facets
+            AggrInfo.Clear_Facets();
+
+            // Get the columns
+            DataColumn idColumn = FacetTable.Columns["MetadataTypeID"];
+            DataColumn termColumn = FacetTable.Columns["FacetTerm"];
+            DataColumn codeColumn = FacetTable.Columns["SobekCode"];
+            DataColumn solrColumn = FacetTable.Columns["SolrCode_Facets"];
+
+            // Step through each row
+            foreach (DataRow thisRow in FacetTable.Rows)
+            {
+                // Get the data
+                short id = Int16.Parse(thisRow[idColumn].ToString());
+                string term = thisRow[termColumn].ToString();
+                string code = thisRow[codeColumn].ToString();
+                string solr = thisRow[solrColumn].ToString();
+
+                // Add this 
+                AggrInfo.Add_Facet(id, term, code, solr);
+            }
+        }
+
+        private static void add_default_facets(Complete_Item_Aggregation AggrInfo)
+        {
+            // Clear any existing facets
+            AggrInfo.Clear_Facets();
+
+            // Add some defaults
+            AggrInfo.Add_Facet(new Complete_Item_Aggregation_Metadata_Type(3, "Language", "LA", "language_facets"));
+            AggrInfo.Add_Facet(new Complete_Item_Aggregation_Metadata_Type(4, "Creator", "AU", "creator_facets"));
+            AggrInfo.Add_Facet(new Complete_Item_Aggregation_Metadata_Type(5, "Publisher", "PU", "publisher_facets"));
+            AggrInfo.Add_Facet(new Complete_Item_Aggregation_Metadata_Type(7, "Subject: Topics", "TO", "subject_facets"));
+            AggrInfo.Add_Facet(new Complete_Item_Aggregation_Metadata_Type(10, "Subject: Spatial Coverage", "SP", "spatial_standard_facets"));
+            AggrInfo.Add_Facet(new Complete_Item_Aggregation_Metadata_Type(38, "Subject: Genre", "GE", "genre_facets"));
+        }
+
+        private static void add_result_fields(Complete_Item_Aggregation AggrInfo, DataTable FacetTable)
+        {
+            // Clear any existing fields
+            AggrInfo.Clear_Results_Fields();
+
+            // Get the columns
+            DataColumn idColumn = FacetTable.Columns["MetadataTypeID"];
+            DataColumn termColumn = FacetTable.Columns["DisplayTerm"];
+            DataColumn codeColumn = FacetTable.Columns["SobekCode"];
+            DataColumn solrColumn = FacetTable.Columns["SolrCode_Display"];
+
+            // For now, add all result fields, but each one only once
+            Dictionary<short, short> added_fields = new Dictionary<short, short>();
+
+            // Step through each row
+            foreach (DataRow thisRow in FacetTable.Rows)
+            {
+                // Get the id
+                short id = Int16.Parse(thisRow[idColumn].ToString());
+
+                // If already added, skip it
+                if (added_fields.ContainsKey(id)) continue;
+
+                // Get the rest of the data
+                string term = thisRow[termColumn].ToString();
+                string code = thisRow[codeColumn].ToString();
+                string solr = thisRow[solrColumn].ToString();
+
+                // Add this 
+                AggrInfo.Add_Results_Field(id, term, code, solr);
+
+                // We only want to add once
+                added_fields[id] = id;
+            }
+        }
+
+        private static void add_default_result_fields(Complete_Item_Aggregation AggrInfo)
+        {
+            // Clear any existing fields
+            AggrInfo.Clear_Results_Fields();
+
+            // Add some defaults
+            AggrInfo.Add_Results_Field(4, "Creator", "AU", "creator.display");
+            AggrInfo.Add_Results_Field(5, "Publisher", "PU", "publisher.display");
+            AggrInfo.Add_Results_Field(2, "Type", "TY", "type");
+            AggrInfo.Add_Results_Field(22, "Format", "FO", "format");
+            AggrInfo.Add_Results_Field(38, "Edition", "ET", "edition");
+            AggrInfo.Add_Results_Field(15, "Source Institution", "SO", "source");
+            AggrInfo.Add_Results_Field(16, "Holding Location", "HO", "holding");
+            AggrInfo.Add_Results_Field(21, "Donor", "DO", "donor");
+            AggrInfo.Add_Results_Field(7, "Subject Keywords", "TO", "subject.display");
+            AggrInfo.Add_Results_Field(10, "Spatial Coverage", "SP", "spatial_standard.display");
+            AggrInfo.Add_Results_Field(8, "Genre", "GE", "genre.display");
+            AggrInfo.Add_Results_Field(3, "Language", "LA", "language");
+
+        }
+
+        /// <summary> Creates the item aggregation object from the datatable extracted from the database </summary>
+        /// <param name="BasicInfo">Datatable from database calls ( either SobekCM_Get_Item_Aggregation or SobekCM_Get_All_Groups )</param>
+        /// <returns>Minimally built aggregation object</returns>
+        /// <remarks>The child and parent information is not yet added to the returned object </remarks>
+        private static Complete_Item_Aggregation create_basic_aggregation_from_datatable(DataTable BasicInfo)
 		{
 			// Pull out this row
 			DataRow thisRow = BasicInfo.Rows[0];

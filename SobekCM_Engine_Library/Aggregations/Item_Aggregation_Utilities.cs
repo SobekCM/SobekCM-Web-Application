@@ -286,7 +286,7 @@ namespace SobekCM.Engine_Library.Aggregations
                 {
                     // Get the list of facets first
                     List<short> facetsList = new List<short>();
-                    foreach (Metadata_Search_Field facet in ItemAggr.Facets)
+                    foreach (Complete_Item_Aggregation_Metadata_Type facet in ItemAggr.Facets)
                         facetsList.Add(facet.ID);
                     if (!Potentially_Include_Facets)
                         facetsList = null;
@@ -348,7 +348,7 @@ namespace SobekCM.Engine_Library.Aggregations
 
                 // Get the list of facets first
                 List<short> facetsList = new List<short>();
-                foreach (Metadata_Search_Field facetField in ItemAggr.Facets)
+                foreach (Complete_Item_Aggregation_Metadata_Type facetField in ItemAggr.Facets)
                     facetsList.Add(facetField.ID);
                 if (!Potentially_Include_Facets)
                     facetsList = null;
@@ -552,7 +552,7 @@ namespace SobekCM.Engine_Library.Aggregations
             {
                 Tracer.Add_Trace("Item_Aggregation_Utilities.Get_Item_Aggregation", "...Copying facets");
             }
-            foreach (Metadata_Search_Field thisFacet in CompAggr.Facets)
+            foreach (Complete_Item_Aggregation_Metadata_Type thisFacet in CompAggr.Facets)
             {
                 returnValue.Facets.Add(thisFacet);
             }
@@ -572,7 +572,7 @@ namespace SobekCM.Engine_Library.Aggregations
             {
                 Tracer.Add_Trace("Item_Aggregation_Utilities.Get_Item_Aggregation", "...Copying results fields");
             }
-            foreach (Metadata_Search_Field thisField in CompAggr.Results_Fields)
+            foreach (Complete_Item_Aggregation_Metadata_Type thisField in CompAggr.Results_Fields)
             {
                 returnValue.Results_Fields.Add(thisField);
             }

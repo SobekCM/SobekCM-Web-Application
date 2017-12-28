@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using SobekCM.Core.Aggregations;
 using SobekCM.Core.Results;
 using SobekCM.Core.Search;
 using SobekCM.Engine_Library.ApplicationState;
-using SobekCM.Engine_Library.Solr.Legacy;
 using SobekCM.Tools;
 using SolrNet;
 using SolrNet.Commands.Parameters;
@@ -28,7 +28,7 @@ namespace SobekCM.Engine_Library.Solr.v5
         /// <param name="Complete_Result_Set_Info"> [OUT] Information about the entire set of results </param>
         /// <param name="Paged_Results"> [OUT] List of search results for the requested page of results </param>
         /// <returns> Page search result object with all relevant result information </returns>
-        public static bool Search(string AggregationCode, List<Metadata_Search_Field> Facets, List<Metadata_Search_Field> Results_Fields, List<string> Terms, List<string> Web_Fields, int ResultsPerPage, int Page_Number, ushort Sort, bool Need_Search_Statistics, Custom_Tracer Tracer, out Search_Results_Statistics Complete_Result_Set_Info, out List<iSearch_Title_Result> Paged_Results)
+        public static bool Search(string AggregationCode, List<Complete_Item_Aggregation_Metadata_Type> Facets, List<Complete_Item_Aggregation_Metadata_Type> Results_Fields, List<string> Terms, List<string> Web_Fields, int ResultsPerPage, int Page_Number, ushort Sort, bool Need_Search_Statistics, Custom_Tracer Tracer, out Search_Results_Statistics Complete_Result_Set_Info, out List<iSearch_Title_Result> Paged_Results)
         {
             if (Tracer != null)
             {
@@ -165,7 +165,7 @@ namespace SobekCM.Engine_Library.Solr.v5
             return Run_Query(queryString, ResultsPerPage, Page_Number, Sort, Need_Search_Statistics, Facets, Results_Fields, Tracer, out Complete_Result_Set_Info, out Paged_Results);
         }
 
-        public static bool All_Browse(string AggregationCode, List<Metadata_Search_Field> Facets, List<Metadata_Search_Field> Results_Fields, int ResultsPerPage, int Page_Number, ushort Sort, bool Need_Search_Statistics, Custom_Tracer Tracer, out Search_Results_Statistics Complete_Result_Set_Info, out List<iSearch_Title_Result> Paged_Results)
+        public static bool All_Browse(string AggregationCode, List<Complete_Item_Aggregation_Metadata_Type> Facets, List<Complete_Item_Aggregation_Metadata_Type> Results_Fields, int ResultsPerPage, int Page_Number, ushort Sort, bool Need_Search_Statistics, Custom_Tracer Tracer, out Search_Results_Statistics Complete_Result_Set_Info, out List<iSearch_Title_Result> Paged_Results)
         {
             // Get the query string value
             string queryString = "(dark:0) AND (discover_ips:0)";
@@ -180,7 +180,7 @@ namespace SobekCM.Engine_Library.Solr.v5
             return Run_Query(queryString, ResultsPerPage, Page_Number, Sort, Need_Search_Statistics, Facets, Results_Fields, Tracer, out Complete_Result_Set_Info, out Paged_Results);
         }
 
-        public static bool New_Browse(string AggregationCode, List<Metadata_Search_Field> Facets, List<Metadata_Search_Field> Results_Fields, int ResultsPerPage, int Page_Number, ushort Sort, bool Need_Search_Statistics, Custom_Tracer Tracer, out Search_Results_Statistics Complete_Result_Set_Info, out List<iSearch_Title_Result> Paged_Results)
+        public static bool New_Browse(string AggregationCode, List<Complete_Item_Aggregation_Metadata_Type> Facets, List<Complete_Item_Aggregation_Metadata_Type> Results_Fields, int ResultsPerPage, int Page_Number, ushort Sort, bool Need_Search_Statistics, Custom_Tracer Tracer, out Search_Results_Statistics Complete_Result_Set_Info, out List<iSearch_Title_Result> Paged_Results)
         {
             // Computer the datetime for this
             DateTime two_weeks_ago = DateTime.Now.Subtract(new TimeSpan(14, 0, 0, 0));
@@ -209,7 +209,7 @@ namespace SobekCM.Engine_Library.Solr.v5
         /// <param name="Complete_Result_Set_Info"> [OUT] Information about the entire set of results </param>
         /// <param name="Paged_Results"> [OUT] List of search results for the requested page of results </param>
         /// <returns> Page search result object with all relevant result information </returns>
-        public static bool Run_Query(string QueryString, int ResultsPerPage, int Page_Number, ushort Sort, bool Need_Search_Statistics, List<Metadata_Search_Field> Facets, List<Metadata_Search_Field> Results_Fields, Custom_Tracer Tracer, out Search_Results_Statistics Complete_Result_Set_Info, out List<iSearch_Title_Result> Paged_Results)
+        public static bool Run_Query(string QueryString, int ResultsPerPage, int Page_Number, ushort Sort, bool Need_Search_Statistics, List<Complete_Item_Aggregation_Metadata_Type> Facets, List<Complete_Item_Aggregation_Metadata_Type> Results_Fields, Custom_Tracer Tracer, out Search_Results_Statistics Complete_Result_Set_Info, out List<iSearch_Title_Result> Paged_Results)
         {
             // Log the search term
             if (Tracer != null)
@@ -235,13 +235,17 @@ namespace SobekCM.Engine_Library.Solr.v5
                 // Create the solr worker to query the document index
                 var solrWorker = Solr_Operations_Cache<v5_SolrDocument>.GetSolrOperations(solrDocumentUrl);
 
+                // Get the list of fields
+                List<string> fields = new List<string> {"did", "mainthumb", "title"};
+                fields.AddRange(Results_Fields.Select(MetadataField => MetadataField.SolrCode));
+
                 // Create the query options
                 QueryOptions options = new QueryOptions
                 {
                     Rows = ResultsPerPage,
                     Start = (Page_Number - 1)*ResultsPerPage,
-                    Fields = new[] {"did", "mainthumb", "title", "donor", "edition", "format", "holding", "source", "type", "creator.display", "publisher.display", "genre", "subject"} //,
-//                    Highlight = new HighlightingParameters { Fields = new[] { "fulltext" }, },
+                    Fields = fields
+                    //                    Highlight = new HighlightingParameters { Fields = new[] { "fulltext" }, },
                     //                  ExtraParams = new Dictionary<string, string> { { "hl.useFastVectorHighlighter", "true" } }
                 };
 
@@ -250,9 +254,9 @@ namespace SobekCM.Engine_Library.Solr.v5
                 {
                     // Create the query facters
                     options.Facet = new FacetParameters();
-                    foreach (Metadata_Search_Field facet in Facets)
+                    foreach (Complete_Item_Aggregation_Metadata_Type facet in Facets)
                     {
-                        options.Facet.Queries.Add(new SolrFacetFieldQuery(facet.Solr_Facet_Code) {MinCount = 1});
+                        options.Facet.Queries.Add(new SolrFacetFieldQuery(facet.SolrCode) {MinCount = 1});
                     }
                 }
 
@@ -305,8 +309,7 @@ namespace SobekCM.Engine_Library.Solr.v5
                 }
 
                 // Create the search statistcs
-                List<string> metadataLabels = new List<string> { "Creator", "Publisher", "Type", "Format", "Edition", "Institution", "Holding Location", "Donor", "Genre", "Subject" };
-
+                List<string> metadataLabels = Results_Fields.Select(MetadataType => MetadataType.DisplayTerm).ToList();
                 Complete_Result_Set_Info = new Search_Results_Statistics(metadataLabels)
                 {
                     Total_Titles = results.NumFound,
@@ -318,13 +321,13 @@ namespace SobekCM.Engine_Library.Solr.v5
                 if (Need_Search_Statistics)
                 {
                     // Copy over all the facets
-                    foreach (Metadata_Search_Field facetTerm in Facets)
+                    foreach (Complete_Item_Aggregation_Metadata_Type facetTerm in Facets)
                     {
                         // Create the collection and and assifn the metadata type id
                         Search_Facet_Collection thisCollection = new Search_Facet_Collection(facetTerm.ID);
 
                         // Add each value
-                        foreach (var facet in results.FacetFields[facetTerm.Solr_Facet_Code])
+                        foreach (var facet in results.FacetFields[facetTerm.SolrCode])
                         {
                             thisCollection.Facets.Add(new Search_Facet(facet.Key, facet.Value));
                         }
@@ -338,39 +341,11 @@ namespace SobekCM.Engine_Library.Solr.v5
                 }
 
                 // Pass all the results into the List and add the highlighted text to each result as well
+                v5_SolrDocument_Results_Mapper mapper = new v5_SolrDocument_Results_Mapper();
                 foreach (v5_SolrDocument thisResult in results)
                 {
-                    // Create the results
-                    Legacy_Solr_Document_Result resultConverted = new Legacy_Solr_Document_Result();
-                    resultConverted.DID = thisResult.DID;
-                    resultConverted.Title = thisResult.Title ?? "NO TITLE";
-                    resultConverted.HoldingLocation = thisResult.Holding;
-                    resultConverted.SourceInstitution = thisResult.Source;
-                    resultConverted.MaterialType = thisResult.Type;
-                    resultConverted.MainThumbnail = thisResult.MainThumbnail;
-
-                    resultConverted.Metadata_Display_Values = new string[]
-                    {
-                        collection_to_string(thisResult.Creator_Display),
-                        collection_to_string(thisResult.Publisher_Display),
-                        (thisResult.Type ?? String.Empty ),
-                        (thisResult.Format ?? String.Empty),
-                        (thisResult.Edition ?? String.Empty),
-                        (thisResult.Source ?? String.Empty),
-                        (thisResult.Holding ?? String.Empty),
-                        (thisResult.Donor ?? String.Empty),
-                        collection_to_string(thisResult.Genre),
-                        collection_to_string(thisResult.Subject)
-                    };
-
-                    //// Add the highlight snipper
-                    //if ((results.Highlights.ContainsKey(thisResult.DID)) && (results.Highlights[thisResult.DID].Count > 0) && (results.Highlights[thisResult.DID].ElementAt(0).Value.Count > 0))
-                    //{
-                    //    thisResult.Snippet = results.Highlights[thisResult.DID].ElementAt(0).Value.ElementAt(0);
-                    //}
-
                     // Add this results as is for now
-                    Paged_Results.Add(resultConverted);
+                    Paged_Results.Add(mapper.Map_To_Result(thisResult));
                 }
 
                 return true;

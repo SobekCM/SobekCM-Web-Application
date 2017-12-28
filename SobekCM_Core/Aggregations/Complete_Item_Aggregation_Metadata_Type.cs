@@ -26,6 +26,19 @@ namespace SobekCM.Core.Aggregations
             this.SobekCode = SobekCode;
         }
 
+        /// <summary> Constructor for a new instance of the Complete_Item_Aggregation_Metadata_Type class </summary>
+        /// <param name="ID"> Primary key for this metadata type, from the database</param>
+        /// <param name="DisplayTerm"> Display term for this metadata type </param>
+        /// <param name="SobekCode"> Code related to this metadata type, used for searching for example </param>
+        /// <param name="SolrCode"> Term used when performing a search against Solr/Lucene </param>
+        public Complete_Item_Aggregation_Metadata_Type(short ID, string DisplayTerm, string SobekCode, string SolrCode)
+        {
+            this.ID = ID;
+            this.DisplayTerm = DisplayTerm;
+            this.SobekCode = SobekCode;
+            this.SolrCode = SolrCode;
+        }
+
         /// <summary> Primary key for this metadata type, from the database </summary>
         [DataMember(Name = "id"), ProtoMember(1)]
         public short ID { get; set; }

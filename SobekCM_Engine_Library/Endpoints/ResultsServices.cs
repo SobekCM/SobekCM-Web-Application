@@ -1074,7 +1074,7 @@ namespace SobekCM.Engine_Library.Endpoints
 
             // Get the list of facets first
             List<short> facetsList = new List<short>();
-            foreach (Metadata_Search_Field facet in Aggregation_Object.Facets)
+            foreach (Complete_Item_Aggregation_Metadata_Type facet in Aggregation_Object.Facets)
                 facetsList.Add(facet.ID);
             if (!Potentially_Include_Facets)
                 facetsList.Clear();

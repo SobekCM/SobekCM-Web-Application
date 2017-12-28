@@ -2329,22 +2329,22 @@ namespace SobekCM.Library.AdminViewer
 		{
 			// Reset the facets
 			itemAggregation.Clear_Facets();
-			if (( Form["admin_aggr_facet1"] != null ) && ( Convert.ToInt16( Form["admin_aggr_facet1"]) > 0 ))
-				itemAggregation.Add_Facet( Convert.ToInt16( Form["admin_aggr_facet1"] ));
-			if (( Form["admin_aggr_facet2"] != null ) && ( Convert.ToInt16( Form["admin_aggr_facet2"]) > 0 ))
-				itemAggregation.Add_Facet( Convert.ToInt16( Form["admin_aggr_facet2"] ));
-			if (( Form["admin_aggr_facet3"] != null ) && ( Convert.ToInt16( Form["admin_aggr_facet3"]) > 0 ))
-				itemAggregation.Add_Facet( Convert.ToInt16( Form["admin_aggr_facet3"] ));
-			if (( Form["admin_aggr_facet4"] != null ) && ( Convert.ToInt16( Form["admin_aggr_facet4"]) > 0 ))
-				itemAggregation.Add_Facet( Convert.ToInt16( Form["admin_aggr_facet4"] ));
-			if (( Form["admin_aggr_facet5"] != null ) && ( Convert.ToInt16( Form["admin_aggr_facet5"]) > 0 ))
-				itemAggregation.Add_Facet( Convert.ToInt16( Form["admin_aggr_facet5"] ));
-			if (( Form["admin_aggr_facet6"] != null ) && ( Convert.ToInt16( Form["admin_aggr_facet6"]) > 0 ))
-				itemAggregation.Add_Facet( Convert.ToInt16( Form["admin_aggr_facet6"] ));
-			if (( Form["admin_aggr_facet7"] != null ) && ( Convert.ToInt16( Form["admin_aggr_facet7"]) > 0 ))
-				itemAggregation.Add_Facet( Convert.ToInt16( Form["admin_aggr_facet7"] ));
-			if (( Form["admin_aggr_facet8"] != null ) && ( Convert.ToInt16( Form["admin_aggr_facet8"]) > 0 ))
-				itemAggregation.Add_Facet( Convert.ToInt16( Form["admin_aggr_facet8"] ));
+            //if ((Form["admin_aggr_facet1"] != null) && (Convert.ToInt16(Form["admin_aggr_facet1"]) > 0))
+            //    itemAggregation.Add_Facet(Convert.ToInt16(Form["admin_aggr_facet1"]));
+            //if ((Form["admin_aggr_facet2"] != null) && (Convert.ToInt16(Form["admin_aggr_facet2"]) > 0))
+            //    itemAggregation.Add_Facet(Convert.ToInt16(Form["admin_aggr_facet2"]));
+            //if ((Form["admin_aggr_facet3"] != null) && (Convert.ToInt16(Form["admin_aggr_facet3"]) > 0))
+            //    itemAggregation.Add_Facet(Convert.ToInt16(Form["admin_aggr_facet3"]));
+            //if ((Form["admin_aggr_facet4"] != null) && (Convert.ToInt16(Form["admin_aggr_facet4"]) > 0))
+            //    itemAggregation.Add_Facet(Convert.ToInt16(Form["admin_aggr_facet4"]));
+            //if ((Form["admin_aggr_facet5"] != null) && (Convert.ToInt16(Form["admin_aggr_facet5"]) > 0))
+            //    itemAggregation.Add_Facet(Convert.ToInt16(Form["admin_aggr_facet5"]));
+            //if ((Form["admin_aggr_facet6"] != null) && (Convert.ToInt16(Form["admin_aggr_facet6"]) > 0))
+            //    itemAggregation.Add_Facet(Convert.ToInt16(Form["admin_aggr_facet6"]));
+            //if ((Form["admin_aggr_facet7"] != null) && (Convert.ToInt16(Form["admin_aggr_facet7"]) > 0))
+            //    itemAggregation.Add_Facet(Convert.ToInt16(Form["admin_aggr_facet7"]));
+            //if ((Form["admin_aggr_facet8"] != null) && (Convert.ToInt16(Form["admin_aggr_facet8"]) > 0))
+            //    itemAggregation.Add_Facet(Convert.ToInt16(Form["admin_aggr_facet8"]));
 
 			// Reset the result views
 			itemAggregation.Result_Views.Clear();
@@ -2399,14 +2399,14 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine("        <tr style=\"vertical-align:top\">");
 			Output.WriteLine("          <td>");
 
-			for (int i = 0; i < 8; i++)
-			{
-				short thisFacet = -1;
-				if (itemAggregation.Facets.Count > i)
-					thisFacet = itemAggregation.Facets[i];
-				Facet_Writer_Helper(Output, thisFacet, i + 1);
-				Output.WriteLine(i < 7 ? "<br />" : String.Empty);
-			}
+            //for (int i = 0; i < 8; i++)
+            //{
+            //    short thisFacet = -1;
+            //    if (itemAggregation.Facets.Count > i)
+            //        thisFacet = itemAggregation.Facets[i];
+            //    Facet_Writer_Helper(Output, thisFacet, i + 1);
+            //    Output.WriteLine(i < 7 ? "<br />" : String.Empty);
+            //}
 			
 			
 			Output.WriteLine("          </td>");

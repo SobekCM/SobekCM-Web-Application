@@ -11,6 +11,7 @@ using ProtoBuf;
 using SobekCM.Core.Configuration;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Navigation;
+using SobekCM.Core.Search;
 using SobekCM.Core.Skins;
 using SobekCM.Core.WebContent;
 using SobekCM.Tools;
@@ -43,9 +44,11 @@ namespace SobekCM.Core.Aggregations
         {
             Search_Fields = new List<Item_Aggregation_Metadata_Type>();
             Browseable_Fields = new List<Item_Aggregation_Metadata_Type>();
-            Facets = new List<short>();
+            Facets = new List<Metadata_Search_Field>();
+            Results_Fields = new List<Metadata_Search_Field>();
             Views_And_Searches = new List<Item_Aggregation_Views_Searches_Enum>();
             Result_Views = new List<string>();
+            Results_Fields = new List<Metadata_Search_Field>();
 
             Custom_Home_Page = false;
         }
@@ -61,9 +64,11 @@ namespace SobekCM.Core.Aggregations
             this.Code = Code;
             Search_Fields = new List<Item_Aggregation_Metadata_Type>();
             Browseable_Fields = new List<Item_Aggregation_Metadata_Type>();
-            Facets = new List<short>();
+            Facets = new List<Metadata_Search_Field>();
+            Results_Fields = new List<Metadata_Search_Field>();
             Views_And_Searches = new List<Item_Aggregation_Views_Searches_Enum>();
             Result_Views = new List<string>();
+            Results_Fields = new List<Metadata_Search_Field>();
 
             Custom_Home_Page = false;
         }
@@ -122,14 +127,6 @@ namespace SobekCM.Core.Aggregations
         [XmlArrayItem("metadataType", typeof(Item_Aggregation_Metadata_Type))]
         [ProtoMember(6)]
         public List<Item_Aggregation_Metadata_Type> Browseable_Fields { get; set; }
-
-        /// <summary> Returns the list of all facets to display during searches and browses within this aggregation </summary>
-        /// <remarks> This can hold up to eight facets, by primary key for the metadata type.  By default this holds 3,5,7,10, and 8. </remarks>
-        [DataMember(Name = "facets")]
-        [XmlArray("facets")]
-        [XmlArrayItem("metadataTypeId")]
-        [ProtoMember(7)]
-        public List<short> Facets { get; set; }
 
         /// <summary> Gets the list of web skins this aggregation can appear under </summary>
         /// <remarks> If no web skins are indicated, this is not restricted to any set of web skins, and can appear under any skin </remarks>
@@ -745,6 +742,49 @@ namespace SobekCM.Core.Aggregations
         }
 
         #endregion
+
+        #region Methods and Properties to support the customization of facets and results
+
+        /// <summary> Returns the list of all facets to display during searches and browses within this aggregation </summary>
+        /// <remarks> This can hold up to eight facets, by primary key for the metadata type.  By default this holds 3,5,7,10, and 8. </remarks>
+        [DataMember(Name = "facets")]
+        [XmlArray("facets")]
+        [XmlArrayItem("Metadata_Search_Field")]
+        [ProtoMember(46)]
+        public List<Metadata_Search_Field> Facets { get; set; }
+
+        /// <summary> Clears all the facets in this item aggregation </summary>
+        public void Clear_Facets()
+        {
+            Facets.Clear();
+        }
+
+        /// <summary> Adds a single facet type to this item aggregation's browse and search result pages </summary>
+        /// <param name = "New_Facet"> Metadata field information for the metadata type to include as a facet </param>
+        public void Add_Facet(Metadata_Search_Field New_Facet)
+        {
+            Facets.Add(New_Facet);
+        }
+
+        /// <summary> Returns the list of all facets to display during searches and browses within this aggregation </summary>
+        /// <remarks> This can hold up to eight facets, by primary key for the metadata type.  By default this holds 3,5,7,10, and 8. </remarks>
+        [DataMember(Name = "resultsFields")]
+        [ProtoMember(47)]
+        public List<Metadata_Search_Field> Results_Fields { get; set; }
+
+        /// <summary> Clears all the result fields in this item aggregation </summary>
+        public void Clear_Results_Fields()
+        {
+            Results_Fields.Clear();
+        }
+
+        /// <summary> Adds a single result field type to this item aggregation's browse and search result pages </summary>
+        /// <param name = "New_Field"> Metadata field information for the metadata type to include as a result field </param>
+        public void Add_Results_Field(Metadata_Search_Field New_Field)
+        {
+            Results_Fields.Add(New_Field);
+        }
+        #endregion 
 
     }
 }

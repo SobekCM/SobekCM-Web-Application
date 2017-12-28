@@ -455,7 +455,11 @@ namespace SobekCM.Library
                         // Get from the hierarchy object
                         if (Current_Mode.Writer_Type == Writer_Type_Enum.JSON)
                         {
-                            Multiple_Paged_Results_Args returnArgs = Engine_Database.Get_Item_Aggregation_Browse_Paged(Current_Mode.Aggregation, "1900-01-01", false, 20, current_page_index, 0, need_browse_statistics, Aggregation_Object.Facets, need_browse_statistics, Tracer);
+                            List<short> facetsList = new List<short>();
+                            foreach(Metadata_Search_Field facet in Aggregation_Object.Facets)
+                                facetsList.Add(facet.ID);
+
+                            Multiple_Paged_Results_Args returnArgs = Engine_Database.Get_Item_Aggregation_Browse_Paged(Current_Mode.Aggregation, "1900-01-01", false, 20, current_page_index, 0, need_browse_statistics, facetsList, need_browse_statistics, Tracer);
                             if (need_browse_statistics)
                             {
                                 Complete_Result_Set_Info = returnArgs.Statistics;
@@ -1038,7 +1042,7 @@ namespace SobekCM.Library
 
                             // Perform the search against solr
                             Search_Results_Statistics recomputed_search_statistics;
-                            Perform_Solr_Search(Tracer, terms, web_fields, actualCount, Current_Mode.Aggregation, current_page_index, sort, results_per_page, out recomputed_search_statistics, out Paged_Results, need_search_statistics);
+                            Perform_Solr_Search(Tracer, terms, web_fields, actualCount, Aggregation_Object, current_page_index, sort, results_per_page, out recomputed_search_statistics, out Paged_Results, need_search_statistics);
                             if (need_search_statistics)
                                 Complete_Result_Set_Info = recomputed_search_statistics;
                         }
@@ -1080,7 +1084,7 @@ namespace SobekCM.Library
 
                             // Use solr or database, depending on the search type
                             if ( UI_ApplicationCache_Gateway.Settings.System.Search_System == Search_System_Enum.Beta )
-                                Perform_Solr_Search(Tracer, terms, web_fields, actualCount, Current_Mode.Aggregation, current_page_index, sort, results_per_page, out recomputed_search_statistics, out Paged_Results, need_search_statistics);
+                                Perform_Solr_Search(Tracer, terms, web_fields, actualCount, Aggregation_Object, current_page_index, sort, results_per_page, out recomputed_search_statistics, out Paged_Results, need_search_statistics);
                             else
                                 Perform_Database_Search(Tracer, terms, web_fields, date1, date2, actualCount, Current_Mode, sort, Aggregation_Object, results_per_page, !special_search_type, out recomputed_search_statistics, out pagesOfResults, need_search_statistics);
 
@@ -1269,7 +1273,9 @@ namespace SobekCM.Library
             }
 
             // Get the list of facets first
-            List<short> facetsList = Aggregation_Object.Facets;
+            List<short> facetsList = new List<short>();
+            foreach (Metadata_Search_Field facet in Aggregation_Object.Facets)
+                facetsList.Add(facet.ID);
             if (!Potentially_Include_Facets)
                 facetsList.Clear();
 
@@ -1533,7 +1539,7 @@ namespace SobekCM.Library
             return (field == null) ? (short) -1 : field.ID;
         }
 
-        private static void Perform_Solr_Search(Custom_Tracer Tracer, List<string> Terms, List<string> Web_Fields, int ActualCount, string Current_Aggregation, int Current_Page, int Current_Sort, int Results_Per_Page, out Search_Results_Statistics Complete_Result_Set_Info, out List<iSearch_Title_Result> Paged_Results, bool Need_Search_Statistics)
+        private static void Perform_Solr_Search(Custom_Tracer Tracer, List<string> Terms, List<string> Web_Fields, int ActualCount, Item_Aggregation Current_Aggregation, int Current_Page, int Current_Sort, int Results_Per_Page, out Search_Results_Statistics Complete_Result_Set_Info, out List<iSearch_Title_Result> Paged_Results, bool Need_Search_Statistics)
         {
             if (Tracer != null)
             {
@@ -1542,9 +1548,9 @@ namespace SobekCM.Library
 
             // Use this built query to query against Solr
             if (UI_ApplicationCache_Gateway.Settings.System.Search_System == Search_System_Enum.Beta)
-                v5_Solr_Document_Searcher.Search(Current_Aggregation, Terms, Web_Fields, Results_Per_Page, Current_Page, (ushort)Current_Sort, Need_Search_Statistics, Tracer, out Complete_Result_Set_Info, out Paged_Results);
+                v5_Solr_Document_Searcher.Search(Current_Aggregation.Code, Current_Aggregation.Facets, Current_Aggregation.Results_Fields,  Terms, Web_Fields, Results_Per_Page, Current_Page, (ushort)Current_Sort, Need_Search_Statistics, Tracer, out Complete_Result_Set_Info, out Paged_Results);
             else
-                Legacy_Solr_Documents_Searcher.Search(Current_Aggregation, Terms, Web_Fields, Results_Per_Page, Current_Page, (ushort)Current_Sort, Need_Search_Statistics, Tracer, out Complete_Result_Set_Info, out Paged_Results);
+                Legacy_Solr_Documents_Searcher.Search(Current_Aggregation.Code, Terms, Web_Fields, Results_Per_Page, Current_Page, (ushort)Current_Sort, Need_Search_Statistics, Tracer, out Complete_Result_Set_Info, out Paged_Results);
 
         }
 

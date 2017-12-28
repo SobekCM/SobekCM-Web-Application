@@ -10,6 +10,7 @@ using SobekCM.Core.Configuration;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Results;
+using SobekCM.Core.Search;
 using SobekCM.Core.Settings;
 using SobekCM.Core.WebContent;
 using SobekCM.Engine_Library.ApplicationState;
@@ -257,10 +258,7 @@ namespace SobekCM.Engine_Library.Aggregations
                 Tracer.Add_Trace("Item_Aggregation_Utilities.Get_Browse_Results", String.Empty);
             }
 
-            // Get the list of facets first
-            List<short> facetsList = ItemAggr.Facets;
-            if (!Potentially_Include_Facets)
-                facetsList = null;
+
 
             // Pull data from the database if necessary
             if ((String.Equals(ChildPageObject.Code, "all", StringComparison.OrdinalIgnoreCase)) || (String.Equals(ChildPageObject.Code, "new", StringComparison.OrdinalIgnoreCase)))
@@ -273,11 +271,11 @@ namespace SobekCM.Engine_Library.Aggregations
 
                     if (String.Equals(ChildPageObject.Code, "new", StringComparison.OrdinalIgnoreCase))
                     {
-                        v5_Solr_Document_Searcher.New_Browse(ItemAggr.Code, Results_Per_Page, Page, (ushort) Sort, Need_Browse_Statistics, Tracer, out stats, out results);
+                        v5_Solr_Document_Searcher.New_Browse(ItemAggr.Code, ItemAggr.Facets, ItemAggr.Results_Fields, Results_Per_Page, Page, (ushort) Sort, Need_Browse_Statistics, Tracer, out stats, out results);
                     }
                     else
                     {
-                        v5_Solr_Document_Searcher.All_Browse(ItemAggr.Code, Results_Per_Page, Page, (ushort)Sort, Need_Browse_Statistics, Tracer, out stats, out results);
+                        v5_Solr_Document_Searcher.All_Browse(ItemAggr.Code, ItemAggr.Facets, ItemAggr.Results_Fields, Results_Per_Page, Page, (ushort)Sort, Need_Browse_Statistics, Tracer, out stats, out results);
                     }
 
                     Multiple_Paged_Results_Args returnValue = new Multiple_Paged_Results_Args(stats, results);
@@ -286,6 +284,13 @@ namespace SobekCM.Engine_Library.Aggregations
                 }
                 else
                 {
+                    // Get the list of facets first
+                    List<short> facetsList = new List<short>();
+                    foreach (Metadata_Search_Field facet in ItemAggr.Facets)
+                        facetsList.Add(facet.ID);
+                    if (!Potentially_Include_Facets)
+                        facetsList = null;
+
                     // Get this browse from the database
                     if ((ItemAggr.ID < 0) || (ItemAggr.Code.ToUpper() == "ALL"))
                     {
@@ -325,10 +330,6 @@ namespace SobekCM.Engine_Library.Aggregations
 	            Tracer.Add_Trace("Item_Aggregation_Utilities.Get_Browse_Results", String.Empty);
 	        }
 
-	        // Get the list of facets first
-	        List<short> facetsList = ItemAggr.Facets;
-	        if (!Potentially_Include_Facets)
-	            facetsList = null;
 
 	        // Determine where to pull the data, based on search type
 	        if (Engine_ApplicationCache_Gateway.Settings.System.Search_System == Search_System_Enum.Beta)
@@ -336,7 +337,7 @@ namespace SobekCM.Engine_Library.Aggregations
                 Search_Results_Statistics stats;
 	            List<iSearch_Title_Result> results;
 
-	            v5_Solr_Document_Searcher.Search(ItemAggr.Code, null, null, Results_Per_Page, Page, (ushort) Sort, Need_Browse_Statistics, Tracer, out stats, out results);
+	            v5_Solr_Document_Searcher.Search(ItemAggr.Code, ItemAggr.Facets, ItemAggr.Results_Fields, null, null, Results_Per_Page, Page, (ushort) Sort, Need_Browse_Statistics, Tracer, out stats, out results);
 
 	            Multiple_Paged_Results_Args returnValue = new Multiple_Paged_Results_Args(stats, results);
 
@@ -344,6 +345,15 @@ namespace SobekCM.Engine_Library.Aggregations
 	        }
 	        else
 	        {
+
+                // Get the list of facets first
+                List<short> facetsList = new List<short>();
+                foreach (Metadata_Search_Field facetField in ItemAggr.Facets)
+                    facetsList.Add(facetField.ID);
+                if (!Potentially_Include_Facets)
+                    facetsList = null;
+
+
                 // Get this browse from the database
                 if ((ItemAggr.ID < 0) || (ItemAggr.Code.ToUpper() == "ALL"))
                 {
@@ -542,7 +552,7 @@ namespace SobekCM.Engine_Library.Aggregations
             {
                 Tracer.Add_Trace("Item_Aggregation_Utilities.Get_Item_Aggregation", "...Copying facets");
             }
-            foreach (short thisFacet in CompAggr.Facets)
+            foreach (Metadata_Search_Field thisFacet in CompAggr.Facets)
             {
                 returnValue.Facets.Add(thisFacet);
             }
@@ -555,6 +565,16 @@ namespace SobekCM.Engine_Library.Aggregations
             foreach (string display in CompAggr.Result_Views)
             {
                 returnValue.Result_Views.Add(display);
+            }
+
+            // Copy over all the search results fields to display
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("Item_Aggregation_Utilities.Get_Item_Aggregation", "...Copying results fields");
+            }
+            foreach (Metadata_Search_Field thisField in CompAggr.Results_Fields)
+            {
+                returnValue.Results_Fields.Add(thisField);
             }
 
             // Copy all the views and searches over

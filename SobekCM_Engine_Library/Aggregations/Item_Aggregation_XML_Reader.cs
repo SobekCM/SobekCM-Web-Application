@@ -4,8 +4,10 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Xml;
+using Microsoft.SqlServer.Server;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.Configuration.Localization;
+using SobekCM.Core.Search;
 
 #endregion
 
@@ -123,10 +125,10 @@ namespace SobekCM.Engine_Library.Aggregations
                             if (!String.IsNullOrEmpty(facets))
                             {
                                 string[] splitter2 = facets.Split(",".ToCharArray());
-                                HierarchyObject.Clear_Facets();
+                                HierarchyObject.LegacyFacets = new List<short>();
                                 foreach (string thisSplitter2 in splitter2)
                                 {
-                                    HierarchyObject.Add_Facet(Convert.ToInt16(thisSplitter2));
+                                    HierarchyObject.LegacyFacets.Add(Convert.ToInt16(thisSplitter2));
                                 }
                             }
                             break;

@@ -28,7 +28,7 @@ namespace SobekCM.Engine_Library.Solr.v5
         /// <param name="Complete_Result_Set_Info"> [OUT] Information about the entire set of results </param>
         /// <param name="Paged_Results"> [OUT] List of search results for the requested page of results </param>
         /// <returns> Page search result object with all relevant result information </returns>
-        public static bool Search(string AggregationCode, List<string> Terms, List<string> Web_Fields, int ResultsPerPage, int Page_Number, ushort Sort, bool Need_Search_Statistics, Custom_Tracer Tracer, out Search_Results_Statistics Complete_Result_Set_Info, out List<iSearch_Title_Result> Paged_Results)
+        public static bool Search(string AggregationCode, List<Metadata_Search_Field> Facets, List<Metadata_Search_Field> Results_Fields, List<string> Terms, List<string> Web_Fields, int ResultsPerPage, int Page_Number, ushort Sort, bool Need_Search_Statistics, Custom_Tracer Tracer, out Search_Results_Statistics Complete_Result_Set_Info, out List<iSearch_Title_Result> Paged_Results)
         {
             if (Tracer != null)
             {
@@ -162,10 +162,10 @@ namespace SobekCM.Engine_Library.Solr.v5
             }
 
             // Set output initially to null
-            return Run_Query(queryString, ResultsPerPage, Page_Number, Sort, Need_Search_Statistics, Tracer, out Complete_Result_Set_Info, out Paged_Results);
+            return Run_Query(queryString, ResultsPerPage, Page_Number, Sort, Need_Search_Statistics, Facets, Results_Fields, Tracer, out Complete_Result_Set_Info, out Paged_Results);
         }
 
-        public static bool All_Browse(string AggregationCode, int ResultsPerPage, int Page_Number, ushort Sort, bool Need_Search_Statistics, Custom_Tracer Tracer, out Search_Results_Statistics Complete_Result_Set_Info, out List<iSearch_Title_Result> Paged_Results)
+        public static bool All_Browse(string AggregationCode, List<Metadata_Search_Field> Facets, List<Metadata_Search_Field> Results_Fields, int ResultsPerPage, int Page_Number, ushort Sort, bool Need_Search_Statistics, Custom_Tracer Tracer, out Search_Results_Statistics Complete_Result_Set_Info, out List<iSearch_Title_Result> Paged_Results)
         {
             // Get the query string value
             string queryString = "(dark:0) AND (discover_ips:0)";
@@ -177,10 +177,10 @@ namespace SobekCM.Engine_Library.Solr.v5
             }
 
             // Set output initially to null
-            return Run_Query(queryString, ResultsPerPage, Page_Number, Sort, Need_Search_Statistics, Tracer, out Complete_Result_Set_Info, out Paged_Results);
+            return Run_Query(queryString, ResultsPerPage, Page_Number, Sort, Need_Search_Statistics, Facets, Results_Fields, Tracer, out Complete_Result_Set_Info, out Paged_Results);
         }
 
-        public static bool New_Browse(string AggregationCode, int ResultsPerPage, int Page_Number, ushort Sort, bool Need_Search_Statistics, Custom_Tracer Tracer, out Search_Results_Statistics Complete_Result_Set_Info, out List<iSearch_Title_Result> Paged_Results)
+        public static bool New_Browse(string AggregationCode, List<Metadata_Search_Field> Facets, List<Metadata_Search_Field> Results_Fields, int ResultsPerPage, int Page_Number, ushort Sort, bool Need_Search_Statistics, Custom_Tracer Tracer, out Search_Results_Statistics Complete_Result_Set_Info, out List<iSearch_Title_Result> Paged_Results)
         {
             // Computer the datetime for this
             DateTime two_weeks_ago = DateTime.Now.Subtract(new TimeSpan(14, 0, 0, 0));
@@ -196,7 +196,7 @@ namespace SobekCM.Engine_Library.Solr.v5
             }
 
             // Set output initially to null
-            return Run_Query(queryString, ResultsPerPage, Page_Number, Sort, Need_Search_Statistics, Tracer, out Complete_Result_Set_Info, out Paged_Results);
+            return Run_Query(queryString, ResultsPerPage, Page_Number, Sort, Need_Search_Statistics, Facets, Results_Fields, Tracer, out Complete_Result_Set_Info, out Paged_Results);
         }
 
         /// <summary> Run a solr query against the solr document index </summary>
@@ -209,7 +209,7 @@ namespace SobekCM.Engine_Library.Solr.v5
         /// <param name="Complete_Result_Set_Info"> [OUT] Information about the entire set of results </param>
         /// <param name="Paged_Results"> [OUT] List of search results for the requested page of results </param>
         /// <returns> Page search result object with all relevant result information </returns>
-        public static bool Run_Query(string QueryString, int ResultsPerPage, int Page_Number, ushort Sort, bool Need_Search_Statistics, Custom_Tracer Tracer, out Search_Results_Statistics Complete_Result_Set_Info, out List<iSearch_Title_Result> Paged_Results)
+        public static bool Run_Query(string QueryString, int ResultsPerPage, int Page_Number, ushort Sort, bool Need_Search_Statistics, List<Metadata_Search_Field> Facets, List<Metadata_Search_Field> Results_Fields, Custom_Tracer Tracer, out Search_Results_Statistics Complete_Result_Set_Info, out List<iSearch_Title_Result> Paged_Results)
         {
             // Log the search term
             if (Tracer != null)
@@ -246,20 +246,11 @@ namespace SobekCM.Engine_Library.Solr.v5
                 };
 
                 // If the search stats are needed, let's get the facets
-                List<Metadata_Search_Field> facets = new List<Metadata_Search_Field>();
                 if (Need_Search_Statistics)
                 {
-                    // Hard-coded for now
-                    facets.Add(new Metadata_Search_Field(3, "Language", "Language", "LA", "language", "Language", "language_facets", String.Empty, String.Empty));
-                    facets.Add(new Metadata_Search_Field(4, "Creator", "Creator", "AU", "creator", "Creator", "creator_facets", String.Empty, String.Empty));
-                    facets.Add(new Metadata_Search_Field(5, "Publisher", "Publisher", "PU", "publisher", "Publisher", "publisher_facets", String.Empty, String.Empty));
-                    facets.Add(new Metadata_Search_Field(8, "Genre", "Genre", "GE", "genre", "Genre", "genre_facets", String.Empty, String.Empty));
-                    facets.Add(new Metadata_Search_Field(7, "Subject: Topic", "Subject Keyword", "TO", "subject", "Subject Keyword", "subject_facets", String.Empty, String.Empty));
-                    facets.Add(new Metadata_Search_Field(10, "Subject: Geographic Area", "Spatial Coverage", "SP", "spatial_standard", "Spatial Coverage", "spatial_standard_facets", String.Empty, String.Empty));
-
                     // Create the query facters
                     options.Facet = new FacetParameters();
-                    foreach (Metadata_Search_Field facet in facets)
+                    foreach (Metadata_Search_Field facet in Facets)
                     {
                         options.Facet.Queries.Add(new SolrFacetFieldQuery(facet.Solr_Facet_Code) {MinCount = 1});
                     }
@@ -327,7 +318,7 @@ namespace SobekCM.Engine_Library.Solr.v5
                 if (Need_Search_Statistics)
                 {
                     // Copy over all the facets
-                    foreach (Metadata_Search_Field facetTerm in facets)
+                    foreach (Metadata_Search_Field facetTerm in Facets)
                     {
                         // Create the collection and and assifn the metadata type id
                         Search_Facet_Collection thisCollection = new Search_Facet_Collection(facetTerm.ID);

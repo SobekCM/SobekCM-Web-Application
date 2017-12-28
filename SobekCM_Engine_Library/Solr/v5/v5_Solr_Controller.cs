@@ -37,7 +37,9 @@ namespace SobekCM.Engine_Library.Solr.v5
             List<Legacy_SolrPage> index_pages = new List<Legacy_SolrPage>();
 
             // Add this document to the list of documents to index
-            index_files.Add(new v5_SolrDocument(Resource, Resource.Source_Directory));
+            v5_SolrDocument_Builder builder = new v5_SolrDocument_Builder();
+            v5_SolrDocument solrDocument = builder.Build_Solr_Document(Resource, Resource.Source_Directory);
+            index_files.Add(solrDocument);
 
             bool document_success = false;
             int document_attempts = 0;

@@ -12,6 +12,7 @@ using ProtoBuf;
 using SobekCM.Core.Configuration;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Navigation;
+using SobekCM.Core.Search;
 using SobekCM.Core.Skins;
 using SobekCM.Tools;
 
@@ -54,7 +55,18 @@ namespace SobekCM.Core.Aggregations
 			childPagesHash = new Dictionary<string, Complete_Item_Aggregation_Child_Page>();
 			Search_Fields = new List<Complete_Item_Aggregation_Metadata_Type>();
 			Browseable_Fields = new List<Complete_Item_Aggregation_Metadata_Type>();
-			Facets = new List<short> { 3, 5, 7, 10, 8 };
+
+            // Create the default facets
+		    Facets = new List<Metadata_Search_Field>();
+            Facets.Add(new Metadata_Search_Field(3, "Language", "Language", "LA", "language", "Language", "language_facets", String.Empty, String.Empty));
+            Facets.Add(new Metadata_Search_Field(4, "Creator", "Creator", "AU", "creator", "Creator", "creator_facets", String.Empty, String.Empty));
+            Facets.Add(new Metadata_Search_Field(5, "Publisher", "Publisher", "PU", "publisher", "Publisher", "publisher_facets", String.Empty, String.Empty));
+            Facets.Add(new Metadata_Search_Field(8, "Genre", "Genre", "GE", "genre", "Genre", "genre_facets", String.Empty, String.Empty));
+            Facets.Add(new Metadata_Search_Field(7, "Subject: Topic", "Subject Keyword", "TO", "subject", "Subject Keyword", "subject_facets", String.Empty, String.Empty));
+            Facets.Add(new Metadata_Search_Field(10, "Subject: Geographic Area", "Spatial Coverage", "SP", "spatial_standard", "Spatial Coverage", "spatial_standard_facets", String.Empty, String.Empty));
+
+            // Set the default results views
+		    Results_Fields = new List<Metadata_Search_Field>();
 
             // Add the default result views
             Result_Views = new List<string> { "BRIEF", "TABLE", "THUMBNAIL" };
@@ -79,7 +91,18 @@ namespace SobekCM.Core.Aggregations
 			childPagesHash = new Dictionary<string, Complete_Item_Aggregation_Child_Page>();
 			Search_Fields = new List<Complete_Item_Aggregation_Metadata_Type>();
 			Browseable_Fields = new List<Complete_Item_Aggregation_Metadata_Type>();
-			Facets = new List<short> {3, 5, 7, 10, 8};
+
+            // Create the default facets
+            Facets = new List<Metadata_Search_Field>();
+            Facets.Add(new Metadata_Search_Field(3, "Language", "Language", "LA", "language", "Language", "language_facets", String.Empty, String.Empty));
+            Facets.Add(new Metadata_Search_Field(4, "Creator", "Creator", "AU", "creator", "Creator", "creator_facets", String.Empty, String.Empty));
+            Facets.Add(new Metadata_Search_Field(5, "Publisher", "Publisher", "PU", "publisher", "Publisher", "publisher_facets", String.Empty, String.Empty));
+            Facets.Add(new Metadata_Search_Field(8, "Genre", "Genre", "GE", "genre", "Genre", "genre_facets", String.Empty, String.Empty));
+            Facets.Add(new Metadata_Search_Field(7, "Subject: Topic", "Subject Keyword", "TO", "subject", "Subject Keyword", "subject_facets", String.Empty, String.Empty));
+            Facets.Add(new Metadata_Search_Field(10, "Subject: Geographic Area", "Spatial Coverage", "SP", "spatial_standard", "Spatial Coverage", "spatial_standard_facets", String.Empty, String.Empty));
+
+            // Set the default results views
+            Results_Fields = new List<Metadata_Search_Field>();
 
             // Add the default result views
             Result_Views = new List<string> { "BRIEF", "TABLE", "THUMBNAIL" };
@@ -115,7 +138,21 @@ namespace SobekCM.Core.Aggregations
 			childPagesHash = new Dictionary<string, Complete_Item_Aggregation_Child_Page>();
 			Search_Fields = new List<Complete_Item_Aggregation_Metadata_Type>();
 			Browseable_Fields = new List<Complete_Item_Aggregation_Metadata_Type>();
-			Facets = new List<short> {3, 5, 7, 10, 8};
+
+            // Create the default facets
+            Facets = new List<Metadata_Search_Field>();
+            Facets.Add(new Metadata_Search_Field(3, "Language", "Language", "LA", "language", "Language", "language_facets", String.Empty, String.Empty));
+            Facets.Add(new Metadata_Search_Field(4, "Creator", "Creator", "AU", "creator", "Creator", "creator_facets", String.Empty, String.Empty));
+            Facets.Add(new Metadata_Search_Field(5, "Publisher", "Publisher", "PU", "publisher", "Publisher", "publisher_facets", String.Empty, String.Empty));
+            Facets.Add(new Metadata_Search_Field(8, "Genre", "Genre", "GE", "genre", "Genre", "genre_facets", String.Empty, String.Empty));
+            Facets.Add(new Metadata_Search_Field(7, "Subject: Topic", "Subject Keyword", "TO", "subject", "Subject Keyword", "subject_facets", String.Empty, String.Empty));
+            Facets.Add(new Metadata_Search_Field(10, "Subject: Geographic Area", "Spatial Coverage", "SP", "spatial_standard", "Spatial Coverage", "spatial_standard_facets", String.Empty, String.Empty));
+
+            // Set the default results views
+            Results_Fields = new List<Metadata_Search_Field>();
+
+                               Fields = new[] {"did", "mainthumb", "title", "donor", "edition", "format", "holding", "source", "type", "creator.display", "publisher.display", "genre", "subject"} //,
+
 
 			// Add the searches and views
 			Views_And_Searches = new List<Item_Aggregation_Views_Searches_Enum>();
@@ -251,12 +288,6 @@ namespace SobekCM.Core.Aggregations
 		[DataMember(Name = "browseableFields")]
 		[ProtoMember(6)]
 		public List<Complete_Item_Aggregation_Metadata_Type> Browseable_Fields { get; set; }
-
-		/// <summary> Returns the list of all facets to display during searches and browses within this aggregation </summary>
-		/// <remarks> This can hold up to eight facets, by primary key for the metadata type.  By default this holds 3,5,7,10, and 8. </remarks>
-		[DataMember(Name = "facets")]
-		[ProtoMember(7)]
-		public List<short> Facets { get; set; }
 
 		/// <summary> Gets the list of web skins this aggregation can appear under </summary>
 		/// <remarks> If no web skins are indicated, this is not restricted to any set of web skins, and can appear under any skin </remarks>
@@ -640,18 +671,6 @@ namespace SobekCM.Core.Aggregations
 			}
 		}
 
-		/// <summary> Clears all the facets in this item aggregation </summary>
-		public void Clear_Facets()
-		{
-			Facets.Clear();
-		}
-
-		/// <summary> Adds a single facet type, by primary key, to this item aggregation's browse and search result pages </summary>
-		/// <param name = "New_Facet_ID"> Primary key for the metadata type to include as a facet </param>
-		public void Add_Facet(short New_Facet_ID)
-		{
-			Facets.Add(New_Facet_ID);
-		}
 
 		/// <summary> Add a web skin which this aggregation can appear under </summary>
 		/// <param name = "Web_Skin"> Web skin this can appear under </param>
@@ -1128,6 +1147,54 @@ namespace SobekCM.Core.Aggregations
 
         #endregion
 
+        #region Methods and Properties to support the customization of facets and results 
+
+        /// <summary> Returns the list of all facets to display during searches and browses within this aggregation </summary>
+        /// <remarks> This can hold up to eight facets, by primary key for the metadata type.  By default this holds 3,5,7,10, and 8. </remarks>
+        [DataMember(Name = "facets")]
+        [ProtoMember(46)]
+        public List<Metadata_Search_Field> Facets { get; set; }
+
+        /// <summary> Clears all the facets in this item aggregation </summary>
+        public void Clear_Facets()
+        {
+            Facets.Clear();
+        }
+
+        /// <summary> Adds a single facet type to this item aggregation's browse and search result pages </summary>
+        /// <param name = "New_Facet"> Metadata field information for the metadata type to include as a facet </param>
+        public void Add_Facet(Metadata_Search_Field New_Facet)
+        {
+            Facets.Add(New_Facet);
+        }
+
+        /// <summary> Returns the list of all facets to display during searches and browses within this aggregation </summary>
+        /// <remarks> This can hold up to eight facets, by primary key for the metadata type.  By default this holds 3,5,7,10, and 8. </remarks>
+        [DataMember(Name = "resultsFields")]
+        [ProtoMember(47)]
+        public List<Metadata_Search_Field> Results_Fields { get; set; }
+
+        /// <summary> Clears all the result fields in this item aggregation </summary>
+        public void Clear_Results_Fields()
+        {
+            Results_Fields.Clear();
+        }
+
+        /// <summary> Adds a single result field type to this item aggregation's browse and search result pages </summary>
+        /// <param name = "New_Field"> Metadata field information for the metadata type to include as a result field </param>
+        public void Add_Results_Field(Metadata_Search_Field New_Field)
+        {
+            Results_Fields.Add(New_Field);
+        }
+
+        /// <summary> Field holds the old legacy facets from the XML configuration files - used during transition to 4.11
+        /// when these were moved into the database </summary>
+        [IgnoreDataMember]
+        [XmlIgnore]
+	    public List<short> LegacyFacets { get; set; } 
+
+        #endregion 
+
         #region Method to write the Aggregation XML Configuration File
 
         /// <summary> Write the XML configuration file for this item aggregation </summary>
@@ -1187,23 +1254,6 @@ namespace SobekCM.Core.Aggregations
 	                writer.WriteLine("    <!-- Aggregation-level CSS file  -->");
 	                writer.WriteLine("    <hi:css>" + CSS_File + "</hi:css>");
 	                writer.WriteLine();
-	            }
-
-	            if ((Facets != null) && (Facets.Count > 0))
-	            {
-	                if (Facets.Count == 1)
-	                    writer.WriteLine("    <hi:facets>" + Facets[0] + "</hi:facets>");
-	                else
-	                {
-	                    writer.Write("    <hi:facets>" + Facets[0]);
-	                    for (int i = 1; i < Facets.Count; i++)
-	                        writer.Write("," + Facets[i]);
-	                    writer.WriteLine("</hi:facets>");
-	                }
-	            }
-	            else
-	            {
-	                writer.WriteLine("    <hi:facets></hi:facets>");
 	            }
 
                 // Include settings for map SEARCH

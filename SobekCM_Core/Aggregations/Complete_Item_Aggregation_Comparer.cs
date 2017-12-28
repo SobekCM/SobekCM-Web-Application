@@ -7,6 +7,7 @@ using System.Text;
 using SobekCM.Core.Configuration;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Navigation;
+using SobekCM.Core.Search;
 
 #endregion
 
@@ -493,14 +494,14 @@ namespace SobekCM.Core.Aggregations
             }
 
             // facets
-            List<short> addedFacets = new List<short>();
-            List<short> removedFacets = new List<short>();
+            List<Metadata_Search_Field> addedFacets = new List<Metadata_Search_Field>();
+            List<Metadata_Search_Field> removedFacets = new List<Metadata_Search_Field>();
             if (Base.Facets != null)
             {
-                foreach (short thisFacet in Base.Facets)
+                foreach (Metadata_Search_Field thisFacet in Base.Facets)
                 {
                     // Look in compared for a match
-                    if ((Compared.Facets == null) || (Compared.Facets.All(CompareFacet => thisFacet != CompareFacet)))
+                    if ((Compared.Facets == null) || (Compared.Facets.All(CompareFacet => thisFacet.ID != CompareFacet.ID)))
                     {
                         removedFacets.Add(thisFacet);
                     }
@@ -508,10 +509,10 @@ namespace SobekCM.Core.Aggregations
             }
             if (Compared.Facets != null)
             {
-                foreach (short thisFacet in Compared.Facets)
+                foreach (Metadata_Search_Field thisFacet in Compared.Facets)
                 {
                     // Look in base for a match
-                    if ((Base.Facets == null) || (Base.Facets.All(CompareFacet => thisFacet != CompareFacet)))
+                    if ((Base.Facets == null) || (Base.Facets.All(CompareFacet => thisFacet.ID != CompareFacet.ID)))
                     {
                         addedFacets.Add(thisFacet);
                     }

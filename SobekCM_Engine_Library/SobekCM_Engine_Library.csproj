@@ -167,6 +167,8 @@
     <Compile Include="Solr\Solr_Operations_Cache.cs" />
     <Compile Include="Solr\Legacy\Legacy_Solr_Page_Result.cs" />
     <Compile Include="Solr\Legacy\Legacy_Solr_Page_Results.cs" />
+    <Compile Include="Solr\v5\v5_SolrDocument_Builder.cs" />
+    <Compile Include="Solr\v5\v5_SolrDocument_Results_Mapper.cs" />
     <Compile Include="Solr\v5\v5_Solr_Controller.cs" />
     <Compile Include="Solr\v5\v5_SolrDocument.cs" />
     <Compile Include="Solr\v5\v5_Solr_Document_Searcher.cs" />

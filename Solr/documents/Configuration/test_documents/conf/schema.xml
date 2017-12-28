@@ -214,9 +214,11 @@
   <copyField source="interviewer" dest="interviewer_facets" />  
   
   <!-- Performing arts metadata fields -->
-  <field name="performance" type="text_general" indexed="true" stored="true" multiValued="false" />
+  <field name="performance" type="text_general" indexed="true" stored="false" multiValued="false" />
+  <field name="performance.display" type="text_general" indexed="false" stored="true" multiValued="false" />
   <field name="performance_date" type="text_general" indexed="true" stored="true" multiValued="false" />
   <field name="performer" type="text_facets" indexed="true" stored="false" multiValued="true" />
+  <field name="performer.display" type="text_facets" indexed="false" stored="true" multiValued="true" />
   <field name="performance_facets" type="text_facets" indexed="true" stored="false" multiValued="false" />
   <field name="performance_date_facets" type="text_facets" indexed="true" stored="false" multiValued="false" />
   <field name="performer_facets" type="text_facets" indexed="true" stored="false" multiValued="true" />

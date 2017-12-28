@@ -847,7 +847,7 @@ namespace SobekCM.Engine_Library.Endpoints
 
                             // Perform the search against greenstone
                             Search_Results_Statistics recomputed_search_statistics;
-                            Perform_Solr_Search(Tracer, terms, web_fields, actualCount, Current_Mode.Aggregation, current_page_index, sort, results_per_page, out recomputed_search_statistics, out Paged_Results);
+                            Perform_Solr_Search(Tracer, terms, web_fields, actualCount, Aggregation_Object, current_page_index, sort, results_per_page, out recomputed_search_statistics, out Paged_Results);
                             if (need_search_statistics)
                             {
                                 Complete_Result_Set_Info = recomputed_search_statistics;
@@ -1073,9 +1073,13 @@ namespace SobekCM.Engine_Library.Endpoints
             }
 
             // Get the list of facets first
-            List<short> facetsList = Aggregation_Object.Facets;
+            List<short> facetsList = new List<short>();
+            foreach (Metadata_Search_Field facet in Aggregation_Object.Facets)
+                facetsList.Add(facet.ID);
             if (!Potentially_Include_Facets)
                 facetsList.Clear();
+
+
 
             // Set the return values to NULL initially
             Complete_Result_Set_Info = null;
@@ -1248,7 +1252,7 @@ namespace SobekCM.Engine_Library.Endpoints
             return (field == null) ? (short)-1 : field.ID;
         }
 
-        protected static void Perform_Solr_Search(Custom_Tracer Tracer, List<string> Terms, List<string> Web_Fields, int ActualCount, string Current_Aggregation, int Current_Page, int Current_Sort, int Results_Per_Page, out Search_Results_Statistics Complete_Result_Set_Info, out List<iSearch_Title_Result> Paged_Results)
+        protected static void Perform_Solr_Search(Custom_Tracer Tracer, List<string> Terms, List<string> Web_Fields, int ActualCount, Complete_Item_Aggregation Aggregation_Object, int Current_Page, int Current_Sort, int Results_Per_Page, out Search_Results_Statistics Complete_Result_Set_Info, out List<iSearch_Title_Result> Paged_Results)
         {
             if (Tracer != null)
             {
@@ -1257,9 +1261,9 @@ namespace SobekCM.Engine_Library.Endpoints
 
             // Use this built query to query against Solr
             if (Engine_ApplicationCache_Gateway.Settings.System.Search_System == Search_System_Enum.Beta)
-                v5_Solr_Document_Searcher.Search(Current_Aggregation, Terms, Web_Fields, Results_Per_Page, Current_Page, (ushort)Current_Sort, true, Tracer, out Complete_Result_Set_Info, out Paged_Results);
+                v5_Solr_Document_Searcher.Search(Aggregation_Object.Code, Aggregation_Object.Facets, Aggregation_Object.Results_Fields, Terms, Web_Fields, Results_Per_Page, Current_Page, (ushort)Current_Sort, true, Tracer, out Complete_Result_Set_Info, out Paged_Results);
             else
-                Legacy_Solr_Documents_Searcher.Search(Current_Aggregation, Terms, Web_Fields, Results_Per_Page, Current_Page, (ushort)Current_Sort, true, Tracer, out Complete_Result_Set_Info, out Paged_Results);
+                Legacy_Solr_Documents_Searcher.Search(Aggregation_Object.Code, Terms, Web_Fields, Results_Per_Page, Current_Page, (ushort)Current_Sort, true, Tracer, out Complete_Result_Set_Info, out Paged_Results);
         }
 
         #endregion

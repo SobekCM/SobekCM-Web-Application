@@ -76,6 +76,7 @@
       </panel>
       <panel>
         <name language="eng">External Records</name>
+		<element type="Accession Number" repeatable="true" />
         <element type="Identifier" subtype="complex" repeatable="true" />
         <element type="Serial Hierarchy" />
         <element type="EAD" />

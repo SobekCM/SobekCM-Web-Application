@@ -398,7 +398,11 @@ namespace SobekCM.Engine_Library.Solr.v5
 
         /// <summary> Accession Number for this document</summary>
         [SolrField("accession_number")]
-        public string AccessionNumber { get; set; }
+        public List<string> AccessionNumber { get; set; }
+
+        /// <summary> Display version of the accession number for this document</summary>
+        [SolrField("accession_number.display")]
+        public string AccessionNumberDisplay { get; set; }
 
         #endregion
 
@@ -815,6 +819,214 @@ namespace SobekCM.Engine_Library.Solr.v5
         /// <summary> User defined metadata field (#52) for this learning object resource </summary>
         [SolrField("user_defined_52")]
         public List<string> UserDefined52 { get; set; }
+
+        /// <summary> Display version of the user defined metadata field (#1) for this learning object resource </summary>
+        [SolrField("user_defined_01.display")]
+        public List<string> UserDefinedDisplay01 { get; set; }
+
+        /// <summary> Display version of the user defined metadata field (#2) for this learning object resource </summary>
+        [SolrField("user_defined_02.display")]
+        public List<string> UserDefinedDisplay02 { get; set; }
+
+        /// <summary> Display version of the user defined metadata field (#3) for this learning object resource </summary>
+        [SolrField("user_defined_03.display")]
+        public List<string> UserDefinedDisplay03 { get; set; }
+
+        /// <summary> Display version of the user defined metadata field (#4) for this learning object resource </summary>
+        [SolrField("user_defined_04.display")]
+        public List<string> UserDefinedDisplay04 { get; set; }
+
+        /// <summary> Display version of the user defined metadata field (#5) for this learning object resource </summary>
+        [SolrField("user_defined_05.display")]
+        public List<string> UserDefinedDisplay05 { get; set; }
+
+        /// <summary> Display version of the user defined metadata field (#6) for this learning object resource </summary>
+        [SolrField("user_defined_06.display")]
+        public List<string> UserDefinedDisplay06 { get; set; }
+
+        /// <summary> Display version of the user defined metadata field (#7) for this learning object resource </summary>
+        [SolrField("user_defined_07.display")]
+        public List<string> UserDefinedDisplay07 { get; set; }
+
+        /// <summary> Display version of the user defined metadata field (#8) for this learning object resource </summary>
+        [SolrField("user_defined_08.display")]
+        public List<string> UserDefinedDisplay08 { get; set; }
+
+        /// <summary> Display version of the user defined metadata field (#9) for this learning object resource </summary>
+        [SolrField("user_defined_09.display")]
+        public List<string> UserDefinedDisplay09 { get; set; }
+
+        /// <summary> Display version of the user defined metadata field (#10) for this learning object resource </summary>
+        [SolrField("user_defined_10.display")]
+        public List<string> UserDefinedDisplay10 { get; set; }
+
+        /// <summary> Display version of the user defined metadata field (#11) for this learning object resource </summary>
+        [SolrField("user_defined_11.display")]
+        public List<string> UserDefinedDisplay11 { get; set; }
+
+        /// <summary> Display version of the user defined metadata field (#12) for this learning object resource </summary>
+        [SolrField("user_defined_12.display")]
+        public List<string> UserDefinedDisplay12 { get; set; }
+
+        /// <summary> Display version of the user defined metadata field (#13) for this learning object resource </summary>
+        [SolrField("user_defined_13.display")]
+        public List<string> UserDefinedDisplay13 { get; set; }
+
+        /// <summary> Display version of the user defined metadata field (#14) for this learning object resource </summary>
+        [SolrField("user_defined_14.display")]
+        public List<string> UserDefinedDisplay14 { get; set; }
+
+        /// <summary> Display version of the user defined metadata field (#15) for this learning object resource </summary>
+        [SolrField("user_defined_15.display")]
+        public List<string> UserDefinedDisplay15 { get; set; }
+
+        /// <summary> Display version of the user defined metadata field (#16) for this learning object resource </summary>
+        [SolrField("user_defined_16.display")]
+        public List<string> UserDefinedDisplay16 { get; set; }
+
+        /// <summary> Display version of the user defined metadata field (#17) for this learning object resource </summary>
+        [SolrField("user_defined_17.display")]
+        public List<string> UserDefinedDisplay17 { get; set; }
+
+        /// <summary> Display version of the user defined metadata field (#18) for this learning object resource </summary>
+        [SolrField("user_defined_18.display")]
+        public List<string> UserDefinedDisplay18 { get; set; }
+
+        /// <summary> Display version of the user defined metadata field (#19) for this learning object resource </summary>
+        [SolrField("user_defined_19.display")]
+        public List<string> UserDefinedDisplay19 { get; set; }
+
+        /// <summary> Display version of the user defined metadata field (#20) for this learning object resource </summary>
+        [SolrField("user_defined_20.display")]
+        public List<string> UserDefinedDisplay20 { get; set; }
+
+        /// <summary> Display version of the user defined metadata field (#21) for this learning object resource </summary>
+        [SolrField("user_defined_21.display")]
+        public List<string> UserDefinedDisplay21 { get; set; }
+
+        /// <summary> Display version of the user defined metadata field (#22) for this learning object resource </summary>
+        [SolrField("user_defined_22.display")]
+        public List<string> UserDefinedDisplay22 { get; set; }
+
+        /// <summary> Display version of the user defined metadata field (#23) for this learning object resource </summary>
+        [SolrField("user_defined_23.display")]
+        public List<string> UserDefinedDisplay23 { get; set; }
+
+        /// <summary> Display version of the user defined metadata field (#24) for this learning object resource </summary>
+        [SolrField("user_defined_24.display")]
+        public List<string> UserDefinedDisplay24 { get; set; }
+
+        /// <summary> Display version of the user defined metadata field (#25) for this learning object resource </summary>
+        [SolrField("user_defined_25.display")]
+        public List<string> UserDefinedDisplay25 { get; set; }
+
+        /// <summary> Display version of the user defined metadata field (#26) for this learning object resource </summary>
+        [SolrField("user_defined_26.display")]
+        public List<string> UserDefinedDisplay26 { get; set; }
+
+        /// <summary> Display version of the user defined metadata field (#27) for this learning object resource </summary>
+        [SolrField("user_defined_27.display")]
+        public List<string> UserDefinedDisplay27 { get; set; }
+
+        /// <summary> Display version of the user defined metadata field (#28) for this learning object resource </summary>
+        [SolrField("user_defined_28.display")]
+        public List<string> UserDefinedDisplay28 { get; set; }
+
+        /// <summary> Display version of the user defined metadata field (#29) for this learning object resource </summary>
+        [SolrField("user_defined_29.display")]
+        public List<string> UserDefinedDisplay29 { get; set; }
+
+        /// <summary> Display version of the user defined metadata field (#30) for this learning object resource </summary>
+        [SolrField("user_defined_30.display")]
+        public List<string> UserDefinedDisplay30 { get; set; }
+
+        /// <summary> Display version of the user defined metadata field (#31) for this learning object resource </summary>
+        [SolrField("user_defined_31.display")]
+        public List<string> UserDefinedDisplay31 { get; set; }
+
+        /// <summary> Display version of the user defined metadata field (#32) for this learning object resource </summary>
+        [SolrField("user_defined_32.display")]
+        public List<string> UserDefinedDisplay32 { get; set; }
+
+        /// <summary> Display version of the user defined metadata field (#33) for this learning object resource </summary>
+        [SolrField("user_defined_33.display")]
+        public List<string> UserDefinedDisplay33 { get; set; }
+
+        /// <summary> Display version of the user defined metadata field (#34) for this learning object resource </summary>
+        [SolrField("user_defined_34.display")]
+        public List<string> UserDefinedDisplay34 { get; set; }
+
+        /// <summary> Display version of the user defined metadata field (#35) for this learning object resource </summary>
+        [SolrField("user_defined_35.display")]
+        public List<string> UserDefinedDisplay35 { get; set; }
+
+        /// <summary> Display version of the user defined metadata field (#36) for this learning object resource </summary>
+        [SolrField("user_defined_36.display")]
+        public List<string> UserDefinedDisplay36 { get; set; }
+
+        /// <summary> Display version of the user defined metadata field (#37) for this learning object resource </summary>
+        [SolrField("user_defined_37.display")]
+        public List<string> UserDefinedDisplay37 { get; set; }
+
+        /// <summary> Display version of the user defined metadata field (#38) for this learning object resource </summary>
+        [SolrField("user_defined_38.display")]
+        public List<string> UserDefinedDisplay38 { get; set; }
+
+        /// <summary> Display version of the user defined metadata field (#39) for this learning object resource </summary>
+        [SolrField("user_defined_39.display")]
+        public List<string> UserDefinedDisplay39 { get; set; }
+
+        /// <summary> Display version of the user defined metadata field (#40) for this learning object resource </summary>
+        [SolrField("user_defined_40.display")]
+        public List<string> UserDefinedDisplay40 { get; set; }
+
+        /// <summary> Display version of the user defined metadata field (#41) for this learning object resource </summary>
+        [SolrField("user_defined_41.display")]
+        public List<string> UserDefinedDisplay41 { get; set; }
+
+        /// <summary> Display version of the user defined metadata field (#42) for this learning object resource </summary>
+        [SolrField("user_defined_42.display")]
+        public List<string> UserDefinedDisplay42 { get; set; }
+
+        /// <summary> Display version of the user defined metadata field (#43) for this learning object resource </summary>
+        [SolrField("user_defined_43.display")]
+        public List<string> UserDefinedDisplay43 { get; set; }
+
+        /// <summary> Display version of the user defined metadata field (#44) for this learning object resource </summary>
+        [SolrField("user_defined_44.display")]
+        public List<string> UserDefinedDisplay44 { get; set; }
+
+        /// <summary> Display version of the user defined metadata field (#45) for this learning object resource </summary>
+        [SolrField("user_defined_45.display")]
+        public List<string> UserDefinedDisplay45 { get; set; }
+
+        /// <summary> Display version of the user defined metadata field (#46) for this learning object resource </summary>
+        [SolrField("user_defined_46.display")]
+        public List<string> UserDefinedDisplay46 { get; set; }
+
+        /// <summary> Display version of the user defined metadata field (#47) for this learning object resource </summary>
+        [SolrField("user_defined_47.display")]
+        public List<string> UserDefinedDisplay47 { get; set; }
+
+        /// <summary> Display version of the user defined metadata field (#48) for this learning object resource </summary>
+        [SolrField("user_defined_48.display")]
+        public List<string> UserDefinedDisplay48 { get; set; }
+
+        /// <summary> Display version of the user defined metadata field (#49) for this learning object resource </summary>
+        [SolrField("user_defined_49.display")]
+        public List<string> UserDefinedDisplay49 { get; set; }
+
+        /// <summary> Display version of the user defined metadata field (#50) for this learning object resource </summary>
+        [SolrField("user_defined_50.display")]
+        public List<string> UserDefinedDisplay50 { get; set; }
+
+        /// <summary> Display version of the user defined metadata field (#51) for this learning object resource </summary>
+        [SolrField("user_defined_51.display")]
+        public List<string> UserDefinedDisplay51 { get; set; }
+
+        /// <summary> Display version of the user defined metadata field (#52) for this learning object resource </summary>
+        [SolrField("user_defined_52.display")]
+        public List<string> UserDefinedDisplay52 { get; set; }
 
         #endregion
 

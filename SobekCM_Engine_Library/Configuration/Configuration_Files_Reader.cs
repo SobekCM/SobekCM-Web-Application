@@ -466,8 +466,8 @@ namespace SobekCM.Engine_Library.Configuration
 
 
             // Some override values for testing
-            config.Sobekcm_Css = "http://test.sobeklibrary.com/default/css/sobekcm/4.11.0/sobekcm.css";
-            config.Sobekcm_Item_Css = "http://test.sobeklibrary.com/default/css/sobekcm-item/4.11.0/sobekcm_item.css";
+            //config.Sobekcm_Css = "http://test.sobeklibrary.com/default/css/sobekcm/4.11.0/sobekcm.css";
+            //config.Sobekcm_Item_Css = "http://test.sobeklibrary.com/default/css/sobekcm-item/4.11.0/sobekcm_item.css";
         }
 
 

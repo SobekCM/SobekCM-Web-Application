@@ -345,7 +345,7 @@ namespace SobekCM.Engine_Library.Solr.v5
                 foreach (v5_SolrDocument thisResult in results)
                 {
                     // Add this results as is for now
-                    Paged_Results.Add(mapper.Map_To_Result(thisResult));
+                    Paged_Results.Add(mapper.Map_To_Result(thisResult, Results_Fields));
                 }
 
                 return true;
@@ -357,21 +357,6 @@ namespace SobekCM.Engine_Library.Solr.v5
         }
 
         #endregion
-
-        private static string collection_to_string(List<string> Values)
-        {
-            if ((Values == null) || ( Values.Count == 0 )) return String.Empty;
-
-            if (Values.Count == 1) return Values[0];
-
-            if (Values.Count == 2) return Values[0] + " | " + Values[1];
-
-            if (Values.Count == 3) return Values[0] + " | " + Values[1] + " | " + Values[2];
-
-            if (Values.Count == 4) return Values[0] + " | " + Values[1] + " | " + Values[2] + " | " + Values[3];
-
-            return Values[0] + " | " + Values[1] + " | " + Values[2] + " | " + Values[3] + " | " + Values[4];
-        }
 
         #region Method to split the complex search term string into a collection of search terms and fields
 

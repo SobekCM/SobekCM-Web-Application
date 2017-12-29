@@ -1,31 +1,42 @@
-﻿#region Using directives
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Web;
 using SobekCM.Core.ApplicationState;
-using SobekCM.Core.Configuration;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Users;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Bib_Info;
 
-#endregion
-
 namespace SobekCM.Library.Citation.Elements
 {
-    /// <summary> Element allows entry of the identifiers ( identifier and identifier type) for an item </summary>
-    /// <remarks> This class extends the <see cref="TextBox_TextBox_Element"/> class. </remarks>
-    public class Identifier_Element : TextBox_TextBox_Element
+    /// <summary> Element allows entry of an accession number, which is a type of identifier </summary>
+    /// <remarks> This class extends the <see cref="SimpleTextBox_Element"/> class. </remarks>
+    public class Accession_Number_Element : MultipleTextBox_Element
     {
-        /// <summary> Constructor for a new instance of the Identifier_Element class </summary>
-        public Identifier_Element()
-            : base("Identifier", "identifier")
+        /// <summary> Constructor for a new instance of the Accession_Number_Element class </summary>
+        public Accession_Number_Element() : base("Accession Number", "accno")
         {
-            SecondLabel = "Identifier Type";
             Repeatable = true;
+
+            MaxBoxes = 3;
+            BoxesPerLine = 3;
+        }
+
+        /// <summary> Options dictionary allows template elements to register certain options or information
+        /// which may be used by other template elements </summary>
+        /// <remarks> This adds a special flag to indicate there is a seperate contributor element ( title_form_included = true ) </remarks>
+        public override Dictionary<string, string> Options
+        {
+            get { return base.Options; }
+            set
+            {
+                base.Options = value;
+
+                Options["accession_number_included"] = "true";
+            }
         }
 
 
@@ -42,13 +53,10 @@ namespace SobekCM.Library.Citation.Elements
         /// <remarks> This simple element does not append any popup form to the popup_form_builder</remarks>
         public override void Render_Template_HTML(TextWriter Output, SobekCM_Item Bib, string Skin_Code, bool IsMozilla, StringBuilder PopupFormBuilder, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL )
         {
-            // Check for the complex form title, which includes statement of responsibility
-            bool exclude_accno = ((Options.ContainsKey("accession_number_included")) && (String.Compare(Options["accession_number_included"], "true", StringComparison.OrdinalIgnoreCase) == 0));
-
             // Check that an acronym exists
             if (Acronym.Length == 0)
             {
-                const string defaultAcronym = "Identifier which describes this item.  This may range from a locally defined identifier to an identifier established by a standard committe.";
+                const string defaultAcronym = "Enter the accession number for this item.";
                 switch (CurrentLanguage)
                 {
                     case Web_Language_Enum.English:
@@ -70,24 +78,17 @@ namespace SobekCM.Library.Citation.Elements
             }
 
             List<string> terms = new List<string>();
-            List<string> schemes = new List<string>();
             if (Bib.Bib_Info.Identifiers_Count > 0)
             {
                 foreach (Identifier_Info thisIdentifier in Bib.Bib_Info.Identifiers)
                 {
-                    // Are we supposed to exclude the accession number?
-                    if (exclude_accno)
-                    {
-                        if ((thisIdentifier.Type.IndexOf("ACCESSION", StringComparison.OrdinalIgnoreCase) >= 0) || ((thisIdentifier.Type.IndexOf("ACCN", StringComparison.OrdinalIgnoreCase) >= 0)))
-                            continue;
-                    }
-
-                    terms.Add(thisIdentifier.Identifier);
-                    schemes.Add(thisIdentifier.Type);
+                    if ((thisIdentifier.Type.IndexOf("ACCESSION", StringComparison.OrdinalIgnoreCase) >= 0) || ((thisIdentifier.Type.IndexOf("ACCN", StringComparison.OrdinalIgnoreCase) >= 0)))
+                        terms.Add(thisIdentifier.Identifier);
                 }
             }
 
-            render_helper(Output, terms, schemes, Skin_Code, Current_User, CurrentLanguage, Translator, Base_URL);
+
+            render_helper(Output, terms, Skin_Code, Current_User, CurrentLanguage, Translator, Base_URL);
         }
 
         /// <summary> Prepares the bib object for the save, by clearing any existing data in this element's related field(s) </summary>
@@ -96,37 +97,27 @@ namespace SobekCM.Library.Citation.Elements
         /// <remarks> This clears any preexisting identifiers </remarks>
         public override void Prepare_For_Save(SobekCM_Item Bib, User_Object Current_User)
         {
-            Bib.Bib_Info.Clear_Identifiers();
+            // Find any existing accession numbers
+            List<Identifier_Info> existing_accno = new List<Identifier_Info>();
+            foreach (Identifier_Info thisIdentifier in Bib.Bib_Info.Identifiers)
+            {
+                if ((thisIdentifier.Type.IndexOf("ACCESSION", StringComparison.OrdinalIgnoreCase) >= 0) || ((thisIdentifier.Type.IndexOf("ACCN", StringComparison.OrdinalIgnoreCase) >= 0)))
+                    existing_accno.Add(thisIdentifier);
+            }
+
+            // Remove this existing accession number
+            foreach (Identifier_Info thisIdentifier in existing_accno)
+                Bib.Bib_Info.Remove_Identifier(thisIdentifier);
         }
 
         /// <summary> Saves the data rendered by this element to the provided bibliographic object during postback </summary>
         /// <param name="Bib"> Object into which to save the user's data, entered into the html rendered by this element </param>
         public override void Save_To_Bib(SobekCM_Item Bib)
         {
-            Dictionary<string, string> terms = new Dictionary<string, string>();
-            Dictionary<string, string> schemes = new Dictionary<string, string>();
-
             string[] getKeys = HttpContext.Current.Request.Form.AllKeys;
-            foreach (string thisKey in getKeys)
+            foreach (string thisKey in getKeys.Where(thisKey => thisKey.IndexOf("accnumber") == 0))
             {
-                if (thisKey.IndexOf(html_element_name.Replace("_", "") + "_first") == 0)
-                {
-                    string term = HttpContext.Current.Request.Form[thisKey];
-                    string index = thisKey.Replace(html_element_name.Replace("_", "") + "_first", "");
-                    terms[index] = term;
-                }
-
-                if (thisKey.IndexOf(html_element_name.Replace("_", "") + "_second") == 0)
-                {
-                    string scheme = HttpContext.Current.Request.Form[thisKey];
-                    string index = thisKey.Replace(html_element_name.Replace("_", "") + "_second", "");
-                    schemes[index] = scheme;
-                }
-            }
-
-            foreach (string index in terms.Keys)
-            {
-                Bib.Bib_Info.Add_Identifier(terms[index], schemes.ContainsKey(index) ? schemes[index] : String.Empty);
+                Bib.Bib_Info.Add_Identifier(HttpContext.Current.Request.Form[thisKey], "Accession Number");
             }
         }
     }

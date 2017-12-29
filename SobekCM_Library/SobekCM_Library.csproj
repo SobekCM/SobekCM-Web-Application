@@ -127,6 +127,7 @@
     <Compile Include="AggregationViewer\Viewers\Work_History_AggregationViewer.cs" />
     <Compile Include="Citation\Elements\base types\CheckBox_Element.cs" />
     <Compile Include="Citation\Elements\HtmlEventsHelper.cs" />
+    <Compile Include="Citation\Elements\implemented elements\Accession_Number_Element.cs" />
     <Compile Include="Citation\Elements\implemented elements\Additional_Work_Needed_Element.cs" />
     <Compile Include="Citation\Elements\implemented elements\Born_Digital_Element.cs" />
     <Compile Include="Citation\Elements\implemented elements\Catalog_Record_Number_Element.cs" />

@@ -83,16 +83,17 @@
   <field name="audience" type="text_general" indexed="true" stored="true"  multiValued="true" />
   <field name="source" type="text_general" indexed="true" stored="true"  multiValued="false" />
   <field name="holding" type="text_general" indexed="true" stored="true"  multiValued="false" />
-  <field name="identifier" type="text_general" indexed="true" stored="true"  multiValued="true" />
+  <field name="identifier" type="text_single" indexed="true" stored="true"  multiValued="true" />
   <field name="identifier.display" type="text_general" indexed="false" stored="true"  multiValued="true" />
-  <field name="accession_number" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="accession_number" type="text_single" indexed="true" stored="false" multiValued="true" />
+  <field name="accession_number.display" type="text_general" indexed="false" stored="true" multiValued="true" />
   <field name="notes" type="text_general" indexed="true" stored="true"  multiValued="true" />
   <field name="tickler" type="text_general" indexed="true" stored="true"  multiValued="true" />
   <field name="donor" type="text_general" indexed="true" stored="true"  multiValued="false" />
   <field name="format" type="text_general" indexed="true" stored="true"  multiValued="false" />
   <field name="frequency" type="text_general" indexed="true" stored="true"  multiValued="true" />
   <field name="genre" type="text_general" indexed="true" stored="true"  multiValued="true" />
-  <field name="genre.display" type="text_general" indexed="true" stored="false"  multiValued="true" />
+  <field name="genre.display" type="text_general" indexed="false" stored="true"  multiValued="true" />
   <field name="other" type="text_general" indexed="true" stored="false"  multiValued="true" />
   
   <!-- Main metadata facet fields -->
@@ -122,7 +123,7 @@
   <copyField source="source" dest="source_facets" />
   <copyField source="holding" dest="holding_facets" />
   <copyField source="identifier" dest="identifier_facets" />
-  <copyField source="accession_number" dest="accession_number_facets" />
+  <copyField source="accession_number.display" dest="accession_number_facets" />
   <copyField source="tickler" dest="tickler_facets" />
   <copyField source="donor" dest="donor_facets" />
   <copyField source="format" dest="format_facets" />
@@ -872,6 +873,20 @@
       <tokenizer class="solr.KeywordTokenizerFactory"/>
     </analyzer>
   </fieldType>
+  
+  <!-- This is used for searching a single term which is not language, such as an identifier  -->
+  <fieldType name="text_single" class="solr.TextField" positionIncrementGap="100">
+    <analyzer type="index">
+      <tokenizer class="solr.KeywordTokenizerFactory"/>
+	  <filter class="solr.LowerCaseFilterFactory"/>
+    </analyzer>
+    <analyzer type="query">
+      <tokenizer class="solr.KeywordTokenizerFactory"/>
+	  <filter class="solr.LowerCaseFilterFactory"/>
+    </analyzer>
+  </fieldType>
+  
+  
 
   <!-- since fields of this type are by default not stored or indexed, any data added to them will be ignored outright.  -->
   <fieldType name="ignored" stored="false" indexed="false" multiValued="true" class="solr.StrField" />

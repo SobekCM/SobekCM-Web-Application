@@ -32,7 +32,7 @@ namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
                         New.Add_Description("Resource Identifier", thisIdentifier.Identifier).Authority = thisIdentifier.Type;
 
                         // Special code for accession number
-                        if (thisIdentifier.Type.IndexOf("ACCESSION", StringComparison.OrdinalIgnoreCase) >= 0)
+                        if ((thisIdentifier.Type.IndexOf("ACCESSION", StringComparison.OrdinalIgnoreCase) >= 0) || ((thisIdentifier.Type.IndexOf("ACCN", StringComparison.OrdinalIgnoreCase) >= 0)))
                             New.Add_Description("Accession Number", thisIdentifier.Identifier).Authority = thisIdentifier.Type;
                     }
                     else

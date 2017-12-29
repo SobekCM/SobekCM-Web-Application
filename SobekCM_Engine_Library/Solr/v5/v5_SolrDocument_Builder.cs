@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Divisions;
 using SobekCM.Resource_Object.Metadata_Modules;
@@ -199,7 +200,30 @@ namespace SobekCM.Engine_Library.Solr.v5
                         break;
 
                     case "accession number":
-                        returnValue.AccessionNumber = searchTerm.Value;
+                        // Set the display value (also used for faceting) to the full term
+                        returnValue.AccessionNumberDisplay = searchTerm.Value;
+
+                        // Make sure the list is built
+                        if (returnValue.AccessionNumber == null) returnValue.AccessionNumber = new List<string>();
+
+                        // If there are any periods, represeting a hierarchical identifier, split it
+                        if (searchTerm.Value.IndexOf(".") > 0)
+                        {
+                            // Add each segment of the identifier
+                            string[] split = searchTerm.Value.Split(".".ToCharArray());
+                            StringBuilder builder = new StringBuilder(split[0]);
+                            returnValue.AccessionNumber.Add(builder.ToString());
+                            for (int i = 1; i < split.Length; i++)
+                            {
+                                builder.Append("." + split[i]);
+                                returnValue.AccessionNumber.Add(builder.ToString());
+                            }
+                        }
+                        else
+                        {
+                            returnValue.AccessionNumber.Add(searchTerm.Value);
+                        }
+
                         break;
 
                     case "language":

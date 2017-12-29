@@ -278,8 +278,12 @@ namespace SobekCM.Library.Citation.Elements
                 // Just create it from the same assembly then
                 try
                 {
+                    // Was a namespace not included?  All elements in the base assemblies should have one
+                    string className2 = (config.Class.IndexOf(".") < 0) ? "SobekCM.Library.Citation.Elements." + config.Class : config.Class;
+
+
                     Assembly dllAssembly = Assembly.GetCallingAssembly();
-                    Type elementType = dllAssembly.GetType(config.Class);
+                    Type elementType = dllAssembly.GetType(className2);
                     abstract_Element returnObj = (abstract_Element) Activator.CreateInstance(elementType);
                     return returnObj;
                 }

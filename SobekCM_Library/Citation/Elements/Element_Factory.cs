@@ -48,6 +48,8 @@ namespace SobekCM.Library.Citation.Elements
                         return new Abstract_Complex_Element();
                     case "SobekCM.Library.Citation.Elements.Abstract_Summary_Element":
                         return new Abstract_Summary_Element();
+                    case "SobekCM.Library.Citation.Elements.Accession_Number_Element":
+                        return new Accession_Number_Element();
                     case "SobekCM.Library.Citation.Elements.Acquisition_Note_Element":
                         return new Acquisition_Note_Element();
                     case "SobekCM.Library.Citation.Elements.Additional_Work_Needed_Element":
@@ -84,10 +86,18 @@ namespace SobekCM.Library.Citation.Elements
                         return new Creator_Notes_Element();
                     case "SobekCM.Library.Citation.Elements.Dark_Flag_Element":
                         return new Dark_Flag_Element();
+                    case "SobekCM.Library.Citation.Elements.Date_Captured_Element":
+                        return new Date_Captured_Element();
                     case "SobekCM.Library.Citation.Elements.Date_Element":
                         return new Date_Element();
                     case "SobekCM.Library.Citation.Elements.Date_Copyrighted_Element":
                         return new Date_Copyrighted_Element();
+                    case "SobekCM.Library.Citation.Elements.Date_Created_Element":
+                        return new Date_Created_Element();
+                    case "SobekCM.Library.Citation.Elements.Date_Modified_Element":
+                        return new Date_Modified_Element();
+                    case "SobekCM.Library.Citation.Elements.Date_Valid_Element":
+                        return new Date_Valid_Element();
                     case "SobekCM.Library.Citation.Elements.Description_Standard_Element":
                         return new Description_Standard_Element();
                     case "SobekCM.Library.Citation.Elements.Disposition_Advice_Element":

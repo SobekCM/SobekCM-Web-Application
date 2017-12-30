@@ -6,7 +6,7 @@ using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Users;
 using SobekCM.Resource_Object;
 
-namespace SobekCM.Library.Citation.Elements.implemented_elements
+namespace SobekCM.Library.Citation.Elements
 {
     /// <summary> Element allows entry of the modified date for an item </summary>
     /// <remarks> This class extends the <see cref="SimpleTextBox_Element"/> class. </remarks>

@@ -726,20 +726,20 @@ namespace SobekCM.Core.Navigation
                     }
 
                     // Add the year or date values
-                    if (Current_Mode.DateRange_Date1 >= 0)
+                    if (Current_Mode.DateRange_Date1.HasValue)
                     {
                         if (!queryStringBegun)
                         {
-                            results_url_builder.Append("?dt1=" + Current_Mode.DateRange_Date1.ToString());
+                            results_url_builder.Append("?dt1=" + Current_Mode.DateRange_Date1.Value.ToShortDateString());
                             //queryStringBegun = true;
                         }
                         else
                         {
-                            results_url_builder.Append("&dt1=" + Current_Mode.DateRange_Date1.ToString());
+                            results_url_builder.Append("&dt1=" + Current_Mode.DateRange_Date1.Value.ToShortDateString());
                         }
-                        if (Current_Mode.DateRange_Date2 >= 0)
+                        if (Current_Mode.DateRange_Date2.HasValue)
                         {
-                            results_url_builder.Append("&dt2=" + Current_Mode.DateRange_Date2.ToString());
+                            results_url_builder.Append("&dt2=" + Current_Mode.DateRange_Date1.Value.ToShortDateString());
                         }
                     }
                     else if (Current_Mode.DateRange_Year1 >= 0)

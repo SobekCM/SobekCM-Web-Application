@@ -551,7 +551,7 @@ namespace SobekCM.Resource_Object.Bib_Info
 
 					if (year != -1)
 					{
-						metadataTerms.Add(new KeyValuePair<string, string>("Temporal Year", year.ToString()));
+						metadataTerms.Add(new KeyValuePair<string, string>("Date Year", year.ToString()));
 					}
 	            }
 

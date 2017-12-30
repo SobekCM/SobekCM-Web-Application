@@ -337,7 +337,7 @@ namespace SobekCM.Engine_Library.Aggregations
                 Search_Results_Statistics stats;
 	            List<iSearch_Title_Result> results;
 
-	            v5_Solr_Document_Searcher.Search(ItemAggr.Code, ItemAggr.Facets, ItemAggr.Results_Fields, null, null, Results_Per_Page, Page, (ushort) Sort, Need_Browse_Statistics, Tracer, out stats, out results);
+	            v5_Solr_Document_Searcher.Search(ItemAggr.Code, ItemAggr.Facets, ItemAggr.Results_Fields, null, null, null, null, Results_Per_Page, Page, (ushort) Sort, Need_Browse_Statistics, Tracer, out stats, out results);
 
 	            Multiple_Paged_Results_Args returnValue = new Multiple_Paged_Results_Args(stats, results);
 

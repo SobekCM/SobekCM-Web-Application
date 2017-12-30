@@ -21,12 +21,12 @@ namespace SobekCM.Core.Results
         /// <summary> Beginning of a date range, if the search includes
         /// a date range between two arbitrary dates </summary>
         /// <value>-1 if no year range</value>
-        public long? DateRange_Date1 { get; set; }
+        public DateTime? DateRange_Date1 { get; set; }
 
         /// <summary> End of a date range, if the search includes
         /// a date range between two arbitrary dates </summary>
         /// <value>-1 if no year range</value>
-        public long? DateRange_Date2 { get; set; }
+        public DateTime? DateRange_Date2 { get; set; }
 
         /// <summary> Beginning of the year range, if the search includes
         /// a date range between two years </summary>
@@ -239,14 +239,14 @@ namespace SobekCM.Core.Results
             }
             if (QueryString["da1"] != null)
             {
-                long date1;
-                if (Int64.TryParse(QueryString["da1"], out date1))
+                DateTime date1;
+                if (DateTime.TryParse(QueryString["da1"], out date1))
                     DateRange_Date1 = date1;
             }
             if (QueryString["da2"] != null)
             {
-                long date2;
-                if (Int64.TryParse(QueryString["da2"], out date2))
+                DateTime date2;
+                if (DateTime.TryParse(QueryString["da2"], out date2))
                     DateRange_Date2 = date2;
             }
 

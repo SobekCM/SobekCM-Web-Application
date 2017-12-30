@@ -213,14 +213,14 @@ namespace SobekCM.Core.Navigation
         [DataMember(EmitDefaultValue = false, Name = "dateRangeDate1")]
         [XmlElement("dateRangeDate1")]
         [ProtoMember(11)]
-        public long? DateRange_Date1 { get; set; }
+        public DateTime? DateRange_Date1 { get; set; }
 
         /// <summary> End of a date range, if the search includes
         /// a date range between two arbitrary dates </summary>
         [DataMember(EmitDefaultValue = false, Name = "dateRangeDate2")]
         [XmlElement("dateRangeDate2")]
         [ProtoMember(12)]
-        public long? DateRange_Date2 { get; set; }
+        public DateTime? DateRange_Date2 { get; set; }
 
         /// <summary> Beginning of the year range, if the search includes
         /// a date range between two years </summary>

@@ -774,48 +774,13 @@ namespace SobekCM.Engine_Library.Endpoints
                 // This is used to return the results as XML and DATASET
                 int results_per_page = (int) Current_Mode.ResultsPerPage;
 
-                // Determine if a date range was provided
-                long date1 = -1;
-                long date2 = -1;
-                if (Current_Mode.DateRange_Date1.HasValue)
-                {
-                    date1 = Current_Mode.DateRange_Date1.Value;
-                    if (Current_Mode.DateRange_Date2.HasValue)
-                    {
-                        if (Current_Mode.DateRange_Date2.Value >= Current_Mode.DateRange_Date1.Value)
-                            date2 = Current_Mode.DateRange_Date2.Value;
-                        else
-                        {
-                            date1 = Current_Mode.DateRange_Date2.Value;
-                            date2 = Current_Mode.DateRange_Date1.Value;
-                        }
-                    }
-                    else
-                    {
-                        date2 = date1;
-                    }
-                }
-                if (date1 < 0)
-                {
-                    if ((Current_Mode.DateRange_Year1.HasValue) && (Current_Mode.DateRange_Year1.Value > 0))
-                    {
-                        DateTime startDate = new DateTime(Current_Mode.DateRange_Year1.Value, 1, 1);
-                        TimeSpan timeElapsed = startDate.Subtract(new DateTime(1, 1, 1));
-                        date1 = (long)timeElapsed.TotalDays;
-                        if ((Current_Mode.DateRange_Year2.HasValue) && (Current_Mode.DateRange_Year2.Value > 0))
-                        {
-                            startDate = new DateTime(Current_Mode.DateRange_Year2.Value, 12, 31);
-                            timeElapsed = startDate.Subtract(new DateTime(1, 1, 1));
-                            date2 = (long)timeElapsed.TotalDays;
-                        }
-                        else
-                        {
-                            startDate = new DateTime(Current_Mode.DateRange_Year1.Value, 12, 31);
-                            timeElapsed = startDate.Subtract(new DateTime(1, 1, 1));
-                            date2 = (long)timeElapsed.TotalDays;
-                        }
-                    }
-                }
+                // Get any included date range
+                Nullable<DateTime> date_start = null;
+                Nullable<DateTime> date_end = null;
+                if (Current_Mode.DateRange_Date1.HasValue) date_start = Current_Mode.DateRange_Date1.Value;
+                else if (Current_Mode.DateRange_Year1.HasValue) date_start = new DateTime(Current_Mode.DateRange_Year1.Value, 1, 1);
+                if (Current_Mode.DateRange_Date2.HasValue) date_end = Current_Mode.DateRange_Date2.Value;
+                else if (Current_Mode.DateRange_Year2.HasValue) date_end = new DateTime(Current_Mode.DateRange_Year2.Value, 12, 31);
 
                 // Set the flags for how much data is needed.  (i.e., do we need to pull ANYTHING?  or
                 // perhaps just the next page of results ( as opposed to pulling facets again).
@@ -824,12 +789,12 @@ namespace SobekCM.Engine_Library.Endpoints
                 if (Current_Mode.Use_Cache)
                 {
                     // Look to see if the search statistics are available on any cache..
-                    Complete_Result_Set_Info = CachedDataManager.Retrieve_Search_Result_Statistics(Current_Mode, actualCount, web_fields, terms, date1, date2, Tracer);
+                    Complete_Result_Set_Info = CachedDataManager.Retrieve_Search_Result_Statistics(Current_Mode, actualCount, web_fields, terms, date_start, date_end, Tracer);
                     if (Complete_Result_Set_Info != null)
                         need_search_statistics = false;
 
                     // Look to see if the paged results are available on any cache..
-                    Paged_Results = CachedDataManager.Retrieve_Search_Results(Current_Mode, sort, actualCount, web_fields, terms, date1, date2, Tracer);
+                    Paged_Results = CachedDataManager.Retrieve_Search_Results(Current_Mode, sort, actualCount, web_fields, terms, date_start, date_end, Tracer);
                     if (Paged_Results != null)
                         need_paged_results = false;
                 }
@@ -847,7 +812,7 @@ namespace SobekCM.Engine_Library.Endpoints
 
                             // Perform the search against greenstone
                             Search_Results_Statistics recomputed_search_statistics;
-                            Perform_Solr_Search(Tracer, terms, web_fields, actualCount, Aggregation_Object, current_page_index, sort, results_per_page, out recomputed_search_statistics, out Paged_Results);
+                            Perform_Solr_Search(Tracer, terms, web_fields, null, null, actualCount, Aggregation_Object, current_page_index, sort, results_per_page, out recomputed_search_statistics, out Paged_Results);
                             if (need_search_statistics)
                             {
                                 Complete_Result_Set_Info = recomputed_search_statistics;
@@ -874,13 +839,13 @@ namespace SobekCM.Engine_Library.Endpoints
                             // Cache the search statistics, if it was needed
                             if ((need_search_statistics) && (Complete_Result_Set_Info != null))
                             {
-                                CachedDataManager.Store_Search_Result_Statistics(Current_Mode, actualCount, web_fields, terms, date1, date2, Complete_Result_Set_Info, Tracer);
+                                CachedDataManager.Store_Search_Result_Statistics(Current_Mode, actualCount, web_fields, terms, date_start, date_end, Complete_Result_Set_Info, Tracer);
                             }
 
                             // Cache the search results
                             if ((need_paged_results) && (Paged_Results != null))
                             {
-                                CachedDataManager.Store_Search_Results(Current_Mode, sort, actualCount, web_fields, terms, date1, date2, Paged_Results, Tracer);
+                                CachedDataManager.Store_Search_Results(Current_Mode, sort, actualCount, web_fields, terms, date_start, date_end, Paged_Results, Tracer);
                             }
                         }
                     }
@@ -893,7 +858,7 @@ namespace SobekCM.Engine_Library.Endpoints
                         try
                         {
                             Search_Results_Statistics recomputed_search_statistics;
-                            Perform_Database_Search(Tracer, terms, web_fields, date1, date2, actualCount, Current_Mode, sort, Aggregation_Object, results_per_page, Current_Mode.Use_Cache, Include_Private_Items, out recomputed_search_statistics, out pagesOfResults, need_search_statistics);
+                            Perform_Database_Search(Tracer, terms, web_fields, date_start, date_end, actualCount, Current_Mode, sort, Aggregation_Object, results_per_page, Current_Mode.Use_Cache, Include_Private_Items, out recomputed_search_statistics, out pagesOfResults, need_search_statistics);
                             if (need_search_statistics)
                             {
                                 Complete_Result_Set_Info = recomputed_search_statistics;
@@ -924,13 +889,13 @@ namespace SobekCM.Engine_Library.Endpoints
                             // Cache the search statistics, if it was needed
                             if ((need_search_statistics) && (Complete_Result_Set_Info != null))
                             {
-                                CachedDataManager.Store_Search_Result_Statistics(Current_Mode, actualCount, web_fields, terms, date1, date2, Complete_Result_Set_Info, Tracer);
+                                CachedDataManager.Store_Search_Result_Statistics(Current_Mode, actualCount, web_fields, terms, date_start, date_end, Complete_Result_Set_Info, Tracer);
                             }
 
                             // Cache the search results
                             if ((need_paged_results) && (pagesOfResults != null))
                             {
-                                CachedDataManager.Store_Search_Results(Current_Mode, sort, actualCount, web_fields, terms, date1, date2, pagesOfResults, Tracer);
+                                CachedDataManager.Store_Search_Results(Current_Mode, sort, actualCount, web_fields, terms, date_start, date_end, pagesOfResults, Tracer);
                             }
                         }
                     }
@@ -1065,7 +1030,7 @@ namespace SobekCM.Engine_Library.Endpoints
             }
         }
 
-        protected void Perform_Database_Search(Custom_Tracer Tracer, List<string> Terms, List<string> Web_Fields, long Date1, long Date2, int ActualCount, Results_Arguments Current_Mode, int Current_Sort, Complete_Item_Aggregation Aggregation_Object, int Results_Per_Page, bool Potentially_Include_Facets, bool Include_Private_Items, out Search_Results_Statistics Complete_Result_Set_Info, out List<List<iSearch_Title_Result>> Paged_Results, bool Need_Search_Statistics)
+        protected void Perform_Database_Search(Custom_Tracer Tracer, List<string> Terms, List<string> Web_Fields, Nullable<DateTime> StartDate, Nullable<DateTime> EndDate, int ActualCount, Results_Arguments Current_Mode, int Current_Sort, Complete_Item_Aggregation Aggregation_Object, int Results_Per_Page, bool Potentially_Include_Facets, bool Include_Private_Items, out Search_Results_Statistics Complete_Result_Set_Info, out List<List<iSearch_Title_Result>> Paged_Results, bool Need_Search_Statistics)
         {
             if (Tracer != null)
             {
@@ -1079,6 +1044,19 @@ namespace SobekCM.Engine_Library.Endpoints
             if (!Potentially_Include_Facets)
                 facetsList.Clear();
 
+            // Convert the dates to longs
+            long Date1 = -1;
+            if (StartDate.HasValue)
+            {
+                TimeSpan timeElapsed = StartDate.Value.Subtract(new DateTime(1, 1, 1));
+                Date1 = (long)timeElapsed.TotalDays;
+            }
+            long Date2 = -1;
+            if (EndDate.HasValue)
+            {
+                TimeSpan timeElapsed = EndDate.Value.Subtract(new DateTime(1, 1, 1));
+                Date2 = (long)timeElapsed.TotalDays;
+            }
 
 
             // Set the return values to NULL initially
@@ -1252,7 +1230,7 @@ namespace SobekCM.Engine_Library.Endpoints
             return (field == null) ? (short)-1 : field.ID;
         }
 
-        protected static void Perform_Solr_Search(Custom_Tracer Tracer, List<string> Terms, List<string> Web_Fields, int ActualCount, Complete_Item_Aggregation Aggregation_Object, int Current_Page, int Current_Sort, int Results_Per_Page, out Search_Results_Statistics Complete_Result_Set_Info, out List<iSearch_Title_Result> Paged_Results)
+        protected static void Perform_Solr_Search(Custom_Tracer Tracer, List<string> Terms, List<string> Web_Fields, DateTime? StartDate, DateTime? EndDate, int ActualCount, Complete_Item_Aggregation Aggregation_Object, int Current_Page, int Current_Sort, int Results_Per_Page, out Search_Results_Statistics Complete_Result_Set_Info, out List<iSearch_Title_Result> Paged_Results)
         {
             if (Tracer != null)
             {
@@ -1261,7 +1239,7 @@ namespace SobekCM.Engine_Library.Endpoints
 
             // Use this built query to query against Solr
             if (Engine_ApplicationCache_Gateway.Settings.System.Search_System == Search_System_Enum.Beta)
-                v5_Solr_Document_Searcher.Search(Aggregation_Object.Code, Aggregation_Object.Facets, Aggregation_Object.Results_Fields, Terms, Web_Fields, Results_Per_Page, Current_Page, (ushort)Current_Sort, true, Tracer, out Complete_Result_Set_Info, out Paged_Results);
+                v5_Solr_Document_Searcher.Search(Aggregation_Object.Code, Aggregation_Object.Facets, Aggregation_Object.Results_Fields, Terms, Web_Fields, StartDate, EndDate, Results_Per_Page, Current_Page, (ushort)Current_Sort, true, Tracer, out Complete_Result_Set_Info, out Paged_Results);
             else
                 Legacy_Solr_Documents_Searcher.Search(Aggregation_Object.Code, Terms, Web_Fields, Results_Per_Page, Current_Page, (ushort)Current_Sort, true, Tracer, out Complete_Result_Set_Info, out Paged_Results);
         }

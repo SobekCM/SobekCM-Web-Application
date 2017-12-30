@@ -28,7 +28,7 @@ namespace SobekCM.Engine_Library.Solr.v5
         /// <param name="Complete_Result_Set_Info"> [OUT] Information about the entire set of results </param>
         /// <param name="Paged_Results"> [OUT] List of search results for the requested page of results </param>
         /// <returns> Page search result object with all relevant result information </returns>
-        public static bool Search(string AggregationCode, List<Complete_Item_Aggregation_Metadata_Type> Facets, List<Complete_Item_Aggregation_Metadata_Type> Results_Fields, List<string> Terms, List<string> Web_Fields, int ResultsPerPage, int Page_Number, ushort Sort, bool Need_Search_Statistics, Custom_Tracer Tracer, out Search_Results_Statistics Complete_Result_Set_Info, out List<iSearch_Title_Result> Paged_Results)
+        public static bool Search(string AggregationCode, List<Complete_Item_Aggregation_Metadata_Type> Facets, List<Complete_Item_Aggregation_Metadata_Type> Results_Fields, List<string> Terms, List<string> Web_Fields, Nullable<DateTime> StartDate, Nullable<DateTime> EndDate, int ResultsPerPage, int Page_Number, ushort Sort, bool Need_Search_Statistics, Custom_Tracer Tracer, out Search_Results_Statistics Complete_Result_Set_Info, out List<iSearch_Title_Result> Paged_Results)
         {
             if (Tracer != null)
             {
@@ -152,6 +152,23 @@ namespace SobekCM.Engine_Library.Solr.v5
             // Get the query string value
             string queryString = queryStringBuilder.ToString();
 
+            // If there is a date range add that
+            if ((StartDate.HasValue) || (EndDate.HasValue))
+            {
+                if ((StartDate.HasValue) && (EndDate.HasValue))
+                {
+                    queryString = "(" + queryString + ") AND ( date.gregorian:[" + to_standard_date_string(StartDate.Value) + " TO " + to_standard_date_string(EndDate.Value) + "])";
+                }
+                else if (StartDate.HasValue) // So EndDate must not have value
+                {
+                    queryString = "(" + queryString + ") AND ( date.gregorian:[" + to_standard_date_string(StartDate.Value) + " TO *])";
+                }
+                else // End date must have value, but not start date
+                {
+                    queryString = "(" + queryString + ") AND ( date.gregorian:[* TO " + to_standard_date_string(EndDate.Value) + "])";
+                }
+            }
+
             // Exclude dark and private
             queryString = "(dark:0) AND (discover_ips:0) AND (" + queryString + ")";
 
@@ -163,6 +180,11 @@ namespace SobekCM.Engine_Library.Solr.v5
 
             // Set output initially to null
             return Run_Query(queryString, ResultsPerPage, Page_Number, Sort, Need_Search_Statistics, Facets, Results_Fields, Tracer, out Complete_Result_Set_Info, out Paged_Results);
+        }
+
+        private static string to_standard_date_string(DateTime AsDate)
+        {
+            return AsDate.Year + "-" + AsDate.Month.ToString().PadLeft(2, '0') + "-" + AsDate.Day.ToString().PadLeft(2, '0') + "T00:00:00Z";
         }
 
         public static bool All_Browse(string AggregationCode, List<Complete_Item_Aggregation_Metadata_Type> Facets, List<Complete_Item_Aggregation_Metadata_Type> Results_Fields, int ResultsPerPage, int Page_Number, ushort Sort, bool Need_Search_Statistics, Custom_Tracer Tracer, out Search_Results_Statistics Complete_Result_Set_Info, out List<iSearch_Title_Result> Paged_Results)

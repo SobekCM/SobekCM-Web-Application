@@ -68,9 +68,19 @@ namespace SobekCM.Resource_Object.Metadata_Modules.VRACore
                 // Add all the material information
                 if (Material_Count > 0)
                 {
+                    // Add the simple material type
                     foreach (VRACore_Materials_Info materialInfo in  Materials)
                     {
                         metadataTerms.Add(new KeyValuePair<string, string>("Material", materialInfo.Materials));
+                    }
+
+                    // Add the display version, which can include more information 
+                    foreach (VRACore_Materials_Info materialInfo in Materials)
+                    {
+                        if ( !String.IsNullOrEmpty(materialInfo.Type))
+                            metadataTerms.Add(new KeyValuePair<string, string>("Material Display", materialInfo.Materials + " (" + materialInfo.Type + ")"));
+                        else
+                            metadataTerms.Add(new KeyValuePair<string, string>("Material Display", materialInfo.Materials));
                     }
                 }
 
@@ -80,6 +90,15 @@ namespace SobekCM.Resource_Object.Metadata_Modules.VRACore
                     foreach (VRACore_Measurement_Info measurement in Measurements)
                     {
                         metadataTerms.Add(new KeyValuePair<string, string>("Measurements", measurement.Measurements));
+                    }
+
+                    // Add the display version, which can include more information 
+                    foreach (VRACore_Measurement_Info measurement in Measurements)
+                    {
+                        if ( !String.IsNullOrEmpty(measurement.Units))
+                            metadataTerms.Add(new KeyValuePair<string, string>("Measurements Display", measurement.Measurements + " " + measurement.Units ));
+                        else
+                            metadataTerms.Add(new KeyValuePair<string, string>("Measurements Display", measurement.Measurements));
                     }
                 }
 

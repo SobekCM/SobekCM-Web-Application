@@ -214,6 +214,10 @@ namespace SobekCM.Engine_Library.Solr.v5
         [SolrField("affiliation")]
         public List<string> Affiliation { get; set; }
 
+        /// <summary> Display version of the affiliations for this document </summary>
+        [SolrField("affiliation.display")]
+        public List<string> AffiliationDisplay { get; set; }
+
         /// <summary> Publishers for this document </summary>
         [SolrField("publisher")]
         public List<string> Publisher { get; set; }
@@ -288,6 +292,10 @@ namespace SobekCM.Engine_Library.Solr.v5
 
         [SolrField("date.gregorian")]
         public DateTime? GregorianDate { get; set; }
+
+        /// <summary> Year this material was published </summary>
+        [SolrField("date.year")]
+        public string DateYear { get; set; }
 
         #endregion
 
@@ -448,6 +456,10 @@ namespace SobekCM.Engine_Library.Solr.v5
         [SolrField("measurements")]
         public List<string> Measurements { get; set; }
 
+        /// <summary> Display version of the measurements VRACore information for this resource </summary>
+        [SolrField("measurements.display")]
+        public List<string> MeasurementsDisplay { get; set; }
+
         /// <summary> Cultural context VRACore information for this resource </summary>
         [SolrField("cultural_context")]
         public List<string> CulturalContext { get; set; }
@@ -459,6 +471,10 @@ namespace SobekCM.Engine_Library.Solr.v5
         /// <summary> Material VRACore information for this resource </summary>
         [SolrField("material")]
         public List<string> Material { get; set; }
+
+        /// <summary> Display version of the material VRACore information for this resource </summary>
+        [SolrField("material.display")]
+        public List<string> MaterialDisplay { get; set; }
 
         /// <summary> Style / Period VRACore information for this resource </summary>
         [SolrField("style_period")]

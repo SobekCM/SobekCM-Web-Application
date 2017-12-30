@@ -1540,14 +1540,14 @@ namespace SobekCM.Engine_Library.Navigation
 						}
 						if (QueryString["da1"] != null)
 						{
-							long date1;
-							if (Int64.TryParse(QueryString["da1"], out date1))
+                            DateTime date1;
+							if (DateTime.TryParse(QueryString["da1"], out date1))
 								Navigator.DateRange_Date1 = date1;
 						}
 						if (QueryString["da2"] != null)
 						{
-							long date2;
-							if (Int64.TryParse(QueryString["da2"], out date2))
+                            DateTime date2;
+                            if (DateTime.TryParse(QueryString["da2"], out date2))
 								Navigator.DateRange_Date2 = date2;
 						}
 

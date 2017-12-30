@@ -173,6 +173,15 @@ namespace SobekCM.Engine_Library.Solr.v5
                     case "affililation":
                         if (returnValue.Affiliation == null) returnValue.Affiliation = new List<string>();
                         returnValue.Affiliation.Add(searchTerm.Value);
+
+                        // For now, also put this in the display
+                        if (returnValue.AffiliationDisplay == null) returnValue.AffiliationDisplay = new List<string>();
+                        returnValue.AffiliationDisplay.Add(searchTerm.Value);
+                        break;
+
+                    case "affililation display":
+                        if (returnValue.AffiliationDisplay == null) returnValue.AffiliationDisplay = new List<string>();
+                        returnValue.AffiliationDisplay.Add(searchTerm.Value);
                         break;
 
                     case "genre":
@@ -355,6 +364,10 @@ namespace SobekCM.Engine_Library.Solr.v5
                         returnValue.Date = searchTerm.Value;
                         break;
 
+                    case "date year":
+                        returnValue.DateYear = searchTerm.Value;
+                        break;
+
                     case "toc":
                         if ( returnValue.TableOfContents == null) returnValue.TableOfContents = new List<string>();
                         returnValue.TableOfContents.Add(searchTerm.Value.Trim());
@@ -380,9 +393,19 @@ namespace SobekCM.Engine_Library.Solr.v5
                         returnValue.Material.Add(searchTerm.Value.Trim());
                         break;
 
+                    case "materials display":
+                        if (returnValue.MaterialDisplay == null) returnValue.MaterialDisplay = new List<string>();
+                        returnValue.MaterialDisplay.Add(searchTerm.Value.Trim());
+                        break;
+
                     case "measurements":
                         if ( returnValue.Measurements == null) returnValue.Measurements = new List<string>();
                         returnValue.Measurements.Add(searchTerm.Value.Trim());
+                        break;
+
+                    case "measurements display":
+                        if (returnValue.MeasurementsDisplay == null) returnValue.MeasurementsDisplay = new List<string>();
+                        returnValue.MeasurementsDisplay.Add(searchTerm.Value.Trim());
                         break;
 
                     case "style period":

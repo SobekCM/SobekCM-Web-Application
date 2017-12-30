@@ -34,8 +34,8 @@
 
   <!-- Administrative fields -->
   <field name="aggregations" type="text_general" indexed="true" stored="true" multiValued="true" />
-  <field name="bibid" type="text_general" indexed="true" stored="true" multiValued="false" />
-  <field name="vid" type="text_general" indexed="true" stored="true" multiValued="false" />
+  <field name="bibid" type="text_single" indexed="true" stored="true" multiValued="false" />
+  <field name="vid" type="text_single" indexed="true" stored="true" multiValued="false" />
   <field name="mainthumb" type="text_general" indexed="false" stored="true" multiValued="false" />
   
   <!-- Fied is used to pull the items added recently -->
@@ -76,7 +76,8 @@
   <field name="language" type="text_general" indexed="true" stored="true" multiValued="true" />
   <field name="creator" type="text_general" indexed="true" stored="true" multiValued="true" />
   <field name="creator.display" type="text_general" indexed="true" stored="true" multiValued="true" />
-  <field name="affiliation" type="text_general" indexed="true" stored="true"  multiValued="true" />
+  <field name="affiliation" type="text_general" indexed="true" stored="false"  multiValued="true" />
+  <field name="affiliation.display" type="text_general" indexed="false" stored="true"  multiValued="true" />
   <field name="publisher" type="text_general" indexed="true" stored="false" multiValued="true" />
   <field name="publisher.display" type="text_general" indexed="false" stored="true" multiValued="true" />
   <field name="publication_place" type="text_general" indexed="true" stored="true" multiValued="true" />
@@ -229,9 +230,11 @@
 
   <!-- VRA Core (visual resource) metadata fields -->
   <field name="measurements" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="measurements.display" type="text_general" indexed="false" stored="true" multiValued="true" />
   <field name="cultural_context" type="text_general" indexed="true" stored="true" multiValued="true" />
   <field name="inscription" type="text_general" indexed="true" stored="true" multiValued="true" />
   <field name="material" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="material.display" type="text_general" indexed="false" stored="true" multiValued="true" />
   <field name="style_period" type="text_general" indexed="true" stored="true" multiValued="true" />
   <field name="technique" type="text_general" indexed="true" stored="true" multiValued="true" />
   <field name="measurements_facets" type="text_facets" indexed="true" stored="false" multiValued="true" />
@@ -304,8 +307,10 @@
   <field name="lom_difficulty" type="text_general" indexed="true" stored="true" multiValued="false" />
   <field name="lom_intended_end_user" type="text_general" indexed="true" stored="true" multiValued="true" />
   <field name="lom_intended_end_user.display" type="text_general" indexed="false" stored="true" multiValued="false" />
-  <field name="lom_interactivity_level" type="text_general" indexed="true" stored="true" multiValued="false" />
-  <field name="lom_interactivity_type" type="text_general" indexed="true" stored="true" multiValued="false" />
+  <field name="lom_interactivity_level" type="text_single" indexed="true" stored="true" multiValued="false" />
+  <field name="lom_interactivity_level.display" type="text_general" indexed="false" stored="true" multiValued="false" />
+  <field name="lom_interactivity_type" type="text_single" indexed="true" stored="true" multiValued="false" />
+  <field name="lom_interactivity_type.display" type="text_general" indexed="false" stored="true" multiValued="false" />
   <field name="lom_status" type="text_general" indexed="true" stored="true" multiValued="false" />
   <field name="lom_requirement" type="text_general" indexed="true" stored="true" multiValued="true" />
   <field name="lom_requirement.display" type="text_general" indexed="false" stored="true" multiValued="true" />
@@ -325,6 +330,8 @@
   <field name="lom_age_range_facets" type="text_facets" indexed="true" stored="false" multiValued="true" />
   <field name="lom_resource_type_facets" type="text_facets" indexed="true" stored="false" multiValued="true" />
   <field name="lom_learning_time_facets" type="text_facets" indexed="true" stored="false" multiValued="false" />
+  <copyField source="lom_interactivity_type" dest="lom_interactivity_type.display" />
+  <copyField source="lom_interactivity_level" dest="lom_interactivity_level.display" />
   <copyField source="lom_aggregation" dest="lom_aggregation_facets" />
   <copyField source="lom_context" dest="lom_context_facets" />
   <copyField source="lom_classification" dest="lom_classification_facets" />

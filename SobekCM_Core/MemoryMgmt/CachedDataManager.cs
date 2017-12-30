@@ -627,7 +627,7 @@ namespace SobekCM.Core.MemoryMgmt
 		/// <param name="Count"> Number of fields or terms to include in the key for this result </param>
 		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> Either NULL or the search results item/title list </returns>
-		public static Search_Results_Statistics Retrieve_Search_Result_Statistics( Navigation_Object Current_Mode, int Count, List<string> Fields, List<string> Terms, long DateRange_Start, long DateRange_End, Custom_Tracer Tracer)
+        public static Search_Results_Statistics Retrieve_Search_Result_Statistics(Navigation_Object Current_Mode, int Count, List<string> Fields, List<string> Terms, Nullable<DateTime> DateRange_Start, Nullable<DateTime> DateRange_End, Custom_Tracer Tracer)
 		{
 			// If the cache is disabled, just return before even tracing
 			if ( Settings.Disabled )
@@ -674,12 +674,12 @@ namespace SobekCM.Core.MemoryMgmt
 			}
 
 			// Add possivle date range search restrction to the key
-			if (DateRange_Start >= 0)
+			if (DateRange_Start.HasValue)
 			{
-				keyBuilder.Append("_DATE" + DateRange_Start);
-				if (DateRange_End >= 0)
+				keyBuilder.Append("_DATE" + DateRange_Start.Value.ToShortDateString());
+				if (DateRange_End.HasValue)
 				{
-					keyBuilder.Append("-" + DateRange_End);
+                    keyBuilder.Append("-" + DateRange_End.Value.ToShortDateString());
 				}
 			}
 
@@ -718,7 +718,7 @@ namespace SobekCM.Core.MemoryMgmt
         /// <param name="Count"> Number of fields or terms to include in the key for this result </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
         /// <returns> Either NULL or the search results item/title list </returns>
-        public static Search_Results_Statistics Retrieve_Search_Result_Statistics(Results_Arguments Current_Mode, int Count, List<string> Fields, List<string> Terms, long DateRange_Start, long DateRange_End, Custom_Tracer Tracer)
+        public static Search_Results_Statistics Retrieve_Search_Result_Statistics(Results_Arguments Current_Mode, int Count, List<string> Fields, List<string> Terms, Nullable<DateTime> DateRange_Start, Nullable<DateTime> DateRange_End, Custom_Tracer Tracer)
         {
             // If the cache is disabled, just return before even tracing
             if (Settings.Disabled)
@@ -765,12 +765,12 @@ namespace SobekCM.Core.MemoryMgmt
             }
 
             // Add possivle date range search restrction to the key
-            if (DateRange_Start >= 0)
+            if (DateRange_Start.HasValue)
             {
-                keyBuilder.Append("_DATE" + DateRange_Start);
-                if (DateRange_End >= 0)
+                keyBuilder.Append("_DATE" + DateRange_Start.Value.ToShortDateString());
+                if (DateRange_End.HasValue)
                 {
-                    keyBuilder.Append("-" + DateRange_End);
+                    keyBuilder.Append("-" + DateRange_End.Value.ToShortDateString());
                 }
             }
 
@@ -809,7 +809,7 @@ namespace SobekCM.Core.MemoryMgmt
 		/// <param name="DateRange_End"> End of a date range search, or -1 </param>
 		/// <param name="StoreObject"> Search results item/title list </param>
 		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-		public static void Store_Search_Result_Statistics(Navigation_Object Current_Mode, int Count, List<string> Fields, List<string> Terms, long DateRange_Start, long DateRange_End, Search_Results_Statistics StoreObject, Custom_Tracer Tracer)
+		public static void Store_Search_Result_Statistics(Navigation_Object Current_Mode, int Count, List<string> Fields, List<string> Terms, Nullable<DateTime> DateRange_Start, Nullable<DateTime> DateRange_End, Search_Results_Statistics StoreObject, Custom_Tracer Tracer)
 		{
 			// If the cache is disabled, just return before even tracing
 			if ( Settings.Disabled )
@@ -849,15 +849,15 @@ namespace SobekCM.Core.MemoryMgmt
 				keyBuilder.Append(Fields[i] + "_");
 			}
 
-			// Add possivle date range search restrction to the key
-			if (DateRange_Start >= 0)
-			{
-				keyBuilder.Append("_DATE" + DateRange_Start);
-				if (DateRange_End >= 0)
-				{
-					keyBuilder.Append("-" + DateRange_End);
-				}
-			}
+            // Add possivle date range search restrction to the key
+            if (DateRange_Start.HasValue)
+            {
+                keyBuilder.Append("_DATE" + DateRange_Start.Value.ToShortDateString());
+                if (DateRange_End.HasValue)
+                {
+                    keyBuilder.Append("-" + DateRange_End.Value.ToShortDateString());
+                }
+            }
 
 			string key = keyBuilder.ToString();
 
@@ -891,7 +891,7 @@ namespace SobekCM.Core.MemoryMgmt
         /// <param name="DateRange_End"> End of a date range search, or -1 </param>
         /// <param name="StoreObject"> Search results item/title list </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-        public static void Store_Search_Result_Statistics(Results_Arguments Current_Mode, int Count, List<string> Fields, List<string> Terms, long DateRange_Start, long DateRange_End, Search_Results_Statistics StoreObject, Custom_Tracer Tracer)
+        public static void Store_Search_Result_Statistics(Results_Arguments Current_Mode, int Count, List<string> Fields, List<string> Terms, Nullable<DateTime> DateRange_Start, Nullable<DateTime> DateRange_End, Search_Results_Statistics StoreObject, Custom_Tracer Tracer)
         {
             // If the cache is disabled, just return before even tracing
             if (Settings.Disabled)
@@ -932,12 +932,12 @@ namespace SobekCM.Core.MemoryMgmt
             }
 
             // Add possivle date range search restrction to the key
-            if (DateRange_Start >= 0)
+            if (DateRange_Start.HasValue)
             {
-                keyBuilder.Append("_DATE" + DateRange_Start);
-                if (DateRange_End >= 0)
+                keyBuilder.Append("_DATE" + DateRange_Start.Value.ToShortDateString());
+                if (DateRange_End.HasValue)
                 {
-                    keyBuilder.Append("-" + DateRange_End);
+                    keyBuilder.Append("-" + DateRange_End.Value.ToShortDateString());
                 }
             }
 
@@ -979,7 +979,7 @@ namespace SobekCM.Core.MemoryMgmt
         /// <param name="ResultsPerPage"> Results per page </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
         /// <returns> Either NULL or the search results item/title list </returns>
-        public static List<iSearch_Title_Result> Retrieve_Search_Results(Navigation_Object Current_Mode, int Sort, int Count, List<string> Fields, List<string> Terms, long DateRange_Start, long DateRange_End, int ResultsPerPage, Custom_Tracer Tracer)
+        public static List<iSearch_Title_Result> Retrieve_Search_Results(Navigation_Object Current_Mode, int Sort, int Count, List<string> Fields, List<string> Terms, Nullable<DateTime> DateRange_Start, Nullable<DateTime> DateRange_End, int ResultsPerPage, Custom_Tracer Tracer)
 		{
 			// If the cache is disabled, just return before even tracing
 			if ( Settings.Disabled )
@@ -1026,15 +1026,15 @@ namespace SobekCM.Core.MemoryMgmt
 			}
 			keyBuilder.Append(Sort);
 
-			// Add possivle date range search restrction to the key
-			if (DateRange_Start >= 0)
-			{
-				keyBuilder.Append("_DATE" + DateRange_Start);
-				if (DateRange_End >= 0)
-				{
-					keyBuilder.Append("-" + DateRange_End);
-				}
-			}
+            // Add possivle date range search restrction to the key
+            if (DateRange_Start.HasValue)
+            {
+                keyBuilder.Append("_DATE" + DateRange_Start.Value.ToShortDateString());
+                if (DateRange_End.HasValue)
+                {
+                    keyBuilder.Append("-" + DateRange_End.Value.ToShortDateString());
+                }
+            }
 
             string key = keyBuilder + "_" + ResultsPerPage + "rpp";
 
@@ -1072,7 +1072,7 @@ namespace SobekCM.Core.MemoryMgmt
         /// <param name="DateRange_End"> End of a date range search, or -1 </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
         /// <returns> Either NULL or the search results item/title list </returns>
-        public static List<iSearch_Title_Result> Retrieve_Search_Results(Results_Arguments Current_Mode, int Sort, int Count, List<string> Fields, List<string> Terms, long DateRange_Start, long DateRange_End, Custom_Tracer Tracer)
+        public static List<iSearch_Title_Result> Retrieve_Search_Results(Results_Arguments Current_Mode, int Sort, int Count, List<string> Fields, List<string> Terms, Nullable<DateTime> DateRange_Start, Nullable<DateTime> DateRange_End, Custom_Tracer Tracer)
         {
             // If the cache is disabled, just return before even tracing
             if (Settings.Disabled)
@@ -1120,12 +1120,12 @@ namespace SobekCM.Core.MemoryMgmt
             keyBuilder.Append(Sort);
 
             // Add possivle date range search restrction to the key
-            if (DateRange_Start >= 0)
+            if (DateRange_Start.HasValue)
             {
-                keyBuilder.Append("_DATE" + DateRange_Start);
-                if (DateRange_End >= 0)
+                keyBuilder.Append("_DATE" + DateRange_Start.Value.ToShortDateString());
+                if (DateRange_End.HasValue)
                 {
-                    keyBuilder.Append("-" + DateRange_End);
+                    keyBuilder.Append("-" + DateRange_End.Value.ToShortDateString());
                 }
             }
 
@@ -1162,7 +1162,7 @@ namespace SobekCM.Core.MemoryMgmt
         /// <param name="ResultsPerPage"> Results per page </param>
         /// <param name="StoreObject"> Search results item/title list </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-        public static void Store_Search_Results(Navigation_Object Current_Mode, int Sort, int Count, List<string> Fields, List<string> Terms, long DateRange_Start, long DateRange_End, int ResultsPerPage, List<iSearch_Title_Result> StoreObject, Custom_Tracer Tracer)
+        public static void Store_Search_Results(Navigation_Object Current_Mode, int Sort, int Count, List<string> Fields, List<string> Terms, Nullable<DateTime> DateRange_Start, Nullable<DateTime> DateRange_End, int ResultsPerPage, List<iSearch_Title_Result> StoreObject, Custom_Tracer Tracer)
 		{
 			// If the cache is disabled, just return before even tracing
 			if ( Settings.Disabled )
@@ -1204,15 +1204,15 @@ namespace SobekCM.Core.MemoryMgmt
 			}
 			keyBuilder.Append(Sort);
 
-			// Add possivle date range search restrction to the key
-			if (DateRange_Start >= 0)
-			{
-				keyBuilder.Append("_DATE" + DateRange_Start);
-				if (DateRange_End >= 0)
-				{
-					keyBuilder.Append("-" + DateRange_End);
-				}
-			}
+            // Add possivle date range search restrction to the key
+            if (DateRange_Start.HasValue)
+            {
+                keyBuilder.Append("_DATE" + DateRange_Start.Value.ToShortDateString());
+                if (DateRange_End.HasValue)
+                {
+                    keyBuilder.Append("-" + DateRange_End.Value.ToShortDateString());
+                }
+            }
 
             string key = keyBuilder + "_" + ResultsPerPage + "rpp";
 
@@ -1247,7 +1247,7 @@ namespace SobekCM.Core.MemoryMgmt
         /// <param name="DateRange_End"> End of a date range search, or -1 </param>
         /// <param name="StoreObject"> Search results item/title list </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-        public static void Store_Search_Results(Results_Arguments Current_Mode, int Sort, int Count, List<string> Fields, List<string> Terms, long DateRange_Start, long DateRange_End, List<iSearch_Title_Result> StoreObject, Custom_Tracer Tracer)
+        public static void Store_Search_Results(Results_Arguments Current_Mode, int Sort, int Count, List<string> Fields, List<string> Terms, Nullable<DateTime> DateRange_Start, Nullable<DateTime> DateRange_End, List<iSearch_Title_Result> StoreObject, Custom_Tracer Tracer)
         {
             // If the cache is disabled, just return before even tracing
             if (Settings.Disabled)
@@ -1290,12 +1290,12 @@ namespace SobekCM.Core.MemoryMgmt
             keyBuilder.Append(Sort);
 
             // Add possivle date range search restrction to the key
-            if (DateRange_Start >= 0)
+            if (DateRange_Start.HasValue)
             {
-                keyBuilder.Append("_DATE" + DateRange_Start);
-                if (DateRange_End >= 0)
+                keyBuilder.Append("_DATE" + DateRange_Start.Value.ToShortDateString());
+                if (DateRange_End.HasValue)
                 {
-                    keyBuilder.Append("-" + DateRange_End);
+                    keyBuilder.Append("-" + DateRange_End.Value.ToShortDateString());
                 }
             }
 
@@ -1332,7 +1332,7 @@ namespace SobekCM.Core.MemoryMgmt
 		/// <param name="DateRange_End"> End of a date range search, or -1 </param>
 		/// <param name="StoreObject"> Search results item/title list </param>
 		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-		public static void Store_Search_Results(Navigation_Object Current_Mode, int Sort, int Count, List<string> Fields, List<string> Terms, long DateRange_Start, long DateRange_End, List<List<iSearch_Title_Result>> StoreObject, Custom_Tracer Tracer)
+		public static void Store_Search_Results(Navigation_Object Current_Mode, int Sort, int Count, List<string> Fields, List<string> Terms, Nullable<DateTime> DateRange_Start, Nullable<DateTime> DateRange_End, List<List<iSearch_Title_Result>> StoreObject, Custom_Tracer Tracer)
 		{
 			// If the cache is disabled, just return before even tracing
 			if ( Settings.Disabled )
@@ -1384,15 +1384,15 @@ namespace SobekCM.Core.MemoryMgmt
 				//    key = "a_" + precision + "_" + aggregation_code + "s_" + Current_Mode.SubAggregation + "t_" + Current_Mode.Search_String + "f_" + search_fields;
 				//}
 
-				// Add possivle date range search restrction to the key
-				if (DateRange_Start >= 0)
-				{
-					keyBuilder.Append("_DATE" + DateRange_Start);
-					if (DateRange_End >= 0)
-					{
-						keyBuilder.Append("-" + DateRange_End);
-					}
-				}
+                // Add possivle date range search restrction to the key
+                if (DateRange_Start.HasValue)
+                {
+                    keyBuilder.Append("_DATE" + DateRange_Start.Value.ToShortDateString());
+                    if (DateRange_End.HasValue)
+                    {
+                        keyBuilder.Append("-" + DateRange_End.Value.ToShortDateString());
+                    }
+                }
 
 				string key = keyBuilder.ToString();
                 if ((String.IsNullOrEmpty(Current_Mode.Search_String)) && (!String.IsNullOrEmpty(Current_Mode.Coordinates)))
@@ -1425,7 +1425,7 @@ namespace SobekCM.Core.MemoryMgmt
         /// <param name="DateRange_End"> End of a date range search, or -1 </param>
         /// <param name="StoreObject"> Search results item/title list </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-        public static void Store_Search_Results(Results_Arguments Current_Mode, int Sort, int Count, List<string> Fields, List<string> Terms, long DateRange_Start, long DateRange_End, List<List<iSearch_Title_Result>> StoreObject, Custom_Tracer Tracer)
+        public static void Store_Search_Results(Results_Arguments Current_Mode, int Sort, int Count, List<string> Fields, List<string> Terms, Nullable<DateTime> DateRange_Start, Nullable<DateTime> DateRange_End, List<List<iSearch_Title_Result>> StoreObject, Custom_Tracer Tracer)
         {
             // If the cache is disabled, just return before even tracing
             if (Settings.Disabled)
@@ -1478,12 +1478,12 @@ namespace SobekCM.Core.MemoryMgmt
                 //}
 
                 // Add possivle date range search restrction to the key
-                if (DateRange_Start >= 0)
+                if (DateRange_Start.HasValue)
                 {
-                    keyBuilder.Append("_DATE" + DateRange_Start);
-                    if (DateRange_End >= 0)
+                    keyBuilder.Append("_DATE" + DateRange_Start.Value.ToShortDateString());
+                    if (DateRange_End.HasValue)
                     {
-                        keyBuilder.Append("-" + DateRange_End);
+                        keyBuilder.Append("-" + DateRange_End.Value.ToShortDateString());
                     }
                 }
 

@@ -9,12 +9,15 @@ using System.Web.UI.WebControls;
 using SobekCM.Core.BriefItem;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Navigation;
+using SobekCM.Core.Settings;
 using SobekCM.Core.UI_Configuration;
 using SobekCM.Core.UI_Configuration.StaticResources;
 using SobekCM.Core.Users;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Engine_Library.Solr.Legacy;
+using SobekCM.Engine_Library.Solr.v5;
 using SobekCM.Library.ItemViewer.Menu;
+using SobekCM.Library.UI;
 using SobekCM.Tools;
 
 namespace SobekCM.Library.ItemViewer.Viewers
@@ -141,7 +144,12 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 Tracer.Add_Trace("Text_Search_ItemViewer.Constructor", "Performing Solr/Lucene search");
 
                 int page = CurrentRequest.SubPage.HasValue ? Math.Max(CurrentRequest.SubPage.Value, ((ushort)1)) : 1;
-                results = Legacy_Solr_Page_Results.Search(BriefItem.BibID, BriefItem.VID, terms, 20, page, false);
+
+                // Search differently, depending on the search type
+                if ( UI_ApplicationCache_Gateway.Settings.System.Search_System == Search_System_Enum.Beta)
+                    results = v5_Solr_Searcher.Search_Within_Document(BriefItem.BibID, BriefItem.VID, terms, 20, page, false);
+                else
+                    results = Legacy_Solr_Searcher.Search_Within_Document(BriefItem.BibID, BriefItem.VID, terms, 20, page, false);
 
                 Tracer.Add_Trace("Text_Search_ItemViewer.Constructor", "Completed Solr/Lucene search in " + results.QueryTime + "ms");
             }
@@ -408,6 +416,16 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
         }
 
+        /// <summary> Any additional inline style for this viewer that affects the main box around this</summary>
+        /// <remarks> This returns the width of the image for the width of the viewer port </remarks>
+        public override string ViewerBox_InlineStyle
+        {
+            get
+            {
+                return "width:1200px;";
+            }
+        }
+
         /// <summary> Allows controls to be added directory to a place holder, rather than just writing to the output HTML stream </summary>
         /// <param name="MainPlaceHolder"> Main place holder ( &quot;mainPlaceHolder&quot; ) in the itemNavForm form into which the bulk of the item viewer's output is displayed</param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
@@ -430,7 +448,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             string complete_search = CurrentRequest.Text_Search;
             ushort subpage = CurrentRequest.SubPage.HasValue ? Math.Max(CurrentRequest.SubPage.Value, ((ushort)1)) : ((ushort)1);
             CurrentRequest.SubPage = 1;
-            Legacy_Solr_Documents_Searcher.Split_Multi_Terms(CurrentRequest.Text_Search, "ZZ", terms, fields);
+            Legacy_Solr_Searcher.Split_Multi_Terms(CurrentRequest.Text_Search, "ZZ", terms, fields);
 
             string your_search_language = "Your search within this document for ";
             string and_not_language = " AND NOT ";

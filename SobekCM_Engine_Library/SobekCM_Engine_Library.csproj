@@ -161,7 +161,7 @@
     <Compile Include="Solr\Legacy\Legacy_SolrDocument.cs" />
     <Compile Include="Solr\Legacy\Legacy_SolrPage.cs" />
     <Compile Include="Solr\Legacy\Legacy_Solr_Controller.cs" />
-    <Compile Include="Solr\Legacy\Legacy_Solr_Documents_Searcher.cs" />
+    <Compile Include="Solr\Legacy\Legacy_Solr_Searcher.cs" />
     <Compile Include="Solr\Legacy\Legacy_Solr_Document_Result.cs" />
     <Compile Include="Solr\Solr_Controller.cs" />
     <Compile Include="Solr\Solr_Operations_Cache.cs" />
@@ -171,7 +171,7 @@
     <Compile Include="Solr\v5\v5_SolrDocument_Results_Mapper.cs" />
     <Compile Include="Solr\v5\v5_Solr_Controller.cs" />
     <Compile Include="Solr\v5\v5_SolrDocument.cs" />
-    <Compile Include="Solr\v5\v5_Solr_Document_Searcher.cs" />
+    <Compile Include="Solr\v5\v5_Solr_Searcher.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\EngineAgnosticLayerDbAccess\EngineAgnosticLayerDbAccess.csproj">

@@ -987,7 +987,7 @@ namespace SobekCM.Engine_Library.Endpoints
             // If this is basic, do some other preparation
             if (Search_Type == Search_Type_Enum.Full_Text)
             {
-                Legacy_Solr_Documents_Searcher.Split_Multi_Terms(Search_String, default_index, Output_Terms, Output_Fields);
+                Legacy_Solr_Searcher.Split_Multi_Terms(Search_String, default_index, Output_Terms, Output_Fields);
             }
             else
             {
@@ -1239,9 +1239,9 @@ namespace SobekCM.Engine_Library.Endpoints
 
             // Use this built query to query against Solr
             if (Engine_ApplicationCache_Gateway.Settings.System.Search_System == Search_System_Enum.Beta)
-                v5_Solr_Document_Searcher.Search(Aggregation_Object.Code, Aggregation_Object.Facets, Aggregation_Object.Results_Fields, Terms, Web_Fields, StartDate, EndDate, Results_Per_Page, Current_Page, (ushort)Current_Sort, true, Tracer, out Complete_Result_Set_Info, out Paged_Results);
+                v5_Solr_Searcher.Search(Aggregation_Object.Code, Aggregation_Object.Facets, Aggregation_Object.Results_Fields, Terms, Web_Fields, StartDate, EndDate, Results_Per_Page, Current_Page, (ushort)Current_Sort, true, Tracer, out Complete_Result_Set_Info, out Paged_Results);
             else
-                Legacy_Solr_Documents_Searcher.Search(Aggregation_Object.Code, Terms, Web_Fields, Results_Per_Page, Current_Page, (ushort)Current_Sort, true, Tracer, out Complete_Result_Set_Info, out Paged_Results);
+                Legacy_Solr_Searcher.Search(Aggregation_Object.Code, Terms, Web_Fields, Results_Per_Page, Current_Page, (ushort)Current_Sort, true, Tracer, out Complete_Result_Set_Info, out Paged_Results);
         }
 
         #endregion

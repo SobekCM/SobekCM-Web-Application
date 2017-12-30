@@ -1295,6 +1295,9 @@ namespace SobekCM.Library.HTML
 			if (Code == "ZZ")
 				return UI_ApplicationCache_Gateway.Translation.Get_Translation("anywhere", RequestSpecificValues.Current_Mode.Language);
 
+            //if (Code == "FT")
+            //    return UI_ApplicationCache_Gateway.Translation.Get_Translation("full text", RequestSpecificValues.Current_Mode.Language);
+
 			Metadata_Search_Field field = UI_ApplicationCache_Gateway.Settings.Metadata_Search_Field_By_Code(Code);
 			return (field != null) ? in_language + UI_ApplicationCache_Gateway.Translation.Get_Translation(field.Display_Term, RequestSpecificValues.Current_Mode.Language) : in_language + HttpUtility.UrlEncode(Code);
 		}
@@ -1370,45 +1373,61 @@ namespace SobekCM.Library.HTML
 	                RequestSpecificValues.Current_Mode.Search_Fields = orig_field;
 	                RequestSpecificValues.Current_Mode.Search_String = orig_terms;
 	            }
-	            if (RequestSpecificValues.Current_Mode.Search_Type == Search_Type_Enum.Basic)
-	            {
-	                List<string> output_terms = new List<string>();
-	                List<string> output_fields = new List<string>();
-	                SobekCM_Assistant.Split_Clean_Search_Terms_Fields(RequestSpecificValues.Current_Mode.Search_String, RequestSpecificValues.Current_Mode.Search_Fields, RequestSpecificValues.Current_Mode.Search_Type, output_terms, output_fields, UI_ApplicationCache_Gateway.Search_Stop_Words, RequestSpecificValues.Current_Mode.Search_Precision, ',');
+                else if ((RequestSpecificValues.Current_Mode.Search_Type == Search_Type_Enum.Full_Text) || ( RequestSpecificValues.Current_Mode.Search_Type == Search_Type_Enum.dLOC_Full_Text ))
+                {
+                    Search_Type_Enum origSearchType = RequestSpecificValues.Current_Mode.Search_Type;
+                    RequestSpecificValues.Current_Mode.Search_Type = Search_Type_Enum.Advanced;
+                    string orig_field = RequestSpecificValues.Current_Mode.Search_Fields;
+                    string orig_terms = RequestSpecificValues.Current_Mode.Search_String;
+                    RequestSpecificValues.Current_Mode.Search_Fields = "TX,<%CODE%>";
+                    RequestSpecificValues.Current_Mode.Search_String = RequestSpecificValues.Current_Mode.Search_String + ",<%VALUE%>";
+                    ushort? page = RequestSpecificValues.Current_Mode.Page;
+                    RequestSpecificValues.Current_Mode.Page = 1;
+                    url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode).Replace("%3c%25", "<%").Replace("%25%3e", "%>").Replace("<%VALUE%>", "\"<%VALUE%>\"").Replace("/exact/", "/results/");
+                    RequestSpecificValues.Current_Mode.Page = page;
+                    RequestSpecificValues.Current_Mode.Search_Fields = orig_field;
+                    RequestSpecificValues.Current_Mode.Search_String = orig_terms;
+                    RequestSpecificValues.Current_Mode.Search_Type = origSearchType;
+                }
+                else if (RequestSpecificValues.Current_Mode.Search_Type == Search_Type_Enum.Basic)
+                {
+                    List<string> output_terms = new List<string>();
+                    List<string> output_fields = new List<string>();
+                    SobekCM_Assistant.Split_Clean_Search_Terms_Fields(RequestSpecificValues.Current_Mode.Search_String, RequestSpecificValues.Current_Mode.Search_Fields, RequestSpecificValues.Current_Mode.Search_Type, output_terms, output_fields, UI_ApplicationCache_Gateway.Search_Stop_Words, RequestSpecificValues.Current_Mode.Search_Precision, ',');
 
-	                string original_search = RequestSpecificValues.Current_Mode.Search_String;
-	                RequestSpecificValues.Current_Mode.Search_Type = Search_Type_Enum.Advanced;
-	                StringBuilder term_builder = new StringBuilder();
-	                foreach (string thisTerm in output_terms)
-	                {
-	                    if (term_builder.Length > 0)
-	                        term_builder.Append(",");
-	                    if (thisTerm.IndexOf(" ") > 0)
-	                        term_builder.Append("\"" + thisTerm + "\"");
-	                    else
-	                        term_builder.Append(thisTerm);
-	                }
-	                StringBuilder field_builder = new StringBuilder();
-	                foreach (string thisField in output_fields)
-	                {
-	                    if (field_builder.Length > 0)
-	                        field_builder.Append(",");
-	                    field_builder.Append(thisField);
-	                }
-	                RequestSpecificValues.Current_Mode.Search_Fields = field_builder.ToString();
-	                RequestSpecificValues.Current_Mode.Search_String = term_builder.ToString();
-	                ushort? page = RequestSpecificValues.Current_Mode.Page;
+                    string original_search = RequestSpecificValues.Current_Mode.Search_String;
+                    RequestSpecificValues.Current_Mode.Search_Type = Search_Type_Enum.Advanced;
+                    StringBuilder term_builder = new StringBuilder();
+                    foreach (string thisTerm in output_terms)
+                    {
+                        if (term_builder.Length > 0)
+                            term_builder.Append(",");
+                        if (thisTerm.IndexOf(" ") > 0)
+                            term_builder.Append("\"" + thisTerm + "\"");
+                        else
+                            term_builder.Append(thisTerm);
+                    }
+                    StringBuilder field_builder = new StringBuilder();
+                    foreach (string thisField in output_fields)
+                    {
+                        if (field_builder.Length > 0)
+                            field_builder.Append(",");
+                        field_builder.Append(thisField);
+                    }
+                    RequestSpecificValues.Current_Mode.Search_Fields = field_builder.ToString();
+                    RequestSpecificValues.Current_Mode.Search_String = term_builder.ToString();
+                    ushort? page = RequestSpecificValues.Current_Mode.Page;
                     RequestSpecificValues.Current_Mode.Page = 1;
 
-	                RequestSpecificValues.Current_Mode.Search_Fields = RequestSpecificValues.Current_Mode.Search_Fields + ",<%CODE%>";
-	                RequestSpecificValues.Current_Mode.Search_String = RequestSpecificValues.Current_Mode.Search_String + ",<%VALUE%>";
-	                url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode).Replace("%3c%25", "<%").Replace("%25%3e", "%>").Replace("<%VALUE%>", "\"<%VALUE%>\"");
+                    RequestSpecificValues.Current_Mode.Search_Fields = RequestSpecificValues.Current_Mode.Search_Fields + ",<%CODE%>";
+                    RequestSpecificValues.Current_Mode.Search_String = RequestSpecificValues.Current_Mode.Search_String + ",<%VALUE%>";
+                    url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode).Replace("%3c%25", "<%").Replace("%25%3e", "%>").Replace("<%VALUE%>", "\"<%VALUE%>\"");
 
-	                RequestSpecificValues.Current_Mode.Search_Type = Search_Type_Enum.Basic;
-	                RequestSpecificValues.Current_Mode.Search_Fields = String.Empty;
-	                RequestSpecificValues.Current_Mode.Search_String = original_search;
-	                RequestSpecificValues.Current_Mode.Page = page;
-	            }
+                    RequestSpecificValues.Current_Mode.Search_Type = Search_Type_Enum.Basic;
+                    RequestSpecificValues.Current_Mode.Search_Fields = String.Empty;
+                    RequestSpecificValues.Current_Mode.Search_String = original_search;
+                    RequestSpecificValues.Current_Mode.Page = page;
+                }
 	        }
 	        builder.AppendLine("      var stem_url = '" + url + "';");
 	        builder.AppendLine("      var new_url = stem_url.replace('<%CODE%>', code).replace('<%VALUE%>', new_value);");

@@ -18,7 +18,7 @@ namespace SobekCM.Engine_Library.Solr.Legacy
 {
 	/// <summary> Static class performs a search against a set of documents within a Solr/Lucene index </summary>
 	[Serializable]
-	public class Legacy_Solr_Documents_Searcher
+	public class Legacy_Solr_Searcher
 	{
 		#region Static method to query the Solr/Lucene for a collection of results
 
@@ -376,5 +376,139 @@ namespace SobekCM.Engine_Library.Solr.Legacy
 		}
 
 		#endregion
-	}
+
+        #region Method to search for pages within a single item
+
+        /// <summary> Perform an in-document search for pages with matching full-text </summary>
+        /// <param name="BibID"> Bibliographic identifier (BibID) for the item to search </param>
+        /// <param name="VID"> Volume identifier for the item to search </param>
+        /// <param name="Search_Terms"> Terms to search for within the page text </param>
+        /// <param name="ResultsPerPage"> Number of results to display per a "page" of results </param>
+        /// <param name="ResultsPage"> Which page of results to return ( one-based, so the first page is page number of one )</param>
+        /// <param name="Sort_By_Score"> Flag indicates whether to sort the results by relevancy score, rather than the default page order </param>
+        /// <returns> Page search result object with all relevant result information </returns>
+        public static Legacy_Solr_Page_Results Search_Within_Document(string BibID, string VID, List<string> Search_Terms, int ResultsPerPage, int ResultsPage, bool Sort_By_Score)
+        {
+            // Ensure page is not erroneously set to zero or negative
+            if (ResultsPage <= 0)
+                ResultsPage = 1;
+
+            // Create the solr worker to query the page index
+            var solrWorker = Solr_Operations_Cache<Legacy_Solr_Page_Result>.GetSolrOperations(Engine_ApplicationCache_Gateway.Settings.Servers.Page_Solr_Legacy_URL);
+
+            // Create the query options
+            QueryOptions options = new QueryOptions
+            {
+                Rows = ResultsPerPage,
+                Start = (ResultsPage - 1) * ResultsPerPage,
+                Fields = new[] { "pageid", "pagename", "pageorder", "score", "thumbnail" },
+                Highlight = new HighlightingParameters { Fields = new[] { "pagetext" }, },
+                ExtraParams = new Dictionary<string, string> { { "hl.useFastVectorHighlighter", "true" } }
+            };
+
+            // If this is not the default Solr sort (by score) request sort by the page order
+            if (!Sort_By_Score)
+                options.OrderBy = new[] { new SortOrder("pageorder", Order.ASC) };
+
+            // Build the query string
+            StringBuilder queryStringBuilder = new StringBuilder("(bibid:" + BibID + ")AND(vid:" + VID + ")AND(");
+            bool first_value = true;
+            foreach (string searchTerm in Search_Terms)
+            {
+                if (searchTerm.Length > 1)
+                {
+                    // Skip any AND NOT for now
+                    if (searchTerm[0] != '-')
+                    {
+                        // Find the joiner
+                        if (first_value)
+                        {
+                            if (searchTerm.IndexOf(" ") > 0)
+                            {
+                                if ((searchTerm[0] == '+') || (searchTerm[0] == '=') || (searchTerm[0] == '-'))
+                                {
+                                    queryStringBuilder.Append("(pagetext:\"" + searchTerm.Substring(1).Replace(":", "") + "\")");
+                                }
+                                else
+                                {
+                                    queryStringBuilder.Append("(pagetext:\"" + searchTerm.Replace(":", "") + "\")");
+                                }
+                            }
+                            else
+                            {
+                                if ((searchTerm[0] == '+') || (searchTerm[0] == '=') || (searchTerm[0] == '-'))
+                                {
+                                    queryStringBuilder.Append("(pagetext:" + searchTerm.Substring(1).Replace(":", "") + ")");
+                                }
+                                else
+                                {
+                                    queryStringBuilder.Append("(pagetext:" + searchTerm.Replace(":", "") + ")");
+                                }
+                            }
+                            first_value = false;
+                        }
+                        else
+                        {
+                            if ((searchTerm[0] == '+') || (searchTerm[0] == '=') || (searchTerm[0] == '-'))
+                            {
+                                queryStringBuilder.Append(searchTerm[0] == '=' ? " OR " : " AND ");
+
+                                if (searchTerm.IndexOf(" ") > 0)
+                                {
+                                    queryStringBuilder.Append("(pagetext:\"" + searchTerm.Substring(1).Replace(":", "") + "\")");
+                                }
+                                else
+                                {
+                                    queryStringBuilder.Append("(pagetext:" + searchTerm.Substring(1).Replace(":", "") + ")");
+                                }
+                            }
+                            else
+                            {
+                                if (searchTerm.IndexOf(" ") > 0)
+                                {
+                                    queryStringBuilder.Append(" AND (pagetext:\"" + searchTerm.Replace(":", "") + "\")");
+                                }
+                                else
+                                {
+                                    queryStringBuilder.Append(" AND (pagetext:" + searchTerm.Replace(":", "") + ")");
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            queryStringBuilder.Append(")");
+
+
+            // Perform this search
+            SolrQueryResults<Legacy_Solr_Page_Result> results = solrWorker.Query(queryStringBuilder.ToString(), options);
+
+            // Create the results object to pass back out
+            var searchResults = new Legacy_Solr_Page_Results
+            {
+                QueryTime = results.Header.QTime,
+                TotalResults = results.NumFound,
+                Query = queryStringBuilder.ToString(),
+                Sort_By_Score = Sort_By_Score,
+                Page_Number = ResultsPage
+            };
+
+            // Pass all the results into the List and add the highlighted text to each result as well
+            foreach (Legacy_Solr_Page_Result thisResult in results)
+            {
+                // Add the highlight snipper
+                if ((results.Highlights.ContainsKey(thisResult.PageID)) && (results.Highlights[thisResult.PageID].Count > 0) && (results.Highlights[thisResult.PageID].ElementAt(0).Value.Count > 0))
+                {
+                    thisResult.Snippet = results.Highlights[thisResult.PageID].ElementAt(0).Value.ElementAt(0);
+                }
+
+                // Add this results
+                searchResults.Add_Result(thisResult);
+            }
+
+            return searchResults;
+        }
+
+        #endregion
+    }
 }

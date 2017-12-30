@@ -30,12 +30,6 @@ namespace SobekCM.Engine_Library.Solr.v5
 
             resultConverted.Metadata_Display_Values = display_result_fields.ToArray();
 
-            //// Add the highlight snipper
-            //if ((results.Highlights.ContainsKey(thisResult.DID)) && (results.Highlights[thisResult.DID].Count > 0) && (results.Highlights[thisResult.DID].ElementAt(0).Value.Count > 0))
-            //{
-            //    thisResult.Snippet = results.Highlights[thisResult.DID].ElementAt(0).Value.ElementAt(0);
-            //}
-
             return resultConverted;
         }
 

@@ -741,7 +741,7 @@ namespace SobekCM.Engine_Library.Endpoints
             string language = Web_Language_Enum_Converter.Enum_To_Code(Engine_ApplicationCache_Gateway.Settings.System.Default_UI_Language);
 
             // Try to save the new item aggregation
-            if (!Engine_Database.Save_Item_Aggregation(NewAggregation.Code, NewAggregation.Name, NewAggregation.ShortName, NewAggregation.Description, thematicHeadingId, NewAggregation.Type, NewAggregation.Active, NewAggregation.Hidden, NewAggregation.External_Link, parentid, NewAggregation.User, language, null))
+            if (!Engine_Database.Save_Item_Aggregation(NewAggregation.Code, NewAggregation.Name, NewAggregation.ShortName, NewAggregation.Description, thematicHeadingId, NewAggregation.Type, NewAggregation.Active, NewAggregation.Hidden, NewAggregation.External_Link, parentid, NewAggregation.User, language, false, null))
             {
                 return new RestResponseMessage(ErrorRestTypeEnum.Exception, "ERROR saving the new item aggregation to the database");
             }

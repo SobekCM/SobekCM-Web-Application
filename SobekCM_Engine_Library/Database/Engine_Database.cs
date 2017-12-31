@@ -3417,6 +3417,7 @@ namespace SobekCM.Engine_Library.Database
                 //Map_Search = Convert.ToUInt16(thisRow[12]),
 				OAI_Enabled = Convert.ToBoolean(thisRow[13]),
 				Items_Can_Be_Described = Convert.ToInt16(thisRow[18]),
+                GroupResults = Convert.ToBoolean(thisRow["GroupResults"])
 			};
 
 			if ((thisRow[8] != DBNull.Value) && (thisRow[8].ToString().Length > 0))
@@ -3429,6 +3430,8 @@ namespace SobekCM.Engine_Library.Database
 				aggrInfo.OAI_Metadata = thisRow[14].ToString();
 			if ((thisRow[19] != DBNull.Value) && (thisRow[19].ToString().Length > 0))
 				aggrInfo.External_Link = thisRow[19].ToString();
+
+
 
 			if (BasicInfo.Columns.Contains("ThematicHeadingID"))
 			{
@@ -3628,41 +3631,43 @@ namespace SobekCM.Engine_Library.Database
 		/// <param name="ExternalLink">External link for this item aggregation (used primarily for institutional item aggregationPermissions to provide a link back to the institution's actual home page)</param>
 		/// <param name="Username"> Username saving this new item aggregation, for the item aggregation milestones </param>
 		/// <param name="LanguageVariants"> Details which language variants exist for this item aggregation </param>
+        /// <param name="GroupResults"> Flag indicates if searches within this collection attempt to cluster the results by title </param>
 		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> TRUE if successful, otherwise FALSE </returns>
 		/// <remarks> This calls the 'SobekCM_Save_Item_Aggregation' stored procedure in the SobekCM database</remarks> 
-		public static bool Save_Item_Aggregation(string Code, string Name, string ShortName, string Description, int ThematicHeadingID, string Type, bool IsActive, bool IsHidden, string ExternalLink, int ParentID, string Username, string LanguageVariants, Custom_Tracer Tracer)
+		public static bool Save_Item_Aggregation(string Code, string Name, string ShortName, string Description, int ThematicHeadingID, string Type, bool IsActive, bool IsHidden, string ExternalLink, int ParentID, string Username, string LanguageVariants, bool GroupResults, Custom_Tracer Tracer)
 		{
-			return Save_Item_Aggregation(-1, Code, Name, ShortName, Description, new Thematic_Heading(ThematicHeadingID, String.Empty), Type, IsActive, IsHidden, String.Empty, 0, 0, 0, 0, false, String.Empty, String.Empty, String.Empty, ExternalLink, ParentID, Username, LanguageVariants, Tracer);
+			return Save_Item_Aggregation(-1, Code, Name, ShortName, Description, new Thematic_Heading(ThematicHeadingID, String.Empty), Type, IsActive, IsHidden, String.Empty, 0, 0, 0, 0, false, String.Empty, String.Empty, String.Empty, ExternalLink, ParentID, Username, LanguageVariants, GroupResults, Tracer);
 		}
 
-		/// <summary> Save a new item aggregation or edit an existing item aggregation in the database </summary>
-		/// <param name="AggregationID"> AggregationID if this is editing an existing one, otherwise -1 </param>
-		/// <param name="Code"> Code for this item aggregation </param>
-		/// <param name="Name"> Name for this item aggregation </param>
-		/// <param name="ShortName"> Short version of this item aggregation </param>
-		/// <param name="Description"> Description of this item aggregation </param>
-		/// <param name="ThematicHeading"> Thematic heading for this item aggregation (or null)</param>
-		/// <param name="Type"> Type of item aggregation (i.e., Collection Group, Institution, Exhibit, etc..)</param>
-		/// <param name="IsActive"> Flag indicates if this item aggregation is active</param>
-		/// <param name="IsHidden"> Flag indicates if this item is hidden</param>
-		/// <param name="DisplayOptions"> Display options for this item aggregation </param>
-		/// <param name="MapSearch"> Map Search value indicates if there is a map search, and the type of search </param>
-		/// /// <param name="MapSearchBeta"> Map Search value indicates if there is a map search, and the type of search </param>
-		/// <param name="MapDisplay"> Map Display value indicates if there is a map display option when looking at search results or browses </param>
-		/// <param name="MapDisplayBeta"> Map Display value indicates if there is a map display option when looking at search results or browses </param>
-		/// <param name="OaiFlag"> Flag indicates if this item aggregation should be available via OAI-PMH </param>
-		/// <param name="OaiMetadata"> Additional metadata about this collection, to be included in the set information in OAI-PMH</param>
-		/// <param name="ContactEmail"> Contact email for this item aggregation (can leave blank to use default)</param>
-		/// <param name="DefaultInterface"> Default interface for this item aggregation (particularly useful for institutional aggregationPermissions)</param>
-		/// <param name="ExternalLink">External link for this item aggregation (used primarily for institutional item aggregationPermissions to provide a link back to the institution's actual home page)</param>
-		/// <param name="ParentID"> ID for the item aggregation parent</param>
-		/// <param name="Username"> Username saving this new item aggregation, for the item aggregation milestones </param>
-		/// <param name="LanguageVariants"> Details which language variants exist for this item aggregation </param>
-		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-		/// <returns> TRUE if successful, otherwise FALSE </returns>
-		/// <remarks> This calls the 'SobekCM_Save_Item_Aggregation' stored procedure in the SobekCM database</remarks> 
-		public static bool Save_Item_Aggregation(int AggregationID, string Code, string Name, string ShortName, string Description, Thematic_Heading ThematicHeading, string Type, bool IsActive, bool IsHidden, string DisplayOptions, int MapSearch, int MapSearchBeta, int MapDisplay, int MapDisplayBeta, bool OaiFlag, string OaiMetadata, string ContactEmail, string DefaultInterface, string ExternalLink, int ParentID, string Username, string LanguageVariants, Custom_Tracer Tracer)
+        /// <summary> Save a new item aggregation or edit an existing item aggregation in the database </summary>
+        /// <param name="AggregationID"> AggregationID if this is editing an existing one, otherwise -1 </param>
+        /// <param name="Code"> Code for this item aggregation </param>
+        /// <param name="Name"> Name for this item aggregation </param>
+        /// <param name="ShortName"> Short version of this item aggregation </param>
+        /// <param name="Description"> Description of this item aggregation </param>
+        /// <param name="ThematicHeading"> Thematic heading for this item aggregation (or null)</param>
+        /// <param name="Type"> Type of item aggregation (i.e., Collection Group, Institution, Exhibit, etc..)</param>
+        /// <param name="IsActive"> Flag indicates if this item aggregation is active</param>
+        /// <param name="IsHidden"> Flag indicates if this item is hidden</param>
+        /// <param name="DisplayOptions"> Display options for this item aggregation </param>
+        /// <param name="MapSearch"> Map Search value indicates if there is a map search, and the type of search </param>
+        /// /// <param name="MapSearchBeta"> Map Search value indicates if there is a map search, and the type of search </param>
+        /// <param name="MapDisplay"> Map Display value indicates if there is a map display option when looking at search results or browses </param>
+        /// <param name="MapDisplayBeta"> Map Display value indicates if there is a map display option when looking at search results or browses </param>
+        /// <param name="OaiFlag"> Flag indicates if this item aggregation should be available via OAI-PMH </param>
+        /// <param name="OaiMetadata"> Additional metadata about this collection, to be included in the set information in OAI-PMH</param>
+        /// <param name="ContactEmail"> Contact email for this item aggregation (can leave blank to use default)</param>
+        /// <param name="DefaultInterface"> Default interface for this item aggregation (particularly useful for institutional aggregationPermissions)</param>
+        /// <param name="ExternalLink">External link for this item aggregation (used primarily for institutional item aggregationPermissions to provide a link back to the institution's actual home page)</param>
+        /// <param name="ParentID"> ID for the item aggregation parent</param>
+        /// <param name="Username"> Username saving this new item aggregation, for the item aggregation milestones </param>
+        /// <param name="LanguageVariants"> Details which language variants exist for this item aggregation </param>
+        /// <param name="GroupResults"> Flag indicates if searches within this collection attempt to cluster the results by title </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <returns> TRUE if successful, otherwise FALSE </returns>
+        /// <remarks> This calls the 'SobekCM_Save_Item_Aggregation' stored procedure in the SobekCM database</remarks> 
+        public static bool Save_Item_Aggregation(int AggregationID, string Code, string Name, string ShortName, string Description, Thematic_Heading ThematicHeading, string Type, bool IsActive, bool IsHidden, string DisplayOptions, int MapSearch, int MapSearchBeta, int MapDisplay, int MapDisplayBeta, bool OaiFlag, string OaiMetadata, string ContactEmail, string DefaultInterface, string ExternalLink, int ParentID, string Username, string LanguageVariants, bool GroupResults, Custom_Tracer Tracer)
 		{
 			Last_Exception = null;
 
@@ -3674,7 +3679,7 @@ namespace SobekCM.Engine_Library.Database
 			try
 			{
 				// Build the parameter list
-				EalDbParameter[] paramList = new EalDbParameter[21];
+				EalDbParameter[] paramList = new EalDbParameter[22];
 				paramList[0] = new EalDbParameter("@aggregationid", AggregationID);
 				paramList[1] = new EalDbParameter("@code", Code);
 				paramList[2] = new EalDbParameter("@name", Name);
@@ -3701,7 +3706,8 @@ namespace SobekCM.Engine_Library.Database
 				paramList[17] = new EalDbParameter("@parentid", ParentID);
 				paramList[18] = new EalDbParameter("@username", Username);
 				paramList[19] = new EalDbParameter("@languageVariants", LanguageVariants);
-				paramList[20] = new EalDbParameter("@newaggregationid", 0) { Direction = ParameterDirection.InputOutput };
+                paramList[20] = new EalDbParameter("@groupResults", GroupResults);
+				paramList[21] = new EalDbParameter("@newaggregationid", 0) { Direction = ParameterDirection.InputOutput };
 
 				//BETA
 				//paramList[20] = new EalDbParameter("@map_search_beta", Map_Search_Beta);

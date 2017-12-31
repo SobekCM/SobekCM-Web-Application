@@ -845,7 +845,7 @@ namespace SobekCM.Engine_Library.Endpoints
                             // Cache the search results
                             if ((need_paged_results) && (Paged_Results != null))
                             {
-                                CachedDataManager.Store_Search_Results(Current_Mode, sort, actualCount, web_fields, terms, date_start, date_end, Paged_Results, Tracer);
+                                CachedDataManager.Store_Search_Results(Current_Mode, sort, actualCount, web_fields, terms, date_start, date_end, (int)Current_Mode.ResultsPerPage, Paged_Results, Tracer);
                             }
                         }
                     }
@@ -895,7 +895,7 @@ namespace SobekCM.Engine_Library.Endpoints
                             // Cache the search results
                             if ((need_paged_results) && (pagesOfResults != null))
                             {
-                                CachedDataManager.Store_Search_Results(Current_Mode, sort, actualCount, web_fields, terms, date_start, date_end, pagesOfResults, Tracer);
+                                CachedDataManager.Store_Search_Results(Current_Mode, sort, actualCount, web_fields, terms, date_start, date_end, (int)Current_Mode.ResultsPerPage, pagesOfResults, Tracer);
                             }
                         }
                     }

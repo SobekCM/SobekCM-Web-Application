@@ -462,6 +462,11 @@ namespace SobekCM.Core.Aggregations
 		[DataMember(EmitDefaultValue = false, Name = "languageVariants"), ProtoMember(44)]
 		public List<Web_Language_Enum> Language_Variants { get; set; }
 
+        /// <summary> Flag indicates if searches within this collection should endeavor to group results by title </summary>
+        [DataMember(Name = "groupResults")]
+        [ProtoMember(48)]
+        public bool GroupResults { get; set; }
+
 		/// <summary> Gets the number of browses and info pages attached to this item aggregation </summary>
 		[IgnoreDataMember]
 		[XmlIgnore]

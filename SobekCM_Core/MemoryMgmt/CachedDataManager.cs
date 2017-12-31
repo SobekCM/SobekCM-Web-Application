@@ -1247,7 +1247,7 @@ namespace SobekCM.Core.MemoryMgmt
         /// <param name="DateRange_End"> End of a date range search, or -1 </param>
         /// <param name="StoreObject"> Search results item/title list </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-        public static void Store_Search_Results(Results_Arguments Current_Mode, int Sort, int Count, List<string> Fields, List<string> Terms, Nullable<DateTime> DateRange_Start, Nullable<DateTime> DateRange_End, List<iSearch_Title_Result> StoreObject, Custom_Tracer Tracer)
+        public static void Store_Search_Results(Results_Arguments Current_Mode, int Sort, int Count, List<string> Fields, List<string> Terms, Nullable<DateTime> DateRange_Start, Nullable<DateTime> DateRange_End, int ResultsPerPage, List<iSearch_Title_Result> StoreObject, Custom_Tracer Tracer)
         {
             // If the cache is disabled, just return before even tracing
             if (Settings.Disabled)
@@ -1299,7 +1299,7 @@ namespace SobekCM.Core.MemoryMgmt
                 }
             }
 
-            string key = keyBuilder.ToString();
+            string key = keyBuilder + "_" + ResultsPerPage + "rpp";
 
             //if (Current_Mode.SubAggregation.Length > 0)
             //{
@@ -1332,7 +1332,7 @@ namespace SobekCM.Core.MemoryMgmt
 		/// <param name="DateRange_End"> End of a date range search, or -1 </param>
 		/// <param name="StoreObject"> Search results item/title list </param>
 		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-		public static void Store_Search_Results(Navigation_Object Current_Mode, int Sort, int Count, List<string> Fields, List<string> Terms, Nullable<DateTime> DateRange_Start, Nullable<DateTime> DateRange_End, List<List<iSearch_Title_Result>> StoreObject, Custom_Tracer Tracer)
+		public static void Store_Search_Results(Navigation_Object Current_Mode, int Sort, int Count, List<string> Fields, List<string> Terms, Nullable<DateTime> DateRange_Start, Nullable<DateTime> DateRange_End, int ResultsPerPage, List<List<iSearch_Title_Result>> StoreObject, Custom_Tracer Tracer)
 		{
 			// If the cache is disabled, just return before even tracing
 			if ( Settings.Disabled )
@@ -1394,7 +1394,7 @@ namespace SobekCM.Core.MemoryMgmt
                     }
                 }
 
-				string key = keyBuilder.ToString();
+                string key = keyBuilder + "_" + ResultsPerPage + "rpp";
                 if ((String.IsNullOrEmpty(Current_Mode.Search_String)) && (!String.IsNullOrEmpty(Current_Mode.Coordinates)))
 				{
 					key = "TOTALRESULTS_" + precision + "_" + aggregation_code + "coord_" + Current_Mode.Coordinates;
@@ -1425,7 +1425,7 @@ namespace SobekCM.Core.MemoryMgmt
         /// <param name="DateRange_End"> End of a date range search, or -1 </param>
         /// <param name="StoreObject"> Search results item/title list </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-        public static void Store_Search_Results(Results_Arguments Current_Mode, int Sort, int Count, List<string> Fields, List<string> Terms, Nullable<DateTime> DateRange_Start, Nullable<DateTime> DateRange_End, List<List<iSearch_Title_Result>> StoreObject, Custom_Tracer Tracer)
+        public static void Store_Search_Results(Results_Arguments Current_Mode, int Sort, int Count, List<string> Fields, List<string> Terms, Nullable<DateTime> DateRange_Start, Nullable<DateTime> DateRange_End, int ResultsPerPage, List<List<iSearch_Title_Result>> StoreObject, Custom_Tracer Tracer)
         {
             // If the cache is disabled, just return before even tracing
             if (Settings.Disabled)
@@ -1487,7 +1487,7 @@ namespace SobekCM.Core.MemoryMgmt
                     }
                 }
 
-                string key = keyBuilder.ToString();
+                string key = keyBuilder + "_" + ResultsPerPage + "rpp";
                 if ((String.IsNullOrEmpty(Current_Mode.Search_String)) && (!String.IsNullOrEmpty(Current_Mode.Coordinates)))
                 {
                     key = "TOTALRESULTS_" + precision + "_" + aggregation_code + "coord_" + Current_Mode.Coordinates;

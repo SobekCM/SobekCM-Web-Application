@@ -1050,10 +1050,14 @@ namespace SobekCM.Library
                             int current_page_index = Current_Mode.Page.HasValue ? Math.Max(Current_Mode.Page.Value, ((ushort)1)) : 1;
 
                             // Use solr or database, depending on the search type
-                            if ( UI_ApplicationCache_Gateway.Settings.System.Search_System == Search_System_Enum.Beta )
+                            if (UI_ApplicationCache_Gateway.Settings.System.Search_System == Search_System_Enum.Beta)
                                 Perform_Solr_Search(Tracer, terms, web_fields, date_start, date_end, Aggregation_Object, current_page_index, sort, results_per_page, out recomputed_search_statistics, out Paged_Results, need_search_statistics);
                             else
+                            {
                                 Perform_Database_Search(Tracer, terms, web_fields, date_start, date_end, actualCount, Current_Mode, sort, Aggregation_Object, results_per_page, !special_search_type, out recomputed_search_statistics, out pagesOfResults, need_search_statistics);
+                                if (( pagesOfResults != null ) && ( pagesOfResults.Count > 0 ))
+                                    Paged_Results = pagesOfResults[0];
+                            }
 
                             if (need_search_statistics)
                                 Complete_Result_Set_Info = recomputed_search_statistics;
@@ -1084,11 +1088,11 @@ namespace SobekCM.Library
                             }
 
                             // Cache the search results
-                            if ((need_paged_results) && (pagesOfResults != null))
+                            if ((need_paged_results) && (pagesOfResults != null) && (pagesOfResults.Count > 0 ))
                             {
                                // CachedDataManager.Store_Search_Results(Current_Mode, sort, actualCount, web_fields, terms, date1, date2, pagesOfResults, Tracer);
 
-                                CachedDataManager.Store_Search_Results(Current_Mode, sort, actualCount, web_fields, terms, date_start, date_end, results_per_page, Paged_Results, Tracer);
+                                CachedDataManager.Store_Search_Results(Current_Mode, sort, actualCount, web_fields, terms, date_start, date_end, results_per_page, pagesOfResults, Tracer);
                             }
                         }
                     }

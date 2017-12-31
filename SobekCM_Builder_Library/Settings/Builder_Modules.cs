@@ -399,7 +399,7 @@ namespace SobekCM.Builder_Library.Settings
                         break;
 
                     case "SobekCM.Builder_Library.Modules.Items.SaveToSolrLuceneModule":
-                        thisModule = new SaveToSolrLuceneModule();
+                        thisModule = new SaveToSolrLuceneModule_Legacy();
                         break;
 
                     case "SobekCM.Builder_Library.Modules.Items.CleanWebResourceFolderModule":

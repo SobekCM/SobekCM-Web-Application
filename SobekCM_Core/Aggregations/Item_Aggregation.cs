@@ -606,6 +606,12 @@ namespace SobekCM.Core.Aggregations
 
         #endregion
 
+        /// <summary> Flag indicates if searches within this collection should endeavor to group results by title </summary>
+        [DataMember(Name = "groupResults")]
+        [XmlElement("isActive")]
+        [ProtoMember(48)]
+        public bool GroupResults { get; set; }
+
         #region Methods to support the key/value pair of loose settings
 
         /// <summary> Key/value pairs of setting values that can be used to store additional

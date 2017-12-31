@@ -55,6 +55,7 @@
     <Compile Include="Modules\Items\ConvertLargeJpegsItemModule.cs" />
     <Compile Include="Modules\Items\CreateImageDerivativesLegacyModule.cs" />
     <Compile Include="Modules\Items\ExternallyLogBuilderWork.cs" />
+    <Compile Include="Modules\Items\SaveToSolrLuceneModule_v5.cs" />
     <Compile Include="Modules\Items\TesseractOcrModule.cs" />
     <Compile Include="Modules\Schedulable\CacheAggregationTileMetadataModule.cs" />
     <Compile Include="Modules\Schedulable\CalculateUsageStatisticsModule.cs" />
@@ -90,7 +91,7 @@
     <Compile Include="Modules\Items\SaveMarcXmlModule.cs" />
     <Compile Include="Modules\Items\SaveServiceMetsModule.cs" />
     <Compile Include="Modules\Items\SaveToDatabaseModule.cs" />
-    <Compile Include="Modules\Items\SaveToSolrLuceneModule.cs" />
+    <Compile Include="Modules\Items\SaveToSolrLuceneModule_Legacy.cs" />
     <Compile Include="Modules\Items\UpdateJpegAttributesModule.cs" />
     <Compile Include="Modules\Items\UpdateWebConfigModule.cs" />
     <Compile Include="Modules\PostProcess\BuildAggregationBrowsesModule.cs" />

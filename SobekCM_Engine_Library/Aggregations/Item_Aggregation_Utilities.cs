@@ -440,7 +440,7 @@ namespace SobekCM.Engine_Library.Aggregations
                 ItemAggr.Description, ItemAggr.Thematic_Heading, ItemAggr.Type, ItemAggr.Active, ItemAggr.Hidden,
                 ItemAggr.Display_Options, 0, ItemAggr.Map_Search_Beta, 0, ItemAggr.Map_Display_Beta,
                 ItemAggr.OAI_Enabled, ItemAggr.OAI_Metadata, ItemAggr.Contact_Email, String.Empty, ItemAggr.External_Link, -1, Username,
-                languageVariantsBuilder.ToString(), Tracer);
+                languageVariantsBuilder.ToString(), ItemAggr.GroupResults, Tracer);
 
             // If this is NOT a new one, save the views
 	        if (ItemAggr.ID > 0)

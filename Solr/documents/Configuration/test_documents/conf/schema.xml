@@ -71,7 +71,7 @@
   <field name="title.sort" type="text_facets" indexed="true" stored="false" multiValued="false" />
   <field name="alttitle" type="text_general" indexed="true" stored="true" multiValued="true" />
   <field name="seriestitle" type="text_general" indexed="true" stored="true" multiValued="false" />
-  <field name="transtitle" type="text_general" indexed="true" stored="true" multiValued="false" />
+  <field name="transtitle" type="text_general" indexed="true" stored="true" multiValued="true" />
   <field name="type" type="text_general" indexed="true" stored="true" multiValued="false" />
   <field name="language" type="text_general" indexed="true" stored="true" multiValued="true" />
   <field name="creator" type="text_general" indexed="true" stored="true" multiValued="true" />

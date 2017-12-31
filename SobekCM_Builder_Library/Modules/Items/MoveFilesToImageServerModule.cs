@@ -18,8 +18,6 @@ namespace SobekCM.Builder_Library.Modules.Items
         /// <returns> TRUE if processing can continue, FALSE if a critical error occurred which should stop all processing </returns>
         public override bool DoWork(Incoming_Digital_Resource Resource)
         {
-            Rename_Any_Received_METS_File(Resource);
-
             // Determine if this is actually already IN the final image server spot first
             // Determine the file root for this
             Resource.File_Root = Resource.BibID.Substring(0, 2) + "\\" + Resource.BibID.Substring(2, 2) + "\\" + Resource.BibID.Substring(4, 2) + "\\" + Resource.BibID.Substring(6, 2) + "\\" + Resource.BibID.Substring(8, 2);
@@ -29,7 +27,23 @@ namespace SobekCM.Builder_Library.Modules.Items
 
             // If this is re-processing the resource in situ, then just return.. nothing to move
             if (NormalizePath(Resource.Resource_Folder) == NormalizePath(serverPackageFolder))
+            {
+                // Still worth it to make a backup though, in case the METS is changed down-stream
+                if ((Directory.Exists(Resource.Resource_Folder)) && (File.Exists(Resource.Resource_Folder + "\\" + Resource.BibID + "_" + Resource.VID + ".mets.xml")))
+                {
+                    if (!Directory.Exists(Resource.Resource_Folder + "\\sobek_files"))
+                        Directory.CreateDirectory(Resource.Resource_Folder + "\\sobek_files");
+
+                    string destination_mets = Resource.Resource_Folder + "\\sobek_files\\" + Resource.BibID + "_" + Resource.VID + "_" + DateTime.Now.Year + "_" + DateTime.Now.Month + "_" + DateTime.Now.Day + ".mets.bak";
+                    if ( !File.Exists(destination_mets))
+                        File.Copy(Resource.Resource_Folder + "\\" + Resource.BibID + "_" + Resource.VID + ".mets.xml", destination_mets, true);
+                }
+
                 return true;
+            }
+
+            // Rename thr eceuived METS file
+            Rename_Any_Received_METS_File(Resource);
 
             // Clear the list of new images files here, since moving the package will recalculate this
             Resource.NewImageFiles.Clear();

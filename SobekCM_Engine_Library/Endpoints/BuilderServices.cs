@@ -34,7 +34,7 @@ namespace SobekCM.Engine_Library.Endpoints
                 tracer.Add_Trace("BuilderServices.GetBuilderSettings", "Pulling dataset from the database");
 
                 // Get the dataset with all the builder settings
-                DataSet builderSet = Engine_Database.Get_Builder_Settings(true, tracer);
+                DataSet builderSet = Engine_Database.Get_Builder_Settings(false, tracer);
 
                 // If the returned value from the database was NULL, there was an error
                 if ((builderSet == null) || ( builderSet.Tables.Count == 0 ))

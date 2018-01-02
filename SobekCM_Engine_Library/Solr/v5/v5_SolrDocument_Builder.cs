@@ -68,16 +68,19 @@ namespace SobekCM.Engine_Library.Solr.v5
                 {
                     returnValue.Level1_Index = Digital_Object.Behaviors.Serial_Info[0].Order;
                     returnValue.Level1_Text = Digital_Object.Behaviors.Serial_Info[0].Display;
+                    returnValue.Level1_Text_Display = Digital_Object.Behaviors.Serial_Info[0].Display;
                 }
                 if (Digital_Object.Behaviors.Serial_Info.Count > 1)
                 {
-                    returnValue.Level1_Index = Digital_Object.Behaviors.Serial_Info[1].Order;
-                    returnValue.Level1_Text = Digital_Object.Behaviors.Serial_Info[1].Display;
+                    returnValue.Level2_Index = Digital_Object.Behaviors.Serial_Info[1].Order;
+                    returnValue.Level2_Text = Digital_Object.Behaviors.Serial_Info[1].Display;
+                    returnValue.Level2_Text_Display = Digital_Object.Behaviors.Serial_Info[1].Display;
                 }
                 if (Digital_Object.Behaviors.Serial_Info.Count > 2)
                 {
-                    returnValue.Level1_Index = Digital_Object.Behaviors.Serial_Info[2].Order;
-                    returnValue.Level1_Text = Digital_Object.Behaviors.Serial_Info[2].Display;
+                    returnValue.Level3_Index = Digital_Object.Behaviors.Serial_Info[2].Order;
+                    returnValue.Level3_Text = Digital_Object.Behaviors.Serial_Info[2].Display;
+                    returnValue.Level3_Text_Display = Digital_Object.Behaviors.Serial_Info[2].Display;
                 }
 
                 returnValue.Dark = Digital_Object.Behaviors.Dark_Flag;
@@ -389,11 +392,13 @@ namespace SobekCM.Engine_Library.Solr.v5
                         break;
 
                     case "materials":
+                    case "material":
                         if ( returnValue.Material == null) returnValue.Material = new List<string>();
                         returnValue.Material.Add(searchTerm.Value.Trim());
                         break;
 
                     case "materials display":
+                    case "material display":
                         if (returnValue.MaterialDisplay == null) returnValue.MaterialDisplay = new List<string>();
                         returnValue.MaterialDisplay.Add(searchTerm.Value.Trim());
                         break;
@@ -606,7 +611,17 @@ namespace SobekCM.Engine_Library.Solr.v5
                     case "vid":
                         break;
 
+                    // Some more to ignore, since these are handled differently in solr
+                    case "all subjects":
+                    case "aggregation":
+                        break;
 
+                    default:
+                        StreamWriter writer = new StreamWriter("missing_fields.txt", true);
+                        writer.WriteLine(searchTerm.Key);
+                        writer.Flush();
+                        writer.Close();
+                        break;
 
                 }
             }

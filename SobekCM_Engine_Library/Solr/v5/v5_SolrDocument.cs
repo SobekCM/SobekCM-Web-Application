@@ -106,6 +106,10 @@ namespace SobekCM.Engine_Library.Solr.v5
         [SolrField("level1text")]
         public string Level1_Text { get; set; }
 
+        /// <summary> Display for the text for the serial hierarchy level 1 for this item </summary>
+        [SolrField("level1text.display")]
+        public string Level1_Text_Display { get; set; }
+
         /// <summary> Index for the serial hierarchy level 1 for this item </summary>
         [SolrField("level1index")]
         public int Level1_Index { get; set; }
@@ -114,6 +118,10 @@ namespace SobekCM.Engine_Library.Solr.v5
         [SolrField("level2text")]
         public string Level2_Text { get; set; }
 
+        /// <summary> Display for the text for the serial hierarchy level 2 for this item </summary>
+        [SolrField("level2text.display")]
+        public string Level2_Text_Display { get; set; }
+
         /// <summary> Index for the serial hierarchy level 2 for this item </summary>
         [SolrField("level2index")]
         public int Level2_Index { get; set; }
@@ -121,6 +129,10 @@ namespace SobekCM.Engine_Library.Solr.v5
         /// <summary> Text for the serial hierarchy level 3 for this item </summary>
         [SolrField("level3text")]
         public string Level3_Text { get; set; }
+
+        /// <summary> Display for the text for the serial hierarchy level 3 for this item </summary>
+        [SolrField("level3text.display")]
+        public string Level3_Text_Display { get; set; }
 
         /// <summary> Index for the serial hierarchy level 3 for this item </summary>
         [SolrField("level3index")]

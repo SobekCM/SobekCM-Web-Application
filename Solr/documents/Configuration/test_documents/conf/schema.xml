@@ -59,12 +59,21 @@
    <field name="spatial.authid" type="int" indexed="true" stored="int" multiValued="true" />
      
    <!-- Serial hierarchy fields, used for display purposes -->
-   <field name="level1text" type="string" indexed="false" stored="true" multiValued="false" />
-   <field name="level1index" type="int" indexed="false" stored="true" multiValued="false" />
-   <field name="level2text" type="string" indexed="false" stored="true" multiValued="false" />
-   <field name="level2index" type="int" indexed="false" stored="true" multiValued="false" />
-   <field name="level3text" type="string" indexed="false" stored="true" multiValued="false" />
-   <field name="level3index" type="int" indexed="false" stored="true" multiValued="false" />
+   <field name="level1text" type="text_single" indexed="true" stored="false" multiValued="false" />
+   <field name="level1index" type="int" indexed="true" stored="true" multiValued="false" />
+   <field name="level1text.display" type="text_facets" indexed="true" stored="true" multiValued="false" />
+   <field name="level2text" type="text_single" indexed="true" stored="false" multiValued="false" />
+   <field name="level2index" type="int" indexed="true" stored="true" multiValued="false" />
+   <field name="level2text.display" type="text_facets" indexed="true" stored="true" multiValued="false" />
+   <field name="level3text" type="text_single" indexed="true" stored="false" multiValued="false" />
+   <field name="level3index" type="int" indexed="true" stored="true" multiValued="false" />
+   <field name="level3text.display" type="text_facets" indexed="true" stored="true" multiValued="false" />
+   <field name="level4text" type="text_single" indexed="true" stored="false" multiValued="false" />
+   <field name="level4index" type="int" indexed="true" stored="true" multiValued="false" />
+   <field name="level4text.display" type="text_facets" indexed="true" stored="true" multiValued="false" />
+   <field name="level5text" type="text_single" indexed="true" stored="false" multiValued="false" />
+   <field name="level5index" type="int" indexed="true" stored="true" multiValued="false" />   
+   <field name="level5text.display" type="text_facets" indexed="true" stored="true" multiValued="false" />
 
   <!-- Main metadata fields -->
   <field name="title" type="text_general" indexed="true" stored="true" multiValued="false" />

@@ -115,6 +115,16 @@ namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
                         New.Add_Description("Committee Members", thisMember);
                     }
                 }
+
+                // Add the graduation date
+                if (thesisInfo.Graduation_Date.HasValue)
+                {
+                    New.Add_Description("Graduation Date", thesisInfo.Graduation_Date.Value.ToShortDateString());
+                }
+
+                // Add the semester
+                if (!String.IsNullOrEmpty(thesisInfo.Graduation_Semester))
+                    New.Add_Description("Graduation Semester", thesisInfo.Graduation_Semester);
             }
 
             return true;

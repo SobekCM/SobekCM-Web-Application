@@ -117,7 +117,8 @@ namespace SobekCM.Library.Citation.Elements
                 // Add each value
                 foreach (string index in terms.Keys)
                 {
-                    vraInfo.Add_Measurement( terms[index], schemes.ContainsKey(index) ? schemes[index] : String.Empty);
+                    if (!String.IsNullOrEmpty(terms[index]))
+                        vraInfo.Add_Measurement( terms[index], schemes.ContainsKey(index) ? schemes[index] : String.Empty);
                 }
             }
         }

@@ -7,6 +7,7 @@ using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Users;
 using SobekCM.Engine_Library.ApplicationState;
 using SobekCM.Engine_Library.Database;
+using SobekCM.Engine_Library.Solr;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Database;
 using SobekCM.Resource_Object.Metadata_File_ReaderWriters;
@@ -94,15 +95,31 @@ namespace SobekCM.Engine_Library.Items
  
 
             // Save the METS file and related Items
-            bool successful_save = true;
+            bool db_successful_save = true;
             try
             {
                 SobekCM_Item_Database.Save_Digital_Resource(Item, options, DateTime.Now, true);
             }
             catch
             {
-                successful_save = false;
+                db_successful_save = false;
             }
+
+            // Save the data to SOLR
+            bool solr_successful_save = true;
+            try
+            {
+                // Save this to the Solr/Lucene database
+                if (!String.IsNullOrEmpty(Engine_ApplicationCache_Gateway.Settings.Servers.Document_Solr_Index_URL))
+                {
+                    Solr_Controller.Update_Index(Engine_ApplicationCache_Gateway.Settings.Servers.Document_Solr_Index_URL, Engine_ApplicationCache_Gateway.Settings.Servers.Page_Solr_Index_URL, Item, true);
+                }
+            }
+            catch
+            {
+                solr_successful_save = false;
+            }
+
 
             //// Create the static html pages
             //string base_url = RequestSpecificValues.Current_Mode.Base_URL;
@@ -135,9 +152,26 @@ namespace SobekCM.Engine_Library.Items
             Item.Save_SobekCM_METS();
 
             // If this was not able to be saved in the database, try it again
-            if (!successful_save)
+            if (!db_successful_save)
             {
                 SobekCM_Item_Database.Save_Digital_Resource(Item, options, DateTime.Now, false);
+            }
+
+            // If this was not able to be saved to solr, try it again
+            if (!solr_successful_save)
+            {
+                try
+                {
+                    // Save this to the Solr/Lucene database
+                    if (!String.IsNullOrEmpty(Engine_ApplicationCache_Gateway.Settings.Servers.Document_Solr_Index_URL))
+                    {
+                        Solr_Controller.Update_Index(Engine_ApplicationCache_Gateway.Settings.Servers.Document_Solr_Index_URL, Engine_ApplicationCache_Gateway.Settings.Servers.Page_Solr_Index_URL, Item, true);
+                    }
+                }
+                catch
+                {
+                    solr_successful_save = false;
+                }
             }
 
             // Make sure the progress has been added to this Item's work log

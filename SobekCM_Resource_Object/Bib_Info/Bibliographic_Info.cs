@@ -1371,13 +1371,19 @@ namespace SobekCM.Resource_Object.Bib_Info
 	        // If a start was found, use it
 	        if ((start >= 0) && ((DateString.Length - start) >= 4))
 	        {
-	            string year = DateString.Substring(start, 4).Replace("X", "0").Replace("?", "0").Replace("U", "0").Replace("-", "0");
-	            DateTime thisYear = new DateTime(Convert.ToInt16(year), 1, 1);
-	            TimeSpan timeElapsed = thisYear.Subtract(new DateTime(1, 1, 1));
-	            sortDate = (int) timeElapsed.TotalDays;
-	            return sortDate;
-	    
-            }
+	            try
+	            {
+	                string year = DateString.Substring(start, 4).Replace("X", "0").Replace("?", "0").Replace("U", "0").Replace("-", "0");
+	                DateTime thisYear = new DateTime(Convert.ToInt16(year), 1, 1);
+	                TimeSpan timeElapsed = thisYear.Subtract(new DateTime(1, 1, 1));
+	                sortDate = (int) timeElapsed.TotalDays;
+	                return sortDate;
+	            }
+	            catch
+	            {
+	                return -1;
+	            }
+	        }
 
 	        // Return this value, as empty
 		    return -1;

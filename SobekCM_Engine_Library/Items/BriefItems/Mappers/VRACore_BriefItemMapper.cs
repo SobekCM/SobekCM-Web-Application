@@ -1,5 +1,6 @@
 ﻿#region Using directives
 
+using System;
 using SobekCM.Core.BriefItem;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Metadata_Modules;
@@ -37,7 +38,10 @@ namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
                 {
                     foreach (VRACore_Materials_Info materials in vraInfo.Materials)
                     {
-                        New.Add_Description("Materials", materials.Materials);
+                        if (!String.IsNullOrEmpty(materials.Type))
+                            New.Add_Description("Materials", materials.Materials).Authority = materials.Type;
+                        else
+                            New.Add_Description("Materials", materials.Materials);
                     }
                 }
 
@@ -46,7 +50,10 @@ namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
                 {
                     foreach (VRACore_Measurement_Info measurement in vraInfo.Measurements)
                     {
-                        New.Add_Description("Measurements", measurement.Measurements);
+                        if ((!String.IsNullOrEmpty(measurement.Units)) && (measurement.Measurements.IndexOf(measurement.Units, StringComparison.OrdinalIgnoreCase) < 0))
+                            New.Add_Description("Measurements", measurement.Measurements + " " + measurement.Units);
+                        else
+                            New.Add_Description("Measurements", measurement.Measurements);
                     }
                 }
 

@@ -81,14 +81,29 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
 
 			if (!String.IsNullOrEmpty(thesisInfo.Degree_Grantor))
 				Output_Stream.WriteLine("<etd:degreeGrantor>" + Convert_String_To_XML_Safe(thesisInfo.Degree_Grantor) + "</etd:degreeGrantor>");
-			if (thesisInfo.Degree_Level == Thesis_Dissertation_Info.Thesis_Degree_Level_Enum.Bachelors)
-				Output_Stream.WriteLine("<etd:degreeLevel>Bachelors</etd:degreeLevel>");
-			if (thesisInfo.Degree_Level == Thesis_Dissertation_Info.Thesis_Degree_Level_Enum.Masters)
-				Output_Stream.WriteLine("<etd:degreeLevel>Masters</etd:degreeLevel>");
-			if (thesisInfo.Degree_Level == Thesis_Dissertation_Info.Thesis_Degree_Level_Enum.Doctorate)
-				Output_Stream.WriteLine("<etd:degreeLevel>Doctorate</etd:degreeLevel>");
-			if (thesisInfo.Degree_Level == Thesis_Dissertation_Info.Thesis_Degree_Level_Enum.PostDoctorate)
-				Output_Stream.WriteLine("<etd:degreeLevel>Post-Doctorate</etd:degreeLevel>");
+
+		    switch (thesisInfo.Degree_Level)
+		    {
+		        case Thesis_Dissertation_Info.Thesis_Degree_Level_Enum.Bachelors:
+                    Output_Stream.WriteLine("<etd:degreeLevel>Bachelors</etd:degreeLevel>");
+		            break;
+
+                case Thesis_Dissertation_Info.Thesis_Degree_Level_Enum.Masters:
+                    Output_Stream.WriteLine("<etd:degreeLevel>Masters</etd:degreeLevel>");
+                    break;
+
+                case Thesis_Dissertation_Info.Thesis_Degree_Level_Enum.Doctorate:
+                    Output_Stream.WriteLine("<etd:degreeLevel>Doctorate</etd:degreeLevel>");
+                    break;
+
+                case Thesis_Dissertation_Info.Thesis_Degree_Level_Enum.PostDoctorate:
+                    Output_Stream.WriteLine("<etd:degreeLevel>Post-Doctorate</etd:degreeLevel>");
+                    break;
+		    }
+
+            if (!String.IsNullOrEmpty(thesisInfo.Graduation_Semester))
+                Output_Stream.WriteLine("<etd:semester>" + Convert_String_To_XML_Safe(thesisInfo.Graduation_Semester) + "</etd:semester>");
+
 			Output_Stream.WriteLine("</etd:etd>");
 			return true;
 		}
@@ -232,6 +247,14 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
 
 							}
 							break;
+
+                        case "semester":
+                            Input_XmlReader.Read();
+                            if ((Input_XmlReader.NodeType == XmlNodeType.Text) && (Input_XmlReader.Value.Trim().Length > 0))
+                            {
+                                thesisInfo.Graduation_Semester = Input_XmlReader.Value;
+                            }
+                            break;
 					}
 				}
 			} while (Input_XmlReader.Read());

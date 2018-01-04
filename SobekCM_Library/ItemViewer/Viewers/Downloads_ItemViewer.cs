@@ -167,6 +167,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
             Output.WriteLine("          <td>");
             Output.WriteLine("            <div id=\"sbkDiv_MainArea\">");
             Add_Download_Links(Output, BriefItem, CurrentRequest, CurrentUser, Tracer );
+            Output.WriteLine("            </div>");
+            Output.WriteLine("          </td>");
         }
 
         /// <summary> Adds the download links directly to the output stream </summary>
@@ -333,7 +335,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
 
             Output.WriteLine("              <br />");
-            Output.WriteLine("            </div>");
         }
 
         /// <summary> Allows controls to be added directory to a place holder, rather than just writing to the output HTML stream </summary>

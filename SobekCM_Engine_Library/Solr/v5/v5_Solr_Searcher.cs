@@ -82,11 +82,11 @@ namespace SobekCM.Engine_Library.Solr.v5
                         // Add the solr search string
                         if (searchTerm.IndexOf(" ") > 0)
                         {
-                            queryStringBuilder.Append("(" + solr_field + "\"" + searchTerm.Replace(":", "") + "\")");
+                            queryStringBuilder.Append("(" + solr_field + "\"" + searchTerm.Replace(":", "").Replace("[", "").Replace("]", "") + "\")");
                         }
                         else
                         {
-                            queryStringBuilder.Append("(" + solr_field + searchTerm.Replace(":", "") + ")");
+                            queryStringBuilder.Append("(" + solr_field + searchTerm.Replace(":", "").Replace("[", "").Replace("]", "") + ")");
                         }
                     }
                     else

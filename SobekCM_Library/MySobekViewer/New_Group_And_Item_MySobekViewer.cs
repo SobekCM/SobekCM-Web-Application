@@ -16,9 +16,11 @@ using SobekCM.Core.Aggregations;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
+using SobekCM.Engine_Library.ApplicationState;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Engine_Library.Email;
 using SobekCM.Engine_Library.Navigation;
+using SobekCM.Engine_Library.Solr;
 using SobekCM.Library.AdminViewer;
 using SobekCM.Library.Citation;
 using SobekCM.Library.Citation.Template;
@@ -846,6 +848,28 @@ namespace SobekCM.Library.MySobekViewer
                 // Assign the file root and assoc file path
                 Item_To_Complete.Web.File_Root = Item_To_Complete.BibID.Substring(0, 2) + "\\" + Item_To_Complete.BibID.Substring(2, 2) + "\\" + Item_To_Complete.BibID.Substring(4, 2) + "\\" + Item_To_Complete.BibID.Substring(6, 2) + "\\" + Item_To_Complete.BibID.Substring(8, 2);
                 Item_To_Complete.Web.AssocFilePath = Item_To_Complete.Web.File_Root + "\\" + Item_To_Complete.VID + "\\";
+
+                try
+                {
+                    // Save this to the Solr/Lucene database
+                    if (!String.IsNullOrEmpty(Engine_ApplicationCache_Gateway.Settings.Servers.Document_Solr_Index_URL))
+                    {
+                        Solr_Controller.Update_Index(Engine_ApplicationCache_Gateway.Settings.Servers.Document_Solr_Index_URL, Engine_ApplicationCache_Gateway.Settings.Servers.Page_Solr_Index_URL, Item_To_Complete, true);
+                    }
+                }
+                catch ( Exception ee )
+                {
+                    // It will still attemp to load in the indexes in the builder
+
+                    StreamWriter writer = new StreamWriter(userInProcessDirectory + "\\exception.txt", false);
+                    writer.WriteLine("ERROR CAUGHT WHILE SAVING NEW DIGITAL RESOURCE TO SOLR INDEXES");
+                    writer.WriteLine(DateTime.Now.ToString());
+                    writer.WriteLine();
+                    writer.WriteLine(ee.Message);
+                    writer.WriteLine(ee.StackTrace);
+                    writer.Flush();
+                    writer.Close();
+                }
 
                 //// Create the static html pages
                 //string base_url = RequestSpecificValues.Current_Mode.Base_URL;

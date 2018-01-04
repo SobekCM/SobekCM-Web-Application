@@ -541,12 +541,33 @@ namespace SobekCM.Library.MainWriters
         /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
         public void Write_Within_HTML_Head(TextWriter Output, Custom_Tracer Tracer)
         {
+            // responsive design support
+
+            try
+            {
+                if (UI_ApplicationCache_Gateway.Settings.Get_Additional_Setting("Use Responsive Design").Equals("true"))
+                {
+                    Output.WriteLine("  <meta name=\"viewport\" content=\"width=" + UI_ApplicationCache_Gateway.Settings.Get_Additional_Setting("Viewport width") + ", initial-scale=" + UI_ApplicationCache_Gateway.Settings.Get_Additional_Setting("Viewport initial-scale") + "\" />\r\n");
+                    Tracer.Add_Trace("Html_MainWriter.Write_Within_HTML_Head", "Adding responsive design meta viewport tag.");
+                }
+                else
+                {
+                    Tracer.Add_Trace("Html_MainWriter.Write_Within_HTML_Head", "Not adding responsive design meta viewport tag.");
+                }
+            }
+            catch (Exception e)
+            {
+                Tracer.Add_Trace("Html_MainWriter.Write_Within_HTML_Head", "Not adding responsive design meta viewport tag (No system-wide settings).");
+            }
+
+            // end responsive design support
+ 
             //if (String.Equals(Current_Mode.Result_Display_Type, "timeline", StringComparison.OrdinalIgnoreCase))
             if (String.Equals(RequestSpecificValues.Current_Mode.Result_Display_Type, "timeline", StringComparison.OrdinalIgnoreCase))
             {
                 // RRB
 
-                Tracer.Add_Trace("Html_MainWriter.Write-Within_HTML_Head", "Timeline - RequestSpecificValues.Current_Mode.Base_URL=[" + RequestSpecificValues.Current_Mode.Base_URL + "].");
+                Tracer.Add_Trace("Html_MainWriter.Write_Within_HTML_Head", "Timeline - RequestSpecificValues.Current_Mode.Base_URL=[" + RequestSpecificValues.Current_Mode.Base_URL + "].");
                 Tracer.Add_Trace("Html_Mainwriter.Write_Within_HTML_Head", "Timeline.");
 
                 String base_url;

@@ -406,13 +406,6 @@ namespace SobekCM.Builder_Library
                     }
                 }
 
-                {
-                    // RE-Configure builders to run and run some basic tests
-                    if ((!Configure_Builders_To_Run(preloader_logger)) || (preloader_logger == null))
-                        return;
-                }
-
-
                 bool skip_sleep = false;
 
 				// Step through each instance

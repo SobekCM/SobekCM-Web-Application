@@ -116,7 +116,13 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             Output.WriteLine("    <button id=\"sbkBsav_SearchButton\" class=\"sbk_GoButton\" title=\"" + search_collection + "\" onclick=\"" + Search_Script_Action + ";return false;\">Go</button>");
             Output.WriteLine("    <div id=\"circular_progress\" name=\"circular_progress\" class=\"hidden_progress\">&nbsp;</div>");
 
-            Output.WriteLine("    <div id=\"sbkBsav_MimeType\"><input type=\"checkbox\" value=\"MIME_TYPE\" name=\"sbkBsav_fullTextCheck\" id=\"sbkBsav_fullTextCheck\" unchecked onclick=\"focus_element( 'SobekHomeSearchBox');\" /><label for=\"sbkBsav_fullTextCheck\">" + INCLUDE_FULLTEXT + "</label></div>");
+            // should this be checked?
+            string text_checked = "unchecked";
+            string text_setting_value = ViewBag.Hierarchy_Object.Get_Setting("Basic_Text_Search_Combined_AggregationViewer.Include_Text_By_Default");
+            if ((!String.IsNullOrEmpty(text_setting_value)) && (String.Equals(text_setting_value, "true", StringComparison.OrdinalIgnoreCase)))
+                text_checked = "checked";
+
+            Output.WriteLine("    <div id=\"sbkBsav_MimeType\"><input type=\"checkbox\" value=\"MIME_TYPE\" name=\"sbkBsav_fullTextCheck\" id=\"sbkBsav_fullTextCheck\" " + text_checked + " onclick=\"focus_element( 'SobekHomeSearchBox');\" /><label for=\"sbkBsav_fullTextCheck\">" + INCLUDE_FULLTEXT + "</label></div>");
 
 
             if (( RequestSpecificValues.Current_User != null ) && (RequestSpecificValues.Current_User.Is_System_Admin))

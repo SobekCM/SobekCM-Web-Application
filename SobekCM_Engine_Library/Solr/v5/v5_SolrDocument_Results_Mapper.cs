@@ -37,6 +37,10 @@ namespace SobekCM.Engine_Library.Solr.v5
         {
             switch (SolrDisplayField.ToLower())
             {
+                case "date":
+                case "date.display":
+                    return SolrDocument.DateDisplay;
+
                 case "title":
                     return SolrDocument.Title;
 

@@ -58,10 +58,20 @@ namespace SobekCM.Engine_Library.Solr.v5
             // Add Serial hierarchy fields
             returnValue.Level1_Text = String.Empty;
             returnValue.Level1_Index = -1;
+            returnValue.Level1_Facet = "NONE";
             returnValue.Level2_Text = String.Empty;
             returnValue.Level2_Index = -1;
+            returnValue.Level2_Facet = "NONE";
             returnValue.Level3_Text = String.Empty;
             returnValue.Level3_Index = -1;
+            returnValue.Level3_Facet = "NONE";
+            returnValue.Level4_Text = String.Empty;
+            returnValue.Level4_Index = -1;
+            returnValue.Level4_Facet = "NONE";
+            returnValue.Level5_Text = String.Empty;
+            returnValue.Level5_Index = -1;
+            returnValue.Level5_Facet = "NONE";
+
             if (Digital_Object.Behaviors != null)
             {
                 if (Digital_Object.Behaviors.Serial_Info.Count > 0)
@@ -69,18 +79,35 @@ namespace SobekCM.Engine_Library.Solr.v5
                     returnValue.Level1_Index = Digital_Object.Behaviors.Serial_Info[0].Order;
                     returnValue.Level1_Text = Digital_Object.Behaviors.Serial_Info[0].Display;
                     returnValue.Level1_Text_Display = Digital_Object.Behaviors.Serial_Info[0].Display;
+                    returnValue.Level1_Facet = Digital_Object.Behaviors.Serial_Info[0].Order.ToString().PadLeft(5, '0') + '|' + Digital_Object.Behaviors.Serial_Info[0].Display;
                 }
                 if (Digital_Object.Behaviors.Serial_Info.Count > 1)
                 {
                     returnValue.Level2_Index = Digital_Object.Behaviors.Serial_Info[1].Order;
                     returnValue.Level2_Text = Digital_Object.Behaviors.Serial_Info[1].Display;
                     returnValue.Level2_Text_Display = Digital_Object.Behaviors.Serial_Info[1].Display;
+                    returnValue.Level2_Facet = Digital_Object.Behaviors.Serial_Info[1].Order.ToString().PadLeft(5, '0') + '|' + Digital_Object.Behaviors.Serial_Info[1].Display;
                 }
                 if (Digital_Object.Behaviors.Serial_Info.Count > 2)
                 {
                     returnValue.Level3_Index = Digital_Object.Behaviors.Serial_Info[2].Order;
                     returnValue.Level3_Text = Digital_Object.Behaviors.Serial_Info[2].Display;
                     returnValue.Level3_Text_Display = Digital_Object.Behaviors.Serial_Info[2].Display;
+                    returnValue.Level3_Facet = Digital_Object.Behaviors.Serial_Info[2].Order.ToString().PadLeft(5, '0') + '|' + Digital_Object.Behaviors.Serial_Info[2].Display;
+                }
+                if (Digital_Object.Behaviors.Serial_Info.Count > 3)
+                {
+                    returnValue.Level4_Index = Digital_Object.Behaviors.Serial_Info[3].Order;
+                    returnValue.Level4_Text = Digital_Object.Behaviors.Serial_Info[3].Display;
+                    returnValue.Level4_Text_Display = Digital_Object.Behaviors.Serial_Info[3].Display;
+                    returnValue.Level4_Facet = Digital_Object.Behaviors.Serial_Info[3].Order.ToString().PadLeft(5, '0') + '|' + Digital_Object.Behaviors.Serial_Info[3].Display;
+                }
+                if (Digital_Object.Behaviors.Serial_Info.Count > 4)
+                {
+                    returnValue.Level5_Index = Digital_Object.Behaviors.Serial_Info[4].Order;
+                    returnValue.Level5_Text = Digital_Object.Behaviors.Serial_Info[4].Display;
+                    returnValue.Level5_Text_Display = Digital_Object.Behaviors.Serial_Info[4].Display;
+                    returnValue.Level5_Facet = Digital_Object.Behaviors.Serial_Info[4].Order.ToString().PadLeft(5, '0') + '|' + Digital_Object.Behaviors.Serial_Info[4].Display;
                 }
 
                 returnValue.Dark = Digital_Object.Behaviors.Dark_Flag;
@@ -93,10 +120,17 @@ namespace SobekCM.Engine_Library.Solr.v5
 
             // Find the Gregorian date issues value
             string pub_date = Digital_Object.Bib_Info.Origin_Info.Date_Check_All_Fields;
+            returnValue.Date = pub_date;
+            returnValue.DateDisplay = pub_date;
             DateTime gregDate;
             if (DateTime.TryParse(pub_date, out gregDate))
             {
                 returnValue.GregorianDate = gregDate;
+                returnValue.DateYear = gregDate.Year.ToString();
+
+                // For now (since temporal subject isn't the best) just use this date for the timeline
+                returnValue.TimelineDate = gregDate;
+                returnValue.TimelineDateDisplay = pub_date;
             }
 
             // Set the IP restrictions based on PRIVATE or NOT
@@ -365,6 +399,7 @@ namespace SobekCM.Engine_Library.Solr.v5
 
                     case "publication date":
                         returnValue.Date = searchTerm.Value;
+                        returnValue.DateDisplay = searchTerm.Value;
                         break;
 
                     case "date year":
@@ -599,6 +634,15 @@ namespace SobekCM.Engine_Library.Solr.v5
                     case "lom learning time":
                         returnValue.LomLearningTime = searchTerm.Value.Trim();
                         break;
+
+                    case "temporal subject":
+                        returnValue.TemporalSubject = searchTerm.Value.Trim();
+                        break;
+
+                    case "temporal subject display":
+                        returnValue.TemporalSubjectDisplay = searchTerm.Value.Trim();
+                        break;
+
 
                     // Not handled yet
                     case "temporal year":

@@ -114,6 +114,10 @@ namespace SobekCM.Engine_Library.Solr.v5
         [SolrField("level1index")]
         public int Level1_Index { get; set; }
 
+        /// <summary> Facet for the serial hierarchy level 1 for this item, which merges the index and text ( i.e., '00001|January') </summary>
+        [SolrField("level1facet")]
+        public string Level1_Facet { get; set; }
+
         /// <summary> Text for the serial hierarchy level 2 for this item </summary>
         [SolrField("level2text")]
         public string Level2_Text { get; set; }
@@ -126,6 +130,10 @@ namespace SobekCM.Engine_Library.Solr.v5
         [SolrField("level2index")]
         public int Level2_Index { get; set; }
 
+        /// <summary> Facet for the serial hierarchy level 2 for this item, which merges the index and text ( i.e., '00001|January') </summary>
+        [SolrField("level2facet")]
+        public string Level2_Facet { get; set; }
+
         /// <summary> Text for the serial hierarchy level 3 for this item </summary>
         [SolrField("level3text")]
         public string Level3_Text { get; set; }
@@ -137,6 +145,43 @@ namespace SobekCM.Engine_Library.Solr.v5
         /// <summary> Index for the serial hierarchy level 3 for this item </summary>
         [SolrField("level3index")]
         public int Level3_Index { get; set; }
+
+        /// <summary> Facet for the serial hierarchy level 3 for this item, which merges the index and text ( i.e., '00001|January') </summary>
+        [SolrField("level3facet")]
+        public string Level3_Facet { get; set; }
+
+        /// <summary> Text for the serial hierarchy level 4 for this item </summary>
+        [SolrField("level4text")]
+        public string Level4_Text { get; set; }
+
+        /// <summary> Display for the text for the serial hierarchy level 4 for this item </summary>
+        [SolrField("level4text.display")]
+        public string Level4_Text_Display { get; set; }
+
+        /// <summary> Index for the serial hierarchy level 4 for this item </summary>
+        [SolrField("level4index")]
+        public int Level4_Index { get; set; }
+
+        /// <summary> Facet for the serial hierarchy level 4 for this item, which merges the index and text ( i.e., '00001|January') </summary>
+        [SolrField("level4facet")]
+        public string Level4_Facet { get; set; }
+
+        /// <summary> Text for the serial hierarchy level 5 for this item </summary>
+        [SolrField("level5text")]
+        public string Level5_Text { get; set; }
+
+        /// <summary> Display for the text for the serial hierarchy level 5 for this item </summary>
+        [SolrField("level5text.display")]
+        public string Level5_Text_Display { get; set; }
+
+        /// <summary> Index for the serial hierarchy level 5 for this item </summary>
+        [SolrField("level5index")]
+        public int Level5_Index { get; set; }
+
+        /// <summary> Facet for the serial hierarchy level 5 for this item, which merges the index and text ( i.e., '00001|January') </summary>
+        [SolrField("level5facet")]
+        public string Level5_Facet { get; set; }
+
 
         #endregion
 
@@ -299,8 +344,12 @@ namespace SobekCM.Engine_Library.Solr.v5
         #region Date metadata fields - STILL NEED TO REVIEW THIS!!!
 
         /// <summary> Date this material was published </summary>
-        [SolrField("date.display")]
+        [SolrField("date")]
         public string Date { get; set; }
+
+        /// <summary> Display version of the date this material was published </summary>
+        [SolrField("date.display")]
+        public string DateDisplay { get; set; }
 
         [SolrField("date.gregorian")]
         public DateTime? GregorianDate { get; set; }
@@ -380,13 +429,36 @@ namespace SobekCM.Engine_Library.Solr.v5
 
         #endregion
 
-        #region Temporal subject fields- STILL NEED TO REVIEW THIS!!!
+        #region Temporal subject fields
 
-        // [SolrField("temporal_subject" type = "text_general" indexed = "true" stored = "true"  multiValued = "true" />
 
-        // [SolrField("temporal_decade" type = "text_general" indexed = "true" stored = "true"  multiValued = "true" />
+        /// <summary> Temporal subject term for indexing purposes, which only includes the term ( i.e., 'World War 2') </summary>
+        [SolrField("temporal_subject")]
+        public string TemporalSubject { get; set; }
 
-        // [SolrField("temporal_year" type = "text_general" indexed = "true" stored = "true" />
+        /// <summary> Temporal subject term for display purposes ( i.e., 'World War 2 ( 1940-1944)' ) </summary>
+        [SolrField("temporal_subject.display")]
+        public string TemporalSubjectDisplay { get; set; }
+
+        /// <summary> If decades can be determined from the temporal date, include them here (Gregorian decades) </summary>
+        [SolrField("temporal_decade")]
+        public string TemporalDecade { get; set; }
+
+        /// <summary> If years can can be determined from the temporal year, include them here (Gregorian year) </summary>
+        [SolrField("temporal_year")]
+        public string TemporalYear { get; set; }
+
+        /// <summary> If a single (Gregorian) date can be determined from the temporal data, it is included here </summary>
+        [SolrField("temporal_date")]
+        public DateTime? TemporalDate { get; set; }
+
+        /// <summary> A single (Gregorian) date for this item, which will be temporal year (if present) or publication date (if present) </summary>
+        [SolrField("timeline_date")]
+        public DateTime? TimelineDate { get; set; }
+
+        /// <summary> Display version of the timeline date for this item, which will be temporal year (if present) or publication date (if present) </summary>
+        [SolrField("timeline_date.display")]
+        public string TimelineDateDisplay { get; set; }
 
         #endregion
 

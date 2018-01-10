@@ -84,7 +84,7 @@ namespace SobekCM.Library.ResultsViewer
 
                 }
                 else
-                    resultsBldr.AppendLine("\t<section class=\"sbkBrv_SingleResult\" onclick=\"window.location.href='" + internal_link + "';\" >");
+                    resultsBldr.AppendLine("\t<section class=\"sbkBrv_SingleResult\" onclick=\"window.location.href='" + internal_link.Replace("'","\\'") + "';\" >");
 
 
                 // Add the counter as the first column

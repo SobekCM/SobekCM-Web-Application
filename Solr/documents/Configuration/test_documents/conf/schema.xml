@@ -33,7 +33,7 @@
   <field name="fulltext" type="text_fulltext" indexed="true" stored="true" termVectors="true" termPositions="true" termOffsets="true" />
 
   <!-- Administrative fields -->
-  <field name="aggregations" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="aggregations" type="text_single" indexed="true" stored="true" multiValued="true" />
   <field name="bibid" type="text_single" indexed="true" stored="true" multiValued="false" />
   <field name="vid" type="text_single" indexed="true" stored="true" multiValued="false" />
   <field name="mainthumb" type="text_general" indexed="false" stored="true" multiValued="false" />
@@ -62,18 +62,23 @@
    <field name="level1text" type="text_single" indexed="true" stored="false" multiValued="false" />
    <field name="level1index" type="int" indexed="true" stored="true" multiValued="false" />
    <field name="level1text.display" type="text_facets" indexed="true" stored="true" multiValued="false" />
+   <field name="level1facet" type="text_single" indexed="true" stored="false" multiValued="false" />
    <field name="level2text" type="text_single" indexed="true" stored="false" multiValued="false" />
    <field name="level2index" type="int" indexed="true" stored="true" multiValued="false" />
    <field name="level2text.display" type="text_facets" indexed="true" stored="true" multiValued="false" />
+   <field name="level2facet" type="text_single" indexed="true" stored="false" multiValued="false" />
    <field name="level3text" type="text_single" indexed="true" stored="false" multiValued="false" />
    <field name="level3index" type="int" indexed="true" stored="true" multiValued="false" />
    <field name="level3text.display" type="text_facets" indexed="true" stored="true" multiValued="false" />
+   <field name="level3facet" type="text_single" indexed="true" stored="false" multiValued="false" />
    <field name="level4text" type="text_single" indexed="true" stored="false" multiValued="false" />
    <field name="level4index" type="int" indexed="true" stored="true" multiValued="false" />
    <field name="level4text.display" type="text_facets" indexed="true" stored="true" multiValued="false" />
+   <field name="level4facet" type="text_single" indexed="true" stored="false" multiValued="false" />
    <field name="level5text" type="text_single" indexed="true" stored="false" multiValued="false" />
    <field name="level5index" type="int" indexed="true" stored="true" multiValued="false" />   
    <field name="level5text.display" type="text_facets" indexed="true" stored="true" multiValued="false" />
+   <field name="level5facet" type="text_single" indexed="true" stored="false" multiValued="false" />
 
   <!-- Main metadata fields -->
   <field name="title" type="text_general" indexed="true" stored="true" multiValued="false" />
@@ -197,10 +202,16 @@
   <copyField source="spatial_standard" dest="subjects_all_facets" />
   <copyField source="spatial_hierarchical" dest="subjects_all_facets" />
 
-  <!-- Temporal subect metadata fields -->
-  <field name="temporal_subject" type="text_general" indexed="true" stored="true"  multiValued="true" />
+  <!-- Temporal (and other special date) subect metadata fields -->
+  <field name="temporal_subject" type="text_general" indexed="true" stored="false"  multiValued="true" />
+  <field name="temporal_subject.display" type="text_general" indexed="false" stored="true"  multiValued="true" />
+  <field name="temporal_subject_facets" type="text_general" indexed="true" stored="false"  multiValued="true" />
   <field name="temporal_decade" type="text_facets" indexed="true" stored="false"  multiValued="true" />
-  <field name="temporal_year" type="text_facets" indexed="true" stored="false" multiValued="false" />
+  <field name="temporal_year" type="text_facets" indexed="true" stored="false" multiValued="true" />
+  <field name="temporal_date" type="date" indexed="true" stored="true" multiValued="false" />
+  <field name="timeline_date" type="date" indexed="true" stored="true" multiValued="false" />
+  <field name="timeline_date.display" type="text_facets" indexed="false" stored="true" multiValued="false" />
+  <copyField source="temporal_subject" dest="temporal_subject_facets" />
 
   <!-- Other standard metadata fields -->
   <field name="attribution" type="text_general" indexed="true" stored="true" multiValued="false" />
@@ -731,16 +742,15 @@
     <analyzer type="index">
       <tokenizer class="solr.StandardTokenizerFactory"/>
       <filter class="solr.StopFilterFactory" ignoreCase="true" words="stopwords.txt" />
-      <!-- in this example, we will only use synonyms at query time
-        <filter class="solr.SynonymGraphFilterFactory" synonyms="index_synonyms.txt" ignoreCase="true" expand="false"/>
-        <filter class="solr.FlattenGraphFilterFactory"/>  -->
       <filter class="solr.LowerCaseFilterFactory"/>
+	  <filter class="solr.EnglishPossessiveFilterFactory"/>
     </analyzer>
     <analyzer type="query">
       <tokenizer class="solr.StandardTokenizerFactory"/>
       <filter class="solr.StopFilterFactory" ignoreCase="true" words="stopwords.txt" />
       <filter class="solr.SynonymGraphFilterFactory" synonyms="synonyms.txt" ignoreCase="true" expand="true"/>
       <filter class="solr.LowerCaseFilterFactory"/>
+	  <filter class="solr.EnglishPossessiveFilterFactory"/>
     </analyzer>
   </fieldType>
   
@@ -751,16 +761,17 @@
     <analyzer type="index">
       <tokenizer class="solr.StandardTokenizerFactory"/>
       <filter class="solr.StopFilterFactory" ignoreCase="true" words="stopwords.txt" />
-      <!-- in this example, we will only use synonyms at query time
-        <filter class="solr.SynonymGraphFilterFactory" synonyms="index_synonyms.txt" ignoreCase="true" expand="false"/>
-        <filter class="solr.FlattenGraphFilterFactory"/>  -->
       <filter class="solr.LowerCaseFilterFactory"/>
+	  <filter class="solr.EnglishPossessiveFilterFactory"/>
+	  <filter class="solr.PorterStemFilterFactory"/>
     </analyzer>
     <analyzer type="query">
       <tokenizer class="solr.StandardTokenizerFactory"/>
       <filter class="solr.StopFilterFactory" ignoreCase="true" words="stopwords.txt" />
       <filter class="solr.SynonymGraphFilterFactory" synonyms="synonyms.txt" ignoreCase="true" expand="true"/>
       <filter class="solr.LowerCaseFilterFactory"/>
+	  <filter class="solr.EnglishPossessiveFilterFactory"/>
+	  <filter class="solr.PorterStemFilterFactory"/>
     </analyzer>
   </fieldType>
 

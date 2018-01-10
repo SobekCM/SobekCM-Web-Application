@@ -509,6 +509,38 @@ namespace SobekCM.Resource_Object.Bib_Info
                         {
                             metadataTerms.Add(new KeyValuePair<string, string>("All Subjects", thisTemporal.TimePeriod));
                             metadataTerms.Add(new KeyValuePair<string, string>("Temporal Subject", thisTemporal.TimePeriod));
+
+                            if ((thisTemporal.End_Year != -1) && (thisTemporal.Start_Year != -1))
+                            {
+                                metadataTerms.Add(new KeyValuePair<string, string>("Temporal Subject Display", thisTemporal.TimePeriod + " (" + thisTemporal.Start_Year + " - " + thisTemporal.End_Year + ")"));
+                            }
+                            else if (( thisTemporal.Start_Year == -1 ) && ( thisTemporal.End_Year != -1 ))
+                            {
+                                metadataTerms.Add(new KeyValuePair<string, string>("Temporal Subject Display", thisTemporal.TimePeriod + " ( - " + thisTemporal.End_Year + ")"));
+                            }
+                            else if ((thisTemporal.Start_Year != -1) && (thisTemporal.End_Year == -1))
+                            {
+                                metadataTerms.Add(new KeyValuePair<string, string>("Temporal Subject Display", thisTemporal.TimePeriod + " (" + thisTemporal.Start_Year + ")"));
+                            }
+                            else
+                            {
+                                metadataTerms.Add(new KeyValuePair<string, string>("Temporal Subject Display", thisTemporal.TimePeriod));
+                            }
+                        }
+                        else
+                        {
+                            if ((thisTemporal.End_Year != -1) && (thisTemporal.Start_Year != -1))
+                            {
+                                metadataTerms.Add(new KeyValuePair<string, string>("Temporal Subject Display", thisTemporal.Start_Year + " - " + thisTemporal.End_Year));
+                            }
+                            else if ((thisTemporal.Start_Year == -1) && (thisTemporal.End_Year != -1))
+                            {
+                                metadataTerms.Add(new KeyValuePair<string, string>("Temporal Subject Display", " - " + thisTemporal.End_Year));
+                            }
+                            else if ((thisTemporal.Start_Year != -1) && (thisTemporal.End_Year == -1))
+                            {
+                                metadataTerms.Add(new KeyValuePair<string, string>("Temporal Subject Display", thisTemporal.Start_Year.ToString()));
+                            }
                         }
                     }
                 }

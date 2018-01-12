@@ -2094,7 +2094,7 @@ namespace SobekCM.Resource_Object
 
                     if (semi_index > 0)
                     {
-                        if (colon_index > 0)
+                        if ((colon_index > 0) && ( semi_index > colon_index))
                         {
                             a_300_subfield_string = Bib_Info.Original_Description.Extent.Substring(0, colon_index);
                             b_300_subfield_string = Bib_Info.Original_Description.Extent.Substring(colon_index + 1, semi_index - colon_index - 1);

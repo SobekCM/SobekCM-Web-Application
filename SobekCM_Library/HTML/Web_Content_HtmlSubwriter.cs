@@ -598,7 +598,7 @@ namespace SobekCM.Library.HTML
             // The header is already drawn, so just start the main table here
             if ((siteMap != null) && ( !excludeSiteMap ))
             {
-                Output.WriteLine("<table width=\"100%\">");
+                Output.WriteLine("<table width=\"100%\" id=\"sbkWchs_SiteMapOuterContainer\">");
                 Output.WriteLine("<tr>");
                 if (siteMap.Width > 0)
                 {

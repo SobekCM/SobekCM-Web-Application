@@ -9,6 +9,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Web;
+using System.Web.UI;
 using System.Web.UI.WebControls;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.Client;
@@ -52,6 +53,8 @@ namespace SobekCM.Library.HTML
         private readonly Search_Results_Statistics datasetBrowseResultsStats;
         private readonly List<iSearch_Title_Result> pagedResults;
 
+        private bool canEditHomePage;
+
         /// <summary> Constructor creates a new instance of the Aggregation_HtmlSubwriter class </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
         public Aggregation_HtmlSubwriter(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
@@ -78,6 +81,20 @@ namespace SobekCM.Library.HTML
             {
                 RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Error;
                 return;
+            }
+
+            // Determine if the user can edit this
+            canEditHomePage = (RequestSpecificValues.Current_User != null) && (RequestSpecificValues.Current_User.Is_Aggregation_Admin(hierarchyObject.Code));
+
+            // Look for a user setting for 'Aggregation_HtmlSubwriter.Can_Edit_Home_Page' and if that included the aggregation code,
+            // this non-admin user can edit the home page.
+            if ((!canEditHomePage) && (RequestSpecificValues.Current_User != null) && (RequestSpecificValues.Current_Mode.Aggregation.Length > 0))
+            {
+                string possible_setting = "|" + (RequestSpecificValues.Current_User.Get_Setting("Aggregation_HtmlSubwriter.Can_Edit_Home_Page", String.Empty)).ToUpper() + "|";
+                if (possible_setting.Contains("|" + RequestSpecificValues.Current_Mode.Aggregation.ToUpper() + "|"))
+                {
+                    canEditHomePage = true;
+                }
             }
 
             //// Check if a differente skin should be used if this is a collection display
@@ -128,7 +145,7 @@ namespace SobekCM.Library.HTML
 					RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Home;
 				else
 				{
-					if ((!RequestSpecificValues.Current_User.Is_System_Admin) && (!RequestSpecificValues.Current_User.Is_Portal_Admin) && (!RequestSpecificValues.Current_User.Is_Aggregation_Admin(hierarchyObject.Code)))
+					if (!canEditHomePage )
 					{
 						RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Home;
 					}
@@ -1220,9 +1237,8 @@ namespace SobekCM.Library.HTML
 				// Get the raw home hteml text
                 string home_html = hierarchyObject.HomePageHtml.Content;
 
-	            bool isAdmin = (RequestSpecificValues.Current_User != null ) && ( RequestSpecificValues.Current_User.Is_Aggregation_Admin(hierarchyObject.Code));
 
-	            if (( isAdmin ) && ( RequestSpecificValues.Current_Mode.Aggregation_Type == Aggregation_Type_Enum.Home_Edit))
+                if ((canEditHomePage) && (RequestSpecificValues.Current_Mode.Aggregation_Type == Aggregation_Type_Enum.Home_Edit))
 	            {
 					string post_url = HttpUtility.HtmlEncode(HttpContext.Current.Items["Original_URL"].ToString());
 					Output.WriteLine("<form name=\"home_edit_form\" method=\"post\" action=\"" + post_url + "\" id=\"addedForm\" >");
@@ -1276,7 +1292,7 @@ namespace SobekCM.Library.HTML
 		            home_html = home_html.Replace("<%BASEURL%>", RequestSpecificValues.Current_Mode.Base_URL).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2);
 
 		            // Output the adjusted home html
-		            if (isAdmin)
+                    if (canEditHomePage)
 		            {
 						Output.WriteLine("<div id=\"sbkAghsw_EditableHome\">");
 			            Output.WriteLine(home_html);

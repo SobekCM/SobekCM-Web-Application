@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="12.0">
   <PropertyGroup>
     <ProjectType>Local</ProjectType>
     <ProductVersion>9.0.30729</ProductVersion>
@@ -28,7 +28,7 @@
     <UpgradeBackupLocation>
     </UpgradeBackupLocation>
     <OldToolsVersion>3.5</OldToolsVersion>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <TargetFrameworkProfile />
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
@@ -158,9 +158,7 @@
     <Compile Include="Bib_Info\MODS_Info\TableOfContents_Info.cs" />
     <Compile Include="Configuration\Metadata_Mapping_Config.cs" />
     <Compile Include="Configuration\ResourceObjectSettings.cs" />
-    <Compile Include="Database\DataSets\SobekCM_All_Items.cs">
-      <SubType>Component</SubType>
-    </Compile>
+    <Compile Include="Database\DataSets\SobekCM_All_Items.cs" />
     <Compile Include="Event_Delegates.cs" />
     <Compile Include="GenericXml\Mapping\GenericXmlMappingPath.cs" />
     <Compile Include="GenericXml\Mapping\GenericXmlMappingSet.cs" />
@@ -367,9 +365,7 @@
     <Compile Include="Metadata_Modules\Maps\Map_Info.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Metadata_Modules\Maps\Map_Info_Tables.cs">
-      <SubType>Component</SubType>
-    </Compile>
+    <Compile Include="Metadata_Modules\Maps\Map_Info_Tables.cs" />
     <Compile Include="Metadata_Modules\Maps\Map_Person.cs">
       <SubType>Code</SubType>
     </Compile>

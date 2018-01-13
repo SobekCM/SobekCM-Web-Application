@@ -377,6 +377,12 @@ namespace SobekCM.Engine_Library.Navigation
 								{
 									switch( url_relative_list[1] )
 									{
+                                        case "import":
+											Navigator.My_Sobek_Type = My_Sobek_Type_Enum.Import_Spreadsheet;
+                                            if (url_relative_list.Count > 2)
+                                                Navigator.My_Sobek_SubMode = url_relative_list[2];
+											break;
+
 										case "logon":
 											Navigator.My_Sobek_Type = My_Sobek_Type_Enum.Logon;
 											if (QueryString["return"] != null)

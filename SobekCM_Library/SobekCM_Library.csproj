@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="12.0">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -15,7 +15,7 @@
     <OldToolsVersion>3.5</OldToolsVersion>
     <UpgradeBackupLocation>
     </UpgradeBackupLocation>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <TargetFrameworkProfile />
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
@@ -75,6 +75,15 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="ClosedXML">
+      <HintPath>..\DLLs\ClosedXML\ClosedXML.dll</HintPath>
+    </Reference>
+    <Reference Include="DocumentFormat.OpenXml">
+      <HintPath>..\DLLs\ClosedXML\DocumentFormat.OpenXml.dll</HintPath>
+    </Reference>
+    <Reference Include="FastMember.Signed">
+      <HintPath>..\DLLs\ClosedXML\FastMember.Signed.dll</HintPath>
+    </Reference>
     <Reference Include="GemBox.Spreadsheet, Version=33.3.30.1049, Culture=neutral, PublicKeyToken=b1b72c69714d4847, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\DLLs\GemBox.Spreadsheet.dll</HintPath>
@@ -367,6 +376,7 @@
     <Compile Include="MainWriters\DataProvider_MainWriter.cs" />
     <Compile Include="MySobekViewer\Edit_Item_Permissions_MySobekViewer.cs" />
     <Compile Include="MySobekViewer\Edit_TEI_Item_MySobekViewer.cs" />
+    <Compile Include="MySobekViewer\Import_Spreadsheet_MySobekViewer.cs" />
     <Compile Include="MySobekViewer\MySobekViewer_Factory.cs" />
     <Compile Include="MySobekViewer\New_TEI_MySobekViewer.cs" />
     <Compile Include="RequestCache.cs" />

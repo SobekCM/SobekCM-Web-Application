@@ -47,8 +47,7 @@ namespace SobekCM.Library.HTML
 
             RequestSpecificValues.Tracer.Add_Trace("MySobek_HtmlSubwriter.Constructor", "Saving values and geting user object back from the session");
 
-
-
+            // SPecific code to logout users and do nothing else
             if (RequestSpecificValues.Current_Mode.My_Sobek_Type == My_Sobek_Type_Enum.Log_Out)
             {
                 RequestSpecificValues.Tracer.Add_Trace("MySobek_HtmlSubwriter.Constructor", "Performing logout");
@@ -65,6 +64,7 @@ namespace SobekCM.Library.HTML
                 RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.New_Password;
             }
 
+            // If logon is required, forward to that
             if (RequestSpecificValues.Current_Mode.Logon_Required)
                 RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Logon;
 

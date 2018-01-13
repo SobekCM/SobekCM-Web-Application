@@ -10,17 +10,6 @@ using SobekCM.Resource_Object.Solr;
 
 namespace SobekCM.Engine_Library.Solr.v5
 {
-    // IN DATABASE HANDLE NEW FIELDS:
-    //   Translated Title
-    //   ZT Hierarchical
-    //   LOM fields (and remove underscore in db metadata type names and learning time and resource type)
-
-    // Add VRA core Materials display
-    // Add VRA Core Measurements display
-
-    // Performance
-
-
     /// <summary> Class builds the beta/version 5 solr document from the SobekCM digital resource object </summary>
     public class v5_SolrDocument_Builder
     {

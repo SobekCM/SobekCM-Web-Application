@@ -39,6 +39,12 @@ namespace SobekCM.Library.ResultsViewer
                 config = UI_ApplicationCache_Gateway.Configuration.UI.WriterViewers.Results.GetViewerByType(viewerCode);
             }
 
+            // If this is still NULL, just try to get the brief view
+            if (config == null)
+            {
+                config = UI_ApplicationCache_Gateway.Configuration.UI.WriterViewers.Results.GetViewerByCode("brief");
+            }
+
             // If still null, return NULL
             if (config == null)
                 return null;

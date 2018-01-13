@@ -332,6 +332,9 @@
         /// <summary> Edit user-based preferences and user information </summary>
         Preferences,
 
+        /// <summary> Perform rights management on items </summary>
+        Rights_Management,
+
         /// <summary> List of all saved searches for this user </summary>
         Saved_Searches,
 

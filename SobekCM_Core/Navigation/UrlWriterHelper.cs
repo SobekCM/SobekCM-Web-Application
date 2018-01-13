@@ -276,7 +276,9 @@ namespace SobekCM.Core.Navigation
                                 return this_base_url + "my/bookshelf" + urlOptions1;  
                             }
 
-
+                        case My_Sobek_Type_Enum.Rights_Management:
+                            return this_base_url + "my/rmanage/";
+                        
                         case My_Sobek_Type_Enum.Preferences:
                             return this_base_url + "my/preferences" + urlOptions1;
 

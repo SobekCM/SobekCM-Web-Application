@@ -81,6 +81,9 @@ namespace SobekCM.Library.MySobekViewer
                 case My_Sobek_Type_Enum.Page_Images_Management:
                     return new Page_Image_Upload_MySobekViewer(RequestSpecificValues);
 
+                case My_Sobek_Type_Enum.Rights_Management:
+                    return new Rights_Management_MySobekViewer(RequestSpecificValues);
+
                 case My_Sobek_Type_Enum.User_Tags:
                     return new User_Tags_MySobekViewer(RequestSpecificValues);
 

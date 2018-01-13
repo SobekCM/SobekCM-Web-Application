@@ -383,7 +383,13 @@ namespace SobekCM.Engine_Library.Navigation
                                                 Navigator.My_Sobek_SubMode = url_relative_list[2];
 											break;
 
-										case "logon":
+                                        case "rmanage":
+                                            Navigator.My_Sobek_Type = My_Sobek_Type_Enum.Rights_Management;
+                                            if (url_relative_list.Count > 2)
+                                                Navigator.My_Sobek_SubMode = url_relative_list[2];
+                                            break;
+
+                                        case "logon":
 											Navigator.My_Sobek_Type = My_Sobek_Type_Enum.Logon;
 											if (QueryString["return"] != null)
 												Navigator.Return_URL = QueryString["return"];

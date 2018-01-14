@@ -1305,9 +1305,11 @@ namespace SobekCM
 				string err;
 				if (ObjErr != null)
 				{
-					err = "<b>" + HttpContext.Current.Request.UserHostAddress + "</b><br /><br />" +
+                    string referrer = (HttpContext.Current.Request.UrlReferrer != null) ? "URL Referred from: " + HttpContext.Current.Request.UrlReferrer + "<br />" : String.Empty;
+
+                    err = "<b>" + HttpContext.Current.Request.UserHostAddress + "</b><br /><br />" +
 					      "Error in: " + HttpContext.Current.Request.Url + "<br />" +
-                          "URL Referred from: " + HttpContext.Current.Request.UrlReferrer + "<br />" +
+                          referrer +
                           "Error Message: " + ObjErr.Message + "<br /><br />" +
 					      "Stack Trace: " + ObjErr.StackTrace.Replace("\r", "<br />") + "<br /><br />";
 

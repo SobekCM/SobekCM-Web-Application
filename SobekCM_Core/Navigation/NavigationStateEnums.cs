@@ -293,6 +293,9 @@
         /// <summary> View a current folder (or bookshelf) or perform folder management on saved items </summary>
         Folder_Management,
 
+        /// <summary> Import a spreadsheet of digital resource metadata </summary>
+        Import_Spreadsheet,
+
         /// <summary> Page is used as the landing page when coming back from Shibboleth authentication </summary>
         Shibboleth_Landing,
 

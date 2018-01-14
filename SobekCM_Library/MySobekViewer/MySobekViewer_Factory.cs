@@ -15,6 +15,9 @@ namespace SobekCM.Library.MySobekViewer
 
             switch (RequestSpecificValues.Current_Mode.My_Sobek_Type)
             {
+                case My_Sobek_Type_Enum.Import_Spreadsheet:
+                    return new Import_Spreadsheet_MySobekViewer(RequestSpecificValues);
+                    
                 case My_Sobek_Type_Enum.Home:
                     return new Home_MySobekViewer(RequestSpecificValues);
  

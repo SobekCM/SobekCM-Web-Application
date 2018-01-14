@@ -170,6 +170,11 @@ namespace SobekCM.Core.Navigation
                 case Display_Mode_Enum.My_Sobek:
                     switch (Current_Mode.My_Sobek_Type)
                     {
+                        case My_Sobek_Type_Enum.Import_Spreadsheet:
+                            if (!String.IsNullOrEmpty(Current_Mode.My_Sobek_SubMode))
+                                return this_base_url + "my/import/" + Current_Mode.My_Sobek_SubMode + urlOptions1;
+                            return this_base_url + "my/import" + urlOptions1;
+
                         case My_Sobek_Type_Enum.Logon:
                             if (!String.IsNullOrEmpty(Current_Mode.Return_URL))
                             {

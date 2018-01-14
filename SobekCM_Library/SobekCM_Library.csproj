@@ -369,6 +369,7 @@
     <Compile Include="MySobekViewer\Edit_TEI_Item_MySobekViewer.cs" />
     <Compile Include="MySobekViewer\MySobekViewer_Factory.cs" />
     <Compile Include="MySobekViewer\New_TEI_MySobekViewer.cs" />
+    <Compile Include="MySobekViewer\Rights_Management.cs" />
     <Compile Include="RequestCache.cs" />
     <Compile Include="ResultsViewer\Custom_Thumbnail_ResultsViewer.cs" />
     <Compile Include="ResultsViewer\Google_Map_ResultsViewer_Beta.cs" />

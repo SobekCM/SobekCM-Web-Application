@@ -64,7 +64,8 @@ namespace SobekCM
 						writer.WriteLine("Error Caught in Application_Error event ( " + DateTime.Now.ToString() + ")");
 						writer.WriteLine("User Host Address: " + Request.UserHostAddress);
 						writer.WriteLine("Requested URL: " + Request.Url);
-						if (objErr is SobekCM_Traced_Exception)
+                        writer.WriteLine("Http Referrer: " + Request.UrlReferrer);
+                        if (objErr is SobekCM_Traced_Exception)
 						{
 							SobekCM_Traced_Exception sobekException = (SobekCM_Traced_Exception)objErr;
 

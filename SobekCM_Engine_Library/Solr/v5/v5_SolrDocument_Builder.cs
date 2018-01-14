@@ -99,7 +99,7 @@ namespace SobekCM.Engine_Library.Solr.v5
                     returnValue.Level5_Facet = Digital_Object.Behaviors.Serial_Info[4].Order.ToString().PadLeft(5, '0') + '|' + Digital_Object.Behaviors.Serial_Info[4].Display;
                 }
 
-                returnValue.Dark = Digital_Object.Behaviors.Dark_Flag;
+                returnValue.Hidden = Digital_Object.Behaviors.Dark_Flag;
             }
 
             // Some defaults
@@ -140,8 +140,8 @@ namespace SobekCM.Engine_Library.Solr.v5
             GeoSpatial_Information geo = Digital_Object.Get_Metadata_Module(GlobalVar.GEOSPATIAL_METADATA_MODULE_KEY) as GeoSpatial_Information;
             if (geo != null)
             {
-                if (returnValue.SpatialFootprint == null) returnValue.SpatialFootprint = new List<string>();
-                returnValue.SpatialFootprint.Add(geo.SobekCM_Main_Spatial_String);
+                if (returnValue.SpatialFootprintKml == null) returnValue.SpatialFootprintKml = new List<string>();
+                returnValue.SpatialFootprintKml.Add(geo.SobekCM_Main_Spatial_String);
 
                 returnValue.SpatialDistance = (int)geo.SobekCM_Main_Spatial_Distance;
             }

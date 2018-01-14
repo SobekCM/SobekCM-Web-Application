@@ -182,7 +182,6 @@ namespace SobekCM.Engine_Library.Solr.v5
         [SolrField("level5facet")]
         public string Level5_Facet { get; set; }
 
-
         #endregion
 
         #region Authority system ID's for use in the local authority system
@@ -203,6 +202,10 @@ namespace SobekCM.Engine_Library.Solr.v5
         [SolrField("spatial.authid")]
         public List<int> Spatial_AuthID { get; set; }
 
+        /// <summary> Temporal authority ids related to this digital resource </summary>
+        [SolrField("temporal.authid")]
+        public List<int> Temporal_AuthID { get; set; }
+
         #endregion
 
         #region Some basic behavior fields related to discoverability and access
@@ -219,9 +222,9 @@ namespace SobekCM.Engine_Library.Solr.v5
         [SolrField("discover_ips")]
         public List<int> Discover_IPs { get; set; }
 
-        /// <summary> Dark flag indicates if this digital resource is considered "dark" or largely inaccessible </summary>
-        [SolrField("dark")]
-        public bool Dark { get; set; }
+        /// <summary> Hidden flag indicates if this digital resource is completely hidden, not to be publicly discovered at all </summary>
+        [SolrField("hidden")]
+        public bool Hidden { get; set; }
 
         /// <summary> Restricted message to display with this item - generally describes accessibility permissions </summary>
         [SolrField("restricted_msg")]
@@ -394,9 +397,9 @@ namespace SobekCM.Engine_Library.Solr.v5
         [SolrField("spatial_standard")]
         public List<string> Spatial { get; set; }
 
-        /// <summary> Spatial footprint to display this item on a map </summary>
-        [SolrField("spatial_footprint")]
-        public List<string> SpatialFootprint { get; set; }
+        /// <summary> KML spatial footprint to display this item on a map </summary>
+        [SolrField("spatial_footprint_kml")]
+        public List<string> SpatialFootprintKml { get; set; }
 
         /// <summary> Distance of the spatial footprint for this item on the map </summary>
         [SolrField("spatial_footprint_distance")]
@@ -1129,6 +1132,63 @@ namespace SobekCM.Engine_Library.Solr.v5
         public List<string> UserDefinedDisplay52 { get; set; }
 
         #endregion
+
+        #region Fields which can be used for metadata export from the results, and retain internal hierarchy
+
+  //      <field name = "creator_export" type="text_facets" indexed="false" stored="true" multiValued="true" />
+  //<field name = "subjects_export" type="text_facets" indexed="false" stored="true" multiValued="true" />
+  //<field name = "" type="text_facets" indexed="false" stored="true" multiValued="true" />
+  //<field name = "" type="text_facets" indexed="false" stored="true" multiValued="true" />
+  //<field name = "" type="text_facets" indexed="false" stored="true" multiValued="true" />
+  //<field name = "" type="text_facets" indexed="false" stored="true" multiValued="true" />
+  //<field name = "title_export" type="text_facets" indexed="false" stored="true" multiValued="true" />
+
+        /// <summary> Allows export of the creator, while retaining internal hierarchy of data elements </summary>
+        /// <remarks> This stores each individual creator, along with sub-elements, as a pipe-delimited string </remarks>
+        [SolrField("creator_export")]
+        public List<string> CreatorExport { get; set; }
+
+        /// <summary> Allows export of the subjects, while retaining internal hierarchy of data elements </summary>
+        /// <remarks> This stores each individual subject, along with sub-elements, as a pipe-delimited string </remarks>
+        [SolrField("subjects_export")]
+        public List<string> SubjectExport { get; set; }
+
+        /// <summary> Allows export of the spatial subjects, while retaining internal hierarchy of data elements </summary>
+        /// <remarks> This stores each individual spatial subject, along with sub-elements, as a pipe-delimited string </remarks>
+        [SolrField("spatial_export")]
+        public List<string> SpatialExport { get; set; }
+
+        /// <summary> Allows export of the identifier, while retaining internal hierarchy of data elements </summary>
+        /// <remarks> This stores each individual identifier, along with sub-elements, as a pipe-delimited string </remarks>
+        [SolrField("identifier_export")]
+        public List<string> IdentifierExport { get; set; }
+
+        /// <summary> Allows export of the genre, while retaining internal hierarchy of data elements </summary>
+        /// <remarks> This stores each individual genre, along with sub-elements, as a pipe-delimited string </remarks>
+        [SolrField("genre_export")]
+        public List<string> GenreExport { get; set; }
+
+        /// <summary> Allows export of the notes, while retaining internal hierarchy of data elements </summary>
+        /// <remarks> This stores each individual notes, along with sub-elements, as a pipe-delimited string </remarks>
+        [SolrField("notes_export")]
+        public List<string> NotesExport { get; set; }
+
+        /// <summary> Allows export of the title, while retaining internal hierarchy of data elements </summary>
+        /// <remarks> This stores each individual title, along with sub-elements, as a pipe-delimited string </remarks>
+        [SolrField("title_export")]
+        public List<string> TitleExport { get; set; }
+
+        /// <summary> Allows export of the classification, while retaining internal hierarchy of data elements </summary>
+        /// <remarks> This stores each individual classification, along with sub-elements, as a pipe-delimited string </remarks>
+        [SolrField("classification_export")]
+        public List<string> ClassificationExport { get; set; }
+
+        /// <summary> Allows export of the temporal subjects, while retaining internal hierarchy of data elements </summary>
+        /// <remarks> This stores each individual temporal subject, along with sub-elements, as a pipe-delimited string </remarks>
+        [SolrField("temporal_export")]
+        public List<string> TemporalExport { get; set; }
+
+        #endregion 
 
         /// <summary> Highlighted snippet of text from this document </summary>
         public string Snippet { get; set; }

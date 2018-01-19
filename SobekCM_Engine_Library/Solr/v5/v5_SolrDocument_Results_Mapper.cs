@@ -38,6 +38,12 @@ namespace SobekCM.Engine_Library.Solr.v5
                 case "date.display":
                     return SolrDocument.DateDisplay;
 
+                case "timeline_date":
+                    return SolrDocument.TimelineDate.ToString();
+
+                case "timeline_date.display":
+                    return SolrDocument.TimelineDateDisplay;
+
                 case "title":
                     return SolrDocument.Title;
 

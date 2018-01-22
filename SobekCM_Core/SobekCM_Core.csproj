@@ -137,6 +137,8 @@
     <Compile Include="Configuration\Extensions\ExtensionAssembly.cs" />
     <Compile Include="Message\EnableExtensionMessage.cs" />
     <Compile Include="Plugins\PluginInstaller.cs" />
+    <Compile Include="Search\Search_Options_Info.cs" />
+    <Compile Include="Search\Search_User_Membership_Info.cs" />
     <Compile Include="Settings\DbItemViewers\DbItemViewerTypes.cs" />
     <Compile Include="Configuration\Extensions\ExtensionCssInfo.cs" />
     <Compile Include="Configuration\Extensions\ExtensionInfo.cs" />

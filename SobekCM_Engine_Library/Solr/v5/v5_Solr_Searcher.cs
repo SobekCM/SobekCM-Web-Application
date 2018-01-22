@@ -19,21 +19,287 @@ namespace SobekCM.Engine_Library.Solr.v5
         #region Static method to query the Solr/Lucene for a collection of results
 
         /// <summary> Perform an search for documents with matching parameters </summary>
-        /// <param name="AggregationCode"> Aggregation code within which to search </param>
-        /// <param name="Terms"> List of the search terms </param>
-        /// <param name="Web_Fields"> List of the web fields associate with the search terms </param>        /// <param name="ResultsPerPage"> Number of results to display per a "page" of results </param>
-        /// <param name="Page_Number"> Which page of results to return ( one-based, so the first page is page number of one )</param>
-        /// <param name="Sort"> Sort to apply before returning the results of the search </param>
-        /// <param name="Need_Search_Statistics"> Flag indicates if the search statistics are needed </param>
+        /// <param name="Terms"> List of the search terms which define this search </param>
+        /// <param name="Web_Fields"> List of the web fields associate with the search terms </param>
+        /// <param name="StartDate"> Starting date, if this search includes a limitation by time </param>
+        /// <param name="EndDate"> Ending date, if this search includes a limitation by time </param>
+        /// <param name="SearchOptions"> Options related to this search, like the page, results per page, facets, fields, etc.. </param>
+        /// <param name="UserMembership"> User-specific membership information, related to a search, which can be used to determine which items this user can discover</param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         /// <param name="Complete_Result_Set_Info"> [OUT] Information about the entire set of results </param>
         /// <param name="Paged_Results"> [OUT] List of search results for the requested page of results </param>
         /// <returns> Page search result object with all relevant result information </returns>
-        public static bool Search(string AggregationCode, List<Complete_Item_Aggregation_Metadata_Type> Facets, List<Complete_Item_Aggregation_Metadata_Type> Results_Fields, List<string> Terms, List<string> Web_Fields, Nullable<DateTime> StartDate, Nullable<DateTime> EndDate, int ResultsPerPage, int Page_Number, ushort Sort, bool Need_Search_Statistics, Custom_Tracer Tracer, out Search_Results_Statistics Complete_Result_Set_Info, out List<iSearch_Title_Result> Paged_Results)
+        public static bool Search(List<string> Terms, List<string> Web_Fields, Nullable<DateTime> StartDate, Nullable<DateTime> EndDate, Search_Options_Info SearchOptions, Search_User_Membership_Info UserMembership, Custom_Tracer Tracer, out Search_Results_Statistics Complete_Result_Set_Info, out List<iSearch_Title_Result> Paged_Results)
         {
             if (Tracer != null)
             {
-                Tracer.Add_Trace("v5_Solr_Documents_Searcher.Search", "Build the Solr query");
+                Tracer.Add_Trace("v5_Solr_Documents_Searcher.Search", String.Empty);
+            }
+
+            // Get the query string
+            string queryString = Create_Query_String(Terms, Web_Fields, StartDate, EndDate, Tracer);
+
+            // Exclude hidden, if not an admin (later we will deal with user/groups and IP restrictions)
+            if (( UserMembership == null ) || (!UserMembership.LoggedIn ) || (!UserMembership.Admin))
+                queryString = "(hidden:0) AND (discover_ips:0) AND (" + queryString + ")";
+
+            // If there was an aggregation code included, put that at the beginning of the search
+            if ((!String.IsNullOrEmpty(SearchOptions.AggregationCode)) && (SearchOptions.AggregationCode.ToUpper() != "ALL"))
+            {
+                queryString = "(aggregations:" + SearchOptions.AggregationCode + ") AND (" + queryString + ")";
+            }
+
+            // Set output initially to null
+            return Run_Query(queryString, SearchOptions, UserMembership, Tracer, out Complete_Result_Set_Info, out Paged_Results);
+        }
+
+        private static string to_standard_date_string(DateTime AsDate)
+        {
+            return AsDate.Year + "-" + AsDate.Month.ToString().PadLeft(2, '0') + "-" + AsDate.Day.ToString().PadLeft(2, '0') + "T00:00:00Z";
+        }
+
+        /// <summary> Return the list of all items within a single aggregation (or ALL aggregations) </summary>
+        /// <param name="SearchOptions"> Options related to this search, like the page, results per page, facets, fields, etc.. </param>
+        /// <param name="UserMembership"> User-specific membership information, related to a search, which can be used to determine which items this user can discover</param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        /// <param name="Complete_Result_Set_Info"> [OUT] Information about the entire set of results </param>
+        /// <param name="Paged_Results"> [OUT] List of search results for the requested page of results </param>
+        /// <returns> Page search result object with all relevant result information</returns>
+        public static bool All_Browse(Search_Options_Info SearchOptions, Search_User_Membership_Info UserMembership, Custom_Tracer Tracer, out Search_Results_Statistics Complete_Result_Set_Info, out List<iSearch_Title_Result> Paged_Results)
+        {
+            // Get the query string value
+            string queryString = String.Empty;
+
+            // Exclude hidden, if not an admin (later we will deal with user/groups and IP restrictions)
+            if ((UserMembership == null) || (!UserMembership.LoggedIn) || (!UserMembership.Admin))
+                queryString = "(hidden:0) AND (discover_ips:0)";
+
+            // If there was an aggregation code included, put that at the beginning of the search
+            if ((!String.IsNullOrEmpty(SearchOptions.AggregationCode)) && (SearchOptions.AggregationCode.ToUpper() != "ALL"))
+            {
+                queryString = "(aggregations:" + SearchOptions.AggregationCode + ") AND " + queryString;
+            }
+
+            // Set output initially to null
+            return Run_Query(queryString, SearchOptions, UserMembership, Tracer, out Complete_Result_Set_Info, out Paged_Results);
+        }
+
+        /// <summary> Return the list of newly added items within a single aggregation (or ALL aggregations) </summary>
+        /// <param name="SearchOptions"> Options related to this search, like the page, results per page, facets, fields, etc.. </param>
+        /// <param name="UserMembership"> User-specific membership information, related to a search, which can be used to determine which items this user can discover</param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        /// <param name="Complete_Result_Set_Info"> [OUT] Information about the entire set of results </param>
+        /// <param name="Paged_Results"> [OUT] List of search results for the requested page of results </param>
+        /// <returns> Page search result object with all relevant result information</returns>
+        public static bool New_Browse(Search_Options_Info SearchOptions, Search_User_Membership_Info UserMembership, Custom_Tracer Tracer, out Search_Results_Statistics Complete_Result_Set_Info, out List<iSearch_Title_Result> Paged_Results)
+        {
+            // Computer the datetime for this
+            DateTime two_weeks_ago = DateTime.Now.Subtract(new TimeSpan(14, 0, 0, 0));
+            string date_string = two_weeks_ago.Year + "-" + two_weeks_ago.Month.ToString().PadLeft(2, '0') + "-" + two_weeks_ago.Day.ToString().PadLeft(2, '0') + "T00:00:00Z";
+
+            // Get the query string value
+            string queryString = null;
+
+            // Exclude hidden, if not an admin (later we will deal with user/groups and IP restrictions)
+            if ((UserMembership == null) || (!UserMembership.LoggedIn) || (!UserMembership.Admin))
+                queryString = "(hidden:0) AND (discover_ips:0) AND ( made_public_date:[" + date_string + " TO *] )";
+            else
+                queryString = "( made_public_date:[" + date_string + " TO *] )";
+
+            // If there was an aggregation code included, put that at the beginning of the search
+            if ((!String.IsNullOrEmpty(SearchOptions.AggregationCode)) && (SearchOptions.AggregationCode.ToUpper() != "ALL"))
+            {
+                queryString = "(aggregations:" + SearchOptions.AggregationCode + ") AND " + queryString;
+            }
+
+            // Set output initially to null
+            return Run_Query(queryString, SearchOptions, UserMembership, Tracer, out Complete_Result_Set_Info, out Paged_Results);
+        }
+
+        /// <summary> Run a solr query against the solr document index </summary>
+        /// <param name="QueryString"> Solr query string </param>
+        /// <param name="SearchOptions"> Options related to this search, like the page, results per page, facets, fields, etc.. </param>
+        /// <param name="UserMembership"> User-specific membership information, related to a search, which can be used to determine which items this user can discover</param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        /// <param name="Complete_Result_Set_Info"> [OUT] Information about the entire set of results </param>
+        /// <param name="Paged_Results"> [OUT] List of search results for the requested page of results </param>
+        /// <returns> Page search result object with all relevant result information </returns>
+        public static bool Run_Query(string QueryString, Search_Options_Info SearchOptions, Search_User_Membership_Info UserMembership, Custom_Tracer Tracer, out Search_Results_Statistics Complete_Result_Set_Info, out List<iSearch_Title_Result> Paged_Results)
+        {
+            // Log the search term
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("v5_Solr_Documents_Searcher.Run_Query", "Solr Query: " + QueryString);
+            }
+
+            // Set output initially to null
+            Paged_Results = new List<iSearch_Title_Result>();
+            Complete_Result_Set_Info = null;
+
+            try
+            {
+                // Ensure page is not erroneously set to zero or negative
+                int pageNumber = SearchOptions.Page;
+                if (pageNumber <= 0)
+                    pageNumber = 1;
+
+                // Get and clean the solr document url
+                string solrDocumentUrl = Engine_ApplicationCache_Gateway.Settings.Servers.Document_Solr_Index_URL;
+                if ((!String.IsNullOrEmpty(solrDocumentUrl)) && (solrDocumentUrl[solrDocumentUrl.Length - 1] == '/'))
+                    solrDocumentUrl = solrDocumentUrl.Substring(0, solrDocumentUrl.Length - 1);
+
+                // Create the solr worker to query the document index
+                var solrWorker = Solr_Operations_Cache<v5_SolrDocument>.GetSolrOperations(solrDocumentUrl);
+
+                // Get the list of fields
+                List<string> fields = new List<string> {"did", "mainthumb", "title"};
+                fields.AddRange(SearchOptions.Fields.Select(MetadataField => MetadataField.SolrCode));
+
+                // Create the query options
+                QueryOptions options = new QueryOptions
+                {
+                    Rows = SearchOptions.ResultsPerPage,
+                    Start = (pageNumber - 1) * SearchOptions.ResultsPerPage,
+                    Fields = fields
+                };
+
+                // Was there full text search in that?
+                if ((QueryString.Contains("(fulltext:")) && ( SearchOptions.IncludeFullTextSnippets ))
+                {
+                    options.Highlight = new HighlightingParameters { Fields = new[] { "fulltext" }, Fragsize = 255 };
+                    options.ExtraParams = new Dictionary<string, string> {{"hl.useFastVectorHighlighter", "true"}, {"wt", "xml"}};
+                }
+                else
+                {
+                    // We still need to instruct SOLR to return the results as XML for solr to parse it
+                    options.ExtraParams = new KeyValuePair<string, string>[] { new KeyValuePair<string, string>("wt", "xml") };
+                }
+
+                // If the search stats are needed, let's get the facets
+                if (( SearchOptions.Facets != null ) && ( SearchOptions.Facets.Count > 0 ))
+                {
+                    // Create the query facters
+                    options.Facet = new FacetParameters();
+                    foreach (Complete_Item_Aggregation_Metadata_Type facet in SearchOptions.Facets)
+                    {
+                        options.Facet.Queries.Add(new SolrFacetFieldQuery(facet.SolrCode) {MinCount=1, Limit=100});
+                    }
+                }
+
+                // Set the sort value
+                if (SearchOptions.Sort != 0)
+                {
+                    options.OrderBy.Clear();
+                    switch (SearchOptions.Sort)
+                    {
+                        case 1:
+                            options.OrderBy.Add(new SortOrder("title.sort", Order.ASC));
+                            break;
+
+                        case 2:
+                            options.OrderBy.Add(new SortOrder("bibid", Order.ASC));
+                            break;
+
+                        case 3:
+                            options.OrderBy.Add(new SortOrder("bibid", Order.DESC));
+                            break;
+
+                        case 10:
+                            options.OrderBy.Add(new SortOrder("date.gregorian", Order.ASC));
+                            break;
+
+                        case 11:
+                            options.OrderBy.Add(new SortOrder("date.gregorian", Order.DESC));
+                            break;
+
+                    }
+                }
+
+                if (Tracer != null)
+                {
+                    Tracer.Add_Trace("v5_Solr_Documents_Searcher.Run_Query", "Perform the search");
+                }
+
+                // Perform this search
+                SolrQueryResults<v5_SolrDocument> results = solrWorker.Query(QueryString, options);
+
+                if (Tracer != null)
+                {
+                    Tracer.Add_Trace("v5_Solr_Documents_Searcher.Run_Query", "Build the results object");
+                }
+
+                // Create the search statistcs
+                List<string> metadataLabels = SearchOptions.Fields.Select(MetadataType => MetadataType.DisplayTerm).ToList();
+                Complete_Result_Set_Info = new Search_Results_Statistics(metadataLabels)
+                {
+                    Total_Titles = results.NumFound,
+                    Total_Items = results.NumFound,
+                    QueryTime = results.Header.QTime
+                };
+
+                // If the search stats were needed, get the facets out
+                if ((SearchOptions.Facets != null) && (SearchOptions.Facets.Count > 0))
+                {
+                    // Copy over all the facets
+                    foreach (Complete_Item_Aggregation_Metadata_Type facetTerm in SearchOptions.Facets)
+                    {
+                        // Create the collection and and assifn the metadata type id
+                        Search_Facet_Collection thisCollection = new Search_Facet_Collection(facetTerm.ID);
+
+                        // Add each value
+                        foreach (var facet in results.FacetFields[facetTerm.SolrCode])
+                        {
+                            thisCollection.Facets.Add(new Search_Facet(facet.Key, facet.Value));
+                        }
+
+                        // If there was an id and facets added, save this to the search statistics
+                        if ((thisCollection.MetadataTypeID > 0) && (thisCollection.Facets.Count > 0))
+                        {
+                            Complete_Result_Set_Info.Facet_Collections.Add(thisCollection);
+                        }
+                    }
+                }
+
+                // Pass all the results into the List and add the highlighted text to each result as well
+                v5_SolrDocument_Results_Mapper mapper = new v5_SolrDocument_Results_Mapper();
+                foreach (v5_SolrDocument thisResult in results)
+                {
+                    // Convert to the new result
+                    Legacy_Solr_Document_Result newResult = mapper.Map_To_Result(thisResult, SearchOptions.Fields);
+
+                    // Add the highlight snippet, if applicable
+                    if (( results.Highlights != null ) && (results.Highlights.ContainsKey(thisResult.DID)) && (results.Highlights[thisResult.DID].Count > 0) && (results.Highlights[thisResult.DID].ElementAt(0).Value.Count > 0))
+                    {
+                        newResult.Snippet = results.Highlights[thisResult.DID].ElementAt(0).Value.ElementAt(0);
+                    }
+
+                    Paged_Results.Add(newResult);
+                }
+
+                return true;
+            }
+            catch ( Exception ee )
+            {
+                return false;
+            }
+        }
+
+        #endregion
+
+        #region Static method to create the query string from web fields, terms, and dates
+
+        /// <summary> Creates the solr/lucene query string for the search terms and dates</summary>
+        /// <param name="Terms"> List of the search terms </param>
+        /// <param name="Web_Fields"> List of the web fields associate with the search terms </param>
+        /// <param name="StartDate"> Starting date, if this search includes a limitation by time </param>
+        /// <param name="EndDate"> Ending date, if this search includes a limitation by time </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        /// <returns> Fully built query string ( excluding user membership and aggreagtion membership checks ) </returns>
+        public static string Create_Query_String(List<string> Terms, List<string> Web_Fields, Nullable<DateTime> StartDate, Nullable<DateTime> EndDate, Custom_Tracer Tracer)
+        {
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("v5_Solr_Documents_Searcher.Create_Query_String", "Build the Solr query");
             }
 
             // Start to build the query
@@ -170,239 +436,20 @@ namespace SobekCM.Engine_Library.Solr.v5
                 }
             }
 
-            // Exclude hidden
-            queryString = "(hidden:0) AND (discover_ips:0) AND (" + queryString + ")";
-
-            // If there was an aggregation code included, put that at the beginning of the search
-            if ((AggregationCode.Length > 0) && (AggregationCode.ToUpper() != "ALL"))
-            {
-                queryString = "(aggregations:" + AggregationCode + ") AND (" + queryString + ")";
-            }
-
-            // Set output initially to null
-            return Run_Query(queryString, ResultsPerPage, Page_Number, Sort, Need_Search_Statistics, Facets, Results_Fields, Tracer, out Complete_Result_Set_Info, out Paged_Results);
+            return queryString;
         }
 
-        private static string to_standard_date_string(DateTime AsDate)
-        {
-            return AsDate.Year + "-" + AsDate.Month.ToString().PadLeft(2, '0') + "-" + AsDate.Day.ToString().PadLeft(2, '0') + "T00:00:00Z";
-        }
-
-        public static bool All_Browse(string AggregationCode, List<Complete_Item_Aggregation_Metadata_Type> Facets, List<Complete_Item_Aggregation_Metadata_Type> Results_Fields, int ResultsPerPage, int Page_Number, ushort Sort, bool Need_Search_Statistics, Custom_Tracer Tracer, out Search_Results_Statistics Complete_Result_Set_Info, out List<iSearch_Title_Result> Paged_Results)
-        {
-            // Get the query string value
-            string queryString = "(hidden:0) AND (discover_ips:0)";
-
-            // If there was an aggregation code included, put that at the beginning of the search
-            if ((AggregationCode.Length > 0) && (AggregationCode.ToUpper() != "ALL"))
-            {
-                queryString = "(aggregations:" + AggregationCode + ") AND " + queryString;
-            }
-
-            // Set output initially to null
-            return Run_Query(queryString, ResultsPerPage, Page_Number, Sort, Need_Search_Statistics, Facets, Results_Fields, Tracer, out Complete_Result_Set_Info, out Paged_Results);
-        }
-
-        public static bool New_Browse(string AggregationCode, List<Complete_Item_Aggregation_Metadata_Type> Facets, List<Complete_Item_Aggregation_Metadata_Type> Results_Fields, int ResultsPerPage, int Page_Number, ushort Sort, bool Need_Search_Statistics, Custom_Tracer Tracer, out Search_Results_Statistics Complete_Result_Set_Info, out List<iSearch_Title_Result> Paged_Results)
-        {
-            // Computer the datetime for this
-            DateTime two_weeks_ago = DateTime.Now.Subtract(new TimeSpan(14, 0, 0, 0));
-            string date_string = two_weeks_ago.Year + "-" + two_weeks_ago.Month.ToString().PadLeft(2, '0') + "-" + two_weeks_ago.Day.ToString().PadLeft(2, '0') + "T00:00:00Z";
-
-            // Get the query string value
-            string queryString = "(hidden:0) AND (discover_ips:0) AND ( made_public_date:[" + date_string + " TO *] )";
-
-            // If there was an aggregation code included, put that at the beginning of the search
-            if ((AggregationCode.Length > 0) && (AggregationCode.ToUpper() != "ALL"))
-            {
-                queryString = "(aggregations:" + AggregationCode + ") AND " + queryString;
-            }
-
-            // Set output initially to null
-            return Run_Query(queryString, ResultsPerPage, Page_Number, Sort, Need_Search_Statistics, Facets, Results_Fields, Tracer, out Complete_Result_Set_Info, out Paged_Results);
-        }
-
-        /// <summary> Run a solr query against the solr document index </summary>
-        /// <param name="QueryString"></param>
-        /// <param name="ResultsPerPage"> Results to retrieve per 'page' of results</param>
-        /// <param name="Page_Number"> Page number within the results, which along with with results per page, determines which results to return </param>
-        /// <param name="Sort"> Sort to apply before returning the results of the search </param>
-        /// <param name="Need_Search_Statistics"> Flag indicates if the search statistics are needed </param>
-        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        /// <param name="Complete_Result_Set_Info"> [OUT] Information about the entire set of results </param>
-        /// <param name="Paged_Results"> [OUT] List of search results for the requested page of results </param>
-        /// <returns> Page search result object with all relevant result information </returns>
-        public static bool Run_Query(string QueryString, int ResultsPerPage, int Page_Number, ushort Sort, bool Need_Search_Statistics, List<Complete_Item_Aggregation_Metadata_Type> Facets, List<Complete_Item_Aggregation_Metadata_Type> Results_Fields, Custom_Tracer Tracer, out Search_Results_Statistics Complete_Result_Set_Info, out List<iSearch_Title_Result> Paged_Results)
-        {
-            // Log the search term
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("v5_Solr_Documents_Searcher.Run_Query", "Solr Query: " + QueryString);
-            }
-
-            // Set output initially to null
-            Paged_Results = new List<iSearch_Title_Result>();
-            Complete_Result_Set_Info = null;
-
-            try
-            {
-                // Ensure page is not erroneously set to zero or negative
-                if (Page_Number <= 0)
-                    Page_Number = 1;
-
-                // Get and clean the solr document url
-                string solrDocumentUrl = Engine_ApplicationCache_Gateway.Settings.Servers.Document_Solr_Index_URL;
-                if ((!String.IsNullOrEmpty(solrDocumentUrl)) && (solrDocumentUrl[solrDocumentUrl.Length - 1] == '/'))
-                    solrDocumentUrl = solrDocumentUrl.Substring(0, solrDocumentUrl.Length - 1);
-
-                // Create the solr worker to query the document index
-                var solrWorker = Solr_Operations_Cache<v5_SolrDocument>.GetSolrOperations(solrDocumentUrl);
-
-                // Get the list of fields
-                List<string> fields = new List<string> {"did", "mainthumb", "title"};
-                fields.AddRange(Results_Fields.Select(MetadataField => MetadataField.SolrCode));
-
-                // Create the query options
-                QueryOptions options = new QueryOptions
-                {
-                    Rows = ResultsPerPage,
-                    Start = (Page_Number - 1)*ResultsPerPage,
-                    Fields = fields
-                    //                    Highlight = new HighlightingParameters { Fields = new[] { "fulltext" }, },
-                    //                  ExtraParams = new Dictionary<string, string> { { "hl.useFastVectorHighlighter", "true" } }
-                };
-
-                // Was there full text search in that?
-                if (QueryString.Contains("(fulltext:"))
-                {
-                    options.Highlight = new HighlightingParameters { Fields = new[] { "fulltext" }, Fragsize = 255 };
-                    options.ExtraParams = new Dictionary<string, string> {{"hl.useFastVectorHighlighter", "true"}, {"wt", "xml"}};
-                }
-                else
-                {
-                    // We still need to instruct SOLR to return the results as XML for solr to parse it
-                    options.ExtraParams = new KeyValuePair<string, string>[] { new KeyValuePair<string, string>("wt", "xml") };
-                }
-
-                // If the search stats are needed, let's get the facets
-                if (Need_Search_Statistics)
-                {
-                    // Create the query facters
-                    options.Facet = new FacetParameters();
-                    foreach (Complete_Item_Aggregation_Metadata_Type facet in Facets)
-                    {
-                        options.Facet.Queries.Add(new SolrFacetFieldQuery(facet.SolrCode) {MinCount = 1});
-                    }
-                }
-
-                // Set the sort value
-                if (Sort != 0)
-                {
-                    options.OrderBy.Clear();
-                    switch (Sort)
-                    {
-                        case 1:
-                            options.OrderBy.Add(new SortOrder("title.sort", Order.ASC));
-                            break;
-
-                        case 2:
-                            options.OrderBy.Add(new SortOrder("bibid", Order.ASC));
-                            break;
-
-                        case 3:
-                            options.OrderBy.Add(new SortOrder("bibid", Order.DESC));
-                            break;
-
-                        case 10:
-                            options.OrderBy.Add(new SortOrder("date.gregorian", Order.ASC));
-                            break;
-
-                        case 11:
-                            options.OrderBy.Add(new SortOrder("date.gregorian", Order.DESC));
-                            break;
-
-                    }
-                }
-
-                if (Tracer != null)
-                {
-                    Tracer.Add_Trace("v5_Solr_Documents_Searcher.Run_Query", "Perform the search");
-                }
-
-                // Perform this search
-                SolrQueryResults<v5_SolrDocument> results = solrWorker.Query(QueryString, options);
-
-                if (Tracer != null)
-                {
-                    Tracer.Add_Trace("v5_Solr_Documents_Searcher.Run_Query", "Build the results object");
-                }
-
-                // Create the search statistcs
-                List<string> metadataLabels = Results_Fields.Select(MetadataType => MetadataType.DisplayTerm).ToList();
-                Complete_Result_Set_Info = new Search_Results_Statistics(metadataLabels)
-                {
-                    Total_Titles = results.NumFound,
-                    Total_Items = results.NumFound,
-                    QueryTime = results.Header.QTime
-                };
-
-                // If the search stats were needed, get the facets out
-                if (Need_Search_Statistics)
-                {
-                    // Copy over all the facets
-                    foreach (Complete_Item_Aggregation_Metadata_Type facetTerm in Facets)
-                    {
-                        // Create the collection and and assifn the metadata type id
-                        Search_Facet_Collection thisCollection = new Search_Facet_Collection(facetTerm.ID);
-
-                        // Add each value
-                        foreach (var facet in results.FacetFields[facetTerm.SolrCode])
-                        {
-                            thisCollection.Facets.Add(new Search_Facet(facet.Key, facet.Value));
-                        }
-
-                        // If there was an id and facets added, save this to the search statistics
-                        if ((thisCollection.MetadataTypeID > 0) && (thisCollection.Facets.Count > 0))
-                        {
-                            Complete_Result_Set_Info.Facet_Collections.Add(thisCollection);
-                        }
-                    }
-                }
-
-                // Pass all the results into the List and add the highlighted text to each result as well
-                v5_SolrDocument_Results_Mapper mapper = new v5_SolrDocument_Results_Mapper();
-                foreach (v5_SolrDocument thisResult in results)
-                {
-                    // Convert to the new result
-                    Legacy_Solr_Document_Result newResult = mapper.Map_To_Result(thisResult, Results_Fields);
-
-                    // Add the highlight snippet, if applicable
-                    if (( results.Highlights != null ) && (results.Highlights.ContainsKey(thisResult.DID)) && (results.Highlights[thisResult.DID].Count > 0) && (results.Highlights[thisResult.DID].ElementAt(0).Value.Count > 0))
-                    {
-                        newResult.Snippet = results.Highlights[thisResult.DID].ElementAt(0).Value.ElementAt(0);
-                    }
-
-                    Paged_Results.Add(newResult);
-                }
-
-                return true;
-            }
-            catch ( Exception ee )
-            {
-                return false;
-            }
-        }
 
         #endregion
 
-        #region Method to split the complex search term string into a collection of search terms and fields
+            #region Method to split the complex search term string into a collection of search terms and fields
 
-        /// <summary> Method splits the search string and field string into seperate collections of strings </summary>
-        /// <param name="TermString"> String containing all of the search terms</param>
-        /// <param name="Field"> String containing all of the search field codes</param>
-        /// <param name="TermsBuilder"> Collection of seperate search terms</param>
-        /// <param name="FieldsBuilder"> Collection of seperate saerch field codes</param>
-        /// <remarks> This code is here to handle quotation marks, so quoted terms are not erroneously split </remarks>
+            /// <summary> Method splits the search string and field string into seperate collections of strings </summary>
+            /// <param name="TermString"> String containing all of the search terms</param>
+            /// <param name="Field"> String containing all of the search field codes</param>
+            /// <param name="TermsBuilder"> Collection of seperate search terms</param>
+            /// <param name="FieldsBuilder"> Collection of seperate saerch field codes</param>
+            /// <remarks> This code is here to handle quotation marks, so quoted terms are not erroneously split </remarks>
         public static void Split_Multi_Terms(string TermString, string Field, List<string> TermsBuilder, List<string> FieldsBuilder)
         {
             string termsStr = TermString + " ";

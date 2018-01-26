@@ -5913,7 +5913,9 @@ namespace SobekCM.Engine_Library.Database
             // Add the user groups to which this user is a member
             foreach (DataRow groupRow in ResultSet.Tables[8].Rows)
             {
-                user.Add_User_Group(groupRow[0].ToString());
+                string userGroupName = groupRow[0].ToString();
+                int userGroupId = int.Parse(groupRow["UserGroupID"].ToString());
+                user.Add_User_Group(userGroupId, userGroupName);
             }
 
             // Get all the user settings

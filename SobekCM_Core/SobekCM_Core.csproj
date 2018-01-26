@@ -280,6 +280,7 @@
     <Compile Include="UI_Configuration\TemplateElements\TemplateElementConfig.cs" />
     <Compile Include="UI_Configuration\TemplateElements\TemplateElementsConfig.cs" />
     <Compile Include="Users\Public_User_Folder.cs" />
+    <Compile Include="Users\Simple_User_Group_Info.cs" />
     <Compile Include="Users\User_Permissioned_Aggregation.cs" />
     <Compile Include="Users\User_Aggregation_Permissions.cs" />
     <Compile Include="Users\User_Folder.cs" />

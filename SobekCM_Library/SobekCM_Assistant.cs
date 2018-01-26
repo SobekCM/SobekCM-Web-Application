@@ -322,6 +322,7 @@ namespace SobekCM.Library
         /// <summary> Gets the browse or info object and any other needed data for display ( resultset or text to display) </summary>
         /// <param name="Current_Mode"> Mode / navigation information for the current request</param>
         /// <param name="Aggregation_Object"> Item Aggregation object</param>
+        /// <param name="Current_User"> Current user which allows user-specific results </param>
         /// <param name="Base_Directory"> Base directory location under which the the CMS/info source file will be found</param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         /// <param name="Browse_Object"> [OUT] Stores all the information about this browse or info </param>
@@ -333,6 +334,7 @@ namespace SobekCM.Library
         /// database and hands off to the <see cref="CachedDataManager" /> to store in the cache </remarks>
         public bool Get_Browse_Info(Navigation_Object Current_Mode,
                                     Item_Aggregation Aggregation_Object,
+                                    User_Object Current_User,
                                     string Base_Directory,
                                     Custom_Tracer Tracer,
                                     out Item_Aggregation_Child_Page Browse_Object,
@@ -470,7 +472,7 @@ namespace SobekCM.Library
                         }
                         else
                         {
-                            Multiple_Paged_Results_Args returnArgs = Item_Aggregation_Utilities.Get_Browse_Results(Aggregation_Object, Browse_Object, current_page_index, sort, results_per_page, !special_search_type, need_browse_statistics, Tracer);
+                            Multiple_Paged_Results_Args returnArgs = Item_Aggregation_Utilities.Get_Browse_Results(Aggregation_Object, Browse_Object, current_page_index, sort, results_per_page, !special_search_type, need_browse_statistics, Current_User, Tracer);
                             if (need_browse_statistics)
                             {
                                 Complete_Result_Set_Info = returnArgs.Statistics;
@@ -639,7 +641,7 @@ namespace SobekCM.Library
         //            Current_Mode.Invalid_Item = true;
         //            return false;
         //        }
-                
+
         //        Current_Mode.Mode = Display_Mode_Enum.Legacy_URL;
         //        Current_Mode.Error_Message = Current_Mode.Base_URL + thisRowInfo["BibID"] + "/" + thisRowInfo["VID"];
         //        return false;
@@ -810,12 +812,14 @@ namespace SobekCM.Library
         /// <param name="Current_Mode"> Mode / navigation information for the current request</param>
         /// <param name="Aggregation_Object"> Object for the current aggregation object, against which this search is performed </param>
         /// <param name="Search_Stop_Words"> List of search stop workds </param>
+        /// <param name="Current_User"> Current user which determines which items to display </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         /// <param name="Complete_Result_Set_Info"> [OUT] Information about the entire set of results </param>
         /// <param name="Paged_Results"> [OUT] List of search results for the requested page of results </param>
         public void Get_Search_Results(Navigation_Object Current_Mode,
                                        Item_Aggregation Aggregation_Object, 
                                        List<string> Search_Stop_Words,
+                                       User_Object Current_User,
                                        Custom_Tracer Tracer,
                                        out Search_Results_Statistics Complete_Result_Set_Info,
                                        out List<iSearch_Title_Result> Paged_Results )
@@ -983,7 +987,7 @@ namespace SobekCM.Library
                 // perhaps just the next page of results ( as opposed to pulling facets again).
                 bool need_search_statistics = true;
                 bool need_paged_results = true;
-                if (!special_search_type)
+                if ((!special_search_type) && ( Current_User == null ))
                 {
                     // Look to see if the search statistics are available on any cache..
                     Complete_Result_Set_Info = CachedDataManager.Retrieve_Search_Result_Statistics(Current_Mode, actualCount, web_fields, terms, date_start, date_end, Tracer);
@@ -1009,7 +1013,7 @@ namespace SobekCM.Library
 
                             // Perform the search against solr
                             Search_Results_Statistics recomputed_search_statistics;
-                            Perform_Solr_Search(Tracer, terms, web_fields, date_start, date_end, Aggregation_Object, current_page_index, sort, results_per_page, out recomputed_search_statistics, out Paged_Results, need_search_statistics);
+                            Perform_Solr_Search(Tracer, terms, web_fields, date_start, date_end, Aggregation_Object, current_page_index, sort, results_per_page, Current_User, out recomputed_search_statistics, out Paged_Results, need_search_statistics);
                             if (need_search_statistics)
                                 Complete_Result_Set_Info = recomputed_search_statistics;
                         }
@@ -1021,7 +1025,7 @@ namespace SobekCM.Library
                         }
 
                         // If this was a special search, don't cache this
-                        if (!special_search_type)
+                        if ((!special_search_type) && ( Current_User == null ))
                         {
                             // Cache the search statistics, if it was needed
                             if ((need_search_statistics) && (Complete_Result_Set_Info != null))
@@ -1051,7 +1055,7 @@ namespace SobekCM.Library
 
                             // Use solr or database, depending on the search type
                             if (UI_ApplicationCache_Gateway.Settings.System.Search_System == Search_System_Enum.Beta)
-                                Perform_Solr_Search(Tracer, terms, web_fields, date_start, date_end, Aggregation_Object, current_page_index, sort, results_per_page, out recomputed_search_statistics, out Paged_Results, need_search_statistics);
+                                Perform_Solr_Search(Tracer, terms, web_fields, date_start, date_end, Aggregation_Object, current_page_index, sort, results_per_page, Current_User, out recomputed_search_statistics, out Paged_Results, need_search_statistics);
                             else
                             {
                                 Perform_Database_Search(Tracer, terms, web_fields, date_start, date_end, actualCount, Current_Mode, sort, Aggregation_Object, results_per_page, !special_search_type, out recomputed_search_statistics, out pagesOfResults, need_search_statistics);
@@ -1079,7 +1083,7 @@ namespace SobekCM.Library
                         }
 
                         // If this was a special search, don't cache this
-                        if (!special_search_type)
+                        if ((!special_search_type) && ( Current_User == null ))
                         {
                             // Cache the search statistics, if it was needed
                             if ((need_search_statistics) && (Complete_Result_Set_Info != null))
@@ -1524,7 +1528,7 @@ namespace SobekCM.Library
             return (field == null) ? (short) -1 : field.ID;
         }
 
-        private static void Perform_Solr_Search(Custom_Tracer Tracer, List<string> Terms, List<string> Web_Fields, Nullable<DateTime> StartDate, Nullable<DateTime> EndDate, Item_Aggregation Current_Aggregation, int Current_Page, int Current_Sort, int Results_Per_Page, out Search_Results_Statistics Complete_Result_Set_Info, out List<iSearch_Title_Result> Paged_Results, bool Need_Search_Statistics)
+        private static void Perform_Solr_Search(Custom_Tracer Tracer, List<string> Terms, List<string> Web_Fields, Nullable<DateTime> StartDate, Nullable<DateTime> EndDate, Item_Aggregation Current_Aggregation, int Current_Page, int Current_Sort, int Results_Per_Page, User_Object Current_User, out Search_Results_Statistics Complete_Result_Set_Info, out List<iSearch_Title_Result> Paged_Results, bool Need_Search_Statistics)
         {
             if (Tracer != null)
             {
@@ -1533,7 +1537,56 @@ namespace SobekCM.Library
 
             // Use this built query to query against Solr
             if (UI_ApplicationCache_Gateway.Settings.System.Search_System == Search_System_Enum.Beta)
-                v5_Solr_Searcher.Search(Current_Aggregation.Code, Current_Aggregation.Facets, Current_Aggregation.Results_Fields, Terms, Web_Fields, StartDate, EndDate, Results_Per_Page, Current_Page, (ushort)Current_Sort, Need_Search_Statistics, Tracer, out Complete_Result_Set_Info, out Paged_Results);
+            {
+                // Build the user membership information
+                Search_User_Membership_Info userInfo = new Search_User_Membership_Info();
+                if ((Current_User == null) || (!Current_User.LoggedOn))
+                {
+                    userInfo.LoggedIn = false;
+                }
+                else
+                {
+                    userInfo.LoggedIn = true;
+                    userInfo.UserID = userInfo.UserID;
+                    if (Current_User.User_Groups != null)
+                    {
+                        foreach (Simple_User_Group_Info groupInfo in Current_User.User_Groups)
+                        {
+                            userInfo.Add_User_Group(groupInfo.UserGroupID);
+                        }
+                    }
+                    if ((Current_User.Is_Host_Admin) || (Current_User.Is_System_Admin) || (Current_User.Is_Portal_Admin))
+                        userInfo.Admin = true;
+                    else if ((Current_User.Is_Aggregation_Admin(Current_Aggregation.Code)) || (Current_User.Is_Aggregation_Curator(Current_Aggregation.Code)))
+                    {
+                        userInfo.Admin = true;
+                    }
+                }
+
+                // Build the search options
+                Search_Options_Info searchOptions = new Search_Options_Info();
+                searchOptions.Page = Current_Page;
+                searchOptions.ResultsPerPage = Results_Per_Page;
+                searchOptions.AggregationCode = Current_Aggregation.Code;
+                searchOptions.Facets = Current_Aggregation.Facets;
+                searchOptions.Fields = Current_Aggregation.Results_Fields;
+                searchOptions.Sort = (ushort)Current_Sort;
+
+                // Should results be grouped?  Aggregation must be set and for the moment, full text
+                // must have been NOT searched
+                bool contains_full_text = false;
+                foreach( string field in Web_Fields )
+                {
+                    if ( field.IndexOf("TX", StringComparison.OrdinalIgnoreCase) >= 0 )
+                    {
+                        contains_full_text = true;
+                        break;
+                    }
+                }
+                searchOptions.GroupItemsByTitle = (Current_Aggregation.GroupResults && !contains_full_text);
+
+                v5_Solr_Searcher.Search(Terms, Web_Fields, null, null, searchOptions, userInfo, Tracer, out Complete_Result_Set_Info, out Paged_Results);
+            }
             else
                 Legacy_Solr_Searcher.Search(Current_Aggregation.Code, Terms, Web_Fields, Results_Per_Page, Current_Page, (ushort)Current_Sort, Need_Search_Statistics, Tracer, out Complete_Result_Set_Info, out Paged_Results);
 

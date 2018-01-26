@@ -415,6 +415,7 @@ namespace SobekCM.Library.HTML
         /// <param name="Current_Mode"> Mode / navigation information for the current request</param>
         /// <param name="Aggregation_Object"> Item Aggregation object</param>
         /// <param name="Base_Directory"> Base directory location under which the the CMS/info source file will be found</param>
+        /// <param name="Current_User"> Currently logged on user, which can determine which items to show </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         /// <param name="Browse_Object"> [OUT] Stores all the information about this browse or info </param>
         /// <param name="Complete_Result_Set_Info"> [OUT] Information about the entire set of results </param>
@@ -426,6 +427,7 @@ namespace SobekCM.Library.HTML
         protected static bool Get_Browse_Info(Navigation_Object Current_Mode,
                                     Item_Aggregation Aggregation_Object,
                                     string Base_Directory,
+                                    User_Object Current_User,
                                     Custom_Tracer Tracer,
                                     out Item_Aggregation_Child_Page Browse_Object,
                                     out Search_Results_Statistics Complete_Result_Set_Info,
@@ -499,8 +501,8 @@ namespace SobekCM.Library.HTML
                     // perhaps just the next page of results ( as opposed to pulling facets again).
                     bool need_browse_statistics = true;
                     bool need_paged_results = true;
-                    if (!special_search_type)
-                    {
+                    if ((!special_search_type) && (Current_User == null))
+                        {
                         // Look to see if the browse statistics are available on any cache for this browse
                         Complete_Result_Set_Info = CachedDataManager.Retrieve_Browse_Result_Statistics(Aggregation_Object.Code, browse_code, Tracer);
                         if (Complete_Result_Set_Info != null)
@@ -531,7 +533,7 @@ namespace SobekCM.Library.HTML
                         List<List<iSearch_Title_Result>> pagesOfResults;
 
                         // Get from the hierarchy object
-                            Multiple_Paged_Results_Args returnArgs = Item_Aggregation_Utilities.Get_Browse_Results(Aggregation_Object, Browse_Object, current_page_index, sort, results_per_page, !special_search_type, need_browse_statistics, Tracer);
+                            Multiple_Paged_Results_Args returnArgs = Item_Aggregation_Utilities.Get_Browse_Results(Aggregation_Object, Browse_Object, current_page_index, sort, results_per_page, !special_search_type, need_browse_statistics, Current_User, Tracer);
                             if (need_browse_statistics)
                             {
                                 Complete_Result_Set_Info = returnArgs.Statistics;
@@ -541,7 +543,7 @@ namespace SobekCM.Library.HTML
                                 Paged_Results = pagesOfResults[0];
 
                         // Save the overall result set statistics to the cache if something was pulled
-                        if (!special_search_type)
+                        if ((!special_search_type) && ( Current_User == null ))
                         {
                             if ((need_browse_statistics) && (Complete_Result_Set_Info != null))
                             {

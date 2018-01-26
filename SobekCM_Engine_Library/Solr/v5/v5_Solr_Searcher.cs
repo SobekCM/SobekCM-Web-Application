@@ -126,6 +126,10 @@ namespace SobekCM.Engine_Library.Solr.v5
         /// <returns> Page search result object with all relevant result information </returns>
         public static bool Run_Query(string QueryString, Search_Options_Info SearchOptions, Search_User_Membership_Info UserMembership, Custom_Tracer Tracer, out Search_Results_Statistics Complete_Result_Set_Info, out List<iSearch_Title_Result> Paged_Results)
         {
+            // If the query string is empty, then set it back to *:*
+            if (QueryString.Trim().Length == 0)
+                QueryString = "*:*";
+
             // Log the search term
             if (Tracer != null)
             {

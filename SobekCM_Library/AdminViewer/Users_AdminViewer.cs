@@ -432,12 +432,12 @@ namespace SobekCM.Library.AdminViewer
 							// Check the RequestSpecificValues.Current_User groups for update
 							bool update_user_groups = false;
                             List<User_Group> userGroup = Engine_Database.Get_All_User_Groups(RequestSpecificValues.Tracer);
-							List<string> newGroups = new List<string>();
+							List<Simple_User_Group_Info> newGroups = new List<Simple_User_Group_Info>();
                             foreach (User_Group thisRow in userGroup)
 							{
 								if (form["group_" + thisRow.UserGroupID] != null)
 								{
-									newGroups.Add(thisRow.Name);
+                                    newGroups.Add(new Simple_User_Group_Info(thisRow.UserGroupID, thisRow.Name));
 								}
 							}
 
@@ -448,9 +448,18 @@ namespace SobekCM.Library.AdminViewer
 							}
 							else
 							{
-								foreach (string thisGroup in newGroups)
+								foreach (Simple_User_Group_Info thisGroup in newGroups)
 								{
-									if (!editUser.User_Groups.Contains(thisGroup))
+                                    bool found_group = false;
+                                    foreach( Simple_User_Group_Info existingGroup in editUser.User_Groups)
+                                    {
+                                        if ( existingGroup.UserGroupID == thisGroup.UserGroupID )
+                                        {
+                                            found_group = true;
+                                            break;
+                                        }
+                                    }
+                                    if ( !found_group )
 									{
 										update_user_groups = true;
 										break;
@@ -460,8 +469,8 @@ namespace SobekCM.Library.AdminViewer
 							if (update_user_groups)
 							{
 								editUser.Clear_UserGroup_Membership();
-								foreach (string thisUserGroup in newGroups)
-									editUser.Add_User_Group(thisUserGroup);
+                                foreach (Simple_User_Group_Info thisUserGroup in newGroups)
+                                    editUser.Add_User_Group(thisUserGroup.UserGroupID, thisUserGroup.Name);
 							}
 							break;
 
@@ -795,14 +804,9 @@ namespace SobekCM.Library.AdminViewer
 
 					    // Save the user group links
 						List<User_Group> userGroup = Engine_Database.Get_All_User_Groups(RequestSpecificValues.Tracer);
-						Dictionary<string, int> groupnames_to_id = new Dictionary<string, int>();
-						foreach (User_Group thisRow in userGroup)
+						foreach (Simple_User_Group_Info userGroup2 in editUser.User_Groups)
 						{
-							groupnames_to_id[thisRow.Name] = Convert.ToInt32(thisRow.UserGroupID);
-						}
-						foreach (string userGroupName in editUser.User_Groups)
-						{
-							SobekCM_Database.Link_User_To_User_Group(editUser.UserID, groupnames_to_id[userGroupName]);
+							SobekCM_Database.Link_User_To_User_Group(editUser.UserID, userGroup2.UserGroupID);
 						}
 
 						// Forward back to the list of users, if this was successful
@@ -1033,9 +1037,9 @@ namespace SobekCM.Library.AdminViewer
             }
             else
             {
-                foreach (string userGroup in editUser.User_Groups)
+                foreach (Simple_User_Group_Info userGroup in editUser.User_Groups)
                 {
-                    text_builder.Append(userGroup + "<br />");
+                    text_builder.Append(userGroup.Name + "<br />");
                 }
                 Output.WriteLine("  <table cellpadding=\"4px\" >");
                 Output.WriteLine("  <tr valign=\"top\"><td><b>User Groups:</b></td><td>" + text_builder + "</td></tr>");
@@ -1499,12 +1503,17 @@ namespace SobekCM.Library.AdminViewer
                         //Output.WriteLine("    <td width=\"300px\" align=\"left\"><span style=\"color: White\"><acronym title=\"Description of this RequestSpecificValues.Current_User group\">GROUP DESCRIPTION</acronym></span></td>");
                         //Output.WriteLine("   </tr>");
 
+                        // Get the dictionary of user groups in this user
+                        Dictionary<int, Simple_User_Group_Info> editUserGroups = new Dictionary<int, Simple_User_Group_Info>();
+                        foreach (Simple_User_Group_Info editUserGroup in editUser.User_Groups)
+                            editUserGroups[editUserGroup.UserGroupID] = editUserGroup;
+                        
                         foreach (User_Group thisRow in userGroup)
                         {
                             Output.WriteLine("  <tr align=\"left\" >");                         
 
                             Output.Write("    <td width=\"50px\" ><input type=\"checkbox\" name=\"group_" + thisRow.UserGroupID + "\" id=\"group_" + thisRow.UserGroupID + "\" ");
-                            if ( editUser.User_Groups.Contains( thisRow.Name ))
+                            if (editUserGroups.ContainsKey(thisRow.UserGroupID))
                                 Output.Write(" checked=\"checked\"");
                             Output.WriteLine("/></td>");
                             Output.WriteLine("    <td width=\"150px\" >" + thisRow.Name + "</td>");

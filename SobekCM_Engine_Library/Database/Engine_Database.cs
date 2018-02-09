@@ -7808,5 +7808,128 @@ namespace SobekCM.Engine_Library.Database
             }
         }
 
+        #region Methods related to get the group title and group thumbnail for item groups
+
+        /// <summary> Gets the full list of ALL the item groups' bibids, titles, and thumbnails </summary>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        /// <returns> List of ALL the group bibid's, titles, and thumbnails </returns>
+        /// <remarks> This called the 'SobekCM_Get_Group_Titles_All' stored procedure. </remarks>
+        public static List<Minimal_Item_Group_Info> Group_Titles_All(Custom_Tracer Tracer)
+        {
+            try
+            {
+                // Open the data reader to step through the data as it comes back
+                EalDbReaderWrapper readerWrapper = EalDbAccess.ExecuteDataReader(DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_Get_Group_Titles_All");
+
+                // Start the return value
+                List<Minimal_Item_Group_Info> returnValue = new List<Minimal_Item_Group_Info>();
+
+                // Step through each value
+                while (readerWrapper.Reader.Read())
+                {
+                    // Build this item information
+                    Minimal_Item_Group_Info thisItem = new Minimal_Item_Group_Info
+                    {
+                        BibID = readerWrapper.Reader.GetString(0),
+                        GroupTitle = readerWrapper.Reader.GetString(1),
+                        GroupThumbnail = readerWrapper.Reader.GetString(2)
+                    };
+
+                    // Add this item to the list to return
+                    returnValue.Add(thisItem);
+                }
+
+                // Close the reader (which also closes the connection)
+                readerWrapper.Close();
+
+                // Return the fully built object
+                return returnValue;
+            }
+            catch (Exception ee)
+            {
+                Last_Exception = ee;
+                if (Tracer != null)
+                {
+                    Tracer.Add_Trace("Engine_Database.Group_Titles_All", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("Engine_Database.Group_Titles_All", ee.Message, Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("Engine_Database.Group_Titles_All", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                }
+                return null;
+            }
+        }
+
+        /// <summary> Gets the bibids, titles, and thumbnails for a given set of group items </summary>
+        /// <param name="BibIDs"> List of all the BibID's to pull the group titles and thumbnails for </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        /// <returns> List of the group bibid's, titles, and thumbnails </returns>
+        /// <remarks> This called the 'SobekCM_Get_Group_Titles_All' stored procedure. </remarks>
+        public static List<Minimal_Item_Group_Info> Group_Titles(List<string> BibIDs, Custom_Tracer Tracer)
+        {
+            try
+            {
+                // Build the parameters
+                List<EalDbParameter> dbParams = new List<EalDbParameter>();
+                dbParams.Add(new EalDbParameter("@bibid1", (BibIDs.Count > 0) ? BibIDs[0] : String.Empty ));
+                dbParams.Add(new EalDbParameter("@bibid2", (BibIDs.Count > 1) ? BibIDs[1] : String.Empty));
+                dbParams.Add(new EalDbParameter("@bibid3", (BibIDs.Count > 2) ? BibIDs[2] : String.Empty));
+                dbParams.Add(new EalDbParameter("@bibid4", (BibIDs.Count > 3) ? BibIDs[3] : String.Empty));
+                dbParams.Add(new EalDbParameter("@bibid5", (BibIDs.Count > 4) ? BibIDs[4] : String.Empty));
+                dbParams.Add(new EalDbParameter("@bibid6", (BibIDs.Count > 5) ? BibIDs[5] : String.Empty));
+                dbParams.Add(new EalDbParameter("@bibid7", (BibIDs.Count > 6) ? BibIDs[6] : String.Empty));
+                dbParams.Add(new EalDbParameter("@bibid8", (BibIDs.Count > 7) ? BibIDs[7] : String.Empty));
+                dbParams.Add(new EalDbParameter("@bibid9", (BibIDs.Count > 8) ? BibIDs[8] : String.Empty));
+                dbParams.Add(new EalDbParameter("@bibid10", (BibIDs.Count > 9) ? BibIDs[9] : String.Empty));
+                dbParams.Add(new EalDbParameter("@bibid11", (BibIDs.Count > 10) ? BibIDs[10] : String.Empty));
+                dbParams.Add(new EalDbParameter("@bibid12", (BibIDs.Count > 11) ? BibIDs[11] : String.Empty));
+                dbParams.Add(new EalDbParameter("@bibid13", (BibIDs.Count > 12) ? BibIDs[12] : String.Empty));
+                dbParams.Add(new EalDbParameter("@bibid14", (BibIDs.Count > 13) ? BibIDs[13] : String.Empty));
+                dbParams.Add(new EalDbParameter("@bibid15", (BibIDs.Count > 14) ? BibIDs[14] : String.Empty));
+                dbParams.Add(new EalDbParameter("@bibid16", (BibIDs.Count > 15) ? BibIDs[15] : String.Empty));
+                dbParams.Add(new EalDbParameter("@bibid17", (BibIDs.Count > 16) ? BibIDs[16] : String.Empty));
+                dbParams.Add(new EalDbParameter("@bibid18", (BibIDs.Count > 17) ? BibIDs[17] : String.Empty));
+                dbParams.Add(new EalDbParameter("@bibid19", (BibIDs.Count > 18) ? BibIDs[18] : String.Empty));
+                dbParams.Add(new EalDbParameter("@bibid20", (BibIDs.Count > 19) ? BibIDs[19] : String.Empty));
+
+                // Open the data reader to step through the data as it comes back
+                EalDbReaderWrapper readerWrapper = EalDbAccess.ExecuteDataReader(DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_Get_Group_Titles_All", dbParams );
+
+                // Start the return value
+                List<Minimal_Item_Group_Info> returnValue = new List<Minimal_Item_Group_Info>();
+
+                // Step through each value
+                while (readerWrapper.Reader.Read())
+                {
+                    // Build this item information
+                    Minimal_Item_Group_Info thisItem = new Minimal_Item_Group_Info
+                    {
+                        BibID = readerWrapper.Reader.GetString(0),
+                        GroupTitle = readerWrapper.Reader.GetString(1),
+                        GroupThumbnail = readerWrapper.Reader.GetString(2)
+                    };
+
+                    // Add this item to the list to return
+                    returnValue.Add(thisItem);
+                }
+
+                // Close the reader (which also closes the connection)
+                readerWrapper.Close();
+
+                // Return the fully built object
+                return returnValue;
+            }
+            catch (Exception ee)
+            {
+                Last_Exception = ee;
+                if (Tracer != null)
+                {
+                    Tracer.Add_Trace("Engine_Database.Group_Titles", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("Engine_Database.Group_Titles", ee.Message, Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("Engine_Database.Group_Titles", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                }
+                return null;
+            }
+        }
+
+        #endregion
     }
 }

@@ -126,7 +126,7 @@ namespace SobekCM.Builder_Library.Modules.Items
                 foreach (string thisFile in all_files)
                 {
                     FileInfo thisFileInfo = new FileInfo(thisFile);
-                    string new_file = ServerPackageFolder + "/" + thisFileInfo.Name;
+                    string new_file = ServerPackageFolder + "\\" + thisFileInfo.Name;
 
                     // Keep the list of new image files being copied, which may be used later
                     if (Settings.System.Page_Image_Extensions.Contains(thisFileInfo.Extension.ToUpper().Replace(".", "")))
@@ -150,7 +150,7 @@ namespace SobekCM.Builder_Library.Modules.Items
 
                 return true;
             }
-            catch
+            catch ( Exception ee )
             {
                 return false;
             }

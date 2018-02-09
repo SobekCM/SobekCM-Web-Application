@@ -119,6 +119,17 @@ namespace SobekCM.Engine_Library.Solr.v5
         {
             try
             {
+
+                // Get rid of trailling '/' in solr document url
+                SolrDocumentUrl = SolrDocumentUrl.Trim();
+                if ((!String.IsNullOrEmpty(SolrDocumentUrl)) && (SolrDocumentUrl[SolrDocumentUrl.Length - 1] == '/'))
+                    SolrDocumentUrl = SolrDocumentUrl.Substring(0, SolrDocumentUrl.Length - 1);
+
+                // Get rid of trailling '/' in solr page url
+                SolrPageUrl = SolrPageUrl.Trim();
+                if ((!String.IsNullOrEmpty(SolrPageUrl)) && (SolrPageUrl[SolrPageUrl.Length - 1] == '/'))
+                    SolrPageUrl = SolrPageUrl.Substring(0, SolrPageUrl.Length - 1);
+
                 // Create the solr workers
                 var solrDocumentWorker = Solr_Operations_Cache<v5_SolrDocument>.GetSolrOperations(SolrDocumentUrl);
                 var solrPageWorker = Solr_Operations_Cache<Legacy_SolrPage>.GetSolrOperations(SolrPageUrl);
@@ -162,6 +173,11 @@ namespace SobekCM.Engine_Library.Solr.v5
         /// <param name="SolrDocumentUrl"> URL for the solr/lucene core used for searching for a single document within the library </param>
         public void Optimize_Document_Index(string SolrDocumentUrl)
         {
+            // Get rid of trailling '/' in solr document url
+            SolrDocumentUrl = SolrDocumentUrl.Trim();
+            if ((!String.IsNullOrEmpty(SolrDocumentUrl)) && (SolrDocumentUrl[SolrDocumentUrl.Length - 1] == '/'))
+                SolrDocumentUrl = SolrDocumentUrl.Substring(0, SolrDocumentUrl.Length - 1);
+
             // Create the solr worker
             var solrDocumentWorker = Solr_Operations_Cache<v5_SolrDocument>.GetSolrOperations(SolrDocumentUrl);
 
@@ -179,6 +195,11 @@ namespace SobekCM.Engine_Library.Solr.v5
         /// <param name="SolrPageUrl"> URL for the solr/lucene core used for searching within a single document for matching pages </param>
         public void Optimize_Page_Index(string SolrPageUrl)
         {
+            // Get rid of trailling '/' in solr page url
+            SolrPageUrl = SolrPageUrl.Trim();
+            if ((!String.IsNullOrEmpty(SolrPageUrl)) && (SolrPageUrl[SolrPageUrl.Length - 1] == '/'))
+                SolrPageUrl = SolrPageUrl.Substring(0, SolrPageUrl.Length - 1);
+
             // Create the solr worker
             var solrPageWorker = Solr_Operations_Cache<Legacy_SolrPage>.GetSolrOperations(SolrPageUrl);
 

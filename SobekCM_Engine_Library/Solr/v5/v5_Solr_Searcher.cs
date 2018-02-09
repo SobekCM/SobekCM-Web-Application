@@ -269,7 +269,7 @@ namespace SobekCM.Engine_Library.Solr.v5
                 foreach (v5_SolrDocument thisResult in results)
                 {
                     // Convert to the new result
-                    Legacy_Solr_Document_Result newResult = mapper.Map_To_Result(thisResult, SearchOptions.Fields);
+                    v5_Solr_Title_Result newResult = mapper.Map_To_Result(thisResult, SearchOptions.Fields);
 
                     // Add the highlight snippet, if applicable
                     if (( results.Highlights != null ) && (results.Highlights.ContainsKey(thisResult.DID)) && (results.Highlights[thisResult.DID].Count > 0) && (results.Highlights[thisResult.DID].ElementAt(0).Value.Count > 0))

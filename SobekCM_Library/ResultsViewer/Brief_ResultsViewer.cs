@@ -1,5 +1,6 @@
 #region Using directives
 
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Web;
@@ -140,7 +141,7 @@ namespace SobekCM.Library.ResultsViewer
 
 
 
-                if ((titleResult.Primary_Identifier_Type.Length > 0) && (titleResult.Primary_Identifier.Length > 0))
+                if ((!String.IsNullOrEmpty(titleResult.Primary_Identifier_Type)) && (!String.IsNullOrEmpty(titleResult.Primary_Identifier)))
                 {
                     resultsBldr.AppendLine("\t\t\t\t<dt>" + UI_ApplicationCache_Gateway.Translation.Get_Translation(titleResult.Primary_Identifier_Type, RequestSpecificValues.Current_Mode.Language) + ":</dt><dd>" + titleResult.Primary_Identifier + "</dd>");
                 }
@@ -215,7 +216,7 @@ namespace SobekCM.Library.ResultsViewer
 
                 resultsBldr.AppendLine("\t\t\t</dl>");
 
-                if (titleResult.Snippet.Length > 0)
+                if (!String.IsNullOrEmpty(titleResult.Snippet))
                 {
                     resultsBldr.AppendLine("\t\t\t<div class=\"sbkBrv_SearchResultSnippet\">&ldquo;..." + titleResult.Snippet.Replace("<em>", "<span class=\"texthighlight\">").Replace ("</em>", "</span>") + "...&rdquo;</div>");
                 }

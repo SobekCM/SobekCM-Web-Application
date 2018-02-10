@@ -643,7 +643,7 @@ namespace SobekCM.Engine_Library.Endpoints
                     List<List<iSearch_Title_Result>> pagesOfResults;
 
                     // Get from the hierarchy object
-                        Multiple_Paged_Results_Args returnArgs = Item_Aggregation_Utilities.Gat_All_Browse(Aggregation_Object, current_page_index, sort, (int) Current_Mode.ResultsPerPage, Current_Mode.Use_Cache, need_browse_statistics, Tracer);
+                        Multiple_Paged_Results_Args returnArgs = Item_Aggregation_Utilities.Gat_All_Browse(Aggregation_Object, current_page_index, sort, (int) Current_Mode.ResultsPerPage, Current_Mode.Use_Cache, need_browse_statistics, null, Tracer);
                         if (need_browse_statistics)
                         {
                             Complete_Result_Set_Info = returnArgs.Statistics;
@@ -1239,9 +1239,35 @@ namespace SobekCM.Engine_Library.Endpoints
 
             // Use this built query to query against Solr
             if (Engine_ApplicationCache_Gateway.Settings.System.Search_System == Search_System_Enum.Beta)
-                v5_Solr_Searcher.Search(Aggregation_Object.Code, Aggregation_Object.Facets, Aggregation_Object.Results_Fields, Terms, Web_Fields, StartDate, EndDate, Results_Per_Page, Current_Page, (ushort)Current_Sort, true, Tracer, out Complete_Result_Set_Info, out Paged_Results);
+            {
+
+                Search_Options_Info searchOptions = new Search_Options_Info();
+                searchOptions.Page = Current_Page;
+                searchOptions.ResultsPerPage = Results_Per_Page;
+                searchOptions.AggregationCode = Aggregation_Object.Code;
+                searchOptions.Facets = Aggregation_Object.Facets;
+                searchOptions.Fields = Aggregation_Object.Results_Fields;
+                searchOptions.Sort = (ushort) Current_Sort;
+
+                // Should results be grouped?  Aggregation must be set and for the moment, full text
+                // must have been NOT searched
+                bool contains_full_text = false;
+                foreach (string field in Web_Fields)
+                {
+                    if (field.IndexOf("TX", StringComparison.OrdinalIgnoreCase) >= 0)
+                    {
+                        contains_full_text = true;
+                        break;
+                    }
+                }
+                searchOptions.GroupItemsByTitle = (Aggregation_Object.GroupResults && !contains_full_text);
+
+                v5_Solr_Searcher.Search(Terms, Web_Fields, StartDate, EndDate, searchOptions, null, Tracer, out Complete_Result_Set_Info, out Paged_Results);
+            }
             else
+            {
                 Legacy_Solr_Searcher.Search(Aggregation_Object.Code, Terms, Web_Fields, Results_Per_Page, Current_Page, (ushort)Current_Sort, true, Tracer, out Complete_Result_Set_Info, out Paged_Results);
+            }
         }
 
         #endregion

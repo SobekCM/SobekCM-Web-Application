@@ -308,9 +308,9 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                             "\t\t\t\t<tr style=\"height:40px;\" valign=\"middle\"><td colspan=\"3\"><span class=\"qtip_BriefTitle\" style=\"color: #a5a5a5;font-weight: bold;font-size:13px;\">" + itemResult.Title.Replace("<", "&lt;").Replace(">", "&gt;") +
                             "</span> &nbsp; </td></tr><br/>");
                         Output.WriteLine("<tr><td colspan=\"100%\"><br/></td></tr>");
-                    
 
-                    if ((titleResult.Primary_Identifier_Type.Length > 0) && (titleResult.Primary_Identifier.Length > 0))
+
+                    if ((!String.IsNullOrEmpty(titleResult.Primary_Identifier_Type)) && (!String.IsNullOrEmpty(titleResult.Primary_Identifier)))
                     {
                         Output.WriteLine("\t\t\t\t<tr><td>" + UI_ApplicationCache_Gateway.Translation.Get_Translation(titleResult.Primary_Identifier_Type, RequestSpecificValues.Current_Mode.Language) + ":</td><td>&nbsp;</td><td>" + HttpUtility.HtmlDecode(titleResult.Primary_Identifier) + "</td></tr>");
                     }

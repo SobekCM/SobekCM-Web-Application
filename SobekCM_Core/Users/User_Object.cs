@@ -191,7 +191,7 @@ namespace SobekCM.Core.Users
         private readonly SortedList<string, User_Folder> folders;
         private readonly List<string> defaultMetadataSets;
         private readonly List<string> templates;
-        private readonly List<string> userGroups;
+        private readonly List<Simple_User_Group_Info> userGroups;
         private readonly Dictionary<string, object> userSettings;
 
 		private readonly List<string> templates_from_groups;
@@ -236,7 +236,7 @@ namespace SobekCM.Core.Users
             Is_System_Admin = false;
             Is_Portal_Admin = false;
             Has_Descriptive_Tags = false;
-            userGroups = new List<string>();
+            userGroups = new List<Simple_User_Group_Info>();
             Receive_Stats_Emails = true;
             Has_Item_Stats = false;
             Include_Tracking_In_Standard_Forms = true;
@@ -528,9 +528,9 @@ namespace SobekCM.Core.Users
         }
 
         /// <summary> List of user groups to which this user belongs </summary>
-        public ReadOnlyCollection<string> User_Groups
+        public List<Simple_User_Group_Info> User_Groups
         {
-            get { return new ReadOnlyCollection<string>(userGroups); }
+            get { return new List<Simple_User_Group_Info>(userGroups); }
         }
 
         /// <summary> List of folders associated with this user </summary>
@@ -727,10 +727,17 @@ namespace SobekCM.Core.Users
 
         /// <summary> Adds a user group to the list of user groups this user belongs to </summary>
         /// <param name="GroupName"> Name of the user group</param>
-        public void Add_User_Group(string GroupName)
+        public void Add_User_Group(int UserGroupID, string GroupName)
         {
-            if ( !userGroups.Contains(GroupName ))
-                userGroups.Add(GroupName);
+            // If already existing, do nothing
+            foreach( Simple_User_Group_Info existing in userGroups )
+            {
+                if (existing.UserGroupID == UserGroupID)
+                    return;
+            }
+
+            // Add this
+            userGroups.Add(new Simple_User_Group_Info(UserGroupID, GroupName));
         }
 
         /// <summary> Add an item to the list of items on the bookshelf for this user </summary>

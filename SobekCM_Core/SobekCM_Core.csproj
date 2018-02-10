@@ -135,8 +135,13 @@
     <Compile Include="Configuration\Extensions\ExtensionAdminAuthorInfo.cs" />
     <Compile Include="Configuration\Extensions\ExtensionAdminInfo.cs" />
     <Compile Include="Configuration\Extensions\ExtensionAssembly.cs" />
+    <Compile Include="Items\Minimal_Item_Group_Info.cs" />
     <Compile Include="Message\EnableExtensionMessage.cs" />
     <Compile Include="Plugins\PluginInstaller.cs" />
+    <Compile Include="Results\v5_Solr_Item_Result.cs" />
+    <Compile Include="Results\v5_Solr_Title_Result.cs" />
+    <Compile Include="Search\Search_Options_Info.cs" />
+    <Compile Include="Search\Search_User_Membership_Info.cs" />
     <Compile Include="Settings\DbItemViewers\DbItemViewerTypes.cs" />
     <Compile Include="Configuration\Extensions\ExtensionCssInfo.cs" />
     <Compile Include="Configuration\Extensions\ExtensionInfo.cs" />
@@ -278,6 +283,7 @@
     <Compile Include="UI_Configuration\TemplateElements\TemplateElementConfig.cs" />
     <Compile Include="UI_Configuration\TemplateElements\TemplateElementsConfig.cs" />
     <Compile Include="Users\Public_User_Folder.cs" />
+    <Compile Include="Users\Simple_User_Group_Info.cs" />
     <Compile Include="Users\User_Permissioned_Aggregation.cs" />
     <Compile Include="Users\User_Aggregation_Permissions.cs" />
     <Compile Include="Users\User_Folder.cs" />

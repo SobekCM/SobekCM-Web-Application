@@ -1,22 +1,37 @@
 ﻿using System;
 using System.Collections.Generic;
 using SobekCM.Core.Aggregations;
+using SobekCM.Core.Results;
 using SobekCM.Engine_Library.Solr.Legacy;
 
 namespace SobekCM.Engine_Library.Solr.v5
 {
     public class v5_SolrDocument_Results_Mapper
     {
-        public Legacy_Solr_Document_Result Map_To_Result(v5_SolrDocument thisResult, List<Complete_Item_Aggregation_Metadata_Type> DisplayFields )
+        public v5_Solr_Title_Result Map_To_Result(v5_SolrDocument thisResult, List<Complete_Item_Aggregation_Metadata_Type> DisplayFields )
         {
             // Create the results
-            Legacy_Solr_Document_Result resultConverted = new Legacy_Solr_Document_Result();
-            resultConverted.DID = thisResult.DID;
-            resultConverted.Title = thisResult.Title ?? "NO TITLE";
-            resultConverted.HoldingLocation = thisResult.Holding;
-            resultConverted.SourceInstitution = thisResult.Source;
+            v5_Solr_Title_Result resultConverted = new v5_Solr_Title_Result();
             resultConverted.MaterialType = thisResult.Type;
-            resultConverted.MainThumbnail = thisResult.MainThumbnail;
+
+            // Get the bibid
+            resultConverted.BibID = thisResult.DID.Substring(0, 10);
+
+            // For now...
+            resultConverted.GroupThumbnail = thisResult.MainThumbnail;
+            resultConverted.GroupTitle = thisResult.Title ?? "NO TITLE";
+
+            // These should not really be necessary
+            resultConverted.Primary_Identifier = String.Empty;
+            resultConverted.Primary_Identifier_Type = String.Empty;
+            resultConverted.Snippet = String.Empty;
+
+            // Add the item
+            v5_Solr_Item_Result itemResult = new v5_Solr_Item_Result();
+            itemResult.VID = thisResult.DID.Substring(11, 5);
+            itemResult.Title = thisResult.Title ?? "NO TITLE";
+            itemResult.MainThumbnail = thisResult.MainThumbnail;
+            resultConverted.Items.Add(itemResult);
 
             // Build the display results values
             List<string> display_result_fields = new List<string>();

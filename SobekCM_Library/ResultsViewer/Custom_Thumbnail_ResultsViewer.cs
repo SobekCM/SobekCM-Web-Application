@@ -191,7 +191,7 @@ namespace SobekCM.Library.ResultsViewer
                     resultsBldr.AppendLine("<tr><td colspan=\"100%\"><br/></td></tr>");
                 }
 
-                if ((titleResult.Primary_Identifier_Type.Length > 0) && (titleResult.Primary_Identifier.Length > 0))
+                if (( !String.IsNullOrEmpty(titleResult.Primary_Identifier_Type)) && ( !String.IsNullOrEmpty(titleResult.Primary_Identifier)))
                 {
                     resultsBldr.AppendLine("\t\t\t\t<tr><td>" + UI_ApplicationCache_Gateway.Translation.Get_Translation(titleResult.Primary_Identifier_Type, RequestSpecificValues.Current_Mode.Language) + ":</td><td>&nbsp;</td><td>" + HttpUtility.HtmlDecode(titleResult.Primary_Identifier) + "</td></tr>");
                 }
@@ -264,8 +264,8 @@ namespace SobekCM.Library.ResultsViewer
 					}
 				}
 
-	
-                if (titleResult.Snippet.Length > 0)
+
+                if (!String.IsNullOrEmpty(titleResult.Snippet))
                 {
                     resultsBldr.AppendLine("\t\t\t\t<tr><td colspan=\"3\"><br />&ldquo;..." + titleResult.Snippet.Replace("<em>", "<span class=\"texthighlight\">").Replace ("</em>", "</span>") + "...&rdquo;</td></tr>");
                 }

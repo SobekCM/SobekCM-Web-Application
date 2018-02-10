@@ -12,6 +12,7 @@ using SobekCM.Core.Navigation;
 using SobekCM.Core.Results;
 using SobekCM.Core.Search;
 using SobekCM.Core.Settings;
+using SobekCM.Core.Users;
 using SobekCM.Core.WebContent;
 using SobekCM.Engine_Library.ApplicationState;
 using SobekCM.Engine_Library.Configuration;
@@ -251,7 +252,7 @@ namespace SobekCM.Engine_Library.Aggregations
 	    /// <returns> Resutls for the browse or info in table form </returns>
 	    public static Multiple_Paged_Results_Args Get_Browse_Results(Item_Aggregation ItemAggr, Item_Aggregation_Child_Page ChildPageObject,
                                                                       int Page, int Sort, int Results_Per_Page, bool Potentially_Include_Facets, bool Need_Browse_Statistics,
-                                                                      Custom_Tracer Tracer)
+                                                                      User_Object Current_User, Custom_Tracer Tracer)
         {
             if (Tracer != null)
             {
@@ -269,13 +270,50 @@ namespace SobekCM.Engine_Library.Aggregations
                     Search_Results_Statistics stats;
                     List<iSearch_Title_Result> results;
 
-                    if (String.Equals(ChildPageObject.Code, "new", StringComparison.OrdinalIgnoreCase))
+                    // Build the user membership information
+                    Search_User_Membership_Info userInfo = new Search_User_Membership_Info();
+                    if (( Current_User == null ) || ( !Current_User.LoggedOn ))
                     {
-                        v5_Solr_Searcher.New_Browse(ItemAggr.Code, ItemAggr.Facets, ItemAggr.Results_Fields, Results_Per_Page, Page, (ushort) Sort, Need_Browse_Statistics, Tracer, out stats, out results);
+                        userInfo.LoggedIn = false;
                     }
                     else
                     {
-                        v5_Solr_Searcher.All_Browse(ItemAggr.Code, ItemAggr.Facets, ItemAggr.Results_Fields, Results_Per_Page, Page, (ushort)Sort, Need_Browse_Statistics, Tracer, out stats, out results);
+                        userInfo.LoggedIn = true;
+                        userInfo.UserID = userInfo.UserID;
+                        if ( Current_User.User_Groups != null )
+                        {
+                            foreach( Simple_User_Group_Info groupInfo in Current_User.User_Groups )
+                            {
+                                userInfo.Add_User_Group(groupInfo.UserGroupID);
+                            }
+                        }
+                        if ((Current_User.Is_Host_Admin) || (Current_User.Is_System_Admin) || (Current_User.Is_Portal_Admin))
+                            userInfo.Admin = true;
+                        else if (( Current_User.Is_Aggregation_Admin(ItemAggr.Code)) || ( Current_User.Is_Aggregation_Curator(ItemAggr.Code)))
+                        {
+                            userInfo.Admin = true;
+                        }
+                    }
+
+                    // Build the search options
+                    Search_Options_Info searchOptions = new Search_Options_Info();
+                    searchOptions.Page = Page;
+                    searchOptions.ResultsPerPage = Results_Per_Page;
+                    searchOptions.AggregationCode = ItemAggr.Code;
+                    searchOptions.Facets = ItemAggr.Facets;
+                    searchOptions.Fields = ItemAggr.Results_Fields;
+                    searchOptions.Sort = (ushort)Sort;
+
+                    // Should results be grouped?  Aggregation must be set and for the moment
+                    searchOptions.GroupItemsByTitle = ItemAggr.GroupResults;
+
+                    if (String.Equals(ChildPageObject.Code, "new", StringComparison.OrdinalIgnoreCase))
+                    {
+                        v5_Solr_Searcher.New_Browse(searchOptions, userInfo, Tracer, out stats, out results);
+                    }
+                    else
+                    {
+                        v5_Solr_Searcher.All_Browse(searchOptions, userInfo, Tracer, out stats, out results);
                     }
 
                     Multiple_Paged_Results_Args returnValue = new Multiple_Paged_Results_Args(stats, results);
@@ -322,8 +360,10 @@ namespace SobekCM.Engine_Library.Aggregations
 	    /// <returns> Resutls for the browse or info in table form </returns>
 	    public static Multiple_Paged_Results_Args Gat_All_Browse(Complete_Item_Aggregation ItemAggr,
 	        int Page, int Sort, int Results_Per_Page,
-	        bool Potentially_Include_Facets, bool Need_Browse_Statistics,
-	        Custom_Tracer Tracer)
+	        bool Potentially_Include_Facets, 
+            bool Need_Browse_Statistics,
+            User_Object Current_User,
+            Custom_Tracer Tracer)
 	    {
 	        if (Tracer != null)
 	        {
@@ -337,7 +377,44 @@ namespace SobekCM.Engine_Library.Aggregations
                 Search_Results_Statistics stats;
 	            List<iSearch_Title_Result> results;
 
-	            v5_Solr_Searcher.Search(ItemAggr.Code, ItemAggr.Facets, ItemAggr.Results_Fields, null, null, null, null, Results_Per_Page, Page, (ushort) Sort, Need_Browse_Statistics, Tracer, out stats, out results);
+                // Build the user membership information
+                Search_User_Membership_Info userInfo = new Search_User_Membership_Info();
+                if ((Current_User == null) || (!Current_User.LoggedOn))
+                {
+                    userInfo.LoggedIn = false;
+                }
+                else
+                {
+                    userInfo.LoggedIn = true;
+                    userInfo.UserID = userInfo.UserID;
+                    if (Current_User.User_Groups != null)
+                    {
+                        foreach (Simple_User_Group_Info groupInfo in Current_User.User_Groups)
+                        {
+                            userInfo.Add_User_Group(groupInfo.UserGroupID);
+                        }
+                    }
+                    if ((Current_User.Is_Host_Admin) || (Current_User.Is_System_Admin) || (Current_User.Is_Portal_Admin))
+                        userInfo.Admin = true;
+                    else if ((Current_User.Is_Aggregation_Admin(ItemAggr.Code)) || (Current_User.Is_Aggregation_Curator(ItemAggr.Code)))
+                    {
+                        userInfo.Admin = true;
+                    }
+                }
+
+                // Build the search options
+                Search_Options_Info searchOptions = new Search_Options_Info();
+                searchOptions.Page = Page;
+                searchOptions.ResultsPerPage = Results_Per_Page;
+                searchOptions.AggregationCode = ItemAggr.Code;
+                searchOptions.Facets = ItemAggr.Facets;
+                searchOptions.Fields = ItemAggr.Results_Fields;
+                searchOptions.Sort = (ushort)Sort;
+
+                // Should results be grouped?  Aggregation must be set and for the moment
+                searchOptions.GroupItemsByTitle = ItemAggr.GroupResults;
+
+                v5_Solr_Searcher.All_Browse( searchOptions, userInfo, Tracer, out stats, out results);
 
 	            Multiple_Paged_Results_Args returnValue = new Multiple_Paged_Results_Args(stats, results);
 

@@ -8,7 +8,7 @@ namespace SobekCM.Engine_Library.Solr.v5
 {
     public class v5_SolrDocument_Results_Mapper
     {
-        public v5_Solr_Title_Result Map_To_Result(v5_SolrDocument thisResult, List<Complete_Item_Aggregation_Metadata_Type> DisplayFields )
+        public v5_Solr_Title_Result Map_To_Result(v5_SolrDocument thisResult, List<Complete_Item_Aggregation_Metadata_Type> DisplayFields)
         {
             // Create the results
             v5_Solr_Title_Result resultConverted = new v5_Solr_Title_Result();
@@ -41,6 +41,54 @@ namespace SobekCM.Engine_Library.Solr.v5
             }
 
             resultConverted.Metadata_Display_Values = display_result_fields.ToArray();
+
+            return resultConverted;
+        }
+
+        public v5_Solr_Title_Result Map_To_Result(SolrNet.Group<v5_SolrDocument> Grouping, List<Complete_Item_Aggregation_Metadata_Type> DisplayFields )
+        {
+            // Create the results
+            v5_Solr_Title_Result resultConverted = new v5_Solr_Title_Result();
+
+            // These should not really be necessary
+            resultConverted.Primary_Identifier = String.Empty;
+            resultConverted.Primary_Identifier_Type = String.Empty;
+            resultConverted.Snippet = String.Empty;
+
+            // Now add all the item info
+            bool first_item = true;
+            foreach(v5_SolrDocument item in Grouping.Documents)
+            {
+                if ( first_item)
+                {
+                    resultConverted.MaterialType = item.Type;
+
+                    // Get the bibid
+                    resultConverted.BibID = item.DID.Substring(0, 10);
+
+                    // For now...
+                    resultConverted.GroupThumbnail = item.MainThumbnail;
+                    resultConverted.GroupTitle = item.Title ?? "NO TITLE";
+
+                    // Build the display results values
+                    List<string> display_result_fields = new List<string>();
+                    foreach (Complete_Item_Aggregation_Metadata_Type metadataField in DisplayFields)
+                    {
+                        display_result_fields.Add(data_from_display_field(item, metadataField.SolrCode) ?? String.Empty);
+                    }
+                    resultConverted.Metadata_Display_Values = display_result_fields.ToArray();
+
+                    // Done with this first item
+                    first_item = false;
+                }
+
+                // Add the item
+                v5_Solr_Item_Result itemResult = new v5_Solr_Item_Result();
+                itemResult.VID = item.DID.Substring(11, 5);
+                itemResult.Title = item.Title ?? "NO TITLE";
+                itemResult.MainThumbnail = item.MainThumbnail;
+                resultConverted.Items.Add(itemResult);
+            }          
 
             return resultConverted;
         }

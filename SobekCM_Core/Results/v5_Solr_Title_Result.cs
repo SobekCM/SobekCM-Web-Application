@@ -119,7 +119,7 @@ namespace SobekCM.Core.Results
 
                 // The logic to add all the nodes for this item.  This is large in an attempt to make it
                 // frighteningly quick
-                if (level4Text.Length > 0)
+                if (!String.IsNullOrEmpty(level4Text))
                 {
                     if (level3Nodes.ContainsKey(level1Text + "_" + level2Text + "_" + level3Text))
                     {
@@ -149,7 +149,7 @@ namespace SobekCM.Core.Results
                 }
                 else
                 {
-                    if (level3Text.Length > 0)
+                    if (!String.IsNullOrEmpty(level3Text))
                     {
                         if ((newspaper) && (level3Text.IndexOf(level2Text) < 0) && (level3Text.IndexOf(level1Text) < 0))
                         {
@@ -195,7 +195,7 @@ namespace SobekCM.Core.Results
                     }
                     else
                     {
-                        if (level2Text.Length > 0)
+                        if (!String.IsNullOrEmpty(level2Text))
                         {
                             if (level1Nodes.ContainsKey(level1Text))
                             {
@@ -209,7 +209,7 @@ namespace SobekCM.Core.Results
                         }
                         else
                         {
-                            if (level1Text.Length > 0)
+                            if (!String.IsNullOrEmpty(level1Text))
                             {
                                 level1Nodes[level1Text] = myRootNode.Add_Child_Node(level1Text, itemLink, thisChild.Level1_Index);
                             }

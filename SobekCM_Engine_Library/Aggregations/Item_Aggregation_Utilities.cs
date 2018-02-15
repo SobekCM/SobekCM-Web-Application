@@ -581,6 +581,7 @@ namespace SobekCM.Engine_Library.Aggregations
                 Description = CompAggr.Description,
                 Display_Options = CompAggr.Display_Options,
                 FrontBannerObj = CompAggr.Front_Banner_Image(RequestedLanguage),
+                GroupResults = CompAggr.GroupResults,
                 Hidden = CompAggr.Hidden,
                 Last_Item_Added = CompAggr.Last_Item_Added,
                 Name = CompAggr.Name,

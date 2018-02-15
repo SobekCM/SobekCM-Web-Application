@@ -219,6 +219,31 @@ namespace SobekCM.Engine_Library.Solr.v5
                     }
                 }
 
+                // Should this be grouped?
+                bool grouped_results = false;
+                if (( SearchOptions.GroupItemsByTitle ) && ( SearchOptions.Sort < 10 ) && ( QueryString.IndexOf("fulltext") < 0 ))
+                {
+                    if (Tracer != null)
+                    {
+                        Tracer.Add_Trace("v5_Solr_Documents_Searcher.Run_Query", "Grouping search request by bibid");
+                    }
+
+                    grouped_results = true;
+
+                    GroupingParameters groupingParams = new GroupingParameters
+                    {
+                        Fields = new[] { "bibid" },
+
+                        Format = GroupingFormat.Grouped,
+
+                        Limit = 10,
+
+                        Ngroups = true
+                    };
+
+                    options.Grouping = groupingParams;
+                }
+
                 if (Tracer != null)
                 {
                     Tracer.Add_Trace("v5_Solr_Documents_Searcher.Run_Query", "Perform the search");
@@ -227,12 +252,13 @@ namespace SobekCM.Engine_Library.Solr.v5
                 // Perform this search
                 SolrQueryResults<v5_SolrDocument> results = solrWorker.Query(QueryString, options);
 
+
                 if (Tracer != null)
                 {
                     Tracer.Add_Trace("v5_Solr_Documents_Searcher.Run_Query", "Build the results object");
                 }
 
-                // Create the search statistcs
+                // Create the search statistcs (this part assumes no grouping, and then we fix the count shortly)
                 List<string> metadataLabels = SearchOptions.Fields.Select(MetadataType => MetadataType.DisplayTerm).ToList();
                 Complete_Result_Set_Info = new Search_Results_Statistics(metadataLabels)
                 {
@@ -264,20 +290,44 @@ namespace SobekCM.Engine_Library.Solr.v5
                     }
                 }
 
-                // Pass all the results into the List and add the highlighted text to each result as well
+                // Build the results mapper object
                 v5_SolrDocument_Results_Mapper mapper = new v5_SolrDocument_Results_Mapper();
-                foreach (v5_SolrDocument thisResult in results)
-                {
-                    // Convert to the new result
-                    v5_Solr_Title_Result newResult = mapper.Map_To_Result(thisResult, SearchOptions.Fields);
 
-                    // Add the highlight snippet, if applicable
-                    if (( results.Highlights != null ) && (results.Highlights.ContainsKey(thisResult.DID)) && (results.Highlights[thisResult.DID].Count > 0) && (results.Highlights[thisResult.DID].ElementAt(0).Value.Count > 0))
+                // Build the results differently, depending on whether they were grouped or not
+                if (grouped_results)
+                {
+                    // Get the grouped results (only grouped by bibid)
+                    GroupedResults<v5_SolrDocument> title_groupings = results.Grouping["bibid"];
+
+                    // Now step through each group (i.e., titles/bibs) in the groups
+                    foreach (Group<v5_SolrDocument> grouping in title_groupings.Groups)
                     {
-                        newResult.Snippet = results.Highlights[thisResult.DID].ElementAt(0).Value.ElementAt(0);
+                        // Convert the grouping to the new result
+                        v5_Solr_Title_Result newResult = mapper.Map_To_Result(grouping, SearchOptions.Fields);
+
+                        Paged_Results.Add(newResult);
                     }
 
-                    Paged_Results.Add(newResult);
+                    // Now, fix the stats as well
+                    Complete_Result_Set_Info.Total_Items = title_groupings.Matches;
+                    Complete_Result_Set_Info.Total_Titles = title_groupings.Ngroups.Value;
+                }
+                else
+                {
+                    // Pass all the results into the List and add the highlighted text to each result as well
+                    foreach (v5_SolrDocument thisResult in results)
+                    {
+                        // Convert to the new result
+                        v5_Solr_Title_Result newResult = mapper.Map_To_Result(thisResult, SearchOptions.Fields);
+
+                        // Add the highlight snippet, if applicable
+                        if ((results.Highlights != null) && (results.Highlights.ContainsKey(thisResult.DID)) && (results.Highlights[thisResult.DID].Count > 0) && (results.Highlights[thisResult.DID].ElementAt(0).Value.Count > 0))
+                        {
+                            newResult.Snippet = results.Highlights[thisResult.DID].ElementAt(0).Value.ElementAt(0);
+                        }
+
+                        Paged_Results.Add(newResult);
+                    }
                 }
 
                 return true;

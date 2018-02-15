@@ -561,7 +561,7 @@ namespace SobekCM.Library.MainWriters
             }
 
             // end responsive design support
- 
+
             //if (String.Equals(Current_Mode.Result_Display_Type, "timeline", StringComparison.OrdinalIgnoreCase))
             if (String.Equals(RequestSpecificValues.Current_Mode.Result_Display_Type, "timeline", StringComparison.OrdinalIgnoreCase))
             {
@@ -582,18 +582,69 @@ namespace SobekCM.Library.MainWriters
 
                 Output.WriteLine("<script type=\"text/javascript\" src=\"https://unpkg.com/xregexp/xregexp-all.js\"></script>");
 
+                Boolean use_timeline_bundle = false;
+
+                try
+                {
+                    if (UI_ApplicationCache_Gateway.Settings.Get_Additional_Setting("Use Timeline Bundle").Equals("true"))
+                    {
+                        Output.WriteLine("<!-- using timeline bundle -->");
+                        use_timeline_bundle = true;
+                    }
+                    else
+                    {
+                        Output.WriteLine("<!-- using timeline src code -->");
+                        use_timeline_bundle = false;
+                    }
+                }
+                catch (Exception e)
+                {
+                    Output.WriteLine("<!-- exception - using timeline bundle -->");
+                    use_timeline_bundle = true;
+                }
+
                 Output.WriteLine("<script type=\"text/javascript\">");
-                Output.WriteLine("Timeline_ajax_url='" + base_url + "/plugins/Timeline/js/timeline_2.3.0/timeline_ajax/simile-ajax-api.js';");
-                Output.WriteLine("Timeline_urlPrefix='" + base_url + "/plugins/Timeline/js/timeline_2.3.0/timeline_js/';");
-                Output.WriteLine("Timeline_parameters='bundle=true';");
+                
+                // libraries version
+                //Output.WriteLine("Timeline_ajax_url='" + base_url + "/plugins/Timeline/js/timeline_2.3.0/timeline_ajax/simile-ajax-api.js';");
+                //Output.WriteLine("Timeline_urlPrefix='" + base_url + "/plugins/Timeline/js/timeline_2.3.0/timeline_js/';");
+
+                if (use_timeline_bundle)
+                {
+                    // libraries version
+                    Output.WriteLine("Timeline_ajax_url='" +  base_url + "plugins/Timeline/js/timeline_libraries_v2.3.0/timeline_2.3.0/timeline_ajax/simile-ajax-api.js?bundle=true';");
+                    Output.WriteLine("Timeline_urlPrefix='" + base_url + "plugins/Timeline/js/timeline_libraries_v2.3.0/timeline_2.3.0/timeline_js/';");
+                }
+                else
+                {
+                    // source version
+                    Output.WriteLine("Timeline_ajax_url='" +  base_url + "plugins/Timeline/js/timeline_source_v2.3.0/timeline_2.3.0/src/ajax/api/simile-ajax-api.js?bundle=false';");
+                    Output.WriteLine("Timeline_urlPrefix='" + base_url + "plugins/Timeline/js/timeline_source_v2.3.0/timeline_2.3.0/src/webapp/api/';");
+                }
+
+                if (use_timeline_bundle)
+                {
+                    Output.WriteLine("Timeline_parameters='bundle=true';");
+                }
+                else
+                {
+                    Output.WriteLine("Timeline_parameters='bundle=false';");
+                }
+
                 Output.WriteLine("</script>");
 
-                Output.WriteLine("<script src=\"" + base_url + "/plugins/Timeline/js/timeline_2.3.0/timeline_js/timeline-api.js?bundle=true\" type=\"text/javascript\"></script>");
-
-                // additional controls
-                Output.WriteLine("<script src=\"" + base_url + "/plugins/Timeline/js/simile-widgets-org_timeline_examples.js\" type=\"text/javascript\"></script>");
-
-                Output.WriteLine("<script src=\"" + base_url + "/plugins/Timeline/js/simile-widgets-org_timeline_customization.js\" type=\"text/javascript\"></script>");
+                if (use_timeline_bundle)
+                {
+                    Output.WriteLine("<script src=\"" + base_url + "plugins/Timeline/js/timeline_libraries_v2.3.0/timeline_2.3.0/timeline_js/timeline-api.js?bundle=true\"></script>");
+                }
+                else
+                {
+                    Output.WriteLine("<script src=\"" + base_url + "plugins/Timeline/js/timeline_source_v2.3.0/timeline_2.3.0/src/webapp/api/timeline-api.js?bundle=false\"></script>");
+                }
+               
+                // additional code
+                Output.WriteLine("<script src=\"" + base_url + "plugins/Timeline/js/simile-widgets-org_timeline_examples.js\" type=\"text/javascript\"></script>");
+                Output.WriteLine("<script src=\"" + base_url + "plugins/Timeline/js/simile-widgets-org_timeline_customization.js\" type=\"text/javascript\"></script>");
 
                 Tracer.Add_Trace("Html_Mainwriter.Write_Within_HTML_Head", "RRB - end of temporary for SOAS project.");
 

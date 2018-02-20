@@ -808,13 +808,55 @@ namespace SobekCM.Engine_Library.Database
 			return true;
 		}
 
-		/// <summary> Populates the dictionary of all files and MIME types from the database </summary>
-		/// <param name="MimeList"> List of files and MIME types to be populated with a successful database pulll </param>
-		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-		/// <returns> TRUE if successful, otherwise FALSE </returns>
-		/// <remarks> This calls the 'SobekCM_Get_Mime_Types' stored procedure <br /><br />
-		/// The lookup values in this dictionary are the file extensions in lower case.</remarks> 
-		public static bool Populate_MIME_List(Dictionary<string, Mime_Type_Info> MimeList, Custom_Tracer Tracer)
+        /// <summary> Populates the collection of all multi-volume titles from the database </summary>
+        /// <param name="TitleList"> Collection of multi-volume titles to be populated with a successful database pulll </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <returns> TRUE if successful, otherwise FALSE </returns>
+        /// <remarks> This calls the 'SobekCM_Get_MultiVolume_Title_Info' stored procedure <br /><br />
+        /// The lookup values in this dictionary are the icon code uppercased.</remarks> 
+        public static bool Populate_Multiple_Volumes(Multiple_Volume_Collection TitleList, Custom_Tracer Tracer)
+        {
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("Engine_Database.Populate_Multiple_Volumes", String.Empty);
+            }
+
+            // Create the database agnostic reader
+            EalDbReaderWrapper readerWrapper = EalDbAccess.ExecuteDataReader(DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_Get_MultiVolume_Title_Info");
+
+            // Pull out the database reader
+            DbDataReader reader = readerWrapper.Reader;
+
+            // Clear existing titles
+            TitleList.Clear();
+
+            while (reader.Read())
+            {
+                string bibid = reader.GetString(0);
+                string thumb = null;
+                if (!reader.IsDBNull(1))
+                    thumb = reader.GetString(1);
+                byte flagByte = reader.GetByte(2);
+                Int16 lastfour = reader.GetInt16(3);
+                string grouptitle = reader.GetString(4);
+
+                TitleList.Add_Title(bibid, thumb, flagByte, lastfour, grouptitle);
+            }
+
+            // Close the reader (which also closes the connection)
+            readerWrapper.Close();
+
+            // Succesful
+            return true;
+        }
+
+        /// <summary> Populates the dictionary of all files and MIME types from the database </summary>
+        /// <param name="MimeList"> List of files and MIME types to be populated with a successful database pulll </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <returns> TRUE if successful, otherwise FALSE </returns>
+        /// <remarks> This calls the 'SobekCM_Get_Mime_Types' stored procedure <br /><br />
+        /// The lookup values in this dictionary are the file extensions in lower case.</remarks> 
+        public static bool Populate_MIME_List(Dictionary<string, Mime_Type_Info> MimeList, Custom_Tracer Tracer)
 		{
 			if (Tracer != null)
 			{

@@ -1,5 +1,6 @@
 #region Using directives
 
+using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 
@@ -7,92 +8,86 @@ using System.Runtime.Serialization;
 
 namespace SobekCM.Core.ApplicationState
 {
+    /// <summary> Enumeration tells the type of group thumbail included for this title </summary>
+    public enum Group_Thumbnail_Enum : byte
+    {
+        /// <summary> No group thumbnail is set for this bibid </summary>
+        No_Group_Thumbnail,
+
+        /// <summary> Use the standard named JPEG group thumbnail </summary>
+        JPEG_Thumbnail,
+
+        /// <summary> Use the standard named PNG group thumbnail </summary>
+        PNG_Thumbnail,
+
+        /// <summary> Use the standard named GIF group thumbnail </summary>
+        GIF_Thumbnail,
+
+        /// <summary> Use the custom group thumbnail indicated </summary>
+        Custom_Thumbnail
+    }
+
 	/// <summary> Stores information about a title which has multiple volumes or is always represented as multiple volumes ( i.e. Newspapers and Serials) </summary>
     [DataContract]
-	public class Multiple_Volume_Item : iSerializationEvents
+	public class Multiple_Volume_Item
 	{
-	    /// <summary> Bibliographic identifier (BibID) for this title within the digital library </summary>
-        [DataMember]
-	    public readonly string BibID;
+        /// <summary> Actual byte which contains the title-level flags, mostly used internally </summary>
+        public byte FlagByte { get; set; }
 
-        /// <summary> Collection of all the single items within this BibID </summary>
-	    [DataMember] 
-        public List<Single_Item> Items;
+        /// <summary> Group title to be displayed for this multi-volume title in results returning more than one item </summary>
+        public string GroupTitle { get; set; }
 
-	    private readonly Dictionary<string, Single_Item> itemDictionary;
+        /// <summary> Custom group thumbnail file </summary>
+        public string CustomThumbnail { get; set; }
+
+        /// <summary> Does this bibid have group metadata? </summary>
+        /// <remarks> Use bitwise operator to check the first, ones bit of the flag </remarks>
+        public bool HasGroupMetadata
+        {
+            get
+            {
+                // Check the bitwise operator (ones bit)
+                return ((FlagByte & 0x1) == 1);
+            }
+        }
+
+        /// <summary> Does this bibid have a group title? </summary>
+        /// <remarks> Use bitwise operator to check the two, fours, and eight bits of the flag </remarks>
+        public Group_Thumbnail_Enum GroupThumbnailType
+        {
+            get
+            {
+                int result = FlagByte & 0xE;
+                switch( result )
+                {
+                    case 0:
+                        return Group_Thumbnail_Enum.No_Group_Thumbnail;
+
+                    case 2:
+                        return Group_Thumbnail_Enum.JPEG_Thumbnail;
+
+                    case 4:
+                        return Group_Thumbnail_Enum.GIF_Thumbnail;
+
+                    case 8:
+                        return Group_Thumbnail_Enum.PNG_Thumbnail;
+
+                    case 14:
+                        if (!String.IsNullOrEmpty(CustomThumbnail))
+                            return Group_Thumbnail_Enum.Custom_Thumbnail;
+                        else
+                            return Group_Thumbnail_Enum.No_Group_Thumbnail;
+                }
+
+                // If it got here, there was an error
+                return Group_Thumbnail_Enum.No_Group_Thumbnail;
+            }
+        }
 
 	    /// <summary> Constructor for a new instance of the Multiple_Volume_Item class </summary>
-        /// <param name="BibID"> Bibliographic identifier (BibID) for this title within the digital library</param>
-        public Multiple_Volume_Item( string BibID )
+        public Multiple_Volume_Item()
 		{
-            this.BibID = BibID;
-	        Items = new List<Single_Item>();
-            itemDictionary = new Dictionary<string, Single_Item>();
-		}
-
-	    /// <summary> Number of child items contained within this title </summary>
-        public int Item_Count
-        {
-            get
-            {
-                return Items.Count;
-            }
+            
         }
-
-        /// <summary> Gets the first item within this title's collection of child items </summary>
-        /// <remarks> This is used to pull any arbitraty item within this title </remarks>
-        public Single_Item First_Item
-        {
-            get
-            {
-                return (Items.Count > 0) ? Items[0] : null;
-            }
-        }
-
-	    /// <summary> Returns a single item from this title's collection of child items, by Volume ID (VID) </summary>
-	    /// <param name="VID"> Volume ID for the item to retrieve from this title </param>
-	    /// <returns> Object containing necessary information about the item, or NULL if there is no matching item within this title's collection of child items </returns>
-	    public Single_Item this[ string VID ]
-	    {
-	        get 
-            {
-                return itemDictionary.ContainsKey(VID) ? itemDictionary[VID] : null;
-	        }
-	    }
-
-	    /// <summary> Adds a single item to this title's collection of child items </summary>
-	    /// <param name="NewItem"> New single item information to add to this title </param>
-	    public void Add_Item(Single_Item NewItem)
-	    {
-	        Items.Add(NewItem);
-            itemDictionary[NewItem.VID] = NewItem;
-	    }
-
-	    /// <summary> Removes a child item from this title's collection of items </summary>
-        /// <param name="VID"> Volume identifier for the item to remove </param>
-        /// <remarks> This currently does nothing, but should probably check single_vid though </remarks>
-        public void Remove_Item( string VID )
-        {
-            // Do nothing for now
-            // Should probably check single_vid though
-        }
-
-        /// <summary> Flag indicates if this title's collection of child items includes a particular volume, by Volume ID (VID) </summary>
-        /// <param name="VID"> Volume ID for the item to check for existence </param>
-        /// <returns> TRUE if the item exists within this title, otherwise FALSE </returns>
-        public bool Contains_VID(string VID)
-        {
-            return itemDictionary.ContainsKey(VID);
-        }
-
-        /// <summary> Method is called by the serializer after this item is unserialized </summary>
-	    public void PostUnSerialization()
-	    {
-	        itemDictionary.Clear();
-	        foreach (Single_Item thisItem in Items)
-	        {
-                itemDictionary[thisItem.VID] = thisItem;
-	        }
-	    }
-	}
+    }
 }

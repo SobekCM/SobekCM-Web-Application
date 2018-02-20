@@ -80,11 +80,11 @@
     <Compile Include="ApplicationState\IP_Restriction_Range.cs" />
     <Compile Include="ApplicationState\IP_Restriction_Ranges.cs" />
     <Compile Include="ApplicationState\Language_Support_Info.cs" />
+    <Compile Include="ApplicationState\Multiple_Volume_Collection.cs" />
     <Compile Include="ApplicationState\Multiple_Volume_Item.cs" />
     <Compile Include="ApplicationState\Portal.cs" />
     <Compile Include="ApplicationState\Portal_List.cs" />
     <Compile Include="ApplicationState\Recent_Searches.cs" />
-    <Compile Include="ApplicationState\Single_Item.cs" />
     <Compile Include="ApplicationState\Statistics_Dates.cs" />
     <Compile Include="ApplicationState\Template.cs" />
     <Compile Include="ApplicationState\Wordmark_Icon.cs" />

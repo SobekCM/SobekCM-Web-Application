@@ -178,5 +178,13 @@ namespace SobekCM.Library.UI
         {
             webContentHierarchy = null;
         }
+
+
+        /// <summary> Get the collection of all titles which have title-level metadata or have
+        /// multiple volumes within the system  </summary>
+        public static Multiple_Volume_Collection Title_List
+        {
+            get { return Engine_ApplicationCache_Gateway.Title_List; }
+        }
     }
 }

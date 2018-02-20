@@ -56,6 +56,7 @@ namespace SobekCM.Engine_Library.ApplicationState
             error = error | !RefreshDefaultMetadataTemplates();
             error = error | !RefreshUrlPortals();
             error = error | !RefreshWebContentHierarchy();
+            error = error | !RefreshTitles();
 
             Last_Refresh = DateTime.Now;
 
@@ -82,6 +83,7 @@ namespace SobekCM.Engine_Library.ApplicationState
             error = error | !RefreshDefaultMetadataTemplates();
             error = error | !RefreshUrlPortals();
             error = error | !RefreshWebContentHierarchy();
+            error = error | !RefreshTitles();
 
             Last_Refresh = DateTime.Now;
 
@@ -1034,6 +1036,55 @@ namespace SobekCM.Engine_Library.ApplicationState
             set
             {
                 webContentHierarchy = value;
+            }
+        }
+
+        #endregion
+
+        #region Properties and methods about the multiple volume records
+
+
+        private static Multiple_Volume_Collection titleList;
+        private static readonly Object titleListLock = new Object();
+
+        /// <summary> Refresh the list of titles which have multiple volumes by pulling the data back from the database </summary>
+        /// <returns> TRUE if successful, otherwise FALSE </returns>
+        public static bool RefreshTitles()
+        {
+            try
+            {
+                lock (titleListLock)
+                {
+                    if (titleList == null)
+                        titleList = new Multiple_Volume_Collection();
+
+                    Engine_Database.Populate_Multiple_Volumes(titleList, null);
+                }
+
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        /// <summary> Get the collection of all titles which have title-level metadata or have
+        /// multiple volumes within the system </summary>
+        public static Multiple_Volume_Collection Title_List
+        {
+            get
+            {
+                lock (titleListLock)
+                {
+                    if (titleList == null)
+                    {
+                        titleList = new Multiple_Volume_Collection();
+                        Engine_Database.Populate_Multiple_Volumes(titleList, null );
+                    }
+
+                    return titleList;
+                }
             }
         }
 

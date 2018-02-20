@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using SobekCM.Core.Aggregations;
+using SobekCM.Core.ApplicationState;
 using SobekCM.Core.Results;
+using SobekCM.Engine_Library.ApplicationState;
 using SobekCM.Engine_Library.Solr.Legacy;
 
 namespace SobekCM.Engine_Library.Solr.v5
@@ -66,9 +68,21 @@ namespace SobekCM.Engine_Library.Solr.v5
                     // Get the bibid
                     resultConverted.BibID = item.DID.Substring(0, 10);
 
-                    // For now...
-                    resultConverted.GroupThumbnail = item.MainThumbnail;
-                    resultConverted.GroupTitle = item.Title ?? "NO TITLE";
+                    // Look for information about this bibid first
+                    Multiple_Volume_Item titleInfo = Engine_ApplicationCache_Gateway.Title_List.Get_Title(resultConverted.BibID);
+                    if (titleInfo == null)
+                    {
+                        resultConverted.GroupThumbnail = item.MainThumbnail;
+                        resultConverted.GroupTitle = item.Title ?? "NO TITLE";
+                    }
+                    else
+                    {
+                        if ((titleInfo.GroupThumbnailType == Group_Thumbnail_Enum.Custom_Thumbnail) && (!String.IsNullOrEmpty(titleInfo.CustomThumbnail)))
+                            resultConverted.GroupThumbnail = titleInfo.CustomThumbnail;
+                        else
+                            resultConverted.GroupThumbnail = item.MainThumbnail;
+                        resultConverted.GroupTitle = titleInfo.GroupTitle;
+                    }
 
                     // Build the display results values
                     List<string> display_result_fields = new List<string>();

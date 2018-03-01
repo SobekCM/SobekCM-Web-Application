@@ -46,7 +46,10 @@ namespace SobekCM.Engine_Library.Solr.v5
             // If there was an aggregation code included, put that at the beginning of the search
             if ((!String.IsNullOrEmpty(SearchOptions.AggregationCode)) && (SearchOptions.AggregationCode.ToUpper() != "ALL"))
             {
-                queryString = "(aggregations:" + SearchOptions.AggregationCode + ") AND (" + queryString + ")";
+                if (!String.IsNullOrEmpty(queryString))
+                    queryString = "(aggregations:" + SearchOptions.AggregationCode + ") AND " + queryString;
+                else
+                    queryString = "(aggregations:" + SearchOptions.AggregationCode + ")";
             }
 
             // Set output initially to null
@@ -77,7 +80,10 @@ namespace SobekCM.Engine_Library.Solr.v5
             // If there was an aggregation code included, put that at the beginning of the search
             if ((!String.IsNullOrEmpty(SearchOptions.AggregationCode)) && (SearchOptions.AggregationCode.ToUpper() != "ALL"))
             {
-                queryString = "(aggregations:" + SearchOptions.AggregationCode + ") AND " + queryString;
+                if ( !String.IsNullOrEmpty(queryString))
+                    queryString = "(aggregations:" + SearchOptions.AggregationCode + ") AND " + queryString;
+                else
+                    queryString = "(aggregations:" + SearchOptions.AggregationCode + ")";
             }
 
             // Set output initially to null
@@ -109,7 +115,10 @@ namespace SobekCM.Engine_Library.Solr.v5
             // If there was an aggregation code included, put that at the beginning of the search
             if ((!String.IsNullOrEmpty(SearchOptions.AggregationCode)) && (SearchOptions.AggregationCode.ToUpper() != "ALL"))
             {
-                queryString = "(aggregations:" + SearchOptions.AggregationCode + ") AND " + queryString;
+                if (!String.IsNullOrEmpty(queryString))
+                    queryString = "(aggregations:" + SearchOptions.AggregationCode + ") AND " + queryString;
+                else
+                    queryString = "(aggregations:" + SearchOptions.AggregationCode + ")";
             }
 
             // Set output initially to null

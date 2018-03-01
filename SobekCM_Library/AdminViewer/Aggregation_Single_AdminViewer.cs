@@ -2329,25 +2329,106 @@ namespace SobekCM.Library.AdminViewer
 		{
 			// Reset the facets
 			itemAggregation.Clear_Facets();
-            //if ((Form["admin_aggr_facet1"] != null) && (Convert.ToInt16(Form["admin_aggr_facet1"]) > 0))
-            //    itemAggregation.Add_Facet(Convert.ToInt16(Form["admin_aggr_facet1"]));
-            //if ((Form["admin_aggr_facet2"] != null) && (Convert.ToInt16(Form["admin_aggr_facet2"]) > 0))
-            //    itemAggregation.Add_Facet(Convert.ToInt16(Form["admin_aggr_facet2"]));
-            //if ((Form["admin_aggr_facet3"] != null) && (Convert.ToInt16(Form["admin_aggr_facet3"]) > 0))
-            //    itemAggregation.Add_Facet(Convert.ToInt16(Form["admin_aggr_facet3"]));
-            //if ((Form["admin_aggr_facet4"] != null) && (Convert.ToInt16(Form["admin_aggr_facet4"]) > 0))
-            //    itemAggregation.Add_Facet(Convert.ToInt16(Form["admin_aggr_facet4"]));
-            //if ((Form["admin_aggr_facet5"] != null) && (Convert.ToInt16(Form["admin_aggr_facet5"]) > 0))
-            //    itemAggregation.Add_Facet(Convert.ToInt16(Form["admin_aggr_facet5"]));
-            //if ((Form["admin_aggr_facet6"] != null) && (Convert.ToInt16(Form["admin_aggr_facet6"]) > 0))
-            //    itemAggregation.Add_Facet(Convert.ToInt16(Form["admin_aggr_facet6"]));
-            //if ((Form["admin_aggr_facet7"] != null) && (Convert.ToInt16(Form["admin_aggr_facet7"]) > 0))
-            //    itemAggregation.Add_Facet(Convert.ToInt16(Form["admin_aggr_facet7"]));
-            //if ((Form["admin_aggr_facet8"] != null) && (Convert.ToInt16(Form["admin_aggr_facet8"]) > 0))
-            //    itemAggregation.Add_Facet(Convert.ToInt16(Form["admin_aggr_facet8"]));
+            short aggr_id;
+            if (Form["admin_aggr_facet1"] != null) 
+            {
+                if (( short.TryParse(Form["admin_aggr_facet1"], out aggr_id )) && (aggr_id > 0))
+                {
+                    Metadata_Search_Field field = UI_ApplicationCache_Gateway.Settings.Metadata_Search_Field_By_ID(aggr_id);
+                    if (field != null)
+                    {
+                        Complete_Item_Aggregation_Metadata_Type mType = new Complete_Item_Aggregation_Metadata_Type(aggr_id, field.Display_Term, field.Web_Code, field.Solr_Field);
+                        itemAggregation.Add_Facet(mType);
+                    }
+                }
+            }
+            if (Form["admin_aggr_facet2"] != null)
+            {
+                if ((short.TryParse(Form["admin_aggr_facet2"], out aggr_id)) && (aggr_id > 0))
+                {
+                    Metadata_Search_Field field = UI_ApplicationCache_Gateway.Settings.Metadata_Search_Field_By_ID(aggr_id);
+                    if (field != null)
+                    {
+                        Complete_Item_Aggregation_Metadata_Type mType = new Complete_Item_Aggregation_Metadata_Type(aggr_id, field.Display_Term, field.Web_Code, field.Solr_Field);
+                        itemAggregation.Add_Facet(mType);
+                    }
+                }
+            }
+            if (Form["admin_aggr_facet3"] != null) 
+            {
+                if ((short.TryParse(Form["admin_aggr_facet3"], out aggr_id)) && (aggr_id > 0))
+                {
+                    Metadata_Search_Field field = UI_ApplicationCache_Gateway.Settings.Metadata_Search_Field_By_ID(aggr_id);
+                    if (field != null)
+                    {
+                        Complete_Item_Aggregation_Metadata_Type mType = new Complete_Item_Aggregation_Metadata_Type(aggr_id, field.Display_Term, field.Web_Code, field.Solr_Field);
+                        itemAggregation.Add_Facet(mType);
+                    }
+                }
+            }
+            if (Form["admin_aggr_facet4"] != null) 
+            {
+                if ((short.TryParse(Form["admin_aggr_facet4"], out aggr_id)) && (aggr_id > 0))
+                {
+                    Metadata_Search_Field field = UI_ApplicationCache_Gateway.Settings.Metadata_Search_Field_By_ID(aggr_id);
+                    if (field != null)
+                    {
+                        Complete_Item_Aggregation_Metadata_Type mType = new Complete_Item_Aggregation_Metadata_Type(aggr_id, field.Display_Term, field.Web_Code, field.Solr_Field);
+                        itemAggregation.Add_Facet(mType);
+                    }
+                }
+            }
+            if (Form["admin_aggr_facet5"] != null)
+            {
+                if ((short.TryParse(Form["admin_aggr_facet5"], out aggr_id)) && (aggr_id > 0))
+                {
+                    Metadata_Search_Field field = UI_ApplicationCache_Gateway.Settings.Metadata_Search_Field_By_ID(aggr_id);
+                    if (field != null)
+                    {
+                        Complete_Item_Aggregation_Metadata_Type mType = new Complete_Item_Aggregation_Metadata_Type(aggr_id, field.Display_Term, field.Web_Code, field.Solr_Field);
+                        itemAggregation.Add_Facet(mType);
+                    }
+                }
+            }
+            if (Form["admin_aggr_facet6"] != null) 
+            {
+                if ((short.TryParse(Form["admin_aggr_facet6"], out aggr_id)) && (aggr_id > 0))
+                {
+                    Metadata_Search_Field field = UI_ApplicationCache_Gateway.Settings.Metadata_Search_Field_By_ID(aggr_id);
+                    if (field != null)
+                    {
+                        Complete_Item_Aggregation_Metadata_Type mType = new Complete_Item_Aggregation_Metadata_Type(aggr_id, field.Display_Term, field.Web_Code, field.Solr_Field);
+                        itemAggregation.Add_Facet(mType);
+                    }
+                }
+            }
+            if (Form["admin_aggr_facet7"] != null) 
+            {
+                if ((short.TryParse(Form["admin_aggr_facet7"], out aggr_id)) && (aggr_id > 0))
+                {
+                    Metadata_Search_Field field = UI_ApplicationCache_Gateway.Settings.Metadata_Search_Field_By_ID(aggr_id);
+                    if (field != null)
+                    {
+                        Complete_Item_Aggregation_Metadata_Type mType = new Complete_Item_Aggregation_Metadata_Type(aggr_id, field.Display_Term, field.Web_Code, field.Solr_Field);
+                        itemAggregation.Add_Facet(mType);
+                    }
+                }
+            }
+            if (Form["admin_aggr_facet8"] != null) 
+            {
+                if ((short.TryParse(Form["admin_aggr_facet8"], out aggr_id)) && ( aggr_id > 0 ))
+                {
+                    Metadata_Search_Field field = UI_ApplicationCache_Gateway.Settings.Metadata_Search_Field_By_ID(aggr_id);
+                    if (field != null)
+                    {
+                        Complete_Item_Aggregation_Metadata_Type mType = new Complete_Item_Aggregation_Metadata_Type(aggr_id, field.Display_Term, field.Web_Code, field.Solr_Field);
+                        itemAggregation.Add_Facet(mType);
+                    }
+                }
+            }
 
-			// Reset the result views
-			itemAggregation.Result_Views.Clear();
+            // Reset the result views
+            itemAggregation.Result_Views.Clear();
             itemAggregation.Default_Result_View = String.Empty;
 
 			// Add the default result view
@@ -2399,17 +2480,17 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine("        <tr style=\"vertical-align:top\">");
 			Output.WriteLine("          <td>");
 
-            //for (int i = 0; i < 8; i++)
-            //{
-            //    short thisFacet = -1;
-            //    if (itemAggregation.Facets.Count > i)
-            //        thisFacet = itemAggregation.Facets[i];
-            //    Facet_Writer_Helper(Output, thisFacet, i + 1);
-            //    Output.WriteLine(i < 7 ? "<br />" : String.Empty);
-            //}
-			
-			
-			Output.WriteLine("          </td>");
+            for (int i = 0; i < 8; i++)
+            {
+                short thisFacet = -1;
+                if (itemAggregation.Facets.Count > i)
+                    thisFacet = itemAggregation.Facets[i].ID;
+                Facet_Writer_Helper(Output, thisFacet, i + 1);
+                Output.WriteLine(i < 7 ? "<br />" : String.Empty);
+            }
+
+
+            Output.WriteLine("          </td>");
 			Output.WriteLine("          <td><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources_Gateway.Help_Button_Jpg + "\" onclick=\"alert('" + FACETS_HELP + "');\"  title=\"" + FACETS_HELP + "\" /></td>");
 			Output.WriteLine("         </tr>");
 			Output.WriteLine("       </table>");

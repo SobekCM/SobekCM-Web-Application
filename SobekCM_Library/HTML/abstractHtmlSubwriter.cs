@@ -493,8 +493,8 @@ namespace SobekCM.Library.HTML
                     {
                         Tracer.Add_Trace("abstractHtmlSubwriter.Get_Browse_Info", "Is timeline, setting browse results_per_page and sort.");
 
-                        results_per_page = 1000;
-                        sort = 10;
+                        results_per_page = 20000;
+                        sort = 12;
                     }
 
                     // Set the flags for how much data is needed.  (i.e., do we need to pull ANYTHING?  or

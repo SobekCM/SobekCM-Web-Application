@@ -433,6 +433,7 @@ namespace SobekCM.Library.HTML
                 string sort_by = "Sort By";
                 string showing_range_text = "{0} - {1} of {2} matching titles";
                 string showing_coord_range_text = "{0} - {1} of {2} matching coordinates";
+                string timeline_showing_text = "{0} items with dates displayed";
 
                 if (RequestSpecificValues.Current_Mode.Aggregation == "aerials")
                 {
@@ -568,6 +569,10 @@ namespace SobekCM.Library.HTML
                 {
                     SHOWING = resultsStatistics.Total_Items.ToString();
                 }
+                else if (String.Equals(RequestSpecificValues.Current_Mode.Result_Display_Type, "timeline", StringComparison.OrdinalIgnoreCase))
+            {
+                    SHOWING = String.Format(timeline_showing_text, resultWriter.Total_Results);
+                }
                 else
                 {
                     SHOWING = String.Format(showing_range_text, startRow, Math.Min(lastRow, resultsStatistics.Total_Titles), resultWriter.Total_Results);
@@ -620,7 +625,7 @@ namespace SobekCM.Library.HTML
                 {
                     Debug.Assert(resultWriter != null, "resultWriter != null");
 
-                    if (RESULTS_PER_PAGE < resultWriter.Total_Results)
+                    if ((RESULTS_PER_PAGE < resultWriter.Total_Results) && (!String.Equals(RequestSpecificValues.Current_Mode.Result_Display_Type, "timeline", StringComparison.OrdinalIgnoreCase)))
                     {
                         ushort current_page = RequestSpecificValues.Current_Mode.Page.HasValue ? RequestSpecificValues.Current_Mode.Page.Value : ((ushort) 1);
                         StringBuilder buttons_builder = new StringBuilder(1000);

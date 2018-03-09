@@ -139,12 +139,6 @@ namespace SobekCM.Engine_Library.Solr.v5
             if (QueryString.Trim().Length == 0)
                 QueryString = "*:*";
 
-            // Log the search term
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("v5_Solr_Documents_Searcher.Run_Query", "Solr Query: " + QueryString);
-            }
-
             // Set output initially to null
             Paged_Results = new List<iSearch_Title_Result>();
             Complete_Result_Set_Info = null;
@@ -225,6 +219,13 @@ namespace SobekCM.Engine_Library.Solr.v5
                             options.OrderBy.Add(new SortOrder("date.gregorian", Order.DESC));
                             break;
 
+                        case 12:
+                            options.OrderBy.Add(new SortOrder("timeline_date", Order.ASC));
+
+                            // If sorting by this, only get records with timeline date
+                            QueryString = "(" + QueryString + ") AND timeline_date:[* TO *]";
+                            break;
+
                     }
                 }
 
@@ -251,6 +252,12 @@ namespace SobekCM.Engine_Library.Solr.v5
                     };
 
                     options.Grouping = groupingParams;
+                }
+
+                // Log the search term
+                if (Tracer != null)
+                {
+                    Tracer.Add_Trace("v5_Solr_Documents_Searcher.Run_Query", "Solr Query: " + QueryString);
                 }
 
                 if (Tracer != null)

@@ -119,7 +119,7 @@ namespace SobekCM.Library.ResultsViewer
                 // Add differently depending on the child row count
                 if ( !multiple_title )
                 {
-                    if (firstItemResult.Link.Length > 0)
+                    if (!String.IsNullOrEmpty(firstItemResult.Link))
                     {
                         resultsBldr.AppendLine("\t\t<td>" + firstItemResult.Title + " ( <a href=\"" + firstItemResult.Link + "\">external resource</a> | <a href=\"" + internal_link + "\">internal citation</a> )</td>");
                     }

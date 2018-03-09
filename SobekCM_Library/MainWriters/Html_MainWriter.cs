@@ -576,9 +576,9 @@ namespace SobekCM.Library.MainWriters
 
                 Output.WriteLine("<link rel=\"stylesheet\" href=\"" + base_url + "/plugins/Timeline/css/SimileTimeline.css\" type=\"text/css\">");
 
-                Output.WriteLine("<link rel=\"stylesheet\" href=\"http://yui.yahooapis.com/2.7.0/build/reset-fonts-grids/reset-fonts-grids.css\" type = \"text/css\">");
-                Output.WriteLine("<link rel=\"stylesheet\" type=\"text/css\" href=\"http://yui.yahooapis.com/2.7.0/build/base/base-min.css\">");
-                Output.WriteLine("<link rel=\"stylesheet\" type=\"text/css\" href=\"" + base_url + "/plugins/Timeline/css/simile-widgets-org_timeline_examples_styles.css\">");
+                //Output.WriteLine("<link rel=\"stylesheet\" href=\"http://yui.yahooapis.com/2.7.0/build/reset-fonts-grids/reset-fonts-grids.css\" type = \"text/css\">");
+                //Output.WriteLine("<link rel=\"stylesheet\" type=\"text/css\" href=\"http://yui.yahooapis.com/2.7.0/build/base/base-min.css\">");
+                //Output.WriteLine("<link rel=\"stylesheet\" type=\"text/css\" href=\"" + base_url + "/plugins/Timeline/css/simile-widgets-org_timeline_examples_styles.css\">");
 
                 Output.WriteLine("<script type=\"text/javascript\" src=\"https://unpkg.com/xregexp/xregexp-all.js\"></script>");
 

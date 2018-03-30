@@ -3756,6 +3756,14 @@ namespace SobekCM.Library.AdminViewer
             DataColumn extensionsCol = tempTable.Columns.Add("Extensions");
             foreach (ItemSubViewerConfig viewer in UI_ApplicationCache_Gateway.Configuration.UI.WriterViewers.Items.Viewers)
             {
+                //rrb
+                RequestSpecificValues.Tracer.Add_Trace("Settings_AdminViewer.add_ui_viewers_info", "viewer.Assembly=[" + viewer.Assembly + "].");
+                RequestSpecificValues.Tracer.Add_Trace("Settings_AdminViewer.add_ui_viewers_info", "viewer.Class=[" + viewer.Class + "].");
+                RequestSpecificValues.Tracer.Add_Trace("Settings_AdminViewer.add_ui_viewers_info", "viewer.Enabled=[" + viewer.Enabled + "].");
+                RequestSpecificValues.Tracer.Add_Trace("Settings_AdminViewer.add_ui_viewers_info", "viewer.ViewerCode=[" + viewer.ViewerCode + "].");
+                RequestSpecificValues.Tracer.Add_Trace("Settings_AdminViewer.add_ui_viewers_info", "viweer.ViewerType=[" + viewer.ViewerType + "].");
+                //rrb
+
                 DataRow newRow = tempTable.NewRow();
                 if (viewer.Enabled)
                     newRow[enabledCol] = "<img src=\"" + Static_Resources_Gateway.Checkmark2_Png + "\" alt=\"yes\" />";
@@ -3763,7 +3771,7 @@ namespace SobekCM.Library.AdminViewer
                     newRow[enabledCol] = "<img src=\"" + Static_Resources_Gateway.Checkmark_Png + "\" alt=\"no\" />";
                 newRow[typeCol] = viewer.ViewerType;
                 newRow[codeCol] = viewer.ViewerCode;
-                if (!String.IsNullOrEmpty(viewer.Assembly))
+                 if (!String.IsNullOrEmpty(viewer.Assembly))
                     newRow[classCol] = viewer.Class + " ( " + viewer.Assembly + " )";
                 else
                     newRow[classCol] = viewer.Class.Replace("SobekCM.Library.ItemViewer.Viewers.", "");

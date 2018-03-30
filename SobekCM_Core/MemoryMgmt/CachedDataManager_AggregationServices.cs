@@ -104,7 +104,6 @@ namespace SobekCM.Core.MemoryMgmt
             HttpContext.Current.Cache.Insert(key, StoreObject, null, Cache.NoAbsoluteExpiration, TimeSpan.FromMinutes(LOCAL_EXPIRATION));
         }
 
-
         #endregion
 
         #region Methods relating to storing and retrieving LANGUAGE-SPECIFIC ITEM AGGREGATION objects
@@ -135,7 +134,7 @@ namespace SobekCM.Core.MemoryMgmt
             {
                 if (Tracer != null)
                 {
-                    Tracer.Add_Trace("CachedDataManager.Retrieve_Item_Aggregation", "Found " + AggregationCode + " item aggregation on local cache for " + languageCode);
+                    Tracer.Add_Trace("CachedDataManager.Retrieve_Item_Aggregation", "Found (" + AggregationCode + ") item aggregation on local cache for (" + languageCode + ")");
                 }
 
                 return returnValue;
@@ -143,7 +142,7 @@ namespace SobekCM.Core.MemoryMgmt
 
             if (Tracer != null)
             {
-                Tracer.Add_Trace("CachedDataManager.Retrieve_Item_Aggregation", "Aggregation ( " + AggregationCode + " ) not found in the local cache for " + languageCode );
+                Tracer.Add_Trace("CachedDataManager.Retrieve_Item_Aggregation", "Aggregation ( " + AggregationCode + " ) not found in the local cache for (" + languageCode + ")");
             }
 
             // Since everything failed, just return null
@@ -276,7 +275,6 @@ namespace SobekCM.Core.MemoryMgmt
 
         #endregion
 
-
         /// <summary> Clears all aggregation values from the cache </summary>
         public void Clear()
         {
@@ -291,7 +289,6 @@ namespace SobekCM.Core.MemoryMgmt
             // Delete the hierarchy
             Clear_Aggregation_Hierarchy();
         }
-
 
         /// <summary> Removes all references to a particular item aggregation from the cache </summary>
         /// <param name="Aggregation_Code"> Code for the item aggregation to remove </param>
@@ -320,7 +317,6 @@ namespace SobekCM.Core.MemoryMgmt
                 HttpContext.Current.Cache.Remove(key);
             }
         }
-
 
         /// <summary> Retrieve the aggregation-level static HTML browse object, including the text itself, from the cache </summary>
         /// <param name="Aggregation_Code"> Aggregation code </param>
@@ -399,6 +395,5 @@ namespace SobekCM.Core.MemoryMgmt
 
             HttpContext.Current.Cache.Insert(key, StoreObject, null, Cache.NoAbsoluteExpiration, TimeSpan.FromMinutes(LOCAL_EXPIRATION));
         }
-
     }
 }

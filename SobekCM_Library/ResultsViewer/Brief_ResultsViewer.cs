@@ -60,6 +60,8 @@ namespace SobekCM.Library.ResultsViewer
             int current_page = RequestSpecificValues.Current_Mode.Page.HasValue ? RequestSpecificValues.Current_Mode.Page.Value : 1;
             int result_counter = ((current_page - 1) * Results_Per_Page) + 1;
 
+            Tracer.Add_Trace("Brief_ResultsViewer.Add_HTML", "There are [" + PagedResults.Count + "] results @ [" + Results_Per_Page + "] per page.");
+
             // Step through all the results
             int current_row = 0;
             foreach (iSearch_Title_Result titleResult in PagedResults)
@@ -86,7 +88,6 @@ namespace SobekCM.Library.ResultsViewer
                 }
                 else
                     resultsBldr.AppendLine("\t<section class=\"sbkBrv_SingleResult\" onclick=\"window.location.href='" + internal_link.Replace("'","\\'") + "';\" >");
-
 
                 // Add the counter as the first column
                 resultsBldr.AppendLine("\t\t<div class=\"sbkBrv_SingleResultNum\">" + result_counter + "</div>");
@@ -115,7 +116,6 @@ namespace SobekCM.Library.ResultsViewer
                     resultsBldr.AppendLine("<a href=\"" + internal_link + "\"><img src=\"" +UI_ApplicationCache_Gateway.Settings.Servers.Image_URL + thumb + "\" class=\"resultsThumbnail\" alt=\"" + title.Replace("\"","") + "\" /></a></div>");
                 }
 
-
                 resultsBldr.AppendLine("\t\t<div class=\"sbkBrv_SingleResultDesc\">");
 
                 // If this was access restricted, add that
@@ -138,8 +138,6 @@ namespace SobekCM.Library.ResultsViewer
 
                 // Add each element to this table
                 resultsBldr.AppendLine("\t\t\t<dl class=\"sbkBrv_SingleResultDescList\">");
-
-
 
                 if ((!String.IsNullOrEmpty(titleResult.Primary_Identifier_Type)) && (!String.IsNullOrEmpty(titleResult.Primary_Identifier)))
                 {

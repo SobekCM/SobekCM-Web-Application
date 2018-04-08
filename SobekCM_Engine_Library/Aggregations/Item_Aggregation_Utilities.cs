@@ -124,9 +124,7 @@ namespace SobekCM.Engine_Library.Aggregations
                 Tracer.Add_Trace("Item_Aggregation_Utilities.Get_Item_Aggregation", "NULL value returned from database");
 	        }
 	        return null;
-
 	    }
-
 
 	    /// <summary> Adds the ALL ITEMS and NEW ITEMS browses to the item aggregation, if the display options and last added
 		/// item date call for it </summary>
@@ -239,7 +237,6 @@ namespace SobekCM.Engine_Library.Aggregations
                 ThisObject.Add_Banner_Image("images/banners/coll_sp.jpg", Web_Language_Enum.Spanish);
 		}
 
-
 	    /// <summary> Method returns the table of results for the browse indicated </summary>
 	    /// <param name="ItemAggr"> Item Aggregation from which to return the browse </param>
 	    /// <param name = "ChildPageObject">Object with all the information about the browse</param>
@@ -259,14 +256,16 @@ namespace SobekCM.Engine_Library.Aggregations
                 Tracer.Add_Trace("Item_Aggregation_Utilities.Get_Browse_Results", String.Empty);
             }
 
-
-
             // Pull data from the database if necessary
             if ((String.Equals(ChildPageObject.Code, "all", StringComparison.OrdinalIgnoreCase)) || (String.Equals(ChildPageObject.Code, "new", StringComparison.OrdinalIgnoreCase)))
             {
+                Tracer.Add_Trace("Item_Aggregation_Utilities.Get_Browse_Results", "ChildPageObject.Code is (all) or (new)");
+
                 // Determine where to pull the data, based on search type
                 if (Engine_ApplicationCache_Gateway.Settings.System.Search_System == Search_System_Enum.Beta)
                 {
+                    Tracer.Add_Trace("Item_Aggregation_Utilities.Get_Browse_Results", "Search_System=Beta");
+
                     Search_Results_Statistics stats;
                     List<iSearch_Title_Result> results;
 
@@ -274,23 +273,34 @@ namespace SobekCM.Engine_Library.Aggregations
                     Search_User_Membership_Info userInfo = new Search_User_Membership_Info();
                     if (( Current_User == null ) || ( !Current_User.LoggedOn ))
                     {
+                        Tracer.Add_Trace("Item_Aggregation_Utilities.Get_Browse_Results", "No current user or not logged in.");
+
                         userInfo.LoggedIn = false;
                     }
                     else
                     {
+                        Tracer.Add_Trace("Item_Aggregation_Utilities.Get_Browse_Results", "User is logged in");
+
                         userInfo.LoggedIn = true;
                         userInfo.UserID = userInfo.UserID;
                         if ( Current_User.User_Groups != null )
                         {
-                            foreach( Simple_User_Group_Info groupInfo in Current_User.User_Groups )
+                            Tracer.Add_Trace("Item_Aggregation_Utilities.Get_Browse_Results", "User has user groups.");
+
+                            foreach ( Simple_User_Group_Info groupInfo in Current_User.User_Groups )
                             {
                                 userInfo.Add_User_Group(groupInfo.UserGroupID);
                             }
                         }
+
                         if ((Current_User.Is_Host_Admin) || (Current_User.Is_System_Admin) || (Current_User.Is_Portal_Admin))
-                            userInfo.Admin = true;
-                        else if (( Current_User.Is_Aggregation_Admin(ItemAggr.Code)) || ( Current_User.Is_Aggregation_Curator(ItemAggr.Code)))
                         {
+                            Tracer.Add_Trace("Item_Aggregation_Utilities.Get_Browse_Results", "User is a host, system, or portal admin.");
+                            userInfo.Admin = true;
+                        }
+                        else if ((Current_User.Is_Aggregation_Admin(ItemAggr.Code)) || (Current_User.Is_Aggregation_Curator(ItemAggr.Code)))
+                        {
+                            Tracer.Add_Trace("Item_Aggregation_Utilities.Get_Browse_Results", "User is an aggregation admin or curator");
                             userInfo.Admin = true;
                         }
                     }
@@ -322,6 +332,8 @@ namespace SobekCM.Engine_Library.Aggregations
                 }
                 else
                 {
+                    Tracer.Add_Trace("Item_Aggregation_Utilities.Get_Browse_Results", "Legacy/database browse");
+
                     // Get the list of facets first
                     List<short> facetsList = new List<short>();
                     foreach (Complete_Item_Aggregation_Metadata_Type facet in ItemAggr.Facets)
@@ -367,9 +379,8 @@ namespace SobekCM.Engine_Library.Aggregations
 	    {
 	        if (Tracer != null)
 	        {
-	            Tracer.Add_Trace("Item_Aggregation_Utilities.Get_Browse_Results", String.Empty);
+	            Tracer.Add_Trace("Item_Aggregation_Utilities.Get_Browse_Results (Gat_All_Browse)", String.Empty);
 	        }
-
 
 	        // Determine where to pull the data, based on search type
 	        if (Engine_ApplicationCache_Gateway.Settings.System.Search_System == Search_System_Enum.Beta)
@@ -422,14 +433,12 @@ namespace SobekCM.Engine_Library.Aggregations
 	        }
 	        else
 	        {
-
                 // Get the list of facets first
                 List<short> facetsList = new List<short>();
                 foreach (Complete_Item_Aggregation_Metadata_Type facetField in ItemAggr.Facets)
                     facetsList.Add(facetField.ID);
                 if (!Potentially_Include_Facets)
                     facetsList = null;
-
 
                 // Get this browse from the database
                 if ((ItemAggr.ID < 0) || (ItemAggr.Code.ToUpper() == "ALL"))
@@ -438,11 +447,8 @@ namespace SobekCM.Engine_Library.Aggregations
                 }
 
                 return Engine_Database.Get_Item_Aggregation_Browse_Paged(ItemAggr.Code, false, false, Results_Per_Page, Page, Sort, Need_Browse_Statistics, facetsList, Need_Browse_Statistics, Tracer);
-
 	        }
-
 	    }
-
 
 	    #region Method to save the complete item aggregation to the database
 
@@ -511,7 +517,6 @@ namespace SobekCM.Engine_Library.Aggregations
                         languageVariantsBuilder.Append(language);
                 }
             }
-
 
             bool returnValue = Engine_Database.Save_Item_Aggregation(ItemAggr.ID, ItemAggr.Code, ItemAggr.Name, ItemAggr.ShortName,
                 ItemAggr.Description, ItemAggr.Thematic_Heading, ItemAggr.Type, ItemAggr.Active, ItemAggr.Hidden,
@@ -943,7 +948,6 @@ namespace SobekCM.Engine_Library.Aggregations
                 }
             }
         }
-
 
         #endregion
     }

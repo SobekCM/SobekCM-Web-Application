@@ -39,6 +39,7 @@ namespace SobekCM.Library.HTML
             Display_Mode_Enum thisMode = RequestSpecificValues.Current_Mode.Mode;
             RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Contact;
             string contact = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+            RequestSpecificValues.Tracer.Add_Trace("HeaderFooter_Helper_HtmlSubWriter.Add_Header", "Curent contact URL=[" + contact + "].");
 
             // Restore the old mode
             RequestSpecificValues.Current_Mode.Mode = thisMode;
@@ -46,6 +47,15 @@ namespace SobekCM.Library.HTML
             // Determine which header and footer to display
             bool useItemHeader = (RequestSpecificValues.Current_Mode.Mode == Display_Mode_Enum.Item_Display) || (RequestSpecificValues.Current_Mode.Mode == Display_Mode_Enum.Item_Print) || ((Behaviors != null) && (Behaviors.Contains(HtmlSubwriter_Behaviors_Enum.MySobek_Subwriter_Mimic_Item_Subwriter)));
 
+            if (useItemHeader)
+            {
+                RequestSpecificValues.Tracer.Add_Trace("HeaderFooter_Helper_HtmlSubWriter.Add_Header", "Going to use item header.");
+            }
+            else
+            {
+                RequestSpecificValues.Tracer.Add_Trace("HeaderFooter_Helper_HtmlSubWriter.Add_Header", "Will NOT use item header.");
+            }
+                
             // Create the breadcrumbs text
             string breadcrumbs = "&nbsp; &nbsp; ";
             if (useItemHeader)
@@ -83,6 +93,7 @@ namespace SobekCM.Library.HTML
                                     }
                                 }
                             }
+
                             if (codes_added == 5)
                                 break;
                         }
@@ -188,7 +199,6 @@ namespace SobekCM.Library.HTML
                 }
             }
 
-
             // Create the mySobek text
             string mySobekLinks = create_mysobek_link(RequestSpecificValues, url_options, null);
 
@@ -214,7 +224,6 @@ namespace SobekCM.Library.HTML
                     mode = "results";
                     break;
             }
-
 
             // Get the language selections
             Web_Language_Enum language = RequestSpecificValues.Current_Mode.Language;
@@ -260,6 +269,9 @@ namespace SobekCM.Library.HTML
                     if (Current_Aggregation!= null)
                     {
                         string banner_image = Current_Aggregation.Get_Banner_Image( RequestSpecificValues.HTML_Skin);
+                        RequestSpecificValues.Tracer.Add_Trace("HeaderFooter_Helper_HtmlSubWriter.Add_Header", "banner_image=[" + banner_image + "].");
+                        RequestSpecificValues.Tracer.Add_Trace("HeaderFooter_Helper_HtmlSubWriter.Add_Header","Current_Aggregation_Shortname=[" + Current_Aggregation.ShortName + "].");
+
                         if (Current_Aggregation.Code != "all")
                         {
                             if (banner_image.Length > 0)
@@ -279,6 +291,8 @@ namespace SobekCM.Library.HTML
                     }
                 }
             }
+
+            banner = "<!-- banner start -->\r\n" + banner + "<!-- banner end -->\r\n";
 
             // Get the session id and user id
             string sessionId = HttpContext.Current.Session.SessionID ?? String.Empty;
@@ -338,7 +352,6 @@ namespace SobekCM.Library.HTML
 
             // Write the header
             Output.WriteLine(headerBuilder.ToString());
-
         }
 
         /// <summary> Add the header to the output </summary>
@@ -349,8 +362,19 @@ namespace SobekCM.Library.HTML
         /// <param name="Current_Item"> Current item object, if there is one </param>
         public static void Add_Footer(TextWriter Output, RequestCache RequestSpecificValues, List<HtmlSubwriter_Behaviors_Enum> Behaviors, Item_Aggregation Current_Aggregation, BriefItemInfo Current_Item)
         {
+            RequestSpecificValues.Tracer.Add_Trace("HeaderFooter_Helper_HtmlSubWriter.Add_Footer");
+
             // Determine which header and footer to display
             bool useItemFooter = (RequestSpecificValues.Current_Mode.Mode == Display_Mode_Enum.Item_Display) || (RequestSpecificValues.Current_Mode.Mode == Display_Mode_Enum.Item_Print) || ((Behaviors != null) && (Behaviors.Contains(HtmlSubwriter_Behaviors_Enum.MySobek_Subwriter_Mimic_Item_Subwriter)));
+
+            if (useItemFooter)
+            {
+                RequestSpecificValues.Tracer.Add_Trace("HeaderFooter_Helper_HtmlSubWriter.Add_Footer", "WILL use item footer.");
+            }
+            else
+            {
+                RequestSpecificValues.Tracer.Add_Trace("HeaderFooter_Helper_HtmlSubWriter.Add_Footer", "Will NOT use item footer.");
+            }
 
             // Get the current contact URL
             Display_Mode_Enum thisMode = RequestSpecificValues.Current_Mode.Mode;
@@ -413,6 +437,7 @@ namespace SobekCM.Library.HTML
             string userid = ((RequestSpecificValues.Current_User != null) && (RequestSpecificValues.Current_User.UserID > 0)) ? RequestSpecificValues.Current_User.UserID.ToString() : String.Empty;
 
             StringBuilder footerBuilder = new StringBuilder();
+
             if (useItemFooter)
             {
                 footerBuilder.Append(RequestSpecificValues.HTML_Skin.Footer_Item_HTML);
@@ -454,6 +479,8 @@ namespace SobekCM.Library.HTML
 
         private static string create_mysobek_link( RequestCache RequestSpecificValues, string url_options, string login_text )
         {
+            RequestSpecificValues.Tracer.Add_Trace("HeaderFooter_Helper_HtmlSubWriter.create_mysobek_link");
+
             string mySobekLinks = String.Empty;
             if (!RequestSpecificValues.Current_Mode.Is_Robot)
             {
@@ -510,7 +537,6 @@ namespace SobekCM.Library.HTML
                         mySobekLinks = "<a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "my/logon" + mySobekOptions + "\">" + login_text + "</a>";
                     else
                         mySobekLinks = "<a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "my/logon" + mySobekOptions + "\">" + mySobekText + " Home</a>";
-
                 }
                 else
                 {

@@ -37,7 +37,7 @@ declare @institution_aggregation_code varchar(20);
 set @institution_aggregation_code = 'i' + @institution_code;
 declare @institution_aggregation_name varchar(60);
 set @institution_aggregation_name = @institution_name + ' Institution';
-exec SobekCM_Save_Item_Aggregation -1, @institution_aggregation_code, @institution_aggregation_name, @institution_name, 'Default institution page', -1, 'Institution', 'false', 'true', 'BAFI', 0, 0, 'false', '', '', '', '', 1, 'Installer', '', -1;
+exec SobekCM_Save_Item_Aggregation -1, @institution_aggregation_code, @institution_aggregation_name, @institution_name, 'Default institution page', -1, 'Institution', 'false', 'true', 'BAFI', 0, 0, 'false', '', '', '', '', 1, 'Installer', '', -1, -1;
 
 -- Add my email for the error emails
 update SobekCM_Settings 

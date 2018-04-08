@@ -73,7 +73,6 @@
     <Compile Include="Modules\Items\AddTrackingWorkflowModule.cs" />
     <Compile Include="Modules\Items\AttachAllNonImageFilesModule.cs" />
     <Compile Include="Modules\Items\CheckForSsnModule.cs" />
-    <Compile Include="Modules\Items\CleanDirtyOcrModule.cs" />
     <Compile Include="Modules\Items\CleanWebResourceFolderModule.cs" />
     <Compile Include="Modules\Items\ConvertOfficeFilesToPdfModule.cs" />
     <Compile Include="Modules\Items\CopyToArchiveFolderModule.cs" />

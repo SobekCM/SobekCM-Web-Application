@@ -107,21 +107,6 @@ namespace SobekCM.Engine_Library.Solr.v5
             returnValue.Discover_Users = new List<int> { 0 };
             returnValue.RestrictedMsg = String.Empty;
 
-            // Find the Gregorian date issues value
-            string pub_date = Digital_Object.Bib_Info.Origin_Info.Date_Check_All_Fields;
-            returnValue.Date = pub_date;
-            returnValue.DateDisplay = pub_date;
-            DateTime gregDate;
-            if (DateTime.TryParse(pub_date, out gregDate))
-            {
-                returnValue.GregorianDate = gregDate;
-                returnValue.DateYear = gregDate.Year.ToString();
-
-                // For now (since temporal subject isn't the best) just use this date for the timeline
-                returnValue.TimelineDate = gregDate;
-                returnValue.TimelineDateDisplay = pub_date;
-            }
-
             // Set the IP restrictions based on PRIVATE or NOT
             if (Digital_Object.Behaviors.IP_Restriction_Membership == -1)
                 returnValue.Discover_IPs = new List<int> { -1 };
@@ -656,6 +641,43 @@ namespace SobekCM.Engine_Library.Solr.v5
                         writer.Close();
                         break;
 
+                }
+            }
+
+            // Find the Gregorian date issues value
+            string pub_date = Digital_Object.Bib_Info.Origin_Info.Date_Check_All_Fields;
+            returnValue.Date = pub_date;
+            returnValue.DateDisplay = pub_date;
+            DateTime gregDate;
+            if (DateTime.TryParse(pub_date, out gregDate))
+            {
+                returnValue.Date = returnValue.Date + " (Date Auto-Converted to " + gregDate.ToShortDateString() + ")";
+                returnValue.GregorianDate = gregDate;
+                returnValue.DateYear = gregDate.Year.ToString();
+
+                // For now (since temporal subject isn't the best) just use this date for the timeline
+                returnValue.TimelineDate = gregDate;
+                returnValue.TimelineDateDisplay = pub_date;
+            }
+            else
+            {
+                int year_only;
+                if ((pub_date.Length == 4) && (int.TryParse(pub_date, out year_only)))
+                {
+                    gregDate = new DateTime(year_only, 1, 1);
+                    returnValue.Date = returnValue.Date = returnValue.Date + " (Date Converted to " + gregDate.ToShortDateString() + ")";
+
+
+                    returnValue.GregorianDate = gregDate;
+                    returnValue.DateYear = gregDate.Year.ToString();
+
+                    // For now (since temporal subject isn't the best) just use this date for the timeline
+                    returnValue.TimelineDate = gregDate;
+                    returnValue.TimelineDateDisplay = pub_date;
+                }
+                else
+                {
+                    returnValue.Date = returnValue.Date + " (Date NOT Converted)";
                 }
             }
 

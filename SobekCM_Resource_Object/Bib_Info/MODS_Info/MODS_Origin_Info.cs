@@ -147,7 +147,7 @@ namespace SobekCM.Resource_Object.Bib_Info
 					pubdate = MARC_DateIssued_Start;
 				if (pubdate.Length == 0)
 					pubdate = Date_Copyrighted;
-			    return pubdate;
+			    return pubdate ?? String.Empty;
 		    }
 	    }
 

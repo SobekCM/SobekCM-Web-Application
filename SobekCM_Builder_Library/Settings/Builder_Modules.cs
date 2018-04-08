@@ -330,8 +330,8 @@ namespace SobekCM.Builder_Library.Settings
                         thisModule = new OcrTiffsModule();
                         break;
 
-                    case "SobekCM.Builder_Library.Modules.Items.CleanDirtyOcrModule":
-                        thisModule = new CleanDirtyOcrModule();
+                    case "SobekCM.Builder_Library.Modules.Items.TesseractOcrModule":
+                        thisModule = new TesseractOcrModule();
                         break;
 
                     case "SobekCM.Builder_Library.Modules.Items.CheckForSsnModule":

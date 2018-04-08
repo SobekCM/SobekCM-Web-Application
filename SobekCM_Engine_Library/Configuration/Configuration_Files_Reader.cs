@@ -3114,6 +3114,9 @@ namespace SobekCM.Engine_Library.Configuration
 
         private static ExtensionInfo read_extension_details(XmlReader readerXml, InstanceWide_Configuration config, string SourceDirectoryName, string SourceDirectory )
         {
+            //rrb
+            config.Source.Add_Log("read_extension_details, SourceDirectoryName=[" + SourceDirectoryName + "], SourceDirectory=[" + SourceDirectory + "].");
+
             // Create the new extension information object
             ExtensionInfo thisExtension = new ExtensionInfo
             {
@@ -3201,10 +3204,14 @@ namespace SobekCM.Engine_Library.Configuration
 
                                 if (File.Exists(full_assembly_name))
                                 {
+                                    //rrb
+                                    config.Source.Add_Log("full_assembly_name exsts [" + full_assembly_name + "].");
+
                                     // Was there an ID?
                                     if (String.IsNullOrEmpty(id))
                                         id = Path.GetFileNameWithoutExtension(full_assembly_name);
 
+                                    config.Source.Add_Log("Adding id=[" + id + "], full_assembly_name=[" + full_assembly_name + "].");
                                     thisExtension.Add_Assembly(id, full_assembly_name);
                                 }
                                 else

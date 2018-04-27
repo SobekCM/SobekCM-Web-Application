@@ -7,6 +7,7 @@ using SobekCM.Core.Configuration.Engine;
 using SobekCM.Core.Configuration.Extensions;
 using SobekCM.Core.Configuration.OAIPMH;
 using SobekCM.Core.UI_Configuration;
+using SobekCM.Core.UI_Configuration.MaterializeClasses;
 using SobekCM.Resource_Object.Configuration;
 
 namespace SobekCM.Core.Configuration
@@ -31,6 +32,8 @@ namespace SobekCM.Core.Configuration
             OAI_PMH = new OAI_PMH_Configuration();
             UI = new InstanceWide_UI_Configuration();
             Source = new Configuration_Source_Info();
+
+            MaterializeClasses = new MaterializeClasses_Configuration();
 
             // Set some defaults
             HasData = false;
@@ -91,10 +94,17 @@ namespace SobekCM.Core.Configuration
         public QualityControl_Configuration QualityControlTool { get; set; }
 
         /// <summary> Basic source and error information from reading the configuration files </summary>
+
         [DataMember(Name = "source", EmitDefaultValue = false)]
         [XmlElement("source")]
         [ProtoMember(10)]
         public Configuration_Source_Info Source { get; set; }
+
+        ///  <summary> Configuration for the Materialize classes configuration for this instance </summary>
+        [DataMember(Name = "materialize", EmitDefaultValue = false)]
+        [XmlElement("materialize")]
+        [ProtoMember(11)]
+        public MaterializeClasses_Configuration MaterializeClasses { get; set; }
 
         /// <summary> Configuration for the user-inteface specific configurations for this instance </summary>
         /// <remarks> This property is not serialized </remarks>

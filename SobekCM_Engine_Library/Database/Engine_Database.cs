@@ -3818,6 +3818,8 @@ namespace SobekCM.Engine_Library.Database
             }
         }
 
+        // identical to the one above
+        /*
         public static bool Save_Item_Aggregation_ResultViews(string AggregationCode, string ResultsViewer1, string ResultsViewer2, string ResultsViewer3,
             string ResultsViewer4, string ResultsViewer5, string ResultsViewer6, string ResultsViewer7, string ResultsViewer8, string ResultsViewer9,
             string ResultsViewer10, string DefaultViewer, Custom_Tracer Tracer)
@@ -3861,7 +3863,7 @@ namespace SobekCM.Engine_Library.Database
                 return false;
             }
         }
-
+        */
 
         #endregion
 

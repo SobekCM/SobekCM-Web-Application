@@ -165,6 +165,7 @@
     <Compile Include="Citation\Elements\implemented elements\FAST_Subject_Element.cs" />
     <Compile Include="Citation\Elements\implemented elements\Frequency_Element.cs" />
     <Compile Include="Citation\Elements\implemented elements\Group_Title_Element.cs" />
+    <Compile Include="Citation\Elements\implemented elements\Language_Script_Element.cs" />
     <Compile Include="Citation\Elements\implemented elements\Language_Select_Element.cs" />
     <Compile Include="Citation\Elements\implemented elements\LCCN_Element.cs" />
     <Compile Include="Citation\Elements\implemented elements\Projects_Element.cs" />

@@ -15,20 +15,19 @@ using SobekCM.Resource_Object.Metadata_Modules.GeoSpatial;
 
 #endregion
 
-namespace SobekCM.Library.Citation.Elements
+namespace SobekCM.Library.Citation.Elements.implemented_elements
 {
-    /// <summary> Element allows simple entry of the coordinates (latitude/longitude) for an item </summary>
+    /// <summary> Element allows entry of the languages, along with a script </summary>
     /// <remarks> This class extends the <see cref="TextBox_TextBox_Element"/> class. </remarks>
-    public class Coordinates_Point_Element : TextBox_TextBox_Element
+    public class Language_Script_Element : TextBox_TextBox_Element
     {
-        /// <summary> Constructor for a new instance of the Coordinates_Point_Element class </summary>
-        public Coordinates_Point_Element() : base("Coordinates:", "coordinate_point")
+        /// <summary> Constructor for a new instance of the Language_Script_Element class </summary>
+        public Language_Script_Element() : base("Language:", "lang_script")
         {
-            FirstLabel = "Latitude";
-            SecondLabel = "Longitude";
+            FirstLabel = "";
+            SecondLabel = "Script";
             Repeatable = true;
         }
-
 
         /// <summary> Renders the HTML for this element </summary>
         /// <param name="Output"> Textwriter to write the HTML for this element </param>
@@ -41,12 +40,12 @@ namespace SobekCM.Library.Citation.Elements
         /// <param name="Translator"> Language support object which handles simple translational duties </param>
         /// <param name="Base_URL"> Base URL for the current request </param>
         /// <remarks> This simple element does not append any popup form to the popup_form_builder</remarks>
-        public override void Render_Template_HTML(TextWriter Output, SobekCM_Item Bib, string Skin_Code, bool IsMozilla, StringBuilder PopupFormBuilder, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL )
+        public override void Render_Template_HTML(TextWriter Output, SobekCM_Item Bib, string Skin_Code, bool IsMozilla, StringBuilder PopupFormBuilder, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL)
         {
             // Check that an acronym exists
             if (Acronym.Length == 0)
             {
-                const string defaultAcronym = "Enter latitude and longitude for a coordinate related to this item";
+                const string defaultAcronym = "Enter language with the script name or code as well.";
                 switch (CurrentLanguage)
                 {
                     case Web_Language_Enum.English:
@@ -67,24 +66,26 @@ namespace SobekCM.Library.Citation.Elements
                 }
             }
 
-            List<string> latitudes = new List<string>();
-            List<string> longitudes = new List<string>();
+            List<string> languages = new List<string>();
+            List<string> scripts = new List<string>();
 
-            // GEt the geospatial metadata module
-            GeoSpatial_Information geoInfo = Bib.Get_Metadata_Module(GlobalVar.GEOSPATIAL_METADATA_MODULE_KEY) as GeoSpatial_Information;
-            if (geoInfo != null)
-            {
-                if (geoInfo.hasData)
-                {
-                    for (int i = 0; i < geoInfo.Point_Count; i++)
-                    {
-                        latitudes.Add(geoInfo.Points[i].Latitude.ToString());
-                        longitudes.Add(geoInfo.Points[i].Longitude.ToString());
-                    }
-                }
-            }
+            //// GEt the language and script info 
+            //if (Bib.Bib_Info.Languages_Count > 0 )
+            //{
+            //    foreach( Resource_Object.Bib_Info.Language_Info language in Bib.Bib_Info.Languages  )
+            //    {
+            //        languages.Add(language.Language_Text);
+            //        scripts.Add(language.S)
+            //    }
+            //        for (int i = 0; i < Bib.Bib_Info.Languages; i++)
+            //        {
+            //            latitudes.Add(geoInfo.Points[i].Latitude.ToString());
+            //            longitudes.Add(geoInfo.Points[i].Longitude.ToString());
+            //        }
+            //    }
+            //}
 
-            render_helper(Output, latitudes, longitudes, Skin_Code, Current_User, CurrentLanguage, Translator, Base_URL);
+            //render_helper(Output, latitudes, longitudes, Skin_Code, Current_User, CurrentLanguage, Translator, Base_URL);
 
         }
 
@@ -120,7 +121,7 @@ namespace SobekCM.Library.Citation.Elements
                 if (thisKey.IndexOf(html_element_name.Replace("_", "") + "_second") != 0) continue;
 
                 string longitude = HttpContext.Current.Request.Form[thisKey];
-                if ((latitude.Length > 0) && ( longitude.Length > 0 ))
+                if ((latitude.Length > 0) && (longitude.Length > 0))
                 {
                     double latitude_double, longitude_double;
                     if ((Double.TryParse(latitude, out latitude_double)) && (Double.TryParse(longitude, out longitude_double)))
@@ -141,12 +142,9 @@ namespace SobekCM.Library.Citation.Elements
 
                 foreach (Coordinate_Point thisPoint in points)
                 {
-                    geoInfo.Add_Point( thisPoint );
+                    geoInfo.Add_Point(thisPoint);
                 }
             }
         }
     }
 }
-
-
-

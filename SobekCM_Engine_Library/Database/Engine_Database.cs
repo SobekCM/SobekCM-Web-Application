@@ -3786,7 +3786,7 @@ namespace SobekCM.Engine_Library.Database
             try
             {
                 // Build the parameter list
-                EalDbParameter[] paramList = new EalDbParameter[21];
+                EalDbParameter[] paramList = new EalDbParameter[13];
                 paramList[0] = new EalDbParameter("@code", AggregationCode);
                 paramList[1] = new EalDbParameter("@results1", ResultsViewer1);
                 paramList[2] = new EalDbParameter("@results2", ResultsViewer2);
@@ -3818,34 +3818,41 @@ namespace SobekCM.Engine_Library.Database
             }
         }
 
-        public static bool Save_Item_Aggregation_ResultViews(string AggregationCode, string ResultsViewer1, string ResultsViewer2, string ResultsViewer3,
-            string ResultsViewer4, string ResultsViewer5, string ResultsViewer6, string ResultsViewer7, string ResultsViewer8, string ResultsViewer9,
-            string ResultsViewer10, string DefaultViewer, Custom_Tracer Tracer)
+        public static bool Save_Item_Aggregation_Facets(string AggregationCode, string Facet1_Type, string Facet1_Display,
+            string Facet2_Type, string Facet2_Display, string Facet3_Type, string Facet3_Display, string Facet4_Type, string Facet4_Display,
+            string Facet5_Type, string Facet5_Display, string Facet6_Type, string Facet6_Display, string Facet7_Type, string Facet7_Display,
+            string Facet8_Type, string Facet8_Display, Custom_Tracer Tracer)
         {
             if (Tracer != null)
             {
-                Tracer.Add_Trace("Engine_Database.Save_Item_Aggregation_ResultViews", String.Empty);
+                Tracer.Add_Trace("Engine_Database.Save_Item_Aggregation_Facets", String.Empty);
             }
 
             try
             {
                 // Build the parameter list
-                EalDbParameter[] paramList = new EalDbParameter[21];
+                EalDbParameter[] paramList = new EalDbParameter[17];
                 paramList[0] = new EalDbParameter("@code", AggregationCode);
-                paramList[1] = new EalDbParameter("@results1", ResultsViewer1);
-                paramList[2] = new EalDbParameter("@results2", ResultsViewer2);
-                paramList[3] = new EalDbParameter("@results3", ResultsViewer3);
-                paramList[4] = new EalDbParameter("@results4", ResultsViewer4);
-                paramList[5] = new EalDbParameter("@results5", ResultsViewer5);
-                paramList[6] = new EalDbParameter("@results6", ResultsViewer6);
-                paramList[7] = new EalDbParameter("@results7", ResultsViewer7);
-                paramList[8] = new EalDbParameter("@results8", ResultsViewer8);
-                paramList[9] = new EalDbParameter("@results9", ResultsViewer9);
-                paramList[10] = new EalDbParameter("@results10", ResultsViewer10);
-                paramList[11] = new EalDbParameter("@default", DefaultViewer ?? String.Empty);
+                paramList[1] = new EalDbParameter("@facet1_type", Facet1_Type);
+                paramList[2] = new EalDbParameter("@facet1_display", Facet1_Display);
+                paramList[3] = new EalDbParameter("@facet2_type", Facet2_Type);
+                paramList[4] = new EalDbParameter("@facet2_display", Facet2_Display);
+                paramList[5] = new EalDbParameter("@facet3_type", Facet3_Type);
+                paramList[6] = new EalDbParameter("@facet3_display", Facet3_Display);
+                paramList[7] = new EalDbParameter("@facet4_type", Facet4_Type);
+                paramList[8] = new EalDbParameter("@facet4_display", Facet4_Display);
+                paramList[9] = new EalDbParameter("@facet5_type", Facet5_Type);
+                paramList[10] = new EalDbParameter("@facet5_display", Facet5_Display);
+                paramList[11] = new EalDbParameter("@facet6_type", Facet6_Type);
+                paramList[12] = new EalDbParameter("@facet6_display", Facet6_Display);
+                paramList[13] = new EalDbParameter("@facet7_type", Facet7_Type);
+                paramList[14] = new EalDbParameter("@facet7_display", Facet7_Display);
+                paramList[15] = new EalDbParameter("@facet8_type", Facet8_Type);
+                paramList[16] = new EalDbParameter("@facet8_display", Facet8_Display);
+
 
                 // Execute this query stored procedure
-                EalDbAccess.ExecuteNonQuery(DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_Save_Item_Aggregation_ResultViews", paramList);
+                EalDbAccess.ExecuteNonQuery(DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_Save_Item_Aggregation_Facets", paramList);
 
                 // Succesful, so return true
                 return true;
@@ -3854,9 +3861,9 @@ namespace SobekCM.Engine_Library.Database
             {
                 if (Tracer != null)
                 {
-                    Tracer.Add_Trace("Engine_Database.Save_Item_Aggregation_ResultViews", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("Engine_Database.Save_Item_Aggregation_ResultViews", ee.Message, Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("Engine_Database.Save_Item_Aggregation_ResultViews", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("Engine_Database.Save_Item_Aggregation_Facets", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("Engine_Database.Save_Item_Aggregation_Facets", ee.Message, Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("Engine_Database.Save_Item_Aggregation_Facets", ee.StackTrace, Custom_Trace_Type_Enum.Error);
                 }
                 return false;
             }

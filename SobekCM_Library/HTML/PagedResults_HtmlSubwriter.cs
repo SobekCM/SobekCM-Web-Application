@@ -222,8 +222,8 @@ namespace SobekCM.Library.HTML
 				return;
 			}
 
-			// If this is default, determine the type from the aggregation (currently) or user
-			if ( String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.Result_Display_Type))
+            // If this is default, determine the type from the aggregation (currently) or user
+            if ( String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.Result_Display_Type))
 			{
 				if ( !String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.Coordinates))
 					RequestSpecificValues.Current_Mode.Result_Display_Type = "map";
@@ -1546,7 +1546,19 @@ namespace SobekCM.Library.HTML
 	                    Metadata_Search_Field field = UI_ApplicationCache_Gateway.Settings.Metadata_Search_Field_By_ID(theseFacets.MetadataTypeID);
 	                    if (field != null)
 	                    {
-	                        Add_Single_Facet(builder, UI_ApplicationCache_Gateway.Translation.Get_Translation(field.Facet_Term, RequestSpecificValues.Current_Mode.Language), field.Web_Code, show_less, show_more, facetIndex, sort_by_frequency, sort_alphabetically, theseFacets.Facets);
+                            string facet_term = field.Facet_Term;
+                            if ((hierarchyObject != null) && (hierarchyObject.Facets != null))
+                            {
+                                foreach (Complete_Item_Aggregation_Metadata_Type facetType in hierarchyObject.Facets)
+                                {
+                                    if ( facetType.ID == theseFacets.MetadataTypeID)
+                                    {
+                                        facet_term = facetType.DisplayTerm;
+                                        break;
+                                    }
+                                }
+                            }
+	                        Add_Single_Facet(builder, UI_ApplicationCache_Gateway.Translation.Get_Translation(facet_term, RequestSpecificValues.Current_Mode.Language), field.Web_Code, show_less, show_more, facetIndex, sort_by_frequency, sort_alphabetically, theseFacets.Facets);
 	                    }
 	                }
 

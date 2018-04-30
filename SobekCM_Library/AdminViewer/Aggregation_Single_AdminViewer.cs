@@ -2337,7 +2337,13 @@ namespace SobekCM.Library.AdminViewer
                     Metadata_Search_Field field = UI_ApplicationCache_Gateway.Settings.Metadata_Search_Field_By_ID(aggr_id);
                     if (field != null)
                     {
-                        Complete_Item_Aggregation_Metadata_Type mType = new Complete_Item_Aggregation_Metadata_Type(aggr_id, field.Display_Term, field.Web_Code, field.Solr_Field);
+                        Complete_Item_Aggregation_Metadata_Type mType = new Complete_Item_Aggregation_Metadata_Type(aggr_id, field.Facet_Term, field.Web_Code, field.Solr_Field);
+
+                        if ( !String.IsNullOrEmpty(Form["admin_aggr_facet1_display"]))
+                        {
+                            mType.DisplayTerm = Form["admin_aggr_facet1_display"].Trim();
+                        }
+
                         itemAggregation.Add_Facet(mType);
                     }
                 }
@@ -2349,7 +2355,13 @@ namespace SobekCM.Library.AdminViewer
                     Metadata_Search_Field field = UI_ApplicationCache_Gateway.Settings.Metadata_Search_Field_By_ID(aggr_id);
                     if (field != null)
                     {
-                        Complete_Item_Aggregation_Metadata_Type mType = new Complete_Item_Aggregation_Metadata_Type(aggr_id, field.Display_Term, field.Web_Code, field.Solr_Field);
+                        Complete_Item_Aggregation_Metadata_Type mType = new Complete_Item_Aggregation_Metadata_Type(aggr_id, field.Facet_Term, field.Web_Code, field.Solr_Field);
+
+                        if (!String.IsNullOrEmpty(Form["admin_aggr_facet2_display"]))
+                        {
+                            mType.DisplayTerm = Form["admin_aggr_facet2_display"].Trim();
+                        }
+
                         itemAggregation.Add_Facet(mType);
                     }
                 }
@@ -2361,7 +2373,13 @@ namespace SobekCM.Library.AdminViewer
                     Metadata_Search_Field field = UI_ApplicationCache_Gateway.Settings.Metadata_Search_Field_By_ID(aggr_id);
                     if (field != null)
                     {
-                        Complete_Item_Aggregation_Metadata_Type mType = new Complete_Item_Aggregation_Metadata_Type(aggr_id, field.Display_Term, field.Web_Code, field.Solr_Field);
+                        Complete_Item_Aggregation_Metadata_Type mType = new Complete_Item_Aggregation_Metadata_Type(aggr_id, field.Facet_Term, field.Web_Code, field.Solr_Field);
+
+                        if (!String.IsNullOrEmpty(Form["admin_aggr_facet3_display"]))
+                        {
+                            mType.DisplayTerm = Form["admin_aggr_facet3_display"].Trim();
+                        }
+
                         itemAggregation.Add_Facet(mType);
                     }
                 }
@@ -2373,7 +2391,13 @@ namespace SobekCM.Library.AdminViewer
                     Metadata_Search_Field field = UI_ApplicationCache_Gateway.Settings.Metadata_Search_Field_By_ID(aggr_id);
                     if (field != null)
                     {
-                        Complete_Item_Aggregation_Metadata_Type mType = new Complete_Item_Aggregation_Metadata_Type(aggr_id, field.Display_Term, field.Web_Code, field.Solr_Field);
+                        Complete_Item_Aggregation_Metadata_Type mType = new Complete_Item_Aggregation_Metadata_Type(aggr_id, field.Facet_Term, field.Web_Code, field.Solr_Field);
+
+                        if (!String.IsNullOrEmpty(Form["admin_aggr_facet4_display"]))
+                        {
+                            mType.DisplayTerm = Form["admin_aggr_facet4_display"].Trim();
+                        }
+
                         itemAggregation.Add_Facet(mType);
                     }
                 }
@@ -2385,7 +2409,13 @@ namespace SobekCM.Library.AdminViewer
                     Metadata_Search_Field field = UI_ApplicationCache_Gateway.Settings.Metadata_Search_Field_By_ID(aggr_id);
                     if (field != null)
                     {
-                        Complete_Item_Aggregation_Metadata_Type mType = new Complete_Item_Aggregation_Metadata_Type(aggr_id, field.Display_Term, field.Web_Code, field.Solr_Field);
+                        Complete_Item_Aggregation_Metadata_Type mType = new Complete_Item_Aggregation_Metadata_Type(aggr_id, field.Facet_Term, field.Web_Code, field.Solr_Field);
+
+                        if (!String.IsNullOrEmpty(Form["admin_aggr_facet5_display"]))
+                        {
+                            mType.DisplayTerm = Form["admin_aggr_facet5_display"].Trim();
+                        }
+
                         itemAggregation.Add_Facet(mType);
                     }
                 }
@@ -2397,7 +2427,13 @@ namespace SobekCM.Library.AdminViewer
                     Metadata_Search_Field field = UI_ApplicationCache_Gateway.Settings.Metadata_Search_Field_By_ID(aggr_id);
                     if (field != null)
                     {
-                        Complete_Item_Aggregation_Metadata_Type mType = new Complete_Item_Aggregation_Metadata_Type(aggr_id, field.Display_Term, field.Web_Code, field.Solr_Field);
+                        Complete_Item_Aggregation_Metadata_Type mType = new Complete_Item_Aggregation_Metadata_Type(aggr_id, field.Facet_Term, field.Web_Code, field.Solr_Field);
+
+                        if (!String.IsNullOrEmpty(Form["admin_aggr_facet6_display"]))
+                        {
+                            mType.DisplayTerm = Form["admin_aggr_facet6_display"].Trim();
+                        }
+
                         itemAggregation.Add_Facet(mType);
                     }
                 }
@@ -2409,7 +2445,13 @@ namespace SobekCM.Library.AdminViewer
                     Metadata_Search_Field field = UI_ApplicationCache_Gateway.Settings.Metadata_Search_Field_By_ID(aggr_id);
                     if (field != null)
                     {
-                        Complete_Item_Aggregation_Metadata_Type mType = new Complete_Item_Aggregation_Metadata_Type(aggr_id, field.Display_Term, field.Web_Code, field.Solr_Field);
+                        Complete_Item_Aggregation_Metadata_Type mType = new Complete_Item_Aggregation_Metadata_Type(aggr_id, field.Facet_Term, field.Web_Code, field.Solr_Field);
+
+                        if (!String.IsNullOrEmpty(Form["admin_aggr_facet7_display"]))
+                        {
+                            mType.DisplayTerm = Form["admin_aggr_facet7_display"].Trim();
+                        }
+
                         itemAggregation.Add_Facet(mType);
                     }
                 }
@@ -2421,7 +2463,13 @@ namespace SobekCM.Library.AdminViewer
                     Metadata_Search_Field field = UI_ApplicationCache_Gateway.Settings.Metadata_Search_Field_By_ID(aggr_id);
                     if (field != null)
                     {
-                        Complete_Item_Aggregation_Metadata_Type mType = new Complete_Item_Aggregation_Metadata_Type(aggr_id, field.Display_Term, field.Web_Code, field.Solr_Field);
+                        Complete_Item_Aggregation_Metadata_Type mType = new Complete_Item_Aggregation_Metadata_Type(aggr_id, field.Facet_Term, field.Web_Code, field.Solr_Field);
+
+                        if (!String.IsNullOrEmpty(Form["admin_aggr_facet8_display"]))
+                        {
+                            mType.DisplayTerm = Form["admin_aggr_facet8_display"].Trim();
+                        }
+
                         itemAggregation.Add_Facet(mType);
                     }
                 }
@@ -2483,9 +2531,13 @@ namespace SobekCM.Library.AdminViewer
             for (int i = 0; i < 8; i++)
             {
                 short thisFacet = -1;
+                string facet_display = String.Empty;
                 if (itemAggregation.Facets.Count > i)
+                {
                     thisFacet = itemAggregation.Facets[i].ID;
-                Facet_Writer_Helper(Output, thisFacet, i + 1);
+                    facet_display = itemAggregation.Facets[i].DisplayTerm;
+                }
+                Facet_Writer_Helper(Output, thisFacet, facet_display, i + 1);
                 Output.WriteLine(i < 7 ? "<br />" : String.Empty);
             }
 
@@ -2580,16 +2632,25 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine("</select>");
 		}
 
-		private void Facet_Writer_Helper(  TextWriter Output, short FacetID, int FacetCounter )
+		private void Facet_Writer_Helper(  TextWriter Output, short FacetID, string DisplayTerm, int FacetCounter )
 		{
 			// Start the select box
-			Output.Write("<select class=\"sbkSaav_select\" name=\"admin_aggr_facet" + FacetCounter + "\" id=\"admin_aggr_facet" + FacetCounter + "\">");
+			Output.Write("<select class=\"sbkSaav_select\" name=\"admin_aggr_facet" + FacetCounter + "\" id=\"admin_aggr_facet" + FacetCounter + "\" onchange=\"document.getElementById('admin_aggr_facet" + FacetCounter + "_display').value = '';\" >");
 
 			// Add the NONE option first
 			Output.Write(FacetID == - 1 ? "<option value=\"-1\" selected=\"selected\" ></option>" : "<option value=\"-1\"></option>");
 
-			// Add each metadata field to the select boxes
-			foreach (Metadata_Search_Field metadataField in UI_ApplicationCache_Gateway.Settings.Metadata_Search_Fields )
+            // Is this the standard facet term for this metadata?  Only show custom ones
+            if (FacetID != -1)
+            {
+                Metadata_Search_Field thisField = UI_ApplicationCache_Gateway.Settings.Metadata_Search_Field_By_ID(FacetID);
+                if (DisplayTerm == thisField.Facet_Term)
+                    DisplayTerm = String.Empty;
+            }
+
+
+            // Add each metadata field to the select boxes
+            foreach (Metadata_Search_Field metadataField in UI_ApplicationCache_Gateway.Settings.Metadata_Search_Fields )
 			{
 				if (metadataField.Web_Code.Length > 0)
 				{
@@ -2608,6 +2669,12 @@ namespace SobekCM.Library.AdminViewer
 				}
 			}
 			Output.WriteLine("</select>");
+
+            Output.WriteLine(" &nbsp; &nbsp; ");
+
+            Output.Write("<input class=\"sbkSaav_medium_input\" name=\"admin_aggr_facet" + FacetCounter + "_display\" id=\"admin_aggr_facet" + FacetCounter + "_display\"");
+            Output.Write(FacetID != -1 ? " value=\"" + HttpUtility.HtmlEncode(DisplayTerm) + "\"" : " value=\"\"");
+            Output.WriteLine(" />");
 		}
 		#endregion
 

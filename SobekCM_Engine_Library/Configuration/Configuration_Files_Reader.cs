@@ -15,6 +15,7 @@ using SobekCM.Core.Configuration.OAIPMH;
 using SobekCM.Core.Settings;
 using SobekCM.Core.UI_Configuration;
 using SobekCM.Core.UI_Configuration.Citation;
+using SobekCM.Core.UI_Configuration.MaterializeClasses;
 using SobekCM.Core.UI_Configuration.StaticResources;
 using SobekCM.Core.UI_Configuration.TemplateElements;
 using SobekCM.Core.UI_Configuration.Viewers;
@@ -402,6 +403,12 @@ namespace SobekCM.Engine_Library.Configuration
                                 }
                                 break;
 
+                            case "materialize_classes":
+
+                                ConfigObj.Source.Add_Log("        Parsing active MATERIALIZE CLASSES subtree");
+                                read_materialize_classes(readerXml.ReadSubtree(), ConfigObj);
+
+                                break;
                         }
                     }
                 }
@@ -428,6 +435,57 @@ namespace SobekCM.Engine_Library.Configuration
 
             return true;
         }
+
+        #region Section reads all the Materialize classes
+
+        /// <summary> Read the indicated configuration file for the materialize classes </summary>
+        private static void read_materialize_classes(XmlReader ReaderXml, InstanceWide_Configuration Config)
+        {
+            // Get the configuration object
+            //StaticResources_Configuration config = Config.UI.StaticResources;
+
+            // Ensure the brief item mapping exists
+            if (Config.MaterializeClasses == null)
+                Config.MaterializeClasses = new MaterializeClasses_Configuration();
+
+            MaterializeClasses_Configuration config = Config.MaterializeClasses;
+
+            if (config.Materialize_Classes == null)
+                config.Materialize_Classes = new Dictionary<string, string>();
+
+            try
+            {
+                while (ReaderXml.Read())
+                {
+                    if (ReaderXml.NodeType == XmlNodeType.Element)
+                    {
+                        switch (ReaderXml.Name.ToLower())
+                        {
+                            case "tag":
+                                string key = (ReaderXml.MoveToAttribute("keyname")) ? ReaderXml.Value.Trim() : null;
+                                string value = (ReaderXml.MoveToAttribute("classnames")) ? ReaderXml.Value.Trim() : null;
+
+                                Config.Source.Add_Log("key (" + key + ")=(" + value + ").");
+
+                                if ((!String.IsNullOrEmpty(key)) && (!String.IsNullOrEmpty(value)))
+                                    config.Materialize_Classes.Add(key.ToLower(), value);
+
+                                break;
+                        }
+                    }
+                }
+            }
+            catch (Exception ee)
+            {
+                Config.Source.Add_Log("EXCEPTION CAUGHT in Configuration_Files_Reader.read_materialize_classes");
+                Config.Source.Add_Log(ee.Message);
+                Config.Source.Add_Log(ee.StackTrace);
+
+                Config.Source.ErrorEncountered = true;
+            }
+        }
+
+        #endregion
 
         #region Section reads all the static resource informatino
 

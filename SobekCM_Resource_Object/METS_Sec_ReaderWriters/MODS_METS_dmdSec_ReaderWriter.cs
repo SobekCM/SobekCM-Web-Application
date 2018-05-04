@@ -200,6 +200,8 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                             string language_rfc_code = String.Empty;
                             string language_iso_code = String.Empty;
                             string language_id = String.Empty;
+                            string script_text = String.Empty;
+                            string script_iso_code = String.Empty;
                             if (R.MoveToAttribute("ID"))
                                 language_id = R.Value;
                             while (R.Read())
@@ -238,9 +240,6 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                                                 {
                                                     language_text = R.Value;
                                                 }
-                                                // Quick check for a change we started in 2010
-                                                if (language_text == "governmental publication")
-                                                    language_text = "government publication";
                                                 break;
 
                                             default:
@@ -262,6 +261,47 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                                     }
                                 }
 
+                                if ((R.NodeType == XmlNodeType.Element) && ((R.Name == "mods:scriptTerm") || (R.Name == "scriptTerm")))
+                                {
+                                    if (R.MoveToAttribute("type"))
+                                    {
+                                        switch (R.Value)
+                                        {
+                                            case "code":
+                                                R.Read();
+                                                if (R.NodeType == XmlNodeType.Text)
+                                                {
+                                                    script_iso_code = R.Value;
+                                                }
+                                                break;
+
+                                            case "text":
+                                                R.Read();
+                                                if (R.NodeType == XmlNodeType.Text)
+                                                {
+                                                    script_text = R.Value;
+                                                }
+                                                break;
+
+                                            default:
+                                                R.Read();
+                                                if (R.NodeType == XmlNodeType.Text)
+                                                {
+                                                    script_text = R.Value;
+                                                }
+                                                break;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        R.Read();
+                                        if (R.NodeType == XmlNodeType.Text)
+                                        {
+                                            script_text = R.Value;
+                                        }
+                                    }
+                                }
+
                                 if ((R.NodeType == XmlNodeType.EndElement) && ((R.Name == "mods:language") || (R.Name == "language")))
                                 {
                                     break;
@@ -270,7 +310,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
 
                             if ((language_text.Length > 0) || (language_rfc_code.Length > 0) || (language_iso_code.Length > 0))
                             {
-                                ThisBibInfo.Add_Language(language_text, language_iso_code, language_rfc_code);
+                                ThisBibInfo.Add_Language(language_text, language_iso_code, language_rfc_code, script_text, script_iso_code);
                             }
                             break;
 
@@ -518,33 +558,6 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                                             if (R.NodeType == XmlNodeType.Text)
                                             {
                                                 ThisBibInfo.Origin_Info.Date_Created = R.Value;
-                                            }
-                                            break;
-
-                                        case "mods:dateCaptured":
-                                        case "dateCaptured":
-                                            R.Read();
-                                            if (R.NodeType == XmlNodeType.Text)
-                                            {
-                                                ThisBibInfo.Origin_Info.Date_Captured = R.Value;
-                                            }
-                                            break;
-
-                                        case "mods:dateValid":
-                                        case "dateValid":
-                                            R.Read();
-                                            if (R.NodeType == XmlNodeType.Text)
-                                            {
-                                                ThisBibInfo.Origin_Info.Date_Valid = R.Value;
-                                            }
-                                            break;
-
-                                        case "mods:dateModified":
-                                        case "dateModified":
-                                            R.Read();
-                                            if (R.NodeType == XmlNodeType.Text)
-                                            {
-                                                ThisBibInfo.Origin_Info.Date_Modified = R.Value;
                                             }
                                             break;
 
@@ -797,7 +810,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
 
                                     while (R.Read())
                                     {
-                                        if ((R.NodeType == XmlNodeType.EndElement) && ((R.Name == "mods:relatedItem") || (R.Name == "relatedItem")))
+                                        if ((R.NodeType == XmlNodeType.EndElement) && ((R.Name == "mods:relatedItem") || (R.Name == "mods:relatedItem")))
                                         {
                                             break;
                                         }

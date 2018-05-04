@@ -174,6 +174,7 @@
     <Compile Include="Settings\Builder\MultiInstance_Builder_Settings_Reader.cs" />
     <Compile Include="Settings\Builder\Single_Instance_Configuration.cs" />
     <Compile Include="Settings\UI_Settings.cs" />
+    <Compile Include="UI_Configuration\MaterializeClasses\MaterializeClasses_Configuration.cs" />
     <Compile Include="UI_Configuration\StaticResources\StaticResources_Configuration.cs" />
     <Compile Include="UI_Configuration\Viewers\AggregationWriterConfig.cs" />
     <Compile Include="UI_Configuration\Viewers\ClassAssemblyConfig.cs" />

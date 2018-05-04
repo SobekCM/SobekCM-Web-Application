@@ -1431,10 +1431,21 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// <param name="Language_RFC_Code">Rfc3066 code for this language</param>       
         public Language_Info Add_Language(string Language_Text, string Language_ISO_Code, string Language_RFC_Code)
         {
+            return Add_Language(Language_Text, Language_ISO_Code, Language_RFC_Code, String.Empty, String.Empty);
+        }
+
+        /// <summary> Indicate another language associated with this material </summary>
+        /// <param name="Language_Text">Language term for this language</param>
+        /// <param name="Language_ISO_Code">Iso639-2b code for this language</param>
+        /// <param name="Language_RFC_Code">Rfc3066 code for this language</param>
+        /// <param name="Script_Text">Script term for the alphabet of this language</param>
+        /// <param name="Script_ISO_Code">Script Iso15924 code for this script </param>       
+        public Language_Info Add_Language(string Language_Text, string Language_ISO_Code, string Language_RFC_Code, string Script_Text, string Script_ISO_Code)
+        {
             if (languages == null)
                 languages = new List<Language_Info>();
 
-            Language_Info newLanguage = new Language_Info(Language_Text, Language_ISO_Code, Language_RFC_Code);
+            Language_Info newLanguage = new Language_Info(Language_Text, Language_ISO_Code, Language_RFC_Code, Script_Text, Script_ISO_Code);
             if (!languages.Contains(newLanguage))
             {
                 languages.Add(newLanguage);

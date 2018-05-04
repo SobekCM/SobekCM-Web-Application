@@ -13,7 +13,7 @@ namespace SobekCM.Core.UI_Configuration.MaterializeClasses
     {
         public MaterializeClasses_Configuration()
         {
-            Dictionary<string, string> Materialize_Classes = new Dictionary<string, string>();
+            Materialize_Classes = new Dictionary<string, string>();
         }
 
         public Dictionary<string,string> Materialize_Classes { get; set; }

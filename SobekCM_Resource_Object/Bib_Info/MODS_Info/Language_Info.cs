@@ -16,12 +16,16 @@ namespace SobekCM.Resource_Object.Bib_Info
         private string language_rfc_code;
         private string language_text;
 
+        private string script_text;
+        private string script_iso_code;
+
+
         /// <summary> Constructor creates an empty instance of the Language_Info class </summary>
         public Language_Info()
         {
             // Do nothing by default
         }
-
+       
         /// <summary> Constructor creates an empty instance of the Language_Info class </summary>
         /// <param name="Language_Text">Language term for this language</param>
         /// <param name="Language_ISO_Code">Iso639-2b code for this language</param>
@@ -73,9 +77,85 @@ namespace SobekCM.Resource_Object.Bib_Info
                     if (language_text.IndexOf("_") < 0)
                         language_iso_code = language_text;
                     else
-                        language_rfc_code = language_text.Replace("_","-");
+                        language_rfc_code = language_text.Replace("_", "-");
                     language_text = possible_text;
                 }
+            }
+        }
+
+        /// <summary> Constructor creates an empty instance of the Language_Info class </summary>
+        /// <param name="Language_Text">Language term for this language</param>
+        /// <param name="Language_ISO_Code">Iso639-2b code for this language</param>
+        /// <param name="Language_RFC_Code">Rfc3066 code for this language</param>   
+        /// <param name="Script_Text">Script term for the alphabet of this language</param>
+        /// <param name="Script_ISO_Code">Script Iso15924 code for this script </param>      
+        public Language_Info(string Language_Text, string Language_ISO_Code, string Language_RFC_Code, string Script_Text, string Script_ISO_Code)
+        {
+            language_text = Language_Text ?? String.Empty;
+            language_iso_code = Language_ISO_Code ?? String.Empty;
+            language_rfc_code = Language_RFC_Code ?? String.Empty;
+
+            if ((String.IsNullOrEmpty(language_iso_code)) && (!String.IsNullOrEmpty(language_text)))
+            {
+                string code = Get_Code_By_Language(language_text);
+                if (code.Length > 0)
+                    language_iso_code = code;
+            }
+
+            if ((!String.IsNullOrEmpty(language_iso_code)) && (String.IsNullOrEmpty(language_text)))
+            {
+                string text = Get_Language_By_Code(language_iso_code);
+                if (text.Length > 0)
+                    language_text = text;
+            }
+
+            // The code may be appearing in the text portion
+            if ((language_iso_code.Length == 0) && ((language_text.Length == 3) || ((language_text.Length > 3) && ((language_text[2] == '-') || (language_text[3] == '-')))))
+            {
+                string possible_code = language_text;
+                if ((language_text.Length > 3) && ((language_text[2] == '-') || (language_text[3] == '-')))
+                    possible_code = language_text.Split("-".ToCharArray())[0];
+
+                string possible_text = Get_Language_By_Code(possible_code);
+                if (possible_text.Length > 0)
+                {
+                    if (language_text.IndexOf("-") < 0)
+                        language_iso_code = language_text;
+                    else
+                        language_rfc_code = language_text;
+                    language_text = possible_text;
+                }
+            }
+            else if ((language_iso_code.Length == 0) && (language_text.Length > 3) && ((language_text[2] == '_') || (language_text[3] == '_')))
+            {
+                string possible_code = language_text.Split("_".ToCharArray())[0];
+
+                string possible_text = Get_Language_By_Code(possible_code);
+                if (possible_text.Length > 0)
+                {
+                    if (language_text.IndexOf("_") < 0)
+                        language_iso_code = language_text;
+                    else
+                        language_rfc_code = language_text.Replace("_", "-");
+                    language_text = possible_text;
+                }
+            }
+
+            script_text = Script_Text;
+            script_iso_code = Script_ISO_Code;
+
+            if ((String.IsNullOrEmpty(script_iso_code)) && (!String.IsNullOrEmpty(script_text)))
+            {
+                string code = Get_Code_By_Script(script_text);
+                if (code.Length > 0)
+                    script_iso_code = code;
+            }
+
+            if ((!String.IsNullOrEmpty(script_iso_code)) && (String.IsNullOrEmpty(script_text)))
+            {
+                string text = Get_Script_By_Code(script_iso_code);
+                if (text.Length > 0)
+                    script_text = text;
             }
         }
 
@@ -120,13 +200,46 @@ namespace SobekCM.Resource_Object.Bib_Info
             set { language_rfc_code = value; }
         }
 
+        /// <summary> Gets or sets the script type ( in text ) </summary>
+        public string Script_Text
+        {
+            get { return script_text ?? String.Empty; }
+            set
+            {
+                script_text = value;
+
+                if (String.IsNullOrEmpty(script_iso_code))
+                {
+                    string code = Get_Code_By_Script(Script_Text);
+                    if (code.Length > 0)
+                        script_iso_code = code;
+                }
+            }
+        }
+
+        /// <summary> Gets or sets the Iso15924 code for this script </summary>
+        public string Script_ISO_Code
+        {
+            get { return script_iso_code ?? String.Empty; }
+            set
+            {
+                script_iso_code = value;
+
+                if ((!String.IsNullOrEmpty(script_iso_code)) && (String.IsNullOrEmpty(script_text)))
+                {
+                    string text = Get_Script_By_Code(script_iso_code);
+                    if (text.Length > 0)
+                        script_text = text;
+                }
+            }
+        }
+
+
         /// <summary> Flag indicates if this language object has data, or is an empty language </summary>
         internal bool hasData
         {
-            get
-            {
-                return (!String.IsNullOrEmpty(language_text)) || (!String.IsNullOrEmpty(language_iso_code)) || (!String.IsNullOrEmpty(language_rfc_code));
-            }
+            get { return (!String.IsNullOrEmpty(language_text)) || (!String.IsNullOrEmpty(language_iso_code)) || (!String.IsNullOrEmpty(language_rfc_code))
+                    || (!String.IsNullOrEmpty(script_text)) || (!String.IsNullOrEmpty(script_iso_code)); }
         }
 
         #region IEquatable<Language_Info> Members
@@ -136,7 +249,7 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// <returns>TRUE if the two objects are sufficiently similar</returns>
         public bool Equals(Language_Info Other)
         {
-            if (( !String.IsNullOrEmpty(Language_Text)) && ( String.Compare(Language_Text, Other.Language_Text, StringComparison.Ordinal) == 0 ))
+            if ((!String.IsNullOrEmpty(Language_Text)) && (String.Compare(Language_Text, Other.Language_Text, StringComparison.Ordinal) == 0))
                 return true;
 
             if ((!String.IsNullOrEmpty(Language_RFC_Code)) && (String.Compare(Language_RFC_Code, Other.Language_RFC_Code, StringComparison.Ordinal) == 0))
@@ -154,8 +267,7 @@ namespace SobekCM.Resource_Object.Bib_Info
             if (!hasData)
                 return;
 
-            ReturnValue.Write("<mods:language");
-            ReturnValue.Write(">\r\n");
+            ReturnValue.Write("<mods:language>\r\n");
 
             if (!String.IsNullOrEmpty(language_text))
             {
@@ -171,10 +283,20 @@ namespace SobekCM.Resource_Object.Bib_Info
             {
                 ReturnValue.Write("<mods:languageTerm type=\"code\" authority=\"rfc3066\">" + Convert_String_To_XML_Safe(language_rfc_code) + "</mods:languageTerm>\r\n");
             }
+
+            if (!String.IsNullOrEmpty(script_text))
+            {
+                ReturnValue.Write("<mods:scriptTerm type=\"text\">" + Convert_String_To_XML_Safe(script_text) + "</mods:scriptTerm>\r\n");
+            }
+
+            if (!String.IsNullOrEmpty(script_iso_code))
+            {
+                ReturnValue.Write("<mods:scriptTerm type=\"code\" authority=\"iso15924\">" + Convert_String_To_XML_Safe(script_iso_code) + "</mods:scriptTerm>\r\n");
+            }
             ReturnValue.Write("</mods:language>\r\n");
         }
 
-        #region Code to get the language text from the ISO code
+        #region Methods to get the language text from the ISO code
 
         /// <summary> Get the language text from the ISO code </summary>
         /// <param name="CodeCheck"> ISO code to convert to language name </param>
@@ -670,7 +792,7 @@ namespace SobekCM.Resource_Object.Bib_Info
                     break;
                 case "FUL":
                 case "FF":
-                    text = "Fula";  // Fulah?
+                    text = "Fula"; // Fulah?
                     break;
                 case "FUR":
                     text = "Friulian";
@@ -1569,7 +1691,7 @@ namespace SobekCM.Resource_Object.Bib_Info
                     break;
                 case "SSW":
                 case "SS":
-                    text = "Swazi";  // Swati
+                    text = "Swazi"; // Swati
                     break;
                 case "SUK":
                     text = "Sukuma";
@@ -1750,7 +1872,7 @@ namespace SobekCM.Resource_Object.Bib_Info
                     text = "Urdu";
                     break;
                 case "UZB":
-                case "UZ": 
+                case "UZ":
                     text = "Uzbek";
                     break;
                 case "VAI":
@@ -1850,7 +1972,7 @@ namespace SobekCM.Resource_Object.Bib_Info
 
         #endregion
 
-        #region Code to get the ISO code from the language text
+        #region Methods to get the ISO code from the language text
 
         /// <summary> Gets the ISO code from the language text </summary>
         /// <param name="LanguageCheck"> Name of the language to check for ISO code </param>
@@ -3322,6 +3444,669 @@ namespace SobekCM.Resource_Object.Bib_Info
             }
 
             return code;
+        }
+
+        #endregion
+
+        #region Methods to get the script text from the ISO code
+
+        /// <summary> Get the script text from the ISO code </summary>
+        /// <param name="CodeCheck"> ISO code to convert to script name </param>
+        /// <returns> The associated script name or an empty string </returns>
+        public string Get_Script_By_Code(string CodeCheck)
+        {
+            return Get_Script_By_Code_Static(CodeCheck);
+        }
+
+        /// <summary> Get the script text from the ISO code </summary>
+        /// <param name="CodeCheck"> ISO code to convert to script name </param>
+        /// <returns> The associated script name or an empty string </returns>
+        public static string Get_Script_By_Code_Static(string CodeCheck)
+        {
+            string code_upper = CodeCheck.ToUpper();
+            switch (code_upper)
+            {
+                case "ADLM": return "Adlam";
+                case "AFAK": return "Afaka";
+                case "AGHB": return "Caucasian Albanian";
+                case "AHOM": return "Ahom";
+                case "ARAB": return "Arabic";
+                case "ARAN": return "Arabic (Nastaliq variant)";
+                case "ARMI": return "Imperial Aramaic";
+                case "ARMN": return "Armenian";
+                case "AVST": return "Avestan";
+                case "BALI": return "Balinese";
+                case "BAMU": return "Bamum";
+                case "BASS": return "Bassa Vah";
+                case "BATK": return "Batak";
+                case "BENG": return "Bengali";
+                case "BHKS": return "Bhaiksuki";
+                case "BLIS": return "Blissymbols";
+                case "BOPO": return "Bopomofo";
+                case "BRAH": return "Brahmi";
+                case "BRAI": return "Braille";
+                case "BUGI": return "Buginese";
+                case "BUHD": return "Buhid";
+                case "CAKM": return "Chakma";
+                case "CANS": return "Unified Canadian Aboriginal Syllabics";
+                case "CARI": return "Carian";
+                case "CHAM": return "Cham";
+                case "CHER": return "Cherokee";
+                case "CIRT": return "Cirth";
+                case "COPT": return "Coptic";
+                case "CPMN": return "Cypro-Minoan";
+                case "CPRT": return "Cypriot syllabary";
+                case "CYRL": return "Cyrillic";
+                case "CYRS": return "Cyrillic (Old Church Slavonic variant)";
+                case "DEVA": return "Devanagari (Nagari)";
+                case "DOGR": return "Dogra";
+                case "DSRT": return "Deseret (Mormon)";
+                case "DUPL": return "Duployan shorthand";
+                case "EGYD": return "Egyptian demotic";
+                case "EGYH": return "Egyptian hieratic";
+                case "EGYP": return "Egyptian hieroglyphs";
+                case "ELBA": return "Elbasan";
+                case "ETHI": return "Ethiopic";
+                case "GEOK": return "Khutsuri";
+                case "GEOR": return "Georgian";
+                case "GLAG": return "Glagolitic";
+                case "GONG": return "Gunjala Gondi";
+                case "GONM": return "Masaram Gondi";
+                case "GOTH": return "Gothic";
+                case "GRAN": return "Grantha";
+                case "GREK": return "Greek";
+                case "GUJR": return "Gujarati";
+                case "GURU": return "Gurmukhi";
+                case "HANB": return "Han with Bopomofo";
+                case "HANG": return "Hangul";
+                case "HANI": return "Han";
+                case "HANO": return "Hanunoo";
+                case "HANS": return "Han (Simplified variant)";
+                case "HANT": return "Han (Traditional variant)";
+                case "HATR": return "Hatran";
+                case "HEBR": return "Hebrew";
+                case "HIRA": return "Hiragana";
+                case "HLUW": return "Anatolian Hieroglyphs";
+                case "HMNG": return "Pahawh Hmong";
+                case "HMNP": return "Nyiakeng Puachue Hmong";
+                case "HRKT": return "Japanese syllabaries";
+                case "HUNG": return "Old Hungarian";
+                case "INDS": return "Indus";
+                case "ITAL": return "Old Italic";
+                case "JAMO": return "Jamo";
+                case "JAVA": return "Javanese";
+                case "JPAN": return "Japanese";
+                case "JURC": return "Jurchen";
+                case "KALI": return "Kayah Li";
+                case "KANA": return "Katakana";
+                case "KHAR": return "Kharoshthi";
+                case "KHMR": return "Khmer";
+                case "KHOJ": return "Khojki";
+                case "KITL": return "Khitan large script";
+                case "KITS": return "Khitan small script";
+                case "KNDA": return "Kannada";
+                case "KORE": return "Korean";
+                case "KPEL": return "Kpelle";
+                case "KTHI": return "Kaithi";
+                case "LANA": return "Tai Tham";
+                case "LAOO": return "Lao";
+                case "LATF": return "Latin (Fraktur variant)";
+                case "LATG": return "Latin (Gaelic variant)";
+                case "LATN": return "Latin";
+                case "LEKE": return "Leke";
+                case "LEPC": return "Lepcha";
+                case "LIMB": return "Limbu";
+                case "LINA": return "Linear A";
+                case "LINB": return "Linear B";
+                case "LISU": return "Lisu";
+                case "LOMA": return "Loma";
+                case "LYCI": return "Lycian";
+                case "LYDI": return "Lydian";
+                case "MAHJ": return "Mahajani";
+                case "MAKA": return "Makasar";
+                case "MAND": return "Mandaic";
+                case "MANI": return "Manichaean";
+                case "MARC": return "Marchen";
+                case "MAYA": return "Mayan hieroglyphs";
+                case "MEDF": return "Medefaidrin";
+                case "MEND": return "Mende Kikakui";
+                case "MERC": return "Meroitic Cursive";
+                case "MERO": return "Meroitic Hieroglyphs";
+                case "MLYM": return "Malayalam";
+                case "MODI": return "Modi";
+                case "MONG": return "Mongolian";
+                case "MOON": return "Moon";
+                case "MROO": return "Mro";
+                case "MTEI": return "Meitei Mayek";
+                case "MULT": return "Multani";
+                case "MYMR": return "Myanmar";
+                case "NARB": return "Old North Arabian";
+                case "NBAT": return "Nabataean";
+                case "NEWA": return "Newa";
+                case "NKDB": return "Naxi Dongba";
+                case "NKGB": return "Naxi Geba";
+                case "NKOO": return "N’Ko";
+                case "NSHU": return "Nüshu";
+                case "OGAM": return "Ogham";
+                case "OLCK": return "Ol Chiki";
+                case "ORKH": return "Old Turkic";
+                case "ORYA": return "Oriya";
+                case "OSGE": return "Osage";
+                case "OSMA": return "Osmanya";
+                case "PALM": return "Palmyrene";
+                case "PAUC": return "Pau Cin Hau";
+                case "PERM": return "Old Permic";
+                case "PHAG": return "Phags-pa";
+                case "PHLI": return "Inscriptional Pahlavi";
+                case "PHLP": return "Psalter Pahlavi";
+                case "PHLV": return "Book Pahlavi";
+                case "PHNX": return "Phoenician";
+                case "PIQD": return "Klingon";
+                case "PLRD": return "Miao";
+                case "PRTI": return "Inscriptional Parthian";
+                case "RJNG": return "Rejang";
+                case "ROHG": return "Hanifi Rohingya";
+                case "RORO": return "Rongorongo";
+                case "RUNR": return "Runic";
+                case "SAMR": return "Samaritan";
+                case "SARA": return "Sarati";
+                case "SARB": return "Old South Arabian";
+                case "SAUR": return "Saurashtra";
+                case "SGNW": return "SignWriting";
+                case "SHAW": return "Shavian";
+                case "SHRD": return "Sharada";
+                case "SHUI": return "Shuishu";
+                case "SIDD": return "Siddham";
+                case "SIND": return "Khudawadi";
+                case "SINH": return "Sinhala";
+                case "SOGD": return "Sogdian";
+                case "SOGO": return "Old Sogdian";
+                case "SORA": return "Sora Sompeng";
+                case "SOYO": return "Soyombo";
+                case "SUND": return "Sundanese";
+                case "SYLO": return "Syloti Nagri";
+                case "SYRC": return "Syriac";
+                case "SYRE": return "Syriac (Estrangelo variant)";
+                case "SYRJ": return "Syriac (Western variant)";
+                case "SYRN": return "Syriac (Eastern variant)";
+                case "TAGB": return "Tagbanwa";
+                case "TAKR": return "Takri";
+                case "TALE": return "Tai Le";
+                case "TALU": return "New Tai Lue";
+                case "TAML": return "Tamil";
+                case "TANG": return "Tangut";
+                case "TAVT": return "Tai Viet";
+                case "TELU": return "Telugu";
+                case "TENG": return "Tengwar";
+                case "TFNG": return "Tifinagh";
+                case "TGLG": return "Tagalog";
+                case "THAA": return "Thaana";
+                case "THAI": return "Thai";
+                case "TIBT": return "Tibetan";
+                case "TIRH": return "Tirhuta";
+                case "UGAR": return "Ugaritic";
+                case "VAII": return "Vai";
+                case "VISP": return "Visible Speech";
+                case "WARA": return "Warang Citi";
+                case "WCHO": return "Wancho";
+                case "WOLE": return "Woleai";
+                case "XPEO": return "Old Persian";
+                case "XSUX": return "Cuneiform";
+                case "YIII": return "Yi";
+                case "ZMTH": return "Mathematical notation";
+                case "ZSYE": return "Symbols (Emoji variant)";
+                case "ZSYM": return "Symbols";
+            }
+
+            return String.Empty;
+        }
+
+        #endregion
+
+        #region Methods to get the ISO code from the script text
+
+        /// <summary> Gets the ISO code from the script text </summary>
+        /// <param name="ScriptCheck"> Name of the script to check for ISO code </param>
+        /// <returns> Associated ISO code, or an empty string </returns>
+        private string Get_Code_By_Script(string ScriptCheck)
+        {
+            return Get_Code_By_Script_Static(ScriptCheck);
+        }
+
+        /// <summary> Gets the ISO code from the script text </summary>
+        /// <param name="ScriptCheck"> Name of the script to check for ISO code </param>
+        /// <returns> Associated ISO code, or an empty string </returns>
+        private static string Get_Code_By_Script_Static(string ScriptCheck)
+        {
+            string script_lower = ScriptCheck.ToLower();
+            switch (script_lower)
+            {
+                case "adlam": return "Adlm";
+                case "afaka": return "Afak";
+                case "aghbanien": return "Aghb";
+                case "caucasian albanian": return "Aghb";
+                case "albanian": return "Aghb";
+                case "âhom": return "Ahom";
+                case "ahom": return "Ahom";
+                case "tai ahom": return "Ahom";
+                case "arabe": return "Arab";
+                case "arabic": return "Arab";
+                case "arabe (variante nastalique)": return "Aran";
+                case "arabic (nastaliq variant)": return "Aran";
+                case "araméen impérial": return "Armi";
+                case "imperial aramaic": return "Armi";
+                case "armenian": return "Armn";
+                case "arménien": return "Armn";
+                case "avestan": return "Avst";
+                case "avestique": return "Avst";
+                case "balinais": return "Bali";
+                case "balinese": return "Bali";
+                case "bamoum": return "Bamu";
+                case "bamum": return "Bamu";
+                case "bassa": return "Bass";
+                case "bassa Vah": return "Bass";
+                case "batak": return "Batk";
+                case "batik": return "Batk";
+                case "bengali": return "Beng";
+                case "bengalî": return "Beng";
+                case "bangla": return "Beng";
+                case "bhaiksuki": return "Bhks";
+                case "bhaïksukî": return "Bhks";
+                case "blissymbols": return "Blis";
+                case "symboles bliss": return "Blis";
+                case "bopomofo": return "Bopo";
+                case "brahma": return "Brah";
+                case "brahmi": return "Brah";
+                case "braille": return "Brai";
+                case "bouguis": return "Bugi";
+                case "buginese": return "Bugi";
+                case "bouhide": return "Buhd";
+                case "buhid": return "Buhd";
+                case "chakma": return "Cakm";
+                case "syllabaire autochtone canadien unifié": return "Cans";
+                case "unified aanadian aboriginal syllabics": return "Cans";
+                case "carian": return "Cari";
+                case "carien": return "Cari";
+                case "cham": return "Cham";
+                case "tcham": return "Cham";
+                case "cherokee": return "Cher";
+                case "tchérokî": return "Cher";
+                case "cirth": return "Cirt";
+                case "copte": return "Copt";
+                case "coptic": return "Copt";
+                case "cypro-minoan": return "Cpmn";
+                case "syllabaire chypro-minoen": return "Cpmn";
+                case "cypriot syllabary": return "Cprt";
+                case "cypriot": return "Cprt";
+                case "syllabaire chypriote": return "Cprt";
+                case "cyrillic": return "Cyrl";
+                case "cyrillique": return "Cyrl";
+                case "cyrillic (old church slavonic variant)": return "Cyrs";
+                case "cyrillique (variante slavonne)": return "Cyrs";
+                case "dévanâgarî": return "Deva";
+                case "devanagari": return "Deva";
+                case "nagari": return "Deva";
+                case "dogra": return "Dogr";
+                case "deseret": return "Dsrt";
+                case "déseret": return "Dsrt";
+                case "mormon": return "Dsrt";
+                case "duployan": return "Dupl";
+                case "duployan shorthand": return "Dupl";
+                case "duployan stenography": return "Dupl";
+                case "sténographie duployé": return "Dupl";
+                case "duployé": return "Dupl";
+                case "démotique égyptien": return "Egyd";
+                case "egyptian demotic": return "Egyd";
+                case "egyptian hieratic": return "Egyh";
+                case "hiératique égyptien": return "Egyh";
+                case "egyptian hieroglyphs": return "Egyp";
+                case "hiéroglyphes égyptiens": return "Egyp";
+                case "elbasan": return "Elba";
+                case "ethiopic": return "Ethi";
+                case "éthiopien": return "Ethi";
+                case "guèze": return "Ethi";
+                case "ge'ez": return "Ethi";
+                case "khoutsouri (assomtavrouli et nouskhouri)": return "Geok";
+                case "khoutsouri": return "Geok";
+                case "assomtavrouli": return "Geok";
+                case "nouskhouri": return "Geok";
+                case "khutsuri (asomtavruli and nuskhuri)": return "Geok";
+                case "khutsuri": return "Geok";
+                case "asomtavruli": return "Geok";
+                case "nuskhuri": return "Geok";
+                case "georgian (mkhedruli and mtavruli)": return "Geor";
+                case "georgian": return "Geor";
+                case "mkhedruli": return "Geor";
+                case "mtavruli": return "Geor";
+                case "géorgien (mkhédrouli et mtavrouli)": return "Geor";
+                case "géorgien": return "Geor";
+                case "mkhédrouli": return "Geor";
+                case "mtavrouli": return "Geor";
+                case "glagolitic": return "Glag";
+                case "glagolitique": return "Glag";
+                case "gunjala gondi": return "Gong";
+                case "gunjala gondî": return "Gong";
+                case "masaram gondi": return "Gonm";
+                case "masaram gondî": return "Gonm";
+                case "gothic": return "Goth";
+                case "gotique": return "Goth";
+                case "grantha": return "Gran";
+                case "grec": return "Grek";
+                case "greek": return "Grek";
+                case "goudjarâtî": return "Gujr";
+                case "gujrâtî": return "Gujr";
+                case "gujarati": return "Gujr";
+                case "gourmoukhî": return "Guru";
+                case "gurmukhi": return "Guru";
+                case "han avec bopomofo": return "Hanb";
+                case "han with bopomofo": return "Hanb";
+                case "hangul": return "Hang";
+                case "hangûl": return "Hang";
+                case "hang ": return "Hang";
+                case "hangeul": return "Hang";
+                case "han": return "Hani";
+                case "hanzi": return "Hani";
+                case "kanji": return "Hani";
+                case "hanja": return "Hani";
+                case "idéogrammes han": return "Hani";
+                case "idéogrammes han (sinogrammes)": return "Hani";
+                case "hanounóo": return "Hano";
+                case "hanunoo": return "Hano";
+                case "hanunóo": return "Hano";
+                case "han (simplified variant)": return "Hans";
+                case "idéogrammes han (variante simplifiée)": return "Hans";
+                case "han (traditional variant)": return "Hant";
+                case "idéogrammes han (variante traditionnelle)": return "Hant";
+                case "hatran": return "Hatr";
+                case "hatrénien": return "Hatr";
+                case "hébreu": return "Hebr";
+                case "hebrew": return "Hebr";
+                case "hiragana": return "Hira";
+                case "anatolian hieroglyphs": return "Hluw";
+                case "luwian hieroglyphs": return "Hluw";
+                case "hittite hieroglyphs": return "Hluw";
+                case "hiéroglyphes anatoliens": return "Hluw";
+                case "hiéroglyphes louvites": return "Hluw";
+                case "hiéroglyphes hittites": return "Hluw";
+                case "pahawh hmong": return "Hmng";
+                case "nyiakeng puachue hmong": return "Hmnp";
+                case "japanese syllabaries": return "Hrkt";
+                case "syllabaires japonais": return "Hrkt";
+                case "old hungarian": return "Hung";
+                case "hungarian runic": return "Hung";
+                case "runes hongroises": return "Hung";
+                case "ancien hongrois": return "Hung";
+                case "indus": return "Inds";
+                case "harappan": return "Inds";
+                case "ancien italique": return "Ital";
+                case "étrusque": return "Ital";
+                case "osque": return "Ital";
+                case "old italic": return "Ital";
+                case "etruscan": return "Ital";
+                case "oscan": return "Ital";
+                case "jamo": return "Jamo";
+                case "javanais": return "Java";
+                case "javanese": return "Java";
+                case "japanese": return "Jpan";
+                case "japonais": return "Jpan";
+                case "jurchen": return "Jurc";
+                case "kayah li": return "Kali";
+                case "katakana": return "Kana";
+                case "kharochthî": return "Khar";
+                case "kharoshthi": return "Khar";
+                case "khmer": return "Khmr";
+                case "khojki": return "Khoj";
+                case "khojkî": return "Khoj";
+                case "grande écriture khitan": return "Kitl";
+                case "khitan large script": return "Kitl";
+                case "khitan small script": return "Kits";
+                case "petite écriture khitan": return "Kits";
+                case "kannada": return "Knda";
+                case "kannara": return "Knda";
+                case "canara": return "Knda";
+                case "coréen": return "Kore";
+                case "korean": return "Kore";
+                case "kpelle": return "Kpel";
+                case "kpèllé": return "Kpel";
+                case "kaithi": return "Kthi";
+                case "kaithî": return "Kthi";
+                case "yai tham": return "Lana";
+                case "taï tham": return "Lana";
+                case "lanna": return "Lana";
+                case "lao": return "Laoo";
+                case "laotien": return "Laoo";
+                case "latin (fraktur variant)": return "Latf";
+                case "latin (variante brisée)": return "Latf";
+                case "latin (gaelic variant)": return "Latg";
+                case "latin (variante gaélique)": return "Latg";
+                case "latin": return "Latn";
+                case "Leke": return "Leke";
+                case "léké": return "Leke";
+                case "Lepcha (Róng)": return "Lepc";
+                case "lepcha (róng)": return "Lepc";
+                case "limbou": return "Limb";
+                case "limbu": return "Limb";
+                case "linéaire a": return "Lina";
+                case "linear a": return "Lina";
+                case "linéaire b": return "Linb";
+                case "linear b": return "Linb";
+                case "fraser": return "Lisu";
+                case "lisu": return "Lisu";
+                case "loma": return "Loma";
+                case "Lycian": return "Lyci";
+                case "lycien": return "Lyci";
+                case "Lydian": return "Lydi";
+                case "lydien": return "Lydi";
+                case "mahajani": return "Mahj";
+                case "mahâjanî": return "Mahj";
+                case "makasar": return "Maka";
+                case "makassar": return "Maka";
+                case "mandaic": return "Mand";
+                case "mandaean": return "Mand";
+                case "mandéen": return "Mand";
+                case "manichaean": return "Mani";
+                case "manichéen": return "Mani";
+                case "marchen": return "Marc";
+                case "hiéroglyphes mayas": return "Maya";
+                case "mayan hieroglyphs": return "Maya";
+                case "medefaidrin": return "Medf";
+                case "oberi okaime": return "Medf";
+                case "médéfaïdrine": return "Medf";
+                case "mende kikakui": return "Mend";
+                case "mendé kikakui": return "Mend";
+                case "cursif méroïtique": return "Merc";
+                case "meroitic bursive": return "Merc";
+                case "hiéroglyphes méroïtiques": return "Mero";
+                case "meroitic hieroglyphs": return "Mero";
+                case "malayalam": return "Mlym";
+                case "malayâlam": return "Mlym";
+                case "modî": return "Modi";
+                case "modi": return "Modi";
+                case "mo": return "Modi";
+                case "mongol": return "Mong";
+                case "mongolian": return "Mong";
+                case "écriture Moon": return "Moon";
+                case "moon": return "Moon";
+                case "moon code": return "Moon";
+                case "moon script": return "Moon";
+                case "moon type": return "Moon";
+                case "mro": return "Mroo";
+                case "mru": return "Mroo";
+                case "meitei mayek": return "Mtei";
+                case "meithei mayek": return "Mtei";
+                case "meetei mayek": return "Mtei";
+                case "meitei": return "Mtei";
+                case "meithei": return "Mtei";
+                case "meetei": return "Mtei";
+                case "multani": return "Mult";
+                case "multanî": return "Mult";
+                case "birman": return "Mymr";
+                case "myanmar": return "Mymr";
+                case "burmese": return "Mymr";
+                case "nord-arabique": return "Narb";
+                case "old north arabian": return "Narb";
+                case "ancient north arabian": return "Narb";
+                case "nabataean": return "Nbat";
+                case "nabatéen": return "Nbat";
+                case "newa": return "Newa";
+                case "newar": return "Newa";
+                case "newari": return "Newa";
+                case "néwa": return "Newa";
+                case "néwar": return "Newa";
+                case "néwari": return "Newa";
+                case "naxi dongba": return "Nkdb";
+                case "naxi tomba": return "Nkdb";
+                case "naxi geba": return "Nkgb";
+                case "nakhi geba": return "Nkgb";
+                case "n’ko": return "Nkoo";
+                case "nüshu": return "Nshu";
+                case "ogam": return "Ogam";
+                case "ogham": return "Ogam";
+                case "ol chiki": return "Olck";
+                case "santali": return "Olck";
+                case "ol cemet": return "Olck";
+                case "ol tchiki": return "Olck";
+                case "old turkic, Orkhon Runic": return "Orkh";
+                case "orkhon runic": return "Orkh";
+                case "orkhon": return "Orkh";
+                case "oriya": return "Orya";
+                case "odia": return "Orya";
+                case "oriyâ": return "Orya";
+                case "osage": return "Osge";
+                case "osmanais": return "Osma";
+                case "osmanya": return "Osma";
+                case "palmyrene": return "Palm";
+                case "palmyrénien": return "Palm";
+                case "paou chin haou": return "Pauc";
+                case "pau cin hau": return "Pauc";
+                case "ancien permien": return "Perm";
+                case "old permic": return "Perm";
+                case "’phags pa": return "Phag";
+                case "phags-pa": return "Phag";
+                case "inscriptional pahlavi": return "Phli";
+                case "pehlevi des inscriptions": return "Phli";
+                case "pehlevi des psautiers": return "Phlp";
+                case "psalter pahlavi": return "Phlp";
+                case "book pahlavi": return "Phlv";
+                case "pehlevi des livres": return "Phlv";
+                case "phénicien": return "Phnx";
+                case "phoenician": return "Phnx";
+                case "kli piqad": return "Piqd";
+                case "piqad du kli": return "Piqd";
+                case "klingon": return "Piqd";
+                case "pollard": return "Plrd";
+                case "miao": return "Plrd";
+                case "inscriptional parthian": return "Prti";
+                case "parthe des inscriptions": return "Prti";
+                case "redjang": return "Rjng";
+                case "rejang": return "Rjng";
+                case "kaganga": return "Rjng";
+                case "hanifi rohingya": return "Rohg";
+                case "rongorongo": return "Roro";
+                case "runic": return "Runr";
+                case "runique": return "Runr";
+                case "samaritain": return "Samr";
+                case "samaritan": return "Samr";
+                case "sarati": return "Sara";
+                case "old south arabian": return "Sarb";
+                case "sud - arabique, himyarite": return "Sarb";
+                case "saurachtra": return "Saur";
+                case "saurashtra": return "Saur";
+                case "signécriture": return "Sgnw";
+                case "signWriting": return "Sgnw";
+                case "shavian": return "Shaw";
+                case "shavien": return "Shaw";
+                case "shaw": return "Shaw";
+                case "charada": return "Shrd";
+                case "shard": return "Shrd";
+                case "sharada" : return "Shrd";
+                case "shuishu": return "Shui";
+                case "siddham": return "Sidd";
+                case "siddha" : return "Sidd";
+                case "sindhî": return "Sind";
+                case "sindhi": return "Sind";
+                case "khoudawadî": return "Sind";
+                case "khudawadi": return "Sind";
+                case "khoudawadî, sindhî": return "Sind";
+                case "khudawadi, sindhi": return "Sind";
+                case "singhalais": return "Sinh";
+                case "sinhala": return "Sinh";
+                case "sogdian": return "Sogd";
+                case "sogdien": return "Sogd";
+                case "ancien sogdien": return "Sogo";
+                case "old sogdian": return "Sogo";
+                case "sora sompeng": return "Sora";
+                case "soyombo": return "Soyo";
+                case "sundanais": return "Sund";
+                case "sundanese": return "Sund";
+                case "syloti nagri": return "Sylo";
+                case "sylotî nâgrî": return "Sylo";
+                case "syriac": return "Syrc";
+                case "syriaque": return "Syrc";
+                case "syriac (estrangelo variant)": return "Syre";
+                case "syriaque (variante estranghélo)": return "Syre";
+                case "syriac (western variant)": return "Syrj";
+                case "syriaque (variante occidentale)": return "Syrj";
+                case "syriac (eastern variant)": return "Syrn";
+                case "syriaque (variante orientale)": return "Syrn";
+                case "tagbanoua": return "Tagb";
+                case "tagbanwa": return "Tagb";
+                case "tâkrî": return "Takr";
+                case "takri" : return "Takr";
+                case "tai le": return "Tale";
+                case "taï-le": return "Tale";
+                case "new tai lue": return "Talu";
+                case "nouveau taï-lue": return "Talu";
+                case "tamil": return "Taml";
+                case "tamoul": return "Taml";
+                case "tangoute": return "Tang";
+                case "tangut": return "Tang";
+                case "tai viet": return "Tavt";
+                case "taï viêt": return "Tavt";
+                case "télougou": return "Telu";
+                case "telugu": return "Telu";
+                case "tengwar": return "Teng";
+                case "tifinagh": return "Tfng";
+                case "tifinagh (berber)": return "Tfng";
+                case "tifinagh (berbère)": return "Tfng";
+                case "tagal": return "Tglg";
+                case "tagalog": return "Tglg";
+                case "tagal (baybayin, alibata)": return "Tglg";
+                case "tagalog (baybayin, alibata)": return "Tglg";
+                case "thaana": return "Thaa";
+                case "thâna": return "Thaa";
+                case "thai": return "Thai";
+                case "thaï": return "Thai";
+                case "tibétain": return "Tibt";
+                case "tibetan": return "Tibt";
+                case "tirhouta": return "Tirh";
+                case "tirhuta": return "Tirh";
+                case "ougaritique": return "Ugar";
+                case "ugaritic": return "Ugar";
+                case "vai": return "Vaii";
+                case "vaï": return "Vaii";
+                case "parole visible": return "Visp";
+                case "visible speech": return "Visp";
+                case "warang citi": return "Wara";
+                case "warang citi (Varang Kshiti)": return "Wara";
+                case "wancho": return "Wcho";
+                case "wantcho": return "Wcho";
+                case "woleai": return "Wole";
+                case "woléaï": return "Wole";
+                case "cunéiforme persépolitain": return "Xpeo";
+                case "old persian": return "Xpeo";
+                case "cuneiform, sumero - akkadian": return "Xsux";
+                case "cunéiforme suméro-akkadien": return "Xsux";
+                case "yi": return "Yiii";
+                case "mathematical notation": return "Zmth";
+                case "notation mathématique": return "Zmth";
+                case "symboles (variante émoji)": return "Zsye";
+                case "symbols (emoji variant)": return "Zsye";
+                case "symboles": return "Zsym";
+                case "symbols": return "Zsym";
+            }
+
+            return String.Empty;
         }
 
         #endregion

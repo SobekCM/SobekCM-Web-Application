@@ -3172,8 +3172,14 @@ namespace SobekCM.Engine_Library.Configuration
 
         private static ExtensionInfo read_extension_details(XmlReader readerXml, InstanceWide_Configuration config, string SourceDirectoryName, string SourceDirectory )
         {
+            // NOTE: When the basic extension details are being read for non-active plug-ins, the config
+            //       object is NULL.  When they are active, the config object is not null.
+
             //rrb
-            config.Source.Add_Log("read_extension_details, SourceDirectoryName=[" + SourceDirectoryName + "], SourceDirectory=[" + SourceDirectory + "].");
+            if (config != null)
+            {
+                config.Source.Add_Log("read_extension_details, SourceDirectoryName=[" + SourceDirectoryName + "], SourceDirectory=[" + SourceDirectory + "].");
+            }
 
             // Create the new extension information object
             ExtensionInfo thisExtension = new ExtensionInfo
@@ -3248,7 +3254,6 @@ namespace SobekCM.Engine_Library.Configuration
                                 thisExtension.AdminInfo.Permissions = permissions;
                             }
                             break;
-                            break;
 
                         case "assembly":
                             if (childReader.MoveToAttribute("name"))
@@ -3263,13 +3268,19 @@ namespace SobekCM.Engine_Library.Configuration
                                 if (File.Exists(full_assembly_name))
                                 {
                                     //rrb
-                                    config.Source.Add_Log("full_assembly_name exsts [" + full_assembly_name + "].");
+                                    if (config != null)
+                                    {
+                                        config.Source.Add_Log("full_assembly_name exsts [" + full_assembly_name + "].");
+                                    }
 
                                     // Was there an ID?
                                     if (String.IsNullOrEmpty(id))
                                         id = Path.GetFileNameWithoutExtension(full_assembly_name);
 
-                                    config.Source.Add_Log("Adding id=[" + id + "], full_assembly_name=[" + full_assembly_name + "].");
+                                    if (config != null)
+                                    {
+                                        config.Source.Add_Log("Adding id=[" + id + "], full_assembly_name=[" + full_assembly_name + "].");
+                                    }
                                     thisExtension.Add_Assembly(id, full_assembly_name);
                                 }
                                 else

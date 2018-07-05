@@ -2515,6 +2515,12 @@ namespace SobekCM.Library.AdminViewer
 			const string DEFAULT_VIEW_HELP = "Set the default view that will be used when a user searches or browses the items within this collection.";
 			const string RESULTS_VIEWS_HELP = "Select which result views should be offered to users who search or browse the items within this collection.";
 
+            if (!String.IsNullOrEmpty(actionMessage))
+            {
+                Output.WriteLine("  <br />");
+                Output.WriteLine("  <div id=\"sbkAdm_ActionMessage\" style=\"color:Maroon;\">" + actionMessage + "</div>");
+            }
+
 			Output.WriteLine("<table class=\"sbkAdm_PopupTable\">");
 
 			Output.WriteLine("  <tr class=\"sbkSaav_TitleRow\"><td colspan=\"3\">Results Options</td></tr>");

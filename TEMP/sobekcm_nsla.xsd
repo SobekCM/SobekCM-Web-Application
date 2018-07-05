@@ -1,0 +1,48 @@
+<?xml version="1.0" ?>
+<!--<!DOCTYPE xs:schema PUBLIC "-//W3C//DTD XMLSCHEMA 200102//EN" "XMLSchema.dtd">-->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://sobekrepository.org/schemas/sobekcm_nsla/" targetNamespace="http://sobekrepository.org/schemas/sobekcm_nsla/"
+	elementFormDefault="qualified" attributeFormDefault="unqualified" xsi:schemaLocation="http://www.w3.org/2001/XMLSchema http://www.w3.org/2001/XMLSchema.xsd"
+	version="1.0">
+	<xs:annotation>
+		<xs:documentation xml:lang="en">
+			Schema defines custom metadata for Nevada State Library, Archives, and Public Records.
+			Developer: Mark Sullivan (Mark.V.Sullivan@sobekdigital.com)
+			Creation Date: June 2018
+	    </xs:documentation>
+	</xs:annotation>
+	
+	<!-- All elements for this custom metadata  -->
+	<!-- This element should appear in a descriptive (dmdSec) wrapper in the METS file -->
+	<xs:element name="nsla">
+		<xs:complexType>
+			<xs:choice minOccurs="1" maxOccurs="unbounded">
+			
+				<!-- Original page numbers for this item within a larger item -->
+				<xs:element name="PageNumber" type="xs:string" minOccurs="0" maxOccurs="1" />
+				
+				<!-- Sender of this correspondence -->
+				<xs:element name="Correspondence_Sender" type="xs:string" minOccurs="0" maxOccurs="1" />
+				
+				<!-- Recepient of this correspondence -->
+				<xs:element name="Correspondence_Recepient" type="xs:string" minOccurs="0" maxOccurs="1" />
+				
+				<!-- Number of the related case -->
+				<xs:element name="Case_Number" type="xs:string" minOccurs="0" maxOccurs="1" />
+				
+				<!-- Name of the related case -->
+				<xs:element name="Case_Name" type="xs:string" minOccurs="0" maxOccurs="1" />
+				
+				<!-- Patent date (in string format) -->
+				<xs:element name="Patent_Date" type="xs:string" minOccurs="0" maxOccurs="1" />
+				
+				<!-- Patent number -->
+				<xs:element name="Patent_Number" type="xs:string" minOccurs="0" maxOccurs="1" />
+								
+				<!-- Zero to many patentees, related to the patent -->
+				<xs:element name="Patentee" type="xs:string" minOccurs="0" maxOccurs="unbounded" />
+				
+			</xs:choice>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

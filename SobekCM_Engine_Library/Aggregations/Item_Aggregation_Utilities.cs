@@ -525,6 +525,8 @@ namespace SobekCM.Engine_Library.Aggregations
                 languageVariantsBuilder.ToString(), ItemAggr.GroupResults, Tracer);
 
             // If this is NOT a new one, save the views and facets
+            bool returnValue2 = true;
+	        bool returnValue3 = true;
 	        if (ItemAggr.ID > 0)
 	        {
                 // Save the views.
@@ -538,7 +540,7 @@ namespace SobekCM.Engine_Library.Aggregations
 	                resultsViews.Add(String.Empty);
 	            }
 
-                bool returnValue2 = Engine_Database.Save_Item_Aggregation_ResultViews(ItemAggr.Code, resultsViews[0], resultsViews[1], resultsViews[2], 
+                returnValue2 = Engine_Database.Save_Item_Aggregation_ResultViews(ItemAggr.Code, resultsViews[0], resultsViews[1], resultsViews[2], 
                     resultsViews[3], resultsViews[4], resultsViews[5], resultsViews[6], resultsViews[7], resultsViews[8], resultsViews[9], ItemAggr.Default_Result_View, Tracer);
 
                 // Save the facets
@@ -555,12 +557,12 @@ namespace SobekCM.Engine_Library.Aggregations
                     facet_display.Add(String.Empty);
                 }
 
-                bool returnValue3 = Engine_Database.Save_Item_Aggregation_Facets(ItemAggr.Code, facet_type[0], facet_display[0],
+                returnValue3 = Engine_Database.Save_Item_Aggregation_Facets(ItemAggr.Code, facet_type[0], facet_display[0],
                     facet_type[1], facet_display[1], facet_type[2], facet_display[2], facet_type[3], facet_display[3], facet_type[4], facet_display[4],
                     facet_type[5], facet_display[5], facet_type[6], facet_display[6], facet_type[7], facet_display[7], Tracer);
             }
 
-            return returnValue;
+            return returnValue && returnValue2 && returnValue3;
         }
 
         #endregion

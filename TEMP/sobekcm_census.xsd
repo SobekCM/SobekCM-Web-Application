@@ -1,0 +1,38 @@
+<?xml version="1.0" ?>
+<!--<!DOCTYPE xs:schema PUBLIC "-//W3C//DTD XMLSCHEMA 200102//EN" "XMLSchema.dtd">-->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://sobekrepository.org/schemas/sobekcm_census/" targetNamespace="http://sobekrepository.org/schemas/sobekcm_census/"
+	elementFormDefault="qualified" attributeFormDefault="unqualified" xsi:schemaLocation="http://www.w3.org/2001/XMLSchema http://www.w3.org/2001/XMLSchema.xsd"
+	version="1.0">
+	<xs:annotation>
+		<xs:documentation xml:lang="en">
+			Schema defines custom metadata for census or city directories
+			Developer: Mark Sullivan (Mark.V.Sullivan@sobekdigital.com)
+			Creation Date: June 2018
+	    </xs:documentation>
+	</xs:annotation>
+	<!-- All elements which contains information from the census or city directory -->
+	<!-- This element should appear in a descriptive (dmdSec) wrapper in the METS file -->
+	<xs:element name="census">
+		<xs:complexType>
+			<xs:choice minOccurs="1" maxOccurs="unbounded">
+				<!-- This element stores information about a single person -->
+				<xs:element name="Person" type="censusPerson" minOccurs="0" maxOccurs="unbounded" />
+			</xs:choice>
+		</xs:complexType>
+	</xs:element>
+	
+	<!-- Define the complex Performer type -->
+	<xs:complexType name="censusPerson">
+		<xs:simpleContent>
+			<xs:extension base="xs:string">
+				<xs:attribute name="lifespan" type="xs:string" use="optional" /> 
+				<xs:attribute name="title" type="xs:string" use="optional" /> 
+				<xs:attribute name="occupation" type="xs:string" use="optional" /> 
+				<xs:attribute name="sex" type="xs:string" use="optional" /> 
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+
+	
+</xs:schema>

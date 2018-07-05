@@ -205,7 +205,7 @@ namespace SobekCM.URL_Rewriter
 	                            HttpContext.Current.RewritePath("~/data/" + appRelative, true);
 	                        }
 	                    }
-	                    else if (appRelative.IndexOf("engine") == 0)
+	                    else if (( appRelative == "engine" ) || ( appRelative.IndexOf("engine/") == 0))
 	                    {
 	                        if (appRelative.Length > 6)
 	                        {

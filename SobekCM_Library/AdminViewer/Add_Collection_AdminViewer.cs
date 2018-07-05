@@ -1160,7 +1160,7 @@ namespace SobekCM.Library.AdminViewer
                 Output.WriteLine("    <td class=\"sbkSaav_TableLabel2\"><label for=\"admin_aggr_desc\">Uploaded Banner:</label></td>");
                 Output.WriteLine("    <td>");
 
-                string url = Path.Combine(userInProcessUrl, "images/banners", last_added_banner).Replace("\\","/");
+                string url = Path.Combine( userInProcessUrl, "images/banners", last_added_banner).Replace("\\","/");
                 Output.WriteLine("      <img src=\"" + url + "\" alt=\"Access Denied\" style=\"max-width:500px; border: 1px #888888 solid;\" />");
                 Output.WriteLine("    </td>");
                 Output.WriteLine("  </tr>");
@@ -1258,7 +1258,7 @@ namespace SobekCM.Library.AdminViewer
                 Output.WriteLine("    <td class=\"sbkSaav_TableLabel2\"><label for=\"admin_aggr_desc\">Current Button:</label></td>");
                 Output.WriteLine("    <td>");
 
-                string url = Path.Combine(userInProcessUrl, "images/buttons", last_added_button).Replace("\\", "/");
+                string url = Path.Combine( userInProcessUrl, "images/buttons", last_added_button).Replace("\\", "/");
                 Output.WriteLine("      <img src=\"" + url + "\" alt=\"Access Denied\" style=\"border: 1px #888888 solid;\" />");
                 Output.WriteLine("    </td>");
                 Output.WriteLine("  </tr>");

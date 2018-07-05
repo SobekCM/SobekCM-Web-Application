@@ -584,7 +584,8 @@ namespace SobekCM.Library.MainWriters
 
             try
             {
-                if (UI_ApplicationCache_Gateway.Settings.Get_Additional_Setting("Use Responsive Design").Equals("true"))
+                string responsive_design_setting = UI_ApplicationCache_Gateway.Settings.Get_Additional_Setting("Use Responsive Design");
+                if (( !String.IsNullOrEmpty(responsive_design_setting)) && ( responsive_design_setting.Equals("true", StringComparison.OrdinalIgnoreCase)))
                 {
                     Output.WriteLine("  <meta name=\"viewport\" content=\"width=" + UI_ApplicationCache_Gateway.Settings.Get_Additional_Setting("Viewport width") + ", initial-scale=" + UI_ApplicationCache_Gateway.Settings.Get_Additional_Setting("Viewport initial-scale") + "\" />\r\n");
                     Tracer.Add_Trace("Html_MainWriter.Write_Within_HTML_Head", "Adding responsive design meta viewport tag.");
@@ -617,11 +618,12 @@ namespace SobekCM.Library.MainWriters
 
                 Output.WriteLine("<script type=\"text/javascript\" src=\"https://unpkg.com/xregexp/xregexp-all.js\"></script>");
 
-                Boolean use_timeline_bundle = false;
+                bool use_timeline_bundle = false;
 
                 try
                 {
-                    if (UI_ApplicationCache_Gateway.Settings.Get_Additional_Setting("Use Timeline Bundle").Equals("true"))
+                    string timeline_bundle_setting = UI_ApplicationCache_Gateway.Settings.Get_Additional_Setting("Use Timeline Bundle");
+                    if ((!String.IsNullOrEmpty(timeline_bundle_setting)) && (timeline_bundle_setting.Equals("true", StringComparison.OrdinalIgnoreCase)))
                     {
                         Output.WriteLine("<!-- using timeline bundle -->");
                         use_timeline_bundle = true;
@@ -629,7 +631,6 @@ namespace SobekCM.Library.MainWriters
                     else
                     {
                         Output.WriteLine("<!-- using timeline src code -->");
-                        use_timeline_bundle = false;
                     }
                 }
                 catch (Exception e)
@@ -713,7 +714,8 @@ namespace SobekCM.Library.MainWriters
 
             try
             {
-                if (UI_ApplicationCache_Gateway.Settings.Get_Additional_Setting("Use Materialize framework").Equals("true"))
+                string materialize_setting = UI_ApplicationCache_Gateway.Settings.Get_Additional_Setting("Use Materialize framework");
+                if ((!String.IsNullOrEmpty(materialize_setting)) && (materialize_setting.Equals("true", StringComparison.OrdinalIgnoreCase)))
                 {
                     Tracer.Add_Trace("Html_MainWriter.Write_Within_HTML_head", "Adding Materialize framework support");
                     Output.WriteLine("<!-- Start Materlize framework support -->");

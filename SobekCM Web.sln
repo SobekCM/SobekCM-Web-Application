@@ -1,6 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+# Visual Studio 15
+VisualStudioVersion = 15.0.27130.2020
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SobekCM", "SobekCM\SobekCM.csproj", "{BEDC2D5D-491E-4A09-9C02-80C58904949D}"
 	ProjectSection(ProjectDependencies) = postProject
 		{C5D75F1A-C5D8-428D-BBA3-EA946FD539E1} = {C5D75F1A-C5D8-428D-BBA3-EA946FD539E1}
@@ -43,6 +45,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EngineAgnosticLayerDbAccess", "EngineAgnosticLayerDbAccess\EngineAgnosticLayerDbAccess.csproj", "{B481CE6E-05FD-4336-9524-64D057AAB107}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SobekCM_Resource_Database", "SobekCM_Resource_Database\SobekCM_Resource_Database.csproj", "{3D35E1A0-0126-45D2-B663-49BA144A3537}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Census_Metadata_Plugin", "Census_Metadata_Plugin\Census_Metadata_Plugin.csproj", "{6D2EF65A-B04D-40B5-A082-79030C287C14}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NSLA_Metadata_Plugin", "NSLA_Metadata_Plugin\NSLA_Metadata_Plugin.csproj", "{51A06F8D-4F8D-4662-82DE-2F4D40AEDBBD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -112,8 +118,27 @@ Global
 		{3D35E1A0-0126-45D2-B663-49BA144A3537}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3D35E1A0-0126-45D2-B663-49BA144A3537}.Release|Any CPU.Build.0 = Release|Any CPU
 		{3D35E1A0-0126-45D2-B663-49BA144A3537}.Release|x64.ActiveCfg = Release|Any CPU
+		{6D2EF65A-B04D-40B5-A082-79030C287C14}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6D2EF65A-B04D-40B5-A082-79030C287C14}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6D2EF65A-B04D-40B5-A082-79030C287C14}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{6D2EF65A-B04D-40B5-A082-79030C287C14}.Debug|x64.Build.0 = Debug|Any CPU
+		{6D2EF65A-B04D-40B5-A082-79030C287C14}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6D2EF65A-B04D-40B5-A082-79030C287C14}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6D2EF65A-B04D-40B5-A082-79030C287C14}.Release|x64.ActiveCfg = Release|Any CPU
+		{6D2EF65A-B04D-40B5-A082-79030C287C14}.Release|x64.Build.0 = Release|Any CPU
+		{51A06F8D-4F8D-4662-82DE-2F4D40AEDBBD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{51A06F8D-4F8D-4662-82DE-2F4D40AEDBBD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{51A06F8D-4F8D-4662-82DE-2F4D40AEDBBD}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{51A06F8D-4F8D-4662-82DE-2F4D40AEDBBD}.Debug|x64.Build.0 = Debug|Any CPU
+		{51A06F8D-4F8D-4662-82DE-2F4D40AEDBBD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{51A06F8D-4F8D-4662-82DE-2F4D40AEDBBD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{51A06F8D-4F8D-4662-82DE-2F4D40AEDBBD}.Release|x64.ActiveCfg = Release|Any CPU
+		{51A06F8D-4F8D-4662-82DE-2F4D40AEDBBD}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {F4734652-C399-4A6B-9A57-0E6630CEAB76}
 	EndGlobalSection
 EndGlobal

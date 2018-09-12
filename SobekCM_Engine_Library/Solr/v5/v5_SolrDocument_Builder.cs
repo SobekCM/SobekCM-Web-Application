@@ -336,7 +336,7 @@ namespace SobekCM.Engine_Library.Solr.v5
                         returnValue.Spatial.Add(searchTerm.Value);
                         break;
 
-                    case "spatial coverage.dispay":
+                    case "spatial coverage.display":
                         if ( returnValue.SpatialDisplay == null) returnValue.SpatialDisplay = new List<string>();
                         returnValue.SpatialDisplay.Add(searchTerm.Value);
                         break;

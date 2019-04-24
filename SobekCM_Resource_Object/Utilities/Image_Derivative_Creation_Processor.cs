@@ -457,19 +457,70 @@ namespace SobekCM.Resource_Object.Utilities
 			}
 		}
 
-		#endregion
+        #endregion
 
-		#region Create JPEG2000 Files
+        #region Create TIFF file from a JPEG
 
-		/// <summary> Creates a JPEG2000 derivative service file, according to NDNP specs, for display 
-		/// within a SobekCM library </summary>
+        /// <summary> Use ImageMagick to create a TIFF file, most likely from a JPEG file </summary>
+        /// <param name="Image_Magick_Path"> path for the image magick executable </param>
+        /// <param name="Sourcefile"> Source file </param>
+        /// <param name="Finalfile"> Final file</param>
+        public static bool ImageMagick_Create_TIFF(string Image_Magick_Path, string Sourcefile, string Finalfile)
+        {
+            try
+            {
+                // Start this process
+                using (Process convert = new Process { StartInfo = { WindowStyle = ProcessWindowStyle.Minimized, CreateNoWindow = true, ErrorDialog = true, RedirectStandardError = true, UseShellExecute = false } })
+                {
+                    if (Image_Magick_Path.ToUpper().IndexOf("CONVERT.EXE") > 0)
+                        convert.StartInfo.FileName = Image_Magick_Path;
+                    else
+                        convert.StartInfo.FileName = Image_Magick_Path + "\\convert.exe";
+
+                    // For TIFFs, we will select [0], which fixes multi-page TIFFs
+                    convert.StartInfo.Arguments = "\"" + Sourcefile + "\" \"" + Finalfile + "\"";
+
+                    // Start
+                    convert.Start();
+
+                    // Check for any error
+                    StreamReader readError = convert.StandardError;
+                    string error = readError.ReadToEnd();
+
+                    // Make sure it is complete
+                    convert.WaitForExit();
+                    convert.Dispose();
+                }
+
+                // If the final file did not appear, there was a problem
+                if (!File.Exists(Finalfile))
+                {
+                    return false;
+                }
+                else
+                {
+                    return true;
+                }
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        #endregion
+
+        #region Create JPEG2000 Files
+
+        /// <summary> Creates a JPEG2000 derivative service file, according to NDNP specs, for display 
+        /// within a SobekCM library </summary>
         /// <param name="SourceFileName"> Complete name (including directory) of the TIFF file to actually process, which is often in a temporary location </param>
         /// <param name="DestinationFilename"> Name of the resulting JPEG2000 file </param>
-		/// <param name="Directory"> Directory where the resulting JPEG2000 should be created ( usually the directory for the volume )</param>
-		/// <param name="ParentLogId"> Primary key to the parent log entery if this is performed by the builder </param>
-		/// <param name="PackageName"> Name of the package this file belongs to ( BibID : VID )</param>
-		/// <returns>TRUE if successful, otherwise FALSE</returns>
-		public bool Create_JPEG2000(string SourceFileName, string DestinationFilename, string Directory, long ParentLogId, string PackageName)
+        /// <param name="Directory"> Directory where the resulting JPEG2000 should be created ( usually the directory for the volume )</param>
+        /// <param name="ParentLogId"> Primary key to the parent log entery if this is performed by the builder </param>
+        /// <param name="PackageName"> Name of the package this file belongs to ( BibID : VID )</param>
+        /// <returns>TRUE if successful, otherwise FALSE</returns>
+        public bool Create_JPEG2000(string SourceFileName, string DestinationFilename, string Directory, long ParentLogId, string PackageName)
 		{
 			bool returnVal = true;
 		    string full_destination_name = Path.Combine(Directory, DestinationFilename);

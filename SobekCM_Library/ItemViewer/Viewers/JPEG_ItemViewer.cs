@@ -69,11 +69,16 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <param name="IpRestricted"> Flag indicates if this item is IP restricted AND if the current user is outside the ranges </param>
         public override void Add_Menu_Items(BriefItemInfo CurrentItem, User_Object CurrentUser, Navigation_Object CurrentRequest, List<Item_MenuItem> MenuItems, bool IpRestricted )
         {
+            int current_page = 1;
+            string previous_code = "1";
+
             // Get the URL for this
-            string previous_code = CurrentRequest.ViewerCode.Replace("x", "").Replace("j", "");
-            int current_page;
-            if (!int.TryParse(previous_code, out current_page))
-                current_page = 1;
+            if (CurrentRequest.ViewerCode != null)
+            {
+                previous_code = CurrentRequest.ViewerCode.Replace("x", "").Replace("j", "");
+                if (!int.TryParse(previous_code, out current_page))
+                    current_page = 1;
+            }
 
             CurrentRequest.ViewerCode = ViewerCode.Replace("#", current_page.ToString());
             string url = UrlWriterHelper.Redirect_URL(CurrentRequest);

@@ -35,6 +35,15 @@ namespace SobekCM.Engine_Library.Solr.v5
             itemResult.MainThumbnail = thisResult.MainThumbnail;
             resultConverted.Items.Add(itemResult);
 
+            // Check for access
+            if (thisResult.Hidden)
+                itemResult.AccessType = "dark";
+            else if (( thisResult.Discover_IPs != null ) && ( thisResult.Discover_IPs.Count > 0 ))
+            {
+                if (thisResult.Discover_IPs[0] == -1)
+                    itemResult.AccessType = "private";
+            }
+
             // Build the display results values
             List<string> display_result_fields = new List<string>();
             foreach (Complete_Item_Aggregation_Metadata_Type metadataField in DisplayFields)

@@ -159,7 +159,7 @@ namespace SobekCM.Engine_Library.Solr.v5
                 var solrWorker = Solr_Operations_Cache<v5_SolrDocument>.GetSolrOperations(solrDocumentUrl);
 
                 // Get the list of fields
-                List<string> fields = new List<string> {"did", "mainthumb", "title"};
+                List<string> fields = new List<string> {"did", "mainthumb", "title", "discover_ips", "hidden"};
                 fields.AddRange(SearchOptions.Fields.Select(MetadataField => MetadataField.SolrCode));
 
                 // Create the query options

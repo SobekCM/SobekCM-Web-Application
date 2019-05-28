@@ -55,6 +55,9 @@ namespace SobekCM.Core.Results
         /// <summary> COinS OpenURL format of citation for citation sharing </summary>
         public string COinS_OpenURL { get; set; }
 
+        /// <summary> Flag indicates if this is dark, private, etc.. </summary>
+        public string AccessType { get; set; }
+
         #endregion
     }
 }

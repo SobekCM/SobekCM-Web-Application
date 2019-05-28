@@ -41,7 +41,10 @@ namespace SobekCM.Engine_Library.Solr.v5
                 // If this is public and non-dark, but no date for made
                 // public exists, make it today
                 if ((!Digital_Object.Behaviors.Dark_Flag) && (Digital_Object.Behaviors.IP_Restriction_Membership >= 0))
+                {
                     Digital_Object.Web.MadePublicDate = DateTime.Now;
+                    returnValue.MadePublicDate = Digital_Object.Web.MadePublicDate.Value;
+                }
             }
 
             // Add Serial hierarchy fields
@@ -60,6 +63,8 @@ namespace SobekCM.Engine_Library.Solr.v5
             returnValue.Level5_Text = String.Empty;
             returnValue.Level5_Index = -1;
             returnValue.Level5_Facet = "NONE";
+            returnValue.Hidden = false;
+            returnValue.RestrictedMsg = String.Empty;
 
             if (Digital_Object.Behaviors != null)
             {
@@ -100,26 +105,28 @@ namespace SobekCM.Engine_Library.Solr.v5
                 }
 
                 returnValue.Hidden = Digital_Object.Behaviors.Dark_Flag;
-            }
 
-            // Some defaults
-            returnValue.Discover_Groups = new List<int> { 0 };
-            returnValue.Discover_Users = new List<int> { 0 };
-            returnValue.RestrictedMsg = String.Empty;
+                // Some defaults
+                returnValue.Discover_Groups = new List<int> { 0 };
+                returnValue.Discover_Users = new List<int> { 0 };
+                returnValue.RestrictedMsg = String.Empty;
 
-            // Set the IP restrictions based on PRIVATE or NOT
-            if (Digital_Object.Behaviors.IP_Restriction_Membership == -1)
-                returnValue.Discover_IPs = new List<int> { -1 };
-            else
-            {
-                returnValue.Discover_IPs = new List<int> { 0 };
-
-                // If some restrictions, set the restriction message
-                if (Digital_Object.Behaviors.IP_Restriction_Membership > 0)
+                // Set the IP restrictions based on PRIVATE or NOT
+                if (Digital_Object.Behaviors.IP_Restriction_Membership == -1)
+                    returnValue.Discover_IPs = new List<int> { -1 };
+                else
                 {
-                    returnValue.RestrictedMsg = "Access Restrictions Apply";
+                    returnValue.Discover_IPs = new List<int> { 0 };
+
+                    // If some restrictions, set the restriction message
+                    if (Digital_Object.Behaviors.IP_Restriction_Membership > 0)
+                    {
+                        returnValue.RestrictedMsg = "Access Restrictions Apply";
+                    }
                 }
             }
+
+
 
             // Set the spatial KML
             GeoSpatial_Information geo = Digital_Object.Get_Metadata_Module(GlobalVar.GEOSPATIAL_METADATA_MODULE_KEY) as GeoSpatial_Information;
@@ -651,7 +658,7 @@ namespace SobekCM.Engine_Library.Solr.v5
             DateTime gregDate;
             if (DateTime.TryParse(pub_date, out gregDate))
             {
-                returnValue.Date = returnValue.Date + " (Date Auto-Converted to " + gregDate.ToShortDateString() + ")";
+                returnValue.Date = returnValue.Date;
                 returnValue.GregorianDate = gregDate;
                 returnValue.DateYear = gregDate.Year.ToString();
 
@@ -665,7 +672,7 @@ namespace SobekCM.Engine_Library.Solr.v5
                 if ((pub_date.Length == 4) && (int.TryParse(pub_date, out year_only)))
                 {
                     gregDate = new DateTime(year_only, 1, 1);
-                    returnValue.Date = returnValue.Date = returnValue.Date + " (Date Converted to " + gregDate.ToShortDateString() + ")";
+                    returnValue.Date = returnValue.Date = returnValue.Date;
 
 
                     returnValue.GregorianDate = gregDate;
@@ -675,70 +682,7 @@ namespace SobekCM.Engine_Library.Solr.v5
                     returnValue.TimelineDate = gregDate;
                     returnValue.TimelineDateDisplay = pub_date;
                 }
-                else
-                {
-                    returnValue.Date = returnValue.Date + " (Date NOT Converted)";
-                }
             }
-
-
-            //// Subject metadata fields ( and also same spatial information )
-            //List<string> spatials = new List<string>();
-            //List<Subject_Info_HierarchicalGeographic> hierarhicals = new List<Subject_Info_HierarchicalGeographic>();
-            //if ( Digital_Object.Bib_Info.Subjects_Count > 0 )
-            //{
-            //    List<string> subjects = new List<string>();
-            //    List<string> name_as_subject = new List<string>();
-            //    List<string> title_as_subject = new List<string>();
-
-            //    // Collect the types of subjects
-            //    foreach (Subject_Info thisSubject in Digital_Object.Bib_Info.Subjects)
-            //    {
-            //        switch (thisSubject.Class_Type)
-            //        {
-            //            case Subject_Info_Type.Name:
-            //                name_as_subject.Add(thisSubject.ToString());
-            //                break;
-
-            //             case Subject_Info_Type.TitleInfo:
-            //                title_as_subject.Add(thisSubject.ToString());
-            //                break;
-
-            //             case Subject_Info_Type.Standard:
-            //                subjects.Add(thisSubject.ToString());
-            //                Subject_Info_Standard standardSubj = thisSubject as Subject_Info_Standard;
-            //                if (standardSubj.Geographics_Count > 0)
-            //                {
-            //                    spatials.AddRange(standardSubj.Geographics);
-            //                }
-            //                break;
-
-            //            case Subject_Info_Type.Hierarchical_Spatial:
-            //                hierarhicals.Add( thisSubject as Subject_Info_HierarchicalGeographic);
-            //                break;
-            //        }
-            //    }
-
-            //    // Now add to this document, if present
-            //    if (name_as_subject.Count > 0)
-            //    {
-            //        NameAsSubject = new List<string>();
-            //        NameAsSubject.AddRange(name_as_subject);
-            //    }
-            //    if (title_as_subject.Count > 0)
-            //    {
-            //        TitleAsSubject = new List<string>();
-            //        TitleAsSubject.AddRange(title_as_subject);
-            //    }
-            //    if (subjects.Count > 0)
-            //    {
-            //        Subject = new List<string>();
-            //        Subject.AddRange(subjects);
-            //    }
-            //}
-
-
-
 
             // Add the empty solr pages for now
             returnValue.Solr_Pages = new List<Legacy_SolrPage>();

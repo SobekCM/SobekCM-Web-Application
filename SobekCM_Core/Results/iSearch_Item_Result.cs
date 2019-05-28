@@ -48,5 +48,8 @@
 
 		/// <summary> COinS OpenURL format of citation for citation sharing </summary>
 		string COinS_OpenURL { get; }
+
+        /// <summary> Flag indicates if this is dark, private, etc.. </summary>
+        string AccessType { get; }
     }
 }

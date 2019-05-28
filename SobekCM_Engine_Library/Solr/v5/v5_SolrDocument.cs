@@ -222,7 +222,8 @@ namespace SobekCM.Engine_Library.Solr.v5
         [SolrField("discover_ips")]
         public List<int> Discover_IPs { get; set; }
 
-        /// <summary> Hidden flag indicates if this digital resource is completely hidden, not to be publicly discovered at all </summary>
+        /// <summary> Hidden flag indicates if this digital resource is completely hidden, not to be publicly discovered </summary>
+        /// <remarks> Admins can get access to discover these items if they use the 'View private items' checkbox </remarks>
         [SolrField("hidden")]
         public bool Hidden { get; set; }
 

@@ -293,6 +293,7 @@ namespace SobekCM.Engine_Library.Aggregations
                             }
                         }
 
+
                         if ((Current_User.Is_Host_Admin) || (Current_User.Is_System_Admin) || (Current_User.Is_Portal_Admin))
                         {
                             Tracer.Add_Trace("Item_Aggregation_Utilities.Get_Browse_Results", "User is a host, system, or portal admin.");
@@ -303,6 +304,8 @@ namespace SobekCM.Engine_Library.Aggregations
                             Tracer.Add_Trace("Item_Aggregation_Utilities.Get_Browse_Results", "User is an aggregation admin or curator");
                             userInfo.Admin = true;
                         }
+
+
                     }
 
                     // Build the search options

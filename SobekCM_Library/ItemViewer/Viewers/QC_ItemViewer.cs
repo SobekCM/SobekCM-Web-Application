@@ -1052,8 +1052,12 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 writer.Flush();
                 writer.Close();
 
+                // Clear the current cached stuff.. it is wrong anyway.
+                Cancel_Current_QC();
+
                 // Also, send an email
                 Email_Helper.SendEmail("Mark.V.Sullivan@gmail.com", "QC Error caught on " + qc_item.BibID + ":" + qc_item.VID, "EXCEPTION CAUGHT DURING SAVE_FROM_FORM_REQUEST_TO_ITEM METHOD\n\n" + e.Message + "\n\n" + e.StackTrace, false, UI_ApplicationCache_Gateway.Settings.System.System_Name);
+
 
                 // Now, throw again
                 throw new ApplicationException(e.Message);

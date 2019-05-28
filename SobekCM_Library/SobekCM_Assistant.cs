@@ -1287,6 +1287,7 @@ namespace SobekCM.Library
                     }
                 }
                 searchOptions.GroupItemsByTitle = (Current_Aggregation.GroupResults && !contains_full_text);
+                searchOptions.IncludeFullTextSnippets = contains_full_text;
 
                 v5_Solr_Searcher.Search(Terms, Web_Fields, null, null, searchOptions, userInfo, Tracer, out Complete_Result_Set_Info, out Paged_Results);
             }

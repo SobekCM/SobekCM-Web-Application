@@ -67,6 +67,7 @@ namespace SobekCM.Library.ResultsViewer
             foreach (iSearch_Title_Result titleResult in PagedResults)
             {
 	            bool multiple_title = titleResult.Item_Count > 1;
+                string access_type = String.Empty;
 
 	            // Always get the first item for things like the main link and thumbnail
                 iSearch_Item_Result firstItemResult = titleResult.Get_Item(0);
@@ -87,21 +88,32 @@ namespace SobekCM.Library.ResultsViewer
 
                 }
                 else
-                    resultsBldr.AppendLine("\t<section class=\"sbkBrv_SingleResult\" onclick=\"window.location.href='" + internal_link.Replace("'","\\'") + "';\" >");
+                {
+                    access_type = firstItemResult.AccessType;
+                    if (String.IsNullOrEmpty(access_type))
+                    {
+                        resultsBldr.AppendLine("\t<section class=\"sbkBrv_SingleResult\" onclick=\"window.location.href='" + internal_link.Replace("'", "\\'") + "';\" >");
+                    }
+                    else
+                    {
+                        resultsBldr.AppendLine("\t<section class=\"sbkBrv_SingleResult sbkBrv_SingleResult_" + access_type + "\" onclick=\"window.location.href='" + internal_link.Replace("'", "\\'") + "';\" >");
+                    }
+                }
 
                 // Add the counter as the first column
                 resultsBldr.AppendLine("\t\t<div class=\"sbkBrv_SingleResultNum\">" + result_counter + "</div>");
                 resultsBldr.Append("\t\t<div class=\"sbkBrv_SingleResultThumb\">");
-                //// Is this restricted?
-                bool restricted_by_ip = false;
-                if ((titleResult.Item_Count == 1) && (firstItemResult.IP_Restriction_Mask > 0))
-                {
-                    int comparison = firstItemResult.IP_Restriction_Mask & CurrentUserMask;
-                    if (comparison == 0)
-                    {
-                        restricted_by_ip = true;
-                    }
-                }
+
+                ////// Is this restricted?
+                //bool restricted_by_ip = false;
+                //if ((titleResult.Item_Count == 1) && (firstItemResult.IP_Restriction_Mask > 0))
+                //{
+                //    int comparison = firstItemResult.IP_Restriction_Mask & CurrentUserMask;
+                //    if (comparison == 0)
+                //    {
+                //        restricted_by_ip = true;
+                //    }
+                //}
 
                 // Calculate the thumbnail
                 string thumb = titleResult.BibID.Substring(0, 2) + "/" + titleResult.BibID.Substring(2, 2) + "/" +titleResult.BibID.Substring(4, 2) + "/" + titleResult.BibID.Substring(6, 2) + "/" + titleResult.BibID.Substring(8) + "/" + firstItemResult.VID + "/" + (firstItemResult.MainThumbnail).Replace("\\", "/").Replace("//", "/");
@@ -119,9 +131,15 @@ namespace SobekCM.Library.ResultsViewer
                 resultsBldr.AppendLine("\t\t<div class=\"sbkBrv_SingleResultDesc\">");
 
                 // If this was access restricted, add that
-                if (restricted_by_ip)
+                if (!String.IsNullOrEmpty(access_type))
                 {
-                    resultsBldr.AppendLine("\t\t\t<span class=\"RestrictedItemText\">" + UI_ApplicationCache_Gateway.Translation.Get_Translation("Access Restricted", RequestSpecificValues.Current_Mode.Language) + "</span>");
+                    string access_message = "Access Restricted";
+                    if (access_type == "private")
+                        access_message = "Access Restricted (Private Item)";
+                    else if (access_type == "dark")
+                        access_message = "Access Restricted (Dark Item)";
+
+                    resultsBldr.AppendLine("\t\t\t<div class=\"RestrictedItemText\">" + UI_ApplicationCache_Gateway.Translation.Get_Translation(access_message, RequestSpecificValues.Current_Mode.Language) + "</div>");
                 }
 
                 if (multiple_title)

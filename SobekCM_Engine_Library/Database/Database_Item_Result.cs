@@ -64,7 +64,13 @@ namespace SobekCM.Engine_Library.Database
 
 		/// <summary> COinS OpenURL format of citation for citation sharing </summary>
 		public string COinS_OpenURL { get; set; }
+        
+        /// <summary> Flag indicates if this is dark, private, etc.. </summary>
+        public string AccessType
+        {
+            get { return String.Empty; }
+        }
 
-		#endregion
-	}
+        #endregion
+    }
 }

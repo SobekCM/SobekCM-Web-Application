@@ -490,6 +490,12 @@ namespace SobekCM.Engine_Library.Solr.Legacy
 			get { return String.Empty; }
 		}
 
+        /// <summary> Flag indicates if this is dark, private, etc.. </summary>
+        public string AccessType
+        {
+            get { return String.Empty;  }
+        }
+
         #endregion
     }
 }

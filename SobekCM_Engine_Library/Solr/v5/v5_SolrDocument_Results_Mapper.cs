@@ -10,18 +10,18 @@ namespace SobekCM.Engine_Library.Solr.v5
 {
     public class v5_SolrDocument_Results_Mapper
     {
-        public v5_Solr_Title_Result Map_To_Result(v5_SolrDocument thisResult, List<Complete_Item_Aggregation_Metadata_Type> DisplayFields)
+        public v5_Solr_Title_Result Map_To_Result(v5_SolrDocument solrDocument, List<Complete_Item_Aggregation_Metadata_Type> DisplayFields)
         {
             // Create the results
             v5_Solr_Title_Result resultConverted = new v5_Solr_Title_Result();
-            resultConverted.MaterialType = thisResult.Type;
+            resultConverted.MaterialType = solrDocument.Type;
 
             // Get the bibid
-            resultConverted.BibID = thisResult.DID.Substring(0, 10);
+            resultConverted.BibID = solrDocument.DID.Substring(0, 10);
 
             // For now...
-            resultConverted.GroupThumbnail = thisResult.MainThumbnail;
-            resultConverted.GroupTitle = thisResult.Title ?? "NO TITLE";
+            resultConverted.GroupThumbnail = solrDocument.MainThumbnail;
+            resultConverted.GroupTitle = solrDocument.Title ?? "NO TITLE";
 
             // These should not really be necessary
             resultConverted.Primary_Identifier = String.Empty;
@@ -30,17 +30,17 @@ namespace SobekCM.Engine_Library.Solr.v5
 
             // Add the item
             v5_Solr_Item_Result itemResult = new v5_Solr_Item_Result();
-            itemResult.VID = thisResult.DID.Substring(11, 5);
-            itemResult.Title = thisResult.Title ?? "NO TITLE";
-            itemResult.MainThumbnail = thisResult.MainThumbnail;
+            itemResult.VID = solrDocument.DID.Substring(11, 5);
+            itemResult.Title = solrDocument.Title ?? "NO TITLE";
+            itemResult.MainThumbnail = solrDocument.MainThumbnail;
             resultConverted.Items.Add(itemResult);
 
             // Check for access
-            if (thisResult.Hidden)
+            if (solrDocument.Hidden)
                 itemResult.AccessType = "dark";
-            else if (( thisResult.Discover_IPs != null ) && ( thisResult.Discover_IPs.Count > 0 ))
+            else if ((solrDocument.Discover_IPs != null ) && (solrDocument.Discover_IPs.Count > 0 ))
             {
-                if (thisResult.Discover_IPs[0] == -1)
+                if (solrDocument.Discover_IPs[0] == -1)
                     itemResult.AccessType = "private";
             }
 
@@ -48,7 +48,7 @@ namespace SobekCM.Engine_Library.Solr.v5
             List<string> display_result_fields = new List<string>();
             foreach (Complete_Item_Aggregation_Metadata_Type metadataField in DisplayFields)
             {
-                display_result_fields.Add(data_from_display_field(thisResult, metadataField.SolrCode) ?? String.Empty);
+                display_result_fields.Add(data_from_display_field(solrDocument, metadataField.SolrCode) ?? String.Empty);
             }
 
             resultConverted.Metadata_Display_Values = display_result_fields.ToArray();
@@ -68,28 +68,28 @@ namespace SobekCM.Engine_Library.Solr.v5
 
             // Now add all the item info
             bool first_item = true;
-            foreach(v5_SolrDocument item in Grouping.Documents)
+            foreach(v5_SolrDocument solrDocument in Grouping.Documents)
             {
                 if ( first_item)
                 {
-                    resultConverted.MaterialType = item.Type;
+                    resultConverted.MaterialType = solrDocument.Type;
 
                     // Get the bibid
-                    resultConverted.BibID = item.DID.Substring(0, 10);
+                    resultConverted.BibID = solrDocument.DID.Substring(0, 10);
 
                     // Look for information about this bibid first
                     Multiple_Volume_Item titleInfo = Engine_ApplicationCache_Gateway.Title_List.Get_Title(resultConverted.BibID);
                     if (titleInfo == null)
                     {
-                        resultConverted.GroupThumbnail = item.MainThumbnail;
-                        resultConverted.GroupTitle = item.Title ?? "NO TITLE";
+                        resultConverted.GroupThumbnail = solrDocument.MainThumbnail;
+                        resultConverted.GroupTitle = solrDocument.Title ?? "NO TITLE";
                     }
                     else
                     {
                         if ((titleInfo.GroupThumbnailType == Group_Thumbnail_Enum.Custom_Thumbnail) && (!String.IsNullOrEmpty(titleInfo.CustomThumbnail)))
                             resultConverted.GroupThumbnail = titleInfo.CustomThumbnail;
                         else
-                            resultConverted.GroupThumbnail = item.MainThumbnail;
+                            resultConverted.GroupThumbnail = solrDocument.MainThumbnail;
                         resultConverted.GroupTitle = titleInfo.GroupTitle;
                     }
 
@@ -97,7 +97,7 @@ namespace SobekCM.Engine_Library.Solr.v5
                     List<string> display_result_fields = new List<string>();
                     foreach (Complete_Item_Aggregation_Metadata_Type metadataField in DisplayFields)
                     {
-                        display_result_fields.Add(data_from_display_field(item, metadataField.SolrCode) ?? String.Empty);
+                        display_result_fields.Add(data_from_display_field(solrDocument, metadataField.SolrCode) ?? String.Empty);
                     }
                     resultConverted.Metadata_Display_Values = display_result_fields.ToArray();
 
@@ -107,9 +107,19 @@ namespace SobekCM.Engine_Library.Solr.v5
 
                 // Add the item
                 v5_Solr_Item_Result itemResult = new v5_Solr_Item_Result();
-                itemResult.VID = item.DID.Substring(11, 5);
-                itemResult.Title = item.Title ?? "NO TITLE";
-                itemResult.MainThumbnail = item.MainThumbnail;
+                itemResult.VID = solrDocument.DID.Substring(11, 5);
+                itemResult.Title = solrDocument.Title ?? "NO TITLE";
+                itemResult.MainThumbnail = solrDocument.MainThumbnail;
+
+                // Check for access
+                if (solrDocument.Hidden)
+                    itemResult.AccessType = "dark";
+                else if ((solrDocument.Discover_IPs != null) && (solrDocument.Discover_IPs.Count > 0))
+                {
+                    if (solrDocument.Discover_IPs[0] == -1)
+                        itemResult.AccessType = "private";
+                }
+
                 resultConverted.Items.Add(itemResult);
             }          
 

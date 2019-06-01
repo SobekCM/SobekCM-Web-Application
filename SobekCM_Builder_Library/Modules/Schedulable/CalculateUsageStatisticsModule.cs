@@ -11,7 +11,6 @@ using SobekCM.Core.Settings;
 using SobekCM.Engine_Library.ApplicationState;
 using SobekCM.Engine_Library.Database;
 
-
 #endregion
 
 namespace SobekCM.Builder_Library.Modules.Schedulable

@@ -33,7 +33,7 @@ namespace SobekCM.Engine_Library.Solr.v5
         {
             if (Tracer != null)
             {
-                Tracer.Add_Trace("v5_Solr_Documents_Searcher.Search", String.Empty);
+                Tracer.Add_Trace("v5_Solr_Searcher.Search", String.Empty);
             }
 
             // Get the query string
@@ -235,7 +235,7 @@ namespace SobekCM.Engine_Library.Solr.v5
                 {
                     if (Tracer != null)
                     {
-                        Tracer.Add_Trace("v5_Solr_Documents_Searcher.Run_Query", "Grouping search request by bibid");
+                        Tracer.Add_Trace("v5_Solr_Searcher.Run_Query", "Grouping search request by bibid");
                     }
 
                     grouped_results = true;
@@ -257,12 +257,12 @@ namespace SobekCM.Engine_Library.Solr.v5
                 // Log the search term
                 if (Tracer != null)
                 {
-                    Tracer.Add_Trace("v5_Solr_Documents_Searcher.Run_Query", "Solr Query: " + QueryString);
+                    Tracer.Add_Trace("v5_Solr_Searcher.Run_Query", "Solr Query: " + QueryString);
                 }
 
                 if (Tracer != null)
                 {
-                    Tracer.Add_Trace("v5_Solr_Documents_Searcher.Run_Query", "Perform the search");
+                    Tracer.Add_Trace("v5_Solr_Searcher.Run_Query", "Perform the search");
                 }
 
                 // Perform this search
@@ -271,7 +271,7 @@ namespace SobekCM.Engine_Library.Solr.v5
 
                 if (Tracer != null)
                 {
-                    Tracer.Add_Trace("v5_Solr_Documents_Searcher.Run_Query", "Build the results object");
+                    Tracer.Add_Trace("v5_Solr_Searcher.Run_Query", "Build the results object");
                 }
 
                 // Create the search statistcs (this part assumes no grouping, and then we fix the count shortly)
@@ -312,6 +312,11 @@ namespace SobekCM.Engine_Library.Solr.v5
                 // Build the results differently, depending on whether they were grouped or not
                 if (grouped_results)
                 {
+                    if (Tracer != null)
+                    {
+                        Tracer.Add_Trace("v5_Solr_Searcher.Run_Query", "Building list of results (grouped)");
+                    }
+
                     // Get the grouped results (only grouped by bibid)
                     GroupedResults<v5_SolrDocument> title_groupings = results.Grouping["bibid"];
 
@@ -330,6 +335,11 @@ namespace SobekCM.Engine_Library.Solr.v5
                 }
                 else
                 {
+                    if (Tracer != null)
+                    {
+                        Tracer.Add_Trace("v5_Solr_Searcher.Run_Query", "Building list of results (not grouped)");
+                    }
+
                     // Pass all the results into the List and add the highlighted text to each result as well
                     foreach (v5_SolrDocument thisResult in results)
                     {
@@ -369,7 +379,7 @@ namespace SobekCM.Engine_Library.Solr.v5
         {
             if (Tracer != null)
             {
-                Tracer.Add_Trace("v5_Solr_Documents_Searcher.Create_Query_String", "Build the Solr query");
+                Tracer.Add_Trace("v5_Solr_Searcher.Create_Query_String", "Build the Solr query");
             }
 
             // Start to build the query

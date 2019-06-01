@@ -75,8 +75,19 @@ namespace SobekCM.Builder_Library.Modules.Items
                 {
                     try
                     {
-                        // Calculate and create the archive directory
-                        string archiveDirectory = Settings.Archive.Archive_DropBox + "\\" + ResourcePackage.BibID + "\\" + ResourcePackage.VID;
+                        // Calculate the unique archive directory for this item
+                        string archiveDirectory = Settings.Archive.Archive_DropBox + "\\" + ResourcePackage.BibID + "_" + ResourcePackage.VID + "_" + DateTime.Now.Year + DateTime.Now.Month.ToString().PadLeft(2, '0') + DateTime.Now.Day.ToString().PadLeft(2, '0');
+                        if ( Directory.Exists(archiveDirectory))
+                        {
+                            char append = 'A';
+                            while((Directory.Exists(archiveDirectory+ append)) && ( append != 'Z'))
+                            {
+                                append++;
+                            }
+                            archiveDirectory = archiveDirectory + append;
+                        }
+                        
+                        // Should be the folder doesn't exist, but check one more time just in case
                         if (!Directory.Exists(archiveDirectory))
                             Directory.CreateDirectory(archiveDirectory);
 

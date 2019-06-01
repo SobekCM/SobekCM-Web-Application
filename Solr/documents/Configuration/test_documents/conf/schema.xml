@@ -38,6 +38,10 @@
   <field name="vid" type="text_single" indexed="true" stored="true" multiValued="false" />
   <field name="mainthumb" type="text_general" indexed="false" stored="true" multiValued="false" />
   
+  <!-- Field lists which instances the item should appear within -->
+  <field name="instances" type="text_single" indexed="true" stored="false" multiValued="true" />
+  <field name="instance_num" type="int" indexed="true" stored="false" multiValued="true" />
+  
   <!-- Fied is used to pull the items added recently -->
   <field name="made_public_date" type="date" indexed="true" stored="false" multiValued="false" />
   
@@ -46,10 +50,10 @@
   <field name="spatial_footprint_distance" type="int" indexed="true" stored="false" multiValued="false" />
   
    <!-- Some basic behavior fields related to discoverability and access -->
-   <field name="hidden" type="boolean" indexed="true" stored="false" multiValued="false" />    
+   <field name="hidden" type="boolean" indexed="true" stored="true" multiValued="false" />    
    <field name="discover_users" type="int" indexed="true" stored="false" multiValued="true" />
    <field name="discover_groups" type="int" indexed="true" stored="false" multiValued="true" />
-   <field name="discover_ips" type="int" indexed="true" stored="false" multiValued="true" />
+   <field name="discover_ips" type="int" indexed="true" stored="true" multiValued="true" />
    <field name="restricted_msg" type="text_general" indexed="false" stored="true" multiValued="false" />   
    
    <!-- Authority ids that this resource is related to -->
@@ -524,7 +528,7 @@
   <field name="user_defined_51_facets" type="text_facets" indexed="true" stored="false" multiValued="true" />
   <field name="user_defined_52_facets" type="text_facets" indexed="true" stored="false" multiValued="true" />
   
-  
+ 
   
   <!-- Title field aggregates all title fields -->
   <field name="title_all" type="text_general" indexed="true" stored="false" multiValued="true" />

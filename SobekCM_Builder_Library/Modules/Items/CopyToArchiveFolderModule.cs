@@ -18,6 +18,10 @@ namespace SobekCM.Builder_Library.Modules.Items
         /// <returns> TRUE if processing can continue, FALSE if a critical error occurred which should stop all processing </returns>
         public override bool DoWork(Incoming_Digital_Resource Resource)
         {
+            // Simple requests for the builder to reprocess an item don't require copying anything to the archive
+            if (Resource.ReprocessRequest)
+                return true;
+
             string resourceFolder = Resource.Resource_Folder;
 
             // Delete any pre-archive deletes

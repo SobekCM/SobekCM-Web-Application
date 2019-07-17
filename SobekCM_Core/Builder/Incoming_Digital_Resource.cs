@@ -78,6 +78,7 @@ namespace SobekCM.Builder_Library
 	        metsTypeOverride = String.Empty;
             NewImageFiles = new List<string>();
             NewPackage = false;
+            ReprocessRequest = false;
 
             fileRoot = "collect/image_files/";
         }
@@ -96,6 +97,10 @@ namespace SobekCM.Builder_Library
 
         /// <summary> Flag indicates if this a brand new item  </summary>
         public bool NewPackage { get; set; }
+
+        /// <summary> Flag indicates this is a reprocessing request, versus a new folder being dropped into an
+        /// inbound folder to be processed </summary>
+        public bool ReprocessRequest { get; set; }
 
 	    /// <summary> Gets the file hashtable to allow checking for the file object from the METS
         /// file by the name of the file </summary>

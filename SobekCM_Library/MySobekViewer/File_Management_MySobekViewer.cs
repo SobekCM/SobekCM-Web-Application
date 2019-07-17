@@ -376,6 +376,7 @@ namespace SobekCM.Library.MySobekViewer
                 {
                     SobekCM_Item_Database.Update_Additional_Work_Needed_Flag(Item_To_Complete.Web.ItemID, true);
                 }
+
             }
             catch (Exception ee)
             {

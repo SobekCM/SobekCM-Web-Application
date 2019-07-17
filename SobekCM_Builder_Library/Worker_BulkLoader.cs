@@ -655,8 +655,13 @@ namespace SobekCM.Builder_Library
                     if ((Directory.Exists(resource_folder)) && (File.Exists(mets_file)))
                     {
                         // Create the incoming digital resource object
-                        Incoming_Digital_Resource additionalWorkResource = new Incoming_Digital_Resource(resource_folder, sourceFolder) 
-							{BibID = bibID, VID = vid, File_Root = bibID.Substring(0, 2) + "\\" + bibID.Substring(2, 2) + "\\" + bibID.Substring(4, 2) + "\\" + bibID.Substring(6, 2) + "\\" + bibID.Substring(8, 2)};
+                        Incoming_Digital_Resource additionalWorkResource = new Incoming_Digital_Resource(resource_folder, sourceFolder)
+                        {
+                            BibID = bibID,
+                            VID = vid,
+                            File_Root = bibID.Substring(0, 2) + "\\" + bibID.Substring(2, 2) + "\\" + bibID.Substring(4, 2) + "\\" + bibID.Substring(6, 2) + "\\" + bibID.Substring(8, 2),
+                            ReprocessRequest = true
+                        };
 
 	                    Complete_Single_Recent_Load_Requiring_Additional_Work( additionalWorkResource);
                     }

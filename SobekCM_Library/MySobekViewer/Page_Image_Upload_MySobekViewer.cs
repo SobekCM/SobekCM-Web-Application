@@ -472,6 +472,9 @@ namespace SobekCM.Library.MySobekViewer
                     SobekCM_Item_Database.Update_Additional_Work_Needed_Flag(Item_To_Complete.Web.ItemID, true);
                 }
 
+                // Also copy the files over to the archive area, if there is an archive area configured
+                //Archive_Any_Files();
+
                 foreach (string thisFile in image_files)
                 {
                     try

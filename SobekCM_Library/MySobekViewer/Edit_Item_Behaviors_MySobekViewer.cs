@@ -152,6 +152,9 @@ namespace SobekCM.Library.MySobekViewer
                     SobekCM_Item_Database.Create_Full_Citation_Value(currentItem.Web.ItemID);
                 }
 
+                // Set the flag to rebuild the item
+                SobekCM_Item_Database.Update_Additional_Work_Needed_Flag(currentItem.Web.ItemID, true);
+
                 // Remoe from the caches (to replace the other)
                 CachedDataManager.Items.Remove_Digital_Resource_Object(currentItem.BibID, currentItem.VID, RequestSpecificValues.Tracer);
 

@@ -954,6 +954,9 @@ namespace SobekCM.Library.MySobekViewer
                     File.Copy(thisFile, destination_file, true);
                 }
 
+                // Also copy the files over to the archive area, if there is an archive area configured
+                Archive_Any_Files();
+
                 // Incrememnt the count of number of items submitted by this RequestSpecificValues.Current_User
                 RequestSpecificValues.Current_User.Items_Submitted_Count++;
                 if (!RequestSpecificValues.Current_User.BibIDs.Contains(Item_To_Complete.BibID))
@@ -1016,6 +1019,64 @@ namespace SobekCM.Library.MySobekViewer
             }
 
             return criticalErrorEncountered;
+        }
+
+        #endregion
+
+        #region Method to archive files
+
+        /// <summary> Copy all the new files over to the archive folder </summary>
+        /// <returns> TRUE if successful, otherwise FALSE </returns>
+        private bool Archive_Any_Files()
+        {
+            bool returnValue = true;
+
+            // For items submitted online through the web, all files are automatically archived if there is any archive drop box,
+            // since these files could be submitted via the IR type interface... maybe down the road we might consider pushing 
+            // this flag into the template configuration though
+            if (!String.IsNullOrEmpty(UI_ApplicationCache_Gateway.Settings.Archive.Archive_DropBox)) 
+            {
+                // Get the list of TIFFs
+                string[] new_files = Directory.GetFiles(userInProcessDirectory);
+
+                try
+                {
+                    // Calculate the unique archive directory for this item
+                    string archiveDirectory = UI_ApplicationCache_Gateway.Settings.Archive.Archive_DropBox + "\\" + item.BibID + "_" + item.VID + "_" + DateTime.Now.Year + DateTime.Now.Month.ToString().PadLeft(2, '0') + DateTime.Now.Day.ToString().PadLeft(2, '0');
+                    if (Directory.Exists(archiveDirectory))
+                    {
+                        char append = 'A';
+                        while ((Directory.Exists(archiveDirectory + append)) && (append != 'Z'))
+                        {
+                            append++;
+                        }
+                        archiveDirectory = archiveDirectory + append;
+                    }
+
+                    // Should be the folder doesn't exist, but check one more time just in case
+                    if (!Directory.Exists(archiveDirectory))
+                        Directory.CreateDirectory(archiveDirectory);
+
+                    // Copy ALL the NEW files over, all the time
+                    foreach (string thisFile in new_files)
+                    {
+                        string filename = Path.GetFileName(thisFile);
+                        if (String.Compare(filename, "thumbs.db", StringComparison.OrdinalIgnoreCase) != 0)
+                        {
+                            string newFile = archiveDirectory + "\\" + filename;
+                            //  OnProcess("\t\tCopying file ( " + thisFile + " -->" + newFile + ")", "Copy To Archive", ResourcePackage.BibID + ":" + ResourcePackage.VID, String.Empty, -1);
+
+                            File.Copy(thisFile, newFile, true);
+                        }
+                    }
+                }
+                catch (Exception ee)
+                {
+                    returnValue = false;
+                }
+            }
+
+            return returnValue;
         }
 
         #endregion

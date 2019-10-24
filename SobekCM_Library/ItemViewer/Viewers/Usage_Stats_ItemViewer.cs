@@ -207,6 +207,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             StringBuilder builder = new StringBuilder(2000);
 
+            builder.AppendLine("  <p>Usage statistics for items are compiled once a month from the previous month's usage logs and does not contain any personal information.</p>");
             builder.AppendLine("  <p>This item was has been viewed <%HITS%> times within <%SESSIONS%> visits.  Below are the details for overall usage for this item within this library.<br /><br />For definitions of these terms, see the <a href=\"" + CurrentRequest.Base_URL + "stats/usage/definitions\" target=\"_BLANK\">definitions on the main statistics page</a>.</p>");
 
             builder.AppendLine("  <table class=\"sbkCiv_StatsTable\">");
@@ -270,6 +271,12 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
 
             builder.AppendLine("</div>");
+
+            if ( hits == 0 )
+            {
+                return "<br /><br /><p>Usage statistics are accumulated monthly and have not yet been recorded for this item.</p><br /><br />";
+            }
+
             return builder.ToString().Replace("<%HITS%>", hits.ToString()).Replace("<%SESSIONS%>", sessions.ToString());
 
         }

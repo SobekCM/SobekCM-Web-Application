@@ -1882,6 +1882,23 @@ namespace SobekCM.Resource_Object
             }
             tags.Add_Field(tag856);
 
+
+            // ADD THE LOCATION / OTHER URL
+            if (( !String.IsNullOrEmpty(Bib_Info.Location.Other_URL)) && ( Bib_Info.Location.Other_URL.Length > 4))
+            {
+                MARC_Field tag856O = new MARC_Field { Tag = 856, Indicators = "41" };
+                string urlO = Bib_Info.Location.Other_URL;
+
+                string linkTextO = "Other Version";
+                if (!String.IsNullOrEmpty(Bib_Info.Location.Other_URL_Display_Label))
+                    linkTextO = Bib_Info.Location.Other_URL_Display_Label;
+
+                tag856O.Control_Field_Value = "|u " + urlO + " |y " + linkTextO;
+
+                tags.Add_Field(tag856O);
+            }
+   
+
             // ADD THE RELATED ITEMS
             if (Bib_Info.RelatedItems_Count > 0)
             {

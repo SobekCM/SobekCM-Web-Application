@@ -476,26 +476,54 @@ namespace SobekCM.Library.ItemViewer.Viewers
                                     }
                                     else
                                     {
-                                        if (String.IsNullOrEmpty(thisValue.Authority))
+                                        if (thisField.ItemProp.ToLower() == "url")
                                         {
-                                            if (String.IsNullOrEmpty(thisValue.Language))
+                                            if (String.IsNullOrEmpty(thisValue.Authority))
                                             {
-                                                valueArray.Add("<span itemprop=\"" + thisField.ItemProp + "\">" + display_text_from_value(thisValue.Value, thisValue.URIs) + "</span>");
+                                                if (String.IsNullOrEmpty(thisValue.Language))
+                                                {
+                                                    valueArray.Add("<span itemprop=\"" + thisField.ItemProp + "\">" + display_url_from_value(thisValue.Value, thisValue.URIs) + "</span>");
+                                                }
+                                                else
+                                                {
+                                                    valueArray.Add("<span itemprop=\"" + thisField.ItemProp + "\">" + display_url_from_value(thisValue.Value, thisValue.URIs) + " ( " + thisValue.Language + " )" + "</span>");
+                                                }
                                             }
                                             else
                                             {
-                                                valueArray.Add("<span itemprop=\"" + thisField.ItemProp + "\">" + display_text_from_value(thisValue.Value, thisValue.URIs) + " ( " + thisValue.Language + " )" + "</span>");
+                                                if (String.IsNullOrEmpty(thisValue.Language))
+                                                {
+                                                    valueArray.Add("<span itemprop=\"" + thisField.ItemProp + "\">" + display_url_from_value(thisValue.Value, thisValue.URIs) + " ( " + thisValue.Authority + " )" + "</span>");
+                                                }
+                                                else
+                                                {
+                                                    valueArray.Add("<span itemprop=\"" + thisField.ItemProp + "\">" + display_url_from_value(thisValue.Value, thisValue.URIs) + " ( " + thisValue.Authority + ", " + thisValue.Language + " )" + "</span>");
+                                                }
                                             }
                                         }
                                         else
                                         {
-                                            if (String.IsNullOrEmpty(thisValue.Language))
+                                            if (String.IsNullOrEmpty(thisValue.Authority))
                                             {
-                                                valueArray.Add("<span itemprop=\"" + thisField.ItemProp + "\">" + display_text_from_value(thisValue.Value, thisValue.URIs) + " ( " + thisValue.Authority + " )" + "</span>");
+                                                if (String.IsNullOrEmpty(thisValue.Language))
+                                                {
+                                                    valueArray.Add("<span itemprop=\"" + thisField.ItemProp + "\">" + display_text_from_value(thisValue.Value, thisValue.URIs) + "</span>");
+                                                }
+                                                else
+                                                {
+                                                    valueArray.Add("<span itemprop=\"" + thisField.ItemProp + "\">" + display_text_from_value(thisValue.Value, thisValue.URIs) + " ( " + thisValue.Language + " )" + "</span>");
+                                                }
                                             }
                                             else
                                             {
-                                                valueArray.Add("<span itemprop=\"" + thisField.ItemProp + "\">" + display_text_from_value(thisValue.Value, thisValue.URIs) + " ( " + thisValue.Authority + ", " + thisValue.Language + " )" + "</span>");
+                                                if (String.IsNullOrEmpty(thisValue.Language))
+                                                {
+                                                    valueArray.Add("<span itemprop=\"" + thisField.ItemProp + "\">" + display_text_from_value(thisValue.Value, thisValue.URIs) + " ( " + thisValue.Authority + " )" + "</span>");
+                                                }
+                                                else
+                                                {
+                                                    valueArray.Add("<span itemprop=\"" + thisField.ItemProp + "\">" + display_text_from_value(thisValue.Value, thisValue.URIs) + " ( " + thisValue.Authority + ", " + thisValue.Language + " )" + "</span>");
+                                                }
                                             }
                                         }
                                     }
@@ -736,6 +764,14 @@ namespace SobekCM.Library.ItemViewer.Viewers
         private static string display_text_from_value(string Value)
         {
             return HttpUtility.HtmlEncode(Value).Replace("&lt;i&gt;", "<i>").Replace("&lt;/i&gt;", "</i>");
+        }
+
+        private static string display_url_from_value(string Value, List<string> URIs)
+        {
+            if ((URIs == null) || (URIs.Count == 0))
+                return "<a href=\"" + Value + "\">" + HttpUtility.HtmlEncode(Value) + "</a>";
+
+            return "<a href=\"" + URIs[0] + "\">" + HttpUtility.HtmlEncode(Value).Replace("&lt;i&gt;", "<i>").Replace("&lt;/i&gt;", "</i>") + "</a>";
         }
 
         private static string display_text_from_value(string Value, List<string> URIs )

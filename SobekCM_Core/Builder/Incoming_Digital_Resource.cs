@@ -327,6 +327,7 @@ namespace SobekCM.Builder_Library
                 }
                 options["MarcXML_File_ReaderWriter:System Name"] = Settings.System.System_Name;
                 options["MarcXML_File_ReaderWriter:System Abbreviation"] = Settings.System.System_Abbreviation;
+                options["System URL"] = Settings.Servers.Application_Server_URL;
 
                 // Set the file root again
                 Metadata.Web.File_Root = fileRoot;

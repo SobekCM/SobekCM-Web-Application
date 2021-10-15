@@ -38,7 +38,11 @@ namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
                         {
                             if (thisNote.Note_Type != Note_Type_Enum.InternalComments)
                             {
-                                BriefItem_DescTermValue newAbstract = New.Add_Description("Note", thisNote.Note);
+                                string term = "Note";
+                                if (thisNote.Note_Type == Note_Type_Enum.Course)
+                                    term = "Course Note";
+
+                                BriefItem_DescTermValue newAbstract = New.Add_Description(term, thisNote.Note);
                                 newAbstract.SubTerm = thisNote.Note_Type_Display_String;
 
                                 if (!String.IsNullOrWhiteSpace(thisNote.Display_Label))

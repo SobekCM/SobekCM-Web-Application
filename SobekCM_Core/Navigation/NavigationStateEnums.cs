@@ -335,6 +335,9 @@
         /// <summary> Edit user-based preferences and user information </summary>
         Preferences,
 
+        /// <summary> Register as a new user </summary>
+        Register,
+
         /// <summary> Perform rights management on items </summary>
         Rights_Management,
 
@@ -410,6 +413,9 @@
 
         /// <summary> Provides top-level reports regarding permissions granted to users </summary>
         User_Permissions_Reports,
+
+        /// <summary> Provides a list of currently pending user requests (i.e., to join a group or allow submission) </summary>
+        User_Requests,
 
         /// <summary> Form to add a new web content page to the system </summary>
         WebContent_Add_New,

@@ -23,7 +23,8 @@ namespace SobekCM.Resource_Object.Bib_Info
         private List<Affiliation_Info> affiliations;
         private string bibID;
         private List<Finding_Guide_Container> containers;
- 
+
+        private string accessibility;
         private string encodingLevel;
         private List<Publisher_Info> manufacturers;
         private List<Publisher_Info> publishers;
@@ -315,6 +316,11 @@ namespace SobekCM.Resource_Object.Bib_Info
                             // Was this a translated title?
                             if ( thisTitle.Title_Type == Title_Type_Enum.Translated)
                                 metadataTerms.Add(new KeyValuePair<string, string>("Translated Title", thisTitle.ToString().Replace("<i>", " ").Replace("</i>", " ")));
+
+                            // Was this a course title?
+                            if (thisTitle.Title_Type == Title_Type_Enum.Course)
+                                metadataTerms.Add(new KeyValuePair<string, string>("Course Title", thisTitle.ToString().Replace("<i>", " ").Replace("</i>", " ")));
+
                         }
                     }
                 }
@@ -587,7 +593,14 @@ namespace SobekCM.Resource_Object.Bib_Info
 					}
 	            }
 
-	            return metadataTerms;
+                // Add the accessibility here
+                if (Accessibility.Length > 0)
+                {
+                    metadataTerms.Add(new KeyValuePair<string, string>("Accessibility", Accessibility));
+                }
+
+
+                return metadataTerms;
             }
         }
 
@@ -678,6 +691,13 @@ namespace SobekCM.Resource_Object.Bib_Info
             {
                 return true;
             }
+        }
+
+        /// <summary> Gets or sets the accessibility value </summary>
+        public string Accessibility
+        {
+            get { return accessibility ?? String.Empty; }
+            set { accessibility = value; }
         }
 
         /// <summary> Gets or sets the encoding level for this record </summary>
@@ -1155,6 +1175,8 @@ namespace SobekCM.Resource_Object.Bib_Info
                 relatedItems.Clear();
 
             encodingLevel = null;
+            accessibility = null;
+
             if (containers != null)
                 containers.Clear();
         }
@@ -1223,6 +1245,12 @@ namespace SobekCM.Resource_Object.Bib_Info
             // Add all the custom SobekCM specific data
             Results.Write(toMODS(sobekcm_namespace + ":BibID", BibID));
             Results.Write(toMODS(sobekcm_namespace + ":VID", VID));
+
+            // Add the Accessibilty info if there is one
+            if (!String.IsNullOrEmpty(accessibility))
+            {
+                Results.Write(toMODS(sobekcm_namespace + ":Accessibility", accessibility));
+            }
 
             // Add affiliation MODS
             if (affiliations != null)

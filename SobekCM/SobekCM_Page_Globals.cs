@@ -884,7 +884,7 @@ namespace SobekCM
 				}
 				else
 				{
-					if ((currentMode.Writer_Type == Writer_Type_Enum.HTML_LoggedIn) && (currentMode.My_Sobek_Type != My_Sobek_Type_Enum.Logon) && (currentMode.My_Sobek_Type != My_Sobek_Type_Enum.Preferences))
+					if ((currentMode.Writer_Type == Writer_Type_Enum.HTML_LoggedIn) && (currentMode.My_Sobek_Type != My_Sobek_Type_Enum.Logon) && (currentMode.My_Sobek_Type != My_Sobek_Type_Enum.Register))
 					{
 						switch (currentMode.Mode)
 						{
@@ -952,7 +952,7 @@ namespace SobekCM
 			}
 			else
 			{
-				if ((currentMode.Mode == Display_Mode_Enum.My_Sobek) && (currentMode.My_Sobek_Type != My_Sobek_Type_Enum.Preferences))
+				if ((currentMode.Mode == Display_Mode_Enum.My_Sobek) && (currentMode.My_Sobek_Type != My_Sobek_Type_Enum.Register))
 				{
 					currentMode.Logon_Required = true;
 				}

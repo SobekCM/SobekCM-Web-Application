@@ -43,6 +43,7 @@ namespace SobekCM.Library.AdminViewer
         private const string ADD_COLLECTION_WIZARD_BRIEF = "Add a new collection (or any other type of aggregation) using the wizard.  This will guide you the process of adding a new collection and uploading the banner and button.";
 		private const string EDIT_CURR_SKIN_BRIEF = "Edit the web skin currently in use.  This allows editing of headers and footers, implementing general style changes via CSS, and uploading web-skin related images and documents.";
 		private const string USERS_AND_GROUPS_BRIEF = "Edit users and user groups and assign new permissions either directly to users or through the user group membership.";
+        private const string USER_REQUESTS_BRIEF = "View any pending user requests, such as to submit material or join a user group.";
 		private const string URL_PORTALS_BRIEF = "URL portals define the different web skins and default aggregations to be displayed for different incoming base URLs.";
 		private const string WEB_SKINS_BRIEF = "View, edit, and create web skins to modify the overall look and feel of the site by editing headers, footers, and the CSS stylesheets.";
 		private const string ALIASES_BRIEF = "Manage the various aggregation aliases which allow different URLs to point to the same aggregation.";
@@ -123,7 +124,7 @@ namespace SobekCM.Library.AdminViewer
 	        categories_dictionary["common"].Add(editCurrSkinIcon);
 
 	        string usersIcon = String.Empty;
-	        if (( RequestSpecificValues.Current_User != null ) && ( RequestSpecificValues.Current_User.Is_System_Admin))
+	        if (( RequestSpecificValues.Current_User != null ) && (( RequestSpecificValues.Current_User.Is_System_Admin) || (RequestSpecificValues.Current_User.Is_Portal_Admin)))
 	        {
 	            // Edit users and groups
 	            RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Users;
@@ -224,6 +225,13 @@ namespace SobekCM.Library.AdminViewer
 	        string permissionsIcon = "  <a href=\"" + permissionsUrl + "\" title=\"" + PERMISSIONS_BRIEF + "\"><div class=\"sbkHav_ButtonDiv\"><img src=\"" + Static_Resources_Gateway.User_Permission_Img + "\" /><span class=\"sbkHav_ButtonText\">User Permissions<br />Reports</span></div></a>";
 	        icons["User Permissions Reports"] = permissionsIcon;
 	        categories_dictionary["permissions"].Add(permissionsIcon);
+
+            // View user rqeuests report
+            RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.User_Requests;
+            string requestsUrl = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+            string requestsIcon = "  <a href=\"" + requestsUrl + "\" title=\"" + USER_REQUESTS_BRIEF + "\"><div class=\"sbkHav_ButtonDiv\"><img src=\"" + Static_Resources_Gateway.User_Permission_Img + "\" /><span class=\"sbkHav_ButtonText\">User Requests</span></div></a>";
+            icons["User Requests"] = permissionsIcon;
+            categories_dictionary["permissions"].Add(requestsIcon);
 
             // Web content pages management
             RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.WebContent_Mgmt;
@@ -575,7 +583,7 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("      </td>");
             Output.WriteLine("    </tr>");
 
-            if (RequestSpecificValues.Current_User.Is_System_Admin)
+            if ((RequestSpecificValues.Current_User.Is_Portal_Admin) || ( RequestSpecificValues.Current_User.Is_System_Admin))
             {
                 // Edit users
                 RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Users;
@@ -589,7 +597,22 @@ namespace SobekCM.Library.AdminViewer
                 Output.WriteLine("        <div class=\"sbkMmav_Desc\">" + USERS_AND_GROUPS_BRIEF  + "</div>");
                 Output.WriteLine("      </td>");
                 Output.WriteLine("    </tr>");
-                Output.WriteLine("    <tr class=\"sbkMmav_SpacerRow\"><td colspan=\"3\"></td></tr>"); 
+                Output.WriteLine("    <tr class=\"sbkMmav_SpacerRow\"><td colspan=\"3\"></td></tr>");
+
+
+                // Edit users
+                RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.User_Requests;
+                string users_requests_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+
+                Output.WriteLine("    <tr>");
+                Output.WriteLine("      <td>&nbsp;</td>");
+                Output.WriteLine("      <td><a href=\"" + users_requests_url + "\"><img src=\"" + Static_Resources_Gateway.Users_Img_Large + "\" /></a></td>");
+                Output.WriteLine("      <td>");
+                Output.WriteLine("        <a href=\"" + users_url + "\">User Requests</a>");
+                Output.WriteLine("        <div class=\"sbkMmav_Desc\">" + USER_REQUESTS_BRIEF + "</div>");
+                Output.WriteLine("      </td>");
+                Output.WriteLine("    </tr>");
+                Output.WriteLine("    <tr class=\"sbkMmav_SpacerRow\"><td colspan=\"3\"></td></tr>");
             }
 
             // Manage web content pages

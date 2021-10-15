@@ -244,6 +244,9 @@ namespace SobekCM.Library.ItemViewer
                     case "SobekCM.Library.ItemViewer.Viewers.MultiVolumes_ItemViewer_Prototyper":
                         return new MultiVolumes_ItemViewer_Prototyper();
 
+                    case "SobekCM.Library.ItemViewer.Viewers.OpenTextbook_ItemViewer_Prototyper":
+                        return new OpenTextbook_ItemViewer_Prototyper();
+
                     case "SobekCM.Library.ItemViewer.Viewers.PDF_ItemViewer_Prototyper":
                         return new PDF_ItemViewer_Prototyper();
 

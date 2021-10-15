@@ -46,6 +46,10 @@ namespace SobekCM.Resource_Object.Behaviors
 		private Main_Page_Info mainPage;
 	    private Serial_Info serialInfo;
 
+        private List<User_Permissions> users_access;
+        private List<User_Group_Permissions> groups_access;
+        private string restricted_message;
+
 		
 		/// <summary> Constructor for a new instance of the Behaviors_Info class </summary>
 		public Behaviors_Info()
@@ -740,8 +744,6 @@ namespace SobekCM.Resource_Object.Behaviors
 
 		#endregion
 
-
-
 		#region Simple properties
 
 	    /// <summary> Flag indicates if the full text should be included in the static
@@ -895,12 +897,152 @@ namespace SobekCM.Resource_Object.Behaviors
         /// behavior/setting information for a digital resource </summary>
         public List<Tuple<string, string>> Settings { get; private set; }
 
-		#endregion
+        #endregion
 
-		/// <summary> Saves the data stored in this instance of the 
-		/// element to the provided bibliographic object </summary>
-		/// <param name="SerialInfo"> Serial information to set to this object </param>
-		public void Set_Serial_Info(Serial_Info SerialInfo)
+        #region Access restriction properties
+
+        /// <summary> Returns a flag indicating this material has user restrictions associated
+        /// with it</summary>
+        public bool HasUserRestriction
+        {
+            get
+            {
+                return (User_Access_Count + User_Group_Access_Count > 0);
+            }
+        }
+
+        /// <summary> Sets the restricted message to display for this item if you do 
+        /// not have permissions </summary>
+        public string RestrictedMessage
+        {
+            get { return restricted_message; }
+            set { restricted_message = value;  }
+        }
+
+        /// <summary> Returns the number of users listed as special access
+        /// in the user list (excluding the owner) </summary>
+        public int User_Access_Count
+        {
+            get
+            {
+                if (users_access == null) return 0;
+                return users_access.Count<User_Permissions>(x => x.isOwner == false);
+            }
+        }
+
+        /// <summary> Returns the complete list of users (including owner) with special
+        /// permissions on this item </summary>
+        public List<User_Permissions> User_Access
+        {
+            get
+            {
+                if (users_access == null) users_access = new List<User_Permissions>();
+                return users_access;
+            }
+        }
+
+        /// <summary> Returns the number of user groupss listed as special access
+        /// in the user group list </summary>
+        public int User_Group_Access_Count
+        {
+            get
+            {
+                if (groups_access == null) return 0;
+                return groups_access.Count();
+            }
+        }
+
+        /// <summary> Returns the complete list of users groups with special
+        /// permissions on this item </summary>
+        public List<User_Group_Permissions> User_Group_Access
+        {
+            get
+            {
+                if (groups_access == null) groups_access = new List<User_Group_Permissions>();
+                return groups_access;
+            }
+        }
+
+
+        /// <summary> Clear the list of users with access to this item </summary>
+        public void Clear_User_Access()
+        {
+            // Leave the owner
+            if (users_access != null)
+            {
+                users_access.RemoveAll(x => x.isOwner == false);
+            }
+        }
+
+        /// <summary> Clear the list of user groups with access to this item </summary>
+        public void Clear_User_Group_Access()
+        {
+            if (groups_access != null) groups_access.Clear();
+        }
+
+        /// <summary> Add user-specific permissions for this item </summary>
+        /// <param name="UserName"> (Immutable) Name of the user </param>
+        /// <param name="CanView"> Flag indicates this user can view the material </param>
+        /// <param name="CanEdit"> Flag indicates this user can edit the material </param>
+        /// <param name="CanDelete"> Flag indicates this user can delete the material </param>
+        public void Add_User_Access(string UserName, bool CanView, bool CanEdit, bool CanDelete)
+        {
+            if (users_access == null) users_access = new List<User_Permissions>();
+
+            // Is this in the list already?
+            var existing = users_access.SingleOrDefault<User_Permissions>(x => x.UserName == UserName);
+            if ( existing == null )
+            {
+                existing = new User_Permissions();
+                existing.UserName = UserName;
+                users_access.Add(existing);
+            }
+
+            // Now, set the flags correctly
+            existing.CanView = CanView;
+            existing.CanEditMetadata = CanEdit;
+            existing.CanEditBehaviors = CanEdit;
+            existing.CanPerformQc = CanEdit;
+            existing.CanUploadFiles = CanEdit;
+            existing.CanChangeVisibility = CanDelete;
+            existing.CanDelete = CanDelete;
+        }
+
+        /// <summary> Add user-group-specific permissions for this item </summary>
+        /// <param name="GroupName"> (Immutable) Name of the user group </param>
+        /// <param name="CanView"> Flag indicates this user group can view the material </param>
+        /// <param name="CanEdit"> Flag indicates this user group can edit the material </param>
+        /// <param name="CanDelete"> Flag indicates this user group can delete the material </param>
+        public void Add_User_Group_Access(string GroupName, bool CanView, bool CanEdit, bool CanDelete)
+        {
+            if (groups_access == null) groups_access = new List<User_Group_Permissions>();
+
+            // Is this in the list already?
+            var existing = groups_access.SingleOrDefault<User_Group_Permissions>(x => x.GroupName == GroupName);
+            if (existing == null)
+            {
+                existing = new User_Group_Permissions();
+                existing.GroupName = GroupName;
+                groups_access.Add(existing);
+            }
+
+            // Now, set the flags correctly
+            existing.CanView = CanView;
+            existing.CanEditMetadata = CanEdit;
+            existing.CanEditBehaviors = CanEdit;
+            existing.CanPerformQc = CanEdit;
+            existing.CanUploadFiles = CanEdit;
+            existing.CanChangeVisibility = CanDelete;
+            existing.CanDelete = CanDelete;
+        }
+
+
+        #endregion 
+
+        /// <summary> Saves the data stored in this instance of the 
+        /// element to the provided bibliographic object </summary>
+        /// <param name="SerialInfo"> Serial information to set to this object </param>
+        public void Set_Serial_Info(Serial_Info SerialInfo)
 		{
 			serialInfo = SerialInfo;
 		}

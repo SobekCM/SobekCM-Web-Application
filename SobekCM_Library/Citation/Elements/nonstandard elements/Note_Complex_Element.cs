@@ -136,6 +136,7 @@ namespace SobekCM.Library.Citation.Elements
                 Output.WriteLine("                  <option value=\"504\">Bibliography</option>");
                 Output.WriteLine("                  <option value=\"545\">Biographical</option>");
                 Output.WriteLine("                  <option value=\"510\">Citation/Reference</option>");
+                Output.WriteLine("                  <option value=\"course\">Course</option>");
                 Output.WriteLine("                  <option value=\"508\">Creation/Production Credits</option>");
                 Output.WriteLine("                  <option value=\"362\">Dates/Sequential Designation</option>");
                 Output.WriteLine("                  <option value=\"donation\">Donation</option>");
@@ -209,6 +210,10 @@ namespace SobekCM.Library.Citation.Elements
                         Output.WriteLine(thisNote.Note_Type == Note_Type_Enum.CitationReference
                                              ? "                  <option value=\"510\" selected=\"selected\">Citation/Reference</option>"
                                              : "                  <option value=\"510\">Citation/Reference</option>");
+
+                        Output.WriteLine(thisNote.Note_Type == Note_Type_Enum.Course
+                                            ? "                  <option value=\"course\" selected=\"selected\">Course</option>"
+                                            : "                  <option value=\"course\">Course</option>");
 
                         Output.WriteLine(thisNote.Note_Type == Note_Type_Enum.CreationCredits
                                              ? "                  <option value=\"508\" selected=\"selected\">Creation/Production Credits</option>"
@@ -448,6 +453,10 @@ namespace SobekCM.Library.Citation.Elements
 
                         case "508":
                             type_enum = Note_Type_Enum.CreationCredits;
+                            break;
+
+                        case "course":
+                            type_enum = Note_Type_Enum.Course;
                             break;
 
                         case "362":

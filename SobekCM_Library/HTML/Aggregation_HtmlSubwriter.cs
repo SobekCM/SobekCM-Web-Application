@@ -114,6 +114,7 @@ namespace SobekCM.Library.HTML
             // Special code to determine if CKEditor should be used since it kind of destroys some more custom HTML
             ifEditNoCkEditor = false;
             if ((UI_ApplicationCache_Gateway.Settings.System.System_Abbreviation == "OPENNJ") &&
+                (RequestSpecificValues.Current_Mode.Aggregation_Type == Aggregation_Type_Enum.Home_Edit ) &&
                 ((RequestSpecificValues.Current_Mode.Aggregation.Length == 0) || (RequestSpecificValues.Current_Mode.Aggregation.ToLower() == "all")))
                 ifEditNoCkEditor = true;
 

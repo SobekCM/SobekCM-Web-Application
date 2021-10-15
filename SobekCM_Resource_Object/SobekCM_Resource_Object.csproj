@@ -154,13 +154,13 @@
     <Compile Include="AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Behaviors\User_Group_Permissions.cs" />
+    <Compile Include="Behaviors\User_Permissions.cs" />
     <Compile Include="Bib_Info\MODS_Info\Origin_Info_Other_Date.cs" />
     <Compile Include="Bib_Info\MODS_Info\TableOfContents_Info.cs" />
     <Compile Include="Configuration\Metadata_Mapping_Config.cs" />
     <Compile Include="Configuration\ResourceObjectSettings.cs" />
-    <Compile Include="Database\DataSets\SobekCM_All_Items.cs">
-      <SubType>Component</SubType>
-    </Compile>
+    <Compile Include="Database\DataSets\SobekCM_All_Items.cs" />
     <Compile Include="Event_Delegates.cs" />
     <Compile Include="GenericXml\Mapping\GenericXmlMappingPath.cs" />
     <Compile Include="GenericXml\Mapping\GenericXmlMappingSet.cs" />
@@ -367,9 +367,7 @@
     <Compile Include="Metadata_Modules\Maps\Map_Info.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Metadata_Modules\Maps\Map_Info_Tables.cs">
-      <SubType>Component</SubType>
-    </Compile>
+    <Compile Include="Metadata_Modules\Maps\Map_Info_Tables.cs" />
     <Compile Include="Metadata_Modules\Maps\Map_Person.cs">
       <SubType>Code</SubType>
     </Compile>

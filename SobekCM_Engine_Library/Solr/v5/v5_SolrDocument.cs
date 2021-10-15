@@ -231,6 +231,10 @@ namespace SobekCM.Engine_Library.Solr.v5
         [SolrField("restricted_msg")]
         public string RestrictedMsg { get; set; }
 
+        /// <summary> Flag indicates that this item has user or user group restrictions </summary>
+        [SolrField("restricted_access")]
+        public bool Restricted { get; set; }
+
         #endregion
 
         #region Main metadata fields
@@ -254,6 +258,10 @@ namespace SobekCM.Engine_Library.Solr.v5
         /// <summary> Series titles for this document </summary>
         [SolrField("seriestitle")]
         public string SeriesTitle { get; set; }
+
+        /// <summary> Course title for this document </summary>
+        [SolrField("coursetitle")]
+        public string CourseTitle { get; set; }
 
         /// <summary> Overall resource type for this document </summary>
         [SolrField("type")]
@@ -467,6 +475,10 @@ namespace SobekCM.Engine_Library.Solr.v5
         #endregion
 
         #region Other standard fields 
+
+        /// <summary> Accessibility for this document</summary>
+        [SolrField("accessibility")]
+        public string Accessibility { get; set; }
 
         /// <summary> Attribution for this document</summary>
         [SolrField("attribution")]

@@ -715,6 +715,12 @@ namespace SobekCM.Engine_Library.Configuration
         /// <summary> URL for the included OpenSeaDragon image library javascript file ( http://cdn.sobekrepository.org/includes/openseadragon/1.2.1/openseadragon.min.js by default)</summary>
         public static string OpenSeaDragon_Js { get { return config.OpenSeaDragon_Js; } }
 
+        /// <summary> URL for the open textbook button to go to next chapter</summary>
+        public static string OpenTextBook_NextButton_Img { get { return config.OpenTextBook_NextButton_Img; } }
+
+        /// <summary> URL for the open textbook button to go to next chapter</summary>
+        public static string OpenTextBook_PrevButton_Img { get { return config.OpenTextBook_PrevButton_Img; } }
+
         /// <summary> URL for the default resource 'pagenumbg.gif' file ( http://cdn.sobekrepository.org/images/bookturner/pageNumBg.gif by default)</summary>
         public static string Pagenumbg_Gif { get { return config.Pagenumbg_Gif; } }
 

@@ -50,7 +50,7 @@ namespace SobekCM.Library.ItemViewer.HtmlSectionWriters
 
             // Get the item URL
             string item_url = RequestSpecificValues.Current_Mode.Base_URL + CurrentItem.BibID + "/" + CurrentItem.VID;
-            string viewer_code = RequestSpecificValues.Current_Mode.ViewerCode;
+            string viewer_code = RequestSpecificValues.Current_Mode.ViewerCode ?? String.Empty;
             if (RequestSpecificValues.Current_Mode.Page.HasValue)
             {
                 viewer_code = viewer_code.Replace(RequestSpecificValues.Current_Mode.Page.ToString(), "#");
@@ -65,6 +65,11 @@ namespace SobekCM.Library.ItemViewer.HtmlSectionWriters
             Output.WriteLine("    <ul>");
 
             List<BriefItem_TocElement> tocElements = CurrentItem.Images_TOC;
+            if ( CurrentItem.BibID == "AA00016193")
+            {
+                tocElements = CurrentItem.OpenTextbook_TOC;
+            }
+
             int lastLevel = -1;
             int currentLevel = 0;
             int nextLevel = 0;

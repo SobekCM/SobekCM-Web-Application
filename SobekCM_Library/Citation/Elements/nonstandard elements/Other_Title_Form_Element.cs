@@ -113,6 +113,7 @@ namespace SobekCM.Library.Citation.Elements
                 PopupFormBuilder.Append("<option value=\"series\"  selected=\"selected\" >Series Title</option>");
                 PopupFormBuilder.Append("<option value=\"translated\">Translated Title</option>");
                 PopupFormBuilder.Append("<option value=\"uniform\">Uniform Title</option>");
+                PopupFormBuilder.Append("<option value=\"course\">Course Title</option>");
 
 
                 PopupFormBuilder.AppendLine("</select>");

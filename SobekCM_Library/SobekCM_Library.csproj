@@ -109,9 +109,11 @@
     <Compile Include="AdminViewer\AdminViewer_Factory.cs" />
     <Compile Include="AdminViewer\Builder_Folder_Mgmt_AdminViewer.cs" />
     <Compile Include="AdminViewer\iMySobek_Admin_Viewer.cs" />
+    <Compile Include="AdminViewer\OpenNJ_Users_AdminViewer.cs" />
     <Compile Include="AdminViewer\Permissions_Reports_AdminViewer.cs" />
     <Compile Include="AdminViewer\Skin_Single_AdminViewer.cs" />
     <Compile Include="AdminViewer\TEI_PlugIn_AdminViewer.cs" />
+    <Compile Include="AdminViewer\User_Requests_AdminViewer.cs" />
     <Compile Include="AdminViewer\WebContent_Add_New_AdminViewer.cs" />
     <Compile Include="AdminViewer\WebContent_Mgmt_AdminViewer.cs" />
     <Compile Include="AdminViewer\WebContent_History_AdminViewer.cs" />
@@ -169,6 +171,7 @@
     <Compile Include="Citation\Elements\implemented elements\Language_Select_Element.cs" />
     <Compile Include="Citation\Elements\implemented elements\LCCN_Element.cs" />
     <Compile Include="Citation\Elements\implemented elements\Projects_Element.cs" />
+    <Compile Include="Citation\Elements\implemented elements\Target_Audience_Select_Element.cs" />
     <Compile Include="Citation\Elements\nonstandard elements\Literal_Element.cs" />
     <Compile Include="Citation\Elements\implemented elements\LOM_AggregationLevel_Element.cs" />
     <Compile Include="Citation\Elements\implemented elements\LOM_Context_Element.cs" />
@@ -238,6 +241,7 @@
     <Compile Include="ItemViewer\Viewers\abstractNoPaginationItemViewer.cs" />
     <Compile Include="ItemViewer\Viewers\abstractPageFilesItemViewer.cs" />
     <Compile Include="ItemViewer\Viewers\Downloads_JP2s_ItemViewer.cs" />
+    <Compile Include="ItemViewer\Viewers\OpenTextbook_ItemViewer.cs" />
     <Compile Include="ItemViewer\Viewers\SearchEngineIndexing_ItemViewer.cs" />
     <Compile Include="ItemViewer\Viewers\TEI_ItemViewer.cs" />
     <Compile Include="ItemViewer\Viewers\UF_Archives_ItemViewer.cs" />
@@ -381,6 +385,7 @@
     <Compile Include="MySobekViewer\Import_Spreadsheet_MySobekViewer.cs" />
     <Compile Include="MySobekViewer\MySobekViewer_Factory.cs" />
     <Compile Include="MySobekViewer\New_TEI_MySobekViewer.cs" />
+    <Compile Include="MySobekViewer\OpenNJ_Register_MySobekViewer.cs" />
     <Compile Include="MySobekViewer\Rights_Management.cs" />
     <Compile Include="RequestCache.cs" />
     <Compile Include="ResultsViewer\Custom_Thumbnail_ResultsViewer.cs" />

@@ -605,7 +605,7 @@ namespace SobekCM.Library.MySobekViewer
 				Output.WriteLine("Account information, name, and email are required for each new account.<br /><br />");
 				RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Logon;
 				Output.WriteLine("Already registered?  <a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">Log on</a>.<br /><br />");
-				RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Preferences;
+				RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Register;
 			}
 			if (validationErrors.Count > 0)
 			{
@@ -781,7 +781,7 @@ namespace SobekCM.Library.MySobekViewer
 			Output.WriteLine("  <tr style=\"text-align:right\"><td colspan=\"3\">");
 			RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
 			Output.WriteLine("    <button onclick=\"window.location.href = '" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "';return false;\" class=\"sbkMySobek_BigButton\"> CANCEL </button> &nbsp; &nbsp; ");
-			RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Preferences;
+			RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Register;
 
 			Output.WriteLine("    <button type=\"submit\" class=\"sbkMySobek_BigButton\"> SUBMIT </button> ");
 

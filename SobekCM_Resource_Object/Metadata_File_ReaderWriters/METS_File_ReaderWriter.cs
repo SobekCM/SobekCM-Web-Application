@@ -99,7 +99,7 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
         public bool Write_Metadata(TextWriter Output_Stream, SobekCM_Item Item_To_Save, Dictionary<string, object> Options, out string Error_Message)
         {
             // PERHAPS MAKE THESE OPTIONS?
-            List<string> mimes_to_exclude = new List<string>();
+            HashSet<string> mimes_to_exclude = new HashSet<string>();
             const bool MINIMIZE_FILE_SIZE = false;
 
             // Get the METS writing profile
@@ -135,320 +135,28 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
                 Item_To_Save.METS_Header.Creator_Organization = Item_To_Save.Bib_Info.Source.Code + "," + Item_To_Save.Bib_Info.Source.XML_Safe_Statement;
             }
 
-            // Get the list of divisions from the physical tree and the download/other file tre
-            List<abstract_TreeNode> physicalDivisions = Item_To_Save.Divisions.Physical_Tree.Divisions_PreOrder;
-            List<abstract_TreeNode> downloadDivisions = Item_To_Save.Divisions.Download_Tree.Divisions_PreOrder;
+            // Get the list of divisions from the division trees
             List<abstract_TreeNode> allDivisions = new List<abstract_TreeNode>();
             List<SobekCM_File_Info> allFiles = new List<SobekCM_File_Info>();
+            Dictionary<string, List<SobekCM_File_Info>> mimeHash = new Dictionary<string, List<SobekCM_File_Info>>();
 
             #region Prepare the list of divisions and files to be written by assigning proper ID's and groupid's to all
 
-            // Create some private variables for this
-            int page_and_group_number = 1;
-            int division_number = 1;
-            bool hasPageFiles = false;
-            bool hasDownloadFiles = false;
-            Dictionary<string, List<SobekCM_File_Info>> mimeHash = new Dictionary<string, List<SobekCM_File_Info>>();
-            List<string> fileids_used = new List<string>();
-
             // Clear any existing ID's here since the ID's are only used for writing METS files
-            foreach (abstract_TreeNode thisNode in physicalDivisions)
-            {
-                thisNode.ID = String.Empty;
-                thisNode.DMDID = String.Empty;
-                thisNode.ADMID = String.Empty;
-            }
+            Item_To_Save.Divisions.Physical_Tree.Clear_Ids();
+            Item_To_Save.Divisions.Download_Tree.Clear_Ids();
+            Item_To_Save.Divisions.OpenTextbook_Tree.Clear_Ids();
 
             // First, assign group numbers for all the files on each page (physical or other)
             // Group numbers in the METS file correspond to files on the same page (physical or other)
-            // At the same time, we will build the list of all files and files by mime type
-            foreach (abstract_TreeNode thisNode in physicalDivisions)
-            {
-                // If this node was already hit (perhaps if a div has two parent divs), 
-                // then skip it
-                if (thisNode.ID.Length > 0)
-                    continue;
+            Item_To_Save.Divisions.Physical_Tree.Ensure_Ids_Assigned("PAGE", "PDIV", out bool hasPageFiles, mimes_to_exclude );
+            Item_To_Save.Divisions.Download_Tree.Ensure_Ids_Assigned("FILES", "DDIV", out bool hasDownloadFiles, mimes_to_exclude);
+            Item_To_Save.Divisions.OpenTextbook_Tree.Ensure_Ids_Assigned("OER", "ODIV", out bool hasOerFiles, mimes_to_exclude);
 
-                // Add this to the list of all nodes
-                allDivisions.Add(thisNode);
-
-                // Was this a PAGE or a DIVISION node?
-                if (thisNode.Page)
-                {
-                    // Get this page node
-                    Page_TreeNode pageNode = (Page_TreeNode) thisNode;
-
-                    // Only do anything if there are actually any files here
-                    if ((pageNode.Files != null) && (pageNode.Files.Count > 0))
-                    {
-
-                        // Set the page ID here
-                        pageNode.ID = "PAGE" + page_and_group_number;
-
-                        // Step through any files under this page
-                        foreach (SobekCM_File_Info thisFile in pageNode.Files)
-                        {
-                            // Set the ADMID and DMDID to empty in preparation for METS writing
-                            thisFile.ADMID = String.Empty;
-                            thisFile.DMDID = String.Empty;
-
-                            // If no file name, skip this
-                            if (String.IsNullOrEmpty(thisFile.System_Name))
-                                continue;
-
-                            // Get this file extension and MIME type
-                            string fileExtension = thisFile.File_Extension;
-                            string mimetype = thisFile.MIME_Type(thisFile.File_Extension);
-
-                            // If this is going to be excluded from appearing in the METS file, just skip 
-                            // it here as well.
-                            if (!mimes_to_exclude.Contains(mimetype))
-                            {
-                                // Set the group number on this file
-                                thisFile.Group_Number = "G" + page_and_group_number;
-
-                                // Set the ID for this file as well
-                                switch (mimetype)
-                                {
-                                    case "image/tiff":
-                                        thisFile.ID = "TIF" + page_and_group_number;
-                                        break;
-                                    case "text/plain":
-                                        thisFile.ID = "TXT" + page_and_group_number;
-                                        break;
-                                    case "image/jpeg":
-                                        if (thisFile.System_Name.ToLower().IndexOf("thm.jp") > 0)
-                                        {
-                                            thisFile.ID = "THUMB" + page_and_group_number;
-                                            mimetype = mimetype + "-thumbnails";
-                                        }
-                                        else
-                                            thisFile.ID = "JPEG" + page_and_group_number;
-                                        break;
-                                    case "image/gif":
-                                        if (thisFile.System_Name.ToLower().IndexOf("thm.gif") > 0)
-                                        {
-                                            thisFile.ID = "THUMB" + page_and_group_number;
-                                            mimetype = mimetype + "-thumbnails";
-                                        }
-                                        else
-                                            thisFile.ID = "GIF" + page_and_group_number;
-                                        break;
-                                    case "image/jp2":
-                                        thisFile.ID = "JP2" + page_and_group_number;
-                                        break;
-                                    default:
-                                        if (fileExtension.Length > 0)
-                                        {
-                                            thisFile.ID = fileExtension + page_and_group_number;
-                                        }
-                                        else
-                                        {
-                                            thisFile.ID = "NOEXT" + page_and_group_number;
-                                        }
-                                        break;
-                                }
-
-                                // Ensure this fileid is really unique.  It may not be if there are multiple
-                                // files of the same mime-type in the same page.  (such as 0001.jpg and 0001.qc.jpg)
-                                if (fileids_used.Contains(thisFile.ID))
-                                {
-                                    int count = 2;
-                                    while (fileids_used.Contains(thisFile.ID + "." + count))
-                                        count++;
-                                    thisFile.ID = thisFile.ID + "." + count;
-                                }
-
-                                // Save this file id
-                                fileids_used.Add(thisFile.ID);
-
-                                // Also add to the list of files
-                                allFiles.Add(thisFile);
-
-                                // Also ensure we know there are page image files
-                                hasPageFiles = true;
-
-
-                                // If this is a new MIME type, add it, else just save this file in the MIME hash
-                                if (!mimeHash.ContainsKey(mimetype))
-                                {
-                                    List<SobekCM_File_Info> newList = new List<SobekCM_File_Info> {thisFile};
-                                    mimeHash[mimetype] = newList;
-                                }
-                                else
-                                {
-                                    mimeHash[mimetype].Add(thisFile);
-                                }
-                            }
-                        }
-
-                        // Prepare for the next page
-                        page_and_group_number++;
-                    }
-                    else
-                    {
-                        // Page has no files, so it should be skipped when written
-                        pageNode.ID = "SKIP";
-                    }
-                }
-                else
-                {
-                    // This node is a DIVISION (non-page)
-                    thisNode.ID = "PDIV" + division_number;
-                    division_number++;
-                }
-            }
-
-
-            // Clear any existing ID's here since the ID's are only used for writing METS files
-            foreach (abstract_TreeNode thisNode in downloadDivisions)
-            {
-                thisNode.ID = String.Empty;
-                thisNode.DMDID = String.Empty;
-                thisNode.ADMID = String.Empty;
-            }
-
-            // Now, do the same thing for the download/other files division tree
-            // Group numbers in the METS file correspond to files on the same page (physical or other)
-            // At the same time, we will build the list of all files and files by mime type
-            page_and_group_number = 1;
-            division_number = 1;
-            foreach (abstract_TreeNode thisNode in downloadDivisions)
-            {
-                // If this node was already hit (perhaps if a div has two parent divs), 
-                // then skip it
-                if (thisNode.ID.Length > 0)
-                    continue;
-
-                // Add this to the list of all nodes
-                allDivisions.Add(thisNode);
-
-                // Was this a PAGE or a DIVISION node?
-                if (thisNode.Page)
-                {
-                    // Get this page node
-                    Page_TreeNode pageNode = (Page_TreeNode) thisNode;
-
-                    // Only do anything if there are actually any files here
-                    if ((pageNode.Files != null) && (pageNode.Files.Count > 0))
-                    {
-
-                        // Set the page ID here
-                        pageNode.ID = "FILES" + page_and_group_number;
-
-                        // Step through any files under this page
-                        foreach (SobekCM_File_Info thisFile in pageNode.Files)
-                        {
-                            // Set the ADMID and DMDID to empty in preparation for METS writing
-                            thisFile.ADMID = String.Empty;
-                            thisFile.DMDID = String.Empty;
-
-                            // If no file name, skip this
-                            if (String.IsNullOrEmpty(thisFile.System_Name))
-                                continue;
-
-                            // Get this file extension and MIME type
-                            string fileExtension = thisFile.File_Extension;
-                            string mimetype = thisFile.MIME_Type(thisFile.File_Extension);
-
-                            // If this is going to be excluded from appearing in the METS file, just skip 
-                            // it here as well.
-                            if (!mimes_to_exclude.Contains(mimetype))
-                            {
-                                // Set the group number on this file
-                                thisFile.Group_Number = "G" + page_and_group_number;
-
-                                // Set the ID for this file as well
-                                switch (mimetype)
-                                {
-                                    case "image/tiff":
-                                        thisFile.ID = "TIF" + page_and_group_number;
-                                        break;
-                                    case "text/plain":
-                                        thisFile.ID = "TXT" + page_and_group_number;
-                                        break;
-                                    case "image/jpeg":
-                                        if (thisFile.System_Name.ToLower().IndexOf("thm.jp") > 0)
-                                        {
-                                            thisFile.ID = "THUMB" + page_and_group_number;
-                                            mimetype = mimetype + "-thumbnails";
-                                        }
-                                        else
-                                            thisFile.ID = "JPEG" + page_and_group_number;
-                                        break;
-                                    case "image/gif":
-                                        if (thisFile.System_Name.ToLower().IndexOf("thm.gif") > 0)
-                                        {
-                                            thisFile.ID = "THUMB" + page_and_group_number;
-                                            mimetype = mimetype + "-thumbnails";
-                                        }
-                                        else
-                                            thisFile.ID = "GIF" + page_and_group_number;
-                                        break;
-                                    case "image/jp2":
-                                        thisFile.ID = "JP2" + page_and_group_number;
-                                        break;
-                                    default:
-                                        if (fileExtension.Length > 0)
-                                        {
-                                            thisFile.ID = fileExtension + page_and_group_number;
-                                        }
-                                        else
-                                        {
-                                            thisFile.ID = "NOEXT" + page_and_group_number;
-                                        }
-                                        break;
-                                }
-
-                                // Ensure this fileid is really unique.  It may not be if there are multiple
-                                // files of the same mime-type in the same page.  (such as 0001.jpg and 0001.qc.jpg)
-                                if (fileids_used.Contains(thisFile.ID))
-                                {
-                                    int count = 2;
-                                    while (fileids_used.Contains(thisFile.ID + "." + count))
-                                        count++;
-                                    thisFile.ID = thisFile.ID + "." + count;
-                                }
-
-                                // Save this file id
-                                fileids_used.Add(thisFile.ID);
-
-                                // Also add to the list of files
-                                allFiles.Add(thisFile);
-
-                                // Also ensure we know there are page image files
-                                hasDownloadFiles = true;
-
-
-                                // If this is a new MIME type, add it, else just save this file in the MIME hash
-                                if (!mimeHash.ContainsKey(mimetype))
-                                {
-                                    List<SobekCM_File_Info> newList = new List<SobekCM_File_Info> {thisFile};
-                                    mimeHash[mimetype] = newList;
-                                }
-                                else
-                                {
-                                    mimeHash[mimetype].Add(thisFile);
-                                }
-                            }
-                        }
-
-                        // Prepare for the next page
-                        page_and_group_number++;
-                    }
-                    else
-                    {
-                        // Page has no files, so it should be skipped when written
-                        pageNode.ID = "SKIP";
-                    }
-                }
-                else
-                {
-                    // This node is a DIVISION (non-page)
-                    thisNode.ID = "ODIV" + division_number;
-                    division_number++;
-                }
-            }
+            // Build the list of all divisions, files and files by mime type
+            Item_To_Save.Divisions.Physical_Tree.Collect_Divs_And_Files(allDivisions, allFiles, mimeHash);
+            Item_To_Save.Divisions.Download_Tree.Collect_Divs_And_Files(allDivisions, allFiles, mimeHash);
+            Item_To_Save.Divisions.OpenTextbook_Tree.Collect_Divs_And_Files(allDivisions, allFiles, mimeHash);
 
             #endregion
 
@@ -540,7 +248,7 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
             foreach (METS_Section_ReaderWriter_Config thisRWconfig in profile.Division_Level_AmdSec_Writer_Configs)
             {
                 iDivision_amdSec_ReaderWriter thisRw = (iDivision_amdSec_ReaderWriter)thisRWconfig.ReaderWriterObject;
-                foreach (abstract_TreeNode thisNode in physicalDivisions)
+                foreach (abstract_TreeNode thisNode in allDivisions)
                 {
                     if (thisRw.Schema_Reference_Required_Division(thisNode))
                     {
@@ -564,7 +272,7 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
             foreach (METS_Section_ReaderWriter_Config thisRWconfig in profile.Division_Level_DmdSec_Writer_Configs)
             {
                 iDivision_dmdSec_ReaderWriter thisRw = (iDivision_dmdSec_ReaderWriter)thisRWconfig.ReaderWriterObject;
-                foreach (abstract_TreeNode thisNode in physicalDivisions)
+                foreach (abstract_TreeNode thisNode in allDivisions)
                 {
                     if (thisRw.Schema_Reference_Required_Division(thisNode))
                     {
@@ -1183,172 +891,31 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
 
                 #endregion
 
-                #region Add the structure map section
-
-                Dictionary<abstract_TreeNode, int> pages_to_appearances = new Dictionary<abstract_TreeNode, int>();
+                #region Add the structure map sections
 
                 // May or may not be AMDSecs and DMDsec
                 string dmdSecIdString = dmd_secid_builder.ToString().Trim();
                 string amdSecIdString = amd_secid_builder.ToString().Trim();
 
-                // Add the physical page structure map first
+                // Get the main title to use in the top-level divs
+                string main_title = Item_To_Save.Bib_Info.Main_Title.ToString();
+
+                // Write the different division trees
                 if (hasPageFiles)
                 {
-                    Output_Stream.WriteLine("<METS:structMap ID=\"STRUCT1\" TYPE=\"physical\">");
-
-                    // Add any outer divisions here
-                    if ( Item_To_Save.Divisions.Outer_Division_Count > 0)
-                    {
-                        foreach (Outer_Division_Info outerDiv in Item_To_Save.Divisions.Outer_Divisions)
-                        {
-                            Output_Stream.Write("<METS:div");
-                            if (dmdSecIdString.Length > 0)
-                            {
-                                Output_Stream.Write(" DMDID=\"" + dmdSecIdString + "\"");
-                            }
-                            if (outerDiv.Label.Length > 0)
-                            {
-                                Output_Stream.Write(" LABEL=\"" + Convert_String_To_XML_Safe_Static(outerDiv.Label) + "\"");
-                            }
-                            if (outerDiv.OrderLabel > 0)
-                            {
-                                Output_Stream.Write(" ORDERLABEL=\"" + outerDiv.OrderLabel + "\"");
-                            }
-                            if (outerDiv.Type.Length > 0)
-                            {
-                                Output_Stream.Write(" TYPE=\"" + Convert_String_To_XML_Safe_Static(outerDiv.Type) + "\"");
-                            }
-                            Output_Stream.WriteLine(">");
-                        }
-                    }
-                    else
-                    {
-                        // Start the main division information
-                        Output_Stream.Write("<METS:div");
-                        if (dmdSecIdString.Length > 0)
-                        {
-                            Output_Stream.Write(" DMDID=\"" + dmdSecIdString + "\"");
-                        }
-                        if (amdSecIdString.Length > 0)
-                        {
-                            Output_Stream.Write(" ADMID=\"" + amdSecIdString + "\"");
-                        }
-
-
-                        // Add the title, if one was provided
-                        string title = Item_To_Save.Bib_Info.Main_Title.ToString();
-                        if (title.Length > 0)
-                        {
-                            Output_Stream.Write(" LABEL=\"" + title + "\"");
-                        }
-
-                        // Finish out this first, main division tag
-                        Output_Stream.WriteLine(" ORDER=\"0\" TYPE=\"main\">");
-                    }
-
-                    // Add all the divisions recursively
-                    int order = 1;
-                    foreach (abstract_TreeNode thisRoot in Item_To_Save.Divisions.Physical_Tree.Roots)
-                    {
-                        recursively_add_div_info(thisRoot, Output_Stream, pages_to_appearances, order++);
-                    }
-
-                    // Close any outer divisions here
-                    if (Item_To_Save.Divisions.Outer_Division_Count > 0)
-                    {
-                        for (int index = 0; index < Item_To_Save.Divisions.Outer_Division_Count; index++)
-                        {
-                            Output_Stream.WriteLine("</METS:div>");
-                        }
-                    }
-                    else
-                    {
-                        // Close out the main division tag
-                        Output_Stream.WriteLine("</METS:div>");
-                    }
-
-                    // Close out this structure map portion
-                    Output_Stream.WriteLine("</METS:structMap>");
+                    Item_To_Save.Divisions.Write_Physical_Tree_METS(Output_Stream, main_title, dmdSecIdString, amdSecIdString);
                 }
 
                 if (hasDownloadFiles)
                 {
-                    Output_Stream.WriteLine("<METS:structMap ID=\"STRUCT2\" TYPE=\"other\">");
-
-                   // Add any outer divisions here
-                    if ( Item_To_Save.Divisions.Outer_Division_Count > 0)
-                    {
-                        foreach (Outer_Division_Info outerDiv in Item_To_Save.Divisions.Outer_Divisions)
-                        {
-                            Output_Stream.Write("<METS:div");
-                            if (dmdSecIdString.Length > 0)
-                            {
-                                Output_Stream.Write(" DMDID=\"" + dmdSecIdString + "\"");
-                            }
-                            if (outerDiv.Label.Length > 0)
-                            {
-                                Output_Stream.Write(" LABEL=\"" + Convert_String_To_XML_Safe_Static(outerDiv.Label) + "\"");
-                            }
-                            if (outerDiv.OrderLabel > 0)
-                            {
-                                Output_Stream.Write(" ORDERLABEL=\"" + outerDiv.OrderLabel + "\"");
-                            }
-                            if (outerDiv.Type.Length > 0)
-                            {
-                                Output_Stream.Write(" TYPE=\"" + Convert_String_To_XML_Safe_Static(outerDiv.Type) + "\"");
-                            }
-                            Output_Stream.WriteLine(">");
-                        }
-                    }
-                    else
-                    {
-                        // Start the main division information
-                        Output_Stream.Write("<METS:div");
-                        if (dmdSecIdString.Length > 0)
-                        {
-                            Output_Stream.Write(" DMDID=\"" + dmdSecIdString + "\"");
-                        }
-                        if (amdSecIdString.Length > 0)
-                        {
-                            Output_Stream.Write(" ADMID=\"" + amdSecIdString + "\"");
-                        }
-
-                        // Add the title, if one was provided
-                        string title = Item_To_Save.Bib_Info.Main_Title.ToString();
-                        if (title.Length > 0)
-                        {
-                            Output_Stream.Write(" LABEL=\"" + title + "\"");
-                        }
-
-                        // Finish out this first, main division tag
-                        Output_Stream.WriteLine(" ORDER=\"0\" TYPE=\"main\">");
-                    }
-
-                    // Add all the divisions recursively
-                    int order = 1;
-                    foreach (abstract_TreeNode thisRoot in Item_To_Save.Divisions.Download_Tree.Roots)
-                    {
-                        recursively_add_div_info(thisRoot, Output_Stream, pages_to_appearances, order++);
-                    }
-
-                    // Close any outer divisions here
-                    if (Item_To_Save.Divisions.Outer_Division_Count > 0)
-                    {
-                        for (int index = 0; index < Item_To_Save.Divisions.Outer_Division_Count; index++)
-                        {
-                            Output_Stream.WriteLine("</METS:div>");
-                        }
-                    }
-                    else
-                    {
-                        // Close out the main division tag
-                        Output_Stream.WriteLine("</METS:div>");
-                    }
-
-                    // Close out this structure map portion
-                    Output_Stream.WriteLine("</METS:structMap>");
+                    Item_To_Save.Divisions.Write_Download_Tree_METS(Output_Stream, main_title, dmdSecIdString, amdSecIdString);
                 }
 
+                if (hasOerFiles)
+                {
+                    Item_To_Save.Divisions.Write_OpenTextbook_Tree_METS(Output_Stream, main_title, dmdSecIdString, amdSecIdString);
+                }
+ 
                 #endregion
             }
             else
@@ -1373,75 +940,7 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
 
         #region Code to create the METS structure map
 
- 
-        private void recursively_add_div_info(abstract_TreeNode ThisNode, TextWriter Results, Dictionary<abstract_TreeNode, int> PagesToAppearances, int Order)
-        {
-            // Add the div information for this node first
-            if (ThisNode.Page)
-            {
-                // If the ID of this page is SKIP, then just return and do nothing here
-                if (ThisNode.ID == "SKIP")
-                    return;
 
-                if (PagesToAppearances.ContainsKey(ThisNode))
-                {
-                    PagesToAppearances[ThisNode] = PagesToAppearances[ThisNode] + 1;
-                    Results.Write("<METS:div ID=\"" + ThisNode.ID + "_repeat" + PagesToAppearances[ThisNode] + "\"");
-                }
-                else
-                {
-                    PagesToAppearances[ThisNode] = 1;
-                    Results.Write("<METS:div ID=\"" + ThisNode.ID + "\"");
-                }
-            }
-            else
-            {
-                Results.Write("<METS:div ID=\"" + ThisNode.ID + "\"");
-            }
-
-            // Add links to dmd secs and amd secs
-            if ( !String.IsNullOrEmpty(ThisNode.DMDID))
-            {
-                Results.Write(" DMDID=\"" + ThisNode.DMDID + "\"");
-            }
-            if (!String.IsNullOrEmpty(ThisNode.ADMID))
-            {
-                Results.Write(" ADMID=\"" + ThisNode.ADMID + "\"");
-            }
-
-            // Add the label, if there is one
-            if ((ThisNode.Label.Length > 0) && (ThisNode.Label != ThisNode.Type))
-                Results.Write(" LABEL=\"" + Convert_String_To_XML_Safe(ThisNode.Label) + "\"");
-
-            // Finish the start div label for this division
-            Results.WriteLine(" ORDER=\"" + Order + "\" TYPE=\"" + ThisNode.Type + "\">");
-
-            // If this is a page, add all the files, otherwise call this method recursively
-            if (ThisNode.Page)
-            {
-                // Add each file
-                Page_TreeNode thisPage = (Page_TreeNode)ThisNode;
-                foreach (SobekCM_File_Info thisFile in thisPage.Files)
-                {
-                    // Add the file pointer informatino
-                    if ( thisFile.ID.Length > 0 )
-                        Results.WriteLine("<METS:fptr FILEID=\"" + thisFile.ID + "\" />");
-                }
-            }
-            else
-            {
-                // Call this method for each subdivision
-                int inner_order = 1;
-                Division_TreeNode thisDivision = (Division_TreeNode)ThisNode;
-                foreach (abstract_TreeNode thisSubDivision in thisDivision.Nodes)
-                {
-                    recursively_add_div_info(thisSubDivision, Results, PagesToAppearances, inner_order++ );
-                }
-            }
-
-            // Close out this division
-            Results.WriteLine("</METS:div>");
-        }
 
         #endregion
 
@@ -2424,8 +1923,10 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
                             thisDivTree = Package.Divisions.Physical_Tree;
                             if (R.MoveToAttribute("TYPE"))
                             {
-                                if (R.Value.ToUpper() == "OTHER")
+                                if ((R.Value.ToUpper() == "OTHER") || (R.Value.ToUpper() == "DOWNLOADS"))
                                     thisDivTree = Package.Divisions.Download_Tree;
+                                if (R.Value.ToUpper() == "OER")
+                                    thisDivTree = Package.Divisions.OpenTextbook_Tree;
                             }
                         }
 

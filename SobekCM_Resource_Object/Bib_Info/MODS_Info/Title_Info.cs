@@ -28,7 +28,10 @@ namespace SobekCM.Resource_Object.Bib_Info
         Alternative,
 
         /// <summary> Uniform title is a title used to describe a set of different items in a uniform way </summary>
-        Uniform
+        Uniform,
+
+        /// <summary> Course title related to this material </summary>
+        Course
     }
 
     /// <summary>A word, phrase, character, or group of characters, normally appearing in a resource, that names it or the work contained in it.</summary>
@@ -317,6 +320,9 @@ namespace SobekCM.Resource_Object.Bib_Info
                     break;
                 case Title_Type_Enum.Uniform:
                     Results.Write(" type=\"uniform\"");
+                    break;
+                case Title_Type_Enum.Course:
+                    Results.Write(" type=\"course\"");
                     break;
             }
 

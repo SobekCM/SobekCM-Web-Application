@@ -295,13 +295,13 @@ namespace SobekCM.Library.MySobekViewer
                 Output.WriteLine("              <button title=\"Make item public\" class=\"sbkMyEip_VisButton sbkMyEip_VisButtonPublic\" onclick=\"set_item_access('public'); return false;\">PUBLIC ITEM</button>");
 
             if ((restrictedSelected) && (!isDark))
-                Output.WriteLine("              <button title=\"Add IP restriction to this item\" class=\"sbkMyEip_VisButton sbkMyEip_VisButtonRestricted sbkMyEip_VisButtonCurrent\" onclick=\"set_item_access('restricted'); return false;\">RESTRICT ITEM</button>");
+                Output.WriteLine("              <button title=\"Limit who can view this item\" class=\"sbkMyEip_VisButton sbkMyEip_VisButtonRestricted sbkMyEip_VisButtonCurrent\" onclick=\"set_item_access('restricted'); return false;\">RESTRICT ITEM</button>");
             else
             {
-                if (UI_ApplicationCache_Gateway.IP_Restrictions.Count > 0)
-                    Output.WriteLine("              <button title=\"Add IP restriction to this item\" class=\"sbkMyEip_VisButton sbkMyEip_VisButtonRestricted\" onclick=\"set_item_access('restricted'); return false;\">RESTRICT ITEM</button>");
+                if ((UI_ApplicationCache_Gateway.IP_Restrictions.Count > 0) || ( UI_ApplicationCache_Gateway.User_Groups.Count > 0 ))
+                    Output.WriteLine("              <button title=\"Limit who can view this item\" class=\"sbkMyEip_VisButton sbkMyEip_VisButtonRestricted\" onclick=\"set_item_access('restricted'); return false;\">RESTRICT ITEM</button>");
                 else
-                    Output.WriteLine("              <button title=\"Add IP restriction to this item\" class=\"sbkMyEip_VisButton sbkMyEip_VisButtonRestricted\" onclick=\"alert('You must have at least one IP range entered in the system to use this option.\\n\\nAt least create an administrative range before assigning RESTRICTED to items'); return false;\">RESTRICT ITEM</button>");
+                    Output.WriteLine("              <button title=\"Limit who can view this item\" class=\"sbkMyEip_VisButton sbkMyEip_VisButtonRestricted\" onclick=\"alert('You must have at least one IP range or user group in the system to use this option.\\n\\nCreate a user group or an administrative IP range before assigning RESTRICTED to items'); return false;\">RESTRICT ITEM</button>");
 
             }
 

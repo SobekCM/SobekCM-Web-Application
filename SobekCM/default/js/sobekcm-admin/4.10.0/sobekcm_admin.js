@@ -687,6 +687,15 @@ function cancel_user_edits() {
     return false;
 }
 
+// Special action during user updates
+function user_edits_special_action(newValue)
+{
+    var hiddenfield = document.getElementById('admin_user_save');
+    hiddenfield.value = newValue;
+    document.itemNavForm.submit();
+    return false;
+}
+
 function new_user_edit_page(page) {
     var hiddenfield = document.getElementById('admin_user_save');
     hiddenfield.value = page;

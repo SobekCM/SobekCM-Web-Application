@@ -1342,11 +1342,16 @@ namespace SobekCM.Library.HTML
                     Output.WriteLine("        <li id=\"sbkUsm_AdminUserReport\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.User_Permission_Img + "\" /> <div class=\"sbkUsm_TextWithImage\">User Permissions Reports</div></a></li>");
 
                     // Edit users
-                    if (RequestSpecificValues.Current_User.Is_System_Admin)
+                    if ((RequestSpecificValues.Current_User.Is_System_Admin) || ( RequestSpecificValues.Current_User.Is_Portal_Admin))
                     {
                         // Edit users
                         RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Users;
                         Output.WriteLine("        <li id=\"sbkUsm_AdminUsers\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.Users_Img_Small + "\" /> <div class=\"sbkUsm_TextWithImage\">Users and Groups</div></a></li>");
+
+                        // View user requests
+                        RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.User_Requests;
+                        Output.WriteLine("        <li id=\"sbkUsm_AdminUserRequests\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.Users_Img_Small + "\" /> <div class=\"sbkUsm_TextWithImage\">Users Requests</div></a></li>");
+
                     }
 
                     Output.WriteLine("      </ul></li>");

@@ -251,6 +251,12 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                                 Return_Package.Bib_Info.EncodingLevel = Input_XmlReader.Value;
                             break;
 
+                        case "Accessibility":
+                            Input_XmlReader.Read();
+                            if (Input_XmlReader.NodeType == XmlNodeType.Text)
+                                Return_Package.Bib_Info.Accessibility = Input_XmlReader.Value;
+                            break;
+
                         case "Icon":
                         case "Wordmark":
                             Input_XmlReader.Read();

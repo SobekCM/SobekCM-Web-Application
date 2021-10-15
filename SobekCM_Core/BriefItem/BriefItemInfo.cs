@@ -67,6 +67,14 @@ namespace SobekCM.Core.BriefItem
         [ProtoMember(7)]
         public List<BriefItem_FileGrouping> Downloads { get; set; }
 
+        /// <summary> Collection of all the pages in an Open Textbook type item, which
+        /// is primarily composed of HTML </summary>
+        [DataMember(EmitDefaultValue = false, Name = "oer_pages")]
+        [XmlArray("oer_pages")]
+        [XmlArrayItem("fileGroup", typeof(BriefItem_FileGrouping))]
+        [ProtoMember(15)]
+        public List<BriefItem_FileGrouping> OpenTextbook_Pages { get; set; }
+
         /// <summary> Images table of contents, if present </summary>
         [DataMember(EmitDefaultValue = false, Name = "images_toc")]
         [XmlArray("images_toc")]
@@ -80,6 +88,13 @@ namespace SobekCM.Core.BriefItem
         [XmlArrayItem("division", typeof(BriefItem_TocElement))]
         [ProtoMember(9)]
         public List<BriefItem_TocElement> Downloads_TOC { get; set; }
+
+        /// <summary> Open Textbook table of contents, if present </summary>
+        [DataMember(EmitDefaultValue = false, Name = "oer_toc")]
+        [XmlArray("oer_toc")]
+        [XmlArrayItem("division", typeof(BriefItem_TocElement))]
+        [ProtoMember(16)]
+        public List<BriefItem_TocElement> OpenTextbook_TOC { get; set; }
 
         /// <summary> Basic resource type, which helps to dictate some default behaviors </summary>
         [DataMember(Name = "type")]

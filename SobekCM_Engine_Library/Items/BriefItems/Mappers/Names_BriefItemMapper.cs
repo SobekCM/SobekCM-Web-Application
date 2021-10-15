@@ -63,10 +63,16 @@ namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
                     string searchTerm = nameBuilder.ToString();
 
                     // Add the display form and dates
-                    if (thisName.Display_Form.Length > 0)
+                    if (!String.IsNullOrEmpty(thisName.Display_Form))
                         nameBuilder.Append(" ( " + thisName.Display_Form + " )");
-                    if (thisName.Dates.Length > 0)
+                    if (!String.IsNullOrEmpty(thisName.Dates))
                         nameBuilder.Append(", " + thisName.Dates);
+
+                    // Add affiliation
+                    if ( !String.IsNullOrEmpty(thisName.Affiliation))
+                    {
+                        nameBuilder.Append(" ( " + thisName.Affiliation + " )");
+                    }
 
                     // Add this now
                     BriefItem_DescTermValue descTerm = New.Add_Description("Creator", nameBuilder.ToString());

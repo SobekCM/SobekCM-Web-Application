@@ -35,6 +35,9 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// <summary> Reference citation note </summary>
         CitationReference,
 
+        /// <summary> Course note information </summary>
+        Course,
+
         /// <summary> Creation credits note </summary>
         CreationCredits,
 
@@ -500,6 +503,9 @@ namespace SobekCM.Resource_Object.Bib_Info
                     case Note_Type_Enum.Restriction:
                         return "Restriction";
 
+                    case Note_Type_Enum.Course:
+                        return "Course";
+
                     case Note_Type_Enum.CreationCredits:
                         return "Creation/Production Credits";
 
@@ -621,6 +627,9 @@ namespace SobekCM.Resource_Object.Bib_Info
                     case Note_Type_Enum.Restriction:
                         return "restriction";
 
+                    case Note_Type_Enum.Course:
+                        return "course";
+
                     case Note_Type_Enum.CreationCredits:
                         return "creation/production credits";
 
@@ -739,6 +748,10 @@ namespace SobekCM.Resource_Object.Bib_Info
 
                     case "restriction":
                         Note_Type = Note_Type_Enum.Restriction;
+                        break;
+
+                    case "course":
+                        Note_Type = Note_Type_Enum.Course;
                         break;
 
                     case "creation/production credits":

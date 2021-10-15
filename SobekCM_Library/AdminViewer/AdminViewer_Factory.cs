@@ -71,13 +71,17 @@ namespace SobekCM.Library.AdminViewer
                     return new Portals_AdminViewer(RequestSpecificValues);
 
                 case Admin_Type_Enum.Users:
-                    return new Users_AdminViewer(RequestSpecificValues);
+                    return new OpenNJ_Users_AdminViewer(RequestSpecificValues);
+                    //return new Users_AdminViewer(RequestSpecificValues);
 
                 case Admin_Type_Enum.User_Groups:
                     return new User_Group_AdminViewer(RequestSpecificValues);
 
                 case Admin_Type_Enum.User_Permissions_Reports:
                     return new Permissions_Reports_AdminViewer(RequestSpecificValues);
+
+                case Admin_Type_Enum.User_Requests:
+                    return new User_Requests_AdminViewer(RequestSpecificValues);
 
                 case Admin_Type_Enum.IP_Restrictions:
                     return new IP_Restrictions_AdminViewer(RequestSpecificValues);

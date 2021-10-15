@@ -114,6 +114,7 @@ namespace SobekCM.Library.AdminViewer
                     {
                         newAggr.Type = "SubCollection";
                     }
+
                 }
             }
 
@@ -761,6 +762,10 @@ namespace SobekCM.Library.AdminViewer
                 case "subinst":
                     correct_type = "Institutional Division";
                     break;
+
+                case "course":
+                    correct_type = "Course Packet";
+                    break;
             }
 
 
@@ -891,6 +896,10 @@ namespace SobekCM.Library.AdminViewer
                     {
                         typeAbbrev = "subcoll";
                     }
+                    else if (thisAggr.Type.ToLower() == "course packet")
+                    {
+                        typeAbbrev = "course";
+                    }
 
                     // For institutions, this retains the initial i as lower case (easier to recognize)
                     string aggrCode = thisAggr.Code;
@@ -946,6 +955,10 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine(newAggr.Type == "SubCollection"
                 ? "        <option value=\"subcoll\" selected=\"selected\" >SubCollection</option>"
                 : "        <option value=\"subcoll\">SubCollection</option>");
+
+            Output.WriteLine(newAggr.Type == "Course Packet"
+                ? "        <option value=\"course\" selected=\"selected\" >Course Packet</option>"
+                : "        <option value=\"course\">Course Packet</option>");
 
             Output.WriteLine("      </select>");
             Output.WriteLine("      <div class=\"sbkAcw_InlineHelp\">Select the aggregation type above.  A suggested type will be offered based on the parent collection above, but you can change it.  All these types of aggregations work very similarly, and generally you can choose whichever type helps you make sense of your aggregation hierarchy.  Only aggregations of institutional types can be linked to digital resources as source and holding institutions however.</div>");

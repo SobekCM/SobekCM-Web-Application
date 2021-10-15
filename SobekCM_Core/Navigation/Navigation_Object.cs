@@ -566,6 +566,12 @@ namespace SobekCM.Core.Navigation
         [ProtoMember(60)]
         public string ViewerCode { get; set; }
 
+        /// <summary> Sub viewer code </summary>
+        [DataMember(EmitDefaultValue = false, Name = "viewerSubCode")]
+        [XmlElement("viewerSubCode")]
+        [ProtoMember(65)]
+        public string ViewerSubCode { get; set; }
+
         /// <summary> Primary key to the web content object selected </summary>
         [DataMember(EmitDefaultValue = false, Name = "webContentId")]
         [XmlElement("webContentId")]

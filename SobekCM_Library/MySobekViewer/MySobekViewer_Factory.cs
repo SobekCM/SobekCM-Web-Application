@@ -36,6 +36,9 @@ namespace SobekCM.Library.MySobekViewer
                 case My_Sobek_Type_Enum.Preferences:
                     return new Preferences_MySobekViewer(RequestSpecificValues);
 
+                case My_Sobek_Type_Enum.Register:
+                    return new OpenNJ_Register_MySobekViewer(RequestSpecificValues);
+
                 case My_Sobek_Type_Enum.Logon:
                     return new Logon_MySobekViewer(RequestSpecificValues);
 

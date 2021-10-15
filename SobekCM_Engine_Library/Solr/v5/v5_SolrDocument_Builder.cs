@@ -64,7 +64,6 @@ namespace SobekCM.Engine_Library.Solr.v5
             returnValue.Level5_Index = -1;
             returnValue.Level5_Facet = "NONE";
             returnValue.Hidden = false;
-            returnValue.RestrictedMsg = String.Empty;
 
             if (Digital_Object.Behaviors != null)
             {
@@ -109,20 +108,31 @@ namespace SobekCM.Engine_Library.Solr.v5
                 // Some defaults
                 returnValue.Discover_Groups = new List<int> { 0 };
                 returnValue.Discover_Users = new List<int> { 0 };
-                returnValue.RestrictedMsg = String.Empty;
 
+                // Set the restricted message
+                returnValue.RestrictedMsg = Digital_Object.Behaviors.RestrictedMessage;
+
+                // Check for specific restrictions
+                bool is_restricted = false;
+                if ( Digital_Object.Behaviors.HasUserRestriction)
+                {
+                    is_restricted = true;
+                    returnValue.Restricted = true;
+                }
+                
                 // Set the IP restrictions based on PRIVATE or NOT
                 if (Digital_Object.Behaviors.IP_Restriction_Membership == -1)
                     returnValue.Discover_IPs = new List<int> { -1 };
                 else
                 {
+                    is_restricted = true;
                     returnValue.Discover_IPs = new List<int> { 0 };
+                }
 
-                    // If some restrictions, set the restriction message
-                    if (Digital_Object.Behaviors.IP_Restriction_Membership > 0)
-                    {
-                        returnValue.RestrictedMsg = "Access Restrictions Apply";
-                    }
+                // Provide a blanket restriction statement
+                if (( is_restricted ) && ( String.IsNullOrEmpty(returnValue.RestrictedMsg)))
+                {
+                    returnValue.RestrictedMsg = "Access Restrictions Apply";
                 }
             }
 
@@ -167,6 +177,10 @@ namespace SobekCM.Engine_Library.Solr.v5
                     case "translated title":
                         if (returnValue.TranslatedTitle == null) returnValue.TranslatedTitle = new List<string>();
                         returnValue.TranslatedTitle.Add(searchTerm.Value);
+                        break;
+
+                    case "course title":
+                        returnValue.CourseTitle = searchTerm.Value;
                         break;
 
                     case "series title":
@@ -622,6 +636,10 @@ namespace SobekCM.Engine_Library.Solr.v5
 
                     case "temporal subject display":
                         returnValue.TemporalSubjectDisplay = searchTerm.Value.Trim();
+                        break;
+
+                    case "accessibility":
+                        returnValue.Accessibility = searchTerm.Value.Trim();
                         break;
 
 

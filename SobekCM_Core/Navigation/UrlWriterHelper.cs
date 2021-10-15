@@ -282,6 +282,9 @@ namespace SobekCM.Core.Navigation
                         case My_Sobek_Type_Enum.Preferences:
                             return this_base_url + "my/preferences" + urlOptions1;
 
+                        case My_Sobek_Type_Enum.Register:
+                            return this_base_url + "my/register" + urlOptions1;
+
                         case My_Sobek_Type_Enum.Log_Out:
                             if (!String.IsNullOrEmpty(Current_Mode.Return_URL))
                             {
@@ -382,6 +385,11 @@ namespace SobekCM.Core.Navigation
                             if (!String.IsNullOrEmpty(Current_Mode.My_Sobek_SubMode))
                                 return this_base_url + "admin/permissions/" + Current_Mode.My_Sobek_SubMode + urlOptions1;
                             return this_base_url + "admin/permissions" + urlOptions1;
+
+                        case Admin_Type_Enum.User_Requests:
+                            if (!String.IsNullOrEmpty(Current_Mode.My_Sobek_SubMode))
+                                return this_base_url + "admin/requests/" + Current_Mode.My_Sobek_SubMode + urlOptions1;
+                            return this_base_url + "admin/requests" + urlOptions1;
 
                         case Admin_Type_Enum.WebContent_Add_New:
                             return this_base_url + "admin/webadd" + urlOptions1;
@@ -520,6 +528,8 @@ namespace SobekCM.Core.Navigation
                             itemDisplayBuilder.Append("/" + Item_View_Code);
                         if (Current_Mode.SubPage > 1)
                             itemDisplayBuilder.Append("/" + Current_Mode.SubPage.ToString());
+                        else if ( !String.IsNullOrEmpty(Current_Mode.ViewerSubCode))
+                            itemDisplayBuilder.Append("/" + Current_Mode.ViewerSubCode);
 
                         bool query_string_started = false;
 

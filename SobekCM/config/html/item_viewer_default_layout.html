@@ -26,10 +26,16 @@
 				
 				<script type="text/javascript">
 
-				var messages = $('#sbkIsw_Leftnavbar');
-				if (messages.children().length < 1) {
-					messages.slideUp('normal', function () { $(this).remove(); });
-				}   
+				    var navBarContent = $('#sbkIsw_Leftnavbar');
+                    if (navBarContent.children().length < 1) {
+                        navBarContent.slideUp('normal', function ()
+                        {
+                            $(this).remove();
+                            $('#sbkIsw_LeftnavbarTd').remove();
+                            $("body").trigger("onresize");
+                        });
+                    }  
+                    
 				</script>
 
                 <!-- Presentation table first cell ends and next will begin-->

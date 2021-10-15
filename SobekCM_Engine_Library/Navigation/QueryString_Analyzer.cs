@@ -364,11 +364,18 @@ namespace SobekCM.Engine_Library.Navigation
 
                             case "register":
                                 Navigator.Mode = Display_Mode_Enum.My_Sobek;
+                                Navigator.My_Sobek_Type = My_Sobek_Type_Enum.Register;
+                                break;
+
+
+                            case "preferences":
+                                Navigator.Mode = Display_Mode_Enum.My_Sobek;
                                 Navigator.My_Sobek_Type = My_Sobek_Type_Enum.Preferences;
                                 break;
-										   
 
-							case "my":
+
+
+                            case "my":
 								Navigator.Mode = Display_Mode_Enum.My_Sobek;
                                 Navigator.My_Sobek_Type = My_Sobek_Type_Enum.Home;
 								if (QueryString["return"] != null)
@@ -553,7 +560,8 @@ namespace SobekCM.Engine_Library.Navigation
 											break;
 
 										case "preferences":
-											Navigator.My_Sobek_Type = My_Sobek_Type_Enum.Preferences;
+                                        case "register":
+                                            Navigator.My_Sobek_Type = My_Sobek_Type_Enum.Preferences;
 											break;
 
 										case "logout":
@@ -678,6 +686,12 @@ namespace SobekCM.Engine_Library.Navigation
                                                 Navigator.My_Sobek_SubMode = url_relative_list[2];
                                             break;
 
+                                        case "requests":
+                                            Navigator.Admin_Type = Admin_Type_Enum.User_Requests;
+                                            if (url_relative_list.Count > 2)
+                                                Navigator.My_Sobek_SubMode = url_relative_list[2];
+                                            break;
+
                                         case "webadd":
                                             Navigator.Admin_Type = Admin_Type_Enum.WebContent_Add_New;
                                             if (url_relative_list.Count > 2)
@@ -748,10 +762,6 @@ namespace SobekCM.Engine_Library.Navigation
                                     }
                                 }
                                 break;
-					 
-							case "preferences":
-								Navigator.Mode = Display_Mode_Enum.Preferences;
-								break;
 
 							case "reports":
 								Navigator.Mode = Display_Mode_Enum.Reports;
@@ -1170,12 +1180,11 @@ namespace SobekCM.Engine_Library.Navigation
 											if (url_relative_list.Count > current_list_index)
 											{
 												string possible_subpage = url_relative_list[current_list_index].Trim();
-												if (is_String_Number(possible_subpage))
-												{
-                                                    ushort testSubPage;
-                                                    if (UInt16.TryParse(possible_subpage, out testSubPage))
+												if ((is_String_Number(possible_subpage)) && (UInt16.TryParse(possible_subpage, out ushort testSubPage)))
+                                                { 
                                                         Navigator.SubPage = testSubPage;
 												}
+                                                Navigator.ViewerSubCode = possible_subpage;
 											}
 										}
 									}

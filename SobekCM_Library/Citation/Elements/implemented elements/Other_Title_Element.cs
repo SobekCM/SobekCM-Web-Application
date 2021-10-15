@@ -26,10 +26,12 @@ namespace SobekCM.Library.Citation.Elements
         {
             Add_Select_Item("Abbreviated Title", "abbreviated" );
             Add_Select_Item("Alternative Title", "alternate");
+            Add_Select_Item("Course Title", "course");
             Add_Select_Item("Series Title", "series");
             Add_Select_Item("Subtitle", "subtitle");
             Add_Select_Item("Translated Title", "translated");
             Add_Select_Item("Uniform Title", "uniform");
+            
 
             Repeatable = true;
         }
@@ -111,6 +113,10 @@ namespace SobekCM.Library.Citation.Elements
                             types.Add("Uniform Title");
                             break;
 
+                        case Title_Type_Enum.Course:
+                            types.Add("Course Title");
+                            break;
+
                         default:
                             types.Add(String.Empty);
                             break;
@@ -177,6 +183,10 @@ namespace SobekCM.Library.Citation.Elements
 
                             case "subtitle":
                                 Bib.Bib_Info.Main_Title.Subtitle = title_text;
+                                break;
+
+                            case "course":
+                                Bib.Bib_Info.Add_Other_Title(title_text, Title_Type_Enum.Course);
                                 break;
                         }
                     }

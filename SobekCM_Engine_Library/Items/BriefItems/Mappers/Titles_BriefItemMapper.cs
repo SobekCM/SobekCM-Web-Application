@@ -50,6 +50,10 @@ namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
                         case Title_Type_Enum.Abbreviated:
                             New.Add_Description("Abbreviated Title", (thisTitle.NonSort + " " + thisTitle.Title + " " + thisTitle.Subtitle).Trim());
                             break;
+
+                        case Title_Type_Enum.Course:
+                            New.Add_Description("Course Title", (thisTitle.NonSort + " " + thisTitle.Title + " " + thisTitle.Subtitle).Trim());
+                            break;
                     }
                 }
             }

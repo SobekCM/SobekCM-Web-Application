@@ -1418,6 +1418,10 @@ function close_othertitle_form( windowname )
             case "translated":
                 new_link_text = new_link_text + " ( <i>Translated Title</i> )";
                 break;
+
+            case "course":
+                new_link_text = new_link_text + " ( <i>Course Title</i> )";
+                break;
                 
             default:
                 new_link_text = new_link_text + " ( <i>Alternative Title</i> )";

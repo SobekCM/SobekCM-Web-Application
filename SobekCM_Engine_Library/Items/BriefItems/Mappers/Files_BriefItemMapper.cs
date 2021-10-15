@@ -27,8 +27,10 @@ namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
             // Step through each of the nodes within the images first
             List<BriefItem_FileGrouping> images = new List<BriefItem_FileGrouping>();
             List<BriefItem_FileGrouping> downloads = new List<BriefItem_FileGrouping>();
+            List<BriefItem_FileGrouping> oer = new List<BriefItem_FileGrouping>();
             List<BriefItem_TocElement> images_toc = new List<BriefItem_TocElement>();
             List<BriefItem_TocElement> downloads_toc = new List<BriefItem_TocElement>();
+            List<BriefItem_TocElement> oer_toc = new List<BriefItem_TocElement>();
 
             // Do the images (i.e., physical tree) first
             collect_nodes(Original.Divisions.Physical_Tree, images, images_toc);
@@ -47,6 +49,15 @@ namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
                 New.Downloads = downloads;
             if (downloads_toc.Count > 0)
                 New.Downloads_TOC = downloads_toc;
+
+            // Collect the open textbook information last
+            collect_nodes(Original.Divisions.OpenTextbook_Tree, oer, oer_toc);
+
+            // If there were groupings and TOCs assigned, add them
+            if (oer.Count > 0)
+                New.OpenTextbook_Pages = oer;
+            if (oer_toc.Count > 0)
+                New.OpenTextbook_TOC = oer_toc;
 
 
             // No exception

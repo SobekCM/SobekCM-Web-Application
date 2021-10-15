@@ -217,7 +217,7 @@ namespace SobekCM.Library.MySobekViewer
 
 		    if (!generalLogonDisabled)
 		    {
-		        RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Preferences;
+		        RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Register;
 		        Output.Write("    <li><span style=\"font-weight:bold\">Not registered yet?</span> <a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "register\">Register now</a> or ");
 
 		        RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Contact;
@@ -265,7 +265,7 @@ namespace SobekCM.Library.MySobekViewer
 			Output.WriteLine("      </td>");
 			Output.WriteLine("    </tr>");
 
-            RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Preferences;
+            RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Register;
             Output.WriteLine("    <tr><td colspan=\"2\"><br />Not registered yet?  <a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">Register now</a>.");
             RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Logon;
             RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Contact;

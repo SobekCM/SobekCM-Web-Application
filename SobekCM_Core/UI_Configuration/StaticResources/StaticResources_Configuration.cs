@@ -1771,6 +1771,18 @@ namespace SobekCM.Core.UI_Configuration.StaticResources
         [ProtoMember(376)]
         public string OpenSeaDragon_Js { get; set; }
 
+        /// <summary> URL for the open textbook button to go to next chapter</summary>
+        [DataMember]
+        [XmlElement]
+        [ProtoMember(377)]
+        public string OpenTextBook_NextButton_Img { get; set; }
+
+        /// <summary> URL for the open textbook button to go to next chapter</summary>
+        [DataMember]
+        [XmlElement]
+        [ProtoMember(378)]
+        public string OpenTextBook_PrevButton_Img { get; set; }
+
         /// <summary> URL for the default resource 'pagenumbg.gif' file ( http://cdn.sobekrepository.org/images/bookturner/pageNumBg.gif by default)</summary>
         [DataMember]
         [XmlElement]
@@ -3567,9 +3579,16 @@ namespace SobekCM.Core.UI_Configuration.StaticResources
                     OpenSeaDragon_Js = Source;
                     break;
 
-
                 case "openseadragon image prefix":
                     OpenSeaDragon_Image_Prefix = Source;
+                    break;
+
+                case "opentextbook_nextbutton_img":
+                    OpenTextBook_NextButton_Img = Source;
+                    break;
+
+                case "opentextbook_prevbutton_img":
+                    OpenTextBook_PrevButton_Img = Source;
                     break;
 
                 case "pagenumbg_img":

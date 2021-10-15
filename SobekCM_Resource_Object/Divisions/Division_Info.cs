@@ -21,6 +21,7 @@ namespace SobekCM.Resource_Object.Divisions
         
         private readonly Division_Tree downloadDivisionTree;
         private readonly Division_Tree physicalDivisionTree;
+        private readonly Division_Tree oerDivisionTree;
 
         private List<Outer_Division_Info> outerDivisions;  
 
@@ -33,6 +34,7 @@ namespace SobekCM.Resource_Object.Divisions
         {
             physicalDivisionTree = new Division_Tree();
             downloadDivisionTree = new Division_Tree();
+            oerDivisionTree = new Division_Tree();
             source_directory = String.Empty;
             suppress_checksum = true;
             directly_set_page_count = 0;
@@ -204,6 +206,21 @@ namespace SobekCM.Resource_Object.Divisions
                     }
                 }
             }
+
+            // Finally clear the extraneous checksum information on the download tree
+            allNodes = oerDivisionTree.Divisions_PreOrder;
+            foreach (abstract_TreeNode thisNode in allNodes)
+            {
+                if (thisNode.Page)
+                {
+                    Page_TreeNode pageNode = (Page_TreeNode)thisNode;
+                    foreach (SobekCM_File_Info thisFile in pageNode.Files)
+                    {
+                        thisFile.Checksum_Type = null;
+                        thisFile.Checksum = null;
+                    }
+                }
+            }
         }
 
         #region Public Properties
@@ -253,6 +270,14 @@ namespace SobekCM.Resource_Object.Divisions
             get { return downloadDivisionTree; }
         }
 
+        /// <summary> Gets the division hierarchy tree associated with an HTML OpenTextbook resource </summary>
+        [DataMember(EmitDefaultValue = false)]
+        public Division_Tree OpenTextbook_Tree
+        {
+            get { return oerDivisionTree; }
+        }
+
+
         /// <summary> Gets the collection of all files associated with this resource, either in the physical 
         /// hierarchy tree or the download/other files hierarchy </summary>
         public List<SobekCM_File_Info> Files
@@ -271,6 +296,9 @@ namespace SobekCM.Resource_Object.Divisions
                 // Now, add the files from the download tree
                 returnVal.AddRange(downloadDivisionTree.All_Files);
 
+                // Finally, add the files from the open textbook tree
+                returnVal.AddRange(oerDivisionTree.All_Files);
+
                 // Return the collection
                 return returnVal;
             }
@@ -285,6 +313,8 @@ namespace SobekCM.Resource_Object.Divisions
                 if (physicalDivisionTree.Has_Files)
                     return true;
                 if (downloadDivisionTree.Has_Files)
+                    return true;
+                if (oerDivisionTree.Has_Files)
                     return true;
                 return false;
             }
@@ -331,6 +361,12 @@ namespace SobekCM.Resource_Object.Divisions
             get { return downloadDivisionTree.All_Files; }
         }
 
+        /// <summary> Gets the collection of all files associated with the open textbook </summary>
+        public List<SobekCM_File_Info> OpenTextbook_Files
+        {
+            get { return oerDivisionTree.All_Files; }
+        }
+
         // Returns the entire table of contents as XML
         internal string Table_Of_Contents_XML
         {
@@ -359,6 +395,7 @@ namespace SobekCM.Resource_Object.Divisions
         {
             physicalDivisionTree.Clear();
             downloadDivisionTree.Clear();
+            oerDivisionTree.Clear();
             Clear_Outer_Divisions();
         }
 
@@ -401,6 +438,21 @@ namespace SobekCM.Resource_Object.Divisions
                     }
                 }
 
+                // Get the list of all pages from the open textbook files tree 
+                pageNodes = oerDivisionTree.Pages_PreOrder;
+                foreach (Page_TreeNode pageNode in pageNodes)
+                {
+                    // Step through each file
+                    foreach (SobekCM_File_Info thisFile in pageNode.Files)
+                    {
+                        // Recalculate this file info?
+                        if ((String.IsNullOrEmpty(thisFile.Checksum)) || (thisFile.Size <= 0))
+                        {
+                            return true;
+                        }
+                    }
+                }
+
                 return false;
             }
         }
@@ -411,6 +463,7 @@ namespace SobekCM.Resource_Object.Divisions
             // Get the list of all pages from this division 
             List<abstract_TreeNode> pageNodes = physicalDivisionTree.Pages_PreOrder;
             List<abstract_TreeNode> fileNodes = downloadDivisionTree.Pages_PreOrder;
+            List<abstract_TreeNode> oerNodes = oerDivisionTree.Pages_PreOrder;
 
             foreach (Page_TreeNode pageNode in pageNodes)
             {
@@ -422,6 +475,15 @@ namespace SobekCM.Resource_Object.Divisions
                 }
             }
             foreach (Page_TreeNode pageNode in fileNodes)
+            {
+                // Step through each file
+                foreach (SobekCM_File_Info thisFile in pageNode.Files)
+                {
+                    thisFile.Checksum_Type = null;
+                    thisFile.Checksum = null;
+                }
+            }
+            foreach (Page_TreeNode pageNode in oerNodes)
             {
                 // Step through each file
                 foreach (SobekCM_File_Info thisFile in pageNode.Files)
@@ -556,6 +618,27 @@ namespace SobekCM.Resource_Object.Divisions
                 Progress_Delegate("Checksum Complete", "Checksum Complete", file_count, total_files);
             }
         }
+
+        #endregion
+
+        #region Methods to assist with standard METS writing
+
+        public void Write_Physical_Tree_METS(TextWriter Output_Stream, string MainTitle, string DmdSecIds, string AmdSecIds)
+        {
+            Physical_Tree.Write_METS(Output_Stream, MainTitle, "STRUCT1", "physical", DmdSecIds, AmdSecIds, outerDivisions);
+        }
+
+        public void Write_Download_Tree_METS(TextWriter Output_Stream, string MainTitle, string DmdSecIds, string AmdSecIds)
+        {
+            Download_Tree.Write_METS(Output_Stream, MainTitle, "STRUCT2", "downloads", DmdSecIds, AmdSecIds, outerDivisions);
+        }
+
+        public void Write_OpenTextbook_Tree_METS(TextWriter Output_Stream, string MainTitle, string DmdSecIds, string AmdSecIds)
+        {
+            OpenTextbook_Tree.Write_METS(Output_Stream, MainTitle, "STRUCT3", "oer", DmdSecIds, AmdSecIds, outerDivisions);
+        }
+
+        
 
         #endregion
 

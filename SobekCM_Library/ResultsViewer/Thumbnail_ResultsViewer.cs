@@ -1,5 +1,6 @@
 #region Using directives
 
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Web;
@@ -141,7 +142,7 @@ namespace SobekCM.Library.ResultsViewer
                 {
                     if (showDate)
                     {
-                        if (firstItemResult.PubDate.Length > 0)
+                        if (( !String.IsNullOrEmpty(firstItemResult.PubDate)) &&  (firstItemResult.PubDate.Length > 0))
                         {
                             title = "[" + firstItemResult.PubDate + "] " + firstItemResult.Title;
                         }

@@ -1006,157 +1006,193 @@ namespace SobekCM.Library.HTML
                 pageViewer.Write_Top_Additional_Navigation_Row(Output, Tracer);
 
                 // Should buttons be included here?
-                if (pageViewer.PageCount != 1)
+                if (pageViewer.PageCount > 1)
                 {
                     Output.WriteLine("\t<tr>");
                     Output.WriteLine("\t\t<td>");
 
                     // ADD NAVIGATION BUTTONS
-                    if (pageViewer.PageCount != 1)
+                    string go_to = "Go To:";
+                    string first_page = "First Page";
+                    string previous_page = "Previous Page";
+                    string next_page = "Next Page";
+                    string last_page = "Last Page";
+                    string first_page_text = "First";
+                    string previous_page_text = "Previous";
+                    string next_page_text = "Next";
+                    string last_page_text = "Last";
+
+                    if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.Spanish)
                     {
-                        string go_to = "Go To:";
-                        string first_page = "First Page";
-                        string previous_page = "Previous Page";
-                        string next_page = "Next Page";
-                        string last_page = "Last Page";
-                        string first_page_text = "First";
-                        string previous_page_text = "Previous";
-                        string next_page_text = "Next";
-                        string last_page_text = "Last";
+                        go_to = "Ir a:";
+                        first_page = "Primera Página";
+                        previous_page = "Página Anterior";
+                        next_page = "Página Siguiente";
+                        last_page = "Última Página";
+                        first_page_text = "Primero";
+                        previous_page_text = "Anterior";
+                        next_page_text = "Proximo";
+                        last_page_text = "Último";
+                    }
 
-                        if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.Spanish)
-                        {
-                            go_to = "Ir a:";
-                            first_page = "Primera Página";
-                            previous_page = "Página Anterior";
-                            next_page = "Página Siguiente";
-                            last_page = "Última Página";
-                            first_page_text = "Primero";
-                            previous_page_text = "Anterior";
-                            next_page_text = "Proximo";
-                            last_page_text = "Último";
-                        }
+                    if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.French)
+                    {
+                        go_to = "Aller à:";
+                        first_page = "Première Page";
+                        previous_page = "Page Précédente";
+                        next_page = "Page Suivante";
+                        last_page = "Dernière Page";
+                        first_page_text = "Première";
+                        previous_page_text = "Précédente";
+                        next_page_text = "Suivante";
+                        last_page_text = "Derniere";
+                    }
 
-                        if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.French)
-                        {
-                            go_to = "Aller à:";
-                            first_page = "Première Page";
-                            previous_page = "Page Précédente";
-                            next_page = "Page Suivante";
-                            last_page = "Dernière Page";
-                            first_page_text = "Première";
-                            previous_page_text = "Précédente";
-                            next_page_text = "Suivante";
-                            last_page_text = "Derniere";
-                        }
+                    Output.WriteLine("\t\t\t<div class=\"sbkIsw_PageNavBar\">");
+                    StringBuilder buttonsHtmlBuilder = new StringBuilder(1000);
 
-                        Output.WriteLine("\t\t\t<div class=\"sbkIsw_PageNavBar\">");
-                        StringBuilder buttonsHtmlBuilder = new StringBuilder(1000);
+                    // Get the URL for the first and previous buttons
+                    string firstButtonURL = pageViewer.First_Page_URL;
+                    string prevButtonURL = pageViewer.Previous_Page_URL;
 
-                        // Get the URL for the first and previous buttons
-                        string firstButtonURL = pageViewer.First_Page_URL;
-                        string prevButtonURL = pageViewer.Previous_Page_URL;
+                    // Only continue if there is an item and mode, and there is previous pages to go to
+                    if ((pageViewer.Current_Page > 1) && ((firstButtonURL.Length > 0) || (prevButtonURL.Length > 0)))
+                    {
+                        buttonsHtmlBuilder.AppendLine("\t\t\t\t<span class=\"sbkIsw_LeftPaginationButtons\">");
+                        buttonsHtmlBuilder.AppendLine("\t\t\t\t\t<button title=\"" + first_page + "\" class=\"sbkIsw_RoundButton\" onclick=\"window.location='" + firstButtonURL + "'; return false;\"><img src=\"" + Static_Resources_Gateway.Button_First_Arrow_Png + "\" class=\"roundbutton_img_left\" alt=\"\" />" + first_page_text + "</button>&nbsp;");
+                        buttonsHtmlBuilder.AppendLine("\t\t\t\t\t<button title=\"" + previous_page + "\" class=\"sbkIsw_RoundButton\" onclick=\"window.location='" + prevButtonURL + "'; return false;\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"roundbutton_img_left\" alt=\"\" />" + previous_page_text + "</button>");
+                        buttonsHtmlBuilder.AppendLine("\t\t\t\t</span>");
+                    }
 
-                        // Only continue if there is an item and mode, and there is previous pages to go to
-                        if ((pageViewer.Current_Page > 1) && ((firstButtonURL.Length > 0) || (prevButtonURL.Length > 0)))
-                        {
-                            buttonsHtmlBuilder.AppendLine("\t\t\t\t<span class=\"sbkIsw_LeftPaginationButtons\">");
-                            buttonsHtmlBuilder.AppendLine("\t\t\t\t\t<button title=\"" + first_page + "\" class=\"sbkIsw_RoundButton\" onclick=\"window.location='" + firstButtonURL + "'; return false;\"><img src=\"" + Static_Resources_Gateway.Button_First_Arrow_Png + "\" class=\"roundbutton_img_left\" alt=\"\" />" + first_page_text + "</button>&nbsp;");
-                            buttonsHtmlBuilder.AppendLine("\t\t\t\t\t<button title=\"" + previous_page + "\" class=\"sbkIsw_RoundButton\" onclick=\"window.location='" + prevButtonURL + "'; return false;\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"roundbutton_img_left\" alt=\"\" />" + previous_page_text + "</button>");
-                            buttonsHtmlBuilder.AppendLine("\t\t\t\t</span>");
-                        }
+                    // Get the URL for the first and previous buttons
+                    string lastButtonURL = pageViewer.Last_Page_URL;
+                    string nextButtonURL = pageViewer.Next_Page_URL;
 
-                        // Get the URL for the first and previous buttons
-                        string lastButtonURL = pageViewer.Last_Page_URL;
-                        string nextButtonURL = pageViewer.Next_Page_URL;
+                    // Only continue if there is an item and mode, and there is previous pages to go to
+                    if ((pageViewer.Current_Page < pageViewer.PageCount) && ((lastButtonURL.Length > 0) || (nextButtonURL.Length > 0)))
+                    {
+                        buttonsHtmlBuilder.AppendLine("\t\t\t\t<span class=\"sbkIsw_RightPaginationButtons\">");
+                        buttonsHtmlBuilder.AppendLine("\t\t\t\t\t<button title=\"" + next_page + "\" class=\"sbkIsw_RoundButton\" onclick=\"window.location='" + nextButtonURL + "'; return false;\">" + next_page_text + "<img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"roundbutton_img_right\" alt=\"\" /></button>&nbsp;");
+                        buttonsHtmlBuilder.AppendLine("\t\t\t\t\t<button title=\"" + last_page + "\" class=\"sbkIsw_RoundButton\" onclick=\"window.location='" + lastButtonURL + "'; return false;\">" + last_page_text + "<img src=\"" + Static_Resources_Gateway.Button_Last_Arrow_Png + "\" class=\"roundbutton_img_right\" alt=\"\" /></button>");
+                        buttonsHtmlBuilder.AppendLine("\t\t\t\t</span>");
+                    }
 
-                        // Only continue if there is an item and mode, and there is previous pages to go to
-                        if ((pageViewer.Current_Page < pageViewer.PageCount) && ((lastButtonURL.Length > 0) || (nextButtonURL.Length > 0)))
-                        {
-                            buttonsHtmlBuilder.AppendLine("\t\t\t\t<span class=\"sbkIsw_RightPaginationButtons\">");
-                            buttonsHtmlBuilder.AppendLine("\t\t\t\t\t<button title=\"" + next_page + "\" class=\"sbkIsw_RoundButton\" onclick=\"window.location='" + nextButtonURL + "'; return false;\">" + next_page_text + "<img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"roundbutton_img_right\" alt=\"\" /></button>&nbsp;");
-                            buttonsHtmlBuilder.AppendLine("\t\t\t\t\t<button title=\"" + last_page + "\" class=\"sbkIsw_RoundButton\" onclick=\"window.location='" + lastButtonURL + "'; return false;\">" + last_page_text + "<img src=\"" + Static_Resources_Gateway.Button_Last_Arrow_Png + "\" class=\"roundbutton_img_right\" alt=\"\" /></button>");
-                            buttonsHtmlBuilder.AppendLine("\t\t\t\t</span>");
-                        }
+                    // Write the buttons and save the HTML for the bottom of the page
+                    buttonsHtml = buttonsHtmlBuilder.ToString();
+                    Output.WriteLine(buttonsHtml);
 
-                        // Write the buttons and save the HTML for the bottom of the page
-                        buttonsHtml = buttonsHtmlBuilder.ToString();
-                        Output.WriteLine(buttonsHtml);
-
-                        // Show a pageselector, if one was selected
-                        switch (pageViewer.Page_Selector)
-                        {
-                            case ItemViewer_PageSelector_Type_Enum.DropDownList:
-                                string[] pageNames = pageViewer.Go_To_Names;
-                                if (pageNames.Length > 0)
+                    // Show a pageselector, if one was selected
+                    switch (pageViewer.Page_Selector)
+                    {
+                        case ItemViewer_PageSelector_Type_Enum.DropDownList:
+                            string[] pageNames = pageViewer.Go_To_Names;
+                            if (pageNames.Length > 0)
+                            {
+                                // Determine if these page names are very long at all
+                                if (pageNames.Any(ThisName => ThisName.Length > 25))
                                 {
-                                    // Determine if these page names are very long at all
-                                    if (pageNames.Any(ThisName => ThisName.Length > 25))
+                                    // Long page names, so move the Go To: to the next line (new div)
+                                    Output.WriteLine("\t\t\t</div>");
+                                    Output.WriteLine("\t\t\t<div class=\"sbkIsw_PageNavBar2\">");
+                                }
+
+                                Output.WriteLine("\t\t\t\t<span id=\"sbkIsw_GoToSpan\"><label for=\"page_select\">" + go_to + "</label></span>");
+                                string orig_viewercode = RequestSpecificValues.Current_Mode.ViewerCode;
+                                string viewercode_only = RequestSpecificValues.Current_Mode.ViewerCode.Replace(RequestSpecificValues.Current_Mode.Page.ToString(), "");
+                                RequestSpecificValues.Current_Mode.ViewerCode = "XX1234567890XX";
+                                string url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+                                RequestSpecificValues.Current_Mode.ViewerCode = orig_viewercode;
+
+                                Output.WriteLine("\t\t\t\t<select id=\"page_select\" name=\"page_select\" onchange=\"javascript:item_jump_sobekcm('" + url + "')\">");
+
+                                // Add all the page selection items to the combo box
+                                int page_index = 1;
+                                foreach (string thisName in pageNames)
+                                {
+                                    if (thisName.Length > 75)
                                     {
-                                        // Long page names, so move the Go To: to the next line (new div)
-                                        Output.WriteLine("\t\t\t</div>");
-                                        Output.WriteLine("\t\t\t<div class=\"sbkIsw_PageNavBar2\">");
-                                    }
-
-                                    Output.WriteLine("\t\t\t\t<span id=\"sbkIsw_GoToSpan\"><label for=\"page_select\">" + go_to + "</label></span>");
-                                    string orig_viewercode = RequestSpecificValues.Current_Mode.ViewerCode;
-                                    string viewercode_only = RequestSpecificValues.Current_Mode.ViewerCode.Replace(RequestSpecificValues.Current_Mode.Page.ToString(), "");
-                                    RequestSpecificValues.Current_Mode.ViewerCode = "XX1234567890XX";
-                                    string url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
-                                    RequestSpecificValues.Current_Mode.ViewerCode = orig_viewercode;
-
-                                    Output.WriteLine("\t\t\t\t<select id=\"page_select\" name=\"page_select\" onchange=\"javascript:item_jump_sobekcm('" + url + "')\">");
-
-                                    // Add all the page selection items to the combo box
-                                    int page_index = 1;
-                                    foreach (string thisName in pageNames)
-                                    {
-                                        if (thisName.Length > 75)
+                                        if (RequestSpecificValues.Current_Mode.Page == page_index)
                                         {
-                                            if (RequestSpecificValues.Current_Mode.Page == page_index)
-                                            {
-                                                Output.WriteLine("\t\t\t\t\t<option value=\"" + page_index + viewercode_only + "\" selected=\"selected\" >" + thisName.Substring(0, 75) + "..</option>");
-                                            }
-                                            else
-                                            {
-                                                Output.WriteLine("\t\t\t\t\t<option value=\"" + page_index + viewercode_only + "\">" + thisName.Substring(0, 75) + "..</option>");
-                                            }
+                                            Output.WriteLine("\t\t\t\t\t<option value=\"" + page_index + viewercode_only + "\" selected=\"selected\" >" + thisName.Substring(0, 75) + "..</option>");
                                         }
                                         else
                                         {
-                                            if (RequestSpecificValues.Current_Mode.Page == page_index)
-                                            {
-                                                Output.WriteLine("\t\t\t\t\t<option value=\"" + page_index + viewercode_only + "\" selected=\"selected\" >" + thisName + "</option>");
-                                            }
-                                            else
-                                            {
-                                                Output.WriteLine("\t\t\t\t\t<option value=\"" + page_index + viewercode_only + "\">" + thisName + "</option>");
-                                            }
+                                            Output.WriteLine("\t\t\t\t\t<option value=\"" + page_index + viewercode_only + "\">" + thisName.Substring(0, 75) + "..</option>");
                                         }
-                                        page_index++;
+                                    }
+                                    else
+                                    {
+                                        if (RequestSpecificValues.Current_Mode.Page == page_index)
+                                        {
+                                            Output.WriteLine("\t\t\t\t\t<option value=\"" + page_index + viewercode_only + "\" selected=\"selected\" >" + thisName + "</option>");
+                                        }
+                                        else
+                                        {
+                                            Output.WriteLine("\t\t\t\t\t<option value=\"" + page_index + viewercode_only + "\">" + thisName + "</option>");
+                                        }
+                                    }
+                                    page_index++;
+                                }
+
+                                Output.WriteLine("\t\t\t\t</select>");
+                            }
+                            break;
+
+                        case ItemViewer_PageSelector_Type_Enum.PageLinks:
+                            // Create the page selection if that is the type to display.  This is where it is actually
+                            // built as well, althouogh it is subsequently used further up the page
+                            if (pageViewer.Page_Selector == ItemViewer_PageSelector_Type_Enum.PageLinks)
+                            {
+                                StringBuilder pageLinkBuilder = new StringBuilder();
+
+                                //Get the total page count
+                                int num_of_pages = pageViewer.PageCount;
+                                string[] page_urls = pageViewer.Go_To_Names;
+
+                                pageLinkBuilder.AppendLine("\t\t\t\t<div class=\"sbkIsw_PageLinks\">");
+
+                                //Display the first, last, current page numbers, and 2 pages before and after the current page
+                                if (num_of_pages <= 7 && num_of_pages > 1)
+                                {
+                                    for (int i = 1; i <= num_of_pages; i++)
+                                    {
+                                        if (i == pageViewer.Current_Page)
+                                            pageLinkBuilder.AppendLine("\t\t\t\t\t" + i + "&nbsp;");
+                                        else
+                                            pageLinkBuilder.AppendLine("\t\t\t\t\t<a href=\"" + page_urls[i - 1] + "\">" + i + "</a>&nbsp;");
+                                    }
+                                }
+                                else if (num_of_pages > 7)
+                                {
+                                    if (pageViewer.Current_Page > 4 && pageViewer.Current_Page < num_of_pages - 3)
+                                    {
+                                        pageLinkBuilder.AppendLine("\t\t\t\t\t<a href=\"" + page_urls[0] + "\">" + 1 + "</a>" + "..");
+                                        for (int i = pageViewer.Current_Page - 2; i <= pageViewer.Current_Page + 2; i++)
+                                        {
+                                            if (i == pageViewer.Current_Page)
+                                                pageLinkBuilder.AppendLine("\t\t\t\t\t" + i + "&nbsp;");
+                                            else
+                                                pageLinkBuilder.AppendLine("\t\t\t\t\t<a href=\"" + page_urls[i - 1] + "\">" + i + "</a>&nbsp;");
+                                        }
+                                        pageLinkBuilder.AppendLine("\t\t\t\t\t.." + "<a href=\"" + page_urls[page_urls.Length - 1] + "\">" + num_of_pages + "</a>");
                                     }
 
-                                    Output.WriteLine("\t\t\t\t</select>");
-                                }
-                                break;
-
-                            case ItemViewer_PageSelector_Type_Enum.PageLinks:
-                                // Create the page selection if that is the type to display.  This is where it is actually
-                                // built as well, althouogh it is subsequently used further up the page
-                                if (pageViewer.Page_Selector == ItemViewer_PageSelector_Type_Enum.PageLinks)
-                                {
-                                    StringBuilder pageLinkBuilder = new StringBuilder();
-
-                                    //Get the total page count
-                                    int num_of_pages = pageViewer.PageCount;
-                                    string[] page_urls = pageViewer.Go_To_Names;
-
-                                    pageLinkBuilder.AppendLine("\t\t\t\t<div class=\"sbkIsw_PageLinks\">");
-
-                                    //Display the first, last, current page numbers, and 2 pages before and after the current page
-                                    if (num_of_pages <= 7 && num_of_pages > 1)
+                                    else if (pageViewer.Current_Page <= 4 && pageViewer.Current_Page < num_of_pages - 3)
                                     {
-                                        for (int i = 1; i <= num_of_pages; i++)
+                                        for (int i = 1; i <= (pageViewer.Current_Page + 2); i++)
+                                        {
+                                            if (i == pageViewer.Current_Page)
+                                                pageLinkBuilder.AppendLine("\t\t\t\t\t" + i + "&nbsp;");
+                                            else
+                                                pageLinkBuilder.AppendLine("\t\t\t\t\t<a href=\"" + page_urls[i - 1] + "\">" + i + "</a>&nbsp;");
+                                        }
+                                        pageLinkBuilder.AppendLine("\t\t\t\t\t.." + "<a href=\"" + page_urls[page_urls.Length - 1] + "\">" + num_of_pages + "</a>");
+                                    }
+
+                                    else if (pageViewer.Current_Page > 4 && pageViewer.Current_Page >= num_of_pages - 3)
+                                    {
+                                        pageLinkBuilder.AppendLine("\t\t\t\t\t<a href=\"" + page_urls[0] + "\">" + 1 + "</a>" + "..");
+                                        for (int i = pageViewer.Current_Page - 2; i <= num_of_pages; i++)
                                         {
                                             if (i == pageViewer.Current_Page)
                                                 pageLinkBuilder.AppendLine("\t\t\t\t\t" + i + "&nbsp;");
@@ -1164,57 +1200,17 @@ namespace SobekCM.Library.HTML
                                                 pageLinkBuilder.AppendLine("\t\t\t\t\t<a href=\"" + page_urls[i - 1] + "\">" + i + "</a>&nbsp;");
                                         }
                                     }
-                                    else if (num_of_pages > 7)
-                                    {
-                                        if (pageViewer.Current_Page > 4 && pageViewer.Current_Page < num_of_pages - 3)
-                                        {
-                                            pageLinkBuilder.AppendLine("\t\t\t\t\t<a href=\"" + page_urls[0] + "\">" + 1 + "</a>" + "..");
-                                            for (int i = pageViewer.Current_Page - 2; i <= pageViewer.Current_Page + 2; i++)
-                                            {
-                                                if (i == pageViewer.Current_Page)
-                                                    pageLinkBuilder.AppendLine("\t\t\t\t\t" + i + "&nbsp;");
-                                                else
-                                                    pageLinkBuilder.AppendLine("\t\t\t\t\t<a href=\"" + page_urls[i - 1] + "\">" + i + "</a>&nbsp;");
-                                            }
-                                            pageLinkBuilder.AppendLine("\t\t\t\t\t.." + "<a href=\"" + page_urls[page_urls.Length - 1] + "\">" + num_of_pages + "</a>");
-                                        }
-
-                                        else if (pageViewer.Current_Page <= 4 && pageViewer.Current_Page < num_of_pages - 3)
-                                        {
-                                            for (int i = 1; i <= (pageViewer.Current_Page + 2); i++)
-                                            {
-                                                if (i == pageViewer.Current_Page)
-                                                    pageLinkBuilder.AppendLine("\t\t\t\t\t" + i + "&nbsp;");
-                                                else
-                                                    pageLinkBuilder.AppendLine("\t\t\t\t\t<a href=\"" + page_urls[i - 1] + "\">" + i + "</a>&nbsp;");
-                                            }
-                                            pageLinkBuilder.AppendLine("\t\t\t\t\t.." + "<a href=\"" + page_urls[page_urls.Length - 1] + "\">" + num_of_pages + "</a>");
-                                        }
-
-                                        else if (pageViewer.Current_Page > 4 && pageViewer.Current_Page >= num_of_pages - 3)
-                                        {
-                                            pageLinkBuilder.AppendLine("\t\t\t\t\t<a href=\"" + page_urls[0] + "\">" + 1 + "</a>" + "..");
-                                            for (int i = pageViewer.Current_Page - 2; i <= num_of_pages; i++)
-                                            {
-                                                if (i == pageViewer.Current_Page)
-                                                    pageLinkBuilder.AppendLine("\t\t\t\t\t" + i + "&nbsp;");
-                                                else
-                                                    pageLinkBuilder.AppendLine("\t\t\t\t\t<a href=\"" + page_urls[i - 1] + "\">" + i + "</a>&nbsp;");
-                                            }
-                                        }
-                                    }
-
-                                    pageLinkBuilder.AppendLine("\t\t\t\t</div>");
-
-                                    pageLinksHtml = pageLinkBuilder.ToString();
-                                    Output.WriteLine(pageLinksHtml);
                                 }
-                                break;
-                        }
 
-                        Output.WriteLine("\t\t\t</div>");
+                                pageLinkBuilder.AppendLine("\t\t\t\t</div>");
+
+                                pageLinksHtml = pageLinkBuilder.ToString();
+                                Output.WriteLine(pageLinksHtml);
+                            }
+                            break;
                     }
 
+                    Output.WriteLine("\t\t\t</div>");
                     Output.WriteLine("\t\t</td>");
                     Output.WriteLine("\t</tr>");
                 }

@@ -52,6 +52,16 @@ namespace SobekCM.Resource_Object.OAI.Writer
                 writer.WriteLine("<dc:identifier>" + resource_url + "</dc:identifier>");
             }
 
+
+            // add by Keven for FIU dPanther, 10/06/2017
+            DirectoryInfo di = new DirectoryInfo(Item_To_Save.Source_Directory);
+            FileInfo[] thumbnails = di.GetFiles("*thm.jpg");
+            if (thumbnails.Length > 0)
+            {
+                //just load the first one into the dc file;
+                writer.WriteLine("<dc:identifier.thumbnail>" + Item_To_Save.Web.Source_URL + "/" + thumbnails[0] + "</dc:identifier.thumbnail>");
+            }
+
             // Finish this OAI
             writer.WriteLine("</oai_dc:dc>");
 

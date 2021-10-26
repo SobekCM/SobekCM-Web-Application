@@ -453,6 +453,9 @@ namespace SobekCM.Core.Users
 
         /// <summary> Flag indicates if this user is the host administrator, if this is a hosted instance </summary>
         public bool Is_Host_Admin { get; set; }
+        
+        /// <summary> Flag indicates if this user is a user administrator, able to manage users, user requests, and groups </summary>
+        public bool Is_User_Admin { get; set; }
 
         /// <summary> Flag indicates if users should see the tracking information when adding a new volume 
         /// or performing standard operations within the system </summary>

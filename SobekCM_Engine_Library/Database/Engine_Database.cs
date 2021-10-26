@@ -5926,6 +5926,7 @@ namespace SobekCM.Engine_Library.Database
             user.Edit_Template_Code_Simple = userRow["EditTemplate"].ToString();
             user.Edit_Template_Code_Complex = userRow["EditTemplateMarc"].ToString();
             user.Can_Delete_All = Convert.ToBoolean(userRow["Can_Delete_All_Items"]);
+            user.Is_User_Admin = Convert.ToBoolean(userRow["IsUserAdmin"]);
             user.Is_System_Admin = Convert.ToBoolean(userRow["IsSystemAdmin"]);
             user.Is_Portal_Admin = Convert.ToBoolean(userRow["IsPortalAdmin"]);
             user.Is_Host_Admin = Convert.ToBoolean(userRow["IsHostAdmin"]);

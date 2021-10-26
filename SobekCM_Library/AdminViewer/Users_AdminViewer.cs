@@ -283,6 +283,7 @@ namespace SobekCM.Library.AdminViewer
 							editUser.Should_Be_Able_To_Edit_All_Items = false;
 							editUser.Is_System_Admin = false;
 							editUser.Is_Portal_Admin = false;
+                            editUser.Is_User_Admin = false;
 							editUser.Include_Tracking_In_Standard_Forms = false;
                             editUser.Can_Delete_All = false;
 
@@ -324,7 +325,11 @@ namespace SobekCM.Library.AdminViewer
 										editUser.Is_Portal_Admin = true;
 										break;
 
-									case "admin_user_includetracking":
+                                    case "admin_user_useradmin":
+                                        editUser.Is_User_Admin = true;
+                                        break;
+
+                                    case "admin_user_includetracking":
 										editUser.Include_Tracking_In_Standard_Forms = true;
 										break;
 
@@ -773,7 +778,7 @@ namespace SobekCM.Library.AdminViewer
                         SobekCM_Database.Save_User(editUser, String.Empty, RequestSpecificValues.Current_User.Authentication_Type, RequestSpecificValues.Tracer);
 
 						// Update the basic user information
-                        SobekCM_Database.Update_SobekCM_User(editUser.UserID, editUser.Can_Submit, editUser.Is_Internal_User, editUser.Should_Be_Able_To_Edit_All_Items, editUser.Can_Delete_All, editUser.Is_System_Admin, editUser.Is_Host_Admin, editUser.Is_Portal_Admin, editUser.Include_Tracking_In_Standard_Forms, editUser.Edit_Template_Code_Simple, editUser.Edit_Template_Code_Complex, true, true, true, RequestSpecificValues.Tracer);
+                        SobekCM_Database.Update_SobekCM_User(editUser.UserID, editUser.Can_Submit, editUser.Is_Internal_User, editUser.Should_Be_Able_To_Edit_All_Items, editUser.Can_Delete_All, editUser.Is_User_Admin, editUser.Is_System_Admin, editUser.Is_Host_Admin, editUser.Is_Portal_Admin, editUser.Include_Tracking_In_Standard_Forms, editUser.Edit_Template_Code_Simple, editUser.Edit_Template_Code_Complex, true, true, true, RequestSpecificValues.Tracer);
 
 						// Update projects, if necessary
                         if (editUser.Default_Metadata_Sets.Count > 0)
@@ -960,6 +965,8 @@ namespace SobekCM.Library.AdminViewer
             }
             if (editUser.Can_Delete_All)
                 text_builder.Append("Can delete all items<br />");
+            if (editUser.Is_User_Admin)
+                text_builder.Append("Is user administrator<br />");
             if (editUser.Is_Portal_Admin)
                 text_builder.Append("Is portal administrator<br />");
 
@@ -1362,6 +1369,10 @@ namespace SobekCM.Library.AdminViewer
 					 ? "    <input class=\"admin_user_checkbox\" type=\"checkbox\" name=\"admin_user_deleteall\" id=\"admin_user_deleteall\" checked=\"checked\" /> <label for=\"admin_user_deleteall\">Can delete <u>all</u> items</label> <br />"
                      : "    <input class=\"admin_user_checkbox\" type=\"checkbox\" name=\"admin_user_deleteall\" id=\"admin_user_deleteall\" /> <label for=\"admin_user_deleteall\">Can delete <u>all</u> items</label> <br />");
 
+
+                    Output.WriteLine(editUser.Is_User_Admin
+                                         ? "    <input class=\"admin_user_checkbox\" type=\"checkbox\" name=\"admin_user_useradmin\" id=\"admin_user_useradmin\" checked=\"checked\" /> <label for=\"admin_user_useradmin\">Is user administrator</label> <br />"
+                                         : "    <input class=\"admin_user_checkbox\" type=\"checkbox\" name=\"admin_user_useradmin\" id=\"admin_user_useradmin\" /> <label for=\"admin_user_useradmin\">Is user administrator</label> <br />");
 
                     Output.WriteLine(editUser.Is_Portal_Admin
                                          ? "    <input class=\"admin_user_checkbox\" type=\"checkbox\" name=\"admin_user_portaladmin\" id=\"admin_user_portaladmin\" checked=\"checked\" /> <label for=\"admin_user_portaladmin\">Is portal administrator</label> <br />"

@@ -2613,25 +2613,26 @@ namespace SobekCM.Library.Database
 			}
 		}
 
-	    /// <summary> Sets some of the permissions values for a single user </summary>
-	    /// <param name="UserID"> Primary key for this user from the database </param>
-	    /// <param name="CanSubmit"> Flag indicates if this user can submit items </param>
-	    /// <param name="IsInternal"> Flag indicates if this user is considered an 'internal user'</param>
-	    /// <param name="CanEditAll"> Flag indicates if this user is authorized to edit all items in the library</param>
-	    /// <param name="IsHostAdmin"> Flag indicates if this used is the host administrator (if this is a hosted instance) </param>
-	    /// <param name="IsPortalAdmin"> Flag indicates if this user is a portal Administrator </param>
-	    /// <param name="CanDeleteAll"> Flag indicates if this user can delete anything in the repository </param>
-	    /// <param name="IsSystemAdmin"> Flag indicates if this user is a system Administrator</param>
-	    /// <param name="IncludeTrackingStandardForms"> Flag indicates if this user should have tracking portions appear in their standard forms </param>
-	    /// <param name="EditTemplate"> CompleteTemplate name for editing non-MARC records </param>
-	    /// <param name="EditTemplateMarc"> CompleteTemplate name for editing MARC-derived records </param>
-	    /// <param name="ClearProjectsTemplates"> Flag indicates whether to clear projects and templates for this user </param>
-	    /// <param name="ClearAggregationLinks"> Flag indicates whether to clear item aggregationPermissions linked to this user</param>
-	    /// <param name="ClearUserGroups"> Flag indicates whether to clear user group membership for this user </param>
-	    /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-	    /// <returns> TRUE if successful, otherwise FALSE </returns>
-	    /// <remarks> This calls the 'mySobek_Update_User' stored procedure</remarks> 
-	    public static bool Update_SobekCM_User(int UserID, bool CanSubmit, bool IsInternal, bool CanEditAll, bool CanDeleteAll, bool IsSystemAdmin, bool IsHostAdmin, bool IsPortalAdmin, bool IncludeTrackingStandardForms, string EditTemplate, string EditTemplateMarc, bool ClearProjectsTemplates, bool ClearAggregationLinks, bool ClearUserGroups, Custom_Tracer Tracer)
+        /// <summary> Sets some of the permissions values for a single user </summary>
+        /// <param name="UserID"> Primary key for this user from the database </param>
+        /// <param name="CanSubmit"> Flag indicates if this user can submit items </param>
+        /// <param name="IsInternal"> Flag indicates if this user is considered an 'internal user'</param>
+        /// <param name="CanEditAll"> Flag indicates if this user is authorized to edit all items in the library</param>
+        /// <param name="IsUserAdmin"> Flag indicates if this user is a user Administrator </param>
+        /// <param name="IsHostAdmin"> Flag indicates if this used is the host administrator (if this is a hosted instance) </param>
+        /// <param name="IsPortalAdmin"> Flag indicates if this user is a portal Administrator </param>
+        /// <param name="CanDeleteAll"> Flag indicates if this user can delete anything in the repository </param>
+        /// <param name="IsSystemAdmin"> Flag indicates if this user is a system Administrator</param>
+        /// <param name="IncludeTrackingStandardForms"> Flag indicates if this user should have tracking portions appear in their standard forms </param>
+        /// <param name="EditTemplate"> CompleteTemplate name for editing non-MARC records </param>
+        /// <param name="EditTemplateMarc"> CompleteTemplate name for editing MARC-derived records </param>
+        /// <param name="ClearProjectsTemplates"> Flag indicates whether to clear projects and templates for this user </param>
+        /// <param name="ClearAggregationLinks"> Flag indicates whether to clear item aggregationPermissions linked to this user</param>
+        /// <param name="ClearUserGroups"> Flag indicates whether to clear user group membership for this user </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <returns> TRUE if successful, otherwise FALSE </returns>
+        /// <remarks> This calls the 'mySobek_Update_User' stored procedure</remarks> 
+        public static bool Update_SobekCM_User(int UserID, bool CanSubmit, bool IsInternal, bool CanEditAll, bool CanDeleteAll, bool IsUserAdmin, bool IsSystemAdmin, bool IsHostAdmin, bool IsPortalAdmin, bool IncludeTrackingStandardForms, string EditTemplate, string EditTemplateMarc, bool ClearProjectsTemplates, bool ClearAggregationLinks, bool ClearUserGroups, Custom_Tracer Tracer)
 		{
 			if (Tracer != null)
 			{
@@ -2641,21 +2642,22 @@ namespace SobekCM.Library.Database
 			try
 			{
 				// Build the parameter list
-				EalDbParameter[] paramList = new EalDbParameter[14];
+				EalDbParameter[] paramList = new EalDbParameter[15];
 				paramList[0] = new EalDbParameter("@userid", UserID);
 				paramList[1] = new EalDbParameter("@can_submit", CanSubmit);
 				paramList[2] = new EalDbParameter("@is_internal", IsInternal);
 				paramList[3] = new EalDbParameter("@can_edit_all", CanEditAll);
 				paramList[4] = new EalDbParameter("@can_delete_all", CanDeleteAll);
-				paramList[5] = new EalDbParameter("@is_portal_admin", IsPortalAdmin);
-				paramList[6] = new EalDbParameter("@is_system_admin", IsSystemAdmin);
-                paramList[7] = new EalDbParameter("@is_host_admin", IsHostAdmin);
-				paramList[8] = new EalDbParameter("@include_tracking_standard_forms", IncludeTrackingStandardForms);
-				paramList[9] = new EalDbParameter("@edit_template", EditTemplate);
-				paramList[10] = new EalDbParameter("@edit_template_marc", EditTemplateMarc);
-				paramList[11] = new EalDbParameter("@clear_projects_templates", ClearProjectsTemplates);
-				paramList[12] = new EalDbParameter("@clear_aggregation_links", ClearAggregationLinks);
-				paramList[13] = new EalDbParameter("@clear_user_groups", ClearUserGroups);
+                paramList[5] = new EalDbParameter("@is_user_admin", IsUserAdmin);
+                paramList[6] = new EalDbParameter("@is_portal_admin", IsPortalAdmin);
+				paramList[7] = new EalDbParameter("@is_system_admin", IsSystemAdmin);
+                paramList[8] = new EalDbParameter("@is_host_admin", IsHostAdmin);
+				paramList[9] = new EalDbParameter("@include_tracking_standard_forms", IncludeTrackingStandardForms);
+				paramList[10] = new EalDbParameter("@edit_template", EditTemplate);
+				paramList[11] = new EalDbParameter("@edit_template_marc", EditTemplateMarc);
+				paramList[12] = new EalDbParameter("@clear_projects_templates", ClearProjectsTemplates);
+				paramList[13] = new EalDbParameter("@clear_aggregation_links", ClearAggregationLinks);
+				paramList[14] = new EalDbParameter("@clear_user_groups", ClearUserGroups);
 
 				// Execute this query stored procedure
 				EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "mySobek_Update_User", paramList);

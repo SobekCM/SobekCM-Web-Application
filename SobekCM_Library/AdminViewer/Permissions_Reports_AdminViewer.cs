@@ -270,6 +270,7 @@ namespace SobekCM.Library.AdminViewer
 
                         List<string> hostAdmins = new List<string>();
                         List<string> sysAdmins = new List<string>();
+                        List<string> userAdmins = new List<string>();
                         List<string> portalAdmins = new List<string>();
                         List<string> canDeleteAll = new List<string>();
                         List<string> internalUsers = new List<string>();
@@ -307,6 +308,7 @@ namespace SobekCM.Library.AdminViewer
                                 if ((Convert.ToBoolean(thisUser["Can_Delete_All_Items"])) && (!canDeleteAll.Contains(name))) canDeleteAll.Add(name);
                                 if ((Convert.ToBoolean(thisUser["Internal_User"])) && (!internalUsers.Contains(name))) internalUsers.Add(name);
                                 if ((Convert.ToBoolean(thisUser["Can_Edit_All_Items"])) && (!canEditAll.Contains(name))) canEditAll.Add(name);
+                                if ((Convert.ToBoolean(thisUser["IsUserAdmin"])) && (!userAdmins.Contains(name))) userAdmins.Add(name);
                             }
                         }
 

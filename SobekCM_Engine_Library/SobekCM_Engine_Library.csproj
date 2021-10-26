@@ -114,6 +114,7 @@
     <Compile Include="Items\BriefItems\Mappers\InternalVarious_BriefItemMapper.cs" />
     <Compile Include="Items\BriefItems\Mappers\Languages_BriefItemMapper.cs" />
     <Compile Include="Items\BriefItems\Mappers\LearningObjectMetadata_BriefItemMapper.cs" />
+    <Compile Include="Items\BriefItems\Mappers\Licensing_BriefItemMapper.cs" />
     <Compile Include="Items\BriefItems\Mappers\Links_BriefItemMapper.cs" />
     <Compile Include="Items\BriefItems\Mappers\Manufacturers_BriefItemMapper.cs" />
     <Compile Include="Items\BriefItems\Mappers\Names_BriefItemMapper.cs" />
@@ -128,6 +129,7 @@
     <Compile Include="Items\BriefItems\Mappers\Source_Institution_BriefItemMapper.cs" />
     <Compile Include="Items\BriefItems\Mappers\Standard_BriefItemMapper.cs" />
     <Compile Include="Items\BriefItems\Mappers\Subjects_BriefItemMapper.cs" />
+    <Compile Include="Items\BriefItems\Mappers\SystemRequirements_BriefItemMapper.cs" />
     <Compile Include="Items\BriefItems\Mappers\Target_Audience_BriefItemMapper.cs" />
     <Compile Include="Items\BriefItems\Mappers\Temporal_Coverage_BriefItemMapper.cs" />
     <Compile Include="Items\BriefItems\Mappers\Thesis_Dissertation_BriefItemMapper.cs" />

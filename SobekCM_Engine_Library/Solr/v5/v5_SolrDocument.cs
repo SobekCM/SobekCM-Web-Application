@@ -480,6 +480,14 @@ namespace SobekCM.Engine_Library.Solr.v5
         [SolrField("accessibility")]
         public string Accessibility { get; set; }
 
+        /// <summary> System requirements associated with this document </summary>
+        [SolrField("system_requirements")]
+        public List<string> SystemRequirements { get; set; }
+
+        /// <summary> Licensing associated with this document </summary>
+        [SolrField("licensing")]
+        public List<string> Licensing { get; set; }
+
         /// <summary> Attribution for this document</summary>
         [SolrField("attribution")]
         public string Attribution { get; set; }

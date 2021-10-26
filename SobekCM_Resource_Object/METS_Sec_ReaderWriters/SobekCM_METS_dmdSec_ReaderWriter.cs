@@ -257,6 +257,18 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                                 Return_Package.Bib_Info.Accessibility = Input_XmlReader.Value;
                             break;
 
+                        case "Licensing":
+                            Input_XmlReader.Read();
+                            if (Input_XmlReader.NodeType == XmlNodeType.Text)
+                                Return_Package.Bib_Info.Add_Licensing(Input_XmlReader.Value);
+                            break;
+
+                        case "SystemRequirements":
+                            Input_XmlReader.Read();
+                            if (Input_XmlReader.NodeType == XmlNodeType.Text)
+                                Return_Package.Bib_Info.Add_SystemRequirements(Input_XmlReader.Value);
+                            break;
+
                         case "Icon":
                         case "Wordmark":
                             Input_XmlReader.Read();

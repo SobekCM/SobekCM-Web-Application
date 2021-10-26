@@ -642,6 +642,15 @@ namespace SobekCM.Engine_Library.Solr.v5
                         returnValue.Accessibility = searchTerm.Value.Trim();
                         break;
 
+                    case "licensing":
+                        if (returnValue.Licensing == null) returnValue.Licensing = new List<string>();
+                        returnValue.Licensing.Add(searchTerm.Value.Trim());
+                        break;
+
+                    case "system requirements":
+                        if (returnValue.SystemRequirements == null) returnValue.SystemRequirements = new List<string>();
+                        returnValue.SystemRequirements.Add(searchTerm.Value.Trim());
+                        break;
 
                     // Not handled yet
                     case "temporal year":

@@ -8,9 +8,9 @@ using SobekCM.Resource_Object;
 
 namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
 {
-    /// <summary> Maps the accessibility info from the METS-based SobekCM_Item object
+    /// <summary> Maps the licensing from the METS-based SobekCM_Item object
     /// to the BriefItem, used for most the public functions of the front-end </summary>
-    public class Accessibility_BriefItemMapper : IBriefItemMapper
+    public class Licensing_BriefItemMapper : IBriefItemMapper
     {
         /// <summary> Map one or more data elements from the original METS-based object to the
         /// BriefItem object </summary>
@@ -19,10 +19,13 @@ namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
         /// <returns> TRUE if successful, FALSE if an exception is encountered </returns>
         public bool MapToBriefItem(SobekCM_Item Original, BriefItemInfo New)
         {
-            // Add the accessibility 
-            if (!String.IsNullOrWhiteSpace(Original.Bib_Info.Accessibility))
+            // Add the licensing
+            if ( Original.Bib_Info.LicensingCount > 0 )
             {
-                New.Add_Description("Accessibility", Original.Bib_Info.Accessibility);
+                foreach( string licensing in Original.Bib_Info.Licensing)
+                {
+                    New.Add_Description("Licensing", licensing);
+                }
             }
 
             return true;

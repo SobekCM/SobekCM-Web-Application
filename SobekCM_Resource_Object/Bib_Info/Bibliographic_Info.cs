@@ -25,6 +25,8 @@ namespace SobekCM.Resource_Object.Bib_Info
         private List<Finding_Guide_Container> containers;
 
         private string accessibility;
+        private List<string> licensing;
+        private List<string> systemRequirements;
         private string encodingLevel;
         private List<Publisher_Info> manufacturers;
         private List<Publisher_Info> publishers;
@@ -599,6 +601,24 @@ namespace SobekCM.Resource_Object.Bib_Info
                     metadataTerms.Add(new KeyValuePair<string, string>("Accessibility", Accessibility));
                 }
 
+                // Add licensing
+                if (LicensingCount > 0)
+                {
+                    foreach (string licensing in Licensing)
+                    {
+                        metadataTerms.Add(new KeyValuePair<string, string>("Licensing", licensing));
+                    }
+                }
+
+                // Add any system requirements
+                if (SystemRequirementsCount > 0 )
+                {
+                    foreach( string sysReq in SystemRequirements)
+                    {
+                        metadataTerms.Add(new KeyValuePair<string, string>("SystemRequirements", sysReq));
+                    }
+                }
+
 
                 return metadataTerms;
             }
@@ -699,6 +719,91 @@ namespace SobekCM.Resource_Object.Bib_Info
             get { return accessibility ?? String.Empty; }
             set { accessibility = value; }
         }
+        
+        /// <summary> Gets the number of licenses included </summary>
+        public int LicensingCount
+        {
+            get
+            {
+                return (licensing != null) ? licensing.Count : 0;
+            }
+        }
+
+        /// <summary> Get the collection of licenses (or null) </summary>
+        public ReadOnlyCollection<string> Licensing
+        {
+            get
+            {
+                if (licensing == null) return null;
+                return new ReadOnlyCollection<string>(licensing);
+            }
+        }
+
+        /// <summary> Remove any existing licenses </summary>
+        public void Clear_Licensing()
+        {
+            if (licensing != null) licensing.Clear();
+        }
+
+        /// <summary> Add a new license </summary>
+        /// <param name="License"> New license </param>
+        public void Add_Licensing( string License )
+        {
+            if (String.IsNullOrWhiteSpace(License)) return;
+
+            if (licensing == null) licensing = new List<string>();
+
+            foreach( string license in licensing)
+            {
+                if (String.Equals(license, License, StringComparison.OrdinalIgnoreCase))
+                    return;
+            }
+
+            licensing.Add(License);
+        }
+
+        /// <summary> Gets the number of system requirements included </summary>
+        public int SystemRequirementsCount
+        {
+            get
+            {
+                return (systemRequirements != null) ? systemRequirements.Count : 0;
+            }
+        }
+
+        /// <summary> Get the collection of system requirements (or null) </summary>
+        public ReadOnlyCollection<string> SystemRequirements
+        {
+            get
+            {
+                if (systemRequirements == null) return null;
+                return new ReadOnlyCollection<string>(systemRequirements);
+            }
+        }
+
+        /// <summary> Remove any existing system requirements </summary>
+        public void Clear_SystemRequirements()
+        {
+            if (systemRequirements != null) systemRequirements.Clear();
+        }
+
+        /// <summary> Add a new system requirement to use this material </summary>
+        /// <param name="SystemRequirement"> New system requirement to use this material </param>
+        public void Add_SystemRequirements(string SystemRequirement)
+        {
+            if (String.IsNullOrWhiteSpace(SystemRequirement)) return;
+
+            if (systemRequirements == null) systemRequirements = new List<string>();
+
+            foreach (string systemRequirement in systemRequirements)
+            {
+                if (String.Equals(systemRequirement, SystemRequirement, StringComparison.OrdinalIgnoreCase))
+                    return;
+            }
+
+            systemRequirements.Add(SystemRequirement);
+        }
+
 
         /// <summary> Gets or sets the encoding level for this record </summary>
         public string EncodingLevel
@@ -1177,6 +1282,9 @@ namespace SobekCM.Resource_Object.Bib_Info
             encodingLevel = null;
             accessibility = null;
 
+            Clear_SystemRequirements();
+            Clear_Licensing();
+
             if (containers != null)
                 containers.Clear();
         }
@@ -1250,6 +1358,24 @@ namespace SobekCM.Resource_Object.Bib_Info
             if (!String.IsNullOrEmpty(accessibility))
             {
                 Results.Write(toMODS(sobekcm_namespace + ":Accessibility", accessibility));
+            }
+
+            // Add licensing if there are some
+            if (LicensingCount > 0 )
+            {
+                foreach(string license in Licensing)
+                {
+                    Results.Write(toMODS(sobekcm_namespace + ":Licensing", license));
+                }
+            }
+
+            // Add any system requirements
+            if (SystemRequirementsCount > 0)
+            {
+                foreach (string sysReq in SystemRequirements)
+                {
+                    Results.Write(toMODS(sobekcm_namespace + ":SystemRequirements", sysReq));
+                }
             }
 
             // Add affiliation MODS

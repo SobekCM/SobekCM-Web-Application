@@ -63,8 +63,17 @@ namespace SobekCM.Library.AdminViewer
         {
             RequestSpecificValues.Tracer.Add_Trace("Users_AdminViewer.Constructor", String.Empty);
 
-            // Ensure the user is the system admin
-            if ((RequestSpecificValues.Current_User == null) || (!RequestSpecificValues.Current_User.Is_System_Admin))
+            // Ensure there is a user
+            if (RequestSpecificValues.Current_User == null)
+            {
+                RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.My_Sobek;
+                RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
+                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                return;
+            }
+
+            // Ensure the user is the system admin, or user admin
+            if ((!RequestSpecificValues.Current_User.Is_System_Admin) && (!RequestSpecificValues.Current_User.Is_User_Admin))
             {
                 RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.My_Sobek;
                 RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Home;

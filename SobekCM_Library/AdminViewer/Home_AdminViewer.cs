@@ -68,14 +68,25 @@ namespace SobekCM.Library.AdminViewer
 	    {
 	        RequestSpecificValues.Tracer.Add_Trace("Home_AdminViewer.Constructor", String.Empty);
 
-	        if ((RequestSpecificValues.Current_User == null) || ((!RequestSpecificValues.Current_User.Is_Portal_Admin) && (!RequestSpecificValues.Current_User.Is_System_Admin)))
-	        {
-	            RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.My_Sobek;
-	            RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
-	            UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
-	        }
+            // Ensure there is a user
+            if (RequestSpecificValues.Current_User == null)
+            {
+                RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.My_Sobek;
+                RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
+                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                return;
+            }
 
-	        menu_preference = "brief";
+            // Ensure the user is the system admin, portal admin, or user admin
+            if ((!RequestSpecificValues.Current_User.Is_System_Admin) && (!RequestSpecificValues.Current_User.Is_Portal_Admin) && (!RequestSpecificValues.Current_User.Is_User_Admin))
+            {
+                RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.My_Sobek;
+                RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
+                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                return;
+            }
+
+            menu_preference = "brief";
             if ( RequestSpecificValues.Current_User != null )
                 menu_preference = RequestSpecificValues.Current_User.Get_Setting("Home_AdminViewer:View Preference", "brief");
 
@@ -105,119 +116,124 @@ namespace SobekCM.Library.AdminViewer
 	        categories_dictionary["permissions"] = new List<string>();
             categories_dictionary["web"] = new List<string>();
 
-	        // Build the icons lists
+            // Build the icons lists
 
-	        // Add collection wizard
-	        RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Add_Collection_Wizard;
-	        string addColUrl = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
-	        string addColIcon = "  <a href=\"" + addColUrl + "\" title=\"" + ADD_COLLECTION_WIZARD_BRIEF + "\"><div class=\"sbkHav_ButtonDiv\"><img src=\"" + Static_Resources_Gateway.Wizard_Img + "\" /><span class=\"sbkHav_ButtonText\">Add Collection<br />Wizard</span></div></a>";
-	        icons["Add Collection Wizard"] = addColIcon;
-	        categories_dictionary["common"].Add(addColIcon);
+            if ((RequestSpecificValues.Current_User.Is_Portal_Admin) || (RequestSpecificValues.Current_User.Is_System_Admin))
+            {
+                // Add collection wizard
+                RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Add_Collection_Wizard;
+                string addColUrl = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+                string addColIcon = "  <a href=\"" + addColUrl + "\" title=\"" + ADD_COLLECTION_WIZARD_BRIEF + "\"><div class=\"sbkHav_ButtonDiv\"><img src=\"" + Static_Resources_Gateway.Wizard_Img + "\" /><span class=\"sbkHav_ButtonText\">Add Collection<br />Wizard</span></div></a>";
+                icons["Add Collection Wizard"] = addColIcon;
+                categories_dictionary["common"].Add(addColIcon);
 
-	        // Edit item current web skin
-	        RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Skins_Single;
-	        RequestSpecificValues.Current_Mode.My_Sobek_SubMode = RequestSpecificValues.Current_Mode.Skin;
-	        string editCurrSkinUrl = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
-	        RequestSpecificValues.Current_Mode.My_Sobek_SubMode = String.Empty;
-	        string editCurrSkinIcon = "  <a href=\"" + editCurrSkinUrl + "\" title=\"" + EDIT_CURR_SKIN_BRIEF + "\"><div class=\"sbkHav_ButtonDiv\"><img src=\"" + Static_Resources_Gateway.Skins_Img + "\" /><span class=\"sbkHav_ButtonText\">Edit Current<br />Web Skin</span></div></a>";
-	        icons["Edit Current Web Skin"] = editCurrSkinIcon;
-	        categories_dictionary["common"].Add(editCurrSkinIcon);
+                // Add collection wizard (REPEAT FROM COMMON TASKS CATEGORY)
+                categories_dictionary["collections"].Add(addColIcon);
 
-	        string usersIcon = String.Empty;
-	        if (( RequestSpecificValues.Current_User != null ) && (( RequestSpecificValues.Current_User.Is_System_Admin) || (RequestSpecificValues.Current_User.Is_Portal_Admin)))
-	        {
-	            // Edit users and groups
-	            RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Users;
-	            string usersUrl = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
-	            usersIcon = "  <a href=\"" + usersUrl + "\" title=\"" + USERS_AND_GROUPS_BRIEF + "\"><div class=\"sbkHav_ButtonDiv\"><img src=\"" + Static_Resources_Gateway.Users_Img + "\" /><span class=\"sbkHav_ButtonText\">Users and Groups</span></div></a>";
-	            icons["Users and Groups"] = usersIcon;
-	            categories_dictionary["common"].Add(usersIcon);
-	        }
+                // Edit item current web skin
+                RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Skins_Single;
+                RequestSpecificValues.Current_Mode.My_Sobek_SubMode = RequestSpecificValues.Current_Mode.Skin;
+                string editCurrSkinUrl = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+                RequestSpecificValues.Current_Mode.My_Sobek_SubMode = String.Empty;
+                string editCurrSkinIcon = "  <a href=\"" + editCurrSkinUrl + "\" title=\"" + EDIT_CURR_SKIN_BRIEF + "\"><div class=\"sbkHav_ButtonDiv\"><img src=\"" + Static_Resources_Gateway.Skins_Img + "\" /><span class=\"sbkHav_ButtonText\">Edit Current<br />Web Skin</span></div></a>";
+                icons["Edit Current Web Skin"] = editCurrSkinIcon;
+                categories_dictionary["common"].Add(editCurrSkinIcon);
+
+                // Edit item current web skin (REPEAT FROM COMMON TASKS CATEGORY)
+                categories_dictionary["appearance"].Add(editCurrSkinIcon);
+            }
+
+            string usersIcon = String.Empty;
+            if ((RequestSpecificValues.Current_User.Is_User_Admin) || (RequestSpecificValues.Current_User.Is_System_Admin))
+            {
+                // Edit users and groups
+                RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Users;
+                string usersUrl = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+                usersIcon = "  <a href=\"" + usersUrl + "\" title=\"" + USERS_AND_GROUPS_BRIEF + "\"><div class=\"sbkHav_ButtonDiv\"><img src=\"" + Static_Resources_Gateway.Users_Img + "\" /><span class=\"sbkHav_ButtonText\">Users and Groups</span></div></a>";
+                icons["Users and Groups"] = usersIcon;
+                categories_dictionary["common"].Add(usersIcon);
+            }
+
+            if ((RequestSpecificValues.Current_User.Is_Portal_Admin) || (RequestSpecificValues.Current_User.Is_System_Admin))
+            {
+                // Edit URL Portals
+                RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.URL_Portals;
+                string urlPortalsUrl = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+                string urlPortalsIcon = "  <a href=\"" + urlPortalsUrl + "\" title=\"" + URL_PORTALS_BRIEF + "\"><div class=\"sbkHav_ButtonDiv\"><img src=\"" + Static_Resources_Gateway.Portals_Img + "\" /><span class=\"sbkHav_ButtonText\">URL Portals</span></div></a>";
+                icons["URL Portals"] = urlPortalsIcon;
+                categories_dictionary["appearance"].Add(urlPortalsIcon);
+
+                // Edit web skins
+                RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Skins_Mgmt;
+                string skinsUrl = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+                string skinsIcon = "  <a href=\"" + skinsUrl + "\" title=\"" + WEB_SKINS_BRIEF + "\"><div class=\"sbkHav_ButtonDiv\"><img src=\"" + Static_Resources_Gateway.Skins_Img + "\" /><span class=\"sbkHav_ButtonText\">Web Skins</span></div></a>";
+                icons["Web Skins"] = skinsIcon;
+                categories_dictionary["appearance"].Add(skinsIcon);
+
+                // Edit aggregation aliases
+                RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Aliases;
+                string aliasesUrl = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+                string aliasesIcon = "  <a href=\"" + aliasesUrl + "\" title=\"" + ALIASES_BRIEF + "\"><div class=\"sbkHav_ButtonDiv\"><img src=\"" + Static_Resources_Gateway.Aliases_Img + "\" /><span class=\"sbkHav_ButtonText\">Aggregation<br />Aliases</span></div></a>";
+                icons["Aggregation Aliases"] = aliasesIcon;
+                categories_dictionary["collections"].Add(aliasesIcon);
+
+                // Edit item aggregations
+                RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Aggregations_Mgmt;
+                string aggrMgmtUrl = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+                string aggrMgmtIcon = "  <a href=\"" + aggrMgmtUrl + "\" title=\"" + AGGR_MGMT_BRIEF + "\"><div class=\"sbkHav_ButtonDiv\"><img src=\"" + Static_Resources_Gateway.Aggregations_Img + "\" /><span class=\"sbkHav_ButtonText\">Aggregation<br />Management</span></div></a>";
+                icons["Aggregation Management"] = aggrMgmtIcon;
+                categories_dictionary["collections"].Add(aggrMgmtIcon);
+
+                // Edit Thematic Headings
+                RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Thematic_Headings;
+                string thematicHeadingUrl = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+                string thematicHeadingIcon = "  <a href=\"" + thematicHeadingUrl + "\" title=\"" + THEMATIC_HEADING_BRIEF + "\"><div class=\"sbkHav_ButtonDiv\"><img src=\"" + Static_Resources_Gateway.Thematic_Heading_Img + "\" /><span class=\"sbkHav_ButtonText\">Thematic Headings</span></div></a>";
+                icons["Thematic Headings"] = thematicHeadingIcon;
+                categories_dictionary["collections"].Add(thematicHeadingIcon);
 
 
-	        // Edit item current web skin (REPEAT FROM COMMON TASKS CATEGORY)
-	        categories_dictionary["appearance"].Add(editCurrSkinIcon);
+                // Edit Default_Metadata
+                RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Default_Metadata;
+                string defaultMetadataUrl = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+                string defaultMetadataIcon = "  <a href=\"" + defaultMetadataUrl + "\" title=\"" + DEFAULT_METADATA_BRIEF + "\"><div class=\"sbkHav_ButtonDiv\"><img src=\"" + Static_Resources_Gateway.Pmets_Img + "\" /><span class=\"sbkHav_ButtonText\">Default Metadata</span></div></a>";
+                icons["Default Metadata"] = defaultMetadataIcon;
+                categories_dictionary["items"].Add(defaultMetadataIcon);
 
-	        // Edit URL Portals
-	        RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.URL_Portals;
-	        string urlPortalsUrl = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
-	        string urlPortalsIcon = "  <a href=\"" + urlPortalsUrl + "\" title=\"" + URL_PORTALS_BRIEF + "\"><div class=\"sbkHav_ButtonDiv\"><img src=\"" + Static_Resources_Gateway.Portals_Img + "\" /><span class=\"sbkHav_ButtonText\">URL Portals</span></div></a>";
-	        icons["URL Portals"] = urlPortalsIcon;
-	        categories_dictionary["appearance"].Add(urlPortalsIcon);
+                // Edit wordmarks
+                RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Wordmarks;
+                string wordmarksUrl = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+                string wordmarksIcon = "  <a href=\"" + wordmarksUrl + "\" title=\"" + WORDMARKS_BRIEF + "\"><div class=\"sbkHav_ButtonDiv\"><img src=\"" + Static_Resources_Gateway.Wordmarks_Img + "\" /><span class=\"sbkHav_ButtonText\">Wordmarks / Icons</span></div></a>";
+                icons["Wordmarks"] = wordmarksIcon;
+                categories_dictionary["items"].Add(wordmarksIcon);
 
-	        // Edit web skins
-	        RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Skins_Mgmt;
-	        string skinsUrl = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
-	        string skinsIcon = "  <a href=\"" + skinsUrl + "\" title=\"" + WEB_SKINS_BRIEF + "\"><div class=\"sbkHav_ButtonDiv\"><img src=\"" + Static_Resources_Gateway.Skins_Img + "\" /><span class=\"sbkHav_ButtonText\">Web Skins</span></div></a>";
-	        icons["Web Skins"] = skinsIcon;
-	        categories_dictionary["appearance"].Add(skinsIcon);
+                // View and set SobekCM Builder Status
+                RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Builder_Status;
+                string builderUrl = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+                string builderIcon = "  <a href=\"" + builderUrl + "\" title=\"" + BUILDER_STATUS_BRIEF + "\"><div class=\"sbkHav_ButtonDiv\"><img src=\"" + Static_Resources_Gateway.Gears_Img + "\" /><span class=\"sbkHav_ButtonText\">Builder Status</span></div></a>";
+                icons["Builder Status"] = builderIcon;
+                categories_dictionary["items"].Add(builderIcon);
 
-	        // Add collection wizard (REPEAT FROM COMMON TASKS CATEGORY)
-	        categories_dictionary["collections"].Add(addColIcon);
+                // Edit IP Restrictions
+                RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.IP_Restrictions;
+                string restrictionsUrl = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+                string restrictionsIcon = "  <a href=\"" + restrictionsUrl + "\" title=\"" + RESTRICTIONS_BRIEF + "\"><div class=\"sbkHav_ButtonDiv\"><img src=\"" + Static_Resources_Gateway.Firewall_Img + "\" /><span class=\"sbkHav_ButtonText\">IP Restriction<br />Ranges</span></div></a>";
+                icons["IP Restriction Ranges"] = restrictionsIcon;
+                categories_dictionary["settings"].Add(restrictionsIcon);
 
-	        // Edit aggregation aliases
-	        RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Aliases;
-	        string aliasesUrl = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
-	        string aliasesIcon = "  <a href=\"" + aliasesUrl + "\" title=\"" + ALIASES_BRIEF + "\"><div class=\"sbkHav_ButtonDiv\"><img src=\"" + Static_Resources_Gateway.Aliases_Img + "\" /><span class=\"sbkHav_ButtonText\">Aggregation<br />Aliases</span></div></a>";
-	        icons["Aggregation Aliases"] = aliasesIcon;
-	        categories_dictionary["collections"].Add(aliasesIcon);
+                // Edit Settings
+                RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Settings;
+                string settingsUrl = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+                string settingsIcon = "  <a href=\"" + settingsUrl + "\" title=\"" + SETTINGS_BRIEF + "\"><div class=\"sbkHav_ButtonDiv\"><img src=\"" + Static_Resources_Gateway.Settings_Img + "\" /><span class=\"sbkHav_ButtonText\">System-Wide<br />Settings</span></div></a>";
+                icons["System-Wide Settings"] = settingsIcon;
+                categories_dictionary["settings"].Add(settingsIcon);
 
-	        // Edit item aggregations
-	        RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Aggregations_Mgmt;
-	        string aggrMgmtUrl = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
-	        string aggrMgmtIcon = "  <a href=\"" + aggrMgmtUrl + "\" title=\"" + AGGR_MGMT_BRIEF + "\"><div class=\"sbkHav_ButtonDiv\"><img src=\"" + Static_Resources_Gateway.Aggregations_Img + "\" /><span class=\"sbkHav_ButtonText\">Aggregation<br />Management</span></div></a>";
-	        icons["Aggregation Management"] = aggrMgmtIcon;
-	        categories_dictionary["collections"].Add(aggrMgmtIcon);
-
-	        // Edit Thematic Headings
-	        RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Thematic_Headings;
-	        string thematicHeadingUrl = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
-	        string thematicHeadingIcon = "  <a href=\"" + thematicHeadingUrl + "\" title=\"" + THEMATIC_HEADING_BRIEF + "\"><div class=\"sbkHav_ButtonDiv\"><img src=\"" + Static_Resources_Gateway.Thematic_Heading_Img + "\" /><span class=\"sbkHav_ButtonText\">Thematic Headings</span></div></a>";
-	        icons["Thematic Headings"] = thematicHeadingIcon;
-	        categories_dictionary["collections"].Add(thematicHeadingIcon);
-
-
-	        // Edit Default_Metadata
-	        RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Default_Metadata;
-	        string defaultMetadataUrl = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
-	        string defaultMetadataIcon = "  <a href=\"" + defaultMetadataUrl + "\" title=\"" + DEFAULT_METADATA_BRIEF + "\"><div class=\"sbkHav_ButtonDiv\"><img src=\"" + Static_Resources_Gateway.Pmets_Img + "\" /><span class=\"sbkHav_ButtonText\">Default Metadata</span></div></a>";
-	        icons["Default Metadata"] = defaultMetadataIcon;
-	        categories_dictionary["items"].Add(defaultMetadataIcon);
-
-	        // Edit wordmarks
-	        RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Wordmarks;
-	        string wordmarksUrl = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
-	        string wordmarksIcon = "  <a href=\"" + wordmarksUrl + "\" title=\"" + WORDMARKS_BRIEF + "\"><div class=\"sbkHav_ButtonDiv\"><img src=\"" + Static_Resources_Gateway.Wordmarks_Img + "\" /><span class=\"sbkHav_ButtonText\">Wordmarks / Icons</span></div></a>";
-	        icons["Wordmarks"] = wordmarksIcon;
-	        categories_dictionary["items"].Add(wordmarksIcon);
-
-	        // View and set SobekCM Builder Status
-	        RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Builder_Status;
-	        string builderUrl = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
-	        string builderIcon = "  <a href=\"" + builderUrl + "\" title=\"" + BUILDER_STATUS_BRIEF + "\"><div class=\"sbkHav_ButtonDiv\"><img src=\"" + Static_Resources_Gateway.Gears_Img + "\" /><span class=\"sbkHav_ButtonText\">Builder Status</span></div></a>";
-	        icons["Builder Status"] = builderIcon;
-	        categories_dictionary["items"].Add(builderIcon);
-
-	        // Edit IP Restrictions
-	        RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.IP_Restrictions;
-	        string restrictionsUrl = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
-	        string restrictionsIcon = "  <a href=\"" + restrictionsUrl + "\" title=\"" + RESTRICTIONS_BRIEF + "\"><div class=\"sbkHav_ButtonDiv\"><img src=\"" + Static_Resources_Gateway.Firewall_Img + "\" /><span class=\"sbkHav_ButtonText\">IP Restriction<br />Ranges</span></div></a>";
-	        icons["IP Restriction Ranges"] = restrictionsIcon;
-	        categories_dictionary["settings"].Add(restrictionsIcon);
-
-	        // Edit Settings
-	        RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Settings;
-	        string settingsUrl = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
-	        string settingsIcon = "  <a href=\"" + settingsUrl + "\" title=\"" + SETTINGS_BRIEF + "\"><div class=\"sbkHav_ButtonDiv\"><img src=\"" + Static_Resources_Gateway.Settings_Img + "\" /><span class=\"sbkHav_ButtonText\">System-Wide<br />Settings</span></div></a>";
-	        icons["System-Wide Settings"] = settingsIcon;
-	        categories_dictionary["settings"].Add(settingsIcon);
-
-	        // Reset cache
-	        RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Reset;
-	        string resetUrl = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
-	        string resetIcon = "  <a href=\"" + resetUrl + "\" title=\"" + RESET_CACHE_BRIEF + "\"><div class=\"sbkHav_ButtonDiv\"><img src=\"" + Static_Resources_Gateway.Refresh_Img + "\" /><span class=\"sbkHav_ButtonText\">Reset Cache</span></div></a>";
-	        icons["Reset Cache"] = resetIcon;
-	        categories_dictionary["settings"].Add(resetIcon);
+                // Reset cache
+                RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Reset;
+                string resetUrl = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+                string resetIcon = "  <a href=\"" + resetUrl + "\" title=\"" + RESET_CACHE_BRIEF + "\"><div class=\"sbkHav_ButtonDiv\"><img src=\"" + Static_Resources_Gateway.Refresh_Img + "\" /><span class=\"sbkHav_ButtonText\">Reset Cache</span></div></a>";
+                icons["Reset Cache"] = resetIcon;
+                categories_dictionary["settings"].Add(resetIcon);
+            }
 
 	        // View permissions report
 	        RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.User_Permissions_Reports;
@@ -227,11 +243,14 @@ namespace SobekCM.Library.AdminViewer
 	        categories_dictionary["permissions"].Add(permissionsIcon);
 
             // View user rqeuests report
-            RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.User_Requests;
-            string requestsUrl = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
-            string requestsIcon = "  <a href=\"" + requestsUrl + "\" title=\"" + USER_REQUESTS_BRIEF + "\"><div class=\"sbkHav_ButtonDiv\"><img src=\"" + Static_Resources_Gateway.User_Permission_Img + "\" /><span class=\"sbkHav_ButtonText\">User Requests</span></div></a>";
-            icons["User Requests"] = permissionsIcon;
-            categories_dictionary["permissions"].Add(requestsIcon);
+            if ((RequestSpecificValues.Current_User.Is_User_Admin) || (RequestSpecificValues.Current_User.Is_System_Admin))
+            {
+                RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.User_Requests;
+                string requestsUrl = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+                string requestsIcon = "  <a href=\"" + requestsUrl + "\" title=\"" + USER_REQUESTS_BRIEF + "\"><div class=\"sbkHav_ButtonDiv\"><img src=\"" + Static_Resources_Gateway.User_Permission_Img + "\" /><span class=\"sbkHav_ButtonText\">User Requests</span></div></a>";
+                icons["User Requests"] = permissionsIcon;
+                categories_dictionary["permissions"].Add(requestsIcon);
+            }
 
             // Web content pages management
             RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.WebContent_Mgmt;
@@ -269,9 +288,9 @@ namespace SobekCM.Library.AdminViewer
                 categories_dictionary["extensions"].Add(teiIcon);
             }
 
-	        // Edit users (REPEAT FROM COMMON TASKS CATEGORY)
-            if ((RequestSpecificValues.Current_User != null) && ( RequestSpecificValues.Current_User.Is_System_Admin))
-	        {
+            // Edit users (REPEAT FROM COMMON TASKS CATEGORY)
+            if ((RequestSpecificValues.Current_User.Is_User_Admin) || (RequestSpecificValues.Current_User.Is_System_Admin))
+            {
 	            // Edit users
 	            categories_dictionary["permissions"].Add(usersIcon);
 	        }
@@ -382,191 +401,194 @@ namespace SobekCM.Library.AdminViewer
 	        display_single_category(Output, "common", String.Empty);
             Output.WriteLine("  </div>");
 
+            if ((RequestSpecificValues.Current_User.Is_System_Admin) || (RequestSpecificValues.Current_User.Is_System_Admin))
+            {
 
-            Output.WriteLine("  <table id=\"sbkHav_OptionsTable3\">");
-            Output.WriteLine("    <tr><td colspan=\"3\"><h2 id=\"appearance\">Appearance</h2></td></tr>");
-
-
-            // Edit item aggregationPermissions
-            RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Administrative;
-            RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Skins_Single;
-            RequestSpecificValues.Current_Mode.My_Sobek_SubMode = RequestSpecificValues.Current_Mode.Skin;
-            string edit_curr_skin_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
-            RequestSpecificValues.Current_Mode.My_Sobek_SubMode = String.Empty;
-
-            Output.WriteLine("    <tr>");
-            Output.WriteLine("      <td style=\"width:30px\">&nbsp;</td>");
-            Output.WriteLine("      <td style=\"width:60px\"><a href=\"" + edit_curr_skin_url + "\"><img src=\"" + Static_Resources_Gateway.Skins_Img_Large + "\" /></a></td>");
-            Output.WriteLine("      <td>");
-            Output.WriteLine("        <a href=\"" + edit_curr_skin_url + "\">Edit Current Web Skin</a>");
-            Output.WriteLine("        <div class=\"sbkMmav_Desc\">" + EDIT_CURR_SKIN_BRIEF + "</div>");
-            Output.WriteLine("      </td>");
-            Output.WriteLine("    </tr>");
-
-            // Edit URL Portals
-            RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.URL_Portals;
-            string portal_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
-
-            Output.WriteLine("    <tr>");
-            Output.WriteLine("      <td>&nbsp;</td>");
-            Output.WriteLine("      <td><a href=\"" + portal_url + "\"><img src=\"" + Static_Resources_Gateway.Portals_Img_Large + "\" /></a></td>");
-            Output.WriteLine("      <td>");
-            Output.WriteLine("        <a href=\"" + portal_url + "\">URL Portals</a>");
-            Output.WriteLine("        <div class=\"sbkMmav_Desc\">" + URL_PORTALS_BRIEF + "</div>");
-            Output.WriteLine("      </td>");
-            Output.WriteLine("    </tr>");
+                Output.WriteLine("  <table id=\"sbkHav_OptionsTable3\">");
+                Output.WriteLine("    <tr><td colspan=\"3\"><h2 id=\"appearance\">Appearance</h2></td></tr>");
 
 
-            // Edit web skins
-            RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Skins_Mgmt;
-            string web_skin_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
-
-            Output.WriteLine("    <tr>");
-            Output.WriteLine("      <td>&nbsp;</td>");
-            Output.WriteLine("      <td><a href=\"" + web_skin_url + "\"><img src=\"" + Static_Resources_Gateway.Skins_Img_Large + "\" /></a></td>");
-            Output.WriteLine("      <td>");
-            Output.WriteLine("        <a href=\"" + web_skin_url + "\">Web Skins</a>");
-            Output.WriteLine("        <div class=\"sbkMmav_Desc\">" + WEB_SKINS_BRIEF  + "</div>");
-            Output.WriteLine("      </td>");
-            Output.WriteLine("    </tr>");
+                // Edit item aggregationPermissions
+                RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Administrative;
+                RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Skins_Single;
+                RequestSpecificValues.Current_Mode.My_Sobek_SubMode = RequestSpecificValues.Current_Mode.Skin;
+                string edit_curr_skin_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+                RequestSpecificValues.Current_Mode.My_Sobek_SubMode = String.Empty;
 
 
-            Output.WriteLine("    <tr><td colspan=\"3\"><h2 id=\"collections\">Collections</h2></td></tr>");
+                Output.WriteLine("    <tr>");
+                Output.WriteLine("      <td style=\"width:30px\">&nbsp;</td>");
+                Output.WriteLine("      <td style=\"width:60px\"><a href=\"" + edit_curr_skin_url + "\"><img src=\"" + Static_Resources_Gateway.Skins_Img_Large + "\" /></a></td>");
+                Output.WriteLine("      <td>");
+                Output.WriteLine("        <a href=\"" + edit_curr_skin_url + "\">Edit Current Web Skin</a>");
+                Output.WriteLine("        <div class=\"sbkMmav_Desc\">" + EDIT_CURR_SKIN_BRIEF + "</div>");
+                Output.WriteLine("      </td>");
+                Output.WriteLine("    </tr>");
 
-            RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Add_Collection_Wizard;
-            string add_collection_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
-            Output.WriteLine("    <tr>");
-            Output.WriteLine("      <td>&nbsp;</td>");
-            Output.WriteLine("      <td><a href=\"" + add_collection_url + "\"><img src=\"" + Static_Resources_Gateway.Wizard_Img_Large + "\" /></a></td>");
-            Output.WriteLine("      <td>");
-            Output.WriteLine("        <a href=\"" + add_collection_url + "\">Add Collection Wizard</a>");
-            Output.WriteLine("        <div class=\"sbkMmav_Desc\">" + ADD_COLLECTION_WIZARD_BRIEF  + "</div>");
-            Output.WriteLine("      </td>");
-            Output.WriteLine("    </tr>");
-       
+                // Edit URL Portals
+                RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.URL_Portals;
+                string portal_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
 
-            // Edit aggregation aliases
-            RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Aliases;
-            string alias_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+                Output.WriteLine("    <tr>");
+                Output.WriteLine("      <td>&nbsp;</td>");
+                Output.WriteLine("      <td><a href=\"" + portal_url + "\"><img src=\"" + Static_Resources_Gateway.Portals_Img_Large + "\" /></a></td>");
+                Output.WriteLine("      <td>");
+                Output.WriteLine("        <a href=\"" + portal_url + "\">URL Portals</a>");
+                Output.WriteLine("        <div class=\"sbkMmav_Desc\">" + URL_PORTALS_BRIEF + "</div>");
+                Output.WriteLine("      </td>");
+                Output.WriteLine("    </tr>");
 
-            Output.WriteLine("    <tr>");
-            Output.WriteLine("      <td>&nbsp;</td>");
-            Output.WriteLine("      <td><a href=\"" + alias_url + "\"><img src=\"" + Static_Resources_Gateway.Aliases_Img_Large + "\" /></a></td>");
-            Output.WriteLine("      <td>");
-            Output.WriteLine("        <a href=\"" + alias_url + "\">Aggregation Aliases</a>");
-            Output.WriteLine("        <div class=\"sbkMmav_Desc\">" + ALIASES_BRIEF + "</div>");
-            Output.WriteLine("      </td>");
-            Output.WriteLine("    </tr>");
+                // Edit web skins
+                RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Skins_Mgmt;
+                string web_skin_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
 
-
-            // Edit item aggregationPermissions
-            RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Aggregations_Mgmt;
-            string aggr_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
-
-            Output.WriteLine("    <tr>");
-            Output.WriteLine("      <td>&nbsp;</td>");
-            Output.WriteLine("      <td><a href=\"" + aggr_url + "\"><img src=\"" + Static_Resources_Gateway.Aggregations_Img_Large + "\" /></a></td>");
-            Output.WriteLine("      <td>");
-            Output.WriteLine("        <a href=\"" + aggr_url + "\">Aggregation Management</a>");
-            Output.WriteLine("        <div class=\"sbkMmav_Desc\">" + AGGR_MGMT_BRIEF  + "</div>");
-            Output.WriteLine("      </td>");
-            Output.WriteLine("    </tr>");
-
-            // Edit Thematic Headings
-            RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Thematic_Headings;
-            string thematic_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
-
-            Output.WriteLine("    <tr>");
-            Output.WriteLine("      <td>&nbsp;</td>");
-            Output.WriteLine("      <td><a href=\"" + thematic_url + "\"><img src=\"" + Static_Resources_Gateway.Thematic_Heading_Img_Large + "\" /></a></td>");
-            Output.WriteLine("      <td>");
-            Output.WriteLine("        <a href=\"" + thematic_url + "\">Thematic Headings</a>");
-            Output.WriteLine("        <div class=\"sbkMmav_Desc\">" + THEMATIC_HEADING_BRIEF  + "</div>");
-            Output.WriteLine("      </td>");
-            Output.WriteLine("    </tr>");
-            
-            Output.WriteLine("    <tr><td colspan=\"3\"><h2 id=\"items\">Items</h2></td></tr>");
-
-            // Edit Default_Metadata
-            RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Default_Metadata;
-            string default_metadata_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
-
-            Output.WriteLine("    <tr>");
-            Output.WriteLine("      <td>&nbsp;</td>");
-            Output.WriteLine("      <td><a href=\"" + default_metadata_url + "\"><img src=\"" + Static_Resources_Gateway.Pmets_Img + "\" /></a></td>");
-            Output.WriteLine("      <td>");
-            Output.WriteLine("        <a href=\"" + default_metadata_url + "\">Default Metadata</a>");
-            Output.WriteLine("        <div class=\"sbkMmav_Desc\">" + DEFAULT_METADATA_BRIEF  + "</div>");
-            Output.WriteLine("      </td>");
-            Output.WriteLine("    </tr>");
-
-            // Edit wordmarks
-            RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Wordmarks;
-            string wordmark_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
-
-            Output.WriteLine("    <tr>");
-            Output.WriteLine("      <td>&nbsp;</td>");
-            Output.WriteLine("      <td><a href=\"" + wordmark_url + "\"><img src=\"" + Static_Resources_Gateway.Wordmarks_Img_Large + "\" /></a></td>");
-            Output.WriteLine("      <td>");
-            Output.WriteLine("        <a href=\"" + wordmark_url + "\">Wordmarks / Icons</a>");
-            Output.WriteLine("        <div class=\"sbkMmav_Desc\">" + WORDMARKS_BRIEF   + "</div>");
-            Output.WriteLine("      </td>");
-            Output.WriteLine("    </tr>");
+                Output.WriteLine("    <tr>");
+                Output.WriteLine("      <td>&nbsp;</td>");
+                Output.WriteLine("      <td><a href=\"" + web_skin_url + "\"><img src=\"" + Static_Resources_Gateway.Skins_Img_Large + "\" /></a></td>");
+                Output.WriteLine("      <td>");
+                Output.WriteLine("        <a href=\"" + web_skin_url + "\">Web Skins</a>");
+                Output.WriteLine("        <div class=\"sbkMmav_Desc\">" + WEB_SKINS_BRIEF + "</div>");
+                Output.WriteLine("      </td>");
+                Output.WriteLine("    </tr>");
 
 
-            // View and set SobekCM Builder Status
-            RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Builder_Status;
-            string builder_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+                Output.WriteLine("    <tr><td colspan=\"3\"><h2 id=\"collections\">Collections</h2></td></tr>");
 
-            Output.WriteLine("    <tr>");
-            Output.WriteLine("      <td>&nbsp;</td>");
-            Output.WriteLine("      <td><a href=\"" + builder_url + "\"><img src=\"" + Static_Resources_Gateway.Gears_Img_Large + "\" /></a></td>");
-            Output.WriteLine("      <td>");
-            Output.WriteLine("        <a href=\"" + builder_url + "\">Builder Status</a>");
-            Output.WriteLine("        <div class=\"sbkMmav_Desc\">" + BUILDER_STATUS_BRIEF  + "</div>");
-            Output.WriteLine("      </td>");
-            Output.WriteLine("    </tr>");
+                RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Add_Collection_Wizard;
+                string add_collection_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+                Output.WriteLine("    <tr>");
+                Output.WriteLine("      <td>&nbsp;</td>");
+                Output.WriteLine("      <td><a href=\"" + add_collection_url + "\"><img src=\"" + Static_Resources_Gateway.Wizard_Img_Large + "\" /></a></td>");
+                Output.WriteLine("      <td>");
+                Output.WriteLine("        <a href=\"" + add_collection_url + "\">Add Collection Wizard</a>");
+                Output.WriteLine("        <div class=\"sbkMmav_Desc\">" + ADD_COLLECTION_WIZARD_BRIEF + "</div>");
+                Output.WriteLine("      </td>");
+                Output.WriteLine("    </tr>");
 
-            Output.WriteLine("    <tr><td colspan=\"3\"><h2 id=\"settings\">Settings</h2></td></tr>");
-            
-            // Edit IP Restrictions
-            RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.IP_Restrictions;
-            string ip_restrictions_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
 
-            Output.WriteLine("    <tr>");
-            Output.WriteLine("      <td>&nbsp;</td>");
-            Output.WriteLine("      <td><a href=\"" + ip_restrictions_url + "\"><img src=\"" + Static_Resources_Gateway.Restricted_Resource_Img_Large + "\" /></a></td>");
-            Output.WriteLine("      <td>");
-            Output.WriteLine("        <a href=\"" + ip_restrictions_url + "\">IP Restriction Ranges</a>");
-            Output.WriteLine("        <div class=\"sbkMmav_Desc\">" + RESTRICTIONS_BRIEF  + "</div>");
-            Output.WriteLine("      </td>");
-            Output.WriteLine("    </tr>");
+                // Edit aggregation aliases
+                RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Aliases;
+                string alias_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
 
-            // Edit Settings
-            RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Settings;
-            string settings_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+                Output.WriteLine("    <tr>");
+                Output.WriteLine("      <td>&nbsp;</td>");
+                Output.WriteLine("      <td><a href=\"" + alias_url + "\"><img src=\"" + Static_Resources_Gateway.Aliases_Img_Large + "\" /></a></td>");
+                Output.WriteLine("      <td>");
+                Output.WriteLine("        <a href=\"" + alias_url + "\">Aggregation Aliases</a>");
+                Output.WriteLine("        <div class=\"sbkMmav_Desc\">" + ALIASES_BRIEF + "</div>");
+                Output.WriteLine("      </td>");
+                Output.WriteLine("    </tr>");
 
-            Output.WriteLine("    <tr>");
-            Output.WriteLine("      <td>&nbsp;</td>");
-            Output.WriteLine("      <td><a href=\"" + settings_url + "\"><img src=\"" + Static_Resources_Gateway.Settings_Img_Large + "\" /></a></td>");
-            Output.WriteLine("      <td>");
-            Output.WriteLine("        <a href=\"" + settings_url + "\">System-Wide Settings</a>");
-            Output.WriteLine("        <div class=\"sbkMmav_Desc\">" + SETTINGS_BRIEF  + "</div>");
-            Output.WriteLine("      </td>");
-            Output.WriteLine("    </tr>");
 
-            // Reset cache
-            RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Reset;
-            string reset_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+                // Edit item aggregationPermissions
+                RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Aggregations_Mgmt;
+                string aggr_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
 
-            Output.WriteLine("    <tr>");
-            Output.WriteLine("      <td>&nbsp;</td>");
-            Output.WriteLine("      <td><a href=\"" + reset_url + "\"><img src=\"" + Static_Resources_Gateway.Refresh_Img_Large + "\" /></a></td>");
-            Output.WriteLine("      <td>");
-            Output.WriteLine("        <a href=\"" + reset_url + "\">Reset Cache</a>");
-            Output.WriteLine("        <div class=\"sbkMmav_Desc\">" + RESET_CACHE_BRIEF + "</div>");
-            Output.WriteLine("      </td>");
-            Output.WriteLine("    </tr>");
+                Output.WriteLine("    <tr>");
+                Output.WriteLine("      <td>&nbsp;</td>");
+                Output.WriteLine("      <td><a href=\"" + aggr_url + "\"><img src=\"" + Static_Resources_Gateway.Aggregations_Img_Large + "\" /></a></td>");
+                Output.WriteLine("      <td>");
+                Output.WriteLine("        <a href=\"" + aggr_url + "\">Aggregation Management</a>");
+                Output.WriteLine("        <div class=\"sbkMmav_Desc\">" + AGGR_MGMT_BRIEF + "</div>");
+                Output.WriteLine("      </td>");
+                Output.WriteLine("    </tr>");
+
+                // Edit Thematic Headings
+                RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Thematic_Headings;
+                string thematic_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+
+                Output.WriteLine("    <tr>");
+                Output.WriteLine("      <td>&nbsp;</td>");
+                Output.WriteLine("      <td><a href=\"" + thematic_url + "\"><img src=\"" + Static_Resources_Gateway.Thematic_Heading_Img_Large + "\" /></a></td>");
+                Output.WriteLine("      <td>");
+                Output.WriteLine("        <a href=\"" + thematic_url + "\">Thematic Headings</a>");
+                Output.WriteLine("        <div class=\"sbkMmav_Desc\">" + THEMATIC_HEADING_BRIEF + "</div>");
+                Output.WriteLine("      </td>");
+                Output.WriteLine("    </tr>");
+
+                Output.WriteLine("    <tr><td colspan=\"3\"><h2 id=\"items\">Items</h2></td></tr>");
+
+                // Edit Default_Metadata
+                RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Default_Metadata;
+                string default_metadata_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+
+                Output.WriteLine("    <tr>");
+                Output.WriteLine("      <td>&nbsp;</td>");
+                Output.WriteLine("      <td><a href=\"" + default_metadata_url + "\"><img src=\"" + Static_Resources_Gateway.Pmets_Img + "\" /></a></td>");
+                Output.WriteLine("      <td>");
+                Output.WriteLine("        <a href=\"" + default_metadata_url + "\">Default Metadata</a>");
+                Output.WriteLine("        <div class=\"sbkMmav_Desc\">" + DEFAULT_METADATA_BRIEF + "</div>");
+                Output.WriteLine("      </td>");
+                Output.WriteLine("    </tr>");
+
+                // Edit wordmarks
+                RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Wordmarks;
+                string wordmark_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+
+                Output.WriteLine("    <tr>");
+                Output.WriteLine("      <td>&nbsp;</td>");
+                Output.WriteLine("      <td><a href=\"" + wordmark_url + "\"><img src=\"" + Static_Resources_Gateway.Wordmarks_Img_Large + "\" /></a></td>");
+                Output.WriteLine("      <td>");
+                Output.WriteLine("        <a href=\"" + wordmark_url + "\">Wordmarks / Icons</a>");
+                Output.WriteLine("        <div class=\"sbkMmav_Desc\">" + WORDMARKS_BRIEF + "</div>");
+                Output.WriteLine("      </td>");
+                Output.WriteLine("    </tr>");
+
+
+                // View and set SobekCM Builder Status
+                RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Builder_Status;
+                string builder_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+
+                Output.WriteLine("    <tr>");
+                Output.WriteLine("      <td>&nbsp;</td>");
+                Output.WriteLine("      <td><a href=\"" + builder_url + "\"><img src=\"" + Static_Resources_Gateway.Gears_Img_Large + "\" /></a></td>");
+                Output.WriteLine("      <td>");
+                Output.WriteLine("        <a href=\"" + builder_url + "\">Builder Status</a>");
+                Output.WriteLine("        <div class=\"sbkMmav_Desc\">" + BUILDER_STATUS_BRIEF + "</div>");
+                Output.WriteLine("      </td>");
+                Output.WriteLine("    </tr>");
+
+                Output.WriteLine("    <tr><td colspan=\"3\"><h2 id=\"settings\">Settings</h2></td></tr>");
+
+                // Edit IP Restrictions
+                RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.IP_Restrictions;
+                string ip_restrictions_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+
+                Output.WriteLine("    <tr>");
+                Output.WriteLine("      <td>&nbsp;</td>");
+                Output.WriteLine("      <td><a href=\"" + ip_restrictions_url + "\"><img src=\"" + Static_Resources_Gateway.Restricted_Resource_Img_Large + "\" /></a></td>");
+                Output.WriteLine("      <td>");
+                Output.WriteLine("        <a href=\"" + ip_restrictions_url + "\">IP Restriction Ranges</a>");
+                Output.WriteLine("        <div class=\"sbkMmav_Desc\">" + RESTRICTIONS_BRIEF + "</div>");
+                Output.WriteLine("      </td>");
+                Output.WriteLine("    </tr>");
+
+                // Edit Settings
+                RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Settings;
+                string settings_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+
+                Output.WriteLine("    <tr>");
+                Output.WriteLine("      <td>&nbsp;</td>");
+                Output.WriteLine("      <td><a href=\"" + settings_url + "\"><img src=\"" + Static_Resources_Gateway.Settings_Img_Large + "\" /></a></td>");
+                Output.WriteLine("      <td>");
+                Output.WriteLine("        <a href=\"" + settings_url + "\">System-Wide Settings</a>");
+                Output.WriteLine("        <div class=\"sbkMmav_Desc\">" + SETTINGS_BRIEF + "</div>");
+                Output.WriteLine("      </td>");
+                Output.WriteLine("    </tr>");
+
+                // Reset cache
+                RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Reset;
+                string reset_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+
+                Output.WriteLine("    <tr>");
+                Output.WriteLine("      <td>&nbsp;</td>");
+                Output.WriteLine("      <td><a href=\"" + reset_url + "\"><img src=\"" + Static_Resources_Gateway.Refresh_Img_Large + "\" /></a></td>");
+                Output.WriteLine("      <td>");
+                Output.WriteLine("        <a href=\"" + reset_url + "\">Reset Cache</a>");
+                Output.WriteLine("        <div class=\"sbkMmav_Desc\">" + RESET_CACHE_BRIEF + "</div>");
+                Output.WriteLine("      </td>");
+                Output.WriteLine("    </tr>");
+            }
 
             Output.WriteLine("    <tr><td colspan=\"3\"><h2 id=\"permissions\">Users and Permissions</h2></td></tr>");
 
@@ -583,7 +605,7 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("      </td>");
             Output.WriteLine("    </tr>");
 
-            if ((RequestSpecificValues.Current_User.Is_Portal_Admin) || ( RequestSpecificValues.Current_User.Is_System_Admin))
+            if ((RequestSpecificValues.Current_User.Is_User_Admin) || ( RequestSpecificValues.Current_User.Is_System_Admin))
             {
                 // Edit users
                 RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Users;
@@ -615,57 +637,60 @@ namespace SobekCM.Library.AdminViewer
                 Output.WriteLine("    <tr class=\"sbkMmav_SpacerRow\"><td colspan=\"3\"></td></tr>");
             }
 
-            // Manage web content pages
-            Output.WriteLine("    <tr><td colspan=\"3\"><h2 id=\"webcontent\">Web Content Pages</h2></td></tr>");
-
-            RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.WebContent_Mgmt;
-            string webcontent_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
-            Output.WriteLine("    <tr>");
-            Output.WriteLine("      <td>&nbsp;</td>");
-            Output.WriteLine("      <td><a href=\"" + webcontent_url + "\"><img src=\"" + Static_Resources_Gateway.WebContent_Img_Large + "\" /></a></td>");
-            Output.WriteLine("      <td>");
-            Output.WriteLine("        <a href=\"" + webcontent_url + "\">Manage Web Content Pages</a>");
-            Output.WriteLine("        <div class=\"sbkMmav_Desc\">" + WEB_MGMT_BRIEF + "</div>");
-            Output.WriteLine("      </td>");
-            Output.WriteLine("    </tr>");
-
-            RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.WebContent_History;
-            string webhistory_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
-            Output.WriteLine("    <tr>");
-            Output.WriteLine("      <td>&nbsp;</td>");
-            Output.WriteLine("      <td><a href=\"" + webhistory_url + "\"><img src=\"" + Static_Resources_Gateway.WebContent_History_Img_Large + "\" /></a></td>");
-            Output.WriteLine("      <td>");
-            Output.WriteLine("        <a href=\"" + webhistory_url + "\">Web Content Recent Changes</a>");
-            Output.WriteLine("        <div class=\"sbkMmav_Desc\">" + WEB_HISTORY_BRIEF + "</div>");
-            Output.WriteLine("      </td>");
-            Output.WriteLine("    </tr>");
-
-            RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.WebContent_Usage;
-            string webusage_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
-            Output.WriteLine("    <tr>");
-            Output.WriteLine("      <td>&nbsp;</td>");
-            Output.WriteLine("      <td><a href=\"" + webusage_url + "\"><img src=\"" + Static_Resources_Gateway.WebContent_Usage_Img_Large + "\" /></a></td>");
-            Output.WriteLine("      <td>");
-            Output.WriteLine("        <a href=\"" + webusage_url + "\">Web Content Usage Reports</a>");
-            Output.WriteLine("        <div class=\"sbkMmav_Desc\">" + WEB_USAGE_BRIEF + "</div>");
-            Output.WriteLine("      </td>");
-            Output.WriteLine("    </tr>");
-
-            // Manage extensions
-            if (categories_dictionary.ContainsKey("extensions"))
+            if ((RequestSpecificValues.Current_User.Is_System_Admin) || (RequestSpecificValues.Current_User.Is_System_Admin))
             {
-                Output.WriteLine("    <tr><td colspan=\"3\"><h2 id=\"extensions\">Extensions</h2></td></tr>");
+                // Manage web content pages
+                Output.WriteLine("    <tr><td colspan=\"3\"><h2 id=\"webcontent\">Web Content Pages</h2></td></tr>");
 
-                RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.TEI;
-                string tei_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+                RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.WebContent_Mgmt;
+                string webcontent_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
                 Output.WriteLine("    <tr>");
                 Output.WriteLine("      <td>&nbsp;</td>");
-                Output.WriteLine("      <td><a href=\"" + tei_url + "\"><img src=\"" + Static_Resources_Gateway.Settings_Img_Large + "\" /></a></td>");
+                Output.WriteLine("      <td><a href=\"" + webcontent_url + "\"><img src=\"" + Static_Resources_Gateway.WebContent_Img_Large + "\" /></a></td>");
                 Output.WriteLine("      <td>");
-                Output.WriteLine("        <a href=\"" + tei_url + "\">Manage TEI Plug-In</a>");
-                Output.WriteLine("        <div class=\"sbkMmav_Desc\">" + TEI_BRIEF + "</div>");
+                Output.WriteLine("        <a href=\"" + webcontent_url + "\">Manage Web Content Pages</a>");
+                Output.WriteLine("        <div class=\"sbkMmav_Desc\">" + WEB_MGMT_BRIEF + "</div>");
                 Output.WriteLine("      </td>");
                 Output.WriteLine("    </tr>");
+
+                RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.WebContent_History;
+                string webhistory_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+                Output.WriteLine("    <tr>");
+                Output.WriteLine("      <td>&nbsp;</td>");
+                Output.WriteLine("      <td><a href=\"" + webhistory_url + "\"><img src=\"" + Static_Resources_Gateway.WebContent_History_Img_Large + "\" /></a></td>");
+                Output.WriteLine("      <td>");
+                Output.WriteLine("        <a href=\"" + webhistory_url + "\">Web Content Recent Changes</a>");
+                Output.WriteLine("        <div class=\"sbkMmav_Desc\">" + WEB_HISTORY_BRIEF + "</div>");
+                Output.WriteLine("      </td>");
+                Output.WriteLine("    </tr>");
+
+                RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.WebContent_Usage;
+                string webusage_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+                Output.WriteLine("    <tr>");
+                Output.WriteLine("      <td>&nbsp;</td>");
+                Output.WriteLine("      <td><a href=\"" + webusage_url + "\"><img src=\"" + Static_Resources_Gateway.WebContent_Usage_Img_Large + "\" /></a></td>");
+                Output.WriteLine("      <td>");
+                Output.WriteLine("        <a href=\"" + webusage_url + "\">Web Content Usage Reports</a>");
+                Output.WriteLine("        <div class=\"sbkMmav_Desc\">" + WEB_USAGE_BRIEF + "</div>");
+                Output.WriteLine("      </td>");
+                Output.WriteLine("    </tr>");
+
+                // Manage extensions
+                if (categories_dictionary.ContainsKey("extensions"))
+                {
+                    Output.WriteLine("    <tr><td colspan=\"3\"><h2 id=\"extensions\">Extensions</h2></td></tr>");
+
+                    RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.TEI;
+                    string tei_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+                    Output.WriteLine("    <tr>");
+                    Output.WriteLine("      <td>&nbsp;</td>");
+                    Output.WriteLine("      <td><a href=\"" + tei_url + "\"><img src=\"" + Static_Resources_Gateway.Settings_Img_Large + "\" /></a></td>");
+                    Output.WriteLine("      <td>");
+                    Output.WriteLine("        <a href=\"" + tei_url + "\">Manage TEI Plug-In</a>");
+                    Output.WriteLine("        <div class=\"sbkMmav_Desc\">" + TEI_BRIEF + "</div>");
+                    Output.WriteLine("      </td>");
+                    Output.WriteLine("    </tr>");
+                }
             }
 
             RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Home;

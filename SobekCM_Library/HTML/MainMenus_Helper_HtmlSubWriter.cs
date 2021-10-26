@@ -1344,7 +1344,7 @@ namespace SobekCM.Library.HTML
                     Output.WriteLine("        <li id=\"sbkUsm_AdminUserReport\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.User_Permission_Img + "\" /> <div class=\"sbkUsm_TextWithImage\">User Permissions Reports</div></a></li>");
 
                     // Edit users
-                    if ((RequestSpecificValues.Current_User.Is_System_Admin) || ( RequestSpecificValues.Current_User.Is_Portal_Admin))
+                    if (RequestSpecificValues.Current_User.Is_System_Admin)
                     {
                         // Edit users
                         RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Users;
@@ -1392,6 +1392,42 @@ namespace SobekCM.Library.HTML
                         Output.WriteLine("      </ul></li>");
                     }
 
+
+                    Output.WriteLine("    </ul></li>");
+                }
+                else if (RequestSpecificValues.Current_User.Is_User_Admin) 
+                {
+                    RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Administrative;
+                    RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Home;
+                    string current_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+
+                    Output.WriteLine("    <li id=\"sbkUsm_Admin\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + sobek_admin_text + "</a><ul id=\"sbkUsm_AdminSubMenu\">");
+
+                    // Common tasks menu
+                    Output.WriteLine("      <li id=\"sbkUsm_AdminCommonTasks\"><a href=\"" + current_url + "#common\"> <div class=\"sbkUsm_TextWithImage\">Common Tasks</div></a><ul>");
+
+                    // Edit users
+                    RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Users;
+                    Output.WriteLine("        <li id=\"sbkUsm_AdminUsers\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.Users_Img_Small + "\" /> <div class=\"sbkUsm_TextWithImage\">Users and Groups</div></a></li>");
+
+                    Output.WriteLine("      </ul></li>");
+
+                    // Permissions submenu
+                    Output.WriteLine("      <li id=\"sbkUsm_AdminPermissions\"><a href=\"" + current_url + "#permissions\"> <div class=\"sbkUsm_TextWithImage\">Users & Permissions</div></a><ul>");
+
+                    // Edit users
+                    RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.User_Permissions_Reports;
+                    Output.WriteLine("        <li id=\"sbkUsm_AdminUserReport\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.User_Permission_Img + "\" /> <div class=\"sbkUsm_TextWithImage\">User Permissions Reports</div></a></li>");
+
+                    // Edit users
+                    RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Users;
+                    Output.WriteLine("        <li id=\"sbkUsm_AdminUsers\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.Users_Img_Small + "\" /> <div class=\"sbkUsm_TextWithImage\">Users and Groups</div></a></li>");
+
+                    // View user requests
+                    RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.User_Requests;
+                    Output.WriteLine("        <li id=\"sbkUsm_AdminUserRequests\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.Users_Img_Small + "\" /> <div class=\"sbkUsm_TextWithImage\">Users Requests</div></a></li>");
+
+                    Output.WriteLine("      </ul></li>");
 
                     Output.WriteLine("    </ul></li>");
                 }

@@ -568,19 +568,20 @@ namespace SobekCM.Library.MySobekViewer
             Output.WriteLine("<table style=\"width:700px;\" cellpadding=\"5px\" class=\"sbkPmsv_InputTable\" >");
 
             Output.WriteLine("  <tr><th colspan=\"3\">Account Type</th></tr>");
-            Output.WriteLine("  <tr><td colspan=\"3\">Are you an instructor?  Let us know below to get access to restricted course materials.</td></tr>");
-            Output.WriteLine("  <tr><td colspan=\"3\">Once your application has been reviewed and approved, you will receive email notification.<br /></td></tr>");
+            Output.WriteLine("  <tr><td>&nbsp;</td><td colspan=\"2\">Are you an instructor?  Let us know below to get access to restricted course materials.</td></tr>");
 
             if (!is_instrcutor)
             {
-                Output.WriteLine("  <tr><td colspan=\"2\">&nbsp;</td><td><input type=\"checkbox\" value=\"isinstructor\" name=\"prefIsInstructor\" id=\"prefIsInstructor\" /><label for=\"prefIsInstructor\">I am an instructor</label></td></tr>");
+                Output.WriteLine("  <tr><td colspan=\"2\">&nbsp;</td><td><input type=\"radio\" value=\"isinstructor\" name=\"prefIsInstructor\" id=\"prefIsInstructor\" /><label for=\"prefIsInstructor\">I am an instructor</label>");
+                Output.WriteLine("                                       <input type=\"radio\" value=\"isNOTinstructor\" name=\"prefIsInstructor\" id=\"prefIsNotInstructor\" /><label for=\"prefIsNotInstructor\">I am NOT an instructor</label></td></tr>");
             }
             else
             {
-                Output.WriteLine("  <tr><td colspan=\"2\">&nbsp;</td><td><input type=\"checkbox\" value=\"isinstructor\" name=\"prefIsInstructor\" id=\"prefIsInstructor\" checked=\"checked\" /><label for=\"prefIsInstructor\">I am an instructor</label></td></tr>");
+                Output.WriteLine("  <tr><td colspan=\"2\">&nbsp;</td><td><input type=\"radio\" value=\"isinstructor\" name=\"prefIsInstructor\" id=\"prefIsInstructor\" /><label for=\"prefIsInstructor\">I am an instructor</label>");
+                Output.WriteLine("                                       <input type=\"radio\" value=\"isNOTinstructor\" name=\"prefIsInstructor\" id=\"prefIsNotInstructor\" /><label for=\"prefIsNotInstructor\">I am NOT an instructor</label></td></tr>");
             }
 
-            Output.WriteLine("  <tr><td colspan=\"3\">Click the option below to submit materials.  To use the online open publishing tools in Open-NJ, you will need to be approved as an instructor and approved to submit materials.<br /></td></tr>");
+            Output.WriteLine("  <tr><td>&nbsp;</td><td colspan=\"2\">Click the option below to submit materials.  To use the online open publishing tools in Open-NJ, you will need to be approved as an instructor and approved to submit materials.<br /></td></tr>");
 
             if (!desire_to_upload)
             {
@@ -590,6 +591,7 @@ namespace SobekCM.Library.MySobekViewer
             {
                 Output.WriteLine("  <tr><td colspan=\"2\">&nbsp;</td><td><input type=\"checkbox\" value=\"allowsubmit\" name=\"prefAllowSubmit\" id=\"prefAllowSubmit\" checked=\"checked\" /><label for=\"prefAllowSubmit\">I would like to be able to submit materials online.</label></td></tr>");
             }
+            Output.WriteLine("  <tr><td>&nbsp;</td><td colspan=\"2\">Once your application has been reviewed and approved, you will receive email notification.<br /></td></tr>");
 
 
             Output.WriteLine("  <tr><th colspan=\"3\">" + accountInfoLabel + "</th></tr>");
@@ -644,11 +646,11 @@ namespace SobekCM.Library.MySobekViewer
             Output.WriteLine("  <tr><th colspan=\"3\">" + affilitionInfoLabel + "</th></tr>");
 
             Output.WriteLine("  <tr><td>&nbsp;</td><td class=\"sbkPmsv_InputLabel\"><label for=\"prefOrganization\">" + organizationLabel + ":</label></td><td><input id=\"prefOrganization\" name=\"prefOrganization\" class=\"preferences_large_input sbk_Focusable\" value=\"" + organization + "\" type=\"text\" /></td></tr>");
-       //     Output.WriteLine("  <tr><td>&nbsp;</td><td class=\"sbkPmsv_InputLabel\"><label for=\"prefCollege\">" + collegeLabel + ":</label></td><td><input id=\"prefCollege\" name=\"prefCollege\" class=\"preferences_large_input sbk_Focusable\" value=\"" + college + "\"type=\"text\" /></td></tr>");
-        //    Output.WriteLine("  <tr><td>&nbsp;</td><td class=\"sbkPmsv_InputLabel\"><label for=\"prefDepartment\">" + departmentLabel + ":</label></td><td><input id=\"prefDepartment\" name=\"prefDepartment\" class=\"preferences_large_input sbk_Focusable\" value=\"" + department + "\"type=\"text\" /></td></tr>");
-       //     Output.WriteLine("  <tr><td>&nbsp;</td><td class=\"sbkPmsv_InputLabel\"><label for=\"prefUnit\">" + unitLabel + ":</label></td><td><input id=\"prefUnit\" name=\"prefUnit\" class=\"preferences_large_input sbk_Focusable\" value=\"" + unit + "\" type=\"text\" /></td></tr>");
+            //     Output.WriteLine("  <tr><td>&nbsp;</td><td class=\"sbkPmsv_InputLabel\"><label for=\"prefCollege\">" + collegeLabel + ":</label></td><td><input id=\"prefCollege\" name=\"prefCollege\" class=\"preferences_large_input sbk_Focusable\" value=\"" + college + "\"type=\"text\" /></td></tr>");
+            //    Output.WriteLine("  <tr><td>&nbsp;</td><td class=\"sbkPmsv_InputLabel\"><label for=\"prefDepartment\">" + departmentLabel + ":</label></td><td><input id=\"prefDepartment\" name=\"prefDepartment\" class=\"preferences_large_input sbk_Focusable\" value=\"" + department + "\"type=\"text\" /></td></tr>");
+            //     Output.WriteLine("  <tr><td>&nbsp;</td><td class=\"sbkPmsv_InputLabel\"><label for=\"prefUnit\">" + unitLabel + ":</label></td><td><input id=\"prefUnit\" name=\"prefUnit\" class=\"preferences_large_input sbk_Focusable\" value=\"" + unit + "\" type=\"text\" /></td></tr>");
 
-
+            Output.WriteLine("  <tr><th colspan=\"3\">&nbsp;</th></tr>");
             Output.WriteLine("  <tr style=\"text-align:right\"><td colspan=\"3\">");
             RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
             Output.WriteLine("    <button onclick=\"window.location.href = '" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "';return false;\" class=\"sbkMySobek_BigButton\"> CANCEL </button> &nbsp; &nbsp; ");

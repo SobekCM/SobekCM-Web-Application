@@ -935,7 +935,7 @@ namespace SobekCM
 				currentUser = (User_Object) HttpContext.Current.Session["user"];
 
 				// Check if this is an administrative task that the current user does not have access to
-				if ((!currentUser.Is_System_Admin) && (!currentUser.Is_Portal_Admin) && (currentMode.Mode == Display_Mode_Enum.Administrative) && (currentMode.Admin_Type != Admin_Type_Enum.Aggregation_Single))
+				if ((!currentUser.Is_System_Admin) && (!currentUser.Is_Portal_Admin) && (!currentUser.Is_User_Admin) && (currentMode.Mode == Display_Mode_Enum.Administrative) && (currentMode.Admin_Type != Admin_Type_Enum.Aggregation_Single))
 				{
                     if (currentUser.LoggedOn)
                     {

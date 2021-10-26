@@ -301,10 +301,34 @@ namespace SobekCM.Library.AdminViewer
 
                             if ( instructor_id > 0 )
                             {
-                                SobekCM_Database.Link_User_To_User_Group(editUser.UserID, instructor_id);
-
                                 editUser.Add_User_Group(instructor_id, "Instructors");
 
+                                // Ensure the upload template is selected
+                                bool instructor_upload_template_selected = false;
+                                foreach( string template in editUser.Templates)
+                                {
+                                    if ( template.ToUpper().IndexOf("INSTRUCT") >= 0 )
+                                    {
+                                        instructor_upload_template_selected = true;
+                                        break;
+                                    }
+                                }
+                                if ( !instructor_upload_template_selected)
+                                {
+                                    editUser.Add_Template("INSTRUCT", false);
+                                }
+
+                                // Set the edit templates
+                                editUser.Edit_Template_Code_Simple = "oer-edit";
+                                editUser.Edit_Template_Code_Complex = "oer-edit";
+
+                                save_user();
+
+                                // Clear the RequestSpecificValues.Current_User from the sessions
+                                HttpContext.Current.Session["Edit_User_" + editUser.UserID] = null;
+
+                                // Redirect to here (first tabe)
+                                RequestSpecificValues.Current_Mode.My_Sobek_SubMode = editUser.UserID.ToString();
                                 UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
                                 return;
                             }
@@ -420,6 +444,11 @@ namespace SobekCM.Library.AdminViewer
                             {
                                 editUser.Edit_Template_Code_Simple = "edit_internal";
                                 editUser.Edit_Template_Code_Complex = "editmarc_internal";
+                            }
+                            if (editTemplate == "oer")
+                            {
+                                editUser.Edit_Template_Code_Simple = "oer-edit";
+                                editUser.Edit_Template_Code_Complex = "oer-edit";
                             }
 
                             // Determine if the projects and templates need to be updated
@@ -817,45 +846,7 @@ namespace SobekCM.Library.AdminViewer
                     // Should this be saved to the database?
                     if (action == "save")
                     {
-                        // Save this user
-                        SobekCM_Database.Save_User(editUser, String.Empty, RequestSpecificValues.Current_User.Authentication_Type, RequestSpecificValues.Tracer);
-
-                        // Update the basic user information
-                        SobekCM_Database.Update_SobekCM_User(editUser.UserID, editUser.Can_Submit, editUser.Is_Internal_User, editUser.Should_Be_Able_To_Edit_All_Items, editUser.Can_Delete_All, editUser.Is_User_Admin, editUser.Is_System_Admin, editUser.Is_Host_Admin, editUser.Is_Portal_Admin, editUser.Include_Tracking_In_Standard_Forms, editUser.Edit_Template_Code_Simple, editUser.Edit_Template_Code_Complex, true, true, true, RequestSpecificValues.Tracer);
-
-                        // Update projects, if necessary
-                        if (editUser.Default_Metadata_Sets.Count > 0)
-                        {
-                            if (!SobekCM_Database.Update_SobekCM_User_DefaultMetadata(editUser.UserID, editUser.Default_Metadata_Sets, RequestSpecificValues.Tracer))
-                            {
-                                successful_save = false;
-                            }
-                        }
-
-                        // Update templates, if necessary
-                        if (editUser.Templates_Count > 0)
-                        {
-                            if (!SobekCM_Database.Update_SobekCM_User_Templates(editUser.UserID, editUser.Templates, RequestSpecificValues.Tracer))
-                            {
-                                successful_save = false;
-                            }
-                        }
-
-                        // Save the aggregationPermissions linked to this user
-                        if (editUser.PermissionedAggregations_Count > 0)
-                        {
-                            if (!SobekCM_Database.Update_SobekCM_User_Aggregations(editUser.UserID, editUser.PermissionedAggregations, RequestSpecificValues.Tracer))
-                            {
-                                successful_save = false;
-                            }
-                        }
-
-                        // Save the user group links
-                        List<User_Group> userGroup = Engine_Database.Get_All_User_Groups(RequestSpecificValues.Tracer);
-                        foreach (Simple_User_Group_Info userGroup2 in editUser.User_Groups)
-                        {
-                            SobekCM_Database.Link_User_To_User_Group(editUser.UserID, userGroup2.UserGroupID);
-                        }
+                        successful_save = save_user();
 
                         // Forward back to the list of users, if this was successful
                         if (successful_save)
@@ -877,6 +868,53 @@ namespace SobekCM.Library.AdminViewer
                     }
                 }
             }
+        }
+
+        private bool save_user()
+        {
+            bool successful_save = true;
+
+            // Save this user
+            SobekCM_Database.Save_User(editUser, String.Empty, RequestSpecificValues.Current_User.Authentication_Type, RequestSpecificValues.Tracer);
+
+            // Update the basic user information
+            SobekCM_Database.Update_SobekCM_User(editUser.UserID, editUser.Can_Submit, editUser.Is_Internal_User, editUser.Should_Be_Able_To_Edit_All_Items, editUser.Can_Delete_All, editUser.Is_User_Admin, editUser.Is_System_Admin, editUser.Is_Host_Admin, editUser.Is_Portal_Admin, editUser.Include_Tracking_In_Standard_Forms, editUser.Edit_Template_Code_Simple, editUser.Edit_Template_Code_Complex, true, true, true, RequestSpecificValues.Tracer);
+
+            // Update projects, if necessary
+            if (editUser.Default_Metadata_Sets.Count > 0)
+            {
+                if (!SobekCM_Database.Update_SobekCM_User_DefaultMetadata(editUser.UserID, editUser.Default_Metadata_Sets, RequestSpecificValues.Tracer))
+                {
+                    successful_save = false;
+                }
+            }
+
+            // Update templates, if necessary
+            if (editUser.Templates_Count > 0)
+            {
+                if (!SobekCM_Database.Update_SobekCM_User_Templates(editUser.UserID, editUser.Templates, RequestSpecificValues.Tracer))
+                {
+                    successful_save = false;
+                }
+            }
+
+            // Save the aggregationPermissions linked to this user
+            if (editUser.PermissionedAggregations_Count > 0)
+            {
+                if (!SobekCM_Database.Update_SobekCM_User_Aggregations(editUser.UserID, editUser.PermissionedAggregations, RequestSpecificValues.Tracer))
+                {
+                    successful_save = false;
+                }
+            }
+
+            // Save the user group links
+            List<User_Group> userGroup = Engine_Database.Get_All_User_Groups(RequestSpecificValues.Tracer);
+            foreach (Simple_User_Group_Info userGroup2 in editUser.User_Groups)
+            {
+                SobekCM_Database.Link_User_To_User_Group(editUser.UserID, userGroup2.UserGroupID);
+            }
+
+            return successful_save;
         }
 
         #endregion
@@ -1472,11 +1510,19 @@ namespace SobekCM.Library.AdminViewer
                     if (editUser.Edit_Template_Code_Simple.ToUpper().IndexOf("INTERNAL") >= 0)
                     {
                         Output.WriteLine("            <option value=\"internal\" selected=\"selected\">Internal</option>");
+                        Output.WriteLine("            <option value=\"oer\">OER Instructors</option>");
+                        Output.WriteLine("            <option value=\"standard\">Standard</option>");
+                    }
+                    else if ( editUser.Edit_Template_Code_Simple.ToUpper().IndexOf("OER") >= 0 )
+                    {
+                        Output.WriteLine("            <option value=\"internal\">Internal</option>");
+                        Output.WriteLine("            <option value=\"oer\" selected=\"selected\">OER Instructors</option>");
                         Output.WriteLine("            <option value=\"standard\">Standard</option>");
                     }
                     else
                     {
                         Output.WriteLine("            <option value=\"internal\">Internal</option>");
+                        Output.WriteLine("            <option value=\"oer\">OER Instructors</option>");
                         Output.WriteLine("            <option value=\"standard\" selected=\"selected\">Standard</option>");
                     }
 

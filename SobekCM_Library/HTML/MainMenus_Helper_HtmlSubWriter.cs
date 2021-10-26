@@ -1050,6 +1050,8 @@ namespace SobekCM.Library.HTML
             string sobek_admin_text = "System Admin";
             if ((RequestSpecificValues.Current_User != null) && (RequestSpecificValues.Current_User.Is_Portal_Admin) && (!RequestSpecificValues.Current_User.Is_System_Admin))
                 sobek_admin_text = "Portal Admin";
+            if ((RequestSpecificValues.Current_User != null) && (RequestSpecificValues.Current_User.Is_User_Admin) && (!RequestSpecificValues.Current_User.Is_Portal_Admin) && (!RequestSpecificValues.Current_User.Is_System_Admin))
+                sobek_admin_text = "User Admin";
             const string list_view_text = "List View";
             const string brief_view_text = "Brief View";
             const string tree_view_text = "Tree View";

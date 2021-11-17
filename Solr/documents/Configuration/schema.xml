@@ -17,7 +17,7 @@
 -->
 
 
-<schema name="sobekcm_documents" version="4.11">
+<schema name="sobekcm_documents" version="4.12">
 
 
   <!-- Required for the update log referenced in solrconfig.xml -->
@@ -376,7 +376,9 @@
   <field name="accessibility" type="text_general" indexed="true" stored="true" multiValued="true" />
   <field name="accessibility_facets" type="text_facets" indexed="true" stored="false" multiValued="true" />
   
-  
+    <!-- Licensing metadata -->
+  <field name="licensing" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="licensing_facets" type="text_facets" indexed="true" stored="false" multiValued="true" />
 
   <!-- User defined metadata fields, used by plug-ins, etc.. -->
   <field name="user_defined_01" type="text_general" indexed="true" stored="true" multiValued="true" />

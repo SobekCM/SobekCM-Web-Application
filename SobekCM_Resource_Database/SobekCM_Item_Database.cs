@@ -332,179 +332,7 @@ namespace SobekCM_Resource_Database
             while (aggregationCodes.Count < 8)
                 aggregationCodes.Add(String.Empty);
 
-            //// Collect the behavior information
-            //List<int> view_type_ids = new List<int>();
-            //List<string> view_labels = new List<string>();
-            //List<string> view_attributes = new List<string>();
-            //foreach (View_Object thisView in ThisPackage.Behaviors.Item_Level_Page_Views)
-            //{
-            //    switch (thisView.View_Type)
-            //    {
-            //        case View_Enum.JPEG:
-            //            if (!view_type_ids.Contains(1))
-            //            {
-            //                view_type_ids.Add(1);
-            //                view_labels.Add(String.Empty);
-            //                view_attributes.Add(String.Empty);
-            //            }
-            //            break;
-
-            //        case View_Enum.JPEG_TEXT_TWO_UP:
-            //            if (!view_type_ids.Contains(14))
-            //            {
-            //                view_type_ids.Add(14);
-            //                view_labels.Add(String.Empty);
-            //                view_attributes.Add(String.Empty);
-            //            }
-            //            break;
-
-            //        case View_Enum.JPEG2000:
-            //            if (!view_type_ids.Contains(2))
-            //            {
-            //                view_type_ids.Add(2);
-            //                view_labels.Add(String.Empty);
-            //                view_attributes.Add(String.Empty);
-            //            }
-            //            break;
-
-            //        case View_Enum.TEXT:
-            //            if (!view_type_ids.Contains(3))
-            //            {
-            //                view_type_ids.Add(3);
-            //                view_labels.Add(String.Empty);
-            //                view_attributes.Add(String.Empty);
-            //            }
-            //            break;
-            //    }
-            //}
-
-            //foreach (View_Object thisView in ThisPackage.Behaviors.Views)
-            //{
-            //    switch (thisView.View_Type)
-            //    {
-            //        case View_Enum.DATASET_CODEBOOK:
-            //            if (!view_type_ids.Contains(11))
-            //            {
-            //                view_type_ids.Add(11);
-            //                view_labels.Add(String.Empty);
-            //                view_attributes.Add(String.Empty);
-            //            }
-            //            break;
-
-            //        case View_Enum.DATASET_REPORTS:
-            //            if (!view_type_ids.Contains(12))
-            //            {
-            //                view_type_ids.Add(12);
-            //                view_labels.Add(String.Empty);
-            //                view_attributes.Add(String.Empty);
-            //            }
-            //            break;
-
-            //        case View_Enum.DATASET_VIEWDATA:
-            //            if (!view_type_ids.Contains(13))
-            //            {
-            //                view_type_ids.Add(13);
-            //                view_labels.Add(String.Empty);
-            //                view_attributes.Add(String.Empty);
-            //            }
-            //            break;
-
-            //        case View_Enum.GOOGLE_MAP:
-            //            if (!view_type_ids.Contains(5))
-            //            {
-            //                view_type_ids.Add(5);
-            //                view_labels.Add(String.Empty);
-            //                view_attributes.Add(String.Empty);
-            //            }
-            //            break;
-
-            //        case View_Enum.GOOGLE_MAP_BETA:
-            //            if (!view_type_ids.Contains(5))
-            //            {
-            //                view_type_ids.Add(5);
-            //                view_labels.Add(String.Empty);
-            //                view_attributes.Add(String.Empty);
-            //            }
-            //            break;
-
-            //        case View_Enum.HTML:
-            //            view_type_ids.Add(6);
-            //            view_labels.Add(thisView.Label);
-            //            view_attributes.Add(thisView.Attributes);
-            //            break;
-
-            //        case View_Enum.JPEG:
-            //            if (!view_type_ids.Contains(1))
-            //            {
-            //                view_type_ids.Add(1);
-            //                view_labels.Add(String.Empty);
-            //                view_attributes.Add(String.Empty);
-            //            }
-            //            break;
-
-            //        case View_Enum.JPEG_TEXT_TWO_UP:
-            //            if (!view_type_ids.Contains(14))
-            //            {
-            //                view_type_ids.Add(14);
-            //                view_labels.Add(String.Empty);
-            //                view_attributes.Add(String.Empty);
-            //            }
-            //            break;
-
-            //        case View_Enum.JPEG2000:
-            //            if (!view_type_ids.Contains(2))
-            //            {
-            //                view_type_ids.Add(2);
-            //                view_labels.Add(String.Empty);
-            //                view_attributes.Add(String.Empty);
-            //            }
-            //            break;
-
-            //        case View_Enum.PAGE_TURNER:
-            //            if (!view_type_ids.Contains(4))
-            //            {
-            //                view_type_ids.Add(4);
-            //                view_labels.Add(String.Empty);
-            //                view_attributes.Add(String.Empty);
-            //            }
-            //            break;
-
-            //        case View_Enum.RELATED_IMAGES:
-            //            view_type_ids.Add(8);
-            //            view_labels.Add(String.Empty);
-            //            view_attributes.Add(String.Empty);
-            //            break;
-
-            //        case View_Enum.TEI:
-            //            view_type_ids.Add(10);
-            //            view_labels.Add(String.Empty);
-            //            view_attributes.Add(String.Empty);
-            //            break;
-
-            //        case View_Enum.TEXT:
-            //            if (!view_type_ids.Contains(3))
-            //            {
-            //                view_type_ids.Add(3);
-            //                view_labels.Add(String.Empty);
-            //                view_attributes.Add(String.Empty);
-            //            }
-            //            break;
-
-            //        case View_Enum.TOC:
-            //            view_type_ids.Add(9);
-            //            view_labels.Add(String.Empty);
-            //            view_attributes.Add(String.Empty);
-            //            break;
-            //    }
-            //}
-
-            //while (view_type_ids.Count < 6)
-            //{
-            //    view_type_ids.Add(0);
-            //    view_labels.Add(String.Empty);
-            //    view_attributes.Add(String.Empty);
-            //}
-
+            // Serial hierarchy
             string level1_text = String.Empty;
             string level2_text = String.Empty;
             string level3_text = String.Empty;
@@ -559,7 +387,7 @@ namespace SobekCM_Resource_Database
             {
                 int i = 0;
                 // Build the parameter list
-                EalDbParameter[] param_list = new EalDbParameter[71];
+                EalDbParameter[] param_list = new EalDbParameter[72];
                 param_list[i++] = new EalDbParameter("@GroupID", ThisPackage.Web.GroupID);
                 param_list[i++] = new EalDbParameter("@VID", ThisPackage.VID);
                 param_list[i++] = new EalDbParameter("@PageCount", ThisPackage.Divisions.Page_Count);
@@ -688,6 +516,7 @@ namespace SobekCM_Resource_Database
                 param_list[i++] = new EalDbParameter("@User", Username);
                 param_list[i++] = new EalDbParameter("@UserNotes", Usernotes);
                 param_list[i++] = new EalDbParameter("@UserID_To_Link", Userid);
+                param_list[i++] = new EalDbParameter("@RestrictionMessage", ThisPackage.Behaviors.RestrictionMessage ?? String.Empty);
 
                 param_list[i] = new EalDbParameter("@ItemID", -1);
                 param_list[i++].Direction = ParameterDirection.InputOutput;
@@ -697,13 +526,13 @@ namespace SobekCM_Resource_Database
                 EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Save_New_Item", param_list);
 
                 // Save the item id and VID into the package
-                ThisPackage.Web.ItemID = (int) param_list[69].Value;
-                ThisPackage.VID = param_list[70].Value.ToString();
+                ThisPackage.Web.ItemID = (int) param_list[70].Value;
+                ThisPackage.VID = param_list[71].Value.ToString();
             }
             catch (Exception ee)
             {
                 // Pass this exception onto the method to handle it
-                exception_caught("SobekCM_Save_Item", ee);
+                exception_caught("SobekCM_Save_New_Item", ee);
                 return false;
             }
 
@@ -741,6 +570,10 @@ namespace SobekCM_Resource_Database
                     }
                 }
             }
+
+            // Save user and user group restrictions
+            Save_User_Restrictions_To_Item(ThisPackage.Web.ItemID, ThisPackage.Behaviors);
+            Save_User_Group_Restrictions_To_Item(ThisPackage.Web.ItemID, ThisPackage.Behaviors);
 
             // Finally, have the database build the full citation based on each metadata element
             Create_Full_Citation_Value(ThisPackage.Web.ItemID);
@@ -795,14 +628,6 @@ namespace SobekCM_Resource_Database
             List<abstract_TreeNode> pages = ThisPackage.Divisions.Physical_Tree.Pages_PreOrder;
             foreach (abstract_TreeNode t in pages)
             {
-                //GeoSpatial_Information geoInfo = pages[i].Get_Metadata_Module(GlobalVar.GEOSPATIAL_METADATA_MODULE_KEY) as GeoSpatial_Information;
-                //string error_message;
-                //Save_Item_Metadata(geoInfo);
-                //Save_Item(geoInfo);
-                //Save_Item_Information(geoInfo);
-                //Save_Item_Metadata_Information(geoInfo);
-                //geoInfo.Save_Additional_Info_To_Database(ThisPackage.Web.ItemID, connectionString, ThisPackage, out error_message);
-
                 //Step through all the metadata modules and allow the modules to save to the database
                 if (t.Metadata_Modules != null)
                 {
@@ -814,6 +639,10 @@ namespace SobekCM_Resource_Database
                 }
             }
 
+            // Save user and user group restrictions
+            Save_User_Restrictions_To_Item(ThisPackage.Web.ItemID, ThisPackage.Behaviors);
+            Save_User_Group_Restrictions_To_Item(ThisPackage.Web.ItemID, ThisPackage.Behaviors);
+
             // Finally, have the database build the full citation based on each metadata element
             Create_Full_Citation_Value(ThisPackage.Web.ItemID);
 
@@ -821,307 +650,28 @@ namespace SobekCM_Resource_Database
             return ThisPackage.Web.ItemID;
         }
 
-        private static void Save_Streets_and_Features_To_Item(SobekCM_Item ThisPackage, int ItemID)
+        private static void Save_User_Restrictions_To_Item(int itemid, Behaviors_Info behaviors)
         {
-            //// Clear any existing links
-            //if (ItemID > 0)
-            //{
-            //    Clear_Features_Streets_By_Item(ItemID);
+            Clear_Item_User_Permissions(itemid);
 
-            //    // Populate the page id's for the sheets
-            //    DataTable pages = null;
+            if (behaviors.User_Access_Count == 0) return;
 
-            //    // Find the matches, by sequence
-            //    Hashtable index_from_id = new Hashtable();
-            //    List<abstract_TreeNode> nodes = thisPackage.Divisions.Physical_Tree.Divisions_PreOrder;
-            //    int page_sequence = 1;
-            //    foreach (abstract_TreeNode node in nodes)
-            //    {
-            //        if (node.Page)
-            //        {
-            //            string node_id = node.Node_ID;
-            //            if ( node_id.IndexOf("_") > 0 )
-            //                node_id = node_id.Substring( 0, node_id.IndexOf("_"));
-            //            if (!index_from_id.Contains(node_id))
-            //            {
-            //                index_from_id.Add(node_id, page_sequence);
-            //                page_sequence++;
-            //            }
-            //        }
-            //    }
-
-            //    // Assign the page ids to the map sheets
-            //    Maps.Map_Sheet[] allSheets = thisPackage.Map.All_Sheets;
-            //    foreach (Maps.Map_Sheet thisSheet in allSheets)
-            //    {
-            //        if (index_from_id.Contains(thisSheet.FilePtr))
-            //        {
-            //            DataRow[] page_rows = pages.Select("PageSequence = " + index_from_id[thisSheet.FilePtr]);
-            //            if (page_rows.Length > 0)
-            //            {
-            //                thisSheet.Database_Sheet_ID = Convert.ToInt32(page_rows[0]["PageID"]);
-            //            }
-            //        }
-            //    }
-            //}
-            //else
-            //{
-            //    Maps.Map_Sheet[] allSheets = thisPackage.Map.All_Sheets;
-            //    foreach (Maps.Map_Sheet thisSheet in allSheets)
-            //    {
-            //        thisSheet.Database_Sheet_ID = -1;
-            //    }
-            //}
-
-            //// Save all the corporations
-            //Maps.Map_Corporation[] corps = thisPackage.Map.All_Corporations;
-            //foreach (Maps.Map_Corporation corporation in corps)
-            //{
-            //    Save_Corporation("CORP" + corporation.CorpID, corporation.Primary_Name);
-            //}
-
-            //// Step through each feature
-            //string corp_code;
-            //int[] feature_pages = new int[5] { -1, -1, -1, -1, -1 };
-            //int page_index = 0;
-            //foreach (Maps.Map_Info_Tables.FeatureRow thisFeature in thisPackage.Map.Features)
-            //{
-            //    // Get the corporation code
-            //    if (thisFeature.GetCorporation_LinkRows().Length > 0)
-            //    {
-            //        corp_code = "CORP" + thisFeature.GetCorporation_LinkRows()[0].CorpID;
-            //    }
-            //    else
-            //    {
-            //        corp_code = String.Empty;
-            //    }
-
-            //    // Clear page references
-            //    page_index = 0;
-            //    for (int i = 0; i < 5; i++)
-            //        feature_pages[i] = -1;
-
-            //    // Get page links
-            //    if (thisFeature.GetSheet_LinkRows().Length > 0)
-            //    {
-            //        Maps.Map_Info_Tables.Sheet_LinkRow[] links = thisFeature.GetSheet_LinkRows();
-            //        foreach (Maps.Map_Info_Tables.Sheet_LinkRow linker in links)
-            //        {
-            //            long sheet_id = linker.SheetID;
-            //            Maps.Map_Sheet sheet = thisPackage.Map.Get_Sheet(sheet_id);
-            //            if (sheet != null)
-            //            {
-            //                feature_pages[page_index++] = sheet.Database_Sheet_ID;
-            //            }
-
-            //            if (page_index == 5)
-            //                break;
-            //        }
-            //    }
-
-            //    // Add this feature
-            //    Save_Feature( "FEAT" + thisFeature.FeatureID, thisFeature.Name, thisFeature.Description, corp_code, false, String.Empty, String.Empty, String.Empty, String.Empty, thisFeature.Type, -1, feature_pages[0], feature_pages[1], feature_pages[2], feature_pages[3], feature_pages[4]);
-            //}
-
-            //// Step through each sheet
-            //int pageid = -1;
-            //foreach (Maps.Map_Info_Tables.StreetRow thisStreet in thisPackage.Map.Streets)
-            //{
-            //    // Save the page id
-            //    pageid = -1;
-            //    Maps.Map_Sheet sheet = thisPackage.Map.Get_Sheet(thisStreet.SheetID);
-            //    if (sheet != null)
-            //        pageid = sheet.Database_Sheet_ID;
-
-            //    // Save this street
-            //    Save_Street("STRE" + thisStreet.StreetID, thisStreet.Name, thisStreet.Start, thisStreet.End, thisStreet.Direction, thisStreet.Side, thisStreet.Description, pageid);
-            //}
+            foreach(User_Permissions permissions in behaviors.User_Access)
+            {
+                Save_Item_User_Permissions(itemid, permissions);
+            }
         }
 
-        private static void Save_GeoRegion_Links(SobekCM_Item ThisPackage, int ItemID)
+        private static void Save_User_Group_Restrictions_To_Item(int itemid, Behaviors_Info behaviors)
         {
-            //// Clear any existing links
-            //if (ItemID > 0)
-            //{
-            //    Clear_Region_Link_By_Item(ItemID);
-            //}
+            Clear_Item_User_Group_Permissions(itemid);
 
-            //// Are there spatial links here?
-            //if (thisPackage.Bib_Info.Hierarchical_Spatials.Count == 0)
-            //    return;
+            if (behaviors.User_Group_Access_Count == 0) return;
 
-            //// Is there the geocore data pulled?
-            //if (geo_core == null)
-            //{
-            //    geo_core = SobekCM_Database.Get_All_Regions();
-            //}
-
-            //// Find the last geo code
-            //long last_geo_code = 1;
-            //if (geo_core.Rows.Count > 0)
-            //{
-            //    DataRow last_row = geo_core.Rows[geo_core.Rows.Count - 1];
-            //    last_geo_code = Convert.ToInt32(last_row["GeoAuthCode"].ToString().Replace("GEO", ""));
-            //}
-
-
-            //// Now, add each hierarchical spatial
-            //string[] code = new string[6] { String.Empty, String.Empty, String.Empty, String.Empty, String.Empty, String.Empty };
-            //string[] name = new string[6] { String.Empty, String.Empty, String.Empty, String.Empty, String.Empty, String.Empty };
-            //string[] type = new string[6] { String.Empty, String.Empty, String.Empty, String.Empty, String.Empty, String.Empty };
-            //int level_index = 0;
-            //DataRow[] select_rows;
-            //DataRow newRow;
-            //foreach (SobekCM.Resource_Object.Bib_Info.Hierarchical_Spatial_Info spatial in thisPackage.Bib_Info.Hierarchical_Spatials)
-            //{
-            //    // Clear the variables
-            //    level_index = 0;
-            //    for (int i = 0; i < 6; i++)
-            //    {
-            //        code[i] = String.Empty;
-            //        name[i] = String.Empty;
-            //        type[i] = String.Empty;
-            //    }             
-
-            //    // Load the city
-            //    if (spatial.City.Length > 0)
-            //    {
-            //        name[level_index] = spatial.City;
-            //        type[level_index] = "City";
-
-            //        // Try to find the code for this
-            //        select_rows = geo_core.Select("RegionName = '" + name[level_index] + "' and RegionTypeName = '" + type[level_index] + "'");
-            //        if (select_rows.Length > 0)
-            //        {
-            //            code[level_index] = select_rows[0]["GeoAuthCode"].ToString();
-            //        }
-            //        else
-            //        {
-            //            // Find the last geo code
-            //            last_geo_code++;
-            //            code[level_index] = "GEO" + (last_geo_code.ToString()).PadLeft(6, '0');
-            //            newRow = geo_core.NewRow();
-            //            newRow["GeoAuthCode"] = code[level_index];
-            //            newRow["RegionName"] = name[level_index];
-            //            newRow["RegionTypeName"] = type[level_index];
-            //            geo_core.Rows.Add(newRow);
-            //        }
-            //        level_index++;
-            //    }
-
-            //    // Load the county
-            //    if (spatial.County.Length > 0)
-            //    {
-            //        name[level_index] = spatial.County;
-            //        type[level_index] = "County";
-
-            //        // Try to find the code for this
-            //        select_rows = geo_core.Select("RegionName = '" + name[level_index] + "' and RegionTypeName = '" + type[level_index] + "'");
-            //        if (select_rows.Length > 0)
-            //        {
-            //            code[level_index] = select_rows[0]["GeoAuthCode"].ToString();
-            //        }
-            //        else
-            //        {
-            //            // Find the last geo code
-            //            last_geo_code++;
-            //            code[level_index] = "GEO" + (last_geo_code.ToString()).PadLeft(6, '0');
-            //            newRow = geo_core.NewRow();
-            //            newRow["GeoAuthCode"] = code[level_index];
-            //            newRow["RegionName"] = name[level_index];
-            //            newRow["RegionTypeName"] = type[level_index];
-            //            geo_core.Rows.Add(newRow);
-            //        }
-
-            //        level_index++;
-            //    }
-
-            //    // Load the state
-            //    if (spatial.State.Length > 0)
-            //    {
-            //        name[level_index] = spatial.State;
-            //        type[level_index] = "State";
-
-            //        // Try to find the code for this
-            //        select_rows = geo_core.Select("RegionName = '" + name[level_index] + "' and RegionTypeName = '" + type[level_index] + "'");
-            //        if (select_rows.Length > 0)
-            //        {
-            //            code[level_index] = select_rows[0]["GeoAuthCode"].ToString();
-            //        }
-            //        else
-            //        {
-            //            // Find the last geo code
-            //            last_geo_code++;
-            //            code[level_index] = "GEO" + (last_geo_code.ToString()).PadLeft(6, '0');
-            //            newRow = geo_core.NewRow();
-            //            newRow["GeoAuthCode"] = code[level_index];
-            //            newRow["RegionName"] = name[level_index];
-            //            newRow["RegionTypeName"] = type[level_index];
-            //            geo_core.Rows.Add(newRow);
-            //        }
-
-            //        level_index++;
-            //    }
-
-            //    // Load the country
-            //    if (spatial.State.Length > 0)
-            //    {
-            //        name[level_index] = spatial.Country;
-            //        type[level_index] = "Country";
-
-            //        // Try to find the code for this
-            //        select_rows = geo_core.Select("RegionName = '" + name[level_index] + "' and RegionTypeName = '" + type[level_index] + "'");
-            //        if (select_rows.Length > 0)
-            //        {
-            //            code[level_index] = select_rows[0]["GeoAuthCode"].ToString();
-            //        }
-            //        else
-            //        {
-            //            // Find the last geo code
-            //            last_geo_code++;
-            //            code[level_index] = "GEO" + (last_geo_code.ToString()).PadLeft(6, '0');
-            //            newRow = geo_core.NewRow();
-            //            newRow["GeoAuthCode"] = code[level_index];
-            //            newRow["RegionName"] = name[level_index];
-            //            newRow["RegionTypeName"] = type[level_index];
-            //            geo_core.Rows.Add(newRow);
-            //        }
-
-            //        level_index++;
-            //    }
-
-            //    // Load the continent
-            //    if (spatial.State.Length > 0)
-            //    {
-            //        name[level_index] = spatial.Continent;
-            //        type[level_index] = "Continent";
-
-            //        // Try to find the code for this
-            //        select_rows = geo_core.Select("RegionName = '" + name[level_index] + "' and RegionTypeName = '" + type[level_index] + "'");
-            //        if (select_rows.Length > 0)
-            //        {
-            //            code[level_index] = select_rows[0]["GeoAuthCode"].ToString();
-            //        }
-            //        else
-            //        {
-            //            // Find the last geo code
-            //            last_geo_code++;
-            //            code[level_index] = "GEO" + (last_geo_code.ToString()).PadLeft(6, '0');
-            //            newRow = geo_core.NewRow();
-            //            newRow["GeoAuthCode"] = code[level_index];
-            //            newRow["RegionName"] = name[level_index];
-            //            newRow["RegionTypeName"] = type[level_index];
-            //            geo_core.Rows.Add(newRow);
-            //        }
-
-            //        level_index++;
-            //    }
-
-            //    // Save this to the database
-            //    Save_Region_Item_Link(ItemID, code[0], name[0], type[0], code[1], name[1], type[1], code[2], name[2], type[2],
-            //        code[3], name[3], type[3], code[4], name[4], type[4], code[5], name[5], type[5]);
-            //}
-
+            foreach (User_Group_Permissions permissions in behaviors.User_Group_Access)
+            {
+                Save_Item_User_Group_Permissions(itemid, permissions);
+            }
         }
 
         /// <summary> Get the list of all corporations from the database </summary>
@@ -1683,7 +1233,8 @@ namespace SobekCM_Resource_Database
                 link, CreateDate, pubdate, ThisPackage.Bib_Info.SortSafeDate(pubdate), holding_code,
                 source_code, author_builder.ToString(), spatial_kml, SPATIAL_DISTANCE, ThisPackage.DiskSize_KB, donor, publisher_builder.ToString(),
                 spatialDisplayBuilder.ToString(), institutionDisplayBuilder.ToString(), ThisPackage.Bib_Info.Origin_Info.Edition, materialDisplayBuilder.ToString(),
-                measurements, stylePeriodDisplayBuilder.ToString(), techniqueDisplayBuilder.ToString(), subjectsDisplayBuilder.ToString());
+                measurements, stylePeriodDisplayBuilder.ToString(), techniqueDisplayBuilder.ToString(), subjectsDisplayBuilder.ToString(),
+                ThisPackage.Behaviors.RestrictionMessage);
 
             // If this was existing, clear the old data
             if (returnVal.Existing)
@@ -2326,12 +1877,12 @@ namespace SobekCM_Resource_Database
             string Holding_Code, string Source_Code, string Author, string Spatial_KML, double Spatial_KML_Distance,
             double DiskSizeMb, string Donor, string Publisher, string Spatial_Display, string Institution_Display,
             string Edition, string Material_Display, string Measurement_Display, string StylePeriod_Display, string Technique_Display,
-            string Subjects_Display)
+            string Subjects_Display, string RestrictionMessage)
         {
             try
             {
                 // Build the parameter list
-                EalDbParameter[] param_list = new EalDbParameter[30];
+                EalDbParameter[] param_list = new EalDbParameter[31];
                 param_list[0] = new EalDbParameter("@GroupID", GroupID);
                 param_list[1] = new EalDbParameter("@VID", VID);
                 param_list[2] = new EalDbParameter("@PageCount", PageCount);
@@ -2359,9 +1910,10 @@ namespace SobekCM_Resource_Database
                 param_list[24] = new EalDbParameter("@Subjects_Display", Subjects_Display);
                 param_list[25] = new EalDbParameter("@Donor", Donor);
                 param_list[26] = new EalDbParameter("@Publisher", Publisher);
-                param_list[27] = new EalDbParameter("@ItemID", -1) {Direction = ParameterDirection.InputOutput};
-                param_list[28] = new EalDbParameter("@Existing", false) {Direction = ParameterDirection.InputOutput};
-                param_list[29] = new EalDbParameter("@New_VID", "00000") {Direction = ParameterDirection.InputOutput};
+                param_list[27] = new EalDbParameter("@RestrictionMessage", RestrictionMessage);
+                param_list[28] = new EalDbParameter("@ItemID", -1) {Direction = ParameterDirection.InputOutput};
+                param_list[29] = new EalDbParameter("@Existing", false) {Direction = ParameterDirection.InputOutput};
+                param_list[30] = new EalDbParameter("@New_VID", "00000") {Direction = ParameterDirection.InputOutput};
 
                 // Execute this non-query stored procedure
                 EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Save_Item", param_list);
@@ -2932,6 +2484,135 @@ namespace SobekCM_Resource_Database
             {
                 // Pass this exception onto the method to handle it
                 exception_caught("SobekCM_Save_Item_Views", ee);
+                return false;
+            }
+        }
+
+        /// <summary> Clears any existing user group permissions linked to this item </summary>
+        /// <param name="ItemID"> Primary key to the item </param>
+        /// <remarks> This method calls the stored procedure 'SobekCM_Clear_Item_User_Group_Permissions'. </remarks>
+        /// <exception cref="SobekCM_Database_Exception"> Exception is thrown if an error is caught during 
+        /// the database work and the THROW_EXCEPTIONS internal flag is set to true. </exception>
+        public static bool Clear_Item_User_Group_Permissions(int ItemID)
+        {
+            try
+            {
+                // Build the parameter list
+                EalDbParameter[] param_list = new EalDbParameter[1];
+                param_list[0] = new EalDbParameter("@ItemId", ItemID);
+
+                // Execute this non-query stored procedure
+                EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Clear_Item_User_Group_Permissions", param_list);
+
+                return true;
+            }
+            catch (Exception ee)
+            {
+                // Pass this exception onto the method to handle it
+                exception_caught("SobekCM_Clear_Item_User_Group_Permissions", ee);
+                return false;
+            }
+        }
+
+        /// <summary> Clears any existing user permissions linked to this item (other than owner) </summary>
+        /// <param name="ItemID"> Primary key to the item </param>
+        /// <remarks> This method calls the stored procedure 'SobekCM_Clear_Item_User_Permissions'. </remarks>
+        /// <exception cref="SobekCM_Database_Exception"> Exception is thrown if an error is caught during 
+        /// the database work and the THROW_EXCEPTIONS internal flag is set to true. </exception>
+        public static bool Clear_Item_User_Permissions(int ItemID)
+        {
+            try
+            {
+                // Build the parameter list
+                EalDbParameter[] param_list = new EalDbParameter[1];
+                param_list[0] = new EalDbParameter("@ItemId", ItemID);
+
+                // Execute this non-query stored procedure
+                EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Clear_Item_User_Permissions", param_list);
+
+                return true;
+            }
+            catch (Exception ee)
+            {
+                // Pass this exception onto the method to handle it
+                exception_caught("SobekCM_Clear_Item_User_Permissions", ee);
+                return false;
+            }
+        }
+
+        /// <summary> Save individual user group permissions to this digital resource item </summary>
+        /// <param name="ItemID">Primary key for this item</param>
+        /// <param name="Permissions">User group permissions object</param>
+        /// <returns> TRUE if successful, otherwise FALSE </returns>
+        /// <remarks> This method calls the stored procedure 'SobekCM_Save_Item_User_Group_Permissions'. </remarks>
+        /// <exception cref="SobekCM_Database_Exception"> Exception is thrown if an error is caught during 
+        /// the database work and the THROW_EXCEPTIONS internal flag is set to true. </exception>
+        public static bool Save_Item_User_Group_Permissions(int ItemID, User_Group_Permissions Permissions)
+        {
+            try
+            {
+                // Build the parameter list
+                EalDbParameter[] param_list = new EalDbParameter[12];
+                param_list[0] = new EalDbParameter("@ItemId", ItemID);
+                param_list[1] = new EalDbParameter("@UserGroupId", Permissions.UserGroupId);
+                param_list[2] = new EalDbParameter("@isOwner", Permissions.isOwner);
+                param_list[3] = new EalDbParameter("@canView", Permissions.CanView);
+                param_list[4] = new EalDbParameter("@canEditMetadata", Permissions.CanEditMetadata);
+                param_list[5] = new EalDbParameter("@canEditBehaviors", Permissions.CanEditBehaviors);
+                param_list[6] = new EalDbParameter("@canPerformQc", Permissions.CanPerformQc);
+                param_list[7] = new EalDbParameter("@canUploadFiles", Permissions.CanUploadFiles);
+                param_list[8] = new EalDbParameter("@canChangeVisibility", Permissions.CanChangeVisibility);
+                param_list[9] = new EalDbParameter("@canDelete", Permissions.CanDelete);
+                param_list[10] = new EalDbParameter("@customPermissions", Permissions.CustomPermissions);
+                param_list[11] = new EalDbParameter("@isDefaultPermissions", false);
+
+                // Execute this non-query stored procedure
+                EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Save_Item_User_Group_Permissions", param_list);
+
+                return true;
+            }
+            catch (Exception ee)
+            {
+                // Pass this exception onto the method to handle it
+                exception_caught("SobekCM_Save_Item_User_Group_Permissions", ee);
+                return false;
+            }
+        }
+
+        /// <summary> Save individual user permissions to this digital resource item </summary>
+        /// <param name="ItemID">Primary key for this item</param>
+        /// <param name="Permissions">User permissions object</param>
+        /// <returns> TRUE if successful, otherwise FALSE </returns>
+        /// <remarks> This method calls the stored procedure 'SobekCM_Save_Item_User_Permissions'. </remarks>
+        /// <exception cref="SobekCM_Database_Exception"> Exception is thrown if an error is caught during 
+        /// the database work and the THROW_EXCEPTIONS internal flag is set to true. </exception>
+        public static bool Save_Item_User_Permissions(int ItemID, User_Permissions Permissions)
+        {
+            try
+            {
+                // Build the parameter list
+                EalDbParameter[] param_list = new EalDbParameter[11];
+                param_list[0] = new EalDbParameter("@ItemId", ItemID);
+                param_list[1] = new EalDbParameter("@UserId", Permissions.UserId);
+                param_list[2] = new EalDbParameter("@isOwner", Permissions.isOwner);
+                param_list[3] = new EalDbParameter("@canView", Permissions.CanView);
+                param_list[4] = new EalDbParameter("@canEditMetadata", Permissions.CanEditMetadata);
+                param_list[5] = new EalDbParameter("@canEditBehaviors", Permissions.CanEditBehaviors);
+                param_list[6] = new EalDbParameter("@canPerformQc", Permissions.CanPerformQc);
+                param_list[7] = new EalDbParameter("@canUploadFiles", Permissions.CanUploadFiles);
+                param_list[8] = new EalDbParameter("@canChangeVisibility", Permissions.CanChangeVisibility);
+                param_list[9] = new EalDbParameter("@canDelete", Permissions.CanDelete);
+                param_list[10] = new EalDbParameter("@customPermissions", Permissions.CustomPermissions);
+
+                // Execute this non-query stored procedure
+                EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Save_Item_User_Permissions", param_list);
+
+                return true;
+            }
+            catch (Exception ee)
+            {
+                // Pass this exception onto the method to handle it
+                exception_caught("SobekCM_Save_Item_User_Permissions", ee);
                 return false;
             }
         }

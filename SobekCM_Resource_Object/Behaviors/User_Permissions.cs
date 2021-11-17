@@ -10,6 +10,9 @@ namespace SobekCM.Resource_Object.Behaviors
     /// rights the user has </summary>
     public class User_Permissions
     {
+        /// <summary> Primary key to this user in the database </summary>
+        public int UserId { get; set; }
+
         /// <summary> UserName of the user that has this access (saves as UserID in database) </summary>
         public string UserName { get; set; }
 

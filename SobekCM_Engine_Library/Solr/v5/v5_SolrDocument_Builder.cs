@@ -110,7 +110,7 @@ namespace SobekCM.Engine_Library.Solr.v5
                 returnValue.Discover_Users = new List<int> { 0 };
 
                 // Set the restricted message
-                returnValue.RestrictedMsg = Digital_Object.Behaviors.RestrictedMessage;
+                returnValue.RestrictedMsg = Digital_Object.Behaviors.RestrictionMessage;
 
                 // Check for specific restrictions
                 bool is_restricted = false;

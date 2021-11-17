@@ -48,7 +48,6 @@ namespace SobekCM.Resource_Object.Behaviors
 
         private List<User_Permissions> users_access;
         private List<User_Group_Permissions> groups_access;
-        private string restricted_message;
 
 		
 		/// <summary> Constructor for a new instance of the Behaviors_Info class </summary>
@@ -913,11 +912,8 @@ namespace SobekCM.Resource_Object.Behaviors
 
         /// <summary> Sets the restricted message to display for this item if you do 
         /// not have permissions </summary>
-        public string RestrictedMessage
-        {
-            get { return restricted_message; }
-            set { restricted_message = value;  }
-        }
+        public string RestrictionMessage { get; set; }
+
 
         /// <summary> Returns the number of users listed as special access
         /// in the user list (excluding the owner) </summary>
@@ -981,20 +977,24 @@ namespace SobekCM.Resource_Object.Behaviors
         }
 
         /// <summary> Add user-specific permissions for this item </summary>
+        /// <param name="UserId"> (Immutable) Id for the user </param>
         /// <param name="UserName"> (Immutable) Name of the user </param>
         /// <param name="CanView"> Flag indicates this user can view the material </param>
         /// <param name="CanEdit"> Flag indicates this user can edit the material </param>
         /// <param name="CanDelete"> Flag indicates this user can delete the material </param>
-        public void Add_User_Access(string UserName, bool CanView, bool CanEdit, bool CanDelete)
+        public void Add_User_Access(int UserId, string UserName, bool CanView, bool CanEdit, bool CanDelete)
         {
             if (users_access == null) users_access = new List<User_Permissions>();
 
             // Is this in the list already?
-            var existing = users_access.SingleOrDefault<User_Permissions>(x => x.UserName == UserName);
+            var existing = users_access.SingleOrDefault<User_Permissions>(x => x.UserId == UserId);
             if ( existing == null )
             {
-                existing = new User_Permissions();
-                existing.UserName = UserName;
+                existing = new User_Permissions
+                {
+                    UserId = UserId,
+                    UserName = UserName
+                };
                 users_access.Add(existing);
             }
 
@@ -1009,20 +1009,24 @@ namespace SobekCM.Resource_Object.Behaviors
         }
 
         /// <summary> Add user-group-specific permissions for this item </summary>
+        /// <param name="UserGroupID"> (Immutable) Primary key of the user group </param>
         /// <param name="GroupName"> (Immutable) Name of the user group </param>
         /// <param name="CanView"> Flag indicates this user group can view the material </param>
         /// <param name="CanEdit"> Flag indicates this user group can edit the material </param>
         /// <param name="CanDelete"> Flag indicates this user group can delete the material </param>
-        public void Add_User_Group_Access(string GroupName, bool CanView, bool CanEdit, bool CanDelete)
+        public void Add_User_Group_Access(int UserGroupID, string GroupName, bool CanView, bool CanEdit, bool CanDelete)
         {
             if (groups_access == null) groups_access = new List<User_Group_Permissions>();
 
             // Is this in the list already?
-            var existing = groups_access.SingleOrDefault<User_Group_Permissions>(x => x.GroupName == GroupName);
+            var existing = groups_access.SingleOrDefault<User_Group_Permissions>(x => x.UserGroupId == UserGroupID);
             if (existing == null)
             {
-                existing = new User_Group_Permissions();
-                existing.GroupName = GroupName;
+                existing = new User_Group_Permissions
+                {
+                    UserGroupId = UserGroupID,
+                    GroupName = GroupName
+                };
                 groups_access.Add(existing);
             }
 

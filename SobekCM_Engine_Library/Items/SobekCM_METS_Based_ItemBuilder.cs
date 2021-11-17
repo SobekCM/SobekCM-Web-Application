@@ -483,24 +483,29 @@ namespace SobekCM.Engine_Library.Items
 		    {
 		        // Copy over some basic values
 		        DataRow mainItemRow = DatabaseInfo.Tables[2].Rows[0];
-		        Package_To_Finalize.Behaviors.Set_Primary_Identifier(mainItemRow["Primary_Identifier_Type"].ToString(), mainItemRow["Primary_Identifier"].ToString());
-		        Package_To_Finalize.Behaviors.GroupTitle = mainItemRow["GroupTitle"].ToString();
-		        Package_To_Finalize.Behaviors.GroupType = mainItemRow["GroupType"].ToString();
+
 		        Package_To_Finalize.Web.File_Root = mainItemRow["File_Location"].ToString();
 		        Package_To_Finalize.Web.AssocFilePath = mainItemRow["File_Location"] + "\\" + Package_To_Finalize.VID + "\\";
-		        Package_To_Finalize.Behaviors.IP_Restriction_Membership = Convert.ToInt16(mainItemRow["IP_Restriction_Mask"]);
-		        Package_To_Finalize.Behaviors.CheckOut_Required = Convert.ToBoolean(mainItemRow["CheckoutRequired"]);
-		        Package_To_Finalize.Behaviors.Text_Searchable = Convert.ToBoolean(mainItemRow["TextSearchable"]);
 		        Package_To_Finalize.Web.ItemID = Convert.ToInt32(mainItemRow["ItemID"]);
-		        Package_To_Finalize.Web.GroupID = Convert.ToInt32(mainItemRow["GroupID"]);
-		        Package_To_Finalize.Behaviors.Suppress_Endeca = Convert.ToBoolean(mainItemRow["SuppressEndeca"]);
-		        //Package_To_Finalize.Behaviors.Expose_Full_Text_For_Harvesting = Convert.ToBoolean(mainItemRow["SuppressEndeca"]);
-		        Package_To_Finalize.Tracking.Internal_Comments = mainItemRow["Comments"].ToString();
-		        Package_To_Finalize.Behaviors.Dark_Flag = Convert.ToBoolean(mainItemRow["Dark"]);
+		        Package_To_Finalize.Web.GroupID = Convert.ToInt32(mainItemRow["GroupID"]);		        
+		        Package_To_Finalize.Tracking.Internal_Comments = mainItemRow["Comments"].ToString();		        
 		        Package_To_Finalize.Tracking.Born_Digital = Convert.ToBoolean(mainItemRow["Born_Digital"]);
-		        Package_To_Finalize.Behaviors.Main_Thumbnail = mainItemRow["MainThumbnail"].ToString();
-		        //Package_To_Finalize.Divisions.Page_Count = Convert.ToInt32(mainItemRow["Pages"]);
-		        if (mainItemRow["Disposition_Advice"] != DBNull.Value)
+
+                // Get the behaviors out
+                Package_To_Finalize.Behaviors.Set_Primary_Identifier(mainItemRow["Primary_Identifier_Type"].ToString(), mainItemRow["Primary_Identifier"].ToString());
+                Package_To_Finalize.Behaviors.GroupTitle = mainItemRow["GroupTitle"].ToString();
+                Package_To_Finalize.Behaviors.GroupType = mainItemRow["GroupType"].ToString();
+                Package_To_Finalize.Behaviors.IP_Restriction_Membership = Convert.ToInt16(mainItemRow["IP_Restriction_Mask"]);
+                Package_To_Finalize.Behaviors.CheckOut_Required = Convert.ToBoolean(mainItemRow["CheckoutRequired"]);
+                Package_To_Finalize.Behaviors.Text_Searchable = Convert.ToBoolean(mainItemRow["TextSearchable"]);
+                Package_To_Finalize.Behaviors.Dark_Flag = Convert.ToBoolean(mainItemRow["Dark"]);
+                Package_To_Finalize.Behaviors.Main_Thumbnail = mainItemRow["MainThumbnail"].ToString();
+                Package_To_Finalize.Behaviors.Suppress_Endeca = Convert.ToBoolean(mainItemRow["SuppressEndeca"]);
+                Package_To_Finalize.Behaviors.RestrictionMessage = mainItemRow["RestrictionMessage"].ToString();
+
+
+                //Package_To_Finalize.Divisions.Page_Count = Convert.ToInt32(mainItemRow["Pages"]);
+                if (mainItemRow["Disposition_Advice"] != DBNull.Value)
 		            Package_To_Finalize.Tracking.Disposition_Advice = Convert.ToInt16(mainItemRow["Disposition_Advice"]);
 		        else
 		            Package_To_Finalize.Tracking.Disposition_Advice = -1;
@@ -761,7 +766,30 @@ namespace SobekCM.Engine_Library.Items
 		        Package_To_Finalize.Behaviors.Settings.Add(new Tuple<string, string>(settingRow["Setting_Key"].ToString(), settingRow["Setting_Value"].ToString()));
 		    }
 
-			Tracer.Add_Trace("SobekCM_METS_Based_ItemBuilder.Finish_Building_Item", "Set the views from a combination of the METS and the database info");
+            // Add any specific user group restrictions
+            foreach(DataRow userGroupRow in DatabaseInfo.Tables[8].Rows)
+            {
+                int id = Int32.Parse(userGroupRow[0].ToString());
+                string groupName = userGroupRow[1].ToString();
+                bool canView = bool.Parse(userGroupRow["canView"].ToString());
+                bool canEdit = bool.Parse(userGroupRow["canEditMetadata"].ToString());
+                bool canDelete = bool.Parse(userGroupRow["canDelete"].ToString());
+                Package_To_Finalize.Behaviors.Add_User_Group_Access(id, groupName, canView, canEdit, canDelete);
+            }
+
+            // Add any specific user restrictions
+            foreach (DataRow userRow in DatabaseInfo.Tables[9].Rows)
+            {
+                int id = Int32.Parse(userRow[0].ToString());
+                string name = userRow[1].ToString();
+                bool canView = bool.Parse(userRow["canView"].ToString());
+                bool canEdit = bool.Parse(userRow["canEditMetadata"].ToString());
+                bool canDelete = bool.Parse(userRow["canDelete"].ToString());
+                Package_To_Finalize.Behaviors.Add_User_Access(id, name, canView, canEdit, canDelete);
+            }
+
+
+            Tracer.Add_Trace("SobekCM_METS_Based_ItemBuilder.Finish_Building_Item", "Set the views from a combination of the METS and the database info");
 
 			// Make sure no views were retained from the METS file itself
 			Package_To_Finalize.Behaviors.Clear_Views();
@@ -842,6 +870,8 @@ namespace SobekCM.Engine_Library.Items
 
                 Package_To_Finalize.Behaviors.Add_View(viewType, label, attribute, menuOrder, exclude);
 			}
+
+
 
             // IF this is dark, add no other views
             if (Package_To_Finalize.Behaviors.Dark_Flag) return;

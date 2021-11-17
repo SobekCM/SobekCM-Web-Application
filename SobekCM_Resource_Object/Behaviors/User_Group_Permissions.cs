@@ -10,6 +10,9 @@ namespace SobekCM.Resource_Object.Behaviors
     /// rights the user group has </summary>
     public class User_Group_Permissions
     {
+        /// <summary> User group id for this user group </summary>
+        public int UserGroupId { get; set; }
+
         /// <summary> GroupName of the user group that has this access (saves as User GroupID in database) </summary>
         public string GroupName { get; set; }
 

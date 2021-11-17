@@ -353,7 +353,7 @@ namespace SobekCM.Engine_Library.Solr.v5
 
         #endregion
 
-        #region Date metadata fields - STILL NEED TO REVIEW THIS!!!
+        #region Date metadata fields
 
         /// <summary> Date this material was published </summary>
         [SolrField("date")]

@@ -375,10 +375,12 @@
   <!-- Accessibility metadata -->
   <field name="accessibility" type="text_general" indexed="true" stored="true" multiValued="true" />
   <field name="accessibility_facets" type="text_facets" indexed="true" stored="false" multiValued="true" />
+  <copyField source="accessibility" dest="accessibility_facets" />
   
-    <!-- Licensing metadata -->
+  <!-- Licensing metadata -->
   <field name="licensing" type="text_general" indexed="true" stored="true" multiValued="true" />
   <field name="licensing_facets" type="text_facets" indexed="true" stored="false" multiValued="true" />
+  <copyField source="licensing" dest="licensing_facets" />
 
   <!-- User defined metadata fields, used by plug-ins, etc.. -->
   <field name="user_defined_01" type="text_general" indexed="true" stored="true" multiValued="true" />

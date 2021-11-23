@@ -1919,9 +1919,9 @@ namespace SobekCM_Resource_Database
                 EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Save_Item", param_list);
 
                 // Return the value
-                int itemID = (int) param_list[27].Value;
-                bool existing = (bool) param_list[28].Value;
-                string new_vid = param_list[29].Value.ToString();
+                int itemID = (int) param_list[28].Value;
+                bool existing = (bool) param_list[29].Value;
+                string new_vid = param_list[30].Value.ToString();
                 return new Save_Item_Args(itemID, existing, new_vid);
             }
             catch (Exception ee)

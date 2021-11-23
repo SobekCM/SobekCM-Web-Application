@@ -18,13 +18,13 @@ using SobekCM.Resource_Object.Bib_Info;
 
 namespace SobekCM.Library.Citation.Elements.implemented_elements
 {
-    /// <summary> Element allows selection of the target audience from a controller list for an item </summary>
+    /// <summary> Element allows selection of one or more genres from a controller list for an item </summary>
     /// <remarks> This class extends the <see cref="MultipleComboBox_Element"/> class. </remarks>
-    public class Target_Audience_Select_Element : MultipleComboBox_Element
+    public class Genre_Select_Element : MultipleComboBox_Element
     {
-        /// <summary> Constructor for a new instance of the Target_Audience_Select_Element class </summary>
-        public Target_Audience_Select_Element()
-            : base("Target Audience", "target_audience")
+        /// <summary> Constructor for a new instance of the Genre_Select_Element class </summary>
+        public Genre_Select_Element()
+            : base("Genre", "genre")
         {
             Repeatable = true;
             ViewChoicesString = String.Empty;
@@ -35,7 +35,7 @@ namespace SobekCM.Library.Citation.Elements.implemented_elements
 
         public override void Prepare_For_Save(SobekCM_Item Bib, User_Object Current_User)
         {
-            Bib.Bib_Info.Clear_Target_Audiences();
+            Bib.Bib_Info.Clear_Genres();
         }
 
         public override void Render_Template_HTML(TextWriter Output, SobekCM_Item Bib, string Skin_Code, bool IsMozilla, StringBuilder PopupFormBuilder, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL)
@@ -43,7 +43,7 @@ namespace SobekCM.Library.Citation.Elements.implemented_elements
             // Check that an acronym exists
             if (Acronym.Length == 0)
             {
-                const string defaultAcronym = "Select the applicable target audiences";
+                const string defaultAcronym = "Select the material type";
                 switch (CurrentLanguage)
                 {
                     case Web_Language_Enum.English:
@@ -64,13 +64,13 @@ namespace SobekCM.Library.Citation.Elements.implemented_elements
                 }
             }
 
-            List<string> audiences = new List<string>();
-            foreach (TargetAudience_Info audience in Bib.Bib_Info.Target_Audiences)
+            List<string> genres = new List<string>();
+            foreach (Genre_Info genre in Bib.Bib_Info.Genres)
             {
-                if (!audiences.Contains(audience.Audience))
-                    audiences.Add(audience.Audience);
+                if (!genres.Contains(genre.Genre_Term))
+                    genres.Add(genre.Genre_Term);
             }
-            render_helper(Output, audiences, Skin_Code, Current_User, CurrentLanguage, Translator, Base_URL);
+            render_helper(Output, genres, Skin_Code, Current_User, CurrentLanguage, Translator, Base_URL);
         }
 
         public override void Save_To_Bib(SobekCM_Item Bib)
@@ -81,15 +81,9 @@ namespace SobekCM.Library.Citation.Elements.implemented_elements
             {
                 if (thisKey.IndexOf(id) != 0) continue;
 
-                string audience = HttpContext.Current.Request.Form[thisKey].Trim();
-                string scheme = String.Empty;
-                string audience_caps = audience.ToUpper();
-                if ((audience_caps == "ADOLESCENT") || (audience_caps == "ADULT") || (audience_caps == "GENERAL") || (audience_caps == "PRIMARY") || (audience_caps == "PRE-ADOLESCENT") || (audience_caps == "JUVENILE") || (audience_caps == "PRESCHOOL") || (audience_caps == "SPECIALIZED"))
-                {
-                    scheme = "marctarget";
-                }
-
-                Bib.Bib_Info.Add_Target_Audience(audience, scheme);
+                string genre = HttpContext.Current.Request.Form[thisKey].Trim();
+                
+                Bib.Bib_Info.Add_Genre(genre);
             }
         }
     }

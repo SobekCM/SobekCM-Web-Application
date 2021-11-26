@@ -16,7 +16,7 @@ using SobekCM.Resource_Object.Bib_Info;
 
 #endregion
 
-namespace SobekCM.Library.Citation.Elements.implemented_elements
+namespace SobekCM.Library.Citation.Elements
 {
     /// <summary> Element allows selection of one or more genres from a controller list for an item </summary>
     /// <remarks> This class extends the <see cref="MultipleComboBox_Element"/> class. </remarks>
@@ -30,7 +30,7 @@ namespace SobekCM.Library.Citation.Elements.implemented_elements
             ViewChoicesString = String.Empty;
 
             MaxBoxes = -1;
-            BoxesPerLine = 3;
+            BoxesPerLine = 2;
         }
 
         public override void Prepare_For_Save(SobekCM_Item Bib, User_Object Current_User)

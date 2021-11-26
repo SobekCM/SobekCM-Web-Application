@@ -79,6 +79,15 @@ namespace SobekCM.Library.Citation.Elements
                 }
             }
 
+            string rights_stmt = Bib.Bib_Info.Access_Condition.Text.Trim();
+            if (( rights_stmt.Length == 0 ) || ( rights_stmt == "All rights reserved by the source institution."))
+            {
+                if ( DefaultValues.Count > 0 )
+                {
+                    rights_stmt = DefaultValues[0];
+                }
+            }
+
             // render_helper(Output, Bib.Bib_Info.Access_Condition.Text, Skin_Code, isMozilla, Current_User, CurrentLanguage, Translator);
 
             string id_name = html_element_name.Replace("_", "");
@@ -110,7 +119,7 @@ namespace SobekCM.Library.Citation.Elements
             Output.WriteLine("        <tr>");
             Output.WriteLine("          <td>");
             Output.WriteLine("            <div id=\"" + html_element_name + "_div\">");
-            Output.WriteLine("              <textarea rows=\"" + Rows + "\" cols=\"" + actual_cols + "\" name=\"" + id_name + "1\" id=\"" + id_name + "1\" class=\"" + html_element_name + "_input\" onfocus=\"javascript:textbox_enter('" + id_name + "1','" + html_element_name + "_input_focused')\" onblur=\"javascript:textbox_leave('" + id_name + "1','" + html_element_name + "_input')\">" + HttpUtility.HtmlEncode(Bib.Bib_Info.Access_Condition.Text.Trim()) + "</textarea>");
+            Output.WriteLine("              <textarea rows=\"" + Rows + "\" cols=\"" + actual_cols + "\" name=\"" + id_name + "1\" id=\"" + id_name + "1\" class=\"" + html_element_name + "_input\" onfocus=\"javascript:textbox_enter('" + id_name + "1','" + html_element_name + "_input_focused')\" onblur=\"javascript:textbox_leave('" + id_name + "1','" + html_element_name + "_input')\">" + HttpUtility.HtmlEncode(rights_stmt) + "</textarea>");
             Output.WriteLine("              <div class=\"ShowOptionsRow\">");
             Output.WriteLine("                <ul class=\"sbk_FauxDownwardTabsList\">");
             Output.WriteLine("                  <li><a href=\"\" onclick=\"return open_cc_rights();\">CREATIVE COMMONS</a></li>");

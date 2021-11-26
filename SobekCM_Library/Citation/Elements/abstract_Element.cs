@@ -78,7 +78,7 @@ namespace SobekCM.Library.Citation.Elements
         #region iElement Members
 
         /// <summary> Current title of this element </summary>
-        public string Title { get; protected set; }
+        public string Title { get; set; }
 
         /// <summary> Flag indicates if this is being used as a constant field, or if data can be entered by the user </summary>
         public bool isConstant { get; set; }

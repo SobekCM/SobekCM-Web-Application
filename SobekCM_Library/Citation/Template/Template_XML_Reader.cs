@@ -286,26 +286,29 @@ namespace SobekCM.Library.Citation.Template
             do
             {
 
-                    switch( nodeReader.Name.ToUpper().Trim() )
-                    {
-                        case "REPEATABLE":
-                            bool repeatable;
-                            if ( Boolean.TryParse( nodeReader.Value, out repeatable ))
-                                newElement.Repeatable = repeatable;
-                            break;
-                        case "MANDATORY":
-                            bool mandatory;
-                            if (Boolean.TryParse(nodeReader.Value, out mandatory))
-                                newElement.Mandatory = mandatory;
-                            break;
-                        case "READONLY":
-                            bool isReadOnly;
-                            if (Boolean.TryParse(nodeReader.Value, out isReadOnly))
-                                newElement.Read_Only = isReadOnly;
-                            break;
-                        case "ACRONYM":
-                            newElement.Acronym = nodeReader.Value;
-                            break;
+                switch (nodeReader.Name.ToUpper().Trim())
+                {
+                    case "REPEATABLE":
+                        bool repeatable;
+                        if (Boolean.TryParse(nodeReader.Value, out repeatable))
+                            newElement.Repeatable = repeatable;
+                        break;
+                    case "MANDATORY":
+                        bool mandatory;
+                        if (Boolean.TryParse(nodeReader.Value, out mandatory))
+                            newElement.Mandatory = mandatory;
+                        break;
+                    case "READONLY":
+                        bool isReadOnly;
+                        if (Boolean.TryParse(nodeReader.Value, out isReadOnly))
+                            newElement.Read_Only = isReadOnly;
+                        break;
+                    case "ACRONYM":
+                        newElement.Acronym = nodeReader.Value;
+                        break;
+                    case "TITLE":
+                        newElement.Title = nodeReader.Value;
+                        break;
                     }
             } while (nodeReader.MoveToNextAttribute() );
 

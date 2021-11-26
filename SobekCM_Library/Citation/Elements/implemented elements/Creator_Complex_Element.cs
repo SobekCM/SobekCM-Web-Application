@@ -58,11 +58,13 @@ namespace SobekCM.Library.Citation.Elements
             Add_Select_Item("Landscape architect", "lsa");
             Add_Select_Item("Lithographer", "ltg");
             Add_Select_Item("Manufacturer", "mfr");
+            Add_Select_Item("Moderator", "mod");
             Add_Select_Item("Musician", "mus");
             Add_Select_Item("Narrator", "nrt");
             Add_Select_Item("Papermaker", "ppm");
             Add_Select_Item("Performer", "prf");
             Add_Select_Item("Photographer", "pht");
+            Add_Select_Item("Presenter", "pre");
             Add_Select_Item("Programmer", "prg");
             Add_Select_Item("Printer", "prt");
             Add_Select_Item("Printmaker", "prm");
@@ -129,8 +131,9 @@ namespace SobekCM.Library.Citation.Elements
 
             List<string> creator = new List<string>();
             List<string> roles = new List<string>();
+            bool isContributor = (Title.Equals("Contributor", StringComparison.OrdinalIgnoreCase));
 
-            if (Bib.Bib_Info.hasMainEntityName )
+            if (!isContributor && Bib.Bib_Info.hasMainEntityName )
             {
                 creator.Add(Bib.Bib_Info.Main_Entity_Name.ToString(false));
                 if (Bib.Bib_Info.Main_Entity_Name.Name_Type == Name_Info_Type_Enum.Conference)
@@ -163,6 +166,9 @@ namespace SobekCM.Library.Citation.Elements
             {
                 if (thisName.hasData)
                 {
+                    if (isContributor && thisName.Roles.Count == 0)
+                        continue;
+
                     creator.Add(thisName.ToString(false));
                     if (thisName.Name_Type == Name_Info_Type_Enum.Conference)
                     {

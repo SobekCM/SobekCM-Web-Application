@@ -138,6 +138,7 @@
     <Compile Include="AggregationViewer\Viewers\User_Permissions_AggregationViewer.cs" />
     <Compile Include="AggregationViewer\Viewers\Work_History_AggregationViewer.cs" />
     <Compile Include="Citation\Elements\base types\CheckBox_Element.cs" />
+    <Compile Include="Citation\Elements\base types\Hidden_Element.cs" />
     <Compile Include="Citation\Elements\HtmlEventsHelper.cs" />
     <Compile Include="Citation\Elements\implemented elements\Accession_Number_Element.cs" />
     <Compile Include="Citation\Elements\implemented elements\Additional_Work_Needed_Element.cs" />
@@ -147,6 +148,8 @@
     <Compile Include="Citation\Elements\implemented elements\Classification_Element.cs" />
     <Compile Include="Citation\Elements\implemented elements\Contributor_Element.cs" />
     <Compile Include="Citation\Elements\implemented elements\Course_Notes_Element.cs" />
+    <Compile Include="Citation\Elements\implemented elements\Course_Title_Element.cs" />
+    <Compile Include="Citation\Elements\implemented elements\Creator_MainOnly_Element.cs" />
     <Compile Include="Citation\Elements\implemented elements\Dark_Flag_Element.cs" />
     <Compile Include="Citation\Elements\implemented elements\Date_Captured_Element.cs" />
     <Compile Include="Citation\Elements\implemented elements\Date_Created_Element.cs" />
@@ -172,6 +175,7 @@
     <Compile Include="Citation\Elements\implemented elements\Language_Script_Element.cs" />
     <Compile Include="Citation\Elements\implemented elements\Language_Select_Element.cs" />
     <Compile Include="Citation\Elements\implemented elements\LCCN_Element.cs" />
+    <Compile Include="Citation\Elements\implemented elements\OpenNJ_Series_Title_Builder_Element.cs" />
     <Compile Include="Citation\Elements\implemented elements\OpenNJ_Visibility_Element.cs" />
     <Compile Include="Citation\Elements\implemented elements\Projects_Element.cs" />
     <Compile Include="Citation\Elements\implemented elements\Target_Audience_Select_Element.cs" />

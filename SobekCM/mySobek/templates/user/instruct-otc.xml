@@ -27,12 +27,14 @@
 			<panel>
 				<name language="eng">Title Information</name>
 				<element type="Title" subtype="simple" acronym="Enter the title of your chapter, article, report, or other material here." mandatory="true"/>
-				<element type="Other Title" subtype="simple" mandatory="false" acronym="Enter the any additional titles for your material here."/>
+				<element type="Course Title" mandatory="false" />
 			</panel>
 			<panel>
 				<name language="eng">Authors and Contributors</name>
-				<element type="Creator" subtype="simple" acronym="Enter each person or group which created this material. Personal names should be entered as [Family Name], [Given Name]." repeatable="true"/>
-				<element type="Creation Date" acronym="Enter the year in which your material was published.  If your material has not been published, enter the current year or leave the field blank."/>
+				<element type="Creator" subtype="main_only" acronym="Enter each person or group which created this material. Personal names should be entered as [Family Name], [Given Name]." repeatable="true" />
+				<element type="Creator" subtype="complex" repeatable="true" title="Contributor" />
+				<element type="Date Created" acronym="Enter the year in which your material was published.  If your material has not been published, enter the current year or leave the field blank."/>
+				<element type="series title builder" subtype="opennj" />
 			</panel>
 			<panel>
 				<name language="eng">Learning Resource Information</name>
@@ -42,11 +44,19 @@
 						<options>Aerial, Archival, Artifact, Audio, Book, Dataset, Map, Newspaper, Photograph, Serial, Video</options>
 					</element_data>
 				</element>
-				<element type="Genre" repeatable="true" />
-				<element type="Format" acronym="Enter any additional data (such as extent or subtype) which describes the material."/>
+				<element type="Genre" subtype="select" repeatable="true" >
+					<element_data>
+						<options>activity, assessment, assignment, diagram/illustration, exam, full course, lecture, lesson plan, module, other, primary source, quiz, readings, simulation, teaching/learning strategy, textbook</options>
+					</element_data>
+				</element>
+				<element type="Format" title="Description" acronym="Enter any additional data (such as extent or subtype) which describes the material." />
 				<element type="LOM_Interactivity_Type" />
 				<element type="LOM_Intended_End_User_Role" />
-				<element type="Target Audience" />
+				<element type="Target Audience" subtype="select" >
+					<element_data>
+						<options>Lower-level undergraduate, Upper-level undergraduate, Graduate, Post-Graduate</options>
+					</element_data>
+				</element>
 			</panel>
 			<panel>
 				<name language="eng">Subject and Notes</name>
@@ -54,10 +64,16 @@
 				<element type="Abstract" repeatable="true" subtype="simple" acronym="Enter your abstract here.  If your material does not have an abstract, you may include a summary of your document here."/>
 				<element type="Note" repeatable="true" subtype="simple"
 				         acronym="Enter any additional information that is important for describing your material.  Include significant keywords or other data useful for finding your material in a citation-only search."/>
+				<element type="Course Notes" repeatable="false" />
 			</panel>
 			<panel>
 				<name language="eng">Rights</name>
-				<element type="Rights" repeatable="false" acronym="Rights management information tells conditions under which this item may be employed by other users."/>
+				<element type="Visibility" subtype="opennj" />
+				<element type="Rights" repeatable="false" acronym="Rights management information tells conditions under which this item may be employed by other users.">
+					<element_data>
+						<value>[cc by-nc] This item is licensed with the Creative Commons Attribution Non-Commerical License.  This license lets others remix, tweak, and build upon this work non-commercially, and although their new works must also acknowledge the author and be non-commercial, they don’t have to license their derivative works on the same terms.</value>
+					</element_data>
+				</element>
 			</panel>
 		</page>
 	</inputs>

@@ -327,6 +327,10 @@ select.fastsubject_select_input { color:Gray; width: 110px; margin-left: 10px; m
 input.disposition_advice_input { width: 318px; margin-top: 6px; margin-bottom: 1px; }
 select.disposition_advice_select { width: 130px; margin-top: 6px; }
 
+select.visibility_select { margin-top: 6px; }
+select.genre_input { margin-top: 6px; }
+select.target_audience_input { margin-top: 6px; }
+
 select.lom_aggrlevel_select { margin-top: 6px; }
 select.lom_status_select { margin-top: 6px; }
 select.lom_interacttype_select { margin-top: 6px; }

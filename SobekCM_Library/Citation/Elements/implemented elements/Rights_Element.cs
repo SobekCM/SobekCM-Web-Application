@@ -1,6 +1,7 @@
 ﻿#region Using directives
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -187,10 +188,23 @@ namespace SobekCM.Library.Citation.Elements
         /// <summary> Prepares the bib object for the save, by clearing any existing data in this element's related field(s) </summary>
         /// <param name="Bib"> Existing digital resource object which may already have values for this element's data field(s) </param>
         /// <param name="Current_User"> Current user, who's rights may impact the way an element is rendered </param>
-        /// <remarks> This does nothing since there is only one rights statement </remarks>
+        /// <remarks> This doesn't change the rights statement, but it does clear any related licenses </remarks>
         public override void Prepare_For_Save(SobekCM_Item Bib, User_Object Current_User)
         {
-            // Do nothing since there is only one rights statement
+            if (Bib.Bib_Info.LicensingCount > 0)
+            {
+                List<string> removes = new List<string>();
+                foreach (string license in Bib.Bib_Info.Licensing)
+                {
+                    if ((!String.IsNullOrEmpty(license)) && (license.IndexOf("cc") == 0))
+                        removes.Add(license);
+                }
+
+                foreach( string remove in removes)
+                {
+                    Bib.Bib_Info.Remove_Licensing(remove);
+                }
+            }
         }
 
         /// <summary> Saves the data rendered by this element to the provided bibliographic object during postback </summary>
@@ -200,7 +214,18 @@ namespace SobekCM.Library.Citation.Elements
             string[] getKeys = HttpContext.Current.Request.Form.AllKeys;
             foreach (string thisKey in getKeys.Where(thisKey => thisKey.IndexOf(html_element_name.Replace("_", "")) == 0))
             {
-                Bib.Bib_Info.Access_Condition.Text = HttpContext.Current.Request.Form[thisKey];
+                string access_text = HttpContext.Current.Request.Form[thisKey];
+                Bib.Bib_Info.Access_Condition.Text = access_text;
+
+                if ( !String.IsNullOrWhiteSpace(access_text))
+                {
+                    if (( access_text.IndexOf("[cc") == 0 ) && ( access_text.IndexOf("]") > 0 ))
+                    {
+                        string license = access_text.Substring(1, access_text.IndexOf("]") - 1);
+                        Bib.Bib_Info.Add_Licensing(license);
+                    }
+                }
+
                 return;
             }
         }

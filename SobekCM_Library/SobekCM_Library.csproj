@@ -175,9 +175,12 @@
     <Compile Include="Citation\Elements\implemented elements\Language_Script_Element.cs" />
     <Compile Include="Citation\Elements\implemented elements\Language_Select_Element.cs" />
     <Compile Include="Citation\Elements\implemented elements\LCCN_Element.cs" />
+    <Compile Include="Citation\Elements\implemented elements\Licensing_Element.cs" />
     <Compile Include="Citation\Elements\implemented elements\OpenNJ_Series_Title_Builder_Element.cs" />
     <Compile Include="Citation\Elements\implemented elements\OpenNJ_Visibility_Element.cs" />
     <Compile Include="Citation\Elements\implemented elements\Projects_Element.cs" />
+    <Compile Include="Citation\Elements\implemented elements\Series_Title_Element.cs" />
+    <Compile Include="Citation\Elements\implemented elements\System_Requirements_Element.cs" />
     <Compile Include="Citation\Elements\implemented elements\Target_Audience_Select_Element.cs" />
     <Compile Include="Citation\Elements\nonstandard elements\Literal_Element.cs" />
     <Compile Include="Citation\Elements\implemented elements\LOM_AggregationLevel_Element.cs" />

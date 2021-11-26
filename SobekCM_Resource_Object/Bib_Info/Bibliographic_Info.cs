@@ -745,6 +745,16 @@ namespace SobekCM.Resource_Object.Bib_Info
             if (licensing != null) licensing.Clear();
         }
 
+        /// <summary> Remove a single license </summary>
+        /// <param name="License"> License to remove </param>
+        public void Remove_Licensing(string License)
+        {
+            if ( licensing != null )
+            {
+                licensing.Remove(License);
+            }
+        }
+
         /// <summary> Add a new license </summary>
         /// <param name="License"> New license </param>
         public void Add_Licensing( string License )

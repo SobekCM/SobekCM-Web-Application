@@ -19,18 +19,14 @@ using SobekCM.Resource_Object.Bib_Info;
 namespace SobekCM.Library.Citation.Elements
 {
     /// <summary> Element allows selection of one or more genres from a controller list for an item </summary>
-    /// <remarks> This class extends the <see cref="MultipleComboBox_Element"/> class. </remarks>
-    public class Genre_Select_Element : MultipleComboBox_Element
+    /// <remarks> This class extends the <see cref="ComboBox_Element"/> class. </remarks>
+    public class Licensing_Element : ComboBox_Element
     {
-        /// <summary> Constructor for a new instance of the Genre_Select_Element class </summary>
-        public Genre_Select_Element()
-            : base("Genre", "genre")
+        /// <summary> Constructor for a new instance of the Licensing_Element class </summary>
+        public Licensing_Element()
+            : base("Licensing", "licensing")
         {
-            Repeatable = true;
-            ViewChoicesString = String.Empty;
-
-            MaxBoxes = -1;
-            BoxesPerLine = 2;
+            Repeatable = false;
         }
 
         /// <summary> Renders the HTML for this element </summary>
@@ -49,7 +45,7 @@ namespace SobekCM.Library.Citation.Elements
             // Check that an acronym exists
             if (Acronym.Length == 0)
             {
-                const string defaultAcronym = "Select the material type";
+                const string defaultAcronym = "Select the most applicable license for this material";
                 switch (CurrentLanguage)
                 {
                     case Web_Language_Enum.English:
@@ -70,37 +66,52 @@ namespace SobekCM.Library.Citation.Elements
                 }
             }
 
-            List<string> genres = new List<string>();
-            foreach (Genre_Info genre in Bib.Bib_Info.Genres)
+            string licensing = string.Empty;
+            if (Bib.Bib_Info.LicensingCount == 1)
             {
-                if (!genres.Contains(genre.Genre_Term))
-                    genres.Add(genre.Genre_Term);
+                licensing = Bib.Bib_Info.Licensing[0];
             }
-            render_helper(Output, genres, Skin_Code, Current_User, CurrentLanguage, Translator, Base_URL);
+            else if (Bib.Bib_Info.LicensingCount > 1)
+            {
+                StringBuilder builder = new StringBuilder();
+                foreach (string license in Bib.Bib_Info.Licensing)
+                {
+                    if (string.IsNullOrEmpty(license)) continue;
+
+                    if (builder.Length > 0)
+                        builder.Append("; ");
+                    builder.Append(license);
+                }
+                licensing = builder.ToString();
+            }
+
+            render_helper(Output, licensing, Skin_Code, Current_User, CurrentLanguage, Translator, Base_URL);
         }
 
         /// <summary> Prepares the bib object for the save, by clearing any existing data in this element's related field(s) </summary>
         /// <param name="Bib"> Existing digital resource object which may already have values for this element's data field(s) </param>
         /// <param name="Current_User"> Current user, who's rights may impact the way an element is rendered </param>
-        /// <remarks> This clears genres </remarks>
+        /// <remarks> This clears licensing information </remarks>
         public override void Prepare_For_Save(SobekCM_Item Bib, User_Object Current_User)
         {
-            Bib.Bib_Info.Clear_Genres();
+            Bib.Bib_Info.Clear_Licensing();
         }
-        
+
         /// <summary> Saves the data rendered by this element to the provided bibliographic object during postback </summary>
         /// <param name="Bib"> Object into which to save the user's data, entered into the html rendered by this element </param>
         public override void Save_To_Bib(SobekCM_Item Bib)
         {
-            string id = html_element_name.Replace("_", "");
             string[] getKeys = HttpContext.Current.Request.Form.AllKeys;
             foreach (string thisKey in getKeys)
             {
-                if (thisKey.IndexOf(id) != 0) continue;
+                if (thisKey.IndexOf(html_element_name.Replace("_", "")) != 0) continue;
 
-                string genre = HttpContext.Current.Request.Form[thisKey].Trim();
-                
-                Bib.Bib_Info.Add_Genre(genre);
+                string type_value = HttpContext.Current.Request.Form[thisKey];
+                if (type_value.IndexOf("Select") < 0)
+                {
+                    Bib.Bib_Info.Add_Licensing(type_value);
+                }
+                return;
             }
         }
     }

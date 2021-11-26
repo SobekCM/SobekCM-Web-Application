@@ -1,8 +1,5 @@
 ﻿#region Using directives
 
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -12,26 +9,22 @@ using SobekCM.Core.Configuration;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Users;
 using SobekCM.Resource_Object;
-using SobekCM.Resource_Object.Bib_Info;
 
 #endregion
 
 namespace SobekCM.Library.Citation.Elements
 {
-    /// <summary> Element allows selection of one or more genres from a controller list for an item </summary>
-    /// <remarks> This class extends the <see cref="MultipleComboBox_Element"/> class. </remarks>
-    public class Genre_Select_Element : MultipleComboBox_Element
+    /// <summary> Element allows simple entry of system requirements for an item </summary>
+    /// <remarks> This class extends the <see cref="SimpleTextBox_Element"/> class. </remarks>
+    public class System_Requirements_Element : SimpleTextBox_Element
     {
-        /// <summary> Constructor for a new instance of the Genre_Select_Element class </summary>
-        public Genre_Select_Element()
-            : base("Genre", "genre")
+        /// <summary> Constructor for a new instance of the System_Requirements_Element class </summary>
+        public System_Requirements_Element() : base("Requirements", "sys_reqs")
         {
-            Repeatable = true;
-            ViewChoicesString = String.Empty;
-
-            MaxBoxes = -1;
-            BoxesPerLine = 2;
+            Repeatable = false;
+            help_page = "sysreqs";
         }
+
 
         /// <summary> Renders the HTML for this element </summary>
         /// <param name="Output"> Textwriter to write the HTML for this element </param>
@@ -49,7 +42,7 @@ namespace SobekCM.Library.Citation.Elements
             // Check that an acronym exists
             if (Acronym.Length == 0)
             {
-                const string defaultAcronym = "Select the material type";
+                const string defaultAcronym = "Enter any system requirements necessary to use this material.";
                 switch (CurrentLanguage)
                 {
                     case Web_Language_Enum.English:
@@ -70,37 +63,49 @@ namespace SobekCM.Library.Citation.Elements
                 }
             }
 
-            List<string> genres = new List<string>();
-            foreach (Genre_Info genre in Bib.Bib_Info.Genres)
+            string sysreqs = string.Empty;
+            if ( Bib.Bib_Info.SystemRequirementsCount == 1 )
             {
-                if (!genres.Contains(genre.Genre_Term))
-                    genres.Add(genre.Genre_Term);
+                sysreqs = Bib.Bib_Info.SystemRequirements[0];
             }
-            render_helper(Output, genres, Skin_Code, Current_User, CurrentLanguage, Translator, Base_URL);
+            else if ( Bib.Bib_Info.SystemRequirementsCount > 1)
+            {
+                StringBuilder builder = new StringBuilder();
+                foreach( string sysReqs in Bib.Bib_Info.SystemRequirements)
+                {
+                    if (string.IsNullOrEmpty(sysReqs)) continue;
+
+                    if (builder.Length > 0)
+                        builder.Append("; ");
+                    builder.Append(sysReqs);
+                }
+                sysreqs = builder.ToString();
+            }
+
+            render_helper(Output, sysreqs, Skin_Code, Current_User, CurrentLanguage, Translator, Base_URL);
         }
 
         /// <summary> Prepares the bib object for the save, by clearing any existing data in this element's related field(s) </summary>
         /// <param name="Bib"> Existing digital resource object which may already have values for this element's data field(s) </param>
         /// <param name="Current_User"> Current user, who's rights may impact the way an element is rendered </param>
-        /// <remarks> This clears genres </remarks>
+        /// <remarks> This clears the system requirements </remarks>
         public override void Prepare_For_Save(SobekCM_Item Bib, User_Object Current_User)
         {
-            Bib.Bib_Info.Clear_Genres();
+            Bib.Bib_Info.Clear_SystemRequirements();
         }
-        
+
         /// <summary> Saves the data rendered by this element to the provided bibliographic object during postback </summary>
         /// <param name="Bib"> Object into which to save the user's data, entered into the html rendered by this element </param>
         public override void Save_To_Bib(SobekCM_Item Bib)
         {
-            string id = html_element_name.Replace("_", "");
             string[] getKeys = HttpContext.Current.Request.Form.AllKeys;
-            foreach (string thisKey in getKeys)
+            foreach (string new_value in from thisKey in getKeys where thisKey.IndexOf(html_element_name.Replace("_", "")) == 0 select HttpContext.Current.Request.Form[thisKey].Trim())
             {
-                if (thisKey.IndexOf(id) != 0) continue;
-
-                string genre = HttpContext.Current.Request.Form[thisKey].Trim();
-                
-                Bib.Bib_Info.Add_Genre(genre);
+                if (new_value.Length > 0)
+                {
+                    Bib.Bib_Info.Add_SystemRequirements(new_value);
+                    return;
+                }
             }
         }
     }

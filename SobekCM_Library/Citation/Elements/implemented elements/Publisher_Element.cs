@@ -91,5 +91,16 @@ namespace SobekCM.Library.Citation.Elements
                 Bib.Bib_Info.Add_Publisher(name);
             }
         }
+
+        /// <summary> Saves the constants to the bib id </summary>
+        /// <param name="Bib"> Object into which to save this element's constant data </param>
+        public override void Save_Constant_To_Bib(SobekCM_Item Bib)
+        {
+            if (DefaultValues.Count > 0)
+            {
+                Bib.Bib_Info.Clear_Publishers();
+                Bib.Bib_Info.Add_Publisher(DefaultValues[0]);
+            }
+        }
     }
 }

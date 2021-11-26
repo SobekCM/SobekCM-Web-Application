@@ -75,5 +75,25 @@
 			</panel>
 		</page>
 	</inputs>
+
+	<!-- This defines the constants which can not be edited by the user -->
+	<constants>
+		<element type="Acquisition">
+			<element_data>
+				<value>Collected for Open-NJ by the Open Publishing Tool.</value>
+			</element_data>
+		</element>
+    <element type="lom aggregation level">
+      <element_data>
+        <value>level 1 - a single, atomic object</value>
+      </element_data>
+    </element>
+    <element type="publisher" subtype="simple" >
+      <element_data>
+        <value>Open Textbook Collaborative</value>
+      </element_data>
+    </element>
+
+	</constants>
 </input_template>
 <!-- End of input template XML -->

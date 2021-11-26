@@ -31,9 +31,9 @@ namespace SobekCM.Library.Citation.Elements
 
             if ( String.IsNullOrWhiteSpace(creator) || ( creator.Equals("unknown", StringComparison.OrdinalIgnoreCase)))
             {
-                if ( Bib.Bib_Info.Names_Count > 0 )
+                if ((Bib.Bib_Info.Names_Count > 0) && (!Bib.Bib_Info.Names[0].ToString().Equals("unknown", StringComparison.OrdinalIgnoreCase)))
                 {
-                    creator = Bib.Bib_Info.Names[0].ToString().Replace("unknown", "");
+                    creator = Bib.Bib_Info.Names[0].ToString();
                 }
             }
 

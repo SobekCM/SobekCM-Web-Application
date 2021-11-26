@@ -115,6 +115,48 @@ namespace SobekCM.Library.Citation.Elements
             // Do nothing since there is only one corresponding value
         }
 
+        private void save(SobekCM_Item Bib, string value)
+        {
+            // Try to get any existing learning object metadata module
+            LearningObjectMetadata lomInfo = Bib.Get_Metadata_Module(GlobalVar.IEEE_LOM_METADATA_MODULE_KEY) as LearningObjectMetadata;
+
+            if (value.Length == 0)
+            {
+                // I fhte learning object metadata does exist, set it to undefined
+                if (lomInfo != null)
+                    lomInfo.AggregationLevel = AggregationLevelEnum.UNDEFINED;
+            }
+            else
+            {
+                // There is a value, so ensure learning object metadata does exist
+                if (lomInfo == null)
+                {
+                    lomInfo = new LearningObjectMetadata();
+                    Bib.Add_Metadata_Module(GlobalVar.IEEE_LOM_METADATA_MODULE_KEY, lomInfo);
+                }
+
+                // Save the new value
+                switch (value)
+                {
+                    case level1_text:
+                        lomInfo.AggregationLevel = AggregationLevelEnum.level1;
+                        break;
+
+                    case level2_text:
+                        lomInfo.AggregationLevel = AggregationLevelEnum.level2;
+                        break;
+
+                    case level3_text:
+                        lomInfo.AggregationLevel = AggregationLevelEnum.level3;
+                        break;
+
+                    case level4_text:
+                        lomInfo.AggregationLevel = AggregationLevelEnum.level4;
+                        break;
+                }
+            }
+        }
+
         /// <summary> Saves the data rendered by this element to the provided bibliographic object during postback </summary>
         /// <param name="Bib"> Object into which to save the user's data, entered into the html rendered by this element </param>
         public override void Save_To_Bib(SobekCM_Item Bib)
@@ -127,47 +169,21 @@ namespace SobekCM.Library.Citation.Elements
                     // Get the value from the combo box
                     string value = HttpContext.Current.Request.Form[thisKey].Trim();
 
-                    // Try to get any existing learning object metadata module
-                    LearningObjectMetadata lomInfo = Bib.Get_Metadata_Module(GlobalVar.IEEE_LOM_METADATA_MODULE_KEY) as LearningObjectMetadata;
+                    save(Bib, value);
 
-                    if (value.Length == 0)
-                    {
-                        // I fhte learning object metadata does exist, set it to undefined
-                        if ( lomInfo != null )
-                            lomInfo.AggregationLevel = AggregationLevelEnum.UNDEFINED;
-                    }
-                    else
-                    {
-                        // There is a value, so ensure learning object metadata does exist
-                        if (lomInfo == null)
-                        {
-                            lomInfo = new LearningObjectMetadata();
-                            Bib.Add_Metadata_Module(GlobalVar.IEEE_LOM_METADATA_MODULE_KEY, lomInfo);
-                        }
-
-                        // Save the new value
-                        switch ( value )
-                        {
-                            case level1_text:
-                                lomInfo.AggregationLevel = AggregationLevelEnum.level1;
-                                break;
-
-                            case level2_text:
-                                lomInfo.AggregationLevel = AggregationLevelEnum.level2;
-                                break;
-
-                            case level3_text:
-                                lomInfo.AggregationLevel = AggregationLevelEnum.level3;
-                                break;
-
-                            case level4_text:
-                                lomInfo.AggregationLevel = AggregationLevelEnum.level4;
-                                break;
-                        }
-                    }
                     return;
                 }
             }            
+        }
+
+        /// <summary> Saves the constants to the bib id </summary>
+        /// <param name="Bib"> Object into which to save this element's constant data </param>
+        public override void Save_Constant_To_Bib(SobekCM_Item Bib)
+        {
+            if (DefaultValues.Count > 0)
+            {
+                save(Bib, DefaultValues[0]);
+            }
         }
     }
 }

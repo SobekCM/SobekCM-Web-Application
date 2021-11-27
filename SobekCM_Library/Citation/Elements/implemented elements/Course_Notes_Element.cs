@@ -94,7 +94,7 @@ namespace SobekCM.Library.Citation.Elements
         public override void Save_To_Bib(SobekCM_Item Bib)
         {
             string[] getKeys = HttpContext.Current.Request.Form.AllKeys;
-            foreach (string thisKey in getKeys.Where(thisKey => thisKey.IndexOf(html_element_name) == 0))
+            foreach (string thisKey in getKeys.Where(thisKey => thisKey.IndexOf(html_element_name.Replace("_","")) == 0))
             {
                 Bib.Bib_Info.Add_Note(HttpContext.Current.Request.Form[thisKey], Note_Type_Enum.Course);
             }

@@ -28,38 +28,49 @@
 				<name language="eng">Title Information</name>
 				<element type="Title" subtype="simple" acronym="Enter the title of your chapter, article, report, or other material here." mandatory="true"/>
 				<element type="Other Title" subtype="simple" mandatory="false" acronym="Enter the any additional titles for your material here."/>
-				<element type="Language" repeatable="true" acronym="Enter the language(s) of the material." >
 				<element type="Edition" />
 			</panel>
 			<panel>
 				<name language="eng">Authors and Contributors</name>
-				<element type="Creator" subtype="simple" acronym="Enter each person or group which created this material. Personal names should be entered as [Family Name], [Given Name]." repeatable="true"/>
+				<element type="Creator" subtype="complex" acronym="Enter each person or group which created this material. Personal names should be entered as [Family Name], [Given Name]." repeatable="true"/>
 				<element type="Creation Date" acronym="Enter the year in which your material was published.  If your material has not been published, enter the current year or leave the field blank."/>
 			</panel>
 			<panel>
 				<name language="eng">Learning Resource Information</name>
+				<element type="Genre" subtype="select" repeatable="true" title="Material Type" >
+					<element_data>
+						<options>activity, assessment, assignment, diagram/illustration, exam, full course, lecture, lesson plan, module, other, primary source, quiz, readings, simulation, teaching/learning strategy, textbook</options>
+					</element_data>
+				</element>
 				<element type="Type" subtype="simple" mandatory="true" acronym="Select the type which best categorizes this material.">
 					<element_data>
 						<value>Book</value>
 						<options>Aerial, Archival, Artifact, Audio, Book, Dataset, Map, Newspaper, Photograph, Serial, Video</options>
 					</element_data>
 				</element>
-				<element type="Genre" repeatable="true" />
-				<element type="Format" acronym="Enter any additional data (such as extent or subtype) which describes the material."/>
+				<element type="Format" title="Description" acronym="Enter any additional data (such as extent or subtype) which describes the material.">
+					<element_data>
+						<placeholder>Detailed description, such as 4 pages of powerpoint...</placeholder>
+					</element_data>
+				</element>
 				<element type="LOM_Aggregation_Level" />
 				<element type="LOM_Interactivity_Type" />
 				<element type="LOM_Intended_End_User_Role" />
-				<element type="Target Audience" />
+				<element type="Target Audience" subtype="select" >
+					<element_data>
+						<options>Lower-level undergraduate, Upper-level undergraduate, Graduate, Post-Graduate</options>
+					</element_data>
+				</element>
+				<element type="Language" repeatable="true" acronym="Enter the language(s) of the material." />
 			</panel>
 			<panel>
 				<name language="eng">Subject and Notes</name>
-				<element type="Subject" subtype="scheme" repeatable="true"/>
+				<element type="Subject" subtype="simple" repeatable="true"/>
 				<element type="Spatial" subtype="simple" repeatable="true"/>
 				<element type="Coordinates" repeatable="true"/>
 				<element type="Temporal" subtype="complex" />
 				<element type="Abstract" repeatable="true" subtype="simple" acronym="Enter your abstract here.  If your material does not have an abstract, you may include a summary of your document here."/>
-				<element type="Note" repeatable="true" subtype="simple"
-				         acronym="Enter any additional information that is important for describing your material.  Include significant keywords or other data useful for finding your material in a citation-only search."/>
+				<element type="Note" repeatable="true" acronym="Enter any additional information that is important for describing your material.  Include significant keywords or other data useful for finding your material in a citation-only search."/>
 			</panel>
       <panel>
         <name language="eng">External Records</name>

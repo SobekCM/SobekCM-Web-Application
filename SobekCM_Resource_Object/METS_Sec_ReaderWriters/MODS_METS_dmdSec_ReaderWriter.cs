@@ -1709,6 +1709,10 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                     case "abbreviated":
                         returnVal.Title_Type = Title_Type_Enum.Abbreviated;
                         break;
+
+                    case "course":
+                        returnVal.Title_Type = Title_Type_Enum.Course;
+                        break;
                 }
             }
 

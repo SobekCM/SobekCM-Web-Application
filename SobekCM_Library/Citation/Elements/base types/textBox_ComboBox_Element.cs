@@ -26,6 +26,9 @@ namespace SobekCM.Library.Citation.Elements
         /// <summary> Protected field contains a possible second label to show before the combo box </summary>
         protected string SecondLabel;
 
+        /// <summary> Protected field holds placeholder that should appear in the empty textbox </summary>
+        protected string Placeholder;
+
 
         /// <summary> Constructor for a new instance of the TextBox_ComboBox_Element class </summary>
         /// <param name="Title"> Title for this element </param>
@@ -90,6 +93,8 @@ namespace SobekCM.Library.Citation.Elements
             {
                 // Write the text box
                 Output.Write("        <input name=\"" + id_name + "_text" + i + "\" id=\"" + id_name + "_text" + i + "\" class=\"" + html_element_name + "_input sbk_Focusable\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(TextValues[i - 1]) + "\" ");
+                if (!String.IsNullOrWhiteSpace(Placeholder))
+                    Output.Write(" placeholder=\"" + HttpUtility.HtmlEncode(Placeholder) + "\"");
                 if (textBoxEvents != null)
                     textBoxEvents.Add_Events_HTML(Output);
                 Output.Write(" />");
@@ -198,6 +203,12 @@ namespace SobekCM.Library.Citation.Elements
                             }
                         }
                     }
+                }
+
+                if ((XMLReader.NodeType == XmlNodeType.Element) && (XMLReader.Name.ToLower() == "placeholder"))
+                {
+                    XMLReader.Read();
+                    Placeholder = XMLReader.Value.Trim();
                 }
             }
         }

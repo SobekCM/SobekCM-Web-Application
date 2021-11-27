@@ -30,6 +30,9 @@ namespace SobekCM.Library.Citation.Elements
         /// <summary> Protected field holds any html to insert as the view choices option after the boxes </summary>
         protected string ViewChoicesString;
 
+        /// <summary> Protected field holds placeholder that should appear in the empty textbox </summary>
+        protected string Placeholder;
+
 
         /// <summary> Constructor for a new instance of the SimpleTextBox_Element class </summary>
         /// <param name="Title"> Title for this element </param>
@@ -178,21 +181,23 @@ namespace SobekCM.Library.Citation.Elements
 
                 for (int i = 1; i <= allValues.Count; i++)
                 {
+                    Output.Write("              <input name=\"" + HTML_ID_Name + i + "\" id=\"" + HTML_ID_Name + i + "\" class=\"" + html_element_name + "_input sbk_Focusable\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(allValues[i - 1].Replace("<i>", "").Replace("</i>", "")) + "\" ");
+
+                    if (!String.IsNullOrWhiteSpace(Placeholder))
+                        Output.Write(" placeholder=\"" + HttpUtility.HtmlEncode(Placeholder) + "\"");
+
+                    if (textBoxEvents != null) 
+                        textBoxEvents.Add_Events_HTML(Output);
+                    
+
+
                     if (i == allValues.Count)
                     {
-                        Output.Write("              <input name=\"" + HTML_ID_Name + i + "\" id=\"" + HTML_ID_Name + i + "\" class=\"" + html_element_name + "_input sbk_Focusable\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(allValues[i - 1].Replace("<i>", "").Replace("</i>", "")) + "\" ");
-                        if (textBoxEvents != null) 
-                            textBoxEvents.Add_Events_HTML(Output);
                         Output.WriteLine(" />");
-
                     }
                     else
                     {
-						Output.Write("              <input name=\"" + HTML_ID_Name + i + "\" id=\"" + HTML_ID_Name + i + "\" class=\"" + html_element_name + "_input sbk_Focusable\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(allValues[i - 1].Replace("<i>", "").Replace("</i>", "")) + "\" ");
-                        if (textBoxEvents != null)
-                            textBoxEvents.Add_Events_HTML(Output);
                         Output.WriteLine(" /><br />");
-
                     }
                 }
 
@@ -289,6 +294,8 @@ namespace SobekCM.Library.Citation.Elements
                 Output.WriteLine("            <div id=\"" + HTML_ID_Name + "_div\">");
 
                 Output.Write("              <input name=\"" + HTML_ID_Name + "1\" id=\"" + HTML_ID_Name + "1\" class=\"" + html_element_name + "_input sbk_Focusable\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(InstanceValue.Replace("<i>", "").Replace("</i>", "")) + "\" ");
+                if (!String.IsNullOrWhiteSpace(Placeholder))
+                    Output.Write(" placeholder=\"" + HttpUtility.HtmlEncode(Placeholder) + "\"");
                 if (textBoxEvents != null)
                     textBoxEvents.Add_Events_HTML(Output);
                 Output.WriteLine(" />");
@@ -345,6 +352,12 @@ namespace SobekCM.Library.Citation.Elements
                 {
                     XMLReader.Read();
                     FixedTypeFromTemplateFile = XMLReader.Value.Trim();
+                }
+
+                if ((XMLReader.NodeType == XmlNodeType.Element) && (XMLReader.Name.ToLower() == "placeholder"))
+                {
+                    XMLReader.Read();
+                    Placeholder = XMLReader.Value.Trim();
                 }
             }
         }

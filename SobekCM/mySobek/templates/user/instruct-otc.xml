@@ -31,8 +31,16 @@
 			</panel>
 			<panel>
 				<name language="eng">Authors and Contributors</name>
-				<element type="Creator" subtype="main_only" acronym="Enter each person or group which created this material. Personal names should be entered as [Family Name], [Given Name]." repeatable="true" />
-				<element type="Creator" subtype="complex" repeatable="true" title="Contributor" />
+				<element type="Creator" subtype="main_only" acronym="Enter each person or group which created this material. Personal names should be entered as [Family Name], [Given Name]." repeatable="true" >
+					<element_data>
+						<placeholder>Primary creator(s) of this material</placeholder>
+					</element_data>
+				</element>
+				<element type="Creator" subtype="complex" repeatable="true" title="Contributor" >
+					<element_data>
+						<placeholder>Secondary contributors to this material</placeholder>
+					</element_data>
+				</element>
 				<element type="Date Created" acronym="Enter the year in which your material was published.  If your material has not been published, enter the current year or leave the field blank."/>
 				<element type="series title builder" subtype="opennj" />
 			</panel>
@@ -49,7 +57,11 @@
 						<options>Aerial, Archival, Artifact, Audio, Book, Dataset, Map, Newspaper, Photograph, Serial, Video</options>
 					</element_data>
 				</element>
-				<element type="Format" title="Description" acronym="Enter any additional data (such as extent or subtype) which describes the material." />
+				<element type="Format" title="Description" acronym="Enter any additional data (such as extent or subtype) which describes the material.">
+					<element_data>
+						<placeholder>Detailed description, such as 4 pages of powerpoint...</placeholder>
+					</element_data>
+				</element>
 				<element type="LOM_Interactivity_Type" />
 				<element type="LOM_Intended_End_User_Role" />
 				<element type="Target Audience" subtype="select" >
@@ -80,7 +92,7 @@
 	<constants>
 		<element type="Acquisition">
 			<element_data>
-				<value>Collected for Open-NJ by the Open Publishing Tool.</value>
+				<value>Submitted for the Open Textbook Collaborative Project on the OpenNJ</value>
 			</element_data>
 		</element>
     <element type="lom aggregation level">
@@ -88,12 +100,21 @@
         <value>level 1 - a single, atomic object</value>
       </element_data>
     </element>
-    <element type="publisher" subtype="simple" >
+    <element type="publisher" subtype="simple">
       <element_data>
         <value>Open Textbook Collaborative</value>
       </element_data>
     </element>
-
+    <element type="funding">
+      <element_data>
+        <value>This material was funded by the Fund for the Improvement of Postsecondary Education (FIPSE) of the U.S. Department of Education for the Open Textbooks Pilot grant awarded to Middlesex College for the Open Textbook Collaborative.</value>
+      </element_data>
+    </element>
+    <element type="wordmark">
+      <element_data>
+        <value>doe,otc</value>
+      </element_data>
+    </element>
 	</constants>
 </input_template>
 <!-- End of input template XML -->

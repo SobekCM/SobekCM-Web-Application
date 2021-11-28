@@ -1101,7 +1101,7 @@ namespace SobekCM.Library.Database
 
 		#region My Sobek database calls
 
-		/// <summary> Saves information about a single user </summary>
+		/// <summary> Saves information about a single user, including user settings </summary>
 		/// <param name="User"> <see cref="SobekCM.Core.Users.User_Object"/> with all the information about the single user</param>
 		/// <param name="Password"> Plain-text password, which is then encrypted prior to saving</param>
         /// <param name="AuthenticationType"> String which indicates the type of authentication utilized, only important if this is the first time this user has authenticated/registered </param>
@@ -1115,8 +1115,46 @@ namespace SobekCM.Library.Database
 				Tracer.Add_Trace("SobekCM_Database.Save_User", String.Empty);
 			}
 
-			const string SALT = "This is my salt to add to the password";
-			string encryptedPassword = SecurityInfo.SHA1_EncryptString(Password + SALT);
+            // Save the basic information about this user
+            bool result = save_user_basic_information(User, Password, AuthenticationType, Tracer);
+            if (!result) return false;
+
+            // Clear existing user settings
+            result = clear_user_settings(User.UserID, Tracer);
+
+            // Save all user settings
+            bool userSettingSaveSuccess = true;
+            if ( User.SettingsCount > 0 )
+            {
+                foreach( string key in User.SettingsKeys)
+                {
+                    string value = User.Get_Setting(key).ToString();
+                    if (!save_user_settings(User.UserID, key, value, Tracer))
+                        userSettingSaveSuccess = false;
+                }
+            }
+
+
+
+            return true;
+		}
+
+        /// <summary> Saves basic information information about an existing single user </summary>
+        /// <param name="User"> <see cref="SobekCM.Core.Users.User_Object"/> with all the information about the single user</param>
+        /// <param name="Password"> Plain-text password, which is then encrypted prior to saving</param>
+        /// <param name="AuthenticationType"> String which indicates the type of authentication utilized, only important if this is the first time this user has authenticated/registered </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <returns> TRUE if successful, otherwise FALSE</returns>
+        /// <remarks> This calls the 'mySobek_Save_User' stored procedure</remarks> 
+        private static bool save_user_basic_information(User_Object User, string Password, User_Authentication_Type_Enum AuthenticationType, Custom_Tracer Tracer)
+        {
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("SobekCM_Database.save_user_basic_information", String.Empty);
+            }
+
+            const string SALT = "This is my salt to add to the password";
+            string encryptedPassword = SecurityInfo.SHA1_EncryptString(Password + SALT);
 
             string auth_string = String.Empty;
             if (AuthenticationType == User_Authentication_Type_Enum.Sobek)
@@ -1126,73 +1164,144 @@ namespace SobekCM.Library.Database
             if ((AuthenticationType == User_Authentication_Type_Enum.Windows) || (AuthenticationType == User_Authentication_Type_Enum.LDAP))
                 auth_string = "ldap";
 
-			try
-			{
-				// Execute this non-query stored procedure
-				EalDbParameter[] paramList = new EalDbParameter[24];
-				paramList[0] = new EalDbParameter("@userid", User.UserID);
-				paramList[1] = new EalDbParameter("@shibbid", User.ShibbID);
-				paramList[2] = new EalDbParameter("@username", User.UserName);
-				paramList[3] = new EalDbParameter("@password", encryptedPassword);
-				paramList[4] = new EalDbParameter("@emailaddress", User.Email);
-				paramList[5] = new EalDbParameter("@firstname", User.Given_Name);
-				paramList[6] = new EalDbParameter("@lastname", User.Family_Name);
-				paramList[7] = new EalDbParameter("@cansubmititems", User.Can_Submit);
-				paramList[8] = new EalDbParameter("@nickname", User.Nickname);
-				paramList[9] = new EalDbParameter("@organization", User.Organization);
-				paramList[10] = new EalDbParameter("@college", User.College);
-				paramList[11] = new EalDbParameter("@department", User.Department);
-				paramList[12] = new EalDbParameter("@unit", User.Unit);
-				paramList[13] = new EalDbParameter("@rights", User.Default_Rights);
-				paramList[14] = new EalDbParameter("@sendemail", User.Send_Email_On_Submission);
-				paramList[15] = new EalDbParameter("@language", User.Preferred_Language);
-				if (User.Templates.Count > 0)
-				{
-					paramList[16] = new EalDbParameter("@default_template", User.Templates[0]);
-				}
-				else
-				{
-					paramList[16] = new EalDbParameter("@default_template", String.Empty);
-				}
-				if (User.Default_Metadata_Sets.Count > 0)
-				{
-					paramList[17] = new EalDbParameter("@default_metadata", User.Default_Metadata_Sets[0]);
-				}
-				else
-				{
-					paramList[17] = new EalDbParameter("@default_metadata", String.Empty);
-				}
-				paramList[18] = new EalDbParameter("@organization_code", User.Organization_Code);
-				paramList[19] = new EalDbParameter("@receivestatsemail", User.Receive_Stats_Emails);
+            try
+            {
+                // Execute this non-query stored procedure
+                EalDbParameter[] paramList = new EalDbParameter[24];
+                paramList[0] = new EalDbParameter("@userid", User.UserID);
+                paramList[1] = new EalDbParameter("@shibbid", User.ShibbID);
+                paramList[2] = new EalDbParameter("@username", User.UserName);
+                paramList[3] = new EalDbParameter("@password", encryptedPassword);
+                paramList[4] = new EalDbParameter("@emailaddress", User.Email);
+                paramList[5] = new EalDbParameter("@firstname", User.Given_Name);
+                paramList[6] = new EalDbParameter("@lastname", User.Family_Name);
+                paramList[7] = new EalDbParameter("@cansubmititems", User.Can_Submit);
+                paramList[8] = new EalDbParameter("@nickname", User.Nickname);
+                paramList[9] = new EalDbParameter("@organization", User.Organization);
+                paramList[10] = new EalDbParameter("@college", User.College);
+                paramList[11] = new EalDbParameter("@department", User.Department);
+                paramList[12] = new EalDbParameter("@unit", User.Unit);
+                paramList[13] = new EalDbParameter("@rights", User.Default_Rights);
+                paramList[14] = new EalDbParameter("@sendemail", User.Send_Email_On_Submission);
+                paramList[15] = new EalDbParameter("@language", User.Preferred_Language);
+                if (User.Templates.Count > 0)
+                {
+                    paramList[16] = new EalDbParameter("@default_template", User.Templates[0]);
+                }
+                else
+                {
+                    paramList[16] = new EalDbParameter("@default_template", String.Empty);
+                }
+                if (User.Default_Metadata_Sets.Count > 0)
+                {
+                    paramList[17] = new EalDbParameter("@default_metadata", User.Default_Metadata_Sets[0]);
+                }
+                else
+                {
+                    paramList[17] = new EalDbParameter("@default_metadata", String.Empty);
+                }
+                paramList[18] = new EalDbParameter("@organization_code", User.Organization_Code);
+                paramList[19] = new EalDbParameter("@receivestatsemail", User.Receive_Stats_Emails);
                 paramList[20] = new EalDbParameter("@scanningtechnician", User.Scanning_Technician);
                 paramList[21] = new EalDbParameter("@processingtechnician", User.Processing_Technician);
                 paramList[22] = new EalDbParameter("@internalnotes", User.Internal_Notes);
                 paramList[23] = new EalDbParameter("@authentication", auth_string);
 
-				EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "mySobek_Save_User", paramList);
-				return true;
-			}
-			catch (Exception ee)
-			{
-				lastException = ee;
-				if (Tracer != null)
-				{
-					Tracer.Add_Trace("SobekCM_Database.Save_User", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
-					Tracer.Add_Trace("SobekCM_Database.Save_User", ee.Message, Custom_Trace_Type_Enum.Error);
-					Tracer.Add_Trace("SobekCM_Database.Save_User", ee.StackTrace, Custom_Trace_Type_Enum.Error);
-				}
-				return false;
-			}
+                EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "mySobek_Save_User", paramList);
+                return true;
+            }
+            catch (Exception ee)
+            {
+                lastException = ee;
+                if (Tracer != null)
+                {
+                    Tracer.Add_Trace("SobekCM_Database.Save_User", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("SobekCM_Database.Save_User", ee.Message, Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("SobekCM_Database.Save_User", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                }
+                return false;
+            }
+        }
+
+        /// <summary> Clears the user settings associated with an existing single user </summary>
+        /// <param name="userid"> Primary key fpr the user </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <returns> TRUE if successful, otherwise FALSE</returns>
+        /// <remarks> This calls the 'mySobek_Save_User' stored procedure</remarks> 
+        private static bool clear_user_settings(int userid, Custom_Tracer Tracer)
+        {
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("SobekCM_Database.clear_user_settings", String.Empty);
+            }
+
+            try
+            {
+                // Execute this non-query stored procedure
+                EalDbParameter[] paramList = new EalDbParameter[1];
+                paramList[0] = new EalDbParameter("@userid", userid);
+ 
+                EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "mySobek_Clear_User_Settings", paramList);
+                return true;
+            }
+            catch (Exception ee)
+            {
+                lastException = ee;
+                if (Tracer != null)
+                {
+                    Tracer.Add_Trace("SobekCM_Database.Save_User", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("SobekCM_Database.Save_User", ee.Message, Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("SobekCM_Database.Save_User", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                }
+                return false;
+            }
+        }
+
+        /// <summary> Saves a single user setting for an existing single user </summary>
+        /// <param name="userid"> Primary key for the user </param>
+        /// <param name="setting_key"> Key for this user setting </param>
+        /// <param name="setting_value"> Value (as a string) for this user setting </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <returns> TRUE if successful, otherwise FALSE</returns>
+        /// <remarks> This calls the 'mySobek_Save_User' stored procedure</remarks> 
+        private static bool save_user_settings(int userid, string setting_key, string setting_value, Custom_Tracer Tracer)
+        {
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("SobekCM_Database.save_user_settings", "Saving setting for " + setting_key);
+            }
+
+            try
+            {
+                // Execute this non-query stored procedure
+                EalDbParameter[] paramList = new EalDbParameter[3];
+                paramList[0] = new EalDbParameter("@userid", userid);
+                paramList[1] = new EalDbParameter("@setting_key", setting_key);
+                paramList[2] = new EalDbParameter("@setting_value", setting_value);
+
+                EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "mySobek_Save_User_Settings", paramList);
+                return true;
+            }
+            catch (Exception ee)
+            {
+                lastException = ee;
+                if (Tracer != null)
+                {
+                    Tracer.Add_Trace("SobekCM_Database.Save_User", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("SobekCM_Database.Save_User", ee.Message, Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("SobekCM_Database.Save_User", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                }
+                return false;
+            }
+        }
 
 
-		}
-
-		/// <summary> Links a single user to a user group  </summary>
-		/// <param name="UserID"> Primary key for the user </param>
-		/// <param name="UserGroupID"> Primary key for the user group </param>
-		/// <returns> TRUE if successful, otherwise FALSE </returns>
-		/// <remarks> This calls the 'mySobek_Link_User_To_User_Group' stored procedure</remarks> 
-		public static bool Link_User_To_User_Group( int UserID, int UserGroupID )
+        /// <summary> Links a single user to a user group  </summary>
+        /// <param name="UserID"> Primary key for the user </param>
+        /// <param name="UserGroupID"> Primary key for the user group </param>
+        /// <returns> TRUE if successful, otherwise FALSE </returns>
+        /// <remarks> This calls the 'mySobek_Link_User_To_User_Group' stored procedure</remarks> 
+        public static bool Link_User_To_User_Group( int UserID, int UserGroupID )
 		{
 			try
 			{

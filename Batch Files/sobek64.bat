@@ -7,18 +7,21 @@ echo.
 echo COPYING WEB FILES INTO PRECOMPILE DIRECTORY
 echo ....sobekcm
 robocopy "%source%\SobekCM" "%iis%\SobekCM" /mir /NFL /NDL /NJH /NJS /nc /ns /np 
+echo ....sobekcm_core
+robocopy "%source%\SobekCM_Core" "%iis%\SobekCM_Core" /mir /NFL /NDL /NJH /NJS /nc /ns /np 
+echo ....sobekcm_engine_library
+robocopy "%source%\SobekCM_Engine_Library" "%iis%\SobekCM_Engine_Library" /mir /NFL /NDL /NJH /NJS /nc /ns /np 
 echo ....sobekcm_library
 robocopy "%source%\SobekCM_Library" "%iis%\SobekCM_Library" /mir /NFL /NDL /NJH /NJS /nc /ns /np 
+echo ....sobekcm_resource_database
+robocopy "%source%\SobekCM_Resource_Database" "%iis%\SobekCM_Resource_Database" /mir /NFL /NDL /NJH /NJS /nc /ns /np
 echo ....sobekcm_resource_object
 robocopy "%source%\SobekCM_Resource_Object" "%iis%\SobekCM_Resource_Object" /mir /NFL /NDL /NJH /NJS /nc /ns /np 
 echo ....sobekcm_tools
 robocopy "%source%\SobekCM_Tools" "%iis%\SobekCM_Tools" /mir /NFL /NDL /NJH /NJS /nc /ns /np 
 echo ....sobekcm_url_rewriter
 robocopy "%source%\SobekCM_URL_Rewriter" "%iis%\SobekCM_URL_Rewriter" /mir /NFL /NDL /NJH /NJS /nc /ns /np 
-echo ....sobekcm_core
-robocopy "%source%\SobekCM_Core" "%iis%\SobekCM_Core" /mir /NFL /NDL /NJH /NJS /nc /ns /np 
-echo ....sobekcm_engine_library
-robocopy "%source%\SobekCM_Engine_Library" "%iis%\SobekCM_Engine_Library" /mir /NFL /NDL /NJH /NJS /nc /ns /np 
+
 echo REMOVING ANY EXISTING STAGING DIRECTORIES
 rmdir "%installer%\SobekCM_WiX_Installer\Staging64" /s /q
 rmdir "%installer%\SobekCM_WiX_Installer\Staging32" /s /q

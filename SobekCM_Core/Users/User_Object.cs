@@ -265,8 +265,31 @@ namespace SobekCM.Core.Users
         /// <summary> Flag indicates if this user should appear as a possible processing technician </summary>
         public bool Processing_Technician { get; set; }
 
+        #region User settings properties and methods
+
         /// <summary> Gets the full list of all settings </summary>
-        public Dictionary<string, object> Settings { get { return userSettings;  } }
+        protected Dictionary<string, object> Settings { get { return userSettings;  } }
+
+        /// <summary> Get the number of settings </summary>
+        public int SettingsCount
+        {
+            get
+            {
+                if (userSettings == null) return 0;
+                return userSettings.Count;
+            }
+        }
+
+        /// <summary> Gets the list of all the keys for these settings </summary>
+        public List<string> SettingsKeys
+        {
+            get
+            {
+                if (userSettings == null) return new List<string>();
+
+                return userSettings.Keys.ToList<string>();
+            }
+        }
 
         /// <summary> Get the user option as an object, by option key </summary>
         /// <param name="Option_Key"> Key for the user option </param>
@@ -328,6 +351,8 @@ namespace SobekCM.Core.Users
                // Engine_Database.Set_User_Setting(UserID, Option_Key, Option_Value.ToString());
 			}
 		}
+
+        #endregion
 
         #region Public properties of this user object
 

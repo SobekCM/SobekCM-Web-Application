@@ -1210,7 +1210,7 @@ namespace SobekCM.Library.MySobekViewer
 
                 // Get the list of Mapping files that exist and this user is enabled for
                 List<string> mapping_files = new List<string>();
-                foreach (string thisSettingKey in RequestSpecificValues.Current_User.Settings.Keys)
+                foreach (string thisSettingKey in RequestSpecificValues.Current_User.SettingsKeys)
                 {
                     if (thisSettingKey.IndexOf("TEI.MAPPING.") == 0)
                     {
@@ -1303,7 +1303,7 @@ namespace SobekCM.Library.MySobekViewer
 
                 // Get the list of XSLT files that exist and this user is enabled for
                 List<string> xslt_files = new List<string>();
-                foreach (string thisSettingKey in RequestSpecificValues.Current_User.Settings.Keys)
+                foreach (string thisSettingKey in RequestSpecificValues.Current_User.SettingsKeys)
                 {
                     if (thisSettingKey.IndexOf("TEI.XSLT.") == 0)
                     {
@@ -1387,7 +1387,7 @@ namespace SobekCM.Library.MySobekViewer
 
                 // CSS is not required, so check to see if any enable CSS's exist
                 List<string> css_files = new List<string>();
-                foreach (string thisSettingKey in RequestSpecificValues.Current_User.Settings.Keys)
+                foreach (string thisSettingKey in RequestSpecificValues.Current_User.SettingsKeys)
                 {
                     if (thisSettingKey.IndexOf("TEI.CSS.") == 0)
                     {

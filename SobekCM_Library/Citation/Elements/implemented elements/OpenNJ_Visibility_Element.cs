@@ -113,6 +113,7 @@ namespace SobekCM.Library.Citation.Elements
                 {
                     case EVERYONE:
                         Bib.Behaviors.Clear_User_Group_Access();
+                        Bib.Behaviors.RestrictionMessage = String.Empty;
                         break;
 
                     case INSTRUCTORS:

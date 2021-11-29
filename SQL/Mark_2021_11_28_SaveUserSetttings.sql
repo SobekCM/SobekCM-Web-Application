@@ -45,3 +45,16 @@ begin
 
 end;
 GO
+
+-- Add new system-wide settings
+insert into SobekCM_Settings ( Setting_Key, Setting_Value, TabPage, Heading, Hidden, Reserved, Help, Options )
+values ( 'Use Tracking Sheet', 'false', 'Digital Resource Settings', 'Online Management Settings', 0, 0, 'Whether the administrative options to use the tracking sheet will be displayed', 'true|false' );
+GO
+
+insert into SobekCM_Settings ( Setting_Key, Setting_Value, TabPage, Heading, Hidden, Reserved, Help, Options )
+values ( 'Manage GeoSpatial Data', 'false', 'Digital Resource Settings', 'Online Management Settings', 0, 0, 'Whether the beta options to manage geo-spatial data will be displayed', 'true|false' );
+GO
+
+insert into SobekCM_Settings ( Setting_Key, Setting_Value, TabPage, Heading, Hidden, Reserved, Help, Options )
+values ( 'Allow Mass Behavior Update', 'false', 'Digital Resource Settings', 'Online Management Settings', 0, 0, 'Whether the administrative options to mass update the behaviors is available', 'true|false' );
+GO

@@ -388,6 +388,20 @@ namespace SobekCM.Core.Settings
             }
         }
 
+        /// <summary> Gets an additional setting value, by the key </summary>
+        /// <param name="Key"> Name / key for this database setting </param>
+        /// <returns> Value, or null </returns>
+        public bool Get_Additional_Setting(string Key, bool defaultValue)
+        {
+            string string_value = Get_Additional_Setting(Key);
+            if (!String.IsNullOrEmpty(string_value))
+            {
+                return string_value.Equals("true", StringComparison.OrdinalIgnoreCase);
+            }
+
+            return defaultValue;
+        }
+
         #endregion
 
         #region Properties related to the list of extensions/plugins from the database

@@ -301,6 +301,21 @@ namespace SobekCM.Core.Users
             return null;
         }
 
+        /// <summary> Get the user option as an object, by option key </summary>
+        /// <param name="Option_Key"> Key for the user option </param>
+        /// <returns> Option, as an uncast object, or NULL </returns>
+        public bool Get_Setting(string Option_Key, bool Default_Value)
+        {
+            if (userSettings.ContainsKey(Option_Key))
+            {
+                string string_value = userSettings[Option_Key].ToString();
+
+                return string_value.Equals("true", StringComparison.OrdinalIgnoreCase);
+            }
+
+            return Default_Value;
+        }
+
         /// <summary> Get the user option as an integer, by option key </summary>
         /// <param name="Option_Key"> Key for the user option </param>
         /// <param name="Default_Value"> Default value to return, if no value is present </param>

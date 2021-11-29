@@ -1279,7 +1279,7 @@ namespace SobekCM.Library.Database
                 paramList[1] = new EalDbParameter("@setting_key", setting_key);
                 paramList[2] = new EalDbParameter("@setting_value", setting_value);
 
-                EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "mySobek_Save_User_Settings", paramList);
+                EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "mySobek_Add_User_Setting", paramList);
                 return true;
             }
             catch (Exception ee)

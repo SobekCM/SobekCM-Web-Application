@@ -92,6 +92,11 @@ namespace SobekCM.Library.ItemViewer.Viewers
             if (!Has_Access(CurrentItem, CurrentUser, false))
                 return;
 
+            // Set some basic permission flags based on the user's settings
+            bool show_behaviors_if_permissioned = CurrentUser.Get_Setting(User_Setting_Constants.ItemViewer_ShowBehaviors, true);
+            bool show_qc_if_permissioned = CurrentUser.Get_Setting(User_Setting_Constants.ItemViewer_ShowQc, true);
+
+
             // Get the URL for this
             string previous_code = CurrentRequest.ViewerCode;
             CurrentRequest.ViewerCode = ViewerCode;
@@ -134,9 +139,12 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 }
 
                 // Add the menu item for editing item behaviors
-                CurrentRequest.My_Sobek_Type = My_Sobek_Type_Enum.Edit_Item_Behaviors;
-                string edit_behaviors_url = UrlWriterHelper.Redirect_URL(CurrentRequest);
-                MenuItems.Add(new Item_MenuItem("Manage", "Edit Item Behaviors", null, edit_behaviors_url, "nevermatchthis"));
+                if (show_behaviors_if_permissioned)
+                {
+                    CurrentRequest.My_Sobek_Type = My_Sobek_Type_Enum.Edit_Item_Behaviors;
+                    string edit_behaviors_url = UrlWriterHelper.Redirect_URL(CurrentRequest);
+                    MenuItems.Add(new Item_MenuItem("Manage", "Edit Item Behaviors", null, edit_behaviors_url, "nevermatchthis"));
+                }
 
                 // Add the menu item for managing download files
                 CurrentRequest.My_Sobek_Type = My_Sobek_Type_Enum.File_Management;
@@ -144,30 +152,39 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 MenuItems.Add(new Item_MenuItem("Manage", "Manage Download Files", null, manage_downloads, "nevermatchthis"));
 
                 // Add the menu item for managing pages and divisions
-                if ((CurrentItem.Images == null) || (CurrentItem.Images.Count == 0))
+                if (show_qc_if_permissioned)
                 {
-                    CurrentRequest.My_Sobek_Type = My_Sobek_Type_Enum.Page_Images_Management;
-                    string page_images_url = UrlWriterHelper.Redirect_URL(CurrentRequest);
-                    MenuItems.Add(new Item_MenuItem("Manage", "Manage Pages and Divisions", null, page_images_url, "nevermatchthis"));
-                }
-                else
-                {
-                    CurrentRequest.Mode = Display_Mode_Enum.Item_Display;
-                    CurrentRequest.ViewerCode = "qc";
-                    string qc_url = UrlWriterHelper.Redirect_URL(CurrentRequest);
-                    MenuItems.Add(new Item_MenuItem("Manage", "Manage Pages and Divisions", null, qc_url, "nevermatchthis"));
+                    if ((CurrentItem.Images == null) || (CurrentItem.Images.Count == 0))
+                    {
+                        CurrentRequest.My_Sobek_Type = My_Sobek_Type_Enum.Page_Images_Management;
+                        string page_images_url = UrlWriterHelper.Redirect_URL(CurrentRequest);
+                        MenuItems.Add(new Item_MenuItem("Manage", "Manage Pages and Divisions", null, page_images_url, "nevermatchthis"));
+                    }
+                    else
+                    {
+                        CurrentRequest.Mode = Display_Mode_Enum.Item_Display;
+                        CurrentRequest.ViewerCode = "qc";
+                        string qc_url = UrlWriterHelper.Redirect_URL(CurrentRequest);
+                        MenuItems.Add(new Item_MenuItem("Manage", "Manage Pages and Divisions", null, qc_url, "nevermatchthis"));
+                    }
                 }
 
                 // Add the manage geo-spatial data option
-                CurrentRequest.Mode = Display_Mode_Enum.Item_Display;
-                CurrentRequest.ViewerCode = "mapedit";
-                string mapedit_url = UrlWriterHelper.Redirect_URL(CurrentRequest);
-                MenuItems.Add(new Item_MenuItem("Manage", "Manage Geo-Spatial Data (beta)", null, mapedit_url, "mapedit"));
+                if (UI_ApplicationCache_Gateway.Settings.Resources.Manage_GeoSpatial_Data)
+                {
+                    CurrentRequest.Mode = Display_Mode_Enum.Item_Display;
+                    CurrentRequest.ViewerCode = "mapedit";
+                    string mapedit_url = UrlWriterHelper.Redirect_URL(CurrentRequest);
+                    MenuItems.Add(new Item_MenuItem("Manage", "Manage Geo-Spatial Data (beta)", null, mapedit_url, "mapedit"));
+                }
 
                 // Add the tracking sheet menu option
-                CurrentRequest.ViewerCode = "ts";
-                string tracking_url = UrlWriterHelper.Redirect_URL(CurrentRequest);
-                MenuItems.Add(new Item_MenuItem("Manage", "View Tracking Sheet", null, tracking_url, "ts"));
+                if (UI_ApplicationCache_Gateway.Settings.Resources.Use_Tracking_Sheet)
+                {
+                    CurrentRequest.ViewerCode = "ts";
+                    string tracking_url = UrlWriterHelper.Redirect_URL(CurrentRequest);
+                    MenuItems.Add(new Item_MenuItem("Manage", "View Tracking Sheet", null, tracking_url, "ts"));
+                }
             }
             else
             {
@@ -185,9 +202,12 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 MenuItems.Add(new Item_MenuItem("Manage", "Add New Volume", null, add_volume_url, "nevermatchthis"));
 
                 // Add the option for group mass update
-                CurrentRequest.My_Sobek_Type = My_Sobek_Type_Enum.Group_Mass_Update_Items;
-                string mass_update_url = UrlWriterHelper.Redirect_URL(CurrentRequest);
-                MenuItems.Add(new Item_MenuItem("Manage", "Mass Update Item Behaviors", null, mass_update_url, "nevermatchthis"));
+                if (UI_ApplicationCache_Gateway.Settings.Resources.Allow_Behavior_Mass_Update)
+                {
+                    CurrentRequest.My_Sobek_Type = My_Sobek_Type_Enum.Group_Mass_Update_Items;
+                    string mass_update_url = UrlWriterHelper.Redirect_URL(CurrentRequest);
+                    MenuItems.Add(new Item_MenuItem("Manage", "Mass Update Item Behaviors", null, mass_update_url, "nevermatchthis"));
+                }
             }
 
             CurrentRequest.Mode = Display_Mode_Enum.Item_Display;
@@ -248,6 +268,11 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
 
             string currentViewerCode = CurrentRequest.ViewerCode;
+
+            // Set some basic permission flags based on the user's settings
+            bool show_behaviors_if_permissioned = CurrentUser.Get_Setting(User_Setting_Constants.ItemViewer_ShowBehaviors, true);
+            bool show_qc_if_permissioned = CurrentUser.Get_Setting(User_Setting_Constants.ItemViewer_ShowQc, true);
+
 
             // Add the HTML for the image
             Output.WriteLine("<!-- MANAGE MENU ITEM VIEWER OUTPUT -->");
@@ -317,33 +342,39 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 }
 
                 // Add ability to edit behaviors for this item
-                CurrentRequest.Mode = Display_Mode_Enum.My_Sobek;
-                CurrentRequest.My_Sobek_Type = My_Sobek_Type_Enum.Edit_Item_Behaviors;
-                CurrentRequest.My_Sobek_SubMode = "1";
-                url = UrlWriterHelper.Redirect_URL(CurrentRequest);
-                Output.WriteLine("\t\t\t\t<tr>");
-                Output.WriteLine("\t\t\t\t\t<td style=\"width:50px\">&nbsp;</td>");
-                Output.WriteLine("\t\t\t\t\t<td style=\"width:60px\"><a href=\"" + url + "\"><img src=\"" + Static_Resources_Gateway.Edit_Behaviors_Icon_Png + "\" /></a></td>");
-                Output.WriteLine("\t\t\t\t\t<td>");
-                Output.WriteLine("\t\t\t\t\t\t<a href=\"" + url + "\">Edit Item Behaviors</a>");
-                Output.WriteLine("\t\t\t\t\t\t<div class=\"sbkMmiv_Desc\">Change the way this item behaves in this library, including which aggregations it appears under, the wordmarks to the left, and which viewer types are publicly accessible.</div>");
-                Output.WriteLine("\t\t\t\t\t</td>");
-                Output.WriteLine("\t\t\t\t</tr>");
-                Output.WriteLine("\t\t\t\t<tr class=\"sbkMmiv_SpacerRow\"><td colspan=\"3\"></td></tr>");
+                if (show_behaviors_if_permissioned)
+                {
+                    CurrentRequest.Mode = Display_Mode_Enum.My_Sobek;
+                    CurrentRequest.My_Sobek_Type = My_Sobek_Type_Enum.Edit_Item_Behaviors;
+                    CurrentRequest.My_Sobek_SubMode = "1";
+                    url = UrlWriterHelper.Redirect_URL(CurrentRequest);
+                    Output.WriteLine("\t\t\t\t<tr>");
+                    Output.WriteLine("\t\t\t\t\t<td style=\"width:50px\">&nbsp;</td>");
+                    Output.WriteLine("\t\t\t\t\t<td style=\"width:60px\"><a href=\"" + url + "\"><img src=\"" + Static_Resources_Gateway.Edit_Behaviors_Icon_Png + "\" /></a></td>");
+                    Output.WriteLine("\t\t\t\t\t<td>");
+                    Output.WriteLine("\t\t\t\t\t\t<a href=\"" + url + "\">Edit Item Behaviors</a>");
+                    Output.WriteLine("\t\t\t\t\t\t<div class=\"sbkMmiv_Desc\">Change the way this item behaves in this library, including which aggregations it appears under, the wordmarks to the left, and which viewer types are publicly accessible.</div>");
+                    Output.WriteLine("\t\t\t\t\t</td>");
+                    Output.WriteLine("\t\t\t\t</tr>");
+                    Output.WriteLine("\t\t\t\t<tr class=\"sbkMmiv_SpacerRow\"><td colspan=\"3\"></td></tr>");
+                }
 
                 // Add ability to perform QC ( manage pages and divisions) for this item
-                CurrentRequest.Mode = Display_Mode_Enum.Item_Display;
-                CurrentRequest.ViewerCode = "qc";
-                url = UrlWriterHelper.Redirect_URL(CurrentRequest);
-                Output.WriteLine("\t\t\t\t<tr>");
-                Output.WriteLine("\t\t\t\t\t<td style=\"width:50px\">&nbsp;</td>");
-                Output.WriteLine("\t\t\t\t\t<td style=\"width:60px\"><a href=\"" + url + "\"><img src=\"" + Static_Resources_Gateway.Qc_Button_Img_Large + "\" /></a></td>");
-                Output.WriteLine("\t\t\t\t\t<td>");
-                Output.WriteLine("\t\t\t\t\t\t<a href=\"" + url + "\">Manage Pages and Divisions (Quality Control)</a>");
-                Output.WriteLine("\t\t\t\t\t\t<div class=\"sbkMmiv_Desc\">Reorder page images, name pages, assign divisions, and delete and add new page images to this item.</div>");
-                Output.WriteLine("\t\t\t\t\t</td>");
-                Output.WriteLine("\t\t\t\t</tr>");
-                Output.WriteLine("\t\t\t\t<tr class=\"sbkMmiv_SpacerRow\"><td colspan=\"3\"></td></tr>");
+                if (show_qc_if_permissioned)
+                {
+                    CurrentRequest.Mode = Display_Mode_Enum.Item_Display;
+                    CurrentRequest.ViewerCode = "qc";
+                    url = UrlWriterHelper.Redirect_URL(CurrentRequest);
+                    Output.WriteLine("\t\t\t\t<tr>");
+                    Output.WriteLine("\t\t\t\t\t<td style=\"width:50px\">&nbsp;</td>");
+                    Output.WriteLine("\t\t\t\t\t<td style=\"width:60px\"><a href=\"" + url + "\"><img src=\"" + Static_Resources_Gateway.Qc_Button_Img_Large + "\" /></a></td>");
+                    Output.WriteLine("\t\t\t\t\t<td>");
+                    Output.WriteLine("\t\t\t\t\t\t<a href=\"" + url + "\">Manage Pages and Divisions (Quality Control)</a>");
+                    Output.WriteLine("\t\t\t\t\t\t<div class=\"sbkMmiv_Desc\">Reorder page images, name pages, assign divisions, and delete and add new page images to this item.</div>");
+                    Output.WriteLine("\t\t\t\t\t</td>");
+                    Output.WriteLine("\t\t\t\t</tr>");
+                    Output.WriteLine("\t\t\t\t<tr class=\"sbkMmiv_SpacerRow\"><td colspan=\"3\"></td></tr>");
+                }
 
 
                 // Add ability to view work history for this item
@@ -376,34 +407,38 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 Output.WriteLine("\t\t\t\t<tr class=\"sbkMmiv_SpacerRow\"><td colspan=\"3\"></td></tr>");
 
                 // Add ability to edit geo-spatial information for this item
-                CurrentRequest.Mode = Display_Mode_Enum.Item_Display;
-                CurrentRequest.ViewerCode = "mapedit";
-                url = UrlWriterHelper.Redirect_URL(CurrentRequest);
-                Output.WriteLine("\t\t\t\t<tr>");
-                Output.WriteLine("\t\t\t\t\t<td style=\"width:50px\">&nbsp;</td>");
-                Output.WriteLine("\t\t\t\t\t<td style=\"width:60px\"><a href=\"" + url + "\"><img src=\"" + Static_Resources_Gateway.Add_Geospatial_Img + "\" /></a></td>");
-                Output.WriteLine("\t\t\t\t\t<td>");
-                Output.WriteLine("\t\t\t\t\t\t<a href=\"" + url + "\">Manage Geo-Spatial Data (beta)</a>");
-                Output.WriteLine("\t\t\t\t\t\t<div class=\"sbkMmiv_Desc\">Add geo-spatial information for this item.  This can be as simple as a location for a photograph or can be an overlay for a map.  Points, lines, and polygons of interest can also be drawn.</div>");
-                Output.WriteLine("\t\t\t\t\t</td>");
-                Output.WriteLine("\t\t\t\t</tr>");
-                Output.WriteLine("\t\t\t\t<tr class=\"sbkMmiv_SpacerRow\"><td colspan=\"3\"></td></tr>");
+                if (UI_ApplicationCache_Gateway.Settings.Resources.Manage_GeoSpatial_Data)
+                {
+                    CurrentRequest.Mode = Display_Mode_Enum.Item_Display;
+                    CurrentRequest.ViewerCode = "mapedit";
+                    url = UrlWriterHelper.Redirect_URL(CurrentRequest);
+                    Output.WriteLine("\t\t\t\t<tr>");
+                    Output.WriteLine("\t\t\t\t\t<td style=\"width:50px\">&nbsp;</td>");
+                    Output.WriteLine("\t\t\t\t\t<td style=\"width:60px\"><a href=\"" + url + "\"><img src=\"" + Static_Resources_Gateway.Add_Geospatial_Img + "\" /></a></td>");
+                    Output.WriteLine("\t\t\t\t\t<td>");
+                    Output.WriteLine("\t\t\t\t\t\t<a href=\"" + url + "\">Manage Geo-Spatial Data (beta)</a>");
+                    Output.WriteLine("\t\t\t\t\t\t<div class=\"sbkMmiv_Desc\">Add geo-spatial information for this item.  This can be as simple as a location for a photograph or can be an overlay for a map.  Points, lines, and polygons of interest can also be drawn.</div>");
+                    Output.WriteLine("\t\t\t\t\t</td>");
+                    Output.WriteLine("\t\t\t\t</tr>");
+                    Output.WriteLine("\t\t\t\t<tr class=\"sbkMmiv_SpacerRow\"><td colspan=\"3\"></td></tr>");
+                }
 
-
-                // Add ability to edit geo-spatial information for this item
-                CurrentRequest.Mode = Display_Mode_Enum.Item_Display;
-                CurrentRequest.ViewerCode = "ts";
-                url = UrlWriterHelper.Redirect_URL(CurrentRequest);
-                Output.WriteLine("\t\t\t\t<tr>");
-                Output.WriteLine("\t\t\t\t\t<td style=\"width:50px\">&nbsp;</td>");
-                Output.WriteLine("\t\t\t\t\t<td style=\"width:60px\"><a href=\"" + url + "\"><img src=\"" + Static_Resources_Gateway.Track2_Gif + "\" /></a></td>");
-                Output.WriteLine("\t\t\t\t\t<td>");
-                Output.WriteLine("\t\t\t\t\t\t<a href=\"" + url + "\">View Tracking Sheet</a>");
-                Output.WriteLine("\t\t\t\t\t\t<div class=\"sbkMmiv_Desc\">This can be used for printing the tracking sheet for this item, which can be used as part of the built-in digitization workflow.</div>");
-                Output.WriteLine("\t\t\t\t\t</td>");
-                Output.WriteLine("\t\t\t\t</tr>");
-                Output.WriteLine("\t\t\t\t<tr class=\"sbkMmiv_SpacerRow\"><td colspan=\"3\"></td></tr>");
-
+                // Add ability to view the tracking sheet for this item
+                if (UI_ApplicationCache_Gateway.Settings.Resources.Use_Tracking_Sheet)
+                {
+                    CurrentRequest.Mode = Display_Mode_Enum.Item_Display;
+                    CurrentRequest.ViewerCode = "ts";
+                    url = UrlWriterHelper.Redirect_URL(CurrentRequest);
+                    Output.WriteLine("\t\t\t\t<tr>");
+                    Output.WriteLine("\t\t\t\t\t<td style=\"width:50px\">&nbsp;</td>");
+                    Output.WriteLine("\t\t\t\t\t<td style=\"width:60px\"><a href=\"" + url + "\"><img src=\"" + Static_Resources_Gateway.Track2_Gif + "\" /></a></td>");
+                    Output.WriteLine("\t\t\t\t\t<td>");
+                    Output.WriteLine("\t\t\t\t\t\t<a href=\"" + url + "\">View Tracking Sheet</a>");
+                    Output.WriteLine("\t\t\t\t\t\t<div class=\"sbkMmiv_Desc\">This can be used for printing the tracking sheet for this item, which can be used as part of the built-in digitization workflow.</div>");
+                    Output.WriteLine("\t\t\t\t\t</td>");
+                    Output.WriteLine("\t\t\t\t</tr>");
+                    Output.WriteLine("\t\t\t\t<tr class=\"sbkMmiv_SpacerRow\"><td colspan=\"3\"></td></tr>");
+                }
 
                 Output.WriteLine("\t\t\t\t<tr class=\"sbkMmiv_HeaderRow\"><td colspan=\"3\">In addition, the following changes can be made at the item group level:</td></tr>");
 
@@ -437,7 +472,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 Output.WriteLine("\t\t\t\t</tr>");
                 Output.WriteLine("\t\t\t\t<tr class=\"sbkMmiv_SpacerRow\"><td colspan=\"3\"></td></tr>");
 
-                if (( BriefItem.Web != null ) && (BriefItem.Web.Siblings.HasValue) && (BriefItem.Web.Siblings > 1))
+                if (( BriefItem.Web != null ) && (BriefItem.Web.Siblings.HasValue) && (BriefItem.Web.Siblings > 1) && ( UI_ApplicationCache_Gateway.Settings.Resources.Allow_Behavior_Mass_Update))
                 {
                     // Add ability to mass update all items for this group
                     CurrentRequest.Mode = Display_Mode_Enum.My_Sobek;

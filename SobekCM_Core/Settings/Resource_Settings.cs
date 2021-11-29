@@ -99,5 +99,23 @@ namespace SobekCM.Core.Settings
         [XmlElement("uploadImageTypes")]
         [ProtoMember(12)]
         public string Upload_Image_Types { get; set; }
+
+        /// <summary> Whether the administrative options to use the tracking sheet will be displayed </summary>
+        [DataMember(Name = "useTrackingSheet")]
+        [XmlElement("useTrackingSheet")]
+        [ProtoMember(13)]
+        public bool Use_Tracking_Sheet { get; set; }
+
+        /// <summary> Whether the beta options to manage geo-spatial data will be displayed </summary>
+        [DataMember(Name = "manageGeoSpatialData")]
+        [XmlElement("manageGeoSpatialData")]
+        [ProtoMember(14)]
+        public bool Manage_GeoSpatial_Data { get; set; }
+
+        /// <summary> Whether the administrative options to mass update the behaviors is available </summary>
+        [DataMember(Name = "allowBehaviorMassUpdate")]
+        [XmlElement("allowBehaviorMassUpdate")]
+        [ProtoMember(15)]
+        public bool Allow_Behavior_Mass_Update { get; set; }
     }
 }

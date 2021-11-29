@@ -636,11 +636,15 @@ namespace SobekCM.Library.HTML
         /// <param name="Current_User"> Currently logged on user, to determine specific rights </param>
         public override void Write_Internal_Header_HTML(TextWriter Output, User_Object Current_User)
         {
-            RequestSpecificValues.Tracer.Add_Trace("item_HtmlSubwriter.Write_Internal_Header_HTML");
-
             // If this is for a fragment, do nothing
             if (!String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.Fragment))
                 return;
+
+            RequestSpecificValues.Tracer.Add_Trace("item_HtmlSubwriter.Write_Internal_Header_HTML");
+
+            // Set some basic permission flags based on the user's settings
+            bool show_behaviors_if_permissioned = Current_User.Get_Setting(User_Setting_Constants.ItemViewer_ShowBehaviors, true);
+            bool show_qc_if_permissioned = Current_User.Get_Setting(User_Setting_Constants.ItemViewer_ShowQc, true);
 
             string currentViewerCode = RequestSpecificValues.Current_Mode.ViewerCode;
 
@@ -687,23 +691,29 @@ namespace SobekCM.Library.HTML
                     }
 
                     // Add ability to edit behaviors for this item
-                    RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Edit_Item_Behaviors;
-                    RequestSpecificValues.Current_Mode.My_Sobek_SubMode = "1";
-                    Output.WriteLine("          <button title=\"Edit Behaviors\" class=\"sbkIsw_intheader_button edit_behaviors_button\" onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "';return false;\"></button>");
-                    RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Item_Display;
-
-                    // Add ability to edit behaviors for this item
-                    if ((currentItem.Images == null ) || ( currentItem.Images.Count == 0 ))
+                    if (show_behaviors_if_permissioned)
                     {
-                        RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.My_Sobek;
-                        RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Page_Images_Management;
-                        Output.WriteLine("          <button title=\"Perform Quality Control\" class=\"sbkIsw_intheader_button qualitycontrol_button\" onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "';return false;\"></button>");
+                        RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Edit_Item_Behaviors;
+                        RequestSpecificValues.Current_Mode.My_Sobek_SubMode = "1";
+                        Output.WriteLine("          <button title=\"Edit Behaviors\" class=\"sbkIsw_intheader_button edit_behaviors_button\" onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "';return false;\"></button>");
                         RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Item_Display;
                     }
-                    else
+
+                    // Add ability to perforrm qc for this item
+                    if (show_qc_if_permissioned)
                     {
-                        RequestSpecificValues.Current_Mode.ViewerCode = "qc";
-                        Output.WriteLine("          <button title=\"Perform Quality Control\" class=\"sbkIsw_intheader_button qualitycontrol_button\" onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "';return false;\"></button>");
+                        if ((currentItem.Images == null) || (currentItem.Images.Count == 0))
+                        {
+                            RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.My_Sobek;
+                            RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Page_Images_Management;
+                            Output.WriteLine("          <button title=\"Perform Quality Control\" class=\"sbkIsw_intheader_button qualitycontrol_button\" onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "';return false;\"></button>");
+                            RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Item_Display;
+                        }
+                        else
+                        {
+                            RequestSpecificValues.Current_Mode.ViewerCode = "qc";
+                            Output.WriteLine("          <button title=\"Perform Quality Control\" class=\"sbkIsw_intheader_button qualitycontrol_button\" onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "';return false;\"></button>");
+                        }
                     }
 
                     // Get ready to send to item permissions
@@ -770,7 +780,7 @@ namespace SobekCM.Library.HTML
                 Output.WriteLine("          <button title=\"View Work Log\" class=\"sbkIsw_intheader_button view_worklog_button\" onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "';return false;\"></button>");
                 RequestSpecificValues.Current_Mode.ViewerCode = currentViewerCode;
 
-                // Add ability to edit behaviors for this item
+                // Add ability to manage files for this item
                 if (userCanEditItem)
                 {
                     RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.My_Sobek;

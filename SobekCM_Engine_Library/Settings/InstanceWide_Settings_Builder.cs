@@ -147,6 +147,7 @@ namespace SobekCM.Engine_Library.Settings
 
                 // Pull all of the builder settings value ( from UFDC_Builder_Settings )
                 Get_String_Value(settingsDictionary, "Ace Editor Theme", SettingsObject.UI, X => X.Ace_Editor_Theme, ref error);
+                Get_Boolean_Value(settingsDictionary, "Allow Mass Behavior Update", SettingsObject.Resources, X => X.Allow_Behavior_Mass_Update, ref error, false);
                 Get_String_Value(settingsDictionary, "Application Server Network", SettingsObject.Servers, X => X.Application_Server_Network, ref error);
                 Get_String_Value(settingsDictionary, "Application Server URL", SettingsObject.Servers, X => X.Application_Server_URL, ref error);
                 Get_String_Value(settingsDictionary, "Archive DropBox", SettingsObject.Archive, X => X.Archive_DropBox, ref error);
@@ -187,10 +188,9 @@ namespace SobekCM.Engine_Library.Settings
                 Get_Integer_Value(settingsDictionary, "JPEG Width", SettingsObject.Resources, X => X.JPEG_Width, ref error, -1);
                 Get_String_Value(settingsDictionary, "JPEG2000 Server", SettingsObject.Servers, X => X.JP2ServerUrl, ref error);
                 Get_String_Value(settingsDictionary, "JPEG2000 Server Type", SettingsObject.Servers, X => X.JP2ServerType, ref error);
-                //Get_String_Value(settingsDictionary, "Kakadu JPEG2000 Create Command", ref kakaduJp2CreateCommand, ref error);
-
-                
+                //Get_String_Value(settingsDictionary, "Kakadu JPEG2000 Create Command", ref kakaduJp2CreateCommand, ref error);               
                 Get_String_Value(settingsDictionary, "Main Builder Input Folder", SettingsObject.Builder, X => X.Main_Builder_Input_Folder, String.Empty);
+                Get_Boolean_Value(settingsDictionary, "Manage GeoSpatial Data", SettingsObject.Resources, X => X.Manage_GeoSpatial_Data, ref error, false);
                 Get_String_Value(settingsDictionary, "Mango Union Search Base URL", SettingsObject.Florida, X => X.Mango_Union_Search_Base_URL, ref error);
                 Get_String_Value(settingsDictionary, "Mango Union Search Text", SettingsObject.Florida, X => X.Mango_Union_Search_Text, ref error);
                 Get_String_Value(settingsDictionary, "OCR Engine Command", SettingsObject.Builder, X => X.OCR_Command_Prompt, String.Empty);
@@ -216,6 +216,7 @@ namespace SobekCM.Engine_Library.Settings
                 Get_Integer_Value(settingsDictionary, "Thumbnail Width", SettingsObject.Resources, X => X.Thumbnail_Width, ref error, -1);
                 Get_String_Value(settingsDictionary, "Upload File Types", SettingsObject.Resources, X => X.Upload_File_Types, ".aif,.aifc,.aiff,.au,.avi,.bz2,.c,.c++,.css,.dbf,.ddl,.doc,.docx,.dtd,.dvi,.flac,.gz,.htm,.html,.java,.jps,.js,.m4p,.mid,.midi,.mp2,.mp3,.mpg,.odp,.ogg,.pdf,.pgm,.ppt,.pptx,.ps,.ra,.ram,.rar,.rm,.rtf,.sgml,.swf,.sxi,.tbz2,.tgz,.wav,.wave,.wma,.wmv,.xls,.xlsx,.xml,.zip");
                 Get_String_Value(settingsDictionary, "Upload Image Types", SettingsObject.Resources, X => X.Upload_Image_Types, ".txt,.tif,.jpg,.jp2,.pro");
+                Get_Boolean_Value(settingsDictionary, "Use Tracking Sheet", SettingsObject.Resources, X => X.Use_Tracking_Sheet, ref error, false);
                 Get_String_Value(settingsDictionary, "Web In Process Submission Location", SettingsObject.Servers, X => X.In_Process_Submission_Location, String.Empty);
                 Get_Integer_Value(settingsDictionary, "Web Output Caching Minutes", SettingsObject.Servers, X => X.Web_Output_Caching_Minutes, ref error, 0);
 

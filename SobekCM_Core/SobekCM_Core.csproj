@@ -291,6 +291,7 @@
     <Compile Include="Users\User_Group.cs" />
     <Compile Include="Users\User_Group_Member.cs" />
     <Compile Include="Users\User_Object.cs" />
+    <Compile Include="Users\User_Setting_Constants.cs" />
     <Compile Include="WebContent\Hierarchy\WebContent_Hierarchy.cs" />
     <Compile Include="WebContent\Hierarchy\WebContent_Hierarchy_Node.cs" />
     <Compile Include="WebContent\HTML_Based_Content.cs" />

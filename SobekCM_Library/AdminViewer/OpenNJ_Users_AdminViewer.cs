@@ -322,6 +322,11 @@ namespace SobekCM.Library.AdminViewer
                                 editUser.Edit_Template_Code_Simple = "oer-edit";
                                 editUser.Edit_Template_Code_Complex = "oer-edit";
 
+                                // Set the user settings to simplify the UI
+                                editUser.Add_Setting(User_Setting_Constants.ItemViewer_ShowBehaviors, "false");
+                                editUser.Add_Setting(User_Setting_Constants.ItemViewer_ShowQc, "false");
+
+
                                 save_user();
 
                                 // Clear the RequestSpecificValues.Current_User from the sessions
@@ -873,6 +878,12 @@ namespace SobekCM.Library.AdminViewer
         private bool save_user()
         {
             bool successful_save = true;
+
+            // START OPEN-NJ SPECIFIC CODE
+
+
+
+            // END OPEN-NJ SPECIFIC CODE
 
             // Save this user
             SobekCM_Database.Save_User(editUser, String.Empty, RequestSpecificValues.Current_User.Authentication_Type, RequestSpecificValues.Tracer);

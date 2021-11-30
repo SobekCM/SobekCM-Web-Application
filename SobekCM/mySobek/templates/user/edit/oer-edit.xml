@@ -25,6 +25,10 @@
 		<page>
 			<name language="eng">Material Information</name>
 			<panel>
+				<name language="en">Permissions</name>
+				<element type="Visibility" subtype="opennj" />
+			</panel>
+			<panel>
 				<name language="eng">Title Information</name>
 				<element type="Title" subtype="simple" acronym="Enter the title of your chapter, article, report, or other material here." mandatory="true"/>
 				<element type="Other Title" subtype="simple" mandatory="false" acronym="Enter the any additional titles for your material here."/>

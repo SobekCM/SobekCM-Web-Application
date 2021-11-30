@@ -63,11 +63,11 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <summary> Flag indicates if the current user has access to this viewer for the item </summary>
         /// <param name="CurrentItem"> Digital resource to see if the current user has correct permissions to use this viewer </param>
         /// <param name="CurrentUser"> Current user, who may or may not be logged on </param>
-        /// <param name="IpRestricted"> Flag indicates if this item is IP restricted AND if the current user is outside the ranges </param>
+        /// <param name="IsRestricted"> Flag indicates if this item is restricted AND the current user is outside the ranges or not in the proper groups</param>
         /// <returns> TRUE if the user has access to use this viewer, otherwise FALSE </returns>
-        public virtual bool Has_Access(BriefItemInfo CurrentItem, User_Object CurrentUser, bool IpRestricted)
+        public virtual bool Has_Access(BriefItemInfo CurrentItem, User_Object CurrentUser, bool IsRestricted)
         {
-            return !IpRestricted;
+            return !IsRestricted;
         }
 
         /// <summary> Gets the menu items related to this viewer that should be included on the main item (digital resource) menu </summary>
@@ -76,8 +76,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <param name="CurrentUser"> Current user, who may or may not be logged on </param>
         /// <param name="CurrentRequest"> Information about the current request </param>
         /// <param name="MenuItems"> List of menu items, to which this method may add one or more menu items </param>
-        /// <param name="IpRestricted"> Flag indicates if this item is IP restricted AND if the current user is outside the ranges </param>
-        public virtual void Add_Menu_Items(BriefItemInfo CurrentItem, User_Object CurrentUser, Navigation_Object CurrentRequest, List<Item_MenuItem> MenuItems, bool IpRestricted )
+        /// <param name="IsRestricted"> Flag indicates if this item is restricted AND the current user is outside the ranges or not in the proper groups</param>
+        public virtual void Add_Menu_Items(BriefItemInfo CurrentItem, User_Object CurrentUser, Navigation_Object CurrentRequest, List<Item_MenuItem> MenuItems, bool IsRestricted )
         {
             // Determine the label to show
             string resource_type_upper = CurrentItem.Type.ToUpper();

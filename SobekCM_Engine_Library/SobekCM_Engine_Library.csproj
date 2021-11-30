@@ -120,6 +120,7 @@
     <Compile Include="Items\BriefItems\Mappers\Names_BriefItemMapper.cs" />
     <Compile Include="Items\BriefItems\Mappers\Notes_BriefItemMapper.cs" />
     <Compile Include="Items\BriefItems\Mappers\Other_URL_BriefItemMapper.cs" />
+    <Compile Include="Items\BriefItems\Mappers\Permissions_BriefItemMapper.cs" />
     <Compile Include="Items\BriefItems\Mappers\Physical_Description_BriefItemMapper.cs" />
     <Compile Include="Items\BriefItems\Mappers\Publisher_BriefItemMapper.cs" />
     <Compile Include="Items\BriefItems\Mappers\Related_Items_BriefItemMapper.cs" />

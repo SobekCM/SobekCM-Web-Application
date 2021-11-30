@@ -119,13 +119,49 @@ namespace SobekCM.Core.BriefItem
 
         [XmlIgnore]
         [IgnoreDataMember]
-        private Dictionary<string, StringKeyValuePair> settingLookupDictionary; 
+        private Dictionary<string, StringKeyValuePair> settingLookupDictionary;
+
+        /// <summary> List of special user group permissions associated with this item </summary>
+        [DataMember(EmitDefaultValue = false, Name = "permissions")]
+        [XmlArray("permissions")]
+        [XmlArrayItem("permissions", typeof(BriefItem_UserGroupRestrictions))]
+        [ProtoMember(17)]
+        public List<BriefItem_UserGroupRestrictions> Restrictions { get; set; }
 
         /// <summary> Constructor for a new instance of the BriefItem_Behaviors class </summary>
         public BriefItem_Behaviors()
         {
             Viewers = new List<BriefItem_BehaviorViewer>();
             viewerTypeToConfig = new Dictionary<string, BriefItem_BehaviorViewer>(StringComparer.OrdinalIgnoreCase);
+        }
+
+        /// <summary> Returns flag to indicate that some user group restrictions exist </summary>
+        [XmlIgnore]
+        [IgnoreDataMember]
+        public bool HasRestrictions
+        {
+            get
+            {
+                return Restrictions != null && Restrictions.Count > 0;
+            }
+        }
+
+        /// <summary> Add a single restriction user group to this item </summary>
+        /// <param name="GroupID"> Primary key to this user group </param>
+        /// <param name="GroupName"> Name of this user group </param>
+        /// <param name="CanView"> Flag indicates this user group can view the item </param>
+        public void Add_Restriction(int GroupID, string GroupName, bool CanView )
+        {
+            if (Restrictions == null) Restrictions = new List<BriefItem_UserGroupRestrictions>();
+
+            BriefItem_UserGroupRestrictions restriction = new BriefItem_UserGroupRestrictions
+            {
+                GroupID = GroupID,
+                GroupName = GroupName,
+                CanView = CanView
+            };
+
+            Restrictions.Add(restriction);
         }
 
         /// <summary> Add a key/value pair setting to this item </summary>

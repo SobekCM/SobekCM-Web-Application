@@ -246,6 +246,7 @@ namespace SobekCM.Library.HTML
 
             // Check to see if this is IP restricted
             restriction_message = String.Empty;
+            bool isRestricted = false;
             if (currentItem.Behaviors.IP_Restriction_Membership > 0)
             {
                 RequestSpecificValues.Tracer.Add_Trace("item_HtmlSubwriter.Constructor", "Item is IP restricted.");
@@ -265,10 +266,49 @@ namespace SobekCM.Library.HTML
                             restriction = restriction >> 1;
                             restriction_counter++;
                         }
+                        isRestricted = true;
                         if (Engine_ApplicationCache_Gateway.IP_Restrictions[restriction_counter] != null)
                             restriction_message = Engine_ApplicationCache_Gateway.IP_Restrictions[restriction_counter].Item_Restricted_Statement;
                         else
                             restriction_message = "Restricted Item";
+                    }
+                }
+            }
+
+            // Check for user group restriction next
+            if (( !userCanEditItem ) && ( !isRestricted ) && ( currentItem.Behaviors.HasRestrictions ))
+            {
+                // Does any group have view access only?
+                bool user_group_restrictions_apply = false;
+                List<int> group_ids_with_view = new List<int>();
+                foreach( var permissions in currentItem.Behaviors.Restrictions )
+                {
+                    if ( permissions.CanView )
+                    {
+                        // Some level of restrictions DO apply
+                        user_group_restrictions_apply = true;
+                        group_ids_with_view.Add(permissions.GroupID);
+                    }
+                }
+
+                // Are any groups for this user in the list of groups that have view access?
+                if (user_group_restrictions_apply)
+                {
+                    isRestricted = true;
+                    restriction_message = "This item can only be viewed by instructors.";
+
+                    // Check user, if there is one
+                    if (( RequestSpecificValues.Current_User != null ) && ( RequestSpecificValues.Current_User.LoggedOn ) 
+                        && ( RequestSpecificValues.Current_User.User_Groups != null ))
+                    { 
+                        foreach (var group in RequestSpecificValues.Current_User.User_Groups)
+                        {
+                            if ( group_ids_with_view.Contains(group.UserGroupID))
+                            {
+                                isRestricted = false;
+                                break;
+                            }
+                        }
                     }
                 }
             }
@@ -501,7 +541,7 @@ namespace SobekCM.Library.HTML
             // Get the valid viewer code
             RequestSpecificValues.Tracer.Add_Trace("Item_HtmlSubwriter.Constructor", "Getting the appropriate item viewer");
             prototyper = ItemViewer_Factory.Get_Item_Viewer(currentItem, RequestSpecificValues.Current_Mode.ViewerCode);
-            if (( prototyper != null ) && ( prototyper.Has_Access(currentItem, RequestSpecificValues.Current_User, !String.IsNullOrEmpty(restriction_message))))
+            if (( prototyper != null ) && ( prototyper.Has_Access(currentItem, RequestSpecificValues.Current_User, isRestricted)))
                 pageViewer = prototyper.Create_Viewer(currentItem, RequestSpecificValues.Current_User, RequestSpecificValues.Current_Mode, RequestSpecificValues.Tracer );
             else
             {
@@ -511,7 +551,7 @@ namespace SobekCM.Library.HTML
                     foreach (string viewerType in currentItem.UI.Viewers_By_Priority)
                     {
                         prototyper = ItemViewer_Factory.Get_Viewer_By_ViewType(viewerType);
-                        if ((prototyper != null) && (prototyper.Has_Access(currentItem, RequestSpecificValues.Current_User, !String.IsNullOrEmpty(restriction_message))))
+                        if ((prototyper != null) && (prototyper.Has_Access(currentItem, RequestSpecificValues.Current_User, isRestricted)))
                         {
                             pageViewer = prototyper.Create_Viewer(currentItem, RequestSpecificValues.Current_User, RequestSpecificValues.Current_Mode, RequestSpecificValues.Tracer);
                             break;

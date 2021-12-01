@@ -379,15 +379,27 @@ namespace SobekCM.Library.MySobekViewer
 			            Output.WriteLine("</li>");
 			        }
 
-			        if (completeTemplate.Code.ToUpper().IndexOf("MARC") > 0)
-			        {
+			        if ((completeTemplate.Code.ToUpper().IndexOf("MARC") > 0) || (completeTemplate.Code.ToUpper().IndexOf("COMPLEX") > 0))
+                    {
 			            Output.WriteLine("      <li>To open detailed edit forms, click on the linked metadata values.</li>");
 			        }
 			    }
 
+                // Look for a custom help url first, otherwise use standard
+                string helpUrl = completeTemplate.HelpUrl;
+                if (String.IsNullOrEmpty(helpUrl))
+                    helpUrl = UI_ApplicationCache_Gateway.Settings.System.Help_URL(RequestSpecificValues.Current_Mode.Base_URL) + "help/editinstructions";
 
-			    Output.WriteLine("      <li>Click <a href=\"" + UI_ApplicationCache_Gateway.Settings.System.Help_URL(RequestSpecificValues.Current_Mode.Base_URL) + "help/editinstructions\" target=\"_EDIT_INSTRUCTIONS\">here for detailed instructions</a> on editing metadata online.</li>");
-			}
+                // Add the line wit help
+                Output.WriteLine("      <li>Click <a href=\"" + helpUrl + "\" target=\"_EDIT_INSTRUCTIONS\">here for detailed instructions</a> on editing metadata online.</li>");
+
+                // Any additional prompts in the template?
+                foreach( string additionalPrompt in completeTemplate.AdditionalPrompts)
+                {
+                    if (additionalPrompt.Length == 0) continue;
+                    Output.WriteLine("      <li>" + additionalPrompt + "</li>");
+                }
+            }
 			else
 			{
 				Output.WriteLine("  <b>Edit this project</b>");

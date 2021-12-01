@@ -156,8 +156,11 @@ namespace SobekCM.Library.MySobekViewer
 			Output.WriteLine("    <tr><td style=\"width:35px\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.Settings_Img + "\" /></a></td><td><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">Edit my account preferences</a></td></tr>");
 
             //If the RequestSpecificValues.Current_User is a scanning/processing technician, add a link for item tracking here
-            RequestSpecificValues.Current_Mode.My_Sobek_Type=My_Sobek_Type_Enum.Item_Tracking;
-            Output.WriteLine("<tr><td style=\"width:35px\"><a href=\""+UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode)+"\"><img src=\""+ Static_Resources_Gateway.Track2_Gif + "\"/></a></td><td><a href=\""+UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode)+"\">Track Item Scanning/Processing</a></td></tr>");
+            if (UI_ApplicationCache_Gateway.Settings.Resources.Use_Tracking_Sheet)
+            {
+                RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Item_Tracking;
+                Output.WriteLine("<tr><td style=\"width:35px\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.Track2_Gif + "\"/></a></td><td><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">Track Item Scanning/Processing</a></td></tr>");
+            }
 
             // If a return URL was provided, add a link to return there
             if ((!String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.Return_URL)) && ( RequestSpecificValues.Current_Mode.Return_URL.IndexOf("my") < 0 ))

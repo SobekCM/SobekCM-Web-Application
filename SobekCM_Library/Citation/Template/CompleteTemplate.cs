@@ -75,6 +75,7 @@ namespace SobekCM.Library.Citation.Template
             Upload_Mandatory = true;
             Default_Visibility = 0;
             Email_Upon_Receipt = String.Empty;
+            AdditionalPrompts = new List<string>();
 
             options = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         }
@@ -100,6 +101,7 @@ namespace SobekCM.Library.Citation.Template
             Upload_Mandatory = true;
             Default_Visibility = 0;
             Email_Upon_Receipt = String.Empty;
+            AdditionalPrompts = new List<string>();
 
             options = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         }
@@ -153,6 +155,12 @@ namespace SobekCM.Library.Citation.Template
 
         /// <summary> Date this template was last modified </summary>
         public DateTime LastModified { get; set; }
+
+        /// <summary> Additional prompts to be shown at the top of the edit form </summary>
+        public List<string> AdditionalPrompts { get; set; }
+       
+        /// <summary> Help URL provided when users are editing with this template </summary>
+        public string HelpUrl { get; set; }
 
         /// <summary> Gets the number of input pages in this template </summary>
         public int InputPages_Count

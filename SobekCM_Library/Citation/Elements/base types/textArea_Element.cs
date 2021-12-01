@@ -25,6 +25,9 @@ namespace SobekCM.Library.Citation.Elements
 
         protected readonly List<string> DefaultValues;
 
+        /// <summary> Protected field holds placeholder that should appear in the empty textbox </summary>
+        protected string Placeholder;
+
         /// <summary> Protected field holds the number of rows for the text area to display </summary>
         protected int Rows = 3;
 
@@ -102,19 +105,23 @@ namespace SobekCM.Library.Citation.Elements
             Output.WriteLine("            <div id=\"" + html_element_name + "_div\">");
             for (int i = 0; i < allValues.Count; i++)
             {
+                Output.Write("              <textarea rows=\"" + Rows + "\" cols=\"" + actual_cols + "\" name=\"" + id_name + i + "\" id=\"" + id_name + i + "\" class=\"" + html_element_name + "_input sbk_Focusable\" ");
+
+                if (!String.IsNullOrWhiteSpace(Placeholder))
+                    Output.Write(" placeholder=\"" + HttpUtility.HtmlEncode(Placeholder) + "\"");
+
+                if (textAreaEvents != null)
+                    textAreaEvents.Add_Events_HTML(Output);
+
+                Output.Write(" >" + HttpUtility.HtmlEncode(allValues[i]) + "</textarea>");
+
                 if (i == allValues.Count - 1)
                 {
-                    Output.Write("              <textarea rows=\"" + Rows + "\" cols=\"" + actual_cols + "\" name=\"" + id_name + i + "\" id=\"" + id_name + i + "\" class=\"" + html_element_name + "_input sbk_Focusable\" ");
-                    if (textAreaEvents != null)
-                        textAreaEvents.Add_Events_HTML(Output);
-                    Output.WriteLine(" >" + HttpUtility.HtmlEncode(allValues[i]) + "</textarea></div>");
+                    Output.WriteLine("</div>");
                 }
                 else
                 {
-					Output.Write("              <textarea rows=\"" + Rows + "\" cols=\"" + actual_cols + "\" name=\"" + id_name + i + "\" id=\"" + id_name + i + "\" class=\"" + html_element_name + "_input sbk_Focusable\" ");
-                    if (textAreaEvents != null)
-                        textAreaEvents.Add_Events_HTML(Output);
-                    Output.WriteLine(" >" + HttpUtility.HtmlEncode(allValues[i]) + "</textarea><br />");
+                    Output.WriteLine("<br />");
                 }
             }
             Output.WriteLine("            </div>");
@@ -180,6 +187,8 @@ namespace SobekCM.Library.Citation.Elements
             Output.WriteLine("            <div id=\"" + html_element_name + "_div\">");
 
 			Output.Write("              <textarea rows=\"" + Rows + "\" cols=\"" + actual_cols + "\" name=\"" + id_name + i + "\" id=\"" + id_name + i + "\" class=\"" + html_element_name + "_input sbk_Focusable\" ");
+            if (!String.IsNullOrWhiteSpace(Placeholder))
+                Output.Write(" placeholder=\"" + HttpUtility.HtmlEncode(Placeholder) + "\"");
             if ( textAreaEvents != null )
                 textAreaEvents.Add_Events_HTML(Output);
             Output.WriteLine(" >" + HttpUtility.HtmlEncode(InstanceValue) + "</textarea></div>");
@@ -215,7 +224,12 @@ namespace SobekCM.Library.Citation.Elements
                 {
                     XMLReader.Read();
                     DefaultValues.Add(XMLReader.Value.Trim());
-                    return;
+                }
+
+                if ((XMLReader.NodeType == XmlNodeType.Element) && (XMLReader.Name.ToLower() == "placeholder"))
+                {
+                    XMLReader.Read();
+                    Placeholder = XMLReader.Value.Trim();
                 }
             }
         }

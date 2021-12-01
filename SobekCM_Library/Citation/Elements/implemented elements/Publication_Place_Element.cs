@@ -130,5 +130,43 @@ namespace SobekCM.Library.Citation.Elements
                 }
             }
         }
+
+        /// <summary> Saves the constants to the bib id </summary>
+        /// <param name="Bib"> Object into which to save this element's constant data </param>
+        public override void Save_Constant_To_Bib(SobekCM_Item Bib)
+        {
+            if (DefaultValues.Count > 0)
+            {
+                Bib.Bib_Info.Origin_Info.Clear_Places();
+
+                // Is there no publishers?
+                if (Bib.Bib_Info.Publishers_Count == 0)
+                {
+                    Bib.Bib_Info.Add_Publisher(String.Empty);
+                }
+
+                // Is there just one publisher?
+                if (Bib.Bib_Info.Publishers_Count == 1)
+                {
+                    ReadOnlyCollection<Publisher_Info> publishers = Bib.Bib_Info.Publishers;
+                    foreach (string thisPubPlace in DefaultValues)
+                    {
+                        bool found = publishers[0].Places.Any(thisPlace => thisPlace.Place_Text.ToUpper().Trim() == thisPubPlace.ToUpper().Trim());
+                        if (!found)
+                        {
+                            publishers[0].Add_Place(thisPubPlace);
+                        }
+                    }
+                }
+                else
+                {
+                    ReadOnlyCollection<Publisher_Info> publishers = Bib.Bib_Info.Publishers;
+                    for (int i = 0; i < publishers.Count && i < DefaultValues.Count; i++)
+                    {
+                        publishers[i].Add_Place(DefaultValues[i]);
+                    }
+                }
+            }
+        }
     }
 }

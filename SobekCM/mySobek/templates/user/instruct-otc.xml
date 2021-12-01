@@ -26,19 +26,27 @@
 			<name language="eng">Material Information</name>
 			<panel>
 				<name language="eng">Title Information</name>
-				<element type="Title" subtype="simple" acronym="Enter the title of your chapter, article, report, or other material here." mandatory="true"/>
-				<element type="Course Title" mandatory="false" />
+				<element type="Title" subtype="simple" acronym="Enter the title of your chapter, article, report, or other material here." mandatory="true">
+					<element_data>
+						<placeholder>e.g. Title of Work – Chapter X</placeholder>
+					</element_data>
+				</element>
+				<element type="Course Title" mandatory="false" >
+					<element_data>
+						<placeholder>Name of course at institution – Course Number</placeholder>
+					</element_data>
+				</element>
 			</panel>
 			<panel>
 				<name language="eng">Authors and Contributors</name>
 				<element type="Creator" subtype="main_only" acronym="Enter each person or group which created this material. Personal names should be entered as [Family Name], [Given Name]." repeatable="true" >
 					<element_data>
-						<placeholder>Primary creator(s) of this material</placeholder>
+						<placeholder>Last Name, First Name Middle Initial</placeholder>
 					</element_data>
 				</element>
 				<element type="Creator" subtype="complex" repeatable="true" title="Contributor" >
 					<element_data>
-						<placeholder>Secondary contributors to this material</placeholder>
+						<placeholder>Last Name, First Name Middle Initial – select role </placeholder>
 					</element_data>
 				</element>
 				<element type="Date Created" acronym="Enter the year in which your material was published.  If your material has not been published, enter the current year or leave the field blank."/>
@@ -53,13 +61,13 @@
 				</element>
 				<element type="Type" subtype="simple" mandatory="true" acronym="Select the type which best categorizes this material.">
 					<element_data>
-						<value>Book</value>
-						<options>Aerial, Archival, Artifact, Audio, Book, Dataset, Map, Newspaper, Photograph, Serial, Video</options>
+						<value>Textual</value>
+						<options>Audio, DataSet, Image, Map, Mixed Material, Other, Textual, Video, Web-Resource Link </options>
 					</element_data>
 				</element>
 				<element type="Format" title="Description" acronym="Enter any additional data (such as extent or subtype) which describes the material.">
 					<element_data>
-						<placeholder>Detailed description, such as 4 pages of powerpoint...</placeholder>
+						<placeholder>video duration, # of pages, slides, questions, etc.</placeholder>
 					</element_data>
 				</element>
 				<element type="LOM_Interactivity_Type" />
@@ -73,8 +81,16 @@
 			<panel>
 				<name language="eng">Subject and Notes</name>
 				<element type="Subject" subtype="simple" repeatable="true"/>
-				<element type="Abstract" repeatable="true" subtype="simple" acronym="Enter your abstract here.  If your material does not have an abstract, you may include a summary of your document here."/>
-				<element type="Course Notes" repeatable="false" />
+				<element type="Abstract" repeatable="true" subtype="simple" acronym="Enter your abstract here.  If your material does not have an abstract, you may include a summary of your document here.">
+					<element_data>
+						<placeholder>Summarize work including its content focus, methods, purpose, etc. Can add table of contents here</placeholder>
+					</element_data>
+				</element>
+				<element type="Course Notes" repeatable="false" >
+					<element_data>
+						<placeholder>Identify course details including institution, credits, prerequisites, and course description</placeholder>
+					</element_data>
+				</element>
 			</panel>
 			<panel>
 				<name language="eng">Rights</name>
@@ -115,6 +131,17 @@
         <value>doe,otc</value>
       </element_data>
     </element>
+    <element type="publication place">
+			<element_data>
+        <value>New Jersey</value>
+      </element_data>
+    </element>
+    <element type="aggregations">
+			<element_data>
+        <value>OTC</value>
+      </element_data>
+    </element>
+
 	</constants>
 </input_template>
 <!-- End of input template XML -->

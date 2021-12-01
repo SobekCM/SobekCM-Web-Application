@@ -8,15 +8,16 @@
 	
 	<!-- Define the information about this input template -->
 	<name>OER Edit Form</name>
-	<notes>Template is used for self-submittal into dLOC</notes>
-	<permissions>I, as copyright holder or licensee with the authority to grant copyright permissions for the title, hereby authorize the [%SYSTEMNAME%] to digitize and distribute the title for nonprofit, educational purposes via the Internet or successive technologies. This is a non-exclusive grant of permissions for on-line and off-line use for an indefinite term. Off-line uses shall be consistent either, for educational uses, with the terms of U.S. copyright legislation's &quot;fair use&quot; provisions or, by the [%SYSTEMNAME%], with the maintenance and preservation of an archival copy. Digitization allows the [%SYSTEMNAME%] to generate image- and text-based versions as appropriate and to provide and enhance access using search software. This grant of permissions prohibits use of the digitized versions for commercial use or profit unless I specifically grant rights for those uses in the rights field for this item.</permissions>
-	<dateCreated>August 20, 2009</dateCreated>
-	<lastModified>June 9, 2015</lastModified>
+	<notes>Template for editing OER material in Open-NJ for instructors</notes>
+	<dateCreated>November 20, 2021</dateCreated>
+	<lastModified>November 29, 2021</lastModified>
 	<creator>Mark V Sullivan</creator>
 	<includeUserAsAuthor>false</includeUserAsAuthor>
 	<uploads>FILE</uploads>
 	<uploadMandatory>false</uploadMandatory>
 	<bibidRoot>AA</bibidRoot>
+	<prompt>If there are fields you want to change or add that are not present, please contact us.</prompt>
+	<!-- <helpurl>https://cnn.com</helpurl> -->
 <!-- <emailUponSubmit>name@email.edu</emailUponSubmit>  -->
 
 
@@ -66,13 +67,13 @@
 					</element_data>
 				</element>
 				<element type="Language" repeatable="true" acronym="Enter the language(s) of the material." />
+				<element type="System Requirements" />
 			</panel>
 			<panel>
 				<name language="eng">Subject and Notes</name>
 				<element type="Subject" subtype="simple" repeatable="true"/>
 				<element type="Spatial" subtype="simple" repeatable="true"/>
-				<element type="Coordinates" repeatable="true"/>
-				<element type="Temporal" subtype="complex" />
+				<element type="Temporal" subtype="simple" />
 				<element type="Abstract" repeatable="true" subtype="simple" acronym="Enter your abstract here.  If your material does not have an abstract, you may include a summary of your document here."/>
 				<element type="Note" repeatable="true" acronym="Enter any additional information that is important for describing your material.  Include significant keywords or other data useful for finding your material in a citation-only search."/>
 			</panel>

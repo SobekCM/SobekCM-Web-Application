@@ -151,6 +151,14 @@ namespace SobekCM.Library.Citation.Template
                         case "EMAILUPONSUBMIT":
                             ThisCompleteTemplate.Email_Upon_Receipt = read_text_node(nodeReader);
                             break;
+
+                        case "PROMPT":
+                            ThisCompleteTemplate.AdditionalPrompts.Add(read_text_node(nodeReader).Trim());
+                            break;
+
+                        case "HELPURL":
+                            ThisCompleteTemplate.HelpUrl = read_text_node(nodeReader).Trim();
+                            break;
                     }
                 }
             }

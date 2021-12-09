@@ -522,7 +522,7 @@ namespace SobekCM.Engine_Library.Solr.v5
 
         #endregion
 
-            #region Method to split the complex search term string into a collection of search terms and fields
+        #region Method to split the complex search term string into a collection of search terms and fields
 
             /// <summary> Method splits the search string and field string into seperate collections of strings </summary>
             /// <param name="TermString"> String containing all of the search terms</param>

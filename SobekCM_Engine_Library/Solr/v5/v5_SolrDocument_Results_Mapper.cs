@@ -532,6 +532,18 @@ namespace SobekCM.Engine_Library.Solr.v5
 
                 case "lom_learning_time":
                     return SolrDocument.LomLearningTime;
+
+                case "seriestitle":
+                    return SolrDocument.SeriesTitle;
+
+                case "coursetitle":
+                    return SolrDocument.CourseTitle;
+
+                case "accessibility":
+                    return SolrDocument.Accessibility;
+
+                case "licensing":
+                    return collection_to_string(SolrDocument.Licensing);
             }
 
             return String.Empty;

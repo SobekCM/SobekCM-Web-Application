@@ -317,16 +317,21 @@ namespace SobekCM.Library.MySobekViewer
 
 				if (registration)
 				{
+                    // validate user name
 					if (username.Trim().Length == 0)
 						validationErrors.Add("Username is a required field");
 					else if (username.Trim().Length < 8)
 						validationErrors.Add("Username must be at least eight digits");
+
+                    // validate password
 					if ((password.Trim().Length == 0) || (password2.Trim().Length == 0))
 						validationErrors.Add("Select and confirm a password");
 					if (password.Trim() != password2.Trim())
 						validationErrors.Add("Passwords do not match");
 					else if (password.Length < 8)
 						validationErrors.Add("Password must be at least eight digits");
+
+                    // validate UFID (UF only)
 					if (ufid.Trim().Length > 0)
 					{
 						if (ufid.Trim().Length != 8)

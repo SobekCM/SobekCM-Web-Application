@@ -36,7 +36,7 @@ namespace SobekCM.Library.MySobekViewer
 
         private readonly bool registration;
         private readonly bool desire_to_upload;
-        private readonly bool is_instrcutor;
+        private readonly bool? is_instructor;
         private readonly bool send_email_on_submission;
         private readonly bool send_usages_emails;
         private readonly string family_name;
@@ -241,7 +241,14 @@ namespace SobekCM.Library.MySobekViewer
                         case "prefIsInstructor":
                             string submit_value_instructor = HttpContext.Current.Request.Form[thisKey];
                             if (submit_value_instructor == "isinstructor")
-                                is_instrcutor = true;
+                            {
+                                is_instructor = true;
+                            
+                            }
+                            else if ( submit_value_instructor == "isNOTinstructor" )
+                            {
+                                is_instructor = false;
+                            }
                             break;
 
                         case "prefSendEmail":
@@ -263,16 +270,34 @@ namespace SobekCM.Library.MySobekViewer
 
                 if (registration)
                 {
+                    // validate user name
                     if (username.Trim().Length == 0)
                         validationErrors.Add("Username is a required field");
                     else if (username.Trim().Length < 8)
                         validationErrors.Add("Username must be at least eight digits");
+
+                    // validate password
                     if ((password.Trim().Length == 0) || (password2.Trim().Length == 0))
                         validationErrors.Add("Select and confirm a password");
                     if (password.Trim() != password2.Trim())
                         validationErrors.Add("Passwords do not match");
                     else if (password.Length < 8)
                         validationErrors.Add("Password must be at least eight digits");
+
+                    // validate instructor indication
+                    if ( !is_instructor.HasValue )
+                    {
+                        validationErrors.Add("Select whether you are an instructor or not");
+                    }
+                    else if ( is_instructor.Value )
+                    {
+                        if ( organization.Length == 0 )
+                        {
+                            validationErrors.Add("As an instructor, institution is a required field");
+                        }
+                    }
+
+                    // validate UFID (UF only)
                     if (ufid.Trim().Length > 0)
                     {
                         if (ufid.Trim().Length != 8)
@@ -364,6 +389,7 @@ namespace SobekCM.Library.MySobekViewer
                     user.Organization = organization.Trim();
                     user.Unit = unit.Trim();
                     user.Set_Default_Template(template.Trim());
+
                     // See if the project is different, if this is not registration
                     if ((!registration) && (user.Default_Metadata_Sets_Count > 0) && (user.Default_Metadata_Sets[0] != project.Trim()))
                     {
@@ -565,33 +591,73 @@ namespace SobekCM.Library.MySobekViewer
                 Output.WriteLine("</span>");
             }
 
+            // Add the script to hide and unhide the instructor parts
+            Output.WriteLine("<script type=\"text/javascript\">");
+            Output.WriteLine("\tfunction show_instruct_parts() {");
+            Output.WriteLine("\t\tdocument.getElementById(\"instructSubmitRow\").style.display = \"table-row\";");
+            Output.WriteLine("\t\tdocument.getElementById(\"instructSubmitRow2\").style.display = \"table-row\";");
+            Output.WriteLine("\t\tdocument.getElementById(\"instructSubmitRow3\").style.display = \"table-row\";");
+            Output.WriteLine("\t\tdocument.getElementById(\"instructEmailPrompt\").style.display = \"inline\";");
+            Output.WriteLine("\t}");
+            Output.WriteLine();
+            Output.WriteLine("\tfunction hide_instruct_parts() {");
+            Output.WriteLine("\t\tdocument.getElementById(\"instructSubmitRow\").style.display = \"none\";");
+            Output.WriteLine("\t\tdocument.getElementById(\"instructSubmitRow2\").style.display = \"none\";");
+            Output.WriteLine("\t\tdocument.getElementById(\"instructSubmitRow3\").style.display = \"none\";");
+            Output.WriteLine("\t\tdocument.getElementById(\"instructEmailPrompt\").style.display = \"none\";");
+
+            Output.WriteLine("\t}");
+            Output.WriteLine();
+            Output.WriteLine("\tfunction isNotInstructorClick(cb) {");
+            Output.WriteLine("\tif(cb.checked) {");
+            Output.WriteLine("\t\thide_instruct_parts();");
+            Output.WriteLine("\t\t}");
+            Output.WriteLine("\t}");
+            Output.WriteLine();
+            Output.WriteLine("\tfunction isInstructorClick(cb) {");
+            Output.WriteLine("\tif(cb.checked) {");
+            Output.WriteLine("\t\tshow_instruct_parts();");
+            Output.WriteLine("\t\t}");
+            Output.WriteLine("\t}");
+            Output.WriteLine("</script>");
+
             Output.WriteLine("<table style=\"width:700px;\" cellpadding=\"5px\" class=\"sbkPmsv_InputTable\" >");
 
             Output.WriteLine("  <tr><th colspan=\"3\">Account Type</th></tr>");
             Output.WriteLine("  <tr><td>&nbsp;</td><td colspan=\"2\">Are you an instructor?  Let us know below to get access to restricted course materials.</td></tr>");
 
-            if (!is_instrcutor)
+            if (is_instructor.HasValue )
             {
-                Output.WriteLine("  <tr><td colspan=\"2\">&nbsp;</td><td><input type=\"radio\" value=\"isinstructor\" name=\"prefIsInstructor\" id=\"prefIsInstructor\" /><label for=\"prefIsInstructor\">I am an instructor</label>");
-                Output.WriteLine("                                       <input type=\"radio\" value=\"isNOTinstructor\" name=\"prefIsInstructor\" id=\"prefIsNotInstructor\" /><label for=\"prefIsNotInstructor\">I am NOT an instructor</label></td></tr>");
+                if (is_instructor.Value)
+                {
+                    Output.WriteLine("  <tr><td colspan=\"2\">&nbsp;</td><td><input type=\"radio\" value=\"isinstructor\" name=\"prefIsInstructor\" id=\"prefIsInstructor\" onclick=\"isInstructorClick(this);\" checked=\"checked\"> /><label for=\"prefIsInstructor\">I am an instructor</label>");
+                    Output.WriteLine("                                       <input type=\"radio\" value=\"isNOTinstructor\" name=\"prefIsInstructor\" id=\"prefIsNotInstructor\" onclick=\"isNotInstructorClick(this);\"  /><label for=\"prefIsNotInstructor\">I am NOT an instructor</label></td></tr>");
+                }
+                else
+                {
+                    Output.WriteLine("  <tr><td colspan=\"2\">&nbsp;</td><td><input type=\"radio\" value=\"isinstructor\" name=\"prefIsInstructor\" id=\"prefIsInstructor\" onclick=\"isInstructorClick(this);\" /><label for=\"prefIsInstructor\">I am an instructor</label>");
+                    Output.WriteLine("                                       <input type=\"radio\" value=\"isNOTinstructor\" name=\"prefIsInstructor\" id=\"prefIsNotInstructor\" onclick=\"isNotInstructorClick(this);\" checked=\"checked\" /><label for=\"prefIsNotInstructor\">I am NOT an instructor</label></td></tr>");
+
+                }
             }
             else
             {
-                Output.WriteLine("  <tr><td colspan=\"2\">&nbsp;</td><td><input type=\"radio\" value=\"isinstructor\" name=\"prefIsInstructor\" id=\"prefIsInstructor\" /><label for=\"prefIsInstructor\">I am an instructor</label>");
-                Output.WriteLine("                                       <input type=\"radio\" value=\"isNOTinstructor\" name=\"prefIsInstructor\" id=\"prefIsNotInstructor\" /><label for=\"prefIsNotInstructor\">I am NOT an instructor</label></td></tr>");
+                Output.WriteLine("  <tr><td colspan=\"2\">&nbsp;</td><td><input type=\"radio\" value=\"isinstructor\" name=\"prefIsInstructor\" id=\"prefIsInstructor\" onclick=\"isInstructorClick(this);\" /><label for=\"prefIsInstructor\">I am an instructor</label>");
+                Output.WriteLine("                                       <input type=\"radio\" value=\"isNOTinstructor\" name=\"prefIsInstructor\" id=\"prefIsNotInstructor\" onclick=\"isNotInstructorClick(this);\" /><label for=\"prefIsNotInstructor\">I am NOT an instructor</label></td></tr>");
             }
 
-            Output.WriteLine("  <tr><td>&nbsp;</td><td colspan=\"2\">Click the option below to submit materials.  To use the online open publishing tools in Open-NJ, you will need to be approved as an instructor and approved to submit materials.<br /></td></tr>");
+            string submitDisplay = (is_instructor.HasValue && is_instructor.Value) ? "table-row" : "none";
+            Output.WriteLine("  <tr id=\"instructSubmitRow\" style=\"display:" + submitDisplay + "\"><td>&nbsp;</td><td colspan=\"2\">Click the option below to submit materials.  To use the online open publishing tools in Open-NJ, you will need to be approved as an instructor and approved to submit materials.<br /></td></tr>");
 
             if (!desire_to_upload)
             {
-                Output.WriteLine("  <tr><td colspan=\"2\">&nbsp;</td><td><input type=\"checkbox\" value=\"allowsubmit\" name=\"prefAllowSubmit\" id=\"prefAllowSubmit\" /><label for=\"prefAllowSubmit\">I would like to be able to submit materials online.</label></td></tr>");
+                Output.WriteLine("  <tr id=\"instructSubmitRow2\" style=\"display:" + submitDisplay + "\"><td colspan=\"2\">&nbsp;</td><td><input type=\"checkbox\" value=\"allowsubmit\" name=\"prefAllowSubmit\" id=\"prefAllowSubmit\" /><label for=\"prefAllowSubmit\">I would like to be able to submit materials online.</label></td></tr>");
             }
             else
             {
                 Output.WriteLine("  <tr><td colspan=\"2\">&nbsp;</td><td><input type=\"checkbox\" value=\"allowsubmit\" name=\"prefAllowSubmit\" id=\"prefAllowSubmit\" checked=\"checked\" /><label for=\"prefAllowSubmit\">I would like to be able to submit materials online.</label></td></tr>");
             }
-            Output.WriteLine("  <tr><td>&nbsp;</td><td colspan=\"2\">Once your application has been reviewed and approved, you will receive email notification.<br /></td></tr>");
+            Output.WriteLine("  <tr id=\"instructSubmitRow3\" style=\"display:" + submitDisplay + "\"><td>&nbsp;</td><td colspan=\"2\">Once your application has been reviewed and approved, you will receive email notification.<br /></td></tr>");
 
 
             Output.WriteLine("  <tr><th colspan=\"3\">" + accountInfoLabel + "</th></tr>");
@@ -629,7 +695,12 @@ namespace SobekCM.Library.MySobekViewer
             Output.WriteLine("  <tr><td style=\"width:" + col1Width + "\">&nbsp;</td><td class=\"sbkPmsv_InputLabel\"><label for=\"prefGivenName\">" + givenNamesLabel + ":</label></td><td><input id=\"prefGivenName\" name=\"prefGivenName\" class=\"preferences_medium_input sbk_Focusable\" value=\"" + given_name + "\" type=\"text\" /></td></tr>");
             Output.WriteLine("  <tr><td>&nbsp;</td><td class=\"sbkPmsv_InputLabel\"><label for=\"prefFamilyName\">" + familyNamesLabel + ":</label></td><td><input id=\"prefFamilyName\" name=\"prefFamilyName\" class=\"preferences_medium_input sbk_Focusable\" value=\"" + family_name + "\" type=\"text\" /></td></tr>");
             Output.WriteLine("  <tr><td>&nbsp;</td><td class=\"sbkPmsv_InputLabel\"><label for=\"prefNickName\">" + nicknameLabel + ":</label></td><td><input id=\"prefNickName\" name=\"prefNickName\" class=\"preferences_medium_input sbk_Focusable\" value=\"" + nickname + "\" type=\"text\" /></td></tr>");
-            Output.WriteLine("  <tr><td>&nbsp;</td><td class=\"sbkPmsv_InputLabel\"><label for=\"prefEmail\">" + emailLabel + ":</label></td><td><input id=\"prefEmail\" name=\"prefEmail\" class=\"preferences_medium_input sbk_Focusable\" value=\"" + email + "\" type=\"text\" /></td></tr>");
+
+            // Email (may include institution prompt)
+            Output.Write("  <tr><td>&nbsp;</td><td class=\"sbkPmsv_InputLabel\"><label for=\"prefEmail\">" + emailLabel + ":</label></td><td><input id=\"prefEmail\" name=\"prefEmail\" class=\"preferences_medium_input sbk_Focusable\" value=\"" + email + "\" type=\"text\" />");
+            string instEmailDisplay = (is_instructor.HasValue && is_instructor.Value) ? "inline" : "none";
+            Output.Write("<span id=\"instructEmailPrompt\" style=\"display:" + instEmailDisplay + "\">&nbsp; &nbsp; (please enter institutional email address)</span>");
+            Output.WriteLine("</td></tr>"); 
 
             if (user.Has_Item_Stats)
             {

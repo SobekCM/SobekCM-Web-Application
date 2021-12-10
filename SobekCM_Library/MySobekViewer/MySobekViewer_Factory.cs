@@ -1,5 +1,6 @@
 ﻿using SobekCM.Core.Navigation;
 using SobekCM.Library.AdminViewer;
+using SobekCM.Library.UI;
 
 namespace SobekCM.Library.MySobekViewer
 {
@@ -37,7 +38,10 @@ namespace SobekCM.Library.MySobekViewer
                     return new Preferences_MySobekViewer(RequestSpecificValues);
 
                 case My_Sobek_Type_Enum.Register:
-                    return new OpenNJ_Register_MySobekViewer(RequestSpecificValues);
+                    if (UI_ApplicationCache_Gateway.URL_Portals.Default_Portal.Abbreviation.Equals("OpenNJ", System.StringComparison.OrdinalIgnoreCase))
+                        return new OpenNJ_Register_MySobekViewer(RequestSpecificValues);
+                    else
+                        return new Preferences_MySobekViewer(RequestSpecificValues);
 
                 case My_Sobek_Type_Enum.Logon:
                     return new Logon_MySobekViewer(RequestSpecificValues);

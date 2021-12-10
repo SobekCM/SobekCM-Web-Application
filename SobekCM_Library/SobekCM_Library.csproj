@@ -183,6 +183,7 @@
     <Compile Include="Citation\Elements\implemented elements\Series_Title_Element.cs" />
     <Compile Include="Citation\Elements\implemented elements\System_Requirements_Element.cs" />
     <Compile Include="Citation\Elements\implemented elements\Target_Audience_Select_Element.cs" />
+    <Compile Include="Citation\Elements\implemented elements\Wordmark_Assign_Institutional_Element.cs" />
     <Compile Include="Citation\Elements\nonstandard elements\Literal_Element.cs" />
     <Compile Include="Citation\Elements\implemented elements\LOM_AggregationLevel_Element.cs" />
     <Compile Include="Citation\Elements\implemented elements\LOM_Context_Element.cs" />

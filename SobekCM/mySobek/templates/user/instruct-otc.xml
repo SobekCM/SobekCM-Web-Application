@@ -50,7 +50,10 @@
 					</element_data>
 				</element>
 				<element type="Date Created" acronym="Enter the year in which your material was published.  If your material has not been published, enter the current year or leave the field blank."/>
+
+				<!-- a couple hidden elements -->
 				<element type="series title builder" subtype="opennj" />
+				<element type="wordmark" subtype="institutional" />
 			</panel>
 			<panel>
 				<name language="eng">Learning Resource Information</name>

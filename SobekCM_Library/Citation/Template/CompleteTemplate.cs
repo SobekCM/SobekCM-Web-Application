@@ -76,6 +76,7 @@ namespace SobekCM.Library.Citation.Template
             Default_Visibility = 0;
             Email_Upon_Receipt = String.Empty;
             AdditionalPrompts = new List<string>();
+            SuccessfulSubmitMessages = new List<string>();
 
             options = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         }
@@ -102,6 +103,7 @@ namespace SobekCM.Library.Citation.Template
             Default_Visibility = 0;
             Email_Upon_Receipt = String.Empty;
             AdditionalPrompts = new List<string>();
+            SuccessfulSubmitMessages = new List<string>();
 
             options = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         }
@@ -158,7 +160,10 @@ namespace SobekCM.Library.Citation.Template
 
         /// <summary> Additional prompts to be shown at the top of the edit form </summary>
         public List<string> AdditionalPrompts { get; set; }
-       
+
+        /// <summary> Message shown if a new item is successfully submitted with this template </summary>
+        public List<string> SuccessfulSubmitMessages { get; set; }
+
         /// <summary> Help URL provided when users are editing with this template </summary>
         public string HelpUrl { get; set; }
 

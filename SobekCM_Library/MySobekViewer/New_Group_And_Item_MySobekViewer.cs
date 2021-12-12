@@ -999,7 +999,17 @@ namespace SobekCM.Library.MySobekViewer
                 // Send email to the email from the CompleteTemplate, if one was provided
                 if (completeTemplate.Email_Upon_Receipt.Length > 0)
                 {
-                    string body = "New item submission complete!<br /><br /><blockquote>Title: " + Item_To_Complete.Bib_Info.Main_Title.Title + "<br />Submittor: " + RequestSpecificValues.Current_User.Full_Name + " ( " + RequestSpecificValues.Current_User.Email + " )<br />Link: <a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "/" + Item_To_Complete.BibID + "/" + Item_To_Complete.VID + "\">" + Item_To_Complete.BibID + ":" + Item_To_Complete.VID + "</a></blockquote>";
+                    StringBuilder bodyBuilder = new StringBuilder();
+                    if ( completeTemplate.Default_Visibility != 0 )
+                    {
+                        bodyBuilder.Append("A new PRIVATE item was submitted.<br /><br />Item is pending your approval.<br /><br />");
+                    }
+                    else
+                    {
+                        bodyBuilder.Append("New item submission complete!<br /><br />");
+                    }
+                    bodyBuilder.Append("<blockquote>Title: " + Item_To_Complete.Bib_Info.Main_Title.Title + "<br />Submittor: " + RequestSpecificValues.Current_User.Full_Name + " ( " + RequestSpecificValues.Current_User.Email + " )<br />Link: <a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "/" + Item_To_Complete.BibID + "/" + Item_To_Complete.VID + "\">" + Item_To_Complete.BibID + ":" + Item_To_Complete.VID + "</a></blockquote>");
+                    string body = bodyBuilder.ToString();
                     string subject = "Item submission complete for '" + Item_To_Complete.Bib_Info.Main_Title.Title + "'";
                     Email_Helper.SendEmail(completeTemplate.Email_Upon_Receipt, subject, body, true, RequestSpecificValues.Current_Mode.Instance_Name);
                 }
@@ -1743,10 +1753,33 @@ namespace SobekCM.Library.MySobekViewer
             {
                 Output.WriteLine("<strong><center><h1>CONGRATULATIONS!</h1></center></strong>");
                 Output.WriteLine("<br />");
-                Output.WriteLine("Your item has been successfully added to the digital library and will appear immediately.<br />");
-                Output.WriteLine("<br />");
-                Output.WriteLine("Search indexes may take a couple minutes to build, at which time this item will be discoverable through the search interface.<br />");
-                Output.WriteLine("<br />");
+
+                if ( completeTemplate.SuccessfulSubmitMessages.Count == 0 )
+                {
+                    if ( completeTemplate.Default_Visibility == 0 )
+                    {
+                        Output.WriteLine("Your item has been successfully added to the digital library and will appear immediately.<br />");
+                        Output.WriteLine("<br />");
+                        Output.WriteLine("Search indexes may take a couple minutes to build, at which time this item will be discoverable through the search interface.<br />");
+
+                    }
+                    else
+                    {
+                        Output.WriteLine("Your item has been successfully added to the digital library as a private item.<br />");
+                        Output.WriteLine("<br />");
+                        Output.WriteLine("The item will be reviewed and should be made public soon.<br />");
+                    }
+                    Output.WriteLine("<br />");
+                }
+                else
+                {
+                    foreach( string message in completeTemplate.SuccessfulSubmitMessages)
+                    {
+                        Output.WriteLine(message + "<br />");
+                        Output.WriteLine("<br />");
+                    }
+                }
+
                 if (RequestSpecificValues.Current_User.Send_Email_On_Submission)
                 {
                     Output.WriteLine("An email has been sent to you with the new item information.<br />");

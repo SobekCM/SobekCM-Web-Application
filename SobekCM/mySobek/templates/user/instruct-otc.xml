@@ -17,7 +17,12 @@
 	<uploads>FILE</uploads>
 	<uploadMandatory>false</uploadMandatory>
 	<bibidRoot>AA</bibidRoot>
-<!-- <emailUponSubmit>name@email.edu</emailUponSubmit>  -->
+	<defaultVisibility>PRIVATE</defaultVisibility>
+	<emailUponSubmit>Mark.V.Sullivan@gmail.com</emailUponSubmit>
+	<messages>
+		<successfulSubmit>Thank you for your submission.  We will review the submission and make it public within the next 48-72 hours.</successfulSubmit>
+		<successfulSubmit> In the meantime, you can view the private item and make changes, but others users will not be able to discover it until reviewed.</successfulSubmit>
+	</messages>
 
 
 	<!-- This defines the inputs which are available for the user -->

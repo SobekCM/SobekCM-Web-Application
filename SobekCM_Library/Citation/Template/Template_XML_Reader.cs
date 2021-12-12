@@ -159,6 +159,10 @@ namespace SobekCM.Library.Citation.Template
                         case "HELPURL":
                             ThisCompleteTemplate.HelpUrl = read_text_node(nodeReader).Trim();
                             break;
+
+                        case "SUCCESSFULSUBMIT":
+                            ThisCompleteTemplate.SuccessfulSubmitMessages.Add(read_text_node(nodeReader).Trim());
+                            break;
                     }
                 }
             }

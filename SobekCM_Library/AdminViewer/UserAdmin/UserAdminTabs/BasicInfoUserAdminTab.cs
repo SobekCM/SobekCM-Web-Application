@@ -1,4 +1,5 @@
-﻿using SobekCM.Core.Users;
+﻿using SobekCM.Core.Aggregations;
+using SobekCM.Core.Users;
 using SobekCM.Engine_Library.Database;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
@@ -219,10 +220,51 @@ namespace SobekCM.Library.AdminViewer.UserAdmin.UserAdminTabs
             Output.WriteLine("      <tr height=\"27px\"><td width=\"80px\"><label for=\"admin_user_college\">College:</label></td><td><input id=\"admin_user_college\" name=\"admin_user_college\" class=\"users_large_input\" value=\"" + editUser.College + "\"type=\"text\" onfocus=\"javascript:textbox_enter('admin_user_college', 'users_large_input_focused')\" onblur=\"javascript:textbox_leave('admin_user_college', 'users_large_input')\" /></td></tr>");
             Output.WriteLine("      <tr height=\"27px\"><td width=\"80px\"><label for=\"admin_user_department\">Department:</label></td><td><input id=\"admin_user_department\" name=\"admin_user_department\" class=\"users_large_input\" value=\"" + editUser.Department + "\"type=\"text\" onfocus=\"javascript:textbox_enter('admin_user_department', 'users_large_input_focused')\" onblur=\"javascript:textbox_leave('admin_user_department', 'users_large_input')\" /></td></tr>");
             Output.WriteLine("      <tr height=\"27px\"><td width=\"80px\"><label for=\"admin_user_unit\">Unit:</label></td><td><input id=\"admin_user_unit\" name=\"admin_user_unit\" class=\"users_large_input\" value=\"" + editUser.Unit + "\" type=\"text\" onfocus=\"javascript:textbox_enter('admin_user_unit', 'users_large_input_focused')\" onblur=\"javascript:textbox_leave('admin_user_unit', 'users_large_input')\" /></td></tr>");
-            Output.WriteLine("      <tr height=\"27px\"><td width=\"80px\"><label for=\"admin_user_org_code\">Code:</label></td><td><input id=\"admin_user_org_code\" name=\"admin_user_org_code\" class=\"users_code_input\" value=\"" + editUser.Organization_Code + "\" type=\"text\" onfocus=\"javascript:textbox_enter('admin_user_org_code', 'users_code_input_focused')\" onblur=\"javascript:textbox_leave('admin_user_org_code', 'users_code_input')\" /></td></tr>");
+
+
+            // Get the list of institution-type aggregations
+            List<Item_Aggregation_Related_Aggregations> allInstAggs = new List<Item_Aggregation_Related_Aggregations>();
+            foreach (string thisType in UI_ApplicationCache_Gateway.Aggregations.All_Types)
+            {
+                if (thisType.IndexOf("Institution") >= 0)
+                {
+                    allInstAggs.AddRange(UI_ApplicationCache_Gateway.Aggregations.Aggregations_By_Type(thisType).Where(a => a.Code.Length > 1).ToList());
+                }
+            }
+
+            // Sort by institution name
+            allInstAggs = allInstAggs.OrderBy(a => a.Name).ToList();
+            Output.WriteLine("      <tr height=\"27px\">");
+            Output.WriteLine("        <td width=\"80px\"><label for=\"admin_user_org_code\">Source:</label></td>");
+            Output.WriteLine("        <td>");
+            Output.WriteLine("          <select id=\"admin_user_org_code\" name=\"admin_user_org_code\" class=\"users_code_input\">");
+
+            // Add all the options
+            bool found_match = false;
+            foreach (Item_Aggregation_Related_Aggregations agg in allInstAggs)
+            {
+
+                Output.Write("            <option value=\"" + agg.Code + "\"");
+                if (editUser.Organization_Code.Equals(agg.Code, StringComparison.OrdinalIgnoreCase))
+                {
+                    Output.Write(" selected=\"selected\"");
+                    found_match = true;
+                }
+                Output.WriteLine(">" + agg.Name + " (" + agg.Code.ToLower() + ")</option>");                
+            }
+
+            // Add empty option
+            Output.Write("            <option value=\"\"");
+            if (!found_match)
+                Output.Write(" selected=\"selected\"");
+            Output.WriteLine("></option>");
+
+            Output.WriteLine("          </select>");
+            Output.WriteLine("        </td>");
+            Output.WriteLine("      </tr>");
+
             Output.WriteLine("    </table>");
             Output.WriteLine("  </blockquote>");
-
 
             Output.WriteLine("  <span class=\"SobekEditItemSectionTitle\"> &nbsp; Global Permissions</span><br />");
             Output.WriteLine(editUser.Can_Submit

@@ -417,6 +417,23 @@ namespace SobekCM.Library.MySobekViewer
                         user.UserName = username;
                         user.UserID = -1;
 
+                        // See if we can match the institution.. if so, assign the org code
+                        if (( String.IsNullOrEmpty(user.Organization_Code)) || ( !String.IsNullOrEmpty(user.Organization)))
+                        {
+                            foreach( var inst in UI_ApplicationCache_Gateway.Aggregations.All_Aggregations)
+                            {
+                                if ( inst.Type.IndexOf("institution", StringComparison.OrdinalIgnoreCase) >= 0 )
+                                {
+                                    if (( inst.Name.Equals(user.Organization, StringComparison.OrdinalIgnoreCase)) ||
+                                        ( inst.ShortName.Equals(user.Organization, StringComparison.OrdinalIgnoreCase)))
+                                    {
+                                        user.Organization_Code = inst.Code;
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+
                         // Save this new user
                         SobekCM_Database.Save_User(user, password, user.Authentication_Type, RequestSpecificValues.Tracer);
 

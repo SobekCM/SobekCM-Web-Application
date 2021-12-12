@@ -371,6 +371,7 @@ namespace SobekCM.Core.UI_Configuration.StaticResources
             View_Work_Log_Img = "http://cdn.sobekrepository.org/images/misc/view_work_log.png";
             View_Work_Log_Img_Large = "http://cdn.sobekrepository.org/images/misc/view_work_log_icon.png";
             Warning_Img = "http://cdn.sobekrepository.org/images/misc/warning.png";
+            Warning_Img_Small = "http://cdn.sobekrepository.org/images/misc/warning_small.png";
             WebContent_Img = "http://cdn.sobekrepository.org/images/misc/web_content_medium.png";
             WebContent_Img_Small = "http://cdn.sobekrepository.org/images/misc/web_content_small.png";
             WebContent_Img_Large = "http://cdn.sobekrepository.org/images/misc/web_content_large.png";
@@ -2515,11 +2516,17 @@ namespace SobekCM.Core.UI_Configuration.StaticResources
         [ProtoMember(350)]
         public string View_Work_Log_Img_Large { get; set; }
 
-        /// <summary> URL for the default resource 'warning.png' file ( http://cdn.sobekrepository.org/images/misc/warnging.png by default)</summary>
+        /// <summary> URL for the default resource 'warning.png' file ( http://cdn.sobekrepository.org/images/misc/warning.png by default)</summary>
         [DataMember]
         [XmlElement]
         [ProtoMember(351)]
         public string Warning_Img { get; set; }
+
+        /// <summary> URL for the default resource 'warning_small.png' file ( http://cdn.sobekrepository.org/images/misc/warning_small.png by default)</summary>
+        [DataMember]
+        [XmlElement]
+        [ProtoMember(379)]
+        public string Warning_Img_Small { get; set; }
 
         /// <summary> URL for the default resource 'web_content_medium.png' file ( http://cdn.sobekrepository.org/images/misc/web_content_medium.png by default)</summary>
         [DataMember]
@@ -4085,6 +4092,10 @@ namespace SobekCM.Core.UI_Configuration.StaticResources
 
                 case "warning_img":
                     Warning_Img = Source;
+                    break;
+
+                case "warning_img_small":
+                    Warning_Img_Small = Source;
                     break;
 
                 case "webcontent_img":

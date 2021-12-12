@@ -1,5 +1,6 @@
 ﻿using SobekCM.Core.Navigation;
 using SobekCM.Core.Users;
+using SobekCM.Engine_Library.Configuration;
 using SobekCM.Engine_Library.Database;
 using SobekCM.Engine_Library.Email;
 using SobekCM.Library.Database;
@@ -158,7 +159,7 @@ namespace SobekCM.Library.AdminViewer.UserAdmin.SubViewers
                 RequestSpecificValues.Current_Mode.My_Sobek_SubMode = String.Empty;
                 RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Users;
 
-                Output.WriteLine("<table border=\"0px\" cellspacing=\"0px\" class=\"statsWhiteTable\">");
+                Output.WriteLine("<table border=\"0px\" cellspacing=\"0px\" class=\"statsWhiteTable\" id=\"sbkAdmListUsers_UsersGroupTable\">");
                 Output.WriteLine("  <tr align=\"left\" bgcolor=\"#0022a7\" >");
                 Output.WriteLine("    <th width=\"200px\" align=\"left\"><span style=\"color: White\"> &nbsp; ACTIONS</span></th>");
                 Output.WriteLine("    <th width=\"140px\" align=\"left\"><span style=\"color: White\">NAME</span></th>");
@@ -167,7 +168,7 @@ namespace SobekCM.Library.AdminViewer.UserAdmin.SubViewers
 
                 foreach (User_Group thisRow in userGroup)
                 {
-                    Output.WriteLine("  <tr align=\"left\" >");
+                    Output.WriteLine("  <tr align=\"left\" class=\"sbkAdmListUsers_ContentRow\" >");
                     Output.Write("    <td class=\"SobekAdminActionLink\" >( ");
 
                     Output.Write("<a title=\"Click to edit\" href=\"" + redirect.Replace("XXXXXXX", thisRow.UserGroupID.ToString()) + "\">edit</a> | ");
@@ -197,9 +198,10 @@ namespace SobekCM.Library.AdminViewer.UserAdmin.SubViewers
             // Get the list of all users
             DataTable usersTable = SobekCM_Database.Get_All_Users(Tracer);
 
-            Output.WriteLine("<table border=\"0px\" cellspacing=\"0px\" class=\"statsWhiteTable\">");
+            Output.WriteLine("<table border=\"0px\" cellspacing=\"0px\" class=\"statsWhiteTable\" id=\"sbkAdmListUsers_UsersTable\">");
             Output.WriteLine("  <tr align=\"left\" bgcolor=\"#0022a7\" >");
-            Output.WriteLine("    <th width=\"190px\" align=\"left\"><span style=\"color: White\"> &nbsp; ACTIONS</span></th>");
+            Output.WriteLine("    <th width=\"220px\" align=\"left\"><span style=\"color: White\"> &nbsp; ACTIONS</span></th>");
+            Output.WriteLine("    <th width=\"32px\"></th>");
             Output.WriteLine("    <th width=\"320px\" align=\"left\"><span style=\"color: White\">NAME</span></th>");
             Output.WriteLine("    <th align=\"left\"><span style=\"color: White\">EMAIL</span></th>");
             Output.WriteLine("   </tr>");
@@ -218,20 +220,34 @@ namespace SobekCM.Library.AdminViewer.UserAdmin.SubViewers
                 string fullname = thisRow["Full_Name"].ToString();
                 string username = thisRow["UserName"].ToString();
                 string email = thisRow["EmailAddress"].ToString();
+                int requests = Int32.Parse(thisRow["PendingRequests"].ToString());
 
                 // Build the action links
-                Output.WriteLine("  <tr align=\"left\" >");
+                Output.WriteLine("  <tr align=\"left\" class=\"sbkAdmListUsers_ContentRow\" >");
                 Output.Write("    <td class=\"SobekAdminActionLink\" >( ");
 
                 Output.Write("<a title=\"Click to edit\" href=\"" + redirect.Replace("XXXXXXX", userid) + "\">edit</a> | ");
                 Output.Write("<a title=\"Click to reset the password\" id=\"RESET_" + userid + "\" href=\"javascript:reset_password('" + userid + "','" + fullname.Replace("'", "") + "');\">reset password</a> | ");
                 Output.Write("<a title=\"Click to view\" href=\"" + redirect.Replace("XXXXXXX", userid) + "v\">view</a> ) </td>");
 
+                // Any pending requests?
+                if ( requests > 0 )
+                {
+                    string request_title = "1 pending user request!";
+                    if (requests > 1)
+                        request_title = requests + " pending user requests!";
+                    Output.WriteLine("    <td><img src=\"" + Static_Resources_Gateway.Warning_Img_Small +  "\" title=\"" + request_title + "\" /></td>");                                      
+                }
+                else
+                {
+                    Output.WriteLine("    <td></td>");
+                }
+
                 // Add the rest of the row with data
-                Output.WriteLine("    <td>" + fullname + " ( " + username + " )</span></td>");
-                Output.WriteLine("    <td>" + email + "</span></td>");
+                Output.WriteLine("    <td><span>" + fullname + " ( " + username + " )</span></td>");
+                Output.WriteLine("    <td><span>" + email + "</span></td>");
                 Output.WriteLine("   </tr>");
-                Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\" colspan=\"3\"></td></tr>");
+                Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\" colspan=\"4\"></td></tr>");
 
             }
 

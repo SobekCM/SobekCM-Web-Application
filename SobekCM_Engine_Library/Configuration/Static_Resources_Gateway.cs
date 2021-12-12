@@ -1087,8 +1087,11 @@ namespace SobekCM.Engine_Library.Configuration
         /// <summary> URL for the default resource 'view_work_log_icon.png' file ( http://cdn.sobekrepository.org/images/misc/view_work_log_icon.png by default)</summary>
         public static string View_Work_Log_Img_Large { get { return config.View_Work_Log_Img_Large; } }
 
-        /// <summary> URL for the default resource 'warning.png' file ( http://cdn.sobekrepository.org/images/misc/warnging.png by default)</summary>
+        /// <summary> URL for the default resource 'warning.png' file ( http://cdn.sobekrepository.org/images/misc/warning.png by default)</summary>
         public static string Warning_Img { get { return config.Warning_Img; } }
+
+        /// <summary> URL for the default resource 'warning_small.png' file ( http://cdn.sobekrepository.org/images/misc/warning_small.png by default)</summary>
+        public static string Warning_Img_Small { get { return config.Warning_Img_Small; } }
 
         /// <summary> URL for the default resource 'web_content_medium.png' file ( http://cdn.sobekrepository.org/images/misc/web_content_medium.png by default)</summary>
         public static string WebContent_Img { get { return config.WebContent_Img; } }

@@ -13,6 +13,7 @@ using SobekCM.Core.UI_Configuration;
 using SobekCM.Core.UI_Configuration.StaticResources;
 using SobekCM.Core.Users;
 using SobekCM.Engine_Library.Configuration;
+using SobekCM.Engine_Library.Email;
 using SobekCM.Library.AdminViewer;
 using SobekCM.Library.HTML;
 using SobekCM.Library.UI;
@@ -201,6 +202,24 @@ namespace SobekCM.Library.MySobekViewer
                             // Also clear any searches or browses ( in the future could refine this to only remove those
                             // that are impacted by this save... but this is good enough for now )
                             CachedDataManager.Clear_Search_Results_Browses();
+
+                            // If this is making it public, check for the email address
+                            if (ipRestrictionMask == 0 )
+                            {
+                                string emailRequest = HttpContext.Current.Request.Form["email_submittor"];
+                                if ( emailRequest == "yes_email")
+                                {
+                                    string emailContent = HttpContext.Current.Request.Form["email_content"];
+                                    if ( !String.IsNullOrWhiteSpace(emailContent))
+                                    {
+                                        Item_Submittor_Info submittor = SobekEngineClient.Items.Get_Submittor_Info(currentItem.BibID, currentItem.VID, RequestSpecificValues.Tracer);
+                                        if ((submittor.UserId > 0) && (!String.IsNullOrEmpty(submittor.Email)))
+                                        {
+                                            Email_Helper.SendEmail(submittor.Email, "Your item has been reviewed", emailContent, false, UI_ApplicationCache_Gateway.Settings.System.System_Name);
+                                        }
+                                    }
+                                }
+                            }
                         }
                         RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Item_Display;
                         UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
@@ -389,12 +408,68 @@ namespace SobekCM.Library.MySobekViewer
                     Item_Submittor_Info submittor = SobekEngineClient.Items.Get_Submittor_Info(currentItem.BibID, currentItem.VID, Tracer);
                     if ((submittor.UserId > 0) && (!String.IsNullOrEmpty(submittor.Email)))
                     {
-                        Output.WriteLine("         <tr>");
-                        Output.WriteLine("           <td>");
-                        Output.WriteLine("             <input type='checkbox' id='email_submittor' name='email_submittor' value='yes_email' /> <label for=\"email_submittor\"><span title=\"Email the submittor when making this private item public\">Email Submittor ( " + submittor.Email + " )</span></label>");
+                        // Get the default email context
+                        string directory = UI_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location + "\\extra\\emails";
+                        string default_email_body = String.Empty;
+                        if (Directory.Exists(directory))
+                        {
+                            string file = Path.Combine(directory, "made_public_email_body.txt");
+                            if (File.Exists(file))
+                            {
+                                Tracer.Add_Trace("Edit_Item_Permissions_MySobekViewer.Write_ItemNavForm_Closing", "Loading email content");
 
+                                try
+                                {
+                                    StreamReader email_reader = new StreamReader(file);
+                                    default_email_body = email_reader.ReadToEnd();
+                                    email_reader.Close();
+
+                                    default_email_body = default_email_body.Replace("[%ITEM%]", currentItem.Bib_Info.Main_Title.ToString());
+                                    default_email_body = default_email_body.Replace("[%NAME%]", submittor.Name);
+                                    default_email_body = default_email_body.Replace("[%ITEMURL%]", UI_ApplicationCache_Gateway.Settings.Servers.System_Base_URL + currentItem.BibID + "/" + currentItem.VID);
+                                    default_email_body = default_email_body.Replace("[%INSTANCE%]", UI_ApplicationCache_Gateway.Settings.System.System_Name);
+                                }
+                                catch (Exception)
+                                {
+                                    // Do nothing here since the default usage will be used if this fails.
+                                }
+                            }
+                        }
+
+                        // Add the HTML
+                        Output.WriteLine("         <tr>");
+                        Output.WriteLine("           <td style=\"width:50px\"></td>");
+                        Output.WriteLine("           <td style=\"text-align:left; font-weight: bold;\">");
+
+                        Output.WriteLine("<script type=\"text/javascript\">");
+                        Output.WriteLine("  function email_checkbox_changed(e) { ");
+                        Output.WriteLine("    var emailRow = document.getElementById('email_content_row');");
+                        Output.WriteLine("    if ( e.checked ) {");
+                        Output.WriteLine("      emailRow.style.display='table-row';");
+                        Output.WriteLine("    }");
+                        Output.WriteLine("    else {");
+                        Output.WriteLine("      emailRow.style.display='none';");
+                        Output.WriteLine("    }");
+
+                        Output.WriteLine("  }");
+                        Output.WriteLine("</script>");
+
+
+                        Output.WriteLine("             <input type='checkbox' id='email_submittor' name='email_submittor' value='yes_email' onchange='email_checkbox_changed(this);' /> <label for=\"email_submittor\"><span title=\"Email the submittor when making this private item public\">Email Submittor ( " + submittor.Email + " )</span></label>");
                         Output.WriteLine("           </td>");
                         Output.WriteLine("         </tr>");
+                        Output.WriteLine("         <tr id=\"email_content_row\" style=\"display:none\">");
+                        Output.WriteLine("           <td></td>");
+                        Output.WriteLine("           <td style=\"text-align:left;\">");
+                        Output.WriteLine("             <br />Email Body:<br />");
+                        Output.WriteLine("<textarea id=\"email_content\" name=\"email_content\" rows=\"20\" style=\"width:800px; font-family: 'Courier New', monotype;\">");
+                        Output.WriteLine(default_email_body);
+                        Output.WriteLine("</textarea>");
+                        Output.WriteLine("             <br />");
+                        Output.WriteLine("           <td>");
+                        Output.WriteLine("         <tr>");
+                        
+
                     }
                 }
             }

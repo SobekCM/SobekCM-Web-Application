@@ -166,7 +166,6 @@ SobekCM/temp/
 SobekCM/config/sobekcm.config
 SobekCM/config/user
 SobekCM/design/aggregations/
-SobekCM/design/extra/
 SobekCM/design/skins/
 SobekCM/design/webcontent/
 SobekCM/design/wordmarks/
@@ -177,6 +176,8 @@ SobekCM Web.v11.suo
 SobekCM Builder.v11.suo
 Other Tools/SMaRT/SMART.v11.suo
 TEMP_MBDA2
+
+
 
 # ====================================
 #  SMaRT files/folders to ignor

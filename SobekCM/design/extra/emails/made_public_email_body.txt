@@ -1,0 +1,9 @@
+Dear [%NAME%],
+
+The item you submitted '[%ITEM%]' has been reviewed and is now available for discovery and download to permissioned users.
+
+Thank you again for your submission.
+
+Your item is available for viewing here: [%ITEMURL%]
+
+[%INSTANCE%] Admins

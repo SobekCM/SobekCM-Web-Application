@@ -70,6 +70,7 @@
     <Compile Include="Aggregations\Item_Aggregation_Metadata_Type.cs" />
     <Compile Include="Aggregations\Item_Aggregation_Related_Aggregations.cs" />
     <Compile Include="Aggregations\Item_Aggregation_Statistics.cs" />
+    <Compile Include="Aggregations\Item_Aggregation_Visibility_Statistic.cs" />
     <Compile Include="Aggregations\New_Aggregation_Arguments.cs" />
     <Compile Include="Aggregations\Simple_Aggregation.cs" />
     <Compile Include="Aggregations\Simple_Aggregation_Child_Page.cs" />

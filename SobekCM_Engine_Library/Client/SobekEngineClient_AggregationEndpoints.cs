@@ -5,9 +5,12 @@ using SobekCM.Core.Configuration;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Message;
 using SobekCM.Core.MicroservicesClient;
+using SobekCM.Core.Results;
 using SobekCM.Core.WebContent;
 using SobekCM.Engine_Library.Endpoints;
 using SobekCM.Tools;
+using System;
+using System.Collections.Generic;
 
 #endregion
 
@@ -72,6 +75,51 @@ namespace SobekCM.Core.Client
             return AggregationServices.add_new_aggregation(NewAggregation);
         }
 
+        public List<Item_Aggregation_Visibility_Statistic> Get_Item_Count(string AggregationCode, Custom_Tracer Tracer)
+        {
+            // Add a beginning trace
+            Tracer.Add_Trace("SobekEngineClient_AggregationServices.Get_Item_Count", "Get by primary key");
+
+            // Get the endpoint
+            MicroservicesClient_Endpoint endpoint = GetEndpointConfig("Aggregations.Get_Item_Count", Tracer);
+
+            // Format the URL
+            string url = String.Format(endpoint.URL, AggregationCode);
+
+            // Call out to the endpoint and deserialize the object
+            var returnValue = Deserialize<List<Item_Aggregation_Visibility_Statistic>>(url, endpoint.Protocol, Tracer);
+
+            // Return the object
+            return returnValue;
+        }
+
+        public Private_Items_List Get_Private_Items(string AggregationCode, int Sort, int Page, int ResultsPerPage, Custom_Tracer Tracer)
+        {
+            // Add a beginning trace
+            Tracer.Add_Trace("SobekEngineClient_AggregationServices.Get_Private_Items", "Get by primary key");
+
+            // Get the endpoint
+            MicroservicesClient_Endpoint endpoint = GetEndpointConfig("Aggregations.Get_Private_Items", Tracer);
+
+            // Format the URL
+            string url = String.Format(endpoint.URL, AggregationCode);
+
+            // Add the other URL elements
+            url = url + $"?p={Page}&o={Sort}";
+
+            // Add results per page?
+            if (ResultsPerPage > 0)
+            {
+                url = url + $"&pageSize={ResultsPerPage}";
+            }
+
+            // Call out to the endpoint and deserialize the object
+            var returnValue = Deserialize<Private_Items_List>(url, endpoint.Protocol, Tracer);
+
+            // Return the object
+            return returnValue;
+        }
+
 
         /// <summary> URL for the list of uploaded file JSON REST API </summary>
         /// <remarks> This is used by the CKEditor to display previously uploaded file at the aggregation level </remarks>
@@ -82,5 +130,7 @@ namespace SobekCM.Core.Client
                 return Config["Get_Aggregation_Uploaded_Files"] == null ? null : Config["Get_Aggregation_Uploaded_Files"].URL;
             }
         }
+
+
     }
 }

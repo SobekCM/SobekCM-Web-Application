@@ -29,10 +29,16 @@ namespace SobekCM.Core.Items
         [ProtoMember(3)]
         public string WorkPerformedBy { get; set; }
 
+        /// <summary> Personal name, username, or vendor name for the party that performed this work </summary>
+        [DataMember(EmitDefaultValue = false, Name = "workerid")]
+        [XmlAttribute("workerid")]
+        [ProtoMember(4)]
+        public int WorkPerformedById { get; set; }
+
         /// <summary> Any associated note for this single worklog history / progress entry </summary>
         [DataMember(EmitDefaultValue = false, Name = "notes")]
         [XmlText]
-        [ProtoMember(4)]
+        [ProtoMember(5)]
         public string Notes { get; set; }
     }
 }

@@ -12,6 +12,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 
 namespace SobekCM.Library.AdminViewer.UserAdmin.UserAdminTabs
 {
@@ -350,20 +351,22 @@ namespace SobekCM.Library.AdminViewer.UserAdmin.UserAdminTabs
             {
                 string template_name = thisTemplate["TemplateName"].ToString();
                 string template_code = thisTemplate["TemplateCode"].ToString();
+                string template_desc = thisTemplate["Description"].ToString();
+
+                if (String.IsNullOrEmpty(template_name)) template_name = template_code;
+                if (String.IsNullOrEmpty(template_desc))
+                    template_desc = template_code;
+                else
+                    template_desc = template_desc + " (" + template_code + ")";
 
                 Output.Write("  <tr align=\"left\"><td><input type=\"checkbox\" name=\"admin_user_template_" + template_code + "\" id=\"admin_user_template_" + template_code + "\"");
                 if (user_templates.Contains(template_code))
                 {
                     Output.Write(" checked=\"checked\"");
                 }
-                if (template_name.Length > 0)
-                {
-                    Output.WriteLine(" /> &nbsp; <acronym title=\"" + template_name.Replace("\"", "'") + "\"><label for=\"admin_user_template_" + template_code + "\">" + template_code + "</label></acronym></td></tr>");
-                }
-                else
-                {
-                    Output.WriteLine(" /> &nbsp; <label for=\"admin_user_template_" + template_code + "\">" + template_code + "</label></td></tr>");
-                }
+                
+                Output.WriteLine(" /> &nbsp; <acronym title=\"" + HttpUtility.HtmlEncode(template_desc.Replace("\"", "'")) + "\"><label for=\"admin_user_template_" + template_code + "\">" + template_name + "</label></acronym></td></tr>");
+                
                 Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\"></td></tr>");
             }
             Output.WriteLine("</table>");

@@ -826,10 +826,13 @@ namespace SobekCM.Library.MySobekViewer
 					Item_To_Complete.Behaviors.Add_View("DATASET_VIEWDATA");
 				}
 
+                // Create the user notes
+                string userNotes = $"Submitted online via {templateCode} template";
+
                 // Save to the database
                 try
                 {
-                    SobekCM_Item_Database.Save_New_Digital_Resource(Item_To_Complete, false, true, RequestSpecificValues.Current_User.UserName, String.Empty, RequestSpecificValues.Current_User.UserID);                    
+                    SobekCM_Item_Database.Save_New_Digital_Resource(Item_To_Complete, false, true, RequestSpecificValues.Current_User.UserName, userNotes, RequestSpecificValues.Current_User.UserID);                    
                 }
                 catch (Exception ee)
                 {

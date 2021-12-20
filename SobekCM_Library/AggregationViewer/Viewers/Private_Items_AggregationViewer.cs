@@ -98,6 +98,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             // Get the list of private items
             int current_sort = RequestSpecificValues.Current_Mode.Sort.HasValue ? RequestSpecificValues.Current_Mode.Sort.Value : 0;
             int current_page = RequestSpecificValues.Current_Mode.Page.HasValue ? RequestSpecificValues.Current_Mode.Page.Value : 1;
+
             privateItems = Engine_Database.Tracking_Get_Aggregation_Private_Items(ViewBag.Hierarchy_Object.Code, (int)RESULTS_PER_PAGE, current_page, current_sort, RequestSpecificValues.Tracer);
         }
 

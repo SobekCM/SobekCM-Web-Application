@@ -605,10 +605,12 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 if (urloptions.Length > 0)
                     urloptions = "?" + urloptions;
 
+                string sysName = RequestSpecificValues.Current_Mode.Instance_Name;
+
                 if ( Tracer != null )
                     Tracer.Add_Trace("Usage_Statistics_AggregationViewer.add_usage_definitions", "Rendering HTML read from source file");
                 Output.WriteLine("<div class=\"SobekText\">");
-                Output.WriteLine(usageDefinitions.Replace("<%BASEURL%>", RequestSpecificValues.Current_Mode.Base_URL).Replace("<%?URLOPTS%>", urloptions));
+                Output.WriteLine(usageDefinitions.Replace("<%BASEURL%>", RequestSpecificValues.Current_Mode.Base_URL).Replace("<%?URLOPTS%>", urloptions).Replace("<%SYSNAME%>", sysName));
                 Output.WriteLine("</div>");
 
             }

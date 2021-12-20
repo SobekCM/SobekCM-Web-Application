@@ -385,6 +385,12 @@ namespace SobekCM.Engine_Library.Database
                     if (!readerWrapper.Reader.IsDBNull(4))
                         thisItem.Notes = readerWrapper.Reader.GetString(4);
 
+                    // If there is a worker id, include that too
+                    if (!readerWrapper.Reader.IsDBNull(5))
+                        thisItem.WorkPerformedById = readerWrapper.Reader.GetInt32(5);
+                    else
+                        thisItem.WorkPerformedById = -1;
+
                     // Add this item to the list to return
                     returnValue.WorkEvents.Add(thisItem);
                 }
@@ -7069,6 +7075,36 @@ namespace SobekCM.Engine_Library.Database
 
                 // Define a temporary dataset
                 DataSet tempSet = EalDbAccess.ExecuteDataset(DatabaseType, Connection_String, CommandType.StoredProcedure, "Tracking_Item_Milestone_Report", paramList);
+
+                // Return the built argument set
+                return tempSet.Tables[0];
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        /// <summary> Gets the high level report of which items exist in which milestone for an aggregation </summary>
+        /// <param name="AggregationCode"> Code for the item aggregation of interest </param>
+        /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <returns> Table with the milestone information </returns>
+        /// <remarks> This calls the 'Tracking_Item_Milestone_Report' stored procedure.</remarks>
+        public static DataTable Tracking_Get_Item_Visibility_Report(string AggregationCode, Custom_Tracer Tracer)
+        {
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("Engine_Database.Tracking_Get_Item_Visibility_Report", "");
+            }
+
+            try
+            {
+                // Build the parameter list
+                EalDbParameter[] paramList = new EalDbParameter[1];
+                paramList[0] = new EalDbParameter("@aggregation_code", AggregationCode);
+
+                // Define a temporary dataset
+                DataSet tempSet = EalDbAccess.ExecuteDataset(DatabaseType, Connection_String, CommandType.StoredProcedure, "Tracking_Item_Visibility_Report", paramList);
 
                 // Return the built argument set
                 return tempSet.Tables[0];

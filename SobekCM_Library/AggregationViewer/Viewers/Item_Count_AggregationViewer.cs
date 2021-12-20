@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using SobekCM.Core.Aggregations;
+using SobekCM.Core.Client;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.UI_Configuration;
 using SobekCM.Core.UI_Configuration.StaticResources;
@@ -111,7 +112,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 Tracer.Add_Trace("Item_Count_AggregationViewer.Add_Secondary_HTML", "Adding HTML");
             }
 
-            DataTable value = Engine_Database.Tracking_Get_Milestone_Report(ViewBag.Hierarchy_Object.Code, Tracer);
+            var stats = SobekEngineClient.Aggregations.Get_Item_Count(ViewBag.Hierarchy_Object.Code, Tracer);
 
             Output.WriteLine("<div class=\"SobekText\">");
             Output.WriteLine("<br />");
@@ -122,29 +123,23 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             // Start the table
             Output.WriteLine("<table width=\"700px\" border=\"0px\" cellspacing=\"0px\" class=\"statsTable\">");
             Output.WriteLine("  <tr align=\"left\" bgcolor=\"#0022a7\">");
-            Output.WriteLine("    <th align=\"left\"><span style=\"color: White\"><b>LAST MILESTONE</b></span></th>");
+            Output.WriteLine("    <th align=\"left\"><span style=\"color: White\"><b>VISIBILITY</b></span></th>");
             Output.WriteLine("    <th align=\"left\"><span style=\"color: White\"><b>TITLE COUNT</b></span></th>");
             Output.WriteLine("    <th align=\"left\"><span style=\"color: White\"><b>ITEM COUNT</b></span></th>");
             Output.WriteLine("    <th align=\"left\"><span style=\"color: White\"><b>PAGE COUNT</b></span></th>");
             Output.WriteLine("    <th align=\"left\"><span style=\"color: White\"><b>FILE COUNT</b></span></th>");
             Output.WriteLine("  </tr>");
 
-            foreach( DataRow thisRow in value.Rows )
+            foreach( Item_Aggregation_Visibility_Statistic stat in stats )
             {
                 Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\" colspan=\"5\"></td></tr>");
 
                 Output.WriteLine("  <tr align=\"left\">");
-                Output.WriteLine("    <td>" + thisRow[0] + "</td>");
-                Output.WriteLine("    <td>" + Int_To_Comma_String( Convert.ToInt32(thisRow[1])) + "</td>");
-                Output.WriteLine("    <td>" + Int_To_Comma_String(Convert.ToInt32(thisRow[2])) + "</td>");
-                if ( thisRow[3] != DBNull.Value )
-                    Output.WriteLine("    <td>" + Int_To_Comma_String(Convert.ToInt32(thisRow[3])) + "</td>");
-                else
-                    Output.WriteLine("    <td>0</td>");
-                if ( thisRow[4] != DBNull.Value )
-                    Output.WriteLine("    <td>" + Int_To_Comma_String(Convert.ToInt32(thisRow[4])) + "</td>");
-                else
-                    Output.WriteLine("    <td>0</td>");
+                Output.WriteLine("    <td>" + stat.Visibility + "</td>");
+                Output.WriteLine("    <td>" + Int_To_Comma_String(stat.Titles) + "</td>");
+                Output.WriteLine("    <td>" + Int_To_Comma_String(stat.Items) + "</td>");
+                Output.WriteLine("    <td>" + Int_To_Comma_String(stat.Pages) + "</td>");
+                Output.WriteLine("    <td>" + Int_To_Comma_String(stat.Files) + "</td>");
                 Output.WriteLine("  </tr>");
             }
 

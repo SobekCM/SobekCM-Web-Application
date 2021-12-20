@@ -26,6 +26,7 @@ using SobekCM.Engine_Library.Email;
 using SobekCM.Engine_Library.JSON_Client_Helpers;
 using SobekCM.Core.Configuration.Engine;
 using SobekCM.Tools;
+using System.Data;
 
 #endregion
 
@@ -409,6 +410,179 @@ namespace SobekCM.Engine_Library.Endpoints
                     Response.Output.WriteLine("Error completing request");
                     Response.StatusCode = 500;
                 }
+            }
+        }
+
+        /// <summary> Gets the item count for an aggregation, broken down by visibility </summary>
+        /// <param name="Response"></param>
+        /// <param name="UrlSegments"></param>
+        /// <param name="QueryString"></param>
+        /// <param name="Protocol"></param>
+        /// <param name="IsDebug"></param>
+        public void GetItemCount(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
+        {
+            string aggCode = String.Empty;
+            if (UrlSegments.Count > 0)
+                aggCode = UrlSegments[0];
+
+            Custom_Tracer tracer = new Custom_Tracer();
+
+            try
+            {
+                // Get the statistics from the database
+                tracer.Add_Trace("AggregationServices.GetItemCount", "Pulling datatable of item visibility information");
+                DataTable results = Engine_Database.Tracking_Get_Item_Visibility_Report(aggCode, tracer);
+
+                // Convert to Item_Aggregation_Visibility_Statistics
+                tracer.Add_Trace("AggregationServices.GetItemCount", "Convert to list of Item_Aggregation_Visibility_Statistic");
+                var returnValue = new List<Item_Aggregation_Visibility_Statistic>();
+                foreach ( DataRow thisRow in results.Rows )
+                {
+                    var stat = new Item_Aggregation_Visibility_Statistic
+                    {
+                        Visibility = thisRow[0].ToString(),
+                        Titles = Int32.Parse(thisRow[1].ToString()),
+                        Items = Int32.Parse(thisRow[2].ToString()),
+                        Pages = thisRow[3] == DBNull.Value ? 0 : Int32.Parse(thisRow[3].ToString()),
+                        Files = thisRow[4] == DBNull.Value ? 0 : Int32.Parse(thisRow[4].ToString())
+                    };
+
+                    returnValue.Add(stat);
+                }
+
+                // If this was debug mode, then just write the tracer
+                if (IsDebug)
+                {
+                    Response.ContentType = "text/plain";
+                    Response.Output.WriteLine("DEBUG MODE DETECTED");
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine(tracer.Text_Trace);
+
+                    return;
+                }
+
+                // Get the JSON-P callback function
+                string json_callback = "getItemCount";
+                if ((Protocol == Microservice_Endpoint_Protocol_Enum.JSON_P) && (!String.IsNullOrEmpty(QueryString["callback"])))
+                {
+                    json_callback = QueryString["callback"];
+                }
+
+                // Use the base class to serialize the object according to request protocol
+                Serialize(returnValue, Response, Protocol, json_callback);
+            }
+            catch (Exception ee)
+            {
+                if (IsDebug)
+                {
+                    Response.ContentType = "text/plain";
+                    Response.Output.WriteLine("EXCEPTION CAUGHT!");
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine(ee.Message);
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine(ee.StackTrace);
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine(tracer.Text_Trace);
+                    return;
+                }
+
+                Response.ContentType = "text/plain";
+                Response.Output.WriteLine("Error completing request");
+                Response.StatusCode = 500;
+            }
+        }
+
+        /// <summary> Gets the list of private items for an aggregation </summary>
+        /// <param name="Response"></param>
+        /// <param name="UrlSegments"></param>
+        /// <param name="QueryString"></param>
+        /// <param name="Protocol"></param>
+        /// <param name="IsDebug"></param>
+        public void GetPrivateItems(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
+        {
+            Custom_Tracer tracer = new Custom_Tracer();
+
+            string aggCode = String.Empty;
+            if (UrlSegments.Count > 0)
+                aggCode = UrlSegments[0];
+
+            // Set some first defaults
+            int sort = 0;
+            int page = 1;
+            int resultsPerPage = 20;
+
+            // Check for any page value
+            if ((!String.IsNullOrEmpty(QueryString["p"])) || (!String.IsNullOrEmpty(QueryString["page"])))
+            {
+                string page_test = !String.IsNullOrEmpty(QueryString["p"]) ? QueryString["p"] : QueryString["page"];
+                if (Int32.TryParse(page_test, out int page_result))
+                {
+                    page = Math.Max(page_result, ((ushort)1));
+                }
+            }
+
+            // Check for any sort value
+            if ((!String.IsNullOrEmpty(QueryString["o"])) || (!String.IsNullOrEmpty(QueryString["sort"])))
+            {
+                string sort_test = !String.IsNullOrEmpty(QueryString["o"]) ? QueryString["o"] : QueryString["sort"];
+                if (Int32.TryParse(sort_test, out int sort_result))
+                    sort = sort_result;
+            }
+
+            // Get the number of results per page
+            if (!String.IsNullOrEmpty(QueryString["pageSize"]))
+            {
+                string pageSize_test = QueryString["pageSize"].Trim();
+                if (Int32.TryParse(pageSize_test, out int pageSize_result))
+                    resultsPerPage = pageSize_result;
+            }
+
+            try
+            {
+                // Get the statistics from the database
+                tracer.Add_Trace("AggregationServices.GetPrivateItems", "Pulling data");
+
+                var returnValue = Engine_Database.Tracking_Get_Aggregation_Private_Items(aggCode, resultsPerPage, page, sort, tracer);
+
+                // If this was debug mode, then just write the tracer
+                if (IsDebug)
+                {
+                    Response.ContentType = "text/plain";
+                    Response.Output.WriteLine("DEBUG MODE DETECTED");
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine(tracer.Text_Trace);
+
+                    return;
+                }
+
+                // Get the JSON-P callback function
+                string json_callback = "getPrivateItems";
+                if ((Protocol == Microservice_Endpoint_Protocol_Enum.JSON_P) && (!String.IsNullOrEmpty(QueryString["callback"])))
+                {
+                    json_callback = QueryString["callback"];
+                }
+
+                // Use the base class to serialize the object according to request protocol
+                Serialize(returnValue, Response, Protocol, json_callback);
+            }
+            catch (Exception ee)
+            {
+                if (IsDebug)
+                {
+                    Response.ContentType = "text/plain";
+                    Response.Output.WriteLine("EXCEPTION CAUGHT!");
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine(ee.Message);
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine(ee.StackTrace);
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine(tracer.Text_Trace);
+                    return;
+                }
+
+                Response.ContentType = "text/plain";
+                Response.Output.WriteLine("Error completing request");
+                Response.StatusCode = 500;
             }
         }
 

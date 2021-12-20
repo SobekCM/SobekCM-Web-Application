@@ -18,7 +18,7 @@
 	<uploadMandatory>false</uploadMandatory>
 	<bibidRoot>AA</bibidRoot>
 	<defaultVisibility>PRIVATE</defaultVisibility>
-	<emailUponSubmit>Mark.V.Sullivan@gmail.com</emailUponSubmit>
+	<emailUponSubmit>MOchoa@middlesexcc.edu;schudnick@middlesexcc.edu</emailUponSubmit>
 	<messages>
 		<successfulSubmit>Thank you for your submission.  We will review the submission and make it public within the next 48-72 hours.</successfulSubmit>
 		<successfulSubmit> In the meantime, you can view the private item and make changes, but others users will not be able to discover it until reviewed.</successfulSubmit>

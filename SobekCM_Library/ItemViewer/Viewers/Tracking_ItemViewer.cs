@@ -297,7 +297,15 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     Output.WriteLine("    <td>" + worklog.WorkflowName + "</td>");
                     Output.WriteLine("    <td>" + worklog.CompletedDate + "</td>");
 
-                    Output.WriteLine("    <td>" + worklog.WorkPerformedBy + "</td>");
+                    if ( worklog.WorkPerformedById > 0 )
+                    {
+                        Output.WriteLine($"    <td><a href=\"{CurrentRequest.Base_URL}admin/users/{worklog.WorkPerformedById}v\">{ worklog.WorkPerformedBy}</a></td>");
+                    }
+                    else
+                    {
+                        Output.WriteLine($"    <td>{worklog.WorkPerformedBy}</td>");
+                    }                    
+
                     if ( String.IsNullOrEmpty(worklog.Notes))
                     {
                         Output.WriteLine("    <td>&nbsp;</td>");

@@ -10,6 +10,7 @@ using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.UI_Configuration;
 using SobekCM.Core.UI_Configuration.StaticResources;
+using SobekCM.Core.Users;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Library.AdminViewer;
 using SobekCM.Library.HTML;
@@ -69,6 +70,14 @@ namespace SobekCM.Library.MySobekViewer
             bool userCanEditItem = RequestSpecificValues.Current_User.Can_Edit_This_Item(currentItem.BibID, currentItem.Bib_Info.SobekCM_Type_String, currentItem.Bib_Info.Source.Code, currentItem.Bib_Info.HoldingCode, currentItem.Behaviors.Aggregation_Code_List);
 
             if (!userCanEditItem)
+            {
+                RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Item_Display;
+                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+            }
+
+            // See if this user is explicitly denied access to permission changes
+            bool hasAccess = RequestSpecificValues.Current_User.Get_Setting(User_Setting_Constants.ItemViewer_AllowPermissionChanges, true);
+            if (!hasAccess )
             {
                 RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Item_Display;
                 UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
@@ -158,8 +167,6 @@ namespace SobekCM.Library.MySobekViewer
                                 restrictedSelected = false;
                                 break;
                         }
-
-
                     }
                 }
 
@@ -326,14 +333,9 @@ namespace SobekCM.Library.MySobekViewer
                 RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Edit_Item_Permissions;
                 Output.WriteLine("              <button title=\"Delete this item\" class=\"sbkMyEip_VisButton sbkMyEip_VisButtonDelete\" onclick=\"if(confirm('Delete this item completely?')) window.location.href = '" + delete_url + "'; return false;\">DELETE ITEM</button>");
             }
-
-            
-
-
-            
+           
             Output.WriteLine("      <br /><br />");
             Output.WriteLine("      <table class=\"sbkMyEip_EntryTable\">");
-
 
             if ((isDark) || (ipRestrictionMask != 0) || ( restrictedSelected ))
             {
@@ -353,7 +355,7 @@ namespace SobekCM.Library.MySobekViewer
             if ((UI_ApplicationCache_Gateway.IP_Restrictions.Count > 0) && (restrictedSelected) && (!isDark))
             {
                 Output.WriteLine("         <tr>");
-                Output.WriteLine("           <th>Restriction Ranges:-</th>");
+                Output.WriteLine("           <th>Restriction Ranges:</th>");
                 Output.WriteLine("           <td>");
 
                 // At least always select the FIRST ip range, if restricted is selected
@@ -375,6 +377,16 @@ namespace SobekCM.Library.MySobekViewer
 
                 Output.WriteLine("           </td>");
                 Output.WriteLine("         </tr>");
+            }
+
+            // If MAKING it public, show email option
+            if ((ipRestrictionMask == 0) && (!isDark) && (!restrictedSelected))
+            {
+                // Only if originally PRIVATE
+                if ( currentItem.Behaviors.IP_Restriction_Membership == -1 )
+                {
+                    Output.WriteLine("<tr><td>CHANGING</td><td>Show option to email</td></tr>");
+                }
             }
 
 

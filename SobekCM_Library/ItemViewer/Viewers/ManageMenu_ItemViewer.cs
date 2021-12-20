@@ -95,7 +95,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             // Set some basic permission flags based on the user's settings
             bool show_behaviors_if_permissioned = CurrentUser.Get_Setting(User_Setting_Constants.ItemViewer_ShowBehaviors, true);
             bool show_qc_if_permissioned = CurrentUser.Get_Setting(User_Setting_Constants.ItemViewer_ShowQc, true);
-
+            bool show_permission_changes_if_permissions = CurrentUser.Get_Setting(User_Setting_Constants.ItemViewer_AllowPermissionChanges, true);
 
             // Get the URL for this
             string previous_code = CurrentRequest.ViewerCode;

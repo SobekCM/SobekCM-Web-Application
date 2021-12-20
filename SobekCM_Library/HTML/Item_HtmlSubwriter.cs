@@ -682,10 +682,6 @@ namespace SobekCM.Library.HTML
 
             RequestSpecificValues.Tracer.Add_Trace("item_HtmlSubwriter.Write_Internal_Header_HTML");
 
-            // Set some basic permission flags based on the user's settings
-            bool show_behaviors_if_permissioned = Current_User.Get_Setting(User_Setting_Constants.ItemViewer_ShowBehaviors, true);
-            bool show_qc_if_permissioned = Current_User.Get_Setting(User_Setting_Constants.ItemViewer_ShowQc, true);
-
             string currentViewerCode = RequestSpecificValues.Current_Mode.ViewerCode;
 
             Output.WriteLine("  <table id=\"sbk_InternalHeader\">");
@@ -708,211 +704,19 @@ namespace SobekCM.Library.HTML
 
             if (!is_bib_level)
             {
-                Output.WriteLine("    <tr style=\"height:40px;\">");
-                Output.WriteLine("      <td colspan=\"3\" style=\"text-align:center;vertical-align:middle;\">");
-
-                // Should we add ability to edit this item to the quick links?
-                if (userCanEditItem)
-                {
-                    // Add ability to edit metadata for this item
-                    if (is_tei)
-                    {
-                        RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.My_Sobek;
-                        RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Edit_TEI_Item;
-                        RequestSpecificValues.Current_Mode.My_Sobek_SubMode = "1";
-                        Output.WriteLine("          <button title=\"Edit TEI\" class=\"sbkIsw_intheader_button edit_tei_button\" onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "';return false;\"></button>");
-                    }
-                    else
-                    {
-                        RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.My_Sobek;
-                        RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Edit_Item_Metadata;
-                        RequestSpecificValues.Current_Mode.My_Sobek_SubMode = "1";
-                        Output.WriteLine("          <button title=\"Edit Metadata\" class=\"sbkIsw_intheader_button edit_metadata_button\" onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "';return false;\"></button>");
-                    }
-
-                    // Add ability to edit behaviors for this item
-                    if (show_behaviors_if_permissioned)
-                    {
-                        RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Edit_Item_Behaviors;
-                        RequestSpecificValues.Current_Mode.My_Sobek_SubMode = "1";
-                        Output.WriteLine("          <button title=\"Edit Behaviors\" class=\"sbkIsw_intheader_button edit_behaviors_button\" onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "';return false;\"></button>");
-                        RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Item_Display;
-                    }
-
-                    // Add ability to perforrm qc for this item
-                    if (show_qc_if_permissioned)
-                    {
-                        if ((currentItem.Images == null) || (currentItem.Images.Count == 0))
-                        {
-                            RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.My_Sobek;
-                            RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Page_Images_Management;
-                            Output.WriteLine("          <button title=\"Perform Quality Control\" class=\"sbkIsw_intheader_button qualitycontrol_button\" onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "';return false;\"></button>");
-                            RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Item_Display;
-                        }
-                        else
-                        {
-                            RequestSpecificValues.Current_Mode.ViewerCode = "qc";
-                            Output.WriteLine("          <button title=\"Perform Quality Control\" class=\"sbkIsw_intheader_button qualitycontrol_button\" onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "';return false;\"></button>");
-                        }
-                    }
-
-                    // Get ready to send to item permissions
-                    RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.My_Sobek;
-                    RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Edit_Item_Permissions;
-                    RequestSpecificValues.Current_Mode.My_Sobek_SubMode = "1";
-
-                    // Check if this item is DARK first
-                    if (currentItem.Behaviors.Dark_Flag)
-                    {
-                        Output.WriteLine("          <button title=\"Dark Resource\" class=\"sbkIsw_intheader_button dark_resource_button_fixed\" onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "';return false;\"></button>");
-                    }
-                    else
-                    {
-                        // If the item is currently PUBLIC, only internal or system admins can reset back to PRIVATE
-                        if (currentItem.Behaviors.IP_Restriction_Membership >= 0)
-                        {
-                            if ((RequestSpecificValues.Current_User.Is_Internal_User) || (RequestSpecificValues.Current_User.Is_System_Admin))
-                            {
-                                Output.WriteLine(currentItem.Behaviors.IP_Restriction_Membership == 0
-                                                     ? "          <button title=\"Change Access Restriction\" class=\"sbkIsw_intheader_button public_resource_button\" onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "';return false;\"></button>"
-                                                     : "          <button title=\"Change Access Restriction\" class=\"sbkIsw_intheader_button restricted_resource_button\" onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "';return false;\"></button>");
-                            }
-                            else
-                            {
-                                Output.WriteLine(currentItem.Behaviors.IP_Restriction_Membership == 0
-                                                     ? "          <button title=\"Public Resource\" class=\"sbkIsw_intheader_button public_resource_button_fixed\" onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "';return false;\"></button>"
-                                                     : "          <button title=\"IP Restriced Resource\" class=\"sbkIsw_intheader_button restricted_resource_button_fixed\" onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "';return false;\"></button>");
-                            }
-                        }
-                        else
-                        {
-                            Output.WriteLine("          <button title=\"Change Access Restriction\" class=\"sbkIsw_intheader_button private_resource_button\" onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "';return false;\"></button>");
-                        }
-                    }
-                }
-                else
-                {
-                    // Check if this item is DARK first
-                    if (currentItem.Behaviors.Dark_Flag)
-                    {
-                        Output.WriteLine("          <button title=\"Dark Resource\" class=\"sbkIsw_intheader_button dark_resource_button_fixed\" onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "';return false;\"></button>");
-                    }
-                    else
-                    {
-                        // Still show that the item is public, private, restricted
-                        if (currentItem.Behaviors.IP_Restriction_Membership > 0)
-                        {
-                            Output.WriteLine("          <button title=\"IP Restriced Resource\" class=\"sbkIsw_intheader_button restricted_resource_button_fixed\" onclick=\"return false;\"></button>");
-                        }
-                        if (currentItem.Behaviors.IP_Restriction_Membership == 0)
-                        {
-                            Output.WriteLine("          <button title=\"Public Resource\" class=\"sbkIsw_intheader_button public_resource_button_fixed\" onclick=\"return false;\"></button>");
-                        }
-                        if (currentItem.Behaviors.IP_Restriction_Membership < 0)
-                        {
-                            Output.WriteLine("          <button title=\"Private Resource\" class=\"sbkIsw_intheader_button private_resource_button_fixed\" onclick=\"return false;\"></button>");
-                        }
-                    }
-                }
-
-                RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Item_Display;
-                RequestSpecificValues.Current_Mode.ViewerCode = "tracking";
-                Output.WriteLine("          <button title=\"View Work Log\" class=\"sbkIsw_intheader_button view_worklog_button\" onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "';return false;\"></button>");
-                RequestSpecificValues.Current_Mode.ViewerCode = currentViewerCode;
-
-                // Add ability to manage files for this item
-                if (userCanEditItem)
-                {
-                    RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.My_Sobek;
-                    RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.File_Management;
-                    Output.WriteLine("          <button title=\"Manage Files\" class=\"sbkIsw_intheader_button manage_files_button\" onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "';return false;\"></button>");
-                    RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Item_Display;
-                }
-
-                // Add the HELP icon next
-                Output.WriteLine("<span id=\"sbk_InternalHeader_Help\"><a href=\"" + UI_ApplicationCache_Gateway.Settings.System.Help_URL(RequestSpecificValues.Current_Mode.Base_URL) + "help/itemheader\" title=\"Help regarding this header\"><img src=\"" + Static_Resources_Gateway.Help_Button_Darkgray_Jpg + "\" alt=\"?\" title=\"Help regarding this header\" /></a></span>");
-
-                Output.WriteLine("      </td>");
-                Output.WriteLine("    </tr>");
+                write_item_level_buttons(Output, Current_User);
 
                 // Display the comments and allow change?
                 if (currentItem.Web != null)
                 {
-                    string internal_comments_normalized = currentItem.Web.Internal_Comments ?? String.Empty;
-                    if ((userCanEditItem) || (RequestSpecificValues.Current_User.Is_Internal_User) || (RequestSpecificValues.Current_User.Is_System_Admin))
-                    {
-                        const int ROWS = 1;
-                        const int ACTUAL_COLS = 70;
-
-                        // Add the internal comments row ( hidden content initially )
-                        Output.WriteLine("    <tr style=\"text-align:center; height:14px;\">");
-                        Output.WriteLine("      <td colspan=\"3\" style=\"text-align:center;\">");
-                        Output.WriteLine("        <table id=\"internal_notes_div\">");
-                        Output.WriteLine("          <tr style=\"text-align:left; height:14px;\">");
-                        Output.WriteLine("            <td class=\"intheader_label\">COMMENTS:</td>");
-                        Output.WriteLine("            <td>");
-                        Output.WriteLine("              <textarea rows=\"" + ROWS + "\" cols=\"" + ACTUAL_COLS + "\" name=\"intheader_internal_notes\" id=\"intheader_internal_notes\" class=\"intheader_comments_input sbkIsw_Focusable\">" + HttpUtility.HtmlEncode(internal_comments_normalized) + "</textarea>");
-                        Output.WriteLine("            </td>");
-                        Output.WriteLine("            <td>");
-                        Output.WriteLine("              <button title=\"Save new internal comments\" class=\"internalheader_button\" onclick=\"save_internal_notes(); return false;\">SAVE</button>");
-                        Output.WriteLine("            </td>");
-                        Output.WriteLine("          </tr>");
-                        Output.WriteLine("        </table>");
-                        Output.WriteLine("      </td>");
-                        Output.WriteLine("    </tr>");
-                    }
-                    else
-                    {
-                        const int ROWS = 1;
-                        const int ACTUAL_COLS = 80;
-
-                        // Add the internal comments row ( hidden content initially )
-                        Output.WriteLine("    <tr style=\"text-align:center; height:14px;\">");
-                        Output.WriteLine("      <td colspan=\"2\">");
-                        Output.WriteLine("        <table id=\"internal_notes_div\">");
-                        Output.WriteLine("          <tr style=\"text-align:left; height:14px;\">");
-                        Output.WriteLine("            <td class=\"intheader_label\">COMMENTS:</td>");
-                        Output.WriteLine("            <td>");
-                        Output.WriteLine("              <textarea readonly=\"readonly\" rows=\"" + ROWS + "\" cols=\"" + ACTUAL_COLS + "\" name=\"intheader_internal_notes\" id=\"intheader_internal_notes\" class=\"intheader_comments_input\" onfocus=\"javascript:textbox_enter('intheader_internal_notes','intheader_comments_input_focused')\" onblur=\"javascript:textbox_leave('intheader_internal_notes','intheader_comments_input')\">" + HttpUtility.HtmlEncode(internal_comments_normalized) + "</textarea>");
-                        Output.WriteLine("            </td>");
-                        Output.WriteLine("          </tr>");
-                        Output.WriteLine("        </table>");
-                        Output.WriteLine("      </td>");
-                        Output.WriteLine("    </tr>");
-                    }
+                    write_item_level_comments(Output);
                 }
             }
             else
             {
                 if (userCanEditItem)
                 {
-                    Output.WriteLine("    <tr style=\"height:45px;\">");
-                    Output.WriteLine("      <td colspan=\"3\" style=\"text-align:center;vertical-align:middle;\">");
-
-                    // Add ability to edit behaviors for this item group
-                    RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.My_Sobek;
-                    RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Edit_Group_Behaviors;
-                    RequestSpecificValues.Current_Mode.My_Sobek_SubMode = "1";
-                    Output.WriteLine("          <button title=\"Edit Behaviors\" class=\"sbkIsw_intheader_button edit_behaviors_button\" onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "';return false;\"></button>");
-
-                    // Add ability to add a new item/volume to this title
-                    RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Group_Add_Volume;
-                    Output.WriteLine("          <button title=\"Add Volume\" class=\"sbkIsw_intheader_button add_volume_button\" onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "';return false;\"></button>");
-
-                    // Add ability to auto-fill a number of new items/volumes to this title
-                    RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Group_AutoFill_Volumes;
-                    Output.WriteLine("          <button title=\"Auto-Fill Volumes\" class=\"sbkIsw_intheader_button autofill_volumes_button\" onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "';return false;\"></button>");
-
-                    // Add ability to edit the serial hierarchy online
-                    RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Edit_Group_Serial_Hierarchy;
-                    Output.WriteLine("          <button title=\"Edit Serial Hierarchy\" class=\"sbkIsw_intheader_button serial_hierarchy_button\" onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "';return false;\"></button>");
-
-                    // Add ability to mass update the items behaviors under this title
-                    RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Group_Mass_Update_Items;
-                    Output.WriteLine("          <button title=\"Mass Update Volumes\" class=\"sbkIsw_intheader_button mass_update_button\" onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "';return false;\"></button>");
-
-                    Output.WriteLine("      </td>");
-                    Output.WriteLine("    </tr>");
+                    write_bib_level_buttons(Output);
                 }
             }
 
@@ -920,6 +724,239 @@ namespace SobekCM.Library.HTML
 
             RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Item_Display;
             RequestSpecificValues.Current_Mode.ViewerCode = currentViewerCode;
+        }
+
+        private void write_item_level_comments(TextWriter Output)
+        {
+            string internal_comments_normalized = currentItem.Web.Internal_Comments ?? String.Empty;
+            if ((userCanEditItem) || (RequestSpecificValues.Current_User.Is_Internal_User) || (RequestSpecificValues.Current_User.Is_System_Admin))
+            {
+                const int ROWS = 1;
+                const int ACTUAL_COLS = 70;
+
+                // Add the internal comments row ( hidden content initially )
+                Output.WriteLine("    <tr style=\"text-align:center; height:14px;\">");
+                Output.WriteLine("      <td colspan=\"3\" style=\"text-align:center;\">");
+                Output.WriteLine("        <table id=\"internal_notes_div\">");
+                Output.WriteLine("          <tr style=\"text-align:left; height:14px;\">");
+                Output.WriteLine("            <td class=\"intheader_label\">COMMENTS:</td>");
+                Output.WriteLine("            <td>");
+                Output.WriteLine("              <textarea rows=\"" + ROWS + "\" cols=\"" + ACTUAL_COLS + "\" name=\"intheader_internal_notes\" id=\"intheader_internal_notes\" class=\"intheader_comments_input sbkIsw_Focusable\">" + HttpUtility.HtmlEncode(internal_comments_normalized) + "</textarea>");
+                Output.WriteLine("            </td>");
+                Output.WriteLine("            <td>");
+                Output.WriteLine("              <button title=\"Save new internal comments\" class=\"internalheader_button\" onclick=\"save_internal_notes(); return false;\">SAVE</button>");
+                Output.WriteLine("            </td>");
+                Output.WriteLine("          </tr>");
+                Output.WriteLine("        </table>");
+                Output.WriteLine("      </td>");
+                Output.WriteLine("    </tr>");
+            }
+            else
+            {
+                const int ROWS = 1;
+                const int ACTUAL_COLS = 80;
+
+                // Add the internal comments row ( hidden content initially )
+                Output.WriteLine("    <tr style=\"text-align:center; height:14px;\">");
+                Output.WriteLine("      <td colspan=\"2\">");
+                Output.WriteLine("        <table id=\"internal_notes_div\">");
+                Output.WriteLine("          <tr style=\"text-align:left; height:14px;\">");
+                Output.WriteLine("            <td class=\"intheader_label\">COMMENTS:</td>");
+                Output.WriteLine("            <td>");
+                Output.WriteLine("              <textarea readonly=\"readonly\" rows=\"" + ROWS + "\" cols=\"" + ACTUAL_COLS + "\" name=\"intheader_internal_notes\" id=\"intheader_internal_notes\" class=\"intheader_comments_input\" onfocus=\"javascript:textbox_enter('intheader_internal_notes','intheader_comments_input_focused')\" onblur=\"javascript:textbox_leave('intheader_internal_notes','intheader_comments_input')\">" + HttpUtility.HtmlEncode(internal_comments_normalized) + "</textarea>");
+                Output.WriteLine("            </td>");
+                Output.WriteLine("          </tr>");
+                Output.WriteLine("        </table>");
+                Output.WriteLine("      </td>");
+                Output.WriteLine("    </tr>");
+            }
+        }
+
+        private void write_item_level_buttons(TextWriter Output, User_Object Current_User)
+        {
+            string currentViewerCode = RequestSpecificValues.Current_Mode.ViewerCode;
+
+            // Set some basic permission flags based on the user's settings
+            bool show_behaviors_if_permissioned = Current_User.Get_Setting(User_Setting_Constants.ItemViewer_ShowBehaviors, true);
+            bool show_qc_if_permissioned = Current_User.Get_Setting(User_Setting_Constants.ItemViewer_ShowQc, true);
+            bool show_permission_changes = Current_User.Get_Setting(User_Setting_Constants.ItemViewer_AllowPermissionChanges, true);
+
+
+            Output.WriteLine("    <tr style=\"height:40px;\">");
+            Output.WriteLine("      <td colspan=\"3\" style=\"text-align:center;vertical-align:middle;\">");
+
+            // Should we add ability to edit this item to the quick links?
+            if (userCanEditItem)
+            {
+                // Add ability to edit metadata for this item
+                if (is_tei)
+                {
+                    RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.My_Sobek;
+                    RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Edit_TEI_Item;
+                    RequestSpecificValues.Current_Mode.My_Sobek_SubMode = "1";
+                    Output.WriteLine("          <button title=\"Edit TEI\" class=\"sbkIsw_intheader_button edit_tei_button\" onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "';return false;\"></button>");
+                }
+                else
+                {
+                    RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.My_Sobek;
+                    RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Edit_Item_Metadata;
+                    RequestSpecificValues.Current_Mode.My_Sobek_SubMode = "1";
+                    Output.WriteLine("          <button title=\"Edit Metadata\" class=\"sbkIsw_intheader_button edit_metadata_button\" onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "';return false;\"></button>");
+                }
+
+                // Add ability to edit behaviors for this item
+                if (show_behaviors_if_permissioned)
+                {
+                    RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Edit_Item_Behaviors;
+                    RequestSpecificValues.Current_Mode.My_Sobek_SubMode = "1";
+                    Output.WriteLine("          <button title=\"Edit Behaviors\" class=\"sbkIsw_intheader_button edit_behaviors_button\" onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "';return false;\"></button>");
+                    RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Item_Display;
+                }
+
+                // Add ability to perforrm qc for this item
+                if (show_qc_if_permissioned)
+                {
+                    if ((currentItem.Images == null) || (currentItem.Images.Count == 0))
+                    {
+                        RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.My_Sobek;
+                        RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Page_Images_Management;
+                        Output.WriteLine("          <button title=\"Perform Quality Control\" class=\"sbkIsw_intheader_button qualitycontrol_button\" onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "';return false;\"></button>");
+                        RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Item_Display;
+                    }
+                    else
+                    {
+                        RequestSpecificValues.Current_Mode.ViewerCode = "qc";
+                        Output.WriteLine("          <button title=\"Perform Quality Control\" class=\"sbkIsw_intheader_button qualitycontrol_button\" onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "';return false;\"></button>");
+                    }
+                }
+
+                // Get ready to send to item permissions
+                if (show_permission_changes)
+                {
+                    show_permissions_active(Output);
+                }
+                else // Will still just SHOW the basic permissions
+                {
+                    show_permissions_notactive(Output);
+                }
+            }
+            else
+            {
+                // User can't edit.. but still show permissions 
+                show_permissions_notactive(Output);
+            }
+
+            RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Item_Display;
+            RequestSpecificValues.Current_Mode.ViewerCode = "tracking";
+            Output.WriteLine("          <button title=\"View Work Log\" class=\"sbkIsw_intheader_button view_worklog_button\" onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "';return false;\"></button>");
+            RequestSpecificValues.Current_Mode.ViewerCode = currentViewerCode;
+
+            // Add ability to manage files for this item
+            if (userCanEditItem)
+            {
+                RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.My_Sobek;
+                RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.File_Management;
+                Output.WriteLine("          <button title=\"Manage Files\" class=\"sbkIsw_intheader_button manage_files_button\" onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "';return false;\"></button>");
+                RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Item_Display;
+            }
+
+            // Add the HELP icon next
+            Output.WriteLine("<span id=\"sbk_InternalHeader_Help\"><a href=\"" + UI_ApplicationCache_Gateway.Settings.System.Help_URL(RequestSpecificValues.Current_Mode.Base_URL) + "help/itemheader\" title=\"Help regarding this header\"><img src=\"" + Static_Resources_Gateway.Help_Button_Darkgray_Jpg + "\" alt=\"?\" title=\"Help regarding this header\" /></a></span>");
+
+            Output.WriteLine("      </td>");
+            Output.WriteLine("    </tr>");
+        }
+
+        private void show_permissions_active(TextWriter Output)
+        {
+            RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.My_Sobek;
+            RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Edit_Item_Permissions;
+            RequestSpecificValues.Current_Mode.My_Sobek_SubMode = "1";
+
+            // Check if this item is DARK first
+            if (currentItem.Behaviors.Dark_Flag)
+            {
+                Output.WriteLine("          <button title=\"Dark Resource\" class=\"sbkIsw_intheader_button dark_resource_button_fixed\" onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "';return false;\"></button>");
+            }
+            else
+            {
+                // If the item is currently PUBLIC, only internal or system admins can reset back to PRIVATE
+                if (currentItem.Behaviors.IP_Restriction_Membership >= 0)
+                {
+                    if ((RequestSpecificValues.Current_User.Is_Internal_User) || (RequestSpecificValues.Current_User.Is_System_Admin))
+                    {
+                        Output.WriteLine(currentItem.Behaviors.IP_Restriction_Membership == 0
+                                             ? "          <button title=\"Change Access Restriction\" class=\"sbkIsw_intheader_button public_resource_button\" onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "';return false;\"></button>"
+                                             : "          <button title=\"Change Access Restriction\" class=\"sbkIsw_intheader_button restricted_resource_button\" onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "';return false;\"></button>");
+                    }
+                    else
+                    {
+                        Output.WriteLine(currentItem.Behaviors.IP_Restriction_Membership == 0
+                                             ? "          <button title=\"Public Resource\" class=\"sbkIsw_intheader_button public_resource_button_fixed\" onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "';return false;\"></button>"
+                                             : "          <button title=\"IP Restriced Resource\" class=\"sbkIsw_intheader_button restricted_resource_button_fixed\" onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "';return false;\"></button>");
+                    }
+                }
+                else
+                {
+                    Output.WriteLine("          <button title=\"Change Access Restriction\" class=\"sbkIsw_intheader_button private_resource_button\" onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "';return false;\"></button>");
+                }
+            }
+        }
+
+        private void show_permissions_notactive(TextWriter Output)
+        {
+            // Check if this item is DARK first
+            if (currentItem.Behaviors.Dark_Flag)
+            {
+                Output.WriteLine("          <button title=\"Dark Resource\" class=\"sbkIsw_intheader_button dark_resource_button_fixed\" onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "';return false;\"></button>");
+            }
+            else
+            {
+                // Still show that the item is public, private, restricted
+                if (currentItem.Behaviors.IP_Restriction_Membership > 0)
+                {
+                    Output.WriteLine("          <button title=\"IP Restriced Resource\" class=\"sbkIsw_intheader_button restricted_resource_button_fixed\" onclick=\"return false;\"></button>");
+                }
+                if (currentItem.Behaviors.IP_Restriction_Membership == 0)
+                {
+                    Output.WriteLine("          <button title=\"Public Resource\" class=\"sbkIsw_intheader_button public_resource_button_fixed\" onclick=\"return false;\"></button>");
+                }
+                if (currentItem.Behaviors.IP_Restriction_Membership < 0)
+                {
+                    Output.WriteLine("          <button title=\"Private Resource\" class=\"sbkIsw_intheader_button private_resource_button_fixed\" onclick=\"return false;\"></button>");
+                }
+            }
+        }
+
+        private void write_bib_level_buttons(TextWriter Output)
+        {
+            Output.WriteLine("    <tr style=\"height:45px;\">");
+            Output.WriteLine("      <td colspan=\"3\" style=\"text-align:center;vertical-align:middle;\">");
+
+            // Add ability to edit behaviors for this item group
+            RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.My_Sobek;
+            RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Edit_Group_Behaviors;
+            RequestSpecificValues.Current_Mode.My_Sobek_SubMode = "1";
+            Output.WriteLine("          <button title=\"Edit Behaviors\" class=\"sbkIsw_intheader_button edit_behaviors_button\" onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "';return false;\"></button>");
+
+            // Add ability to add a new item/volume to this title
+            RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Group_Add_Volume;
+            Output.WriteLine("          <button title=\"Add Volume\" class=\"sbkIsw_intheader_button add_volume_button\" onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "';return false;\"></button>");
+
+            // Add ability to auto-fill a number of new items/volumes to this title
+            RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Group_AutoFill_Volumes;
+            Output.WriteLine("          <button title=\"Auto-Fill Volumes\" class=\"sbkIsw_intheader_button autofill_volumes_button\" onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "';return false;\"></button>");
+
+            // Add ability to edit the serial hierarchy online
+            RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Edit_Group_Serial_Hierarchy;
+            Output.WriteLine("          <button title=\"Edit Serial Hierarchy\" class=\"sbkIsw_intheader_button serial_hierarchy_button\" onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "';return false;\"></button>");
+
+            // Add ability to mass update the items behaviors under this title
+            RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Group_Mass_Update_Items;
+            Output.WriteLine("          <button title=\"Mass Update Volumes\" class=\"sbkIsw_intheader_button mass_update_button\" onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "';return false;\"></button>");
+
+            Output.WriteLine("      </td>");
+            Output.WriteLine("    </tr>");
         }
 
         #endregion

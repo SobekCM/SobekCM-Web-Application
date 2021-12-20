@@ -58,6 +58,7 @@ namespace SobekCM.Library.AdminViewer.UserAdmin.UserAdminTabs
                         // Set the user settings to simplify the UI
                         editUser.Add_Setting(User_Setting_Constants.ItemViewer_ShowBehaviors, "false");
                         editUser.Add_Setting(User_Setting_Constants.ItemViewer_ShowQc, "false");
+                        editUser.Add_Setting(User_Setting_Constants.ItemViewer_AllowPermissionChanges, "false");
 
                         // We want this to save immediately
                         return true;

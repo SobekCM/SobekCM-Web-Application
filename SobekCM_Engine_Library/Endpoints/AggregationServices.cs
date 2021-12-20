@@ -544,6 +544,12 @@ namespace SobekCM.Engine_Library.Endpoints
 
                 var returnValue = Engine_Database.Tracking_Get_Aggregation_Private_Items(aggCode, resultsPerPage, page, sort, tracer);
 
+                // Add the search parameters to the object
+                returnValue.Aggregation = aggCode;
+                returnValue.Page = page;
+                returnValue.Sort = sort;
+                returnValue.ResultsPerPage = resultsPerPage;
+
                 // If this was debug mode, then just write the tracer
                 if (IsDebug)
                 {

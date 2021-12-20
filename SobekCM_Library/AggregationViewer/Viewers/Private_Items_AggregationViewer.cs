@@ -3,7 +3,9 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using SobekCM.Core.Aggregations;
+using SobekCM.Core.Client;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Results;
@@ -99,7 +101,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             int current_sort = RequestSpecificValues.Current_Mode.Sort.HasValue ? RequestSpecificValues.Current_Mode.Sort.Value : 0;
             int current_page = RequestSpecificValues.Current_Mode.Page.HasValue ? RequestSpecificValues.Current_Mode.Page.Value : 1;
 
-            privateItems = Engine_Database.Tracking_Get_Aggregation_Private_Items(ViewBag.Hierarchy_Object.Code, (int)RESULTS_PER_PAGE, current_page, current_sort, RequestSpecificValues.Tracer);
+            privateItems = SobekEngineClient.Aggregations.Get_Private_Items(ViewBag.Hierarchy_Object.Code, current_sort, current_page, (int)RESULTS_PER_PAGE, RequestSpecificValues.Tracer);
         }
 
         /// <summary>Flag indicates whether the subaggregation selection panel is displayed for this collection viewer</summary>
@@ -319,6 +321,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             Output.WriteLine("</script>");
 
             // Should buttons be added here for additional pages?
+            string buttons = String.Empty;
             if (privateItems.TotalTitles > RESULTS_PER_PAGE)
             {
                 // Get the language suffix for the buttons
@@ -351,21 +354,24 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 // Get the current page
                 ushort current_page = RequestSpecificValues.Current_Mode.Page.HasValue ? RequestSpecificValues.Current_Mode.Page.Value : ((ushort) 1 );
 
+                // Put in a string builder and save, so we can repeat at the bottom
+                StringBuilder buttonBuilder = new StringBuilder();
+
                 // Should the previous and first buttons be enabled?
-                Output.WriteLine("  <span class=\"leftButtons\">");
+                buttonBuilder.AppendLine("  <span class=\"leftButtons\">");
                 if (current_page > 1)
                 {
                     RequestSpecificValues.Current_Mode.Page = 1;
-                    Output.WriteLine("    &nbsp; &nbsp; &nbsp; <button title=\"" + first_page + "\" class=\"roundbutton\" onclick=\"window.location='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "'; return false;\"><img src=\"" + Static_Resources_Gateway.Button_First_Arrow_Png + "\" class=\"roundbutton_img_left\" alt=\"\" /> " + first_page + " </button>&nbsp;");
+                    buttonBuilder.AppendLine("    &nbsp; &nbsp; &nbsp; <button title=\"" + first_page + "\" class=\"roundbutton\" onclick=\"window.location='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "'; return false;\"><img src=\"" + Static_Resources_Gateway.Button_First_Arrow_Png + "\" class=\"roundbutton_img_left\" alt=\"\" /> " + first_page + " </button>&nbsp;");
 
                     RequestSpecificValues.Current_Mode.Page = (ushort)(current_page - 1);
-                    Output.WriteLine("    <button title=\"" + previous_page + "\" class=\"roundbutton\" onclick=\"window.location='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "'; return false;\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"roundbutton_img_left\" alt=\"\" /> " + previous_page + " </button>");
+                    buttonBuilder.AppendLine("    <button title=\"" + previous_page + "\" class=\"roundbutton\" onclick=\"window.location='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "'; return false;\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"roundbutton_img_left\" alt=\"\" /> " + previous_page + " </button>");
                 }
                 else
                 {
-                    Output.WriteLine("    <div style=\"width:160px\">&nbsp;</div>");
+                    buttonBuilder.AppendLine("    <div style=\"width:160px\">&nbsp;</div>");
                 }
-                Output.WriteLine("  </span>");
+                buttonBuilder.AppendLine("  </span>");
 
                 // Calculate the maximum number of pages
                 ushort pages = (ushort)(Math.Ceiling(privateItems.TotalTitles / RESULTS_PER_PAGE));
@@ -373,33 +379,37 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 int start_title = (int) (1 + ((current_page - 1)*RESULTS_PER_PAGE));
                 int end_title = (int) (Math.Min(start_title + RESULTS_PER_PAGE, privateItems.TotalTitles));
 
-                Output.WriteLine("<span style=\"text-align:center;margin-left:auto; margin-right:auto\">" + start_title + " - " + end_title + " of " + privateItems.TotalTitles + " matching titles</span>");
+                buttonBuilder.AppendLine("<span style=\"text-align:center;margin-left:auto; margin-right:auto\">" + start_title + " - " + end_title + " of " + privateItems.TotalTitles + " matching titles</span>");
 
 
                 // Should the next and last buttons be enabled?
-                Output.WriteLine("  <span class=\"rightButtons\">");
+                buttonBuilder.AppendLine("  <span class=\"rightButtons\">");
                 if (current_page < pages)
                 {
                     RequestSpecificValues.Current_Mode.Page = (ushort)(current_page + 1);
-                    Output.WriteLine("    <button title=\"" + next_page + "\" class=\"roundbutton\" onclick=\"window.location='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "'; return false;\"> " + next_page + " <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"roundbutton_img_right\" alt=\"\" /></button>&nbsp;");
+                    buttonBuilder.AppendLine("    <button title=\"" + next_page + "\" class=\"roundbutton\" onclick=\"window.location='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "'; return false;\"> " + next_page + " <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"roundbutton_img_right\" alt=\"\" /></button>&nbsp;");
 
                     RequestSpecificValues.Current_Mode.Page = pages;
-                    Output.WriteLine("    <button title=\"" + last_page + "\" class=\"roundbutton\" onclick=\"window.location='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "'; return false;\"> " + last_page + " <img src=\"" + Static_Resources_Gateway.Button_Last_Arrow_Png + "\" class=\"roundbutton_img_right\" alt=\"\" /></button>");
+                    buttonBuilder.AppendLine("    <button title=\"" + last_page + "\" class=\"roundbutton\" onclick=\"window.location='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "'; return false;\"> " + last_page + " <img src=\"" + Static_Resources_Gateway.Button_Last_Arrow_Png + "\" class=\"roundbutton_img_right\" alt=\"\" /></button>");
                 }
                 else
                 {
-                    Output.WriteLine("    <div style=\"width:160px\">&nbsp;</div>");
+                    buttonBuilder.AppendLine("    <div style=\"width:160px\">&nbsp;</div>");
                 }
 
-                Output.WriteLine("  </span>");
+                buttonBuilder.AppendLine("  </span>");
                 RequestSpecificValues.Current_Mode.Page = current_page;
 
-                Output.WriteLine("<br />");
+                buttonBuilder.AppendLine("<br />");
+
+                // Convert string builder to string (and save for bottom buttons)
+                buttons = buttonBuilder.ToString();
+
+                // Write the top buttons
+                Output.WriteLine(buttons);
             }
 
             Output.WriteLine("<br />");
-
-
            
             // Start the table to display
             Output.WriteLine("</div>");
@@ -506,6 +516,14 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 
             Output.WriteLine("</center>");
             Output.WriteLine("<div id=\"pagecontainer_resumed\">");
+
+            // Add bottom buttons if they were calculated
+            if (!String.IsNullOrEmpty(buttons))
+            {
+                Output.WriteLine("<br />");
+                Output.WriteLine(buttons);
+            }
+
             Output.WriteLine("<br /> <br />");
 
         }

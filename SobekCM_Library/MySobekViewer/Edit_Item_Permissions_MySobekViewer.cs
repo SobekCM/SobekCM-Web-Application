@@ -387,7 +387,15 @@ namespace SobekCM.Library.MySobekViewer
                 if ( currentItem.Behaviors.IP_Restriction_Membership == -1 )
                 {
                     Item_Submittor_Info submittor = SobekEngineClient.Items.Get_Submittor_Info(currentItem.BibID, currentItem.VID, Tracer);
-                    Output.WriteLine($"<tr><td>CHANGING</td><td>Show option to email {submittor.Email ?? String.Empty}</td></tr>");
+                    if ((submittor.UserId > 0) && (!String.IsNullOrEmpty(submittor.Email)))
+                    {
+                        Output.WriteLine("         <tr>");
+                        Output.WriteLine("           <td>");
+                        Output.WriteLine("             <input type='checkbox' id='email_submittor' name='email_submittor' value='yes_email' /> <label for=\"email_submittor\"><span title=\"Email the submittor when making this private item public\">Email Submittor ( " + submittor.Email + " )</span></label>");
+
+                        Output.WriteLine("           </td>");
+                        Output.WriteLine("         </tr>");
+                    }
                 }
             }
 

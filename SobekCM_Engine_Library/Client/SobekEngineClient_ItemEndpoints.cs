@@ -315,6 +315,25 @@ namespace SobekCM.Core.Client
             Tracer.Add_Trace("SobekEngineClient_ItemEndpoints.Clear_Item_Cache", "Response: " + returnValue);
         }
 
+        /// <summary> Gets basic information about the person who online submitted an item </summary>
+        /// <param name="BibID"> Bibliographic identifier (BibID) for the digital resources </param>
+        /// <param name="VID"> Volume identifier (VID) for the digital resource </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        /// <returns>Information about the online submittor, if there was one</returns>
+        public Item_Submittor_Info Get_Submittor_Info(string BibID, string VID, Custom_Tracer Tracer )
+        {
+            // Add a beginning trace
+            Tracer.Add_Trace("SobekEngineClient_ItemEndpoints.Get_Submittor_Info", "Clear all items cache for " + BibID);
+
+            // Get the endpoint
+            MicroservicesClient_Endpoint endpoint = GetEndpointConfig("Items.GetItemSubmittorInfo", Tracer);
+
+            // Format the URL
+            string url = String.Format(endpoint.URL, BibID, VID);
+
+            // Call out to the endpoint and deserialize the object
+            return Deserialize<Item_Submittor_Info>(url, endpoint.Protocol, Tracer);
+        }
 
 
         public SobekCM_Item Get_Sobek_Item(string BibID, string VID, Custom_Tracer Tracer)

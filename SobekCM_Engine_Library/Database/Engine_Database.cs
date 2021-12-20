@@ -427,6 +427,63 @@ namespace SobekCM.Engine_Library.Database
             }
         }
 
+        /// <summary> Returns basic information about the online submittor of an item </summary>
+        /// <param name="BibID"> Bibliographic identifier for the item group of interest </param>
+        /// <param name="VID"> Volume identifier for the item of interest </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <returns> Basic information (email, name, id) about the original online submittor, if it was online submitted.  
+        /// Otherwise, NULL is returned. </returns>
+        /// <remarks> This calls the 'SobekCM_Get_Submittor' stored procedure  </remarks>
+        public static Item_Submittor_Info Get_Item_Submittor(string BibID, string VID, Custom_Tracer Tracer)
+        {
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("Engine_Database.Get_Item_Submittor", "Pulling submittor information for '" + BibID + "_" + VID + "' from database");
+            }
+
+            try
+            {
+                // Execute this query stored procedure
+                EalDbParameter[] paramList = new EalDbParameter[2];
+                paramList[0] = new EalDbParameter("@BibID", BibID);
+                paramList[1] = new EalDbParameter("@VID", VID);
+
+                // Open the data reader to step through the data as it comes back
+                EalDbReaderWrapper readerWrapper = EalDbAccess.ExecuteDataReader(DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_Get_Submittor", paramList);
+
+                // Start the return value
+                var returnValue = new Item_Submittor_Info { UserId = -1 };
+
+                // Step through each work event
+                while (readerWrapper.Reader.Read())
+                {
+                    // Build this item information
+                    returnValue.Name = readerWrapper.Reader.GetString(0);
+                    returnValue.Email = readerWrapper.Reader.GetString(1);
+                    returnValue.UserId = readerWrapper.Reader.GetInt32(2);
+
+                    break;
+                }
+
+                // Close the reader (which also closes the connection)
+                readerWrapper.Close();
+
+                // Return the fully built object
+                return returnValue;
+            }
+            catch (Exception ee)
+            {
+                Last_Exception = ee;
+                if (Tracer != null)
+                {
+                    Tracer.Add_Trace("Engine_Database.Get_Item_Submittor", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("Engine_Database.Get_Item_Submittor", ee.Message, Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("Engine_Database.Get_Item_Submittor", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                }
+                return null;
+            }
+        }
+
         #endregion
 
         #region Methods to support the restriction by IP addresses

@@ -6,6 +6,7 @@ using System.IO;
 using System.Web;
 using SobekCM.Core.ApplicationState;
 using SobekCM.Core.Client;
+using SobekCM.Core.Items;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.UI_Configuration;
@@ -385,7 +386,8 @@ namespace SobekCM.Library.MySobekViewer
                 // Only if originally PRIVATE
                 if ( currentItem.Behaviors.IP_Restriction_Membership == -1 )
                 {
-                    Output.WriteLine("<tr><td>CHANGING</td><td>Show option to email</td></tr>");
+                    Item_Submittor_Info submittor = SobekEngineClient.Items.Get_Submittor_Info(currentItem.BibID, currentItem.VID, Tracer);
+                    Output.WriteLine($"<tr><td>CHANGING</td><td>Show option to email {submittor.Email ?? String.Empty}</td></tr>");
                 }
             }
 

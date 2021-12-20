@@ -1754,6 +1754,75 @@ namespace SobekCM.Engine_Library.Endpoints
             }
         }
 
+        /// <summary> Gets information about the submittor/user if the item was online submitted </summary>
+        /// <param name="Response"></param>
+        /// <param name="UrlSegments"></param>
+        /// <param name="QueryString"></param>
+        /// <param name="Protocol"></param>
+        /// <param name="IsDebug"></param>
+        public void GetItemSubmittorInfo(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
+        {
+            if (UrlSegments.Count > 1)
+            {
+                Custom_Tracer tracer = new Custom_Tracer();
+
+                string bibid = UrlSegments[0];
+                string vid = UrlSegments[1];
+
+                try
+                {
+                    // Get the information from the database
+                    Item_Submittor_Info submittor = Engine_Database.Get_Item_Submittor(bibid, vid, tracer);
+
+                    // If null, return
+                    if (submittor == null)
+                    {
+                        submittor = new Item_Submittor_Info { UserId = -1 };
+                    }
+
+                    // If this was debug mode, then just write the tracer
+                    if (IsDebug)
+                    {
+                        Response.ContentType = "text/plain";
+                        Response.Output.WriteLine("DEBUG MODE DETECTED");
+                        Response.Output.WriteLine();
+                        Response.Output.WriteLine(tracer.Text_Trace);
+
+                        return;
+                    }
+
+                    // Get the JSON-P callback function
+                    string json_callback = "getSubmittor";
+                    if ((Protocol == Microservice_Endpoint_Protocol_Enum.JSON_P) && (!String.IsNullOrEmpty(QueryString["callback"])))
+                    {
+                        json_callback = QueryString["callback"];
+                    }
+
+                    // Use the base class to serialize the object according to request protocol
+                    Serialize(submittor, Response, Protocol, json_callback);
+                }
+                catch (Exception ee)
+                {
+                    if (IsDebug)
+                    {
+                        Response.ContentType = "text/plain";
+                        Response.Output.WriteLine("EXCEPTION CAUGHT!");
+                        Response.Output.WriteLine();
+                        Response.Output.WriteLine(ee.Message);
+                        Response.Output.WriteLine();
+                        Response.Output.WriteLine(ee.StackTrace);
+                        Response.Output.WriteLine();
+                        Response.Output.WriteLine(tracer.Text_Trace);
+                        return;
+                    }
+
+                    Response.ContentType = "text/plain";
+                    Response.Output.WriteLine("Error completing request");
+                    Response.StatusCode = 500;
+                }
+            }
+        }
+
         #endregion
 
         #region Method to get resource files for an item

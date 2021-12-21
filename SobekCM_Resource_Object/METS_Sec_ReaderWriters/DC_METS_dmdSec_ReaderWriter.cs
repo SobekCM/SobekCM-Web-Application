@@ -312,9 +312,14 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
             }
 
             // Add the rights
-            if (BibInfo.Access_Condition.Text.Length > 0)
+            // Add the availability statement
+            if (BibInfo.AccessConditions_Count > 0)
             {
-                Output.WriteLine("<dc:rights>" + Convert_String_To_XML_Safe_Static(BibInfo.Access_Condition.Text) + "</dc:rights>");
+                foreach (var rights in BibInfo.AccessConditions)
+                {
+                    Output.WriteLine("<dc:rights>" + Convert_String_To_XML_Safe_Static(rights.Text) + "</dc:rights>");
+
+                }
             }
 
             // Add the source note
@@ -457,7 +462,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                             R.Read();
                             if ((R.NodeType == XmlNodeType.Text) && (R.Value.Trim().Length > 0))
                             {
-                                BibInfo.Access_Condition.Text = R.Value.Trim();
+                                BibInfo.Add_AccessCondition(R.Value.Trim());
                             }
                             break;
 

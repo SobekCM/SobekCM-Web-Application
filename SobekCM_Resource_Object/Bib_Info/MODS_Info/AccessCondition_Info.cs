@@ -16,6 +16,7 @@ namespace SobekCM.Resource_Object.Bib_Info
         private string language;
         private string rights_text;
         private string rights_type;
+        private string rights_uri;
 
         /// <summary> Constructor creates an empty access condition object </summary>
         public AccessCondition_Info()
@@ -52,6 +53,13 @@ namespace SobekCM.Resource_Object.Bib_Info
             set { language = value; }
         }
 
+        /// <summary> Uri for this rights statement </summary>
+        public string URI
+        {
+            get { return rights_uri ?? rights_uri; }
+            set { rights_uri = value; }
+        }
+
         /// <summary> Clear all the data associated with this access condition object </summary>
         public void Clear()
         {
@@ -59,6 +67,7 @@ namespace SobekCM.Resource_Object.Bib_Info
             rights_type = null;
             language = null;
             displayLabel = null;
+            rights_uri = null;
         }
 
         /// <summary> Writes this access condition as MODS to a writer writing to a stream ( either a file or web response stream )</summary>
@@ -76,6 +85,8 @@ namespace SobekCM.Resource_Object.Bib_Info
                 ReturnValue.Write(" displayLabel=\"" + Convert_String_To_XML_Safe(displayLabel) + "\"");
             if (!String.IsNullOrEmpty(language))
                 ReturnValue.Write(" lang=\"" + language + "\"");
+            if (!String.IsNullOrEmpty(rights_uri))
+                ReturnValue.Write(" xlink:href=\"" + Convert_String_To_XML_Safe(rights_uri) + "\"");
             ReturnValue.Write(">" + Convert_String_To_XML_Safe(rights_text) + "</mods:accessCondition>\r\n");
         }
     }

@@ -521,7 +521,7 @@ namespace SobekCM.Resource_Object.Mapping
                     return true;
 
                 case "RIGHTS":
-                    Package.Bib_Info.Access_Condition.Text = Data;
+                    Package.Bib_Info.Add_AccessCondition(Data);
                     return true;
 
                 case "BIBSERIESTITLE":

@@ -2338,7 +2338,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
             {
                 if (thisRecord.has_Subfield('a'))
                 {
-                    thisBibInfo.Access_Condition.Text = thisRecord['a'];
+                    thisBibInfo.Add_AccessCondition(thisRecord['a']);
                     // thisBibInfo.Add_Note(thisRecord['a'], Note_Type_Enum.restriction);
                 }
             }

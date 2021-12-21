@@ -130,19 +130,23 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
 
                         case "mods:accessCondition":
                         case "accessCondition":
+                            AccessCondition_Info newRights = new AccessCondition_Info();
                             if (R.MoveToAttribute("ID"))
-                                ThisBibInfo.Access_Condition.ID = R.Value;
+                                newRights.ID = R.Value;
                             if (R.MoveToAttribute("type"))
-                                ThisBibInfo.Access_Condition.Type = R.Value;
+                                newRights.Type = R.Value;
                             if (R.MoveToAttribute("displayLabel"))
-                                ThisBibInfo.Access_Condition.Display_Label = R.Value;
+                                newRights.Display_Label = R.Value;
                             if (R.MoveToAttribute("lang"))
-                                ThisBibInfo.Access_Condition.Language = R.Value;
+                                newRights.Language = R.Value;
+                            if (R.MoveToAttribute("xlink:href"))
+                                newRights.URI = R.Value;
                             R.Read();
                             if (R.NodeType == XmlNodeType.Text)
                             {
-                                ThisBibInfo.Access_Condition.Text = R.Value;
+                                newRights.Text = R.Value;
                             }
+                            ThisBibInfo.Add_AccessCondition(newRights);
                             break;
 
                         case "mods:classification":

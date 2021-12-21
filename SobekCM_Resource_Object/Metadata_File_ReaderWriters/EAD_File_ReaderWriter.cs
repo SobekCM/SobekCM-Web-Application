@@ -319,7 +319,7 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
                                     break;
 
                                 case "userestrict":
-                                    Return_Package.Bib_Info.Access_Condition.Text = Clean_Text_Block(reader2.ReadInnerXml());
+                                    Return_Package.Bib_Info.Add_AccessCondition(Clean_Text_Block(reader2.ReadInnerXml()));
                                     break;
 
                                 case "acqinfo":

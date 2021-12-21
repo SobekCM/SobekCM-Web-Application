@@ -173,7 +173,7 @@ namespace SobekCM.Resource_Object
             {
                 foreach (string thisRights in OAI_Record.Rights)
                 {
-                    Bib_Info.Access_Condition.Text = thisRights;
+                    Bib_Info.Add_AccessCondition(thisRights);
                 }
             }
             //if (OAI_Record.hasSources)
@@ -2335,21 +2335,36 @@ namespace SobekCM.Resource_Object
             }
 
             // ADD THE RIGHTS 
-            if (Bib_Info.Access_Condition.Text.Length > 0)
+            foreach( var rights in Bib_Info.AccessConditions)
             {
-                if (String.Compare(Bib_Info.Access_Condition.Type, "use and reproduction", StringComparison.OrdinalIgnoreCase) == 0)
+                if (String.Compare(rights.Type, "use and reproduction", StringComparison.OrdinalIgnoreCase) == 0)
                 {
-                    if ( Bib_Info.Access_Condition.Text.IndexOf("http") == 0 )
-                        tags.Add_Field(540, "  ", "|u " + Bib_Info.Access_Condition.Text);
+                    if (rights.Text.IndexOf("http") == 0)
+                        tags.Add_Field(540, "  ", "|u " + rights.Text);
                     else
-                        tags.Add_Field(540, "  ", "|a " + Bib_Info.Access_Condition.Text);
+                    {
+                        var newTag = tags.Add_Field(540, "  ", "|a " + rights.Text);
+                        if ( !String.IsNullOrEmpty(rights.URI))
+                        {
+                            newTag.Add_Subfield('u', rights.URI);
+                        }
+                    }
                 }
                 else
                 {
-                    if (Bib_Info.Access_Condition.Text.IndexOf("http") == 0)
-                        tags.Add_Field(506, "  ", "|u " + Bib_Info.Access_Condition.Text);
+                    if (rights.Text.IndexOf("http") == 0)
+                        tags.Add_Field(506, "  ", "|u " + rights.Text);
                     else
-                        tags.Add_Field(506, "  ", "|a " + Bib_Info.Access_Condition.Text);
+                    {
+                        var newTag = tags.Add_Field(506, "  ", "|a " + rights.Text);
+                        if (!String.IsNullOrEmpty(rights.URI))
+                        {
+                            if (!String.IsNullOrEmpty(rights.URI))
+                            {
+                                newTag.Add_Subfield('u', rights.URI);
+                            }
+                        }
+                    }
                 }
             }
 

@@ -153,11 +153,14 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
             Output_Stream.WriteLine("\t\t\t\t<idno>" + purl + "</idno>");
 
             // Add the availability statement
-            if ( Item_To_Save.Bib_Info.Access_Condition.Text.Length > 0 )
+            if ( Item_To_Save.Bib_Info.AccessConditions_Count > 0 )
             {
-                Output_Stream.WriteLine("\t\t\t\t<availability status=\"restricted\">");
-                Output_Stream.WriteLine("\t\t\t\t\t<p>" + Convert_String_To_XML_Safe(Item_To_Save.Bib_Info.Access_Condition.Text) + "</p>");
-                Output_Stream.WriteLine("\t\t\t\t</availability>");
+                foreach (var rights in Item_To_Save.Bib_Info.AccessConditions)
+                {
+                    Output_Stream.WriteLine("\t\t\t\t<availability status=\"restricted\">");
+                    Output_Stream.WriteLine("\t\t\t\t\t<p>" + Convert_String_To_XML_Safe(rights.Text) + "</p>");
+                    Output_Stream.WriteLine("\t\t\t\t</availability>");
+                }
             }
             Output_Stream.WriteLine("\t\t\t</publicationStmt>");
 
@@ -235,12 +238,16 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
             }
 
             // Add the availability statement
-            if ( Item_To_Save.Bib_Info.Access_Condition.Text.Length > 0 )
+            if (Item_To_Save.Bib_Info.AccessConditions_Count > 0)
             {
-                Output_Stream.WriteLine("\t\t\t\t\t\t<availability status=\"restricted\">");
-                Output_Stream.WriteLine("\t\t\t\t\t\t\t<p>" + Convert_String_To_XML_Safe(Item_To_Save.Bib_Info.Access_Condition.Text) + "</p>");
-                Output_Stream.WriteLine("\t\t\t\t\t\t</availability>");
+                foreach (var rights in Item_To_Save.Bib_Info.AccessConditions)
+                {
+                    Output_Stream.WriteLine("\t\t\t\t<availability status=\"restricted\">");
+                    Output_Stream.WriteLine("\t\t\t\t\t<p>" + Convert_String_To_XML_Safe(rights.Text) + "</p>");
+                    Output_Stream.WriteLine("\t\t\t\t</availability>");
+                }
             }
+
             Output_Stream.WriteLine("\t\t\t\t\t</publicationStmt>");
 
             Output_Stream.WriteLine("\t\t\t\t\t<notesStmt>");

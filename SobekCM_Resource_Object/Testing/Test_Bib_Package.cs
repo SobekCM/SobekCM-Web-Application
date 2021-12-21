@@ -46,10 +46,15 @@ namespace SobekCM.Resource_Object.Testing
             testAbstract.Display_Label = "Summary Abstract";
             testAbstract.Type = "summary";
 
-            testPackage.Bib_Info.Access_Condition.Text = "All rights are reserved by source institution.";
-            testPackage.Bib_Info.Access_Condition.Language = "en";
-            testPackage.Bib_Info.Access_Condition.Type = "restrictions on use";
-            testPackage.Bib_Info.Access_Condition.Display_Label = "Rights";
+            AccessCondition_Info newAccessInfo = new AccessCondition_Info
+            {
+                Text = "All rights are reserved by source institution.",
+                Language = "en",
+                Type = "restrictions on use",
+                Display_Label = "Rights",
+                URI = "http://domain.edu"
+            };
+            testPackage.Bib_Info.Add_AccessCondition(newAccessInfo);
 
             testPackage.Bib_Info.Add_Identifier("000123234", "OCLC", "Electronic OCLC");
             testPackage.Bib_Info.Add_Identifier("182-asdsd-28k", "DOI");

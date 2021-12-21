@@ -73,9 +73,12 @@ namespace SobekCM.Resource_Object.Bib_Info
                 }
 
                 // Add the rights statement
-                if (Access_Condition.Text.Length > 0)
+                if (AccessConditions_Count > 0 )
                 {
-                    metadataTerms.Add(new KeyValuePair<string, string>("Other Citation", Access_Condition.Text));
+                    foreach (var thisRights in AccessConditions)
+                    {
+                        metadataTerms.Add(new KeyValuePair<string, string>("Other Citation", thisRights.Text));
+                    }
                 }
 
                 // Add the affiliation information

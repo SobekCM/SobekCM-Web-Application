@@ -1409,7 +1409,7 @@ namespace SobekCM.Resource_Object
                     Package.Bib_Info.Add_Note(Data);
                     break;
                 case Mapped_Fields.Rights:
-                    Package.Bib_Info.Access_Condition.Text = Data;
+                    Package.Bib_Info.Add_AccessCondition(Data);
                     break;
                 case Mapped_Fields.Series_Title:
                     Package.Bib_Info.SeriesTitle.Title = Data;

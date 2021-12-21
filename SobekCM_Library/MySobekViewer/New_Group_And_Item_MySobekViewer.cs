@@ -2005,7 +2005,7 @@ namespace SobekCM.Library.MySobekViewer
             if (item.Bib_Info.Main_Title.Title.ToUpper().IndexOf("PROJECT LEVEL METADATA") == 0)
                 item.Bib_Info.Main_Title.Clear();
             if (RequestSpecificValues.Current_User.Default_Rights.Length > 0)
-                item.Bib_Info.Access_Condition.Text = RequestSpecificValues.Current_User.Default_Rights.Replace("[name]", RequestSpecificValues.Current_User.Full_Name).Replace("[year]", DateTime.Now.Year.ToString());
+                item.Bib_Info.Add_AccessCondition(RequestSpecificValues.Current_User.Default_Rights.Replace("[name]", RequestSpecificValues.Current_User.Full_Name).Replace("[year]", DateTime.Now.Year.ToString()));
         }
 
         #endregion

@@ -355,7 +355,7 @@ namespace SobekCM.Resource_Object.Mapping
                     return true;
 
                 case "rightsinformation":
-                    Package.Bib_Info.Access_Condition.Text = Data;
+                    Package.Bib_Info.Add_AccessCondition(Data);
                     return true;
 
                 case "scrapbook-specificsubjects":

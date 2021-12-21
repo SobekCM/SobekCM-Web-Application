@@ -188,9 +188,11 @@ namespace SobekCM.Library.Citation.Elements
         /// <summary> Prepares the bib object for the save, by clearing any existing data in this element's related field(s) </summary>
         /// <param name="Bib"> Existing digital resource object which may already have values for this element's data field(s) </param>
         /// <param name="Current_User"> Current user, who's rights may impact the way an element is rendered </param>
-        /// <remarks> This doesn't change the rights statement, but it does clear any related licenses </remarks>
+        /// <remarks> This clears the rights statement, and any related licenses </remarks>
         public override void Prepare_For_Save(SobekCM_Item Bib, User_Object Current_User)
         {
+            Bib.Bib_Info.Clear_AccessConditions();
+
             if (Bib.Bib_Info.LicensingCount > 0)
             {
                 List<string> removes = new List<string>();
@@ -215,7 +217,7 @@ namespace SobekCM.Library.Citation.Elements
             foreach (string thisKey in getKeys.Where(thisKey => thisKey.IndexOf(html_element_name.Replace("_", "")) == 0))
             {
                 string access_text = HttpContext.Current.Request.Form[thisKey];
-                Bib.Bib_Info.Access_Condition.Text = access_text;
+                Bib.Bib_Info.Add_AccessCondition(access_text);
 
                 if ( !String.IsNullOrWhiteSpace(access_text))
                 {
@@ -236,7 +238,7 @@ namespace SobekCM.Library.Citation.Elements
         {
             if ((DefaultValues != null) && (DefaultValues.Count > 0))
             {
-                Bib.Bib_Info.Access_Condition.Text = DefaultValues[0];
+                Bib.Bib_Info.Add_AccessCondition(DefaultValues[0]);
             }
         }
     }

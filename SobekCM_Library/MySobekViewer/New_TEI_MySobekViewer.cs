@@ -2758,7 +2758,7 @@ namespace SobekCM.Library.MySobekViewer
             item.METS_Header.Add_Creator_Org_Notes("Created using online TEI submission form");
 
             if (RequestSpecificValues.Current_User.Default_Rights.Length > 0)
-                item.Bib_Info.Access_Condition.Text = RequestSpecificValues.Current_User.Default_Rights.Replace("[name]", RequestSpecificValues.Current_User.Full_Name).Replace("[year]", DateTime.Now.Year.ToString());
+                item.Bib_Info.Add_AccessCondition(RequestSpecificValues.Current_User.Default_Rights.Replace("[name]", RequestSpecificValues.Current_User.Full_Name).Replace("[year]", DateTime.Now.Year.ToString()));
         }
 
         #endregion

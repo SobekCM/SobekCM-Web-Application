@@ -478,7 +478,7 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
                             thisPackage.Bib_Info.Main_Title.Title = read_text_node(nodeReader);
                             break;
                         case "DC.RIGHTS":
-                            thisPackage.Bib_Info.Access_Condition.Text = read_text_node(nodeReader);
+                            thisPackage.Bib_Info.Add_AccessCondition(read_text_node(nodeReader));
                             break;
                         case "DC.IDENTIFIER":
                             thisPackage.Bib_Info.Add_Identifier(read_text_node(nodeReader));

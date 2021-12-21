@@ -20,7 +20,7 @@ namespace SobekCM.Resource_Object.Bib_Info
         protected List<Abstract_Info> abstracts;
 
         /// <summary> Protected field contains the rights associated with the use of this digital resource </summary>
-        protected AccessCondition_Info accessCondition;
+        protected List<AccessCondition_Info> accessConditions;
 
         /// <summary> Protected field contains the collection of classifications associated with this digital resource </summary>
         protected List<Classification_Info> classifications;
@@ -96,7 +96,7 @@ namespace SobekCM.Resource_Object.Bib_Info
         {
             // Perform some preliminary configuration
             ModsOriginInfo = new MODS_Origin_Info();
-            accessCondition = new AccessCondition_Info();
+            accessConditions = new List<AccessCondition_Info>();
             originalPhysicalDesc = new PhysicalDescription_Info();
             //physicalDesc = new PhysicalDescription_Info();
             mainTitle = new Title_Info();
@@ -145,10 +145,51 @@ namespace SobekCM.Resource_Object.Bib_Info
             set { mainTitle = value; }
         }
 
-        /// <summary> Rights associated with the use of this digital resource </summary>
-        public AccessCondition_Info Access_Condition
+        /// <summary> The number of access conditions with this digital resource </summary>
+        /// <remarks> This should be used rather than the Count property of the <see cref="AccessConditions"/> property.  Even if 
+        /// there are no abstracts, the AccessConditions property creates a readonly collection to pass back out.</remarks>
+        public int AccessConditions_Count
         {
-            get { return accessCondition; }
+            get
+            {
+                return accessConditions == null ? 0 : accessConditions.Count;
+            }
+        }
+
+        /// <summary> Rights associated with the use of this digital resource </summary>
+        public ReadOnlyCollection<AccessCondition_Info> AccessConditions
+        {
+            get
+            {
+                return accessConditions == null ? new ReadOnlyCollection<AccessCondition_Info>(new List<AccessCondition_Info>()) : new ReadOnlyCollection<AccessCondition_Info>(accessConditions);
+            }
+        }
+
+        /// <summary> Clears all the rights assocaited with this item </summary>
+        public void Clear_AccessConditions()
+        {
+            if (accessConditions != null)
+                accessConditions.Clear();
+        }
+
+        /// <summary> Add a new rights access condition statements </summary>
+        /// <param name="AccessCondition"> Fully built rights object </param>
+        public void Add_AccessCondition(AccessCondition_Info AccessCondition)
+        {
+            if (accessConditions == null) accessConditions = new List<AccessCondition_Info>();
+
+            accessConditions.Add(AccessCondition);
+        }
+
+        /// <summary> Add a new rights access condition statements </summary>
+        /// <param name="RightsText"> Text of this access condition </param>
+        public void Add_AccessCondition(string RightsText)
+        {
+            if (accessConditions == null) accessConditions = new List<AccessCondition_Info>();
+
+            AccessCondition_Info access = new AccessCondition_Info { Text = RightsText };
+
+            accessConditions.Add(access);
         }
 
         /// <summary> The number of table of contents associated with this digital resource </summary>
@@ -161,7 +202,7 @@ namespace SobekCM.Resource_Object.Bib_Info
                 return tableOfContents == null ? 0 : tableOfContents.Count;
             }
         }
-
+        
         /// <summary> Collection of all the table of contents associated with this item </summary>
         /// <remarks> You should check the count of table of contents first using the <see cref="TableOfContents_Count"/> property before using this property.
         /// Even if there are no abstracts, this property creates a readonly collection to pass back out.</remarks>
@@ -1649,7 +1690,10 @@ namespace SobekCM.Resource_Object.Bib_Info
                     }
                 }
 
-                full_citation.Append(accessCondition.Text + " | ");
+                foreach (var rights in accessConditions)
+                {
+                    full_citation.Append(rights.Text + " | ");
+                }
 
                 if (mainTitle.Title.Length > 0)
                 {
@@ -1753,7 +1797,13 @@ namespace SobekCM.Resource_Object.Bib_Info
             }
 
             // Add the rights
-            accessCondition.Add_MODS(Results);
+            if (accessConditions != null)
+            {
+                foreach (var accessCondition in accessConditions)
+                {
+                    accessCondition.Add_MODS(Results);
+                }
+            }
 
             // Add the genres
             if (genres != null)

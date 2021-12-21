@@ -141,10 +141,10 @@ namespace SobekCM.Library.Citation.Elements
         /// <summary> Prepares the bib object for the save, by clearing any existing data in this element's related field(s) </summary>
         /// <param name="Bib"> Existing digital resource object which may already have values for this element's data field(s) </param>
         /// <param name="Current_User"> Current user, who's rights may impact the way an element is rendered </param>
-        /// <remarks> This does nothing since there is only one rights statement </remarks>
+        /// <remarks> Clears existing rights statements </remarks>
         public override void Prepare_For_Save(SobekCM_Item Bib, User_Object Current_User)
         {
-            // Do nothing since there is only one rights statement
+            Bib.Bib_Info.Clear_AccessConditions();
         }
 
         /// <summary> Saves the data rendered by this element to the provided bibliographic object during postback </summary>
@@ -154,7 +154,7 @@ namespace SobekCM.Library.Citation.Elements
             string[] getKeys = HttpContext.Current.Request.Form.AllKeys;
             foreach (string thisKey in getKeys.Where(thisKey => thisKey.IndexOf(html_element_name.Replace("_", "")) == 0))
             {
-                Bib.Bib_Info.Access_Condition.Text = DEFAULT_PREFIX + " " + HttpContext.Current.Request.Form[thisKey];
+                Bib.Bib_Info.Add_AccessCondition(DEFAULT_PREFIX + " " + HttpContext.Current.Request.Form[thisKey]);
                 return;
             }
         }

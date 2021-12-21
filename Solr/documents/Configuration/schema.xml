@@ -221,7 +221,7 @@
   <copyField source="temporal_subject" dest="temporal_subject_facets" />
 
   <!-- Other standard metadata fields -->
-  <field name="attribution" type="text_general" indexed="true" stored="true" multiValued="false" />
+  <field name="attribution" type="text_general" indexed="true" stored="true" multiValued="true" />
   <field name="mime_type" type="text_general" indexed="true" stored="true" multiValued="true" />
   <field name="tracking_box" type="text_general" indexed="true" stored="true" multiValued="true" />
   <field name="abstract" type="text_general" indexed="true" stored="true" multiValued="true" />

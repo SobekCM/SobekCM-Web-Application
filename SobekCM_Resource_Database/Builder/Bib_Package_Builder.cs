@@ -581,9 +581,16 @@ namespace SobekCM_Resource_Database.Builder
                     }
 
                     // Copy the rights over
-                    if ((projectMETS.Bib_Info.Access_Condition.Text.Length > 0) && (BIBPackage.Bib_Info.Access_Condition.Text.Length == 0))
+                    if (projectMETS.Bib_Info.AccessConditions_Count > 0)
                     {
-                        BIBPackage.Bib_Info.Access_Condition.Text = projectMETS.Bib_Info.Access_Condition.Text;
+                        var projectAccess = projectMETS.Bib_Info.AccessConditions[0];
+                        if (projectAccess.Text.Length > 0)
+                        {
+                            var access = BIBPackage.Bib_Info.Add_AccessCondition(projectAccess.Text);
+                            access.Display_Label = projectAccess.Display_Label;
+                            access.Language = projectAccess.Language;
+                            access.URI = projectAccess.URI;
+                        }
                     }
 
                     // Copy all the icon information over

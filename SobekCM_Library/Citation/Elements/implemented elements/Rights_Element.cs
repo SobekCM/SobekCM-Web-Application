@@ -80,7 +80,9 @@ namespace SobekCM.Library.Citation.Elements
                 }
             }
 
-            string rights_stmt = Bib.Bib_Info.Access_Condition.Text.Trim();
+            string rights_stmt = String.Empty;
+            if ((Bib.Bib_Info.AccessConditions_Count > 0) && (!String.IsNullOrEmpty(Bib.Bib_Info.AccessConditions[0].Text)))
+                rights_stmt = Bib.Bib_Info.AccessConditions[0].Text.Trim();
             if (( rights_stmt.Length == 0 ) || ( rights_stmt == "All rights reserved by the source institution."))
             {
                 if ( DefaultValues.Count > 0 )

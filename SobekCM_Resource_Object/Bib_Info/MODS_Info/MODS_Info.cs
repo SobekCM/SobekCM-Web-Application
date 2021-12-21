@@ -183,13 +183,16 @@ namespace SobekCM.Resource_Object.Bib_Info
 
         /// <summary> Add a new rights access condition statements </summary>
         /// <param name="RightsText"> Text of this access condition </param>
-        public void Add_AccessCondition(string RightsText)
+        /// <returns> Built access condition object </returns>
+        public AccessCondition_Info Add_AccessCondition(string RightsText)
         {
             if (accessConditions == null) accessConditions = new List<AccessCondition_Info>();
 
             AccessCondition_Info access = new AccessCondition_Info { Text = RightsText };
 
             accessConditions.Add(access);
+
+            return access;
         }
 
         /// <summary> The number of table of contents associated with this digital resource </summary>

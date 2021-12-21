@@ -910,16 +910,24 @@ namespace SobekCM.Engine_Library.Solr.Legacy
 
         /// <summary> Returns the rights/attribution for the Solr engine to index for this document </summary>
         [SolrField("attribution")]
-        public string Attribution
+        public List<string> Attribution
         {
             get
             {
-                // Add the rights statement
-                if (digitalObject.Bib_Info.Access_Condition.Text.Length > 0)
+                List<string> returnValue = new List<string>();
+
+                // Add the rights statements
+                if (digitalObject.Bib_Info.AccessConditions_Count > 0)
                 {
-                    return digitalObject.Bib_Info.Access_Condition.Text;
+                    foreach (var access in digitalObject.Bib_Info.AccessConditions)
+                    {
+                        if (!String.IsNullOrEmpty(access.Text))
+                        {
+                            returnValue.Add(access.Text);
+                        }
+                    }
                 }
-                return String.Empty;
+                return returnValue;
             }
         }
 

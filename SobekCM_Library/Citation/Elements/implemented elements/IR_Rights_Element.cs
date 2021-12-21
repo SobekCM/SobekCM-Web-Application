@@ -86,6 +86,10 @@ namespace SobekCM.Library.Citation.Elements
             if (IsMozilla)
                 actual_cols = ColsMozilla;
 
+            string accessCondition = String.Empty;
+            if ((Bib.Bib_Info.AccessConditions_Count > 0) && (!String.IsNullOrEmpty(Bib.Bib_Info.AccessConditions[0].Text)))
+                accessCondition = Bib.Bib_Info.AccessConditions[0].Text.Replace(DEFAULT_PREFIX, "").Trim();
+
             Output.WriteLine("  <!-- " + Title + " Element -->");
             Output.WriteLine("  <tr align=\"left\">");
             Output.WriteLine("    <td width=\"" + LEFT_MARGIN + "px\">&nbsp;</td>");
@@ -107,7 +111,7 @@ namespace SobekCM.Library.Citation.Elements
             Output.WriteLine("    <td>");
 
             Output.WriteLine("      <div id=\"" + html_element_name + "_div\">");
-            Output.WriteLine("        <textarea rows=\"" + Rows + "\" cols=\"" + actual_cols + "\" name=\"" + id_name + "1\" id=\"" + id_name + "1\" class=\"" + html_element_name + "_input\" onfocus=\"javascript:textbox_enter('" + id_name + "1','" + html_element_name + "_input_focused')\" onblur=\"javascript:textbox_leave('" + id_name + "1','" + html_element_name + "_input')\">" + HttpUtility.HtmlEncode(Bib.Bib_Info.Access_Condition.Text.Replace(DEFAULT_PREFIX, "").Trim()) + "</textarea>");
+            Output.WriteLine("        <textarea rows=\"" + Rows + "\" cols=\"" + actual_cols + "\" name=\"" + id_name + "1\" id=\"" + id_name + "1\" class=\"" + html_element_name + "_input\" onfocus=\"javascript:textbox_enter('" + id_name + "1','" + html_element_name + "_input_focused')\" onblur=\"javascript:textbox_leave('" + id_name + "1','" + html_element_name + "_input')\">" + HttpUtility.HtmlEncode(accessCondition) + "</textarea>");
             Output.WriteLine("        <div class=\"ShowOptionsRow\">");
 			Output.WriteLine("                <ul class=\"sbk_FauxDownwardTabsList\">");
 			Output.WriteLine("                  <li><a href=\"\" onclick=\"return open_cc_rights();\">CREATIVE COMMONS</a></li>");

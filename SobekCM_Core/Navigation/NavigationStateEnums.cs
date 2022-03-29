@@ -329,6 +329,9 @@
         /// <summary> Change your current password (or temporary password) </summary>
         New_Password,
 
+        /// <summary> Open publishing tool allows creation of oer textbooks through online interface </summary>
+        Open_Publishing_Tool,
+
         /// <summary> Edit the page images related to a digial resource, by deleting or uploading new images </summary>
         Page_Images_Management,
 

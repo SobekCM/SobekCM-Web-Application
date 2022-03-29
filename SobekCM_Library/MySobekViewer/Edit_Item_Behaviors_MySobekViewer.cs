@@ -25,7 +25,7 @@ using SobekCM_Resource_Database;
 
 namespace SobekCM.Library.MySobekViewer
 {
-    /// <summary> Class allows an authenticated RequestSpecificValues.Current_User to edit a single digital resource's behaviors within this digital library </summary>
+    /// <summary> Class allows an authenticated user to edit a single digital resource's behaviors within this digital library </summary>
     /// <remarks> This class extends the <see cref="abstract_MySobekViewer"/> class.<br /><br />
     /// MySobek Viewers are used for registration and authentication with mySobek, as well as performing any task which requires
     /// authentication, such as online submittal, metadata editing, and system administrative tasks.<br /><br />

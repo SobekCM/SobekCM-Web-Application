@@ -324,6 +324,12 @@ namespace SobekCM.Core.Navigation
                             if (!String.IsNullOrEmpty(Current_Mode.My_Sobek_SubMode))
                                 return this_base_url + "my/stats/" + Current_Mode.My_Sobek_SubMode + urlOptions1;
                             return this_base_url + "my/stats" + urlOptions1;
+
+                        case My_Sobek_Type_Enum.Open_Publishing_Tool:
+                            if (!String.IsNullOrEmpty(Current_Mode.My_Sobek_SubMode))
+                                return this_base_url + "my/openpublisher/" + Current_Mode.BibID + "/" + Current_Mode.VID + "/" + Current_Mode.My_Sobek_SubMode + urlOptions1;
+                            return this_base_url + "my/openpublisher/" + Current_Mode.BibID + "/" + Current_Mode.VID + urlOptions1;
+
                     }
                     break;
 

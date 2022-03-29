@@ -54,6 +54,29 @@
   }
 
   .oer_div_inner_title { color: #444; }
+
+  .oer_div_add_button {
+    display:  inline-block;
+    width:  20px;
+    background-color: white;
+    border:  solid 1px #ccc;
+    border-radius: 5px;
+    margin-right:  20px;
+    padding-left:  15px;
+    padding-right: 5px;
+    padding-top:  15px;
+    vertical-align: top;
+    padding-bottom: 12px;
+    cursor: pointer;
+  }
+
+
+
+  .oer_div_toolbox_outer { width: 360px; margin-left: 420px; height: 19px; margin-top: 5px; }
+  .oer_div_toolbox a:link { color: #999; }
+  .oer_div_toolbox a:visited { color: #999; }
+  .oer_div_toolbox a:hover { color: blue; text-decoration: none; }
+
  
 
 </style>
@@ -73,10 +96,6 @@
                   <td style="width:250px; text-align:right;"><a href="http://localhost:52468/my">Mark's myTest</a>&nbsp; | &nbsp; <a href="http://localhost:52468/my/logout">Log Out</a> </td>
               </tr>
           </table>
-    </div>
-  
-  	<div id="header-primary-item">
-       <div id="headerlogo"><a href="https://OpenNJ.net"><img src="https://OpenNJ.net/design/skins/OPEN/uploads/vale_200.png" alt="VALE Open-NJ" width="100px" /></a></div>
     </div>
   
 </header>
@@ -107,6 +126,21 @@
 
 <div id="pagecontainer">
 
+  <script>
+
+jQuery(document).ready(function () {
+
+    jQuery(document).on('mouseenter', '.oer_div_outer', function () {                       
+         //alert('ready');
+        jQuery(this).children('.oer_div_toolbox_outer').children('.oer_div_toolbox').show();
+
+    }).on('mouseleave', '.oer_div_outer', function () {
+        jQuery(this).children('.oer_div_toolbox_outer').children('.oer_div_toolbox').hide();
+    });
+});
+
+  </script>
+
 <div class="sbkMySobek_HomeText">
   <br />
   <h2>Resource Structure</h2>
@@ -122,10 +156,28 @@
 
 <div class="oer_div_outer">
   <div class="oer_div_outer_title">Front Cover</div>
+  <div class="oer_div_toolbox_outer">
+    <div class="oer_div_toolbox" style="display:none;">
+      <a href="">new division</a> &nbsp;
+      <a href="">add before</a> &nbsp;
+      <a href="">add after</a> &nbsp;
+      <a href="">view</a> &nbsp;
+      <a href="">edit</a>
+    </div>
+  </div>
 </div>
 
 <div class="oer_div_outer">
   <div class="oer_div_outer_title">Table of Contents</div>
+  <div class="oer_div_toolbox_outer">
+    <div class="oer_div_toolbox" style="display:none;">
+      <a href="">new division</a> &nbsp;
+      <a href="">add before</a> &nbsp;
+      <a href="">add after</a> &nbsp;
+      <a href="">view</a> &nbsp;
+      <a href="">edit</a>
+    </div>
+  </div>
 </div>
 
 <div class="oer_div_outer">
@@ -135,6 +187,18 @@
   </div>
   <div class="oer_div_inner">
     <div class="oer_div_inner_title">Application of Basic Concepts</div>
+  </div>
+  <div class="oer_div_add_button">
+    <div class="oer_div_inner_title">+</div>
+  </div>
+  <div class="oer_div_toolbox_outer">
+    <div class="oer_div_toolbox" style="display:none;">
+      <a href="">new division</a> &nbsp;
+      <a href="">add before</a> &nbsp;
+      <a href="">add after</a> &nbsp;
+      <a href="">view</a> &nbsp;
+      <a href="">edit</a>
+    </div>
   </div>
 </div>
 
@@ -146,14 +210,44 @@
   <div class="oer_div_inner">
     <div class="oer_div_inner_title">Application of Advanced Topics</div>
   </div>
+  <div class="oer_div_add_button">
+    <div class="oer_div_inner_title">+</div>
+  </div>
+  <div class="oer_div_toolbox_outer">
+    <div class="oer_div_toolbox" style="display:none;">
+      <a href="">new division</a> &nbsp;
+      <a href="">add before</a> &nbsp;
+      <a href="">add after</a> &nbsp;
+      <a href="">view</a> &nbsp;
+      <a href="">edit</a>
+    </div>
+  </div>
 </div>
 
 <div class="oer_div_outer">
   <div class="oer_div_outer_title">Further Studies</div>
+  <div class="oer_div_toolbox_outer">
+    <div class="oer_div_toolbox" style="display:none;">
+      <a href="">new division</a> &nbsp;
+      <a href="">add before</a> &nbsp;
+      <a href="">add after</a> &nbsp;
+      <a href="">view</a> &nbsp;
+      <a href="">edit</a>
+    </div>
+  </div>
 </div>
 
 <div class="oer_div_outer">
   <div class="oer_div_outer_title">Back Matter</div>
+  <div class="oer_div_toolbox_outer">
+    <div class="oer_div_toolbox" style="display:none;">
+      <a href="">new division</a> &nbsp;
+      <a href="">add before</a> &nbsp;
+      <a href="">add after</a> &nbsp;
+      <a href="">view</a> &nbsp;
+      <a href="">edit</a>
+    </div>
+  </div>
 </div>
 
 </div>

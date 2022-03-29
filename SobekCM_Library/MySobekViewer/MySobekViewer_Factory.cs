@@ -85,6 +85,9 @@ namespace SobekCM.Library.MySobekViewer
                 case My_Sobek_Type_Enum.Group_Mass_Update_Items:
                     return new Mass_Update_Items_MySobekViewer(RequestSpecificValues);
 
+                case My_Sobek_Type_Enum.Open_Publishing_Tool:
+                    return new Edit_Item_OpenPublisher_MySobekViewer(RequestSpecificValues);
+
                 case My_Sobek_Type_Enum.Page_Images_Management:
                     return new Page_Image_Upload_MySobekViewer(RequestSpecificValues);
 

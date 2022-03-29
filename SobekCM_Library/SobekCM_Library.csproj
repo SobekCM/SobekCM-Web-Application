@@ -264,6 +264,8 @@
     <Compile Include="ItemViewer\Viewers\abstractNoPaginationItemViewer.cs" />
     <Compile Include="ItemViewer\Viewers\abstractPageFilesItemViewer.cs" />
     <Compile Include="ItemViewer\Viewers\Downloads_JP2s_ItemViewer.cs" />
+    <Compile Include="ItemViewer\Viewers\HTML_WebSite_ItemViewer.cs" />
+    <Compile Include="ItemViewer\Viewers\OpenTextbook_Divisions_ItemViewer.cs" />
     <Compile Include="ItemViewer\Viewers\OpenTextbook_ItemViewer.cs" />
     <Compile Include="ItemViewer\Viewers\SearchEngineIndexing_ItemViewer.cs" />
     <Compile Include="ItemViewer\Viewers\TEI_ItemViewer.cs" />
@@ -403,6 +405,7 @@
     <Compile Include="Localization\SampleClass_LocalizationInfo.cs" />
     <Compile Include="Localization\SobekCM_LocalizationInfo.cs" />
     <Compile Include="MainWriters\DataProvider_MainWriter.cs" />
+    <Compile Include="MySobekViewer\Edit_Item_OpenPublisher_MySobekViewer.cs" />
     <Compile Include="MySobekViewer\Edit_Item_Permissions_MySobekViewer.cs" />
     <Compile Include="MySobekViewer\Edit_TEI_Item_MySobekViewer.cs" />
     <Compile Include="MySobekViewer\Import_Spreadsheet_MySobekViewer.cs" />

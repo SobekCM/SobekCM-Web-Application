@@ -46,9 +46,9 @@ namespace SobekCM.Library.Citation.Elements
             Add_Select_Item("Contributor", "ctb");
             Add_Select_Item("Curator", "cur");
             Add_Select_Item("Degree grantor", "dgg");
+            Add_Select_Item("Designer", "dsr");
             Add_Select_Item("Director", "drt");
             Add_Select_Item("Dissertant", "dis");
-            Add_Select_Item("Designer", "dsr");
             Add_Select_Item("Editor", "edt");
             Add_Select_Item("Engineer", "eng");
             Add_Select_Item("Engraver", "egr");

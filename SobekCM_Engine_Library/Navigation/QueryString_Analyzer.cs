@@ -438,7 +438,17 @@ namespace SobekCM.Engine_Library.Navigation
                                                 Navigator.My_Sobek_SubMode = url_relative_list[4];
                                             break;
 
-										case "behaviors":
+                                        case "openpublisher":
+                                            Navigator.My_Sobek_Type = My_Sobek_Type_Enum.Open_Publishing_Tool;
+                                            if (url_relative_list.Count > 2)
+                                                Navigator.BibID = url_relative_list[2].ToUpper();
+                                            if (url_relative_list.Count > 3)
+                                                Navigator.VID = url_relative_list[3];
+                                            if (url_relative_list.Count > 4)
+                                                Navigator.My_Sobek_SubMode = url_relative_list[4];
+                                            break;
+
+                                        case "behaviors":
 											Navigator.My_Sobek_Type = My_Sobek_Type_Enum.Edit_Item_Behaviors;
 											if (url_relative_list.Count > 2)
 												Navigator.BibID = url_relative_list[2].ToUpper();

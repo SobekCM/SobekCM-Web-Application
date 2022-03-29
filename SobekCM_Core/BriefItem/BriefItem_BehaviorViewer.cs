@@ -30,6 +30,21 @@ namespace SobekCM.Core.BriefItem
             this.Label = Label;
         }
 
+        /// <summary> Constructor for a new instance of the BriefItem_BehaviorViewer class </summary>
+        /// <param name="ViewerType"> Name of this viewer type, from the database </param>
+        /// <param name="MenuOrder"> Order this displays in the item main menu </param>
+        /// <param name="Excluded"> Flag indicates if this viewer is explicitly excluded from this digital resource </param>
+        /// <param name="Label"> Label associated with this viewer for display in the item menu for the digital resource </param>
+        /// <param name="Attributes">Attributes related to this viewer for the digital resource</param>
+        public BriefItem_BehaviorViewer(string ViewerType, float MenuOrder, bool Excluded, string Label, string Attributes)
+        {
+            this.ViewerType = ViewerType;
+            this.MenuOrder = MenuOrder;
+            this.Excluded = Excluded;
+            this.Label = Label;
+            this.Attributes = Attributes;
+        }
+
         /// <summary> Name of this viewer type, from the database </summary>
         [DataMember(Name = "type")]
         [XmlAttribute("type")]

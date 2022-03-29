@@ -285,6 +285,12 @@ namespace SobekCM.Library.ItemViewer
 
                     case "SobekCM.Library.ItemViewer.Viewers.UF_Media_ItemViewer_Prototyper":
                         return new UF_Media_ItemViewer_Prototyper();
+
+                    case "SobekCM.Library.ItemViewer.Viewers.HTML_WebSite_ItemViewer_Prototyper":
+                        return new HTML_WebSite_ItemViewer_Prototyper();
+
+                    case "SobekCM.Library.ItemViewer.Viewers.SearchEngineIndexing_ItemViewer_Prototyper":
+                        return new SearchEngineIndexing_ItemViewer_Prototyper();
                 }
 
                 // If it made it here, there is no assembly, but it is an unexpected type.  
@@ -296,7 +302,7 @@ namespace SobekCM.Library.ItemViewer
                     iItemViewerPrototyper returnObj = (iItemViewerPrototyper) Activator.CreateInstance(prototyperType);
                     return returnObj;
                 }
-                catch (Exception)
+                catch (Exception ee)
                 {
                     // Not sure exactly what to do here, honestly
                     return null;

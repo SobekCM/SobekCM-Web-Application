@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using SobekCM.Core.Users;
 using SobekCM.Resource_Object;
+using SobekCM.Resource_Object.Bib_Info;
 
 namespace SobekCM.Library.Citation.Elements
 {
@@ -27,6 +28,16 @@ namespace SobekCM.Library.Citation.Elements
         public override void Save_To_Bib(SobekCM_Item Bib)
         {
             string title = Bib.Bib_Info.Main_Title.ToString();
+            foreach (Title_Info titleObj in Bib.Bib_Info.Other_Titles)
+            {
+                if (titleObj.Title_Type == Title_Type_Enum.Course)
+                {
+                    title = titleObj.ToString();
+                    break;
+                }
+
+            }
+
             string creator = Bib.Bib_Info.Main_Entity_Name.ToString();
 
             if ( String.IsNullOrWhiteSpace(creator) || ( creator.Equals("unknown", StringComparison.OrdinalIgnoreCase)))

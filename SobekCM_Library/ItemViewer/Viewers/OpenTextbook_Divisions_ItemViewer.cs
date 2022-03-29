@@ -21,13 +21,13 @@ namespace SobekCM.Library.ItemViewer.Viewers
 {
     /// <summary> OpenTextbook viewer prototyper, which is used to check to see if a (non-thumbnail) OpenTextbook file exists, 
     /// to create the link in the main menu, and to create the viewer itself if the user selects that option </summary>
-    public class OpenTextbook_ItemViewer_Prototyper : abstractItemViewerPrototyper
+    public class OpenTextbook_Divisions_ItemViewer_Prototyper : abstractItemViewerPrototyper
     {
-        /// <summary> Constructor for a new instance of the OpenTextbook_ItemViewer_Prototyper class </summary>
-        public OpenTextbook_ItemViewer_Prototyper()
+        /// <summary> Constructor for a new instance of the OpenTextbook_Divisions_ItemViewer_Prototyper class </summary>
+        public OpenTextbook_Divisions_ItemViewer_Prototyper()
         {
-            ViewerType = "OPEN_TEXTBOOK";
-            ViewerCode = "#o";
+            ViewerType = "OPEN_DIVISIONS";
+            ViewerCode = "od";
         }
 
         /// <summary> Indicates if the specified item matches the basic requirements for this viewer, or
@@ -66,45 +66,36 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <param name="IsRestricted"> Flag indicates if this item is restricted AND the current user is outside the ranges or not in the proper groups</param>
         public override void Add_Menu_Items(BriefItemInfo CurrentItem, User_Object CurrentUser, Navigation_Object CurrentRequest, List<Item_MenuItem> MenuItems, bool IsRestricted)
         {
-            int current_page = 1;
-            string previous_code = "1";
+            string previous_code = CurrentRequest.ViewerCode;
 
-            // Get the URL for this
-            if (CurrentRequest.ViewerCode != null)
-            {
-                previous_code = CurrentRequest.ViewerCode.Replace("o", "");
-                if (!int.TryParse(previous_code, out current_page))
-                    current_page = 1;
-            }
-
-            CurrentRequest.ViewerCode = ViewerCode.Replace("#", current_page.ToString());
+            CurrentRequest.ViewerCode = ViewerCode;
             string url = UrlWriterHelper.Redirect_URL(CurrentRequest);
             CurrentRequest.ViewerCode = previous_code;
 
             // Add the item menu information
-            Item_MenuItem menuItem = new Item_MenuItem("Open Textbook", null, null, url, ViewerCode);
+            Item_MenuItem menuItem = new Item_MenuItem("Open Publisher", null, null, url, ViewerCode);
             MenuItems.Add(menuItem);
         }
 
-        /// <summary> Creates and returns the an instance of the <see cref="OpenTextbook_ItemViewer"/> class for showing a  
+        /// <summary> Creates and returns the an instance of the <see cref="OpenTextbook_Divisions_ItemViewer"/> class for showing a  
         /// OpenTextbook image from a page within a digital resource during execution of a single HTTP request. </summary>
         /// <param name="CurrentItem"> Digital resource object </param>
         /// <param name="CurrentUser"> Current user, who may or may not be logged on </param>
         /// <param name="CurrentRequest"> Information about the current request </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        /// <returns> Fully built and initialized <see cref="OpenTextbook_ItemViewer"/> object </returns>
+        /// <returns> Fully built and initialized <see cref="OpenTextbook_Divisions_ItemViewer"/> object </returns>
         /// <remarks> This method is called whenever a request requires the actual viewer to be created to render the HTML for
         /// the digital resource requested.  The created viewer is then destroyed at the end of the request </remarks>
         public override iItemViewer Create_Viewer(BriefItemInfo CurrentItem, User_Object CurrentUser, Navigation_Object CurrentRequest, Custom_Tracer Tracer)
         {
-            return new OpenTextbook_ItemViewer(CurrentItem, CurrentUser, CurrentRequest, Tracer, ViewerCode.ToLower(), FileExtensions);
+            return new OpenTextbook_Divisions_ItemViewer(CurrentItem, CurrentUser, CurrentRequest, Tracer, ViewerCode.ToLower(), FileExtensions);
         }
     }
 
     /// <summary> Item page viewer displays the a OpenTextbook from the page images within a digital resource. </summary>
     /// <remarks> This class extends the abstract class <see cref="abstractPageFilesItemViewer"/> and implements the 
     /// <see cref="iItemViewer" /> interface. </remarks>
-    public class OpenTextbook_ItemViewer : abstractPageFilesItemViewer
+    public class OpenTextbook_Divisions_ItemViewer : abstractPageFilesItemViewer
     {
         // information about the page to display
         private readonly int page;
@@ -112,7 +103,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         private readonly bool canEdit;
         private string filename;
 
-        /// <summary> Constructor for a new instance of the OpenTextbook_ItemViewer class, used to display OpenTextbooks linked to
+        /// <summary> Constructor for a new instance of the OpenTextbook_Divisions_ItemViewer class, used to display OpenTextbooks linked to
         /// pages in a digital resource </summary>
         /// <param name="BriefItem"> Digital resource object </param>
         /// <param name="CurrentUser"> Current user, who may or may not be logged on </param>
@@ -120,11 +111,11 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         /// <param name="OpenTextbook_ViewerCode"> OpenTextbook viewer code, as determined by configuration files </param>
         /// <param name="FileExtensions"> File extensions that this viewer allows, as determined by configuration files </param>
-        public OpenTextbook_ItemViewer(BriefItemInfo BriefItem, User_Object CurrentUser, Navigation_Object CurrentRequest, Custom_Tracer Tracer, string OpenTextbook_ViewerCode, string[] FileExtensions)
+        public OpenTextbook_Divisions_ItemViewer(BriefItemInfo BriefItem, User_Object CurrentUser, Navigation_Object CurrentRequest, Custom_Tracer Tracer, string OpenTextbook_ViewerCode, string[] FileExtensions)
         {
             // Add the trace
             if (Tracer != null)
-                Tracer.Add_Trace("OpenTextbook_ItemViewer.Constructor");
+                Tracer.Add_Trace("OpenTextbook_Divisions_ItemViewer.Constructor");
 
             // Save the arguments for use later
             this.BriefItem = BriefItem;
@@ -134,37 +125,13 @@ namespace SobekCM.Library.ItemViewer.Viewers
             // Set the behavior properties
             Behaviors = EmptyBehaviors;
 
-            // Determine the page
-            page = 1;
-            if (!String.IsNullOrEmpty(CurrentRequest.ViewerCode))
-            {
-                int tempPageParse;
-                if (Int32.TryParse(CurrentRequest.ViewerCode.Replace(OpenTextbook_ViewerCode.Replace("#", ""), ""), out tempPageParse))
-                    page = tempPageParse;
-            }
-
-            // Just a quick range check
-            if (page > BriefItem.OpenTextbook_Pages.Count)
-                page = 1;
-
-            // Since this is a paging viewer, set the viewer code
-            if (String.IsNullOrEmpty(CurrentRequest.ViewerCode))
-                CurrentRequest.ViewerCode = OpenTextbook_ViewerCode.Replace("#", page.ToString());
-
             // Can the user edit this?
             canEdit = CurrentUser != null && CurrentUser.LoggedOn;
-
-            // Is this in edit mode?
-            isEditMode = false;
-            if ((!String.IsNullOrEmpty(CurrentRequest.ViewerSubCode)) && ( CurrentRequest.ViewerSubCode == "edit"))
-            {
-                isEditMode = true;
-            }
 
             // Get the file info
             set_file_information(new string[] { "HTML" });
 
-            // Handle postbacks
+            // Handles post backs
             NameValueCollection form = HttpContext.Current.Request.Form;
             if ((canEdit) && (isEditMode) && (form["sbkOeriv_HtmlEdit"] != null))
             {
@@ -296,7 +263,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             if (Tracer != null)
             {
-                Tracer.Add_Trace("OpenTextbook_ItemViewer.Write_Within_HTML_Head", "Add html editing libraries and javascript to HTML head");
+                Tracer.Add_Trace("OpenTextbook_Divisions_ItemViewer.Write_Within_HTML_Head", "Add html editing libraries and javascript to HTML head");
             }
 
             // Create the CKEditor object
@@ -333,7 +300,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <remarks> By default this does nothing, but can be overwritten by all the individual item viewers </remarks>
         public override void Write_Top_Additional_Navigation_Row(TextWriter Output, Custom_Tracer Tracer)
         {
-            if ( !isEditMode )
+            if (!isEditMode)
             {
                 Output.WriteLine("\t<tr>");
                 Output.WriteLine("\t\t<td>");
@@ -369,7 +336,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         {
             if (Tracer != null)
             {
-                Tracer.Add_Trace("OpenTextbook_ItemViewer.Write_Main_Viewer_Section", "");
+                Tracer.Add_Trace("OpenTextbook_Divisions_ItemViewer.Write_Main_Viewer_Section", "");
             }
 
             string displayFileName = SobekFileSystem.Resource_Web_Uri(BriefItem, filename);
@@ -436,7 +403,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 Output.WriteLine("\t\t\t\t\t<a href=\"" + edit_url + "\" title=\"Edit this section\"><img src=\"" + Static_Resources_Gateway.Edit_Gif + "\" alt=\"\"> edit content</a>");
                 Output.WriteLine("\t\t\t\t</div>");
                 Output.WriteLine("\t\t\t</div>");
-                
+
             }
 
             // Is this in edit mode?
@@ -537,7 +504,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
 
             // Add the bar to go to the previous page
-            if ((page <= 1) || ( isEditMode))
+            if ((page <= 1) || (isEditMode))
             {
                 Output.WriteLine("\t\t\t<div id=\"sbkOeriv_PrevBarInactive\"></div>");
             }
@@ -553,7 +520,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
 
             // Add the bar to go to the next page
-            if ((page >= PageCount) || ( isEditMode ))
+            if ((page >= PageCount) || (isEditMode))
             {
                 Output.WriteLine("\t\t\t<div id=\"sbkOeriv_NextBarInactive\"></div>");
             }

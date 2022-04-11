@@ -339,7 +339,7 @@ namespace SobekCM.Library.MySobekViewer
         /// <remarks> This text will appear within the ItemNavForm form tags  </remarks>
 	    public override void Write_ItemNavForm_Opening(TextWriter Output, Custom_Tracer Tracer)
 	    {
-		    Output.WriteLine("<!-- Edit_Item_Metadata_MySobekViewer.Add_Controls -->");
+		    Output.WriteLine("<!-- Edit_Item_Metadata_MySobekViewer.Write_ItemNavForm_Opening -->");
 
 			// Write the top item mimic html portion
 		    Write_Item_Type_Top(Output, currentItem);

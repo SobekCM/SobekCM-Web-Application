@@ -92,6 +92,13 @@ namespace SobekCM.Library.MySobekViewer
         /// administrative tabs should be included as well.  </remarks>
         public override MySobek_Admin_Included_Navigation_Enum Standard_Navigation_Type => MySobek_Admin_Included_Navigation_Enum.NONE;
 
+        /// <summary> Property indicates if this mySobek viewer can contain pop-up forms</summary>
+        /// <remarks> If the mySobek viewer contains pop-up forms the overall page renders differently, 
+        /// allowing for the blanket division and the popup forms near the top of the rendered HTML </remarks>
+        ///<value> This mySobek viewer always returns the value TRUE </value>
+        public override bool Contains_Popup_Forms => true;
+
+
         /// <summary> Title for the page that displays this viewer, this is shown in the search box at the top of the page, just below the banner </summary>
         /// <value> This returns the value 'OpenPublishing Tool' </value>
         public override string Web_Title => "OpenPublishing Tool";
@@ -114,7 +121,23 @@ namespace SobekCM.Library.MySobekViewer
             Tracer.Add_Trace("Edit_Item_OpenPublisher_MySobekViewer.Write_ItemNavForm_Closing", "");
 
 
+            Output.WriteLine("<!-- Edit_Item_OpenPublisher_MySobekViewer.Write_ItemNavForm_Closing -->");
 
+            // Write the top item mimic html portion
+            Write_Item_Type_Top(Output, currentItem);
+
+            Output.WriteLine("<div id=\"container-inner1000\">");
+            Output.WriteLine("<div id=\"pagecontainer\">");
+            Output.WriteLine("<div class=\"sbkMySobek_HomeText\">");
+            Output.WriteLine("  <br />");
+
+            Output.WriteLine("STUFF HERE!");
+
+
+            Output.WriteLine("</div>");
+            Output.WriteLine("</div>");
+            Output.WriteLine("</div>");
+            Output.WriteLine();
         }
 
 
@@ -127,7 +150,13 @@ namespace SobekCM.Library.MySobekViewer
             Tracer.Add_Trace("Edit_Item_OpenPublisher_MySobekViewer.Add_Popup_HTML", "Add any popup divisions for form elements");
 
             // Add the hidden field
+            Output.WriteLine("<!-- Hidden field is used for postbacks to add new form elements (i.e., new name, new other titles, etc..) -->");
+            Output.WriteLine("<input type=\"hidden\" id=\"action_requested\" name=\"action_requested\" value=\"\" />");
+            Output.WriteLine("<input type=\"hidden\" id=\"action_value\" name=\"action_value\" value=\"\" />");
             Output.WriteLine();
+            Output.WriteLine("<script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Jquery_Ui_1_10_3_Custom_Js + "\"></script>");
+            Output.WriteLine("<script src=\"" + Static_Resources_Gateway.Sobekcm_OpenPublisher_Js + "\" type=\"text/javascript\"></script>");
+
         }
 
         /// <summary> Gets the collection of special behaviors which this admin or mySobek viewer
@@ -144,15 +173,20 @@ namespace SobekCM.Library.MySobekViewer
                 };
             }
         }
-        
+
         /// <summary> Write any additional values within the HTML Head of the final served page </summary>
         /// <param name="Output"> Output stream currently within the HTML head tags </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         /// <returns> TRUE if this should completely override the default added by the admin or mySobek viewer </returns>
         public override bool Write_Within_HTML_Head(TextWriter Output, Custom_Tracer Tracer)
         {
-            //Output.WriteLine("  <link href=\"" + Static_Resources_Gateway.Sobekcm_Metadata_Css + "\" rel=\"stylesheet\" type=\"text/css\" />");
-            return false;
+            Output.WriteLine("  <link href=\"" + Static_Resources_Gateway.Sobekcm_OpenPublisher_Css + "\" rel=\"stylesheet\" type=\"text/css\" />");
+            Output.WriteLine("  <link href=\"" + Static_Resources_Gateway.Sobekcm_Mysobek_Css + "\" rel=\"stylesheet\" type=\"text/css\" title=\"standard\" />");
+            Output.WriteLine("  <link href=\"" + Static_Resources_Gateway.Sobekcm_Item_Css + "\" rel=\"stylesheet\" type=\"text/css\" />");
+
+
+
+            return true;
         }
 
 

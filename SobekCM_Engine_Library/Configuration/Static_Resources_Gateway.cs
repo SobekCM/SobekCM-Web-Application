@@ -934,6 +934,12 @@ namespace SobekCM.Engine_Library.Configuration
         /// <summary> URL for the default resource 'sobekcm_mysobek.css' file ( http://cdn.sobekrepository.org/css/sobekcm-mysobek/4.8.4/SobekCM_MySobek.min.css by default)</summary>
         public static string Sobekcm_Mysobek_Css { get { return config.Sobekcm_Mysobek_Css; } }
 
+        /// <summary> URL for the default resource 'sobekcm_openpublisher.css' file ( http://cdn.sobekrepository.org/css/sobekcm-openpublisher/5.0.0/SobekCM_OpenPublisher.min.css by default)</summary>
+        public static string Sobekcm_OpenPublisher_Css { get { return config.Sobekcm_OpenPublisher_Css; } }
+
+        /// <summary> URL for the default resource 'sobekcm_openpublisher.js' file ( http://cdn.sobekrepository.org/js/sobekcm-openpublisher/5.0.0/sobekcm_openpublisher.js by default)</summary>
+        public static string Sobekcm_OpenPublisher_Js { get { return config.Sobekcm_OpenPublisher_Js; } }
+
         /// <summary> URL for the default resource 'sobekcm_print.css' file ( http://cdn.sobekrepository.org/css/sobekcm-print/4.8.4/SobekCM_Print.css by default)</summary>
         public static string Sobekcm_Print_Css { get { return config.Sobekcm_Print_Css; } }
 

@@ -317,8 +317,10 @@ namespace SobekCM.Core.UI_Configuration.StaticResources
             Sobekcm_Mapeditor_Css = "http://cdn.sobekrepository.org/css/sobekcm-map/4.8.4/SobekCM_MapEditor.css";
             Sobekcm_Mapsearch_Css = "http://cdn.sobekrepository.org/css/sobekcm-map/4.8.4/SobekCM_MapSearch.css";
             Sobekcm_Metadata_Css = "http://cdn.sobekrepository.org/css/sobekcm-metadata/4.11.0/SobekCM_Metadata.min.css";
-            Sobekcm_Metadata_Js = "http://cdn.sobekrepository.org/js/sobekcm-metadata/4.8.11/sobekcm_metadata.min.js";
+            Sobekcm_Metadata_Js = "http://cdn.sobekrepository.org/js/sobekcm-metadata/4.8.11/sobekcm_metadata.js";
             Sobekcm_Mysobek_Css = "http://cdn.sobekrepository.org/css/sobekcm-mysobek/4.8.11/sobekCM_mysobek.min.css";
+            Sobekcm_OpenPublisher_Css = "http://cdn.sobekrepository.org/css/sobekcm-openpublisher/5.0.0/sobekcm_openpublisher.min.css";
+            Sobekcm_OpenPublisher_Js = "http://cdn.sobekrepository.org/js/sobekcm-openpublisher/5.0.0/sobekcm_openpublisher.js";
             Sobekcm_Print_Css = "http://cdn.sobekrepository.org/css/sobekcm-print/4.8.4/SobekCM_Print.css";
             Sobekcm_Qc_Css = "http://cdn.sobekrepository.org/css/sobekcm-qc/4.8.4/SobekCM_QC.css";
             Sobekcm_Qc_Js = "http://cdn.sobekrepository.org/js/sobekcm-qc/4.8.4/sobekcm_qc.js";
@@ -2210,6 +2212,18 @@ namespace SobekCM.Core.UI_Configuration.StaticResources
         [ProtoMember(298)]
         public string Sobekcm_Mysobek_Css { get; set; }
 
+        /// <summary> URL for the default resource 'sobekcm_openpublisher.css' file ( http://cdn.sobekrepository.org/css/sobekcm-openpublisher/5.0.0/sobekcm_openpublisher.min.css by default)</summary>
+        [DataMember]
+        [XmlElement]
+        [ProtoMember(380)]
+        public string Sobekcm_OpenPublisher_Css { get; set; }
+
+        /// <summary> URL for the default resource 'sobekcm_openpublisher.js' file ( http://cdn.sobekrepository.org/js/sobekcm-openpublisher/5.0.0/sobekcm_openpublisher.min.js by default)</summary>
+        [DataMember]
+        [XmlElement]
+        [ProtoMember(381)]
+        public string Sobekcm_OpenPublisher_Js { get; set; }
+
         /// <summary> URL for the default resource 'sobekcm_print.css' file ( http://cdn.sobekrepository.org/css/sobekcm-print/4.8.4/SobekCM_Print.css by default)</summary>
         [DataMember]
         [XmlElement]
@@ -3882,6 +3896,14 @@ namespace SobekCM.Core.UI_Configuration.StaticResources
 
                 case "sobekcm_mysobek.css":
                     Sobekcm_Mysobek_Css = Source;
+                    break;
+
+                case "sobekcm_openpublisher.css":
+                    Sobekcm_OpenPublisher_Css = Source;
+                    break;
+
+                case "sobekcm_openpublisher.js":
+                    Sobekcm_OpenPublisher_Js = Source;
                     break;
 
                 case "sobekcm_print.css":

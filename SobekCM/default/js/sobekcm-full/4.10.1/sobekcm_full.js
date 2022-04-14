@@ -1462,6 +1462,36 @@ function popup_keypress_focus(windowname, linkname, focusname, windowheight, win
 	return false;
 }
 
+function popup_keypress_focus(windowname, focusname, isMozilla) {
+	if (isMozilla == 'False') {
+		popup(windowname);
+		//blanket_size(windowname, linkname, windowheight );
+		//window_pos(windowname, windowwidth);
+		//toggle('blanket_outer');
+		//toggle(windowname);	
+	}
+	else {
+		var theKeyPressed = evt.charCode || evt.keyCode;
+		if (theKeyPressed != 9) {
+			popup(windowname);
+			//blanket_size(windowname, linkname, windowheight );
+			//window_pos(windowname, windowwidth);
+			//toggle('blanket_outer');
+			//toggle(windowname);	
+		}
+	}
+
+	// Create the draggable object to allow this window to be dragged around
+	//document.getElementById(windowname).draggable();
+	$('#' + windowname).draggable();
+	//mydrag = new Draggable( windowname, {starteffect:null});
+
+	var focusfield = document.getElementById(focusname);
+	focusfield.focus();
+
+	return false;
+}
+
 function popup_keypress(windowname, linkname, windowheight, windowwidth, isMozilla) {
 	if (isMozilla == 'False') {
 		popup(windowname);

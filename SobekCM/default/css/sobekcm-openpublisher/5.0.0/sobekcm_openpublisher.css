@@ -1,0 +1,76 @@
+#container-openpublisher {
+    margin: 0 auto;
+    padding:0;
+    width: 1300px;
+    position: relative;
+    border-right: 1px solid #ccc;
+    border-left: 1px solid #ccc;
+    border-bottom: 1px solid #ccc;
+    background-color:#fff;
+}
+
+#oer_button_div { float: right; padding-top: 25px; padding-right:100px; width: 200px; }
+
+#form_chapter_title { width: 250px; }
+
+ .oer_div_outer { margin-left: auto; 
+    margin-right: auto;
+    width: 950px;
+    background-color: #eee;
+    text-align: left;
+    font-weight: normal;
+    padding: 12px 0 12px 40px;
+    border: solid 1px #ccc;
+    margin-top: 0;
+    margin-bottom:  20px;
+    font-weight: bold;
+    border-radius: 5px; }
+
+  .oer_div_outer_title { color: #444; font-weight: bold; font-size:1.35em; margin-top:  15px; margin-bottom:  15px;}
+
+.oer_div_inner_wrapepr { 
+	vertical-align: top; 
+	padding-bottom:  10px;
+}
+
+  .oer_div_inner {
+    display:  inline-block;
+    width:  200px;
+    background-color: white;
+    border:  solid 1px #ccc;
+    border-radius: 5px;
+    margin-right:  20px;
+    padding: 5px;
+    height: 70px;
+    vertical-align: top;
+  }
+
+  .oer_div_inner_title { color: #444; padding-left: 5px; padding-top:  5px;}
+
+  .oer_div_add_button {
+    display:  inline-block;
+    width:  20px;
+    background-color: white;
+    border:  solid 1px #ccc;
+    border-radius: 5px;
+    margin-right:  20px;
+    padding-left:  15px;
+    padding-right: 5px;
+    padding-top: 4px;
+    vertical-align: top;
+    padding-bottom: 4px;
+    cursor: pointer;
+  }
+
+
+
+  .oer_div_toolbox_outer { width: 410px; margin-left: 510px; height: 19px; margin-top: 5px; vertical-align: bottom; }
+  .oer_div_toolbox a:link { color: #999; }
+  .oer_div_toolbox a:visited { color: #999; }
+  .oer_div_toolbox a:hover { color: blue; text-decoration: none; }
+
+  .oer_div_inner_toolbox_outer { height: 15px; margin-top: 5px; width: 190px; padding:0px; }
+  .oer_div_inner_toolbox { margin-left: 60px; height: 15px; width: 140px; padding:0px; }
+  .oer_div_inner_toolbox a:link { color: #999; }
+  .oer_div_inner_toolbox a:visited { color: #999; }
+  .oer_div_inner_toolbox a:hover { color: blue; text-decoration: none; }

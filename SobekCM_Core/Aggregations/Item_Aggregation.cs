@@ -409,7 +409,9 @@ namespace SobekCM.Core.Aggregations
                 List<Search_Type_Enum> returnValue = new List<Search_Type_Enum>();
                 if (Views_And_Searches.Contains(Item_Aggregation_Views_Searches_Enum.Basic_Search))
                     returnValue.Add(Search_Type_Enum.Basic);
-				if (Views_And_Searches.Contains(Item_Aggregation_Views_Searches_Enum.Basic_Search_YearRange))
+                if (Views_And_Searches.Contains(Item_Aggregation_Views_Searches_Enum.Banner_Search))
+                    returnValue.Add(Search_Type_Enum.Basic);
+                if (Views_And_Searches.Contains(Item_Aggregation_Views_Searches_Enum.Basic_Search_YearRange))
 					returnValue.Add(Search_Type_Enum.Basic);
                 if (Views_And_Searches.Contains(Item_Aggregation_Views_Searches_Enum.Basic_Search_MimeType))
                     returnValue.Add(Search_Type_Enum.Basic);

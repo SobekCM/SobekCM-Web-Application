@@ -33,6 +33,9 @@ namespace SobekCM.Core.Aggregations
         /// <summary> Browse the list of all items or new items </summary>
         All_New_Items,
 
+        /// <summary> Basic search which is in the banner </summary>
+        Banner_Search,
+
         /// <summary> Basic search type allows metadata searching with one search field </summary>
         Basic_Search,
 

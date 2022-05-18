@@ -63,8 +63,14 @@ namespace SobekCM
 				        filename = filenameSansExtension + extensionCheck;
 				    }
 
-				    // Should this be overriden?
-				    if (!String.IsNullOrEmpty(tokenObj.ServerSideFileName))
+                    // Remove any ampersands
+                    if ( filename.IndexOf("&") >= 0 )
+                    {
+                        filename = filename.Replace("&", "");
+                    }
+
+                    // Should this be overriden?
+                    if (!String.IsNullOrEmpty(tokenObj.ServerSideFileName))
 				    {
 				        if (tokenObj.ServerSideFileName.IndexOf(".") > 0)
 				            filename = tokenObj.ServerSideFileName;

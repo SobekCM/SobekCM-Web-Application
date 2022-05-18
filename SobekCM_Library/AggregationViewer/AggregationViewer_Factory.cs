@@ -31,6 +31,9 @@ namespace SobekCM.Library.AggregationViewer
 				case Item_Aggregation_Views_Searches_Enum.Advanced_Search_YearRange:
                     return new Advanced_Search_YearRange_AggregationViewer(RequestSpecificValues, ViewBag);
 
+                case Item_Aggregation_Views_Searches_Enum.Banner_Search:
+                    return new Banner_Search_AggregationViewer(RequestSpecificValues, ViewBag);
+
 
                 case Item_Aggregation_Views_Searches_Enum.Basic_Search:
                     Item_Aggregation_Front_Banner frontBannerImage = ViewBag.Hierarchy_Object.FrontBannerObj;
@@ -103,6 +106,8 @@ namespace SobekCM.Library.AggregationViewer
                     {
                         return new Rotating_Highlight_Search_AggregationViewer(RequestSpecificValues, ViewBag);
                     }
+                    if (ViewBag.Hierarchy_Object.Views_And_Searches.Contains(Item_Aggregation_Views_Searches_Enum.Advanced_Search_YearRange))
+                        return new Banner_Search_AggregationViewer(RequestSpecificValues, ViewBag);
                     return new Basic_Search_AggregationViewer(RequestSpecificValues, ViewBag);
 
                 case Search_Type_Enum.Full_Text:

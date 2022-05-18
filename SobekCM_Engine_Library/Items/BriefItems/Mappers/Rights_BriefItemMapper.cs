@@ -71,7 +71,7 @@ namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
                     }
 
                     BriefItem_DescTermValue rightsVal = New.Add_Description("Rights Management", value);
-                    if (uri.Length > 0)
+                    if ( !String.IsNullOrWhiteSpace(uri))
                         rightsVal.Add_URI(uri);
 
                 }

@@ -146,7 +146,14 @@ namespace SobekCM.Core.Aggregations
 						home_search_found = true;
 						break;
 
-					case 'C':
+                    case 'H':
+                        Views_And_Searches.Add(Item_Aggregation_Views_Searches_Enum.Banner_Search);
+                        if (Views_And_Searches.Contains(Item_Aggregation_Views_Searches_Enum.Basic_Search))
+                            Views_And_Searches.Remove(Item_Aggregation_Views_Searches_Enum.Basic_Search);
+                        home_search_found = true;
+                        break;
+
+                    case 'C':
 						Views_And_Searches.Add(Item_Aggregation_Views_Searches_Enum.DLOC_FullText_Search);
 						home_search_found = true;
                         break;
@@ -514,7 +521,9 @@ namespace SobekCM.Core.Aggregations
 				List<Search_Type_Enum> returnValue = new List<Search_Type_Enum>();
 				if (Views_And_Searches.Contains(Item_Aggregation_Views_Searches_Enum.Basic_Search))
 					returnValue.Add(Search_Type_Enum.Basic);
-				if (Views_And_Searches.Contains(Item_Aggregation_Views_Searches_Enum.Basic_Search_YearRange))
+                if (Views_And_Searches.Contains(Item_Aggregation_Views_Searches_Enum.Banner_Search))
+                    returnValue.Add(Search_Type_Enum.Basic);
+                if (Views_And_Searches.Contains(Item_Aggregation_Views_Searches_Enum.Basic_Search_YearRange))
 					returnValue.Add(Search_Type_Enum.Basic);
 				if (Views_And_Searches.Contains(Item_Aggregation_Views_Searches_Enum.Basic_Search_MimeType))
 					returnValue.Add(Search_Type_Enum.Basic);

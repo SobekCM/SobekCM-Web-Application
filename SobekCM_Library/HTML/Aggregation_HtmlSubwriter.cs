@@ -1037,7 +1037,7 @@ namespace SobekCM.Library.HTML
             }
 			
 			// Draw the banner and add links to the other views first
-	        if ((collectionViewer.Type != Item_Aggregation_Views_Searches_Enum.Rotating_Highlight_Search) && (collectionViewer.Type != Item_Aggregation_Views_Searches_Enum.Custom_Home_Page))
+	        if ((collectionViewer.Type != Item_Aggregation_Views_Searches_Enum.Rotating_Highlight_Search) && (collectionViewer.Type != Item_Aggregation_Views_Searches_Enum.Custom_Home_Page) && (collectionViewer.Type != Item_Aggregation_Views_Searches_Enum.Banner_Search))
 	        {
                 if (collectionViewer.Type != Item_Aggregation_Views_Searches_Enum.DataSet_Browse) 
 		        {
@@ -1156,7 +1156,7 @@ namespace SobekCM.Library.HTML
 
                     Tracer.Add_Trace("Aggregation_HtmlSubwriter.Write_HTML", "Adding search panel.");
 
-                    if (collectionViewer.Type != Item_Aggregation_Views_Searches_Enum.Rotating_Highlight_Search)
+                    if ((collectionViewer.Type != Item_Aggregation_Views_Searches_Enum.Rotating_Highlight_Search) && ( collectionViewer.Type != Item_Aggregation_Views_Searches_Enum.Banner_Search))
                     {
                         Output.WriteLine("<!-- Adding SobekSearchPanel div then sharing buttons -->");
                         Output.WriteLine("<div class=\"SobekSearchPanel\">");
@@ -1188,7 +1188,22 @@ namespace SobekCM.Library.HTML
 					// Start the page container
 					Output.WriteLine("<div id=\"pagecontainer\">");
                 }
-                else
+                else if (collectionViewer.Type == Item_Aggregation_Views_Searches_Enum.Banner_Search)
+                    {
+                        StringBuilder builder = new StringBuilder(2000);
+                        StringWriter writer = new StringWriter(builder);
+                        Add_Sharing_Buttons(writer, FORM_NAME, "SobekHomeBannerButton");
+                        ((Banner_Search_AggregationViewer)collectionViewer).Sharing_Buttons_HTML = builder.ToString();
+
+                        collectionViewer.Add_Search_Box_HTML(Output, Tracer);
+
+                        Output.WriteLine("<!-- Aggregation_HtmlSubwriter.Write_HTML - MainMenus_Helper_HtmlSubWriter.Add_Aggregation_Main_menu -->");
+                        MainMenus_Helper_HtmlSubWriter.Add_Aggregation_Main_Menu(Output, RequestSpecificValues, hierarchyObject);
+
+                        // Start the page container
+                        Output.WriteLine("<div id=\"pagecontainer\">");
+                    }
+                    else
                 {
                     collectionViewer.Add_Search_Box_HTML(Output, Tracer);
 

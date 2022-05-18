@@ -34,7 +34,10 @@ namespace SobekCM.Library.AggregationViewer
                 case Item_Aggregation_Views_Searches_Enum.Basic_Search:
                     return SearchType2 == Search_Type_Enum.Basic;
 
-				case Item_Aggregation_Views_Searches_Enum.Basic_Search_YearRange:
+                case Item_Aggregation_Views_Searches_Enum.Banner_Search:
+                    return SearchType2 == Search_Type_Enum.Basic;
+
+                case Item_Aggregation_Views_Searches_Enum.Basic_Search_YearRange:
 					return SearchType2 == Search_Type_Enum.Basic;
 
                 case Item_Aggregation_Views_Searches_Enum.Basic_Search_MimeType:

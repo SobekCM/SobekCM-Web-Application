@@ -134,6 +134,7 @@
     <Compile Include="AggregationViewer\HtmlHeadWriters\DublinCore_AggregationHtmlHeadWriter.cs" />
     <Compile Include="AggregationViewer\HtmlHeadWriters\iAggregationHtmlHeadWriter.cs" />
     <Compile Include="AggregationViewer\HtmlHeadWriters\JSON_AggregationHtmlHeadWriter.cs" />
+    <Compile Include="AggregationViewer\Viewers\Banner_Search_AggregationViewer.cs" />
     <Compile Include="AggregationViewer\Viewers\Basic_Text_Search_Combined_AggregationViewer.cs" />
     <Compile Include="AggregationViewer\Viewers\Empty_AggregationViewer.cs" />
     <Compile Include="AggregationViewer\Viewers\Manage_Menu_AggregationViewer.cs" />

@@ -1,3 +1,46 @@
+function op_div_cancel_form()
+{
+    if ( confirm('Are you sure you want to cancel these changes?\n\n'))
+    {
+        var actionfield = document.getElementById('action_requested');
+        actionfield.value = 'cancel';
+
+        // Perform post back
+        document.itemNavForm.submit();
+    }
+    return false;
+}
+
+function op_div_save_form()
+{
+        var actionfield = document.getElementById('action_requested');
+        actionfield.value = 'save';
+
+        // Perform post back
+        document.itemNavForm.submit();
+}
+
+function get_structure()
+{
+    var returnValue = '';
+
+    alert('build structure string');
+
+    var test = $("#oer_div_container").children(".oer_div_outer");
+    alert(test.length);
+
+
+    var counter = 1;
+    $("#oer_div_container").children(".oer_div_outer").each(function() {
+        alert('doing stuff');
+        var outer_title = this.children(".oer_div_outer_title").first().html;
+        alert(outer_title);
+        returnValue = returnValue + '|' + outer_title;
+        counter++;
+    });
+
+    return returnValue;
+}
 
 function show_chapter_form_keypress(index, isMozilla)
 {

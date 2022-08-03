@@ -8137,7 +8137,7 @@ namespace SobekCM.Engine_Library.Database
             try
             {
                 // Run the SQL and get back a dataset
-                DataSet valueSet = EalDbAccess.ExecuteDataset(DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_Get_Available_OpenPublishing_Themes", new EalDbParameter[] { new EalDbParameter("@bibid", BibID) });
+                DataSet valueSet = EalDbAccess.ExecuteDataset(DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_Get_Available_OpenPublishing_Themes");
 
                 // If there was either no match, or more than one, return null
                 if ((valueSet.Tables.Count == 0) || (valueSet.Tables[0] == null))
@@ -8177,7 +8177,7 @@ namespace SobekCM.Engine_Library.Database
             try
             {
                 // Run the SQL and get back a dataset
-                DataSet valueSet = EalDbAccess.ExecuteDataset(DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_Get_OpenPublishing_Theme", new EalDbParameter[] { new EalDbParameter("@bibid", BibID) });
+                DataSet valueSet = EalDbAccess.ExecuteDataset(DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_Get_OpenPublishing_Theme", new EalDbParameter[] { new EalDbParameter("@id", ThemeID) });
 
                 // If there was either no match, or more than one, return null
                 if ((valueSet.Tables.Count == 0) || (valueSet.Tables[0] == null) || (valueSet.Tables[0].Rows.Count == 0))

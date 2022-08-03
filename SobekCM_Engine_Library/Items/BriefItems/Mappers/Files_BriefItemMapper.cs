@@ -33,7 +33,7 @@ namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
             List<BriefItem_TocElement> oer_toc = new List<BriefItem_TocElement>();
 
             // Do the images (i.e., physical tree) first
-            collect_nodes(Original.Divisions.Physical_Tree, images, images_toc);
+            collect_nodes(Original.Divisions.Physical_Tree, images, images_toc, false);
 
             // If there were groupings and TOCs assigned, add them
             if (images.Count > 0)
@@ -42,7 +42,7 @@ namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
                 New.Images_TOC = images_toc;
 
             // Collect the downloads next
-            collect_nodes(Original.Divisions.Download_Tree, downloads, downloads_toc);
+            collect_nodes(Original.Divisions.Download_Tree, downloads, downloads_toc, false);
 
             // If there were groupings and TOCs assigned, add them
             if (downloads.Count > 0)
@@ -51,7 +51,7 @@ namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
                 New.Downloads_TOC = downloads_toc;
 
             // Collect the open textbook information last
-            collect_nodes(Original.Divisions.OpenTextbook_Tree, oer, oer_toc);
+            collect_nodes(Original.Divisions.OpenTextbook_Tree, oer, oer_toc, true);
 
             // If there were groupings and TOCs assigned, add them
             if (oer.Count > 0)
@@ -64,7 +64,7 @@ namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
             return true;
         }
 
-        private void collect_nodes(Division_Tree Tree, List<BriefItem_FileGrouping> Groupings, List<BriefItem_TocElement> Toc)
+        private void collect_nodes(Division_Tree Tree, List<BriefItem_FileGrouping> Groupings, List<BriefItem_TocElement> Toc, bool AlwaysIncludeDivs)
         {
             // If not roots, do nothing!
             if (( Tree == null ) || ( Tree.Roots == null ) || ( Tree.Roots.Count == 0 ))
@@ -89,11 +89,11 @@ namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
             // Now, step through all the nodes
             foreach (abstract_TreeNode thisNode in rootNodes)
             {
-                recurse_through_nodes(thisNode, Groupings, Toc, currDivStack, 1);
+                recurse_through_nodes(thisNode, Groupings, Toc, currDivStack, 1, AlwaysIncludeDivs);
             }
         }
 
-        private bool recurse_through_nodes(abstract_TreeNode Node, List<BriefItem_FileGrouping> Groupings, List<BriefItem_TocElement> Toc, Stack<BriefItem_TocElement> CurrDivStack, int Level)
+        private bool recurse_through_nodes(abstract_TreeNode Node, List<BriefItem_FileGrouping> Groupings, List<BriefItem_TocElement> Toc, Stack<BriefItem_TocElement> CurrDivStack, int Level, bool AlwaysIncludeDivs)
         {
             // Was this node a page?
             if (Node.Page)
@@ -150,12 +150,12 @@ namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
                 foreach (abstract_TreeNode childNode in divNode.Nodes)
                 {
                     // Visit each child node 
-                    if (recurse_through_nodes(childNode, Groupings, Toc, CurrDivStack, Level + 1))
+                    if (recurse_through_nodes(childNode, Groupings, Toc, CurrDivStack, Level + 1, AlwaysIncludeDivs))
                         some_files_under = true;
                 }
 
                 // Were there some files under here?
-                if (some_files_under)
+                if ((some_files_under) || (AlwaysIncludeDivs))
                 {
                     // Now, pop-up all the nodes in the queue and add them 
                     if (CurrDivStack.Count > 0)

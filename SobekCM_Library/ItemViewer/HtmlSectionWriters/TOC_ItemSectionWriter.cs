@@ -23,7 +23,11 @@ namespace SobekCM.Library.ItemViewer.HtmlSectionWriters
         public void Write_HTML(TextWriter Output, iItemViewerPrototyper Prototyper, iItemViewer CurrentViewer, BriefItemInfo CurrentItem, RequestCache RequestSpecificValues, List<HtmlSubwriter_Behaviors_Enum> Behaviors)
         {
             // If there is no TOC, just return
-            if ((CurrentItem == null) || (CurrentItem.Images_TOC == null) || (CurrentItem.Images_TOC.Count <= 1))
+            if (CurrentItem == null) 
+                return;
+
+            if (((CurrentItem.Images_TOC == null) || (CurrentItem.Images_TOC.Count <= 1)) &&
+                ((CurrentItem.OpenTextbook_TOC == null) || (CurrentItem.OpenTextbook_TOC.Count <= 1)))
                 return;
 
             // If there are certain thing set in the behavior, return
@@ -65,6 +69,9 @@ namespace SobekCM.Library.ItemViewer.HtmlSectionWriters
             Output.WriteLine("    <ul>");
 
             List<BriefItem_TocElement> tocElements = CurrentItem.Images_TOC;
+            if ((CurrentItem.Images_TOC == null) || (CurrentItem.Images_TOC.Count <= 1))
+                tocElements = CurrentItem.OpenTextbook_TOC;
+
             if ( CurrentItem.BibID == "AA00016193")
             {
                 tocElements = CurrentItem.OpenTextbook_TOC;

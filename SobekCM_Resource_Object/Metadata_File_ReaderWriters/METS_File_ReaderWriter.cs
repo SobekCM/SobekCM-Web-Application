@@ -782,7 +782,7 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
             #endregion
 
             // Add file and structure map sections
-            if ( allFiles.Count > 0 )
+            if (( allFiles.Count > 0 ) || (allDivisions.Count > 0 ))
             {
                 #region Add the files section
 
@@ -911,7 +911,7 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
                     Item_To_Save.Divisions.Write_Download_Tree_METS(Output_Stream, main_title, dmdSecIdString, amdSecIdString);
                 }
 
-                if (hasOerFiles)
+                if ((hasOerFiles) || ((Item_To_Save.Divisions.OpenTextbook_Tree != null ) && (Item_To_Save.Divisions.OpenTextbook_Tree.Divisions_PreOrder.Count > 0 )))
                 {
                     Item_To_Save.Divisions.Write_OpenTextbook_Tree_METS(Output_Stream, main_title, dmdSecIdString, amdSecIdString);
                 }

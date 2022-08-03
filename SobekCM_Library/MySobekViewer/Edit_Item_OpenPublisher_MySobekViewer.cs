@@ -1,6 +1,8 @@
 ﻿using SobekCM.Core.Client;
+using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
 using SobekCM.Engine_Library.Configuration;
+using SobekCM.Engine_Library.Items;
 using SobekCM.Library.AdminViewer;
 using SobekCM.Library.HTML;
 using SobekCM.Resource_Object;
@@ -92,6 +94,33 @@ namespace SobekCM.Library.MySobekViewer
             {
                 // See if there was a hidden request
                 string action_requested = HttpContext.Current.Request.Form["action_requested"] ?? String.Empty;
+
+                if ( action_requested == "cancel")
+                {
+                    RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Item_Display;
+                    UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                    return;
+                }
+
+                if ( action_requested == "save")
+                {
+                    string error_message;
+                    SobekCM_Item_Updater.Update_Item(currentItem, RequestSpecificValues.Current_User, out error_message);
+
+                    // Set the flag to rebuild the item
+                    SobekCM_Item_Updater.Set_Item_Rebuild_Flag(currentItem, true);
+
+                    // Clear this digital resource locally
+                    CachedDataManager.Items.Remove_Digital_Resource_Object(RequestSpecificValues.Current_User.UserID, currentItem.BibID, currentItem.VID, null);
+
+                    // Also clear the engine
+                    SobekEngineClient.Items.Clear_Item_Cache(currentItem.BibID, currentItem.VID, RequestSpecificValues.Tracer);
+
+                    // Forward to the display item again
+                    RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Item_Display;
+                    UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                }
+
                 string action_value = HttpContext.Current.Request.Form["action_value"] ?? String.Empty;
                 string action_index = HttpContext.Current.Request.Form["action_index"] ?? String.Empty;
 
@@ -207,7 +236,9 @@ namespace SobekCM.Library.MySobekViewer
             // Write the top item mimic html portion
             Write_Item_Type_Top(Output, currentItem);
 
+
             Output.WriteLine("<div id=\"container-openpublisher\">");
+
             Output.WriteLine("<div id=\"pagecontainer\">");
 
             Output.WriteLine("<script type=\"text/javascript\">");
@@ -237,7 +268,8 @@ namespace SobekCM.Library.MySobekViewer
 
             
             Output.WriteLine("  <div id=\"oer_button_div\">");
-            Output.WriteLine($"    <button onclick=\"window.location.href = '{item_url}';return false;\" class=\"sbkMySobek_BigButton\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"sbkMySobek_RoundButton_LeftImg\" alt=\"\" /> RETURN TO ITEM </button> &nbsp; &nbsp; ");
+            Output.WriteLine("        <button onclick=\"op_div_cancel_form(); return false;\" class=\"sbkMySobek_BigButton\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"sbkMySobek_RoundButton_LeftImg\" alt=\"\" /> CANCEL </button> &nbsp; &nbsp; ");
+            Output.WriteLine("        <button onclick=\"op_div_save_form(); return false;\" class=\"sbkMySobek_BigButton\"> SAVE <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkMySobek_RoundButton_RightImg\" alt=\"\" /></button>");
             Output.WriteLine("  </div>");
 
             Output.WriteLine("  <ul>");
@@ -361,7 +393,7 @@ namespace SobekCM.Library.MySobekViewer
             Output.WriteLine("<input type=\"hidden\" id=\"action_requested\" name=\"action_requested\" value=\"\" />");
             Output.WriteLine("<input type=\"hidden\" id=\"action_value\" name=\"action_value\" value=\"\" />");
             Output.WriteLine("<input type=\"hidden\" id=\"action_index\" name=\"action_index\" value=\"\" />");
-            //Output.WriteLine("<input type=\"hidden\" id=\"action_value\" name=\"action_value\" value=\"\" />");
+            Output.WriteLine("<input type=\"hidden\" id=\"new_structure\" name=\"new_structure\" value=\"\"/>");
             Output.WriteLine();
             Output.WriteLine("<script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Jquery_Ui_1_10_3_Custom_Js + "\"></script>");
             Output.WriteLine("<script src=\"" + Static_Resources_Gateway.Sobekcm_OpenPublisher_Js + "\" type=\"text/javascript\"></script>");

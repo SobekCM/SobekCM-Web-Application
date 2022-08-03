@@ -178,6 +178,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     // Get the file/path for the HTML file
                     string file = SobekFileSystem.Resource_Network_Uri(BriefItem, filename);
 
+                    string folder = SobekFileSystem.Resource_Network_Uri(BriefItem, "oer");
+                    if (!Directory.Exists(folder))
+                        Directory.CreateDirectory(folder);
+
                     // Set the source to the new source
                     StreamWriter writer = new StreamWriter(file);
                     writer.Write(newSource);
@@ -256,7 +260,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         {
             if ( BriefItem.OpenTextbook_Pages == null )
             {
-                filename = "00001.html";
+                filename = "oer\\" + Guid.NewGuid().ToString() + ".html";
                 return true;
             }
 
@@ -276,7 +280,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                         if (String.Compare(extension, thisPossibleFileExtension, StringComparison.OrdinalIgnoreCase) == 0)
                         {
                             // Get the OpenTextbooks information
-                            filename = thisFile.Name;
+                            filename = thisFile.Name?.Replace("\\", "/");
                             return true;
                         }
                     }
@@ -419,14 +423,24 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
             catch
             {
-                html = "Demo Test data";
-
                 StringBuilder builder = new StringBuilder();
-                builder.AppendLine("<h2>Welcome to OpenPublishing</h2>");
-                builder.AppendLine();
-                builder.AppendLine("<p> You may edit your item here, by selecting <i>Edit Content</i> in the upper right corner of this page.</p>");
-                builder.AppendLine();
-                builder.AppendLine("<p> To update your table of contents and create chapters, use the OpenPublishing tool, available in the internal header or through the <i>MANAGE</i> option in the item menu.</p>");
+
+                if (page == 1)
+                {
+                    builder.AppendLine("<h2>Welcome to OpenPublishing</h2>");
+                    builder.AppendLine();
+                    builder.AppendLine("<p> You may edit your item here, by selecting <i>Edit Content</i> in the upper right corner of this page.</p>");
+                    builder.AppendLine();
+                    builder.AppendLine("<p> To update your table of contents and create chapters, use the OpenPublishing tool, available in the internal header or through the <i>MANAGE</i> option in the item menu.</p>");
+                }
+                else
+                {
+                    string chapterLabel = BriefItem.OpenTextbook_Pages[page - 1].Label;
+
+                    builder.AppendLine("<h2>" + chapterLabel + "</h2>");
+                    builder.AppendLine();
+                    builder.AppendLine("<p> You may edit this chapter here, by selecting <i>Edit Content</i> in the upper right corner of this page.</p>");
+                 }
 
                 html = builder.ToString();
             }

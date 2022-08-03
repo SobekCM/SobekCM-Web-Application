@@ -104,6 +104,26 @@ namespace SobekCM.Library.MySobekViewer
 
                 if ( action_requested == "save")
                 {
+                    // Ensure there is a HTML file under each division
+                    foreach(abstract_TreeNode node in currentItem.Divisions.OpenTextbook_Tree.Roots)
+                    {
+                        if ( !node.Page)
+                        {
+                            Division_TreeNode divNode = (Division_TreeNode)node;
+                            if (( divNode.Nodes == null ) || (divNode.Nodes.Count == 0))
+                            {
+                                Page_TreeNode page = new Page_TreeNode();
+                                page.Label = node.Label;
+                                divNode.Nodes.Add(page);
+
+                                SobekCM_File_Info fileInfo = new SobekCM_File_Info();
+                                string guid = Guid.NewGuid().ToString() + ".html";
+                                fileInfo.System_Name = "oer/" + guid;
+                                page.Files.Add(fileInfo);
+                            }
+                        }
+                    }
+
                     string error_message;
                     SobekCM_Item_Updater.Update_Item(currentItem, RequestSpecificValues.Current_User, out error_message);
 

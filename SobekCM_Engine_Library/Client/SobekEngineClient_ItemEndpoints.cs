@@ -323,7 +323,7 @@ namespace SobekCM.Core.Client
         public Item_Submittor_Info Get_Submittor_Info(string BibID, string VID, Custom_Tracer Tracer )
         {
             // Add a beginning trace
-            Tracer.Add_Trace("SobekEngineClient_ItemEndpoints.Get_Submittor_Info", "Clear all items cache for " + BibID);
+            Tracer.Add_Trace("SobekEngineClient_ItemEndpoints.Get_Submittor_Info", "Get submittor information for " + BibID);
 
             // Get the endpoint
             MicroservicesClient_Endpoint endpoint = GetEndpointConfig("Items.GetItemSubmittorInfo", Tracer);

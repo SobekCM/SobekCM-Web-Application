@@ -140,6 +140,8 @@
     <Compile Include="Items\Item_Submittor_Info.cs" />
     <Compile Include="Items\Minimal_Item_Group_Info.cs" />
     <Compile Include="Message\EnableExtensionMessage.cs" />
+    <Compile Include="OpenPublishing\OPTheme.cs" />
+    <Compile Include="OpenPublishing\OPThemePage.cs" />
     <Compile Include="Plugins\PluginInstaller.cs" />
     <Compile Include="Results\v5_Solr_Item_Result.cs" />
     <Compile Include="Results\v5_Solr_Title_Result.cs" />

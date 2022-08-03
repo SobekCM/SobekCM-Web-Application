@@ -1,7 +1,6 @@
 ﻿#region Using directives
 
 using System;
-using SobekCM.Core.Configuration;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.MicroservicesClient;

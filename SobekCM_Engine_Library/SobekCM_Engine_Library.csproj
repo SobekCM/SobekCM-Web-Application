@@ -67,6 +67,7 @@
     <Compile Include="Client\SobekEngineClient_BuilderEndpoints.cs" />
     <Compile Include="Client\SobekEngineClient_ItemEndpoints.cs" />
     <Compile Include="Client\SobekEngineClient_NavigationEndpoints.cs" />
+    <Compile Include="Client\SobekEngineClient_OpenPublishing.cs" />
     <Compile Include="Client\SobekEngineClient_SearchEndpoints.cs" />
     <Compile Include="Client\SobekEngineClient_WebContentEndpoints.cs" />
     <Compile Include="Client\SobekEngineClient_WebSkinEndpoints.cs" />
@@ -85,6 +86,7 @@
     <Compile Include="Endpoints\EndpointBase.cs" />
     <Compile Include="Endpoints\ItemServices.cs" />
     <Compile Include="Endpoints\NavigationServices.cs" />
+    <Compile Include="Endpoints\OpenPublishingServices.cs" />
     <Compile Include="Endpoints\ResultsServices.cs" />
     <Compile Include="Endpoints\WebContentServices.cs" />
     <Compile Include="Endpoints\WebSkinServices.cs" />

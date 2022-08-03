@@ -782,6 +782,18 @@ namespace SobekCM.Library.HTML
             bool show_permission_changes = Current_User.Get_Setting(User_Setting_Constants.ItemViewer_AllowPermissionChanges, true);
 
 
+            // Look for openpublishing type item
+            bool is_openpublisher = false;
+            foreach (var viewer in currentItem.Behaviors.Viewers)
+            {
+                if (viewer.ViewerType == OpenTextbook_ItemViewer_Prototyper.VIEWER_TYPE)
+                {
+                    is_openpublisher = true;
+                    break;
+                }
+            }
+
+
             Output.WriteLine("    <tr style=\"height:40px;\">");
             Output.WriteLine("      <td colspan=\"3\" style=\"text-align:center;vertical-align:middle;\">");
 
@@ -814,7 +826,15 @@ namespace SobekCM.Library.HTML
                 }
 
                 // Add ability to perforrm qc for this item
-                if (show_qc_if_permissioned)
+                if (is_openpublisher)
+                {
+                    RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.My_Sobek;
+                    RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Open_Publishing_Tool;
+                    RequestSpecificValues.Current_Mode.My_Sobek_SubMode = "1";
+                    Output.WriteLine("          <button title=\"Edit Behaviors\" class=\"sbkIsw_intheader_button open_publisher_button\" onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "';return false;\"></button>");
+                    RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Item_Display;
+                }
+                else if (show_qc_if_permissioned)
                 {
                     if ((currentItem.Images == null) || (currentItem.Images.Count == 0))
                     {

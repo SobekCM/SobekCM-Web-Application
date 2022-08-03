@@ -789,17 +789,6 @@ namespace SobekCM.Library.MySobekViewer
                             Item_To_Complete.Divisions.Download_Tree.Add_File(newFile, label);
                         }
                     }
-
-                    // Add the JPEG2000 and JPEG-specific viewers
-                    Item_To_Complete.Behaviors.Clear_Views();
-                    if (jpeg_added)
-                    {
-                        Item_To_Complete.Behaviors.Add_View("JPEG");
-                    }
-                    if (jp2_added)
-                    {
-                        Item_To_Complete.Behaviors.Add_View("JPEG2000");
-                    }
                 }
 
                 // Determine the total size of the package before saving
@@ -847,6 +836,28 @@ namespace SobekCM.Library.MySobekViewer
                     throw;
                 }
 
+                // Ensure any special viewers are includeed
+                if ( Item_To_Complete.Behaviors.Views_Count > 0 )
+                {
+                    foreach (var viewer in Item_To_Complete.Behaviors.Views)
+                    {
+                        try
+                        {
+                            SobekCM_Item_Database.Save_Item_Add_Viewer(Item_To_Complete.Web.ItemID, viewer.View_Type, viewer.Label, viewer.Attributes);
+                        }
+                        catch (Exception ee)
+                        {
+                            StreamWriter writer = new StreamWriter(userInProcessDirectory + "\\exception.txt", false);
+                            writer.WriteLine("ERROR CAUGHT WHILE SAVING NEW DIGITAL RESOURCE");
+                            writer.WriteLine(DateTime.Now.ToString());
+                            writer.WriteLine();
+                            writer.WriteLine(ee.Message);
+                            writer.WriteLine(ee.StackTrace);
+                            writer.Flush();
+                            writer.Close();
+                        }
+                    }
+                }
 
                 // Assign the file root and assoc file path
                 Item_To_Complete.Web.File_Root = Item_To_Complete.BibID.Substring(0, 2) + "\\" + Item_To_Complete.BibID.Substring(2, 2) + "\\" + Item_To_Complete.BibID.Substring(4, 2) + "\\" + Item_To_Complete.BibID.Substring(6, 2) + "\\" + Item_To_Complete.BibID.Substring(8, 2);

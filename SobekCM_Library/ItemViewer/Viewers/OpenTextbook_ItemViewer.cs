@@ -23,10 +23,12 @@ namespace SobekCM.Library.ItemViewer.Viewers
     /// to create the link in the main menu, and to create the viewer itself if the user selects that option </summary>
     public class OpenTextbook_ItemViewer_Prototyper : abstractItemViewerPrototyper
     {
+        public const string VIEWER_TYPE = "OPEN_TEXTBOOK";
+
         /// <summary> Constructor for a new instance of the OpenTextbook_ItemViewer_Prototyper class </summary>
         public OpenTextbook_ItemViewer_Prototyper()
         {
-            ViewerType = "OPEN_TEXTBOOK";
+            ViewerType = VIEWER_TYPE;
             ViewerCode = "#o";
         }
 
@@ -143,8 +145,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     page = tempPageParse;
             }
 
+            
+
             // Just a quick range check
-            if (page > BriefItem.OpenTextbook_Pages.Count)
+            if (( BriefItem.OpenTextbook_Pages != null ) && (page > BriefItem.OpenTextbook_Pages.Count))
                 page = 1;
 
             // Since this is a paging viewer, set the viewer code
@@ -250,6 +254,12 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
         private bool set_file_information(string[] FileExtensions)
         {
+            if ( BriefItem.OpenTextbook_Pages == null )
+            {
+                filename = "00001.html";
+                return true;
+            }
+
             // Find the page information
             BriefItem_FileGrouping imagePage = BriefItem.OpenTextbook_Pages[page - 1];
             if (imagePage.Files != null)
@@ -405,19 +415,19 @@ namespace SobekCM.Library.ItemViewer.Viewers
             try
             {
                 html = SobekFileSystem.ReadToEnd(BriefItem, sourceString);
+
             }
             catch
             {
-                StringBuilder builder = new StringBuilder();
-                builder.AppendLine("<div style=\"background-color: White; color: black;text-align:center; width:630px;\">");
-                builder.AppendLine("  <br /><br />");
-                builder.AppendLine("  <span style=\"font-weight:bold;font-size:1.4em\">Unable to pull html view for item ( <a href=\"" + sourceString + "\">source</a> )</span><br /><br />");
-                builder.AppendLine("  <span style=\"font-size:1.2em\">We apologize for the inconvenience.</span><br /><br />");
+                html = "Demo Test data";
 
-                string returnurl = CurrentRequest.Base_URL + "/contact";
-                builder.AppendLine("  <span style=\"font-size:1.2em\">Click <a href=\"" + returnurl + "\">here</a> to report the problem.</span>");
-                builder.AppendLine("  <br /><br />");
-                builder.AppendLine("</div>");
+                StringBuilder builder = new StringBuilder();
+                builder.AppendLine("<h2>Welcome to OpenPublishing</h2>");
+                builder.AppendLine();
+                builder.AppendLine("<p> You may edit your item here, by selecting <i>Edit Content</i> in the upper right corner of this page.</p>");
+                builder.AppendLine();
+                builder.AppendLine("<p> To update your table of contents and create chapters, use the OpenPublishing tool, available in the internal header or through the <i>MANAGE</i> option in the item menu.</p>");
+
                 html = builder.ToString();
             }
 

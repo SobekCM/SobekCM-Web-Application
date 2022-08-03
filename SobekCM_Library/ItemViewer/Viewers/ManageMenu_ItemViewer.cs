@@ -121,6 +121,17 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     }
                 }
 
+                // Look for openpublishing type item
+                bool is_openpublisher = false;
+                foreach( var viewer in CurrentItem.Behaviors.Viewers)
+                {
+                    if ( viewer.ViewerType == OpenTextbook_ItemViewer_Prototyper.VIEWER_TYPE)
+                    {
+                        is_openpublisher = true;
+                        break;
+                    }
+                }
+
                 if (!is_tei)
                 {
                     // Add the menu item for editing metadatga
@@ -141,21 +152,32 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 // Add the menu item for editing item behaviors
                 if (show_behaviors_if_permissioned)
                 {
+                    CurrentRequest.Mode = Display_Mode_Enum.My_Sobek;
                     CurrentRequest.My_Sobek_Type = My_Sobek_Type_Enum.Edit_Item_Behaviors;
                     string edit_behaviors_url = UrlWriterHelper.Redirect_URL(CurrentRequest);
                     MenuItems.Add(new Item_MenuItem("Manage", "Edit Item Behaviors", null, edit_behaviors_url, "nevermatchthis"));
                 }
 
                 // Add the menu item for managing download files
+                CurrentRequest.Mode = Display_Mode_Enum.My_Sobek;
                 CurrentRequest.My_Sobek_Type = My_Sobek_Type_Enum.File_Management;
                 string manage_downloads = UrlWriterHelper.Redirect_URL(CurrentRequest);
                 MenuItems.Add(new Item_MenuItem("Manage", "Manage Download Files", null, manage_downloads, "nevermatchthis"));
 
                 // Add the menu item for managing pages and divisions
-                if (show_qc_if_permissioned)
+                if ( is_openpublisher)
+                {
+                    // Add the menu item for open publisher
+                    CurrentRequest.Mode = Display_Mode_Enum.My_Sobek;
+                    CurrentRequest.My_Sobek_Type = My_Sobek_Type_Enum.Open_Publishing_Tool;
+                    string open_publishing_url = UrlWriterHelper.Redirect_URL(CurrentRequest);
+                    MenuItems.Add(new Item_MenuItem("Manage", "Open Publishing", null, open_publishing_url, "nevermatchthis"));
+                }
+                else if (show_qc_if_permissioned)
                 {
                     if ((CurrentItem.Images == null) || (CurrentItem.Images.Count == 0))
                     {
+                        CurrentRequest.Mode = Display_Mode_Enum.My_Sobek;
                         CurrentRequest.My_Sobek_Type = My_Sobek_Type_Enum.Page_Images_Management;
                         string page_images_url = UrlWriterHelper.Redirect_URL(CurrentRequest);
                         MenuItems.Add(new Item_MenuItem("Manage", "Manage Pages and Divisions", null, page_images_url, "nevermatchthis"));
@@ -181,6 +203,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 // Add the tracking sheet menu option
                 if (UI_ApplicationCache_Gateway.Settings.Resources.Use_Tracking_Sheet)
                 {
+                    CurrentRequest.Mode = Display_Mode_Enum.Item_Display;
                     CurrentRequest.ViewerCode = "ts";
                     string tracking_url = UrlWriterHelper.Redirect_URL(CurrentRequest);
                     MenuItems.Add(new Item_MenuItem("Manage", "View Tracking Sheet", null, tracking_url, "ts"));
@@ -294,7 +317,18 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     }
                 }
 
+                // Look for openpublishing type item
+                bool is_openpublisher = false;
+                foreach (var viewer in BriefItem.Behaviors.Viewers)
+                {
+                    if (viewer.ViewerType == OpenTextbook_ItemViewer_Prototyper.VIEWER_TYPE)
+                    {
+                        is_openpublisher = true;
+                        break;
+                    }
+                }
 
+                
                 // Start the citation table
                 Output.WriteLine("  <td align=\"left\"><div class=\"sbkMmiv_ViewerTitle\">Manage this Item</div></td>");
                 Output.WriteLine("</tr>");
@@ -306,6 +340,24 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 Output.WriteLine("\t\t\t\t<tr class=\"sbkMmiv_HeaderRow\"><td colspan=\"3\">How would you like to manage this item today?</td></tr>");
 
                 string url;
+
+
+                if (is_openpublisher)
+                {
+                    CurrentRequest.Mode = Display_Mode_Enum.My_Sobek;
+                    CurrentRequest.My_Sobek_Type = My_Sobek_Type_Enum.Open_Publishing_Tool;
+                    CurrentRequest.My_Sobek_SubMode = "1";
+                    url = UrlWriterHelper.Redirect_URL(CurrentRequest);
+                    Output.WriteLine("\t\t\t\t<tr>");
+                    Output.WriteLine("\t\t\t\t\t<td style=\"width:50px\">&nbsp;</td>");
+                    Output.WriteLine("\t\t\t\t\t<td colspan=\"2\"><a href=\"" + url + "\"><img src=\"https://opennj.net/default/images/oer/open-publishing2.png\" style=\"width:200px;\"/></a>");
+
+                    Output.WriteLine("\t\t\t\t\t\t<div class=\"sbkMmiv_Desc\" style=\"padding-left:75px\">Manage this open textbook item, allowing you to edit the page content, add images, add new chapeters, etc..</div>");
+                    Output.WriteLine("\t\t\t\t\t</td>");
+                    Output.WriteLine("\t\t\t\t</tr>");
+                    Output.WriteLine("\t\t\t\t<tr class=\"sbkMmiv_SpacerRow\"><td colspan=\"3\"></td></tr>");
+                }
+
                 if (!is_tei)
                 {
                     // Add ability to edit metadata for this item
@@ -360,7 +412,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 }
 
                 // Add ability to perform QC ( manage pages and divisions) for this item
-                if (show_qc_if_permissioned)
+                if ((!is_openpublisher) && (show_qc_if_permissioned))
                 {
                     CurrentRequest.Mode = Display_Mode_Enum.Item_Display;
                     CurrentRequest.ViewerCode = "qc";

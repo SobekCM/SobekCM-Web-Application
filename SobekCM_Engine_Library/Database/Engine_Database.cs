@@ -12,6 +12,7 @@ using SobekCM.Core.ApplicationState;
 using SobekCM.Core.Builder;
 using SobekCM.Core.Configuration.Extensions;
 using SobekCM.Core.Items;
+using SobekCM.Core.OpenPublishing;
 using SobekCM.Core.Results;
 using SobekCM.Core.Search;
 using SobekCM.Core.Settings;
@@ -8119,5 +8120,97 @@ namespace SobekCM.Engine_Library.Database
         }
 
         #endregion
+
+        #region Open Publishing methods
+
+        /// <summary> Gets all Open Publishing themes which are currently available for selection </summary>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <returns> Open Publishing themes with the basic database information loaded</returns>
+        /// <remarks> This calls the 'SobekCM_Get_Available_OpenPublishing_Themes' stored procedure  </remarks>
+        public static List<OPTheme> Get_Available_OpenPublishing_Themes(Custom_Tracer Tracer)
+        {
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("Engine_Database.Get_Available_OpenPublishing_Themes");
+            }
+
+            try
+            {
+                // Run the SQL and get back a dataset
+                DataSet valueSet = EalDbAccess.ExecuteDataset(DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_Get_Available_OpenPublishing_Themes", new EalDbParameter[] { new EalDbParameter("@bibid", BibID) });
+
+                // If there was either no match, or more than one, return null
+                if ((valueSet.Tables.Count == 0) || (valueSet.Tables[0] == null))
+                {
+                    return null;
+                }
+
+                List<OPTheme> returnValue = new List<OPTheme>();
+
+                foreach( DataRow row in valueSet.Tables[0].Rows)
+                {
+                    returnValue.Add(build_theme(row));
+                }   
+                
+                // Return the fully built list
+                return returnValue;
+            }
+            catch (Exception ee)
+            {
+                Last_Exception = ee;
+                return null;
+            }
+        }
+
+        /// <summary> Gets the Open Publishing theme from the database, by key </summary>
+        /// <param name="ThemeID"> Primary key to the OpenPublishing theme </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <returns> Open Publishing theme with the basic database information loaded</returns>
+        /// <remarks> This calls the 'SobekCM_Get_OpenPublishing_Theme' stored procedure  </remarks>
+        public static OPTheme Get_OpenPublishing_Theme(int ThemeID, Custom_Tracer Tracer)
+        {
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("Engine_Database.Get_OpenPublishing_Theme", "Gets the theme by id " + ThemeID);
+            }
+
+            try
+            {
+                // Run the SQL and get back a dataset
+                DataSet valueSet = EalDbAccess.ExecuteDataset(DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_Get_OpenPublishing_Theme", new EalDbParameter[] { new EalDbParameter("@bibid", BibID) });
+
+                // If there was either no match, or more than one, return null
+                if ((valueSet.Tables.Count == 0) || (valueSet.Tables[0] == null) || (valueSet.Tables[0].Rows.Count == 0))
+                {
+                    return null;
+                }
+
+                // Return the fully built object
+                return build_theme(valueSet.Tables[0].Rows[0]);
+            }
+            catch (Exception ee)
+            {
+                Last_Exception = ee;
+                return null;
+            }
+        }
+
+        private static OPTheme build_theme(DataRow row)
+        {
+            // Create the object
+            return new OPTheme
+            {
+                PrimaryKey = Int32.Parse(row["ThemeID"].ToString()),
+                ThemeName = row["ThemeName"].ToString(),
+                Location = row["Location"].ToString(),
+                Author = row["Author"].ToString(),
+                Description = row["Description"].ToString(),
+                Image = row["Image"].ToString(),
+                AvailableForSelection = bool.Parse(row["AvailableForSelection"].ToString())
+            };
+        }
+
+
+        #endregion  
     }
 }

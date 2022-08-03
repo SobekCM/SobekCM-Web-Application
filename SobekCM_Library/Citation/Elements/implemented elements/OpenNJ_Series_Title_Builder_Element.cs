@@ -64,6 +64,8 @@ namespace SobekCM.Library.Citation.Elements
                     Bib.Bib_Info.SeriesTitle.Title = title.Trim();
                 }
             }
+
+            Bib.Behaviors.Add_View("OPEN_TEXTBOOK");
         }
     }
 }

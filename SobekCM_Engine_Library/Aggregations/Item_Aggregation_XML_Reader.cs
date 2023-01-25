@@ -259,6 +259,11 @@ namespace SobekCM.Engine_Library.Aggregations
                             NodeReader.Read();
                             HierarchyObject.Add_Home_Page_File(NodeReader.Value, langEnum, isCustom );
                             break;
+
+                        case "HI:BROWSE":
+                            NodeReader.Read();
+                            HierarchyObject.BrowseOnHomePage = NodeReader.Value;
+                            break;
                     }
                 }
 

@@ -1,5 +1,6 @@
 ﻿#region Using directives
 
+using System;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.Navigation;
 using SobekCM.Library.AggregationViewer.Viewers;
@@ -41,7 +42,19 @@ namespace SobekCM.Library.AggregationViewer
                     {
                         return new Rotating_Highlight_Search_AggregationViewer(RequestSpecificValues, ViewBag);
                     }
-                    return new Basic_Search_AggregationViewer(RequestSpecificValues, ViewBag);
+                    if ( String.IsNullOrEmpty(ViewBag.Hierarchy_Object.BrowseOnHomePage))
+                        return new Basic_Search_AggregationViewer(RequestSpecificValues, ViewBag);
+                    else
+                    {
+                        switch(ViewBag.Hierarchy_Object.BrowseOnHomePage.ToUpper())
+                        {
+                            case "SUPPLEMENTARY":
+                                return new Thumbnails_Home_AggregationViewer(RequestSpecificValues, ViewBag);
+
+                            default:
+                                return new Basic_Search_AggregationViewer(RequestSpecificValues, ViewBag);
+                        }
+                    }                    
 
 				case Item_Aggregation_Views_Searches_Enum.Basic_Search_YearRange:
                     return new Basic_Search_YearRange_AggregationViewer(RequestSpecificValues, ViewBag);

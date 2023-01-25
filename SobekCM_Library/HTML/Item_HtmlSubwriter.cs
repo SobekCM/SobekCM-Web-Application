@@ -1097,7 +1097,22 @@ namespace SobekCM.Library.HTML
                     Output.WriteLine("\t<tr id=\"sbkIsw_RestrictedRow\">");
                     Output.WriteLine("\t\t<td>");
                     Output.WriteLine("\t\t\t<span style=\"font-size:larger; font-weight: bold;\">PRIVATE ITEM</span>");
-                    Output.WriteLine("\t\t\tDigitization of this item is currently in progress.");
+                    if ( !String.IsNullOrEmpty(currentItem.Web.Internal_Comments))
+                    {
+                        Output.WriteLine("\t\t\t" + currentItem.Web.Internal_Comments);
+                    }
+                    else
+                    {
+                        Output.WriteLine("\t\t\tDigitization of this item is currently in progress.");
+                    }
+                    Output.WriteLine("\t\t</td>");
+                    Output.WriteLine("\t</tr>");
+                }
+                else if (!String.IsNullOrEmpty(currentItem.Web.Internal_Comments))
+                {
+                    Output.WriteLine("\t<tr id=\"sbkIsw_RestrictedRow\">");
+                    Output.WriteLine("\t\t<td>");
+                    Output.WriteLine("\t\t\t" + currentItem.Web.Internal_Comments);
                     Output.WriteLine("\t\t</td>");
                     Output.WriteLine("\t</tr>");
                 }

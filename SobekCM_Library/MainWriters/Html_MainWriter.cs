@@ -360,6 +360,9 @@ namespace SobekCM.Library.MainWriters
                         return true; //RequestSpecificValues.Site_Map != null;
 
                     case Display_Mode_Enum.Aggregation:
+                        if (subwriter is Aggregation_HtmlSubwriter)
+                            return ((Aggregation_HtmlSubwriter)subwriter).Include_Navigation_Form;
+
 		                if ((RequestSpecificValues.Current_Mode.Aggregation_Type == Aggregation_Type_Enum.Home) || (RequestSpecificValues.Current_Mode.Aggregation_Type == Aggregation_Type_Enum.Home_Edit))
 		                {
                             return false;

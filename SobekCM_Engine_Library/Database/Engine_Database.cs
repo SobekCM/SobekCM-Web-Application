@@ -3919,7 +3919,7 @@ namespace SobekCM.Engine_Library.Database
                 EalDbAccess.ExecuteNonQuery(DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_Save_Item_Aggregation_Facets", paramList);
 
                 // Succesful, so return true
-                return false;
+                return true;
             }
             catch (Exception ee)
             {
@@ -8206,7 +8206,8 @@ namespace SobekCM.Engine_Library.Database
                 Author = row["Author"].ToString(),
                 Description = row["Description"].ToString(),
                 Image = row["Image"].ToString(),
-                AvailableForSelection = bool.Parse(row["AvailableForSelection"].ToString())
+                AvailableForSelection = bool.Parse(row["AvailableForSelection"].ToString()),
+                Default = bool.Parse(row["Default"].ToString())
             };
         }
 

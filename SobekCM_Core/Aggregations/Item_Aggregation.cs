@@ -614,6 +614,9 @@ namespace SobekCM.Core.Aggregations
         [ProtoMember(48)]
         public bool GroupResults { get; set; }
 
+        [DataMember(Name = "browseOnHomePage"), XmlElement("browseOnHomePage"), ProtoMember(49)]
+        public string BrowseOnHomePage { get; set; }
+
         #region Methods to support the key/value pair of loose settings
 
         /// <summary> Key/value pairs of setting values that can be used to store additional

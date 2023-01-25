@@ -1022,6 +1022,12 @@ namespace SobekCM.Library.AdminViewer
                         itemAggregation.Default_Skin = Form[thisKey];
                 }
             }
+
+            if (Form["admin_aggr_home_browse"] != null)
+                itemAggregation.BrowseOnHomePage = Form["admin_aggr_home_browse"];
+            else
+                itemAggregation.BrowseOnHomePage = "NONE";
+
             //if ((Form["admin_aggr_skin_1"] != null) && (Form["admin_aggr_skin_1"].Length > 0))
             //{
             //    itemAggregation.Web_Skins = new List<string> { Form["admin_aggr_skin_1"] };
@@ -1038,10 +1044,11 @@ namespace SobekCM.Library.AdminViewer
 	        const string NEW_HOME_PAGE_HELP = "Use this option to add special support for a new language to your home page.  For example, if you have just translated your home page text into Spanish, and would like users that have set Spanish as their browser preference to see your translations by default, select Spanish from the drop down.  Choosing a home page to copy from will allow the new home page to not start completely blank.";
 	        const string NEW_BANNER_HELP = "Select the language and the already uploaded banner to use and click ADD.  This will allow you to customize the banner image, based on the language preference of your web user.  To change an existing banner, simply select the existing language and the new banner image and press ADD.";
 	        const string UPLOAD_BANNER_HELP = "Before you can choose to use a new banner image for a language, you must upload the new banner.  Pressing the large SELECT button in this section allows you to upload this new image, or overwrite an existing banner image.";
+            const string HOME_BROWSE_HELP = "Setting indicates if a portion of the item browse should appear on the home page, as well as (or instead of) the home page text.";
 
 
 
-	        Output.WriteLine("<table class=\"sbkAdm_PopupTable\">");
+            Output.WriteLine("<table class=\"sbkAdm_PopupTable\">");
 
 	        Output.WriteLine("  <tr class=\"sbkSaav_TitleRow\"><td colspan=\"3\">Appearance Options</td></tr>");
 	        Output.WriteLine("  <tr class=\"sbkSaav_TextRow\"><td colspan=\"3\"><p>These three settings have the most profound affects on the appearance of this aggregation, by forcing it to appear under a particular web skin, allowing a custom aggregation-level stylesheet, or completely overriding the system-generated home page for a custom home page HTML source file.</p><p>For more information about the settings on this tab, <a href=\"" + UI_ApplicationCache_Gateway.Settings.System.Help_URL(RequestSpecificValues.Current_Mode.Base_URL) + "adminhelp/singleaggr\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</p></td></tr>");
@@ -1102,7 +1109,37 @@ namespace SobekCM.Library.AdminViewer
 	        Output.WriteLine("    </td>");
 	        Output.WriteLine("  </tr>");
 
-	        Output.WriteLine("  <tr class=\"sbkSaav_TitleRow2\"><td colspan=\"3\">Home Page Text</td></tr>");
+            // Add the browse on home page 
+            Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\">");
+            Output.WriteLine("    <td>&nbsp;</td>");
+            Output.WriteLine("    <td class=\"sbkSaav_TableLabel\"><label for=\"admin_aggr_home_browse\">Home Page Browse:</label></td>");
+            Output.WriteLine("    <td>");
+            Output.WriteLine("      <table class=\"sbkSaav_InnerTable\"><tr><td>");
+            Output.WriteLine("          <select class=\"sbkSaav_select_large\" name=\"admin_aggr_home_browse\" id=\"admin_aggr_home_browse\">");
+            if ((String.IsNullOrEmpty(itemAggregation.BrowseOnHomePage)) || ( itemAggregation.BrowseOnHomePage == "NONE"))
+            {
+                Output.WriteLine("             <option value=\"NONE\" selected=\"selected\">None</option>");
+            }
+            else
+            {
+                Output.WriteLine("             <option value=\"NONE\">None</option>");
+            }
+            if ((!String.IsNullOrEmpty(itemAggregation.BrowseOnHomePage)) && (itemAggregation.BrowseOnHomePage == "SUPPLEMENTARY"))
+            {
+                Output.WriteLine("             <option value=\"SUPPLEMENTARY\" selected=\"selected\">With home page text</option>");
+            }
+            else
+            {
+                Output.WriteLine("             <option value=\"SUPPLEMENTARY\">With home page text</option>");
+            }
+
+            Output.WriteLine("          </select>");
+            Output.WriteLine("        </td>");
+            Output.WriteLine("        <td><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources_Gateway.Help_Button_Jpg + "\" onclick=\"alert('" + HOME_BROWSE_HELP + "');\"  title=\"" + HOME_BROWSE_HELP + "\" /></td></tr></table>");
+            Output.WriteLine("     </td>");
+            Output.WriteLine("  </tr>");
+
+            Output.WriteLine("  <tr class=\"sbkSaav_TitleRow2\"><td colspan=\"3\">Home Page Text</td></tr>");
 	        Output.WriteLine("  <tr class=\"sbkSaav_TextRow\"><td colspan=\"3\"><p>This section controls all the language-specific (and default) text which appears on the home page.</p></td></tr>");
 
 	        // Add all the existing home page information

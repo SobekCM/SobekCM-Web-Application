@@ -42,11 +42,57 @@ function get_structure()
     return returnValue;
 }
 
+function edit_chapter_keypress(index, name, type, isMozilla)
+{
+    var typeField = document.getElementById('form_chapter_type');
+    typeField.value = type;
+
+    var titleField = document.getElementById('form_chapter_title');
+    titleField.value = name;
+
+    // Set the hidden index field (may not be used though)
+    var hiddenfield = document.getElementById('action_index');
+    hiddenfield.value = index;
+
+    popup_keypress_focus('form_new_chapter', 'form_chapter_title', '" + isMozilla.ToString() + "' );
+
+    var actionfield = document.getElementById('action_requested');
+    actionfield.value = 'edit_chapter';
+
+    // Return false to prevent an immediate return trip to the server
+    return false;
+}
+
+function edit_chapter(index, name, type)
+{
+    var typeField = document.getElementById('form_chapter_type');
+    typeField.value = type;
+
+    var titleField = document.getElementById('form_chapter_title');
+    titleField.value = name;
+
+    // Set the hidden index field (may not be used though)
+    var hiddenfield = document.getElementById('action_index');
+    hiddenfield.value = index;
+
+    var actionfield = document.getElementById('action_requested');
+    actionfield.value = 'edit_chapter';
+
+    popup_focus('form_new_chapter', 'form_chapter_title');
+
+    // Return false to prevent an immediate return trip to the server
+    return false;
+}
+
 function show_chapter_form_keypress(index, isMozilla)
 {
     // Set the hidden index field (may not be used though)
     var hiddenfield = document.getElementById('action_index');
     hiddenfield.value = index;
+
+    // Set the hidden value based on the user request
+    var actionfield = document.getElementById('action_requested');
+    actionfield.value = 'new_chapter';
 
     popup_keypress_focus('form_new_chapter', 'form_chapter_title', '" + isMozilla.ToString() + "' );
 
@@ -59,6 +105,10 @@ function show_chapter_form(index)
     // Set the hidden index field (may not be used though)
     var hiddenfield = document.getElementById('action_index');
     hiddenfield.value = index;
+
+    // Set the hidden value based on the user request
+    var actionfield = document.getElementById('action_requested');
+    actionfield.value = 'new_chapter';
 
     popup_focus('form_new_chapter', 'form_chapter_title' );
 
@@ -81,10 +131,6 @@ function save_new_chapter_form()
     // Close the associated form
     popdown( 'form_new_chapter' );    
         
-    // Set the hidden value based on the user request
-    var actionfield = document.getElementById('action_requested');
-    actionfield.value = 'new_chapter';
-
     // Get the name of this chapter
     var titlefield = document.getElementById('form_chapter_title');
     var title = titlefield.value;

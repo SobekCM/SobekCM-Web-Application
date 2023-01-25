@@ -322,7 +322,9 @@ namespace SobekCM.Resource_Object.Bib_Info
                     Results.Write(" type=\"uniform\"");
                     break;
                 case Title_Type_Enum.Course:
-                    Results.Write(" type=\"course\"");
+                    Results.Write(" type=\"alternative\"");
+                    if (displayLabel != "course")
+                        displayLabel = "course";
                     break;
             }
 

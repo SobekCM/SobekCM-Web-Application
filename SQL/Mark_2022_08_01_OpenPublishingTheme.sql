@@ -6,7 +6,8 @@ CREATE TABLE [dbo].[SobekCM_OpenPublishing_Theme](
 	[Author] [nvarchar](50) NULL,
 	[Description] [nvarchar](1000) NULL,
 	[Image] [nvarchar](255) NULL,
-	[AvailableForSelection] bit NOT NULL default('true')
+	[AvailableForSelection] bit NOT NULL default('true'),
+	[Default] bit NOT NULL default('false')
  CONSTRAINT [PK_OpenPublishing_Theme] PRIMARY KEY CLUSTERED 
 (
 	[ThemeID] ASC
@@ -21,7 +22,7 @@ CREATE PROCEDURE [dbo].[SobekCM_Get_OpenPublishing_Theme]
 AS
 begin
 
-	select ThemeID, ThemeName, Location, isnull(Author,'') as Author, isnull([Description],'') as [Description], isnull([Image], '') as [Image], AvailableForSelection
+	select ThemeID, ThemeName, Location, isnull(Author,'') as Author, isnull([Description],'') as [Description], isnull([Image], '') as [Image], AvailableForSelection, [Default]
 	from SobekCM_OpenPublishing_Theme
 	where ThemeID=@id;
 
@@ -34,7 +35,7 @@ CREATE PROCEDURE [dbo].[SobekCM_Get_Available_OpenPublishing_Themes]
 AS
 begin
 
-	select ThemeID, ThemeName, Location, isnull(Author,'') as Author, isnull([Description],'') as [Description], isnull([Image], '') as [Image], AvailableForSelection
+	select ThemeID, ThemeName, Location, isnull(Author,'') as Author, isnull([Description],'') as [Description], isnull([Image], '') as [Image], AvailableForSelection, [Default]
 	from SobekCM_OpenPublishing_Theme
 	where AvailableForSelection='true';
 

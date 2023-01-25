@@ -158,7 +158,8 @@ namespace SobekCM.Library.ResultsViewer
                 }
 
                 // Start the HTML for this item
-                resultsBldr.AppendLine("<table width=\"150px\">");
+                resultsBldr.AppendLine("<table style=\"width:150px;max-height:250px;\">");
+
 
                 //// Is this restricted?
                 bool restricted_by_ip = false;

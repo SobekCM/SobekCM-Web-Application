@@ -1723,6 +1723,9 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
             if (r.MoveToAttribute("displayLabel"))
                 returnVal.Display_Label = r.Value;
 
+            if ((returnVal.Title_Type == Title_Type_Enum.Alternative) && (String.Equals(returnVal.Display_Label, "course", StringComparison.OrdinalIgnoreCase)))
+                returnVal.Title_Type = Title_Type_Enum.Course;
+
             if (r.MoveToAttribute("lang"))
                 returnVal.Language = r.Value;
 

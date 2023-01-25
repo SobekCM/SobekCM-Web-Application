@@ -164,6 +164,18 @@ namespace SobekCM.Library.MySobekViewer
                     }
                 }
 
+                if (action_requested == "edit_chapter")
+                {
+                    if (String.IsNullOrEmpty(action_value))
+                        action_value = "Untitled";
+
+                    if ((!String.IsNullOrEmpty(action_index)) && (Int32.TryParse(action_index, out int chapter_index)))
+                    {
+                        abstract_TreeNode node = currentItem.Divisions.OpenTextbook_Tree.Roots[chapter_index];
+                        node.Label = action_value;
+                    }
+                }
+
                 if ( action_requested == "new_division")
                 {
                     if (String.IsNullOrEmpty(action_value))
@@ -348,8 +360,7 @@ namespace SobekCM.Library.MySobekViewer
 
                                 Output.WriteLine("        <div class=\"oer_div_inner_toolbox_outer\">");
                                 Output.WriteLine("          <div class=\"oer_div_inner_toolbox\" style=\"display:none;\">");
-                                Output.WriteLine("            <a href=\"" + javascript_req + "\" onkeypress=\"\" onclick=\"\">view</a> &nbsp;");
-                                Output.WriteLine("            <a href=\"" + javascript_req + "\" onkeypress=\"\" onclick=\"\">edit</a> &nbsp;");
+                                Output.WriteLine($"            <a title=\"Edit the division title\" href=\"{javascript_req}\" onkeypress=\"return edit_division_keypress('{chapter_index}', '{division_index}', '{HttpUtility.HtmlEncode(rootnode.Label).Replace("'", "")}', '{isMozilla.ToString()}');\" onclick=\"return edit_division('{chapter_index}', '{division_index}', '{HttpUtility.HtmlEncode(rootnode.Label).Replace("'", "")}');\">edit</a> &nbsp;");
                                 Output.WriteLine($"            <a title=\"Delete this division\" href=\"{javascript_req}\" onkeypress=\"return delete_division('{chapter_index}', '{division_index}', '{HttpUtility.HtmlEncode(childNode.Label).Replace("'", "")}');\" onclick=\"return delete_division('{chapter_index}', '{division_index}', '{HttpUtility.HtmlEncode(childNode.Label).Replace("'", "")}');\">delete</a>");
                                 Output.WriteLine("          </div>");
                                 Output.WriteLine("        </div>");
@@ -375,8 +386,7 @@ namespace SobekCM.Library.MySobekViewer
                 Output.WriteLine($"        <a title=\"Add a new division in this chapter\" href=\"{javascript_req}\" onkeypress=\"return show_division_form_keypress('{chapter_index}', '{isMozilla.ToString()}');\" onclick=\"return show_division_form('{chapter_index}');\">new division</a> &nbsp;");
                 Output.WriteLine($"        <a title=\"Add a new chapter BEFORE this chapter\" href=\"{javascript_req}\" onkeypress=\"return show_chapter_form_keypress('{chapter_index}', '{isMozilla.ToString()}');\" onclick=\"return show_chapter_form('{chapter_index}');\">add before</a> &nbsp;");
                 Output.WriteLine($"        <a title=\"Add a new chapter AFTER this chapter\" href=\"{javascript_req}\" onkeypress=\"return show_chapter_form_keypress('{chapter_index + 1}', '{isMozilla.ToString()}');\" onclick=\"return show_chapter_form('{chapter_index + 1}');\">add after</a> &nbsp;");
-                Output.WriteLine("        <a href=\"" + javascript_req + "\" onkeypress=\"\" onclick=\"\">view</a> &nbsp;");
-                Output.WriteLine("        <a href=\"" + javascript_req + "\" onkeypress=\"\" onclick=\"\">edit</a> &nbsp;");
+                Output.WriteLine($"        <a title=\"Edit the chapter type and/or title\" href=\"{javascript_req}\" onkeypress=\"return edit_chapter_keypress('{chapter_index}', '{HttpUtility.HtmlEncode(rootnode.Label).Replace("'", "")}', '{HttpUtility.HtmlEncode(rootnode.Type).Replace("'", "")}', '{isMozilla.ToString()}');\" onclick=\"return edit_chapter('{chapter_index}', '{HttpUtility.HtmlEncode(rootnode.Label).Replace("'", "")}', '{HttpUtility.HtmlEncode(rootnode.Type).Replace("'", "")}');\">edit</a> &nbsp;");
                 if (allowDelete)
                 {
                     Output.WriteLine($"        <a title=\"Delete this chapter\" href=\"{javascript_req}\" onkeypress=\"return delete_chapter('{chapter_index}', '{HttpUtility.HtmlEncode(rootnode.Label).Replace("'","")}');\" onclick=\"return delete_chapter('{chapter_index}', '{HttpUtility.HtmlEncode(rootnode.Label).Replace("'", "")}');\">delete</a>");
@@ -444,7 +454,7 @@ namespace SobekCM.Library.MySobekViewer
             Output.WriteLine();
 
             // Add form for new division (and title)
-            Output.WriteLine("<!-- New chapter form -->");
+            Output.WriteLine("<!-- New division form -->");
             Output.WriteLine("<div class=\"related_url_popup_div sbkMetadata_PopupDiv\" id=\"form_new_division\" style=\"display:none;\">");
             Output.WriteLine("  <div class=\"sbkMetadata_PopupTitle\"><table style=\"width:100%\"><tr><td style=\"text-align:left\">New Division</td><td style=\"text-align:right\">");
             //Output.Write("<a href=\"" + Help_URL(Skin_Code, Base_URL) + "\" alt=\"HELP\" target=\"_" + html_element_name.ToUpper() + "\" >?</a> &nbsp;");

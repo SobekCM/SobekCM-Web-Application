@@ -474,6 +474,9 @@ namespace SobekCM.Core.Aggregations
         [ProtoMember(48)]
         public bool GroupResults { get; set; }
 
+        [DataMember(Name = "browseOnHomePage"), ProtoMember(49)]
+        public string BrowseOnHomePage { get; set; }
+
 		/// <summary> Gets the number of browses and info pages attached to this item aggregation </summary>
 		[IgnoreDataMember]
 		[XmlIgnore]
@@ -1322,6 +1325,10 @@ namespace SobekCM.Core.Aggregations
 	                    writer.WriteLine("    <hi:body lang=\"" + Web_Language_Enum_Converter.Enum_To_Code(homePair.Key) + "\" isCustom=\"" + homePair.Value.isCustomHome.ToString().ToLower() + "\">" + homePair.Value.Source.Replace("/", "\\") + "</hi:body>");
 	                }
 	            }
+                if ( !String.IsNullOrEmpty(BrowseOnHomePage))
+                {
+                    writer.WriteLine("    <hi:browse>" + BrowseOnHomePage + "</hi:browse>");
+                }
 	            writer.WriteLine("</hi:home>");
 	            writer.WriteLine();
 

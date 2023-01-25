@@ -617,7 +617,8 @@ namespace SobekCM.Engine_Library.Aggregations
                 Rotating_Highlights = CompAggr.Rotating_Highlights,
                 ShortName = CompAggr.ShortName,
                 Statistics = CompAggr.Statistics,
-                Type = CompAggr.Type
+                Type = CompAggr.Type,
+                BrowseOnHomePage = CompAggr.BrowseOnHomePage
             };
 
             // Copy the map search and browse information

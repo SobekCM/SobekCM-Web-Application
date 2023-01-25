@@ -84,6 +84,13 @@ namespace SobekCM.Core.OpenPublishing
         [ProtoMember(11)]
         public bool AvailableForSelection { get; set; }
 
+        /// <summary> Flag which indicates if this theme is the default theme for new incoming items </summary>
+        /// <remarks> This should also probably be settable in the templates themselves </remarks>
+        [DataMember(Name = "default")]
+        [XmlAttribute("default")]
+        [ProtoMember(12)]
+        public bool Default { get; set; }
+
         /// <summary> Default constructor for a new instance of the OPTheme class </summary>
         public OPTheme()
         {

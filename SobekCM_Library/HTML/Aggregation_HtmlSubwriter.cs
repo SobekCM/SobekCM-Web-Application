@@ -1251,6 +1251,21 @@ namespace SobekCM.Library.HTML
             return finish_page;
         }
 
+        public bool Include_Navigation_Form
+        {
+            get
+            {
+                if (collectionViewer is Thumbnails_Home_AggregationViewer)
+                    return true;
+
+                if ((RequestSpecificValues.Current_Mode.Aggregation_Type == Aggregation_Type_Enum.Home) || (RequestSpecificValues.Current_Mode.Aggregation_Type == Aggregation_Type_Enum.Home_Edit))
+                {
+                    return false;
+                }
+                return true;
+            }
+        }
+
         private void Add_Sharing_Buttons( TextWriter Output, string FormName, string Style )
         {
             #region Add the buttons for sharing, emailing, etc..

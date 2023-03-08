@@ -276,6 +276,24 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 
             if (stats.Total_Items > 0)
             {
+                StringBuilder builder = new StringBuilder();
+                builder.AppendLine("<div id=\"Thp_ResultsDesc\" style=\"background-color:#eee; border: #ccc 1px solid;width: 100%\">");
+                builder.AppendLine("<div id=\"Thp_ResultsTitle\" style=\"width:30%;display:inline-block; font-size: 1.15em; padding: 12px; padding-left:30px\" >Collection Items</div>");
+                if ( stats.Total_Items > results.Count )
+                {
+                    builder.AppendLine("<div id=\"Thp_ResultsShowing\" style=\"width:30%;display:inline-block; padding: 12px; text-align:center;\" >Showing 20 items out of " + stats.Total_Items + "</div>");
+
+                    RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Browse_Info;
+                    RequestSpecificValues.Current_Mode.Info_Browse_Mode = "all";
+                    string url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+                    RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Home;
+
+                    builder.AppendLine("<div id=\"Thp_ResultsShowAll\" style=\"width:30%;display:inline-block; padding: 12px; text-align:right;\" ><a href=\"" + url + "\">View all</a></div>");
+                }
+                builder.AppendLine("</div>");
+                MainPlaceHolder.Controls.Add(new Literal() { Text = builder.ToString() });
+
+
                 var resultsViewer = new Thumbnail_ResultsViewer();
                 resultsViewer.PagedResults = results;
                 resultsViewer.ResultsStats = stats;

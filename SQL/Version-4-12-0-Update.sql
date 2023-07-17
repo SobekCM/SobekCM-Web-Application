@@ -1,9 +1,4 @@
-/****** Object:  Table [dbo].[mySobek_User_Request]    Script Date: 10/14/2021 5:53:48 AM ******/
-SET ANSI_NULLS ON
-GO
 
-SET QUOTED_IDENTIFIER ON
-GO
 
 IF ( NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = N'mySobek_User_Request'))
 begin
@@ -878,12 +873,14 @@ BEGIN
 			-- Return any special user group restriction information
 			select I.UserGroupID, G.GroupName, I.canView, I.isOwner, I.canEditMetadata, I.canEditBehaviors, I.canPerformQc, I.canUploadFiles, I.canChangeVisibility, I.canDelete, I.customPermissions
 			from mySobek_User_Group_Item_Permissions I, mySobek_User_Group G
-			where G.UserGroupID=I.UserGroupID;
+			where G.UserGroupID=I.UserGroupID
+			  and ItemID=@ItemID;
 
 			-- Return any special user restriction information
 			select I.UserID, U.UserName, U.UserID, I.canView, I.isOwner, I.canEditMetadata, I.canEditBehaviors, I.canPerformQc, I.canUploadFiles, I.canChangeVisibility, I.canDelete, I.customPermissions
 			from mySobek_User_Item_Permissions I, mySobek_User U
-			where U.UserID=I.UserID;
+			where U.UserID=I.UserID
+			  and ItemID=@ItemID;
 
 		end;		
 	end
@@ -1339,6 +1336,76 @@ END
 GO
 
 
+/****** Object:  StoredProcedure [dbo].[SobekCM_Builder_Get_Minimum_Item_Information]    Script Date: 12/20/2013 05:43:36 ******/
+ALTER PROCEDURE [dbo].[SobekCM_Builder_Get_Minimum_Item_Information]
+	@bibid varchar(10),
+	@vid varchar(5)
+AS
+begin
+
+	-- No need to perform any locks here.  A slightly dirty read won't hurt much
+	SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED;
+	
+	-- Only continue if there is ONE match
+	if (( select COUNT(*) from SobekCM_Item I, SobekCM_Item_Group G where I.GroupID = G.GroupID and G.BibID = @BibID and I.VID = @VID ) = 1 )
+	begin
+		-- Get the itemid
+		declare @ItemID int;
+		select @ItemID = ItemID from SobekCM_Item I, SobekCM_Item_Group G where I.GroupID = G.GroupID and G.BibID = @BibID and I.VID = @VID;
+
+		-- Get the item id and mainthumbnail
+		select I.ItemID, I.MainThumbnail, I.IP_Restriction_Mask, I.Born_Digital, G.ItemCount, I.Dark, I.MadePublicDate
+		from SobekCM_Item I, SobekCM_Item_Group G
+		where ( I.VID = @vid )
+		  and ( G.BibID = @bibid )
+		  and ( I.GroupID = G.GroupID );
+
+		-- Get the links to the aggregations
+		select A.Code, A.Name, A.[Type]
+		from SobekCM_Item_Aggregation_Item_Link L, SobekCM_Item_Aggregation A
+		where ( L.ItemID = @itemid )
+		  and ( L.AggregationID = A.AggregationID );
+	 
+		-- Return the icons for this item
+		select Icon_URL, Link, Icon_Name, I.Title
+		from SobekCM_Icon I, SobekCM_Item_Icons L
+		where ( L.IconID = I.IconID ) 
+		  and ( L.ItemID = @ItemID )
+		order by Sequence;
+			  
+		-- Return any web skin restrictions
+		select S.WebSkinCode
+		from SobekCM_Item_Group_Web_Skin_Link L, SobekCM_Item I, SobekCM_Web_Skin S
+		where ( L.GroupID = I.GroupID )
+		  and ( L.WebSkinID = S.WebSkinID )
+		  and ( I.ItemID = @ItemID )
+		order by L.Sequence;
+
+		-- Return the viewers for this item
+		select T.ViewType, V.Attribute, V.Label, coalesce(V.MenuOrder, T.MenuOrder) as MenuOrder, V.Exclude, coalesce(V.OrderOverride, T.[Order])
+		from SobekCM_Item_Viewers V, SobekCM_Item_Viewer_Types T
+		where ( V.ItemID = @ItemID )
+		  and ( V.ItemViewTypeID = T.ItemViewTypeID )
+		group by T.ViewType, V.Attribute, V.Label, coalesce(V.MenuOrder, T.MenuOrder), V.Exclude, coalesce(V.OrderOverride, T.[Order])
+		order by coalesce(V.OrderOverride, T.[Order]) ASC;
+
+		-- Return any special user group restriction information
+		select I.UserGroupID, G.GroupName, I.canView, I.isOwner, I.canEditMetadata, I.canEditBehaviors, I.canPerformQc, I.canUploadFiles, I.canChangeVisibility, I.canDelete, I.customPermissions
+		from mySobek_User_Group_Item_Permissions I, mySobek_User_Group G
+		where G.UserGroupID=I.UserGroupID
+		  and ItemID=@ItemID;
+
+		-- Return any special user restriction information
+		select I.UserID, U.UserName, U.UserID, I.canView, I.isOwner, I.canEditMetadata, I.canEditBehaviors, I.canPerformQc, I.canUploadFiles, I.canChangeVisibility, I.canDelete, I.customPermissions
+		from mySobek_User_Item_Permissions I, mySobek_User U
+		where U.UserID=I.UserID
+		  and ItemID=@ItemID;
+		
+	end;
+
+end;
+GO
+
 
 
 /** NEW DATA **/
@@ -1364,6 +1431,14 @@ begin
 	values ( 'Allow Mass Behavior Update', 'false', 'Digital Resource Settings', 'Online Management Settings', 0, 0, 'Whether the administrative options to mass update the behaviors is available', 'true|false' );
 end;
 GO
+
+if ( not exists ( select 1 from dbo.SobekCM_Settings where Setting_Key = 'Instance Code'))
+begin
+	insert into dbo.SobekCM_Settings ( Setting_Key, Setting_Value, TabPage, Heading, Hidden, Reserved, Help, Options )
+	values ( 'Instance Code', '', 'System / Server Settings', 'System Settings', 0, 2, 'Instance code used for shared database or solr instances', null );
+end;
+GO
+
 
 if ( not exists ( select 1 from dbo.SobekCM_Metadata_Types where MetadataName = 'Series Title' ))
 begin
@@ -1393,9 +1468,158 @@ begin
 end;
 GO
 
+if ( not exists ( select 1 from dbo.SobekCM_Metadata_Types where MetadataName = 'Restriction Message' ))
+begin
+  insert into dbo.SobekCM_Metadata_Types (MetadataName, SobekCode, SolrCode, DisplayTerm, FacetTerm, CustomField, canFacetBrowse, DefaultAdvancedSearch, [SolrCode_Display])
+  values ( 'Restriction Message', '', 'restricted_msg', 'Access Restriction', '', 0, 0, 0, 'restricted_msg');
+end;
+GO
+
+if ( not exists ( select 1 from dbo.SobekCM_Metadata_Types where MetadataName = 'Group Restrictions' ))
+begin
+  insert into dbo.SobekCM_Metadata_Types (MetadataName, SobekCode, SolrCode, DisplayTerm, FacetTerm, CustomField, canFacetBrowse, DefaultAdvancedSearch, [SolrCode_Display])
+  values ( 'Group Restrictions', '', 'group_restrictions', 'Group Restrictions', '', 0, 0, 0, 'group_restrictions');
+end;
+GO
+
+if ( not exists ( select 1 from dbo.SobekCM_Metadata_Types where MetadataName = 'Instances' ))
+begin  
+  insert into dbo.SobekCM_Metadata_Types (MetadataName, SobekCode, SolrCode, DisplayTerm, FacetTerm, CustomField, canFacetBrowse, DefaultAdvancedSearch, [SolrCode_Display])
+  values ( 'Instances', '', 'instance', 'Instances', '', 0, 0, 0, 'instance');
+end;
+GO
+
+
 if ( not exists ( select 1 from dbo.SobekCM_Item_Viewer_Types where ViewType = 'WEBSITE' ))
 begin
   insert into SobekCM_Item_Viewer_Types (ViewType, [Order], DefaultView, MenuOrder)
   values ( 'WEBSITE', 14, 0, 116);
+end;
+GO
+
+-- These values SHOULD exist in the database, just making sure --
+if ( not exists ( select 1 from dbo.SobekCM_Settings where Setting_Key = 'Builder Log Expiration in Days'))
+begin
+  insert into SobekCM_Settings ( Setting_Key, Setting_Value, TabPage, Heading, Hidden, Reserved, Help, Options, Dimensions ) 
+  values ( 'Builder Log Expiration in Days','10','Builder','Builder Settings','0',0,'Number of days the SobekCM Builder logs are retained.','10|30|365|99999','');
+end;
+GO
+
+if ( not exists ( select 1 from dbo.SobekCM_Settings where Setting_Key = 'Builder Send Usage Emails'))
+begin
+  insert into SobekCM_Settings ( Setting_Key, Setting_Value, TabPage, Heading, Hidden, Reserved, Help, Options, Dimensions ) 
+  values ( 'Builder Send Usage Emails','false','Builder','Builder Settings','0',0,'Flag indicates is usage emails should be sent automatically after the stats usage has been calculated and added to the database.','true|false','');
+end;
+GO
+
+if ( not exists ( select 1 from dbo.SobekCM_Settings where Setting_Key = 'Can Submit Items Online'))
+begin
+  insert into SobekCM_Settings ( Setting_Key, Setting_Value, TabPage, Heading, Hidden, Reserved, Help, Options, Dimensions ) 
+  values ( 'Can Submit Items Online','true','System / Server Settings','System Settings','0',0,'Flag dictates if users can submit items online, or if this is disabled in this system.','true|false','');
+end;
+GO
+
+if ( not exists ( select 1 from dbo.SobekCM_Settings where Setting_Key = 'Disable Standard User Logon Flag'))
+begin
+  insert into SobekCM_Settings ( Setting_Key, Setting_Value, TabPage, Heading, Hidden, Reserved, Help, Options, Dimensions ) 
+  values ( 'Disable Standard User Logon Flag','false','System / Server Settings','System Settings','0',0,'Flag indicates if non system administrators are temporarily barred from logging on.','true|false','');
+end;
+GO
+
+if ( not exists ( select 1 from dbo.SobekCM_Settings where Setting_Key = 'Disable Standard User Logon Message'))
+begin
+  insert into SobekCM_Settings ( Setting_Key, Setting_Value, TabPage, Heading, Hidden, Reserved, Help, Options, Dimensions ) 
+  values ( 'Disable Standard User Logon Message','','System / Server Settings','System Settings','0',0,'Message displayed if non syste administrators are temporarily barred from logging on.','','');
+end;
+GO
+
+if ( not exists ( select 1 from dbo.SobekCM_Settings where Setting_Key = 'Email Default From Name'))
+begin
+  insert into SobekCM_Settings ( Setting_Key, Setting_Value, TabPage, Heading, Hidden, Reserved, Help, Options, Dimensions ) 
+  values ( 'Email Default From Name','','General Settings','Email Settings','0',0,'Display name to associate with emails sent from this system (otherwise the instance/portal name will be used)','','300');
+end;
+GO
+
+if ( not exists ( select 1 from dbo.SobekCM_Settings where Setting_Key = 'Email SMTP Port'))
+begin
+  insert into SobekCM_Settings ( Setting_Key, Setting_Value, TabPage, Heading, Hidden, Reserved, Help, Options, Dimensions ) 
+  values ( 'Email SMTP Port','25','System / Server Settings','Email Setup','0',0,'If direct SMTP email sending is used, the port to utilize.  This must be numeric.','','70');
+end;
+GO
+
+if ( not exists ( select 1 from dbo.SobekCM_Settings where Setting_Key = 'Email SMTP Server'))
+begin
+  insert into SobekCM_Settings ( Setting_Key, Setting_Value, TabPage, Heading, Hidden, Reserved, Help, Options, Dimensions ) 
+  values ( 'Email SMTP Server','','System / Server Settings','Email Setup','0',0,'If direct SMTP email sending is used, the server name to send emails to.','','');
+end;
+GO
+
+if ( not exists ( select 1 from dbo.SobekCM_Settings where Setting_Key = 'Kakadu JPEG2000 Create Command'))
+begin
+  insert into SobekCM_Settings ( Setting_Key, Setting_Value, TabPage, Heading, Hidden, Reserved, Help, Options, Dimensions ) 
+  values ( 'Kakadu JPEG2000 Create Command','','Builder','Builder Settings','0',0,'Kakadu JPEG2000 script will override the specifications used when creating zoomable images.\n\nIf this is blank, the default specifications will be used which match those used by the National Digital Newspaper Program and University of Florida Digital Collections.','','');
+end;
+GO
+
+if ( not exists ( select 1 from dbo.SobekCM_Settings where Setting_Key = 'MARC Cataloging Source Code'))
+begin
+  insert into SobekCM_Settings ( Setting_Key, Setting_Value, TabPage, Heading, Hidden, Reserved, Help, Options, Dimensions ) 
+  values ( 'MARC Cataloging Source Code','','Digital Resource Settings','Metadata Settings','0',0,'Cataloging source code for the 040 field, ( for example ''FUG'' for University of Florida )','','60');
+end;
+GO
+
+if ( not exists ( select 1 from dbo.SobekCM_Settings where Setting_Key = 'MARC Location Code'))
+begin
+  insert into SobekCM_Settings ( Setting_Key, Setting_Value, TabPage, Heading, Hidden, Reserved, Help, Options, Dimensions ) 
+  values ( 'MARC Location Code','','Digital Resource Settings','Metadata Settings','0',0,'Location code for the 852 |a - if none is given the system abbreviation will be used. Otherwise, the system abbreviation will be put in the 852 |b field.','','60');
+end;
+GO
+
+if ( not exists ( select 1 from dbo.SobekCM_Settings where Setting_Key = 'MARC Reproduction Agency'))
+begin
+  insert into SobekCM_Settings ( Setting_Key, Setting_Value, TabPage, Heading, Hidden, Reserved, Help, Options, Dimensions ) 
+  values ( 'MARC Reproduction Agency','','Digital Resource Settings','Metadata Settings','0',0,'Agency responsible for reproduction, or primary agency associated with the SobekCM instance ( for the added 533 |c field )\n\nThis 533 is not added for born digital items.','','');
+end;
+GO
+
+if ( not exists ( select 1 from dbo.SobekCM_Settings where Setting_Key = 'MARC Reproduction Place'))
+begin
+  insert into SobekCM_Settings ( Setting_Key, Setting_Value, TabPage, Heading, Hidden, Reserved, Help, Options, Dimensions ) 
+  values ( 'MARC Reproduction Place','','Digital Resource Settings','Metadata Settings','0',0,'Place of reproduction, or primary location associated with the SobekCM instance ( for the added 533 |b field ).\n\nThis 533 is not added for born digital items.','','');
+end;
+GO
+
+if ( not exists ( select 1 from dbo.SobekCM_Settings where Setting_Key = 'MARC XSLT File'))
+begin
+  insert into SobekCM_Settings ( Setting_Key, Setting_Value, TabPage, Heading, Hidden, Reserved, Help, Options, Dimensions ) 
+  values ( 'MARC XSLT File','','Digital Resource Settings','Metadata Settings','0',0,'XSLT file to use as a final transform, after the standard MarcXML file is written.\n\nThis only affects generated MarcXML ( for the feeds and OAI ) not the dispayed in-system MARC ( as of January 2015 ).  This file should appear in the config/users folder.','','');
+end;
+GO
+
+if ( not exists ( select 1 from dbo.SobekCM_Settings where Setting_Key = 'Send Email On Added Aggregation'))
+begin
+  insert into SobekCM_Settings ( Setting_Key, Setting_Value, TabPage, Heading, Hidden, Reserved, Help, Options, Dimensions ) 
+  values ( 'Send Email On Added Aggregation','Always','General Settings','Email Settings','0',0,'Flag indicates when emails should be sent after new item aggregations are added through the web interface.','Always|Never','');
+end;
+GO
+
+if ( not exists ( select 1 from dbo.SobekCM_Settings where Setting_Key = 'Static Resources Source'))
+begin
+  insert into SobekCM_Settings ( Setting_Key, Setting_Value, TabPage, Heading, Hidden, Reserved, Help, Options, Dimensions ) 
+  values ( 'Static Resources Source','CDN','System / Server Settings','Server Settings','0',0,'Indicates the general source of all the static resources, such as javascript, system default stylesheets, images, and included libraries.\n\nUsing CDN will result in better performance, but can only be used when users will have access to the database.\n\nThis actually indicates which configuration file to read to determine the base location of the default resources.','{STATIC_SOURCE_CODES}','');
+end;
+GO
+
+
+-- Update the version number
+if (( select count(*) from SobekCM_Database_Version ) = 0 )
+begin
+	insert into SobekCM_Database_Version ( Major_Version, Minor_Version, Release_Phase )
+	values ( 4, 12, '0' );
+end
+else
+begin
+	update SobekCM_Database_Version
+	set Major_Version=4, Minor_Version=12, Release_Phase='0';
 end;
 GO

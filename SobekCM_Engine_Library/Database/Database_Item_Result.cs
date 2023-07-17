@@ -71,6 +71,12 @@ namespace SobekCM.Engine_Library.Database
             get { return String.Empty; }
         }
 
+        /// <summary> List of groups (by id) that have access to this item </summary>
+        public string Group_Restrictions { get; set; }
+
+        /// <summary> Restriction message (to be displayed if restricted) </summary>
+        public string RestrictedMsg { get; set; }
+
         #endregion
     }
 }

@@ -79,6 +79,7 @@ namespace SobekCM.Library.ItemViewer.HtmlSectionWriters
                         }
                     }
 
+                    
 
                     // Add the link if there is one  
                     // Links_BriefItemMapper
@@ -98,8 +99,13 @@ namespace SobekCM.Library.ItemViewer.HtmlSectionWriters
                     {
                         Output.WriteLine("\t" + UI_ApplicationCache_Gateway.Translation.Get_Translation("Accession number", RequestSpecificValues.Current_Mode.Language) + " " + accessNumber.Values[0].Value + "<br />");
                     }
-                }
 
+                    // Is this item restricted?
+                    if (CurrentItem.Behaviors.HasRestrictions)
+                    {
+                        Output.WriteLine("\t<div id=\"sbkIsw_TitlebarRestricted\" style=\"font-size:0.85em; color:red;\">RESTRICTED ITEM</div>");
+                    }
+                }
 
                 Output.WriteLine("</section>");
                 Output.WriteLine();

@@ -88,7 +88,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <returns> Fully built and initialized <see cref="SearchEngineIndexing_ItemViewer"/> object </returns>
         /// <remarks> This method is called whenever a request requires the actual viewer to be created to render the HTML for
         /// the digital resource requested.  The created viewer is then destroyed at the end of the request </remarks>
-        public virtual iItemViewer Create_Viewer(BriefItemInfo CurrentItem, User_Object CurrentUser, Navigation_Object CurrentRequest, Custom_Tracer Tracer)
+        public virtual iItemViewer Create_Viewer(BriefItemInfo CurrentItem, User_Object CurrentUser, Navigation_Object CurrentRequest, Custom_Tracer Tracer, RequestCache_RequestFlags CurrentFlags)
         {
             return new SearchEngineIndexing_ItemViewer(CurrentItem, CurrentUser, CurrentRequest);
         }
@@ -182,32 +182,42 @@ namespace SobekCM.Library.ItemViewer.Viewers
             if ((CurrentRequest.Language == Web_Language_Enum.French) || (CurrentRequest.Language == Web_Language_Enum.Spanish))
                 width = 230;
 
+            // BUild the flags object
+            RequestCache_RequestFlags currentFlags = new RequestCache_RequestFlags();
+            if ( BriefItem.Behaviors.HasRestrictions )
+            {
+                currentFlags.ItemRestrictedFromUser = true;
+                currentFlags.RestrictionMessage = BriefItem.Behaviors.RestrictionMessage;
+            }
+
             // Add the main wrapper division, with microdata information
             Output.WriteLine("          <div id=\"sbkCiv_Citation\" itemprop=\"about\" itemscope itemtype=\"http://schema.org/" + microdata_type + "\">");
             Output.WriteLine();
-            Output.WriteLine(Citation_Standard_ItemViewer.Standard_Citation_String(BriefItem, CurrentRequest, null, width, false, Tracer));
+            Output.WriteLine(Citation_Standard_ItemViewer.Standard_Citation_String(BriefItem, CurrentRequest, null, width, false, Tracer, currentFlags));
             CurrentRequest.ViewerCode = viewer_code;
 
             Output.WriteLine("        </td>");
             Output.WriteLine("      </tr>");
-            Output.WriteLine("      <tr>");
 
-            // Add the downloads
-            if ((BriefItem.Downloads != null) && (BriefItem.Downloads.Count > 0))
+            if (!currentFlags.ItemRestrictedFromUser)
             {
-                Output.WriteLine("        <td align=\"left\"><span class=\"SobekViewerTitle\">Downloads</span></td>");
-                Output.WriteLine("      </tr>");
                 Output.WriteLine("      <tr>");
-                Output.WriteLine("        <td id=\"sbkDiv_MainArea\">");
-                Downloads_ItemViewer.Add_Download_Links(Output, BriefItem, CurrentRequest, null, Tracer);
-                Output.WriteLine("        </td>");
-            }
-            Output.WriteLine("      </tr>");
 
-            string textLocation = SobekFileSystem.Resource_Network_Uri(BriefItem);
-            Add_Full_Text(Output, textLocation);
-        
-        
+                // Add the downloads
+                if ((BriefItem.Downloads != null) && (BriefItem.Downloads.Count > 0))
+                {
+                    Output.WriteLine("        <td align=\"left\"><span class=\"SobekViewerTitle\">Downloads</span></td>");
+                    Output.WriteLine("      </tr>");
+                    Output.WriteLine("      <tr>");
+                    Output.WriteLine("        <td id=\"sbkDiv_MainArea\">");
+                    Downloads_ItemViewer.Add_Download_Links(Output, BriefItem, CurrentRequest, null, Tracer);
+                    Output.WriteLine("        </td>");
+                }
+                Output.WriteLine("      </tr>");
+
+                string textLocation = SobekFileSystem.Resource_Network_Uri(BriefItem);
+                Add_Full_Text(Output, textLocation);
+            }        
         }
 
         private void Add_Full_Text(TextWriter Output, string TextFileLocation)

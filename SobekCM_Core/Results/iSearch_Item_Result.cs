@@ -51,5 +51,11 @@
 
         /// <summary> Flag indicates if this is dark, private, etc.. </summary>
         string AccessType { get; }
+
+        /// <summary> List of groups (by id) that have access to this item </summary>
+        string Group_Restrictions { get; }
+
+        /// <summary> Restriction message (to be displayed if restricted) </summary>
+        string RestrictedMsg { get; }
     }
 }

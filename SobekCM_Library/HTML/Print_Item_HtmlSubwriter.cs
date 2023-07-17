@@ -293,8 +293,9 @@ namespace SobekCM.Library.HTML
 
             // For this, also need the brief item (OBVIOUSLY NEEDS TO CHANGE!)
 
+
             Output.WriteLine("<div class=\"SobekCitation\">");
-            Output.WriteLine(Citation_Standard_ItemViewer.Standard_Citation_String(currentItem, RequestSpecificValues.Current_Mode, RequestSpecificValues.Current_User, 850, false, null));
+            Output.WriteLine(Citation_Standard_ItemViewer.Standard_Citation_String(currentItem, RequestSpecificValues.Current_Mode, RequestSpecificValues.Current_User, 850, false, null, null));
             Output.WriteLine("</div>");
         }
 

@@ -352,12 +352,22 @@ namespace SobekCM.Library.MySobekViewer
                 bool jp2_added = false;
                 foreach (string thisFile in image_files)
                 {
-                    // Create the new file object and compute a label
+                    // Create the new file object 
                     FileInfo fileInfo = new FileInfo(thisFile);
-                    SobekCM_File_Info newFile = new SobekCM_File_Info(fileInfo.Name);
 
                     // Copy this file
                     File.Copy(thisFile, final_destination + "\\" + fileInfo.Name, true);
+
+                    // Special code for thumbnail
+                    if ( fileInfo.Name.Equals("mainthm.jpg", StringComparison.OrdinalIgnoreCase))
+                    {
+                        // Save as thumbnail and do nothing else
+                        currentItem.Behaviors.Main_Thumbnail = "mainthm.jpg";
+                        continue;
+                    }
+
+                    // Add this file to the physical tree
+                    SobekCM_File_Info newFile = new SobekCM_File_Info(fileInfo.Name);
                     currentItem.Divisions.Physical_Tree.Add_File(newFile, "New Page");
 
                     // Seperate code for JP2 and JPEG type files

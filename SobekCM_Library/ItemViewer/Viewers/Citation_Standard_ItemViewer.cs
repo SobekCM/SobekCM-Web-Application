@@ -100,9 +100,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <returns> Fully built and initialized <see cref="Citation_Standard_ItemViewer"/> object </returns>
         /// <remarks> This method is called whenever a request requires the actual viewer to be created to render the HTML for
         /// the digital resource requested.  The created viewer is then destroyed at the end of the request </remarks>
-        public virtual iItemViewer Create_Viewer(BriefItemInfo CurrentItem, User_Object CurrentUser, Navigation_Object CurrentRequest, Custom_Tracer Tracer)
+        public virtual iItemViewer Create_Viewer(BriefItemInfo CurrentItem, User_Object CurrentUser, Navigation_Object CurrentRequest, Custom_Tracer Tracer, RequestCache_RequestFlags CurrentFlags)
         {
-            return new Citation_Standard_ItemViewer(CurrentItem, CurrentUser, CurrentRequest);
+            return new Citation_Standard_ItemViewer(CurrentItem, CurrentUser, CurrentRequest, CurrentFlags);
         }
     }
 
@@ -113,18 +113,20 @@ namespace SobekCM.Library.ItemViewer.Viewers
     {
         private readonly int width = 180;
         private readonly bool isRobot;
+        private RequestCache_RequestFlags currentFlags;
 
         /// <summary> Constructor for a new instance of the Citation_Standard_ItemViewer class, used to display the 
         /// descriptive citation in standard, human-readable format for the digital resource </summary>
         /// <param name="BriefItem"> Digital resource object </param>
         /// <param name="CurrentUser"> Current user, who may or may not be logged on </param>
         /// <param name="CurrentRequest"> Information about the current request </param>
-        public Citation_Standard_ItemViewer(BriefItemInfo BriefItem, User_Object CurrentUser, Navigation_Object CurrentRequest)
+        public Citation_Standard_ItemViewer(BriefItemInfo BriefItem, User_Object CurrentUser, Navigation_Object CurrentRequest, RequestCache_RequestFlags CurrentFlags)
         {
             // Save the arguments for use later
             this.BriefItem = BriefItem;
             this.CurrentUser = CurrentUser;
             this.CurrentRequest = CurrentRequest;
+            this.currentFlags = CurrentFlags;
 
             // Set the behavior properties to the empy behaviors ( in the base class )
             Behaviors = EmptyBehaviors;
@@ -172,6 +174,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 return;
             }
 
+
+
             string viewer_code = CurrentRequest.ViewerCode;
 
             // Get any search terms
@@ -209,16 +213,29 @@ namespace SobekCM.Library.ItemViewer.Viewers
             if (!CurrentRequest.Is_Robot)
                 Add_Citation_View_Tabs(Output, BriefItem, CurrentRequest, "CITATION");
 
+            // Is this item restricted?
+            if (( currentFlags != null ) && ( currentFlags.ItemRestrictedFromUser ))
+            {
+                if (( CurrentUser == null )  || ( !CurrentUser.LoggedOn))
+                {
+                    Output.WriteLine("          <div id=\"darkItemSuppressCitationMsg\" style=\"color:red;\">" + currentFlags.RestrictionMessage + "  Please log on to access.</div>" + Environment.NewLine );
+                }
+                else
+                {
+                    Output.WriteLine("          <div id=\"darkItemSuppressCitationMsg\" style=\"color:red;\">" + currentFlags.RestrictionMessage + "  Please request access.</div>" + Environment.NewLine);
+                }
+            }
+
             // Now, add the text
             Output.WriteLine();
 
             if (terms.Count > 0)
             {
-                Output.WriteLine(Text_Search_Term_Highlighter.Hightlight_Term_In_HTML(Standard_Citation_String(BriefItem, CurrentRequest, CurrentUser, width, !isRobot, Tracer), terms, "<span class=\"sbkCiv_TextHighlight\">", "</span>") + Environment.NewLine + "  </td>" + Environment.NewLine + "  <!-- END CITATION VIEWER OUTPUT -->");
+                Output.WriteLine(Text_Search_Term_Highlighter.Hightlight_Term_In_HTML(Standard_Citation_String(BriefItem, CurrentRequest, CurrentUser, width, !isRobot, Tracer, currentFlags), terms, "<span class=\"sbkCiv_TextHighlight\">", "</span>") + Environment.NewLine + "  </td>" + Environment.NewLine + "  <!-- END CITATION VIEWER OUTPUT -->");
             }
             else
             {
-                Output.WriteLine(Standard_Citation_String(BriefItem, CurrentRequest, CurrentUser, width, !isRobot, Tracer) + Environment.NewLine + "  </td>" + Environment.NewLine + "  <div id=\"sbkCiv_EmptyRobotDiv\" />" + Environment.NewLine + "  <!-- END CITATION VIEWER OUTPUT -->");
+                Output.WriteLine(Standard_Citation_String(BriefItem, CurrentRequest, CurrentUser, width, !isRobot, Tracer, currentFlags) + Environment.NewLine + "  </td>" + Environment.NewLine + "  <div id=\"sbkCiv_EmptyRobotDiv\" />" + Environment.NewLine + "  <!-- END CITATION VIEWER OUTPUT -->");
             }
 
             CurrentRequest.ViewerCode = viewer_code;
@@ -234,9 +251,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <param name="CurrentUser"> Current user, if one is logged in, or NULL</param>
         /// <param name="width"> Width to which the display should be constrained </param>
         /// <returns> HTML string with the basic information about this digital resource for display </returns>
-        public static string Standard_Citation_String(BriefItemInfo BriefItem, Navigation_Object CurrentRequest, User_Object CurrentUser, int width, bool Include_Links, Custom_Tracer Tracer)
+        public static string Standard_Citation_String(BriefItemInfo BriefItem, Navigation_Object CurrentRequest, User_Object CurrentUser, int width, bool Include_Links, Custom_Tracer Tracer, RequestCache_RequestFlags currentFlags)
         {
-
             // Compute the URL to use for all searches from the citation
             Display_Mode_Enum lastMode = CurrentRequest.Mode;
             CurrentRequest.Mode = Display_Mode_Enum.Results;
@@ -272,7 +288,13 @@ namespace SobekCM.Library.ItemViewer.Viewers
             {
                 string name_for_image = HttpUtility.HtmlEncode(BriefItem.Title);
 
-                if (!String.IsNullOrEmpty(BriefItem.Behaviors.Main_Thumbnail))
+                if (( currentFlags != null ) && (currentFlags.ItemRestrictedFromUser))
+                {
+                    result.AppendLine();
+                    result.AppendLine(INDENT + "<div id=\"Sbk_CivThumbnailDiv\"><img src=\"" + CurrentRequest.Base_Design_URL + "restricted-thumb.png\" alt=\"Restricted Item\" id=\"Sbk_CivThumbnailImg\" itemprop=\"primaryImageOfPage\" /></div>");
+                    result.AppendLine();
+                }
+                else if (!String.IsNullOrEmpty(BriefItem.Behaviors.Main_Thumbnail))
                 {
                     
                     result.AppendLine();

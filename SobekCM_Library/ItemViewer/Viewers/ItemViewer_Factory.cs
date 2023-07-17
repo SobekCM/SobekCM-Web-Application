@@ -256,9 +256,6 @@ namespace SobekCM.Library.ItemViewer
                     case "SobekCM.Library.ItemViewer.Viewers.Related_Images_ItemViewer_Prototyper":
                         return new Related_Images_ItemViewer_Prototyper();
 
-                    case "SobekCM.Library.ItemViewer.Viewers.Restricted_ItemViewer_Prototyper":
-                        return new Restricted_ItemViewer_Prototyper();
-
                     case "SobekCM.Library.ItemViewer.Viewers.TEI_ItemViewer_Prototyper":
                         return new TEI_ItemViewer_Prototyper();
 

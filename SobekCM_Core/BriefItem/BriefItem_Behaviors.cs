@@ -128,6 +128,12 @@ namespace SobekCM.Core.BriefItem
         [ProtoMember(17)]
         public List<BriefItem_UserGroupRestrictions> Restrictions { get; set; }
 
+        /// <summary> Restriction message that is shown if this item is restricted </summary>
+        [DataMember(EmitDefaultValue = false, Name = "restrictionMessage")]
+        [XmlAttribute("restrictionMessage")]
+        [ProtoMember(18)]
+        public string RestrictionMessage { get; set; }
+
         /// <summary> Constructor for a new instance of the BriefItem_Behaviors class </summary>
         public BriefItem_Behaviors()
         {

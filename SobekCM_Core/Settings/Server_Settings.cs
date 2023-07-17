@@ -24,6 +24,7 @@ namespace SobekCM.Core.Settings
             Static_Resources_Config_File = "CDN";
             Base_SobekCM_Location_Relative = String.Empty;
             isHosted = false;
+            Instance_Code = String.Empty;
         }
 
         /// <summary> Legacy URL for the old-style Solr/Lucene index for the document metadata and text </summary>
@@ -171,6 +172,12 @@ namespace SobekCM.Core.Settings
         [XmlElement("isHosted")]
         [ProtoMember(21)]
         public bool isHosted { get; set; }
+
+        /// <summary> Instance code used to search within a shared solr instance </summary>
+        [DataMember(Name = "instanceCode")]
+        [XmlElement("instanceCode")]
+        [ProtoMember(22)]
+        public string Instance_Code { get; set; }
 
         #region Derivative properties which return the base directory or base url with a constant ending to indicate the SobekCM standard subfolders
 

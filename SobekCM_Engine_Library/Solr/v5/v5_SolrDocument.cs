@@ -95,8 +95,20 @@ namespace SobekCM.Engine_Library.Solr.v5
         public string MainThumbnail { get; set; }
 
         /// <summary> Main thumbnail for this item </summary>
+        [SolrField("restrictedthumb")]
+        public string RestrictedThumbnail { get; set; }
+
+        /// <summary> Main thumbnail for this item </summary>
         [SolrField("made_public_date")]
         public DateTime MadePublicDate { get; set; }
+
+        /// <summary> List of groups which have access to this item (or blank if no group-level restrictions) </summary>
+        [SolrField("group_restrictions")]
+        public string Group_Restrictions { get; set; }
+
+        /// <summary> List of instances (by code) to which this item should appear </summary>
+        [SolrField("instance")]
+        public List<string> Instances { get; set; }
 
         #endregion
 

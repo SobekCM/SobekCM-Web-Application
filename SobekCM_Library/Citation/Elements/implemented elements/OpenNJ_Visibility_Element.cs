@@ -144,7 +144,7 @@ namespace SobekCM.Library.Citation.Elements
                                 Bib.Behaviors.Add_User_Group_Access(instructor_id, "Instructors", true, false, false);
                             }
 
-                            Bib.Behaviors.RestrictionMessage = "Material can only be accessed by Instructors";
+                            Bib.Behaviors.RestrictionMessage = "This OER content is restricted to instructors.";
                         }
                         break;
                 }

@@ -35,10 +35,10 @@ namespace SobekCM.Engine_Library.Settings
 
         /// <summary> Current version number associated with this SobekCM digital repository web application </summary>
         // DO NOT CHANGE THIS LINE.. THIS IS READ BY THE CODE DOCUMENTATION BUILDING TASK
-        private const string CURRENT_WEB_VERSION = "4.11.0";
+        private const string CURRENT_WEB_VERSION = "4.12.0";
 
         /// <summary> Current version number associated with this SobekCM builder application </summary>
-        private const string CURRENT_BUILDER_VERSION = "4.11.0"; 
+        private const string CURRENT_BUILDER_VERSION = "4.12.0"; 
 
         /// <summary> Number of ticks that a complete package must age before being processed </summary>
         /// <value> This is currently set to 15 minutes (in ticks) </value>
@@ -184,6 +184,7 @@ namespace SobekCM.Engine_Library.Settings
                 Get_String_Value(settingsDictionary, "Image Server URL", SettingsObject.Servers, X => X.Image_URL, ref error);
                 Get_Boolean_Value(settingsDictionary, "Include TreeView On System Home", SettingsObject.System, X => X.Include_TreeView_On_System_Home, ref error, false);
                 Get_Boolean_Value(settingsDictionary, "Include Partners On System Home", SettingsObject.System, X => X.Include_Partners_On_System_Home, ref error, false);
+                Get_String_Value(settingsDictionary, "Instance Code", SettingsObject.Servers, X => X.Instance_Code, ref error);
                 Get_Integer_Value(settingsDictionary, "JPEG Height", SettingsObject.Resources, X => X.JPEG_Height, ref error, -1);
                 Get_Integer_Value(settingsDictionary, "JPEG Width", SettingsObject.Resources, X => X.JPEG_Width, ref error, -1);
                 Get_String_Value(settingsDictionary, "JPEG2000 Server", SettingsObject.Servers, X => X.JP2ServerUrl, ref error);

@@ -7917,6 +7917,30 @@ namespace SobekCM.Engine_Library.Database
                     Resource.Behaviors.Add_View(result);
                 }
 
+                // Add any specific user group restrictions
+                Resource.Behaviors.Clear_User_Group_Access();
+                foreach (DataRow userGroupRow in tempSet.Tables[5].Rows)
+                {
+                    int id = Int32.Parse(userGroupRow[0].ToString());
+                    string groupName = userGroupRow[1].ToString();
+                    bool canView = bool.Parse(userGroupRow["canView"].ToString());
+                    bool canEdit = bool.Parse(userGroupRow["canEditMetadata"].ToString());
+                    bool canDelete = bool.Parse(userGroupRow["canDelete"].ToString());
+                    Resource.Behaviors.Add_User_Group_Access(id, groupName, canView, canEdit, canDelete);
+                }
+
+                // Add any specific user restrictions
+                Resource.Behaviors.Clear_User_Access();
+                foreach (DataRow userRow in tempSet.Tables[6].Rows)
+                {
+                    int id = Int32.Parse(userRow[0].ToString());
+                    string name = userRow[1].ToString();
+                    bool canView = bool.Parse(userRow["canView"].ToString());
+                    bool canEdit = bool.Parse(userRow["canEditMetadata"].ToString());
+                    bool canDelete = bool.Parse(userRow["canDelete"].ToString());
+                    Resource.Behaviors.Add_User_Access(id, name, canView, canEdit, canDelete);
+                }
+
                 // Return the first table from the returned dataset
                 return true;
             }

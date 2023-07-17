@@ -172,10 +172,12 @@ namespace SobekCM.Library.ResultsViewer
                     }
                 }
 
-                // Calculate the thumbnail
-
                 // Add the thumbnail
-                if ((firstItemResult.MainThumbnail.ToUpper().IndexOf(".JPG") < 0) && (firstItemResult.MainThumbnail.ToUpper().IndexOf(".GIF") < 0))
+                if (!String.IsNullOrEmpty(firstItemResult.Group_Restrictions))
+                {
+                    resultsBldr.AppendLine("<tr><td><span id=\"sbkThumbnailSpan" + title_count + "\"><a href=\"" + internal_link + "\"><img src=\"" + RequestSpecificValues.Current_Mode.Base_Design_URL + "restricted-thumb.png\" border=\"0px\" class=\"resultsThumbnail\" alt=\"RESTRICTED ITEM\" style=\"width:150px\" /></a></span></td></tr>");
+                }
+                else if ((firstItemResult.MainThumbnail.ToUpper().IndexOf(".JPG") < 0) && (firstItemResult.MainThumbnail.ToUpper().IndexOf(".GIF") < 0))
                 {
                     resultsBldr.AppendLine("<tr><td><span id=\"sbkThumbnailSpan"+title_count+"\"><a href=\"" + internal_link + "\"><img id=\"sbkThumbnailImg" + title_count + "\" src=\"" + Static_Resources_Gateway.Nothumb_Jpg + "\" alt=\"MISSING THUMBNAIL\" /></a></span></td></tr>");
                 }

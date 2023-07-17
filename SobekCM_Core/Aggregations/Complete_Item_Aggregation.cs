@@ -1168,8 +1168,7 @@ namespace SobekCM.Core.Aggregations
             Facets.Add(newFacet);
         }
 
-        /// <summary> Returns the list of all facets to display during searches and browses within this aggregation </summary>
-        /// <remarks> This can hold up to eight facets, by primary key for the metadata type.  By default this holds 3,5,7,10, and 8. </remarks>
+        /// <summary> Returns the list of all fields to display during searches and browses within this aggregation </summary>
         [DataMember(Name = "resultsFields")]
         [ProtoMember(47)]
         public List<Complete_Item_Aggregation_Metadata_Type> Results_Fields { get; set; }

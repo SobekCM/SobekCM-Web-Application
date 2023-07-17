@@ -28,6 +28,14 @@ namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
                 }
             }
 
+            New.Behaviors.RestrictionMessage = Original.Behaviors.RestrictionMessage;
+
+            // If there IS a restriction message, add that to the desription
+            if ( !String.IsNullOrEmpty(Original.Behaviors.RestrictionMessage))
+            {
+                New.Add_Description("Access Restrictions", Original.Behaviors.RestrictionMessage);
+            }
+
             return true;
         }
     }

@@ -33,6 +33,8 @@ namespace SobekCM.Engine_Library.Solr.v5
             itemResult.VID = solrDocument.DID.Substring(11, 5);
             itemResult.Title = solrDocument.Title ?? "NO TITLE";
             itemResult.MainThumbnail = solrDocument.MainThumbnail;
+            itemResult.Group_Restrictions = solrDocument.Group_Restrictions;
+            itemResult.RestrictedMsg = solrDocument.RestrictedMsg;
             resultConverted.Items.Add(itemResult);
 
             // Check for access

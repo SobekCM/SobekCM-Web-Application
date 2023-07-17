@@ -34,7 +34,8 @@ namespace SobekCM.Resource_Object.Behaviors
 		private Nullable<bool> dark_flag;
 	    private Nullable<short> ip_restricted;
 		private string mainThumbnail;
-		private string notifyEmail;
+        private string restrictedThumbnail;
+        private string notifyEmail;
 		private bool textSearchable;
 
 		private string embeddedVideo;
@@ -763,8 +764,16 @@ namespace SobekCM.Resource_Object.Behaviors
 			set { mainThumbnail = value; }
 		}
 
-	    /// <summary> Flag determines if this item should be suppressed in the Endeca feed of digital resources </summary>
-	    public bool Suppress_Endeca { get; set; }
+        /// <summary> Gets and sets the name of the thumbnail file to be used if this is restricted
+        /// and the current user does not have access </summary>
+        public string Restricted_Thumbnail
+        {
+            get { return restrictedThumbnail ?? String.Empty; }
+            set { restrictedThumbnail = value; }
+        }
+
+        /// <summary> Flag determines if this item should be suppressed in the Endeca feed of digital resources </summary>
+        public bool Suppress_Endeca { get; set; }
 
 	    /// <summary> Flag determines if this item can be described online by logged in users </summary>
 	    /// <remarks> This value is set based on the values for all the item aggregations to which this item belongs </remarks>

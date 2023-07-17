@@ -1,8 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
+using SobekCM.Core.Settings;
+using SobekCM.Engine_Library.ApplicationState;
 using SobekCM.Resource_Object;
+using SobekCM.Resource_Object.Behaviors;
 using SobekCM.Resource_Object.Divisions;
 using SobekCM.Resource_Object.Metadata_Modules;
 using SobekCM.Resource_Object.Metadata_Modules.GeoSpatial;
@@ -32,6 +36,29 @@ namespace SobekCM.Engine_Library.Solr.v5
             returnValue.BibID = Digital_Object.BibID;
             returnValue.VID = Digital_Object.VID;
             returnValue.MainThumbnail = Digital_Object.Behaviors.Main_Thumbnail;
+            returnValue.RestrictedThumbnail = Digital_Object.Behaviors.Restricted_Thumbnail;
+
+            returnValue.Instances = new List<string>();
+            returnValue.Instances.Add(Engine_ApplicationCache_Gateway.Settings.Servers.Instance_Code);
+
+            returnValue.Group_Restrictions = String.Empty;
+            if ( Digital_Object.Behaviors.User_Group_Access_Count > 0 )
+            {
+                // If any group has CanView access, it is assumed that noone else can
+                List<int> matches = Digital_Object.Behaviors.User_Group_Access.Where(p => p.CanView).Select(p => p.UserGroupId).ToList<int>();
+
+                if (matches.Count == 1)
+                    returnValue.Group_Restrictions = "|" + matches[0] + "|";
+                else
+                {
+                    StringBuilder groupBuilder = new StringBuilder("|");
+                    foreach(int groupid in matches)
+                    {
+                        groupBuilder.Append(groupid + "|");
+                    }
+                    returnValue.Group_Restrictions = groupBuilder.ToString();
+                }
+            }           
 
             // Add the made public field
             if (Digital_Object.Web.MadePublicDate.HasValue)

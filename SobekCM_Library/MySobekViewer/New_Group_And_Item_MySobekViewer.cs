@@ -66,6 +66,7 @@ namespace SobekCM.Library.MySobekViewer
         private readonly int totalTemplatePages;
         private readonly string userInProcessDirectory;
         private readonly List<string> validationErrors;
+        private readonly string submodeOption;
 
         #region Constructor
 
@@ -138,11 +139,28 @@ namespace SobekCM.Library.MySobekViewer
                 Template_MemoryMgmt_Utility.Store_Template(templateCode, completeTemplate, RequestSpecificValues.Tracer);
             }
 
+            // Determine the current phase
+            currentProcessStep = 1;
+            if ((RequestSpecificValues.Current_Mode.My_Sobek_SubMode.Length > 0) && (Char.IsNumber(RequestSpecificValues.Current_Mode.My_Sobek_SubMode[0])))
+            {
+                // Get the page
+                Int32.TryParse(RequestSpecificValues.Current_Mode.My_Sobek_SubMode[0].ToString(), out currentProcessStep);
+
+                // Set the submode option
+                submodeOption = RequestSpecificValues.Current_Mode.My_Sobek_SubMode.Replace(currentProcessStep.ToString(), "");
+            }
+            else
+            {
+                submodeOption = String.Empty;
+            }
+
+       
+
             // Determine the number of total CompleteTemplate pages
             totalTemplatePages = completeTemplate.InputPages_Count;
             if (completeTemplate.Permissions_Agreement.Length > 0)
                 totalTemplatePages++;
-            if (completeTemplate.Upload_Types != CompleteTemplate.Template_Upload_Types.None)
+            if ((completeTemplate.Upload_Types != CompleteTemplate.Template_Upload_Types.None) && ( !submodeOption.Equals("OP", StringComparison.OrdinalIgnoreCase)))
                 totalTemplatePages++;
 
             // Determine the title for this CompleteTemplate, or use a default
@@ -151,12 +169,8 @@ namespace SobekCM.Library.MySobekViewer
                 toolTitle = "Self-Submittal Tool";
 
 
-            // Determine the current phase
-            currentProcessStep = 1;
-            if ((RequestSpecificValues.Current_Mode.My_Sobek_SubMode.Length > 0) && (Char.IsNumber(RequestSpecificValues.Current_Mode.My_Sobek_SubMode[0])))
-            {
-                Int32.TryParse(RequestSpecificValues.Current_Mode.My_Sobek_SubMode.Substring(0), out currentProcessStep);
-            }
+
+
 
             // If this is process step 1 and there is no permissions statement in the CompleteTemplate,
             // just go to step 2
@@ -168,6 +182,7 @@ namespace SobekCM.Library.MySobekViewer
 
                 // Skip the permissions step
                 currentProcessStep = 2;
+
             }
 
             // If there is a boundary infraction here, go back to step 2
@@ -177,10 +192,12 @@ namespace SobekCM.Library.MySobekViewer
                 currentProcessStep = 2;
 
             // If this is to enter a file or URL, and the CompleteTemplate does not include this, skip over this step
-            if (( currentProcessStep == 8 ) && ( completeTemplate.Upload_Types == CompleteTemplate.Template_Upload_Types.None ))
+            if (( currentProcessStep == 8 ) && (( completeTemplate.Upload_Types == CompleteTemplate.Template_Upload_Types.None ) || (submodeOption.Equals("OP", StringComparison.OrdinalIgnoreCase))))
+
             {
                 // For now, just forward to the next phase
-                RequestSpecificValues.Current_Mode.My_Sobek_SubMode = "9";
+                RequestSpecificValues.Current_Mode.My_Sobek_SubMode = "9" + submodeOption;
+
                 UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
                 return;
             }
@@ -382,7 +399,7 @@ namespace SobekCM.Library.MySobekViewer
                     HttpContext.Current.Session["Item"] = item;
 
                     // Forward back to the same URL
-                    RequestSpecificValues.Current_Mode.My_Sobek_SubMode = "2";
+                    RequestSpecificValues.Current_Mode.My_Sobek_SubMode = "2" + submodeOption;
                     UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
                     return;
                 }
@@ -500,7 +517,7 @@ namespace SobekCM.Library.MySobekViewer
                     }
 
                     // For now, just forward to the next phase
-                    RequestSpecificValues.Current_Mode.My_Sobek_SubMode = next_phase;
+                    RequestSpecificValues.Current_Mode.My_Sobek_SubMode = next_phase + submodeOption;
                     UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
                     return;
                 }
@@ -516,7 +533,7 @@ namespace SobekCM.Library.MySobekViewer
                 // Validate that an agreement.txt file exists, if the CompleteTemplate has permissions
                 if (( completeTemplate.Permissions_Agreement.Length > 0 ) && (!File.Exists(userInProcessDirectory + "\\agreement.txt")))
                 {
-                    RequestSpecificValues.Current_Mode.My_Sobek_SubMode = "1";
+                    RequestSpecificValues.Current_Mode.My_Sobek_SubMode = "1" + submodeOption;
                     UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
                     return;
                 }
@@ -532,7 +549,7 @@ namespace SobekCM.Library.MySobekViewer
                 // Validate that a METS file exists
                 if (Directory.GetFiles( userInProcessDirectory, "*.mets*").Length == 0 )
                 {
-                    RequestSpecificValues.Current_Mode.My_Sobek_SubMode = "2";
+                    RequestSpecificValues.Current_Mode.My_Sobek_SubMode = "2" + submodeOption;
                     UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
                     return;
                 }
@@ -543,7 +560,7 @@ namespace SobekCM.Library.MySobekViewer
                 else
                 {
                     item.Web.Show_Validation_Errors = true;
-                    RequestSpecificValues.Current_Mode.My_Sobek_SubMode = "2";
+                    RequestSpecificValues.Current_Mode.My_Sobek_SubMode = "2" + submodeOption;
                     UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
                     return;
                 }
@@ -552,7 +569,7 @@ namespace SobekCM.Library.MySobekViewer
             // If this is for step 8, ensure that this even takes this information, or go to step 9
             if (( currentProcessStep == 8 ) && ( completeTemplate.Upload_Types == CompleteTemplate.Template_Upload_Types.None ))
             {
-                RequestSpecificValues.Current_Mode.My_Sobek_SubMode = "9";
+                RequestSpecificValues.Current_Mode.My_Sobek_SubMode = "9" + submodeOption;
                 UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
                 return;
             }
@@ -592,7 +609,7 @@ namespace SobekCM.Library.MySobekViewer
                     // If neither was present, go back to step 8
                     if (( !required_file_present ) && ( !required_url_present ))
                     {
-                        RequestSpecificValues.Current_Mode.My_Sobek_SubMode = "8";
+                        RequestSpecificValues.Current_Mode.My_Sobek_SubMode = "8" + submodeOption; 
                         UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
                         return;
                     }
@@ -817,6 +834,12 @@ namespace SobekCM.Library.MySobekViewer
 
                 // Create the user notes
                 string userNotes = $"Submitted online via {templateCode} template";
+
+                // If this is OpenPublishing, add that view
+                if ( submodeOption.Equals("OP", StringComparison.OrdinalIgnoreCase))
+                {
+                    Item_To_Complete.Behaviors.Add_View("OPEN_TEXTBOOK");
+                }
 
                 // Save to the database
                 try
@@ -1820,12 +1843,22 @@ namespace SobekCM.Library.MySobekViewer
             {
                 Output.WriteLine("<a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/" + item.BibID + "/" + item.VID + "\">View this item</a><br/><br />");
 
-                RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Edit_Item_Metadata;
-                RequestSpecificValues.Current_Mode.My_Sobek_SubMode = "1";
-                RequestSpecificValues.Current_Mode.BibID = item.BibID;
-                RequestSpecificValues.Current_Mode.VID = item.VID;
-                Output.WriteLine("<a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">Edit this item</a><br /><br />");
-
+                if (submodeOption.Equals("OP", StringComparison.OrdinalIgnoreCase))
+                {
+                    RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.My_Sobek;
+                    RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Open_Publishing_Tool;
+                    RequestSpecificValues.Current_Mode.BibID = item.BibID;
+                    RequestSpecificValues.Current_Mode.VID = item.VID;
+                    Output.WriteLine("<a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">Edit this item (Open Publishing)</a><br /><br />");
+                }
+                else
+                {
+                    RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Edit_Item_Metadata;
+                    RequestSpecificValues.Current_Mode.My_Sobek_SubMode = "1";
+                    RequestSpecificValues.Current_Mode.BibID = item.BibID;
+                    RequestSpecificValues.Current_Mode.VID = item.VID;
+                    Output.WriteLine("<a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">Edit this item</a><br /><br />");
+                }
 
                 RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.New_Item;
                 RequestSpecificValues.Current_Mode.BibID = String.Empty;

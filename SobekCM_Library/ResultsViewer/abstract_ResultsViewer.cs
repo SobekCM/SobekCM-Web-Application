@@ -51,6 +51,28 @@ namespace SobekCM.Library.ResultsViewer
             }
         }
 
+        public bool CurrentUserHasAccess(iSearch_Item_Result item)
+        {
+            if (!String.IsNullOrEmpty(item.Group_Restrictions))
+            {
+                // Check user, if there is one
+                if ((RequestSpecificValues.Current_User != null) && (RequestSpecificValues.Current_User.LoggedOn)
+                    && (RequestSpecificValues.Current_User.User_Groups != null))
+                {
+                    foreach (var group in RequestSpecificValues.Current_User.User_Groups)
+                    {
+                        if (item.Group_Restrictions.Contains("|" + group.UserGroupID + "|"))
+                        {
+                            return true;
+                        }
+                    }
+                }
+
+                return false;
+            }
+            return true;
+        }
+
         /// <summary> Calculates the index for the last row to be displayed on the current result page </summary>
         public int LastRow
         {

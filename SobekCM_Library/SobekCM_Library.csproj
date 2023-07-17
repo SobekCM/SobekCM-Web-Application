@@ -244,7 +244,6 @@
     <Compile Include="HTML\Empty_HtmlSubwriter.cs" />
     <Compile Include="HTML\HeaderFooter_Helper_HtmlSubWriter.cs" />
     <Compile Include="HTML\HtmlSubwriter_Behaviors_Enum.cs" />
-    <Compile Include="HTML\Item_HtmlSubwriter_Last.cs" />
     <Compile Include="HTML\MainMenus_Helper_HtmlSubWriter.cs" />
     <Compile Include="ItemViewer\HtmlHeadWriters\DublinCore_ItemHtmlHeadWriter.cs" />
     <Compile Include="ItemViewer\HtmlHeadWriters\iItemHtmlHeadWriter.cs" />
@@ -293,7 +292,6 @@
     <Compile Include="ItemViewer\Viewers\PDF_ItemViewer.cs" />
     <Compile Include="ItemViewer\Viewers\QC_ItemViewer.cs" />
     <Compile Include="ItemViewer\Viewers\Related_Images_ItemViewer.cs" />
-    <Compile Include="ItemViewer\Viewers\Restricted_ItemViewer.cs" />
     <Compile Include="ItemViewer\Viewers\Text_ItemViewer.cs" />
     <Compile Include="ItemViewer\Viewers\Text_Search_ItemViewer.cs" />
     <Compile Include="ItemViewer\Viewers\TrackingSheet_ItemViewer.cs" />

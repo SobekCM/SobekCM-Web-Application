@@ -125,10 +125,13 @@ namespace SobekCM.Library
 
         /// <summary> Flag indicates if the current item is restricted from the
         /// current user by IP address </summary>
-        public bool ItemRestrictedFromUserByIp { get; set; }
+        public bool ItemRestrictedFromUser { get; set; }
 
         /// <summary> Flag indicates if the current item is checked out by 
         /// another user and is a single-use item </summary>
         public bool ItemCheckedOutByOtherUser { get; set; }
+
+        /// <summary> Restriction message to display </summary>
+        public string RestrictionMessage { get; set; }
     }
 }

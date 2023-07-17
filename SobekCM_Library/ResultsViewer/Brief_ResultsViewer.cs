@@ -90,6 +90,7 @@ namespace SobekCM.Library.ResultsViewer
                 else
                 {
                     access_type = firstItemResult.AccessType;
+
                     if (String.IsNullOrEmpty(access_type))
                     {
                         resultsBldr.AppendLine("\t<section class=\"sbkBrv_SingleResult\" onclick=\"window.location.href='" + internal_link.Replace("'", "\\'") + "';\" >");
@@ -119,7 +120,11 @@ namespace SobekCM.Library.ResultsViewer
                 string thumb = titleResult.BibID.Substring(0, 2) + "/" + titleResult.BibID.Substring(2, 2) + "/" +titleResult.BibID.Substring(4, 2) + "/" + titleResult.BibID.Substring(6, 2) + "/" + titleResult.BibID.Substring(8) + "/" + firstItemResult.VID + "/" + (firstItemResult.MainThumbnail).Replace("\\", "/").Replace("//", "/");
 
                 // Draw the thumbnail 
-                if ((thumb.ToUpper().IndexOf(".JPG") < 0) && (thumb.ToUpper().IndexOf(".GIF") < 0))
+                if ( !String.IsNullOrEmpty(firstItemResult.Group_Restrictions))
+                {
+                    resultsBldr.AppendLine("<a href=\"" + internal_link + "\"><img src=\"" + RequestSpecificValues.Current_Mode.Base_Design_URL + "restricted-thumb.png\" border=\"0px\" class=\"resultsThumbnail\" alt=\"RESTRICTED ITEM\" style=\"width:150px\" /></a></div>");
+                }
+                else if ((thumb.ToUpper().IndexOf(".JPG") < 0) && (thumb.ToUpper().IndexOf(".GIF") < 0))
                 {
                     resultsBldr.AppendLine("<a href=\"" + internal_link + "\"><img src=\"" + Static_Resources_Gateway.Nothumb_Jpg + "\" border=\"0px\" class=\"resultsThumbnail\" alt=\"MISSING THUMBNAIL\" /></a></div>");
                 }
@@ -140,6 +145,16 @@ namespace SobekCM.Library.ResultsViewer
                         access_message = "Access Restricted (Dark Item)";
 
                     resultsBldr.AppendLine("\t\t\t<div class=\"RestrictedItemText\">" + UI_ApplicationCache_Gateway.Translation.Get_Translation(access_message, RequestSpecificValues.Current_Mode.Language) + "</div>");
+                }
+                else if (!String.IsNullOrEmpty(firstItemResult.Group_Restrictions))
+                {
+                    bool hasAccess = CurrentUserHasAccess(firstItemResult);
+                    if (!hasAccess)
+                    {
+                        string rst_msg = firstItemResult.RestrictedMsg ?? "Item is restricted by user group membership.";
+                        resultsBldr.AppendLine("\t\t\t<div class=\"RestrictedItemText\">" + rst_msg + "</div>");
+                    }
+
                 }
 
                 if (multiple_title)

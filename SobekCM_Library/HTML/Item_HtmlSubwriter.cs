@@ -244,7 +244,7 @@ namespace SobekCM.Library.HTML
                 }
             }
 
-            // Check to see if this is IP restricted
+            // Check to see if this is access restricted
             restriction_message = String.Empty;
             bool isRestricted = false;
             if (currentItem.Behaviors.IP_Restriction_Membership > 0)
@@ -253,12 +253,11 @@ namespace SobekCM.Library.HTML
 
                 if (HttpContext.Current != null)
                 {
+                    // Check for IP restriction
                     int user_mask = (int)HttpContext.Current.Session["IP_Range_Membership"];
                     int comparison = currentItem.Behaviors.IP_Restriction_Membership & user_mask;
                     if (comparison == 0)
                     {
-                        RequestSpecificValues.Flags.ItemRestrictedFromUserByIp = true;
-
                         int restriction = currentItem.Behaviors.IP_Restriction_Membership;
                         int restriction_counter = 1;
                         while (restriction % 2 != 1)
@@ -276,45 +275,55 @@ namespace SobekCM.Library.HTML
             }
 
             // Check for user group restriction next
-            if (( !userCanEditItem ) && ( !isRestricted ) && ( currentItem.Behaviors.HasRestrictions ))
+            if (( !isRestricted ) && ( currentItem.Behaviors.HasRestrictions ))
             {
-                // Does any group have view access only?
-                bool user_group_restrictions_apply = false;
-                List<int> group_ids_with_view = new List<int>();
-                foreach( var permissions in currentItem.Behaviors.Restrictions )
-                {
-                    if ( permissions.CanView )
-                    {
-                        // Some level of restrictions DO apply
-                        user_group_restrictions_apply = true;
-                        group_ids_with_view.Add(permissions.GroupID);
-                    }
-                }
+                RequestSpecificValues.Tracer.Add_Trace("item_HtmlSubwriter.Constructor", "Item has some user group restrictions.. checking for access");
+
+                // If any group has CanView access, it is assumed that noone else can
+                var matches = currentItem.Behaviors.Restrictions.Where(p => p.CanView).Select(p => p.GroupID).ToList<int>();
 
                 // Are any groups for this user in the list of groups that have view access?
-                if (user_group_restrictions_apply)
+                if (matches.Count > 0 )
                 {
+                    RequestSpecificValues.Tracer.Add_Trace("item_HtmlSubwriter.Constructor", "At least one group has view only access... item is not publicly viewabls");
+                
                     isRestricted = true;
-                    restriction_message = "This item can only be viewed by instructors.";
+                    restriction_message = currentItem.Behaviors.RestrictionMessage ?? "This item can only be viewed by instructors.";
 
                     // Check user, if there is one
                     if (( RequestSpecificValues.Current_User != null ) && ( RequestSpecificValues.Current_User.LoggedOn ) 
                         && ( RequestSpecificValues.Current_User.User_Groups != null ))
-                    { 
+                    {
+                        RequestSpecificValues.Tracer.Add_Trace("item_HtmlSubwriter.Constructor", "Checking to see if user has access via user group membership");
+                    
                         foreach (var group in RequestSpecificValues.Current_User.User_Groups)
                         {
-                            if ( group_ids_with_view.Contains(group.UserGroupID))
+                            if (matches.Contains(group.UserGroupID))
                             {
+                                RequestSpecificValues.Tracer.Add_Trace("item_HtmlSubwriter.Constructor", "User does have permission via user group membership");
+
                                 isRestricted = false;
+                                restriction_message = String.Empty;
                                 break;
                             }
                         }
                     }
                 }
+                else
+                {
+                    RequestSpecificValues.Tracer.Add_Trace("item_HtmlSubwriter.Constructor", "No user group assigned view permissions... item is public for viewing");
+                }
+            }
+            else
+            {
+                RequestSpecificValues.Tracer.Add_Trace("item_HtmlSubwriter.Constructor", "Item has no user group restrictions");
             }
 
-            // If this item is restricted by IP than alot of the upcoming code is unnecessary
-            if ((RequestSpecificValues.Current_User != null) && ((!RequestSpecificValues.Flags.ItemRestrictedFromUserByIp) || (userCanEditItem) || (RequestSpecificValues.Current_User.Is_Internal_User)))
+            RequestSpecificValues.Flags.ItemRestrictedFromUser = isRestricted;
+            RequestSpecificValues.Flags.RestrictionMessage = restriction_message;
+
+            // If this item is restricted from the current user than alot of the upcoming code is unnecessary
+            if ((RequestSpecificValues.Current_User != null) && ((!RequestSpecificValues.Flags.ItemRestrictedFromUser) || (userCanEditItem) || (RequestSpecificValues.Current_User.Is_Internal_User)))
             {
                 #region Region suppressed currently - was for adding feature to a map image?
 
@@ -542,7 +551,7 @@ namespace SobekCM.Library.HTML
             RequestSpecificValues.Tracer.Add_Trace("Item_HtmlSubwriter.Constructor", "Getting the appropriate item viewer");
             prototyper = ItemViewer_Factory.Get_Item_Viewer(currentItem, RequestSpecificValues.Current_Mode.ViewerCode);
             if (( prototyper != null ) && ( prototyper.Has_Access(currentItem, RequestSpecificValues.Current_User, isRestricted)))
-                pageViewer = prototyper.Create_Viewer(currentItem, RequestSpecificValues.Current_User, RequestSpecificValues.Current_Mode, RequestSpecificValues.Tracer );
+                pageViewer = prototyper.Create_Viewer(currentItem, RequestSpecificValues.Current_User, RequestSpecificValues.Current_Mode, RequestSpecificValues.Tracer, RequestSpecificValues.Flags);
             else
             {
                 // Since the user did not have access to THAT viewer, try to find one that he does have access to
@@ -553,7 +562,7 @@ namespace SobekCM.Library.HTML
                         prototyper = ItemViewer_Factory.Get_Viewer_By_ViewType(viewerType);
                         if ((prototyper != null) && (prototyper.Has_Access(currentItem, RequestSpecificValues.Current_User, isRestricted)))
                         {
-                            pageViewer = prototyper.Create_Viewer(currentItem, RequestSpecificValues.Current_User, RequestSpecificValues.Current_Mode, RequestSpecificValues.Tracer);
+                            pageViewer = prototyper.Create_Viewer(currentItem, RequestSpecificValues.Current_User, RequestSpecificValues.Current_Mode, RequestSpecificValues.Tracer, RequestSpecificValues.Flags);
                             break;
                         }
                     }

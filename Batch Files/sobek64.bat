@@ -1,7 +1,7 @@
 echo off
 REM ******** Some values used to support alternate locations **********
 set source=C:\GitHub\SobekCM-Web-Application
-set iis=C:\inetpub\wwwroot
+set iis=C:\inetpub\wwwroot\SobekCM
 set installer=C:\GitHub\SobekWebInstaller
 echo.
 echo COPYING WEB FILES INTO PRECOMPILE DIRECTORY
@@ -26,23 +26,22 @@ echo REMOVING ANY EXISTING STAGING DIRECTORIES
 rmdir "%installer%\SobekCM_WiX_Installer\Staging64" /s /q
 rmdir "%installer%\SobekCM_WiX_Installer\Staging32" /s /q
 echo.
-echo REMOVING DIRECTORIES TO NOT MOVE TO STAGING
-rmdir %iis%\SobekCM\config /s /q
-rmdir %iis%\SobekCM\design /s /q
-rmdir %iis%\SobekCM\default /s /q
-rmdir %iis%\SobekCM\iipimage /s /q
-rmdir %iis%\SobekCM\mysobek /s /q
-rmdir %iis%\SobekCM\dev /s /q
-rmdir %iis%\SobekCM\temp /s /q
-rmdir %iis%\SobekCM\obj /s /q
-rmdir %iis%\SobekCM\Properties /s /q
-rmdir %iis%\SobekCM\content /s /q
+REM echo REMOVING DIRECTORIES TO NOT MOVE TO STAGING
+REM rmdir %iis%\SobekCM\config /s /q
+REM rmdir %iis%\SobekCM\design /s /q
+REM rmdir %iis%\SobekCM\default /s /q
+REM rmdir %iis%\SobekCM\iipimage /s /q
+REM rmdir %iis%\SobekCM\mysobek /s /q
+REM rmdir %iis%\SobekCM\dev /s /q
+REM rmdir %iis%\SobekCM\temp /s /q
+REM rmdir %iis%\SobekCM\obj /s /q
+REM rmdir %iis%\SobekCM\Properties /s /q
+REM rmdir %iis%\SobekCM\content /s /q
 echo.
-
 
 echo COMPILING 64-BIT VERSION
 cd c:\windows\microsoft.net\framework64\v4.0.30319
-aspnet_compiler -v /SobekCM "%installer%\SobekCM_WiX_Installer\Staging64"
+aspnet_compiler -p C:\inetpub\wwwroot\SobekCM\SobekCM -v / "%installer%\SobekCM_WiX_Installer\Staging64"
 echo.
 echo DELETING UNNECESSARY 64-BIT FILES
 del "%installer%\SobekCM_WiX_Installer\Staging64\web.config"

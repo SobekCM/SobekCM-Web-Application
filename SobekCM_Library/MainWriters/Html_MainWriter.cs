@@ -598,7 +598,7 @@ namespace SobekCM.Library.MainWriters
                     Tracer.Add_Trace("Html_MainWriter.Write_Within_HTML_Head", "Not adding responsive design meta viewport tag.");
                 }
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 Tracer.Add_Trace("Html_MainWriter.Write_Within_HTML_Head", "Not adding responsive design meta viewport tag (No system-wide settings).");
             }
@@ -636,7 +636,7 @@ namespace SobekCM.Library.MainWriters
                         Output.WriteLine("<!-- using timeline src code -->");
                     }
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                     Output.WriteLine("<!-- exception - using timeline bundle -->");
                     use_timeline_bundle = true;
@@ -739,7 +739,7 @@ namespace SobekCM.Library.MainWriters
                     Tracer.Add_Trace("Html_MainWriter.Write_Within_HTML_head", "Materialize framework support set to false");
                 }
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 Output.WriteLine("<!-- exception while checking on adding Materialize support -->");
                 Tracer.Add_Trace("Html_MainWriter.Write_Within_HTML_head", "Exception while checking on adding Materialize support, not adding.");

@@ -111,6 +111,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <param name="CurrentUser"> Current user, who may or may not be logged on </param>
         /// <param name="CurrentRequest"> Information about the current request </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        /// <param name="CurrentFlags"> Calculated flags for this particular requests, to avoid recalculation in different viewers </param>
         /// <returns> Fully built and initialized <see cref="Google_Coordinate_Entry_ItemViewer"/> object </returns>
         /// <remarks> This method is called whenever a request requires the actual viewer to be created to render the HTML for
         /// the digital resource requested.  The created viewer is then destroyed at the end of the request </remarks>
@@ -132,8 +133,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
         List<Coordinate_Point> allPoints;
         List<Coordinate_Line> allLines;
         List<Coordinate_Circle> allCircles;
-
-        private Dictionary<string, object> options;
 
         /// <summary> Constructor for a new instance of the Google_Coordinate_Entry_ItemViewer class, used to edit the 
         /// coordinate information associated with this digital resource within an online google maps interface </summary>
@@ -280,7 +279,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                                 //add the new point 
                                 resourceGeoInfo.Add_Point(newPoint);
                                 //save to db
-                                SobekCM_Item_Database.Save_Digital_Resource(currentItem, options);
+                                SobekCM_Item_Database.Save_Digital_Resource(currentItem, null);
                                 break;
                             #endregion
                             #region overlay
@@ -378,7 +377,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                                 //add the pagegeo obj
                                 pages[arrayId].Add_Metadata_Module(GlobalVar.GEOSPATIAL_METADATA_MODULE_KEY, pageGeo);
                                 //save to db
-                                SobekCM_Item_Database.Save_Digital_Resource(currentItem, options);
+                                SobekCM_Item_Database.Save_Digital_Resource(currentItem, null);
                                 break;
                             #endregion
                         }
@@ -394,7 +393,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                                     //clear nonpoipoints
                                     resourceGeoInfo.Clear_NonPOIPoints();
                                     //save to db
-                                    SobekCM_Item_Database.Save_Digital_Resource(currentItem, options);
+                                    SobekCM_Item_Database.Save_Digital_Resource(currentItem, null);
                                     break;
                                 #endregion
                                 #region overlay
@@ -431,7 +430,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                                         pages[arrayId].Add_Metadata_Module(GlobalVar.GEOSPATIAL_METADATA_MODULE_KEY, pageGeo);
 
                                         //save to db
-                                        SobekCM_Item_Database.Save_Digital_Resource(currentItem, options);
+                                        SobekCM_Item_Database.Save_Digital_Resource(currentItem, null);
                                     }
                                     catch (Exception)
                                     {

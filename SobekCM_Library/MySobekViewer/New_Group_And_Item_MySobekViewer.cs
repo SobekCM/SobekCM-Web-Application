@@ -858,8 +858,6 @@ namespace SobekCM.Library.MySobekViewer
                     bool error_reading_file_occurred = false;
 
                     // Add the image files first
-                    bool jpeg_added = false;
-                    bool jp2_added = false;
                     foreach(string thisFileKey in image_files.Keys )
                     {
                         // Get the list of files
@@ -891,7 +889,6 @@ namespace SobekCM.Library.MySobekViewer
                                     if (!newFile.Compute_Jpeg2000_Attributes(userInProcessDirectory))
                                         error_reading_file_occurred = true;
                                 }
-                                jp2_added = true;
                             }
                             else
                             {
@@ -900,7 +897,6 @@ namespace SobekCM.Library.MySobekViewer
                                     if (!newFile.Compute_Jpeg_Attributes(userInProcessDirectory))
                                         error_reading_file_occurred = true;
                                 }
-                                jpeg_added = true;
                             }
                         }
                     }
@@ -1240,7 +1236,7 @@ namespace SobekCM.Library.MySobekViewer
                         }
                     }
                 }
-                catch (Exception ee)
+                catch (Exception)
                 {
                     returnValue = false;
                 }

@@ -323,8 +323,8 @@ namespace SobekCM.Library.AdminViewer
             const string ARCHIVE_ALL_HELP = "Flag indicates that ALL incoming digital resource files will be copied to the Archival Drop Box directory, if such a value has been set in the main system settings.";
             const string DELETE_HELP = "Flag indicates if incoming METS files with a record status of DELETE should be accepted and result in the deletion of the corresponding item from this system.";
             const string NO_METADATA_HELP = "Flag indicates that all incoming digital resources MUST be accompanied by a METS file, or they will be rejected.";
-            const string METADATA_UPDATE_HELP = "Flag indicates if incoming METS files with METADATA_UPDATE or PARTIAL are allowed in this folder, which will update just the metadata portion of the METS and possibly add new files.";
-
+            
+            //const string METADATA_UPDATE_HELP = "Flag indicates if incoming METS files with METADATA_UPDATE or PARTIAL are allowed in this folder, which will update just the metadata portion of the METS and possibly add new files.";
             //const string BIB_RESTRICT_HELP = "Flag indicates that incoming packages are restricted by the BibID root.  Packages that begin with a different root are rejected.  Multiple roots are added with a &quot;pipe&quot; between them, such as &quot;UF01|CA|SMI&quot;.";
 
             Output.WriteLine("<p>Below is the information for an existing builder incoming folder.  Use this form to make any changes to the folder, such as the network folders or any of the folder options.</p>");
@@ -430,13 +430,11 @@ namespace SobekCM.Library.AdminViewer
             //Output.WriteLine("  </tr>");
 
             // Determine button text
-            string button_text = "ADD";
             string cancel_button_text = "CANCEL";
             string cancel_text = "Do not apply changes";
             string button_title = "Add this new builder incoming folder";
             if (folderId > 0)
             {
-                button_text = "SAVE";
                 button_title = "Save builder incoming folder changes";
             }
             if (saved)

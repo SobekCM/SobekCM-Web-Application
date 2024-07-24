@@ -299,7 +299,7 @@ namespace SobekCM.Library.ItemViewer
                     iItemViewerPrototyper returnObj = (iItemViewerPrototyper) Activator.CreateInstance(prototyperType);
                     return returnObj;
                 }
-                catch (Exception ee)
+                catch (Exception)
                 {
                     // Not sure exactly what to do here, honestly
                     return null;
@@ -328,8 +328,6 @@ namespace SobekCM.Library.ItemViewer
                     return null;
                 return null;
             }
-
-            return null;
         }
 
         /// <summary> Clears the dictionaries of item viewer prototypes, used when the cache
@@ -378,7 +376,7 @@ namespace SobekCM.Library.ItemViewer
         }
 
         /// <summary> Accepts a viewer code (string) from the digital resource object and returns
-        /// the appropriate item viewer object which extends the <see cref="SobekCM.Library.ItemViewer.Viewer.iItemViewerPriority"/>
+        /// the appropriate item viewer object which extends the <see cref="SobekCM.Library.ItemViewer.Viewers.iItemViewerPrototyper"/>
         /// class for rendering items to the web via HTML.</summary>
         /// <param name="ViewerCode"> Viewer code to retrieve </param>
         /// <returns> Genereated item viewer class for rendering the particular view of a digital resource
@@ -397,7 +395,7 @@ namespace SobekCM.Library.ItemViewer
 
 
         /// <summary> Accepts a view type (string) from the digital resource object and returns
-        /// the appropriate item viewer object which extends the <see cref="SobekCM.Library.ItemViewer.Viewer.iItemViewerPriority"/>
+        /// the appropriate item viewer object which extends the <see cref="SobekCM.Library.ItemViewer.Viewers.iItemViewerPrototyper"/>
         /// class for rendering items to the web via HTML.</summary>
         /// <param name="ViewType"> Viewer code to retrieve </param>
         /// <returns> Genereated item viewer class for rendering the particular view of a digital resource
@@ -414,7 +412,7 @@ namespace SobekCM.Library.ItemViewer
             return null;
         }
 
-        /// <summary> Gets the appropriate item viewer prototyper ( <see cref="SobekCM.Library.ItemViewer.Viewer.iItemViewerPriority"/> )
+        /// <summary> Gets the appropriate item viewer prototyper ( <see cref="SobekCM.Library.ItemViewer.Viewers.iItemViewerPrototyper"/> )
         /// class for an individual item, based on the requested viewer code </summary>
         /// <param name="CurrentItem">The current item.</param>
         /// <param name="ViewerCode">The viewer code.</param>

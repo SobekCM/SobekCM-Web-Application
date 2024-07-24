@@ -796,9 +796,8 @@ namespace SobekCM.Resource_Object.GenericXml.Reader
 
             // Step through and remove the END tags
             int index = 0;
-            int next_index = 0;
-            bool start_tag = false;
-            string next_tag = String.Empty;
+            int next_index;
+
             do
             {
                 // Look for the next match

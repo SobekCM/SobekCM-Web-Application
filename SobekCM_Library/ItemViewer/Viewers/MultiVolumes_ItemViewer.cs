@@ -119,6 +119,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <param name="CurrentUser"> Current user, who may or may not be logged on </param>
         /// <param name="CurrentRequest"> Information about the current request </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        /// <param name="CurrentFlags"> Calculated flags for this particular requests, to avoid recalculation in different viewers </param>
         /// <returns> Fully built and initialized <see cref="MultiVolumes_ItemViewer"/> object </returns>
         /// <remarks> This method is called whenever a request requires the actual viewer to be created to render the HTML for
         /// the digital resource requested.  The created viewer is then destroyed at the end of the request </remarks>
@@ -213,7 +214,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             {
                 allVolumes = SobekEngineClient.Items.Get_Multiple_Volumes(BriefItem.BibID, Tracer);
             }
-            catch (Exception ee)
+            catch (Exception)
             {
                 Tracer.Add_Trace("Tracking_ItemViewer.Constructor", "Unable to pull volumes under " + BriefItem.BibID);
                 CurrentRequest.Mode = Display_Mode_Enum.Error;

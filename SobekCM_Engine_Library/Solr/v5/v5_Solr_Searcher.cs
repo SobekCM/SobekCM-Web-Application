@@ -358,7 +358,7 @@ namespace SobekCM.Engine_Library.Solr.v5
 
                 return true;
             }
-            catch ( Exception ee )
+            catch ( Exception )
             {
                 return false;
             }

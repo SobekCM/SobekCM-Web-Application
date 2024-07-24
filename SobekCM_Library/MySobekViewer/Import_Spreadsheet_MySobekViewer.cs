@@ -320,7 +320,7 @@ namespace SobekCM.Library.MySobekViewer
                     returnValue.Add(worksheet.Name);
                 }
             }
-            catch (Exception ee)
+            catch (Exception)
             {
                 return null;
             }

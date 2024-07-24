@@ -79,7 +79,6 @@ namespace SobekCM.Library.ItemViewer.HtmlSectionWriters
 
             int lastLevel = -1;
             int currentLevel = 0;
-            int nextLevel = 0;
             int currentSequence = 0;
             int nextSequence = 0;
             int selectSequence = Convert.ToInt32(RequestSpecificValues.Current_Mode.Page);

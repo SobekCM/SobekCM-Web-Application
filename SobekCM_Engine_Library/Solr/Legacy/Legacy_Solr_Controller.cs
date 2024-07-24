@@ -42,7 +42,7 @@ namespace SobekCM.Engine_Library.Solr.Legacy
             {
                 try
                 {
-                    solrDocumentWorker.Add(index_files);
+                    solrDocumentWorker.AddRange(index_files);
                     document_success = true;
                 }
                 catch (Exception)
@@ -70,7 +70,7 @@ namespace SobekCM.Engine_Library.Solr.Legacy
             {
                 try
                 {
-                    solrPageWorker.Add(index_pages);
+                    solrPageWorker.AddRange(index_pages);
                     page_success = true;
                 }
                 catch (Exception)

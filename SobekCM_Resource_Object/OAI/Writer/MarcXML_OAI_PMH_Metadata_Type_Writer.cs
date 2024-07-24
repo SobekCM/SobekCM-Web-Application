@@ -27,8 +27,7 @@ namespace SobekCM.Resource_Object.OAI.Writer
             string SystemName = null;
             string SystemAbbreviation = null;
             string ThumbnailBase = null;
-            string XlstFile = null;
-
+ 
 
             if (Options != null)
             {
@@ -36,13 +35,10 @@ namespace SobekCM.Resource_Object.OAI.Writer
                 if (Options.ContainsKey("MarcXML_File_ReaderWriter:MARC Location Code")) LocationCode = Options["MarcXML_File_ReaderWriter:MARC Location Code"].ToString();
                 if (Options.ContainsKey("MarcXML_File_ReaderWriter:MARC Reproduction Agency")) ReproductionAgency = Options["MarcXML_File_ReaderWriter:MARC Reproduction Agency"].ToString();
                 if (Options.ContainsKey("MarcXML_File_ReaderWriter:MARC Reproduction Place")) ReproductionPlace = Options["MarcXML_File_ReaderWriter:MARC Reproduction Place"].ToString();
-                if (Options.ContainsKey("MarcXML_File_ReaderWriter:MARC XSLT File")) XlstFile = Options["MarcXML_File_ReaderWriter:MARC XSLT File"].ToString();
                 if (Options.ContainsKey("MarcXML_File_ReaderWriter:System Name")) SystemName = Options["MarcXML_File_ReaderWriter:System Name"].ToString();
                 if (Options.ContainsKey("MarcXML_File_ReaderWriter:System Abbreviation")) SystemAbbreviation = Options["MarcXML_File_ReaderWriter:System Abbreviation"].ToString();
                 if (Options.ContainsKey("MarcXML_File_ReaderWriter:Image_Base")) ThumbnailBase = Options["MarcXML_File_ReaderWriter:Image_Base"].ToString();
             }
-
-
 
 
             // Set default error outpt message

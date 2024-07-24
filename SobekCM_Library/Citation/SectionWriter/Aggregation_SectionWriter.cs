@@ -10,7 +10,7 @@ using SobekCM.Tools;
 namespace SobekCM.Library.Citation.SectionWriter
 {
     /// <summary> Special citation section writer adds the aggregations related to this item </summary>
-    /// <remarks> This class implements the <see cref="iCitationSectionWriter"/> interface.
+    /// <remarks> This class implements the <see cref="iCitationSectionWriter"/> interface.</remarks>
     public class Aggregation_SectionWriter : iCitationSectionWriter
     {
         /// <summary> Returns flag that indicates this citation section writer 
@@ -31,6 +31,7 @@ namespace SobekCM.Library.Citation.SectionWriter
         /// <param name="SearchLink"> Beginning of the search link that can be used to allow the web patron to select a term and run a search against this instance </param>
         /// <param name="SearchLinkEnd"> End of the search link that can be used to allow the web patron to select a term and run a search against this instance  </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        /// <param name="CurrentRequest"> Information about the current request </param>
         public void Write_Citation_Section(CitationElement ElementInfo, StringBuilder Output, BriefItemInfo Item, int LeftColumnWidth, string SearchLink, string SearchLinkEnd, Custom_Tracer Tracer, Navigation_Object CurrentRequest)
         {
             string displayLabel = "Aggregations";

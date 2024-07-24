@@ -651,8 +651,6 @@ namespace SobekCM.Library.HTML
             const string brief_view_text = "Brief View";
             const string tree_view_text = "Tree View";
             const string partners_text = "Browse Partners";
-            const string EXPORT_VIEW = "Export";
-
 
             if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.Spanish)
             {

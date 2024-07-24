@@ -1134,9 +1134,7 @@ namespace SobekCM.Library.Database
                 }
             }
 
-
-
-            return true;
+            return userSettingSaveSuccess && result;
 		}
 
         /// <summary> Saves basic information information about an existing single user </summary>

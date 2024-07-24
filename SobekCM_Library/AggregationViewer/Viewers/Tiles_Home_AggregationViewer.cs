@@ -179,7 +179,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                         // Also put this in the cache
                         HttpContext.Current.Cache.Insert(cache_key, tileMetadata, null, Cache.NoAbsoluteExpiration, TimeSpan.FromMinutes(5));
                     }
-                    catch (Exception ee)
+                    catch (Exception)
                     {
                         tileMetadata = null;
                     }

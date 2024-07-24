@@ -192,7 +192,7 @@ namespace SobekCM.Core.FileSystems
                     return returnValue;
                 }
             }
-            catch (Exception ee)
+            catch (Exception)
             {
                 return null;
             }

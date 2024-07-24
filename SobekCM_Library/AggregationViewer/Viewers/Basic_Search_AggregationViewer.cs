@@ -26,11 +26,6 @@ namespace SobekCM.Library.AggregationViewer.Viewers
     /// </ul></remarks>
     public class Basic_Search_AggregationViewer : abstractAggregationViewer
     {
-        private readonly string arg1;
-        private readonly string arg2;
-        private readonly string browse_url;
-        private readonly string textBoxValue;
-
         /// <summary> Constructor for a new instance of the Basic_Search_AggregationViewer class </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
         /// <param name="ViewBag"> Aggregation-specific request information, such as aggregation object and any browse object requested </param>

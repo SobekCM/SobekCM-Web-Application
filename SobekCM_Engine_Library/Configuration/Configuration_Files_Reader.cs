@@ -1040,9 +1040,6 @@ namespace SobekCM.Engine_Library.Configuration
                             // Add this (if enabled) to the list of mappers
                             if (enabled)
                             {
-                                string error;
-                              //  IBriefItemMapper mapper = get_or_create_mapper(mapperAssembly, mapperClass, MappingObjDictionary, out error);
-
                                 BriefItemMapping_Mapper mapperConfig = new BriefItemMapping_Mapper
                                 {
                                     Assembly = mapperAssembly,
@@ -3146,7 +3143,7 @@ namespace SobekCM.Engine_Library.Configuration
                     }
                 }
             }
-            catch (Exception ee)
+            catch (Exception)
             {
                 returnObj = null;
                 //ConfigObj.Source.Add_Log("EXCEPTION CAUGHT in Configuration_Files_Reader.read_config_files");

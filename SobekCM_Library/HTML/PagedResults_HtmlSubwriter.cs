@@ -202,7 +202,7 @@ namespace SobekCM.Library.HTML
         /// <param name="Output"> Output stream currently within the HTML head tags </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         /// <remarks> By default this does nothing, but can be overwritten by all the individual html subwriters </remarks>
-        public void Write_Within_HTML_Head(TextWriter Output, Custom_Tracer Tracer)
+        public override void Write_Within_HTML_Head(TextWriter Output, Custom_Tracer Tracer)
         {
             if (resultWriter != null)
             {

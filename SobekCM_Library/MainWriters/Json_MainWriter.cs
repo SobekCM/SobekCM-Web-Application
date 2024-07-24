@@ -151,7 +151,6 @@ namespace SobekCM.Library.MainWriters
 
         /// <summary> Writes the search or browse information in JSON format directly to the output stream  </summary>
         /// <param name="Output"> Stream to which to write the JSON search or browse information </param>
-        /// <param name="All_Items_Lookup"> Lookup object used to pull basic information about any item loaded into this library </param>
         protected internal void display_search_results(TextWriter Output )
         {
             // If results are null, or no results, return empty string

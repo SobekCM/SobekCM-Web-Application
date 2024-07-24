@@ -50,7 +50,7 @@ namespace SobekCM.Engine_Library.Solr.v5
                     solrDocumentWorker.AddRange(index_files);
                     document_success = true;
                 }
-                catch (Exception ee)
+                catch (Exception)
                 {
                     if (document_attempts > 5)
                     {
@@ -75,10 +75,10 @@ namespace SobekCM.Engine_Library.Solr.v5
             {
                 try
                 {
-                    solrPageWorker.Add(index_pages);
+                    solrPageWorker.AddRange(index_pages);
                     page_success = true;
                 }
-                catch (Exception ee)
+                catch (Exception)
                 {
                     if (page_attempts > 5)
                     {
@@ -94,7 +94,7 @@ namespace SobekCM.Engine_Library.Solr.v5
             {
                 solrDocumentWorker.Commit();
             }
-            catch (Exception ee)
+            catch (Exception)
             {
                 Thread.Sleep(10 * 60 * 1000);
             }
@@ -103,7 +103,7 @@ namespace SobekCM.Engine_Library.Solr.v5
             {
                 solrPageWorker.Commit();
             }
-            catch (Exception ee)
+            catch (Exception)
             {
                 Thread.Sleep(10 * 60 * 1000);
             }

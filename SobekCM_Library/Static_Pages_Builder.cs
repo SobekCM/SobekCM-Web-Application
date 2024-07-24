@@ -31,17 +31,17 @@ namespace SobekCM.Library
     /// <summary> Class builds the static HTML page for a digital resource to allow indexing by search engines </summary>
     public class Static_Pages_Builder
     {
-        private readonly SobekCM_Assistant assistant;
-        private readonly Navigation_Object currentMode;
+  //      private readonly SobekCM_Assistant assistant;
+  //      private readonly Navigation_Object currentMode;
 
-        private int errors;
+  //      private int errors;
 
-        private readonly string primaryWebServerUrl;
-        private readonly string staticSobekcmDataLocation;
-		private readonly string staticSobekcmLocation;
-        private readonly Custom_Tracer tracer;
+  //      private readonly string primaryWebServerUrl;
+  //      private readonly string staticSobekcmDataLocation;
+		//private readonly string staticSobekcmLocation;
+  //      private readonly Custom_Tracer tracer;
 
-	    private readonly string defaultSkin;
+	 //   private readonly string defaultSkin;
 
 
     //    /// <summary> Constructor for a new instance of the Static_Pages_Builder class </summary>

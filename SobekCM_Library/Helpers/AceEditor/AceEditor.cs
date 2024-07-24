@@ -58,8 +58,7 @@ namespace SobekCM.Library.Helpers.AceEditor
 
         /// <summary> Add the Ace editor and all the necessary html/javascript to enable an Ace editor here on the page </summary>
         /// <param name="Output"> Writer to write to the stream </param>
-        /// <param name="Contents"></param>
-        /// added to the output stream here (might not if there are multiple AceEditor areas on the same page )</param>
+        /// <param name="Contents"> added to the output stream here (might not if there are multiple AceEditor areas on the same page )</param>
         public void Add_To_Stream(TextWriter Output, string Contents)
         {
             Add_To_Stream(Output, Contents, true );

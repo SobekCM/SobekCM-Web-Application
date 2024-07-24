@@ -96,8 +96,6 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 Tracer.Add_Trace("Thumbnails_Home_AggregationViewer.Add_Secondary_HTML", "Add the search thumbnails to the home page");
             }
 
-            const string VARIES_STRING = "<span style=\"color:Gray\">( varies )</span>";
-
             string url_options = UrlWriterHelper.URL_Options(RequestSpecificValues.Current_Mode);
             string urlOptions1 = String.Empty;
             string urlOptions2 = String.Empty;

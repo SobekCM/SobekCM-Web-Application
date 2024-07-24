@@ -51,7 +51,6 @@ namespace SobekCM.Library.MySobekViewer
     {
         private bool criticalErrorEncountered;
         private readonly int currentProcessStep;
-        private SobekCM_Item item;
         private readonly CompleteTemplate completeTemplate;
         private readonly string toolTitle;
         private readonly int totalTemplatePages;
@@ -558,7 +557,6 @@ namespace SobekCM.Library.MySobekViewer
         {
             // Set an initial flag 
             criticalErrorEncountered = false;
-            bool xml_found = false;
 
             // This package is good to go, so build it, save, etc...
             try
@@ -682,7 +680,7 @@ namespace SobekCM.Library.MySobekViewer
                 // Copy the static HTML page over first
                 if (File.Exists(userInProcessDirectory + "\\" + Item_To_Complete.BibID + "_" + Item_To_Complete.VID + ".html"))
                 {
-                    File.Copy(userInProcessDirectory + "\\" + Item_To_Complete.BibID + "_" + Item_To_Complete.VID + ".html", serverNetworkFolder + "\\" + UI_ApplicationCache_Gateway.Settings.Resources.Backup_Files_Folder_Name + "\\" + item.BibID + "_" + item.VID + ".html", true);
+                    File.Copy(userInProcessDirectory + "\\" + Item_To_Complete.BibID + "_" + Item_To_Complete.VID + ".html", serverNetworkFolder + "\\" + UI_ApplicationCache_Gateway.Settings.Resources.Backup_Files_Folder_Name + "\\" + bibid + "_" + vid + ".html", true);
                     File.Delete(userInProcessDirectory + "\\" + Item_To_Complete.BibID + "_" + Item_To_Complete.VID + ".html");
                 }
 
@@ -1338,7 +1336,7 @@ namespace SobekCM.Library.MySobekViewer
 
                 Output.WriteLine("<h2>Step " + adjusted_process_step + " of " + totalTemplatePages + ": " + template_page_title + "</h2>");
                 Output.WriteLine("<blockquote>" + template_page_instructions + "</blockquote>");
-                if ((validationErrors != null) && (validationErrors.Count > 0) && (item.Web.Show_Validation_Errors))
+                if ((validationErrors != null) && (validationErrors.Count > 0) && (editingItem.Web.Show_Validation_Errors))
                 {
                     Output.WriteLine("<span style=\"color: red;\"><b>The following errors were detected:</b>");
                     Output.WriteLine("<blockquote>");

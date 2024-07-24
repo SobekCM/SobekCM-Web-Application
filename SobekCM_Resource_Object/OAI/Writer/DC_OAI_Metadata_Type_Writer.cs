@@ -44,7 +44,7 @@ namespace SobekCM.Resource_Object.OAI.Writer
             {
                 writer.WriteLine("<dc:identifier>" + Item_To_Save.Web.Service_URL + "</dc:identifier>");
             }
-            else if ( Options.ContainsKey("System URL"))
+            else if (( Options != null ) && ( Options.ContainsKey("System URL")))
             {
                 string url = Options["System URL"].ToString();
                 string resource_url = url + Item_To_Save.BibID + "/" + Item_To_Save.VID;

@@ -194,7 +194,7 @@ namespace SobekCM.Library.Citation.Elements
 
         /// <summary> Return all these events as a string </summary>
         /// <returns> All existing events as a string </returns>
-        public string ToString()
+        public override string ToString()
         {
             StringBuilder builder = new StringBuilder();
             using (StringWriter writer = new StringWriter(builder))

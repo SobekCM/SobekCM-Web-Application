@@ -110,7 +110,7 @@ namespace SobekCM.Library.MySobekViewer
             {
                 allVolumes = SobekEngineClient.Items.Get_Multiple_Volumes(RequestSpecificValues.Current_Mode.BibID, RequestSpecificValues.Tracer);
             }
-            catch (Exception ee)
+            catch (Exception)
             {
                 RequestSpecificValues.Tracer.Add_Trace("Tracking_ItemViewer.Constructor", "Unable to pull volumes under " + RequestSpecificValues.Current_Mode.BibID);
                 RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Error;
@@ -559,8 +559,6 @@ namespace SobekCM.Library.MySobekViewer
 		    Output.WriteLine("      <div style=\"text-align:left;padding-left:58px; padding-bottom: 10px;\">Import from existing volume: &nbsp; ");
 		    Output.WriteLine("        <select id=\"base_volume\" name=\"base_volume\" class=\"addvolume_base_volume\">");
 
-
-		    bool first = true;
             SortedList<string, string> sortList = new SortedList<string, string>();
 	        foreach (Item_Hierarchy_Details itemRowView in allVolumes)
 	        {

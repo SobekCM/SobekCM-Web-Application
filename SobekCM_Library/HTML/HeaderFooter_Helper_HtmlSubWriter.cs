@@ -341,7 +341,7 @@ namespace SobekCM.Library.HTML
                 headerBuilder.Replace("<%SESSIONID%>", sessionId);
                 headerBuilder.Replace("<%USERID%>", userid);
             }
-            catch (Exception ee)
+            catch (Exception)
             {
                 RequestSpecificValues.Tracer.Add_Trace("HeaderFooter_Helper_HtmlSubWriter.Add_Header", "EXCEPTION CAUGHT while trying to write the header.");
                 if (RequestSpecificValues.HTML_Skin == null)
@@ -425,8 +425,6 @@ namespace SobekCM.Library.HTML
 
             // Get the skin url
             string skin_url = RequestSpecificValues.Current_Mode.Base_Design_URL + "skins/" + RequestSpecificValues.HTML_Skin.Skin_Code + "/";
-
-            bool end_div = true;// !((RequestSpecificValues.Current_Mode.Mode == Display_Mode_Enum.Simple_HTML_CMS) && (RequestSpecificValues.Site_Map != null));
 
             string version = UI_ApplicationCache_Gateway.Settings.Static.Current_Web_Version;
             if (version.IndexOf(" ") > 0)

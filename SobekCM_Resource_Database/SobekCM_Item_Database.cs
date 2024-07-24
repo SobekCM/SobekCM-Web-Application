@@ -3745,7 +3745,7 @@ namespace SobekCM_Resource_Database
                 return true;
 
             }
-            catch (Exception ee)
+            catch (Exception)
             {
                 return false;
             }
@@ -3772,7 +3772,7 @@ namespace SobekCM_Resource_Database
                 EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Set_Main_Thumbnail", paramList);
                 return true;
             }
-            catch (Exception ee)
+            catch (Exception)
             {
                 return false;
             }

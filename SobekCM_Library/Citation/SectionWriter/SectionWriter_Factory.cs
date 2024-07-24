@@ -12,7 +12,7 @@ namespace SobekCM.Library.Citation.SectionWriter
         private static Dictionary<string, iCitationSectionWriter> writers;
  
         /// <summary> Return a build section writer, used for displaying a portion of the citation </summary>
-        /// <param name="Assembly"> Assembly from which to load the section writer, or null/empty</param>
+        /// <param name="AssemblyName"> Assembly from which to load the section writer, or null/empty</param>
         /// <param name="Class"> Fully qualified class name </param>
         /// <returns> Built citation section writer </returns>
         public static iCitationSectionWriter GetSectionWriter(string AssemblyName, string Class)

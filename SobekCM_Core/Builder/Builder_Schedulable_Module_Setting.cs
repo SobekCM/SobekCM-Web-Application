@@ -15,6 +15,11 @@ namespace SobekCM.Core.Builder
     [XmlRoot("builderSchedulableModule")]
     public class Builder_Schedulable_Module_Setting : Builder_Module_Setting
     {
+        public Builder_Schedulable_Module_Setting()
+        {
+            Schedules = new List<Builder_Module_Schedule>();
+        }
+
         /// <summary> Schedules of when this module should be run </summary>
         [DataMember(Name = "schedules")]
         [XmlArray("schedules")]

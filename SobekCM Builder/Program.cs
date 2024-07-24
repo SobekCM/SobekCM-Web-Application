@@ -40,6 +40,7 @@ namespace SobekCM.Builder
                 // Argument says to only run once, then exit
                 if (thisArgs == "--once")
                 {
+
                     run_once_only = true;
                     arg_handled = true;
                 }
@@ -109,6 +110,8 @@ namespace SobekCM.Builder
                 Abort_Database_Mechanism.Builder_Operation_Flag = Builder_Operation_Flag_Enum.LAST_EXECUTION_ABORTED;
 
 #if DEBUG
+            Console.WriteLine();
+            Console.WriteLine("Detected DEBUG mode.. press any key to continue");
             Console.ReadKey();
 #endif
         }

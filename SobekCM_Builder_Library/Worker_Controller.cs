@@ -463,19 +463,24 @@ namespace SobekCM.Builder_Library
 					}
 				}
 
-	            if (aborted)
-		            break;
-
-
 				// Publish the log
 	            publish_log_file(local_log_name);
+
+                if (aborted)
+                {
+                    Console.WriteLine("Abort detected, stopping polling");
+                    break;
+                }
+
+                if (run_once_only)
+                {
+                    Console.WriteLine("Builder was set to run only once... stopping polling");
+                    break;
+                }
 
                 // Sleep for correct number of milliseconds
                 if ( !skip_sleep )
                     Thread.Sleep(1000 * time_between_polls);
-
-
-
 
             } while (DateTime.Now.Hour < BULK_LOADER_END_HOUR);
 

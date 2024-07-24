@@ -19,7 +19,7 @@ namespace SobekCM.Engine_Library.Settings
         /// <param name="IncludeModuleDescriptions"> Flag indicates if the module descriptions should be included for human readability </param>
         /// <param name="DataTableOffset"> If some previous tables exist, and should be skipped, set this to a non-zero value</param>
         /// <returns> TRUE if successful, otherwise FALSE </returns>
-        public static bool Refresh(Builder_Settings SettingsObject, DataSet SobekCM_Settings, bool IncludeModuleDescriptions, int DataTableOffset )
+        public static bool Refresh(Builder_Settings SettingsObject, DataSet SobekCM_Settings, bool IncludeModuleDescriptions, int DataTableOffset = 0)
         {
             SettingsObject.Clear();
             try
@@ -31,7 +31,7 @@ namespace SobekCM.Engine_Library.Settings
 
                 Set_NonScheduled_Modules(SettingsObject, SobekCM_Settings.Tables[1 + DataTableOffset], setid_to_modules, IncludeModuleDescriptions);
 
-               // Set_Scheduled_Modules();
+                Set_Scheduled_Modules(SettingsObject, SobekCM_Settings.Tables[2 + DataTableOffset], IncludeModuleDescriptions);
 
                 // Link the folders to the builder module sets
                 foreach (KeyValuePair<int, List<Builder_Module_Setting>> module in setid_to_modules)
@@ -56,22 +56,16 @@ namespace SobekCM.Engine_Library.Settings
 
         private static void Set_NonScheduled_Modules(Builder_Settings SettingsObject, DataTable BuilderFoldersTable, Dictionary<int, List<Builder_Module_Setting>> SetidToModules, bool IncludeModuleDescriptions )
         {
-            //DataColumn moduleIdColumn = BuilderFoldersTable.Columns["ModuleID"];
             DataColumn assemblyColumn = BuilderFoldersTable.Columns["Assembly"];
             DataColumn classColumn = BuilderFoldersTable.Columns["Class"];
             DataColumn descColumn = BuilderFoldersTable.Columns["ModuleDesc"];
             DataColumn args1Column = BuilderFoldersTable.Columns["Argument1"];
             DataColumn args2Column = BuilderFoldersTable.Columns["Argument2"];
             DataColumn args3Column = BuilderFoldersTable.Columns["Argument3"];
-           // DataColumn enabledColumn = BuilderFoldersTable.Columns["Enabled"];
             DataColumn setIdColumn = BuilderFoldersTable.Columns["ModuleSetID"];
-           // DataColumn setNameColumn = BuilderFoldersTable.Columns["SetName"];
-           // DataColumn setEnabledColumn = BuilderFoldersTable.Columns["SetEnabled"];
             DataColumn typeAbbrevColumn = BuilderFoldersTable.Columns["TypeAbbrev"];
-           // DataColumn typeDescColumn = BuilderFoldersTable.Columns["TypeDescription"];
 
 
-            int prevSetid = -1;
             Dictionary<int,List<Builder_Module_Setting>> folderSettings = new Dictionary<int, List<Builder_Module_Setting>>();
             foreach (DataRow thisRow in BuilderFoldersTable.Rows)
             {
@@ -128,7 +122,67 @@ namespace SobekCM.Engine_Library.Settings
                 }
             }
         }
-        
+
+        private static void Set_Scheduled_Modules(Builder_Settings SettingsObject, DataTable BuilderFoldersTable, bool IncludeModuleDescriptions)
+        {
+            DataColumn assemblyColumn = BuilderFoldersTable.Columns["Assembly"];
+            DataColumn classColumn = BuilderFoldersTable.Columns["Class"];
+            DataColumn descColumn = BuilderFoldersTable.Columns["ModuleDesc"];
+            DataColumn args1Column = BuilderFoldersTable.Columns["Argument1"];
+            DataColumn args2Column = BuilderFoldersTable.Columns["Argument2"];
+            DataColumn args3Column = BuilderFoldersTable.Columns["Argument3"];
+            DataColumn daysOfWeekColumn = BuilderFoldersTable.Columns["DaysOfWeek"];
+            DataColumn timeOfDayColumn = BuilderFoldersTable.Columns["TimesOfDay"];
+            DataColumn lastRunColumn = BuilderFoldersTable.Columns["LastRun"];
+
+            Dictionary<string, Builder_Schedulable_Module_Setting> alreadyBuilt = new Dictionary<string, Builder_Schedulable_Module_Setting>();
+
+            foreach (DataRow thisRow in BuilderFoldersTable.Rows)
+            {
+                string className = thisRow[classColumn].ToString();
+                string assemblyName = thisRow[assemblyColumn].ToString();
+                string key = assemblyName + ":" + className;
+
+                var newModule = new Builder_Schedulable_Module_Setting();
+                if (alreadyBuilt.ContainsKey(key))
+                {
+                    newModule = alreadyBuilt[key];
+                }
+                else
+                {
+                    newModule.Class = className;
+                    newModule.Assembly = assemblyName;
+
+                    if (thisRow[assemblyColumn] != DBNull.Value)
+                        newModule.Assembly = thisRow[assemblyColumn].ToString();
+                    if (thisRow[args1Column] != DBNull.Value)
+                        newModule.Argument1 = thisRow[args1Column].ToString();
+                    if (thisRow[args2Column] != DBNull.Value)
+                        newModule.Argument2 = thisRow[args2Column].ToString();
+                    if (thisRow[args3Column] != DBNull.Value)
+                        newModule.Argument3 = thisRow[args3Column].ToString();
+
+                    if (IncludeModuleDescriptions)
+                    {
+                        if (thisRow[descColumn] != DBNull.Value)
+                            newModule.Description = thisRow[descColumn].ToString();
+                    }
+
+                    SettingsObject.ScheduledModulesSettings.Add(newModule);
+                    alreadyBuilt[key] = newModule;
+                }
+
+                // Get this schedule
+                Builder_Module_Schedule schedule = new Builder_Module_Schedule();
+                schedule.DaysOfWeek = thisRow[daysOfWeekColumn].ToString();
+                schedule.TimeOfDay = thisRow[timeOfDayColumn].ToString();
+                if (thisRow[lastRunColumn] != DBNull.Value)
+                    schedule.LastRun = Convert.ToDateTime(thisRow[lastRunColumn]);
+
+                newModule.Schedules.Add(schedule);
+            }
+        }
+
 
         private static void Set_Builder_Folders(Builder_Settings SettingsObject, DataTable BuilderFoldersTable, Dictionary<int, List<Builder_Source_Folder>> FolderToSetDictionary)
         {

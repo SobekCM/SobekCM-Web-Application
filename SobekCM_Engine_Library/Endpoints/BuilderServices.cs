@@ -63,7 +63,7 @@ namespace SobekCM.Engine_Library.Endpoints
 
                 tracer.Add_Trace("BuilderServices.GetBuilderSettings", "Build the builder-specific settings object");
                 Builder_Settings returnValue = new Builder_Settings();
-                if (!Builder_Settings_Builder.Refresh(returnValue, builderSet, includeDescriptions, 0))
+                if (!Builder_Settings_Builder.Refresh(returnValue, builderSet, includeDescriptions))
                 {
                     Response.ContentType = "text/plain";
                     Response.Output.WriteLine("Error completing request");

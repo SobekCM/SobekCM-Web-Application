@@ -180,7 +180,7 @@ namespace SobekCM.Builder_Library.Tools
                     aggregation_empty_page_source = client.DownloadString(empty_page);
                 }
             }
-            catch (Exception ee)
+            catch (Exception )
             {
                 OnError("BuildAggregationBrowsesModule:Unable to pull the aggregation empty page for " + Aggregation.Code, UpdateId);
                 return false;

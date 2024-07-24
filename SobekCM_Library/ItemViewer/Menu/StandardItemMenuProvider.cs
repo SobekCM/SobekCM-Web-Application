@@ -33,13 +33,17 @@ namespace SobekCM.Library.ItemViewer.Menu
                 string remove_text = "Remove";
                 string send_text = "Send";
                 string print_text = "Print";
-                if (canManage)
-                {
-                    add_text = String.Empty;
-                    remove_text = String.Empty;
-                    send_text = String.Empty;
-                    print_text = String.Empty;
-                }
+                bool can_submit = false;
+                string remix_text = "Revise";
+
+
+                //if (canManage)
+                //{
+                //    add_text = String.Empty;
+                //    remove_text = String.Empty;
+                //    send_text = String.Empty;
+                //    print_text = String.Empty;
+                //}
 
                 string logOnUrl = String.Empty;
                 bool isLoggedOn = CurrentUser != null && CurrentUser.LoggedOn;
@@ -55,7 +59,31 @@ namespace SobekCM.Library.ItemViewer.Menu
                     CurrentMode.Return_URL = String.Empty;
                 }
 
+                if ( CurrentUser != null && CurrentUser.LoggedOn && CurrentUser.Can_Submit)
+                {
+                    can_submit = true;
+                }
+
                 Output.WriteLine("\t<div id=\"menu-right-actions\">");
+
+                if ( can_submit )
+                {
+                    CurrentMode.Mode = Display_Mode_Enum.My_Sobek;
+                    CurrentMode.My_Sobek_Type = My_Sobek_Type_Enum.New_Item;
+                    string remixUrl = UrlWriterHelper.Redirect_URL(CurrentMode);
+                    if ( remixUrl.IndexOf("?") < 0 )
+                    {
+                        remixUrl = remixUrl + "?remix=" + CurrentItem.BibID + CurrentItem.VID;
+                    }
+                    else
+                    {
+                        remixUrl = remixUrl + "&remix=" + CurrentItem.BibID + CurrentItem.VID;
+                    }
+                    CurrentMode.Mode = Display_Mode_Enum.Item_Display;
+
+                    Output.WriteLine("\t\t<span id=\"remixbuttonitem\" class=\"action-sf-menu-item\" onclick=\"window.location='" + remixUrl + "';return false;\"><span id=\"remixbuttonspan\">" + remix_text + "</span></span>");
+
+                }
 
                 if (( CurrentItem.Web != null ) && ( CurrentItem.Web.ItemID > 0))
                 {

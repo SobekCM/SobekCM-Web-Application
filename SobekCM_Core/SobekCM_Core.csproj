@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>SobekCM.Core</RootNamespace>
     <AssemblyName>SobekCM_Core</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
   </PropertyGroup>
@@ -112,6 +112,8 @@
     <Compile Include="BriefItem\BriefItem_Web.cs" />
     <Compile Include="BriefItem\IBriefItemMapper.cs" />
     <Compile Include="Builder\Actionable_Builder_Source_Folder.cs" />
+    <Compile Include="Builder\Builder_Module_Schedule.cs" />
+    <Compile Include="Builder\Builder_Schedulable_Module_Setting.cs" />
     <Compile Include="Builder\Builder_Scheduled_Task_Execution_History.cs" />
     <Compile Include="Builder\Builder_Scheduled_Task_Status.cs" />
     <Compile Include="Builder\Builder_Status.cs" />

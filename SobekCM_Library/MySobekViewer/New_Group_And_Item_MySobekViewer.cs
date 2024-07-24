@@ -7,11 +7,13 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using DocumentFormat.OpenXml.Drawing.Diagrams;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.MemoryMgmt;
@@ -67,6 +69,7 @@ namespace SobekCM.Library.MySobekViewer
         private readonly string userInProcessDirectory;
         private readonly List<string> validationErrors;
         private readonly string submodeOption;
+        private readonly string remixBib;
 
         #region Constructor
 
@@ -90,8 +93,14 @@ namespace SobekCM.Library.MySobekViewer
             else
                 userInProcessDirectory = Path.Combine(UI_ApplicationCache_Gateway.Settings.Servers.In_Process_Submission_Location, RequestSpecificValues.Current_User.UserName.Replace(".","").Replace("@","") + "\\newgroup");
 
+            // Is this for remixing?
+            if (!String.IsNullOrEmpty(HttpContext.Current.Request.QueryString["remix"]))
+            {
+                remixBib = HttpContext.Current.Request.QueryString["remix"];
+            }
+
             // Handle postback for changing the CompleteTemplate or project
-            templateCode = RequestSpecificValues.Current_User.Current_Template;
+             templateCode = RequestSpecificValues.Current_User.Current_Template;
             if (RequestSpecificValues.Current_Mode.isPostBack)
             {
                 string action1 = HttpContext.Current.Request.Form["action"];
@@ -141,7 +150,7 @@ namespace SobekCM.Library.MySobekViewer
 
             // Determine the current phase
             currentProcessStep = 1;
-            if ((RequestSpecificValues.Current_Mode.My_Sobek_SubMode.Length > 0) && (Char.IsNumber(RequestSpecificValues.Current_Mode.My_Sobek_SubMode[0])))
+            if ((!String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.My_Sobek_SubMode)) && (Char.IsNumber(RequestSpecificValues.Current_Mode.My_Sobek_SubMode[0])))
             {
                 // Get the page
                 Int32.TryParse(RequestSpecificValues.Current_Mode.My_Sobek_SubMode[0].ToString(), out currentProcessStep);
@@ -182,7 +191,6 @@ namespace SobekCM.Library.MySobekViewer
 
                 // Skip the permissions step
                 currentProcessStep = 2;
-
             }
 
             // If there is a boundary infraction here, go back to step 2
@@ -198,7 +206,7 @@ namespace SobekCM.Library.MySobekViewer
                 // For now, just forward to the next phase
                 RequestSpecificValues.Current_Mode.My_Sobek_SubMode = "9" + submodeOption;
 
-                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                Redirect();
                 return;
             }
 
@@ -244,10 +252,91 @@ namespace SobekCM.Library.MySobekViewer
                 // If there is still no item, just create a new one
                 if (item == null)
                 {
-                    // Build a new empty METS file
-                    new_item(RequestSpecificValues.Tracer);
+                    // This is different depending on whether it is a remix or not
+                    if ((!String.IsNullOrEmpty(remixBib)) && (remixBib.Length == 15))
+                    {
+                        string assocFilePath = remixBib.Substring(0, 2) + "/" + remixBib.Substring(2, 2) + "/" + remixBib.Substring(4, 2) + "/" + remixBib.Substring(6, 2) + "/" + remixBib.Substring(8, 2) + "/" + remixBib.Substring(10);
+
+                        string serverNetworkFolder = UI_ApplicationCache_Gateway.Settings.Servers.Image_Server_Network + assocFilePath;
+
+                        if (Directory.Exists(serverNetworkFolder))
+                        {
+                            string bibid = remixBib.Substring(0, 10);
+                            string vid = remixBib.Substring(10);
+                            string mets_file = bibid + "_" + vid + ".mets.xml";
+                            string mets_file_dir = Path.Combine(serverNetworkFolder, mets_file);
+                            if (File.Exists(mets_file_dir))
+                            {
+                                item = SobekCM_Item.Read_METS(mets_file_dir);
+
+                                // Set the visibility information from the CompleteTemplate
+                                item.Behaviors.IP_Restriction_Membership = completeTemplate.Default_Visibility;
+
+                                item.Behaviors.Clear_Aggregations();
+                                item.Behaviors.Add_Aggregation("revised");
+                                
+                                item.BibID = String.Empty;
+                                item.VID = "00001";
+                                item.Web.IsRemix = true;
+
+                                var originalItem = new Related_Item_Info();
+                                originalItem.Relationship = Related_Item_Type_Enum.Preceding;
+                                originalItem.Add_Note("This is a revision of an original resource");
+                                originalItem.SobekCM_ID = remixBib;
+                                originalItem.URL_Display_Label = "Original item";
+                                originalItem.URL = "https://opennj.net/" + remixBib;
+                                item.Bib_Info.Add_Related_Item(originalItem);
+
+
+                                if (item.Bib_Info.Names_Count > 0)
+                                {
+                                    StringBuilder builder = new StringBuilder();
+                                    foreach (var author in item.Bib_Info.Names)
+                                    {
+                                        if (builder.Length > 0)
+                                            builder.Append(", ");
+                                        builder.Append(author.Full_Name);
+                                    }
+
+                                    item.Bib_Info.Add_Note("This is a revision of an existing resource from this Open Textbook Collaborative originally authored by " + builder.ToString() + ".");
+                                }
+                                else
+                                {
+                                    item.Bib_Info.Add_Note("This is a revision of an existing resource from this Open Textbook Collaborative.");
+                                }
+
+                                item.Bib_Info.Clear_Names();
+                                item.Bib_Info.Add_Named_Entity(RequestSpecificValues.Current_User.Family_Name + ", " + RequestSpecificValues.Current_User.Given_Name);
+                                item.Bib_Info.Source.Code = RequestSpecificValues.Current_User.Organization_Code;
+                                item.Bib_Info.Source.Statement = RequestSpecificValues.Current_User.Organization;
+                                item.Bib_Info.Location.Holding_Code = RequestSpecificValues.Current_User.Organization_Code;
+                                item.Bib_Info.Location.Holding_Name = RequestSpecificValues.Current_User.Organization;
+
+                                // Copy all the files
+                                string[] extensions = { "*.JPG", "*.JP2", "*.DOCX", "*.DOC", "*.PDF","*.PPTX", "*.MP4"};
+                                foreach( string extension in extensions)
+                                {
+                                    string[] files = Directory.GetFiles(serverNetworkFolder, extension);
+                                    foreach( string file in files )
+                                    {
+                                        string fileName = Path.GetFileName(file);
+                                        string new_file = Path.Combine(userInProcessDirectory, fileName);
+                                        if ( !File.Exists(new_file))
+                                            File.Copy(file, new_file, false);
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
 
+                if (item == null)
+                {
+                    // Build a new empty METS file
+                    new_item(RequestSpecificValues.Tracer);
+                    item.Web.IsRemix = false;
+                }
+                
                 // Save this to the session state now
                 HttpContext.Current.Session["Item"] = item;
             }
@@ -364,9 +453,22 @@ namespace SobekCM.Library.MySobekViewer
                     RequestSpecificValues.Current_User.Current_Default_Metadata = null;
                     RequestSpecificValues.Current_User.Current_Template = null;
 
-                    // Forward back to my Sobek home
-                    RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
-                    UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                    if ( String.IsNullOrEmpty(remixBib) || remixBib.Length != 15)
+                    {
+                        // Forward back to my Sobek home
+                        RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
+                        Redirect();
+                    }
+                    else
+                    {
+                        string bibid = remixBib.Substring(0, 10);
+                        string vid = remixBib.Substring(10);
+                        RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Item_Display;
+                        RequestSpecificValues.Current_Mode.BibID = bibid;
+                        RequestSpecificValues.Current_Mode.VID = vid;
+                        Redirect();
+                    }
+                    
                 }
 
                 if ( action == "delete" )
@@ -378,7 +480,7 @@ namespace SobekCM.Library.MySobekViewer
                             File.Delete(userInProcessDirectory + "\\" + filename);
 
                         // Forward
-                        UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                        Redirect();
                         return;
                     }
                     catch (Exception)
@@ -400,7 +502,7 @@ namespace SobekCM.Library.MySobekViewer
 
                     // Forward back to the same URL
                     RequestSpecificValues.Current_Mode.My_Sobek_SubMode = "2" + submodeOption;
-                    UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                    Redirect();
                     return;
                 }
 
@@ -518,7 +620,7 @@ namespace SobekCM.Library.MySobekViewer
 
                     // For now, just forward to the next phase
                     RequestSpecificValues.Current_Mode.My_Sobek_SubMode = next_phase + submodeOption;
-                    UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                    Redirect();
                     return;
                 }
             }
@@ -534,7 +636,7 @@ namespace SobekCM.Library.MySobekViewer
                 if (( completeTemplate.Permissions_Agreement.Length > 0 ) && (!File.Exists(userInProcessDirectory + "\\agreement.txt")))
                 {
                     RequestSpecificValues.Current_Mode.My_Sobek_SubMode = "1" + submodeOption;
-                    UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                    Redirect();   
                     return;
                 }
 
@@ -550,7 +652,7 @@ namespace SobekCM.Library.MySobekViewer
                 if (Directory.GetFiles( userInProcessDirectory, "*.mets*").Length == 0 )
                 {
                     RequestSpecificValues.Current_Mode.My_Sobek_SubMode = "2" + submodeOption;
-                    UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                    Redirect();
                     return;
                 }
 
@@ -561,7 +663,7 @@ namespace SobekCM.Library.MySobekViewer
                 {
                     item.Web.Show_Validation_Errors = true;
                     RequestSpecificValues.Current_Mode.My_Sobek_SubMode = "2" + submodeOption;
-                    UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                    Redirect();
                     return;
                 }
             }
@@ -570,7 +672,7 @@ namespace SobekCM.Library.MySobekViewer
             if (( currentProcessStep == 8 ) && ( completeTemplate.Upload_Types == CompleteTemplate.Template_Upload_Types.None ))
             {
                 RequestSpecificValues.Current_Mode.My_Sobek_SubMode = "9" + submodeOption;
-                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                Redirect();
                 return;
             }
 
@@ -609,8 +711,8 @@ namespace SobekCM.Library.MySobekViewer
                     // If neither was present, go back to step 8
                     if (( !required_file_present ) && ( !required_url_present ))
                     {
-                        RequestSpecificValues.Current_Mode.My_Sobek_SubMode = "8" + submodeOption; 
-                        UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                        RequestSpecificValues.Current_Mode.My_Sobek_SubMode = "8" + submodeOption;
+                        Redirect();
                         return;
                     }
                 }
@@ -623,6 +725,27 @@ namespace SobekCM.Library.MySobekViewer
         }
 
         #endregion
+
+        private void Redirect()
+        {
+            base.RequestSpecificValues.Current_Mode.Request_Completed = true;
+            string redirect_url = Redirect_URL();
+            HttpContext.Current.Response.Redirect(redirect_url, false);
+            HttpContext.Current.ApplicationInstance.CompleteRequest();
+        }
+
+        private string Redirect_URL()
+        {
+            string redirect_url = UrlWriterHelper.Redirect_URL(base.RequestSpecificValues.Current_Mode);
+            if (!String.IsNullOrEmpty(remixBib))
+            {
+                if ( redirect_url.IndexOf("?") < 0 )
+                    redirect_url = redirect_url + "?remix=" + remixBib;
+                else
+                    redirect_url = redirect_url + "&remix=" + remixBib;
+            }
+            return redirect_url;
+        }
 
 		#region Code to re-scale an image
 
@@ -1160,26 +1283,46 @@ namespace SobekCM.Library.MySobekViewer
             {
                 Output.WriteLine("<script src=\"" + Static_Resources_Gateway.Sobekcm_Metadata_Js + "\" type=\"text/javascript\"></script>");
 				Output.WriteLine("<div class=\"sbkMySobek_HomeText\">");
-				Output.WriteLine("<br />");
+
+                if ((item.Web.IsRemix) || (!String.IsNullOrEmpty(remixBib)))
+                {
+                    Output.WriteLine("<blockquote style=\"line-height:1.6;\"><strong>REVISION NOTE:</strong> The files for the item you are revising were retained, but you may add more files or remove some original files below.</blockquote>");
+
+                    Output.WriteLine("<br />");
+                }
+
+                Output.WriteLine("<br />");
                 Output.Write("<h2>Step " + totalTemplatePages + " of " + totalTemplatePages + ": ");
                 string explanation = String.Empty;
-                switch( completeTemplate.Upload_Types)
+                if ((item.Web.IsRemix) || (!String.IsNullOrEmpty(remixBib)))
                 {
-                    case CompleteTemplate.Template_Upload_Types.File:
-                        Output.Write("Upload Files");
-                        explanation = "Upload the related files for your new item.  You can also provide labels for each file, once they are uploaded.";
-                        break;
-
-                    case CompleteTemplate.Template_Upload_Types.File_or_URL:
-                        Output.Write("Upload Files or Enter URL");
-                        explanation = "Upload the related files or enter a URL for your new item.  You can also provide labels for each file, once they are uploaded.";
-                        break;
-
-                    case CompleteTemplate.Template_Upload_Types.URL:
-                        explanation = "Enter a URL for this new item.";
-                        Output.Write("Enter URL");
-                        break;
+                    Output.Write("Modify Files");
+                    explanation = "Upload the related files for your new item or remove existing files.  You can also provide labels for each file, once they are uploaded.";
+                   
                 }
+                else
+                {
+                    switch (completeTemplate.Upload_Types)
+                    {
+                        case CompleteTemplate.Template_Upload_Types.File:
+                            Output.Write("Upload Files");
+                            explanation = "Upload the related files for your new item.  You can also provide labels for each file, once they are uploaded.";
+                            break;
+
+                        case CompleteTemplate.Template_Upload_Types.File_or_URL:
+                            Output.Write("Upload Files or Enter URL");
+                            explanation = "Upload the related files or enter a URL for your new item.  You can also provide labels for each file, once they are uploaded.";
+                            break;
+
+                        case CompleteTemplate.Template_Upload_Types.URL:
+                            explanation = "Enter a URL for this new item.";
+                            Output.Write("Enter URL");
+                            break;
+                    }
+                }
+
+
+
                 Output.WriteLine(completeTemplate.Upload_Mandatory
                                      ? " ( <i>Required</i> )</h2>"
                                      : " ( Optional )</h2>");
@@ -1231,6 +1374,13 @@ namespace SobekCM.Library.MySobekViewer
                 Output.WriteLine("<br />");
                 if (completeTemplate.Permissions_Agreement.Length > 0)
                 {
+                    if ((item.Web.IsRemix) || ( !String.IsNullOrEmpty(remixBib)))
+                    {
+                        Output.WriteLine("<blockquote style=\"line-height:1.6;\"><strong>REVISION NOTE:</strong> You are creating a revision of the existing item <i>" + item.Bib_Info.Main_Title.ToString() + "</i>.</blockquote>");
+
+                        Output.WriteLine("<br />");
+                    }
+
                     Output.WriteLine("<h2>Step 1 of " + totalTemplatePages + ": Grant of Permission</h2>");
 
                     Output.WriteLine("<blockquote>You must read and accept the below permissions to continue.<br /><br />");
@@ -1360,7 +1510,14 @@ namespace SobekCM.Library.MySobekViewer
                 if (completeTemplate.Permissions_Agreement.Length == 0)
                     adjusted_process_step--;
 
-				Output.WriteLine("<h2>Step " + adjusted_process_step + " of " + totalTemplatePages + ": " + template_page_title + "</h2>");
+                if ((item.Web.IsRemix) || (!String.IsNullOrEmpty(remixBib)))
+                {
+                    Output.WriteLine("<blockquote style=\"line-height:1.6;\"><strong>REVISION NOTE:</strong> The citation information for the item you are revising was retained, but you may edit much of the information below.</blockquote>");
+
+                    Output.WriteLine("<br />");
+                }
+
+                Output.WriteLine("<h2>Step " + adjusted_process_step + " of " + totalTemplatePages + ": " + template_page_title + "</h2>");
                 Output.WriteLine("<blockquote>" + template_page_instructions + "</blockquote>");
                 if ((validationErrors != null) && (validationErrors.Count > 0) && (item.Web.Show_Validation_Errors))
                 {
@@ -1440,278 +1597,7 @@ namespace SobekCM.Library.MySobekViewer
 
             if (currentProcessStep == 8)
             {
-                if ((completeTemplate.Upload_Types == CompleteTemplate.Template_Upload_Types.File) || (completeTemplate.Upload_Types == CompleteTemplate.Template_Upload_Types.File_or_URL))
-                {
-                    string[] all_files = Directory.GetFiles(userInProcessDirectory);
-                    SortedList<string, List<string>> image_files = new SortedList<string, List<string>>();
-                    SortedList<string, List<string>> download_files = new SortedList<string, List<string>>();
-                    foreach (string thisFile in all_files)
-                    {
-                        FileInfo thisFileInfo = new FileInfo(thisFile);
-
-                        if ((thisFileInfo.Name.IndexOf("agreement.txt") != 0) && (thisFileInfo.Name.IndexOf("TEMP000001_00001.mets") != 0) && (thisFileInfo.Name.IndexOf("doc.xml") != 0) && (thisFileInfo.Name.IndexOf("sobek_mets.xml") != 0) && (thisFileInfo.Name.IndexOf("marc.xml") != 0))
-                        {
-                            // Get information about this files name and extension
-                            string extension_upper = thisFileInfo.Extension.ToUpper();
-                            string filename_sans_extension = thisFileInfo.Name.Replace(thisFileInfo.Extension, "");
-                            string name_upper = thisFileInfo.Name.ToUpper();
-
-                            // Is this a page image?
-                            if ((extension_upper == ".JPG") || (extension_upper == ".TIF") || (extension_upper == ".JP2") || (extension_upper == ".JPX"))
-                            {
-                                // Exclude .QC.jpg files
-                                if (name_upper.IndexOf(".QC.JPG") < 0)
-                                {
-                                    // If this is a thumbnail, trim off the THM part on the file name
-                                    if (name_upper.IndexOf("THM.JPG") > 0)
-                                    {
-                                        filename_sans_extension = filename_sans_extension.Substring(0, filename_sans_extension.Length - 3);
-                                    }
-
-                                    // Is this the first image file with this name?
-                                    if (image_files.ContainsKey(filename_sans_extension.ToLower()))
-                                    {
-                                        image_files[filename_sans_extension.ToLower()].Add(thisFileInfo.Name);
-                                    }
-                                    else
-                                    {
-                                        List<string> newImageGrouping = new List<string> {thisFileInfo.Name};
-                                        image_files[filename_sans_extension.ToLower()] = newImageGrouping;
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                // If this does not match the exclusion regular expression, than add this
-                                if (!Regex.Match(thisFileInfo.Name, UI_ApplicationCache_Gateway.Settings.Resources.Files_To_Exclude_From_Downloads, RegexOptions.IgnoreCase).Success)
-                                {
-	                                if ((thisFileInfo.Name.IndexOf("marc.xml", StringComparison.OrdinalIgnoreCase) != 0) && (thisFileInfo.Name.IndexOf("marc.xml", StringComparison.OrdinalIgnoreCase) != 0) && (thisFileInfo.Name.IndexOf(".mets", StringComparison.OrdinalIgnoreCase) < 0))
-	                                {
-		                                // Is this the first image file with this name?
-		                                if (download_files.ContainsKey(filename_sans_extension.ToLower()))
-		                                {
-			                                download_files[filename_sans_extension.ToLower()].Add(thisFileInfo.Name);
-		                                }
-		                                else
-		                                {
-			                                List<string> newDownloadGrouping = new List<string> {thisFileInfo.Name};
-			                                download_files[filename_sans_extension.ToLower()] = newDownloadGrouping;
-		                                }
-	                                }
-                                }
-                            }
-                        }
-                    }
-
-                    // Any page images?
-                    int file_counter = 0;
-                    if ( image_files.Count > 0 )
-                    {
-                        Output.WriteLine("The following page images are already uploaded for this package:");
-						Output.WriteLine("<table class=\"sbkMySobek_FileTable\">");
-                        Output.WriteLine("  <tr>");
-                        Output.WriteLine("    <th style=\"width:350px;\">FILENAME</th>");
-                        Output.WriteLine("    <th style=\"width:90px;\">SIZE</th>");
-                        Output.WriteLine("    <th style=\"width:170px;\">DATE UPLOADED</th>");
-                        Output.WriteLine("    <th style=\"width:90px;text-align:center;\">ACTION</th>");
-                        Output.WriteLine("  </tr>");
-
-                        int totalFileCount = 0;
-
-                        //Determine the total number of files
-                        foreach (string fileKey in image_files.Keys)
-                        {
-                            // Get this group of files
-                            List<string> fileGroup = image_files[fileKey];
-                            totalFileCount += fileGroup.Count();
-                        }
-
-                        // Step through all the page image file groups
-                        foreach (string fileKey in image_files.Keys )
-                        {
-                            // Get this group of files
-                            List<string> fileGroup = image_files[fileKey];
-                        
-                            // Add each individual file
-                            foreach (string thisFile in fileGroup)
-                            {
-                                file_counter++;
-
-                                // Add the file name literal
-                                FileInfo fileInfo = new FileInfo(userInProcessDirectory + "\\" + thisFile);
-                                Output.WriteLine("  <tr style=\"min-height:22px\">");
-                                Output.WriteLine("    <td>" + fileInfo.Name + "</td>");
-                                if (fileInfo.Length < 1024)
-                                    Output.WriteLine("    <td>" + fileInfo.Length + "</td>");
-                                else
-                                {
-                                    if (fileInfo.Length < (1024 * 1024))
-                                        Output.WriteLine("    <td>" + (fileInfo.Length / 1024) + " KB</td>");
-                                    else
-                                        Output.WriteLine("    <td>" + (fileInfo.Length / (1024 * 1024)) + " MB</td>");
-                                }
-
-                                Output.WriteLine("    <td>" + fileInfo.LastWriteTime + "</td>");
-
-                                //add by Keven:replace single & double quote with ascII characters
-                                string strFileName = fileInfo.Name;
-                                if (strFileName.Contains("'") || strFileName.Contains("\""))
-                                {
-                                    strFileName = strFileName.Replace("'", "\\&#39;");
-                                    strFileName = strFileName.Replace("\"", "\\&#34;");
-                                }
-                                Output.WriteLine("    <td style=\"text-align:center\"> <span class=\"sbkMySobek_ActionLink\">( <a href=\"\" onclick=\"return file_delete('" + strFileName + "');\">delete</a> )</span></td>");
-
-								Output.WriteLine("  </tr>");
-                            }
-
-                            // Now add the row to include the label
-                            string input_name = "upload_label" + file_counter.ToString();
-							Output.WriteLine("  <tr style=\"min-height: 30px;\">");
-							Output.WriteLine("    <td colspan=\"4\">");
-							Output.WriteLine("      <div style=\"padding-left: 90px;\">");
-							Output.WriteLine("        <span style=\"color:gray\">Label:</span>");
-							Output.WriteLine("        <input type=\"hidden\" id=\"upload_file" + file_counter.ToString() + "\" name=\"upload_file" + file_counter.ToString() + "\" value=\"" + fileKey + "\" />");
-                            if (HttpContext.Current.Session["file_" + fileKey] == null)
-                            {
-                                Output.WriteLine("      <input type=\"text\" class=\"sbkNgi_UploadFileLabel sbk_Focusable\" id=\"" + input_name + "\" name=\"" + input_name + "\" value=\"\" onchange=\"upload_label_fieldChanged(this.id," + totalFileCount + ");\"></input>");
-                            }
-                            else
-                            {
-                                string label_from_session = HttpContext.Current.Session["file_" + fileKey].ToString();
-                                Output.WriteLine("      <input type=\"text\" class=\"sbkNgi_UploadFileLabel sbk_Focusable\" id=\"" + input_name + "\" name=\"" + input_name + "\" value=\"" + label_from_session + "\" onchange=\"upload_label_fieldChanged(this.id," + totalFileCount + ");\"></input>");
-                            }
-							Output.WriteLine("      </div>");
-							Output.WriteLine("    </td>");
-							Output.WriteLine("  </tr>");
-							Output.WriteLine("  <tr><td class=\"sbkMySobek_FileTableRule\" colspan=\"4\"></td></tr>");
-                        }
-                        Output.WriteLine("</table>");
-                    }
-
-                    // Any download files?
-                    if (download_files.Count > 0)
-                    {
-                        Output.WriteLine("The following files are already uploaded for this package and will be included as downloads:");
-						Output.WriteLine("<table class=\"sbkMySobek_FileTable\">");
-						Output.WriteLine("  <tr>");
-						Output.WriteLine("    <th style=\"width:350px;\">FILENAME</th>");
-						Output.WriteLine("    <th style=\"width:90px;\">SIZE</th>");
-						Output.WriteLine("    <th style=\"width:170px;\">DATE UPLOADED</th>");
-						Output.WriteLine("    <th style=\"width:90px;text-align:center;\">ACTION</th>");
-						Output.WriteLine("  </tr>");
-
-                        int totalFileCount = 0;
-
-                        //Determine the total number of files
-                        foreach (string fileKey in download_files.Keys)
-                        {
-                            // Get this group of files
-                            List<string> fileGroup = download_files[fileKey];
-                            totalFileCount += fileGroup.Count();
-                        }
-
-                        // Step through all the download file groups
-                        foreach (string fileKey in download_files.Keys)
-                        {
-                            // Get this group of files
-                            List<string> fileGroup = download_files[fileKey];
-                            
-                            // Add each individual file
-                            foreach (string thisFile in fileGroup)
-                            {
-                                file_counter++;
-
-								// Add the file name literal
-								FileInfo fileInfo = new FileInfo(userInProcessDirectory + "\\" + thisFile);
-								Output.WriteLine("  <tr>");
-								Output.WriteLine("    <td>" + fileInfo.Name + "</td>");
-								if (fileInfo.Length < 1024)
-									Output.WriteLine("    <td>" + fileInfo.Length + "</td>");
-								else
-								{
-									if (fileInfo.Length < (1024 * 1024))
-										Output.WriteLine("    <td>" + (fileInfo.Length / 1024) + " KB</td>");
-									else
-										Output.WriteLine("    <td>" + (fileInfo.Length / (1024 * 1024)) + " MB</td>");
-								}
-
-								Output.WriteLine("    <td>" + fileInfo.LastWriteTime + "</td>");
-
-                                //add by Keven:replace single & double quote with ascII characters
-                                string strFileName = fileInfo.Name;
-                                if (strFileName.Contains("'") || strFileName.Contains("\""))
-                                {
-                                    strFileName = strFileName.Replace("'", "\\&#39;");
-                                    strFileName = strFileName.Replace("\"", "\\&#34;");
-                                }
-                                Output.WriteLine("    <td style=\"text-align:center\"> <span class=\"sbkMySobek_ActionLink\">( <a href=\"\" onclick=\"return file_delete('" + strFileName + "');\">delete</a> )</span></td>");
-
-								Output.WriteLine("  </tr>");
-							}
-
-                            // Now add the row to include the label
-                            string input_name = "upload_label" + file_counter.ToString();
-							Output.WriteLine("  <tr>");
-							Output.WriteLine("    <td style=\"text-align:right; color:gray;\">Label:</td>");
-							Output.WriteLine("    <td colspan=\"4\">");
-							Output.WriteLine("      <input type=\"hidden\" id=\"upload_file" + file_counter.ToString() + "\" name=\"upload_file" + file_counter.ToString() + "\" value=\"" + fileKey + "\" />");
-							if (HttpContext.Current.Session["file_" + fileKey] == null)
-							{
-                                Output.WriteLine("      <input type=\"text\" class=\"sbkNgi_UploadFileLabel sbk_Focusable\" id=\"" + input_name + "\" name=\"" + input_name + "\" onchange=\"upload_label_fieldChanged(this.id," + totalFileCount + ");\"></input>");
-							}
-							else
-							{
-								string label_from_session = HttpContext.Current.Session["file_" + fileKey].ToString();
-                                Output.WriteLine("      <input type=\"text\" class=\"sbkNgi_UploadFileLabel sbk_Focusable\" id=\"" + input_name + "\" name=\"" + input_name + "\" value=\"" + label_from_session + "\" onchange=\"upload_label_fieldChanged(this.id," + totalFileCount + ");\"></input>");
-							}
-							Output.WriteLine("    </td>");
-							Output.WriteLine("  </tr>");
-							Output.WriteLine("  <tr><td class=\"sbkMySobek_FileTableRule\" colspan=\"4\"></td></tr>");
-                        }
-                        Output.WriteLine("</table>");
-                    }
-                }
-
-                if ((completeTemplate.Upload_Types == CompleteTemplate.Template_Upload_Types.File_or_URL) || (completeTemplate.Upload_Types == CompleteTemplate.Template_Upload_Types.URL))
-                {
-                    Output.WriteLine("Enter a URL for this digital resource:");
-                    Output.WriteLine("<blockquote>");
-                    Output.WriteLine("<input type=\"text\" class=\"upload_url_input\" id=\"url_input\" name=\"url_input\" value=\"" + HttpUtility.HtmlEncode(item.Bib_Info.Location.Other_URL) + "\" ></input>");
-                    Output.WriteLine("</blockquote>");
-                }
-
-                string completion_message;
-                switch (completeTemplate.Upload_Types)
-                {
-                    case CompleteTemplate.Template_Upload_Types.URL:
-                        completion_message = "Once the URL is entered, press SUBMIT to finish this item.";
-                        break;
-
-                    case CompleteTemplate.Template_Upload_Types.File_or_URL:
-                        completion_message = "Once you enter any files and/or URL, press SUBMIT to finish this item.";
-                        break;
-
-                    case CompleteTemplate.Template_Upload_Types.File:
-                        completion_message = "Once all files are uploaded, press SUBMIT to finish this item.";
-                        break;
-
-                    default:
-                        completion_message = "Once complete, press SUBMIT to finish this item.";
-                        break;
-                }
-
-
-				Output.WriteLine("<div class=\"sbkMySobek_FileRightButtons\">");
-				Output.WriteLine("      <button onclick=\"return new_upload_next_phase(" + (completeTemplate.InputPages.Count + 1) + ");\" class=\"sbkMySobek_BigButton\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"sbkMySobek_RoundButton_LeftImg\" alt=\"\" /> BACK </button> &nbsp; &nbsp; ");
-				Output.WriteLine("      <button onclick=\"return new_upload_next_phase(9);\" class=\"sbkMySobek_BigButton\"> SUBMIT <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkMySobek_RoundButton_RightImg\" alt=\"\" /></button>");
-				Output.WriteLine("      <div id=\"circular_progress\" name=\"circular_progress\" class=\"hidden_progress\">&nbsp;</div>");
-				Output.WriteLine("</div>");
-				Output.WriteLine();
-
-				Output.WriteLine("<div class=\"sbkMySobek_FileCompletionMsg\">" + completion_message + "</div>");
-				Output.WriteLine();
-	            Output.WriteLine("</div>");
+                add_files_html(Output, Tracer);
             }
 
             #endregion
@@ -1720,6 +1606,283 @@ namespace SobekCM.Library.MySobekViewer
             {
                 add_congratulations_html(Output, Tracer);
             }
+        }
+
+        private void add_files_html(TextWriter Output, Custom_Tracer Tracer)
+        {
+            if ((completeTemplate.Upload_Types == CompleteTemplate.Template_Upload_Types.File) || (completeTemplate.Upload_Types == CompleteTemplate.Template_Upload_Types.File_or_URL))
+            {
+                string[] all_files = Directory.GetFiles(userInProcessDirectory);
+                SortedList<string, List<string>> image_files = new SortedList<string, List<string>>();
+                SortedList<string, List<string>> download_files = new SortedList<string, List<string>>();
+                foreach (string thisFile in all_files)
+                {
+                    FileInfo thisFileInfo = new FileInfo(thisFile);
+
+                    if ((thisFileInfo.Name.IndexOf("agreement.txt") != 0) && (thisFileInfo.Name.IndexOf("TEMP000001_00001.mets") != 0) && (thisFileInfo.Name.IndexOf("doc.xml") != 0) && (thisFileInfo.Name.IndexOf("sobek_mets.xml") != 0) && (thisFileInfo.Name.IndexOf("marc.xml") != 0))
+                    {
+                        // Get information about this files name and extension
+                        string extension_upper = thisFileInfo.Extension.ToUpper();
+                        string filename_sans_extension = thisFileInfo.Name.Replace(thisFileInfo.Extension, "");
+                        string name_upper = thisFileInfo.Name.ToUpper();
+
+                        // Is this a page image?
+                        if ((extension_upper == ".JPG") || (extension_upper == ".TIF") || (extension_upper == ".JP2") || (extension_upper == ".JPX"))
+                        {
+                            // Exclude .QC.jpg files
+                            if ((name_upper.IndexOf(".QC.JPG") < 0 )&& ( name_upper.IndexOf("THM.JPG") < 0 ))
+                            {
+                                // If this is a thumbnail, trim off the THM part on the file name
+                                if (name_upper.IndexOf("THM.JPG") > 0)
+                                {
+                                    filename_sans_extension = filename_sans_extension.Substring(0, filename_sans_extension.Length - 3);
+                                }
+
+                                // Is this the first image file with this name?
+                                if (image_files.ContainsKey(filename_sans_extension.ToLower()))
+                                {
+                                    image_files[filename_sans_extension.ToLower()].Add(thisFileInfo.Name);
+                                }
+                                else
+                                {
+                                    List<string> newImageGrouping = new List<string> { thisFileInfo.Name };
+                                    image_files[filename_sans_extension.ToLower()] = newImageGrouping;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            // If this does not match the exclusion regular expression, than add this
+                            if (!Regex.Match(thisFileInfo.Name, UI_ApplicationCache_Gateway.Settings.Resources.Files_To_Exclude_From_Downloads, RegexOptions.IgnoreCase).Success)
+                            {
+                                if ((thisFileInfo.Name.IndexOf("marc.xml", StringComparison.OrdinalIgnoreCase) != 0) && (thisFileInfo.Name.IndexOf("marc.xml", StringComparison.OrdinalIgnoreCase) != 0) && (thisFileInfo.Name.IndexOf(".mets", StringComparison.OrdinalIgnoreCase) < 0))
+                                {
+                                    // Is this the first image file with this name?
+                                    if (download_files.ContainsKey(filename_sans_extension.ToLower()))
+                                    {
+                                        download_files[filename_sans_extension.ToLower()].Add(thisFileInfo.Name);
+                                    }
+                                    else
+                                    {
+                                        List<string> newDownloadGrouping = new List<string> { thisFileInfo.Name };
+                                        download_files[filename_sans_extension.ToLower()] = newDownloadGrouping;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // Any page images?
+                int file_counter = 0;
+                if (image_files.Count > 0)
+                {
+                    Output.WriteLine("The following page images are already uploaded for this package:");
+                    Output.WriteLine("<table class=\"sbkMySobek_FileTable\">");
+                    Output.WriteLine("  <tr>");
+                    Output.WriteLine("    <th style=\"width:350px;\">FILENAME</th>");
+                    Output.WriteLine("    <th style=\"width:90px;\">SIZE</th>");
+                    Output.WriteLine("    <th style=\"width:170px;\">DATE UPLOADED</th>");
+                    Output.WriteLine("    <th style=\"width:90px;text-align:center;\">ACTION</th>");
+                    Output.WriteLine("  </tr>");
+
+                    int totalFileCount = 0;
+
+                    //Determine the total number of files
+                    foreach (string fileKey in image_files.Keys)
+                    {
+                        // Get this group of files
+                        List<string> fileGroup = image_files[fileKey];
+                        totalFileCount += fileGroup.Count();
+                    }
+
+                    // Step through all the page image file groups
+                    foreach (string fileKey in image_files.Keys)
+                    {
+                        // Get this group of files
+                        List<string> fileGroup = image_files[fileKey];
+
+                        // Add each individual file
+                        foreach (string thisFile in fileGroup)
+                        {
+                            file_counter++;
+
+                            // Add the file name literal
+                            FileInfo fileInfo = new FileInfo(userInProcessDirectory + "\\" + thisFile);
+                            Output.WriteLine("  <tr style=\"min-height:22px\">");
+                            Output.WriteLine("    <td>" + fileInfo.Name + "</td>");
+                            if (fileInfo.Length < 1024)
+                                Output.WriteLine("    <td>" + fileInfo.Length + "</td>");
+                            else
+                            {
+                                if (fileInfo.Length < (1024 * 1024))
+                                    Output.WriteLine("    <td>" + (fileInfo.Length / 1024) + " KB</td>");
+                                else
+                                    Output.WriteLine("    <td>" + (fileInfo.Length / (1024 * 1024)) + " MB</td>");
+                            }
+
+                            Output.WriteLine("    <td>" + fileInfo.LastWriteTime + "</td>");
+
+                            //add by Keven:replace single & double quote with ascII characters
+                            string strFileName = fileInfo.Name;
+                            if (strFileName.Contains("'") || strFileName.Contains("\""))
+                            {
+                                strFileName = strFileName.Replace("'", "\\&#39;");
+                                strFileName = strFileName.Replace("\"", "\\&#34;");
+                            }
+                            Output.WriteLine("    <td style=\"text-align:center\"> <span class=\"sbkMySobek_ActionLink\">( <a href=\"\" onclick=\"return file_delete('" + strFileName + "');\">delete</a> )</span></td>");
+
+                            Output.WriteLine("  </tr>");
+                        }
+
+                        // Now add the row to include the label
+                        string input_name = "upload_label" + file_counter.ToString();
+                        Output.WriteLine("  <tr style=\"min-height: 30px;\">");
+                        Output.WriteLine("    <td colspan=\"4\">");
+                        Output.WriteLine("      <div style=\"padding-left: 90px;\">");
+                        Output.WriteLine("        <span style=\"color:gray\">Label:</span>");
+                        Output.WriteLine("        <input type=\"hidden\" id=\"upload_file" + file_counter.ToString() + "\" name=\"upload_file" + file_counter.ToString() + "\" value=\"" + fileKey + "\" />");
+                        if (HttpContext.Current.Session["file_" + fileKey] == null)
+                        {
+                            Output.WriteLine("      <input type=\"text\" class=\"sbkNgi_UploadFileLabel sbk_Focusable\" id=\"" + input_name + "\" name=\"" + input_name + "\" value=\"\" onchange=\"upload_label_fieldChanged(this.id," + totalFileCount + ");\"></input>");
+                        }
+                        else
+                        {
+                            string label_from_session = HttpContext.Current.Session["file_" + fileKey].ToString();
+                            Output.WriteLine("      <input type=\"text\" class=\"sbkNgi_UploadFileLabel sbk_Focusable\" id=\"" + input_name + "\" name=\"" + input_name + "\" value=\"" + label_from_session + "\" onchange=\"upload_label_fieldChanged(this.id," + totalFileCount + ");\"></input>");
+                        }
+                        Output.WriteLine("      </div>");
+                        Output.WriteLine("    </td>");
+                        Output.WriteLine("  </tr>");
+                        Output.WriteLine("  <tr><td class=\"sbkMySobek_FileTableRule\" colspan=\"4\"></td></tr>");
+                    }
+                    Output.WriteLine("</table>");
+                }
+
+                // Any download files?
+                if (download_files.Count > 0)
+                {
+                    Output.WriteLine("The following files are already uploaded for this package and will be included as downloads:");
+                    Output.WriteLine("<table class=\"sbkMySobek_FileTable\">");
+                    Output.WriteLine("  <tr>");
+                    Output.WriteLine("    <th style=\"width:350px;\">FILENAME</th>");
+                    Output.WriteLine("    <th style=\"width:90px;\">SIZE</th>");
+                    Output.WriteLine("    <th style=\"width:170px;\">DATE UPLOADED</th>");
+                    Output.WriteLine("    <th style=\"width:90px;text-align:center;\">ACTION</th>");
+                    Output.WriteLine("  </tr>");
+
+                    int totalFileCount = 0;
+
+                    //Determine the total number of files
+                    foreach (string fileKey in download_files.Keys)
+                    {
+                        // Get this group of files
+                        List<string> fileGroup = download_files[fileKey];
+                        totalFileCount += fileGroup.Count();
+                    }
+
+                    // Step through all the download file groups
+                    foreach (string fileKey in download_files.Keys)
+                    {
+                        // Get this group of files
+                        List<string> fileGroup = download_files[fileKey];
+
+                        // Add each individual file
+                        foreach (string thisFile in fileGroup)
+                        {
+                            file_counter++;
+
+                            // Add the file name literal
+                            FileInfo fileInfo = new FileInfo(userInProcessDirectory + "\\" + thisFile);
+                            Output.WriteLine("  <tr>");
+                            Output.WriteLine("    <td>" + fileInfo.Name + "</td>");
+                            if (fileInfo.Length < 1024)
+                                Output.WriteLine("    <td>" + fileInfo.Length + "</td>");
+                            else
+                            {
+                                if (fileInfo.Length < (1024 * 1024))
+                                    Output.WriteLine("    <td>" + (fileInfo.Length / 1024) + " KB</td>");
+                                else
+                                    Output.WriteLine("    <td>" + (fileInfo.Length / (1024 * 1024)) + " MB</td>");
+                            }
+
+                            Output.WriteLine("    <td>" + fileInfo.LastWriteTime + "</td>");
+
+                            //add by Keven:replace single & double quote with ascII characters
+                            string strFileName = fileInfo.Name;
+                            if (strFileName.Contains("'") || strFileName.Contains("\""))
+                            {
+                                strFileName = strFileName.Replace("'", "\\&#39;");
+                                strFileName = strFileName.Replace("\"", "\\&#34;");
+                            }
+                            Output.WriteLine("    <td style=\"text-align:center\"> <span class=\"sbkMySobek_ActionLink\">( <a href=\"\" onclick=\"return file_delete('" + strFileName + "');\">delete</a> )</span></td>");
+
+                            Output.WriteLine("  </tr>");
+                        }
+
+                        // Now add the row to include the label
+                        string input_name = "upload_label" + file_counter.ToString();
+                        Output.WriteLine("  <tr>");
+                        Output.WriteLine("    <td style=\"text-align:right; color:gray;\">Label:</td>");
+                        Output.WriteLine("    <td colspan=\"4\">");
+                        Output.WriteLine("      <input type=\"hidden\" id=\"upload_file" + file_counter.ToString() + "\" name=\"upload_file" + file_counter.ToString() + "\" value=\"" + fileKey + "\" />");
+                        if (HttpContext.Current.Session["file_" + fileKey] == null)
+                        {
+                            Output.WriteLine("      <input type=\"text\" class=\"sbkNgi_UploadFileLabel sbk_Focusable\" id=\"" + input_name + "\" name=\"" + input_name + "\" onchange=\"upload_label_fieldChanged(this.id," + totalFileCount + ");\"></input>");
+                        }
+                        else
+                        {
+                            string label_from_session = HttpContext.Current.Session["file_" + fileKey].ToString();
+                            Output.WriteLine("      <input type=\"text\" class=\"sbkNgi_UploadFileLabel sbk_Focusable\" id=\"" + input_name + "\" name=\"" + input_name + "\" value=\"" + label_from_session + "\" onchange=\"upload_label_fieldChanged(this.id," + totalFileCount + ");\"></input>");
+                        }
+                        Output.WriteLine("    </td>");
+                        Output.WriteLine("  </tr>");
+                        Output.WriteLine("  <tr><td class=\"sbkMySobek_FileTableRule\" colspan=\"4\"></td></tr>");
+                    }
+                    Output.WriteLine("</table>");
+                }
+            }
+
+            if ((completeTemplate.Upload_Types == CompleteTemplate.Template_Upload_Types.File_or_URL) || (completeTemplate.Upload_Types == CompleteTemplate.Template_Upload_Types.URL))
+            {
+                Output.WriteLine("Enter a URL for this digital resource:");
+                Output.WriteLine("<blockquote>");
+                Output.WriteLine("<input type=\"text\" class=\"upload_url_input\" id=\"url_input\" name=\"url_input\" value=\"" + HttpUtility.HtmlEncode(item.Bib_Info.Location.Other_URL) + "\" ></input>");
+                Output.WriteLine("</blockquote>");
+            }
+
+            string completion_message;
+            switch (completeTemplate.Upload_Types)
+            {
+                case CompleteTemplate.Template_Upload_Types.URL:
+                    completion_message = "Once the URL is entered, press SUBMIT to finish this item.";
+                    break;
+
+                case CompleteTemplate.Template_Upload_Types.File_or_URL:
+                    completion_message = "Once you enter any files and/or URL, press SUBMIT to finish this item.";
+                    break;
+
+                case CompleteTemplate.Template_Upload_Types.File:
+                    completion_message = "Once all files are uploaded, press SUBMIT to finish this item.";
+                    break;
+
+                default:
+                    completion_message = "Once complete, press SUBMIT to finish this item.";
+                    break;
+            }
+
+
+            Output.WriteLine("<div class=\"sbkMySobek_FileRightButtons\">");
+            Output.WriteLine("      <button onclick=\"return new_upload_next_phase(" + (completeTemplate.InputPages.Count + 1) + ");\" class=\"sbkMySobek_BigButton\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"sbkMySobek_RoundButton_LeftImg\" alt=\"\" /> BACK </button> &nbsp; &nbsp; ");
+            Output.WriteLine("      <button onclick=\"return new_upload_next_phase(9);\" class=\"sbkMySobek_BigButton\"> SUBMIT <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkMySobek_RoundButton_RightImg\" alt=\"\" /></button>");
+            Output.WriteLine("      <div id=\"circular_progress\" name=\"circular_progress\" class=\"hidden_progress\">&nbsp;</div>");
+            Output.WriteLine("</div>");
+            Output.WriteLine();
+
+            Output.WriteLine("<div class=\"sbkMySobek_FileCompletionMsg\">" + completion_message + "</div>");
+            Output.WriteLine();
+            Output.WriteLine("</div>");
+
         }
 
         #endregion
@@ -1837,7 +2000,7 @@ namespace SobekCM.Library.MySobekViewer
             Output.WriteLine("<blockquote>");
 
             RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
-            Output.WriteLine("<a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">Return to my home</a><br/><br />");
+            Output.WriteLine("<a href=\"" + Redirect_URL() + "\">Return to my home</a><br/><br />");
 
             if (!criticalErrorEncountered)
             {
@@ -1849,7 +2012,7 @@ namespace SobekCM.Library.MySobekViewer
                     RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Open_Publishing_Tool;
                     RequestSpecificValues.Current_Mode.BibID = item.BibID;
                     RequestSpecificValues.Current_Mode.VID = item.VID;
-                    Output.WriteLine("<a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">Edit this item (Open Publishing)</a><br /><br />");
+                    Output.WriteLine("<a href=\"" + Redirect_URL() + "\">Edit this item (Open Publishing)</a><br /><br />");
                 }
                 else
                 {
@@ -1857,18 +2020,18 @@ namespace SobekCM.Library.MySobekViewer
                     RequestSpecificValues.Current_Mode.My_Sobek_SubMode = "1";
                     RequestSpecificValues.Current_Mode.BibID = item.BibID;
                     RequestSpecificValues.Current_Mode.VID = item.VID;
-                    Output.WriteLine("<a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">Edit this item</a><br /><br />");
+                    Output.WriteLine("<a href=\"" + Redirect_URL() + "\">Edit this item</a><br /><br />");
                 }
 
                 RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.New_Item;
                 RequestSpecificValues.Current_Mode.BibID = String.Empty;
                 RequestSpecificValues.Current_Mode.VID = String.Empty;
-                Output.WriteLine("<a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">Add another item</a><br /><br />");
+                Output.WriteLine("<a href=\"" + Redirect_URL() + "\">Add another item</a><br /><br />");
             }
             RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Folder_Management;
             RequestSpecificValues.Current_Mode.Result_Display_Type = "brief";
             RequestSpecificValues.Current_Mode.My_Sobek_SubMode = "Submitted Items";
-            Output.WriteLine("<a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">View all my submitted items</a><br /><br />");
+            Output.WriteLine("<a href=\"" + Redirect_URL() + "\">View all my submitted items</a><br /><br />");
 
             Output.WriteLine("</blockquote>");
             Output.WriteLine("</td></tr></table></div>");

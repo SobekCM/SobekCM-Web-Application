@@ -41,7 +41,7 @@ namespace SobekCM.Builder_Library.Modules.Items
                     // Save the static page and then copy to all the image servers
                     try
                     {
-                        if (!Directory.Exists(Resource.Resource_Folder + "\\" + Settings.System))
+                        if (!Directory.Exists(Resource.Resource_Folder + "\\" + Settings.Resources.Backup_Files_Folder_Name))
                             Directory.CreateDirectory(Resource.Resource_Folder + "\\" + Settings.Resources.Backup_Files_Folder_Name);
 
                         string static_file = Resource.Resource_Folder + "\\" + Settings.Resources.Backup_Files_Folder_Name + "\\" + Resource.Metadata.BibID + "_" + Resource.Metadata.VID + ".html";
@@ -72,7 +72,7 @@ namespace SobekCM.Builder_Library.Modules.Items
                 }
 
             }
-            catch (Exception ee)
+            catch (Exception )
             {
                 OnProcess("Error pulling the robot version", "CreateStaticVersionModule", Resource.BibID + "_" + Resource.VID, Resource.METS_Type_String, -1);
             }

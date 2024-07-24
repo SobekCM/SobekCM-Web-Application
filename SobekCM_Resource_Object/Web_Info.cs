@@ -315,5 +315,8 @@ namespace SobekCM.Resource_Object
                 pages_by_seq = new List<Page_TreeNode>();
             pages_by_seq.Add(Next_Page);
         }
+
+        /// <summary> Is this a remix actively occuring </summary>
+        public bool IsRemix { get; set; }
     }
 }

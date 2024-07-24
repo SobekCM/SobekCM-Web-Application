@@ -1,8 +1,8 @@
 echo off
 REM ******** Some values used to support alternate locations **********
-set source=C:\GitRepository\SobekCM-Web-Application
-set iis=C:\inetpub\wwwroot\SobekCM
-set installer=C:\GitRepository\SobekWebInstaller
+set source=C:\GitHub\SobekCM-Web-Application
+set iis=C:\inetpub\wwwroot
+set installer=C:\GitHub\SobekWebInstaller
 echo.
 echo COPYING WEB FILES INTO PRECOMPILE DIRECTORY
 echo ....sobekcm

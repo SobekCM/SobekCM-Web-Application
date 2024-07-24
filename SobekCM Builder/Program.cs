@@ -17,6 +17,7 @@ namespace SobekCM.Builder
             bool show_help = false;
             string invalid_arg = String.Empty;
             bool verbose = false;
+            bool run_once_only = false;
 
 	        // Get values from the arguments
             foreach (string thisArgs in Args)
@@ -30,9 +31,16 @@ namespace SobekCM.Builder
                     return;
                 }
 
-                // Always run in BACKGROUND mode
+                // Running in BACKGROUND mode is the default
                 if (thisArgs == "--background")
                 {
+                    arg_handled = true;
+                }
+
+                // Argument says to only run once, then exit
+                if (thisArgs == "--once")
+                {
+                    run_once_only = true;
                     arg_handled = true;
                 }
 
@@ -76,6 +84,7 @@ namespace SobekCM.Builder
                 builder.Append("  --version\tDisplays the current version of the SobekCM Builder\n\n");
                 builder.Append("  --verbose\tFlag indicates to be verbose in the logs and console\n\n");
                 builder.Append("  --help\t\tShows these instructions\n\n");
+                builder.Append("  --once\t\tRuns one time only, then closes (rather than polling in background mode)\n\n");
 
 
                 // If invalid arg, save to log file
@@ -92,7 +101,7 @@ namespace SobekCM.Builder
 
             // Controller always runs in background mode
             Worker_Controller controller = new Worker_Controller(verbose );
-            controller.Execute_In_Background();
+            controller.Execute(run_once_only);
 
             // If this was set to aborting, set to last execution aborted
             Builder_Operation_Flag_Enum operationFlag = Abort_Database_Mechanism.Builder_Operation_Flag;

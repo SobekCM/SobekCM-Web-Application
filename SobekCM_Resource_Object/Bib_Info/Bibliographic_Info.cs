@@ -1505,6 +1505,11 @@ namespace SobekCM.Resource_Object.Bib_Info
                 }
             }
 
+            if ((BibID == "AA00001660") && (TitleString.ToLower().Contains("introduction")))
+            {
+                return "A" + TitleString.ToUpper();
+            }
+
             // Return this value
             return TitleString.ToUpper();
         }

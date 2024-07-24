@@ -1,4 +1,4 @@
-<p>You are receiving this message because you are a contributor to the <a href="<%SYSURL%>"><%SYSNAME%></a> digital library. If you do not wish to receive future messages, please <a href=\"<%SYSURL%>/my/preferences\">edit your account preferences</a> online. </p>
+<p>You are receiving this message because you are a contributor to the <a href="<%SYSURL%>"><%SYSNAME%></a> digital library. If you do not wish to receive future messages, please <a href="<%SYSURL%>/my/preferences">edit your account preferences</a> online. </p>
 
 <p><strong>Usage statistics for your materials ( <%DATE%> )</strong></p>
 
@@ -10,6 +10,6 @@
 
 <%ITEMS%>
 
-<p><em><a href=\"<%SYSURL%>/my/stats/<%YEAR%><%MONTH%>d\">Click here to see the usage statistics for ALL of your items.</a></em></p>
+<p><em><a href="<%SYSURL%>/my/stats/<%YEAR%><%MONTH%>d">Click here to see the usage statistics for ALL of your items.</a></em></p>
 
 <p>Thank you for sharing these materials.</p>

@@ -365,7 +365,7 @@ namespace SobekCM.Builder_Library
         #region Method to execute processes in background
 
         /// <summary> Continuously execute the processes in a recurring background thread </summary>
-        public void Execute_In_Background()
+        public void Execute(bool run_once_only)
         {
             // Determine the new log name
             string log_name = "incoming_" + controllerStarted.Year + "_" + controllerStarted.Month.ToString().PadLeft(2, '0') + "_" + controllerStarted.Day.ToString().PadLeft(2, '0') + ".html";
@@ -432,8 +432,8 @@ namespace SobekCM.Builder_Library
 							break;
 						}
 
-						// Refresh all settings, etc..
-						loaders[i].Refresh_Settings_And_Item_List();
+						// Refresh all settings, etc..  (already happens in the Run_BulkLoader, almost immediately)
+						//loaders[i].Refresh_Settings_And_Item_List();
 
 						// Pull the abort/pause flag
 						Builder_Operation_Flag_Enum currentPauseFlag = Abort_Database_Mechanism.Builder_Operation_Flag;
@@ -586,7 +586,7 @@ namespace SobekCM.Builder_Library
 
                 return returnValue;
             }
-            catch ( Exception ee )
+            catch ( Exception )
             {
                 return false;
             }

@@ -31,6 +31,7 @@ namespace SobekCM.Core.Settings
             PostProcessModulesSettings = new List<Builder_Module_Setting>();
             ItemProcessModulesSettings = new List<Builder_Module_Setting>();
             ItemDeleteModulesSettings = new List<Builder_Module_Setting>();
+            ScheduledModulesSettings = new List<Builder_Schedulable_Module_Setting>();
         }
         
         /// <summary> [DataMember] List of all the incoming folders which should be checked for new resources </summary>
@@ -68,6 +69,13 @@ namespace SobekCM.Core.Settings
         [ProtoMember(5)]
         public List<Builder_Module_Setting> ItemDeleteModulesSettings { get; set; }
 
+        /// <summary> [DataMember] List of all the builder modules scheduled to run at certain times </summary>
+        [DataMember(Name = "scheduledModules")]
+        [XmlArray("scheduledModules")]
+        [XmlArrayItem("scheduledModule", typeof(Builder_Schedulable_Module_Setting))]
+        [ProtoMember(21)]
+        public List<Builder_Schedulable_Module_Setting> ScheduledModulesSettings { get; set; }
+
         /// <summary> Clear all these settings </summary>
         public virtual void Clear()
         {
@@ -76,6 +84,7 @@ namespace SobekCM.Core.Settings
             PostProcessModulesSettings.Clear();
             ItemProcessModulesSettings.Clear();
             ItemDeleteModulesSettings.Clear();
+            ScheduledModulesSettings.Clear();
         }
 
 

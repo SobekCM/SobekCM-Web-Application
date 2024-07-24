@@ -68,17 +68,11 @@ namespace SobekCM.Library.AdminViewer.UserAdmin.SubViewers
                     {
                         if (Email_Helper.SendEmail(reset_user.Email, "my" + RequestSpecificValues.Current_Mode.Instance_Abbreviation.ToUpper() + " Password Reset", reset_user.Full_Name + ",\n\nYour my" + RequestSpecificValues.Current_Mode.Instance_Abbreviation.ToUpper() + " password has been reset to a temporary password.  The first time you logon, you will be required to change it.\n\n\tUsername: " + reset_user.UserName + "\n\tPassword: " + password + "\n\nYour password is case-sensitive and must be entered exactly as it appears above when logging on.\n\nIf you have any questions or problems logging on, feel free to contact us at " + UI_ApplicationCache_Gateway.Settings.Email.System_Email + ", or reply to this email.\n\n" + RequestSpecificValues.Current_Mode.Base_URL + "my/home\n", false, RequestSpecificValues.Current_Mode.Instance_Name))
                         {
-                            if ((RequestSpecificValues.Current_User.UserID == 1) || (RequestSpecificValues.Current_User.UserID == 2))
-                                actionMessage = "Reset of password (" + password + ") for '" + reset_user.Full_Name + "' complete";
-                            else
-                                actionMessage = "Reset of password for '" + reset_user.Full_Name + "' complete";
+                            actionMessage = "Reset of password (" + password + ") for '" + reset_user.Full_Name + "' successful";
                         }
                         else
                         {
-                            if ((RequestSpecificValues.Current_User.UserID == 1) || (RequestSpecificValues.Current_User.UserID == 2))
-                                actionMessage = "ERROR while sending new password (" + password + ") to '" + reset_user.Full_Name + "'!";
-                            else
-                                actionMessage = "ERROR while sending new password to '" + reset_user.Full_Name + "'!";
+                            actionMessage = "ERROR while sending new password (" + password + ") to '" + reset_user.Full_Name + "'!";
                         }
                     }
                 }

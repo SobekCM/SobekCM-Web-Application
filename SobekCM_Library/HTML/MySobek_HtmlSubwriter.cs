@@ -190,7 +190,7 @@ namespace SobekCM.Library.HTML
         {
             Tracer.Add_Trace("MySobek_HtmlSubwriter.Write_HTML", "Rendering HTML");
 
-            if ((HttpContext.Current.Session["agreement_date"] == null) && (RequestSpecificValues.Current_Mode.My_Sobek_Type == My_Sobek_Type_Enum.New_Item ) && ((RequestSpecificValues.Current_Mode.My_Sobek_SubMode.Length == 0) || (RequestSpecificValues.Current_Mode.My_Sobek_SubMode[0] != '1')))
+            if ((HttpContext.Current.Session["agreement_date"] == null) && (RequestSpecificValues.Current_Mode.My_Sobek_Type == My_Sobek_Type_Enum.New_Item ) && ((String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.My_Sobek_SubMode)) || (RequestSpecificValues.Current_Mode.My_Sobek_SubMode[0] != '1')))
             {
                 RequestSpecificValues.Current_Mode.My_Sobek_SubMode = "1";
             }

@@ -114,7 +114,7 @@ namespace SobekCM_Builder_Service
 
             // Two ways to run this... constantly in background or once
             Worker_Controller controller = new Worker_Controller(true);
-            controller.Execute_In_Background();
+            controller.Execute(false);
 
             // If this was set to aborting, set to last execution aborted
             Builder_Operation_Flag_Enum operationFlag = Abort_Database_Mechanism.Builder_Operation_Flag;

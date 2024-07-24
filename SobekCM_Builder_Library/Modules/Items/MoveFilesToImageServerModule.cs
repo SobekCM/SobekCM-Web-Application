@@ -150,7 +150,7 @@ namespace SobekCM.Builder_Library.Modules.Items
 
                 return true;
             }
-            catch ( Exception ee )
+            catch ( Exception )
             {
                 return false;
             }

@@ -161,7 +161,7 @@ namespace SobekCM.Builder_Library.Modules.Schedulable
                         empty_page_source = client.DownloadString(empty_page);
                     }
                 }
-                catch (Exception ee)
+                catch (Exception)
                 {
                     OnError("RebuildAllAggregationBrowsesModule:Unable to pull the top-level empty page", null, null, updatedId);
                     return;

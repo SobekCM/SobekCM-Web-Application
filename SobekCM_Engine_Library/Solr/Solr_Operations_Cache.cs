@@ -1,6 +1,6 @@
-﻿#region Using directives
+#region Using directives
 
-using Microsoft.Practices.ServiceLocation;
+using CommonServiceLocator;
 using SolrNet;
 using System;
 
@@ -8,12 +8,12 @@ using System;
 
 namespace SobekCM.Engine_Library.Solr
 {
-    internal static class Solr_Operations_Cache<T> where T : new() 
-    { 
+    internal static class Solr_Operations_Cache<T> where T : new()
+    {
         private static ISolrOperations<T> solrOperations;
         private static string solrUrl;
 
-        public static ISolrOperations<T> GetSolrOperations(string SolrURL) 
+        public static ISolrOperations<T> GetSolrOperations(string SolrURL)
         {
             try
             {
@@ -30,6 +30,6 @@ namespace SobekCM.Engine_Library.Solr
             {
                 return null;
             }
-        } 
+        }
     }
 }

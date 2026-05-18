@@ -1,345 +1,41 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{849C78A5-C60B-4FAF-9EFB-943753F64E56}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SobekCM.Core</RootNamespace>
+    <TargetFramework>net10.0</TargetFramework>
     <AssemblyName>SobekCM_Core</AssemblyName>
-    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile />
+    <RootNamespace>SobekCM.Core</RootNamespace>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <DocumentationFile>
-    </DocumentationFile>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
+
   <ItemGroup>
-    <Reference Include="Jil">
-      <HintPath>..\DLLs\JIL\Jil.dll</HintPath>
-    </Reference>
-    <Reference Include="protobuf-net">
-      <HintPath>..\DLLs\Protobuf-net\protobuf-net.dll</HintPath>
-    </Reference>
+    <!-- These files duplicate types defined in MicroservicesClient/ with the same namespace -->
+    <Compile Remove="Configuration\Engine\MicroservicesClient_Configuration.cs" />
+    <Compile Remove="Configuration\Engine\MicroservicesClient_Endpoint.cs" />
+    <!-- AdoNetHelper used BinaryFormatter (removed in .NET 9+) for AppFabric distributed cache serialization;
+         SobekCM_Items_In_Title no longer implements ISerializable since we use in-process MemoryCache -->
+    <Compile Remove="MemoryMgmt\AdoNetHelper\FastSerializer.cs" />
+    <Compile Remove="MemoryMgmt\AdoNetHelper\AdoNetHelper.cs" />
+    <Compile Remove="MemoryMgmt\AdoNetHelper\AdoNetFastSerializerSurrogate.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Jil" Version="2.17.0" />
+    <PackageReference Include="protobuf-net" Version="3.2.30" />
+    <!-- System.Runtime.Caching replaces System.Web.Caching for in-process caching -->
+    <PackageReference Include="System.Runtime.Caching" Version="9.0.3" />
+    <PackageReference Include="System.Drawing.Common" Version="9.0.3" Condition="'$(OS)' == 'Windows_NT'" />
+    <!-- Saxon-HE: keep existing DLL until API compatibility with SaxonHE12 is validated -->
     <Reference Include="saxon9he-api">
       <HintPath>..\DLLs\Saxon\saxon9he-api.dll</HintPath>
     </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Runtime.Serialization" />
-    <Reference Include="System.Web" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
   </ItemGroup>
+
   <ItemGroup>
-    <Compile Include="Aggregations\Aggregation_Hierarchy.cs" />
-    <Compile Include="Aggregations\Complete_Item_Aggregation.cs" />
-    <Compile Include="Aggregations\Complete_Item_Aggregation_Child_Page.cs" />
-    <Compile Include="Aggregations\Complete_Item_Aggregation_Comparer.cs" />
-    <Compile Include="Aggregations\Complete_Item_Aggregation_Home_Page.cs" />
-    <Compile Include="Aggregations\Complete_Item_Aggregation_Metadata_Type.cs" />
-    <Compile Include="Aggregations\Item_Aggregation.cs" />
-    <Compile Include="Aggregations\Item_Aggregation_Child_Page.cs" />
-    <Compile Include="Aggregations\Item_Aggregation_Custom_Directive.cs" />
-    <Compile Include="Aggregations\Item_Aggregation_Enums.cs" />
-    <Compile Include="Aggregations\Item_Aggregation_Front_Banner.cs" />
-    <Compile Include="Aggregations\Complete_Item_Aggregation_Highlights.cs" />
-    <Compile Include="Aggregations\Item_Aggregation_Highlights.cs" />
-    <Compile Include="Aggregations\Item_Aggregation_Map_Coverage_Info.cs" />
-    <Compile Include="Aggregations\Item_Aggregation_Metadata_Type.cs" />
-    <Compile Include="Aggregations\Item_Aggregation_Related_Aggregations.cs" />
-    <Compile Include="Aggregations\Item_Aggregation_Statistics.cs" />
-    <Compile Include="Aggregations\Item_Aggregation_Visibility_Statistic.cs" />
-    <Compile Include="Aggregations\New_Aggregation_Arguments.cs" />
-    <Compile Include="Aggregations\Simple_Aggregation.cs" />
-    <Compile Include="Aggregations\Simple_Aggregation_Child_Page.cs" />
-    <Compile Include="Aggregations\Thematic_Heading.cs" />
-    <Compile Include="ApplicationState\Aggregation_Code_Manager.cs" />
-    <Compile Include="ApplicationState\Default_Metadata.cs" />
-    <Compile Include="ApplicationState\IP_Restriction_Address.cs" />
-    <Compile Include="ApplicationState\IP_Restriction_Range.cs" />
-    <Compile Include="ApplicationState\IP_Restriction_Ranges.cs" />
-    <Compile Include="ApplicationState\Language_Support_Info.cs" />
-    <Compile Include="ApplicationState\Multiple_Volume_Collection.cs" />
-    <Compile Include="ApplicationState\Multiple_Volume_Item.cs" />
-    <Compile Include="ApplicationState\Portal.cs" />
-    <Compile Include="ApplicationState\Portal_List.cs" />
-    <Compile Include="ApplicationState\Recent_Searches.cs" />
-    <Compile Include="ApplicationState\Statistics_Dates.cs" />
-    <Compile Include="ApplicationState\Template.cs" />
-    <Compile Include="ApplicationState\Wordmark_Icon.cs" />
-    <Compile Include="BriefItem\BriefItemInfo.cs" />
-    <Compile Include="BriefItem\BriefItem_Behaviors.cs" />
-    <Compile Include="BriefItem\BriefItem_BehaviorViewer.cs" />
-    <Compile Include="BriefItem\BriefItem_CitationResponse.cs" />
-    <Compile Include="BriefItem\BriefItem_Coordinate_Circle.cs" />
-    <Compile Include="BriefItem\BriefItem_Coordinate_Line.cs" />
-    <Compile Include="BriefItem\BriefItem_Coordinate_Point.cs" />
-    <Compile Include="BriefItem\BriefItem_Coordinate_Polygon.cs" />
-    <Compile Include="BriefItem\BriefItem_UI.cs" />
-    <Compile Include="BriefItem\BriefItem_UserGroupRestrictions.cs" />
-    <Compile Include="BriefItem\BriefItem_UserTag.cs" />
-    <Compile Include="BriefItem\BriefItem_DescriptiveTerm.cs" />
-    <Compile Include="BriefItem\BriefItem_DescTermValue.cs" />
-    <Compile Include="BriefItem\BriefItem_ExtensionData.cs" />
-    <Compile Include="BriefItem\BriefItem_File.cs" />
-    <Compile Include="BriefItem\BriefItem_FileGrouping.cs" />
-    <Compile Include="BriefItem\BriefItem_GeoSpatial.cs" />
-    <Compile Include="BriefItem\BriefItem_Namespace.cs" />
-    <Compile Include="BriefItem\BriefItem_Related_Titles.cs" />
-    <Compile Include="BriefItem\BriefItem_TocElement.cs" />
-    <Compile Include="BriefItem\BriefItem_Web.cs" />
-    <Compile Include="BriefItem\IBriefItemMapper.cs" />
-    <Compile Include="Builder\Actionable_Builder_Source_Folder.cs" />
-    <Compile Include="Builder\Builder_Module_Schedule.cs" />
-    <Compile Include="Builder\Builder_Schedulable_Module_Setting.cs" />
-    <Compile Include="Builder\Builder_Scheduled_Task_Execution_History.cs" />
-    <Compile Include="Builder\Builder_Scheduled_Task_Status.cs" />
-    <Compile Include="Builder\Builder_Status.cs" />
-    <Compile Include="Builder\Incoming_Digital_Resource.cs" />
-    <Compile Include="Builder\Modules\abstractFolderModule.cs" />
-    <Compile Include="Builder\Modules\abstractPostProcessModule.cs" />
-    <Compile Include="Builder\Modules\abstractPreProcessModule.cs" />
-    <Compile Include="Builder\Modules\abstractSchedulableModule.cs" />
-    <Compile Include="Builder\Modules\abstractSubmissionPackageModule.cs" />
-    <Compile Include="Builder\Modules\BibVidStruct.cs" />
-    <Compile Include="Builder\Modules\iFolderModule.cs" />
-    <Compile Include="Builder\Modules\iPostProcessModule.cs" />
-    <Compile Include="Builder\Modules\iPreProcessModule.cs" />
-    <Compile Include="Builder\Modules\iSchedulableModule.cs" />
-    <Compile Include="Builder\Modules\iSubmissionPackageModule.cs" />
-    <Compile Include="Builder\Modules\ModuleErrorLoggingDelegate.cs" />
-    <Compile Include="Builder\Modules\ModuleStandardLoggingDelegate.cs" />
-    <Compile Include="Configuration\Authentication\Authentication_Configuration.cs" />
-    <Compile Include="Configuration\BriefItemMapping_Configuration.cs" />
-    <Compile Include="Configuration\Configuration_Source_Info.cs" />
-    <Compile Include="Configuration\ContactForm_Configuration.cs" />
-    <Compile Include="Configuration\Database_Instance_Configuration.cs" />
-    <Compile Include="Configuration\Extensions\ExtensionAdminAuthorInfo.cs" />
-    <Compile Include="Configuration\Extensions\ExtensionAdminInfo.cs" />
-    <Compile Include="Configuration\Extensions\ExtensionAssembly.cs" />
-    <Compile Include="Items\Item_Submittor_Info.cs" />
-    <Compile Include="Items\Minimal_Item_Group_Info.cs" />
-    <Compile Include="Message\EnableExtensionMessage.cs" />
-    <Compile Include="OpenPublishing\OPTheme.cs" />
-    <Compile Include="OpenPublishing\OPThemePage.cs" />
-    <Compile Include="Plugins\PluginInstaller.cs" />
-    <Compile Include="Results\v5_Solr_Item_Result.cs" />
-    <Compile Include="Results\v5_Solr_Title_Result.cs" />
-    <Compile Include="Search\Search_Options_Info.cs" />
-    <Compile Include="Search\Search_User_Membership_Info.cs" />
-    <Compile Include="Settings\DbItemViewers\DbItemViewerTypes.cs" />
-    <Compile Include="Configuration\Extensions\ExtensionCssInfo.cs" />
-    <Compile Include="Configuration\Extensions\ExtensionInfo.cs" />
-    <Compile Include="Configuration\Extensions\ExtensionKeyValueConfiguration.cs" />
-    <Compile Include="Configuration\Extensions\ExtensionXmlConfiguration.cs" />
-    <Compile Include="Configuration\Extensions\Extension_Configuration.cs" />
-    <Compile Include="Configuration\InstanceWide_Configuration.cs" />
-    <Compile Include="Settings\DbItemViewers\DbItemViewerType.cs" />
-    <Compile Include="EAD\EAD_Transfer_Container_Info.cs" />
-    <Compile Include="EAD\EAD_Transfer_Desc_Sub_Components.cs" />
-    <Compile Include="EAD\EAD_Transfer_Descriptive_Identification.cs" />
-    <Compile Include="EAD\EAD_Transfer_Object.cs" />
-    <Compile Include="EAD\EAD_Transfer_TOC_Included_Section.cs" />
-    <Compile Include="EAD\EAD_Transfer_Parent_Container_Info.cs" />
-    <Compile Include="FileSystems\iFileSystem.cs" />
-    <Compile Include="FileSystems\PairTreeStructure.cs" />
-    <Compile Include="FileSystems\SobekFileSystem.cs" />
-    <Compile Include="FileSystems\SobekFileSystem_FileInfo.cs" />
-    <Compile Include="Items\Item_Hierarchy_Details.cs" />
-    <Compile Include="Items\Item_Monthly_Usage.cs" />
-    <Compile Include="Items\Item_Tracking_Details.cs" />
-    <Compile Include="Items\Item_Tracking_Event.cs" />
-    <Compile Include="MARC\MARC_Transfer_Field.cs" />
-    <Compile Include="MARC\MARC_Transfer_Record.cs" />
-    <Compile Include="MARC\MARC_Transfer_Subfield.cs" />
-    <Compile Include="MemoryMgmt\CachedDataManager_BuilderServices.cs" />
-    <Compile Include="MemoryMgmt\CachedDataManager_ItemServices.cs" />
-    <Compile Include="Builder\Builder_Module_Set_Info.cs" />
-    <Compile Include="Settings\Builder\MultiInstance_Builder_Settings.cs" />
-    <Compile Include="Settings\Builder\MultiInstance_Builder_Settings_Reader.cs" />
-    <Compile Include="Settings\Builder\Single_Instance_Configuration.cs" />
-    <Compile Include="Settings\UI_Settings.cs" />
-    <Compile Include="UI_Configuration\MaterializeClasses\MaterializeClasses_Configuration.cs" />
-    <Compile Include="UI_Configuration\StaticResources\StaticResources_Configuration.cs" />
-    <Compile Include="UI_Configuration\Viewers\AggregationWriterConfig.cs" />
-    <Compile Include="UI_Configuration\Viewers\ClassAssemblyConfig.cs" />
-    <Compile Include="UI_Configuration\Viewers\HtmlHeadWriterConfig.cs" />
-    <Compile Include="UI_Configuration\Viewers\ItemSubViewerConfig.cs" />
-    <Compile Include="UI_Configuration\MapEditor_Configuration.cs" />
-    <Compile Include="Configuration\Engine\Engine_Component.cs" />
-    <Compile Include="Configuration\Engine\Engine_IpRange.cs" />
-    <Compile Include="Configuration\Engine\Engine_Path_Endpoint.cs" />
-    <Compile Include="Configuration\Engine\Engine_RestrictionRange.cs" />
-    <Compile Include="Configuration\Engine\Engine_Server_Configuration.cs" />
-    <Compile Include="Configuration\Engine\Engine_VerbMapping.cs" />
-    <Compile Include="Configuration\OAIPMH\OAI_PMH_Configuration.cs" />
-    <Compile Include="Configuration\OAIPMH\OAI_PMH_Metadata_Format.cs" />
-    <Compile Include="Configuration\QualityControl_Configuration.cs" />
-    <Compile Include="Configuration\Authentication\Shibboleth_Configuration.cs" />
-    <Compile Include="Configuration\Authentication\Shibboleth_Configuration_Mapping.cs" />
-    <Compile Include="Configuration\Localization\Web_Language_Enum.cs" />
-    <Compile Include="Configuration\Localization\Web_Language_Translation_Lookup.cs" />
-    <Compile Include="Configuration\Localization\Web_Language_Translation_Value.cs" />
-    <Compile Include="EmailInfo.cs" />
-    <Compile Include="iPostSerialization.cs" />
-    <Compile Include="Items\SobekCM_Items_In_Title.cs" />
-    <Compile Include="MemoryMgmt\AdoNetHelper\AdoNetFastSerializerSurrogate.cs" />
-    <Compile Include="MemoryMgmt\AdoNetHelper\AdoNetHelper.cs" />
-    <Compile Include="MemoryMgmt\AdoNetHelper\FastSerializer.cs" />
-    <Compile Include="MemoryMgmt\CachedDataManager.cs" />
-    <Compile Include="MemoryMgmt\CachedDataManager_AggregationServices.cs" />
-    <Compile Include="MemoryMgmt\CachedDataManager_Settings.cs" />
-    <Compile Include="MemoryMgmt\CachedDataManager_WebContentServices.cs" />
-    <Compile Include="MemoryMgmt\CachedDataManager_WebSkinServices.cs" />
-    <Compile Include="MemoryMgmt\Cached_Object_Info.cs" />
-    <Compile Include="Message\RestResponseMessage.cs" />
-    <Compile Include="MicroservicesClient\MicroservicesClient_Configuration.cs" />
-    <Compile Include="MicroservicesClient\MicroservicesClient_Config_Reader.cs" />
-    <Compile Include="MicroservicesClient\MicroservicesClient_Endpoint.cs" />
-    <Compile Include="MicroservicesClient\MicroservicesClientBase.cs" />
-    <Compile Include="Milestone_Entry.cs" />
-    <Compile Include="Navigation\NavigationStateEnums.cs" />
-    <Compile Include="Navigation\Navigation_Object.cs" />
-    <Compile Include="Navigation\UrlWriterHelper.cs" />
-    <Compile Include="OAI\OAI_Record.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ResultTitle\ResultItemInfo.cs" />
-    <Compile Include="ResultTitle\ResultSetPage.cs" />
-    <Compile Include="ResultTitle\ResultTitleInfo.cs" />
-    <Compile Include="Results\iSearch_Item_Result.cs" />
-    <Compile Include="Results\iSearch_Title_Result.cs" />
-    <Compile Include="Results\Multiple_Paged_Results_Args.cs" />
-    <Compile Include="Results\Private_Items_List.cs" />
-    <Compile Include="Results\Private_Items_List_Item.cs" />
-    <Compile Include="Results\Private_Items_List_Title.cs" />
-    <Compile Include="Results\Results_Arguments.cs" />
-    <Compile Include="Results\Search_Facet.cs" />
-    <Compile Include="Results\Search_Facet_Aggregation.cs" />
-    <Compile Include="Results\Search_Facet_Collection.cs" />
-    <Compile Include="Results\Search_Results_Statistics.cs" />
-    <Compile Include="Results\Search_Result_Item_Tree.cs" />
-    <Compile Include="Results\Search_Result_Item_TreeNode.cs" />
-    <Compile Include="Results\Single_Paged_Results_Args.cs" />
-    <Compile Include="ResultTitle\ResultTitle_DescriptiveTerm.cs" />
-    <Compile Include="Search\Metadata_Search_Field.cs" />
-    <Compile Include="Serialization\iSerializationEvents.cs" />
-    <Compile Include="Settings\Admin_Setting_Collection.cs" />
-    <Compile Include="Settings\Admin_Setting_Value.cs" />
-    <Compile Include="Settings\Archive_Settings.cs" />
-    <Compile Include="Builder\Builder_Module_Setting.cs" />
-    <Compile Include="Settings\Builder_Settings.cs" />
-    <Compile Include="Builder\Builder_Source_Folder.cs" />
-    <Compile Include="Settings\Disposition_Option.cs" />
-    <Compile Include="Settings\Email_Settings.cs" />
-    <Compile Include="Settings\Email_Setup_Settings.cs" />
-    <Compile Include="Settings\Florida_Settings.cs" />
-    <Compile Include="Settings\InstanceWide_Settings.cs" />
-    <Compile Include="Settings\Marc21_Settings.cs" />
-    <Compile Include="Settings\Mime_Type_Info.cs" />
-    <Compile Include="Settings\Resource_Settings.cs" />
-    <Compile Include="Settings\Search_Settings.cs" />
-    <Compile Include="Settings\Server_Settings.cs" />
-    <Compile Include="Settings\Simple_Setting.cs" />
-    <Compile Include="Settings\Static_Settings.cs" />
-    <Compile Include="Settings\System_Settings.cs" />
-    <Compile Include="Settings\Workflow_Type.cs" />
-    <Compile Include="SiteMap\SobekCM_SiteMap.cs" />
-    <Compile Include="SiteMap\SobekCM_SiteMap_Node.cs" />
-    <Compile Include="Skins\Complete_Web_Skin_Object.cs" />
-    <Compile Include="Skins\Complete_Web_Skin_Source_Files.cs" />
-    <Compile Include="Skins\Web_Skin_Collection.cs" />
-    <Compile Include="Skins\Web_Skin_Object.cs" />
-    <Compile Include="UI_Configuration\Citation\CitationConfig.cs" />
-    <Compile Include="UI_Configuration\Citation\CitationElement.cs" />
-    <Compile Include="UI_Configuration\Citation\CitationFieldSet.cs" />
-    <Compile Include="UI_Configuration\Citation\CitationSet.cs" />
-    <Compile Include="UI_Configuration\Citation\SectionWriter.cs" />
-    <Compile Include="UI_Configuration\InstanceWide_UI_Configuration.cs" />
-    <Compile Include="UI_Configuration\Viewers\ItemWriterConfig.cs" />
-    <Compile Include="UI_Configuration\Viewers\ItemWriterLayoutConfig.cs" />
-    <Compile Include="UI_Configuration\Viewers\OtherWriterConfig.cs" />
-    <Compile Include="UI_Configuration\Viewers\ResultsSubViewerConfig.cs" />
-    <Compile Include="UI_Configuration\Viewers\ResultsWriterConfig.cs" />
-    <Compile Include="UI_Configuration\Viewers\SectionWriterConfig.cs" />
-    <Compile Include="UI_Configuration\Viewers\SectionWriterGroupConfig.cs" />
-    <Compile Include="UI_Configuration\Viewers\StylesheetConfig.cs" />
-    <Compile Include="UI_Configuration\Viewers\WebContentWriterConfig.cs" />
-    <Compile Include="UI_Configuration\Viewers\WriterViewerConfig.cs" />
-    <Compile Include="UI_Configuration\Viewers\SingleSubViewerConfig.cs" />
-    <Compile Include="UI_Configuration\TemplateElements\TemplateElementConfig.cs" />
-    <Compile Include="UI_Configuration\TemplateElements\TemplateElementsConfig.cs" />
-    <Compile Include="Users\Public_User_Folder.cs" />
-    <Compile Include="Users\Simple_User_Group_Info.cs" />
-    <Compile Include="Users\User_Permissioned_Aggregation.cs" />
-    <Compile Include="Users\User_Aggregation_Permissions.cs" />
-    <Compile Include="Users\User_Folder.cs" />
-    <Compile Include="Users\User_Group.cs" />
-    <Compile Include="Users\User_Group_Member.cs" />
-    <Compile Include="Users\User_Object.cs" />
-    <Compile Include="Users\User_Setting_Constants.cs" />
-    <Compile Include="WebContent\Hierarchy\WebContent_Hierarchy.cs" />
-    <Compile Include="WebContent\Hierarchy\WebContent_Hierarchy_Node.cs" />
-    <Compile Include="WebContent\HTML_Based_Content.cs" />
-    <Compile Include="WebContent\HTML_Based_Content_Reader.cs" />
-    <Compile Include="WebContent\Single\Single_WebContent_Change_Report.cs" />
-    <Compile Include="WebContent\Single\Single_WebContent_Usage.cs" />
-    <Compile Include="WebContent\Admin\WebContent_Basic_Pages.cs" />
-    <Compile Include="WebContent\Admin\WebContent_Page_Usage.cs" />
-    <Compile Include="WebContent\Admin\WebContent_Recent_Changed_Page.cs" />
-    <Compile Include="WebContent\Admin\WebContent_Recent_Changes.cs" />
-    <Compile Include="WebContent\Single\Single_WebContent_Usage_Report.cs" />
-    <Compile Include="WebContent\WebContent_Basic_Info.cs" />
-    <Compile Include="WebContent\Admin\WebContent_Usage_Report.cs" />
-    <Compile Include="XSLT\XSLT_Transformer.cs" />
-    <Compile Include="XSLT\XSLT_Transformer_ReturnArgs.cs" />
+    <ProjectReference Include="..\EngineAgnosticLayerDbAccess\EngineAgnosticLayerDbAccess.csproj" />
+    <ProjectReference Include="..\SobekCM_Resource_Database\SobekCM_Resource_Database.csproj" />
+    <ProjectReference Include="..\SobekCM_Resource_Object\SobekCM_Resource_Object.csproj" />
+    <ProjectReference Include="..\SobekCM_Tools\SobekCM_Tools.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\EngineAgnosticLayerDbAccess\EngineAgnosticLayerDbAccess.csproj">
-      <Project>{b481ce6e-05fd-4336-9524-64d057aab107}</Project>
-      <Name>EngineAgnosticLayerDbAccess</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\SobekCM_Resource_Database\SobekCM_Resource_Database.csproj">
-      <Project>{3d35e1a0-0126-45d2-b663-49ba144a3537}</Project>
-      <Name>SobekCM_Resource_Database</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\SobekCM_Resource_Object\SobekCM_Resource_Object.csproj">
-      <Project>{395c2621-ce19-41e0-aa1a-abdb37f6e815}</Project>
-      <Name>SobekCM_Resource_Object</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\SobekCM_Tools\SobekCM_Tools.csproj">
-      <Project>{a511ce4c-7bd6-4446-bca8-ab71f7aa8078}</Project>
-      <Name>SobekCM_Tools</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup />
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+
 </Project>

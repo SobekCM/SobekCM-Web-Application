@@ -1,13 +1,13 @@
-﻿#region Using directives
+#region Using directives
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
+using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using System.Web;
+using Microsoft.AspNetCore.Http;
 using SobekCM.Core.Configuration;
 using SobekCM.Engine_Library.ApplicationState;
 using SobekCM.Engine_Library.Database;
@@ -17,8 +17,9 @@ using SobekCM.Core.Configuration.Engine;
 
 namespace SobekCM.Engine_Library
 {
-    /// <summary> Handler is used to handle any incoming requests for a microservice exposed by the engine </summary>
-    public class MicroserviceHandler : IHttpHandler
+    /// <summary> Handles incoming requests for a microservice exposed by the engine.
+    /// Originally IHttpHandler; converted to a plain class for use with ASP.NET Core routing. </summary>
+    public class MicroserviceHandler
     {
         private static Dictionary<string, object> restApiObjectsDictionary;
         private static Dictionary<string, MethodInfo> restApiMethodDictionary;
@@ -36,48 +37,42 @@ namespace SobekCM.Engine_Library
             restApiObjectsDictionary = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
             restApiMethodDictionary = new Dictionary<string, MethodInfo>();
         }
-       
+
         /// <summary> Processes the request </summary>
-        /// <param name="Context">The context for the current request </param>
+        /// <param name="Context">The ASP.NET Core HTTP context for the current request </param>
         public void ProcessRequest(HttpContext Context)
         {
             Engine_Database.Connection_String = Engine_ApplicationCache_Gateway.Settings.Database_Connection.Connection_String;
 
+            var compat = new CompatHttpResponse(Context.Response);
+
             // Get the original query string
-            string queryString = Context.Request.QueryString["urlrelative"];
+            string queryString = Context.Request.Query["urlrelative"].ToString();
             if (!String.IsNullOrEmpty(queryString))
             {
-                // Set the encoding
-                Context.Response.Charset = Encoding.UTF8.WebName;
-
-                // Set this to allow us to have our own error messages, without IIS jumping into it
-                Context.Response.TrySkipIisCustomErrors = true;
+                // Set the encoding as part of content type
+                Context.Response.ContentType = "text/plain; charset=utf-8";
 
                 // Make sure the microservices configuration has been read
                 if (Engine_ApplicationCache_Gateway.Configuration.Source.ErrorEncountered)
                 {
-                    // If we got to here, it means it attempted to read it and failed somehow
                     Context.Response.ContentType = "text/plain";
                     Context.Response.StatusCode = 500;
-                    Context.Response.Output.WriteLine("Error reading the configuration files!");
-                    Context.Response.Output.WriteLine();
+                    compat.Output.WriteLine("Error reading the configuration files!");
+                    compat.Output.WriteLine();
 
                     foreach (string thisLine in Engine_ApplicationCache_Gateway.Configuration.Source.ReadingLog)
-                        Context.Response.Output.WriteLine(thisLine);
+                        compat.Output.WriteLine(thisLine);
                     return;
                 }
 
                 // Collect the requested paths
                 string[] splitter;
-                if (( queryString.IndexOf("/") == 0 ) && ( queryString.Length > 1 ))
+                if ((queryString.IndexOf("/") == 0) && (queryString.Length > 1))
                     splitter = queryString.Substring(1).Split("/".ToCharArray());
                 else
                     splitter = queryString.Split("/".ToCharArray());
                 List<string> paths = splitter.ToList();
-
-
-
-
 
                 // Get any matching endpoint configuration
                 Engine_Path_Endpoint endpoint = Engine_ApplicationCache_Gateway.Configuration.Engine.Get_Endpoint(paths);
@@ -85,20 +80,20 @@ namespace SobekCM.Engine_Library
                 {
                     Context.Response.ContentType = "text/plain";
                     Context.Response.StatusCode = 501;
-                    Context.Response.Output.WriteLine("No endpoint found");
-                    Context.Response.Output.WriteLine();
+                    compat.Output.WriteLine("No endpoint found");
+                    compat.Output.WriteLine();
 
                     foreach (string thisLine in Engine_ApplicationCache_Gateway.Configuration.Source.ReadingLog)
-                        Context.Response.Output.WriteLine(thisLine);
+                        compat.Output.WriteLine(thisLine);
                 }
                 else
                 {
-                    string method =  Context.Request.HttpMethod.ToUpper();
+                    string method = Context.Request.Method.ToUpper();
                     if (!endpoint.VerbMappingExists(method))
                     {
                         Context.Response.ContentType = "text/plain";
                         Context.Response.StatusCode = 406;
-                        Context.Response.Write("HTTP method " + method + " is not supported by this URL");
+                        compat.Write("HTTP method " + method + " is not supported by this URL");
                         return;
                     }
 
@@ -106,16 +101,16 @@ namespace SobekCM.Engine_Library
                     Engine_VerbMapping verbMapping = endpoint[method];
 
                     // Ensure this is allowed in the range
-                    string requestIp = Context.Request.UserHostAddress;
+                    string requestIp = Context.Connection.RemoteIpAddress?.ToString() ?? "unknown";
                     if (!verbMapping.AccessPermitted(requestIp))
                     {
                         Context.Response.ContentType = "text/plain";
                         Context.Response.StatusCode = 403;
-                        Context.Response.Write("You are forbidden from accessing this endpoint ( " + requestIp + " )");
+                        compat.Write("You are forbidden from accessing this endpoint ( " + requestIp + " )");
                         return;
                     }
 
-                    // Set the protocoal
+                    // Set the protocol
                     switch (verbMapping.Protocol)
                     {
                         case Microservice_Endpoint_Protocol_Enum.JSON:
@@ -148,16 +143,21 @@ namespace SobekCM.Engine_Library
                     }
 
                     // Determine if this is currently in a valid DEBUG mode
-                    bool debug = (Context.Request.QueryString["debug"] == "debug");
+                    bool debug = (Context.Request.Query["debug"].ToString() == "debug");
 
                     // Get the component information
                     if (verbMapping.Component == null)
                     {
                         Context.Response.ContentType = "text/plain";
-                        Context.Response.Output.WriteLine("No component listed or found for this valid endpoint");
+                        compat.Output.WriteLine("No component listed or found for this valid endpoint");
                         Context.Response.StatusCode = 500;
                         return;
                     }
+
+                    // Convert IQueryCollection → NameValueCollection for endpoint methods
+                    NameValueCollection queryNVC = new NameValueCollection();
+                    foreach (var kvp in Context.Request.Query)
+                        queryNVC.Add(kvp.Key, kvp.Value.ToString());
 
                     // Look for this component
                     object restApiObject = null;
@@ -169,8 +169,6 @@ namespace SobekCM.Engine_Library
                     {
                         try
                         {
-                            // Create this component object (assumes same assembly for the moment)
-                            
                             Assembly dllAssembly = Assembly.GetExecutingAssembly();
                             if (!String.IsNullOrEmpty(verbMapping.Component.Assembly))
                             {
@@ -181,42 +179,35 @@ namespace SobekCM.Engine_Library
                                 }
                             }
 
-                            // Type restApiClassType = dllAssembly.GetType(Component.Namespace + "." + Component.Class);
-
                             string className = verbMapping.Component.Class;
                             if (className.IndexOf(".") < 0)
                                 className = "SobekCM.Engine_Library.Endpoints." + verbMapping.Component.Class;
-                            
+
                             Type restApiClassType = dllAssembly.GetType(className);
                             restApiObject = Activator.CreateInstance(restApiClassType);
 
-                            // Add this to the dictionary of rest api objects as well
                             restApiObjectsDictionary[verbMapping.Component.ID] = restApiObject;
                         }
                         catch (Exception ee)
                         {
                             Context.Response.ContentType = "text/plain";
-                            Context.Response.Output.WriteLine("Error creating the endpoint object " + verbMapping.Component.Class);
-                            Context.Response.Output.WriteLine(ee.Message);
+                            compat.Output.WriteLine("Error creating the endpoint object " + verbMapping.Component.Class);
+                            compat.Output.WriteLine(ee.Message);
                             Context.Response.StatusCode = 500;
                             return;
                         }
                     }
 
-                    // One more check that the value really was not null
                     if (verbMapping.Component.Class == null)
                     {
                         Context.Response.ContentType = "text/plain";
-                        Context.Response.Output.WriteLine("Error creating the endpoint object " + verbMapping.Component.Class);
+                        compat.Output.WriteLine("Error creating the endpoint object " + verbMapping.Component.Class);
                         Context.Response.StatusCode = 500;
                         return;
                     }
 
-                    // Now, check for the method itself
-
                     try
                     {
-                        // Get the method information for the method to execute
                         MethodInfo methodInfo = null;
                         if (restApiMethodDictionary.ContainsKey(verbMapping.Component.ID + "|" + verbMapping.Method))
                         {
@@ -227,29 +218,35 @@ namespace SobekCM.Engine_Library
                             Type restApiClassType = restApiObject.GetType();
                             methodInfo = restApiClassType.GetMethod(verbMapping.Method);
 
-                            // Add back to the dictionary
                             restApiMethodDictionary[verbMapping.Component.ID + "|" + verbMapping.Method] = methodInfo;
                         }
 
-                        // If the this somehow didn't throw an error, but is null, show the same message
                         if (methodInfo == null)
                         {
                             Context.Response.ContentType = "text/plain";
-                            Context.Response.Output.WriteLine("Error invoking the endpoint method: No Method Found");
+                            compat.Output.WriteLine("Error invoking the endpoint method: No Method Found");
                             Context.Response.StatusCode = 500;
                             return;
                         }
 
-                        // Invokation is different, dependingon whether this is a PUT or POST
                         if (verbMapping.RequestType == Microservice_Endpoint_RequestType_Enum.GET)
-                            methodInfo.Invoke(restApiObject, new object[] { Context.Response, paths, Context.Request.QueryString, verbMapping.Protocol, debug });
+                        {
+                            methodInfo.Invoke(restApiObject, new object[] { compat, paths, queryNVC, verbMapping.Protocol, debug });
+                        }
                         else
-                            methodInfo.Invoke(restApiObject, new object[] { Context.Response, paths, Context.Request.QueryString, verbMapping.Protocol, Context.Request.Form, debug });
+                        {
+                            // Convert IFormCollection → NameValueCollection for POST endpoints
+                            NameValueCollection formNVC = new NameValueCollection();
+                            foreach (var kvp in Context.Request.Form)
+                                formNVC.Add(kvp.Key, kvp.Value.ToString());
+
+                            methodInfo.Invoke(restApiObject, new object[] { compat, paths, queryNVC, verbMapping.Protocol, formNVC, debug });
+                        }
                     }
                     catch (Exception ee)
                     {
                         Context.Response.ContentType = "text/plain";
-                        Context.Response.Output.WriteLine("Error invoking the endpoint method: " + ee.Message);
+                        compat.Output.WriteLine("Error invoking the endpoint method: " + ee.Message);
                         Context.Response.StatusCode = 500;
                     }
                 }
@@ -258,11 +255,8 @@ namespace SobekCM.Engine_Library
             {
                 Context.Response.ContentType = "text/plain";
                 Context.Response.StatusCode = 400;
-                Context.Response.Write("Invalid URI - No endpoint requested");
+                compat.Write("Invalid URI - No endpoint requested");
             }
         }
-
-        /// <summary> Gets a value indicating whether another request can use the <see cref="T:System.Web.IHttpHandler" /> instance. </summary>
-        public bool IsReusable { get { return true;  } }
     }
 }

@@ -219,8 +219,8 @@ namespace SobekCM.Engine_Library.Solr.Legacy
 
 				Complete_Result_Set_Info = new Search_Results_Statistics(metadataLabels)
 											   {
-												   Total_Titles = results.NumFound,
-												   Total_Items = results.NumFound,
+												   Total_Titles = (int)results.NumFound,
+												   Total_Items = (int)results.NumFound,
 												   QueryTime = results.Header.QTime
 											   };
 
@@ -487,7 +487,7 @@ namespace SobekCM.Engine_Library.Solr.Legacy
             var searchResults = new Legacy_Solr_Page_Results
             {
                 QueryTime = results.Header.QTime,
-                TotalResults = results.NumFound,
+                TotalResults = (int)results.NumFound,
                 Query = queryStringBuilder.ToString(),
                 Sort_By_Score = Sort_By_Score,
                 Page_Number = ResultsPage

@@ -7,9 +7,8 @@ using System.Data;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Web;
-using System.Web.Caching;
-using System.Web.UI.WebControls;
+
+using System.Runtime.Caching;
 using System.Xml.Serialization;
 using Jil;
 using ProtoBuf;
@@ -24,7 +23,6 @@ using SobekCM.Engine_Library.Database;
 using SobekCM.Engine_Library.JSON_Client_Helpers;
 using SobekCM.Core.Configuration.Engine;
 using SobekCM.Tools;
-using SolrNet.DSL;
 
 #endregion
 
@@ -55,7 +53,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="QueryString"></param>
         /// <param name="Protocol"></param>
         /// <param name="IsDebug"></param>
-        public void Get_Hierarchy(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
+        public void Get_Hierarchy(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
         {
             Custom_Tracer tracer = new Custom_Tracer();
 
@@ -142,7 +140,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="QueryString"></param>
         /// <param name="Protocol"></param>
         /// <param name="IsDebug"></param>
-        public void Get_HTML_Based_Content(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
+        public void Get_HTML_Based_Content(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
         {
             Custom_Tracer tracer = new Custom_Tracer();
 
@@ -171,7 +169,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="QueryString"></param>
         /// <param name="Protocol"></param>
         /// <param name="IsDebug"></param>
-        public void Get_HTML_Based_Content_By_ID(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
+        public void Get_HTML_Based_Content_By_ID(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
         {
             Custom_Tracer tracer = new Custom_Tracer();
 
@@ -321,7 +319,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="QueryString"></param>
         /// <param name="Protocol"></param>
         /// <param name="IsDebug"></param>
-        public void Get_HTML_Based_Content_By_URL(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug )
+        public void Get_HTML_Based_Content_By_URL(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug )
         {
             Custom_Tracer tracer = new Custom_Tracer();
 
@@ -469,7 +467,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="Protocol"></param>
         /// <param name="RequestForm"></param>
         /// <param name="IsDebug"></param>
-        public void Delete_HTML_Based_Content(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, NameValueCollection RequestForm, bool IsDebug)
+        public void Delete_HTML_Based_Content(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, NameValueCollection RequestForm, bool IsDebug)
         {
             Custom_Tracer tracer = new Custom_Tracer();
 
@@ -536,7 +534,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="Protocol"></param>
         /// <param name="RequestForm"></param>
         /// <param name="IsDebug"></param>
-        public void Update_HTML_Based_Content(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, NameValueCollection RequestForm, bool IsDebug)
+        public void Update_HTML_Based_Content(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, NameValueCollection RequestForm, bool IsDebug)
         {
             Custom_Tracer tracer = new Custom_Tracer();
 
@@ -593,7 +591,7 @@ namespace SobekCM.Engine_Library.Endpoints
                     case Microservice_Endpoint_Protocol_Enum.XML:
                         byte[] byteArray2 = Encoding.UTF8.GetBytes(contentString);
                         MemoryStream mstream2 = new MemoryStream(byteArray2);
-                        XmlSerializer x = new XmlSerializer(typeof(Content));
+                        XmlSerializer x = new XmlSerializer(typeof(HTML_Based_Content));
                         content = (HTML_Based_Content)x.Deserialize(mstream2);
                         break;
                 }
@@ -916,7 +914,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="Protocol"></param>
         /// <param name="RequestForm"></param>
         /// <param name="IsDebug"></param>
-        public void Add_HTML_Based_Content(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, NameValueCollection RequestForm, bool IsDebug)
+        public void Add_HTML_Based_Content(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, NameValueCollection RequestForm, bool IsDebug)
         {
             Custom_Tracer tracer = new Custom_Tracer();
 
@@ -970,7 +968,7 @@ namespace SobekCM.Engine_Library.Endpoints
                     case Microservice_Endpoint_Protocol_Enum.XML:
                         byte[] byteArray2 = Encoding.UTF8.GetBytes(contentString);
                         MemoryStream mstream2 = new MemoryStream(byteArray2);
-                        XmlSerializer x = new XmlSerializer(typeof(Content));
+                        XmlSerializer x = new XmlSerializer(typeof(HTML_Based_Content));
                         content = (HTML_Based_Content) x.Deserialize(mstream2);
                         break;
                 }
@@ -1208,7 +1206,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="Protocol"></param>
         /// <param name="RequestForm"></param>
         /// <param name="IsDebug"></param>
-        public void Add_Milestone(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, NameValueCollection RequestForm, bool IsDebug)
+        public void Add_Milestone(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, NameValueCollection RequestForm, bool IsDebug)
         {
             Custom_Tracer tracer = new Custom_Tracer();
 
@@ -1266,7 +1264,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="QueryString"></param>
         /// <param name="Protocol"></param>
         /// <param name="IsDebug"></param>
-        public void Get_Special_Missing_Page(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
+        public void Get_Special_Missing_Page(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
         {
             Custom_Tracer tracer = new Custom_Tracer();
 
@@ -1406,7 +1404,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="QueryString"></param>
         /// <param name="Protocol"></param>
         /// <param name="IsDebug"></param>
-        public void Get_Single_Milestones(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
+        public void Get_Single_Milestones(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
         {
             Custom_Tracer tracer = new Custom_Tracer();
 
@@ -1493,7 +1491,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="QueryString"></param>
         /// <param name="Protocol"></param>
         /// <param name="IsDebug"></param>
-        public void Get_Single_Usage_Report(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
+        public void Get_Single_Usage_Report(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
         {
             Custom_Tracer tracer = new Custom_Tracer();
 
@@ -1581,7 +1579,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="Protocol"></param>
         /// <param name="IsDebug"></param>
         /// <remarks> This REST API should be publicly available for users that are performing administrative work </remarks>
-        public void GetUploadedImages(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
+        public void GetUploadedImages(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
         {
             Custom_Tracer tracer = new Custom_Tracer();
 
@@ -1689,7 +1687,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="IsDebug"></param>
         /// <remarks> This is not the most efficient way to verify existence of the updates since this actually pulls the entire list of 
         /// recent updates from the database.  However, this will likely be cached and be needed immediately anyway. </remarks>
-        public void Has_Global_Recent_Updates(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
+        public void Has_Global_Recent_Updates(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
         {
             // Create the tracer and add a trace
             Custom_Tracer tracer = new Custom_Tracer();
@@ -1751,7 +1749,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="QueryString"></param>
         /// <param name="Protocol"></param>
         /// <param name="IsDebug"></param>
-        public void Get_Global_Recent_Updates(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug )
+        public void Get_Global_Recent_Updates(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug )
         {
             Custom_Tracer tracer = new Custom_Tracer();
 
@@ -1928,7 +1926,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="QueryString"></param>
         /// <param name="Protocol"></param>
         /// <param name="IsDebug"></param>
-        public void Get_Global_Recent_Updates_JDataTable(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
+        public void Get_Global_Recent_Updates_JDataTable(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
         {
             Custom_Tracer tracer = new Custom_Tracer();
 
@@ -1940,15 +1938,15 @@ namespace SobekCM.Engine_Library.Endpoints
             string sortDirection1 = "asc";
 
             // Get the display start and length from the DataTables generated data URL
-            if (!Int32.TryParse(HttpContext.Current.Request.QueryString["iDisplayStart"], out displayStart)) displayStart = 0;
-            if (!Int32.TryParse(HttpContext.Current.Request.QueryString["iDisplayLength"], out displayLength)) displayLength = 50;
+            if (!Int32.TryParse(QueryString["iDisplayStart"], out displayStart)) displayStart = 0;
+            if (!Int32.TryParse(QueryString["iDisplayLength"], out displayLength)) displayLength = 50;
 
             // Get the echo value
-            string sEcho = HttpContext.Current.Request.QueryString["sEcho"];
+            string sEcho = QueryString["sEcho"];
 
             // Get the sorting column and sorting direction
-            if (!Int32.TryParse(HttpContext.Current.Request.QueryString["iSortCol_0"], out sortingColumn1)) sortingColumn1 = 0;
-            if ((HttpContext.Current.Request.QueryString["sSortDir_0"] != null) && (HttpContext.Current.Request.QueryString["sSortDir_0"] == "desc"))
+            if (!Int32.TryParse(QueryString["iSortCol_0"], out sortingColumn1)) sortingColumn1 = 0;
+            if ((QueryString["sSortDir_0"] != null) && (QueryString["sSortDir_0"] == "desc"))
                 sortDirection1 = "desc";
 
             // Get the dataset of recent updates
@@ -2127,7 +2125,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="QueryString"></param>
         /// <param name="Protocol"></param>
         /// <param name="IsDebug"></param>
-        public void Get_Global_Recent_Updates_NextLevel(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
+        public void Get_Global_Recent_Updates_NextLevel(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
         {
             Custom_Tracer tracer = new Custom_Tracer();
             tracer.Add_Trace("WebContentServices.Get_Global_Recent_Updates_NextLevel", "Into endpoint code");
@@ -2305,7 +2303,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="QueryString"></param>
         /// <param name="Protocol"></param>
         /// <param name="IsDebug"></param>
-        public void Get_Global_Recent_Updates_Users(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug )
+        public void Get_Global_Recent_Updates_Users(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug )
         {
             Custom_Tracer tracer = new Custom_Tracer();
 
@@ -2446,7 +2444,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="QueryString"></param>
         /// <param name="Protocol"></param>
         /// <param name="IsDebug"></param>
-        public void Has_Global_Usage(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
+        public void Has_Global_Usage(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
         {
             // Create the tracer and add a trace
             Custom_Tracer tracer = new Custom_Tracer();
@@ -2494,7 +2492,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="QueryString"></param>
         /// <param name="Protocol"></param>
         /// <param name="IsDebug"></param>
-        public void Get_Global_Usage_Report(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug )
+        public void Get_Global_Usage_Report(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug )
         {
             Custom_Tracer tracer = new Custom_Tracer();
 
@@ -2685,7 +2683,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="QueryString"></param>
         /// <param name="Protocol"></param>
         /// <param name="IsDebug"></param>
-        public void Get_Global_Usage_Report_JDataTable(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
+        public void Get_Global_Usage_Report_JDataTable(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
         {
             Custom_Tracer tracer = new Custom_Tracer();
 
@@ -2697,15 +2695,15 @@ namespace SobekCM.Engine_Library.Endpoints
             string sortDirection1 = "asc";
 
             // Get the display start and length from the DataTables generated data URL
-            if (!Int32.TryParse(HttpContext.Current.Request.QueryString["iDisplayStart"], out displayStart)) displayStart = 0;
-            if (!Int32.TryParse(HttpContext.Current.Request.QueryString["iDisplayLength"], out displayLength)) displayLength = 50;
+            if (!Int32.TryParse(QueryString["iDisplayStart"], out displayStart)) displayStart = 0;
+            if (!Int32.TryParse(QueryString["iDisplayLength"], out displayLength)) displayLength = 50;
 
             // Get the echo value
-            string sEcho = HttpContext.Current.Request.QueryString["sEcho"];
+            string sEcho = QueryString["sEcho"];
 
             // Get the sorting column and sorting direction
-            if (!Int32.TryParse(HttpContext.Current.Request.QueryString["iSortCol_0"], out sortingColumn1)) sortingColumn1 = 0;
-            if ((HttpContext.Current.Request.QueryString["sSortDir_0"] != null) && (HttpContext.Current.Request.QueryString["sSortDir_0"] == "desc"))
+            if (!Int32.TryParse(QueryString["iSortCol_0"], out sortingColumn1)) sortingColumn1 = 0;
+            if ((QueryString["sSortDir_0"] != null) && (QueryString["sSortDir_0"] == "desc"))
                 sortDirection1 = "desc";
 
             // Determine the range
@@ -2881,7 +2879,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="QueryString"></param>
         /// <param name="Protocol"></param>
         /// <param name="IsDebug"></param>
-        public void Get_Global_Usage_Report_NextLevel(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
+        public void Get_Global_Usage_Report_NextLevel(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
         {
             Custom_Tracer tracer = new Custom_Tracer();
             tracer.Add_Trace("WebContentServices.Get_Global_Usage_Report_NextLevel", "Into endpoint code");
@@ -3108,7 +3106,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="IsDebug"></param>
         /// <remarks> This is not the most efficient way to verify existence of the rediects since this actually pulls the entire list of 
         /// redirects from the database.  However, this will likely be cached and be needed immediately anyway. </remarks>
-        public void Has_Redirects(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
+        public void Has_Redirects(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
         {
             // Create the tracer and add a trace
             Custom_Tracer tracer = new Custom_Tracer();
@@ -3170,7 +3168,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="QueryString"></param>
         /// <param name="Protocol"></param>
         /// <param name="IsDebug"></param>
-        public void Get_All_Redirects(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug )
+        public void Get_All_Redirects(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug )
         {
             Custom_Tracer tracer = new Custom_Tracer();
 
@@ -3295,7 +3293,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="QueryString"></param>
         /// <param name="Protocol"></param>
         /// <param name="IsDebug"></param>
-        public void Get_All_Redirects_JDataTable(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
+        public void Get_All_Redirects_JDataTable(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
         {
             Custom_Tracer tracer = new Custom_Tracer();
 
@@ -3307,15 +3305,15 @@ namespace SobekCM.Engine_Library.Endpoints
             string sortDirection1 = "asc";
 
             // Get the display start and length from the DataTables generated data URL
-            if (!Int32.TryParse(HttpContext.Current.Request.QueryString["iDisplayStart"], out displayStart)) displayStart = 0;
-            if (!Int32.TryParse(HttpContext.Current.Request.QueryString["iDisplayLength"], out displayLength)) displayLength = 50;
+            if (!Int32.TryParse(QueryString["iDisplayStart"], out displayStart)) displayStart = 0;
+            if (!Int32.TryParse(QueryString["iDisplayLength"], out displayLength)) displayLength = 50;
 
             // Get the echo value
-            string sEcho = HttpContext.Current.Request.QueryString["sEcho"];
+            string sEcho = QueryString["sEcho"];
 
             // Get the sorting column and sorting direction
-            if (!Int32.TryParse(HttpContext.Current.Request.QueryString["iSortCol_0"], out sortingColumn1)) sortingColumn1 = 0;
-            if ((HttpContext.Current.Request.QueryString["sSortDir_0"] != null) && (HttpContext.Current.Request.QueryString["sSortDir_0"] == "desc"))
+            if (!Int32.TryParse(QueryString["iSortCol_0"], out sortingColumn1)) sortingColumn1 = 0;
+            if ((QueryString["sSortDir_0"] != null) && (QueryString["sSortDir_0"] == "desc"))
                 sortDirection1 = "desc";
 
             // Get the dataset of pages
@@ -3469,7 +3467,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="QueryString"></param>
         /// <param name="Protocol"></param>
         /// <param name="IsDebug"></param>
-        public void Get_All_Redirects_NextLevel(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
+        public void Get_All_Redirects_NextLevel(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
         {
             Custom_Tracer tracer = new Custom_Tracer();
             tracer.Add_Trace("WebContentServices.Get_All_Redirects_NextLevel", "Into endpoint code");
@@ -3674,7 +3672,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="IsDebug"></param>
         /// <remarks> This is not the most efficient way to verify existence of the pages since this actually pulls the entire list of 
         /// pages from the database.  However, this will likely be cached and be needed immediately anyway. </remarks>
-        public void Has_Content_Pages(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
+        public void Has_Content_Pages(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
         {
             // Create the tracer and add a trace
             Custom_Tracer tracer = new Custom_Tracer();
@@ -3736,7 +3734,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="QueryString"></param>
         /// <param name="Protocol"></param>
         /// <param name="IsDebug"></param>
-        public void Get_All_Pages(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug )
+        public void Get_All_Pages(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug )
         {
             Custom_Tracer tracer = new Custom_Tracer();
 
@@ -3863,7 +3861,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="QueryString"></param>
         /// <param name="Protocol"></param>
         /// <param name="IsDebug"></param>
-        public void Get_All_Pages_JDataTable(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug )
+        public void Get_All_Pages_JDataTable(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug )
         {
             Custom_Tracer tracer = new Custom_Tracer();
 
@@ -3875,15 +3873,15 @@ namespace SobekCM.Engine_Library.Endpoints
             string sortDirection1 = "asc";
 
             // Get the display start and length from the DataTables generated data URL
-            if (!Int32.TryParse(HttpContext.Current.Request.QueryString["iDisplayStart"], out displayStart)) displayStart = 0;
-            if (!Int32.TryParse(HttpContext.Current.Request.QueryString["iDisplayLength"], out displayLength)) displayLength = 50;
+            if (!Int32.TryParse(QueryString["iDisplayStart"], out displayStart)) displayStart = 0;
+            if (!Int32.TryParse(QueryString["iDisplayLength"], out displayLength)) displayLength = 50;
 
             // Get the echo value
-            string sEcho = HttpContext.Current.Request.QueryString["sEcho"];
+            string sEcho = QueryString["sEcho"];
 
             // Get the sorting column and sorting direction
-            if (!Int32.TryParse(HttpContext.Current.Request.QueryString["iSortCol_0"], out sortingColumn1)) sortingColumn1 = 0;
-            if ((HttpContext.Current.Request.QueryString["sSortDir_0"] != null) && (HttpContext.Current.Request.QueryString["sSortDir_0"] == "desc"))
+            if (!Int32.TryParse(QueryString["iSortCol_0"], out sortingColumn1)) sortingColumn1 = 0;
+            if ((QueryString["sSortDir_0"] != null) && (QueryString["sSortDir_0"] == "desc"))
                 sortDirection1 = "desc";
 
             // Get the dataset of pages
@@ -4037,7 +4035,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="QueryString"></param>
         /// <param name="Protocol"></param>
         /// <param name="IsDebug"></param>
-        public void Get_All_Pages_NextLevel(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug )
+        public void Get_All_Pages_NextLevel(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug )
         {
             Custom_Tracer tracer = new Custom_Tracer();
             tracer.Add_Trace("WebContentServices.Get_All_Pages_NextLevel", "Into endpoint code");
@@ -4290,7 +4288,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <remarks> This is not the most efficient way to verify existence of the pages and redirects since this actually 
         /// pulls the entire list of pages and redirects from the database.  However, this will likely be cached and be 
         /// needed immediately anyway. </remarks>
-        public void Has_Pages_Or_Redirects(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
+        public void Has_Pages_Or_Redirects(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
         {
             // Create the tracer and add a trace
             Custom_Tracer tracer = new Custom_Tracer();
@@ -4352,7 +4350,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="QueryString"></param>
         /// <param name="Protocol"></param>
         /// <param name="IsDebug"></param>
-        public void Get_All(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
+        public void Get_All(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
         {
             Custom_Tracer tracer = new Custom_Tracer();
 
@@ -4479,7 +4477,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="QueryString"></param>
         /// <param name="Protocol"></param>
         /// <param name="IsDebug"></param>
-        public void Get_All_JDataTable(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
+        public void Get_All_JDataTable(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
         {
             Custom_Tracer tracer = new Custom_Tracer();
 
@@ -4491,15 +4489,15 @@ namespace SobekCM.Engine_Library.Endpoints
             string sortDirection1 = "asc";
 
             // Get the display start and length from the DataTables generated data URL
-            if (!Int32.TryParse(HttpContext.Current.Request.QueryString["iDisplayStart"], out displayStart)) displayStart = 0;
-            if (!Int32.TryParse(HttpContext.Current.Request.QueryString["iDisplayLength"], out displayLength)) displayLength = 50;
+            if (!Int32.TryParse(QueryString["iDisplayStart"], out displayStart)) displayStart = 0;
+            if (!Int32.TryParse(QueryString["iDisplayLength"], out displayLength)) displayLength = 50;
 
             // Get the echo value
-            string sEcho = HttpContext.Current.Request.QueryString["sEcho"];
+            string sEcho = QueryString["sEcho"];
 
             // Get the sorting column and sorting direction
-            if (!Int32.TryParse(HttpContext.Current.Request.QueryString["iSortCol_0"], out sortingColumn1)) sortingColumn1 = 0;
-            if ((HttpContext.Current.Request.QueryString["sSortDir_0"] != null) && (HttpContext.Current.Request.QueryString["sSortDir_0"] == "desc"))
+            if (!Int32.TryParse(QueryString["iSortCol_0"], out sortingColumn1)) sortingColumn1 = 0;
+            if ((QueryString["sSortDir_0"] != null) && (QueryString["sSortDir_0"] == "desc"))
                 sortDirection1 = "desc";
 
             // Get the dataset of pages
@@ -4656,7 +4654,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="QueryString"></param>
         /// <param name="Protocol"></param>
         /// <param name="IsDebug"></param>
-        public void Get_All_NextLevel(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
+        public void Get_All_NextLevel(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
         {
             Custom_Tracer tracer = new Custom_Tracer();
             tracer.Add_Trace("WebContentServices.Get_All_NextLevel", "Into endpoint code");
@@ -4861,7 +4859,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="QueryString"></param>
         /// <param name="Protocol"></param>
         /// <param name="IsDebug"></param>
-        public void Get_All_Sitemaps(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
+        public void Get_All_Sitemaps(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
         {
             Custom_Tracer tracer = new Custom_Tracer();
 
@@ -4958,7 +4956,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="QueryString"></param>
         /// <param name="Protocol"></param>
         /// <param name="IsDebug"></param>
-        public void Get_All_Controlled_Javascript(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
+        public void Get_All_Controlled_Javascript(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
         {
             Custom_Tracer tracer = new Custom_Tracer();
 
@@ -5050,7 +5048,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="QueryString"></param>
         /// <param name="Protocol"></param>
         /// <param name="IsDebug"></param>
-        public void Get_All_Controlled_Stylesheets(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
+        public void Get_All_Controlled_Stylesheets(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
         {
             Custom_Tracer tracer = new Custom_Tracer();
 
@@ -5311,7 +5309,7 @@ namespace SobekCM.Engine_Library.Endpoints
                     string include_text;
 
                     // Look in the cache for this
-                    object returnValue = HttpContext.Current.Cache.Get("INCLUDE_" + filename_to_include);
+                    object returnValue = MemoryCache.Default.Get("INCLUDE_" + filename_to_include);
                     if (returnValue != null)
                     {
                         include_text = returnValue.ToString();
@@ -5327,7 +5325,7 @@ namespace SobekCM.Engine_Library.Endpoints
 
                             // Store on the cache for two minutes, if no indication not to
                             if (include_statement_upper.IndexOf("NOCACHE") < 0)
-                                HttpContext.Current.Cache.Insert("INCLUDE_" + filename_to_include, include_text, null, Cache.NoAbsoluteExpiration, TimeSpan.FromMinutes(2));
+                                MemoryCache.Default.Set("INCLUDE_" + filename_to_include, include_text, new CacheItemPolicy { SlidingExpiration = TimeSpan.FromMinutes(2) });
                         }
                         catch (Exception)
                         {

@@ -1,13 +1,11 @@
 ﻿#region Using directives
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Runtime.Caching;
 using System.Text;
-using System.Web;
-using System.Web.Caching;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Results;
 using SobekCM.Core.SiteMap;
@@ -60,9 +58,9 @@ namespace SobekCM.Core.MemoryMgmt
             {
                 // Build the sorted list
                 SortedList<string, Cached_Object_Info> sortedList = new SortedList<string, Cached_Object_Info>();
-                foreach (DictionaryEntry thisItem in HttpContext.Current.Cache)
+                foreach (KeyValuePair<string, object> thisItem in MemoryCache.Default)
                 {
-                    sortedList.Add(thisItem.Key.ToString(), new Cached_Object_Info(thisItem.Key.ToString(), thisItem.Value.GetType()));
+                    sortedList.Add(thisItem.Key, new Cached_Object_Info(thisItem.Key, thisItem.Value.GetType()));
                 }
 
                 // Return the readonly collection of all the values
@@ -74,12 +72,12 @@ namespace SobekCM.Core.MemoryMgmt
         public static void Clear_Cache()
         {
             // Get collection of keys in the Cache
-            List<string> keys = (from DictionaryEntry thisItem in HttpContext.Current.Cache select thisItem.Key.ToString()).ToList();
+            List<string> keys = (from KeyValuePair<string, object> thisItem in MemoryCache.Default select thisItem.Key).ToList();
 
             // Delete all items from the Cache
             foreach (string key in keys)
             {
-                HttpContext.Current.Cache.Remove(key);
+                MemoryCache.Default.Remove(key);
             }
         }
 
@@ -87,14 +85,14 @@ namespace SobekCM.Core.MemoryMgmt
         public static void Clear_Search_Results_Browses()
         {
             // Get collection of keys in the Cache
-            List<string> keys = (from DictionaryEntry thisItem in HttpContext.Current.Cache select thisItem.Key.ToString()).ToList();
+            List<string> keys = (from KeyValuePair<string, object> thisItem in MemoryCache.Default select thisItem.Key).ToList();
 
             // Delete all items from the Cache
             foreach (string key in keys)
             {
                 if ((key.IndexOf("PAGEDBROWSE_") == 0) || (key.IndexOf("PAGEDRESULTS_") == 0) || (key.IndexOf("TOTALBROWSE_") == 0) || (key.IndexOf("TOTALRESULTS_") == 0))
                 {
-                    HttpContext.Current.Cache.Remove(key);
+                    MemoryCache.Default.Remove(key);
                 }
             }
         }
@@ -119,7 +117,7 @@ namespace SobekCM.Core.MemoryMgmt
                 Tracer.Add_Trace("CachedDataManager.Retrieve_User_Folder_Browse", "");
             }
 
-            object returnValue = HttpContext.Current.Cache.Get("USER_FOLDER_" + User_ID + "_" + Folder_Name.ToLower() + "_" + ResultsPage + "_" + Results_Per_Page);
+            object returnValue = MemoryCache.Default.Get("USER_FOLDER_" + User_ID + "_" + Folder_Name.ToLower() + "_" + ResultsPage + "_" + Results_Per_Page);
             return (returnValue != null) ? (List<iSearch_Title_Result>) returnValue : null;
         }
 
@@ -143,9 +141,9 @@ namespace SobekCM.Core.MemoryMgmt
                 Tracer.Add_Trace("CachedDataManager.Store_User_Folder_Browse", "Adding object '" + key + "' to the cache with expiration of 1 minute");
             }
 
-            if (HttpContext.Current.Cache[key] == null)
+            if (MemoryCache.Default[key] == null)
             {
-                HttpContext.Current.Cache.Insert(key, StoreObject, null, Cache.NoAbsoluteExpiration, TimeSpan.FromMinutes(1));
+                MemoryCache.Default.Set(key, StoreObject, new CacheItemPolicy { SlidingExpiration = TimeSpan.FromMinutes(1) });
             }
         }
 
@@ -165,7 +163,7 @@ namespace SobekCM.Core.MemoryMgmt
                 Tracer.Add_Trace("CachedDataManager.Retrieve_User_Folder_Browse_Statistics", "");
             }
 
-            object returnValue = HttpContext.Current.Cache.Get("USER_FOLDER_" + User_ID + "_" + Folder_Name.ToLower() + "_STATISTICS");
+            object returnValue = MemoryCache.Default.Get("USER_FOLDER_" + User_ID + "_" + Folder_Name.ToLower() + "_STATISTICS");
             return (returnValue != null) ? (Search_Results_Statistics) returnValue : null;
         }
 
@@ -187,9 +185,9 @@ namespace SobekCM.Core.MemoryMgmt
                 Tracer.Add_Trace("CachedDataManager.Store_User_Folder_Browse_Statistics", "Adding object '" + key + "' to the cache with expiration of 1 minute");
             }
 
-            if (HttpContext.Current.Cache[key] == null)
+            if (MemoryCache.Default[key] == null)
             {
-                HttpContext.Current.Cache.Insert(key, StoreObject, null, Cache.NoAbsoluteExpiration, TimeSpan.FromMinutes(1));
+                MemoryCache.Default.Set(key, StoreObject, new CacheItemPolicy { SlidingExpiration = TimeSpan.FromMinutes(1) });
             }
         }
 
@@ -211,12 +209,12 @@ namespace SobekCM.Core.MemoryMgmt
             }
 
             // Get collection of keys in the Cache
-            List<string> keys = (from DictionaryEntry thisItem in HttpContext.Current.Cache where thisItem.Key.ToString().IndexOf(key_start) == 0 select thisItem.Key.ToString()).ToList();
+            List<string> keys = (from KeyValuePair<string, object> thisItem in MemoryCache.Default where thisItem.Key.IndexOf(key_start) == 0 select thisItem.Key).ToList();
 
             // Delete all items from the Cache
             foreach (string key in keys)
             {
-                HttpContext.Current.Cache.Remove(key);
+                MemoryCache.Default.Remove(key);
             }
         }
 
@@ -237,12 +235,12 @@ namespace SobekCM.Core.MemoryMgmt
             string key_start = "USER_FOLDER_" + User_ID + "_";
 
             // Get collection of keys in the Cache
-            List<string> keys = (from DictionaryEntry thisItem in HttpContext.Current.Cache where thisItem.Key.ToString().IndexOf(key_start) == 0 select thisItem.Key.ToString()).ToList();
+            List<string> keys = (from KeyValuePair<string, object> thisItem in MemoryCache.Default where thisItem.Key.IndexOf(key_start) == 0 select thisItem.Key).ToList();
 
             // Delete all items from the Cache
             foreach (string key in keys)
             {
-                HttpContext.Current.Cache.Remove(key);
+                MemoryCache.Default.Remove(key);
             }
         }
 
@@ -265,7 +263,7 @@ namespace SobekCM.Core.MemoryMgmt
                 Tracer.Add_Trace("CachedDataManager.Retrieve_Public_Folder_Info", "");
             }
 
-            object returnValue = HttpContext.Current.Cache.Get("FOLDER_INFO_" + UserFolderID);
+            object returnValue = MemoryCache.Default.Get("FOLDER_INFO_" + UserFolderID);
             return (returnValue != null) ? (Public_User_Folder) returnValue : null;
         }
 
@@ -285,7 +283,7 @@ namespace SobekCM.Core.MemoryMgmt
                 Tracer.Add_Trace("CachedDataManager.Retrieve_Public_Folder_Browse", "");
             }
 
-            object returnValue = HttpContext.Current.Cache.Get("FOLDER_BROWSE_" + UserFolderID + "_" + ResultsPage);
+            object returnValue = MemoryCache.Default.Get("FOLDER_BROWSE_" + UserFolderID + "_" + ResultsPage);
             return (returnValue != null) ? (List<iSearch_Title_Result>) returnValue : null;
         }
 
@@ -304,7 +302,7 @@ namespace SobekCM.Core.MemoryMgmt
                 Tracer.Add_Trace("CachedDataManager.Retrieve_Public_Folder_Browse", "");
             }
 
-            object returnValue = HttpContext.Current.Cache.Get("FOLDER_BROWSE_" + UserFolderID + "_STATISTICS");
+            object returnValue = MemoryCache.Default.Get("FOLDER_BROWSE_" + UserFolderID + "_STATISTICS");
             return (returnValue != null) ? (Search_Results_Statistics) returnValue : null;
         }
 
@@ -324,9 +322,9 @@ namespace SobekCM.Core.MemoryMgmt
                 Tracer.Add_Trace("CachedDataManager.Store_Public_Folder_Info", "Adding object '" + key + "' to the cache with expiration of 2 minutes");
             }
 
-            if (HttpContext.Current.Cache[key] == null)
+            if (MemoryCache.Default[key] == null)
             {
-                HttpContext.Current.Cache.Insert(key, StoreObject, null, Cache.NoAbsoluteExpiration, TimeSpan.FromMinutes(2));
+                MemoryCache.Default.Set(key, StoreObject, new CacheItemPolicy { SlidingExpiration = TimeSpan.FromMinutes(2) });
             }
         }
 
@@ -348,9 +346,9 @@ namespace SobekCM.Core.MemoryMgmt
                 Tracer.Add_Trace("CachedDataManager.Store_Public_Folder_Browse", "Adding object '" + key + "' to the cache with expiration of 2 minutes");
             }
 
-            if (HttpContext.Current.Cache[key] == null)
+            if (MemoryCache.Default[key] == null)
             {
-                HttpContext.Current.Cache.Insert(key, StoreObject, null, Cache.NoAbsoluteExpiration, TimeSpan.FromMinutes(2));
+                MemoryCache.Default.Set(key, StoreObject, new CacheItemPolicy { SlidingExpiration = TimeSpan.FromMinutes(2) });
             }
         }
 
@@ -371,9 +369,9 @@ namespace SobekCM.Core.MemoryMgmt
                 Tracer.Add_Trace("CachedDataManager.Store_Public_Folder_Browse", "Adding object '" + key + "' to the cache with expiration of 2 minutes");
             }
 
-            if (HttpContext.Current.Cache[key] == null)
+            if (MemoryCache.Default[key] == null)
             {
-                HttpContext.Current.Cache.Insert(key, StoreObject, null, Cache.NoAbsoluteExpiration, TimeSpan.FromMinutes(2));
+                MemoryCache.Default.Set(key, StoreObject, new CacheItemPolicy { SlidingExpiration = TimeSpan.FromMinutes(2) });
             }
         }
 
@@ -391,17 +389,17 @@ namespace SobekCM.Core.MemoryMgmt
                 Tracer.Add_Trace("CachedDataManager.Clear_Public_Folder_Info", "");
             }
 
-            HttpContext.Current.Cache.Remove("FOLDER_INFO_" + UserFolderID);
+            MemoryCache.Default.Remove("FOLDER_INFO_" + UserFolderID);
 
             string key_start = "FOLDER_BROWSE_" + UserFolderID + "_";
 
             // Get collection of keys in the Cache
-            List<string> keys = (from DictionaryEntry thisItem in HttpContext.Current.Cache where thisItem.Key.ToString().IndexOf(key_start) == 0 select thisItem.Key.ToString()).ToList();
+            List<string> keys = (from KeyValuePair<string, object> thisItem in MemoryCache.Default where thisItem.Key.IndexOf(key_start) == 0 select thisItem.Key).ToList();
 
             // Delete all items from the Cache
             foreach (string key in keys)
             {
-                HttpContext.Current.Cache.Remove(key);
+                MemoryCache.Default.Remove(key);
             }
         }
 
@@ -429,7 +427,7 @@ namespace SobekCM.Core.MemoryMgmt
             string key = "TOTALBROWSE_" + Aggregation_Code.ToUpper() + "_" + Browse_Name.ToUpper();
 
             // Try to get this from the local cache next
-            object returnValue = HttpContext.Current.Cache.Get(key);
+            object returnValue = MemoryCache.Default.Get(key);
             if (returnValue != null)
             {
                 if (Tracer != null)
@@ -458,14 +456,14 @@ namespace SobekCM.Core.MemoryMgmt
             string key = "TOTALBROWSE_" + Aggregation_Code.ToUpper() + "_" + Browse_Name.ToUpper();
 
             // Store this on the local cache, if not there and storing on the cache server failed
-            if (HttpContext.Current.Cache[key] == null)
+            if (MemoryCache.Default[key] == null)
             {
                 if (Tracer != null)
                 {
                     Tracer.Add_Trace("CachedDataManager.Store_Browse_Result_Statistics", "Adding object '" + key + "' to the local cache with expiration of 1 minute");
                 }
 
-                HttpContext.Current.Cache.Insert(key, StoreObject, null, Cache.NoAbsoluteExpiration, TimeSpan.FromMinutes(1));
+                MemoryCache.Default.Set(key, StoreObject, new CacheItemPolicy { SlidingExpiration = TimeSpan.FromMinutes(1) });
             }
         }
 
@@ -496,7 +494,7 @@ namespace SobekCM.Core.MemoryMgmt
             string key = "PAGEDBROWSE_" + Aggregation_Code.ToUpper() + "_" + Browse_Name.ToUpper() + "_" + Sort + "_" + Results_Per_Page + "_" + Page;
 
             // Try to get this object from the local cache first
-            object returnValue = HttpContext.Current.Cache.Get(key);
+            object returnValue = MemoryCache.Default.Get(key);
             if (returnValue != null)
             {
                 if (Tracer != null)
@@ -533,14 +531,14 @@ namespace SobekCM.Core.MemoryMgmt
                 string key = "PAGEDBROWSE_" + Aggregation_Code.ToUpper() + "_" + Browse_Name.ToUpper() + "_" + Sort + "_" + Results_Per_Page + "_" + currentpage;
 
                 // Store this on the local cache, if not there and storing on the cache server failed
-                if (HttpContext.Current.Cache[key] == null)
+                if (MemoryCache.Default[key] == null)
                 {
                     if (Tracer != null)
                     {
                         Tracer.Add_Trace("CachedDataManager.Store_Info_Browse", "Adding object '" + key + "' to the local cache with expiration of 1 minute");
                     }
 
-                    HttpContext.Current.Cache.Insert(key, pageOfResults, null, Cache.NoAbsoluteExpiration, TimeSpan.FromMinutes(1));
+                    MemoryCache.Default.Set(key, pageOfResults, new CacheItemPolicy { SlidingExpiration = TimeSpan.FromMinutes(1) });
                 }
 
                 currentpage++;
@@ -571,7 +569,7 @@ namespace SobekCM.Core.MemoryMgmt
             string key = "BROWSEBY_" + Aggregation_Code.ToUpper() + "_" + Browse_Name.ToUpper();
 
             // Try to get this object from the local cache if above fails
-            object returnValue = HttpContext.Current.Cache.Get(key);
+            object returnValue = MemoryCache.Default.Get(key);
             if (returnValue != null)
             {
                 if (Tracer != null)
@@ -600,14 +598,14 @@ namespace SobekCM.Core.MemoryMgmt
             string key = "BROWSEBY_" + Aggregation_Code.ToUpper() + "_" + Browse_Name.ToUpper();
 
             // Store this on the local cache, if not there and storing on the cache server failed
-            if (HttpContext.Current.Cache[key] == null)
+            if (MemoryCache.Default[key] == null)
             {
                 if (Tracer != null)
                 {
                     Tracer.Add_Trace("CachedDataManager.Store_Aggregation_Metadata_Browse", "Adding object '" + key + "' to the local cache with expiration of 1 minute");
                 }
 
-                HttpContext.Current.Cache.Insert(key, StoreObject, null, Cache.NoAbsoluteExpiration, TimeSpan.FromMinutes(1));
+                MemoryCache.Default.Set(key, StoreObject, new CacheItemPolicy { SlidingExpiration = TimeSpan.FromMinutes(1) });
             }
         }
 
@@ -695,7 +693,7 @@ namespace SobekCM.Core.MemoryMgmt
 			}
 
 			// Try to get this from the local cache first
-			object returnValue = HttpContext.Current.Cache.Get(key);
+			object returnValue = MemoryCache.Default.Get(key);
 			if (returnValue != null)
 			{
 				if (Tracer != null)
@@ -786,7 +784,7 @@ namespace SobekCM.Core.MemoryMgmt
             }
 
             // Try to get this from the local cache first
-            object returnValue = HttpContext.Current.Cache.Get(key);
+            object returnValue = MemoryCache.Default.Get(key);
             if (returnValue != null)
             {
                 if (Tracer != null)
@@ -871,14 +869,14 @@ namespace SobekCM.Core.MemoryMgmt
 			}
 
 			// Store this on the local cache, if not there and storing on the cache server failed
-			if (HttpContext.Current.Cache[key] == null)
+			if (MemoryCache.Default[key] == null)
 			{
 				if (Tracer != null)
 				{
 					Tracer.Add_Trace("CachedDataManager.Store_Search_Result_Statistics", "Adding object '" + key + "' to the local cache with expiration of 1 minute");
 				}
 
-				HttpContext.Current.Cache.Insert(key, StoreObject, null, Cache.NoAbsoluteExpiration, TimeSpan.FromMinutes(1));
+				MemoryCache.Default.Set(key, StoreObject, new CacheItemPolicy { SlidingExpiration = TimeSpan.FromMinutes(1) });
 			}
 		}
 
@@ -953,14 +951,14 @@ namespace SobekCM.Core.MemoryMgmt
             }
 
             // Store this on the local cache, if not there and storing on the cache server failed
-            if (HttpContext.Current.Cache[key] == null)
+            if (MemoryCache.Default[key] == null)
             {
                 if (Tracer != null)
                 {
                     Tracer.Add_Trace("CachedDataManager.Store_Search_Result_Statistics", "Adding object '" + key + "' to the local cache with expiration of 1 minute");
                 }
 
-                HttpContext.Current.Cache.Insert(key, StoreObject, null, Cache.NoAbsoluteExpiration, TimeSpan.FromMinutes(1));
+                MemoryCache.Default.Set(key, StoreObject, new CacheItemPolicy { SlidingExpiration = TimeSpan.FromMinutes(1) });
             }
         }
 
@@ -1048,7 +1046,7 @@ namespace SobekCM.Core.MemoryMgmt
 			}
 
     		// Try to get this from the local cache next
-			object returnValue = HttpContext.Current.Cache.Get(key);
+			object returnValue = MemoryCache.Default.Get(key);
 			if (returnValue != null)
 			{
 				if (Tracer != null)
@@ -1137,7 +1135,7 @@ namespace SobekCM.Core.MemoryMgmt
             }
 
             // Try to get this from the local cache next
-            object returnValue = HttpContext.Current.Cache.Get(key);
+            object returnValue = MemoryCache.Default.Get(key);
             if (returnValue != null)
             {
                 if (Tracer != null)
@@ -1226,14 +1224,14 @@ namespace SobekCM.Core.MemoryMgmt
 			}
 
 			// Store this on the local cache, if not there and storing on the cache server failed
-			if (HttpContext.Current.Cache[key] == null)
+			if (MemoryCache.Default[key] == null)
 			{
 				if (Tracer != null)
 				{
 					Tracer.Add_Trace("CachedDataManager.Store_Search_Results", "Adding object '" + key + "' to the local cache with expiration of 1 minute");
 				}
 
-				HttpContext.Current.Cache.Insert(key, StoreObject, null, Cache.NoAbsoluteExpiration, TimeSpan.FromMinutes(1));
+				MemoryCache.Default.Set(key, StoreObject, new CacheItemPolicy { SlidingExpiration = TimeSpan.FromMinutes(1) });
 			}
 		}
 
@@ -1311,14 +1309,14 @@ namespace SobekCM.Core.MemoryMgmt
             }
 
             // Store this on the local cache, if not there and storing on the cache server failed
-            if (HttpContext.Current.Cache[key] == null)
+            if (MemoryCache.Default[key] == null)
             {
                 if (Tracer != null)
                 {
                     Tracer.Add_Trace("CachedDataManager.Store_Search_Results", "Adding object '" + key + "' to the local cache with expiration of 1 minute");
                 }
 
-                HttpContext.Current.Cache.Insert(key, StoreObject, null, Cache.NoAbsoluteExpiration, TimeSpan.FromMinutes(1));
+                MemoryCache.Default.Set(key, StoreObject, new CacheItemPolicy { SlidingExpiration = TimeSpan.FromMinutes(1) });
             }
         }
 
@@ -1401,14 +1399,14 @@ namespace SobekCM.Core.MemoryMgmt
 				}
 
 				// Store this on the local cache, if not there and storing on the cache server failed
-				if (HttpContext.Current.Cache[key] == null)
+				if (MemoryCache.Default[key] == null)
 				{
 					if (Tracer != null)
 					{
 						Tracer.Add_Trace("CachedDataManager.Store_Search_Results", "Adding object '" + key + "' to the local cache with expiration of 1 minutes");
 					}
 
-					HttpContext.Current.Cache.Insert(key, pageOfResults, null, Cache.NoAbsoluteExpiration, TimeSpan.FromMinutes(1));
+					MemoryCache.Default.Set(key, pageOfResults, new CacheItemPolicy { SlidingExpiration = TimeSpan.FromMinutes(1) });
 				}
 
 				currentpage++;
@@ -1494,14 +1492,14 @@ namespace SobekCM.Core.MemoryMgmt
                 }
 
                 // Store this on the local cache, if not there and storing on the cache server failed
-                if (HttpContext.Current.Cache[key] == null) 
+                if (MemoryCache.Default[key] == null) 
                 {
                     if (Tracer != null)
                     {
                         Tracer.Add_Trace("CachedDataManager.Store_Search_Results", "Adding object '" + key + "' to the local cache with expiration of 1 minute");
                     }
 
-                    HttpContext.Current.Cache.Insert(key, pageOfResults, null, Cache.NoAbsoluteExpiration, TimeSpan.FromMinutes(1));
+                    MemoryCache.Default.Set(key, pageOfResults, new CacheItemPolicy { SlidingExpiration = TimeSpan.FromMinutes(1) });
                 }
 
                 currentpage++;
@@ -1537,7 +1535,7 @@ namespace SobekCM.Core.MemoryMgmt
         //        key = key + "_SCORE";
 
         //    // Try to get this object
-        //    object returnValue = HttpContext.Current.Cache.Get(key);
+        //    object returnValue = MemoryCache.Default.Get(key);
         //    return (returnValue != null) ? (Solr_Page_Results) returnValue : null;
         //}
 
@@ -1563,9 +1561,9 @@ namespace SobekCM.Core.MemoryMgmt
         //    }
 
         //    // Store this on the cache
-        //    if (HttpContext.Current.Cache[key] == null)
+        //    if (MemoryCache.Default[key] == null)
         //    {
-        //        HttpContext.Current.Cache.Insert(key, StoreObject, null, Cache.NoAbsoluteExpiration, TimeSpan.FromMinutes(5));
+        //        MemoryCache.Default.Set(key, StoreObject, new CacheItemPolicy { SlidingExpiration = TimeSpan.FromMinutes(5) });
         //    }
         //}
 
@@ -1592,7 +1590,7 @@ namespace SobekCM.Core.MemoryMgmt
         //    string key = "TEMPLATE_" + Template_Code;
 
         //    // Try to get this object
-        //    object returnValue = HttpContext.Current.Cache.Get(key);
+        //    object returnValue = MemoryCache.Default.Get(key);
         //    return (returnValue != null) ? (CompleteTemplate) returnValue : null;
         //}
 
@@ -1615,9 +1613,9 @@ namespace SobekCM.Core.MemoryMgmt
         //    }
 
         //    // Store this on the cache
-        //    if (HttpContext.Current.Cache[key] == null)
+        //    if (MemoryCache.Default[key] == null)
         //    {
-        //        HttpContext.Current.Cache.Insert(key, StoreObject, null, Cache.NoAbsoluteExpiration, TimeSpan.FromMinutes(30));
+        //        MemoryCache.Default.Set(key, StoreObject, new CacheItemPolicy { SlidingExpiration = TimeSpan.FromMinutes(30) });
         //    }
         //}
 
@@ -1657,7 +1655,7 @@ namespace SobekCM.Core.MemoryMgmt
 			}
 
 			// Clear this from the local cache
-			HttpContext.Current.Cache.Remove(key);
+			MemoryCache.Default.Remove(key);
 		}
 
 		/// <summary> Retrieves a global project object from the cache  </summary>
@@ -1693,7 +1691,7 @@ namespace SobekCM.Core.MemoryMgmt
 			}
 
 			// Try to get this object
-			object returnValue = HttpContext.Current.Cache.Get(key);
+			object returnValue = MemoryCache.Default.Get(key);
 			return (returnValue != null) ? (SobekCM_Item) returnValue : null;
 		}
 
@@ -1730,9 +1728,9 @@ namespace SobekCM.Core.MemoryMgmt
 			}
 
 			// Store this on the cache
-			if (HttpContext.Current.Cache[key] == null)
+			if (MemoryCache.Default[key] == null)
 			{
-				HttpContext.Current.Cache.Insert(key, StoreObject, null, Cache.NoAbsoluteExpiration, TimeSpan.FromMinutes(15));
+				MemoryCache.Default.Set(key, StoreObject, new CacheItemPolicy { SlidingExpiration = TimeSpan.FromMinutes(15) });
 			}
 		}
 
@@ -1760,7 +1758,7 @@ namespace SobekCM.Core.MemoryMgmt
 			string key = "SITEMAP_" + SiteMap_File;
 
 			// Try to get this object from the local cache 
-			object returnValue = HttpContext.Current.Cache.Get(key);
+			object returnValue = MemoryCache.Default.Get(key);
 			if (returnValue != null)
 			{
 				if (Tracer != null)
@@ -1789,14 +1787,14 @@ namespace SobekCM.Core.MemoryMgmt
 			string key = "SITEMAP_" + SiteMap_File;
 
 			// Store this on the local cache, if not there and storing on the cache server failed
-			if (HttpContext.Current.Cache[key] == null)
+			if (MemoryCache.Default[key] == null)
 			{
 				if (Tracer != null)
 				{
 					Tracer.Add_Trace("CachedDataManager.Store_Site_Map", "Adding object '" + key + "' to the local cache with expiration of 3 minutes");
 				}
 
-				HttpContext.Current.Cache.Insert(key, StoreObject, null, Cache.NoAbsoluteExpiration, TimeSpan.FromMinutes(3));
+				MemoryCache.Default.Set(key, StoreObject, new CacheItemPolicy { SlidingExpiration = TimeSpan.FromMinutes(3) });
 			}
 		}
 

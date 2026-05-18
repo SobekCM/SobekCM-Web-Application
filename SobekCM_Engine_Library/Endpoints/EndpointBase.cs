@@ -1,8 +1,5 @@
-﻿#region Using directives
+#region Using directives
 
-using System.Runtime.Serialization;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.Web;
 using System.Xml.Serialization;
 using Jil;
 using ProtoBuf;
@@ -20,7 +17,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="Response"> HTTP Response to write result to </param>
         /// <param name="Protocol"> Requested protocol type </param>
         /// <param name="CallbackJsonP"> Callback function for JSON-P </param>
-        protected void Serialize(object ReturnValue, HttpResponse Response, Microservice_Endpoint_Protocol_Enum Protocol, string CallbackJsonP)
+        protected void Serialize(object ReturnValue, CompatHttpResponse Response, Microservice_Endpoint_Protocol_Enum Protocol, string CallbackJsonP)
         {
             if (ReturnValue == null)
                 return;
@@ -46,14 +43,11 @@ namespace SobekCM.Engine_Library.Endpoints
                     x.Serialize(Response.Output, ReturnValue);
                     break;
 
-                case Microservice_Endpoint_Protocol_Enum.BINARY:
-                    IFormatter binary = new BinaryFormatter();
-                    binary.Serialize(Response.OutputStream, ReturnValue);
-                    break;
-
                 case Microservice_Endpoint_Protocol_Enum.TEXT:
                     Response.Output.Write(ReturnValue.ToString());
                     break;
+
+                // BINARY (BinaryFormatter) was removed in .NET 9 — not supported
             }
         }
     }

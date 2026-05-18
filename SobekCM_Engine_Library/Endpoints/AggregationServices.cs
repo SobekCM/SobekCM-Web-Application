@@ -10,7 +10,7 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Web;
+
 using Jil;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.Client;
@@ -41,7 +41,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="QueryString"></param>
         /// <param name="Protocol"></param>
         /// <param name="IsDebug"></param>
-        public void GetCompleteAggregationByCode(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug )
+        public void GetCompleteAggregationByCode(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug )
         {
             if (UrlSegments.Count > 0)
             {
@@ -105,7 +105,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="QueryString"></param>
         /// <param name="Protocol"></param>
         /// <param name="IsDebug"></param>
-        public void GetAggregationByCode(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug )
+        public void GetAggregationByCode(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug )
         {
             if (UrlSegments.Count > 1)
             {
@@ -176,7 +176,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="QueryString"></param>
         /// <param name="Protocol"></param>
         /// <param name="IsDebug"></param>
-        public void GetAllAggregations(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug )
+        public void GetAllAggregations(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug )
         {
             Custom_Tracer tracer = new Custom_Tracer();
             tracer.Add_Trace("AggregationServices.GetAllAggregations", "Return the list of all aggregations (including inactive and hidden)");
@@ -241,7 +241,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="Protocol"></param>
         /// <param name="IsDebug"></param>
         /// <remarks> This REST API should be publicly available for users that are performing administrative work </remarks>
-        public void GetAggregationUploadedImages(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug )
+        public void GetAggregationUploadedImages(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug )
         {
             if (UrlSegments.Count > 0)
             {
@@ -286,7 +286,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="QueryString"></param>
         /// <param name="Protocol"></param>
         /// <param name="IsDebug"></param>
-        public void GetCollectionHierarchy(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug )
+        public void GetCollectionHierarchy(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug )
         {
             Custom_Tracer tracer = new Custom_Tracer();
             tracer.Add_Trace("AggregationServices.GetCollectionHierarchy", "Return the hierarchical list of all active and unhidden aggregations");
@@ -344,7 +344,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="QueryString"></param>
         /// <param name="Protocol"></param>
         /// <param name="IsDebug"></param>
-        public void GetCollectionStaticPage(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug )
+        public void GetCollectionStaticPage(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug )
         {
             if (UrlSegments.Count > 2)
             {
@@ -419,7 +419,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="QueryString"></param>
         /// <param name="Protocol"></param>
         /// <param name="IsDebug"></param>
-        public void GetItemCount(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
+        public void GetItemCount(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
         {
             string aggCode = String.Empty;
             if (UrlSegments.Count > 0)
@@ -498,7 +498,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="QueryString"></param>
         /// <param name="Protocol"></param>
         /// <param name="IsDebug"></param>
-        public void GetPrivateItems(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
+        public void GetPrivateItems(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
         {
             Custom_Tracer tracer = new Custom_Tracer();
 
@@ -670,8 +670,8 @@ namespace SobekCM.Engine_Library.Endpoints
                 return null;
             }
 
-            string path = Path.Combine("/design/", itemAggr.ObjDirectory, childPage.Source);
-            string file = HttpContext.Current.Server.MapPath(path);
+            string path = Path.Combine(Engine_ApplicationCache_Gateway.Settings.Servers.Base_Directory, "design", itemAggr.ObjDirectory, childPage.Source);
+            string file = path;
 
             Tracer.Add_Trace("AggregationServices.get_item_aggregation_html_child_page", "Attempting to read source file for child page");
             HTML_Based_Content results = HTML_Based_Content_Reader.Read_HTML_File(file, true, Tracer);

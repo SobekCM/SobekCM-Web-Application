@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dotnet build *)",
+      "Bash(dotnet package *)",
+      "Bash(del \"multiple_textBox_Element.cs\" \"fileChooser_Element2.cs\" \"keywordScheme_Element.cs\" \"fileChooser_Element.cs\" \"codeStatement_Element.cs\")"
+    ]
+  }
+}

@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Threading;
-using Microsoft.Practices.ServiceLocation;
 using SobekCM.Engine_Library.Database;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Solr;

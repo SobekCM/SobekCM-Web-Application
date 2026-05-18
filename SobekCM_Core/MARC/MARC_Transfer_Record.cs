@@ -70,12 +70,12 @@ namespace SobekCM.Core.MARC
                     dictionary = new Dictionary<int, List<MARC_Transfer_Field>>();
                 if (dictionary.Count != Fields.Count)
                 {
-                    foreach (MARC_Transfer_Field field in Fields)
+                    foreach (MARC_Transfer_Field marcField in Fields)
                     {
-                        if ( dictionary.ContainsKey(field.Tag ))
-                            dictionary[field.Tag].Add(field);
+                        if ( dictionary.ContainsKey(marcField.Tag ))
+                            dictionary[marcField.Tag].Add(marcField);
                         else
-                            dictionary[field.Tag] = new List<MARC_Transfer_Field> {field};
+                            dictionary[marcField.Tag] = new List<MARC_Transfer_Field> {marcField};
                     }
                 }
 

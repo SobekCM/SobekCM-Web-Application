@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Data;
 using System.Text;
-using System.Web;
+
 using SobekCM.Core.Builder;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Settings;
@@ -23,7 +23,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="QueryString"></param>
         /// <param name="Protocol"></param>
         /// <param name="IsDebug"></param>
-        public void GetBuilderSettings(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
+        public void GetBuilderSettings(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
         {
             Custom_Tracer tracer = new Custom_Tracer();
 
@@ -128,7 +128,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="QueryString"></param>
         /// <param name="Protocol"></param>
         /// <param name="IsDebug"></param>
-        public void GetBuilderStatus(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
+        public void GetBuilderStatus(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
         {
             Custom_Tracer tracer = new Custom_Tracer();
 
@@ -214,7 +214,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="QueryString"></param>
         /// <param name="Protocol"></param>
         /// <param name="IsDebug"></param>
-        public void GetSingleFolder(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
+        public void GetSingleFolder(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
         {
             Custom_Tracer tracer = new Custom_Tracer();
 
@@ -328,7 +328,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="QueryString"></param>
         /// <param name="Protocol"></param>
         /// <param name="IsDebug"></param>
-        public void Get_Builder_Logs_JDataTable(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
+        public void Get_Builder_Logs_JDataTable(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
         {
             Custom_Tracer tracer = new Custom_Tracer();
 
@@ -338,11 +338,11 @@ namespace SobekCM.Engine_Library.Endpoints
             int displayLength;
 
             // Get the display start and length from the DataTables generated data URL
-            if (!Int32.TryParse(HttpContext.Current.Request.QueryString["iDisplayStart"], out displayStart)) displayStart = 0;
-            if (!Int32.TryParse(HttpContext.Current.Request.QueryString["iDisplayLength"], out displayLength)) displayLength = 50;
+            if (!Int32.TryParse(QueryString["iDisplayStart"], out displayStart)) displayStart = 0;
+            if (!Int32.TryParse(QueryString["iDisplayLength"], out displayLength)) displayLength = 50;
 
             // Get the echo value
-            string sEcho = HttpContext.Current.Request.QueryString["sEcho"];
+            string sEcho = QueryString["sEcho"];
 
             // Look for specific arguments in the URL
             DateTime? startDate = null;
@@ -351,36 +351,36 @@ namespace SobekCM.Engine_Library.Endpoints
             bool include_no_work = false;
 
             // Check for start date
-            if (!String.IsNullOrEmpty(HttpContext.Current.Request.QueryString["date1"]))
+            if (!String.IsNullOrEmpty(QueryString["date1"]))
             {
                 DateTime temp;
-                if (DateTime.TryParse(HttpContext.Current.Request.QueryString["date1"], out temp))
+                if (DateTime.TryParse(QueryString["date1"], out temp))
                 {
                     startDate = new DateTime(temp.Year, temp.Month, temp.Day, 0, 0, 0);
                 }
             }
 
             // Check for end date
-            if (!String.IsNullOrEmpty(HttpContext.Current.Request.QueryString["date2"]))
+            if (!String.IsNullOrEmpty(QueryString["date2"]))
             {
                 DateTime temp;
-                if (DateTime.TryParse(HttpContext.Current.Request.QueryString["date2"], out temp))
+                if (DateTime.TryParse(QueryString["date2"], out temp))
                 {
                     endDate = new DateTime(temp.Year, temp.Month, temp.Day, 23, 59, 59);
                 }
             }
 
             // Check for filter
-            if (!String.IsNullOrEmpty(HttpContext.Current.Request.QueryString["filter"]))
+            if (!String.IsNullOrEmpty(QueryString["filter"]))
             {
-                filter = HttpContext.Current.Request.QueryString["filter"];
+                filter = QueryString["filter"];
             }
 
             // Check for flag
-            if (!String.IsNullOrEmpty(HttpContext.Current.Request.QueryString["includeNoWork"]))
+            if (!String.IsNullOrEmpty(QueryString["includeNoWork"]))
             {
                 bool temp;
-                if (bool.TryParse(HttpContext.Current.Request.QueryString["includeNoWork"], out temp))
+                if (bool.TryParse(QueryString["includeNoWork"], out temp))
                 {
                     include_no_work = temp;
                 }

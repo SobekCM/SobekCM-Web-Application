@@ -6,7 +6,7 @@ using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Web;
+
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
@@ -58,7 +58,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="QueryString"></param>
         /// <param name="Protocol"></param>
         /// <param name="IsDebug"></param>
-        public void Get_Search_Statistics(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug )
+        public void Get_Search_Statistics(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug )
         {
             Custom_Tracer tracer = new Custom_Tracer();
             tracer.Add_Trace("ResultsServices.Get_Search_Statistics", "Parse request to determine search requested");
@@ -156,7 +156,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="QueryString"></param>
         /// <param name="Protocol"></param>
         /// <param name="IsDebug"></param>
-        public void Get_Search_Results_Page(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug )
+        public void Get_Search_Results_Page(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug )
         {
             Custom_Tracer tracer = new Custom_Tracer();
             tracer.Add_Trace("ResultsServices.Get_Search_Results_Set", "Parse request to determine search requested");
@@ -321,7 +321,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="QueryString"></param>
         /// <param name="Protocol"></param>
         /// <param name="IsDebug"></param>
-        public void Get_Search_Results_Legacy(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug )
+        public void Get_Search_Results_Legacy(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug )
         {
             Custom_Tracer tracer = new Custom_Tracer();
             tracer.Add_Trace("ResultsServices.Get_Search_Results_Legacy", "Parse request to determine search requested");
@@ -429,12 +429,6 @@ namespace SobekCM.Engine_Library.Endpoints
             // Get the URL and network roots
             string image_url = Engine_ApplicationCache_Gateway.Settings.Servers.Image_URL;
             string base_url = Engine_ApplicationCache_Gateway.Settings.Servers.Base_URL;
-            if (HttpContext.Current != null)
-            {
-                base_url = HttpContext.Current.Request.Url.AbsoluteUri;
-                if (base_url.IndexOf("?") > 0)
-                    base_url = base_url.Substring(0, base_url.IndexOf("?")).Replace("sobekcm.svc", "");
-            }
             if ((base_url.Length > 0) && (base_url[base_url.Length - 1] != '/'))
                 base_url = base_url + "/";
             if ((image_url.Length > 0) && (image_url[image_url.Length - 1] != '/'))
@@ -479,12 +473,6 @@ namespace SobekCM.Engine_Library.Endpoints
             string image_url = Engine_ApplicationCache_Gateway.Settings.Servers.Image_URL;
             string network = Engine_ApplicationCache_Gateway.Settings.Servers.Image_Server_Network;
             string base_url = Engine_ApplicationCache_Gateway.Settings.Servers.Base_URL;
-            if (HttpContext.Current != null)
-            {
-                base_url = HttpContext.Current.Request.Url.AbsoluteUri;
-                if (base_url.IndexOf("?") > 0)
-                    base_url = base_url.Substring(0, base_url.IndexOf("?")).Replace("sobekcm.svc", "");
-            }
             if ((base_url.Length > 0) && (base_url[base_url.Length - 1] != '/'))
                 base_url = base_url + "/";
             if ((image_url.Length > 0) && (image_url[image_url.Length - 1] != '/'))

@@ -3,7 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Web;
+
 using SobekCM.Core.Navigation;
 using SobekCM.Engine_Library.ApplicationState;
 using SobekCM.Core.Configuration.Engine;
@@ -24,7 +24,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="QueryString"></param>
         /// <param name="Protocol"></param>
         /// <param name="IsDebug"></param>
-        public void ResolveUrl(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug )
+        public void ResolveUrl(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug )
         {
             Custom_Tracer tracer = new Custom_Tracer();
             tracer.Add_Trace("NavigationServices.ResolveUrl", "Parse request and return navigation object");
@@ -32,25 +32,17 @@ namespace SobekCM.Engine_Library.Endpoints
             try
             {
 
-                // Pull out the http request
-                tracer.Add_Trace("NavigationServices.ResolveUrl", "Get the current request HttpRequest object");
-                HttpRequest request = HttpContext.Current.Request;
-
-                // Get the base url
-                string base_url = request.Url.AbsoluteUri.ToLower().Replace("sobekcm.aspx", "").Replace("sobekcm.svc", "");
-                if (base_url.IndexOf("?") > 0)
-                    base_url = base_url.Substring(0, base_url.IndexOf("?"));
-
+                // Derive base URL from the configured setting (HttpContext not available here)
+                string base_url = Engine_ApplicationCache_Gateway.Settings.Servers.Base_URL;
+                if ((base_url.Length > 0) && (base_url[base_url.Length - 1] == '/'))
+                    base_url = base_url.TrimEnd('/');
 
                 tracer.Add_Trace("NavigationServices.ResolveUrl", "Get the navigation object");
-                Navigation_Object returnValue = get_navigation_object(QueryString, base_url, request.UserLanguages, tracer);
+                Navigation_Object returnValue = get_navigation_object(QueryString, base_url, null, tracer);
 
-                tracer.Add_Trace("NavigationServices.ResolveUrl", "Set base url and browser type (may not be useful)");
-                returnValue.Base_URL = base_url;
-                returnValue.Browser_Type = request.Browser.Type.ToUpper();
-
-                tracer.Add_Trace("NavigationServices.ResolveUrl", "Determine if the user host address was a robot request");
-                returnValue.Set_Robot_Flag(request.UserAgent, request.UserHostAddress);
+                tracer.Add_Trace("NavigationServices.ResolveUrl", "Set base url");
+                returnValue.Base_URL = base_url + "/";
+                returnValue.Browser_Type = "UNKNOWN";
 
                 // If this was debug mode, then just write the tracer
                 if ( IsDebug )

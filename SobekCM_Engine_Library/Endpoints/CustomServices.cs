@@ -4,10 +4,10 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Data;
-using System.Data.SqlClient;
+using Microsoft.Data.SqlClient;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Web;
+
 using SobekCM.Core.Configuration.Engine;
 using SobekCM.Tools;
 
@@ -25,7 +25,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="Protocol"></param>
         /// <param name="RequestForm"></param>
         /// <param name="IsDebug"></param>
-        public void Register_User(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, NameValueCollection RequestForm, bool IsDebug)
+        public void Register_User(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, NameValueCollection RequestForm, bool IsDebug)
         {
             Custom_Tracer tracer = new Custom_Tracer();
 

@@ -1,11 +1,9 @@
 ﻿#region Using directives
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
-using System.Web.Caching;
+using System.Runtime.Caching;
 using SobekCM.Core.Skins;
 using SobekCM.Tools;
 
@@ -31,12 +29,12 @@ namespace SobekCM.Core.MemoryMgmt
         public void Clear()
         {
             // Get collection of keys in the Cache
-            List<string> keys = (from DictionaryEntry thisItem in HttpContext.Current.Cache select thisItem.Key.ToString()).ToList();
+            List<string> keys = (from KeyValuePair<string, object> thisItem in MemoryCache.Default select thisItem.Key).ToList();
 
             // Delete all items from the Cache
             foreach (string key in keys.Where(Key => Key.StartsWith("SKIN|")))
             {
-                HttpContext.Current.Cache.Remove(key);
+                MemoryCache.Default.Remove(key);
             }
         }
 
@@ -58,14 +56,16 @@ namespace SobekCM.Core.MemoryMgmt
                 Tracer.Add_Trace("CachedDataManager.Remove_Skin");
             }
 
-            int values_cleared = 0;
-            foreach (DictionaryEntry thisItem in HttpContext.Current.Cache)
+            string skinKey = "SKIN|" + Skin_Code.ToLower();
+            string skinKeyPrefix = skinKey + "|";
+            List<string> keysToRemove = MemoryCache.Default
+                .Where(e => e.Key == skinKey || e.Key.IndexOf(skinKeyPrefix) == 0)
+                .Select(e => e.Key)
+                .ToList();
+            int values_cleared = keysToRemove.Count;
+            foreach (string removeKey in keysToRemove)
             {
-                if ((thisItem.Key.ToString() == "SKIN|" + Skin_Code.ToLower()) || (thisItem.Key.ToString().IndexOf("SKIN|" + Skin_Code.ToLower() + "|") == 0))
-                {
-                    HttpContext.Current.Cache.Remove(thisItem.Key.ToString());
-                    values_cleared++;
-                }
+                MemoryCache.Default.Remove(removeKey);
             }
 
             return values_cleared;
@@ -88,7 +88,7 @@ namespace SobekCM.Core.MemoryMgmt
                 key = key + Language_Code;
 
             // See if this is in the local cache first
-            object returnValue = HttpContext.Current.Cache.Get(key);
+            object returnValue = MemoryCache.Default.Get(key);
             if (returnValue != null)
             {
                 if (Tracer != null)
@@ -131,7 +131,7 @@ namespace SobekCM.Core.MemoryMgmt
             }
 
             // Add to the cache with five minute expiration
-            HttpContext.Current.Cache.Insert(key, StoreObject, null, Cache.NoAbsoluteExpiration, TimeSpan.FromMinutes(5));
+            MemoryCache.Default.Set(key, StoreObject, new CacheItemPolicy { SlidingExpiration = TimeSpan.FromMinutes(5) });
         }
 
         /// <summary> Retrieves the complete html skin object from the cache  </summary>
@@ -148,7 +148,7 @@ namespace SobekCM.Core.MemoryMgmt
             string key = "SKIN|" + Skin_Code.ToLower() + "|COMPLETE";
 
             // See if this is in the local cache first
-            object returnValue = HttpContext.Current.Cache.Get(key);
+            object returnValue = MemoryCache.Default.Get(key);
             if (returnValue != null)
             {
                 if (Tracer != null)
@@ -188,7 +188,7 @@ namespace SobekCM.Core.MemoryMgmt
             }
 
             // Stote the value with five minute expiration
-            HttpContext.Current.Cache.Insert(key, StoreObject, null, Cache.NoAbsoluteExpiration, TimeSpan.FromMinutes(5));
+            MemoryCache.Default.Set(key, StoreObject, new CacheItemPolicy { SlidingExpiration = TimeSpan.FromMinutes(5) });
         }
 
         #endregion

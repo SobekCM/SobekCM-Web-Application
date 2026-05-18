@@ -913,9 +913,9 @@ namespace SobekCM.Resource_Object.Solr
             get
             {
                 // Add the rights statement
-                if (digitalObject.Bib_Info.Access_Condition.Text.Length > 0)
+                if (digitalObject.Bib_Info.AccessConditions_Count > 0)
                 {
-                    return digitalObject.Bib_Info.Access_Condition.Text;
+                    return digitalObject.Bib_Info.AccessConditions[0].Text;
                 }
                 return String.Empty;
             }

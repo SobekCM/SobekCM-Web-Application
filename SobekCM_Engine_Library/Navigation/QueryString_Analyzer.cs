@@ -8,7 +8,6 @@ using System.Linq;
 using System.Security.Policy;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Web;
 using SobekCM.Core.ApplicationState;
 using SobekCM.Core.Configuration;
 using SobekCM.Core.Configuration.Localization;
@@ -1511,8 +1510,7 @@ namespace SobekCM.Engine_Library.Navigation
 						Navigator.Search_Type = Search_Type_Enum.Basic;
 						Navigator.Page = 1;
 						Navigator.Sort = 0;
-						if ((HttpContext.Current != null) && (HttpContext.Current.Session != null) && (HttpContext.Current.Session["User_Default_Sort"] != null))
-							Navigator.Sort = Convert.ToInt16(HttpContext.Current.Session["User_Default_Sort"]);
+						// Session-based sort preference removed; web layer should override Navigator.Sort if needed
 
 						int search_handled_args = 1;
 
@@ -1625,8 +1623,7 @@ namespace SobekCM.Engine_Library.Navigation
 						Navigator.Info_Browse_Mode = RemainingURLRedirectList[0];
 						Navigator.Page = 1;
 						Navigator.Sort = 0;
-						if ((HttpContext.Current != null) && (HttpContext.Current.Session != null) && (HttpContext.Current.Session["User_Default_Sort"] != null))
-							Navigator.Sort = Convert.ToInt16(HttpContext.Current.Session["User_Default_Sort"]);
+						// Session-based sort preference removed; web layer should override Navigator.Sort if needed
 						int aggr_handled_args = 1;
 
 						// Look for result display type

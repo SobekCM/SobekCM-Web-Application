@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
-using System.Web.Hosting;
 using SobekCM.Core.BriefItem;
 
 namespace SobekCM.Core.FileSystems

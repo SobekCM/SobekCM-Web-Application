@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Web;
+
 using System.Data;
 using System;
 using SobekCM.Tools;
@@ -11,7 +11,7 @@ namespace SobekCM.Engine_Library.Endpoints
 {
     public class BuilderLogSummaryServices : BuilderServices
     {
-        public void BLSS_Results_XML(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
+        public void BLSS_Results_XML(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
         {
             Custom_Tracer tracer = new Custom_Tracer();
 

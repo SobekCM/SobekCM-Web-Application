@@ -2,10 +2,8 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Runtime.Caching;
 using System.Text;
-using System.Threading.Tasks;
-using System.Web;
-using System.Web.Caching;
 using SobekCM.Tools;
 
 namespace SobekCM.Core.MemoryMgmt
@@ -33,7 +31,7 @@ namespace SobekCM.Core.MemoryMgmt
         public DataSet Retrieve_Builder_Logs(DateTime? StartDate, DateTime? EndDate, string BibVidFilter, bool IncludeNoWorkFlag, Custom_Tracer Tracer)
         {
             // If the cache is disabled, just return before even tracing
-            if ((settings.Disabled) || (HttpContext.Current == null))
+            if (settings.Disabled)
                 return null;
 
             if (Tracer != null)
@@ -55,7 +53,7 @@ namespace SobekCM.Core.MemoryMgmt
             string key = build_key.ToString();
 
             // See if this is in the local cache first
-            DataSet returnValue = HttpContext.Current.Cache.Get(key) as DataSet;
+            DataSet returnValue = MemoryCache.Default.Get(key) as DataSet;
             if (returnValue != null)
             {
                 if (Tracer != null)
@@ -115,7 +113,7 @@ namespace SobekCM.Core.MemoryMgmt
                 Tracer.Add_Trace("CachedDataManager_BuilderServices.Store_Builder_Logs", "Adding object '" + key + "' to the local cache with expiration of 30 seconds");
             }
 
-            HttpContext.Current.Cache.Insert(key, StoreObject, null, Cache.NoAbsoluteExpiration, TimeSpan.FromSeconds(30));
+            MemoryCache.Default.Set(key, StoreObject, new CacheItemPolicy { SlidingExpiration = TimeSpan.FromSeconds(30) });
         }
     }
 }

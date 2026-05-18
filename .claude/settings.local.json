@@ -1,10 +1,16 @@
 {
   "permissions": {
     "allow": [
-      "Bash(dotnet build *)",
-      "Bash(dotnet package *)",
-      "Bash(del \"multiple_textBox_Element.cs\" \"fileChooser_Element2.cs\" \"keywordScheme_Element.cs\" \"fileChooser_Element.cs\" \"codeStatement_Element.cs\")",
-      "Bash(grep -oP 'Viewers\\\\\\\\[^\\(]+\\\\.cs')"
+      "Bash(git *)",
+      "Bash(npm *)",
+      "Bash(dotnet *)",
+      "Bash(pwsh *)",
+      "Bash(powershell *)",
+      "Bash(find:*)",
+      "Bash(grep:*)",
+      "Bash(rg:*)",
+      "Bash(ls:*)",
+      "Bash(cat:*)"
     ]
   }
 }

@@ -111,16 +111,9 @@ namespace SobekCM.Library.HTML
             // Determine if the user can edit this
             canEditHomePage = (RequestSpecificValues.Current_User != null) && (RequestSpecificValues.Current_User.Is_Aggregation_Admin(hierarchyObject.Code));
 
-            // Special code to determine if CKEditor should be used since it kind of destroys some more custom HTML
-            ifEditNoCkEditor = false;
-            if ((UI_ApplicationCache_Gateway.Settings.System.System_Abbreviation == "OPENNJ") &&
-                (RequestSpecificValues.Current_Mode.Aggregation_Type == Aggregation_Type_Enum.Home_Edit ) &&
-                ((RequestSpecificValues.Current_Mode.Aggregation.Length == 0) || (RequestSpecificValues.Current_Mode.Aggregation.ToLower() == "all")))
-                ifEditNoCkEditor = true;
-
-                // Look for a user setting for 'Aggregation_HtmlSubwriter.Can_Edit_Home_Page' and if that included the aggregation code,
-                // this non-admin user can edit the home page.
-                if ((!canEditHomePage) && (RequestSpecificValues.Current_User != null) && (RequestSpecificValues.Current_Mode.Aggregation.Length > 0))
+            // Look for a user setting for 'Aggregation_HtmlSubwriter.Can_Edit_Home_Page' and if that included the aggregation code,
+            // this non-admin user can edit the home page.
+            if ((!canEditHomePage) && (RequestSpecificValues.Current_User != null) && (RequestSpecificValues.Current_Mode.Aggregation.Length > 0))
             {
                 string possible_setting = "|" + (RequestSpecificValues.Current_User.Get_Setting("Aggregation_HtmlSubwriter.Can_Edit_Home_Page", String.Empty)).ToUpper() + "|";
 
@@ -637,6 +630,8 @@ namespace SobekCM.Library.HTML
 			// If this is to edit the home page, add the html editor
 	        if ((RequestSpecificValues.Current_Mode.Mode == Display_Mode_Enum.Aggregation) && (RequestSpecificValues.Current_Mode.Aggregation_Type == Aggregation_Type_Enum.Home_Edit))
 	        {
+                ifEditNoCkEditor = hierarchyObject.HomePageHtml.Content.IndexOf("<script") >= 0;
+
                 // In some cases, we skip CKEditor
                 if (!ifEditNoCkEditor)
                 {
@@ -1398,6 +1393,9 @@ namespace SobekCM.Library.HTML
 				// Get the raw home hteml text
                 string home_html = hierarchyObject.HomePageHtml.Content;
 
+                // Does a script tag exist here?
+                bool hasScriptTag = home_html.IndexOf("<script") >= 0;              
+
                 if ((canEditHomePage) && (RequestSpecificValues.Current_Mode.Aggregation_Type == Aggregation_Type_Enum.Home_Edit))
 	            {
 					string post_url = HttpUtility.HtmlEncode(HttpContext.Current.Items["Original_URL"].ToString());
@@ -1412,7 +1410,7 @@ namespace SobekCM.Library.HTML
 					Output.WriteLine("  <button title=\"Do not apply changes\" class=\"roundbutton\" onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "';return false;\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"roundbutton_img_left\" alt=\"\" /> CANCEL</button> &nbsp; &nbsp; ");
 
                     // In some cases, we don't want the HTML editing to use CKEditor, since it can damage the HTML editing from source
-                    if (ifEditNoCkEditor)
+                    if (hasScriptTag || ifEditNoCkEditor)
                     {
                         Output.WriteLine("  <button title=\"Save changes to this aggregation home page text\" class=\"roundbutton\" type=\"submit\">SAVE <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"roundbutton_img_right\" alt=\"\" /></button>");
                     }

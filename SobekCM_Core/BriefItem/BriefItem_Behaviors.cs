@@ -134,6 +134,18 @@ namespace SobekCM.Core.BriefItem
         [ProtoMember(18)]
         public string RestrictionMessage { get; set; }
 
+        /// <summary> Complete embed html tag for an embedded web content (such as H5P) </summary>
+        [DataMember(EmitDefaultValue = false, Name = "embeddedWebTag")]
+        [XmlElement("embeddedWebTag")]
+        [ProtoMember(19)]
+        public string Embedded_Web_Content { get; set; }
+
+        /// <summary> Title to display for the displayed content (or blank) </summary>
+        [DataMember(EmitDefaultValue = false, Name = "embeddedWebTitle")]
+        [XmlElement("embeddedWebTitle")]
+        [ProtoMember(20)]
+        public string Embedded_Web_Content_Title { get; set; }
+
         /// <summary> Constructor for a new instance of the BriefItem_Behaviors class </summary>
         public BriefItem_Behaviors()
         {

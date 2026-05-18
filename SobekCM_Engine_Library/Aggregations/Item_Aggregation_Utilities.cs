@@ -662,6 +662,8 @@ namespace SobekCM.Engine_Library.Aggregations
             }
             foreach (Complete_Item_Aggregation_Metadata_Type thisFacet in CompAggr.Facets)
             {
+                if (String.IsNullOrWhiteSpace(thisFacet.SolrCode)) continue;
+
                 returnValue.Facets.Add(thisFacet);
             }
 

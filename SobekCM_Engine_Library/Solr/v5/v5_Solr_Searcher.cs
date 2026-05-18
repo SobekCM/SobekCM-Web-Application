@@ -189,6 +189,8 @@ namespace SobekCM.Engine_Library.Solr.v5
                     options.Facet = new FacetParameters();
                     foreach (Complete_Item_Aggregation_Metadata_Type facet in SearchOptions.Facets)
                     {
+                        if (String.IsNullOrWhiteSpace(facet.SolrCode)) continue;
+
                         options.Facet.Queries.Add(new SolrFacetFieldQuery(facet.SolrCode) {MinCount=1, Limit=100});
                     }
                 }

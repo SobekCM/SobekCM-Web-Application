@@ -415,7 +415,8 @@ namespace SobekCM.Builder_Library
 
             // If this was not refreshed yet, ensure [BASEURL] is replaced
 		    if (!refreshed)
-		    {
+		    
+            {
                 // Determine the base url
                 string baseUrl = String.IsNullOrWhiteSpace(settings.Servers.Base_URL) ? settings.Servers.Application_Server_URL : settings.Servers.Base_URL;
 		        List<MicroservicesClient_Endpoint> endpoints = instanceInfo.Microservices.Endpoints;

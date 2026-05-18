@@ -265,6 +265,7 @@
     <Compile Include="ItemViewer\Viewers\abstractNoPaginationItemViewer.cs" />
     <Compile Include="ItemViewer\Viewers\abstractPageFilesItemViewer.cs" />
     <Compile Include="ItemViewer\Viewers\Downloads_JP2s_ItemViewer.cs" />
+    <Compile Include="ItemViewer\Viewers\Embedded_Web_Content_ItemViewer.cs" />
     <Compile Include="ItemViewer\Viewers\HTML_WebSite_ItemViewer.cs" />
     <Compile Include="ItemViewer\Viewers\OpenTextbook_Divisions_ItemViewer.cs" />
     <Compile Include="ItemViewer\Viewers\OpenTextbook_ItemViewer.cs" />

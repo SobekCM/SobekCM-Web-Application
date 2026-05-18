@@ -39,8 +39,24 @@ namespace SobekCM.URL_Rewriter
 	        string appRelative = HttpContext.Current.Request.AppRelativeCurrentExecutionFilePath.ToLower();
 	        string url_authority = HttpContext.Current.Request.Url.Authority;
 
-	        // If this is for a FILES request, handle that first
-	        if ((appRelative.IndexOf("~/files/") == 0) && (appRelative.Length > 8))
+            // Always allow access to robots.txt
+            if (appRelative.IndexOf("robots.txt") > 0)
+                return;
+
+            // Ignore all reauqests with AmazonBot for now
+            if (HttpContext.Current.Request.Headers["User-Agent"] != null)
+			{
+				string user_agent = HttpContext.Current.Request.Headers["User-Agent"].ToString();
+				if (user_agent.IndexOf("amazonbot") >= 0)
+				{
+					HttpContext.Current.Response.StatusCode = 301;
+					HttpContext.Current.Response.Redirect("https://sobekdigital.com/about/");
+					return;
+				}
+			}
+
+            // If this is for a FILES request, handle that first
+            if ((appRelative.IndexOf("~/files/") == 0) && (appRelative.Length > 8))
 	        {
 	            HttpContext.Current.RewritePath("~/files.aspx?urlrelative=" + appRelative);
 	            return;

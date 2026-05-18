@@ -1,6 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+# Visual Studio Version 17
+VisualStudioVersion = 17.7.34024.191
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SobekCM_Tools", "SobekCM_Tools\SobekCM_Tools.csproj", "{A511CE4C-7BD6-4446-BCA8-AB71F7AA8078}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SobekCM Builder", "SobekCM Builder\SobekCM Builder.csproj", "{BFE38B45-D59A-4824-999E-7617B5B1B2D5}"
@@ -18,6 +20,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EngineAgnosticLayerDbAccess", "EngineAgnosticLayerDbAccess\EngineAgnosticLayerDbAccess.csproj", "{B481CE6E-05FD-4336-9524-64D057AAB107}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SobekCM_Resource_Database", "SobekCM_Resource_Database\SobekCM_Resource_Database.csproj", "{3D35E1A0-0126-45D2-B663-49BA144A3537}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ArchivingTool", "ArchivingTool\ArchivingTool.csproj", "{1525399C-A83F-4C8E-8A18-04B000E31DEA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -143,8 +147,27 @@ Global
 		{3D35E1A0-0126-45D2-B663-49BA144A3537}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{3D35E1A0-0126-45D2-B663-49BA144A3537}.Release|x64.ActiveCfg = Release|Any CPU
 		{3D35E1A0-0126-45D2-B663-49BA144A3537}.Release|x86.ActiveCfg = Release|Any CPU
+		{1525399C-A83F-4C8E-8A18-04B000E31DEA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1525399C-A83F-4C8E-8A18-04B000E31DEA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1525399C-A83F-4C8E-8A18-04B000E31DEA}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{1525399C-A83F-4C8E-8A18-04B000E31DEA}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{1525399C-A83F-4C8E-8A18-04B000E31DEA}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{1525399C-A83F-4C8E-8A18-04B000E31DEA}.Debug|x64.Build.0 = Debug|Any CPU
+		{1525399C-A83F-4C8E-8A18-04B000E31DEA}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{1525399C-A83F-4C8E-8A18-04B000E31DEA}.Debug|x86.Build.0 = Debug|Any CPU
+		{1525399C-A83F-4C8E-8A18-04B000E31DEA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1525399C-A83F-4C8E-8A18-04B000E31DEA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1525399C-A83F-4C8E-8A18-04B000E31DEA}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{1525399C-A83F-4C8E-8A18-04B000E31DEA}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{1525399C-A83F-4C8E-8A18-04B000E31DEA}.Release|x64.ActiveCfg = Release|Any CPU
+		{1525399C-A83F-4C8E-8A18-04B000E31DEA}.Release|x64.Build.0 = Release|Any CPU
+		{1525399C-A83F-4C8E-8A18-04B000E31DEA}.Release|x86.ActiveCfg = Release|Any CPU
+		{1525399C-A83F-4C8E-8A18-04B000E31DEA}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {43EE2AE0-3378-4AAA-B78F-1F245BF91430}
 	EndGlobalSection
 EndGlobal

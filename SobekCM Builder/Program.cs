@@ -40,7 +40,6 @@ namespace SobekCM.Builder
                 // Argument says to only run once, then exit
                 if (thisArgs == "--once")
                 {
-
                     run_once_only = true;
                     arg_handled = true;
                 }

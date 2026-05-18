@@ -489,7 +489,7 @@ namespace SobekCM.Builder_Library
 	        {
 		        for (int i = 0; i < instances.Count; i++)
 		        {
-			        if (loaders[i] != null)
+			        if (loaders.Count > i && loaders[i] != null)
 			        {
                         // Get the instance
                         Single_Instance_Configuration dbInstance = instances[i];

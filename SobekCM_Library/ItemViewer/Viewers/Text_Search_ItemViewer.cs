@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -431,10 +431,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <param name="MainPlaceHolder"> Main place holder ( &quot;mainPlaceHolder&quot; ) in the itemNavForm form into which the bulk of the item viewer's output is displayed</param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         /// <remarks> This method does nothing, since nothing is added to the place holder as a control for this item viewer </remarks>
-        public override void Add_Main_Viewer_Section(PlaceHolder MainPlaceHolder, Custom_Tracer Tracer)
-        {
-            // Do nothing
-        }
 
         /// <summary> Returns the textual explanation of the item-level search </summary>
         protected string Compute_Search_Explanation()

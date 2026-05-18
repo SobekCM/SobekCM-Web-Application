@@ -3,7 +3,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Web.UI.WebControls;
 using SobekCM.Core.Navigation;
 using SobekCM.Library.HTML;
 using SobekCM.Resource_Object;
@@ -69,15 +68,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <param name="Output"> Response stream for the item viewer to write directly to </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         void Write_Main_Viewer_Section(TextWriter Output, Custom_Tracer Tracer);
-
-        #endregion
-
-        #region Method used to add directly to the place holder within the item viewer (currently used by EAD containers )
-
-        /// <summary> Allows controls to be added directory to a place holder, rather than just writing to the output HTML stream </summary>
-        /// <param name="MainPlaceHolder"> Main place holder ( &quot;mainPlaceHolder&quot; ) in the itemNavForm form into which the the bulk of the item viewer's output is displayed</param>
-        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        void Add_Main_Viewer_Section(PlaceHolder MainPlaceHolder, Custom_Tracer Tracer);
 
         #endregion
 

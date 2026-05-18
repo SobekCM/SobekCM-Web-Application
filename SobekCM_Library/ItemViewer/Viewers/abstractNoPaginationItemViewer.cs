@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Web.UI.WebControls;
 using SobekCM.Core.BriefItem;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Users;
@@ -109,12 +108,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         /// <remarks> This MUST be implemented by all classes that implement this abstract class </remarks>
         public abstract void Write_Main_Viewer_Section(TextWriter Output, Custom_Tracer Tracer);
-
-        /// <summary> Abstract method allows controls to be added directory to a place holder, rather than just writing to the output HTML stream </summary>
-        /// <param name="MainPlaceHolder"> Main place holder ( &quot;mainPlaceHolder&quot; ) in the itemNavForm form into which the bulk of the item viewer's output is displayed</param>
-        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        /// <remarks> This MUST be implemented by all classes that implement this abstract class </remarks>
-        public abstract void Add_Main_Viewer_Section(PlaceHolder MainPlaceHolder, Custom_Tracer Tracer);
 
         #region Paging related properties ( no paging enabled )
 

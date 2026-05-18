@@ -2,24 +2,20 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.IO;
 using System.Text;
 using System.Web;
-using System.Web.UI.WebControls;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.Client;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Message;
 using SobekCM.Core.Navigation;
-using SobekCM.Core.SiteMap;
 using SobekCM.Core.UI_Configuration;
 using SobekCM.Core.UI_Configuration.StaticResources;
 using SobekCM.Core.Users;
 using SobekCM.Core.WebContent;
 using SobekCM.Engine_Library.Configuration;
-using SobekCM.Engine_Library.SiteMap;
 using SobekCM.Library.Helpers.CKEditor;
 using SobekCM.Library.UI;
 using SobekCM.Library.WebContentViewer;
@@ -37,22 +33,19 @@ namespace SobekCM.Library.HTML
     /// <remarks> This class extends the <see cref="abstractHtmlSubwriter"/> abstract class. </remarks>
     public class Web_Content_HtmlSubwriter : abstractHtmlSubwriter
     {
-        private string breadcrumbs;
         private bool canEdit;
-        private bool excludeSiteMap;
         private bool adminMissingScreen;
 
         private abstractWebContentViewer viewer;
 
         private HTML_Based_Content staticWebContent;
-        private SobekCM_SiteMap siteMap;
 
         /// <summary> Constructor for a new instance of the Web_Content_HtmlSubwriter class </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
         public Web_Content_HtmlSubwriter(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
         {
             // Try to pull the basic web content information to display
-            if (!Get_Simple_Web_Content_Text(RequestSpecificValues.Current_Mode, RequestSpecificValues.Tracer, out staticWebContent, out siteMap))
+            if (!Get_Simple_Web_Content_Text(RequestSpecificValues.Current_Mode, RequestSpecificValues.Tracer, out staticWebContent))
             {
                 RequestSpecificValues.Tracer.Add_Trace("Web_Content_HtmlSubwriter.Constructor", "Error pulling the simple web page content to display");
             }
@@ -70,23 +63,6 @@ namespace SobekCM.Library.HTML
                     // Set this to allow us to have our own error messages, without IIS jumping into it
                     HttpContext.Current.Response.TrySkipIisCustomErrors = true;
                     HttpContext.Current.Response.StatusCode = 404;
-                }
-            }
-
-            // If there is a sitemap, check if this is a robot request and then if the URL
-            // for the sitemap pages is URL restricted
-            if ((siteMap != null) && (siteMap.Is_URL_Restricted_For_Robots) && (RequestSpecificValues.Current_Mode.Is_Robot))
-            {
-                if (RequestSpecificValues.Current_Mode.Base_URL != siteMap.Restricted_Robot_URL)
-                {
-                    RequestSpecificValues.Current_Mode.Base_URL = siteMap.Restricted_Robot_URL;
-                    string redirect_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
-
-                    HttpContext.Current.Response.Status = "301 Moved Permanently";
-                    HttpContext.Current.Response.AddHeader("Location", redirect_url);
-                    HttpContext.Current.ApplicationInstance.CompleteRequest();
-                    RequestSpecificValues.Current_Mode.Request_Completed = true;
-                    return;
                 }
             }
 
@@ -126,15 +102,10 @@ namespace SobekCM.Library.HTML
                 }
             }
 
-            // In certain modes, the sitemap should not be displayed
-            excludeSiteMap = false;
-            
             // Build the viewer, if there should be one
             if ((RequestSpecificValues.Current_Mode.WebContent_Type != WebContent_Type_Enum.Edit) && (RequestSpecificValues.Current_Mode.WebContent_Type != WebContent_Type_Enum.Display))
             {
                 viewer = WebContentViewer_Factory.Get_Viewer(RequestSpecificValues.Current_Mode.WebContent_Type, RequestSpecificValues, staticWebContent);
-                if (viewer != null)
-                    excludeSiteMap = true;
             }
         }
 
@@ -159,17 +130,15 @@ namespace SobekCM.Library.HTML
         /// <param name="Current_Mode"> Mode / navigation information for the current request</param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         /// <param name="Simple_Web_Content"> [OUT] Built browse object which contains information like title, banner, etc.. and the entire text to be displayed </param>
-        /// <param name="Site_Map"> [OUT] Optional navigational site map object related to this page </param>
         /// <returns>TRUE if successful, otherwise FALSE </returns>
         /// <remarks> This always pulls the data directly from disk; this text is not cached. </remarks>
-        private bool Get_Simple_Web_Content_Text(Navigation_Object Current_Mode, Custom_Tracer Tracer, out HTML_Based_Content Simple_Web_Content, out SobekCM_SiteMap Site_Map)
+        private bool Get_Simple_Web_Content_Text(Navigation_Object Current_Mode, Custom_Tracer Tracer, out HTML_Based_Content Simple_Web_Content)
         {
             if (Tracer != null)
             {
                 Tracer.Add_Trace("Web_Content_HtmlSubwriter.Get_Simple_Web_Content_Text", String.Empty);
             }
 
-            Site_Map = null;
             Simple_Web_Content = null;
 
             // Get the web content object
@@ -198,56 +167,6 @@ namespace SobekCM.Library.HTML
                 return false;
             }
 
-            // Look for a site map
-            if (!String.IsNullOrEmpty(Simple_Web_Content.SiteMap))
-            {
-                // Look in the cache first
-                Site_Map = CachedDataManager.Retrieve_Site_Map(Simple_Web_Content.SiteMap, Tracer);
-
-                // If this was NULL, pull it
-                if (Site_Map == null)
-                {
-                    string sitemap_file = Simple_Web_Content.SiteMap;
-                    if (!sitemap_file.ToLower().Contains(".sitemap"))
-                        sitemap_file = sitemap_file + ".sitemap";
-
-                    // Only continue if the file exists
-                    if (File.Exists(UI_ApplicationCache_Gateway.Settings.Servers.Base_Directory + "design\\webcontent\\sitemaps\\" + sitemap_file))
-                    {
-                        if (Tracer != null)
-                        {
-                            Tracer.Add_Trace("Web_Content_HtmlSubwriter.Get_Simple_Web_Content_Text", "Reading site map file");
-                        }
-
-                        // Try to read this sitemap file
-                        Site_Map = SobekCM_SiteMap_Reader.Read_SiteMap_File(UI_ApplicationCache_Gateway.Settings.Servers.Base_Directory + "design\\webcontent\\sitemaps\\" + sitemap_file);
-
-                        // If the sitemap file was succesfully read, cache it
-                        if (Site_Map != null)
-                        {
-                            CachedDataManager.Store_Site_Map(Site_Map, Simple_Web_Content.SiteMap, Tracer);
-                        }
-                    }
-                    else if (File.Exists(UI_ApplicationCache_Gateway.Settings.Servers.Base_Directory + "design\\webcontent\\" + sitemap_file))
-                    {
-                        // This is just for some legacy material
-                        if (Tracer != null)
-                        {
-                            Tracer.Add_Trace("Web_Content_HtmlSubwriter.Get_Simple_Web_Content_Text", "Reading site map file");
-                        }
-
-                        // Try to read this sitemap file
-                        Site_Map = SobekCM_SiteMap_Reader.Read_SiteMap_File(UI_ApplicationCache_Gateway.Settings.Servers.Base_Directory + "design\\webcontent\\" + sitemap_file);
-
-                        // If the sitemap file was succesfully read, cache it
-                        if (Site_Map != null)
-                        {
-                            CachedDataManager.Store_Site_Map(Site_Map, Simple_Web_Content.SiteMap, Tracer);
-                        }
-                    }
-                }
-            }
-
             // Since this is not cached, we can apply the individual user settings to the static text which was read right here
             Simple_Web_Content.Content = Simple_Web_Content.Apply_Settings_To_Static_Text(Simple_Web_Content.Content, null, Current_Mode.Skin, Current_Mode.Base_Skin, Current_Mode.Base_URL, UrlWriterHelper.URL_Options(Current_Mode), Tracer);
 
@@ -256,197 +175,6 @@ namespace SobekCM.Library.HTML
 
         #endregion
 
-        #region Method to add the sitemap tree controls
-
-        /// <summary> Add the sitemap tree-view control, if there is a site map included in this object </summary>
-        /// <param name="placeHolder"> Main place holder ( &quot;mainPlaceHolder&quot; ) in the itemNavForm form, widely used throughout the application</param>
-        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        public void Add_Controls(PlaceHolder placeHolder, Custom_Tracer Tracer)
-        {
-            if ((siteMap == null) || (RequestSpecificValues.Current_Mode.Is_Robot) || (excludeSiteMap))
-                return;
-
-            Tracer.Add_Trace("Web_Content_HtmlSubwriter.Add_Controls", "Adding site map tree nav view");
-
-            // Create the treeview
-            TreeView treeView1 = new TreeView
-                {
-                    CssClass = "SobekSiteMapTreeView",
-                    ExpandDepth = 0,
-                    NodeIndent = 15,
-                    ShowLines = true,
-                    EnableClientScript = true,
-                    PopulateNodesFromClient = true
-                };
-
-            // Set some tree view properties
-            treeView1.TreeNodePopulate += treeView1_TreeNodePopulate;
-
-
-            // Determine the base URL
-            string base_url = RequestSpecificValues.Current_Mode.Base_URL;
-            if (RequestSpecificValues.Current_Mode.Writer_Type == Writer_Type_Enum.HTML_LoggedIn)
-            {
-                base_url = base_url + "l/";
-            }
-
-            // Find the selected node
-            int selected_node = siteMap.Selected_NodeValue(RequestSpecificValues.Current_Mode.Info_Browse_Mode);
-
-            foreach (SobekCM_SiteMap_Node rootSiteMapNode in siteMap.RootNodes)
-            {
-                // Add the sitemaps root node first
-                TreeNode rootNode = new TreeNode
-                    {
-                        SelectAction = TreeNodeSelectAction.None,
-                        Text = string.Format("<a href='{0}{1}' title='{2}'>{3}</a>", base_url, rootSiteMapNode.URL, rootSiteMapNode.Description, rootSiteMapNode.Title)
-                    };
-                treeView1.Nodes.Add(rootNode);
-
-                // Was this node currently selected?
-                if (rootSiteMapNode.URL == RequestSpecificValues.Current_Mode.Info_Browse_Mode)
-                {
-                    rootNode.Text = string.Format("<span Title='{0}'>{1}</span>", rootSiteMapNode.Description, rootSiteMapNode.Title);
-                    rootNode.Expand();
-                }
-
-                // Now add all the children recursively
-                add_child_nodes(rootNode, rootSiteMapNode, base_url, selected_node);
-            }
-
-            // Always expand the top node
-            //rootNode.Expand();
-
-            // Add the tree to the view
-            placeHolder.Controls.Add(treeView1);
-
-        }
-
-        private void add_child_nodes(TreeNode treeNode, SobekCM_SiteMap_Node siteNode, string base_url, int selected_node )
-        {
-            // Only do anything if there are child nodes defined
-            if (siteNode.Child_Nodes_Count > 0)
-            {
-                // Step through each child node
-                ReadOnlyCollection<SobekCM_SiteMap_Node> childNodes = siteNode.Child_Nodes;
-                int child_node_counter = 0;
-                while ( child_node_counter < childNodes.Count )
-                {
-                    // Get this child node
-                    SobekCM_SiteMap_Node childNode = childNodes[child_node_counter];
-
-                    // Add this child node to the tree view
-                    TreeNode childTreeNode = new TreeNode
-                                                 {
-                                                     SelectAction = TreeNodeSelectAction.None,
-                                                     Value = childNode.NodeValue.ToString()
-                                                 };
-
-                    if (childNode.URL.Length > 0)
-                    {
-                        childTreeNode.Text = string.Format("<a href='{0}' title='{1}'>{2}</a>", base_url + childNode.URL, childNode.Description, childNode.Title);
-                    }
-                    else
-                    {
-                        childTreeNode.Text = string.Format("<span Title='{0}' class='SobekSiteMapNoLink' >{1}</span>", childNode.Description, childNode.Title);
-                        childTreeNode.SelectAction = TreeNodeSelectAction.Expand;
-                    }
-                    treeNode.ChildNodes.Add(childTreeNode);
-
-                    if (childNode.Child_Nodes_Count > 0)
-                    {
-                        // Determine if the selected node is in the child nodes...
-                        if ((childNode.NodeValue < selected_node) && ((child_node_counter + 1 == childNodes.Count) || (childNodes[child_node_counter + 1].NodeValue > selected_node)))
-                        {
-                            // Recurse through any children
-                            add_child_nodes(childTreeNode, childNode, base_url, selected_node);
-                        }
-                        else
-                        {
-                            childTreeNode.PopulateOnDemand = true;
-                        }
-                    }
-
-                    // Was this node currently selected?
-                    if (childNode.NodeValue == selected_node )
-                    {
-                        childTreeNode.Text = string.Format("<span Title='{0}'>{1}</span>", childNode.Description, childNode.Title);
-                        childTreeNode.Expand();
-
-                        // Create the breadcrumbs now
-                        StringBuilder breadcrumbBuilder = new StringBuilder();
-                        breadcrumbBuilder.Append(childTreeNode.Text);
-
-                        // Add each parent next, if they have a URL and also expand each parent
-                        TreeNode selectedNodeExpander = childTreeNode;
-                        while (selectedNodeExpander.Parent != null) 
-                        {
-                            // expand this node
-                            (selectedNodeExpander.Parent).Expand();
-
-                            // add to breadcrumb, if a link
-                            if (selectedNodeExpander.Parent.SelectAction == TreeNodeSelectAction.None)
-                            {
-                                string text = selectedNodeExpander.Parent.Text.Replace(" Namespace</a>","</a>").Replace(" Sub-Namespace</a>","</a>");
-
-                                breadcrumbBuilder.Insert(0, text + " <img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "design/skins/" + RequestSpecificValues.Current_Mode.Base_Skin_Or_Skin + "/breadcrumbimg.gif\" alt=\">\" /><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "design/skins/" + RequestSpecificValues.Current_Mode.Base_Skin_Or_Skin + "/breadcrumbimg.gif\" alt=\">\" /> ");
-                            }
-
-                            // step up another level
-                            selectedNodeExpander = selectedNodeExpander.Parent;
-                        }
-                        breadcrumbs = breadcrumbBuilder.ToString();
-                    }
-
-                    child_node_counter++;
-                }
-            }
-        }
-
-        /// <summary> Event handler loads the nodes on request to the serial hierarchy trees when the user requests them
-        /// by expanding a node </summary>
-        /// <param name="sender"> TreeView object that fired this event </param>
-        /// <param name="e"> Event arguments includes the tree node which was expanded </param>
-        void treeView1_TreeNodePopulate(object sender, TreeNodeEventArgs e)
-        {
-            SobekCM_SiteMap_Node retrieved_node = siteMap.Node_By_Value(Convert.ToInt32(e.Node.Value));
-
-            // Determine the base URL
-            string base_url = RequestSpecificValues.Current_Mode.Base_URL;
-            if (RequestSpecificValues.Current_Mode.Writer_Type == Writer_Type_Enum.HTML_LoggedIn)
-            {
-                base_url = base_url + "l/";
-            }
-
-            if ((retrieved_node != null) && (retrieved_node.Child_Nodes_Count > 0))
-            {
-                foreach (SobekCM_SiteMap_Node childNode in retrieved_node.Child_Nodes)
-                {
-                    // Add this child node to the tree view
-                    TreeNode childTreeNode = new TreeNode
-                                                 {
-                                                     SelectAction = TreeNodeSelectAction.None,
-                                                     Value = childNode.NodeValue.ToString()
-                                                 };
-                    if (childNode.Child_Nodes_Count > 0)
-                    {
-                        childTreeNode.PopulateOnDemand = true;
-                    }
-                    if (childNode.URL.Length > 0)
-                    {
-                        childTreeNode.Text = string.Format("<a href='{0}' title='{1}'>{2}</a>", base_url + childNode.URL, childNode.Description, childNode.Title);
-                    }
-                    else
-                    {
-                        childTreeNode.Text = string.Format("<span Title='{0}' class='SobekSiteMapNoLink' >{1}</span>", childNode.Description, childNode.Title);
-                        childTreeNode.SelectAction = TreeNodeSelectAction.Expand;
-                    }
-                    e.Node.ChildNodes.Add(childTreeNode);
-                }
-            }
-        }
-
-        #endregion 
 
         /// <summary> Writes the HTML generated by this simple text / CMS html subwriter directly to the response stream </summary>
         /// <param name="Output"> Stream to which to write the HTML for this subwriter </param>
@@ -595,56 +323,7 @@ namespace SobekCM.Library.HTML
                 return true;
             }
 
-            // The header is already drawn, so just start the main table here
-            if ((siteMap != null) && ( !excludeSiteMap ))
-            {
-                Output.WriteLine("<table width=\"100%\" id=\"sbkWchs_SiteMapOuterContainer\">");
-                Output.WriteLine("<tr>");
-                if (siteMap.Width > 0)
-                {
-                    Output.WriteLine("<td valign=\"top\" width=\"" + siteMap.Width + "px\">");
-                }
-                else
-                {
-                    Output.WriteLine("<td valign=\"top\">");
-                }
-
-                // If this is a robot, just draw the links
-                if (RequestSpecificValues.Current_Mode.Is_Robot)
-                {
-                    Output.WriteLine("<div class=\"sbkWchs_SiteMapTree\">");
-                    foreach (SobekCM_SiteMap_Node rootNode in siteMap.RootNodes)
-                    {
-                        recursively_draw_sitemap_for_robots(Output, rootNode, String.Empty);
-                    }
-                    Output.WriteLine("</div>");
-                }
-            }
-
             return false;
-        }
-
-        private void recursively_draw_sitemap_for_robots(TextWriter Output, SobekCM_SiteMap_Node Node, string Indent)
-        {
-
-            // Add this text
-            if ((Node.URL.Length > 0) && (Node.URL != RequestSpecificValues.Current_Mode.Info_Browse_Mode))
-            {
-                Output.WriteLine(Indent + "<a href='" + RequestSpecificValues.Current_Mode.Base_URL + Node.URL + "' title='" + Node.Description + "'>" + Node.Title + "</a><br />");
-            }
-            else
-            {
-                Output.WriteLine(Indent + "<span Title='" + Node.Description + "' class='sbkWchs_SiteMapNoLink' >" + Node.Title + "</span><br />");
-            }
-
-            // Add all the children
-            if (Node.Child_Nodes_Count > 0)
-            {
-                foreach (SobekCM_SiteMap_Node childNode in Node.Child_Nodes)
-                {
-                    recursively_draw_sitemap_for_robots(Output, childNode, Indent + " &nbsp; &nbsp; &nbsp; ");
-                }
-            }
         }
 
 
@@ -658,13 +337,6 @@ namespace SobekCM.Library.HTML
 
             if (adminMissingScreen)
                 return;
-
-            // If there is a sitemap, move to the second part of the table
-            if ((siteMap != null) && (!excludeSiteMap))
-            {
-                Output.WriteLine("</td>");
-                Output.WriteLine("<td id=\"sbkWchs_MainTd\">");
-            }
 
             // Depending on mode, display the information
             switch (RequestSpecificValues.Current_Mode.WebContent_Type)
@@ -756,80 +428,6 @@ namespace SobekCM.Library.HTML
                     Output.WriteLine("<img id=\"mainBanner\" src=\"" + staticWebContent.Banner.Replace("<%BASEURL%>", RequestSpecificValues.Current_Mode.Base_URL) + "\" alt=\"MISSING BANNER\" />");
                 }
             }
-
-            // Should a menu be included, from the sitemaps?
-            if ((siteMap != null) && (staticWebContent.IncludeMenu.HasValue) && (staticWebContent.IncludeMenu.Value))
-            {
-                // Determine the base URL
-                string base_url = RequestSpecificValues.Current_Mode.Base_URL;
-                if (RequestSpecificValues.Current_Mode.Writer_Type == Writer_Type_Enum.HTML_LoggedIn)
-                {
-                    base_url = base_url + "l/";
-                }
-
-                // Start the menu
-                Output.WriteLine("<!-- Add the top-level static page menu -->");
-                Output.WriteLine("<nav id=\"sbkAgm_MenuBar\" class=\"sbkMenu_Bar\">");
-                Output.WriteLine("  <ul class=\"sf-menu\" id=\"sbkAgm_Menu\">");
-
-                // Step through each of the root nodes and add it
-                int counter = 1;
-                foreach (SobekCM_SiteMap_Node rootSiteMapNode in siteMap.RootNodes)
-                {
-                    if (rootSiteMapNode.Child_Nodes_Count == 0)
-                    {
-                        Output.WriteLine("    <li id=\"sbkAgm_TopMenu{0}\"><a href=\"{1}{2}\">{3}</a></li>", counter, base_url, rootSiteMapNode.URL, rootSiteMapNode.Title);
-                    }
-                    else
-                    {
-                        Output.Write("    <li id=\"sbkAgm_TopMenu{0}\"><a href=\"{1}{2}\">{3}</a><ul id=\"sbkAgm_SubMenu{0}\">", counter, base_url, rootSiteMapNode.URL, rootSiteMapNode.Title);
-                        int middle_counter = 1;
-                        foreach (SobekCM_SiteMap_Node childNode in rootSiteMapNode.Child_Nodes)
-                        {
-                            Output.Write("<li id=\"sbkAgm_MiddleMenu{0}\"><a href=\"{1}{2}\">{3}</a></li>", counter + "_" + middle_counter, base_url, childNode.URL, childNode.Title);
-                            middle_counter++;
-                        }
-
-                        Output.WriteLine("</ul></li>");
-                    }
-                    counter++;
-                }
-
-                Output.WriteLine("  </ul>");
-                Output.WriteLine("</nav>");
-                Output.WriteLine();
-
-                Output.WriteLine("<!-- Initialize the main user menu -->");
-                Output.WriteLine("<script>");
-                Output.WriteLine("  jQuery(document).ready(function () {");
-                Output.WriteLine("     jQuery('ul.sf-menu').superfish({");
-
-                Output.WriteLine("          onBeforeShow: function() { ");
-                Output.WriteLine("               if ( $(this).attr('id') == 'sbkAgm_FinalMenu')");
-                Output.WriteLine("               {");
-                Output.WriteLine("                 var thisWidth = $(this).width();");
-                Output.WriteLine("                 var parent = $('#sbkAgm_Final');");
-                Output.WriteLine("                 var offset = $('#sbkAgm_Final').offset();");
-                Output.WriteLine("                 if ( $(window).width() < offset.left + thisWidth )");
-                Output.WriteLine("                 {");
-                Output.WriteLine("                   var newleft = thisWidth - parent.width();");
-                Output.WriteLine("                   $(this).css('left', '-' + newleft + 'px');");
-                Output.WriteLine("                 }");
-                Output.WriteLine("               }");
-                Output.WriteLine("          }");
-
-                Output.WriteLine("    });");
-                Output.WriteLine("  });");
-                Output.WriteLine("</script>");
-                Output.WriteLine();
-            }
-
-
-            // Add the breadcrumbs
-            if (!String.IsNullOrEmpty(breadcrumbs))
-            {
-                Output.WriteLine("<div class=\"sbkWchs_Breadcrumbs\">" + breadcrumbs + "</div>");
-            }
         }
 
 
@@ -876,13 +474,6 @@ namespace SobekCM.Library.HTML
             Output.WriteLine("<br />");
             Output.WriteLine();
 
-            // If there is a sitemap, finish the main table
-            if (siteMap != null)
-            {
-                Output.WriteLine("</td>");
-                Output.WriteLine("</tr>");
-                Output.WriteLine("</table>");
-            }
         }
 
         private void write_edit_display(TextWriter Output, Custom_Tracer Tracer)
@@ -969,13 +560,6 @@ namespace SobekCM.Library.HTML
             Output.WriteLine("<br />");
             Output.WriteLine();
 
-            // If there is a sitemap, finish the main table
-            if (siteMap != null)
-            {
-                Output.WriteLine("</td>");
-                Output.WriteLine("</tr>");
-                Output.WriteLine("</table>");
-            }
         }
 
         /// <summary> Title for this web page </summary>
@@ -1112,7 +696,7 @@ namespace SobekCM.Library.HTML
 		{
 			get
 			{
-                return siteMap != null ? String.Empty : base.Container_CssClass;
+                return base.Container_CssClass;
 			}
 		}
 

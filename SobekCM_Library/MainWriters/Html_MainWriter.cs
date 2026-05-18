@@ -421,9 +421,7 @@ namespace SobekCM.Library.MainWriters
                 #region Start adding HTML and controls for SIMPLE WEB CONTENT TEXT mode
 
                 case Display_Mode_Enum.Simple_HTML_CMS:
-                    // Add any necessary controls
-                    RequestSpecificValues.Tracer.Add_Trace("Html_MainWriter.Add_Controls", "Adding controls for simple html cms.");
-                    ((Web_Content_HtmlSubwriter)subwriter).Add_Controls(Main_Place_Holder, Tracer);
+                    // No controls needed; sitemap rendered directly in Write_HTML
                     break;
 
                 #endregion

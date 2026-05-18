@@ -8,6 +8,7 @@ using System.Web;
 using System.Web.UI.WebControls;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Results;
+using SobekCM.Library.HTML;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
 
@@ -233,15 +234,14 @@ namespace SobekCM.Library.ResultsViewer
         }
 
  
-        /// <summary> Builds the tree view control for all the issues related to a single result title and
-        /// adds the tree view to the provided place holder </summary>
-        /// <param name="MainPlaceHolder"> Main place holder ( &quot;mainPlaceHolder&quot; ) in the itemNavForm form into which the results are being built for display</param>
-        /// <param name="TitleRow"> Title row for this title to be displayed, from the dataset of results </param>
-        /// <param name="CalculatedTextRedirectStem"> Redirect string specifically for textual items, which includes the search terms to pass to the final item viewer </param>
-        /// <param name="BaseURL"> Writer-adjusted base_url ( i.e., may include /l at the end if logged in currently ) </param>
-        /// <param name="CurrentResultRow"> Counter indicates which result number this is within the current page of results </param>
-        /// <remarks> This only adds the root node for the tree.  Any further computations and tree-creation are left for the tree node populate event when the user requests any issue information.</remarks>
-        protected void Add_Issue_Tree( PlaceHolder MainPlaceHolder, iSearch_Title_Result TitleRow, int CurrentResultRow, string CalculatedTextRedirectStem, string BaseURL )
+        /// <summary> Builds the HTML tree for all the issues related to a single result title and
+        /// adds it to the provided place holder, eagerly loading all child nodes </summary>
+        /// <param name="MainPlaceHolder"> Main place holder in the itemNavForm form </param>
+        /// <param name="TitleRow"> Title row for this title to be displayed </param>
+        /// <param name="CalculatedTextRedirectStem"> Redirect string for textual items including search terms </param>
+        /// <param name="BaseURL"> Writer-adjusted base URL (may include /l/ suffix when logged in) </param>
+        /// <param name="CurrentResultRow"> Counter indicating which result number this is within the current page </param>
+        protected void Add_Issue_Tree(PlaceHolder MainPlaceHolder, iSearch_Title_Result TitleRow, int CurrentResultRow, string CalculatedTextRedirectStem, string BaseURL)
         {
             // Determine term to use
             string single_item_term = "item";
@@ -288,93 +288,58 @@ namespace SobekCM.Library.ResultsViewer
                     break;
             }
 
-            // Set the actual term
-            string multi_term = multi_item_term;
-            if (TitleRow.Item_Count <= 1)
-                multi_term = single_item_term;
+            string multi_term = TitleRow.Item_Count <= 1 ? single_item_term : multi_item_term;
 
-            // Create the root node first
-            TreeNode rootNode = new TreeNode
-                                    {
-                                        SelectAction = TreeNodeSelectAction.Expand,
-                                        Value = CurrentResultRow + "_" + TitleRow.BibID,
-                                        Text = (TitleRow.GroupTitle.Length < 70) ? TitleRow.GroupTitle + " ( " + TitleRow.Item_Count + " " + multi_term + " )" : TitleRow.GroupTitle.Substring(0, 65) + "... ( " + TitleRow.Item_Count + " " + multi_term + " )"
-                                    };
+            string rootText = (TitleRow.GroupTitle.Length < 70)
+                ? TitleRow.GroupTitle + " ( " + TitleRow.Item_Count + " " + multi_term + " )"
+                : TitleRow.GroupTitle.Substring(0, 65) + "... ( " + TitleRow.Item_Count + " " + multi_term + " )";
 
-            // Build the tree view object and tree view nodes now
-            TreeView treeView1 = new TreeView {EnableClientScript = true, PopulateNodesFromClient = true};
-            treeView1.TreeNodePopulate += treeView1_TreeNodePopulate;
-            rootNode.Expanded = false;
-            rootNode.PopulateOnDemand = true;
+            HtmlTreeNode rootNode = new HtmlTreeNode { Text = rootText };
 
+            // Build the complete item tree eagerly
+            if (TitleRow.Item_Tree == null)
+                TitleRow.Build_Item_Tree(CurrentResultRow.ToString());
+
+            if (TitleRow.Item_Tree != null)
+            {
+                string base_url = RequestSpecificValues.Current_Mode.Base_URL;
+                if (RequestSpecificValues.Current_Mode.Writer_Type == Writer_Type_Enum.HTML_LoggedIn)
+                    base_url = RequestSpecificValues.Current_Mode.Base_URL + "l/";
+
+                Search_Result_Item_TreeNode itemTreeRoot = TitleRow.Item_Tree.Get_Node_By_Value(TitleRow.BibID);
+                if (itemTreeRoot != null)
+                    populate_issue_node_children(rootNode, itemTreeRoot, base_url);
+            }
+
+            HtmlTreeView treeView1 = new HtmlTreeView();
             treeView1.Nodes.Add(rootNode);
 
-            // Add this tree view to the place holder
-            MainPlaceHolder.Controls.Add(treeView1);
+            StringBuilder treeBuilder = new StringBuilder();
+            treeView1.Render(new StringWriter(treeBuilder));
+            MainPlaceHolder.Controls.Add(new Literal { Text = treeBuilder.ToString() });
         }
 
-        /// <summary> Event handler loads the nodes on request to the serial hierarchy trees when the user requests them
-        /// by expanding a node </summary>
-        /// <param name="Sender"> TreeView object that fired this event </param>
-        /// <param name="E"> Event arguments includes the tree node which was expanded </param>
-        void treeView1_TreeNodePopulate(object Sender, TreeNodeEventArgs E)
+        private void populate_issue_node_children(HtmlTreeNode viewNode, Search_Result_Item_TreeNode dataNode, string base_url)
         {
-            // Determine the index of this result within the entire page of results
-            string resultsIndex = E.Node.Value;
-            string node_value = E.Node.Value;
-            if (E.Node.Value.IndexOf("_") > 0)
+            foreach (Search_Result_Item_TreeNode childNode in dataNode.ChildNodes)
             {
-                resultsIndex = E.Node.Value.Substring(0, E.Node.Value.IndexOf("_"));
-                node_value = node_value.Substring(resultsIndex.Length + 1);
-            }
-
-            // Get the appropriate title result
-            iSearch_Title_Result titleResult = PagedResults[Convert.ToInt32(resultsIndex)];
-
-            // Is this tree built?
-            if (titleResult.Item_Tree == null)
-            {
-                titleResult.Build_Item_Tree(resultsIndex);
-            }
-
-            Search_Result_Item_TreeNode retrieved_node = titleResult.Item_Tree.Get_Node_By_Value(node_value);
-            if (retrieved_node == null) return;
-
-            string base_url = RequestSpecificValues.Current_Mode.Base_URL;
-            if (RequestSpecificValues.Current_Mode.Writer_Type == Writer_Type_Enum.HTML_LoggedIn)
-                base_url = RequestSpecificValues.Current_Mode.Base_URL + "l/";
-
-            foreach (Search_Result_Item_TreeNode childNode in retrieved_node.ChildNodes)
-            {
-                TreeNode childViewNode = new TreeNode
-                                             {
-                                                 Value = resultsIndex + "_" + childNode.Value,
-                                                 SelectAction = TreeNodeSelectAction.None
-                                             };
-
                 string name = UI_ApplicationCache_Gateway.Translation.Get_Translation(childNode.Name, RequestSpecificValues.Current_Mode.Language);
-                string tooltip = String.Empty;
+                HtmlTreeNode childViewNode = new HtmlTreeNode();
+
                 if (name.Length > 100)
                 {
-                    tooltip = name;
+                    childViewNode.ToolTip = name;
                     name = name.Substring(0, 100) + "...";
                 }
 
-                if (childNode.Link.Length > 0)
-                {
-                    childViewNode.ToolTip = tooltip;
-                    childViewNode.Text = "<a href=\"" + base_url + childNode.Link + textRedirectStem + "\">" + name + "</a>";
-                }
-                else
-                {
-                    childViewNode.ToolTip = tooltip;
-                    childViewNode.Text = name;
-                }
+                childViewNode.Text = childNode.Link.Length > 0
+                    ? "<a href=\"" + base_url + childNode.Link + textRedirectStem + "\">" + name + "</a>"
+                    : name;
+
+                viewNode.ChildNodes.Add(childViewNode);
+
                 if (childNode.ChildNodes.Count > 0)
-                {
-                    childViewNode.PopulateOnDemand = true;
-                }
-                E.Node.ChildNodes.Add(childViewNode);
+                    populate_issue_node_children(childViewNode, childNode, base_url);
             }
         }
     }

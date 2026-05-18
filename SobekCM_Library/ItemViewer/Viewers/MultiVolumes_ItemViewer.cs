@@ -349,10 +349,12 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 Literal mainLiteral = new Literal { Text = builder.ToString() };
                 MainPlaceHolder.Controls.Add(mainLiteral);
 
-                // Add the tree view
-                TreeView treeView1 = new TreeView { EnableViewState = false, CssClass = "sbkMviv_Tree" };
+                // Build the tree and render it as HTML
+                HtmlTreeView treeView1 = new HtmlTreeView { CssClass = "sbkMviv_Tree" };
                 Build_Tree(treeView1);
-                MainPlaceHolder.Controls.Add(treeView1);
+                StringBuilder treeBuilder = new StringBuilder();
+                treeView1.Render(new StringWriter(treeBuilder));
+                MainPlaceHolder.Controls.Add(new Literal { Text = treeBuilder.ToString() });
             }
 
             // Add the final HTML
@@ -734,17 +736,16 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
         #region Method to add the volume list in tree view
 
-        /// <summary> Populates a tree view control with the hierarchical collection of volumes associated with the same title as a digital resource </summary>
-        /// <param name="TreeView1"> Treeview control to populate with the associated volumes </param>
-        protected internal void Build_Tree(TreeView TreeView1)
+        /// <summary> Populates an HTML tree view with the hierarchical collection of volumes associated with the same title as a digital resource </summary>
+        /// <param name="TreeView1"> HTML tree view to populate with the associated volumes </param>
+        protected internal void Build_Tree(HtmlTreeView TreeView1)
         {
             const int LINE_TO_LONG = 100;
 
             // Add the root node
-            TreeNode rootNode = new TreeNode("<span id=\"sbkMviv_TableGroupTitle\">" + briefItem.Behaviors.GroupTitle + "</span>");
+            HtmlTreeNode rootNode = new HtmlTreeNode { Text = "<span id=\"sbkMviv_TableGroupTitle\">" + briefItem.Behaviors.GroupTitle + "</span>" };
             if (briefItem.Behaviors.GroupTitle.Length > LINE_TO_LONG)
                 rootNode.Text = "<span id=\"sbkMviv_TableGroupTitle\">" + briefItem.Behaviors.GroupTitle.Substring(0, LINE_TO_LONG) + "...</span>";
-            rootNode.SelectAction = TreeNodeSelectAction.None;
             TreeView1.Nodes.Add(rootNode);
 
             // Is this a newspaper?
@@ -756,11 +757,11 @@ namespace SobekCM.Library.ItemViewer.Viewers
             string lastNodeText2 = String.Empty;
             string lastNodeText3 = String.Empty;
             string lastNodeText4 = String.Empty;
-            TreeNode lastNode1 = null;
-            TreeNode lastNode2 = null;
-            TreeNode lastNode3 = null;
-            TreeNode lastNode4 = null;
-            TreeNode currentSelectedNode = null;
+            HtmlTreeNode lastNode1 = null;
+            HtmlTreeNode lastNode2 = null;
+            HtmlTreeNode lastNode3 = null;
+            HtmlTreeNode lastNode4 = null;
+            HtmlTreeNode currentSelectedNode = null;
 
             // Compute the base redirect URL
             string current_vid = currentRequest.VID;
@@ -814,7 +815,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     string title = thisItem.Title;
                     if (level1_text.Length == 0)
                     {
-                        TreeNode singleNode = new TreeNode(access_span_start + title + access_string + access_span_end);
+                        HtmlTreeNode singleNode = new HtmlTreeNode { Text = access_span_start + title + access_string + access_span_end };
                         if (title.Length > LINE_TO_LONG)
                         {
                             singleNode.ToolTip = title;
@@ -824,9 +825,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                         if (thisItem.ItemID == briefItem.Web.ItemID)
                         {
                             currentSelectedNode = singleNode;
-                            singleNode.SelectAction = TreeNodeSelectAction.None;
                             singleNode.Text = "<span id=\"sbkMviv_TreeSelectedNode\">" + singleNode.Text + "</span>";
-
                         }
                         else
                         {
@@ -841,7 +840,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                         level2_text = UI_ApplicationCache_Gateway.Translation.Get_Translation(thisItem.Level2_Text, currentRequest.Language);
                         if (level2_text.Length == 0)
                         {
-                            TreeNode singleNode1 = new TreeNode(access_span_start + level1_text + access_string + access_span_end);
+                            HtmlTreeNode singleNode1 = new HtmlTreeNode { Text = access_span_start + level1_text + access_string + access_span_end };
                             if (thisItem.Level1_Text.Length > LINE_TO_LONG)
                             {
                                 singleNode1.ToolTip = level1_text;
@@ -851,9 +850,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                             if (thisItem.ItemID == briefItem.Web.ItemID)
                             {
                                 currentSelectedNode = singleNode1;
-                                singleNode1.SelectAction = TreeNodeSelectAction.None;
                                 singleNode1.Text = "<span id=\"sbkMviv_TreeSelectedNode\">" + singleNode1.Text + "</span>";
-
                             }
                             else
                             {
@@ -869,7 +866,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                                 string nontranslated = thisItem.Level1_Text;
                                 bool allPrivate = allVolumes.All(ThisVolume => (thisItem.IP_Restriction_Mask < 0) || (dark) || (String.Compare(ThisVolume.Level1_Text, nontranslated, StringComparison.OrdinalIgnoreCase) != 0) || (thisItem.Level1_Index != ThisVolume.Level1_Index));
 
-                                lastNode1 = new TreeNode(level1_text);
+                                lastNode1 = new HtmlTreeNode { Text = level1_text };
                                 if (level1_text.Length > LINE_TO_LONG)
                                 {
                                     lastNode1.ToolTip = lastNode1.Text;
@@ -881,8 +878,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
                                 {
                                     lastNode1.Text = "<span class=\"sbkMviv_TreePrivateNode\">" + level1_text + " ( all private or dark )</span>";
                                 }
-
-                                lastNode1.SelectAction = TreeNodeSelectAction.None;
 
                                 lastNodeText1 = level1_text.ToUpper();
                                 rootNode.ChildNodes.Add(lastNode1);
@@ -903,7 +898,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                         level3_text = UI_ApplicationCache_Gateway.Translation.Get_Translation(thisItem.Level3_Text, currentRequest.Language);
                         if (level3_text.Length == 0)
                         {
-                            TreeNode singleNode2 = new TreeNode(access_span_start + level2_text + access_string + access_span_end);
+                            HtmlTreeNode singleNode2 = new HtmlTreeNode { Text = access_span_start + level2_text + access_string + access_span_end };
                             if (level2_text.Length > LINE_TO_LONG)
                             {
                                 singleNode2.ToolTip = level2_text;
@@ -913,7 +908,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
                             if (thisItem.ItemID == briefItem.Web.ItemID)
                             {
                                 currentSelectedNode = singleNode2;
-                                singleNode2.SelectAction = TreeNodeSelectAction.None;
                                 singleNode2.Text = "<span id=\"sbkMviv_TreeSelectedNode\">" + level2_text + access_string + "</span>";
                             }
                             else
@@ -926,13 +920,12 @@ namespace SobekCM.Library.ItemViewer.Viewers
                         {
                             if ((lastNode2 == null) || (lastNodeText2 != level2_text.ToUpper()))
                             {
-                                lastNode2 = new TreeNode(level2_text);
+                                lastNode2 = new HtmlTreeNode { Text = level2_text };
                                 if (level2_text.Length > LINE_TO_LONG)
                                 {
                                     lastNode2.ToolTip = lastNode2.Text;
                                     lastNode2.Text = level2_text.Substring(0, LINE_TO_LONG) + "...";
                                 }
-                                lastNode2.SelectAction = TreeNodeSelectAction.None;
                                 lastNodeText2 = level2_text.ToUpper();
                                 lastNode1.ChildNodes.Add(lastNode2);
 
@@ -950,7 +943,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                         level4_text = UI_ApplicationCache_Gateway.Translation.Get_Translation(thisItem.Level4_Text, currentRequest.Language);
                         if (level4_text.Length == 0)
                         {
-                            TreeNode singleNode3 = new TreeNode(access_span_start + level3_text + access_string + access_span_end);
+                            HtmlTreeNode singleNode3 = new HtmlTreeNode { Text = access_span_start + level3_text + access_string + access_span_end };
                             if (level3_text.Length > LINE_TO_LONG)
                             {
                                 singleNode3.ToolTip = level3_text;
@@ -966,7 +959,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
                             if (thisItem.ItemID == briefItem.Web.ItemID)
                             {
                                 currentSelectedNode = singleNode3;
-                                singleNode3.SelectAction = TreeNodeSelectAction.None;
                                 singleNode3.Text = "<span id=\"sbkMviv_TreeSelectedNode\">" + level3_text + access_string + "</span>";
                             }
                             else
@@ -980,13 +972,12 @@ namespace SobekCM.Library.ItemViewer.Viewers
                         {
                             if ((lastNode3 == null) || (lastNodeText3 != level3_text.ToUpper()))
                             {
-                                lastNode3 = new TreeNode(level3_text);
+                                lastNode3 = new HtmlTreeNode { Text = level3_text };
                                 if (level3_text.Length > LINE_TO_LONG)
                                 {
                                     lastNode3.ToolTip = lastNode3.Text;
                                     lastNode3.Text = level3_text.Substring(0, LINE_TO_LONG) + "...";
                                 }
-                                lastNode3.SelectAction = TreeNodeSelectAction.None;
                                 lastNodeText3 = level3_text.ToUpper();
                                 lastNode2.ChildNodes.Add(lastNode3);
 
@@ -1002,7 +993,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                         UI_ApplicationCache_Gateway.Translation.Get_Translation(thisItem.Level5_Text, currentRequest.Language);
                         if (level5_text.Length == 0)
                         {
-                            TreeNode singleNode4 = new TreeNode(access_span_start + level4_text + access_string + access_span_end);
+                            HtmlTreeNode singleNode4 = new HtmlTreeNode { Text = access_span_start + level4_text + access_string + access_span_end };
                             if (level4_text.Length > LINE_TO_LONG)
                             {
                                 singleNode4.ToolTip = level4_text;
@@ -1012,7 +1003,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
                             if (thisItem.ItemID == briefItem.Web.ItemID)
                             {
                                 currentSelectedNode = singleNode4;
-                                singleNode4.SelectAction = TreeNodeSelectAction.None;
                                 singleNode4.Text = "<span id=\"sbkMviv_TreeSelectedNode\">" + level4_text + access_string + "</span>";
                             }
                             else
@@ -1025,13 +1015,12 @@ namespace SobekCM.Library.ItemViewer.Viewers
                         {
                             if ((lastNode4 == null) || (lastNodeText4 != level4_text.ToUpper()))
                             {
-                                lastNode4 = new TreeNode(level4_text);
+                                lastNode4 = new HtmlTreeNode { Text = level4_text };
                                 if (level4_text.Length > LINE_TO_LONG)
                                 {
                                     lastNode4.ToolTip = lastNode4.Text;
                                     lastNode4.Text = level4_text.Substring(0, LINE_TO_LONG) + "...";
                                 }
-                                lastNode4.SelectAction = TreeNodeSelectAction.None;
                                 lastNodeText4 = level4_text.ToUpper();
                                 lastNode3.ChildNodes.Add(lastNode4);
                             }
@@ -1041,7 +1030,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     // Look at the fifth level
                     if ((level5_text.Length > 0) && (lastNode4 != null))
                     {
-                        TreeNode lastNode5 = new TreeNode(access_span_start + level5_text + access_string + access_span_end);
+                        HtmlTreeNode lastNode5 = new HtmlTreeNode { Text = access_span_start + level5_text + access_string + access_span_end };
                         if (level5_text.Length > LINE_TO_LONG)
                         {
                             lastNode5.ToolTip = level5_text;
@@ -1051,7 +1040,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
                         if (thisItem.ItemID == briefItem.Web.ItemID)
                         {
                             currentSelectedNode = lastNode5;
-                            lastNode5.SelectAction = TreeNodeSelectAction.None;
                             lastNode5.Text = "<span id=\"sbkMviv_TreeSelectedNode\">" + level5_text + access_string + "</span>";
                         }
                         else

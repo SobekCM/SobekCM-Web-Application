@@ -572,54 +572,40 @@ namespace SobekCM.Library.MySobekViewer
                 RequestSpecificValues.Current_Mode.My_Sobek_SubMode = properFolderName;
                 RequestSpecificValues.Current_Mode.Result_Display_Type = currentDisplayType;
 
-                // Build the tree view object and tree view nodes now
-                TreeView treeView1 = new TreeView
-                                         {
-                                             CssClass = "tree",
-                                             EnableClientScript = true,
-                                             PopulateNodesFromClient = false,
-                                             ShowLines = false
-                                         };
-                treeView1.NodeStyle.NodeSpacing = new Unit(2);
-                treeView1.NodeStyle.CssClass = "TreeNode";
-                
+                // Build the HTML tree view object and nodes
+                HtmlTreeView treeView1 = new HtmlTreeView { CssClass = "tree" };
 
                 // Add the root my bookshelves node
-                TreeNode rootNode = new TreeNode
-                                        {
-                                            Text = "&nbsp; <a title=\"Manage my library\" href=\"" + redirect_url.Replace("XXXXXXXXXXXXXXXXXX", String.Empty) + "\">My Library  (Manage my bookshelves)</a>",
-                                            ImageUrl = Static_Resources_Gateway.Bookshelf_Img,
-                                            SelectAction = TreeNodeSelectAction.None
-                                        };
+                HtmlTreeNode rootNode = new HtmlTreeNode
+                {
+                    Text = "&nbsp; <a title=\"Manage my library\" href=\"" + redirect_url.Replace("XXXXXXXXXXXXXXXXXX", String.Empty) + "\">My Library  (Manage my bookshelves)</a>",
+                    ImageUrl = Static_Resources_Gateway.Bookshelf_Img
+                };
                 treeView1.Nodes.Add(rootNode);
 
                 // Add the personalized home page
-                TreeNode homeNode = new TreeNode
-                                        {
-                                            Text = "&nbsp; <a title=\"View my collections home page\" href=\"" + personalized_home + "\">My Collections Home</a>", 
-                                            SelectAction = TreeNodeSelectAction.None,
-                                            ImageUrl = Static_Resources_Gateway.Home_Folder_Gif
-                                        };
+                HtmlTreeNode homeNode = new HtmlTreeNode
+                {
+                    Text = "&nbsp; <a title=\"View my collections home page\" href=\"" + personalized_home + "\">My Collections Home</a>",
+                    ImageUrl = Static_Resources_Gateway.Home_Folder_Gif
+                };
                 rootNode.ChildNodes.Add(homeNode);
 
                 // Add the saved searches node
-                TreeNode savedSearchesNode = new TreeNode
-                                                 {
-                                                     Text ="&nbsp; <a title=\"View my saved searches\" href=\"" + saved_search_url + "\">My Saved Searches</a>",
-                                                     SelectAction = TreeNodeSelectAction.None,
-                                                     ImageUrl = Static_Resources_Gateway.Saved_Searches_Img
-                                                 };
+                HtmlTreeNode savedSearchesNode = new HtmlTreeNode
+                {
+                    Text = "&nbsp; <a title=\"View my saved searches\" href=\"" + saved_search_url + "\">My Saved Searches</a>",
+                    ImageUrl = Static_Resources_Gateway.Saved_Searches_Img
+                };
                 rootNode.ChildNodes.Add(savedSearchesNode);
 
-
-               // StringBuilder literalBuilder = new StringBuilder();
-                List<TreeNode> selectedNodes = new List<TreeNode>();
+                List<HtmlTreeNode> selectedNodes = new List<HtmlTreeNode>();
                 foreach (User_Folder thisFolder in RequestSpecificValues.Current_User.Folders)
                 {
                     if (thisFolder.Folder_Name != "Submitted Items")
                     {
-                        TreeNode folderNode = new TreeNode
-                                                  { Text ="&nbsp; <a href=\"" + redirect_url.Replace("XXXXXXXXXXXXXXXXXX", thisFolder.Folder_Name_Encoded) + "\">" + thisFolder.Folder_Name + "</a>" };
+                        HtmlTreeNode folderNode = new HtmlTreeNode
+                            { Text = "&nbsp; <a href=\"" + redirect_url.Replace("XXXXXXXXXXXXXXXXXX", thisFolder.Folder_Name_Encoded) + "\">" + thisFolder.Folder_Name + "</a>" };
                         if (thisFolder.Folder_Name == properFolderName)
                         {
                             selectedNodes.Add(folderNode);
@@ -633,7 +619,6 @@ namespace SobekCM.Library.MySobekViewer
                                 folderNode.ImageUrl = Static_Resources_Gateway.Open_Folder_Jpg;
                             }
                             folderNode.Text = "&nbsp; <span class=\"Selected_TreeNode_Text\">" + thisFolder.Folder_Name + "</span>";
-                            folderNode.SelectAction = TreeNodeSelectAction.None;
                         }
                         else
                         {
@@ -655,14 +640,14 @@ namespace SobekCM.Library.MySobekViewer
                     }
                 }
 
-                // Collapse the treeview
+                // Collapse the tree then expand the path to the selected node
                 treeView1.CollapseAll();
                 if (selectedNodes.Count > 0)
                 {
-                    TreeNode selectedNodeExpander = selectedNodes[0];
-                    while (selectedNodeExpander.Parent != null) 
+                    HtmlTreeNode selectedNodeExpander = selectedNodes[0];
+                    while (selectedNodeExpander.Parent != null)
                     {
-                        (selectedNodeExpander.Parent).Expand();
+                        selectedNodeExpander.Parent.Expand();
                         selectedNodeExpander = selectedNodeExpander.Parent;
                     }
                 }
@@ -671,8 +656,10 @@ namespace SobekCM.Library.MySobekViewer
                     rootNode.Expand();
                 }
 
-
-                MainPlaceHolder.Controls.Add(treeView1);
+                // Render to HTML and add as a Literal
+                StringBuilder treeBuilder = new StringBuilder();
+                treeView1.Render(new StringWriter(treeBuilder));
+                MainPlaceHolder.Controls.Add(new Literal { Text = treeBuilder.ToString() });
             }
 
             if (RequestSpecificValues.Current_Mode.My_Sobek_SubMode.Length > 0)
@@ -820,15 +807,15 @@ namespace SobekCM.Library.MySobekViewer
             }
         }
 
-        private void add_children_nodes(TreeNode ParentNode, User_Folder ThisFolder, string SelectedFolder, string RedirectURL, List<TreeNode> SelectedNodes )
+        private void add_children_nodes(HtmlTreeNode ParentNode, User_Folder ThisFolder, string SelectedFolder, string RedirectURL, List<HtmlTreeNode> SelectedNodes)
         {
             if (ThisFolder.Child_Count == 0)
                 return;
 
             foreach (User_Folder childFolders in ThisFolder.Children)
             {
-                TreeNode folderNode = new TreeNode
-                                          { Text ="&nbsp; <a href=\"" +RedirectURL.Replace("XXXXXXXXXXXXXXXXXX",childFolders.Folder_Name_Encoded) + "\">" +childFolders.Folder_Name + "</a>" };
+                HtmlTreeNode folderNode = new HtmlTreeNode
+                    { Text = "&nbsp; <a href=\"" + RedirectURL.Replace("XXXXXXXXXXXXXXXXXX", childFolders.Folder_Name_Encoded) + "\">" + childFolders.Folder_Name + "</a>" };
                 if (childFolders.Folder_Name == SelectedFolder)
                 {
                     SelectedNodes.Add(folderNode);
@@ -841,9 +828,7 @@ namespace SobekCM.Library.MySobekViewer
                     {
                         folderNode.ImageUrl = Static_Resources_Gateway.Open_Folder_Jpg;
                     }
-
                     folderNode.Text = "&nbsp; <span class=\"Selected_TreeNode_Text\">" + childFolders.Folder_Name + "</span>";
-                    folderNode.SelectAction = TreeNodeSelectAction.None;
                 }
                 else
                 {

@@ -25,7 +25,7 @@ using SobekCM.Library.Citation;
 using SobekCM.Library.Citation.SectionWriter;
 using SobekCM.Library.Citation.Template;
 using SobekCM.Library.Database;
-using SobekCM.Library.Helpers.UploadiFive;
+// using SobekCM.Library.Helpers.UploadiFive;
 using SobekCM.Library.UI;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Bib_Info;
@@ -2528,6 +2528,7 @@ namespace SobekCM.Library.MySobekViewer
                 filesBuilder.Remove(0, filesBuilder.Length);
 
 
+/*
                 UploadiFiveControl uploadControl = new UploadiFiveControl();
                 uploadControl.UploadPath = userInProcessDirectory;
                 uploadControl.UploadScript = RequestSpecificValues.Current_Mode.Base_URL + "UploadiFiveFileHandler.ashx";
@@ -2540,6 +2541,7 @@ namespace SobekCM.Library.MySobekViewer
                 uploadControl.ButtonText = "Select TEI File";
                 uploadControl.ButtonWidth = 175;
                 MainPlaceholder.Controls.Add(uploadControl);
+*/
 
                 filesBuilder.AppendLine("</blockquote><br />");
             }
@@ -2565,6 +2567,7 @@ namespace SobekCM.Library.MySobekViewer
                 filesBuilder.Remove(0, filesBuilder.Length);
 
 
+/*
                 UploadiFiveControl uploadControl = new UploadiFiveControl();
                 uploadControl.UploadPath = userInProcessDirectory;
                 uploadControl.UploadScript = RequestSpecificValues.Current_Mode.Base_URL + "UploadiFiveFileHandler.ashx";
@@ -2574,6 +2577,7 @@ namespace SobekCM.Library.MySobekViewer
                 uploadControl.Swf = Static_Resources_Gateway.Uploadify_Swf;
                 uploadControl.RevertToFlashVersion = true;
                 MainPlaceholder.Controls.Add(uploadControl);
+*/
 
                 filesBuilder.AppendLine("</blockquote><br />");
             }

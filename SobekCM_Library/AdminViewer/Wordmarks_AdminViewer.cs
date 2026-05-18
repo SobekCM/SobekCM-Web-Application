@@ -18,7 +18,7 @@ using SobekCM.Core.UI_Configuration.StaticResources;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Engine_Library.Database;
 using SobekCM.Library.Database;
-using SobekCM.Library.Helpers.UploadiFive;
+// using SobekCM.Library.Helpers.UploadiFive;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
 using SobekCM.Library.UI;
@@ -530,6 +530,7 @@ namespace SobekCM.Library.AdminViewer
 			UploadFilesPlaceHolder.Controls.Add(filesLiteral2);
 			filesBuilder.Remove(0, filesBuilder.Length);
 
+/*
 			UploadiFiveControl uploadControl = new UploadiFiveControl();
 			uploadControl.UploadPath = wordmarkDirectory;
 			uploadControl.UploadScript = RequestSpecificValues.Current_Mode.Base_URL + "UploadiFiveFileHandler.ashx";
@@ -538,6 +539,7 @@ namespace SobekCM.Library.AdminViewer
 			uploadControl.SubmitWhenQueueCompletes = true;
 			uploadControl.Multi = false;
 			UploadFilesPlaceHolder.Controls.Add(uploadControl);
+*/
 
 			LiteralControl literal1 = new LiteralControl(filesBuilder.ToString());
 			UploadFilesPlaceHolder.Controls.Add(literal1);

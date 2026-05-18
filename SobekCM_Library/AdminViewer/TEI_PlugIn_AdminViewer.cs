@@ -13,7 +13,7 @@ using SobekCM.Core.Navigation;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Engine_Library.Database;
 using SobekCM.Library.Database;
-using SobekCM.Library.Helpers.UploadiFive;
+// using SobekCM.Library.Helpers.UploadiFive;
 using SobekCM.Library.HTML;
 using SobekCM.Library.TEI;
 using SobekCM.Library.UI;
@@ -874,6 +874,7 @@ namespace SobekCM.Library.AdminViewer
             UploadFilesPlaceHolder.Controls.Add(filesLiteral2);
             filesBuilder.Remove(0, filesBuilder.Length);
 
+/*
             UploadiFiveControl uploadControl = new UploadiFiveControl();
             uploadControl.UploadPath = DestinationDirectory;
             uploadControl.UploadScript = RequestSpecificValues.Current_Mode.Base_URL + "UploadiFiveFileHandler.ashx";
@@ -884,6 +885,7 @@ namespace SobekCM.Library.AdminViewer
             uploadControl.ButtonText = ButtonText;
             uploadControl.CssClass = "sbkTeiAv_UploadButton";
             UploadFilesPlaceHolder.Controls.Add(uploadControl);
+*/
 
             LiteralControl literal1 = new LiteralControl(filesBuilder.ToString());
             UploadFilesPlaceHolder.Controls.Add(literal1);

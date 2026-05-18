@@ -18,7 +18,7 @@ using SobekCM.Core.UI_Configuration.StaticResources;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Engine_Library.Email;
 using SobekCM.Library.AdminViewer;
-using SobekCM.Library.Helpers.UploadiFive;
+// using SobekCM.Library.Helpers.UploadiFive;
 using SobekCM.Library.HTML;
 using SobekCM.Library.UI;
 using SobekCM.Resource_Object;
@@ -767,6 +767,7 @@ namespace SobekCM.Library.MySobekViewer
             PlaceHolder.Controls.Add(filesLiteral2);
             filesBuilder.Remove(0, filesBuilder.Length);
 
+/*
 			UploadiFiveControl uploadControl = new UploadiFiveControl
 			{
 			    UploadPath = digitalResourceDirectory, 
@@ -778,6 +779,7 @@ namespace SobekCM.Library.MySobekViewer
                 RevertToFlashVersion = true
 			};
             PlaceHolder.Controls.Add(uploadControl);
+*/
 
 			filesBuilder.AppendLine("</blockquote><br />");
 

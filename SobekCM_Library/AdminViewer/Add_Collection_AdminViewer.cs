@@ -19,7 +19,7 @@ using SobekCM.Core.UI_Configuration.StaticResources;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Engine_Library.Database;
 using SobekCM.Library.Database;
-using SobekCM.Library.Helpers.UploadiFive;
+// using SobekCM.Library.Helpers.UploadiFive;
 using SobekCM.Library.HTML;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
@@ -1386,6 +1386,7 @@ namespace SobekCM.Library.AdminViewer
             UploadFilesPlaceHolder.Controls.Add(filesLiteral2);
             filesBuilder.Remove(0, filesBuilder.Length);
 
+/*
             UploadiFiveControl uploadControl = new UploadiFiveControl
             {
                 UploadPath = UploadDirectory, 
@@ -1397,6 +1398,7 @@ namespace SobekCM.Library.AdminViewer
                 ServerSideFileName = ServerSideName
             };
             UploadFilesPlaceHolder.Controls.Add(uploadControl);
+*/
 
             LiteralControl literal1 = new LiteralControl(filesBuilder.ToString());
             UploadFilesPlaceHolder.Controls.Add(literal1);

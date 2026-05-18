@@ -8,7 +8,7 @@ using System.Web.UI.WebControls;
 using ClosedXML.Excel;
 using SobekCM.Core.Navigation;
 using SobekCM.Engine_Library.Configuration;
-using SobekCM.Library.Helpers.UploadiFive;
+// using SobekCM.Library.Helpers.UploadiFive;
 using SobekCM.Library.HTML;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
@@ -283,6 +283,7 @@ namespace SobekCM.Library.MySobekViewer
             MainPlaceHolder.Controls.Add(filesLiteral2);
             filesBuilder.Remove(0, filesBuilder.Length);
 
+/*
             UploadiFiveControl uploadControl = new UploadiFiveControl();
             uploadControl.UploadPath = taskDirectory;
             uploadControl.UploadScript = RequestSpecificValues.Current_Mode.Base_URL + "UploadiFiveFileHandler.ashx";
@@ -292,6 +293,7 @@ namespace SobekCM.Library.MySobekViewer
             uploadControl.RevertToFlashVersion = true;
             uploadControl.AllowedFileExtensions = ".xls|.xlsx|.csv";
             MainPlaceHolder.Controls.Add(uploadControl);
+*/
 
 
             filesBuilder.AppendLine("</blockquote><br />");

@@ -2,7 +2,6 @@
 
 using System.Collections.Generic;
 using System.IO;
-using System.Web.UI.WebControls;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Results;
@@ -102,7 +101,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
         /// <remarks> This adds the results from the dataset into the space below the search box.<br /><br />
         /// This creates and uses a <see cref="PagedResults_HtmlSubwriter"/> to write the results. </remarks>
-        public override void Add_Secondary_Controls(PlaceHolder MainPlaceHolder, Custom_Tracer Tracer)
+        public override void Add_Secondary_Controls(TextWriter Output, Custom_Tracer Tracer)
         {
             if (Tracer != null)
             {
@@ -110,7 +109,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             }
 
             writeResult = new PagedResults_HtmlSubwriter(RequestSpecificValues, ViewBag.Results_Statistics, ViewBag.Paged_Results) { Browse_Title = ViewBag.Browse_Object.Label };
-            writeResult.Add_Controls(MainPlaceHolder, Tracer);
+            writeResult.Add_Controls(Output, Tracer);
 
 
 			//if ( resultsStatistics.Total_Items > 0)

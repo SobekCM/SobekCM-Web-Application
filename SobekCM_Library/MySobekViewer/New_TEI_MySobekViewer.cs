@@ -10,8 +10,6 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
-using System.Web.UI;
-using System.Web.UI.WebControls;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.BriefItem;
 using SobekCM.Core.MemoryMgmt;
@@ -2491,7 +2489,7 @@ namespace SobekCM.Library.MySobekViewer
         /// <summary> Add controls directly to the form in the main control area placeholder </summary>
         /// <param name="MainPlaceHolder"> Main place holder to which all main controls are added </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-        public override void Add_Controls(PlaceHolder MainPlaceHolder, Custom_Tracer Tracer)
+        public override void Add_Controls(TextWriter Output, Custom_Tracer Tracer)
         {
             Tracer.Add_Trace("New_TEI_MySobekViewer.Add_Controls", String.Empty);
 
@@ -2499,91 +2497,44 @@ namespace SobekCM.Library.MySobekViewer
             if (currentProcessStep == 2)
             {
                 // Add the upload controls to the file place holder
-                add_upload_controls_tei(MainPlaceHolder, "", ".xml", Tracer);
+                add_upload_controls_tei(Output, "", ".xml", Tracer);
             }
 
             if  (currentProcessStep == 8)
             {
                 // Add the upload controls to the file place holder
-                add_upload_controls(MainPlaceHolder, "Add a new related file for this package:", UI_ApplicationCache_Gateway.Settings.Resources.Upload_Image_Types + "," + UI_ApplicationCache_Gateway.Settings.Resources.Upload_File_Types, Tracer);
+                add_upload_controls(Output, "Add a new related file for this package:", UI_ApplicationCache_Gateway.Settings.Resources.Upload_Image_Types + "," + UI_ApplicationCache_Gateway.Settings.Resources.Upload_File_Types, Tracer);
             }
         }
 
         #region Step 3: Upload Related Files
 
-        private void add_upload_controls_tei(PlaceHolder MainPlaceholder, string Prompt, string AllowedFileExtensions, Custom_Tracer Tracer)
+        private void add_upload_controls_tei(TextWriter Output, string Prompt, string AllowedFileExtensions, Custom_Tracer Tracer)
         {
             Tracer.Add_Trace("New_TEI_MySobekViewer.add_upload_controls", String.Empty);
 
-            StringBuilder filesBuilder = new StringBuilder(2000);
-            filesBuilder.AppendLine("<script src=\"" + Static_Resources_Gateway.Sobekcm_Metadata_Js + "\" type=\"text/javascript\"></script>");
+            Output.WriteLine("<script src=\"" + Static_Resources_Gateway.Sobekcm_Metadata_Js + "\" type=\"text/javascript\"></script>");
 
-            if (currentProcessStep == 2) 
+            if (currentProcessStep == 2)
             {
-                filesBuilder.AppendLine(Prompt);
-                filesBuilder.AppendLine("<blockquote>");
-
-                LiteralControl filesLiteral2 = new LiteralControl(filesBuilder.ToString());
-                MainPlaceholder.Controls.Add(filesLiteral2);
-                filesBuilder.Remove(0, filesBuilder.Length);
-
-
-/*
-                UploadiFiveControl uploadControl = new UploadiFiveControl();
-                uploadControl.UploadPath = userInProcessDirectory;
-                uploadControl.UploadScript = RequestSpecificValues.Current_Mode.Base_URL + "UploadiFiveFileHandler.ashx";
-                uploadControl.AllowedFileExtensions = AllowedFileExtensions;
-                uploadControl.SubmitWhenQueueCompletes = true;
-                uploadControl.RemoveCompleted = true;
-                uploadControl.Swf = Static_Resources_Gateway.Uploadify_Swf;
-                uploadControl.RevertToFlashVersion = true;
-                uploadControl.QueueSizeLimit = 1;
-                uploadControl.ButtonText = "Select TEI File";
-                uploadControl.ButtonWidth = 175;
-                MainPlaceholder.Controls.Add(uploadControl);
-*/
-
-                filesBuilder.AppendLine("</blockquote><br />");
+                Output.WriteLine(Prompt);
+                Output.WriteLine("<blockquote>");
+                Output.WriteLine("</blockquote><br />");
             }
-
-            LiteralControl literal1 = new LiteralControl(filesBuilder.ToString());
-            MainPlaceholder.Controls.Add(literal1);
         }
 
-        private void add_upload_controls(PlaceHolder MainPlaceholder, string Prompt, string AllowedFileExtensions, Custom_Tracer Tracer)
+        private void add_upload_controls(TextWriter Output, string Prompt, string AllowedFileExtensions, Custom_Tracer Tracer)
         {
             Tracer.Add_Trace("New_TEI_MySobekViewer.add_upload_controls", String.Empty);
 
-            StringBuilder filesBuilder = new StringBuilder(2000);
-            filesBuilder.AppendLine("<script src=\"" + Static_Resources_Gateway.Sobekcm_Metadata_Js + "\" type=\"text/javascript\"></script>");
+            Output.WriteLine("<script src=\"" + Static_Resources_Gateway.Sobekcm_Metadata_Js + "\" type=\"text/javascript\"></script>");
 
             if (( currentProcessStep == 2 ) || ((completeTemplate.Upload_Types == CompleteTemplate.Template_Upload_Types.File) || (completeTemplate.Upload_Types == CompleteTemplate.Template_Upload_Types.File_or_URL)))
             {
-                filesBuilder.AppendLine(Prompt);
-                filesBuilder.AppendLine("<blockquote>");
-
-                LiteralControl filesLiteral2 = new LiteralControl(filesBuilder.ToString());
-                MainPlaceholder.Controls.Add(filesLiteral2);
-                filesBuilder.Remove(0, filesBuilder.Length);
-
-
-/*
-                UploadiFiveControl uploadControl = new UploadiFiveControl();
-                uploadControl.UploadPath = userInProcessDirectory;
-                uploadControl.UploadScript = RequestSpecificValues.Current_Mode.Base_URL + "UploadiFiveFileHandler.ashx";
-                uploadControl.AllowedFileExtensions = AllowedFileExtensions;
-                uploadControl.SubmitWhenQueueCompletes = true;
-                uploadControl.RemoveCompleted = true;
-                uploadControl.Swf = Static_Resources_Gateway.Uploadify_Swf;
-                uploadControl.RevertToFlashVersion = true;
-                MainPlaceholder.Controls.Add(uploadControl);
-*/
-
-                filesBuilder.AppendLine("</blockquote><br />");
+                Output.WriteLine(Prompt);
+                Output.WriteLine("<blockquote>");
+                Output.WriteLine("</blockquote><br />");
             }
-
-            LiteralControl literal1 = new LiteralControl(filesBuilder.ToString());
-            MainPlaceholder.Controls.Add(literal1);
         }
 
         #endregion

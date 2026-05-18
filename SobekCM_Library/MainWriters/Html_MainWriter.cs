@@ -5,8 +5,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Web;
-using System.Web.UI;
-using System.Web.UI.WebControls;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Skins;
 using SobekCM.Core.UI_Configuration;
@@ -404,10 +402,9 @@ namespace SobekCM.Library.MainWriters
         public override Writer_Type_Enum Writer_Type { get { return Writer_Type_Enum.HTML; } }
 
         /// <summary> Perform all the work of adding to the response stream back to the web user </summary>
-        /// <param name="Main_Place_Holder"> Place holder is used to add more complex server-side objects during execution</param>
+        /// <param name="Output"> TextWriter to write HTML output </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-        /// <remarks> Since this class writes all the output directly to the response stream, this method simply returns, without doing anything</remarks>
-        public override void Add_Controls(  PlaceHolder Main_Place_Holder, Custom_Tracer Tracer)
+        public override void Add_Controls(TextWriter Output, Custom_Tracer Tracer)
         {
             // If execution should end, do it now
             if (RequestSpecificValues.Current_Mode.Request_Completed)
@@ -435,7 +432,7 @@ namespace SobekCM.Library.MainWriters
 					if (mySobekWriter != null)
                     {
                         // Add any necessary controls
-                        mySobekWriter.Add_Controls(Main_Place_Holder, Tracer);
+                        mySobekWriter.Add_Controls(Output, Tracer);
                     }
                     break;
 
@@ -454,25 +451,16 @@ namespace SobekCM.Library.MainWriters
 						if ((adminWriter.Contains_Popup_Forms) && ( !adminWriter.Subwriter_Behaviors.Contains(HtmlSubwriter_Behaviors_Enum.MySobek_Subwriter_Mimic_Item_Subwriter)))
 						{
                             add_footer = true;
-
-							StringBuilder header_builder = new StringBuilder("Html_Mainwriter:Line415");
-							StringWriter header_writer = new StringWriter(header_builder);
-							Display_Header(header_writer, Tracer);
-							LiteralControl header_literal = new LiteralControl(header_builder.ToString());
-							Main_Place_Holder.Controls.Add(header_literal);
+							Display_Header(Output, Tracer);
 						}
 
                         // Add any necessary controls
-                        adminWriter.Add_Controls(Main_Place_Holder, Tracer);
+                        adminWriter.Add_Controls(Output, Tracer);
 
 						// Finally, add the footer
                         if (add_footer)
 						{
-							StringBuilder footer_builder = new StringBuilder();
-							StringWriter footer_writer = new StringWriter(footer_builder);
-							Display_Footer(footer_writer, Tracer);
-							LiteralControl footer_literal = new LiteralControl(footer_builder.ToString());
-							Main_Place_Holder.Controls.Add(footer_literal);
+							Display_Footer(Output, Tracer);
 						}
                     }
 
@@ -493,8 +481,8 @@ namespace SobekCM.Library.MainWriters
                         HttpContext.Current.Session["LastSearch"] = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
                         RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Results;
 
-                        // Add the controls 
-						searchResultsSub.Add_Controls(Main_Place_Holder, Tracer, null);
+                        // Add the controls
+						searchResultsSub.Add_Controls(Output, Tracer);
                     }
 
                     break;
@@ -510,7 +498,7 @@ namespace SobekCM.Library.MainWriters
 					if (publicFolderSub != null )
                     {
                         // Also try to add any controls
-						publicFolderSub.Add_Controls(Main_Place_Holder, Tracer, null);
+						publicFolderSub.Add_Controls(Output, Tracer);
                     }
                     break;
 
@@ -525,7 +513,7 @@ namespace SobekCM.Library.MainWriters
                     if (aggregationSub != null)
                     {
                         // Also try to add any controls
-                        aggregationSub.Add_Controls(Main_Place_Holder, Tracer);
+                        aggregationSub.Add_Controls(Output, Tracer);
                     }
                     break;
 
@@ -540,10 +528,10 @@ namespace SobekCM.Library.MainWriters
 					if (itemWriter != null )
                     {
                         // Add the TOC section
-                        Tracer.Add_Trace("Html_MainWriter.Add_Controls", "Allowing item viewer to add controls to main PlaceHolder");
+                        Tracer.Add_Trace("Html_MainWriter.Add_Controls", "Allowing item viewer to write main viewer section");
 
                         // Add the main viewer section
-                        itemWriter.Add_Main_Viewer_Section(Main_Place_Holder, Tracer);
+                        itemWriter.Add_Main_Viewer_Section(Output, Tracer);
                     }
                     break;
 

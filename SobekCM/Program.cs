@@ -1,0 +1,513 @@
+using System;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Extensions;
+using Microsoft.AspNetCore.SystemWebAdapters;
+using Microsoft.Extensions.DependencyInjection;
+using SobekCM.Core.Client;
+using SobekCM.Core.FileSystems;
+using SobekCM.Core.Navigation;
+using SobekCM.Core.UI_Configuration;
+using SobekCM.Engine_Library.Configuration;
+using SobekCM.Library.Database;
+using SobekCM.Library.Helpers.CKEditor;
+using SobekCM.Library.MainWriters;
+using SobekCM.Library.ResultsViewer;
+using SobekCM.Library.UI;
+using SobekCM.Tools;
+
+namespace SobekCM
+{
+    // Minimal token class for UploadiFive security (the library helper was removed)
+    internal sealed class UploadiFive_Security_Token
+    {
+        public string FileObjName { get; set; } = "file";
+        public string UploadPath { get; set; } = "";
+        public string ServerSideFileName { get; set; } = "";
+        public string AllowedFileExtensions { get; set; } = "";
+        public string ReturnToken { get; set; } = "";
+    }
+
+    public class Program
+    {
+        public static void Main(string[] args)
+        {
+            var builder = WebApplication.CreateBuilder(args);
+
+            // Session requires a distributed cache backing store
+            builder.Services.AddDistributedMemoryCache();
+            builder.Services.AddSession(options =>
+            {
+                options.IdleTimeout = TimeSpan.FromMinutes(30);
+                options.Cookie.HttpOnly = true;
+                options.Cookie.IsEssential = true;
+            });
+
+            // SystemWebAdapters v2.x: no explicit AddSystemWebAdapters() needed —
+            // the package auto-wires via build targets; HttpContext.Current works via IHttpContextAccessor.
+
+            builder.Services.AddHttpContextAccessor();
+
+            var app = builder.Build();
+
+            app.UseSession();
+
+            // Static files (CSS, JS, images) served from wwwroot
+            app.UseStaticFiles();
+
+            // Ensure base URL is populated before any request processing
+            app.Use(async (context, next) =>
+            {
+                if (string.IsNullOrEmpty(UI_ApplicationCache_Gateway.Settings?.Servers?.System_Base_URL))
+                {
+                    string baseUrl = $"{context.Request.Scheme}://{context.Request.Host}/";
+                    if (UI_ApplicationCache_Gateway.Settings?.Servers != null)
+                    {
+                        UI_ApplicationCache_Gateway.Settings.Servers.System_Base_URL = baseUrl;
+                        UI_ApplicationCache_Gateway.Settings.Servers.Base_URL = baseUrl;
+                    }
+                }
+
+                if (!SobekEngineClient.Config_Read_Attempted && UI_ApplicationCache_Gateway.Settings?.Servers != null)
+                {
+                    string configPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "config", "default", "sobekcm_microservices.config");
+                    SobekEngineClient.Read_Config_File(configPath, UI_ApplicationCache_Gateway.Settings.Servers.System_Base_URL);
+                }
+
+                SobekFileSystem.Initialize(
+                    UI_ApplicationCache_Gateway.Settings?.Servers?.Image_Server_Network ?? "",
+                    UI_ApplicationCache_Gateway.Settings?.Servers?.Image_URL ?? "");
+
+                await next();
+            });
+
+            // ── File serving endpoint (replaces Files.aspx) ──────────────────────────
+            app.Map("/files/{**urlrelative}", async (HttpContext context, string urlrelative) =>
+            {
+                await Files_Handler(context, urlrelative ?? "");
+            });
+
+            // ── HTML editor file upload (replaces HtmlEditFileHandler.ashx) ──────────
+            app.MapPost("/htmleditfilehandler.ashx", async (HttpContext context) =>
+            {
+                await HtmlEdit_Upload_Handler(context);
+            });
+
+            // ── UploadiFive file upload (replaces UploadiFiveFileHandler.ashx) ───────
+            app.MapPost("/uploadifivefilehandler.ashx", async (HttpContext context) =>
+            {
+                await UploadiFive_Upload_Handler(context);
+            });
+
+            // ── Map search callback (replaces CallBacks.aspx WebMethod) ──────────────
+            app.MapPost("/default/callbacks/callbacks.aspx/MapSearch", async (HttpContext context) =>
+            {
+                string sendData = "";
+                using var reader = new StreamReader(context.Request.Body);
+                sendData = await reader.ReadToEndAsync();
+                SobekCM_Database.Connection_String = UI_ApplicationCache_Gateway.Settings.Database_Connection.Connection_String;
+                object result = Google_Map_ResultsViewer.Process_MapSearch_Callback(sendData);
+                await context.Response.WriteAsJsonAsync(result);
+            });
+
+            // ── Dashboard (replaces Dashboard.aspx) ──────────────────────────────────
+            app.Map("/dashboard.aspx", async (HttpContext context) =>
+            {
+                context.Response.ContentType = "text/html; charset=utf-8";
+                await using var writer = new StreamWriter(context.Response.Body, Encoding.UTF8, leaveOpen: true);
+
+                writer.WriteLine("<!DOCTYPE html><html><head><title>SobekCM Dashboard</title></head><body>");
+
+                var session = System.Web.HttpContext.Current.Session;
+                if (session["Last_Exception"] is Exception lastException)
+                {
+                    if (lastException is SobekCM_Traced_Exception traced)
+                    {
+                        writer.WriteLine("<h1>EXCEPTION CAUGHT</h1>");
+                        writer.WriteLine("<h2>SobekCM Message</h2><blockquote>" + traced.Message + "</blockquote>");
+                        writer.WriteLine("<h2>Inner Message</h2><blockquote>" + traced.InnerException?.Message + "</blockquote>");
+                        if (!string.IsNullOrEmpty(traced.InnerException?.StackTrace))
+                            writer.WriteLine("<h2>Stack Trace</h2><blockquote>" + traced.InnerException.StackTrace.Replace("\n", "<br />") + "</blockquote>");
+                        writer.WriteLine("<h2>SobekCM Tracer</h2><blockquote>" + traced.Trace_Route_HTML + "</blockquote>");
+                    }
+                    else
+                    {
+                        writer.WriteLine("<h1>EXCEPTION CAUGHT</h1>");
+                        writer.WriteLine("<h2>Message</h2><blockquote>" + lastException.Message + "</blockquote>");
+                        if (!string.IsNullOrEmpty(lastException.StackTrace))
+                            writer.WriteLine("<h2>Stack Trace</h2><blockquote>" + lastException.StackTrace.Replace("\n", "<br />") + "</blockquote>");
+                    }
+                    session.Remove("Last_Exception");
+                }
+                else
+                {
+                    writer.WriteLine("<h1>SobekCM Dashboard</h1>");
+                    writer.WriteLine("This dashboard displays exceptions when the application is run locally.");
+                }
+
+                writer.WriteLine("</body></html>");
+            });
+
+            // ── Data/JSON/XML endpoint (replaces SobekCM_data.aspx) ─────────────────
+            app.Map("/sobekcm_data.aspx", async (HttpContext context) =>
+            {
+                var pageGlobals = new SobekCM_Page_Globals(
+                    string.Equals(context.Request.Method, "POST", StringComparison.OrdinalIgnoreCase),
+                    "SOBEKCM_DATA");
+                try
+                {
+                    pageGlobals.On_Page_Load();
+                }
+                catch (OutOfMemoryException ee) { pageGlobals.Email_Information("SobekCM Out of Memory Exception", ee); }
+                catch (Exception ee)
+                {
+                    if (pageGlobals.currentMode != null)
+                    {
+                        pageGlobals.currentMode.Mode = Display_Mode_Enum.Error;
+                        pageGlobals.currentMode.Error_Message = ee.Message;
+                        pageGlobals.currentMode.Caught_Exception = ee;
+                    }
+                }
+
+                if (pageGlobals.mainWriter != null)
+                {
+                    await using var writer = new StreamWriter(context.Response.Body, Encoding.UTF8, leaveOpen: true);
+                    pageGlobals.mainWriter.Write_Html(writer, pageGlobals.tracer);
+                }
+            });
+
+            // ── OAI-PMH endpoint (replaces SobekCM_oai.aspx) ────────────────────────
+            app.Map("/sobekcm_oai.aspx", async (HttpContext context) =>
+            {
+                var pageGlobals = new SobekCM_Page_Globals(
+                    string.Equals(context.Request.Method, "POST", StringComparison.OrdinalIgnoreCase),
+                    "SOBEKCM_OAI");
+                if (pageGlobals.currentMode != null)
+                    pageGlobals.currentMode.Writer_Type = Writer_Type_Enum.OAI;
+
+                try
+                {
+                    pageGlobals.On_Page_Load();
+                }
+                catch (OutOfMemoryException ee) { pageGlobals.Email_Information("SobekCM Out of Memory Exception", ee); }
+                catch (Exception ee)
+                {
+                    if (pageGlobals.currentMode != null)
+                    {
+                        pageGlobals.currentMode.Mode = Display_Mode_Enum.Error;
+                        pageGlobals.currentMode.Error_Message = ee.Message;
+                        pageGlobals.currentMode.Caught_Exception = ee;
+                    }
+                }
+
+                if (pageGlobals.mainWriter != null)
+                {
+                    await using var writer = new StreamWriter(context.Response.Body, Encoding.UTF8, leaveOpen: true);
+                    pageGlobals.mainWriter.Write_Html(writer, pageGlobals.tracer);
+                }
+            });
+
+            // ── Main SobekCM catch-all (replaces SobekCM.aspx) ──────────────────────
+            app.MapFallback(async (HttpContext context) =>
+            {
+                bool isPostBack = string.Equals(context.Request.Method, "POST", StringComparison.OrdinalIgnoreCase);
+                var pageGlobals = new SobekCM_Page_Globals(isPostBack, "SOBEKCM");
+
+                try
+                {
+                    pageGlobals.On_Page_Load();
+                }
+                catch (OutOfMemoryException ee)
+                {
+                    pageGlobals.Email_Information("SobekCM Out of Memory Exception", ee);
+                }
+                catch (Exception ee)
+                {
+                    if (pageGlobals.currentMode != null)
+                    {
+                        pageGlobals.currentMode.Mode = Display_Mode_Enum.Error;
+                        pageGlobals.currentMode.Error_Message = "Unknown error caught while executing your request";
+                        pageGlobals.currentMode.Caught_Exception = ee;
+                    }
+                }
+
+                if (pageGlobals.currentMode == null || pageGlobals.currentMode.Request_Completed)
+                    return;
+
+                // Save the current URL to session for "back" navigation
+                var webSession = System.Web.HttpContext.Current.Session;
+                string originalUrl = System.Web.HttpContext.Current.Items.Contains("Original_URL")
+                    ? System.Web.HttpContext.Current.Items["Original_URL"].ToString()
+                    : context.Request.GetDisplayUrl();
+
+                if (pageGlobals.currentMode.Mode != Display_Mode_Enum.Preferences &&
+                    pageGlobals.currentMode.Mode != Display_Mode_Enum.Contact)
+                {
+                    webSession["Last_Mode"] = originalUrl;
+                }
+
+                context.Response.ContentType = "text/html; charset=utf-8";
+                await using var writer = new StreamWriter(context.Response.Body, Encoding.UTF8, leaveOpen: true);
+
+                // Mirrors the SobekCM.aspx template structure
+                writer.Write("<!DOCTYPE html>");
+
+                writer.Write("<html lang=\"");
+                if (pageGlobals.currentMode.Language == SobekCM.Core.Configuration.Localization.Web_Language_Enum.DEFAULT)
+                    writer.Write(SobekCM.Core.Configuration.Localization.Web_Language_Enum_Converter.Enum_To_Code(UI_ApplicationCache_Gateway.Settings.System.Default_UI_Language));
+                else
+                    writer.Write(SobekCM.Core.Configuration.Localization.Web_Language_Enum_Converter.Enum_To_Code(pageGlobals.currentMode.Language));
+                writer.Write("\">");
+
+                writer.Write("<head>");
+                writer.Write("<title>");
+                if ((pageGlobals.mainWriter.Writer_Type == Writer_Type_Enum.HTML) || (pageGlobals.mainWriter.Writer_Type == Writer_Type_Enum.HTML_LoggedIn))
+                    writer.Write(((Html_MainWriter)pageGlobals.mainWriter).Get_Page_Title(pageGlobals.tracer));
+                else if (pageGlobals.mainWriter.Writer_Type == Writer_Type_Enum.HTML_Echo)
+                    writer.Write(pageGlobals.currentMode.Info_Browse_Mode);
+                writer.Write("</title>");
+
+                if ((pageGlobals.mainWriter.Writer_Type == Writer_Type_Enum.HTML) || (pageGlobals.mainWriter.Writer_Type == Writer_Type_Enum.HTML_LoggedIn))
+                    ((Html_MainWriter)pageGlobals.mainWriter).Write_Within_HTML_Head(writer, pageGlobals.tracer);
+                else if (pageGlobals.mainWriter.Writer_Type == Writer_Type_Enum.HTML_Echo)
+                    ((Html_Echo_MainWriter)pageGlobals.mainWriter).Write_Within_HTML_Head(writer, pageGlobals.tracer);
+
+                writer.Write("</head>");
+
+                writer.Write("<body");
+                if ((pageGlobals.mainWriter.Writer_Type == Writer_Type_Enum.HTML) || (pageGlobals.mainWriter.Writer_Type == Writer_Type_Enum.HTML_LoggedIn))
+                    writer.Write(" " + ((Html_MainWriter)pageGlobals.mainWriter).Get_Body_Attributes(pageGlobals.tracer));
+                else if ((pageGlobals.mainWriter.Writer_Type == Writer_Type_Enum.HTML_Echo) && (pageGlobals.currentMode.Mode == Display_Mode_Enum.Item_Display))
+                    writer.Write(" id=\"itembody\"");
+                writer.Write(">");
+
+                pageGlobals.mainWriter.Write_Html(writer, pageGlobals.tracer);
+
+                if (pageGlobals.mainWriter.Include_Navigation_Form)
+                {
+                    string formAction = originalUrl;
+                    string enctype = pageGlobals.mainWriter.File_Upload_Possible ? " enctype=\"multipart/form-data\"" : "";
+                    writer.Write($"<form id=\"itemNavForm\" action=\"{formAction}\" method=\"post\"{enctype}>");
+
+                    if ((pageGlobals.mainWriter.Writer_Type == Writer_Type_Enum.HTML) || (pageGlobals.mainWriter.Writer_Type == Writer_Type_Enum.HTML_LoggedIn))
+                        ((Html_MainWriter)pageGlobals.mainWriter).Write_ItemNavForm_Opening(writer, pageGlobals.tracer);
+
+                    if (pageGlobals.mainWriter.Include_Main_Place_Holder)
+                        pageGlobals.mainWriter.Add_Controls(writer, pageGlobals.tracer);
+
+                    if ((pageGlobals.mainWriter.Writer_Type == Writer_Type_Enum.HTML) || (pageGlobals.mainWriter.Writer_Type == Writer_Type_Enum.HTML_LoggedIn))
+                        ((Html_MainWriter)pageGlobals.mainWriter).Write_ItemNavForm_Closing(writer, pageGlobals.tracer);
+
+                    writer.Write("</form>");
+                }
+
+                if ((pageGlobals.mainWriter.Writer_Type == Writer_Type_Enum.HTML) || (pageGlobals.mainWriter.Writer_Type == Writer_Type_Enum.HTML_LoggedIn))
+                    ((Html_MainWriter)pageGlobals.mainWriter).Write_Final_HTML(writer, pageGlobals.tracer);
+
+                writer.Write("</body></html>");
+            });
+
+            app.Run();
+        }
+
+        private static async Task Files_Handler(HttpContext context, string urlrelative)
+        {
+            // Robot check
+            string userAgent = context.Request.Headers.UserAgent.ToString();
+            string userHostAddress = context.Connection.RemoteIpAddress?.ToString() ?? "";
+            if (Navigation_Object.Is_UserAgent_IP_Robot(userAgent, userHostAddress))
+            {
+                context.Response.Clear();
+                await context.Response.WriteAsync("RESTRICTED ITEM");
+                return;
+            }
+
+            if (urlrelative.Length <= 4)
+                return;
+
+            string[] urlParts = urlrelative.ToLower().Split('/');
+            var urlList = urlParts.Where(p => p.Length > 0).ToList();
+
+            if (urlList.Count <= 2 || urlList[2].Length != 10)
+                return;
+
+            string bibID = urlList[2].ToUpper();
+            string vid = null;
+            if (urlList.Count > 3)
+            {
+                string possibleVid = urlList[3].Trim().PadLeft(5, '0');
+                if (int.TryParse(possibleVid, out _))
+                    vid = possibleVid;
+            }
+
+            if (string.IsNullOrEmpty(bibID) || string.IsNullOrEmpty(vid) || urlList.Count <= 4)
+                return;
+
+            var filePathBuilder = new StringBuilder(
+                UI_ApplicationCache_Gateway.Settings.Servers.Image_Server_Network +
+                bibID[..2] + "\\" + bibID[2..4] + "\\" + bibID[4..6] + "\\" + bibID[6..8] + "\\" + bibID[8..] +
+                "\\" + vid + "\\" + urlList[4]);
+            for (int i = 5; i < urlList.Count; i++)
+                filePathBuilder.Append("\\" + urlList[i]);
+
+            string filePath = filePathBuilder.ToString();
+            string extension = Path.GetExtension(filePath)?.ToLower();
+            if (string.IsNullOrEmpty(extension))
+                return;
+
+            if (!UI_ApplicationCache_Gateway.Mime_Types.TryGetValue(extension, out var mimeType) || mimeType.isBlocked)
+                return;
+
+            SobekCM.Library.Database.SobekCM_Database.Get_Item_Restrictions(bibID, vid, null, out bool isDark, out short restrictions);
+
+            if (!isDark && restrictions > 0)
+            {
+                var webContext = System.Web.HttpContext.Current;
+                if (webContext.Session["IP_Range_Membership"] == null)
+                {
+                    int ipMask = UI_ApplicationCache_Gateway.IP_Restrictions.Restrictive_Range_Membership(userHostAddress);
+                    webContext.Session["IP_Range_Membership"] = ipMask;
+                }
+                int userMask = Convert.ToInt32(webContext.Session["IP_Range_Membership"]);
+                if ((restrictions & userMask) == 0)
+                {
+                    var possibleUser = webContext.Session["user"] as SobekCM.Core.Users.User_Object;
+                    if (possibleUser == null || possibleUser.Authentication_Type != SobekCM.Core.Users.User_Authentication_Type_Enum.Shibboleth)
+                        isDark = true;
+                }
+            }
+
+            if (isDark)
+            {
+                context.Response.Clear();
+                await context.Response.WriteAsync("RESTRICTED ITEM");
+                return;
+            }
+
+            if (mimeType.shouldForward)
+            {
+                var forwardBuilder = new StringBuilder(
+                    UI_ApplicationCache_Gateway.Settings.Servers.Image_URL +
+                    bibID[..2] + "/" + bibID[2..4] + "/" + bibID[4..6] + "/" + bibID[6..8] + "/" + bibID[8..] +
+                    "/" + vid + "/" + urlList[4]);
+                for (int i = 5; i < urlList.Count; i++)
+                    forwardBuilder.Append("/" + urlList[i]);
+                context.Response.Redirect(forwardBuilder.ToString());
+                return;
+            }
+
+            if (!File.Exists(filePath))
+                return;
+
+            context.Response.ContentType = mimeType.MIME_Type;
+            await using var fileStream = File.OpenRead(filePath);
+            await fileStream.CopyToAsync(context.Response.Body);
+        }
+
+        private static async Task HtmlEdit_Upload_Handler(HttpContext context)
+        {
+            string token = context.Request.Query["token"];
+            if (string.IsNullOrEmpty(token))
+                return;
+
+            var webSession = System.Web.HttpContext.Current.Session;
+            if (webSession["#CKEDITOR::" + token] is not CKEditor_Security_Token tokenObj)
+                return;
+
+            if (!Directory.Exists(tokenObj.UploadPath))
+                Directory.CreateDirectory(tokenObj.UploadPath);
+
+            IFormFile upload = context.Request.Form.Files["upload"];
+            if (upload == null)
+                return;
+
+            string file = Path.GetFileName(upload.FileName);
+            string savePath = Path.Combine(tokenObj.UploadPath, file);
+            await using var stream = File.Create(savePath);
+            await upload.CopyToAsync(stream);
+
+            string ckFuncNum = context.Request.Form["CKEditorFuncNum"];
+            string url = tokenObj.UploadURL + file;
+            await context.Response.WriteAsync($"<script>window.parent.CKEDITOR.tools.callFunction({ckFuncNum}, \"{url}\");</script>");
+        }
+
+        private static async Task UploadiFive_Upload_Handler(HttpContext context)
+        {
+            context.Response.ContentType = "text/plain";
+
+            string tokenKey = context.Request.Form["token"];
+            if (string.IsNullOrEmpty(tokenKey))
+            {
+                context.Response.StatusCode = 401;
+                await context.Response.WriteAsync("No token provided with this request");
+                return;
+            }
+
+            var webSession = System.Web.HttpContext.Current.Session;
+            if (webSession["#UPLOADIFIVE::" + tokenKey] is not UploadiFive_Security_Token tokenObj)
+            {
+                context.Response.StatusCode = 401;
+                await context.Response.WriteAsync("No matching server-side token found for this request");
+                return;
+            }
+
+            try
+            {
+                IFormFile postedFile = context.Request.Form.Files[tokenObj.FileObjName];
+                if (postedFile == null)
+                    return;
+
+                if (!Directory.Exists(tokenObj.UploadPath))
+                    Directory.CreateDirectory(tokenObj.UploadPath);
+
+                string extension = Path.GetExtension(postedFile.FileName).ToLower();
+                string filename = Path.GetFileName(postedFile.FileName);
+                string filenameSansExt = Path.GetFileNameWithoutExtension(filename);
+
+                if (filenameSansExt.Contains('.'))
+                    filename = filenameSansExt.Replace(".", "_") + extension;
+                if (filename.Contains('&'))
+                    filename = filename.Replace("&", "");
+
+                if (!string.IsNullOrEmpty(tokenObj.ServerSideFileName))
+                    filename = tokenObj.ServerSideFileName.Contains('.') ? tokenObj.ServerSideFileName : tokenObj.ServerSideFileName + extension;
+
+                if (!string.IsNullOrEmpty(tokenObj.AllowedFileExtensions))
+                {
+                    var allowed = tokenObj.AllowedFileExtensions.Split(new[] { '|', ',' }).ToList();
+                    if (!allowed.Contains(extension))
+                    {
+                        context.Response.StatusCode = 401;
+                        await context.Response.WriteAsync("Invalid extension");
+                        return;
+                    }
+                }
+
+                string newPath = Path.Combine(tokenObj.UploadPath, filename);
+                if (File.Exists(newPath))
+                    File.Delete(newPath);
+
+                await using var fileStream = File.Create(newPath);
+                await postedFile.CopyToAsync(fileStream);
+
+                if (!string.IsNullOrEmpty(tokenObj.ReturnToken))
+                {
+                    string existing = webSession[tokenObj.ReturnToken] as string;
+                    webSession[tokenObj.ReturnToken] = string.IsNullOrEmpty(existing) ? filename : existing + "|" + filename;
+                }
+
+                context.Response.StatusCode = 200;
+                await context.Response.WriteAsync(filename);
+            }
+            catch (Exception ex)
+            {
+                context.Response.StatusCode = 500;
+                await context.Response.WriteAsync("Error: " + ex.Message);
+            }
+        }
+    }
+}

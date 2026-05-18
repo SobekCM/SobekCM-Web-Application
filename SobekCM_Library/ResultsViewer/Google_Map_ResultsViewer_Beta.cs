@@ -3,10 +3,10 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.IO;
 using System.Text;
+using System.Text.Json;
 using System.Web;
-using System.Web.Script.Serialization;
-using System.Web.UI.WebControls;
 using SobekCM.Core.Results;
 using SobekCM.Library.Database;
 using SobekCM.Tools;
@@ -61,7 +61,7 @@ namespace SobekCM.Library.ResultsViewer
         /// <summary> Adds the controls for this result viewer to the place holder on the main form </summary>
         /// <param name="MainPlaceHolder"> Main place holder ( &quot;mainPlaceHolder&quot; ) in the itemNavForm form into which the the bulk of the result viewer's output is displayed</param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        public override void Add_HTML(PlaceHolder MainPlaceHolder, Custom_Tracer Tracer)
+        public override void Add_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
             //tracer
             if (Tracer != null)
@@ -105,9 +105,8 @@ namespace SobekCM.Library.ResultsViewer
             // PAGE LITERAL
             mapSearchBuilder.AppendLine(" <div id=\"container_SearchMap\"></div> ");
 
-            // Add this to the page
-            Literal writeData = new Literal { Text = mapSearchBuilder.ToString() };
-            MainPlaceHolder.Controls.Add(writeData);
+            // Write to output
+            Output.Write(mapSearchBuilder.ToString());
 
         }
         
@@ -550,21 +549,19 @@ namespace SobekCM.Library.ResultsViewer
         public static object Create_JSON_Search_Results_Object(DataTable searchResults)
         {
             //take the search results from db query (incoming) and parse into JSON
-            JavaScriptSerializer serializer = new JavaScriptSerializer();
-            serializer.MaxJsonLength = Int32.MaxValue;
             List<Dictionary<string, object>> rows = new List<Dictionary<string, object>>();
-            Dictionary<string, object> row = null;
             foreach (DataRow dr in searchResults.Rows)
             {
-                row = new Dictionary<string, object>();
+                Dictionary<string, object> row = new Dictionary<string, object>();
                 foreach (DataColumn col in searchResults.Columns)
                 {
-                    row.Add(col.ColumnName.Trim(), dr[col]);
+                    object val = dr[col];
+                    row.Add(col.ColumnName.Trim(), val == DBNull.Value ? null : val);
                 }
                 rows.Add(row);
             }
             //return JSON object
-            return serializer.Serialize(rows);
+            return JsonSerializer.Serialize(rows);
         }
 
     }

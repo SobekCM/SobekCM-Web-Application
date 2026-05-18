@@ -8,8 +8,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Web;
-using System.Web.UI;
-using System.Web.UI.WebControls;
 using SobekCM.Core.Client;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
@@ -746,45 +744,22 @@ namespace SobekCM.Library.MySobekViewer
 		/// <summary> Add controls directly to the form in the main control area placeholder </summary>
         /// <param name="MainPlaceHolder"> Main place holder to which all main controls are added </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-        public override void Add_Controls(PlaceHolder MainPlaceHolder, Custom_Tracer Tracer)
+        public override void Add_Controls(TextWriter Output, Custom_Tracer Tracer)
         {
             Tracer.Add_Trace("New_Group_And_Item_MySobekViewer.Add_Controls", String.Empty);
 
             // Add the upload controls to the file place holder
-            add_upload_controls(MainPlaceHolder, Tracer);
+            add_upload_controls(Output, Tracer);
         }
 
-        private void add_upload_controls(PlaceHolder PlaceHolder, Custom_Tracer Tracer)
+        private void add_upload_controls(TextWriter Output, Custom_Tracer Tracer)
         {
             Tracer.Add_Trace("New_Group_And_Item_MySobekViewer.add_upload_controls", String.Empty);
 
-            StringBuilder filesBuilder = new StringBuilder(2000);
-            filesBuilder.AppendLine("<script src=\"" + Static_Resources_Gateway.Sobekcm_Metadata_Js + "\" type=\"text/javascript\"></script>");
-            filesBuilder.AppendLine("Add a new page image for this package:");
-            filesBuilder.AppendLine("<blockquote>");
-
-            LiteralControl filesLiteral2 = new LiteralControl(filesBuilder.ToString());
-            PlaceHolder.Controls.Add(filesLiteral2);
-            filesBuilder.Remove(0, filesBuilder.Length);
-
-/*
-			UploadiFiveControl uploadControl = new UploadiFiveControl
-			{
-			    UploadPath = digitalResourceDirectory, 
-                UploadScript = RequestSpecificValues.Current_Mode.Base_URL + "UploadiFiveFileHandler.ashx", 
-                AllowedFileExtensions = UI_ApplicationCache_Gateway.Settings.Resources.Upload_Image_Types, 
-                SubmitWhenQueueCompletes = true, 
-                RemoveCompleted = true, 
-                Swf = Static_Resources_Gateway.Uploadify_Swf, 
-                RevertToFlashVersion = true
-			};
-            PlaceHolder.Controls.Add(uploadControl);
-*/
-
-			filesBuilder.AppendLine("</blockquote><br />");
-
-            LiteralControl literal1 = new LiteralControl(filesBuilder.ToString());
-            PlaceHolder.Controls.Add(literal1);
+            Output.WriteLine("<script src=\"" + Static_Resources_Gateway.Sobekcm_Metadata_Js + "\" type=\"text/javascript\"></script>");
+            Output.WriteLine("Add a new page image for this package:");
+            Output.WriteLine("<blockquote>");
+            Output.WriteLine("</blockquote><br />");
         }
 
 		/// <summary> Gets the collection of special behaviors which this admin or mySobek viewer

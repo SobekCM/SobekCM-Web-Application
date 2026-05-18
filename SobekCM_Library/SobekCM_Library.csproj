@@ -18,8 +18,20 @@
     <Reference Include="Zen.Barcode.Core">
       <HintPath>..\DLLs\Zen.Barcode.Core.dll</HintPath>
     </Reference>
-    <!-- ASP.NET Core HTTP types replace System.Web throughout this library -->
-    <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
+    <!-- System.Web compatibility shim for ASP.NET Core migration — provides HttpContext.Current, Request, Session, etc. -->
+    <PackageReference Include="Microsoft.AspNetCore.SystemWebAdapters" Version="2.3.0" />
+    <!-- System.Runtime.Caching replaces System.Web.Caching.Cache -->
+    <PackageReference Include="System.Runtime.Caching" Version="10.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Legacy Web Forms files not yet converted; excluded until migration is complete -->
+    <Compile Remove="ItemViewer\Viewers\Excluded\**\*.cs" />
+    <Compile Remove="SobekCM_Library_Settings_BACKUP.cs" />
+    <!-- Duplicate class moved to WebContentViewer/Viewers/ -->
+    <Compile Remove="AdminViewer\Work_History_WebContentViewer.cs" />
+    <!-- Legacy item subwriter using Web Forms TreeView; excluded until fully migrated -->
+    <Compile Remove="HTML\Item_HtmlSubwriter_Legacy.cs" />
   </ItemGroup>
 
   <ItemGroup>

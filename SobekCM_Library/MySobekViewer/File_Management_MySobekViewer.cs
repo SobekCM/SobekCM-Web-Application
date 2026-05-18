@@ -7,8 +7,6 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
-using System.Web.UI;
-using System.Web.UI.WebControls;
 using SobekCM.Core.Client;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
@@ -38,6 +36,33 @@ namespace SobekCM.Library.MySobekViewer
         private bool criticalErrorEncountered;
         private readonly string digitalResourceDirectory;
         private readonly SobekCM_Item currentItem;
+
+        // Session key tracking helpers — adapter's HttpSessionState does not expose Keys enumeration
+        private const string FILE_KEY_REGISTRY_PREFIX = "file_keyset_";
+
+        private static void Set_Session_File_Label(int itemId, string filename, string label)
+        {
+            HttpContext.Current.Session["file_" + itemId + "_" + filename] = label;
+            string registryKey = FILE_KEY_REGISTRY_PREFIX + itemId;
+            if (!(HttpContext.Current.Session[registryKey] is List<string> registry))
+            {
+                registry = new List<string>();
+                HttpContext.Current.Session[registryKey] = registry;
+            }
+            if (!registry.Contains(filename))
+                registry.Add(filename);
+        }
+
+        private static void Clear_Session_File_Labels(int itemId)
+        {
+            string registryKey = FILE_KEY_REGISTRY_PREFIX + itemId;
+            if (HttpContext.Current.Session[registryKey] is List<string> registry)
+            {
+                foreach (string filename in registry)
+                    HttpContext.Current.Session.Remove("file_" + itemId + "_" + filename);
+            }
+            HttpContext.Current.Session.Remove(registryKey);
+        }
 
         #region Constructor
 
@@ -104,7 +129,7 @@ namespace SobekCM.Library.MySobekViewer
                     }
                     if ((file_name_from_keys.Length > 0) && (label_from_keys.Length > 0))
                     {
-                        HttpContext.Current.Session["file_" + currentItem.Web.ItemID + "_" + file_name_from_keys.Trim()] = label_from_keys.Trim();
+                        Set_Session_File_Label(currentItem.Web.ItemID, file_name_from_keys.Trim(), label_from_keys.Trim());
                         file_name_from_keys = String.Empty;
                         label_from_keys = String.Empty;
                     }
@@ -153,11 +178,7 @@ namespace SobekCM.Library.MySobekViewer
                     {
                         case 2:
                             // Clear all the file keys in the session state
-                            List<string> keys = HttpContext.Current.Session.Keys.Cast<string>().Where(ThisKey => ThisKey.IndexOf("file_" + currentItem.Web.ItemID + "_") == 0).ToList();
-		                    foreach (string thisKey in keys)
-                            {
-                                HttpContext.Current.Session.Remove(thisKey);
-                            }
+                            Clear_Session_File_Labels(currentItem.Web.ItemID);
 
                             // Redirect to the currentItem
                             RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Item_Display;
@@ -168,11 +189,7 @@ namespace SobekCM.Library.MySobekViewer
                             if (!complete_item_submission(currentItem, null))
                             {
                                 // Clear all the file keys in the session state
-                                List<string> keys2 = HttpContext.Current.Session.Keys.Cast<string>().Where(ThisKey => ThisKey.IndexOf("file_" + currentItem.Web.ItemID + "_") == 0).ToList();
-	                            foreach (string thisKey in keys2)
-                                {
-                                    HttpContext.Current.Session.Remove(thisKey);
-                                }
+                                Clear_Session_File_Labels(currentItem.Web.ItemID);
 
                                 // Remoe from the caches (to replace the other)
                                 CachedDataManager.Items.Remove_Digital_Resource_Object(currentItem.BibID, currentItem.VID, RequestSpecificValues.Tracer);
@@ -616,7 +633,7 @@ namespace SobekCM.Library.MySobekViewer
 		            {
 			            if (resource_files_to_labels.ContainsKey(fileKey))
 			            {
-				            HttpContext.Current.Session["file_" + currentItem.Web.ItemID + "_" + fileKey] = resource_files_to_labels[fileKey];
+				            Set_Session_File_Label(currentItem.Web.ItemID, fileKey, resource_files_to_labels[fileKey]);
 							Output.WriteLine("        <input type=\"text\" class=\"upload_label_input sbk_Focusable\" id=\"" + input_name + "\" name=\"" + input_name + "\" value=\"" + HttpUtility.HtmlEncode(resource_files_to_labels[fileKey]) + "\" ></input>");
 			            }
 			            else
@@ -670,46 +687,27 @@ namespace SobekCM.Library.MySobekViewer
         #endregion
 
 		/// <summary> Add controls directly to the form in the main control area placeholder </summary>
-        /// <param name="MainPlaceHolder"> Main place holder to which all main controls are added </param>
+        /// <param name="Output"> TextWriter to write HTML output </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-        public override void Add_Controls(PlaceHolder MainPlaceHolder, Custom_Tracer Tracer)
+        public override void Add_Controls(TextWriter Output, Custom_Tracer Tracer)
         {
             Tracer.Add_Trace("File_Managament_MySobekViewer.Add_Controls", String.Empty);
 
-            // Add the upload controls to the file place holder
-            add_upload_controls(MainPlaceHolder, Tracer);
+            // Add the upload controls
+            add_upload_controls(Output, Tracer);
         }
 
-        private void add_upload_controls(PlaceHolder MainPlaceHolder, Custom_Tracer Tracer)
+        private void add_upload_controls(TextWriter Output, Custom_Tracer Tracer)
         {
             Tracer.Add_Trace("File_Managament_MySobekViewer.add_upload_controls", String.Empty);
 
-            StringBuilder filesBuilder = new StringBuilder(2000);
-            filesBuilder.AppendLine("<script src=\"" + Static_Resources_Gateway.Sobekcm_Metadata_Js + "\" type=\"text/javascript\"></script>");
-            filesBuilder.AppendLine("Add a new file for this package:");
-            filesBuilder.AppendLine("<blockquote>");
+            Output.WriteLine("<script src=\"" + Static_Resources_Gateway.Sobekcm_Metadata_Js + "\" type=\"text/javascript\"></script>");
+            Output.WriteLine("Add a new file for this package:");
+            Output.WriteLine("<blockquote>");
 
-            LiteralControl filesLiteral2 = new LiteralControl(filesBuilder.ToString());
-            MainPlaceHolder.Controls.Add(filesLiteral2);
-            filesBuilder.Remove(0, filesBuilder.Length);
+            // Upload control removed (UploadiFive dependency removed)
 
-/*
-			UploadiFiveControl uploadControl = new UploadiFiveControl();
-			uploadControl.UploadPath = digitalResourceDirectory;
-	        uploadControl.UploadScript = RequestSpecificValues.Current_Mode.Base_URL + "UploadiFiveFileHandler.ashx";
-			uploadControl.SubmitWhenQueueCompletes = true;
-	        uploadControl.RemoveCompleted = true;
-            uploadControl.Swf = Static_Resources_Gateway.Uploadify_Swf; 
-			uploadControl.RevertToFlashVersion = true;
-	        uploadControl.AllowedFileExtensions = UI_ApplicationCache_Gateway.Settings.Resources.Upload_File_Types;
-			MainPlaceHolder.Controls.Add(uploadControl);
-*/
-
-
-            filesBuilder.AppendLine("</blockquote><br />");
-
-            LiteralControl literal1 = new LiteralControl(filesBuilder.ToString());
-            MainPlaceHolder.Controls.Add(literal1);
+            Output.WriteLine("</blockquote><br />");
         }
 
 		/// <summary> Gets the collection of special behaviors which this admin or mySobek viewer

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Web;
-using System.Web.Caching;
+using System.Runtime.Caching;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.UI_Configuration;
 using SobekCM.Core.UI_Configuration.StaticResources;
@@ -60,7 +60,7 @@ namespace SobekCM.Library.WebContentViewer.Viewers
 
 
             // Try to get the global permissions table
-            DataTable globalPermissions = HttpContext.Current.Cache["GlobalPermissionsReport"] as DataTable;
+            DataTable globalPermissions = MemoryCache.Default["GlobalPermissionsReport"] as DataTable;
             if (globalPermissions == null)
             {
                 globalPermissions = SobekCM_Database.Get_Global_User_Permissions(RequestSpecificValues.Tracer);
@@ -71,7 +71,7 @@ namespace SobekCM.Library.WebContentViewer.Viewers
                 }
                 else
                 {
-                    HttpContext.Current.Cache.Insert("GlobalPermissionsReport", globalPermissions, null, DateTime.Now.AddSeconds(60d), Cache.NoSlidingExpiration);
+                    MemoryCache.Default.Set("GlobalPermissionsReport", globalPermissions, new CacheItemPolicy { AbsoluteExpiration = DateTimeOffset.Now.AddSeconds(60) });
                 }
             }
 

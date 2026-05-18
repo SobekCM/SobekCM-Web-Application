@@ -5,7 +5,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
-using System.Web.UI.WebControls;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Results;
@@ -214,7 +213,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             
         }
 
-        public override void Add_Secondary_Controls(PlaceHolder MainPlaceHolder, Custom_Tracer Tracer)
+        public override void Add_Secondary_Controls(TextWriter Output, Custom_Tracer Tracer)
         {
             // Build the search options
             Search_Options_Info searchOptions = new Search_Options_Info();
@@ -289,7 +288,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                     builder.AppendLine("<div id=\"Thp_ResultsShowAll\" style=\"width:30%;display:inline-block; padding: 12px; text-align:right;\" ><a href=\"" + url + "\">View all</a></div>");
                 }
                 builder.AppendLine("</div>");
-                MainPlaceHolder.Controls.Add(new Literal() { Text = builder.ToString() });
+                Output.Write(builder.ToString());
 
 
                 var resultsViewer = new Thumbnail_ResultsViewer();
@@ -297,10 +296,10 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 resultsViewer.ResultsStats = stats;
                 resultsViewer.RequestSpecificValues = RequestSpecificValues;
 
-                resultsViewer.Add_HTML(MainPlaceHolder, Tracer);
+                resultsViewer.Add_HTML(Output, Tracer);
             }
 
-            MainPlaceHolder.Controls.Add(new Literal() { Text = "</div>" });
+            Output.WriteLine("</div>");
         }
 
         private string Highlight_To_Html(Item_Aggregation_Highlights Highlight, string Directory)

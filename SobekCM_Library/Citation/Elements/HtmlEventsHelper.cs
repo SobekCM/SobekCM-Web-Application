@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Text;
-using System.Web.UI;
 
 namespace SobekCM.Library.Citation.Elements
 {

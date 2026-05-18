@@ -5,8 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
-using System.Web.Caching;
-using System.Web.ModelBinding;
+using System.Runtime.Caching;
 using System.Xml;
 using System.Xml.Serialization;
 using Microsoft.Win32;
@@ -94,7 +93,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 
             // Is the metadata cached?
             string cache_key = ViewBag.Hierarchy_Object.Code + ":TILE METADATA";
-            tileMetadata = HttpContext.Current.Cache.Get(cache_key) as Database_Results_Info;
+            tileMetadata = MemoryCache.Default.Get(cache_key) as Database_Results_Info;
             if (tileMetadata == null)
             {
                 // Look for the metadat file
@@ -177,7 +176,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                         fs.Close();
 
                         // Also put this in the cache
-                        HttpContext.Current.Cache.Insert(cache_key, tileMetadata, null, Cache.NoAbsoluteExpiration, TimeSpan.FromMinutes(5));
+                        MemoryCache.Default.Set(cache_key, tileMetadata, new CacheItemPolicy { SlidingExpiration = TimeSpan.FromMinutes(5) });
                     }
                     catch (Exception)
                     {

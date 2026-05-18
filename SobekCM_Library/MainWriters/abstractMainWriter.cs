@@ -1,7 +1,6 @@
 #region Using directives
 
 using System.IO;
-using System.Web.UI.WebControls;
 using SobekCM.Core.Navigation;
 using SobekCM.Tools;
 
@@ -64,10 +63,10 @@ namespace SobekCM.Library.MainWriters
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         public abstract void Write_Html(TextWriter Output, Custom_Tracer Tracer);
 
-        /// <summary> Perform all the work of adding to the response stream back to the web user </summary>
-        /// <param name="Main_Place_Holder"> Place holder is used to add more complex server-side objects during execution</param>
+        /// <summary> Write any additional HTML into the main form area of the page </summary>
+        /// <param name="Output"> Stream to which to write additional HTML </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-        public virtual void Add_Controls( PlaceHolder Main_Place_Holder, Custom_Tracer Tracer)
+        public virtual void Add_Controls( TextWriter Output, Custom_Tracer Tracer)
         {
             // Do nothing
         }

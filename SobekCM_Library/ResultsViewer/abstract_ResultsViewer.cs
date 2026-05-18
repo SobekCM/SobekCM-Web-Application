@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Web;
-using System.Web.UI.WebControls;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Results;
 using SobekCM.Library.HTML;
@@ -144,10 +143,9 @@ namespace SobekCM.Library.ResultsViewer
         }
 
         /// <summary> Adds the controls for this result viewer to the place holder on the main form </summary>
-        /// <param name="MainPlaceHolder"> Main place holder ( &quot;mainPlaceHolder&quot; ) in the itemNavForm form into which the the bulk of the result viewer's output is displayed</param>
+        /// <param name="Output"> TextWriter to write HTML output </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        /// <returns> Sorted tree with the results in hierarchical structure with volumes and issues under the titles and sorted by serial hierarchy </returns>
-        public abstract void Add_HTML(PlaceHolder MainPlaceHolder, Custom_Tracer Tracer);
+        public abstract void Add_HTML(TextWriter Output, Custom_Tracer Tracer);
 
         /// <summary> Write any additional values within the HTML Head of the final served page </summary>
         /// <param name="Output"> Output stream currently within the HTML head tags </param>
@@ -235,13 +233,13 @@ namespace SobekCM.Library.ResultsViewer
 
  
         /// <summary> Builds the HTML tree for all the issues related to a single result title and
-        /// adds it to the provided place holder, eagerly loading all child nodes </summary>
-        /// <param name="MainPlaceHolder"> Main place holder in the itemNavForm form </param>
+        /// writes it to the output stream, eagerly loading all child nodes </summary>
+        /// <param name="Output"> TextWriter to write HTML output </param>
         /// <param name="TitleRow"> Title row for this title to be displayed </param>
         /// <param name="CalculatedTextRedirectStem"> Redirect string for textual items including search terms </param>
         /// <param name="BaseURL"> Writer-adjusted base URL (may include /l/ suffix when logged in) </param>
         /// <param name="CurrentResultRow"> Counter indicating which result number this is within the current page </param>
-        protected void Add_Issue_Tree(PlaceHolder MainPlaceHolder, iSearch_Title_Result TitleRow, int CurrentResultRow, string CalculatedTextRedirectStem, string BaseURL)
+        protected void Add_Issue_Tree(TextWriter Output, iSearch_Title_Result TitleRow, int CurrentResultRow, string CalculatedTextRedirectStem, string BaseURL)
         {
             // Determine term to use
             string single_item_term = "item";
@@ -316,7 +314,7 @@ namespace SobekCM.Library.ResultsViewer
 
             StringBuilder treeBuilder = new StringBuilder();
             treeView1.Render(new StringWriter(treeBuilder));
-            MainPlaceHolder.Controls.Add(new Literal { Text = treeBuilder.ToString() });
+            Output.Write(treeBuilder.ToString());
         }
 
         private void populate_issue_node_children(HtmlTreeNode viewNode, Search_Result_Item_TreeNode dataNode, string base_url)

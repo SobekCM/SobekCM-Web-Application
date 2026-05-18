@@ -9,8 +9,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Web;
-using System.Web.UI;
-using System.Web.UI.WebControls;
 using SobekCM.Core.ApplicationState;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.UI_Configuration;
@@ -511,38 +509,18 @@ namespace SobekCM.Library.AdminViewer
 		/// <summary> Add controls directly to the form in the main control area placeholder </summary>
 		/// <param name="MainPlaceHolder"> Main place holder to which all main controls are added </param>
 		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-		public override void Add_Controls(PlaceHolder MainPlaceHolder, Custom_Tracer Tracer)
+		public override void Add_Controls(TextWriter Output, Custom_Tracer Tracer)
 		{
 			Tracer.Add_Trace("File_Managament_MySobekViewer.Add_Controls", String.Empty);
 
 			// Add the upload controls to the file place holder
-			add_upload_controls(MainPlaceHolder, Tracer);
+			add_upload_controls(Output, Tracer);
 		}
 
 
-		private void add_upload_controls(PlaceHolder UploadFilesPlaceHolder, Custom_Tracer Tracer)
+		private void add_upload_controls(TextWriter Output, Custom_Tracer Tracer)
 		{
 			Tracer.Add_Trace("File_Managament_MySobekViewer.add_upload_controls", String.Empty);
-
-			StringBuilder filesBuilder = new StringBuilder(2000);
-
-			LiteralControl filesLiteral2 = new LiteralControl(filesBuilder.ToString());
-			UploadFilesPlaceHolder.Controls.Add(filesLiteral2);
-			filesBuilder.Remove(0, filesBuilder.Length);
-
-/*
-			UploadiFiveControl uploadControl = new UploadiFiveControl();
-			uploadControl.UploadPath = wordmarkDirectory;
-			uploadControl.UploadScript = RequestSpecificValues.Current_Mode.Base_URL + "UploadiFiveFileHandler.ashx";
-			uploadControl.AllowedFileExtensions = ".jpg,.png,.gif,.bmp,.jpeg";
-			uploadControl.RemoveCompleted = true;
-			uploadControl.SubmitWhenQueueCompletes = true;
-			uploadControl.Multi = false;
-			UploadFilesPlaceHolder.Controls.Add(uploadControl);
-*/
-
-			LiteralControl literal1 = new LiteralControl(filesBuilder.ToString());
-			UploadFilesPlaceHolder.Controls.Add(literal1);
 		}
 
         /// <summary> Returns a flag indicating whether the file upload specific holder in the itemNavForm form will be utilized 

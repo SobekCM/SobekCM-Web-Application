@@ -206,7 +206,7 @@ namespace SobekCM
                 tracer.Add_Trace("SobekCM_Page_Globals.Constructor", "Exception caught around line 198: " + ee.Message);
                 tracer.Add_Trace("SobekCM_Page_Globals.Constructor", ee.StackTrace);
 
-				HttpContext.Current.Response.Status = "301 Moved Permanently";
+				HttpContext.Current.Response.StatusCode = 301;
 				HttpContext.Current.Response.AddHeader("Location", base_url);
 				HttpContext.Current.ApplicationInstance.CompleteRequest();
 				return;
@@ -385,7 +385,7 @@ namespace SobekCM
 			// Some writers should not be selected yet
 			if ((CurrentModeCheck.Writer_Type != Writer_Type_Enum.HTML) && (CurrentModeCheck.Writer_Type != Writer_Type_Enum.HTML_Echo) && (CurrentModeCheck.Writer_Type != Writer_Type_Enum.OAI))
 			{
-				HttpContext.Current.Response.Status = "301 Moved Permanently";
+				HttpContext.Current.Response.StatusCode = 301;
 				HttpContext.Current.Response.AddHeader("Location", CurrentModeCheck.Base_URL);
 				HttpContext.Current.ApplicationInstance.CompleteRequest();
 				currentMode.Request_Completed = true;
@@ -396,7 +396,7 @@ namespace SobekCM
 			// by virtue of the fact they don't logon
 			if ((CurrentModeCheck.Mode == Display_Mode_Enum.Internal) || (CurrentModeCheck.Mode == Display_Mode_Enum.My_Sobek) || (CurrentModeCheck.Mode == Display_Mode_Enum.Administrative) || (CurrentModeCheck.Mode == Display_Mode_Enum.Reset) || (CurrentModeCheck.Mode == Display_Mode_Enum.Item_Cache_Reload) || (CurrentModeCheck.Mode == Display_Mode_Enum.Results) || (CurrentModeCheck.Mode == Display_Mode_Enum.Public_Folder) || ((CurrentModeCheck.Mode == Display_Mode_Enum.Aggregation) && (CurrentModeCheck.Aggregation_Type == Aggregation_Type_Enum.Browse_By)) || (CurrentModeCheck.Mode == Display_Mode_Enum.Item_Print))
 			{
-				HttpContext.Current.Response.Status = "301 Moved Permanently";
+				HttpContext.Current.Response.StatusCode = 301;
 				HttpContext.Current.Response.AddHeader("Location", CurrentModeCheck.Base_URL);
 				HttpContext.Current.ApplicationInstance.CompleteRequest();
 				currentMode.Request_Completed = true;
@@ -408,7 +408,7 @@ namespace SobekCM
 			{
 				CurrentModeCheck.Info_Browse_Mode = "all";
 
-				HttpContext.Current.Response.Status = "301 Moved Permanently";
+				HttpContext.Current.Response.StatusCode = 301;
 				HttpContext.Current.Response.AddHeader("Location", UrlWriterHelper.Redirect_URL(CurrentModeCheck));
 				HttpContext.Current.ApplicationInstance.CompleteRequest();
 				currentMode.Request_Completed = true;
@@ -420,7 +420,7 @@ namespace SobekCM
 			{
 				CurrentModeCheck.Mode = Display_Mode_Enum.Aggregation;
 				CurrentModeCheck.Aggregation_Type = Aggregation_Type_Enum.Home;
-				HttpContext.Current.Response.Status = "301 Moved Permanently";
+				HttpContext.Current.Response.StatusCode = 301;
 				HttpContext.Current.Response.AddHeader("Location", UrlWriterHelper.Redirect_URL(CurrentModeCheck));
 				HttpContext.Current.ApplicationInstance.CompleteRequest();
 				currentMode.Request_Completed = true;
@@ -430,7 +430,7 @@ namespace SobekCM
 			// If this was a legacy type request, forward to the new URL
 			if ((QueryString["b"] != null) || (QueryString["m"] != null) || (QueryString["g"] != null) || (QueryString["c"] != null) || (QueryString["s"] != null) || (QueryString["a"] != null))
 			{
-				HttpContext.Current.Response.Status = "301 Moved Permanently";
+				HttpContext.Current.Response.StatusCode = 301;
 				HttpContext.Current.Response.AddHeader("Location", UrlWriterHelper.Redirect_URL(CurrentModeCheck));
 				HttpContext.Current.ApplicationInstance.CompleteRequest();
 				currentMode.Request_Completed = true;
@@ -459,7 +459,7 @@ namespace SobekCM
 				if ((CurrentModeCheck.Statistics_Type != Statistics_Type_Enum.Item_Count_Growth_View) && (CurrentModeCheck.Statistics_Type != Statistics_Type_Enum.Item_Count_Standard_View) && (CurrentModeCheck.Statistics_Type != Statistics_Type_Enum.Item_Count_Text) && (CurrentModeCheck.Statistics_Type != Statistics_Type_Enum.Usage_Definitions) && (CurrentModeCheck.Statistics_Type != Statistics_Type_Enum.Usage_Overall))
 				{
 					CurrentModeCheck.Statistics_Type = Statistics_Type_Enum.Usage_Overall;
-					HttpContext.Current.Response.Status = "301 Moved Permanently";
+					HttpContext.Current.Response.StatusCode = 301;
 					HttpContext.Current.Response.AddHeader("Location", UrlWriterHelper.Redirect_URL(CurrentModeCheck));
 					HttpContext.Current.ApplicationInstance.CompleteRequest();
 					currentMode.Request_Completed = true;
@@ -474,7 +474,7 @@ namespace SobekCM
 					case Statistics_Type_Enum.Usage_Definitions:
 						if (url_relative_depth > 3)
 						{
-							HttpContext.Current.Response.Status = "301 Moved Permanently";
+							HttpContext.Current.Response.StatusCode = 301;
 							HttpContext.Current.Response.AddHeader("Location", UrlWriterHelper.Redirect_URL(CurrentModeCheck));
 							HttpContext.Current.ApplicationInstance.CompleteRequest();
 							currentMode.Request_Completed = true;
@@ -485,7 +485,7 @@ namespace SobekCM
 					case Statistics_Type_Enum.Usage_Overall:
 						if (url_relative_depth > 2)
 						{
-							HttpContext.Current.Response.Status = "301 Moved Permanently";
+							HttpContext.Current.Response.StatusCode = 301;
 							HttpContext.Current.Response.AddHeader("Location", UrlWriterHelper.Redirect_URL(CurrentModeCheck));
 							HttpContext.Current.ApplicationInstance.CompleteRequest();
 							currentMode.Request_Completed = true;
@@ -496,7 +496,7 @@ namespace SobekCM
 					case Statistics_Type_Enum.Item_Count_Standard_View:
 						if (url_relative_depth > 2)
 						{
-							HttpContext.Current.Response.Status = "301 Moved Permanently";
+							HttpContext.Current.Response.StatusCode = 301;
 							HttpContext.Current.Response.AddHeader("Location", UrlWriterHelper.Redirect_URL(CurrentModeCheck));
 							HttpContext.Current.ApplicationInstance.CompleteRequest();
 							currentMode.Request_Completed = true;
@@ -506,7 +506,7 @@ namespace SobekCM
 						{
 							if (( url_relative_info != null ) && (url_relative_info.Length > 1 ) && ( url_relative_info[1] != "itemcount"))
 							{
-								HttpContext.Current.Response.Status = "301 Moved Permanently";
+								HttpContext.Current.Response.StatusCode = 301;
 								HttpContext.Current.Response.AddHeader("Location", UrlWriterHelper.Redirect_URL(CurrentModeCheck));
 								HttpContext.Current.ApplicationInstance.CompleteRequest();
 								currentMode.Request_Completed = true;
@@ -528,7 +528,7 @@ namespace SobekCM
 						case Home_Type_Enum.List:
 							if (url_relative_depth > 0)
 							{
-								HttpContext.Current.Response.Status = "301 Moved Permanently";
+								HttpContext.Current.Response.StatusCode = 301;
 								HttpContext.Current.Response.AddHeader("Location", UrlWriterHelper.Redirect_URL(CurrentModeCheck));
 								HttpContext.Current.ApplicationInstance.CompleteRequest();
 								currentMode.Request_Completed = true;
@@ -541,7 +541,7 @@ namespace SobekCM
 						case Home_Type_Enum.Partners_List:
 							if (url_relative_depth > 1)
 							{
-								HttpContext.Current.Response.Status = "301 Moved Permanently";
+								HttpContext.Current.Response.StatusCode = 301;
 								HttpContext.Current.Response.AddHeader("Location", UrlWriterHelper.Redirect_URL(CurrentModeCheck));
 								HttpContext.Current.ApplicationInstance.CompleteRequest();
 								currentMode.Request_Completed = true;
@@ -552,7 +552,7 @@ namespace SobekCM
 						case Home_Type_Enum.Partners_Thumbnails:
 							if (url_relative_depth > 2)
 							{
-								HttpContext.Current.Response.Status = "301 Moved Permanently";
+								HttpContext.Current.Response.StatusCode = 301;
 								HttpContext.Current.Response.AddHeader("Location", UrlWriterHelper.Redirect_URL(CurrentModeCheck));
 								HttpContext.Current.ApplicationInstance.CompleteRequest();
 								currentMode.Request_Completed = true;
@@ -561,7 +561,7 @@ namespace SobekCM
 							break;
 
 						case Home_Type_Enum.Personalized:
-							HttpContext.Current.Response.Status = "301 Moved Permanently";
+							HttpContext.Current.Response.StatusCode = 301;
 							HttpContext.Current.Response.AddHeader("Location", UrlWriterHelper.Redirect_URL(CurrentModeCheck));
 							HttpContext.Current.ApplicationInstance.CompleteRequest();
 							currentMode.Request_Completed = true;
@@ -578,7 +578,7 @@ namespace SobekCM
 				{
 					CurrentModeCheck.ViewerCode = String.Empty;
 
-					HttpContext.Current.Response.Status = "301 Moved Permanently";
+					HttpContext.Current.Response.StatusCode = 301;
 					HttpContext.Current.Response.AddHeader("Location", UrlWriterHelper.Redirect_URL(CurrentModeCheck));
 					HttpContext.Current.ApplicationInstance.CompleteRequest();
 					currentMode.Request_Completed = true;

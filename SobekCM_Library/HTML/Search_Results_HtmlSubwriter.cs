@@ -3,7 +3,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Web.UI.WebControls;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.UI_Configuration;
@@ -126,12 +125,10 @@ namespace SobekCM.Library.HTML
         }
 
         /// <summary> Adds controls to the main navigational page </summary>
-        /// <param name="MainPlaceHolder"> Main place holder ( &quot;mainPlaceHolder&quot; ) in the itemNavForm form, widely used throughout the application</param>
+        /// <param name="Output"> TextWriter to write HTML output </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        /// <param name="PopulateNodeEvent"> Event is used to populate the a tree node without doing a full refresh of the page </param>
-        /// <returns> Sorted tree with the results in hierarchical structure with volumes and issues under the titles </returns>
         /// <remarks> This uses a <see cref="PagedResults_HtmlSubwriter"/> instance to render the items  </remarks>
-        public void Add_Controls(PlaceHolder MainPlaceHolder, Custom_Tracer Tracer, TreeNodeEventHandler PopulateNodeEvent )
+        public void Add_Controls(TextWriter Output, Custom_Tracer Tracer)
         {
             if (RequestSpecificValues.Results_Statistics == null) return;
 
@@ -143,7 +140,7 @@ namespace SobekCM.Library.HTML
             }
 
             Tracer.Add_Trace("Search_Results_HtmlSubwriter.Add_Controls", "Add controls");
-            writeResult.Add_Controls(MainPlaceHolder, Tracer);
+            writeResult.Add_Controls(Output, Tracer);
         }
 
         /// <summary> Writes the final output to close this search page results, including the results page navigation buttons </summary>

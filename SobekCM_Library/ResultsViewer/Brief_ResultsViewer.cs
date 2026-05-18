@@ -2,9 +2,9 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using System.Web;
-using System.Web.UI.WebControls;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Results;
 using SobekCM.Core.Search;
@@ -33,7 +33,7 @@ namespace SobekCM.Library.ResultsViewer
         /// <param name="MainPlaceHolder"> Main place holder ( &quot;mainPlaceHolder&quot; ) in the itemNavForm form into which the the bulk of the result viewer's output is displayed</param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         /// <returns> Sorted tree with the results in hierarchical structure with volumes and issues under the titles and sorted by serial hierarchy </returns>
-        public override void Add_HTML(PlaceHolder MainPlaceHolder, Custom_Tracer Tracer)
+        public override void Add_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
             if (Tracer != null)
             {
@@ -255,13 +255,11 @@ namespace SobekCM.Library.ResultsViewer
                 // Add children, if there are some
                 if (multiple_title)
                 {
-                    // Add this to the place holder
-                    Literal thisLiteral = new Literal
-                                              { Text = resultsBldr.ToString().Replace("&lt;role&gt;", "<i>").Replace( "&lt;/role&gt;", "</i>") };
-                    MainPlaceHolder.Controls.Add(thisLiteral);
+                    // Write to output
+                    Output.Write(resultsBldr.ToString().Replace("&lt;role&gt;", "<i>").Replace("&lt;/role&gt;", "</i>"));
                     resultsBldr.Remove(0, resultsBldr.Length);
 
-                    Add_Issue_Tree(MainPlaceHolder, titleResult, current_row, textRedirectStem, base_url);
+                    Add_Issue_Tree(Output, titleResult, current_row, textRedirectStem, base_url);
                 }
 
                 resultsBldr.AppendLine("\t\t</div>");
@@ -277,10 +275,8 @@ namespace SobekCM.Library.ResultsViewer
             // End this table
             resultsBldr.AppendLine("</section>");
 
-            // Add this to the HTML page
-            Literal mainLiteral = new Literal
-                                      { Text = resultsBldr.ToString().Replace("&lt;role&gt;", "<i>").Replace( "&lt;/role&gt;", "</i>") };
-            MainPlaceHolder.Controls.Add(mainLiteral);
+            // Write to output
+            Output.Write(resultsBldr.ToString().Replace("&lt;role&gt;", "<i>").Replace("&lt;/role&gt;", "</i>"));
         }
     }
 }

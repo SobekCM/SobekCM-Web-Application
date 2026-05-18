@@ -7,8 +7,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Web;
-using System.Web.UI;
-using System.Web.UI.WebControls;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.Client;
 using SobekCM.Core.MemoryMgmt;
@@ -1338,7 +1336,7 @@ namespace SobekCM.Library.AdminViewer
         /// <summary> Add controls directly to the form in the main control area placeholder </summary>
         /// <param name="MainPlaceHolder"> Main place holder to which all main controls are added </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-        public override void Add_Controls(PlaceHolder MainPlaceHolder, Custom_Tracer Tracer)
+        public override void Add_Controls(TextWriter Output, Custom_Tracer Tracer)
         {
             Tracer.Add_Trace("File_Managament_MySobekViewer.Add_Controls", String.Empty);
 
@@ -1354,7 +1352,7 @@ namespace SobekCM.Library.AdminViewer
                     {
                         new_file = code + "_" + Convert.ToChar(next_decimal++);
                     }
-                    add_upload_controls(MainPlaceHolder, ".gif,.bmp,.jpg,.png,.jpeg", userInProcessDirectory + "\\images\\banners", new_file, false, Tracer);
+                    add_upload_controls(Output, ".gif,.bmp,.jpg,.png,.jpeg", userInProcessDirectory + "\\images\\banners", new_file, false, Tracer);
                     break;
 
                 case 4:
@@ -1367,41 +1365,18 @@ namespace SobekCM.Library.AdminViewer
                     {
                         new_file2 = code2 + "_" + Convert.ToChar(next_decimal2++);
                     }
-                    add_upload_controls(MainPlaceHolder, ".gif", userInProcessDirectory + "\\images\\buttons", new_file2 + ".gif", false, Tracer);
+                    add_upload_controls(Output, ".gif", userInProcessDirectory + "\\images\\buttons", new_file2 + ".gif", false, Tracer);
                     break;
             }
         }
 
-        private void add_upload_controls(PlaceHolder UploadFilesPlaceHolder, string FileExtensions, string UploadDirectory, string ServerSideName, bool UploadMultiple, Custom_Tracer Tracer)
+        private void add_upload_controls(TextWriter Output, string FileExtensions, string UploadDirectory, string ServerSideName, bool UploadMultiple, Custom_Tracer Tracer)
         {
             Tracer.Add_Trace("File_Managament_MySobekViewer.add_upload_controls", String.Empty);
 
             // Ensure the directory exists
             if (!File.Exists(UploadDirectory))
                 Directory.CreateDirectory(UploadDirectory);
-
-            StringBuilder filesBuilder = new StringBuilder(2000);
-
-            LiteralControl filesLiteral2 = new LiteralControl(filesBuilder.ToString());
-            UploadFilesPlaceHolder.Controls.Add(filesLiteral2);
-            filesBuilder.Remove(0, filesBuilder.Length);
-
-/*
-            UploadiFiveControl uploadControl = new UploadiFiveControl
-            {
-                UploadPath = UploadDirectory, 
-                UploadScript = RequestSpecificValues.Current_Mode.Base_URL + "UploadiFiveFileHandler.ashx", 
-                AllowedFileExtensions = FileExtensions, 
-                SubmitWhenQueueCompletes = true, 
-                RemoveCompleted = true, 
-                Multi = UploadMultiple, 
-                ServerSideFileName = ServerSideName
-            };
-            UploadFilesPlaceHolder.Controls.Add(uploadControl);
-*/
-
-            LiteralControl literal1 = new LiteralControl(filesBuilder.ToString());
-            UploadFilesPlaceHolder.Controls.Add(literal1);
         }
 
         #endregion

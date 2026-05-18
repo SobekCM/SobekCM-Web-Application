@@ -10,8 +10,8 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Runtime.Caching;
 using System.Web;
-using System.Web.Caching;
 
 namespace SobekCM.Library.AdminViewer.UserAdmin.UserAdminTabs
 {
@@ -24,7 +24,7 @@ namespace SobekCM.Library.AdminViewer.UserAdmin.UserAdminTabs
         private void getOrCreateTeiConfig()
         {
             // Try to pull the configuration from the cache, otherwise create it manually
-            teiConfig = HttpContext.Current.Cache.Get("TEI.Configuration") as TEI_Configuration;
+            teiConfig = MemoryCache.Default.Get("TEI.Configuration") as TEI_Configuration;
 
             // Did not find it in the cache
             if (teiConfig == null)
@@ -34,7 +34,7 @@ namespace SobekCM.Library.AdminViewer.UserAdmin.UserAdminTabs
                 teiConfig = new TEI_Configuration(plugin_directory);
 
                 // Store on the cache for several minutes
-                HttpContext.Current.Cache.Insert("TEI.Configuration", teiConfig, null, Cache.NoAbsoluteExpiration, TimeSpan.FromMinutes(2));
+                MemoryCache.Default.Set("TEI.Configuration", teiConfig, new CacheItemPolicy { SlidingExpiration = TimeSpan.FromMinutes(2) });
             }
         }
 

@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
@@ -334,15 +335,15 @@ namespace SobekCM.Library.HTML
                 if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.French)
                 {
                     contact_us_title = "Contactez Nous";
-                    please_complete = "Veuillez remplir les champs obligatoires indiqués:";
+                    please_complete = "Veuillez remplir les champs obligatoires indiquï¿½s:";
                     submit = "Soumettre";
                     cancel = "Annuler";
                 }
 
                 if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.Spanish)
                 {
-                    contact_us_title = "Contáctenos";
-                    please_complete = "Por Favor llene la información Requerida:";
+                    contact_us_title = "Contï¿½ctenos";
+                    please_complete = "Por Favor llene la informaciï¿½n Requerida:";
                     submit = "Mandar";
                     cancel = "Cancelar";
                 }
@@ -381,7 +382,7 @@ namespace SobekCM.Library.HTML
                         if ((thisElement.UserAttribute != User_Object_Attribute_Mapping_Enum.NONE) && (RequestSpecificValues.Current_User != null))
                         {
                             string userAttrValue = RequestSpecificValues.Current_User.Get_Value_By_Mapping(thisElement.UserAttribute);
-                            Output.WriteLine("    <input type=\"hidden\" id=\"" + thisElement.Name + "\" name=\"" + thisElement.Name + "\" value=\"" + HttpContext.Current.Server.HtmlEncode(userAttrValue) + "\" />");
+                            Output.WriteLine("    <input type=\"hidden\" id=\"" + thisElement.Name + "\" name=\"" + thisElement.Name + "\" value=\"" + WebUtility.HtmlEncode(userAttrValue) + "\" />");
                         }
                         else
                         {

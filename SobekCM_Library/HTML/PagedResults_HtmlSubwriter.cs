@@ -7,7 +7,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Text;
 using System.Web;
-using System.Web.UI.WebControls;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Navigation;
@@ -356,10 +355,9 @@ namespace SobekCM.Library.HTML
 		}
 
 		/// <summary> Adds controls to the main navigational page </summary>
-		/// <param name="MainPlaceHolder"> Main place holder ( &quot;mainPlaceHolder&quot; ) in the itemNavForm form, widely used throughout the application</param>
+		/// <param name="Output"> TextWriter to write HTML output </param>
 		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-		/// <returns> Sorted tree with the results in hierarchical structure with volumes and issues under the titles and sorted by serial hierarchy </returns>
-		public void Add_Controls(PlaceHolder MainPlaceHolder, Custom_Tracer Tracer)
+		public void Add_Controls(TextWriter Output, Custom_Tracer Tracer)
 		{
 			Tracer.Add_Trace("paged_result_html_subwriter.Add_Controls", "Adding controls for the result set");
 
@@ -367,13 +365,11 @@ namespace SobekCM.Library.HTML
             if ((resultsStatistics.Has_Facet_Info) && (resultsStatistics.Total_Items > 1) && (!String.Equals(RequestSpecificValues.Current_Mode.Result_Display_Type, "export", StringComparison.OrdinalIgnoreCase)) && (!String.Equals(RequestSpecificValues.Current_Mode.Result_Display_Type, "map", StringComparison.OrdinalIgnoreCase)))
 			{
 				// Start this table, write the facets, and start the next TD section for the results
-				Literal startFacetTable = new Literal { Text = string.Format("<table id=\"sbkPrsw_ResultsOuterTable\">" + Environment.NewLine + "<tr style=\"vertical-align:top;\">" + Environment.NewLine + "<td id=\"sbkPrsw_FacetOuterColumn\">" + Environment.NewLine + "{0}" + Environment.NewLine + "</td>" + Environment.NewLine + "<td>" + Environment.NewLine, Add_Facet_Information(Tracer)) };
-				MainPlaceHolder.Controls.Add(startFacetTable);
+				Output.Write(string.Format("<table id=\"sbkPrsw_ResultsOuterTable\">" + Environment.NewLine + "<tr style=\"vertical-align:top;\">" + Environment.NewLine + "<td id=\"sbkPrsw_FacetOuterColumn\">" + Environment.NewLine + "{0}" + Environment.NewLine + "</td>" + Environment.NewLine + "<td>" + Environment.NewLine, Add_Facet_Information(Tracer)));
 			}
 			else
 			{
-				Literal startFacetTable = new Literal { Text = "<table style=\"width:100%;\">" + Environment.NewLine + "<tr style=\"vertical-align:top;\">" + Environment.NewLine + "<td style=\"text-align:center\">" + Environment.NewLine };
-				MainPlaceHolder.Controls.Add(startFacetTable);
+				Output.Write("<table style=\"width:100%;\">" + Environment.NewLine + "<tr style=\"vertical-align:top;\">" + Environment.NewLine + "<td style=\"text-align:center\">" + Environment.NewLine);
 			}
 
 			// Make sure the result writer has been created
@@ -386,21 +382,18 @@ namespace SobekCM.Library.HTML
 
 			if (resultsStatistics.Total_Items == 0)
 			{
-				resultWriter.Add_HTML(MainPlaceHolder, Tracer);
+				resultWriter.Add_HTML(Output, Tracer);
 				return;
 			}
 
-            Literal startingLiteral = new Literal { Text = (String.Equals(RequestSpecificValues.Current_Mode.Result_Display_Type, "map", StringComparison.OrdinalIgnoreCase)) ? "</div>" + Environment.NewLine + "<div class=\"sbkPrsw_ResultsPanel\" id=\"main-content\" role=\"main\">" + Environment.NewLine : "<div class=\"sbkPrsw_ResultsPanel\" id=\"main-content\" role=\"main\" itemscope itemtype=\"http:schema.org/SearchResultsPage\">" + Environment.NewLine };
-			MainPlaceHolder.Controls.Add(startingLiteral);
+			Output.Write((String.Equals(RequestSpecificValues.Current_Mode.Result_Display_Type, "map", StringComparison.OrdinalIgnoreCase)) ? "</div>" + Environment.NewLine + "<div class=\"sbkPrsw_ResultsPanel\" id=\"main-content\" role=\"main\">" + Environment.NewLine : "<div class=\"sbkPrsw_ResultsPanel\" id=\"main-content\" role=\"main\" itemscope itemtype=\"http:schema.org/SearchResultsPage\">" + Environment.NewLine);
 
-			resultWriter.Add_HTML(MainPlaceHolder, Tracer );
+			resultWriter.Add_HTML(Output, Tracer);
 
-            Literal endingLiteral = new Literal { Text = (String.Equals(RequestSpecificValues.Current_Mode.Result_Display_Type, "map", StringComparison.OrdinalIgnoreCase))  ? "</div>" + Environment.NewLine + "<div id=\"pagecontainer_resumed\">" + Environment.NewLine : "</div>" + Environment.NewLine };
-			MainPlaceHolder.Controls.Add(endingLiteral);
+			Output.Write((String.Equals(RequestSpecificValues.Current_Mode.Result_Display_Type, "map", StringComparison.OrdinalIgnoreCase)) ? "</div>" + Environment.NewLine + "<div id=\"pagecontainer_resumed\">" + Environment.NewLine : "</div>" + Environment.NewLine);
 
 			// If the results have facets, end the result table
-			Literal endResultTable = new Literal {Text = "</td>" + Environment.NewLine + "</tr>" + Environment.NewLine + "</table>" + Environment.NewLine };
-			MainPlaceHolder.Controls.Add(endResultTable);
+			Output.Write("</td>" + Environment.NewLine + "</tr>" + Environment.NewLine + "</table>" + Environment.NewLine);
 		}
 
 		/// <summary> Writes the final output to close this result view, including the results page navigation buttons </summary>
@@ -443,7 +436,7 @@ namespace SobekCM.Library.HTML
                 if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.Spanish)
                 {
                     sort_by = "Organizar";
-                    showing_range_text = "{0} - {1} de {2} títulos correspondientes";
+                    showing_range_text = "{0} - {1} de {2} tï¿½tulos correspondientes";
                 }
 
                 if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.French)
@@ -596,24 +589,24 @@ namespace SobekCM.Library.HTML
 
                 if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.Spanish)
                 {
-                    first_page = "Primera Página";
-                    previous_page = "Página Anterior";
-                    next_page = "Página Siguiente";
-                    last_page = "Última Página";
+                    first_page = "Primera Pï¿½gina";
+                    previous_page = "Pï¿½gina Anterior";
+                    next_page = "Pï¿½gina Siguiente";
+                    last_page = "ï¿½ltima Pï¿½gina";
                     first_page_text = "Primero";
                     previous_page_text = "Anterior";
                     next_page_text = "Proximo";
-                    last_page_text = "Último";
+                    last_page_text = "ï¿½ltimo";
                 }
 
                 if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.French)
                 {
-                    first_page = "Première Page";
-                    previous_page = "Page Précédente";
+                    first_page = "Premiï¿½re Page";
+                    previous_page = "Page Prï¿½cï¿½dente";
                     next_page = "Page Suivante";
-                    last_page = "Dernière Page";
-                    first_page_text = "Première";
-                    previous_page_text = "Précédente";
+                    last_page = "Derniï¿½re Page";
+                    first_page_text = "Premiï¿½re";
+                    previous_page_text = "Prï¿½cï¿½dente";
                     next_page_text = "Suivante";
                     last_page_text = "Derniere";
                 }
@@ -1004,27 +997,27 @@ namespace SobekCM.Library.HTML
 					and_not_language = "non ";
 
 					no_matches_language = "aucun des documents correspondants.";
-					one_match_language = ", correpsonde à 1 document.";
-					multiple_records_language = ", correpsonde à {0} documents";
-					one_item_language = ", correpsonde à 1 document en ";
-					multiple_items_language = ", correpsonde à {0} documents en ";
+					one_match_language = ", correpsonde ï¿½ 1 document.";
+					multiple_records_language = ", correpsonde ï¿½ {0} documents";
+					one_item_language = ", correpsonde ï¿½ 1 document en ";
+					multiple_items_language = ", correpsonde ï¿½ {0} documents en ";
 					one_title_language = "1 titre.";
 					multiple_titles_language = " titres.";
 					break;
 
 				case Web_Language_Enum.Spanish:
-					Output.Write("Su búsqueda de <i>" + hierarchyObject.Name + "</i> en ");
+					Output.Write("Su bï¿½squeda de <i>" + hierarchyObject.Name + "</i> en ");
 					and_language = "y ";
 					or_language = "o ";
 					and_not_language = "no ";
 
 					no_matches_language = "no dio lugar a los objetos.";
-					one_match_language = ", resultó en 1 objeto.";
-					multiple_records_language = ", resultó en {0} objetos.";
-					one_item_language = ", resultó en 1 objeto en ";
-					multiple_items_language = ", resultó en {0} objetos en ";
-					one_title_language = "1 título.";
-					multiple_titles_language = " títulos.";
+					one_match_language = ", resultï¿½ en 1 objeto.";
+					multiple_records_language = ", resultï¿½ en {0} objetos.";
+					one_item_language = ", resultï¿½ en 1 objeto en ";
+					multiple_items_language = ", resultï¿½ en {0} objetos en ";
+					one_title_language = "1 tï¿½tulo.";
+					multiple_titles_language = " tï¿½tulos.";
 					break;
 
 				default:

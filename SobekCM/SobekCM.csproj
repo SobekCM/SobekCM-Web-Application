@@ -5,14 +5,31 @@
     <AssemblyName>SobekCM</AssemblyName>
     <RootNamespace>SobekCM</RootNamespace>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <!-- NOTE: This was an ASP.NET Web Forms application. The .aspx/.ashx files and
-         all System.Web references in code-behind files require conversion to
-         ASP.NET Core Razor Pages or MVC controllers. Web Forms is not supported
-         on .NET 5+. See migration notes for details. -->
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="System.Drawing.Common" Version="9.0.3" Condition="'$(OS)' == 'Windows_NT'" />
+    <!-- SystemWebAdapters provides HttpContext.Current, HttpRequest, HttpSessionState, etc. backed by ASP.NET Core -->
+    <PackageReference Include="Microsoft.AspNetCore.SystemWebAdapters" Version="2.3.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Legacy Web Forms code-behind files excluded — replaced by Program.cs and minimal API endpoints -->
+    <Compile Remove="Dashboard.aspx.cs" />
+    <Compile Remove="Dashboard.aspx.designer.cs" />
+    <Compile Remove="Files.aspx.cs" />
+    <Compile Remove="Files.aspx.designer.cs" />
+    <Compile Remove="SobekCM.aspx.cs" />
+    <Compile Remove="SobekCM.aspx.designer.cs" />
+    <Compile Remove="SobekCM_data.aspx.cs" />
+    <Compile Remove="SobekCM_Data.aspx.designer.cs" />
+    <Compile Remove="SobekCM_oai.aspx.cs" />
+    <Compile Remove="SobekCM_OAI.aspx.designer.cs" />
+    <Compile Remove="HtmlEditFileHandler.ashx.cs" />
+    <Compile Remove="UploadiFiveFileHandler.ashx.cs" />
+    <Compile Remove="Global.asax.cs" />
+    <Compile Remove="default\callbacks\CallBacks.aspx.cs" />
+    <Compile Remove="default\callbacks\CallBacks.aspx.designer.cs" />
   </ItemGroup>
 
   <ItemGroup>

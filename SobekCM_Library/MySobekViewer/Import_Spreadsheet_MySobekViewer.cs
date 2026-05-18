@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Web;
-using System.Web.UI;
-using System.Web.UI.WebControls;
 using ClosedXML.Excel;
 using SobekCM.Core.Navigation;
 using SobekCM.Engine_Library.Configuration;
@@ -258,48 +256,26 @@ namespace SobekCM.Library.MySobekViewer
 
 
 
-        public override void Add_Controls(System.Web.UI.WebControls.PlaceHolder MainPlaceHolder, Custom_Tracer Tracer)
+        public override void Add_Controls(TextWriter Output, Custom_Tracer Tracer)
         {
             if ((page == 1) && ( String.IsNullOrEmpty(file_name)))
             {
                 Tracer.Add_Trace("Import_Spreadsheet_MySobekViewer.Add_Controls", "Add upload controls for the spreadsheet upload");
 
                 // Add the upload controls to the file place holder
-                add_upload_controls(MainPlaceHolder, Tracer);
+                add_upload_controls(Output, Tracer);
             }
         }
 
 
-        private void add_upload_controls(PlaceHolder MainPlaceHolder, Custom_Tracer Tracer)
+        private void add_upload_controls(TextWriter Output, Custom_Tracer Tracer)
         {
             Tracer.Add_Trace("Import_Spreadsheet_MySobekViewer.add_upload_controls", String.Empty);
 
-            StringBuilder filesBuilder = new StringBuilder(2000);
-            filesBuilder.AppendLine("<script src=\"" + Static_Resources_Gateway.Sobekcm_Metadata_Js + "\" type=\"text/javascript\"></script>");
-            filesBuilder.AppendLine("Upload an Excel spreadsheet or CSV file:");
-            filesBuilder.AppendLine("<blockquote>");
-
-            LiteralControl filesLiteral2 = new LiteralControl(filesBuilder.ToString());
-            MainPlaceHolder.Controls.Add(filesLiteral2);
-            filesBuilder.Remove(0, filesBuilder.Length);
-
-/*
-            UploadiFiveControl uploadControl = new UploadiFiveControl();
-            uploadControl.UploadPath = taskDirectory;
-            uploadControl.UploadScript = RequestSpecificValues.Current_Mode.Base_URL + "UploadiFiveFileHandler.ashx";
-            uploadControl.SubmitWhenQueueCompletes = true;
-            uploadControl.RemoveCompleted = true;
-            uploadControl.Swf = Static_Resources_Gateway.Uploadify_Swf;
-            uploadControl.RevertToFlashVersion = true;
-            uploadControl.AllowedFileExtensions = ".xls|.xlsx|.csv";
-            MainPlaceHolder.Controls.Add(uploadControl);
-*/
-
-
-            filesBuilder.AppendLine("</blockquote><br />");
-
-            LiteralControl literal1 = new LiteralControl(filesBuilder.ToString());
-            MainPlaceHolder.Controls.Add(literal1);
+            Output.WriteLine("<script src=\"" + Static_Resources_Gateway.Sobekcm_Metadata_Js + "\" type=\"text/javascript\"></script>");
+            Output.WriteLine("Upload an Excel spreadsheet or CSV file:");
+            Output.WriteLine("<blockquote>");
+            Output.WriteLine("</blockquote><br />");
         }
 
         /// <summary> Returns a flag indicating whether the file upload specific holder in the itemNavForm form will be utilized 

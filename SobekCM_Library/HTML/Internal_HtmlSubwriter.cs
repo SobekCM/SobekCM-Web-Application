@@ -6,7 +6,6 @@ using System.Collections.ObjectModel;
 using System.Data;
 using System.IO;
 using System.Web;
-using System.Web.SessionState;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.ApplicationState;
 using SobekCM.Core.Client;
@@ -64,8 +63,8 @@ namespace SobekCM.Library.HTML
             if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.French)
             {
                 collection_details_title = "Actifs et inactifs collections";
-                new_items_title = "Documents récents ou venant d'être modifié";
-                memory_mgmt_title = "L'utilisation de la mémoire en cours";
+                new_items_title = "Documents rï¿½cents ou venant d'ï¿½tre modifiï¿½";
+                memory_mgmt_title = "L'utilisation de la mï¿½moire en cours";
             }
 
             // Ensure there is a valid RequestSpecificValues.Current_User, and the RequestSpecificValues.Current_User is internal
@@ -464,7 +463,7 @@ namespace SobekCM.Library.HTML
             Tracer.Add_Trace("Internal_HtmlSubwriter.add_cache_html", "Rendering HTML");
 
             HttpApplicationState applicationState = HttpContext.Current.Application;
-            HttpSessionState session = HttpContext.Current.Session;
+            var session = HttpContext.Current.Session;
 
             string global_values = "GLOBAL VALUES";
             string application_state = "APPLICATION STATE VALUES";
@@ -477,9 +476,9 @@ namespace SobekCM.Library.HTML
             if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.French)
                 {
                     global_values = "VALEURS MONIDAL";
-                    application_state = "APPLICATAION LES VALEURS DE L'ÉTAT";
+                    application_state = "APPLICATAION LES VALEURS DE L'ï¿½TAT";
                     local_cache_state = "MIS EN CACHE LOCALEMENT DES VALEURS";
-                    session_state = "SESSION LES VALEURS DE L'ÉTAT";
+                    session_state = "SESSION LES VALEURS DE L'ï¿½TAT";
                     variable_name = "Nom Instance";
                     key = "Clef";
                     objectTitle = "Objet";
@@ -488,9 +487,9 @@ namespace SobekCM.Library.HTML
             if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.Spanish)
                 {
                     global_values = "GLOBAL VALORES";
-                    application_state = "APLICACIÓN ESTADO VALORES";
+                    application_state = "APLICACIï¿½N ESTADO VALORES";
                     local_cache_state = "LOCALMENTE EN CACHE LOS VALORES";
-                    session_state = "SESIÓN ESTADO VALORES";
+                    session_state = "SESIï¿½N ESTADO VALORES";
                     variable_name = "Instancia Nombre";
                     key = "Clave";
                     objectTitle = "Objeto";
@@ -684,13 +683,13 @@ namespace SobekCM.Library.HTML
                     }
                     else
                     {
-                        foreach (string thisKey in session.Keys)
+                        foreach (string thisKey in session)
                         {
                             // Add this row
                             Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\" colspan=\"2\"></td></tr>");
                             Output.WriteLine("  <tr align=\"left\">");
                             Output.WriteLine("    <td>" + thisKey + "</td>");
-                            Output.WriteLine("    <td>" + session[thisKey].GetType().FullName + "</td>");
+                            Output.WriteLine("    <td>" + session[thisKey]?.GetType().FullName + "</td>");
                             Output.WriteLine("  </tr>");
                         }
                     }
@@ -1021,12 +1020,12 @@ namespace SobekCM.Library.HTML
             switch (RequestSpecificValues.Current_Mode.Language)
             {
                 case Web_Language_Enum.French:
-                    last_event = "Dernière année de construction";
+                    last_event = "Derniï¿½re annï¿½e de construction";
                     mets_type = "Type de METS";
                     break;
 
                 case Web_Language_Enum.Spanish:
-                    last_event = "Última Construido";
+                    last_event = "ï¿½ltima Construido";
                     mets_type = "Tipe de METS";
                     break;
             }

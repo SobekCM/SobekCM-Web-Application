@@ -1,8 +1,7 @@
-﻿#region Using directives
+#region Using directives
 
 using System;
-using System.Web;
-using System.Web.Caching;
+using System.Runtime.Caching;
 using SobekCM.Library.Citation.Template;
 using SobekCM.Tools;
 
@@ -28,12 +27,8 @@ namespace SobekCM.Library.Citation
                 Tracer.Add_Trace("Template_MemoryMgmt_Utility.Retrieve_Template", "");
             }
 
-            // Determine the key
             string key = "TEMPLATE_" + Template_Code;
-
-            // Try to get this object
-            CompleteTemplate returnValue = HttpContext.Current.Cache.Get(key) as CompleteTemplate;
-            return returnValue; 
+            return MemoryCache.Default.Get(key) as CompleteTemplate;
         }
 
         /// <summary> Stores the template ( for online submission and editing ) to the cache or caching server </summary>
@@ -42,7 +37,6 @@ namespace SobekCM.Library.Citation
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
         public static void Store_Template(string Template_Code, CompleteTemplate StoreObject, Custom_Tracer Tracer)
         {
-            // Determine the key
             string key = "TEMPLATE_" + Template_Code;
 
             if (Tracer != null)
@@ -50,10 +44,9 @@ namespace SobekCM.Library.Citation
                 Tracer.Add_Trace("Template_MemoryMgmt_Utility.Store_Template", "Adding object '" + key + "' to the cache with expiration of thirty minutes");
             }
 
-            // Store this on the cache
-            if (HttpContext.Current.Cache[key] == null)
+            if (MemoryCache.Default[key] == null)
             {
-                HttpContext.Current.Cache.Insert(key, StoreObject, null, Cache.NoAbsoluteExpiration, TimeSpan.FromMinutes(30));
+                MemoryCache.Default.Set(key, StoreObject, new CacheItemPolicy { SlidingExpiration = TimeSpan.FromMinutes(30) });
             }
         }
 

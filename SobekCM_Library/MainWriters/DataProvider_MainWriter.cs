@@ -6,7 +6,6 @@ using System.Data;
 using System.IO;
 using System.Linq;
 using System.Web;
-using System.Web.Caching;
 using SobekCM.Core.Navigation;
 using SobekCM.Tools;
 

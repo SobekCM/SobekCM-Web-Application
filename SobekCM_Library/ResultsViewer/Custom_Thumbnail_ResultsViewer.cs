@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
-using System.Web.UI.WebControls;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Results;
 using SobekCM.Core.Search;
@@ -26,7 +26,7 @@ namespace SobekCM.Library.ResultsViewer
         /// <param name="MainPlaceHolder"> Main place holder ( &quot;mainPlaceHolder&quot; ) in the itemNavForm form into which the the bulk of the result viewer's output is displayed</param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         /// <returns> Sorted tree with the results in hierarchical structure with volumes and issues under the titles and sorted by serial hierarchy </returns>
-        public override void Add_HTML(PlaceHolder MainPlaceHolder, Custom_Tracer Tracer)
+        public override void Add_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
             if (Tracer != null)
             {
@@ -303,9 +303,8 @@ namespace SobekCM.Library.ResultsViewer
             resultsBldr.AppendLine("\t</tr>");
             resultsBldr.AppendLine("</table>");
 
-            // Add this to the html table
-            Literal mainLiteral = new Literal {Text = resultsBldr.ToString()};
-            MainPlaceHolder.Controls.Add(mainLiteral);
+            // Write to output
+            Output.Write(resultsBldr.ToString());
         }
     }
 }

@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Web;
-using System.Web.Caching;
+using System.Runtime.Caching;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Navigation;
@@ -112,7 +112,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 			// Get the list of years for this aggregation
 	        string aggrCode = ViewBag.Hierarchy_Object.Code.ToLower();
 	        string key = aggrCode + "_YearRanges";
-	        List<int> yearRange = HttpContext.Current.Cache[key] as List<int>;
+	        List<int> yearRange = MemoryCache.Default[key] as List<int>;
 			if (yearRange == null)
 			{
 				yearRange = new List<int>();
@@ -123,7 +123,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 					if ( Int32.TryParse(thisYear, out result))
 						yearRange.Add(result);
 				}
-				HttpContext.Current.Cache.Insert(key, yearRange, null, Cache.NoAbsoluteExpiration, TimeSpan.FromMinutes(5));
+				MemoryCache.Default.Set(key, yearRange, new CacheItemPolicy { SlidingExpiration = TimeSpan.FromMinutes(5) });
 			}
 
             string search_collection = "Search Collection";

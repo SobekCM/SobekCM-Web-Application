@@ -2,10 +2,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Web;
-using System.Web.UI.WebControls;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Results;
 using SobekCM.Core.Search;
@@ -48,7 +48,7 @@ namespace SobekCM.Library.ResultsViewer
         /// <param name="MainPlaceHolder"> Main place holder ( &quot;mainPlaceHolder&quot; ) in the itemNavForm form into which the the bulk of the result viewer's output is displayed</param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         /// <returns> Sorted tree with the results in hierarchical structure with volumes and issues under the titles and sorted by serial hierarchy </returns>
-        public override void Add_HTML(PlaceHolder MainPlaceHolder, Custom_Tracer Tracer)
+        public override void Add_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
             if (Tracer != null)
             {
@@ -115,7 +115,7 @@ namespace SobekCM.Library.ResultsViewer
                     if (( titleResult.Spatial_Coordinates.Length == 0 ) || ( coords.Length == 0 ) || (titleResult.Spatial_Coordinates[0] == 'A') || (titleResult.Spatial_Coordinates[0] != coords[0]))
                     {
                         // Write the information
-                        Add_Item_Info_And_Map(textRedirectStem, base_url, map_number, titles_for_current_map, MainPlaceHolder, builder);
+                        Add_Item_Info_And_Map(textRedirectStem, base_url, map_number, titles_for_current_map, Output, builder);
 
                         // Get ready for the next item
                         map_number++;
@@ -126,7 +126,7 @@ namespace SobekCM.Library.ResultsViewer
                 // Add this title for the current (possibly new) map
                 titles_for_current_map.Add(titleResult);
 
-                // Just making sure the coordinate and bib id really reflect this last item 
+                // Just making sure the coordinate and bib id really reflect this last item
                 // before going to the next item
                 coords = titleResult.Spatial_Coordinates;
             }
@@ -135,10 +135,10 @@ namespace SobekCM.Library.ResultsViewer
             if (titles_for_current_map.Count > 0)
             {
                 // Write the information
-                Add_Item_Info_And_Map( textRedirectStem, base_url, map_number, titles_for_current_map, MainPlaceHolder, builder);
+                Add_Item_Info_And_Map( textRedirectStem, base_url, map_number, titles_for_current_map, Output, builder);
             }
 
-            // Close out this map table 
+            // Close out this map table
             builder.AppendLine("  <tr><td bgcolor=\"" + LINE_COLOR + "\" colspan=\"3\"></td></tr>");
             builder.AppendLine("</table>");
 
@@ -147,12 +147,11 @@ namespace SobekCM.Library.ResultsViewer
             mapScriptHtml.AppendLine("  //]]>");
             mapScriptHtml.AppendLine("</script>");
 
-            // Add this to the page
-            Literal writeData = new Literal {Text = builder + mapScriptHtml.ToString()};
-            MainPlaceHolder.Controls.Add(writeData);
+            // Write to output
+            Output.Write(builder.ToString() + mapScriptHtml.ToString());
         }
 
-        private void Add_Item_Info_And_Map(string TextRedirectStem, string BaseURL, int MapNumber, List<iSearch_Title_Result> TitlesForCurrentMap, PlaceHolder MainPlaceHolder, StringBuilder Builder)
+        private void Add_Item_Info_And_Map(string TextRedirectStem, string BaseURL, int MapNumber, List<iSearch_Title_Result> TitlesForCurrentMap, TextWriter Output, StringBuilder Builder)
         {
             // Set some values before iterating through the item rows
 			const string VARIES_STRING = "<span style=\"color:Gray\">( varies )</span>";
@@ -312,14 +311,12 @@ namespace SobekCM.Library.ResultsViewer
 
                     Builder.AppendLine("          <td colspan=\"2\">");
 
-                    // Write all the collected HTML to a literal, since we will be adding a 
-                    // tree view control to the web page next
-                    Literal literal = new Literal {Text = Builder.ToString()};
-                    MainPlaceHolder.Controls.Add(literal);
+                    // Write all the collected HTML, since we will be adding a tree view next
+                    Output.Write(Builder.ToString());
                     Builder.Remove(0, Builder.Length);
 
                     // Draw the tree of all matching issues
-                    Add_Issue_Tree(MainPlaceHolder, titleResult, currentResultCount, TextRedirectStem, BaseURL);
+                    Add_Issue_Tree(Output, titleResult, currentResultCount, TextRedirectStem, BaseURL);
 
                     // Finish this table in the item results view                                                       
                     Builder.AppendLine("          </td>");

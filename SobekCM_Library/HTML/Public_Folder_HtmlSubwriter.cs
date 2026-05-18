@@ -1,7 +1,6 @@
 ﻿#region Using directives
 
 using System.IO;
-using System.Web.UI.WebControls;
 using SobekCM.Core.Configuration;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Navigation;
@@ -28,12 +27,10 @@ namespace SobekCM.Library.HTML
         }
 
         /// <summary> Adds controls to the main navigational page </summary>
-        /// <param name="placeHolder"> Main place holder ( &quot;mainPlaceHolder&quot; ) in the itemNavForm form, widely used throughout the application</param>
+        /// <param name="Output"> TextWriter to write HTML output </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        /// <param name="populate_node_event"> Event is used to populate the a tree node without doing a full refresh of the page </param>
-        /// <returns> Sorted tree with the results in hierarchical structure with volumes and issues under the titles </returns>
         /// <remarks> This uses a <see cref="PagedResults_HtmlSubwriter"/> instance to render the browse  </remarks>
-        public void Add_Controls(PlaceHolder placeHolder, Custom_Tracer Tracer, TreeNodeEventHandler populate_node_event)
+        public void Add_Controls(TextWriter Output, Custom_Tracer Tracer)
         {
             if ((RequestSpecificValues.Paged_Results != null) && (RequestSpecificValues.Results_Statistics != null))
             {
@@ -50,7 +47,7 @@ namespace SobekCM.Library.HTML
                 }
 
                 Tracer.Add_Trace("Public_Folder_HtmlSubwriter.Add_Controls", "Add controls");
-                writeResult.Add_Controls(placeHolder, Tracer);
+                writeResult.Add_Controls(Output, Tracer);
             }
         }
 

@@ -7,8 +7,6 @@ using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
-using System.Web.UI;
-using System.Web.UI.WebControls;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.UI_Configuration;
 using SobekCM.Core.UI_Configuration.StaticResources;
@@ -839,10 +837,9 @@ namespace SobekCM.Library.MySobekViewer
         }
 
 
-        public override void Add_Controls(PlaceHolder MainPlaceHolder, Custom_Tracer Tracer)
+        public override void Add_Controls(TextWriter Output, Custom_Tracer Tracer)
         {
             Tracer.Add_Trace("Track_Item_MySobekViewer.Add_Controls", "");
-            //   base.Add_Controls(MainPlaceHolder, Tracer);
 
             string barcode_row_style = String.Empty;
             string manual_row_style = String.Empty;
@@ -1574,9 +1571,7 @@ namespace SobekCM.Library.MySobekViewer
             builder.AppendLine("  </script>");
 
 
-            LiteralControl control1 = new LiteralControl(builder.ToString());
-
-            MainPlaceHolder.Controls.Add(control1);
+            Output.Write(builder.ToString());
 
 
         }

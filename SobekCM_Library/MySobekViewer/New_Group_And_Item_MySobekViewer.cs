@@ -11,8 +11,6 @@ using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
-using System.Web.UI;
-using System.Web.UI.WebControls;
 using DocumentFormat.OpenXml.Drawing.Diagrams;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.Configuration.Localization;
@@ -1886,7 +1884,7 @@ namespace SobekCM.Library.MySobekViewer
 		/// <summary> Add controls directly to the form in the main control area placeholder </summary>
         /// <param name="MainPlaceHolder"> Main place holder to which all main controls are added </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-        public override void Add_Controls(PlaceHolder MainPlaceHolder, Custom_Tracer Tracer)
+        public override void Add_Controls(TextWriter Output, Custom_Tracer Tracer)
         {
             Tracer.Add_Trace("New_Group_And_Item_MySobekViewer.Add_Controls", String.Empty);
 
@@ -1894,46 +1892,24 @@ namespace SobekCM.Library.MySobekViewer
             if (currentProcessStep == 8)
             {
                 // Add the upload controls to the file place holder
-                add_upload_controls(MainPlaceHolder, Tracer);
+                add_upload_controls(Output, Tracer);
             }
         }
 
         #region Step 3: Upload Related Files
 
-        private void add_upload_controls(PlaceHolder MainPlaceholder, Custom_Tracer Tracer)
+        private void add_upload_controls(TextWriter Output, Custom_Tracer Tracer)
         {
             Tracer.Add_Trace("New_Group_And_Item_MySobekViewer.add_upload_controls", String.Empty);
 
-            StringBuilder filesBuilder = new StringBuilder(2000);
-            filesBuilder.AppendLine("<script src=\"" + Static_Resources_Gateway.Sobekcm_Metadata_Js + "\" type=\"text/javascript\"></script>");
+            Output.WriteLine("<script src=\"" + Static_Resources_Gateway.Sobekcm_Metadata_Js + "\" type=\"text/javascript\"></script>");
 
             if ((completeTemplate.Upload_Types == CompleteTemplate.Template_Upload_Types.File) || (completeTemplate.Upload_Types == CompleteTemplate.Template_Upload_Types.File_or_URL))
             {
-                filesBuilder.AppendLine("Add a new item for this package:");
-                filesBuilder.AppendLine("<blockquote>");
-
-                LiteralControl filesLiteral2 = new LiteralControl(filesBuilder.ToString());
-                MainPlaceholder.Controls.Add(filesLiteral2);
-                filesBuilder.Remove(0, filesBuilder.Length);
-
-
-/*
-				UploadiFiveControl uploadControl = new UploadiFiveControl();
-				uploadControl.UploadPath = userInProcessDirectory;
-				uploadControl.UploadScript = RequestSpecificValues.Current_Mode.Base_URL + "UploadiFiveFileHandler.ashx";
-				uploadControl.AllowedFileExtensions = UI_ApplicationCache_Gateway.Settings.Resources.Upload_Image_Types + "," + UI_ApplicationCache_Gateway.Settings.Resources.Upload_File_Types;
-				uploadControl.SubmitWhenQueueCompletes = true;
-	            uploadControl.RemoveCompleted = true;
-                uploadControl.Swf = Static_Resources_Gateway.Uploadify_Swf; 
-	            uploadControl.RevertToFlashVersion = true;
-				MainPlaceholder.Controls.Add(uploadControl);
-*/
-
-                filesBuilder.AppendLine("</blockquote><br />");
+                Output.WriteLine("Add a new item for this package:");
+                Output.WriteLine("<blockquote>");
+                Output.WriteLine("</blockquote><br />");
             }
-
-            LiteralControl literal1 = new LiteralControl(filesBuilder.ToString());
-            MainPlaceholder.Controls.Add(literal1);
         }
 
         #endregion

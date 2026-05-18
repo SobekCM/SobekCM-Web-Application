@@ -7,8 +7,6 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Web;
-using System.Web.Caching;
-using System.Web.UI.WebControls;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Results;
 using SobekCM.Library.UI;
@@ -33,7 +31,7 @@ namespace SobekCM.Library.ResultsViewer
         /// <param name="MainPlaceHolder"> Main place holder ( &quot;mainPlaceHolder&quot; ) in the itemNavForm form into which the the bulk of the result viewer's output is displayed</param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         /// <returns> Sorted tree with the results in hierarchical structure with volumes and issues under the titles and sorted by serial hierarchy </returns>
-        public override void Add_HTML(PlaceHolder MainPlaceHolder, Custom_Tracer Tracer)
+        public override void Add_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
             if (Tracer != null)
             {
@@ -42,8 +40,6 @@ namespace SobekCM.Library.ResultsViewer
 
             // Get the no results text
             string noResultsText = Get_NoResults_Text();
-
-            Literal thisLiteral = new Literal();
 
             // Get the list of search terms
             string terms = RequestSpecificValues.Current_Mode.Search_String.Replace(",", " ").Trim();
@@ -133,8 +129,7 @@ namespace SobekCM.Library.ResultsViewer
             noResultsTextBuilder.AppendLine("</script>");
             noResultsTextBuilder.AppendLine();
 
-            thisLiteral.Text = noResultsTextBuilder.ToString();
-            MainPlaceHolder.Controls.Add(thisLiteral);
+            Output.Write(noResultsTextBuilder.ToString());
         }
 
         /// <summary> Gets the no results text to display, from the HTML static page or uses the default </summary>

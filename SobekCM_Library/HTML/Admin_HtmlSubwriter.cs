@@ -4,8 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using System.Web.UI;
-using System.Web.UI.WebControls;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.UI_Configuration;
@@ -251,7 +249,7 @@ namespace SobekCM.Library.HTML
 		/// <summary> Add controls directly to the form in the main control area placeholder</summary>
 		/// <param name="MainPlaceHolder"> Main place holder ( &quot;mainPlaceHolder&quot; ) in the itemNavForm form, widely used throughout the application</param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        public void Add_Controls(PlaceHolder MainPlaceHolder, Custom_Tracer Tracer)
+        public void Add_Controls(TextWriter Output, Custom_Tracer Tracer)
         {
             Tracer.Add_Trace("Admin_HtmlSubwriter.Add_Controls", "Build admin viewer and add controls");
 
@@ -260,19 +258,12 @@ namespace SobekCM.Library.HTML
             {
                 if (!adminViewer.Viewer_Behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Suppress_Banner))
                 {
-                    // Start to build the result to write, with the banner
-                    StringBuilder header_builder = new StringBuilder();
-                    StringWriter header_writer = new StringWriter(header_builder);
-                    Add_Banner(header_writer, "sbkAhs_BannerDiv", WebPage_Title.Replace("{0} ", ""), RequestSpecificValues.Current_Mode, RequestSpecificValues.HTML_Skin, RequestSpecificValues.Top_Collection);
-
-                    // Now, add this literal
-                    LiteralControl header_literal = new LiteralControl(header_builder.ToString());
-                    MainPlaceHolder.Controls.Add(header_literal);
+                    Add_Banner(Output, "sbkAhs_BannerDiv", WebPage_Title.Replace("{0} ", ""), RequestSpecificValues.Current_Mode, RequestSpecificValues.HTML_Skin, RequestSpecificValues.Top_Collection);
                 }
             }
 
             // Add any controls needed
-			adminViewer.Add_Controls(MainPlaceHolder, Tracer);
+			adminViewer.Add_Controls(Output, Tracer);
          }
 
  

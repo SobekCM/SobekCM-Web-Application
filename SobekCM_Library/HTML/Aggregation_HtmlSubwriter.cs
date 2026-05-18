@@ -9,8 +9,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Web;
-using System.Web.UI;
-using System.Web.UI.WebControls;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.Client;
 using SobekCM.Core.Configuration.Localization;
@@ -1343,14 +1341,14 @@ namespace SobekCM.Library.HTML
         /// <param name="MainPlaceHolder"> Place holder into which to place the built tree control </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         /// <returns>Flag indicates if secondary text contains controls </returns>
-        public bool Add_Controls(PlaceHolder MainPlaceHolder, Custom_Tracer Tracer)
+        public bool Add_Controls(TextWriter Output, Custom_Tracer Tracer)
         {
             Tracer.Add_Trace("Aggregation_HtmlSubwriter.Add_Controls", "Entered...");
-            
+
             if (collectionViewer.Secondary_Text_Requires_Controls)
             {
                 Tracer.Add_Trace("Aggregation_HtmlSubwriter.Add_Controls", "Secondary text requires controls.");
-                collectionViewer.Add_Secondary_Controls(MainPlaceHolder, Tracer);
+                collectionViewer.Add_Secondary_Controls(Output, Tracer);
                 return true;
             }
             else

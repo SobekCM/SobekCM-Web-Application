@@ -6,7 +6,6 @@ using System.Data;
 using System.IO;
 using System.Text;
 using System.Web;
-using System.Web.UI.WebControls;
 using SobekCM.Core.Items;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
@@ -269,15 +268,15 @@ namespace SobekCM.Library.HTML
 
 
 	    /// <summary> Adds any necessary controls to one of two place holders on the main ASPX page </summary>
-	    /// <param name="MainPlaceHolder"> Main place holder ( &quot;mainPlaceHolder&quot; ) in the itemNavForm form, widely used throughout the application</param>
+	    /// <param name="Output"> TextWriter to write HTML output </param>
 	    /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-	    public void Add_Controls(PlaceHolder MainPlaceHolder, Custom_Tracer Tracer)
+	    public void Add_Controls(TextWriter Output, Custom_Tracer Tracer)
 	    {
 		    Tracer.Add_Trace("MySobek_HtmlSubwriter.Add_Controls", "Build my sobek viewer and add controls");
 
 		    // Add any controls needed
 		    if (mySobekViewer != null)
-			    mySobekViewer.Add_Controls(MainPlaceHolder, Tracer);
+			    mySobekViewer.Add_Controls(Output, Tracer);
 	    }
 
 	    /// <summary> Writes final HTML to the output stream after all the placeholders and just before the itemNavForm is closed.  </summary>

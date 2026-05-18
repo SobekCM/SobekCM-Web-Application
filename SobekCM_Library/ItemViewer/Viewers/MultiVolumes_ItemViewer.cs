@@ -5,7 +5,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Web;
-using System.Web.UI.WebControls;
 using SobekCM.Core.BriefItem;
 using SobekCM.Core.Client;
 using SobekCM.Core.Configuration.Localization;
@@ -298,11 +297,32 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         public void Write_Main_Viewer_Section(TextWriter Output, Custom_Tracer Tracer)
         {
-            if (viewType != View_Type.Tree)
+            if (viewType == View_Type.Tree)
             {
                 if (Tracer != null)
                 {
-                    Tracer.Add_Trace("MultiVolumes_ItemViewer.Write_Main_Viewer_Section", "Write the main viewer section (for tree and list view)");
+                    Tracer.Add_Trace("MultiVolumes_ItemViewer.Write_Main_Viewer_Section", "Write the main viewer section (tree view)");
+                }
+
+                // Build the value
+                Output.WriteLine("          <td><div id=\"sbkMviv_ViewerTitle\">" + issues_type + "</div></td>");
+                Output.WriteLine("        </tr>");
+                Output.WriteLine("        <tr>");
+                Output.WriteLine("          <td>");
+                Output.WriteLine("            <div id=\"sbkMviv_MainArea\">");
+
+                // Build the tree and render it directly to output
+                HtmlTreeView treeView1 = new HtmlTreeView { CssClass = "sbkMviv_Tree" };
+                Build_Tree(treeView1);
+                StringBuilder treeBuilder = new StringBuilder();
+                treeView1.Render(new StringWriter(treeBuilder));
+                Output.Write(treeBuilder.ToString());
+            }
+            else
+            {
+                if (Tracer != null)
+                {
+                    Tracer.Add_Trace("MultiVolumes_ItemViewer.Write_Main_Viewer_Section", "Write the main viewer section (list/thumbnail view)");
                 }
 
                 // Build the value
@@ -321,77 +341,41 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     Write_Thumbnails(Output);
                 }
             }
-        }
 
-        /// <summary> Allows controls to be added directory to a place holder, rather than just writing to the output HTML stream </summary>
-        /// <param name="MainPlaceHolder"> Main place holder ( &quot;mainPlaceHolder&quot; ) in the itemNavForm form into which the bulk of the item viewer's output is displayed</param>
-        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        /// <remarks> In tree view mode, this adds a tree control directly to the place holder </remarks>
-        public void Add_Main_Viewer_Section(PlaceHolder MainPlaceHolder, Custom_Tracer Tracer)
-        {
-            // Add the tree view as controls
-            if (viewType == View_Type.Tree)
-            {
-                if (Tracer != null)
-                {
-                    Tracer.Add_Trace("MultiVolumes_ItemViewer.Add_Main_Viewer_Section", "Adds tree view control");
-                }
-
-                // Build the value
-                StringBuilder builder = new StringBuilder(5000);
-                builder.AppendLine("          <td><div id=\"sbkMviv_ViewerTitle\">" + issues_type + "</div></td>");
-                builder.AppendLine("        </tr>");
-                builder.AppendLine("        <tr>");
-                builder.AppendLine("          <td>");
-                builder.AppendLine(viewType == View_Type.Thumbnail ? "            <div id=\"sbkMviv_ThumbnailsArea\">" : "            <div id=\"sbkMviv_MainArea\">");
-
-                // Add the HTML for the image
-                Literal mainLiteral = new Literal { Text = builder.ToString() };
-                MainPlaceHolder.Controls.Add(mainLiteral);
-
-                // Build the tree and render it as HTML
-                HtmlTreeView treeView1 = new HtmlTreeView { CssClass = "sbkMviv_Tree" };
-                Build_Tree(treeView1);
-                StringBuilder treeBuilder = new StringBuilder();
-                treeView1.Render(new StringWriter(treeBuilder));
-                MainPlaceHolder.Controls.Add(new Literal { Text = treeBuilder.ToString() });
-            }
-
-            // Add the final HTML
-            Literal secondLiteral = new Literal();
+            // Add the final HTML (related titles and closing divs)
             if ((briefItem.Web.Related_Titles != null ) && ( briefItem.Web.Related_Titles.Count > 0 ))
             {
                 if (Tracer != null)
                 {
-                    Tracer.Add_Trace("MultiVolumes_ItemViewer.Add_Main_Viewer_Section", "Add the related titles and close the remaining divs");
+                    Tracer.Add_Trace("MultiVolumes_ItemViewer.Write_Main_Viewer_Section", "Add the related titles and close the remaining divs");
                 }
 
-                StringBuilder relatedBuilder = new StringBuilder(1000);
-                relatedBuilder.AppendLine("<table id=\"sbkMviv_RelatedTitles\">");
-                relatedBuilder.AppendLine("  <tr>");
-                relatedBuilder.AppendLine("    <td colspan=\"2\"><h2>Related Titles</h2></td>");
-                relatedBuilder.AppendLine("  </tr>");
+                Output.WriteLine("<table id=\"sbkMviv_RelatedTitles\">");
+                Output.WriteLine("  <tr>");
+                Output.WriteLine("    <td colspan=\"2\"><h2>Related Titles</h2></td>");
+                Output.WriteLine("  </tr>");
                 string url_opts = UrlWriterHelper.URL_Options(currentRequest);
                 foreach (BriefItem_Related_Titles thisTitle in briefItem.Web.Related_Titles)
                 {
-                    relatedBuilder.AppendLine("  <tr>");
-                    relatedBuilder.AppendLine("    <td class=\"sbkMviv_RelatedTitlesRelation\">" + thisTitle.Relationship + ": </td>");
-                    relatedBuilder.AppendLine("    <td><a href=\"" + thisTitle.Link.Replace("<%URL_OPTS%>", url_opts) + "\">" + thisTitle.Title + "</a></td>");
-                    relatedBuilder.AppendLine("  <tr>");
+                    Output.WriteLine("  <tr>");
+                    Output.WriteLine("    <td class=\"sbkMviv_RelatedTitlesRelation\">" + thisTitle.Relationship + ": </td>");
+                    Output.WriteLine("    <td><a href=\"" + thisTitle.Link.Replace("<%URL_OPTS%>", url_opts) + "\">" + thisTitle.Title + "</a></td>");
+                    Output.WriteLine("  <tr>");
                 }
-                relatedBuilder.AppendLine("</table>");
-                secondLiteral.Text = "" + Environment.NewLine + relatedBuilder + "</div><!-- FINISHING -->" + Environment.NewLine + "</td>" + Environment.NewLine;
+                Output.WriteLine("</table>");
+                Output.WriteLine("</div><!-- FINISHING -->");
+                Output.WriteLine("</td>");
             }
             else
             {
                 if (Tracer != null)
                 {
-                    Tracer.Add_Trace("MultiVolumes_ItemViewer.Add_Main_Viewer_Section", "Close the remaining divs");
+                    Tracer.Add_Trace("MultiVolumes_ItemViewer.Write_Main_Viewer_Section", "Close the remaining divs");
                 }
 
-                secondLiteral.Text = "" + Environment.NewLine + "            </div><!-- FINISHING -->" + Environment.NewLine + "</td>" + Environment.NewLine;
+                Output.WriteLine("            </div><!-- FINISHING -->");
+                Output.WriteLine("</td>");
             }
-            MainPlaceHolder.Controls.Add(secondLiteral);
         }
 
         #region Paging related properties ( custom paging with XX thumbnails displayed per page in thumbnail mode )

@@ -8,7 +8,6 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Web;
-using System.Web.UI.WebControls;
 using SobekCM.Core.ApplicationState;
 using SobekCM.Core.BriefItem;
 using SobekCM.Core.Client;
@@ -49,7 +48,6 @@ namespace SobekCM.Library.HTML
         private readonly int searchResultsCount;
         private readonly bool showZoomable;
         private bool tocSelectedComplete;
-        private TreeView treeView1;
         private readonly bool userCanEditItem;
         private readonly List<HtmlSubwriter_Behaviors_Enum> behaviors;
         private string buttonsHtml;
@@ -1156,25 +1154,25 @@ namespace SobekCM.Library.HTML
                     if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.Spanish)
                     {
                         go_to = "Ir a:";
-                        first_page = "Primera Página";
-                        previous_page = "Página Anterior";
-                        next_page = "Página Siguiente";
-                        last_page = "Última Página";
+                        first_page = "Primera Pï¿½gina";
+                        previous_page = "Pï¿½gina Anterior";
+                        next_page = "Pï¿½gina Siguiente";
+                        last_page = "ï¿½ltima Pï¿½gina";
                         first_page_text = "Primero";
                         previous_page_text = "Anterior";
                         next_page_text = "Proximo";
-                        last_page_text = "Último";
+                        last_page_text = "ï¿½ltimo";
                     }
 
                     if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.French)
                     {
-                        go_to = "Aller à:";
-                        first_page = "Première Page";
-                        previous_page = "Page Précédente";
+                        go_to = "Aller ï¿½:";
+                        first_page = "Premiï¿½re Page";
+                        previous_page = "Page Prï¿½cï¿½dente";
                         next_page = "Page Suivante";
-                        last_page = "Dernière Page";
-                        first_page_text = "Première";
-                        previous_page_text = "Précédente";
+                        last_page = "Derniï¿½re Page";
+                        first_page_text = "Premiï¿½re";
+                        previous_page_text = "Prï¿½cï¿½dente";
                         next_page_text = "Suivante";
                         last_page_text = "Derniere";
                     }
@@ -1357,15 +1355,15 @@ namespace SobekCM.Library.HTML
         }
 
         /// <summary> Performs the final HTML writing which completes the item table and adds the final page navigation buttons at the bottom of the page </summary>
-        /// <param name="Main_PlaceHolder"> Main place holder ( &quot;mainPlaceHolder&quot; ) in the itemNavForm form, widely used throughout the application</param>
+        /// <param name="Output"> TextWriter to write HTML output </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        public void Add_Main_Viewer_Section(PlaceHolder Main_PlaceHolder, Custom_Tracer Tracer)
+        public void Add_Main_Viewer_Section(TextWriter Output, Custom_Tracer Tracer)
         {
             // Add the main viewer section
             if (pageViewer != null)
             {
-                Tracer.Add_Trace("Item_HtmlSubwriter.Add_Main_Viewer_Section", "Allowing page viewer to add main viewer section to <i>mainPlaceHolder</i>");
-                pageViewer.Add_Main_Viewer_Section(Main_PlaceHolder, Tracer);
+                Tracer.Add_Trace("Item_HtmlSubwriter.Add_Main_Viewer_Section", "Allowing page viewer to write main viewer section");
+                pageViewer.Write_Main_Viewer_Section(Output, Tracer);
             }
         }
 

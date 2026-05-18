@@ -2,7 +2,6 @@
 
 using System.Collections.Generic;
 using System.IO;
-using System.Web.UI.WebControls;
 using SobekCM.Library.HTML;
 using SobekCM.Tools;
 
@@ -75,10 +74,10 @@ namespace SobekCM.Library.AdminViewer
         void Write_ItemNavForm_Closing(TextWriter Output, Custom_Tracer Tracer);
 
         /// <summary> Add controls directly to the form in the main control area placeholder </summary>
-        /// <param name="MainPlaceHolder"> Main place holder to which all main controls are added </param>
+        /// <param name="Output"> TextWriter to write HTML output </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
         ///  <remarks> No controls are added here, although some children class override this virtual method to add controls </remarks>
-        void Add_Controls(PlaceHolder MainPlaceHolder, Custom_Tracer Tracer);
+        void Add_Controls(TextWriter Output, Custom_Tracer Tracer);
 
         /// <summary> Returns a flag indicating whether the file upload specific holder in the itemNavForm form will be utilized 
         /// for the current request, or if it can be hidden/omitted. </summary>

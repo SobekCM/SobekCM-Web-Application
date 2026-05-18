@@ -2,7 +2,6 @@
 
 using System.Collections.Generic;
 using System.IO;
-using System.Web.UI.WebControls;
 using SobekCM.Library.HTML;
 using SobekCM.Tools;
 
@@ -111,10 +110,10 @@ namespace SobekCM.Library.AdminViewer
         }
 
 		/// <summary> Add controls directly to the form in the main control area placeholder </summary>
-        /// <param name="MainPlaceHolder"> Main place holder to which all main controls are added </param>
+        /// <param name="Output"> TextWriter to write HTML output </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
         ///  <remarks> No controls are added here, although some children class override this virtual method to add controls </remarks>
-        public virtual void Add_Controls(PlaceHolder MainPlaceHolder, Custom_Tracer Tracer)
+        public virtual void Add_Controls(TextWriter Output, Custom_Tracer Tracer)
         {
             if (Tracer != null)
             {

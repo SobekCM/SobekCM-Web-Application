@@ -4,11 +4,9 @@ using System.Collections.Specialized;
 using System.Data;
 using System.IO;
 using System.Linq;
+using System.Runtime.Caching;
 using System.Text;
 using System.Web;
-using System.Web.Caching;
-using System.Web.UI;
-using System.Web.UI.WebControls;
 using SobekCM.Core.Navigation;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Engine_Library.Database;
@@ -59,7 +57,7 @@ namespace SobekCM.Library.AdminViewer
             }
 
             // Try to pull the configuration from the cache, otherwise create it manually
-            teiConfig = HttpContext.Current.Cache.Get("TEI.Configuration") as TEI_Configuration;
+            teiConfig = MemoryCache.Default["TEI.Configuration"] as TEI_Configuration;
 
             // Did not find it in the cache
             if (teiConfig == null)
@@ -69,11 +67,11 @@ namespace SobekCM.Library.AdminViewer
                 teiConfig = new TEI_Configuration(plugin_directory);
 
                 // Store on the cache for several minutes
-                HttpContext.Current.Cache.Insert("TEI.Configuration", teiConfig, null, Cache.NoAbsoluteExpiration, TimeSpan.FromMinutes(2));
+                MemoryCache.Default.Set("TEI.Configuration", teiConfig, new CacheItemPolicy { SlidingExpiration = TimeSpan.FromMinutes(2) });
             }
 
             // Try to pull the latest tei user settings
-            teiUserSettings = HttpContext.Current.Cache.Get("TEI.UserSettings") as DataTable;
+            teiUserSettings = MemoryCache.Default["TEI.UserSettings"] as DataTable;
 
             // Did not find it in the cache
             if (teiUserSettings == null)
@@ -82,7 +80,7 @@ namespace SobekCM.Library.AdminViewer
                 teiUserSettings = Engine_Database.Get_All_User_Settings_Like("TEI.%", "true");
 
                 // Store on the cache for several minutes
-                HttpContext.Current.Cache.Insert("TEI.UserSettings", teiUserSettings, null, Cache.NoAbsoluteExpiration, TimeSpan.FromMinutes(2));
+                MemoryCache.Default.Set("TEI.UserSettings", teiUserSettings, new CacheItemPolicy { SlidingExpiration = TimeSpan.FromMinutes(2) });
             }
 
             // Create the list of sorted users approvied for TEI
@@ -235,7 +233,7 @@ namespace SobekCM.Library.AdminViewer
                         teiUserSettings = Engine_Database.Get_All_User_Settings_Like("TEI.%", "true");
 
                         // Store on the cache for several minutes
-                        HttpContext.Current.Cache.Insert("TEI.UserSettings", teiUserSettings, null, Cache.NoAbsoluteExpiration, TimeSpan.FromMinutes(2));
+                        MemoryCache.Default.Set("TEI.UserSettings", teiUserSettings, new CacheItemPolicy { SlidingExpiration = TimeSpan.FromMinutes(2) });
                     }
                 }
 
@@ -247,7 +245,7 @@ namespace SobekCM.Library.AdminViewer
                     teiConfig = new TEI_Configuration(plugin_directory);
 
                     // Store on the cache for several minutes
-                    HttpContext.Current.Cache.Insert("TEI.Configuration", teiConfig, null, Cache.NoAbsoluteExpiration, TimeSpan.FromMinutes(2));
+                    MemoryCache.Default.Set("TEI.Configuration", teiConfig, new CacheItemPolicy { SlidingExpiration = TimeSpan.FromMinutes(2) });
                 }
             }
         }
@@ -817,7 +815,7 @@ namespace SobekCM.Library.AdminViewer
         /// <summary> Add controls directly to the form in the main control area placeholder </summary>
         /// <param name="MainPlaceHolder"> Main place holder to which all main controls are added </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-        public override void Add_Controls(PlaceHolder MainPlaceHolder, Custom_Tracer Tracer)
+        public override void Add_Controls(TextWriter Output, Custom_Tracer Tracer)
         {
             Tracer.Add_Trace("File_Managament_MySobekViewer.Add_Controls", String.Empty);
 
@@ -860,35 +858,13 @@ namespace SobekCM.Library.AdminViewer
             }
 
             // Add the upload controls to the file place holder
-            add_upload_controls(directory, extensions, buttonText, MainPlaceHolder, Tracer);
+            add_upload_controls(directory, extensions, buttonText, Output, Tracer);
         }
 
 
-        private void add_upload_controls(string DestinationDirectory, string Extensions, string ButtonText, PlaceHolder UploadFilesPlaceHolder, Custom_Tracer Tracer)
+        private void add_upload_controls(string DestinationDirectory, string Extensions, string ButtonText, TextWriter Output, Custom_Tracer Tracer)
         {
             Tracer.Add_Trace("File_Managament_MySobekViewer.add_upload_controls", String.Empty);
-
-            StringBuilder filesBuilder = new StringBuilder(2000);
-
-            LiteralControl filesLiteral2 = new LiteralControl(filesBuilder.ToString());
-            UploadFilesPlaceHolder.Controls.Add(filesLiteral2);
-            filesBuilder.Remove(0, filesBuilder.Length);
-
-/*
-            UploadiFiveControl uploadControl = new UploadiFiveControl();
-            uploadControl.UploadPath = DestinationDirectory;
-            uploadControl.UploadScript = RequestSpecificValues.Current_Mode.Base_URL + "UploadiFiveFileHandler.ashx";
-            uploadControl.AllowedFileExtensions = Extensions;//.jpg,.png,.gif,.bmp,.jpeg";
-            uploadControl.RemoveCompleted = true;
-            uploadControl.SubmitWhenQueueCompletes = true;
-            uploadControl.Multi = false;
-            uploadControl.ButtonText = ButtonText;
-            uploadControl.CssClass = "sbkTeiAv_UploadButton";
-            UploadFilesPlaceHolder.Controls.Add(uploadControl);
-*/
-
-            LiteralControl literal1 = new LiteralControl(filesBuilder.ToString());
-            UploadFilesPlaceHolder.Controls.Add(literal1);
         }
 
         /// <summary> Returns a flag indicating whether the file upload specific holder in the itemNavForm form will be utilized 

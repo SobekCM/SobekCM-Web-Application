@@ -9,7 +9,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Web;
-using System.Web.UI.WebControls;
 using SobekCM.Core.Items;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
@@ -543,10 +542,10 @@ namespace SobekCM.Library.MySobekViewer
 
 
 		/// <summary> Add controls directly to the form in the main control area placeholder </summary>
-        /// <param name="MainPlaceHolder"> Main place holder to which all main controls are added </param>
+        /// <param name="Output"> TextWriter to write HTML output </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
         /// <remarks> The <see cref="PagedResults_HtmlSubwriter"/> class is instantiated and adds controls to the placeholder here </remarks>
-        public override void Add_Controls(PlaceHolder MainPlaceHolder, Custom_Tracer Tracer)
+        public override void Add_Controls(TextWriter Output, Custom_Tracer Tracer)
         {
             Tracer.Add_Trace("Folder_Mgmt_MySobekViewer.Add_Controls", String.Empty);
 
@@ -656,18 +655,16 @@ namespace SobekCM.Library.MySobekViewer
                     rootNode.Expand();
                 }
 
-                // Render to HTML and add as a Literal
+                // Render to HTML and write to output
                 StringBuilder treeBuilder = new StringBuilder();
                 treeView1.Render(new StringWriter(treeBuilder));
-                MainPlaceHolder.Controls.Add(new Literal { Text = treeBuilder.ToString() });
+                Output.Write(treeBuilder.ToString());
             }
 
             if (RequestSpecificValues.Current_Mode.My_Sobek_SubMode.Length > 0)
             {
                 if ( RequestSpecificValues.Results_Statistics.Total_Titles == 0)
                 {
-                    Literal literal = new Literal();
-
                     string folder_name = RequestSpecificValues.Current_User.Folder_Name(RequestSpecificValues.Current_Mode.My_Sobek_SubMode);
                     RequestSpecificValues.Current_Mode.My_Sobek_SubMode = String.Empty;
                     if (folder_name.Length == 0)
@@ -675,13 +672,11 @@ namespace SobekCM.Library.MySobekViewer
                         UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
                         return;
                     }
-                    
-                    if (properFolderName != "Submitted Items")
-						literal.Text = "<br /><br /><h1>" + folder_name + "</h1><br /><br /><div class=\"SobekHomeText\" ><center><b>This bookshelf is currently empty</b></center><br /><br /><br /></div></div>";
-                    else
-						literal.Text = "<h1>" + folder_name + "</h1><br /><br /><div class=\"SobekHomeText\" ><center><b>This bookshelf is currently empty</b></center><br /><br /><br /></div></div>";
-                    MainPlaceHolder.Controls.Add(literal);
 
+                    if (properFolderName != "Submitted Items")
+						Output.Write("<br /><br /><h1>" + folder_name + "</h1><br /><br /><div class=\"SobekHomeText\" ><center><b>This bookshelf is currently empty</b></center><br /><br /><br /></div></div>");
+                    else
+						Output.Write("<h1>" + folder_name + "</h1><br /><br /><div class=\"SobekHomeText\" ><center><b>This bookshelf is currently empty</b></center><br /><br /><br /></div></div>");
                 }
                 else
                 {
@@ -695,22 +690,16 @@ namespace SobekCM.Library.MySobekViewer
                         writeResult.Include_Bookshelf_View = true;
 
                     // Add some space and then the view type selection box
-                    StringBuilder view_type_selection_builder = new StringBuilder( 2000);
                     if (properFolderName != "Submitted Items")
-                        view_type_selection_builder.AppendLine("<br /><br />");
+                        Output.WriteLine("<br /><br />");
 
-                    StringWriter writer = new StringWriter(view_type_selection_builder);
-                    writeResult.Write_HTML(writer, Tracer);
-
-                    Literal view_type_selection_literal = new Literal {Text = view_type_selection_builder.ToString()};
-                    MainPlaceHolder.Controls.Add(view_type_selection_literal);
+                    writeResult.Write_HTML(Output, Tracer);
 
                     // Now, add the results controls as well
-                    writeResult.Add_Controls(MainPlaceHolder, Tracer);
+                    writeResult.Add_Controls(Output, Tracer);
 
                     // Close the div
-                    Literal final_literal = new Literal {Text = "<br />\n"};
-                    MainPlaceHolder.Controls.Add(final_literal);
+                    Output.Write("<br />\n");
                 }
 
 				//if (( pagedResults != null ) && ( pagedResults.Count > 0))
@@ -801,9 +790,8 @@ namespace SobekCM.Library.MySobekViewer
                 bookshelfManageBuilder.AppendLine("  </blockquote>");
                 bookshelfManageBuilder.AppendLine("</div>");
 
-                // Add this as a literal
-                Literal mgmtLiteral = new Literal {Text = bookshelfManageBuilder.ToString()};
-                MainPlaceHolder.Controls.Add(mgmtLiteral);
+                // Write to output
+                Output.Write(bookshelfManageBuilder.ToString());
             }
         }
 

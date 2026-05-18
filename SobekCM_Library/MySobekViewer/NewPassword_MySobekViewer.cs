@@ -1,17 +1,12 @@
-﻿#region Using directives
+#region Using directives
 
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using System.Web;
-using System.Web.UI;
-using System.Web.UI.WebControls;
 using SobekCM.Core.Navigation;
-using SobekCM.Core.UI_Configuration;
 using SobekCM.Core.UI_Configuration.StaticResources;
 using SobekCM.Core.Users;
-using SobekCM.Engine_Library.Configuration;
 using SobekCM.Library.Database;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
@@ -35,10 +30,9 @@ namespace SobekCM.Library.MySobekViewer
     /// </ul></remarks>
     public class NewPassword_MySobekViewer : abstract_MySobekViewer
     {
-        private TextBox confirmPasswordBox;
-        private TextBox existingPasswordBox;
-        private TextBox passwordBox;
         private readonly List<string> validationErrors;
+        private readonly bool registration;
+        private readonly User_Object user;
 
         /// <summary> Constructor for a new instance of the NewPassword_MySobekViewer class </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
@@ -46,207 +40,150 @@ namespace SobekCM.Library.MySobekViewer
         {
             RequestSpecificValues.Tracer.Add_Trace("NewPassword_MySobekViewer.Constructor", String.Empty);
 
-            // Do nothing
             validationErrors = new List<string>();
+
+            user = RequestSpecificValues.Current_User;
+            registration = (HttpContext.Current.Session["user"] == null);
+            if (registration)
+                user = new User_Object();
+
+            if (!RequestSpecificValues.Current_Mode.isPostBack)
+                return;
+
+            string current_password = String.Empty;
+            string new_password = String.Empty;
+            string new_password2 = String.Empty;
+
+            string[] getKeys = HttpContext.Current.Request.Form.AllKeys;
+            foreach (string thisKey in getKeys)
+            {
+                switch (thisKey)
+                {
+                    case "current_password_enter":
+                        current_password = HttpContext.Current.Request.Form[thisKey];
+                        break;
+
+                    case "new_password_enter":
+                        new_password = HttpContext.Current.Request.Form[thisKey];
+                        break;
+
+                    case "new_password_confirm":
+                        new_password2 = HttpContext.Current.Request.Form[thisKey];
+                        break;
+                }
+            }
+
+            if ((new_password.Trim().Length == 0) || (new_password2.Trim().Length == 0))
+                validationErrors.Add("Select and confirm a new password");
+            if (new_password != new_password2)
+                validationErrors.Add("New passwords do not match");
+            else if ((new_password.Length < 8) && (new_password.Length > 0))
+                validationErrors.Add("Password must be at least eight digits");
+            if (validationErrors.Count == 0)
+            {
+                if (new_password == current_password)
+                    validationErrors.Add("The new password cannot match the old password");
+            }
+
+            if (validationErrors.Count == 0)
+            {
+                bool success = SobekCM_Database.Change_Password(user.UserName, current_password, new_password, false, RequestSpecificValues.Tracer);
+                if (success)
+                {
+                    user.Is_Temporary_Password = false;
+                    string raw_url = HttpContext.Current.Request.RawUrl;
+                    if (raw_url.ToUpper().IndexOf("M=HML") > 0)
+                    {
+                        RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
+                        UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                    }
+                    else
+                    {
+                        HttpContext.Current.Response.Redirect(raw_url, false);
+                        HttpContext.Current.ApplicationInstance.CompleteRequest();
+                        RequestSpecificValues.Current_Mode.Request_Completed = true;
+                    }
+                }
+                else
+                {
+                    validationErrors.Add("Unable to change password.  Verify current password.");
+                }
+            }
         }
 
         /// <summary> Title for the page that displays this viewer, this is shown in the search box at the top of the page, just below the banner </summary>
         /// <value> This always returns the value 'Change your password' </value>
         public override string Web_Title
         {
-            get 
-            {
-                return "Change your password";
-            }
+            get { return "Change your password"; }
         }
 
         /// <summary> Add the HTML to be displayed in the main SobekCM viewer area </summary>
         /// <param name="Output"> Textwriter to write the HTML for this viewer</param>
         /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
-        /// <remarks> This class does nothing, since this form is added as controls, not HTML </remarks>
         public override void Write_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
             Tracer.Add_Trace("NewPassword_MySobekViewer.Write_HTML", "Do nothing");
         }
 
-		/// <summary> Add controls directly to the form in the main control area placeholder </summary>
-        /// <param name="MainPlaceHolder"> Main place holder to which all main controls are added </param>
-        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-        /// <remarks> The bulk of this page is added here, as controls </remarks>
-        public override void Add_Controls(PlaceHolder MainPlaceHolder, Custom_Tracer Tracer)
+        /// <summary> Add the HTML to be displayed in the main SobekCM viewer area with the form </summary>
+        /// <param name="Output"> Textwriter to write the HTML for this viewer</param>
+        /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
+        public override void Write_ItemNavForm_Opening(TextWriter Output, Custom_Tracer Tracer)
         {
-            Tracer.Add_Trace("NewPassword_MySobekViewer.Add_Controls", "");
+            Tracer.Add_Trace("NewPassword_MySobekViewer.Write_ItemNavForm_Opening", String.Empty);
 
-		    User_Object user = RequestSpecificValues.Current_User;
+            Output.WriteLine("<script src=\"" + Static_Resources_Gateway.Sobekcm_Metadata_Js + "\" type=\"text/javascript\"></script>");
+            Output.WriteLine("<div class=\"SobekHomeText\">");
+            Output.WriteLine("<br />");
+            Output.WriteLine("<blockquote>");
+            Output.WriteLine(user.Is_Temporary_Password
+                ? "You are required to change your password to continue."
+                : "Please enter your existing password and your new password.");
 
-            // Is this for registration?       
-            bool registration = (HttpContext.Current.Session["user"] == null);
-            if (registration)
-            {
-                user = new User_Object();
-            }
-
-            string current_password = String.Empty;
-            string new_password = String.Empty;
-            string new_password2 = String.Empty;
-
-            if (RequestSpecificValues.Current_Mode.isPostBack)
-            {
-                // Loop through and get the dataa
-                string[] getKeys = HttpContext.Current.Request.Form.AllKeys;
-                foreach (string thisKey in getKeys)
-                {
-                    switch (thisKey)
-                    {
-                        case "current_password_enter":
-                            current_password = HttpContext.Current.Request.Form[thisKey];
-                            break;
-
-                        case "new_password_enter":
-                            new_password = HttpContext.Current.Request.Form[thisKey];
-                            break;
-
-                        case "new_password_confirm":
-                            new_password2 = HttpContext.Current.Request.Form[thisKey];
-                            break;
-                    }
-                }
-
-                if ((new_password.Trim().Length == 0) || (new_password2.Trim().Length == 0))
-                    validationErrors.Add("Select and confirm a new password");
-                if (new_password != new_password2)
-                    validationErrors.Add("New passwords do not match");
-                else if ((new_password.Length < 8) && ( new_password.Length > 0 ))
-                    validationErrors.Add("Password must be at least eight digits");
-                if (validationErrors.Count == 0)
-                {
-                    if (new_password == current_password)
-                    {
-                        validationErrors.Add("The new password cannot match the old password");
-                    }
-                }
-
-                if (validationErrors.Count == 0)
-                {
-                    bool success = SobekCM_Database.Change_Password(user.UserName, current_password, new_password, false, Tracer);
-                    if (success)
-                    {
-                        user.Is_Temporary_Password = false;
-                        // Forward back to their original URL (unless the original URL was this logon page)
-                        string raw_url = (HttpContext.Current.Request.RawUrl);
-                        if (raw_url.ToUpper().IndexOf("M=HML") > 0)
-                        {
-                            RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
-                            UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
-                            return;
-                        }
-                        else
-                        {
-                            HttpContext.Current.Response.Redirect(HttpContext.Current.Request.RawUrl, false);
-                            HttpContext.Current.ApplicationInstance.CompleteRequest();
-                            RequestSpecificValues.Current_Mode.Request_Completed = true;
-                            return;
-                        }
-                    }
-                    else
-                    {
-                        validationErrors.Add("Unable to change password.  Verify current password.");
-                    }
-                }
-            }
-
-            StringBuilder literalBuilder = new StringBuilder(1000);
-            literalBuilder.AppendLine("<script src=\"" + Static_Resources_Gateway.Sobekcm_Metadata_Js + "\" type=\"text/javascript\"></script>");
-            literalBuilder.AppendLine("<div class=\"SobekHomeText\" >");
-            literalBuilder.AppendLine("<br />");
-            literalBuilder.AppendLine("<blockquote>");
-            literalBuilder.AppendLine(user.Is_Temporary_Password
-                                          ? "You are required to change your password to continue."
-                                          : "Please enter your existing password and your new password.");
             if (validationErrors.Count > 0)
             {
-                literalBuilder.AppendLine("<br /><br /><strong><span style=\"color: Red\">The following errors were detected:");
-                literalBuilder.AppendLine("<blockquote>");
+                Output.WriteLine("<br /><br /><strong><span style=\"color: Red\">The following errors were detected:");
+                Output.WriteLine("<blockquote>");
                 foreach (string thisError in validationErrors)
-                {
-                    literalBuilder.AppendLine(thisError + "<br />");
-                }
-                literalBuilder.AppendLine("</blockquote>");
-                literalBuilder.AppendLine("</span></strong>");
+                    Output.WriteLine(thisError + "<br />");
+                Output.WriteLine("</blockquote>");
+                Output.WriteLine("</span></strong>");
             }
-            literalBuilder.AppendLine("</blockquote>");
-            literalBuilder.AppendLine("<table width=\"700px\"><tr><td width=\"180px\">&nbsp;</td>");
-            literalBuilder.AppendLine("<td width=\"200px\"><label for=\"current_password_enter\">Existing Password:</label></td>");
-            literalBuilder.AppendLine("<td width=\"180px\">");
-            LiteralControl literal1 = new LiteralControl(literalBuilder.ToString());
-            literalBuilder.Remove(0, literalBuilder.Length);
-            MainPlaceHolder.Controls.Add(literal1);
 
-            existingPasswordBox = new TextBox
-                                      {
-                                          CssClass = "preferences_small_input",
-                                          ID = "current_password_enter",
-                                          TextMode = TextBoxMode.Password
-                                      };
-            existingPasswordBox.Attributes.Add("onfocus", "textbox_enter('current_password_enter', 'preferences_small_input_focused')");
-            existingPasswordBox.Attributes.Add("onblur", "textbox_leave('current_password_enter', 'preferences_small_input')");
-            MainPlaceHolder.Controls.Add(existingPasswordBox);
-
-            LiteralControl literal2 = new LiteralControl("</td><td width=\"140px\">&nbsp;</td></tr>" + Environment.NewLine + "<tr><td>&nbsp;</td><td><label for=\"new_password_enter\">New Password:</label></td><td>");
-            MainPlaceHolder.Controls.Add(literal2);
-
-            passwordBox = new TextBox
-                              {
-                                  CssClass = "preferences_small_input",
-                                  ID = "new_password_enter",
-                                  TextMode = TextBoxMode.Password
-                              };
-            passwordBox.Attributes.Add("onfocus", "textbox_enter('new_password_enter', 'preferences_small_input_focused')");
-            passwordBox.Attributes.Add("onblur", "textbox_leave('new_password_enter', 'preferences_small_input')");
-            MainPlaceHolder.Controls.Add(passwordBox);
-
-            LiteralControl literal3 = new LiteralControl("</td><td>&nbsp;</td></tr>" + Environment.NewLine + "<tr><td>&nbsp;</td><td><label for=\"new_password_confirm\">Confirm New Password:</label></td><td>");
-            MainPlaceHolder.Controls.Add(literal3);
-
-            confirmPasswordBox = new TextBox
-                                     {
-                                         CssClass = "preferences_small_input",
-                                         ID = "new_password_confirm",
-                                         TextMode = TextBoxMode.Password
-                                     };
-            confirmPasswordBox.Attributes.Add("onfocus", "textbox_enter('new_password_confirm', 'preferences_small_input_focused')");
-            confirmPasswordBox.Attributes.Add("onblur", "textbox_leave('new_password_confirm', 'preferences_small_input')");
-            MainPlaceHolder.Controls.Add(confirmPasswordBox);
-
-            literalBuilder.AppendLine("   </td><td>&nbsp;</td></tr>");
-            literalBuilder.AppendLine("  <tr align=\"right\" valign=\"bottom\" height=\"50px\" ><td colspan=\"3\">");
+            Output.WriteLine("<table width=\"700px\">");
+            Output.WriteLine("  <tr>");
+            Output.WriteLine("    <td width=\"180px\">&nbsp;</td>");
+            Output.WriteLine("    <td width=\"200px\"><label for=\"current_password_enter\">Existing Password:</label></td>");
+            Output.WriteLine("    <td width=\"180px\"><input type=\"password\" id=\"current_password_enter\" name=\"current_password_enter\" class=\"preferences_small_input sbk_Focusable\" /></td>");
+            Output.WriteLine("    <td width=\"140px\">&nbsp;</td>");
+            Output.WriteLine("  </tr>");
+            Output.WriteLine("  <tr>");
+            Output.WriteLine("    <td>&nbsp;</td>");
+            Output.WriteLine("    <td><label for=\"new_password_enter\">New Password:</label></td>");
+            Output.WriteLine("    <td><input type=\"password\" id=\"new_password_enter\" name=\"new_password_enter\" class=\"preferences_small_input sbk_Focusable\" /></td>");
+            Output.WriteLine("    <td>&nbsp;</td>");
+            Output.WriteLine("  </tr>");
+            Output.WriteLine("  <tr>");
+            Output.WriteLine("    <td>&nbsp;</td>");
+            Output.WriteLine("    <td><label for=\"new_password_confirm\">Confirm New Password:</label></td>");
+            Output.WriteLine("    <td><input type=\"password\" id=\"new_password_confirm\" name=\"new_password_confirm\" class=\"preferences_small_input sbk_Focusable\" /></td>");
+            Output.WriteLine("    <td>&nbsp;</td>");
+            Output.WriteLine("  </tr>");
+            Output.WriteLine("  <tr align=\"right\" valign=\"bottom\" height=\"50px\">");
+            Output.WriteLine("    <td colspan=\"3\">");
             RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Log_Out;
-            literalBuilder.AppendLine("    <a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "design/skins/" + RequestSpecificValues.Current_Mode.Base_Skin_Or_Skin + "/buttons/cancel_button.gif\" border=\"0\" alt=\"CANCEL\" /></a> &nbsp; ");
+            Output.WriteLine("      <a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "design/skins/" + RequestSpecificValues.Current_Mode.Base_Skin_Or_Skin + "/buttons/cancel_button.gif\" border=\"0\" alt=\"CANCEL\" /></a> &nbsp; ");
             RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.New_Password;
-
-            LiteralControl literal4 = new LiteralControl(literalBuilder.ToString());
-            MainPlaceHolder.Controls.Add(literal4);
-
-            // Add the submit button
-            ImageButton submitButton = new ImageButton
-                                           {
-                                               ImageUrl = RequestSpecificValues.Current_Mode.Base_URL + "design/skins/" + RequestSpecificValues.Current_Mode.Base_Skin_Or_Skin + "/buttons/save_button.gif",
-                                               AlternateText = "SAVE"
-                                           };
-            submitButton.Click += submitButton_Click;
-            MainPlaceHolder.Controls.Add(submitButton);
-
-            LiteralControl literal5 = new LiteralControl("</td></tr></table></blockquote></div>\n\n<!-- Focus on current password text box -->\n<script type=\"text/javascript\">focus_element('current_password_enter');</script>\n\n");
-            MainPlaceHolder.Controls.Add(literal5);
-
-        }
-
-        void submitButton_Click(object sender, ImageClickEventArgs e)
-        {
-            
+            Output.WriteLine("      <button type=\"submit\" class=\"sbkMySobek_BigButton\"> SAVE </button>");
+            Output.WriteLine("    </td>");
+            Output.WriteLine("  </tr>");
+            Output.WriteLine("</table>");
+            Output.WriteLine("</blockquote>");
+            Output.WriteLine("</div>");
+            Output.WriteLine();
+            Output.WriteLine("<!-- Focus on current password text box -->");
+            Output.WriteLine("<script type=\"text/javascript\">focus_element('current_password_enter');</script>");
         }
     }
 }
-
-
-

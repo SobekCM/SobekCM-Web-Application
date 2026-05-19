@@ -305,7 +305,8 @@ namespace SobekCM.Library.MainWriters
             catch (Exception ee)
             {
                 // Send to the dashboard
-                if ((HttpContext.Current.Request.UserHostAddress == "127.0.0.1") || (HttpContext.Current.Request.UserHostAddress == HttpContext.Current.Request.ServerVariables["LOCAL_ADDR"]) || (HttpContext.Current.Request.Url.ToString().IndexOf("localhost") >= 0))
+                string remoteAddr = HttpContext.Current.Request.UserHostAddress ?? "";
+                if (remoteAddr == "127.0.0.1" || remoteAddr == "::1" || HttpContext.Current.Request.Url.ToString().IndexOf("localhost") >= 0)
                 {
                     RequestSpecificValues.Tracer.Add_Trace("Html_MainWriter.Constructor", "Exception caught!", Custom_Trace_Type_Enum.Error);
                     RequestSpecificValues.Tracer.Add_Trace("Html_MainWriter.Constructor", ee.Message, Custom_Trace_Type_Enum.Error);

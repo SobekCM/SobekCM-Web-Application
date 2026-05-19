@@ -138,7 +138,8 @@ namespace SobekCM
                 tracer.Add_Trace("SobekCM_Page_Globals.Constructor", ee.StackTrace);
 
 				// Send to the dashboard
-				if ((HttpContext.Current.Request.UserHostAddress == "127.0.0.1") || (HttpContext.Current.Request.UserHostAddress == HttpContext.Current.Request.ServerVariables["LOCAL_ADDR"]) || (HttpContext.Current.Request.Url.ToString().IndexOf("localhost") >= 0))
+				string remoteAddr = HttpContext.Current.Request.UserHostAddress ?? "";
+				if (remoteAddr == "127.0.0.1" || remoteAddr == "::1" || HttpContext.Current.Request.Url.ToString().IndexOf("localhost") >= 0)
 				{
 					// Create an error message 
 					string errorMessage = "Error caught while validating application state";
@@ -638,7 +639,9 @@ namespace SobekCM
 				// If this is a responce from Shibboleth, get the user information and register them if necessary
 			    if ((UI_ApplicationCache_Gateway.Configuration.Authentication.Shibboleth != null ) && (UI_ApplicationCache_Gateway.Configuration.Authentication.Shibboleth.Enabled))
 			    {
-			        string shibboleth_id = HttpContext.Current.Request.ServerVariables[UI_ApplicationCache_Gateway.Configuration.Authentication.Shibboleth.UserIdentityAttribute];
+			        string shibboleth_id = null;
+			        try { shibboleth_id = HttpContext.Current.Request.ServerVariables[UI_ApplicationCache_Gateway.Configuration.Authentication.Shibboleth.UserIdentityAttribute]; }
+			        catch (InvalidOperationException) { /* IServerVariablesFeature unavailable (Kestrel); Shibboleth via server variables requires IIS hosting */ }
 			        if (shibboleth_id == null)
 			        {
 			            if (UI_ApplicationCache_Gateway.Configuration.Authentication.Shibboleth.Debug)

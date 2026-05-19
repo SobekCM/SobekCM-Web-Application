@@ -92,6 +92,8 @@ namespace SobekCM
 			        UI_ApplicationCache_Gateway.Settings.Servers.Base_URL = base_url;
 
                     string baseDir = AppDomain.CurrentDomain.BaseDirectory;
+					int bin_index = baseDir.IndexOf("\\bin\\");
+					string mainDir = baseDir.Substring(0, bin_index+1);
                     UI_ApplicationCache_Gateway.Settings.Servers.Base_Directory = baseDir;
                     UI_ApplicationCache_Gateway.Settings.Servers.In_Process_Submission_Location = Path.Combine(baseDir, "mySobek", "InProcess");
 			    }
@@ -102,7 +104,7 @@ namespace SobekCM
 			    {
                     string baseDir = AppDomain.CurrentDomain.BaseDirectory;
                     UI_ApplicationCache_Gateway.Settings.Servers.Base_Directory = baseDir;
-
+					tracer.Add_Trace($"SobekCM_Page_Globals.Constructor", "No base directory set, so seting to {baseDir}");
                     Engine_Database.Set_Setting("Application Server Network", baseDir);
 			    }
 
@@ -122,7 +124,7 @@ namespace SobekCM
                 // (TEMPORARY FOR UF)
 			    if (( !String.IsNullOrEmpty(UI_ApplicationCache_Gateway.Settings.System.System_Abbreviation)) && ( UI_ApplicationCache_Gateway.Settings.System.System_Abbreviation.IndexOf("UFDC") == 0))
 			    {
-                    string baseDir = System.Web.HttpContext.Current.Server.MapPath("~");
+                    string baseDir = AppDomain.CurrentDomain.BaseDirectory;
                     UI_ApplicationCache_Gateway.Settings.Servers.Base_Directory = baseDir;
 			    }
 

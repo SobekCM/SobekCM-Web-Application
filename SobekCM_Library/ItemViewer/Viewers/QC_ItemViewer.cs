@@ -2390,12 +2390,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
             // do nothing
         }
 
-        /// <summary> Allows controls to be added directory to a place holder, rather than just writing to the output HTML stream </summary>
-        /// <param name="MainPlaceHolder"> Main place holder ( &quot;mainPlaceHolder&quot; ) in the itemNavForm form into which the bulk of the item viewer's output is displayed</param>
-        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        /// <remarks> This method does nothing, since nothing is added to the place holder as a control for this item viewer </remarks>
-
-
         #region Methods and properties to allow the paging to work correctly
 
         /// <summary> Gets the flag that indicates if the page selector should be shown </summary>

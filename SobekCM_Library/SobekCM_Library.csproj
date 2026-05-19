@@ -10,7 +10,7 @@
 
   <ItemGroup>
     <!-- ClosedXML has NuGet support on .NET 6+ -->
-    <PackageReference Include="ClosedXML" Version="0.102.2" />
+    <PackageReference Include="ClosedXML" Version="0.105.0" />
     <!-- GemBox.Spreadsheet is commercially licensed; verify version compatibility -->
     <PackageReference Include="GemBox.Spreadsheet" Version="48.0.1568" />
     <PackageReference Include="System.Drawing.Common" Version="9.0.3" Condition="'$(OS)' == 'Windows_NT'" />

@@ -91,7 +91,7 @@ namespace SobekCM
 			        UI_ApplicationCache_Gateway.Settings.Servers.System_Base_URL = base_url;
 			        UI_ApplicationCache_Gateway.Settings.Servers.Base_URL = base_url;
 
-                    string baseDir = System.Web.HttpContext.Current.Server.MapPath("~");
+                    string baseDir = AppDomain.CurrentDomain.BaseDirectory;
                     UI_ApplicationCache_Gateway.Settings.Servers.Base_Directory = baseDir;
                     UI_ApplicationCache_Gateway.Settings.Servers.In_Process_Submission_Location = Path.Combine(baseDir, "mySobek", "InProcess");
 			    }
@@ -100,9 +100,7 @@ namespace SobekCM
                 // Ensure the settings base directory is set correctly 
 			    if ( String.IsNullOrEmpty(UI_ApplicationCache_Gateway.Settings.Servers.Base_Directory))
 			    {
-                    string baseDir = System.Web.HttpContext.Current.Server.MapPath("~");
-			        if ((baseDir.Length > 0) && (baseDir[baseDir.Length - 1] != '\\'))
-			            baseDir = baseDir + "\\";
+                    string baseDir = AppDomain.CurrentDomain.BaseDirectory;
                     UI_ApplicationCache_Gateway.Settings.Servers.Base_Directory = baseDir;
 
                     Engine_Database.Set_Setting("Application Server Network", baseDir);

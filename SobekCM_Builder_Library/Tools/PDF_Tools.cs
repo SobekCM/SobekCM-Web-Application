@@ -4,7 +4,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
-using iTextSharp.text.pdf;
+using iText.Kernel.Pdf;
 
 #endregion
 
@@ -75,19 +75,17 @@ namespace SobekCM.Builder_Library.Tools
         public static bool Extract_Text(string PDF_In_Name, string Text_Out_Name)
         {
             StreamWriter outFile = null;
-            PdfReader reader = null;
+            PdfDocument pdfDoc = null;
             try
             {
-                // Create a reader for the given PDF file
-                reader = new PdfReader(PDF_In_Name);
-                //outFile = File.CreateText(outFileName);
                 outFile = new StreamWriter(Text_Out_Name, false, Encoding.UTF8);
+                pdfDoc = new PdfDocument(new PdfReader(PDF_In_Name));
 
-                for (int page = 1; page <= reader.NumberOfPages; page++)
+                for (int page = 1; page <= pdfDoc.GetNumberOfPages(); page++)
                 {
                     try
                     {
-                        string text_to_add = ExtractTextFromPDFBytes(reader.GetPageContent(page));
+                        string text_to_add = ExtractTextFromPDFBytes(pdfDoc.GetPage(page).GetContentBytes());
 
                         if (text_to_add.Trim().Length > 0)
                         {
@@ -104,14 +102,14 @@ namespace SobekCM.Builder_Library.Tools
                 }
                 return true;
             }
-            catch 
+            catch
             {
-                
+
             }
             finally
             {
                 if (outFile != null) outFile.Close();
-                if ( reader != null ) reader.Close();
+                if (pdfDoc != null) pdfDoc.Close();
             }
 
             return false;
@@ -365,7 +363,7 @@ namespace SobekCM.Builder_Library.Tools
                         inTextObject = true;
                     }
                 }
-                return resultString.ToString().Replace("Õ", "'").Replace("Ò", "\"").Replace("Ó", "\"").Replace("¥", "•");
+                return resultString.ToString().Replace("ï¿½", "'").Replace("ï¿½", "\"").Replace("ï¿½", "\"").Replace("ï¿½", "ï¿½");
             }
             catch
             {
@@ -424,16 +422,13 @@ namespace SobekCM.Builder_Library.Tools
         /// <returns> The number of pages within the PDF </returns>
         public static int Page_Count(string Path)
         {
-            PdfReader pdf_file = null;
+            PdfDocument pdfDoc = null;
             int page_count;
 
             try
             {
-                // open the file
-                pdf_file = new PdfReader(Path);
-
-                // read it's page count
-                page_count = pdf_file.NumberOfPages;
+                pdfDoc = new PdfDocument(new PdfReader(Path));
+                page_count = pdfDoc.GetNumberOfPages();
             }
             catch
             {
@@ -441,14 +436,10 @@ namespace SobekCM.Builder_Library.Tools
             }
             finally
             {
-                // close the file.
-                if (pdf_file != null)
-                {
-                    pdf_file.Close();
-                }
+                if (pdfDoc != null)
+                    pdfDoc.Close();
             }
-            
-            // return the page count
+
             return page_count;
         }
 

@@ -10,10 +10,7 @@
 
   <ItemGroup>
     <PackageReference Include="System.Drawing.Common" Version="9.0.3" Condition="'$(OS)' == 'Windows_NT'" />
-    <!-- iTextSharp has no drop-in NuGet for .NET 10; keep DLL until migrated to iText7 -->
-    <Reference Include="itextsharp">
-      <HintPath>..\DLLs\itextsharp.dll</HintPath>
-    </Reference>
+    <PackageReference Include="itext7" Version="8.0.5" />
     <!-- UseOffice: commercial library, no NuGet available; keep DLL reference -->
     <Reference Include="UseOffice">
       <HintPath>..\DLLs\UseOffice.dll</HintPath>

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
+using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.AspNetCore.SystemWebAdapters;
 using Microsoft.Extensions.DependencyInjection;
 using SobekCM.Core.Client;
@@ -42,7 +43,8 @@ namespace SobekCM
             builder.Services.AddDistributedMemoryCache();
             builder.Services.AddSession(options =>
             {
-                options.IdleTimeout = TimeSpan.FromMinutes(30);
+                options.IdleTimeout = TimeSpan.FromMinutes(
+                    builder.Configuration.GetValue<int>("Session:IdleTimeoutMinutes", 90));
                 options.Cookie.HttpOnly = true;
                 options.Cookie.IsEssential = true;
             });
@@ -57,7 +59,17 @@ namespace SobekCM
             app.UseSession();
 
             // Static files (CSS, JS, images) served from wwwroot
-            app.UseStaticFiles();
+            var contentTypeProvider = new FileExtensionContentTypeProvider();
+            contentTypeProvider.Mappings[".glsl"] = "application/octet-stream";
+            app.UseStaticFiles(new StaticFileOptions
+            {
+                ContentTypeProvider = contentTypeProvider,
+                OnPrepareResponse = ctx =>
+                {
+                    // 10-day client cache, matching the previous IIS clientCache setting
+                    ctx.Context.Response.Headers.CacheControl = "public,max-age=864000";
+                }
+            });
 
             // Ensure base URL is populated before any request processing
             app.Use(async (context, next) =>

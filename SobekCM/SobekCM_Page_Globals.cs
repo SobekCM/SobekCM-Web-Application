@@ -197,7 +197,7 @@ namespace SobekCM
 
                 currentMode.Base_URL=base_url;
 			    currentMode.isPostBack = isPostBack;
-                currentMode.Browser_Type = request.Browser.Type.ToUpper();
+                currentMode.Browser_Type = get_browser_type(request.UserAgent);
 				currentMode.Set_Robot_Flag(request.UserAgent, request.UserHostAddress);
 			}
 			catch  ( Exception ee )
@@ -1410,7 +1410,20 @@ namespace SobekCM
 
 		#endregion
 
-        #region Helper method to find this server's IP address, if necessary
+        #region Helper methods
+
+        private static string get_browser_type(string userAgent)
+        {
+            if (string.IsNullOrEmpty(userAgent)) return "UNKNOWN";
+            string ua = userAgent.ToUpper();
+            // Order matters: Edge/IE must precede Chrome/Safari which share UA tokens
+            if (ua.Contains("TRIDENT") || ua.Contains("MSIE")) return "IE";
+            if (ua.Contains("EDG/") || ua.Contains("EDGHTML")) return "EDGE";
+            if (ua.Contains("FIREFOX")) return "FIREFOX";
+            if (ua.Contains("CHROME")) return "CHROME";
+            if (ua.Contains("SAFARI")) return "SAFARI";
+            return "UNKNOWN";
+        }
 
         private string get_local_ip()
         {

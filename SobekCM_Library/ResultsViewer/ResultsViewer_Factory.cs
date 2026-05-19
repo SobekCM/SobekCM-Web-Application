@@ -65,10 +65,6 @@ namespace SobekCM.Library.ResultsViewer
                         returnValue = new Brief_ResultsViewer();
                         break;
 
-                    case "SobekCM.Library.ResultsViewer.Export_ResultsViewer":
-                        returnValue = new Export_ResultsViewer();
-                        break;
-
                     case "SobekCM.Library.ResultsViewer.Google_Map_ResultsViewer":
                         returnValue = new Google_Map_ResultsViewer();
                         break;

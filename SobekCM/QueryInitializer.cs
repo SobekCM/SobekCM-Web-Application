@@ -1,14 +1,13 @@
 ﻿#region Using directives
 
-using System;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.IO;
-using System.Linq;
-using System.Net;
-using System.Net.Sockets;
-using System.Text;
-using System.Web;
+using DocumentFormat.OpenXml.EMMA;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Extensions;
+using Microsoft.AspNetCore.StaticFiles;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.ApplicationState;
 using SobekCM.Core.Client;
@@ -34,15 +33,25 @@ using SobekCM.Library;
 using SobekCM.Library.Database;
 using SobekCM.Library.MainWriters;
 using SobekCM.Library.UI;
+using SobekCM.QueryInitializerHelpers;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Divisions;
 using SobekCM.Tools;
+using System;
+using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.IO;
+using System.Linq;
+using System.Net;
+using System.Net.Sockets;
+using System.Text;
+using System.Threading.Tasks;
 
 #endregion
 
 namespace SobekCM
 {
-	public class SobekCM_Page_Globals
+	public class QueryInitializer
 	{
 		#region Private class members
 
@@ -60,170 +69,65 @@ namespace SobekCM
 		public Search_Results_Statistics searchResultStatistics;
 		public SobekCM_SiteMap siteMap;
 		public HTML_Based_Content staticWebContent;
+		public RequestCache requestSpecificValues;
 
-		public Custom_Tracer tracer;
+
+        public Custom_Tracer tracer;
+		public HttpContext context;
 
 	    #endregion
 
 		#region Constructor for this class
 
-		public SobekCM_Page_Globals(bool isPostBack, string page_name)
+		public QueryInitializer(HttpContext context, string page_name)
 		{
-			// Pull out the http request
-			HttpRequest request = HttpContext.Current.Request;
+			requestSpecificValues = new RequestCache(context);
 
-			// Get the base url
-			string base_url = request.Url.AbsoluteUri.ToLower().Replace("sobekcm.aspx", "");
-			if (base_url.IndexOf("?") > 0)
-				base_url = base_url.Substring(0, base_url.IndexOf("?"));
-            
+			context.Items.Add(RequestCache_Keys.PageName, page_name);
 
-			try
+			// Start the tracter
+            tracer = new Custom_Tracer();
+            tracer.Add_Trace("QueryInitializer.Constructor", "Starting");
+
+            // Get the user IP address
+            new UserIpInitializer().Initialize(context, requestSpecificValues, tracer);			
+
+			// Add the request url and base url to the request cache
+            new UrlInitializer().Initialize(context, requestSpecificValues, tracer);     
+			
+			// Setup the db connection, if not already setup, from the sobekcm.config file
+			var result = new DatabaseConnectionInitializer().Initialize(context, requestSpecificValues, tracer);
+
+			if (!result.Success) 
 			{
-				tracer = new Custom_Tracer();
-				tracer.Add_Trace("SobekCM_Page_Globals.Constructor", "Starting");
-			    SobekCM_Database.Connection_String = UI_ApplicationCache_Gateway.Settings.Database_Connection.Connection_String;
-
-                // If this is running on localhost, and in debug, set base directory to this one
-#if DEBUG
-			    if (base_url.IndexOf("localhost:") > 0)
-			    {
-			        UI_ApplicationCache_Gateway.Settings.Servers.System_Base_URL = base_url;
-			        UI_ApplicationCache_Gateway.Settings.Servers.Base_URL = base_url;
-
-                    string baseDir = AppDomain.CurrentDomain.BaseDirectory;
-					int bin_index = baseDir.IndexOf("\\bin\\");
-					string mainDir = baseDir.Substring(0, bin_index+1);
-                    UI_ApplicationCache_Gateway.Settings.Servers.Base_Directory = baseDir;
-                    UI_ApplicationCache_Gateway.Settings.Servers.In_Process_Submission_Location = Path.Combine(baseDir, "mySobek", "InProcess");
-			    }
-#endif
-
-                // Ensure the settings base directory is set correctly 
-			    if ( String.IsNullOrEmpty(UI_ApplicationCache_Gateway.Settings.Servers.Base_Directory))
-			    {
-                    string baseDir = AppDomain.CurrentDomain.BaseDirectory;
-                    UI_ApplicationCache_Gateway.Settings.Servers.Base_Directory = baseDir;
-					tracer.Add_Trace($"SobekCM_Page_Globals.Constructor", "No base directory set, so seting to {baseDir}");
-                    Engine_Database.Set_Setting("Application Server Network", baseDir);
-			    }
-
-                // Ensure the web server IP address is set correctly
-			    if (String.IsNullOrEmpty(UI_ApplicationCache_Gateway.Settings.Servers.SobekCM_Web_Server_IP))
-			    {
-			        string ip = get_local_ip();
-			        if (ip.Length > 0)
-			        {
-                        UI_ApplicationCache_Gateway.Settings.Servers.SobekCM_Web_Server_IP = ip;
-
-                        Engine_Database.Set_Setting("SobekCM Web Server IP", ip);
-			        }
-			    }
-
-
-                // (TEMPORARY FOR UF)
-			    if (( !String.IsNullOrEmpty(UI_ApplicationCache_Gateway.Settings.System.System_Abbreviation)) && ( UI_ApplicationCache_Gateway.Settings.System.System_Abbreviation.IndexOf("UFDC") == 0))
-			    {
-                    string baseDir = AppDomain.CurrentDomain.BaseDirectory;
-                    UI_ApplicationCache_Gateway.Settings.Servers.Base_Directory = baseDir;
-			    }
-
-				// Check that something is saved for the original requested URL (may not exist if not forwarded)
-				if (!HttpContext.Current.Items.Contains("Original_URL"))
-					HttpContext.Current.Items["Original_URL"] = request.Url.ToString();
-			}
-			catch (Exception ee)
-			{
-                tracer.Add_Trace("SobekCM_Page_Globals.Constructor", "Exception caught around line 129: " + ee.Message);
-                tracer.Add_Trace("SobekCM_Page_Globals.Constructor", ee.StackTrace);
-
-				// Send to the dashboard
-				string remoteAddr = HttpContext.Current.Request.UserHostAddress ?? "";
-				if (remoteAddr == "127.0.0.1" || remoteAddr == "::1" || HttpContext.Current.Request.Url.ToString().IndexOf("localhost") >= 0)
-				{
-					// Create an error message 
-					string errorMessage = "Error caught while validating application state";
-                    if ((UI_ApplicationCache_Gateway.Settings.Database_Connection == null) || (String.IsNullOrEmpty(UI_ApplicationCache_Gateway.Settings.Database_Connection.Connection_String)))
-					{
-						errorMessage = "No database connection string found!";
-						string configFileLocation = AppDomain.CurrentDomain.BaseDirectory + "config/sobekcm.xml";
-						try
-						{
-							if (!File.Exists(configFileLocation))
-							{
-								errorMessage = "Missing config/sobekcm.xml configuration file on the web server.<br />Ensure the configuration file 'sobekcm.xml' exists in a 'config' subfolder directly under the web application.<br />Example configuration is:" +
-								               "<div style=\"background-color: #bbbbbb; margin-left: 30px; margin-top:10px; padding: 3px;\">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;yes&quot;  ?&gt;<br /> &lt;configuration&gt;<br /> &nbsp; &nbsp &lt;connection_string type=&quot;MSSQL&quot;&gt;data source=localhost\\instance;initial catalog=SobekCM;integrated security=Yes;&lt;/connection_string&gt;<br /> &nbsp; &nbsp &lt;error_emails&gt;marsull@uflib.ufl.edu&lt;/error_emails&gt;<br /> &nbsp; &nbsp &lt;error_page&gt;http://ufdc.ufl.edu/error.html&lt;/error_page&gt;<br />&lt;/configuration&gt;</div>";
-							}
-						}
-						catch
-						{
-							errorMessage = "No database connection string found.<br />Likely an error reading the configuration file due to permissions on the web server.<br />Ensure the configuration file 'sobekcm.xml' exists in a 'config' subfolder directly under the web application.<br />Example configuration is:" +
-							               "<div style=\"background-color: #bbbbbb; margin-left: 30px; margin-top:10px; padding: 3px;\">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;yes&quot;  ?&gt;<br /> &lt;configuration&gt;<br /> &nbsp; &nbsp &lt;connection_string type=&quot;MSSQL&quot;&gt;data source=localhost\\instance;initial catalog=SobekCM;integrated security=Yes;&lt;/connection_string&gt;<br /> &nbsp; &nbsp &lt;error_emails&gt;marsull@uflib.ufl.edu&lt;/error_emails&gt;<br /> &nbsp; &nbsp &lt;error_page&gt;http://ufdc.ufl.edu/error.html&lt;/error_page&gt;<br />&lt;/configuration&gt;</div>";
-						}
-					}
-					else
-					{
-						if (ee.Message.IndexOf("The EXECUTE permission") >= 0)
-						{
-							errorMessage = "Permissions error while connecting to the database and pulling necessary data.<br /><br />Confirm the following:<ul><li>IIS is configured correctly to use anonymous authentication</li><li>Anonymous user (or service account) is part of the sobek_users role in the database.</li></ul>";
-						}
-						else
-						{
-							errorMessage = "Error connecting to the database and pulling necessary data.<br /><br />Confirm the following:<ul><li>Database connection string is correct ( " + UI_ApplicationCache_Gateway.Settings.Database_Connection.Connection_String + ")</li><li>IIS is configured correctly to use anonymous authentication</li><li>Anonymous user (or service account) is part of the sobek_users role in the database.</li></ul>";
-						}
-					}
-					// Wrap this into the SobekCM Exception
-					SobekCM_Traced_Exception newException = new SobekCM_Traced_Exception(errorMessage, ee, tracer);
-
-					// Save this to the session state, and then forward to the dashboard
-					HttpContext.Current.Session["Last_Exception"] = newException;
-					HttpContext.Current.Response.Redirect("dashboard.aspx", false);
-					HttpContext.Current.ApplicationInstance.CompleteRequest();
-					return;
-				}
-				else
-				{
-					throw ee;
-				}
-			}
-
-            tracer.Add_Trace("SobekCM_Page_Globals.Constructor", "About to parse the URL for the navigation object");
-
-			// Analyze the response and get the mode
-			try
-			{
-			    currentMode = new Navigation_Object();
-			    NameValueCollection queryString = request.QueryString;
-
-			    QueryString_Analyzer.Parse_Query(queryString, currentMode, base_url, request.UserLanguages, UI_ApplicationCache_Gateway.Aggregations, UI_ApplicationCache_Gateway.Collection_Aliases, UI_ApplicationCache_Gateway.URL_Portals, UI_ApplicationCache_Gateway.WebContent_Hierarchy, UI_ApplicationCache_Gateway.Settings.System.Custom_BibID_RegEx, tracer);
-
-                currentMode.Base_URL=base_url;
-			    currentMode.isPostBack = isPostBack;
-                currentMode.Browser_Type = get_browser_type(request.UserAgent);
-				currentMode.Set_Robot_Flag(request.UserAgent, request.UserHostAddress);
-			}
-			catch  ( Exception ee )
-			{
-                tracer.Add_Trace("SobekCM_Page_Globals.Constructor", "Exception caught around line 198: " + ee.Message);
-                tracer.Add_Trace("SobekCM_Page_Globals.Constructor", ee.StackTrace);
-
-				HttpContext.Current.Response.StatusCode = 301;
-				HttpContext.Current.Response.AddHeader("Location", base_url);
-				HttpContext.Current.ApplicationInstance.CompleteRequest();
+				handle_error(result, context);
 				return;
 			}
 
-            tracer.Add_Trace("SobekCM_Page_Globals.Constructor", "Navigation parse completed");
+            // Determine the base directory and related information (including IP) for the server 
+            // Special code for DEBUG mode
+            result = new ServerDirectoryInitializer().Initialize(context, requestSpecificValues, tracer);
 
-			// If this was for HTML, but was at the data, just convert to XML 
-			if ((page_name == "SOBEKCM_DATA") && (currentMode.Writer_Type != Writer_Type_Enum.XML) && (currentMode.Writer_Type != Writer_Type_Enum.JSON) && (currentMode.Writer_Type != Writer_Type_Enum.DataSet) && (currentMode.Writer_Type != Writer_Type_Enum.Data_Provider))
-				currentMode.Writer_Type = Writer_Type_Enum.XML;
+            if (!result.Success)
+            {
+                handle_error(result, context);
+                return;
+            }
 
+			// Parse the URL for the the navigation requested and create the current mode object
+			result = new NavigationObjectInitializer().Initialize(context, requestSpecificValues, tracer);
 
-			tracer.Add_Trace("SobekCM_Page_Globals.Constructor", "Navigation Object created from URI query string");
+            if (!result.Success)
+            {
+                handle_error(result, context);
+                return;
+            }
+
+			tracer.Add_Trace("QueryInitializer.Constructor", "Navigation Object created from URI query string");
 
 			try
 			{
+				currentMode = requestSpecificValues.Current_Mode;
 				// If this was an error, redirect now
 				if (currentMode.Mode == Display_Mode_Enum.Error)
 				{
@@ -234,13 +138,15 @@ namespace SobekCM
 				if (!currentMode.Is_Robot)
 				{
 					// Determine which IP Ranges this IP address belongs to, if not already determined.
-					if (HttpContext.Current.Session["IP_Range_Membership"] == null)
+					if (context.Session.GetString(SessionCache_Keys.IpRangeMembership) == null)
 					{
-					    string userAddress = request.UserHostAddress;
+                        string userAddress = context.Items[RequestCache_Keys.UserIP].ToString();
+
 #if DEBUG
                         // If in DEBUG mode, and it is the loopback IP address, use a local IP
 					    if (userAddress == "::1")
 					    {
+
                             try
                             {
                                 var host = Dns.GetHostEntry(Dns.GetHostName());
@@ -258,7 +164,7 @@ namespace SobekCM
 					    }
 #endif
                         int ip_mask = UI_ApplicationCache_Gateway.IP_Restrictions.Restrictive_Range_Membership(userAddress);
-						HttpContext.Current.Session["IP_Range_Membership"] = ip_mask;
+						context.Session.SetString(SessionCache_Keys.IpRangeMembership, ip_mask.ToString());
 					}
 
 					// Set the Session TOC, if provided
@@ -266,32 +172,32 @@ namespace SobekCM
 					{
 						if (currentMode.TOC_Display == TOC_Display_Type_Enum.Hide)
 						{
-							HttpContext.Current.Session["Show TOC"] = false;
+							context.Items["Show TOC"] = false;
 						}
 						else
 						{
-							HttpContext.Current.Session["Show TOC"] = true;
+							context.Items["Show TOC"] = true;
 						}
 					}
 
 					// Only do any of the user stuff if this is from the main SobekCM page
 					if (page_name == "SOBEKCM")
 					{
-						tracer.Add_Trace("SobekCM_Page_Globals.Constructor", "Checking for logged on user by cookie or session");
-						perform_user_checks(isPostBack);
+						tracer.Add_Trace("QueryInitializer.Constructor", "Checking for logged on user by cookie or session");
+						perform_user_checks(requestSpecificValues.Current_Mode.isPostBack);
 					}
 
 					// If this is a system admin, they can run as a different user actually
-					if ((currentUser != null) && (currentUser.Is_System_Admin) && (request.QueryString["userid"] != null))
+					if ((currentUser != null) && (currentUser.Is_System_Admin) && (requestSpecificValues.QueryString["userid"] != null))
 					{
 						try
 						{
-							int userid = Convert.ToInt32(request.QueryString["userid"]);
+							int userid = Convert.ToInt32(requestSpecificValues.QueryString["userid"]);
 							User_Object mirroredUser = Engine_Database.Get_User(userid, tracer);
 							if (mirroredUser != null)
 							{
 								// Replace the user information in the session state
-								HttpContext.Current.Session["user"] = mirroredUser;
+								context.Items["user"] = mirroredUser;
 								currentUser = mirroredUser;
 							}
 						}
@@ -316,7 +222,7 @@ namespace SobekCM
 				}
 				else // THIS IS A ROBOT REQUEST
 				{
-					Perform_Search_Engine_Robot_Checks(currentMode, request.QueryString);
+					Perform_Search_Engine_Robot_Checks(currentMode, requestSpecificValues.QueryString);
 				}
 
                 // Always pull TOP level collection
@@ -377,11 +283,33 @@ namespace SobekCM
 			}
 		}
 
+		private void handle_error(QueryInitializerHelperResponse response, HttpContext context)
+		{
+			// Get user IP to determine if they should be sent to the dashboard or not
+			string userip = context.Items[RequestCache_Keys.UserIP].ToString();
+
+            // Wrap this into the SobekCM Exception
+            SobekCM_Traced_Exception newException = new SobekCM_Traced_Exception(response.Message, response.InnerException, tracer);
+
+            // Save this to the session state
+            var json = JsonConvert.SerializeObject(newException);
+            context.Session.SetString(SessionCache_Keys.LastException, json);
+
+			// Forward to the dashboard if appropriate
+            if (userip == "127.0.0.1" || userip == "::1" || context.Request.Host.ToString().IndexOf("localhost") >= 0)
+			{
+				context.Response.Redirect("dashboard.aspx", false);
+				return;
+			}
+
+			throw newException;
+		}
+
 		#endregion
 
 		#region Special checks for search engine robot URL behaviors
 
-		private void Perform_Search_Engine_Robot_Checks(Navigation_Object CurrentModeCheck, NameValueCollection QueryString)
+		private void Perform_Search_Engine_Robot_Checks(Navigation_Object CurrentModeCheck, Dictionary<string, string> QueryString)
 		{
 			// Some writers should not be selected yet
 			if ((CurrentModeCheck.Writer_Type != Writer_Type_Enum.HTML) && (CurrentModeCheck.Writer_Type != Writer_Type_Enum.HTML_Echo) && (CurrentModeCheck.Writer_Type != Writer_Type_Enum.OAI))
@@ -598,12 +526,12 @@ namespace SobekCM
 			if ((currentMode == null) || (currentMode.Request_Completed))
 				return;
 
-			tracer.Add_Trace("SobekCM_Page_Globals.Perform_User_Checks", "In user checks portion");
+			tracer.Add_Trace("QueryInitializer.Perform_User_Checks", "In user checks portion");
 
 			// If this is to log out of my sobekcm, clear user id and forward back to sobekcm
 			if ((currentMode.Mode == Display_Mode_Enum.My_Sobek) && (currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Log_Out))
 			{
-				tracer.Add_Trace("SobekCM_Page_Globals.Perform_User_Checks", "User logged out");
+				tracer.Add_Trace("QueryInitializer.Perform_User_Checks", "User logged out");
 
 				// Delete any user cookie
 				HttpCookie userCookie = new HttpCookie("SobekUser");
@@ -646,14 +574,14 @@ namespace SobekCM
 			        {
 			            if (UI_ApplicationCache_Gateway.Configuration.Authentication.Shibboleth.Debug)
 			            {
-                            tracer.Add_Trace("SobekCM_Page_Globals.Constructor", UI_ApplicationCache_Gateway.Configuration.Authentication.Shibboleth.UserIdentityAttribute + " server variable NOT found");
+                            tracer.Add_Trace("QueryInitializer.Constructor", UI_ApplicationCache_Gateway.Configuration.Authentication.Shibboleth.UserIdentityAttribute + " server variable NOT found");
 
 			                // For debugging purposes, if this SHOULD have included SHibboleth information, show in the trace route
 			                if (HttpContext.Current.Request.Url.AbsoluteUri.Contains("shibboleth"))
 			                {
 			                    foreach (string var in HttpContext.Current.Request.ServerVariables)
 			                    {
-			                        tracer.Add_Trace("SobekCM_Page_Globals.Constructor", "Server Variables: " + var + " --> " + HttpContext.Current.Request.ServerVariables[var]);
+			                        tracer.Add_Trace("QueryInitializer.Constructor", "Server Variables: " + var + " --> " + HttpContext.Current.Request.ServerVariables[var]);
 			                    }
 			                }
 			            }
@@ -662,23 +590,23 @@ namespace SobekCM
 			        {
 			            if (UI_ApplicationCache_Gateway.Configuration.Authentication.Shibboleth.Debug)
 			            {
-                            tracer.Add_Trace("SobekCM_Page_Globals.Constructor", UI_ApplicationCache_Gateway.Configuration.Authentication.Shibboleth.UserIdentityAttribute + " server variable found");
+                            tracer.Add_Trace("QueryInitializer.Constructor", UI_ApplicationCache_Gateway.Configuration.Authentication.Shibboleth.UserIdentityAttribute + " server variable found");
 
-                            tracer.Add_Trace("SobekCM_Page_Globals.Constructor", UI_ApplicationCache_Gateway.Configuration.Authentication.Shibboleth.UserIdentityAttribute + " server variable = '" + shibboleth_id + "'");
+                            tracer.Add_Trace("QueryInitializer.Constructor", UI_ApplicationCache_Gateway.Configuration.Authentication.Shibboleth.UserIdentityAttribute + " server variable = '" + shibboleth_id + "'");
 
 			                // For debugging purposes, if this SHOULD have included SHibboleth information, show in the trace route
                             if (HttpContext.Current.Request.Url.AbsoluteUri.Contains("shibboleth"))
                             {
                                 foreach (string var in HttpContext.Current.Request.ServerVariables)
                                 {
-                                    tracer.Add_Trace("SobekCM_Page_Globals.Constructor", "Server Variables: " + var + " --> " + HttpContext.Current.Request.ServerVariables[var]);
+                                    tracer.Add_Trace("QueryInitializer.Constructor", "Server Variables: " + var + " --> " + HttpContext.Current.Request.ServerVariables[var]);
                                 }
                             }
 			            }
 
 			            if (shibboleth_id.Length > 0)
 			            {
-			                tracer.Add_Trace("SobekCM_Page_Globals.Constructor", "Pulling from database by shibboleth id");
+			                tracer.Add_Trace("QueryInitializer.Constructor", "Pulling from database by shibboleth id");
 
 			                User_Object possible_user_by_shibboleth_id = Engine_Database.Get_User(shibboleth_id, tracer);
 
@@ -697,12 +625,12 @@ namespace SobekCM
 
 			                                if (UI_ApplicationCache_Gateway.Configuration.Authentication.Shibboleth.Debug)
 			                                {
-			                                    tracer.Add_Trace("SobekCM_Page_Globals.Constructor", "Server Variable " + var + " ( " + value + " ) would have been mapped to " + User_Object_Attribute_Mapping_Enum_Converter.ToString(mapping));
+			                                    tracer.Add_Trace("QueryInitializer.Constructor", "Server Variable " + var + " ( " + value + " ) would have been mapped to " + User_Object_Attribute_Mapping_Enum_Converter.ToString(mapping));
 			                                }
 			                            }
 			                            else if (UI_ApplicationCache_Gateway.Configuration.Authentication.Shibboleth.Debug)
 			                            {
-			                                tracer.Add_Trace("SobekCM_Page_Globals.Constructor", "Server Variable " + var + " is not mapped to a user attribute");
+			                                tracer.Add_Trace("QueryInitializer.Constructor", "Server Variable " + var + " is not mapped to a user attribute");
 			                            }
 			                        }
 
@@ -713,19 +641,19 @@ namespace SobekCM
 			                            {
 			                                if (UI_ApplicationCache_Gateway.Configuration.Authentication.Shibboleth.Debug)
 			                                {
-			                                    tracer.Add_Trace("SobekCM_Page_Globals.Constructor", "Constant value ( " + constantMapping.Value + " ) would have been set to " + User_Object_Attribute_Mapping_Enum_Converter.ToString(constantMapping.Mapping));
+			                                    tracer.Add_Trace("QueryInitializer.Constructor", "Constant value ( " + constantMapping.Value + " ) would have been set to " + User_Object_Attribute_Mapping_Enum_Converter.ToString(constantMapping.Mapping));
 			                                }
 			                            }
 			                        }
 			                    }
 
-			                    tracer.Add_Trace("SobekCM_Page_Globals.Constructor", "Setting session user from shibboleth id");
+			                    tracer.Add_Trace("QueryInitializer.Constructor", "Setting session user from shibboleth id");
 			                    possible_user_by_shibboleth_id.Authentication_Type = User_Authentication_Type_Enum.Shibboleth;
 			                    HttpContext.Current.Session["user"] = possible_user_by_shibboleth_id;
 			                }
 			                else
 			                {
-			                    tracer.Add_Trace("SobekCM_Page_Globals.Constructor", "User from shibboleth id was null.. adding user");
+			                    tracer.Add_Trace("QueryInitializer.Constructor", "User from shibboleth id was null.. adding user");
 
 			                    // Now build the user object
 			                    User_Object newUser = new User_Object();
@@ -752,12 +680,12 @@ namespace SobekCM
 
 			                            if (UI_ApplicationCache_Gateway.Configuration.Authentication.Shibboleth.Debug)
 			                            {
-			                                tracer.Add_Trace("SobekCM_Page_Globals.Constructor", "Server Variable " + var + " ( " + value + " ) mapped to " + User_Object_Attribute_Mapping_Enum_Converter.ToString(mapping));
+			                                tracer.Add_Trace("QueryInitializer.Constructor", "Server Variable " + var + " ( " + value + " ) mapped to " + User_Object_Attribute_Mapping_Enum_Converter.ToString(mapping));
 			                            }
 			                        }
 			                        else if (UI_ApplicationCache_Gateway.Configuration.Authentication.Shibboleth.Debug)
 			                        {
-			                            tracer.Add_Trace("SobekCM_Page_Globals.Constructor", "Server Variable " + var + " is not mapped to a user attribute");
+			                            tracer.Add_Trace("QueryInitializer.Constructor", "Server Variable " + var + " is not mapped to a user attribute");
 			                        }
 			                    }
 
@@ -770,7 +698,7 @@ namespace SobekCM
 
 			                            if (UI_ApplicationCache_Gateway.Configuration.Authentication.Shibboleth.Debug)
 			                            {
-                                            tracer.Add_Trace("SobekCM_Page_Globals.Constructor", "Setting constant value ( " + constantMapping.Value + " ) to " + User_Object_Attribute_Mapping_Enum_Converter.ToString(constantMapping.Mapping));
+                                            tracer.Add_Trace("QueryInitializer.Constructor", "Setting constant value ( " + constantMapping.Value + " ) to " + User_Object_Attribute_Mapping_Enum_Converter.ToString(constantMapping.Mapping));
 			                            }
 			                        }
 			                    }
@@ -983,7 +911,7 @@ namespace SobekCM
 				// If this is not a post back, log it
 				if (!currentMode.isPostBack)
 				{
-					tracer.Add_Trace("SobekCM_Page_Globals.Constructor.On_Page_Load", String.Empty);
+					tracer.Add_Trace("QueryInitializer.Constructor.On_Page_Load", String.Empty);
 				}
 
 				Set_Main_Writer();
@@ -1012,12 +940,12 @@ namespace SobekCM
 				}
 			}
 
-            // Build the RequestCache object
-		    RequestCache RequestSpecificValues = new RequestCache(currentMode, searchResultStatistics, pagedSearchResults, currentUser, publicFolder, topLevelCollection, tracer);
+      //      // Build the RequestCache object
+		    //RequestCache RequestSpecificValues = new RequestCache(currentMode, searchResultStatistics, pagedSearchResults, currentUser, publicFolder, topLevelCollection, tracer);
 
             if ((currentMode.Writer_Type == Writer_Type_Enum.HTML) || (currentMode.Writer_Type == Writer_Type_Enum.HTML_LoggedIn))
             {
-                mainWriter = new Html_MainWriter(RequestSpecificValues);
+                mainWriter = new Html_MainWriter(c);
             }
 
 			// Load the OAI writer
@@ -1067,7 +995,7 @@ namespace SobekCM
 
 		private void Public_Folder()
 		{
-			tracer.Add_Trace("SobekCM_Page_Globals.Public_Folder", "Retrieving public folder information and browse");
+			tracer.Add_Trace("QueryInitializer.Public_Folder", "Retrieving public folder information and browse");
 
 			SobekCM_Assistant assistant = new SobekCM_Assistant();
 		    int currentPageIndex = currentMode.Page.HasValue ? currentMode.Page.Value : 1;
@@ -1087,7 +1015,7 @@ namespace SobekCM
 
 		private void Simple_Web_Content_Text_Block()
 		{
-			tracer.Add_Trace("SobekCM_Page_Globals.Simple_Web_Content_Text_Block", "Retrieiving Simple Web Content Object");
+			tracer.Add_Trace("QueryInitializer.Simple_Web_Content_Text_Block", "Retrieiving Simple Web Content Object");
 
 			SobekCM_Assistant assistant = new SobekCM_Assistant();
             if (!assistant.Get_Simple_Web_Content_Text(currentMode, UI_ApplicationCache_Gateway.Settings.Servers.Base_Directory, tracer,
@@ -1120,7 +1048,7 @@ namespace SobekCM
 
 		private void Search_Block()
 		{
-			tracer.Add_Trace("SobekCM_Page_Globals.Search_Block", "Retreiving search results");
+			tracer.Add_Trace("QueryInitializer.Search_Block", "Retreiving search results");
 
             // Here just pull the hierarchy object then (later this will be pused out of here)
             Item_Aggregation hierarchyObject = SobekEngineClient.Aggregations.Get_Aggregation(currentMode.Aggregation, currentMode.Language, UI_ApplicationCache_Gateway.Settings.System.Default_UI_Language, tracer);
@@ -1207,7 +1135,7 @@ namespace SobekCM
 		{
 			if ((currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Folder_Management) && (HttpContext.Current.Session["user"] != null) && (!String.IsNullOrEmpty(currentMode.My_Sobek_SubMode)))
 			{
-				tracer.Add_Trace("SobekCM_Page_Globals.MySobekCM_Block", "Retrieiving Browse/Info Object");
+				tracer.Add_Trace("QueryInitializer.MySobekCM_Block", "Retrieiving Browse/Info Object");
 
 				User_Object userObj = (User_Object) HttpContext.Current.Session["user"];
 
@@ -1236,7 +1164,7 @@ namespace SobekCM
 
 		private void Reset_Memory()
 		{
-			tracer.Add_Trace("SobekCM_Page_Globals.Reset_Memory", "Clearing cache and application of data");
+			tracer.Add_Trace("QueryInitializer.Reset_Memory", "Clearing cache and application of data");
 
 			// Clear the cache
 			CachedDataManager.Clear_Cache();
@@ -1414,40 +1342,7 @@ namespace SobekCM
 
         #region Helper methods
 
-        private static string get_browser_type(string userAgent)
-        {
-            if (string.IsNullOrEmpty(userAgent)) return "UNKNOWN";
-            string ua = userAgent.ToUpper();
-            // Order matters: Edge/IE must precede Chrome/Safari which share UA tokens
-            if (ua.Contains("TRIDENT") || ua.Contains("MSIE")) return "IE";
-            if (ua.Contains("EDG/") || ua.Contains("EDGHTML")) return "EDGE";
-            if (ua.Contains("FIREFOX")) return "FIREFOX";
-            if (ua.Contains("CHROME")) return "CHROME";
-            if (ua.Contains("SAFARI")) return "SAFARI";
-            return "UNKNOWN";
-        }
 
-        private string get_local_ip()
-        {
-            try
-            {
-                IPHostEntry host;
-                string localIP = "?";
-                host = Dns.GetHostEntry(Dns.GetHostName());
-                foreach (IPAddress ip in host.AddressList)
-                {
-                    if (ip.AddressFamily == AddressFamily.InterNetwork)
-                    {
-                        localIP = ip.ToString();
-                    }
-                }
-                return localIP;
-            }
-            catch
-            {
-                return String.Empty;
-            }
-        }
 
         #endregion
     }

@@ -47,14 +47,13 @@ namespace SobekCM
                 options.Cookie.IsEssential = true;
             });
 
-            // SystemWebAdapters v2.x: no explicit AddSystemWebAdapters() needed —
-            // the package auto-wires via build targets; HttpContext.Current works via IHttpContextAccessor.
-
-            builder.Services.AddHttpContextAccessor();
+            // Wire System.Web.HttpContext.Current.Session to ASP.NET Core ISession
+        //    builder.Services.AddSystemWebAdapters().AddWrappedAspNetCoreSession();
 
             var app = builder.Build();
 
             app.UseSession();
+        //    app.UseSystemWebAdapters();
 
             // Static files (CSS, JS, images) served from wwwroot
             var contentTypeProvider = new FileExtensionContentTypeProvider();
@@ -165,9 +164,7 @@ namespace SobekCM
             // ── Data/JSON/XML endpoint (replaces SobekCM_data.aspx) ─────────────────
             app.Map("/sobekcm_data.aspx", async (HttpContext context) =>
             {
-                var pageGlobals = new SobekCM_Page_Globals(
-                    string.Equals(context.Request.Method, "POST", StringComparison.OrdinalIgnoreCase),
-                    "SOBEKCM_DATA");
+                var pageGlobals = new QueryInitializer(context, "SOBEKCM_DATA");
                 try
                 {
                     pageGlobals.On_Page_Load();
@@ -193,9 +190,7 @@ namespace SobekCM
             // ── OAI-PMH endpoint (replaces SobekCM_oai.aspx) ────────────────────────
             app.Map("/sobekcm_oai.aspx", async (HttpContext context) =>
             {
-                var pageGlobals = new SobekCM_Page_Globals(
-                    string.Equals(context.Request.Method, "POST", StringComparison.OrdinalIgnoreCase),
-                    "SOBEKCM_OAI");
+                var pageGlobals = new QueryInitializer(context, "SOBEKCM_OAI");
                 if (pageGlobals.currentMode != null)
                     pageGlobals.currentMode.Writer_Type = Writer_Type_Enum.OAI;
 
@@ -224,8 +219,9 @@ namespace SobekCM
             // ── Main SobekCM catch-all (replaces SobekCM.aspx) ──────────────────────
             app.MapFallback(async (HttpContext context) =>
             {
+               //context.Response.Redirect("/sobekcm.aspx" + context.Request.QueryString);
                 bool isPostBack = string.Equals(context.Request.Method, "POST", StringComparison.OrdinalIgnoreCase);
-                var pageGlobals = new SobekCM_Page_Globals(isPostBack, "SOBEKCM");
+                var pageGlobals = new QueryInitializer(context, "SOBEKCM");
 
                 try
                 {

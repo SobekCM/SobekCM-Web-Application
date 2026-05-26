@@ -10,7 +10,16 @@
       "Bash(grep:*)",
       "Bash(rg:*)",
       "Bash(ls:*)",
-      "Bash(cat:*)"
+      "Bash(cat:*)",
+      "PowerShell(Get-ChildItem \"$env:USERPROFILE\\\\.nuget\\\\packages\\\\microsoft.aspnetcore.systemwebadapters\\\\2.3.0\" -Recurse | Select-Object FullName)",
+      "PowerShell(Get-ChildItem \"C:\\\\Users\\\\mark.v.sullivan\\\\.nuget\\\\packages\" | Where-Object { $_.Name -match \"system\" } | Select-Object Name)",
+      "PowerShell(Get-ChildItem \"C:\\\\Users\\\\mark.v.sullivan\\\\.nuget\\\\packages\" | Where-Object { $_.Name -match \"microsoft.aspnetcore\" } | Select-Object Name)",
+      "PowerShell(dotnet list \"C:\\\\GitHub\\\\SobekCM-Web-Application\\\\SobekCM\\\\SobekCM.csproj\" package 2>&1)",
+      "PowerShell(Get-ChildItem \"C:\\\\Program Files \\(x86\\)\\\\Microsoft Visual Studio\\\\Shared\\\\NuGetPackages\" | Where-Object { $_.Name -match \"systemweb\" } | Select-Object Name)",
+      "PowerShell(Get-ChildItem \"C:\\\\Program Files \\(x86\\)\\\\Microsoft Visual Studio\\\\Shared\\\\NuGetPackages\" | Where-Object { $_.Name -match \"microsoft.aspnetcore\" } | Select-Object Name)",
+      "PowerShell(dotnet nuget locals all --list)",
+      "PowerShell(cmd /c \"dir /s /b C:\\\\Users\\\\mark.v.sullivan\\\\.nuget\\\\packages\\\\microsoft.aspnetcore.systemwebadapters\\\\2.3.0\")",
+      "PowerShell(cmd /c \"dir /s /b C:\\\\GitHub\\\\SobekCM-Web-Application\\\\SobekCM\\\\obj\\\\Debug\" 2>&1)"
     ]
   }
 }

@@ -8,6 +8,7 @@ using System.Linq;
 using System.Security.Policy;
 using System.Text;
 using System.Text.RegularExpressions;
+using Microsoft.AspNetCore.Http;
 using SobekCM.Core.ApplicationState;
 using SobekCM.Core.Configuration;
 using SobekCM.Core.Configuration.Localization;
@@ -29,27 +30,27 @@ namespace SobekCM.Engine_Library.Navigation
 	/// a particular search or map. </remarks>
 	public static class QueryString_Analyzer 
 	{
-		#region Constructor
+        #region Constructor
 
-		#endregion
+        #endregion
 
-		#region iSobekCM_QueryString_Analyzer Members
+        #region iSobekCM_QueryString_Analyzer Members
 
-	    /// <summary> Parse the query and set the internal variables </summary>
-	    /// <param name="QueryString"> QueryString collection passed from the main page </param>
-	    /// <param name="Navigator"> Navigation object to hold the mode information </param>
-	    /// <param name="Base_URL">Requested base URL (without query string, etc..)</param>
-	    /// <param name="User_Languages"> Languages preferred by user, per their browser settings </param>
-	    /// <param name="Code_Manager"> List of valid collection codes, including mapping from the Sobek collections to Greenstone collections </param>
-	    /// <param name="Aggregation_Aliases"> List of all existing aliases for existing aggregationPermissions</param>
+        /// <summary> Parse the query and set the internal variables </summary>
+        /// <param name="queryParams"> QueryString dictionary parsed previously</param>
+        /// <param name="Navigator"> Navigation object to hold the mode information </param>
+        /// <param name="Base_URL">Requested base URL (without query string, etc..)</param>
+        /// <param name="User_Languages"> Languages preferred by user, per their browser settings </param>
+        /// <param name="Code_Manager"> List of valid collection codes, including mapping from the Sobek collections to Greenstone collections </param>
+        /// <param name="Aggregation_Aliases"> List of all existing aliases for existing aggregationPermissions</param>
         /// <param name="Custom_BibID_RegEx"> Custom regular expression which can be used for BibID checks, rather than the default checks </param>
-	    /// <param name="URL_Portals"> List of all web portals into this system </param>
-	    /// <param name="WebHierarchy"> Hierarchy of all non-aggregational web content pages and redirects </param>
-	    /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-	    public static void Parse_Query(NameValueCollection QueryString,
+        /// <param name="URL_Portals"> List of all web portals into this system </param>
+        /// <param name="WebHierarchy"> Hierarchy of all non-aggregational web content pages and redirects </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        public static void Parse_Query(Dictionary<string, string> queryParams,
 			Navigation_Object Navigator,
 			string Base_URL,
-			string[] User_Languages,
+			IEnumerable<string> User_Languages,
 			Aggregation_Code_Manager Code_Manager,
 			Dictionary<string, string> Aggregation_Aliases,
 			Portal_List URL_Portals,
@@ -61,23 +62,23 @@ namespace SobekCM.Engine_Library.Navigation
 		        Tracer.Add_Trace("QueryString_Analyzer.Parse_Query", "Parse the query into the provided Navigation_Object");
 
 			// Set default mode to error
-			Navigator.Mode = Display_Mode_Enum.Error;
+			Navigator.Mode = Display_Mode_Enum.Error;			
 
 			// If this has 'verb' then this is an OAI-PMH request
-			if ( QueryString["verb"] != null )
+			if ( queryParams.ContainsKey("verb") )
 			{
 				Navigator.Writer_Type = Writer_Type_Enum.OAI;
 				return;
 			}
 
 			// Is there a TOC state set?
-			if (QueryString["toc"] != null)
+			if (queryParams.ContainsKey("toc"))
 			{
-				if (QueryString["toc"] == "y")
+				if (queryParams["toc"] == "y")
 				{
 					Navigator.TOC_Display = TOC_Display_Type_Enum.Show;
 				}
-				else if ( QueryString["toc"] == "n" )
+				else if ( queryParams["toc"] == "n" )
 				{
 					Navigator.TOC_Display = TOC_Display_Type_Enum.Hide;
 				}
@@ -110,15 +111,15 @@ namespace SobekCM.Engine_Library.Navigation
 
 			// Is there a language defined?  If so, load right into the navigator
 			Navigator.Language = Navigator.Default_Language;
-			if ( !String.IsNullOrEmpty(QueryString["l"]))
+			if (queryParams.ContainsKey("l") && !String.IsNullOrEmpty(queryParams["l"]))
 			{
-				Navigator.Language = Web_Language_Enum_Converter.Code_To_Enum(QueryString["l"]);
+				Navigator.Language = Web_Language_Enum_Converter.Code_To_Enum(queryParams["l"]);
 			}
 
 			// If there is flag indicating to show the trace route, save it
-			if (QueryString["trace"] != null)
+			if (queryParams.ContainsKey("trace"))
 			{
-				Navigator.Trace_Flag = QueryString["trace"].ToUpper() == "NO" ? Trace_Flag_Type_Enum.No : Trace_Flag_Type_Enum.Explicit;
+				Navigator.Trace_Flag = queryParams["trace"].ToUpper() == "NO" ? Trace_Flag_Type_Enum.No : Trace_Flag_Type_Enum.Explicit;
 			}
 			else
 			{
@@ -126,15 +127,15 @@ namespace SobekCM.Engine_Library.Navigation
 			}
 
 			// Did the user request to have it render like it would for a search robot?
-			if (QueryString["robot"] != null)
+			if (queryParams.ContainsKey("robot"))
 			{
 				Navigator.Is_Robot = true;
 			}
 
             // Was a fragment specified in the query string?
-            if (QueryString["fragment"] != null)
+            if (queryParams.ContainsKey("fragment"))
             {
-                Navigator.Fragment = QueryString["fragment"];
+                Navigator.Fragment = queryParams["fragment"];
             }
 
             // Get the valid URL Portal
@@ -161,9 +162,9 @@ namespace SobekCM.Engine_Library.Navigation
             }
 
             // Collect the interface string
-            if (QueryString["n"] != null)
+            if (queryParams.ContainsKey("n"))
             {
-                string currSkin = QueryString["n"].ToLower().Replace("'", "");
+                string currSkin = queryParams["n"].ToLower().Replace("'", "");
 
                 // Save the interface
                 if (currSkin.Length > 0)
@@ -180,18 +181,18 @@ namespace SobekCM.Engine_Library.Navigation
 
 			// CHECK FOR LEGACY VALUES 
 			// Check for legacy bibid / vid information, since this will be supported indefinitely
-			if (( QueryString["b"] != null ) || ( QueryString["bib"] != null ))
+			if ((queryParams.ContainsKey("b")) || (queryParams.ContainsKey("bib")))
 			{
-				Navigator.BibID = QueryString["b"] ?? QueryString["bib"];
+				Navigator.BibID = queryParams.ContainsKey("b") ? queryParams["b"] : queryParams["bib"];
 
 				if ( Navigator.BibID.Length > 0 )
 				{
 					Navigator.Mode = Display_Mode_Enum.Item_Display;
 
-					if ( QueryString["v"] != null )
-						Navigator.VID = QueryString["v"];
-					else if ( QueryString["vid"] != null )
-						Navigator.VID = QueryString["vid"];                
+					if (queryParams.ContainsKey("v"))
+						Navigator.VID = queryParams["v"];
+					else if (queryParams.ContainsKey("vid"))
+						Navigator.VID = queryParams["vid"];                
 				}
 
 				// No other item information is collected here anymore.. just return
@@ -205,9 +206,9 @@ namespace SobekCM.Engine_Library.Navigation
 			Navigator.Home_Type = Home_Type_Enum.List;
 
 			// Get any url rewrite which occurred
-			if (QueryString["urlrelative"] != null)
+			if (queryParams.ContainsKey("urlrelative"))
 			{
-				string urlrewrite = QueryString["urlrelative"].ToLower();
+				string urlrewrite = queryParams["urlrelative"].ToLower();
 				if (urlrewrite.Length > 0)
 				{
 					// Split the url relative list
@@ -323,8 +324,8 @@ namespace SobekCM.Engine_Library.Navigation
 										Navigator.Aggregation = url_relative_list[1];
 									}
 								}
-								if (QueryString["em"] != null)
-									Navigator.Error_Message = QueryString["em"];
+								if (queryParams.ContainsKey("em"))
+									Navigator.Error_Message = queryParams["em"];
 								break;
 					  
 							case "folder":
@@ -377,8 +378,8 @@ namespace SobekCM.Engine_Library.Navigation
                             case "my":
 								Navigator.Mode = Display_Mode_Enum.My_Sobek;
                                 Navigator.My_Sobek_Type = My_Sobek_Type_Enum.Home;
-								if (QueryString["return"] != null)
-									Navigator.Return_URL = QueryString["return"];
+								if (queryParams.ContainsKey("return"))
+									Navigator.Return_URL = queryParams["return"];
 								if ( url_relative_list.Count > 1 )
 								{
 									switch( url_relative_list[1] )
@@ -397,14 +398,14 @@ namespace SobekCM.Engine_Library.Navigation
 
                                         case "logon":
 											Navigator.My_Sobek_Type = My_Sobek_Type_Enum.Logon;
-											if (QueryString["return"] != null)
-												Navigator.Return_URL = QueryString["return"];
+											if (queryParams.ContainsKey("return"))
+												Navigator.Return_URL = queryParams["return"];
 											break;
 
 										case "home":
 											Navigator.My_Sobek_Type = My_Sobek_Type_Enum.Home;
-											if (QueryString["return"] != null)
-												Navigator.Return_URL = QueryString["return"];
+											if (queryParams.ContainsKey("return"))
+												Navigator.Return_URL = queryParams["return"];
 											break;
 
 										case "delete":
@@ -575,14 +576,14 @@ namespace SobekCM.Engine_Library.Navigation
 
 										case "logout":
 											Navigator.My_Sobek_Type = My_Sobek_Type_Enum.Log_Out;
-											if (QueryString["return"] != null)
-												Navigator.Return_URL = QueryString["return"];
+											if (queryParams.ContainsKey("return"))
+												Navigator.Return_URL = queryParams["return"];
 											break;
 
 										case "shibboleth":
 											Navigator.My_Sobek_Type = My_Sobek_Type_Enum.Shibboleth_Landing;
-											if (QueryString["return"] != null)
-												Navigator.Return_URL = QueryString["return"];
+											if (queryParams.ContainsKey("return"))
+												Navigator.Return_URL = queryParams["return"];
 											break;
 
                                         case "itemtracking":
@@ -613,8 +614,8 @@ namespace SobekCM.Engine_Library.Navigation
                             case "admin":
                                 Navigator.Mode = Display_Mode_Enum.Administrative;
 						        Navigator.Admin_Type = Admin_Type_Enum.Home;
-                                if (QueryString["return"] != null)
-                                    Navigator.Return_URL = QueryString["return"];
+                                if (queryParams.ContainsKey("return"))
+                                    Navigator.Return_URL = queryParams["return"];
                                 if (url_relative_list.Count > 1)
                                 {
                                     switch (url_relative_list[1])
@@ -916,7 +917,7 @@ namespace SobekCM.Engine_Library.Navigation
 								}
 								else
 								{
-									aggregation_querystring_analyze(Navigator, QueryString, Navigator.Default_Aggregation, url_relative_list);
+									aggregation_querystring_analyze(Navigator, queryParams, Navigator.Default_Aggregation, url_relative_list);
 								}
 								break;
 
@@ -953,9 +954,9 @@ namespace SobekCM.Engine_Library.Navigation
                                     if (is_String_Number(url_relative_list[1]))
                                         Navigator.Page = Convert.ToUInt16(url_relative_list[1]);
                                 }
-                                if ((QueryString["o"] != null) && (is_String_Number(QueryString["o"])))
+                                if ((queryParams.ContainsKey("o")) && (is_String_Number(queryParams["o"])))
                                 {
-                                    Navigator.Sort = Convert.ToInt16(QueryString["o"]);
+                                    Navigator.Sort = Convert.ToInt16(queryParams["o"]);
                                 }
                                 else
                                 {
@@ -991,7 +992,7 @@ namespace SobekCM.Engine_Library.Navigation
                             case "aggrhistory":
                             case "aggrpermissions":
                             case "geography":
-								aggregation_querystring_analyze(Navigator, QueryString, Navigator.Default_Aggregation, url_relative_list);
+								aggregation_querystring_analyze(Navigator, queryParams, Navigator.Default_Aggregation, url_relative_list);
 								break;
 
 							// This was none of the main constant mode settings,
@@ -1045,9 +1046,9 @@ namespace SobekCM.Engine_Library.Navigation
 
                                         // If something was found, then check for submodes
                                         Navigator.WebContent_Type = WebContent_Type_Enum.Display;
-						                if (!String.IsNullOrEmpty(QueryString["mode"]))
+						                if (!String.IsNullOrEmpty(queryParams.ContainsKey("mode") ? queryParams["mode"] : ""))
 						                {
-						                    switch (QueryString["mode"].ToLower())
+						                    switch (queryParams["mode"].ToLower())
 						                    {
 						                        case "edit":
 						                            Navigator.WebContent_Type = WebContent_Type_Enum.Edit;
@@ -1087,13 +1088,13 @@ namespace SobekCM.Engine_Library.Navigation
 									// Perform all aggregation_style checks next
 									string aggregation_code = Aggregation_Aliases[url_relative_list[0]];
 									Navigator.Aggregation_Alias = url_relative_list[0];
-									aggregation_querystring_analyze( Navigator, QueryString, aggregation_code, url_relative_list.GetRange(1, url_relative_list.Count - 1));
+									aggregation_querystring_analyze( Navigator, queryParams, aggregation_code, url_relative_list.GetRange(1, url_relative_list.Count - 1));
 								}
 								else if ( Code_Manager.isValidCode( url_relative_list[0] ))
 								{ 
 									// This is an item aggregation call
 									// Perform all aggregation_style checks next
-									aggregation_querystring_analyze( Navigator, QueryString, url_relative_list[0], url_relative_list.GetRange(1, url_relative_list.Count - 1 ));
+									aggregation_querystring_analyze( Navigator, queryParams, url_relative_list[0], url_relative_list.GetRange(1, url_relative_list.Count - 1 ));
 								}
                                 else if (is_bibid_format(url_relative_list[0], Custom_BibID_RegEx))
 								{
@@ -1136,9 +1137,9 @@ namespace SobekCM.Engine_Library.Navigation
 
 										// Since we need special characters for ranges, etc.. the viewer code 
 										// is in the options query string variable in this case
-										if (QueryString["options"] != null)
+										if (queryParams.ContainsKey("options"))
 										{
-											Navigator.ViewerCode = QueryString["options"];
+											Navigator.ViewerCode = queryParams["options"];
 										}
 									}
 									else
@@ -1199,33 +1200,33 @@ namespace SobekCM.Engine_Library.Navigation
 									}
 
                                     // Collect number of thumbnails per page
-                                    if (QueryString["nt"] != null)
+                                    if (queryParams.ContainsKey("nt"))
                                     {
                                         short nt_temp;
-                                        if (short.TryParse(QueryString["nt"], out nt_temp))
+                                        if (short.TryParse(queryParams["nt"], out nt_temp))
                                             Navigator.Thumbnails_Per_Page = nt_temp;
                                     }
 
                                     // Collect size of thumbnails per page
-                                    if (QueryString["ts"] != null)
+                                    if (queryParams.ContainsKey("ts"))
                                     {
                                         short ts_temp;
-                                        if (short.TryParse(QueryString["ts"], out ts_temp))
+                                        if (short.TryParse(queryParams["ts"], out ts_temp))
                                             Navigator.Size_Of_Thumbnails = ts_temp;
                                     }
 
 
-									// Collect the text search string
-									if (QueryString["search"] != null)
-										Navigator.Text_Search = QueryString["search"].Replace("+"," ");
+										// Collect the text search string
+									if (queryParams.ContainsKey("search"))
+										Navigator.Text_Search = queryParams["search"].Replace("+"," ");
 
 									// If coordinates were here, save them
-									if (QueryString["coord"] != null)
-										Navigator.Coordinates = QueryString["coord"];
+									if (queryParams.ContainsKey("coord"))
+										Navigator.Coordinates = queryParams["coord"];
 
 									// If a page is requested by filename (rather than sequenc), collect that
-									if (QueryString["file"] != null)
-										Navigator.Page_By_FileName = QueryString["file"];
+									if (queryParams.ContainsKey("file"))
+										Navigator.Page_By_FileName = queryParams["file"];
 								}
 								else if ((String.IsNullOrEmpty(Navigator.Page_By_FileName)) && ((String.IsNullOrEmpty(Navigator.Default_Aggregation)) || (Navigator.Default_Aggregation == "all")))
 								{
@@ -1327,7 +1328,7 @@ namespace SobekCM.Engine_Library.Navigation
 	        return allRemaining.ToArray();
 	    }
 
-		private static void aggregation_querystring_analyze(Navigation_Object Navigator, NameValueCollection QueryString, string Aggregation, List<string> RemainingURLRedirectList)
+private static void aggregation_querystring_analyze(Navigation_Object Navigator, Dictionary<string, string> queryParams, string Aggregation, List<string> RemainingURLRedirectList)
 		{
             // If the aggrgeation passed in was null or empty, use ALL
 		    if (String.IsNullOrEmpty(Aggregation))
@@ -1338,8 +1339,8 @@ namespace SobekCM.Engine_Library.Navigation
 			Navigator.Aggregation_Type = Aggregation_Type_Enum.Home;
 
             // Collect any search and search field values
-            if (QueryString["t"] != null) Navigator.Search_String = QueryString["t"].Trim();
-            if (QueryString["f"] != null) Navigator.Search_Fields = QueryString["f"].Trim();
+            if (queryParams.ContainsKey("t")) Navigator.Search_String = queryParams["t"].Trim();
+            if (queryParams.ContainsKey("f")) Navigator.Search_Fields = queryParams["f"].Trim();
 
 			// Look for any more url information
 			if (RemainingURLRedirectList.Count > 0)
@@ -1378,9 +1379,9 @@ namespace SobekCM.Engine_Library.Navigation
 							if (is_String_Number(RemainingURLRedirectList[1]))
 								Navigator.Page = Convert.ToUInt16(RemainingURLRedirectList[1]);
 						}
-						if ((QueryString["o"] != null) && (is_String_Number(QueryString["o"])))
+						if ((queryParams.ContainsKey("o")) && (is_String_Number(queryParams["o"])))
 						{
-							Navigator.Sort = Convert.ToInt16(QueryString["o"]);
+							Navigator.Sort = Convert.ToInt16(queryParams["o"]);
 						}
 						else
 						{
@@ -1397,8 +1398,8 @@ namespace SobekCM.Engine_Library.Navigation
 								Navigator.Mode = Display_Mode_Enum.Contact_Sent;
 							}
 						}
-						if (QueryString["em"] != null)
-							Navigator.Error_Message = QueryString["em"];
+						if (queryParams.ContainsKey("em"))
+							Navigator.Error_Message = queryParams["em"];
 						break;
 
                     case "manage":
@@ -1537,9 +1538,9 @@ namespace SobekCM.Engine_Library.Navigation
 						}
 
 						// Collect the coordinate information from the URL query string
-						if (QueryString["coord"] != null)
+						if (queryParams.ContainsKey("coord"))
 						{
-							Navigator.Coordinates = QueryString["coord"].Trim();
+							Navigator.Coordinates = queryParams["coord"].Trim();
 							if (!String.IsNullOrEmpty(Navigator.Coordinates))
 							{
 								Navigator.Search_Type = Search_Type_Enum.Map;
@@ -1549,16 +1550,16 @@ namespace SobekCM.Engine_Library.Navigation
 						}
 
                         // Collect any date range that may have existed
-						if (QueryString["yr1"] != null)
+						if (queryParams.ContainsKey("yr1"))
 						{
 							short year1;
-							if (Int16.TryParse(QueryString["yr1"], out year1))
+							if (Int16.TryParse(queryParams["yr1"], out year1))
 								Navigator.DateRange_Year1 = year1;
 						}
-						if (QueryString["yr2"] != null)
+						if (queryParams.ContainsKey("yr2"))
 						{
 							short year2;
-							if (Int16.TryParse(QueryString["yr2"], out year2))
+							if (Int16.TryParse(queryParams["yr2"], out year2))
 								Navigator.DateRange_Year2 = year2;
 						}
 						if ((Navigator.DateRange_Year1.HasValue ) && ( Navigator.DateRange_Year2.HasValue ) && (Navigator.DateRange_Year1.Value > Navigator.DateRange_Year2.Value ))
@@ -1567,16 +1568,16 @@ namespace SobekCM.Engine_Library.Navigation
                             Navigator.DateRange_Year1 = Navigator.DateRange_Year2.Value;
 							Navigator.DateRange_Year2 = temp;
 						}
-						if (QueryString["da1"] != null)
+						if (queryParams.ContainsKey("da1"))
 						{
                             DateTime date1;
-							if (DateTime.TryParse(QueryString["da1"], out date1))
+							if (DateTime.TryParse(queryParams["da1"], out date1))
 								Navigator.DateRange_Date1 = date1;
 						}
-						if (QueryString["da2"] != null)
+						if (queryParams.ContainsKey("da2"))
 						{
                             DateTime date2;
-                            if (DateTime.TryParse(QueryString["da2"], out date2))
+                            if (DateTime.TryParse(queryParams["da2"], out date2))
 								Navigator.DateRange_Date2 = date2;
 						}
 
@@ -1593,9 +1594,9 @@ namespace SobekCM.Engine_Library.Navigation
 						// If no search term, look foor the TEXT-specific term
 						if (Navigator.Search_String.Length == 0)
 						{
-							if (QueryString["text"] != null)
+							if (queryParams.ContainsKey("text"))
 							{
-								Navigator.Search_String = QueryString["text"].Trim();
+								Navigator.Search_String = queryParams["text"].Trim();
 							}
 
 							if (Navigator.Search_String.Length > 0)
@@ -1605,9 +1606,9 @@ namespace SobekCM.Engine_Library.Navigation
 						}                        
 
 						// Check for any sort value
-						if (QueryString["o"] != null) 
+						if (queryParams.ContainsKey("o")) 
 						{
-							string sort = QueryString["o"];
+							string sort = queryParams["o"];
 							if (is_String_Number(sort))
 							{
 								short sort_result ;
@@ -1657,9 +1658,9 @@ namespace SobekCM.Engine_Library.Navigation
 						}
 
 						// Check for any sort value
-						if (QueryString["o"] != null)
+						if (queryParams.ContainsKey("o"))
 						{
-							string sort = QueryString["o"];
+							string sort = queryParams["o"];
 							if (is_String_Number(sort))
 							{
 								short sort_result;

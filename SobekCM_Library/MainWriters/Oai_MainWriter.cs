@@ -25,7 +25,7 @@ namespace SobekCM.Library.MainWriters
     public class Oai_MainWriter: abstractMainWriter
     {
         private readonly DataTable oaiSets;
-        private readonly NameValueCollection queryString;
+        private readonly Dictionary<string, string> queryString;
         private readonly string url = UI_ApplicationCache_Gateway.Settings.Servers.System_Base_URL;
         private readonly List<string> validArgs;
 
@@ -45,7 +45,7 @@ namespace SobekCM.Library.MainWriters
         /// <summary> Constructor for a new instance of the Oai_MainWriter class </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
         /// <param name="Query_String"> URL Query string to parse for OAI-PMH verbs and other values </param>
-        public Oai_MainWriter(NameValueCollection Query_String, RequestCache RequestSpecificValues) : base(RequestSpecificValues)
+        public Oai_MainWriter(Dictionary<string, string> Query_String, RequestCache RequestSpecificValues) : base(RequestSpecificValues)
    
         {
             // Build list of valid arguments
@@ -129,7 +129,7 @@ namespace SobekCM.Library.MainWriters
             }
 
             // Check each argument for basic validity
-            foreach (string thisArg in queryString.AllKeys)
+            foreach (string thisArg in queryString.Keys)
             {
                 if (!validArgs.Contains(thisArg))
                 {

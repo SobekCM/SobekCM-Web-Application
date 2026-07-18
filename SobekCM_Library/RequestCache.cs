@@ -120,6 +120,8 @@ namespace SobekCM.Library
         public RequestCache_RequestFlags Flags { get; private set; }
 
         public Dictionary<string, string> QueryString { get; set; }
+
+        public string Page_Name { get; set; } = string.Empty;           
     }
 
     /// <summary> Flags for this individual execution, used for cross-class communication

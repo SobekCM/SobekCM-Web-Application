@@ -1,5 +1,6 @@
 ﻿#region Using directives
 
+using Azure;
 using DocumentFormat.OpenXml.EMMA;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -70,6 +71,7 @@ namespace SobekCM
 		public SobekCM_SiteMap siteMap;
 		public HTML_Based_Content staticWebContent;
 		public RequestCache requestSpecificValues;
+		
 
 
         public Custom_Tracer tracer;
@@ -81,11 +83,12 @@ namespace SobekCM
 
 		public QueryInitializer(HttpContext context, string page_name)
 		{
-			requestSpecificValues = new RequestCache(context);
+            requestSpecificValues = new RequestCache(context)
+            {
+                Page_Name = page_name
+            };
 
-			context.Items.Add(RequestCache_Keys.PageName, page_name);
-
-			// Start the tracter
+            // Start the tracter
             tracer = new Custom_Tracer();
             tracer.Add_Trace("QueryInitializer.Constructor", "Starting");
 
@@ -128,24 +131,32 @@ namespace SobekCM
             // Parse the URL for the the navigation requested and create the current mode object
             result = new SearchEngineRobotNavigationInitializer().Initialize(context, requestSpecificValues, tracer);
 
-            if (!result.Success)
-            {
-                handle_error(result, context);
-                return;
-            }
-
+			if (!result.Success)
+			{
+				handle_error(result, context);
+				return;
+			}
+			else if (!String.IsNullOrEmpty(result.RedirectUrl))
+			{
+				context.Response.Redirect(result.RedirectUrl, false);
+				return;
+			}
 
             result = new UserObjectInitializer().Initialize(context, requestSpecificValues, tracer);
 
-            if (!result.Success)
-            {
-                handle_error(result, context);
-                return;
-            }
+			if (!result.Success)
+			{
+				handle_error(result, context);
+				return;
+			}
+			else if (!String.IsNullOrEmpty(result.RedirectUrl))
+			{
+				context.Response.Redirect(result.RedirectUrl, false);
+				return;
+			}
 
 
-
-			try { 
+            try { 
 
 				if (!currentMode.Is_Robot)
                     if (currentMode.Request_Completed)
@@ -239,6 +250,8 @@ namespace SobekCM
 				context.Response.Redirect("dashboard.aspx", false);
 				return;
 			}
+
+			if (!String.IsNullOrEmpty(response.RedirectUrl)) context.Response.Redirect(response.RedirectUrl, false);
 
 			throw newException;
 		}
@@ -376,8 +389,7 @@ namespace SobekCM
 		    if ((currentMode.Mode == Display_Mode_Enum.Simple_HTML_CMS) && (currentMode.WebContent_Type == WebContent_Type_Enum.Display) && (staticWebContent != null) && (!String.IsNullOrEmpty(staticWebContent.Redirect)))
 		    {
                 currentMode.Request_Completed = true;
-                HttpContext.Current.Response.Redirect(staticWebContent.Redirect, false);
-                HttpContext.Current.ApplicationInstance.CompleteRequest();
+				context.Response.Redirect(staticWebContent.Redirect, false);
                 return;
 		    }
 
@@ -542,147 +554,147 @@ namespace SobekCM
 
 		public void Email_Information(string EmailTitle, Exception ObjErr, bool Redirect)
 		{
-			try
-			{
-				StreamWriter writer = new StreamWriter(AppDomain.CurrentDomain.BaseDirectory + "\\temp\\exceptions.txt", true);
-				writer.WriteLine();
-				writer.WriteLine("Error logged in SobekCM_Page_Globals.Email_Information ( " + DateTime.Now.ToString() + ")");
-				writer.WriteLine("User Host Address: " + HttpContext.Current.Request.UserHostAddress);
-				writer.WriteLine("Requested URL: " + HttpContext.Current.Request.Url);
-				if (ObjErr is SobekCM_Traced_Exception)
-				{
-					SobekCM_Traced_Exception sobekException = (SobekCM_Traced_Exception) ObjErr;
+			//try
+			//{
+			//	StreamWriter writer = new StreamWriter(AppDomain.CurrentDomain.BaseDirectory + "\\temp\\exceptions.txt", true);
+			//	writer.WriteLine();
+			//	writer.WriteLine("Error logged in SobekCM_Page_Globals.Email_Information ( " + DateTime.Now.ToString() + ")");
+			//	writer.WriteLine("User Host Address: " + HttpContext.Current.Request.UserHostAddress);
+			//	writer.WriteLine("Requested URL: " + HttpContext.Current.Request.Url);
+			//	if (ObjErr is SobekCM_Traced_Exception)
+			//	{
+			//		SobekCM_Traced_Exception sobekException = (SobekCM_Traced_Exception) ObjErr;
 
-					writer.WriteLine("Error Message: " + sobekException.InnerException.Message);
-					writer.WriteLine("Stack Trace: " + ObjErr.StackTrace);
-					writer.WriteLine("Error Message:" + sobekException.InnerException.StackTrace);
-					writer.WriteLine();
-					writer.WriteLine(sobekException.Trace_Route);
-				}
-				else
-				{
+			//		writer.WriteLine("Error Message: " + sobekException.InnerException.Message);
+			//		writer.WriteLine("Stack Trace: " + ObjErr.StackTrace);
+			//		writer.WriteLine("Error Message:" + sobekException.InnerException.StackTrace);
+			//		writer.WriteLine();
+			//		writer.WriteLine(sobekException.Trace_Route);
+			//	}
+			//	else
+			//	{
 
-					writer.WriteLine("Error Message: " + ObjErr.Message);
-					writer.WriteLine("Stack Trace: " + ObjErr.StackTrace);
-				}
+			//		writer.WriteLine("Error Message: " + ObjErr.Message);
+			//		writer.WriteLine("Stack Trace: " + ObjErr.StackTrace);
+			//	}
 
-				writer.WriteLine();
-				writer.WriteLine("------------------------------------------------------------------");
-				writer.Flush();
-				writer.Close();
-			}
-			catch (Exception)
-			{
-				// Already catching errors.. nothing else to realy do here if this causes an error as well
-			}
+			//	writer.WriteLine();
+			//	writer.WriteLine("------------------------------------------------------------------");
+			//	writer.Flush();
+			//	writer.Close();
+			//}
+			//catch (Exception)
+			//{
+			//	// Already catching errors.. nothing else to realy do here if this causes an error as well
+			//}
 
-			try
-			{
-				// Build the error message
-				string err;
-				if (ObjErr != null)
-				{
-                    string referrer = (HttpContext.Current.Request.UrlReferrer != null) ? "URL Referred from: " + HttpContext.Current.Request.UrlReferrer + "<br />" : String.Empty;
+			//try
+			//{
+			//	// Build the error message
+			//	string err;
+			//	if (ObjErr != null)
+			//	{
+   //                 string referrer = (HttpContext.Current.Request.UrlReferrer != null) ? "URL Referred from: " + HttpContext.Current.Request.UrlReferrer + "<br />" : String.Empty;
 
-                    err = "<b>" + HttpContext.Current.Request.UserHostAddress + "</b><br /><br />" +
-					      "Error in: " + HttpContext.Current.Request.Url + "<br />" +
-                          referrer +
-                          "Error Message: " + ObjErr.Message + "<br /><br />" +
-					      "Stack Trace: " + ObjErr.StackTrace.Replace("\r", "<br />") + "<br /><br />";
+   //                 err = "<b>" + HttpContext.Current.Request.UserHostAddress + "</b><br /><br />" +
+			//		      "Error in: " + HttpContext.Current.Request.Url + "<br />" +
+   //                       referrer +
+   //                       "Error Message: " + ObjErr.Message + "<br /><br />" +
+			//		      "Stack Trace: " + ObjErr.StackTrace.Replace("\r", "<br />") + "<br /><br />";
 
-					if (ObjErr.Message.IndexOf("Timeout expired") >= 0)
-						EmailTitle = "Database Timeout Expired";
-				}
-				else
-				{
-					err = "<b>" + HttpContext.Current.Request.UserHostAddress + "</b><br /><br />" +
-					      "Error in: " + HttpContext.Current.Request.Url + "<br />" +
-					      "Error Message: " + EmailTitle;
-				}
+			//		if (ObjErr.Message.IndexOf("Timeout expired") >= 0)
+			//			EmailTitle = "Database Timeout Expired";
+			//	}
+			//	else
+			//	{
+			//		err = "<b>" + HttpContext.Current.Request.UserHostAddress + "</b><br /><br />" +
+			//		      "Error in: " + HttpContext.Current.Request.Url + "<br />" +
+			//		      "Error Message: " + EmailTitle;
+			//	}
 
-                Email_Helper.SendEmail(UI_ApplicationCache_Gateway.Settings.Email.System_Error_Email, EmailTitle, err, true, String.Empty);
-			}
-			catch (Exception)
-			{
-				// Already catching errors.. nothing else to realy do here if this causes an error as well
-			}
+   //             Email_Helper.SendEmail(UI_ApplicationCache_Gateway.Settings.Email.System_Error_Email, EmailTitle, err, true, String.Empty);
+			//}
+			//catch (Exception)
+			//{
+			//	// Already catching errors.. nothing else to realy do here if this causes an error as well
+			//}
 
-			// Forward to our error message
-			if (Redirect)
-			{
-				// Forward to our error message
-                HttpContext.Current.Response.Redirect(UI_ApplicationCache_Gateway.Settings.Servers.System_Error_URL, false);
-				HttpContext.Current.ApplicationInstance.CompleteRequest();
-				if (currentMode != null)
-					currentMode.Request_Completed = true;
-			}
+			//// Forward to our error message
+			//if (Redirect)
+			//{
+			//	// Forward to our error message
+   //             HttpContext.Current.Response.Redirect(UI_ApplicationCache_Gateway.Settings.Servers.System_Error_URL, false);
+			//	HttpContext.Current.ApplicationInstance.CompleteRequest();
+			//	if (currentMode != null)
+			//		currentMode.Request_Completed = true;
+			//}
 		}
 
 		private void send_error_email()
 		{
-			try
-			{
-				// Start the body
-				StringBuilder builder = new StringBuilder();
-				builder.Append("\n\nSUBMISSION INFORMATION\n");
-				builder.Append("\tDate:\t\t\t\t" + DateTime.Now.ToString() + "\n");
-				builder.Append("\tIP Address:\t\t\t" + HttpContext.Current.Request.UserHostAddress + "\n");
-				builder.Append("\tHost Name:\t\t\t" + HttpContext.Current.Request.UserHostName + "\n");
-				builder.Append("\tBrowser:\t\t\t" + HttpContext.Current.Request.Browser.Browser + "\n");
-				builder.Append("\tBrowser Platform:\t\t" + HttpContext.Current.Request.Browser.Platform + "\n");
-				builder.Append("\tBrowser Version:\t\t" + HttpContext.Current.Request.Browser.Version + "\n");
-				builder.Append("\tBrowser Language:\t\t");
-				bool first = true;
-				string[] languages = HttpContext.Current.Request.UserLanguages;
-				if (languages != null)
-				{
-					foreach (string thisLanguage in languages)
-					{
-						if (first)
-						{
-							builder.Append(thisLanguage);
-							first = false;
-						}
-						else
-						{
-							builder.Append(", " + thisLanguage);
-						}
-					}
-				}
+			//try
+			//{
+			//	// Start the body
+			//	StringBuilder builder = new StringBuilder();
+			//	builder.Append("\n\nSUBMISSION INFORMATION\n");
+			//	builder.Append("\tDate:\t\t\t\t" + DateTime.Now.ToString() + "\n");
+			//	builder.Append("\tIP Address:\t\t\t" + HttpContext.Current.Request.UserHostAddress + "\n");
+			//	builder.Append("\tHost Name:\t\t\t" + HttpContext.Current.Request.UserHostName + "\n");
+			//	builder.Append("\tBrowser:\t\t\t" + HttpContext.Current.Request.Browser.Browser + "\n");
+			//	builder.Append("\tBrowser Platform:\t\t" + HttpContext.Current.Request.Browser.Platform + "\n");
+			//	builder.Append("\tBrowser Version:\t\t" + HttpContext.Current.Request.Browser.Version + "\n");
+			//	builder.Append("\tBrowser Language:\t\t");
+			//	bool first = true;
+			//	string[] languages = HttpContext.Current.Request.UserLanguages;
+			//	if (languages != null)
+			//	{
+			//		foreach (string thisLanguage in languages)
+			//		{
+			//			if (first)
+			//			{
+			//				builder.Append(thisLanguage);
+			//				first = false;
+			//			}
+			//			else
+			//			{
+			//				builder.Append(", " + thisLanguage);
+			//			}
+			//		}
+			//	}
 
-				builder.AppendLine("HISTORY");
-				if (HttpContext.Current.Session["LastSearch"] != null)
-					builder.AppendLine("\tLast Search:\t\t" + HttpContext.Current.Session["LastSearch"]);
-				if (HttpContext.Current.Session["LastResults"] != null)
-					builder.AppendLine("\tLast Results:\t\t" + HttpContext.Current.Session["LastResults"]);
-				if (HttpContext.Current.Session["Last_Mode"] != null)
-					builder.AppendLine("\tLast Mode:\t\t\t?" + HttpContext.Current.Session["Last_Mode"]);
-				if (HttpContext.Current.Items.Contains("Original_URL"))
-					builder.AppendLine("\tURL:\t\t\t\t" + HttpContext.Current.Items["Original_URL"]);
-				else
-					builder.AppendLine("\tURL:\t\t\t\t" + HttpContext.Current.Request.Url);
+			//	builder.AppendLine("HISTORY");
+			//	if (HttpContext.Current.Session["LastSearch"] != null)
+			//		builder.AppendLine("\tLast Search:\t\t" + HttpContext.Current.Session["LastSearch"]);
+			//	if (HttpContext.Current.Session["LastResults"] != null)
+			//		builder.AppendLine("\tLast Results:\t\t" + HttpContext.Current.Session["LastResults"]);
+			//	if (HttpContext.Current.Session["Last_Mode"] != null)
+			//		builder.AppendLine("\tLast Mode:\t\t\t?" + HttpContext.Current.Session["Last_Mode"]);
+			//	if (HttpContext.Current.Items.Contains("Original_URL"))
+			//		builder.AppendLine("\tURL:\t\t\t\t" + HttpContext.Current.Items["Original_URL"]);
+			//	else
+			//		builder.AppendLine("\tURL:\t\t\t\t" + HttpContext.Current.Request.Url);
 
-				// Send this email
-				try
-				{
-                    Email_Helper.SendEmail(UI_ApplicationCache_Gateway.Settings.Email.System_Error_Email, "SobekCM Exception Caught  [Invalid Item Requested]", builder.ToString(), false, String.Empty);
-				}
-				catch (Exception)
-				{
-					// Already catching errors.. nothing else to realy do here if this causes an error as well
-				}
+			//	// Send this email
+			//	try
+			//	{
+   //                 Email_Helper.SendEmail(UI_ApplicationCache_Gateway.Settings.Email.System_Error_Email, "SobekCM Exception Caught  [Invalid Item Requested]", builder.ToString(), false, String.Empty);
+			//	}
+			//	catch (Exception)
+			//	{
+			//		// Already catching errors.. nothing else to realy do here if this causes an error as well
+			//	}
 
-			}
-			catch (Exception)
-			{
-				// Already catching errors.. nothing else to realy do here if this causes an error as well
-			}
+			//}
+			//catch (Exception)
+			//{
+			//	// Already catching errors.. nothing else to realy do here if this causes an error as well
+			//}
 
-			// Forward to our error message
-            HttpContext.Current.Response.Redirect(UI_ApplicationCache_Gateway.Settings.Servers.System_Error_URL, false);
-			HttpContext.Current.ApplicationInstance.CompleteRequest();
-			if (currentMode != null)
-				currentMode.Request_Completed = true;
+			//// Forward to our error message
+   //         HttpContext.Current.Response.Redirect(UI_ApplicationCache_Gateway.Settings.Servers.System_Error_URL, false);
+			//HttpContext.Current.ApplicationInstance.CompleteRequest();
+			//if (currentMode != null)
+			//	currentMode.Request_Completed = true;
 		}
 
 		#endregion

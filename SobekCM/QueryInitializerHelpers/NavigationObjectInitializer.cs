@@ -55,8 +55,6 @@ namespace SobekCM.QueryInitializerHelpers
                 tracer.Add_Trace("NavigationObjectInitializer.Initialize", ee.StackTrace);
 
                 context.Response.StatusCode = 301;
-                //context.Response.AddHeader("Location", base_url);
-                //context.ApplicationInstance.CompleteRequest();
                 return new QueryInitializerHelperResponse(false, "Exception caught while parsing the query string.", ee);
             }
 

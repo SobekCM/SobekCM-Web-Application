@@ -1,13 +1,16 @@
 ﻿#region Using directives
 
+using ProtoBuf;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Xml.Serialization;
 
 #endregion
 
@@ -176,26 +179,28 @@ namespace SobekCM.Core.Users
 
     #endregion
 
-	/// <summary> Represents a single mySobek user, including personal information, permissions,
+    /// <summary> Represents a single mySobek user, including personal information, permissions,
     /// and preferences.  </summary>
+    [Serializable, DataContract, ProtoContract]
+    [XmlRoot("User")]
     public class User_Object
     {
         #region Private class members 
 
-        private readonly User_Aggregation_Permissions aggregationPermissions;
-        private readonly List<string> bibids;
-        private readonly List<string> bookshelfObjectIds;
+        private User_Aggregation_Permissions aggregationPermissions;
+        private List<string> bibids;
+        private List<string> bookshelfObjectIds;
         private string currentMetadataSet;
         private string currentTemplate;
-        private readonly List<string> editableRegexes;
-        private readonly SortedList<string, User_Folder> folders;
-        private readonly List<string> defaultMetadataSets;
-        private readonly List<string> templates;
-        private readonly List<Simple_User_Group_Info> userGroups;
-        private readonly Dictionary<string, object> userSettings;
+        private List<string> editableRegexes;
+        private SortedList<string, User_Folder> folders;
+        private List<string> defaultMetadataSets;
+        private List<string> templates;
+        private List<Simple_User_Group_Info> userGroups;
+        private Dictionary<string, object> userSettings;
 
-		private readonly List<string> templates_from_groups;
-	    private readonly List<string> defaultMetadataSetsFromGroups;
+		private List<string> templates_from_groups;
+	    private List<string> defaultMetadataSetsFromGroups;
 
         #endregion
 
@@ -251,19 +256,31 @@ namespace SobekCM.Core.Users
 
         #endregion
 
-		/// <summary> Flag indicates if this user is logged on, or if this represents
-		/// a non-logged on user's session-specific data </summary>
-        public bool LoggedOn { get; set; }
+        /// <summary> Flag indicates if this user is logged on, or if this represents
+        /// a non-logged on user's session-specific data </summary>
+        [DataMember(EmitDefaultValue = false, Name = "loggedOn")]
+        [XmlAttribute("loggedOn")]
+        [ProtoMember(1)]
+        public bool LoggedOn { get; set; } = false;
 
         /// <summary> Internal notes about this user, which are not viewable by the actual user </summary>
         /// <remarks> This can be used, in part, to put data from Shibboleth or the LDAP authentication process </remarks>
-        public string Internal_Notes { get; set;  }
+        [DataMember(EmitDefaultValue = false, Name = "notes")]
+        [XmlAttribute("notes")]
+        [ProtoMember(2)]
+        public string Internal_Notes { get; set; } = String.Empty;
 
         /// <summary> Flag indicates if this user should appear as a possible scanning technician </summary>
-        public bool Scanning_Technician { get; set; }
+        [DataMember(EmitDefaultValue = false, Name = "scanningTechnician")]
+        [XmlAttribute("scanningTechnician")]
+        [ProtoMember(3)]
+        public bool Scanning_Technician { get; set; } = false;
 
         /// <summary> Flag indicates if this user should appear as a possible processing technician </summary>
-        public bool Processing_Technician { get; set; }
+        [DataMember(EmitDefaultValue = false, Name = "processingTechnician")]
+        [XmlAttribute("processingTechnician")]
+        [ProtoMember(4)]
+        public bool Processing_Technician { get; set; } = false;
 
         #region User settings properties and methods
 

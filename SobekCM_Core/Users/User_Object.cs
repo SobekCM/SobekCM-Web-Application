@@ -188,19 +188,10 @@ namespace SobekCM.Core.Users
         #region Private class members 
 
         private User_Aggregation_Permissions aggregationPermissions;
-        private List<string> bibids;
-        private List<string> bookshelfObjectIds;
-        private string currentMetadataSet;
-        private string currentTemplate;
-        private List<string> editableRegexes;
         private SortedList<string, User_Folder> folders;
-        private List<string> defaultMetadataSets;
-        private List<string> templates;
-        private List<Simple_User_Group_Info> userGroups;
-        private Dictionary<string, string> userSettings;
 
-		private List<string> templates_from_groups;
-	    private List<string> defaultMetadataSetsFromGroups;
+        private List<string> templates_from_groups;
+        private List<string> defaultMetadataSetsFromGroups;
 
         #endregion
 
@@ -222,10 +213,10 @@ namespace SobekCM.Core.Users
             Is_Internal_User = false;
             UserName = String.Empty;
             Preferred_Language = String.Empty;
-            templates = new List<string>();
-            defaultMetadataSets = new List<string>();
-            bibids = new List<string>();
-            bookshelfObjectIds = new List<string>();
+            Templates = [];
+            Default_Metadata_Sets = [];
+            BibIDs = [];
+            Bookshelf_Items = [];
             Items_Submitted_Count = 0;
             Organization = String.Empty;
             Department = String.Empty;
@@ -235,21 +226,21 @@ namespace SobekCM.Core.Users
             Edit_Template_Code_Simple = String.Empty;
             Edit_Template_Code_Complex = String.Empty;
             aggregationPermissions = new User_Aggregation_Permissions();
-            editableRegexes = new List<string>();
+            Editable_Regular_Expressions = [];
             folders = new SortedList<string, User_Folder>();
             Default_Rights = String.Empty;
             Is_System_Admin = false;
             Is_Portal_Admin = false;
             Has_Descriptive_Tags = false;
-            userGroups = new List<Simple_User_Group_Info>();
+            User_Groups = [];
             Receive_Stats_Emails = true;
             Has_Item_Stats = false;
             Include_Tracking_In_Standard_Forms = true;
-			userSettings = new Dictionary<string, string>();
-	        Can_Delete_All = false;
+            UserSettings = [];
+            Can_Delete_All = false;
             Authentication_Type = User_Authentication_Type_Enum.NONE;
-			defaultMetadataSetsFromGroups = new List<string>();
-			templates_from_groups = new List<string>();
+            defaultMetadataSetsFromGroups = [];
+            templates_from_groups = [];
             LoggedOn = false;
 
         }
@@ -284,337 +275,429 @@ namespace SobekCM.Core.Users
 
         #region User settings properties and methods
 
-        /// <summary> Gets the full list of all settings </summary>
-        protected Dictionary<string, string> Settings { get { return userSettings;  } }
+        /// <summary> User settings as a key/value dictionary </summary>
+        [DataMember(EmitDefaultValue = false, Name = "settings")]
+        [XmlIgnore]
+        [ProtoMember(5)]
+        public Dictionary<string, string> UserSettings { get; private set; }
 
         /// <summary> Get the number of settings </summary>
-        public int SettingsCount
-        {
-            get
-            {
-                if (userSettings == null) return 0;
-                return userSettings.Count;
-            }
-        }
+        public int SettingsCount => UserSettings?.Count ?? 0;
 
         /// <summary> Gets the list of all the keys for these settings </summary>
-        public List<string> SettingsKeys
+        public List<string> SettingsKeys => UserSettings?.Keys.ToList() ?? new List<string>();
+
+        /// <summary> Get the user option by key, returning null if absent </summary>
+        public string Get_Setting(string Option_Key) =>
+            UserSettings.TryGetValue(Option_Key, out string v) ? v : null;
+
+        /// <summary> Get the user option as a bool, returning the default if absent </summary>
+        public bool Get_Setting(string Option_Key, bool Default_Value) =>
+            UserSettings.TryGetValue(Option_Key, out string v)
+                ? v.Equals("true", StringComparison.OrdinalIgnoreCase)
+                : Default_Value;
+
+        /// <summary> Get the user option as an integer, returning the default if absent </summary>
+        public int Get_Setting(string Option_Key, int Default_Value) =>
+            UserSettings.TryGetValue(Option_Key, out string v) && int.TryParse(v, out int i) ? i : Default_Value;
+
+        /// <summary> Get the user option as a string, returning the default if absent </summary>
+        public string Get_Setting(string Option_Key, string Default_Value) =>
+            UserSettings.TryGetValue(Option_Key, out string v) ? v : Default_Value;
+
+        /// <summary> Add or update a user option </summary>
+        public void Add_Setting(string Option_Key, string Option_Value) =>
+            Add_Setting(Option_Key, Option_Value, true);
+
+        /// <summary> Add or update a user option </summary>
+        public void Add_Setting(string Option_Key, string Option_Value, bool Update_Database)
         {
-            get
-            {
-                if (userSettings == null) return new List<string>();
-
-                return userSettings.Keys.ToList<string>();
-            }
+            if (!UserSettings.TryGetValue(Option_Key, out string existing) || existing != Option_Value)
+                UserSettings[Option_Key] = Option_Value;
         }
-
-        /// <summary> Get the user option as an object, by option key </summary>
-        /// <param name="Option_Key"> Key for the user option </param>
-        /// <returns> Option, as an uncast object, or NULL </returns>
-        public string Get_Setting( string Option_Key )
-        {
-			if (userSettings.ContainsKey(Option_Key))
-				return userSettings[Option_Key];
-            return null;
-        }
-
-        /// <summary> Get the user option as an object, by option key </summary>
-        /// <param name="Option_Key"> Key for the user option </param>
-        /// <returns> Option, as an uncast object, or NULL </returns>
-        public bool Get_Setting(string Option_Key, bool Default_Value)
-        {
-            if (userSettings.ContainsKey(Option_Key))
-                return userSettings[Option_Key].Equals("true", StringComparison.OrdinalIgnoreCase);
-
-            return Default_Value;
-        }
-
-        /// <summary> Get the user option as an integer, by option key </summary>
-        /// <param name="Option_Key"> Key for the user option </param>
-        /// <param name="Default_Value"> Default value to return, if no value is present </param>
-        /// <returns> Either the value from the user options, or else the default value </returns>
-        public int Get_Setting(string Option_Key, int Default_Value )
-        {
-			if (userSettings.ContainsKey(Option_Key))
-            {
-                if (int.TryParse(userSettings[Option_Key], out int tempValue))
-                    return tempValue;
-            }
-            return Default_Value;
-        }
-
-        /// <summary> Get the user option as a string, by option key </summary>
-        /// <param name="Option_Key"> Key for the user option </param>
-        /// <param name="Default_Value"> Default value to return, if no value is present </param>
-        /// <returns> Either the value from the user options, or else the default value </returns>
-        public string Get_Setting(string Option_Key, string Default_Value)
-        {
-			if (userSettings.ContainsKey(Option_Key))
-                return userSettings[Option_Key];
-            return Default_Value;
-        }
-
-        /// <summary> Add a new user option </summary>
-        /// <param name="Option_Key"> Key for the user option </param>
-        /// <param name="Option_Value"> Value for this user option </param>
-        public void Add_Setting( string Option_Key, string Option_Value )
-        {
-	        Add_Setting(Option_Key, Option_Value, true);
-        }
-
-		/// <summary> Add a new user option </summary>
-		/// <param name="Option_Key"> Key for the user option </param>
-		/// <param name="Option_Value"> Value for this user option </param>
-		/// <param name="Update_Database"> Flag indicates if the database should be updated </param>
-		public void Add_Setting(string Option_Key, string Option_Value, bool Update_Database )
-		{
-			// Does this option already exist, and does it have the same value?
-			if ((!userSettings.ContainsKey(Option_Key)) || (userSettings[Option_Key] != Option_Value))
-			{
-				userSettings[Option_Key] = Option_Value;
-
-               // Engine_Database.Set_User_Setting(UserID, Option_Key, Option_Value.ToString());
-			}
-		}
 
         #endregion
 
         #region Public properties of this user object
 
         /// <summary> Flag indicates this user has chosen to receive statistics emails about their items </summary>
+        [DataMember(EmitDefaultValue = false, Name = "receiveStatsEmails")]
+        [XmlAttribute("receiveStatsEmails")]
+        [ProtoMember(6)]
         public bool Receive_Stats_Emails { get; set; }
 
         /// <summary> Flag indicates this user has item statistics linked to their account </summary>
+        [DataMember(EmitDefaultValue = false, Name = "hasItemStats")]
+        [XmlAttribute("hasItemStats")]
+        [ProtoMember(7)]
         public bool Has_Item_Stats { get; set; }
 
         /// <summary> Checks to see if this user is a collection manager or collection admin </summary>
+        [XmlIgnore]
         public bool Is_A_Collection_Manager_Or_Admin
         {
-            get
-            {
-                return aggregationPermissions != null && (aggregationPermissions.Aggregations !=null) && aggregationPermissions.Aggregations.Any(Aggregation => Aggregation.IsCurator);
-            }
+            get { return aggregationPermissions != null && (aggregationPermissions.Aggregations != null) && aggregationPermissions.Aggregations.Any(Aggregation => Aggregation.IsCurator); }
         }
 
         /// <summary> Flag indicates if this user has descriptive tags associated with them </summary>
+        [DataMember(EmitDefaultValue = false, Name = "hasDescriptiveTags")]
+        [XmlAttribute("hasDescriptiveTags")]
+        [ProtoMember(8)]
         public bool Has_Descriptive_Tags { get; set; }
 
         /// <summary> Flag is used when editing a users rights to indicate this user should be able to edit ALL items in the library </summary>
+        [DataMember(EmitDefaultValue = false, Name = "shouldBeAbleToEditAllItems")]
+        [XmlAttribute("shouldBeAbleToEditAllItems")]
+        [ProtoMember(9)]
         public bool Should_Be_Able_To_Edit_All_Items { get; set; }
 
         /// <summary> Ordered list of submittal templates this user has access to </summary>
         /// <remarks>The first item in this list is the default template for this user </remarks>
-        public ReadOnlyCollection<string> Templates
-        {
-            get { return new ReadOnlyCollection<string>(templates); }
-        }
+        [DataMember(EmitDefaultValue = false, Name = "templates")]
+        [XmlArray("templates")]
+        [XmlArrayItem("template", typeof(string))]
+        [ProtoMember(10)]
+        public List<string> Templates { get; private set; }
 
-        /// <summary> Returns the current template for this user </summary>
+        /// <summary> Stored value of the current template selection (raw, for serialization) </summary>
+        [DataMember(EmitDefaultValue = false, Name = "currentTemplate")]
+        [XmlAttribute("currentTemplate")]
+        [ProtoMember(46)]
+        public string Current_Template_Value { get; set; }
+
+        /// <summary> Returns the effective current template, falling back to the first available template </summary>
+        [XmlIgnore]
         public string Current_Template
         {
-            get 
+            get
             {
-                if (!String.IsNullOrEmpty(currentTemplate))
-                    return currentTemplate;
-                if ((templates != null) && (templates.Count > 0))
-                    return templates[0];
-                return String.Empty;
+                if (!string.IsNullOrEmpty(Current_Template_Value))
+                    return Current_Template_Value;
+                return Templates is { Count: > 0 } ? Templates[0] : string.Empty;
             }
             set
             {
-                if ((templates == null) || (templates.Count <= 0)) return;
-
-                if (( String.IsNullOrEmpty(value)) || ( templates.Contains( value )))
-                    currentTemplate = value;
+                if (Templates == null || Templates.Count == 0) return;
+                if (string.IsNullOrEmpty(value) || Templates.Contains(value))
+                    Current_Template_Value = value;
             }
         }
 
         /// <summary> Ordered list of default metadata sets this user has access to </summary>
         /// <remarks>The first item in this list is the default metadata set for this user </remarks>
-        public ReadOnlyCollection<string> Default_Metadata_Sets
-        {
-            get { return new ReadOnlyCollection<string>(defaultMetadataSets); }
-        }
+        [DataMember(EmitDefaultValue = false, Name = "defaultMetadataSets")]
+        [XmlArray("defaultMetadataSets")]
+        [XmlArrayItem("metadataSet", typeof(string))]
+        [ProtoMember(11)]
+        public List<string> Default_Metadata_Sets { get; private set; }
 
-        /// <summary> Returns the current default metadata set for this user </summary>
+        /// <summary> Stored value of the current default metadata set selection (raw, for serialization) </summary>
+        [DataMember(EmitDefaultValue = false, Name = "currentMetadataSet")]
+        [XmlAttribute("currentMetadataSet")]
+        [ProtoMember(47)]
+        public string Current_Default_Metadata_Value { get; set; }
+
+        /// <summary> Returns the effective current default metadata set, falling back to the first available set </summary>
+        [XmlIgnore]
         public string Current_Default_Metadata
         {
             get
             {
-                if (!String.IsNullOrEmpty(currentMetadataSet))
-                    return currentMetadataSet;
-                if ((defaultMetadataSets != null) && (defaultMetadataSets.Count > 0))
-                    return defaultMetadataSets[0];
-                return String.Empty;
+                if (!string.IsNullOrEmpty(Current_Default_Metadata_Value))
+                    return Current_Default_Metadata_Value;
+                return Default_Metadata_Sets is { Count: > 0 } ? Default_Metadata_Sets[0] : string.Empty;
             }
             set
             {
-                if ((defaultMetadataSets == null) || (defaultMetadataSets.Count <= 0)) return;
-
-                if ((String.IsNullOrEmpty(value)) || (defaultMetadataSets.Contains(value)))
-                    currentMetadataSet = value;
+                if (Default_Metadata_Sets == null || Default_Metadata_Sets.Count == 0) return;
+                if (string.IsNullOrEmpty(value) || Default_Metadata_Sets.Contains(value))
+                    Current_Default_Metadata_Value = value;
             }
         }
 
-        /// <summary> List of the BibID's for every item this user has submitted or been directly 
+        /// <summary> List of the BibID's for every item this user has submitted or been directly
         /// granted edit permissions against. </summary>
-        public ReadOnlyCollection<string> BibIDs
-        {
-            get { return new ReadOnlyCollection<string>(bibids); }
-        }
+        [DataMember(EmitDefaultValue = false, Name = "bibids")]
+        [XmlArray("bibids")]
+        [XmlArrayItem("bibid", typeof(string))]
+        [ProtoMember(12)]
+        public List<string> BibIDs { get; private set; }
+
+        /// <summary> List of BibID_VID identifiers for items in this user's bookshelves </summary>
+        [DataMember(EmitDefaultValue = false, Name = "bookshelfItems")]
+        [XmlArray("bookshelfItems")]
+        [XmlArrayItem("item", typeof(string))]
+        [ProtoMember(48)]
+        public List<string> Bookshelf_Items { get; private set; }
 
         /// <summary> Number of items this user has submitted </summary>
+        [DataMember(EmitDefaultValue = false, Name = "itemsSubmittedCount")]
+        [XmlAttribute("itemsSubmittedCount")]
+        [ProtoMember(13)]
         public int Items_Submitted_Count { get; set; }
 
         /// <summary> SobekCM username for this user </summary>
+        [DataMember(EmitDefaultValue = false, Name = "userName")]
+        [XmlAttribute("userName")]
+        [ProtoMember(14)]
         public string UserName { get; set; }
 
         /// <summary> UserID (or primary key) to this user from the database </summary>
+        [DataMember(Name = "userID")]
+        [XmlAttribute("userID")]
+        [ProtoMember(15)]
         public int UserID { get; set; }
 
         /// <summary> User's preferred language </summary>
+        [DataMember(EmitDefaultValue = false, Name = "preferredLanguage")]
+        [XmlAttribute("preferredLanguage")]
+        [ProtoMember(16)]
         public string Preferred_Language { get; set; }
 
         /// <summary> Simple flag indicates if this user can submit items </summary>
+        [DataMember(EmitDefaultValue = false, Name = "canSubmit")]
+        [XmlAttribute("canSubmit")]
+        [ProtoMember(17)]
         public bool Can_Submit { get; set; }
 
-		/// <summary> Simple flag indicates if this user can delete any item in this repository </summary>
-		public bool Can_Delete_All { get; set; }
+        /// <summary> Simple flag indicates if this user can delete any item in this repository </summary>
+        [DataMember(EmitDefaultValue = false, Name = "canDeleteAll")]
+        [XmlAttribute("canDeleteAll")]
+        [ProtoMember(18)]
+        public bool Can_Delete_All { get; set; }
 
-        /// <summary> Default rights statement for this user  </summary>
+        /// <summary> Default rights statement for this user </summary>
+        [DataMember(EmitDefaultValue = false, Name = "defaultRights")]
+        [XmlAttribute("defaultRights")]
+        [ProtoMember(19)]
         public string Default_Rights { get; set; }
 
         /// <summary> Flag indicates whether user wishes to receive an email after submission </summary>
+        [DataMember(EmitDefaultValue = false, Name = "sendEmailOnSubmission")]
+        [XmlAttribute("sendEmailOnSubmission")]
+        [ProtoMember(20)]
         public bool Send_Email_On_Submission { get; set; }
 
         /// <summary> Flag indicates if this is a temporary password </summary>
         /// <remarks>Temporary passwords must be changed once the user logs on </remarks>
+        [DataMember(EmitDefaultValue = false, Name = "isTemporaryPassword")]
+        [XmlAttribute("isTemporaryPassword")]
+        [ProtoMember(21)]
         public bool Is_Temporary_Password { get; set; }
 
         /// <summary> Flag indicates if this is an internal user </summary>
         /// <remarks>This grants access to various tracking elements in SobekCM</remarks>
+        [DataMember(EmitDefaultValue = false, Name = "isInternalUser")]
+        [XmlAttribute("isInternalUser")]
+        [ProtoMember(22)]
         public bool Is_Internal_User { get; set; }
 
-        /// <summary> Flag indicates if this user has general admin rights over the entire system, including very basic settings which impactt how the system runs </summary>
+        /// <summary> Flag indicates if this user has general admin rights over the entire system </summary>
+        [DataMember(EmitDefaultValue = false, Name = "isSystemAdmin")]
+        [XmlAttribute("isSystemAdmin")]
+        [ProtoMember(23)]
         public bool Is_System_Admin { get; set; }
 
         /// <summary> Flag indicates if this user has general admin rights over the appearance of portions of the system </summary>
+        [DataMember(EmitDefaultValue = false, Name = "isPortalAdmin")]
+        [XmlAttribute("isPortalAdmin")]
+        [ProtoMember(24)]
         public bool Is_Portal_Admin { get; set; }
 
         /// <summary> Flag indicates if this user is the host administrator, if this is a hosted instance </summary>
+        [DataMember(EmitDefaultValue = false, Name = "isHostAdmin")]
+        [XmlAttribute("isHostAdmin")]
+        [ProtoMember(25)]
         public bool Is_Host_Admin { get; set; }
-        
+
         /// <summary> Flag indicates if this user is a user administrator, able to manage users, user requests, and groups </summary>
+        [DataMember(EmitDefaultValue = false, Name = "isUserAdmin")]
+        [XmlAttribute("isUserAdmin")]
+        [ProtoMember(26)]
         public bool Is_User_Admin { get; set; }
 
-        /// <summary> Flag indicates if users should see the tracking information when adding a new volume 
+        /// <summary> Flag indicates if users should see the tracking information when adding a new volume
         /// or performing standard operations within the system </summary>
+        [DataMember(EmitDefaultValue = false, Name = "includeTrackingInStandardForms")]
+        [XmlAttribute("includeTrackingInStandardForms")]
+        [ProtoMember(27)]
         public bool Include_Tracking_In_Standard_Forms { get; set; }
 
         /// <summary> User's family (or last) name </summary>
+        [DataMember(EmitDefaultValue = false, Name = "familyName")]
+        [XmlAttribute("familyName")]
+        [ProtoMember(28)]
         public string Family_Name { get; set; }
 
         /// <summary> User's given (or first) name </summary>
+        [DataMember(EmitDefaultValue = false, Name = "givenName")]
+        [XmlAttribute("givenName")]
+        [ProtoMember(29)]
         public string Given_Name { get; set; }
 
         /// <summary> User's nickname </summary>
+        [DataMember(EmitDefaultValue = false, Name = "nickname")]
+        [XmlAttribute("nickname")]
+        [ProtoMember(30)]
         public string Nickname { get; set; }
 
-        /// <summary> Returns the user's full name in [first name last name] order</summary>
+        /// <summary> Returns the user's full name in [first name last name] order </summary>
+        [XmlIgnore]
         public string Full_Name
         {
-            get {   return Given_Name + " " + Family_Name;  }
+            get { return Given_Name + " " + Family_Name; }
         }
 
-        /// <summary> Returns the user's full name in [last name, last name] format</summary>
+        /// <summary> Returns the user's full name in [last name, first name] format </summary>
+        [XmlIgnore]
         public string Reversed_Full_Name
         {
             get { return Family_Name + ", " + Given_Name; }
         }
 
         /// <summary> User's shibboleth ID </summary>
+        [DataMember(EmitDefaultValue = false, Name = "shibbID")]
+        [XmlAttribute("shibbID")]
+        [ProtoMember(31)]
         public string ShibbID { get; set; }
 
-        /// <summary> User's organization affiliation information   </summary>
+        /// <summary> User's organization affiliation information </summary>
+        [DataMember(EmitDefaultValue = false, Name = "organization")]
+        [XmlAttribute("organization")]
+        [ProtoMember(32)]
         public string Organization { get; set; }
 
-        /// <summary> User's organization code  </summary>
-        /// <remarks> This is used to tag any newly submitted items to the institution's aggregation</remarks>
+        /// <summary> User's organization code </summary>
+        /// <remarks> This is used to tag any newly submitted items to the institution's aggregation </remarks>
+        [DataMember(EmitDefaultValue = false, Name = "organizationCode")]
+        [XmlAttribute("organizationCode")]
+        [ProtoMember(33)]
         public string Organization_Code { get; set; }
 
-        /// <summary> User's college affiliation information  </summary>
+        /// <summary> User's college affiliation information </summary>
+        [DataMember(EmitDefaultValue = false, Name = "college")]
+        [XmlAttribute("college")]
+        [ProtoMember(34)]
         public string College { get; set; }
 
-        /// <summary> User's department affiliation information  </summary>
+        /// <summary> User's department affiliation information </summary>
+        [DataMember(EmitDefaultValue = false, Name = "department")]
+        [XmlAttribute("department")]
+        [ProtoMember(35)]
         public string Department { get; set; }
 
-        /// <summary> User's unit affiliation information  </summary>
+        /// <summary> User's unit affiliation information </summary>
+        [DataMember(EmitDefaultValue = false, Name = "unit")]
+        [XmlAttribute("unit")]
+        [ProtoMember(36)]
         public string Unit { get; set; }
 
         /// <summary> User's email address </summary>
+        [DataMember(EmitDefaultValue = false, Name = "email")]
+        [XmlAttribute("email")]
+        [ProtoMember(37)]
         public string Email { get; set; }
 
-        /// <summary>User's template code for editing simple (non-MARC) records </summary>
+        /// <summary> User's template code for editing simple (non-MARC) records </summary>
+        [DataMember(EmitDefaultValue = false, Name = "editTemplateCodeSimple")]
+        [XmlAttribute("editTemplateCodeSimple")]
+        [ProtoMember(38)]
         public string Edit_Template_Code_Simple { get; set; }
 
-        /// <summary> User's template code editing complex (MARC) records  </summary>
+        /// <summary> User's template code editing complex (MARC) records </summary>
+        [DataMember(EmitDefaultValue = false, Name = "editTemplateCodeComplex")]
+        [XmlAttribute("editTemplateCodeComplex")]
+        [ProtoMember(39)]
         public string Edit_Template_Code_Complex { get; set; }
 
-		/// <summary> Enumeration indicates how the user authenticated with the system ( i.e., Sobek, Shibboleth, or LDAP ) </summary>
+        /// <summary> Enumeration indicates how the user authenticated with the system ( i.e., Sobek, Shibboleth, or LDAP ) </summary>
+        [DataMember(EmitDefaultValue = false, Name = "authenticationType")]
+        [XmlAttribute("authenticationType")]
+        [ProtoMember(40)]
         public User_Authentication_Type_Enum Authentication_Type { get; set; }
 
         /// <summary> List of item aggregation permissions associated with this user </summary>
+        [DataMember(EmitDefaultValue = false, Name = "aggregations")]
+        [XmlArray("aggregations")]
+        [XmlArrayItem("aggregation", typeof(User_Permissioned_Aggregation))]
+        [ProtoMember(41)]
         public List<User_Permissioned_Aggregation> PermissionedAggregations
         {
             get
             {
-                if (aggregationPermissions == null)
-                    return null;
+                if (aggregationPermissions == null) return null;
                 return aggregationPermissions.Aggregations;
+            }
+            set
+            {
+                if (aggregationPermissions == null)
+                    aggregationPermissions = new User_Aggregation_Permissions();
+                aggregationPermissions.Aggregations = value;
             }
         }
 
         /// <summary> List of regular expressions for checking for edit by bibid </summary>
-        public ReadOnlyCollection<string> Editable_Regular_Expressions
-        {
-            get { return new ReadOnlyCollection<string>(editableRegexes); }
-        }
+        [DataMember(EmitDefaultValue = false, Name = "editableRegexes")]
+        [XmlArray("editableRegexes")]
+        [XmlArrayItem("regex", typeof(string))]
+        [ProtoMember(42)]
+        public List<string> Editable_Regular_Expressions { get; private set; }
 
         /// <summary> List of user groups to which this user belongs </summary>
-        public List<Simple_User_Group_Info> User_Groups
-        {
-            get { return new List<Simple_User_Group_Info>(userGroups); }
-        }
+        [DataMember(EmitDefaultValue = false, Name = "userGroups")]
+        [XmlArray("userGroups")]
+        [XmlArrayItem("userGroup", typeof(Simple_User_Group_Info))]
+        [ProtoMember(43)]
+        public List<Simple_User_Group_Info> User_Groups { get; private set; }
 
         /// <summary> List of folders associated with this user </summary>
+        [XmlIgnore]
         public ReadOnlyCollection<User_Folder> Folders
         {
             get { return new ReadOnlyCollection<User_Folder>(folders.Values); }
         }
 
-        /// <summary> Return the number of templates tied to this user group </summary>
-        public int Templates_Count
+        /// <summary> List of folders associated with this user, exposed as a list for serialization </summary>
+        [DataMember(EmitDefaultValue = false, Name = "folders")]
+        [XmlArray("folders")]
+        [XmlArrayItem("folder", typeof(User_Folder))]
+        [ProtoMember(44)]
+        public List<User_Folder> Folders_List
         {
-            get { return templates == null ? 0 : templates.Count; }
+            get { return folders.Values.ToList(); }
+            set
+            {
+                folders.Clear();
+                if (value != null)
+                    foreach (User_Folder f in value)
+                        folders[f.Folder_Name] = f;
+            }
         }
 
-        /// <summary> Return the number of default metadata sets tied to this user group </summary>
-        public int Default_Metadata_Sets_Count
-        {
-            get { return defaultMetadataSets == null ? 0 : defaultMetadataSets.Count; }
-        }
+        /// <summary> Return the number of templates tied to this user </summary>
+        [XmlIgnore]
+        public int Templates_Count => Templates?.Count ?? 0;
 
-        /// <summary> Return the number of aggregations tied to this user group </summary>
+        /// <summary> Return the number of default metadata sets tied to this user </summary>
+        [XmlIgnore]
+        public int Default_Metadata_Sets_Count => Default_Metadata_Sets?.Count ?? 0;
+
+        /// <summary> Return the number of aggregations tied to this user </summary>
+        [XmlIgnore]
         public int PermissionedAggregations_Count
         {
-            get { return ((aggregationPermissions == null) || ( aggregationPermissions.Aggregations == null )) ? 0 : aggregationPermissions.Aggregations.Count; }
+            get { return ((aggregationPermissions == null) || (aggregationPermissions.Aggregations == null)) ? 0 : aggregationPermissions.Aggregations.Count; }
         }
 
         /// <summary> Flag indicates if this user was just registered </summary>
         /// <remarks> This flag is just used so mySobek does not say 'Welcome Back' the first time a user logs on </remarks>
+        [DataMember(EmitDefaultValue = false, Name = "isJustRegistered")]
+        [XmlAttribute("isJustRegistered")]
+        [ProtoMember(45)]
         public bool Is_Just_Registered { get; set; }
 
         /// <summary> Gets the list of all folders, in alphabetical order </summary>
+        [XmlIgnore]
         public ReadOnlyCollection<User_Folder> All_Folders
         {
             get
@@ -639,8 +722,8 @@ namespace SobekCM.Core.Users
         public void Remove_From_Bookshelves(string BibID, string VID)
         {
             string objID = BibID.ToUpper() + "_" + VID;
-            if (bookshelfObjectIds.Contains(objID))
-                bookshelfObjectIds.Remove(objID);
+            if (Bookshelf_Items.Contains(objID))
+                Bookshelf_Items.Remove(objID);
         }
 
         /// <summary> Checks to see if an item exists in this user's bookshelf </summary>
@@ -649,7 +732,7 @@ namespace SobekCM.Core.Users
         /// <returns> TRUE if the item is in the bookshelf, otherwise FALSE </returns>
         public bool Is_In_Bookshelf(string BibID, string VID)
         {
-            return bookshelfObjectIds.Contains(BibID.ToUpper() + "_" + VID);
+            return Bookshelf_Items.Contains(BibID.ToUpper() + "_" + VID);
         }
 
         /// <summary> Sets the flag that a particular aggregation exists on this user's home page </summary>
@@ -775,22 +858,19 @@ namespace SobekCM.Core.Users
         /// <summary> Clear all the user groups associated with this user  </summary>
         public void Clear_UserGroup_Membership()
         {
-            userGroups.Clear();
+            User_Groups.Clear();
         }
 
         /// <summary> Adds a user group to the list of user groups this user belongs to </summary>
         /// <param name="GroupName"> Name of the user group</param>
         public void Add_User_Group(int UserGroupID, string GroupName)
         {
-            // If already existing, do nothing
-            foreach( Simple_User_Group_Info existing in userGroups )
+            foreach (Simple_User_Group_Info existing in User_Groups)
             {
                 if (existing.UserGroupID == UserGroupID)
                     return;
             }
-
-            // Add this
-            userGroups.Add(new Simple_User_Group_Info(UserGroupID, GroupName));
+            User_Groups.Add(new Simple_User_Group_Info(UserGroupID, GroupName));
         }
 
         /// <summary> Add an item to the list of items on the bookshelf for this user </summary>
@@ -799,8 +879,8 @@ namespace SobekCM.Core.Users
         public void Add_Bookshelf_Item(string BibID, string VID)
         {
             string objid = BibID.ToUpper() + "_" + VID;
-            if (!bookshelfObjectIds.Contains(objid))
-                bookshelfObjectIds.Add(objid);
+            if (!Bookshelf_Items.Contains(objid))
+                Bookshelf_Items.Add(objid);
         }
 
         /// <summary> Clear the list of aggregation permissions associated with this user </summary>
@@ -832,41 +912,40 @@ namespace SobekCM.Core.Users
         /// <param name="BibID">New BibID this user can edit</param>
         public void Add_BibID(string BibID)
         {
-            bibids.Add(BibID);
+            BibIDs.Add(BibID);
         }
 
         /// <summary> Clears the list of templates associated with this user </summary>
         public void Clear_Templates()
         {
-            templates.Clear();
+            Templates.Clear();
         }
 
-	    /// <summary> Adds a template to the list of templates this user can select </summary>
-	    /// <param name="Template">Code for this template</param>
-	    /// <param name="Group_Defined"> Indicates if this user has permissions to use this tempate through group membership </param>
-	    /// <remarks>This must match the name of one of the template XML files in the mySobek\templates folder</remarks>
-	    public void Add_Template(string Template, bool Group_Defined)
+        /// <summary> Adds a template to the list of templates this user can select </summary>
+        /// <param name="Template">Code for this template</param>
+        /// <param name="Group_Defined"> Indicates if this user has permissions to use this template through group membership </param>
+        /// <remarks>This must match the name of one of the template XML files in the mySobek\templates folder</remarks>
+        public void Add_Template(string Template, bool Group_Defined)
         {
-            templates.Add(Template);
-			if ( Group_Defined )
-				templates_from_groups.Add(Template);
+            Templates.Add(Template);
+            if (Group_Defined)
+                templates_from_groups.Add(Template);
         }
 
         /// <summary> Sets the default template for this user </summary>
         /// <param name="Template">Code for this template</param>
-        /// <remarks>This only sets this as the default template if it currently exists in the list of possible templates for this uers </remarks>
+        /// <remarks>This only sets this as the default template if it currently exists in the list of possible templates for this user </remarks>
         public void Set_Default_Template(string Template)
         {
-            if ((!templates.Contains(Template)) || (templates.IndexOf(Template) == 0)) return;
-
-            templates.Remove(Template);
-            templates.Insert(0, Template);
+            if (!Templates.Contains(Template) || Templates.IndexOf(Template) == 0) return;
+            Templates.Remove(Template);
+            Templates.Insert(0, Template);
         }
 
         /// <summary> Clears all default metadata sets associated with this user </summary>
         public void Clear_Default_Metadata_Sets()
         {
-            defaultMetadataSets.Clear();
+            Default_Metadata_Sets.Clear();
         }
 
         /// <summary> Adds a default metadata set to the list of sets this user can select </summary>
@@ -875,27 +954,26 @@ namespace SobekCM.Core.Users
         /// <remarks>This must match the name of one of the project METS (.pmets) files in the mySobek\projects folder</remarks>
         public void Add_Default_Metadata_Set(string MetadataSet, bool Group_Defined)
         {
-            defaultMetadataSets.Add(MetadataSet);
-			if ( Group_Defined )
-				defaultMetadataSetsFromGroups.Add(MetadataSet);
+            Default_Metadata_Sets.Add(MetadataSet);
+            if (Group_Defined)
+                defaultMetadataSetsFromGroups.Add(MetadataSet);
         }
 
         /// <summary> Sets the current default metadata set for this user </summary>
         /// <param name="MetadataSet">Code for this default metadata set</param>
-        /// <remarks>This only sets this as the default metadata set if it currently exists in the list of possible projects for this uers </remarks>
+        /// <remarks>This only sets this as the default metadata set if it currently exists in the list of possible projects for this user </remarks>
         public void Set_Current_Default_Metadata(string MetadataSet)
         {
-            if ((!defaultMetadataSets.Contains(MetadataSet)) || (defaultMetadataSets.IndexOf(MetadataSet) == 0)) return;
-
-            defaultMetadataSets.Remove(MetadataSet);
-            defaultMetadataSets.Insert(0, MetadataSet);
+            if (!Default_Metadata_Sets.Contains(MetadataSet) || Default_Metadata_Sets.IndexOf(MetadataSet) == 0) return;
+            Default_Metadata_Sets.Remove(MetadataSet);
+            Default_Metadata_Sets.Insert(0, MetadataSet);
         }
 
         /// <summary> Adds a regular expression to this user to determine which titles this user can edit </summary>
         /// <param name="Regular_Expression"> Regular expression used to compute if this user can edit a title, by BibID</param>
         public void Add_Editable_Regular_Expression(string Regular_Expression)
         {
-            editableRegexes.Add(Regular_Expression);
+            Editable_Regular_Expressions.Add(Regular_Expression);
         }
 
         /// <summary> Adds a folder to the list of folders associated with this user </summary>
@@ -1045,7 +1123,7 @@ namespace SobekCM.Core.Users
 	        if ((Is_Portal_Admin) || (Is_System_Admin))
 		        return true;
 
-            if (bibids.Contains( BibID.ToUpper()))
+            if (BibIDs.Contains(BibID.ToUpper()))
                 return true;
 
             if ((aggregationPermissions[ "I" + SourceCode.ToUpper() ] != null ) && ( aggregationPermissions["I" + SourceCode.ToUpper()].CanEditMetadata ))
@@ -1063,7 +1141,7 @@ namespace SobekCM.Core.Users
                 }
             }
 
-            return editableRegexes.Select(RegexString => new Regex(RegexString)).Any(MyReg => MyReg.IsMatch(BibID.ToUpper()));
+            return Editable_Regular_Expressions.Select(RegexString => new Regex(RegexString)).Any(MyReg => MyReg.IsMatch(BibID.ToUpper()));
         }
 
 

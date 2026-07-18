@@ -346,7 +346,7 @@ namespace SobekCM.Library.AdminViewer.UserAdmin.UserAdminTabs
             Output.WriteLine("   </tr>");
             Output.WriteLine("  <tr ><td bgcolor=\"#e7e7e7\"></td></tr>");
 
-            ReadOnlyCollection<string> user_templates = editUser.Templates;
+            List<string> user_templates = editUser.Templates;
             foreach (DataRow thisTemplate in projectTemplateSet.Tables[1].Rows)
             {
                 string template_name = thisTemplate["TemplateName"].ToString();
@@ -379,7 +379,7 @@ namespace SobekCM.Library.AdminViewer.UserAdmin.UserAdminTabs
             Output.WriteLine("   </tr>");
             Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\"></td></tr>");
 
-            ReadOnlyCollection<string> user_projects = editUser.Default_Metadata_Sets;
+            List<string> user_projects = editUser.Default_Metadata_Sets;
             foreach (DataRow thisProject in projectTemplateSet.Tables[0].Rows)
             {
                 string project_name = thisProject["MetadataName"].ToString();

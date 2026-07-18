@@ -125,69 +125,30 @@ namespace SobekCM
 
 			tracer.Add_Trace("QueryInitializer.Constructor", "Navigation Object created from URI query string");
 
-			try
-			{
-				currentMode = requestSpecificValues.Current_Mode;
-				// If this was an error, redirect now
-				if (currentMode.Mode == Display_Mode_Enum.Error)
-				{
-					return;
-				}
+            // Parse the URL for the the navigation requested and create the current mode object
+            result = new SearchEngineRobotNavigationInitializer().Initialize(context, requestSpecificValues, tracer);
 
-				// All the user stuff can be skipped if this was from a robot
+            if (!result.Success)
+            {
+                handle_error(result, context);
+                return;
+            }
+
+
+            result = new UserObjectInitializer().Initialize(context, requestSpecificValues, tracer);
+
+            if (!result.Success)
+            {
+                handle_error(result, context);
+                return;
+            }
+
+
+
+			try { 
+
 				if (!currentMode.Is_Robot)
-				{
-					// Determine which IP Ranges this IP address belongs to, if not already determined.
-					if (context.Session.GetString(SessionCache_Keys.IpRangeMembership) == null)
-					{
-                        string userAddress = context.Items[RequestCache_Keys.UserIP].ToString();
-
-
-                        int ip_mask = UI_ApplicationCache_Gateway.IP_Restrictions.Restrictive_Range_Membership(userAddress);
-						context.Session.SetString(SessionCache_Keys.IpRangeMembership, ip_mask.ToString());
-					}
-
-					// Set the Session TOC, if provided
-					if (currentMode.TOC_Display != TOC_Display_Type_Enum.Undetermined)
-					{
-						if (currentMode.TOC_Display == TOC_Display_Type_Enum.Hide)
-						{
-							context.Items["Show TOC"] = false;
-						}
-						else
-						{
-							context.Items["Show TOC"] = true;
-						}
-					}
-
-					// Only do any of the user stuff if this is from the main SobekCM page
-					if (page_name == "SOBEKCM")
-					{
-						tracer.Add_Trace("QueryInitializer.Constructor", "Checking for logged on user by cookie or session");
-						perform_user_checks(requestSpecificValues.Current_Mode.isPostBack);
-					}
-
-					// If this is a system admin, they can run as a different user actually
-					if ((currentUser != null) && (currentUser.Is_System_Admin) && (requestSpecificValues.QueryString["userid"] != null))
-					{
-						try
-						{
-							int userid = Convert.ToInt32(requestSpecificValues.QueryString["userid"]);
-							User_Object mirroredUser = Engine_Database.Get_User(userid, tracer);
-							if (mirroredUser != null)
-							{
-								// Replace the user information in the session state
-								context.Items["user"] = mirroredUser;
-								currentUser = mirroredUser;
-							}
-						}
-						catch (Exception)
-						{
-							// Nothing to do here.. shouldn't ever really be here..
-						}
-					}
-
-					if (currentMode.Request_Completed)
+                    if (currentMode.Request_Completed)
 						return;
 
 					// If this was a call for RESET, clear the memory
@@ -199,11 +160,8 @@ namespace SobekCM
 						currentMode.Mode = Display_Mode_Enum.Internal;
 						currentMode.Internal_Type = Internal_Type_Enum.Cache;
 					}
-				}
-				else // THIS IS A ROBOT REQUEST
-				{
-					Perform_Search_Engine_Robot_Checks(currentMode, requestSpecificValues.QueryString);
-				}
+				
+
 
                 // Always pull TOP level collection
 			    SobekEngineClient.Aggregations.Get_Aggregation("all", currentMode.Language, UI_ApplicationCache_Gateway.Settings.System.Default_UI_Language, tracer);
@@ -287,600 +245,9 @@ namespace SobekCM
 
 		#endregion
 
-		#region Special checks for search engine robot URL behaviors
 
-		private void Perform_Search_Engine_Robot_Checks(Navigation_Object CurrentModeCheck, Dictionary<string, string> QueryString)
-		{
-			// Some writers should not be selected yet
-			if ((CurrentModeCheck.Writer_Type != Writer_Type_Enum.HTML) && (CurrentModeCheck.Writer_Type != Writer_Type_Enum.HTML_Echo) && (CurrentModeCheck.Writer_Type != Writer_Type_Enum.OAI))
-			{
-				HttpContext.Current.Response.StatusCode = 301;
-				HttpContext.Current.Response.AddHeader("Location", CurrentModeCheck.Base_URL);
-				HttpContext.Current.ApplicationInstance.CompleteRequest();
-				currentMode.Request_Completed = true;
-				return;
-			}
 
-			// There are some spots which robots are never allowed to go, just
-			// by virtue of the fact they don't logon
-			if ((CurrentModeCheck.Mode == Display_Mode_Enum.Internal) || (CurrentModeCheck.Mode == Display_Mode_Enum.My_Sobek) || (CurrentModeCheck.Mode == Display_Mode_Enum.Administrative) || (CurrentModeCheck.Mode == Display_Mode_Enum.Reset) || (CurrentModeCheck.Mode == Display_Mode_Enum.Item_Cache_Reload) || (CurrentModeCheck.Mode == Display_Mode_Enum.Results) || (CurrentModeCheck.Mode == Display_Mode_Enum.Public_Folder) || ((CurrentModeCheck.Mode == Display_Mode_Enum.Aggregation) && (CurrentModeCheck.Aggregation_Type == Aggregation_Type_Enum.Browse_By)) || (CurrentModeCheck.Mode == Display_Mode_Enum.Item_Print))
-			{
-				HttpContext.Current.Response.StatusCode = 301;
-				HttpContext.Current.Response.AddHeader("Location", CurrentModeCheck.Base_URL);
-				HttpContext.Current.ApplicationInstance.CompleteRequest();
-				currentMode.Request_Completed = true;
-				return;
-			}
-
-			// Browse are okay, except when it is the NEW
-            if ((CurrentModeCheck.Mode == Display_Mode_Enum.Aggregation) && (CurrentModeCheck.Aggregation_Type == Aggregation_Type_Enum.Browse_Info) && (!String.IsNullOrEmpty(CurrentModeCheck.Info_Browse_Mode)) && (CurrentModeCheck.Info_Browse_Mode == "new"))
-			{
-				CurrentModeCheck.Info_Browse_Mode = "all";
-
-				HttpContext.Current.Response.StatusCode = 301;
-				HttpContext.Current.Response.AddHeader("Location", UrlWriterHelper.Redirect_URL(CurrentModeCheck));
-				HttpContext.Current.ApplicationInstance.CompleteRequest();
-				currentMode.Request_Completed = true;
-				return;
-			}
-
-			// Going to the search page is okay, except for ADVANCED searches ( results aren't okay, but going to the search page is okay )
-			if ((CurrentModeCheck.Mode == Display_Mode_Enum.Search) && (CurrentModeCheck.Search_Type == Search_Type_Enum.Advanced))
-			{
-				CurrentModeCheck.Mode = Display_Mode_Enum.Aggregation;
-				CurrentModeCheck.Aggregation_Type = Aggregation_Type_Enum.Home;
-				HttpContext.Current.Response.StatusCode = 301;
-				HttpContext.Current.Response.AddHeader("Location", UrlWriterHelper.Redirect_URL(CurrentModeCheck));
-				HttpContext.Current.ApplicationInstance.CompleteRequest();
-				currentMode.Request_Completed = true;
-				return;
-			}
-
-			// If this was a legacy type request, forward to the new URL
-			if ((QueryString["b"] != null) || (QueryString["m"] != null) || (QueryString["g"] != null) || (QueryString["c"] != null) || (QueryString["s"] != null) || (QueryString["a"] != null))
-			{
-				HttpContext.Current.Response.StatusCode = 301;
-				HttpContext.Current.Response.AddHeader("Location", UrlWriterHelper.Redirect_URL(CurrentModeCheck));
-				HttpContext.Current.ApplicationInstance.CompleteRequest();
-				currentMode.Request_Completed = true;
-				return;
-			}
-
-			// Get the depth of the url relative 
-			// Try to determine if this is a legacy type URL and how deep the urlrelative is
-			int url_relative_depth = 0;
-			string[] url_relative_info = null;
-			if (QueryString["urlrelative"] != null)
-			{
-				string urlrewrite = QueryString["urlrelative"].ToLower();
-				if (urlrewrite.Length > 0)
-				{
-					// Split the url relative list
-					url_relative_info = urlrewrite.Split("/".ToCharArray());
-					url_relative_depth = url_relative_info.Length;
-				}
-			}
-
-			// For STATISTICS, handle some specific cases and enforce appropriate URLs
-			if (CurrentModeCheck.Mode == Display_Mode_Enum.Statistics)
-			{
-				// Some submodes are off limites
-				if ((CurrentModeCheck.Statistics_Type != Statistics_Type_Enum.Item_Count_Growth_View) && (CurrentModeCheck.Statistics_Type != Statistics_Type_Enum.Item_Count_Standard_View) && (CurrentModeCheck.Statistics_Type != Statistics_Type_Enum.Item_Count_Text) && (CurrentModeCheck.Statistics_Type != Statistics_Type_Enum.Usage_Definitions) && (CurrentModeCheck.Statistics_Type != Statistics_Type_Enum.Usage_Overall))
-				{
-					CurrentModeCheck.Statistics_Type = Statistics_Type_Enum.Usage_Overall;
-					HttpContext.Current.Response.StatusCode = 301;
-					HttpContext.Current.Response.AddHeader("Location", UrlWriterHelper.Redirect_URL(CurrentModeCheck));
-					HttpContext.Current.ApplicationInstance.CompleteRequest();
-					currentMode.Request_Completed = true;
-					return;
-				}
-
-				// Ensure the URL behaved correctly
-				switch (CurrentModeCheck.Statistics_Type)
-				{
-					case Statistics_Type_Enum.Item_Count_Text:
-					case Statistics_Type_Enum.Item_Count_Growth_View:
-					case Statistics_Type_Enum.Usage_Definitions:
-						if (url_relative_depth > 3)
-						{
-							HttpContext.Current.Response.StatusCode = 301;
-							HttpContext.Current.Response.AddHeader("Location", UrlWriterHelper.Redirect_URL(CurrentModeCheck));
-							HttpContext.Current.ApplicationInstance.CompleteRequest();
-							currentMode.Request_Completed = true;
-							return;
-						}
-						break;
-
-					case Statistics_Type_Enum.Usage_Overall:
-						if (url_relative_depth > 2)
-						{
-							HttpContext.Current.Response.StatusCode = 301;
-							HttpContext.Current.Response.AddHeader("Location", UrlWriterHelper.Redirect_URL(CurrentModeCheck));
-							HttpContext.Current.ApplicationInstance.CompleteRequest();
-							currentMode.Request_Completed = true;
-							return;
-						}
-						break;
-
-					case Statistics_Type_Enum.Item_Count_Standard_View:
-						if (url_relative_depth > 2)
-						{
-							HttpContext.Current.Response.StatusCode = 301;
-							HttpContext.Current.Response.AddHeader("Location", UrlWriterHelper.Redirect_URL(CurrentModeCheck));
-							HttpContext.Current.ApplicationInstance.CompleteRequest();
-							currentMode.Request_Completed = true;
-							return;
-						}
-						else if (url_relative_depth == 2)
-						{
-							if (( url_relative_info != null ) && (url_relative_info.Length > 1 ) && ( url_relative_info[1] != "itemcount"))
-							{
-								HttpContext.Current.Response.StatusCode = 301;
-								HttpContext.Current.Response.AddHeader("Location", UrlWriterHelper.Redirect_URL(CurrentModeCheck));
-								HttpContext.Current.ApplicationInstance.CompleteRequest();
-								currentMode.Request_Completed = true;
-								return;
-							}
-						}
-						break;
-				}
-			}
-
-			// For AGGREGATION HOME handle some cases
-			if ((CurrentModeCheck.Mode == Display_Mode_Enum.Aggregation) && ((currentMode.Aggregation_Type == Aggregation_Type_Enum.Home) || (currentMode.Aggregation_Type == Aggregation_Type_Enum.Home_Edit)))
-			{
-				// Different code depending on if this is an aggregation or not
-				if (( String.IsNullOrEmpty(CurrentModeCheck.Aggregation)) || (CurrentModeCheck.Aggregation == "all"))
-				{
-					switch (CurrentModeCheck.Home_Type)
-					{
-						case Home_Type_Enum.List:
-							if (url_relative_depth > 0)
-							{
-								HttpContext.Current.Response.StatusCode = 301;
-								HttpContext.Current.Response.AddHeader("Location", UrlWriterHelper.Redirect_URL(CurrentModeCheck));
-								HttpContext.Current.ApplicationInstance.CompleteRequest();
-								currentMode.Request_Completed = true;
-								return;
-							}
-							break;
-
-						case Home_Type_Enum.Descriptions:
-						case Home_Type_Enum.Tree:
-						case Home_Type_Enum.Partners_List:
-							if (url_relative_depth > 1)
-							{
-								HttpContext.Current.Response.StatusCode = 301;
-								HttpContext.Current.Response.AddHeader("Location", UrlWriterHelper.Redirect_URL(CurrentModeCheck));
-								HttpContext.Current.ApplicationInstance.CompleteRequest();
-								currentMode.Request_Completed = true;
-								return;
-							}
-							break;
-
-						case Home_Type_Enum.Partners_Thumbnails:
-							if (url_relative_depth > 2)
-							{
-								HttpContext.Current.Response.StatusCode = 301;
-								HttpContext.Current.Response.AddHeader("Location", UrlWriterHelper.Redirect_URL(CurrentModeCheck));
-								HttpContext.Current.ApplicationInstance.CompleteRequest();
-								currentMode.Request_Completed = true;
-								return;
-							}
-							break;
-
-						case Home_Type_Enum.Personalized:
-							HttpContext.Current.Response.StatusCode = 301;
-							HttpContext.Current.Response.AddHeader("Location", UrlWriterHelper.Redirect_URL(CurrentModeCheck));
-							HttpContext.Current.ApplicationInstance.CompleteRequest();
-							currentMode.Request_Completed = true;
-							return;
-					}
-				}
-			}
-
-			// Ensure this is requesting the item without a viewercode and without extraneous information
-			if (CurrentModeCheck.Mode == Display_Mode_Enum.Item_Display)
-			{
-				if (( !String.IsNullOrEmpty(CurrentModeCheck.ViewerCode)) || (url_relative_depth > 2))
-
-				{
-					CurrentModeCheck.ViewerCode = String.Empty;
-
-					HttpContext.Current.Response.StatusCode = 301;
-					HttpContext.Current.Response.AddHeader("Location", UrlWriterHelper.Redirect_URL(CurrentModeCheck));
-					HttpContext.Current.ApplicationInstance.CompleteRequest();
-					currentMode.Request_Completed = true;
-					return;
-				}
-			}
-		}
-
-		#endregion
-
-		#region Method performs user checks against session, cookie, database, etc..
-
-		private void perform_user_checks(bool isPostBack)
-		{
-			// If the mode is NULL or the request was already completed, do nothing
-			if ((currentMode == null) || (currentMode.Request_Completed))
-				return;
-
-			tracer.Add_Trace("QueryInitializer.Perform_User_Checks", "In user checks portion");
-
-			// If this is to log out of my sobekcm, clear user id and forward back to sobekcm
-			if ((currentMode.Mode == Display_Mode_Enum.My_Sobek) && (currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Log_Out))
-			{
-				tracer.Add_Trace("QueryInitializer.Perform_User_Checks", "User logged out");
-
-				// Delete any user cookie
-				HttpCookie userCookie = new HttpCookie("SobekUser");
-				userCookie.Values["userid"] = String.Empty;
-				userCookie.Values["security_hash"] = String.Empty;
-				userCookie.Expires = DateTime.Now.AddDays(-1);
-				HttpContext.Current.Response.Cookies.Add(userCookie);
-
-				// Delete from memory
-				HttpContext.Current.Session["userid"] = 0;
-				HttpContext.Current.Session["user"] = null;
-
-				// Determine new redirect location
-			    string redirect = currentMode.Base_URL;
-			    if (!String.IsNullOrEmpty(currentMode.Return_URL))
-			    {
-			        redirect = currentMode.Base_URL + currentMode.Return_URL;
-
-			        if (((currentMode.Return_URL.IndexOf("admin") >= 0) && (currentMode.Return_URL.IndexOf("admin") <= 1)) ||
-			            ((currentMode.Return_URL.IndexOf("mysobek") >= 0) && (currentMode.Return_URL.IndexOf("mysobek") <= 1)))
-			            redirect = currentMode.Base_URL;
-			    }
-
-			    HttpContext.Current.Response.Redirect(redirect, false);
-				HttpContext.Current.ApplicationInstance.CompleteRequest();
-				currentMode.Request_Completed = true;
-				return;
-			}
-
-			// If there is already a user logged on, do nothing here
-			if (HttpContext.Current.Session["user"] == null)
-			{
-				// If this is a responce from Shibboleth, get the user information and register them if necessary
-			    if ((UI_ApplicationCache_Gateway.Configuration.Authentication.Shibboleth != null ) && (UI_ApplicationCache_Gateway.Configuration.Authentication.Shibboleth.Enabled))
-			    {
-			        string shibboleth_id = null;
-			        try { shibboleth_id = HttpContext.Current.Request.ServerVariables[UI_ApplicationCache_Gateway.Configuration.Authentication.Shibboleth.UserIdentityAttribute]; }
-			        catch (InvalidOperationException) { /* IServerVariablesFeature unavailable (Kestrel); Shibboleth via server variables requires IIS hosting */ }
-			        if (shibboleth_id == null)
-			        {
-			            if (UI_ApplicationCache_Gateway.Configuration.Authentication.Shibboleth.Debug)
-			            {
-                            tracer.Add_Trace("QueryInitializer.Constructor", UI_ApplicationCache_Gateway.Configuration.Authentication.Shibboleth.UserIdentityAttribute + " server variable NOT found");
-
-			                // For debugging purposes, if this SHOULD have included SHibboleth information, show in the trace route
-			                if (HttpContext.Current.Request.Url.AbsoluteUri.Contains("shibboleth"))
-			                {
-			                    foreach (string var in HttpContext.Current.Request.ServerVariables)
-			                    {
-			                        tracer.Add_Trace("QueryInitializer.Constructor", "Server Variables: " + var + " --> " + HttpContext.Current.Request.ServerVariables[var]);
-			                    }
-			                }
-			            }
-			        }
-			        else
-			        {
-			            if (UI_ApplicationCache_Gateway.Configuration.Authentication.Shibboleth.Debug)
-			            {
-                            tracer.Add_Trace("QueryInitializer.Constructor", UI_ApplicationCache_Gateway.Configuration.Authentication.Shibboleth.UserIdentityAttribute + " server variable found");
-
-                            tracer.Add_Trace("QueryInitializer.Constructor", UI_ApplicationCache_Gateway.Configuration.Authentication.Shibboleth.UserIdentityAttribute + " server variable = '" + shibboleth_id + "'");
-
-			                // For debugging purposes, if this SHOULD have included SHibboleth information, show in the trace route
-                            if (HttpContext.Current.Request.Url.AbsoluteUri.Contains("shibboleth"))
-                            {
-                                foreach (string var in HttpContext.Current.Request.ServerVariables)
-                                {
-                                    tracer.Add_Trace("QueryInitializer.Constructor", "Server Variables: " + var + " --> " + HttpContext.Current.Request.ServerVariables[var]);
-                                }
-                            }
-			            }
-
-			            if (shibboleth_id.Length > 0)
-			            {
-			                tracer.Add_Trace("QueryInitializer.Constructor", "Pulling from database by shibboleth id");
-
-			                User_Object possible_user_by_shibboleth_id = Engine_Database.Get_User(shibboleth_id, tracer);
-
-			                // Check to see if we got a valid user back
-			                if (possible_user_by_shibboleth_id != null)
-			                {
-			                    if (UI_ApplicationCache_Gateway.Configuration.Authentication.Shibboleth.Debug)
-			                    {
-			                        // Set the user information from the server variables here 
-			                        foreach (string var in HttpContext.Current.Request.ServerVariables)
-			                        {
-			                            User_Object_Attribute_Mapping_Enum mapping = UI_ApplicationCache_Gateway.Configuration.Authentication.Shibboleth.Get_User_Object_Mapping(var);
-			                            if (mapping != User_Object_Attribute_Mapping_Enum.NONE)
-			                            {
-			                                string value = HttpContext.Current.Request.ServerVariables[var];
-
-			                                if (UI_ApplicationCache_Gateway.Configuration.Authentication.Shibboleth.Debug)
-			                                {
-			                                    tracer.Add_Trace("QueryInitializer.Constructor", "Server Variable " + var + " ( " + value + " ) would have been mapped to " + User_Object_Attribute_Mapping_Enum_Converter.ToString(mapping));
-			                                }
-			                            }
-			                            else if (UI_ApplicationCache_Gateway.Configuration.Authentication.Shibboleth.Debug)
-			                            {
-			                                tracer.Add_Trace("QueryInitializer.Constructor", "Server Variable " + var + " is not mapped to a user attribute");
-			                            }
-			                        }
-
-			                        // Set any constants as well
-			                        foreach (Shibboleth_Configuration_Mapping constantMapping in UI_ApplicationCache_Gateway.Configuration.Authentication.Shibboleth.Constants)
-			                        {
-			                            if (constantMapping.Mapping != User_Object_Attribute_Mapping_Enum.NONE)
-			                            {
-			                                if (UI_ApplicationCache_Gateway.Configuration.Authentication.Shibboleth.Debug)
-			                                {
-			                                    tracer.Add_Trace("QueryInitializer.Constructor", "Constant value ( " + constantMapping.Value + " ) would have been set to " + User_Object_Attribute_Mapping_Enum_Converter.ToString(constantMapping.Mapping));
-			                                }
-			                            }
-			                        }
-			                    }
-
-			                    tracer.Add_Trace("QueryInitializer.Constructor", "Setting session user from shibboleth id");
-			                    possible_user_by_shibboleth_id.Authentication_Type = User_Authentication_Type_Enum.Shibboleth;
-			                    HttpContext.Current.Session["user"] = possible_user_by_shibboleth_id;
-			                }
-			                else
-			                {
-			                    tracer.Add_Trace("QueryInitializer.Constructor", "User from shibboleth id was null.. adding user");
-
-			                    // Now build the user object
-			                    User_Object newUser = new User_Object();
-			                    if ((HttpContext.Current.Request.ServerVariables["HTTP_PRIMARY-AFFILIATION"] != null) && (HttpContext.Current.Request.ServerVariables["HTTP_PRIMARY-AFFILIATION"].IndexOf("F") >= 0))
-			                        newUser.Can_Submit = true;
-			                    else
-			                        newUser.Can_Submit = false;
-			                    newUser.Send_Email_On_Submission = true;
-			                    newUser.Email = String.Empty;
-			                    newUser.Family_Name = String.Empty;
-			                    newUser.Given_Name = String.Empty;
-			                    newUser.Organization = String.Empty;
-			                    newUser.ShibbID = shibboleth_id;
-			                    newUser.UserID = -1;
-
-			                    // Set the user information from the server variables here 
-			                    foreach (string var in HttpContext.Current.Request.ServerVariables)
-			                    {
-			                        User_Object_Attribute_Mapping_Enum mapping = UI_ApplicationCache_Gateway.Configuration.Authentication.Shibboleth.Get_User_Object_Mapping(var);
-			                        if (mapping != User_Object_Attribute_Mapping_Enum.NONE)
-			                        {
-			                            string value = HttpContext.Current.Request.ServerVariables[var];
-			                            newUser.Set_Value_By_Mapping(mapping, value);
-
-			                            if (UI_ApplicationCache_Gateway.Configuration.Authentication.Shibboleth.Debug)
-			                            {
-			                                tracer.Add_Trace("QueryInitializer.Constructor", "Server Variable " + var + " ( " + value + " ) mapped to " + User_Object_Attribute_Mapping_Enum_Converter.ToString(mapping));
-			                            }
-			                        }
-			                        else if (UI_ApplicationCache_Gateway.Configuration.Authentication.Shibboleth.Debug)
-			                        {
-			                            tracer.Add_Trace("QueryInitializer.Constructor", "Server Variable " + var + " is not mapped to a user attribute");
-			                        }
-			                    }
-
-			                    // Set any constants as well
-			                    foreach (Shibboleth_Configuration_Mapping constantMapping in UI_ApplicationCache_Gateway.Configuration.Authentication.Shibboleth.Constants)
-			                    {
-			                        if (constantMapping.Mapping != User_Object_Attribute_Mapping_Enum.NONE)
-			                        {
-                                        newUser.Set_Value_By_Mapping(constantMapping.Mapping, constantMapping.Value);
-
-			                            if (UI_ApplicationCache_Gateway.Configuration.Authentication.Shibboleth.Debug)
-			                            {
-                                            tracer.Add_Trace("QueryInitializer.Constructor", "Setting constant value ( " + constantMapping.Value + " ) to " + User_Object_Attribute_Mapping_Enum_Converter.ToString(constantMapping.Mapping));
-			                            }
-			                        }
-			                    }
-
-			                    // Set the username
-			                    if (String.IsNullOrEmpty(newUser.UserName))
-			                    {
-			                        if (newUser.Email.Length > 0)
-			                            newUser.UserName = newUser.Email;
-			                        else
-			                            newUser.UserName = newUser.Family_Name + shibboleth_id;
-			                    }
-
-			                    // Set a random password
-			                    StringBuilder passwordBuilder = new StringBuilder();
-			                    Random randomGenerator = new Random(DateTime.Now.Millisecond);
-			                    for (int i = 0; i < 5; i++)
-			                    {
-			                        int randomNumber = randomGenerator.Next(97, 122);
-			                        passwordBuilder.Append((char) randomNumber);
-
-			                        int randomNumber2 = randomGenerator.Next(65, 90);
-			                        passwordBuilder.Append((char) randomNumber2);
-			                    }
-			                    string password = passwordBuilder.ToString();
-
-			                    // Now, save this user
-			                    SobekCM_Database.Save_User(newUser, password, newUser.Authentication_Type, tracer);
-
-			                    // Now, pull back out of the database
-			                    User_Object possible_user_by_shib2 = Engine_Database.Get_User(shibboleth_id, tracer);
-			                    possible_user_by_shib2.Is_Just_Registered = true;
-			                    possible_user_by_shib2.Authentication_Type = User_Authentication_Type_Enum.Shibboleth;
-			                    HttpContext.Current.Session["user"] = possible_user_by_shib2;
-			                }
-
-			                if (HttpContext.Current.Session["user"] != null)
-			                {
-			                    currentMode.Mode = Display_Mode_Enum.My_Sobek;
-			                    currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
-			                }
-			                else
-			                {
-			                    currentMode.Mode = Display_Mode_Enum.Aggregation;
-			                    currentMode.Aggregation_Type = Aggregation_Type_Enum.Home;
-			                    currentMode.Aggregation = String.Empty;
-			                }
-
-			                if (!UI_ApplicationCache_Gateway.Configuration.Authentication.Shibboleth.Debug)
-			                {
-			                    UrlWriterHelper.Redirect(currentMode);
-			                }
-			            }
-			        }
-			    }
-
-			    // If the user information is still missing , but the SobekUser cookie exists, then pull 
-				// the user information from the SobekUser cookie in the current requests
-				if ((HttpContext.Current.Session["user"] == null) && (HttpContext.Current.Request.Cookies["SobekUser"] != null))
-				{
-					string userid_string = HttpContext.Current.Request.Cookies["SobekUser"]["userid"];
-					int userid = -1;
-
-					bool valid_perhaps = userid_string.All(Char.IsNumber);
-					if (valid_perhaps)
-						Int32.TryParse(userid_string, out userid);
-
-					if (userid > 0)
-					{
-						User_Object possible_user = Engine_Database.Get_User(userid, tracer);
-						if (possible_user != null)
-						{
-							string cookie_security_hash = HttpContext.Current.Request.Cookies["SobekUser"]["security_hash"];
-							if (cookie_security_hash == possible_user.Security_Hash(HttpContext.Current.Request.UserHostAddress))
-							{
-								HttpContext.Current.Session["user"] = possible_user;
-							}
-							else
-							{
-								// Security hash did not match, so clear the cookie
-								HttpCookie userCookie = new HttpCookie("SobekUser");
-								userCookie.Values["userid"] = String.Empty;
-								userCookie.Values["security_hash"] = String.Empty;
-								userCookie.Expires = DateTime.Now.AddDays(-1);
-								HttpContext.Current.Response.Cookies.Add(userCookie);
-							}
-						}
-					}
-				}
-			}
-
-			// If this is not a post back, set the html writer code to 'l' or 'h' depending on whether logged on
-			if (!isPostBack)
-			{
-				if (HttpContext.Current.Session["user"] != null)
-				{
-					if (currentMode.Writer_Type == Writer_Type_Enum.HTML)
-					{
-						// If this is really a deprecated URL, don't try to forwaard
-						if ((currentMode.Mode != Display_Mode_Enum.Item_Display) || (currentMode.BibID.Length > 0) || (currentMode.ItemID_DEPRECATED <= 0))
-						{
-							currentMode.Writer_Type = Writer_Type_Enum.HTML_LoggedIn;
-							UrlWriterHelper.Redirect(currentMode);
-							return;
-						}
-					}
-					else
-					{
-						if ((currentMode.Mode == Display_Mode_Enum.My_Sobek) && (currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Logon))
-						{
-							currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
-						}
-					}
-				}
-				else
-				{
-					if ((currentMode.Writer_Type == Writer_Type_Enum.HTML_LoggedIn) && (currentMode.My_Sobek_Type != My_Sobek_Type_Enum.Logon) && (currentMode.My_Sobek_Type != My_Sobek_Type_Enum.Register))
-					{
-						switch (currentMode.Mode)
-						{
-							case Display_Mode_Enum.My_Sobek:
-								currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Logon;
-								break;
-
-							case Display_Mode_Enum.Item_Display:
-								currentMode.Writer_Type = Writer_Type_Enum.HTML;
-								// If this is really a deprecated URL, don't try to forwaard
-								if ((currentMode.BibID.Length > 0) || (currentMode.ItemID_DEPRECATED <= 0))
-								{
-									UrlWriterHelper.Redirect(currentMode);
-									return;
-								}
-								break;
-
-							default:
-								currentMode.Writer_Type = Writer_Type_Enum.HTML;
-								UrlWriterHelper.Redirect(currentMode);
-								return;
-
-						}
-					}
-
-					// If this is requesting an internal page and there is no user, send to the logon page
-					if (currentMode.Mode == Display_Mode_Enum.Internal)
-					{
-						currentMode.Mode = Display_Mode_Enum.My_Sobek;
-						currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Logon;
-					}
-				}
-			}
-			else // This IS a postback
-			{
-				// If this is a postback from the logon page being inserted in front of the INTERNAL pages,
-				// then the postback request needs to be handled by the logon page
-				if ((currentMode.Mode == Display_Mode_Enum.Internal) && (HttpContext.Current.Session["user"] == null))
-				{
-					currentMode.Mode = Display_Mode_Enum.My_Sobek;
-					currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Logon;
-				}
-			}
-
-			// Set the internal DLC flag
-			if (HttpContext.Current.Session["user"] != null) 
-			{
-				currentUser = (User_Object) HttpContext.Current.Session["user"];
-
-				// Check if this is an administrative task that the current user does not have access to
-				if ((!currentUser.Is_System_Admin) && (!currentUser.Is_Portal_Admin) && (!currentUser.Is_User_Admin) && (currentMode.Mode == Display_Mode_Enum.Administrative) && (currentMode.Admin_Type != Admin_Type_Enum.Aggregation_Single))
-				{
-                    if (currentUser.LoggedOn)
-                    {
-                        currentMode.Mode = Display_Mode_Enum.My_Sobek;
-                        currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
-                    }
-                    else
-                    {
-                        currentMode.Mode = Display_Mode_Enum.Aggregation;
-                        currentMode.Aggregation_Type = Aggregation_Type_Enum.Home;
-                        currentMode.Aggregation = String.Empty;
-                    }
-				}
-			}
-			else
-			{
-				if ((currentMode.Mode == Display_Mode_Enum.My_Sobek) && (currentMode.My_Sobek_Type != My_Sobek_Type_Enum.Register))
-				{
-					currentMode.Logon_Required = true;
-				}
-
-				if ((currentMode.Mode == Display_Mode_Enum.Aggregation) && (currentMode.Aggregation_Type == Aggregation_Type_Enum.Home) && (currentMode.Home_Type == Home_Type_Enum.Personalized))
-					currentMode.Home_Type = Home_Type_Enum.List;
-			}
-
-            //// Create the empty user
-            //if (currentUser == null)
-            //{
-            //    currentUser = new User_Object();
-            //    HttpContext.Current.Session["user"] = currentUser;
-            //}
-		}
-
-		#endregion
+		
 
 		#region Method called during Page Load
 
@@ -925,49 +292,49 @@ namespace SobekCM
 
             if ((currentMode.Writer_Type == Writer_Type_Enum.HTML) || (currentMode.Writer_Type == Writer_Type_Enum.HTML_LoggedIn))
             {
-                mainWriter = new Html_MainWriter(c);
+                mainWriter = new Html_MainWriter(requestSpecificValues);
             }
 
 			// Load the OAI writer
 			if (currentMode.Writer_Type == Writer_Type_Enum.OAI)
 			{
-                mainWriter = new Oai_MainWriter(HttpContext.Current.Request.QueryString, RequestSpecificValues);
+                mainWriter = new Oai_MainWriter(requestSpecificValues.QueryString, requestSpecificValues);
 			}
 
 			// Load the DataSet writer
 			if (currentMode.Writer_Type == Writer_Type_Enum.DataSet)
 			{
-                mainWriter = new Dataset_MainWriter(RequestSpecificValues);
+                mainWriter = new Dataset_MainWriter(requestSpecificValues);
 			}
 
 			// Load the DataProvider writer
 			if (currentMode.Writer_Type == Writer_Type_Enum.Data_Provider)
 			{
-                mainWriter = new DataProvider_MainWriter(RequestSpecificValues);
+                mainWriter = new DataProvider_MainWriter(requestSpecificValues);
 			}
 
 			// Load the XML writer
 			if (currentMode.Writer_Type == Writer_Type_Enum.XML)
 			{
-                mainWriter = new Xml_MainWriter(RequestSpecificValues);
+                mainWriter = new Xml_MainWriter(requestSpecificValues);
 			}
 
 			// Load the JSON writer
 			if (currentMode.Writer_Type == Writer_Type_Enum.JSON)
 			{
-                mainWriter = new Json_MainWriter(RequestSpecificValues, UI_ApplicationCache_Gateway.Settings.Servers.Image_URL);
+                mainWriter = new Json_MainWriter(requestSpecificValues, UI_ApplicationCache_Gateway.Settings.Servers.Image_URL);
 			}
 
 			// Load the HTML ECHO writer
 			if (currentMode.Writer_Type == Writer_Type_Enum.HTML_Echo)
 			{
-                mainWriter = new Html_Echo_MainWriter(RequestSpecificValues, browse_info_display_text);
+                mainWriter = new Html_Echo_MainWriter(requestSpecificValues, browse_info_display_text);
 			}
 
 			// Default to HTML
 			if (mainWriter == null)
 			{
-                mainWriter = new Html_MainWriter(RequestSpecificValues);
+                mainWriter = new Html_MainWriter(requestSpecificValues);
 			}
 		}
 
@@ -1320,11 +687,7 @@ namespace SobekCM
 
 		#endregion
 
-        #region Helper methods
 
-
-
-        #endregion
     }
 
 }

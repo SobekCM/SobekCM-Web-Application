@@ -11,6 +11,7 @@ using SobekCM.Library.Database;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
 using System;
+using System.IO;
 using System.Linq;
 using System.Text;
 
@@ -69,7 +70,9 @@ namespace SobekCM.QueryInitializerHelpers
                 if (request.Page_Name == "SOBEKCM")
                 {
                     tracer.Add_Trace("QueryInitializer.Constructor", "Checking for logged on user by cookie or session");
-                    perform_user_checks(context, request, tracer);
+                    var result = perform_user_checks(context, request, tracer);
+                    if (result != null)
+                        return result;
                 }
 
                 // If this is a system admin, they can run as a different user actually
@@ -82,8 +85,10 @@ namespace SobekCM.QueryInitializerHelpers
                         if (mirroredUser != null)
                         {
                             // Replace the user information in the session state
-                            context.Items["user"] = mirroredUser;
-                            request.Current_User = mirroredUser;
+                            using var sessionMs = new MemoryStream();
+                            ProtoBuf.Serializer.Serialize(sessionMs, mirroredUser);
+                            context.Session.Set(SessionCache_Keys.User, sessionMs.ToArray());
+                            request.Current_User = mirroredUser; 
                         }
                     }
                     catch (Exception)
@@ -141,12 +146,17 @@ namespace SobekCM.QueryInitializerHelpers
                         redirect = currentMode.Base_URL;
                 }
 
-                return new QueryInitializerHelperResponse(false, "Exception caught while parsing the query string.") { RedirectUrl = redirect };
+                return new QueryInitializerHelperResponse(true) { RedirectUrl = redirect };
             }
 
             // If there is already a user logged on, do nothing here
-            var currentSessionUserString = context.Session.GetString(SessionCache_Keys.User);
-            User_Object sessionUser = (String.IsNullOrEmpty(currentSessionUserString) ? null : currentSessionUserString as User_Object) ;
+            byte[] sessionUserBytes = context.Session.Get(SessionCache_Keys.User);
+            User_Object sessionUser = null;
+            if (sessionUserBytes != null && sessionUserBytes.Length > 0)
+            {
+                using var ms = new MemoryStream(sessionUserBytes);
+                sessionUser = ProtoBuf.Serializer.Deserialize<User_Object>(ms);
+            }
 
             if (sessionUser == null)
             {
@@ -154,7 +164,7 @@ namespace SobekCM.QueryInitializerHelpers
 
                 // If the user information is still missing , but the SobekUser cookie exists, then pull 
                 // the user information from the SobekUser cookie in the current requests
-                if ((sessionUser == null) && (context.Request.Cookies["SobekUser"] != null))
+                if (context.Request.Cookies["SobekUser"] != null)
                 {
                     string readCookieValue = context.Request.Cookies["SobekUser"] ?? "";
                     var parts = Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(readCookieValue);
@@ -169,16 +179,22 @@ namespace SobekCM.QueryInitializerHelpers
 
                     if (userid > 0)
                     {
-                        User_Object possible_user = Engine_Database.Get_User(userid, tracer);
-                        if (possible_user != null)
+                        sessionUser = Engine_Database.Get_User(userid, tracer);
+                        if (sessionUser != null)
                         {
                             string userIp = context.Connection.RemoteIpAddress?.ToString();
-                            string cookieValue = $"userid={possible_user.UserID}&security_hash={possible_user.Security_Hash(userIp)}";
+                            string cookieValue = $"userid={sessionUser.UserID}&security_hash={sessionUser.Security_Hash(userIp)}";
                             context.Response.Cookies.Append("SobekUser", cookieValue, new CookieOptions
                             {
                                 Expires = DateTimeOffset.Now.AddDays(30),
                                 HttpOnly = true
                             });
+
+                            // Also add user to session
+                            using var sessionMs = new MemoryStream();
+                            ProtoBuf.Serializer.Serialize(sessionMs, sessionUser);
+                            context.Session.Set(SessionCache_Keys.User, sessionMs.ToArray());
+                            request.Current_User = sessionUser;
                         }
                     }
                 }
@@ -187,7 +203,7 @@ namespace SobekCM.QueryInitializerHelpers
             // If this is not a post back, set the html writer code to 'l' or 'h' depending on whether logged on
             if (!isPostBack)
             {
-                if (context.Session["user"] != null)
+                if (sessionUser != null)
                 {
                     if (currentMode.Writer_Type == Writer_Type_Enum.HTML)
                     {
@@ -235,7 +251,7 @@ namespace SobekCM.QueryInitializerHelpers
             {
                 // If this is a postback from the logon page being inserted in front of the INTERNAL pages,
                 // then the postback request needs to be handled by the logon page
-                if ((currentMode.Mode == Display_Mode_Enum.Internal) && (context.Session["user"] == null))
+                if ((currentMode.Mode == Display_Mode_Enum.Internal) && (sessionUser == null))
                 {
                     currentMode.Mode = Display_Mode_Enum.My_Sobek;
                     currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Logon;
@@ -243,14 +259,14 @@ namespace SobekCM.QueryInitializerHelpers
             }
 
             // Set the internal DLC flag
-            if (context.Session["user"] != null)
+            if (sessionUser != null)
             {
-                currentUser = (User_Object)context.Session["user"];
+                request.Current_User = sessionUser;
 
                 // Check if this is an administrative task that the current user does not have access to
-                if ((!currentUser.Is_System_Admin) && (!currentUser.Is_Portal_Admin) && (!currentUser.Is_User_Admin) && (currentMode.Mode == Display_Mode_Enum.Administrative) && (currentMode.Admin_Type != Admin_Type_Enum.Aggregation_Single))
+                if ((!sessionUser.Is_System_Admin) && (!sessionUser.Is_Portal_Admin) && (!sessionUser.Is_User_Admin) && (currentMode.Mode == Display_Mode_Enum.Administrative) && (currentMode.Admin_Type != Admin_Type_Enum.Aggregation_Single))
                 {
-                    if (currentUser.LoggedOn)
+                    if (sessionUser.LoggedOn)
                     {
                         currentMode.Mode = Display_Mode_Enum.My_Sobek;
                         currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Home;

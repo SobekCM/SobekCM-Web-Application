@@ -429,7 +429,8 @@ namespace SobekCM
 
 				if ((!currentMode.isPostBack) && (UI_ApplicationCache_Gateway.Search_History != null))
 				{
-                    UI_ApplicationCache_Gateway.Search_History.Add_New_Search(Get_Search_From_Mode(currentMode, HttpContext.Current.Request.UserHostAddress, currentMode.Search_Type, hierarchyObject.Name, currentMode.Search_String ));
+                    string userAddress = context.Items[RequestCache_Keys.UserIP].ToString();
+                    UI_ApplicationCache_Gateway.Search_History.Add_New_Search(Get_Search_From_Mode(currentMode, userAddress, currentMode.Search_Type, hierarchyObject.Name, currentMode.Search_String ));
 				}
 			}
 			catch (Exception ee)
@@ -492,11 +493,9 @@ namespace SobekCM
 
 		private void MySobekCM_Block()
 		{
-			if ((currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Folder_Management) && (HttpContext.Current.Session["user"] != null) && (!String.IsNullOrEmpty(currentMode.My_Sobek_SubMode)))
+            if ((currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Folder_Management) && (requestSpecificValues.Current_User != null) && (!String.IsNullOrEmpty(currentMode.My_Sobek_SubMode)))
 			{
-				tracer.Add_Trace("QueryInitializer.MySobekCM_Block", "Retrieiving Browse/Info Object");
-
-				User_Object userObj = (User_Object) HttpContext.Current.Session["user"];
+				tracer.Add_Trace("QueryInitializer.MySobekCM_Block", "Retrieiving Browse/Info Object");				
 
 				// For EXPORT option, include ALL the items
 				int results_per_page = 20;
@@ -509,7 +508,7 @@ namespace SobekCM
 
 				// Get the folder
 				SobekCM_Assistant assistant = new SobekCM_Assistant();
-				if (!assistant.Get_User_Folder(currentMode.My_Sobek_SubMode, userObj.UserID, results_per_page, current_page, tracer, out searchResultStatistics, out pagedSearchResults))
+				if (!assistant.Get_User_Folder(currentMode.My_Sobek_SubMode, requestSpecificValues.Current_User.UserID, results_per_page, current_page, tracer, out searchResultStatistics, out pagedSearchResults))
 				{
 					currentMode.Mode = Display_Mode_Enum.Error;
 				}

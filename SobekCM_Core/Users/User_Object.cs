@@ -197,7 +197,7 @@ namespace SobekCM.Core.Users
         private List<string> defaultMetadataSets;
         private List<string> templates;
         private List<Simple_User_Group_Info> userGroups;
-        private Dictionary<string, object> userSettings;
+        private Dictionary<string, string> userSettings;
 
 		private List<string> templates_from_groups;
 	    private List<string> defaultMetadataSetsFromGroups;
@@ -245,7 +245,7 @@ namespace SobekCM.Core.Users
             Receive_Stats_Emails = true;
             Has_Item_Stats = false;
             Include_Tracking_In_Standard_Forms = true;
-			userSettings = new Dictionary<string, object>();
+			userSettings = new Dictionary<string, string>();
 	        Can_Delete_All = false;
             Authentication_Type = User_Authentication_Type_Enum.NONE;
 			defaultMetadataSetsFromGroups = new List<string>();
@@ -285,7 +285,7 @@ namespace SobekCM.Core.Users
         #region User settings properties and methods
 
         /// <summary> Gets the full list of all settings </summary>
-        protected Dictionary<string, object> Settings { get { return userSettings;  } }
+        protected Dictionary<string, string> Settings { get { return userSettings;  } }
 
         /// <summary> Get the number of settings </summary>
         public int SettingsCount
@@ -311,7 +311,7 @@ namespace SobekCM.Core.Users
         /// <summary> Get the user option as an object, by option key </summary>
         /// <param name="Option_Key"> Key for the user option </param>
         /// <returns> Option, as an uncast object, or NULL </returns>
-        public object Get_Setting( string Option_Key )
+        public string Get_Setting( string Option_Key )
         {
 			if (userSettings.ContainsKey(Option_Key))
 				return userSettings[Option_Key];
@@ -324,11 +324,7 @@ namespace SobekCM.Core.Users
         public bool Get_Setting(string Option_Key, bool Default_Value)
         {
             if (userSettings.ContainsKey(Option_Key))
-            {
-                string string_value = userSettings[Option_Key].ToString();
-
-                return string_value.Equals("true", StringComparison.OrdinalIgnoreCase);
-            }
+                return userSettings[Option_Key].Equals("true", StringComparison.OrdinalIgnoreCase);
 
             return Default_Value;
         }
@@ -341,8 +337,7 @@ namespace SobekCM.Core.Users
         {
 			if (userSettings.ContainsKey(Option_Key))
             {
-                int tempValue;
-				if (int.TryParse(userSettings[Option_Key].ToString(), out tempValue))
+                if (int.TryParse(userSettings[Option_Key], out int tempValue))
                     return tempValue;
             }
             return Default_Value;
@@ -355,16 +350,14 @@ namespace SobekCM.Core.Users
         public string Get_Setting(string Option_Key, string Default_Value)
         {
 			if (userSettings.ContainsKey(Option_Key))
-            {
-				return userSettings[Option_Key].ToString();
-            }
+                return userSettings[Option_Key];
             return Default_Value;
         }
 
         /// <summary> Add a new user option </summary>
         /// <param name="Option_Key"> Key for the user option </param>
         /// <param name="Option_Value"> Value for this user option </param>
-        public void Add_Setting( string Option_Key, object Option_Value )
+        public void Add_Setting( string Option_Key, string Option_Value )
         {
 	        Add_Setting(Option_Key, Option_Value, true);
         }
@@ -373,13 +366,13 @@ namespace SobekCM.Core.Users
 		/// <param name="Option_Key"> Key for the user option </param>
 		/// <param name="Option_Value"> Value for this user option </param>
 		/// <param name="Update_Database"> Flag indicates if the database should be updated </param>
-		public void Add_Setting(string Option_Key, object Option_Value, bool Update_Database )
+		public void Add_Setting(string Option_Key, string Option_Value, bool Update_Database )
 		{
 			// Does this option already exist, and does it have the same value?
 			if ((!userSettings.ContainsKey(Option_Key)) || (userSettings[Option_Key] != Option_Value))
 			{
 				userSettings[Option_Key] = Option_Value;
-                
+
                // Engine_Database.Set_User_Setting(UserID, Option_Key, Option_Value.ToString());
 			}
 		}

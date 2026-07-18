@@ -157,7 +157,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 // Or was there a new value in the URL?
                 if ((currentRequest.Thumbnails_Per_Page.HasValue) && (currentRequest.Thumbnails_Per_Page.Value >= -1))
                 {
-                    CurrentUser.Add_Setting("Related_Images_ItemViewer:ThumbnailsPerPage", currentRequest.Thumbnails_Per_Page);
+                    CurrentUser.Add_Setting("Related_Images_ItemViewer:ThumbnailsPerPage", currentRequest.Thumbnails_Per_Page.ToString());
                     thumbnailsPerPage = currentRequest.Thumbnails_Per_Page.Value;
                 }
             }
@@ -195,7 +195,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 // Or was there a new value in the URL?
                 if ((currentRequest.Size_Of_Thumbnails.HasValue) && (currentRequest.Size_Of_Thumbnails.Value > -1))
                 {
-                    CurrentUser.Add_Setting("Related_Images_ItemViewer:ThumbnailSize", currentRequest.Size_Of_Thumbnails);
+                    CurrentUser.Add_Setting("Related_Images_ItemViewer:ThumbnailSize", currentRequest.Size_Of_Thumbnails.ToString());
                     thumbnailSize = currentRequest.Size_Of_Thumbnails.Value;
                 }
             }

@@ -354,7 +354,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             {
                 if (makeSortable.ToString() != CurrentUser.Get_Setting("QC_ItemViewer:SortableMode", "NULL"))
                 {
-                    CurrentUser.Add_Setting("QC_ItemViewer:SortableMode", makeSortable);
+                    CurrentUser.Add_Setting("QC_ItemViewer:SortableMode", makeSortable.ToString());
                     Engine_Database.Set_User_Setting(CurrentUser.UserID, "QC_ItemViewer:SortableMode", makeSortable.ToString());
                 }
             }
@@ -365,7 +365,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             {
                 if (autonumber_mode.ToString() != CurrentUser.Get_Setting("QC_ItemViewer:AutonumberingMode", "NULL"))
                 {
-                    CurrentUser.Add_Setting("QC_ItemViewer:AutonumberingMode", autonumber_mode);
+                    CurrentUser.Add_Setting("QC_ItemViewer:AutonumberingMode", autonumber_mode.ToString());
                     Engine_Database.Set_User_Setting(CurrentUser.UserID, "QC_ItemViewer:AutonumberingMode", autonumber_mode.ToString());
                 }
             }
@@ -375,7 +375,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             {
                 if (CurrentRequest.Size_Of_Thumbnails.ToString() != CurrentUser.Get_Setting("QC_ItemViewer:ThumbnailSize", "NULL"))
                 {
-                    CurrentUser.Add_Setting("QC_ItemViewer:ThumbnailSize", CurrentRequest.Size_Of_Thumbnails);
+                    CurrentUser.Add_Setting("QC_ItemViewer:ThumbnailSize", CurrentRequest.Size_Of_Thumbnails.ToString());
                     Engine_Database.Set_User_Setting(CurrentUser.UserID, "QC_ItemViewer:ThumbnailSize", CurrentRequest.Size_Of_Thumbnails.ToString());
                 }
             }
@@ -799,7 +799,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             // Or was there a new value in the URL?
             if (CurrentRequest.Thumbnails_Per_Page >= -1)
             {
-                CurrentUser.Add_Setting("QC_ItemViewer:ThumbnailsPerPage", CurrentRequest.Thumbnails_Per_Page);
+                CurrentUser.Add_Setting("QC_ItemViewer:ThumbnailsPerPage", CurrentRequest.Thumbnails_Per_Page.ToString());
                 thumbnailsPerPage = CurrentRequest.Thumbnails_Per_Page.HasValue ? CurrentRequest.Thumbnails_Per_Page.Value : -100;
 
                 // Now, reset the value in the navigation object, since we won't need to set it again
@@ -817,7 +817,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             // Or was there a new value in the URL?
             if (CurrentRequest.Size_Of_Thumbnails > -1)
             {
-                CurrentUser.Add_Setting("QC_ItemViewer:ThumbnailSize", CurrentRequest.Size_Of_Thumbnails);
+                CurrentUser.Add_Setting("QC_ItemViewer:ThumbnailSize", CurrentRequest.Size_Of_Thumbnails.ToString());
                 thumbnailSize = CurrentRequest.Size_Of_Thumbnails.HasValue ? CurrentRequest.Size_Of_Thumbnails.Value : -1;
 
                 //Now reset the current mode value since we won't need to set it again

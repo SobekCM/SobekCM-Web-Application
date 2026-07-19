@@ -40,7 +40,7 @@ namespace SobekCM.Library.MainWriters
             {
                 RequestSpecificValues.Tracer.Add_Trace("Html_MainWriter.Constructor", "The NonIE_Hack_CSS was not loaded.");
 
-                string css_file = HttpContext.Current.Server.MapPath("default/SobekCM_NonIE.css");
+                string css_file = Context.Server.MapPath("default/SobekCM_NonIE.css");
                 if (File.Exists(css_file))
                 {
                     try
@@ -66,10 +66,10 @@ namespace SobekCM.Library.MainWriters
             }
 
 		    // Handle basic events which may be fired by the internal header
-            if (HttpContext.Current.Request.Form["internal_header_action"] != null)
+            if (Context.Request.Form["internal_header_action"] != null)
             {
                 // Pull the action value
-                string internalHeaderAction = HttpContext.Current.Request.Form["internal_header_action"].Trim();
+                string internalHeaderAction = Context.Request.Form["internal_header_action"].Trim();
 
                 RequestSpecificValues.Tracer.Add_Trace("Html_MainWriter.Consructor", "Internal header action=[" + internalHeaderAction + "].");
 
@@ -77,18 +77,18 @@ namespace SobekCM.Library.MainWriters
                 if ((internalHeaderAction == "hide") || (internalHeaderAction == "show"))
                 {
                     // Pull the current visibility from the session
-                    bool shown = !((HttpContext.Current.Session["internal_header"] != null) && (HttpContext.Current.Session["internal_header"].ToString() == "hidden"));
+                    bool shown = !((Context.Session.GetString("internal_header") != null) && (Context.Session.GetString("internal_header").ToString() == "hidden"));
 
                     if ((internalHeaderAction == "hide") && (shown))
                     {
-                        HttpContext.Current.Session["internal_header"] = "hidden";
+                        Context.Session.SetString("internal_header", "hidden");
                         UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
                         return;
                     }
 
                     if ((internalHeaderAction == "show") && (!shown))
                     {
-                        HttpContext.Current.Session["internal_header"] = "shown";
+                        Context.Session.SetString("internal_header", "shown");
                         UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
                         return;
                     }
@@ -150,17 +150,17 @@ namespace SobekCM.Library.MainWriters
                         string lastMode = String.Empty;
                         try
                         {
-                            if (HttpContext.Current.Session["Last_Mode"] != null)
-                                lastMode = HttpContext.Current.Session["Last_Mode"].ToString();
+                            if (Context.Session.GetString("Last_Mode") != null)
+                                lastMode = Context.Session.GetString("Last_Mode").ToString();
 
-                            builder.Append("\tIP Address:\t\t\t" + HttpContext.Current.Request.UserHostAddress + "\n");
-                            builder.Append("\tHost Name:\t\t\t" + HttpContext.Current.Request.UserHostName + "\n");
-                            builder.Append("\tBrowser:\t\t\t" + HttpContext.Current.Request.Browser.Browser + "\n");
-                            builder.Append("\tBrowser Platform:\t\t" + HttpContext.Current.Request.Browser.Platform + "\n");
-                            builder.Append("\tBrowser Version:\t\t" + HttpContext.Current.Request.Browser.Version + "\n");
+                            builder.Append("\tIP Address:\t\t\t" + Context.Request.UserHostAddress + "\n");
+                            builder.Append("\tHost Name:\t\t\t" + Context.Request.UserHostName + "\n");
+                            builder.Append("\tBrowser:\t\t\t" + Context.Request.Browser.Browser + "\n");
+                            builder.Append("\tBrowser Platform:\t\t" + Context.Request.Browser.Platform + "\n");
+                            builder.Append("\tBrowser Version:\t\t" + Context.Request.Browser.Version + "\n");
                             builder.Append("\tBrowser Language:\t\t");
                             bool first = true;
-                            string[] languages = HttpContext.Current.Request.UserLanguages;
+                            string[] languages = Context.Request.UserLanguages;
 
                             if (languages != null)
                                 foreach (string thisLanguage in languages)
@@ -177,7 +177,7 @@ namespace SobekCM.Library.MainWriters
                                 }
 
                             builder.Append("\n\nHISTORY\n");
-                            if (HttpContext.Current.Session["LastSearch"] != null)
+                            if (Context.Session.GetString("LastSearch") != null)
                                 builder.Append("\tLast Search:\t\t" + HttpContext.Current.Session["LastSearch"] + "\n");
                             if (HttpContext.Current.Session["LastResults"] != null)
                                 builder.Append("\tLast Results:\t\t" + HttpContext.Current.Session["LastResults"] + "\n");

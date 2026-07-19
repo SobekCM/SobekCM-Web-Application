@@ -788,21 +788,21 @@ namespace SobekCM.Library.AdminViewer
             }
 
             // Get any level filter information from the query string
-            if ((fixed_depth < 2) && (!String.IsNullOrEmpty(Context.Request.QueryString["l2"])))
+            if ((fixed_depth < 2) && (!String.IsNullOrEmpty(RequestSpecificValues.QueryString["l2"])))
             {
-                level2 = Context.Request.QueryString["l2"];
+                level2 = RequestSpecificValues.QueryString["l2"];
             }
-            if ((fixed_depth < 3) && (!String.IsNullOrEmpty(level2)) && (!String.IsNullOrEmpty(Context.Request.QueryString["l3"])))
+            if ((fixed_depth < 3) && (!String.IsNullOrEmpty(level2)) && (!String.IsNullOrEmpty(RequestSpecificValues.QueryString["l3"])))
             {
-                level3 = Context.Request.QueryString["l3"];
+                level3 = RequestSpecificValues.QueryString["l3"];
             }
-            if ((fixed_depth < 4) && (!String.IsNullOrEmpty(level3)) && (!String.IsNullOrEmpty(Context.Request.QueryString["l4"])))
+            if ((fixed_depth < 4) && (!String.IsNullOrEmpty(level3)) && (!String.IsNullOrEmpty(RequestSpecificValues.QueryString["l4"])))
             {
-                level4 = Context.Request.QueryString["l4"];
+                level4 = RequestSpecificValues.QueryString["l4"];
             }
-            if ((fixed_depth < 5) && (!String.IsNullOrEmpty(level4)) && (!String.IsNullOrEmpty(Context.Request.QueryString["l5"])))
+            if ((fixed_depth < 5) && (!String.IsNullOrEmpty(level4)) && (!String.IsNullOrEmpty(RequestSpecificValues.QueryString["l5"])))
             {
-                level5 = Context.Request.QueryString["l5"];
+                level5 = RequestSpecificValues.QueryString["l5"];
             }
 
 

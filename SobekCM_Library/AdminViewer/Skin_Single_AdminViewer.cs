@@ -891,9 +891,9 @@ namespace SobekCM.Library.AdminViewer
         {
             Web_Language_Enum current_language = Web_Language_Enum.DEFAULT;
 
-            if (!String.IsNullOrEmpty(Context.Request.QueryString["lang"]))
+            if (!String.IsNullOrEmpty(RequestSpecificValues.QueryString["lang"]))
             {
-                string current_language_code = Context.Request.QueryString["lang"];
+                string current_language_code = RequestSpecificValues.QueryString["lang"];
                 current_language = current_language_code.ToLower() == "def" ? Web_Language_Enum.DEFAULT : Web_Language_Enum_Converter.Code_To_Enum(current_language_code);
             }
 
@@ -939,9 +939,9 @@ namespace SobekCM.Library.AdminViewer
         {
             Web_Language_Enum current_language = Web_Language_Enum.DEFAULT;
 
-            if (!String.IsNullOrEmpty(Context.Request.QueryString["lang"]))
+            if (!String.IsNullOrEmpty(RequestSpecificValues.QueryString["lang"]))
             {
-                string current_language_code = Context.Request.QueryString["lang"];
+                string current_language_code = RequestSpecificValues.QueryString["lang"];
                 current_language = current_language_code.ToLower() == "def" ? Web_Language_Enum.DEFAULT : Web_Language_Enum_Converter.Code_To_Enum(current_language_code);
             }
 

@@ -1,10 +1,12 @@
 #region Using directives
 
+using SobekCM.Core.MemoryMgmt;
+using Microsoft.Extensions.Caching.Memory;
+
 using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Runtime.Caching;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Navigation;
@@ -115,7 +117,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 			// Get the list of years for this aggregation
 			string aggrCode = ViewBag.Hierarchy_Object.Code.ToLower();
 			string key = aggrCode + "_YearRanges";
-			List<int> yearRange = MemoryCache.Default[key] as List<int>;
+			List<int> yearRange = SharedCache.Instance[key] as List<int>;
 			if (yearRange == null)
 			{
 				yearRange = new List<int>();
@@ -126,7 +128,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 					if (Int32.TryParse(thisYear, out result))
 						yearRange.Add(result);
 				}
-				MemoryCache.Default.Set(key, yearRange, new CacheItemPolicy { SlidingExpiration = TimeSpan.FromMinutes(5) });
+				SharedCache.Instance.Set(key, yearRange, new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(5) });
 			}
 
 			string searchLanguage = "Search for:";

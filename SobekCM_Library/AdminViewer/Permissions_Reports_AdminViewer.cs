@@ -1,10 +1,12 @@
 #region Using directives
 
+using SobekCM.Core.MemoryMgmt;
+using Microsoft.Extensions.Caching.Memory;
+
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
-using System.Runtime.Caching;
 using Microsoft.AspNetCore.Http;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.UI_Configuration;
@@ -57,10 +59,10 @@ namespace SobekCM.Library.AdminViewer
                 if ((!String.IsNullOrEmpty(reset_value)) && (reset_value == "reset"))
                 {
                     // Just ensure everything is emptied out
-                    MemoryCache.Default.Remove("GlobalPermissionsReport");
-                    MemoryCache.Default.Remove("GlobalPermissionsUsersLinked");
-                    MemoryCache.Default.Remove("GlobalPermissionsLinkedAggr");
-                    MemoryCache.Default.Remove("GlobalPermissionsReportSubmit");
+                    SharedCache.Instance.Remove("GlobalPermissionsReport");
+                    SharedCache.Instance.Remove("GlobalPermissionsUsersLinked");
+                    SharedCache.Instance.Remove("GlobalPermissionsLinkedAggr");
+                    SharedCache.Instance.Remove("GlobalPermissionsReportSubmit");
                 }
             }
         }
@@ -259,7 +261,7 @@ namespace SobekCM.Library.AdminViewer
             {
                 case 1:
                     // Try to get the global permissions table
-                    DataTable globalPermissions = MemoryCache.Default["GlobalPermissionsReport"] as DataTable;
+                    DataTable globalPermissions = SharedCache.Instance["GlobalPermissionsReport"] as DataTable;
                     if (globalPermissions == null)
                     {
                         globalPermissions = SobekCM_Database.Get_Global_User_Permissions(RequestSpecificValues.Tracer);
@@ -269,7 +271,7 @@ namespace SobekCM.Library.AdminViewer
                         }
                         else
                         {
-                            MemoryCache.Default.Set("GlobalPermissionsReport", globalPermissions, new CacheItemPolicy { AbsoluteExpiration = DateTimeOffset.Now.AddSeconds(60) });
+                            SharedCache.Instance.Set("GlobalPermissionsReport", globalPermissions, new MemoryCacheEntryOptions { AbsoluteExpiration = DateTimeOffset.Now.AddSeconds(60) });
                         }
                     }
 
@@ -413,7 +415,7 @@ namespace SobekCM.Library.AdminViewer
                 case 2:
 
                     // Try to get the global permissions table
-                    DataTable globalPermissions2 = MemoryCache.Default["GlobalPermissionsReport"] as DataTable;
+                    DataTable globalPermissions2 = SharedCache.Instance["GlobalPermissionsReport"] as DataTable;
                     if (globalPermissions2 == null)
                     {
                         globalPermissions2 = SobekCM_Database.Get_Global_User_Permissions(RequestSpecificValues.Tracer);
@@ -423,7 +425,7 @@ namespace SobekCM.Library.AdminViewer
                         }
                         else
                         {
-                            MemoryCache.Default.Set("GlobalPermissionsReport", globalPermissions2, new CacheItemPolicy { AbsoluteExpiration = DateTimeOffset.Now.AddSeconds(60) });
+                            SharedCache.Instance.Set("GlobalPermissionsReport", globalPermissions2, new MemoryCacheEntryOptions { AbsoluteExpiration = DateTimeOffset.Now.AddSeconds(60) });
                         }
                     }
 
@@ -605,7 +607,7 @@ namespace SobekCM.Library.AdminViewer
 
                 case 3:
                     // Try to get the list of users linked to aggregations
-                    DataTable usersLinked = MemoryCache.Default["GlobalPermissionsUsersLinked"] as DataTable;
+                    DataTable usersLinked = SharedCache.Instance["GlobalPermissionsUsersLinked"] as DataTable;
                     if (usersLinked == null)
                     {
                         usersLinked = SobekCM_Database.Get_Global_User_Permissions_Aggregations_Links(RequestSpecificValues.Tracer);
@@ -615,7 +617,7 @@ namespace SobekCM.Library.AdminViewer
                         }
                         else
                         {
-                            MemoryCache.Default.Set("GlobalPermissionsUsersLinked", usersLinked, new CacheItemPolicy { AbsoluteExpiration = DateTimeOffset.Now.AddSeconds(60) });
+                            SharedCache.Instance.Set("GlobalPermissionsUsersLinked", usersLinked, new MemoryCacheEntryOptions { AbsoluteExpiration = DateTimeOffset.Now.AddSeconds(60) });
                         }
                     }
 
@@ -711,7 +713,7 @@ namespace SobekCM.Library.AdminViewer
 
                 case 4:
                     // First, try to get the list of aggregations that have special permissioned users linked to them
-                    DataTable linkedAggrs = MemoryCache.Default["GlobalPermissionsLinkedAggr"] as DataTable;
+                    DataTable linkedAggrs = SharedCache.Instance["GlobalPermissionsLinkedAggr"] as DataTable;
                     if (linkedAggrs == null)
                     {
                         linkedAggrs = SobekCM_Database.Get_Global_User_Permissions_Linked_Aggregations(RequestSpecificValues.Tracer);
@@ -721,7 +723,7 @@ namespace SobekCM.Library.AdminViewer
                         }
                         else
                         {
-                            MemoryCache.Default.Set("GlobalPermissionsLinkedAggr", linkedAggrs, new CacheItemPolicy { AbsoluteExpiration = DateTimeOffset.Now.AddSeconds(60) });
+                            SharedCache.Instance.Set("GlobalPermissionsLinkedAggr", linkedAggrs, new MemoryCacheEntryOptions { AbsoluteExpiration = DateTimeOffset.Now.AddSeconds(60) });
                         }
                     }
 
@@ -1063,7 +1065,7 @@ namespace SobekCM.Library.AdminViewer
 
                 case 5:
                     // Try to get the global can submit permissions table
-                    DataTable userSubmitPermit = MemoryCache.Default["GlobalPermissionsReportSubmit"] as DataTable;
+                    DataTable userSubmitPermit = SharedCache.Instance["GlobalPermissionsReportSubmit"] as DataTable;
                     if (userSubmitPermit == null)
                     {
                         userSubmitPermit = SobekCM_Database.Get_Global_User_Permissions_Submission_Rights(RequestSpecificValues.Tracer);
@@ -1073,7 +1075,7 @@ namespace SobekCM.Library.AdminViewer
                         }
                         else
                         {
-                            MemoryCache.Default.Set("GlobalPermissionsReportSubmit", userSubmitPermit, new CacheItemPolicy { AbsoluteExpiration = DateTimeOffset.Now.AddSeconds(60) });
+                            SharedCache.Instance.Set("GlobalPermissionsReportSubmit", userSubmitPermit, new MemoryCacheEntryOptions { AbsoluteExpiration = DateTimeOffset.Now.AddSeconds(60) });
                         }
                     }
 

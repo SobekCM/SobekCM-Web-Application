@@ -1,4 +1,7 @@
-﻿#region Using directives
+#region Using directives
+
+using SobekCM.Core.MemoryMgmt;
+using Microsoft.Extensions.Caching.Memory;
 
 using System;
 using System.Collections.Generic;
@@ -8,7 +11,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
-using System.Runtime.Caching;
 using System.Xml.Serialization;
 using Jil;
 using ProtoBuf;
@@ -5309,7 +5311,7 @@ namespace SobekCM.Engine_Library.Endpoints
                     string include_text;
 
                     // Look in the cache for this
-                    object returnValue = MemoryCache.Default.Get("INCLUDE_" + filename_to_include);
+                    object returnValue = SharedCache.Instance.Get("INCLUDE_" + filename_to_include);
                     if (returnValue != null)
                     {
                         include_text = returnValue.ToString();
@@ -5325,7 +5327,7 @@ namespace SobekCM.Engine_Library.Endpoints
 
                             // Store on the cache for two minutes, if no indication not to
                             if (include_statement_upper.IndexOf("NOCACHE") < 0)
-                                MemoryCache.Default.Set("INCLUDE_" + filename_to_include, include_text, new CacheItemPolicy { SlidingExpiration = TimeSpan.FromMinutes(2) });
+                                SharedCache.Instance.Set("INCLUDE_" + filename_to_include, include_text, new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(2) });
                         }
                         catch (Exception)
                         {

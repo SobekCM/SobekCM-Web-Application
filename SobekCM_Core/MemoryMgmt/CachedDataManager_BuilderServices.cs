@@ -1,8 +1,8 @@
-﻿using System;
+using Microsoft.Extensions.Caching.Memory;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Runtime.Caching;
 using System.Text;
 using SobekCM.Tools;
 
@@ -53,7 +53,7 @@ namespace SobekCM.Core.MemoryMgmt
             string key = build_key.ToString();
 
             // See if this is in the local cache first
-            DataSet returnValue = MemoryCache.Default.Get(key) as DataSet;
+            DataSet returnValue = SharedCache.Instance.Get(key) as DataSet;
             if (returnValue != null)
             {
                 if (Tracer != null)
@@ -113,7 +113,7 @@ namespace SobekCM.Core.MemoryMgmt
                 Tracer.Add_Trace("CachedDataManager_BuilderServices.Store_Builder_Logs", "Adding object '" + key + "' to the local cache with expiration of 30 seconds");
             }
 
-            MemoryCache.Default.Set(key, StoreObject, new CacheItemPolicy { SlidingExpiration = TimeSpan.FromSeconds(30) });
+            SharedCache.Instance.Set(key, StoreObject, new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromSeconds(30) });
         }
     }
 }

@@ -1,8 +1,8 @@
-﻿using System;
+using Microsoft.Extensions.Caching.Memory;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Runtime.Caching;
 using System.Text;
 using SobekCM.Core.WebContent;
 using SobekCM.Core.WebContent.Hierarchy;
@@ -45,7 +45,7 @@ namespace SobekCM.Core.MemoryMgmt
             string key = "WEBCONTENT|DETAILS|" + WebContentID;
 
             // See if this is in the local cache first
-            HTML_Based_Content returnValue = MemoryCache.Default.Get(key) as HTML_Based_Content;
+            HTML_Based_Content returnValue = SharedCache.Instance.Get(key) as HTML_Based_Content;
             if (returnValue != null)
             {
                 if (Tracer != null)
@@ -93,7 +93,7 @@ namespace SobekCM.Core.MemoryMgmt
                 Tracer.Add_Trace("CachedDataManager_WebContentServices.Store_Page_Details", "Adding object '" + key + "' to the local cache with expiration of " + LOCAL_EXPIRATION + " minute(s)");
             }
 
-            MemoryCache.Default.Set(key, StoreObject, new CacheItemPolicy { SlidingExpiration = TimeSpan.FromMinutes(LOCAL_EXPIRATION) });
+            SharedCache.Instance.Set(key, StoreObject, new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(LOCAL_EXPIRATION) });
         }
 
         /// <summary> Retrieves the special missing web content page, used when a requested resource is missing (engine and client side) </summary>
@@ -114,7 +114,7 @@ namespace SobekCM.Core.MemoryMgmt
             const string KEY = "WEBCONTENT|DETAILS|!MISSING!";
 
             // See if this is in the local cache first
-            HTML_Based_Content returnValue = MemoryCache.Default.Get(KEY) as HTML_Based_Content;
+            HTML_Based_Content returnValue = SharedCache.Instance.Get(KEY) as HTML_Based_Content;
             if (returnValue != null)
             {
                 if (Tracer != null)
@@ -162,7 +162,7 @@ namespace SobekCM.Core.MemoryMgmt
                 Tracer.Add_Trace("CachedDataManager_WebContentServices.Store_Special_Missing_Page", "Adding object '" + KEY + "' to the local cache with expiration of " + LOCAL_EXPIRATION + " minute(s)");
             }
 
-            MemoryCache.Default.Set(KEY, StoreObject, new CacheItemPolicy { SlidingExpiration = TimeSpan.FromMinutes(LOCAL_EXPIRATION) });
+            SharedCache.Instance.Set(KEY, StoreObject, new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(LOCAL_EXPIRATION) });
         }
 
         /// <summary> Clear the special missing page from the cache </summary>
@@ -171,7 +171,7 @@ namespace SobekCM.Core.MemoryMgmt
         {
             // Determine the key
             string key = "WEBCONTENT|DETAILS|!MISSING!";
-            MemoryCache.Default.Remove(key);
+            SharedCache.Instance.Remove(key);
         }
 
         /// <summary> Clears a single web content page (or redirect) detail objects that is currently cached (engine and client side) </summary>
@@ -186,7 +186,7 @@ namespace SobekCM.Core.MemoryMgmt
 
             // Determine the key
             string key = "WEBCONTENT|DETAILS|" + WebContentID;
-            MemoryCache.Default.Remove(key);
+            SharedCache.Instance.Remove(key);
         }
 
         /// <summary> Clears all the web content page (or redirect) detail objects that are currently cached (engine and client side) </summary>
@@ -199,12 +199,12 @@ namespace SobekCM.Core.MemoryMgmt
             }
 
             // Get collection of keys in the Cache
-            List<string> keys = (from KeyValuePair<string, object> thisItem in MemoryCache.Default select thisItem.Key).ToList();
+            List<string> keys = (from KeyValuePair<string, object> thisItem in SharedCache.Instance select thisItem.Key).ToList();
 
             // Delete all items from the Cache
             foreach (string key in keys.Where(Key => Key.StartsWith("WEBCONTENT|DETAILS|")))
             {
-                MemoryCache.Default.Remove(key);
+                SharedCache.Instance.Remove(key);
             }
         }
 
@@ -233,7 +233,7 @@ namespace SobekCM.Core.MemoryMgmt
             const string KEY = "WEBCONTENT|ENGINE|RECENT_UPDATES";
 
             // See if this is in the local cache first
-            DataSet returnValue = MemoryCache.Default.Get(KEY) as DataSet;
+            DataSet returnValue = SharedCache.Instance.Get(KEY) as DataSet;
             if (returnValue != null)
             {
                 if (Tracer != null)
@@ -281,7 +281,7 @@ namespace SobekCM.Core.MemoryMgmt
                 Tracer.Add_Trace("CachedDataManager_WebContentServices.Store_Global_Recent_Updates", "Adding object '" + KEY + "' to the local cache with expiration of " + LOCAL_EXPIRATION + " minute(s)");
             }
 
-            MemoryCache.Default.Set(KEY, StoreObject, new CacheItemPolicy { SlidingExpiration = TimeSpan.FromMinutes(LOCAL_EXPIRATION) });
+            SharedCache.Instance.Set(KEY, StoreObject, new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(LOCAL_EXPIRATION) });
         }
 
         /// <summary> Clear the raw data global list of recent updates to top-level static web content pages from the cache (engine side) </summary>
@@ -295,7 +295,7 @@ namespace SobekCM.Core.MemoryMgmt
 
             // Determine the key
             const string KEY = "WEBCONTENT|ENGINE|RECENT_UPDATES";
-            MemoryCache.Default.Remove(KEY);
+            SharedCache.Instance.Remove(KEY);
         }
 
         #endregion
@@ -320,7 +320,7 @@ namespace SobekCM.Core.MemoryMgmt
             const string KEY = "WEBCONTENT|ENGINE|PAGES";
 
             // See if this is in the local cache first
-            DataSet returnValue = MemoryCache.Default.Get(KEY) as DataSet;
+            DataSet returnValue = SharedCache.Instance.Get(KEY) as DataSet;
             if (returnValue != null)
             {
                 if (Tracer != null)
@@ -368,7 +368,7 @@ namespace SobekCM.Core.MemoryMgmt
                 Tracer.Add_Trace("CachedDataManager_WebContentServices.Store_All_Web_Content_Pages", "Adding object '" + KEY + "' to the local cache with expiration of " + LOCAL_EXPIRATION + " minute(s)");
             }
 
-            MemoryCache.Default.Set(KEY, StoreObject, new CacheItemPolicy { SlidingExpiration = TimeSpan.FromMinutes(LOCAL_EXPIRATION) });
+            SharedCache.Instance.Set(KEY, StoreObject, new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(LOCAL_EXPIRATION) });
         }
 
         /// <summary> Clear the raw data global list of all web content pages, excluding redirects (engine side) </summary>
@@ -382,7 +382,7 @@ namespace SobekCM.Core.MemoryMgmt
 
             // Determine the key
             const string KEY = "WEBCONTENT|ENGINE|PAGES";
-            MemoryCache.Default.Remove(KEY);
+            SharedCache.Instance.Remove(KEY);
         }
 
         #endregion
@@ -407,7 +407,7 @@ namespace SobekCM.Core.MemoryMgmt
             const string KEY = "WEBCONTENT|ENGINE|REDIRECTS";
 
             // See if this is in the local cache first
-            DataSet returnValue = MemoryCache.Default.Get(KEY) as DataSet;
+            DataSet returnValue = SharedCache.Instance.Get(KEY) as DataSet;
             if (returnValue != null)
             {
                 if (Tracer != null)
@@ -455,7 +455,7 @@ namespace SobekCM.Core.MemoryMgmt
                 Tracer.Add_Trace("CachedDataManager_WebContentServices.Store_Redirects", "Adding object '" + KEY + "' to the local cache with expiration of " + LOCAL_EXPIRATION + " minute(s)");
             }
 
-            MemoryCache.Default.Set(KEY, StoreObject, new CacheItemPolicy { SlidingExpiration = TimeSpan.FromMinutes(LOCAL_EXPIRATION) });
+            SharedCache.Instance.Set(KEY, StoreObject, new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(LOCAL_EXPIRATION) });
         }
 
         /// <summary> Clear the raw data list of global redirects (engine side) </summary>
@@ -469,7 +469,7 @@ namespace SobekCM.Core.MemoryMgmt
 
             // Determine the key
             const string KEY = "WEBCONTENT|ENGINE|REDIRECTS";
-            MemoryCache.Default.Remove(KEY);
+            SharedCache.Instance.Remove(KEY);
         }
 
         #endregion
@@ -494,7 +494,7 @@ namespace SobekCM.Core.MemoryMgmt
             const string KEY = "WEBCONTENT|ENGINE|ALL";
 
             // See if this is in the local cache first
-            DataSet returnValue = MemoryCache.Default.Get(KEY) as DataSet;
+            DataSet returnValue = SharedCache.Instance.Get(KEY) as DataSet;
             if (returnValue != null)
             {
                 if (Tracer != null)
@@ -542,7 +542,7 @@ namespace SobekCM.Core.MemoryMgmt
                 Tracer.Add_Trace("CachedDataManager_WebContentServices.Store_All_Web_Content", "Adding object '" + KEY + "' to the local cache with expiration of " + LOCAL_EXPIRATION + " minute(s)");
             }
 
-            MemoryCache.Default.Set(KEY, StoreObject, new CacheItemPolicy { SlidingExpiration = TimeSpan.FromMinutes(LOCAL_EXPIRATION) });
+            SharedCache.Instance.Set(KEY, StoreObject, new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(LOCAL_EXPIRATION) });
         }
 
         /// <summary> Clear the raw data global list of all web content entities, including pages and redirects (engine side) </summary>
@@ -556,13 +556,13 @@ namespace SobekCM.Core.MemoryMgmt
 
             // Release all the related info
             const string KEY1 = "WEBCONTENT|ENGINE|ALL";
-            MemoryCache.Default.Remove(KEY1);
+            SharedCache.Instance.Remove(KEY1);
 
             const string KEY2 = "WEBCONTENT|ENGINE|PAGES";
-            MemoryCache.Default.Remove(KEY2);
+            SharedCache.Instance.Remove(KEY2);
 
             const string KEY3 = "WEBCONTENT|ENGINE|REDIRECTS";
-            MemoryCache.Default.Remove(KEY3);
+            SharedCache.Instance.Remove(KEY3);
         }
 
         #endregion
@@ -591,7 +591,7 @@ namespace SobekCM.Core.MemoryMgmt
             string key = "WEBCONTENT|ENGINE|GLOBALSTATS|" + Year1 + "|" + Month1 + "|" + Year2 + "|" + Month2;
 
             // See if this is in the local cache first
-            DataSet returnValue = MemoryCache.Default.Get(key) as DataSet;
+            DataSet returnValue = SharedCache.Instance.Get(key) as DataSet;
             if (returnValue != null)
             {
                 if (Tracer != null)
@@ -644,7 +644,7 @@ namespace SobekCM.Core.MemoryMgmt
                 Tracer.Add_Trace("CachedDataManager_WebContentServices.Store_Global_Usage_Report", "Adding object '" + key + "' to the local cache with expiration of " + LOCAL_EXPIRATION + " minute(s)");
             }
 
-            MemoryCache.Default.Set(key, StoreObject, new CacheItemPolicy { SlidingExpiration = TimeSpan.FromMinutes(LOCAL_EXPIRATION) });
+            SharedCache.Instance.Set(key, StoreObject, new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(LOCAL_EXPIRATION) });
         }
 
         /// <summary> Clear all global raw data usage reports from the cache (engine side ) </summary>
@@ -657,12 +657,12 @@ namespace SobekCM.Core.MemoryMgmt
             }
 
             // Get collection of keys in the Cache
-            List<string> keys = (from KeyValuePair<string, object> thisItem in MemoryCache.Default select thisItem.Key).ToList();
+            List<string> keys = (from KeyValuePair<string, object> thisItem in SharedCache.Instance select thisItem.Key).ToList();
 
             // Delete all items from the Cache
             foreach (string key in keys.Where(Key => Key.StartsWith("WEBCONTENT|ENGINE|GLOBALSTATS|")))
             {
-                MemoryCache.Default.Remove(key);
+                SharedCache.Instance.Remove(key);
             }
         }
 
@@ -692,7 +692,7 @@ namespace SobekCM.Core.MemoryMgmt
             const string KEY = "WEBCONTENT|CLIENT|RECENT_UPDATES_FLAG";
 
             // See if this is in the local cache first
-            bool? returnValue = MemoryCache.Default.Get(KEY) as bool?;
+            bool? returnValue = SharedCache.Instance.Get(KEY) as bool?;
             if (returnValue != null)
             {
                 if (Tracer != null)
@@ -740,7 +740,7 @@ namespace SobekCM.Core.MemoryMgmt
                 Tracer.Add_Trace("CachedDataManager_WebContentServices.Store_Has_Global_Recent_Updates_Flag", "Adding object '" + KEY + "' to the local cache with expiration of " + LOCAL_EXPIRATION + " minute(s)");
             }
 
-            MemoryCache.Default.Set(KEY, StoreObject, new CacheItemPolicy { SlidingExpiration = TimeSpan.FromMinutes(LOCAL_EXPIRATION) });
+            SharedCache.Instance.Set(KEY, StoreObject, new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(LOCAL_EXPIRATION) });
         }
 
         /// <summary> Clear the flag indicating if there are any global recent updates to the web content entities (pages and redirects) </summary>
@@ -754,7 +754,7 @@ namespace SobekCM.Core.MemoryMgmt
 
             // Determine the key
             const string KEY = "WEBCONTENT|CLIENT|RECENT_UPDATES_FLAG";
-            MemoryCache.Default.Remove(KEY);
+            SharedCache.Instance.Remove(KEY);
         }
 
         /// <summary> Retrieves the list of possible next level from an existing page in the recent updates </summary>
@@ -811,7 +811,7 @@ namespace SobekCM.Core.MemoryMgmt
             }
 
             // See if this is in the local cache first
-            List<string> returnValue = MemoryCache.Default.Get(keyBuilder.ToString()) as List<string>;
+            List<string> returnValue = SharedCache.Instance.Get(keyBuilder.ToString()) as List<string>;
             if (returnValue != null)
             {
                 if (Tracer != null)
@@ -895,7 +895,7 @@ namespace SobekCM.Core.MemoryMgmt
                 Tracer.Add_Trace("CachedDataManager_WebContentServices.Store_Global_Recent_Updates_NextLevel", "Adding object '" + keyBuilder + "' to the local cache with expiration of " + LOCAL_EXPIRATION + " minute(s)");
             }
 
-            MemoryCache.Default.Set(keyBuilder.ToString(), StoreObject, new CacheItemPolicy { SlidingExpiration = TimeSpan.FromMinutes(LOCAL_EXPIRATION) });
+            SharedCache.Instance.Set(keyBuilder.ToString(), StoreObject, new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(LOCAL_EXPIRATION) });
         }
 
         /// <summary> Clear the list of possible next level from an existing page in the recent updates </summary>
@@ -908,12 +908,12 @@ namespace SobekCM.Core.MemoryMgmt
             }
 
             // Get collection of keys in the Cache
-            List<string> keys = (from KeyValuePair<string, object> thisItem in MemoryCache.Default select thisItem.Key).ToList();
+            List<string> keys = (from KeyValuePair<string, object> thisItem in SharedCache.Instance select thisItem.Key).ToList();
 
             // Delete all items from the Cache
             foreach (string key in keys.Where(Key => Key.StartsWith("WEBCONTENT|CLIENT|RECENT_UPDATES|NEXTLEVEL|")))
             {
-                MemoryCache.Default.Remove(key);
+                SharedCache.Instance.Remove(key);
             }
         }
 
@@ -935,7 +935,7 @@ namespace SobekCM.Core.MemoryMgmt
             const string KEY = "WEBCONTENT|CLIENT|RECENT_UPDATES|USERS";
 
             // See if this is in the local cache first
-            List<string> returnValue = MemoryCache.Default.Get(KEY) as List<string>;
+            List<string> returnValue = SharedCache.Instance.Get(KEY) as List<string>;
             if (returnValue != null)
             {
                 if (Tracer != null)
@@ -982,7 +982,7 @@ namespace SobekCM.Core.MemoryMgmt
                 Tracer.Add_Trace("CachedDataManager_WebContentServices.Store_Global_Recent_Updates_Users", "Adding object '" + KEY + "' to the local cache with expiration of " + LOCAL_EXPIRATION + " minute(s)");
             }
 
-            MemoryCache.Default.Set(KEY, StoreObject, new CacheItemPolicy { SlidingExpiration = TimeSpan.FromMinutes(LOCAL_EXPIRATION) });
+            SharedCache.Instance.Set(KEY, StoreObject, new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(LOCAL_EXPIRATION) });
         }
 
         /// <summary> Clear the list of all users that have participated in the recent updates to all top-level static web content pages </summary>
@@ -996,7 +996,7 @@ namespace SobekCM.Core.MemoryMgmt
 
             // Determine the key
             const string KEY = "WEBCONTENT|CLIENT|RECENT_UPDATES|USERS";
-            MemoryCache.Default.Remove(KEY);
+            SharedCache.Instance.Remove(KEY);
         }
 
         #endregion
@@ -1021,7 +1021,7 @@ namespace SobekCM.Core.MemoryMgmt
             const string KEY = "WEBCONTENT|CLIENT|PAGES_FLAG";
 
             // See if this is in the local cache first
-            bool? returnValue = MemoryCache.Default.Get(KEY) as bool?;
+            bool? returnValue = SharedCache.Instance.Get(KEY) as bool?;
             if (returnValue != null)
             {
                 if (Tracer != null)
@@ -1069,7 +1069,7 @@ namespace SobekCM.Core.MemoryMgmt
                 Tracer.Add_Trace("CachedDataManager_WebContentServices.Store_Has_Content_Pages_Flag", "Adding object '" + KEY + "' to the local cache with expiration of " + LOCAL_EXPIRATION + " minute(s)");
             }
 
-            MemoryCache.Default.Set(KEY, StoreObject, new CacheItemPolicy { SlidingExpiration = TimeSpan.FromMinutes(LOCAL_EXPIRATION) });
+            SharedCache.Instance.Set(KEY, StoreObject, new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(LOCAL_EXPIRATION) });
         }
 
         /// <summary> Clear the flag indicating if there are any global recent updates to the web content entities (pages and redirects) </summary>
@@ -1083,7 +1083,7 @@ namespace SobekCM.Core.MemoryMgmt
 
             // Determine the key
             const string KEY = "WEBCONTENT|CLIENT|PAGES_FLAG";
-            MemoryCache.Default.Remove(KEY);
+            SharedCache.Instance.Remove(KEY);
         }
 
         /// <summary> Retrieves the list of possible next level from an existing point in the page hierarchy </summary>
@@ -1140,7 +1140,7 @@ namespace SobekCM.Core.MemoryMgmt
             }
 
             // See if this is in the local cache first
-            List<string> returnValue = MemoryCache.Default.Get(keyBuilder.ToString()) as List<string>;
+            List<string> returnValue = SharedCache.Instance.Get(keyBuilder.ToString()) as List<string>;
             if (returnValue != null)
             {
                 if (Tracer != null)
@@ -1224,7 +1224,7 @@ namespace SobekCM.Core.MemoryMgmt
                 Tracer.Add_Trace("CachedDataManager_WebContentServices.Store_All_Pages_NextLevel", "Adding object '" + keyBuilder + "' to the local cache with expiration of " + LOCAL_EXPIRATION + " minute(s)");
             }
 
-            MemoryCache.Default.Set(keyBuilder.ToString(), StoreObject, new CacheItemPolicy { SlidingExpiration = TimeSpan.FromMinutes(LOCAL_EXPIRATION) });
+            SharedCache.Instance.Set(keyBuilder.ToString(), StoreObject, new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(LOCAL_EXPIRATION) });
         }
 
         /// <summary> Clear the list of possible next level from an existing point in the page hierarchy </summary>
@@ -1237,12 +1237,12 @@ namespace SobekCM.Core.MemoryMgmt
             }
 
             // Get collection of keys in the Cache
-            List<string> keys = (from KeyValuePair<string, object> thisItem in MemoryCache.Default select thisItem.Key).ToList();
+            List<string> keys = (from KeyValuePair<string, object> thisItem in SharedCache.Instance select thisItem.Key).ToList();
 
             // Delete all items from the Cache
             foreach (string key in keys.Where(Key => Key.StartsWith("WEBCONTENT|CLIENT|PAGES|NEXTLEVEL|")))
             {
-                MemoryCache.Default.Remove(key);
+                SharedCache.Instance.Remove(key);
             }
         }
 
@@ -1268,7 +1268,7 @@ namespace SobekCM.Core.MemoryMgmt
             const string KEY = "WEBCONTENT|CLIENT|REDIRECTS_FLAG";
 
             // See if this is in the local cache first
-            bool? returnValue = MemoryCache.Default.Get(KEY) as bool?;
+            bool? returnValue = SharedCache.Instance.Get(KEY) as bool?;
             if (returnValue != null)
             {
                 if (Tracer != null)
@@ -1316,7 +1316,7 @@ namespace SobekCM.Core.MemoryMgmt
                 Tracer.Add_Trace("CachedDataManager_WebContentServices.Store_Has_Redirects_Flag", "Adding object '" + KEY + "' to the local cache with expiration of " + LOCAL_EXPIRATION + " minute(s)");
             }
 
-            MemoryCache.Default.Set(KEY, StoreObject, new CacheItemPolicy { SlidingExpiration = TimeSpan.FromMinutes(LOCAL_EXPIRATION) });
+            SharedCache.Instance.Set(KEY, StoreObject, new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(LOCAL_EXPIRATION) });
         }
 
         /// <summary> Clear the flag indicating if there are any global redirects within the web content system </summary>
@@ -1330,7 +1330,7 @@ namespace SobekCM.Core.MemoryMgmt
 
             // Determine the key
             const string KEY = "WEBCONTENT|CLIENT|REDIRECTS_FLAG";
-            MemoryCache.Default.Remove(KEY);
+            SharedCache.Instance.Remove(KEY);
         }
 
         /// <summary> Retrieves the list of possible next level from an existing point in the redirect hierarchy </summary>
@@ -1387,7 +1387,7 @@ namespace SobekCM.Core.MemoryMgmt
             }
 
             // See if this is in the local cache first
-            List<string> returnValue = MemoryCache.Default.Get(keyBuilder.ToString()) as List<string>;
+            List<string> returnValue = SharedCache.Instance.Get(keyBuilder.ToString()) as List<string>;
             if (returnValue != null)
             {
                 if (Tracer != null)
@@ -1471,7 +1471,7 @@ namespace SobekCM.Core.MemoryMgmt
                 Tracer.Add_Trace("CachedDataManager_WebContentServices.Store_All_Redirects_NextLevel", "Adding object '" + keyBuilder + "' to the local cache with expiration of " + LOCAL_EXPIRATION + " minute(s)");
             }
 
-            MemoryCache.Default.Set(keyBuilder.ToString(), StoreObject, new CacheItemPolicy { SlidingExpiration = TimeSpan.FromMinutes(LOCAL_EXPIRATION) });
+            SharedCache.Instance.Set(keyBuilder.ToString(), StoreObject, new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(LOCAL_EXPIRATION) });
         }
 
         /// <summary> Clear the list of possible next level from an existing point in the redirect hierarchy </summary>
@@ -1484,12 +1484,12 @@ namespace SobekCM.Core.MemoryMgmt
             }
 
             // Get collection of keys in the Cache
-            List<string> keys = (from KeyValuePair<string, object> thisItem in MemoryCache.Default select thisItem.Key).ToList();
+            List<string> keys = (from KeyValuePair<string, object> thisItem in SharedCache.Instance select thisItem.Key).ToList();
 
             // Delete all items from the Cache
             foreach (string key in keys.Where(Key => Key.StartsWith("WEBCONTENT|CLIENT|REDIRECTS|NEXTLEVEL|")))
             {
-                MemoryCache.Default.Remove(key);
+                SharedCache.Instance.Remove(key);
             }
         }
 
@@ -1515,7 +1515,7 @@ namespace SobekCM.Core.MemoryMgmt
             const string KEY = "WEBCONTENT|CLIENT|CONTENT_FLAG";
 
             // See if this is in the local cache first
-            bool? returnValue = MemoryCache.Default.Get(KEY) as bool?;
+            bool? returnValue = SharedCache.Instance.Get(KEY) as bool?;
             if (returnValue != null)
             {
                 if (Tracer != null)
@@ -1563,7 +1563,7 @@ namespace SobekCM.Core.MemoryMgmt
                 Tracer.Add_Trace("CachedDataManager_WebContentServices.Store_Has_Content_Flag", "Adding object '" + KEY + "' to the local cache with expiration of " + LOCAL_EXPIRATION + " minute(s)");
             }
 
-            MemoryCache.Default.Set(KEY, StoreObject, new CacheItemPolicy { SlidingExpiration = TimeSpan.FromMinutes(LOCAL_EXPIRATION) });
+            SharedCache.Instance.Set(KEY, StoreObject, new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(LOCAL_EXPIRATION) });
         }
 
         /// <summary> Clear the flag indicating if there are any web content entities, including pages and redirects </summary>
@@ -1577,7 +1577,7 @@ namespace SobekCM.Core.MemoryMgmt
 
             // Determine the key
             const string KEY = "WEBCONTENT|CLIENT|CONTENT_FLAG";
-            MemoryCache.Default.Remove(KEY);
+            SharedCache.Instance.Remove(KEY);
         }
 
         /// <summary> Retrieves the list of possible next level from an existing point in the web content entities, including pages and redirects, hierarchy </summary>
@@ -1634,7 +1634,7 @@ namespace SobekCM.Core.MemoryMgmt
             }
 
             // See if this is in the local cache first
-            List<string> returnValue = MemoryCache.Default.Get(keyBuilder.ToString()) as List<string>;
+            List<string> returnValue = SharedCache.Instance.Get(keyBuilder.ToString()) as List<string>;
             if (returnValue != null)
             {
                 if (Tracer != null)
@@ -1718,7 +1718,7 @@ namespace SobekCM.Core.MemoryMgmt
                 Tracer.Add_Trace("CachedDataManager_WebContentServices.Store_All_Content_NextLevel", "Adding object '" + keyBuilder + "' to the local cache with expiration of " + LOCAL_EXPIRATION + " minute(s)");
             }
 
-            MemoryCache.Default.Set(keyBuilder.ToString(), StoreObject, new CacheItemPolicy { SlidingExpiration = TimeSpan.FromMinutes(LOCAL_EXPIRATION) });
+            SharedCache.Instance.Set(keyBuilder.ToString(), StoreObject, new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(LOCAL_EXPIRATION) });
         }
 
         /// <summary> Clear the list of possible next level from an existing point in the web content entities, including pages and redirects, hierarchy </summary>
@@ -1731,12 +1731,12 @@ namespace SobekCM.Core.MemoryMgmt
             }
 
             // Get collection of keys in the Cache
-            List<string> keys = (from KeyValuePair<string, object> thisItem in MemoryCache.Default select thisItem.Key).ToList();
+            List<string> keys = (from KeyValuePair<string, object> thisItem in SharedCache.Instance select thisItem.Key).ToList();
 
             // Delete all items from the Cache
             foreach (string key in keys.Where(Key => Key.StartsWith("WEBCONTENT|CLIENT|CONTENT|NEXTLEVEL|")))
             {
-                MemoryCache.Default.Remove(key);
+                SharedCache.Instance.Remove(key);
             }
         }
 
@@ -1762,7 +1762,7 @@ namespace SobekCM.Core.MemoryMgmt
             const string KEY = "WEBCONTENT|USAGE_FLAG";
 
             // See if this is in the local cache first
-            bool? returnValue = MemoryCache.Default.Get(KEY) as bool?;
+            bool? returnValue = SharedCache.Instance.Get(KEY) as bool?;
             if (returnValue != null)
             {
                 if (Tracer != null)
@@ -1810,7 +1810,7 @@ namespace SobekCM.Core.MemoryMgmt
                 Tracer.Add_Trace("CachedDataManager_WebContentServices.Store_Has_Global_Usage_Flag", "Adding object '" + KEY + "' to the local cache with expiration of " + LOCAL_EXPIRATION + " minute(s)");
             }
 
-            MemoryCache.Default.Set(KEY, StoreObject, new CacheItemPolicy { SlidingExpiration = TimeSpan.FromMinutes(LOCAL_EXPIRATION) });
+            SharedCache.Instance.Set(KEY, StoreObject, new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(LOCAL_EXPIRATION) });
         }
 
         /// <summary> Clear the flag indicating if any usage has been reported for this instance's web content entities (pages and redirects) </summary>
@@ -1824,7 +1824,7 @@ namespace SobekCM.Core.MemoryMgmt
 
             // Determine the key
             const string KEY = "WEBCONTENT|USAGE_FLAG";
-            MemoryCache.Default.Remove(KEY);
+            SharedCache.Instance.Remove(KEY);
         }
 
         /// <summary> Retrieves the list of possible next level from an existing used page in a global usage report for a date range </summary>
@@ -1885,7 +1885,7 @@ namespace SobekCM.Core.MemoryMgmt
             }
 
             // See if this is in the local cache first
-            List<string> returnValue = MemoryCache.Default.Get(keyBuilder.ToString()) as List<string>;
+            List<string> returnValue = SharedCache.Instance.Get(keyBuilder.ToString()) as List<string>;
             if (returnValue != null)
             {
                 if (Tracer != null)
@@ -1973,7 +1973,7 @@ namespace SobekCM.Core.MemoryMgmt
                 Tracer.Add_Trace("CachedDataManager_WebContentServices.Store_Global_Usage_Report_NextLevel", "Adding object '" + keyBuilder + "' to the local cache with expiration of " + LOCAL_EXPIRATION + " minute(s)");
             }
 
-            MemoryCache.Default.Set(keyBuilder.ToString(), StoreObject, new CacheItemPolicy { SlidingExpiration = TimeSpan.FromMinutes(LOCAL_EXPIRATION) });
+            SharedCache.Instance.Set(keyBuilder.ToString(), StoreObject, new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(LOCAL_EXPIRATION) });
         }
 
         /// <summary> Clear the list of possible next level from an existing used page in a global usage report for a date range</summary>
@@ -1986,12 +1986,12 @@ namespace SobekCM.Core.MemoryMgmt
             }
 
             // Get collection of keys in the Cache
-            List<string> keys = (from KeyValuePair<string, object> thisItem in MemoryCache.Default select thisItem.Key).ToList();
+            List<string> keys = (from KeyValuePair<string, object> thisItem in SharedCache.Instance select thisItem.Key).ToList();
 
             // Delete all items from the Cache
             foreach (string key in keys.Where(Key => Key.StartsWith("WEBCONTENT|CLIENT|USAGE_REPORT|NEXTLEVEL|")))
             {
-                MemoryCache.Default.Remove(key);
+                SharedCache.Instance.Remove(key);
             }
         }
 
@@ -2018,7 +2018,7 @@ namespace SobekCM.Core.MemoryMgmt
             const string KEY = "WEBCONTENT|CLIENT|HIERARCHY";
 
             // See if this is in the local cache first
-            WebContent_Hierarchy returnValue = MemoryCache.Default.Get(KEY) as WebContent_Hierarchy;
+            WebContent_Hierarchy returnValue = SharedCache.Instance.Get(KEY) as WebContent_Hierarchy;
             if (returnValue != null)
             {
                 if (Tracer != null)
@@ -2065,7 +2065,7 @@ namespace SobekCM.Core.MemoryMgmt
                 Tracer.Add_Trace("CachedDataManager_WebContentServices.Store_Hierarchy", "Adding object '" + KEY + "' to the local cache with expiration of " + LOCAL_EXPIRATION + " minute(s)");
             }
 
-            MemoryCache.Default.Set(KEY, StoreObject, new CacheItemPolicy { SlidingExpiration = TimeSpan.FromMinutes(LOCAL_EXPIRATION) });
+            SharedCache.Instance.Set(KEY, StoreObject, new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(LOCAL_EXPIRATION) });
         }
 
         /// <summary> Clear the complete hierarchy of non-aggregational static web content pages and redirects, used for navigation </summary>
@@ -2077,7 +2077,7 @@ namespace SobekCM.Core.MemoryMgmt
                 return;
             }
 
-            MemoryCache.Default.Remove("WEBCONTENT|CLIENT|HIERARCHY");
+            SharedCache.Instance.Remove("WEBCONTENT|CLIENT|HIERARCHY");
         }
 
         #endregion
@@ -2104,7 +2104,7 @@ namespace SobekCM.Core.MemoryMgmt
             const string KEY = "WEBCONTENT|SITEMAPS|ALL";
 
             // See if this is in the local cache first
-            List<string> returnValue = MemoryCache.Default.Get(KEY) as List<string>;
+            List<string> returnValue = SharedCache.Instance.Get(KEY) as List<string>;
             if (returnValue != null)
             {
                 if (Tracer != null)
@@ -2151,7 +2151,7 @@ namespace SobekCM.Core.MemoryMgmt
                 Tracer.Add_Trace("CachedDataManager_WebContentServices.Store_All_Sitemaps", "Adding object '" + KEY + "' to the local cache with expiration of " + LOCAL_EXPIRATION + " minute(s)");
             }
 
-            MemoryCache.Default.Set(KEY, StoreObject, new CacheItemPolicy { SlidingExpiration = TimeSpan.FromMinutes(LOCAL_EXPIRATION) });
+            SharedCache.Instance.Set(KEY, StoreObject, new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(LOCAL_EXPIRATION) });
         }
 
         #endregion
@@ -2176,7 +2176,7 @@ namespace SobekCM.Core.MemoryMgmt
             const string KEY = "WEBCONTENT|JAVSCRIPTS|ALL";
 
             // See if this is in the local cache first
-            List<string> returnValue = MemoryCache.Default.Get(KEY) as List<string>;
+            List<string> returnValue = SharedCache.Instance.Get(KEY) as List<string>;
             if (returnValue != null)
             {
                 if (Tracer != null)
@@ -2223,7 +2223,7 @@ namespace SobekCM.Core.MemoryMgmt
                 Tracer.Add_Trace("CachedDataManager_WebContentServices.Store_All_Controlled_Javascript", "Adding object '" + KEY + "' to the local cache with expiration of " + LOCAL_EXPIRATION + " minute(s)");
             }
 
-            MemoryCache.Default.Set(KEY, StoreObject, new CacheItemPolicy { SlidingExpiration = TimeSpan.FromMinutes(LOCAL_EXPIRATION) });
+            SharedCache.Instance.Set(KEY, StoreObject, new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(LOCAL_EXPIRATION) });
         }
 
         #endregion
@@ -2248,7 +2248,7 @@ namespace SobekCM.Core.MemoryMgmt
             const string KEY = "WEBCONTENT|CSSES|ALL";
 
             // See if this is in the local cache first
-            List<string> returnValue = MemoryCache.Default.Get(KEY) as List<string>;
+            List<string> returnValue = SharedCache.Instance.Get(KEY) as List<string>;
             if (returnValue != null)
             {
                 if (Tracer != null)
@@ -2295,7 +2295,7 @@ namespace SobekCM.Core.MemoryMgmt
                 Tracer.Add_Trace("CachedDataManager_WebContentServices.Store_All_Controlled_Stylesheets", "Adding object '" + KEY + "' to the local cache with expiration of " + LOCAL_EXPIRATION + " minute(s)");
             }
 
-            MemoryCache.Default.Set(KEY, StoreObject, new CacheItemPolicy { SlidingExpiration = TimeSpan.FromMinutes(LOCAL_EXPIRATION) });
+            SharedCache.Instance.Set(KEY, StoreObject, new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(LOCAL_EXPIRATION) });
         }
 
         #endregion

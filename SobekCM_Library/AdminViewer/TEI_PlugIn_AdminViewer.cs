@@ -1,10 +1,11 @@
+using SobekCM.Core.MemoryMgmt;
+using Microsoft.Extensions.Caching.Memory;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Data;
 using System.IO;
 using System.Linq;
-using System.Runtime.Caching;
 using System.Text;
 using Microsoft.AspNetCore.Http;
 using SobekCM.Core.Navigation;
@@ -57,7 +58,7 @@ namespace SobekCM.Library.AdminViewer
             }
 
             // Try to pull the configuration from the cache, otherwise create it manually
-            teiConfig = MemoryCache.Default["TEI.Configuration"] as TEI_Configuration;
+            teiConfig = SharedCache.Instance["TEI.Configuration"] as TEI_Configuration;
 
             // Did not find it in the cache
             if (teiConfig == null)
@@ -67,11 +68,11 @@ namespace SobekCM.Library.AdminViewer
                 teiConfig = new TEI_Configuration(plugin_directory);
 
                 // Store on the cache for several minutes
-                MemoryCache.Default.Set("TEI.Configuration", teiConfig, new CacheItemPolicy { SlidingExpiration = TimeSpan.FromMinutes(2) });
+                SharedCache.Instance.Set("TEI.Configuration", teiConfig, new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(2) });
             }
 
             // Try to pull the latest tei user settings
-            teiUserSettings = MemoryCache.Default["TEI.UserSettings"] as DataTable;
+            teiUserSettings = SharedCache.Instance["TEI.UserSettings"] as DataTable;
 
             // Did not find it in the cache
             if (teiUserSettings == null)
@@ -80,7 +81,7 @@ namespace SobekCM.Library.AdminViewer
                 teiUserSettings = Engine_Database.Get_All_User_Settings_Like("TEI.%", "true");
 
                 // Store on the cache for several minutes
-                MemoryCache.Default.Set("TEI.UserSettings", teiUserSettings, new CacheItemPolicy { SlidingExpiration = TimeSpan.FromMinutes(2) });
+                SharedCache.Instance.Set("TEI.UserSettings", teiUserSettings, new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(2) });
             }
 
             // Create the list of sorted users approvied for TEI
@@ -233,7 +234,7 @@ namespace SobekCM.Library.AdminViewer
                         teiUserSettings = Engine_Database.Get_All_User_Settings_Like("TEI.%", "true");
 
                         // Store on the cache for several minutes
-                        MemoryCache.Default.Set("TEI.UserSettings", teiUserSettings, new CacheItemPolicy { SlidingExpiration = TimeSpan.FromMinutes(2) });
+                        SharedCache.Instance.Set("TEI.UserSettings", teiUserSettings, new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(2) });
                     }
                 }
 
@@ -245,7 +246,7 @@ namespace SobekCM.Library.AdminViewer
                     teiConfig = new TEI_Configuration(plugin_directory);
 
                     // Store on the cache for several minutes
-                    MemoryCache.Default.Set("TEI.Configuration", teiConfig, new CacheItemPolicy { SlidingExpiration = TimeSpan.FromMinutes(2) });
+                    SharedCache.Instance.Set("TEI.Configuration", teiConfig, new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(2) });
                 }
             }
         }

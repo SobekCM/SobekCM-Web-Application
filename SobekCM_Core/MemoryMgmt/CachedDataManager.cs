@@ -1,10 +1,11 @@
-﻿#region Using directives
+#region Using directives
+
+using Microsoft.Extensions.Caching.Memory;
 
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Runtime.Caching;
 using System.Text;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Results;
@@ -58,7 +59,7 @@ namespace SobekCM.Core.MemoryMgmt
             {
                 // Build the sorted list
                 SortedList<string, Cached_Object_Info> sortedList = new SortedList<string, Cached_Object_Info>();
-                foreach (KeyValuePair<string, object> thisItem in MemoryCache.Default)
+                foreach (KeyValuePair<string, object> thisItem in SharedCache.Instance)
                 {
                     sortedList.Add(thisItem.Key, new Cached_Object_Info(thisItem.Key, thisItem.Value.GetType()));
                 }
@@ -72,12 +73,12 @@ namespace SobekCM.Core.MemoryMgmt
         public static void Clear_Cache()
         {
             // Get collection of keys in the Cache
-            List<string> keys = (from KeyValuePair<string, object> thisItem in MemoryCache.Default select thisItem.Key).ToList();
+            List<string> keys = (from KeyValuePair<string, object> thisItem in SharedCache.Instance select thisItem.Key).ToList();
 
             // Delete all items from the Cache
             foreach (string key in keys)
             {
-                MemoryCache.Default.Remove(key);
+                SharedCache.Instance.Remove(key);
             }
         }
 
@@ -85,14 +86,14 @@ namespace SobekCM.Core.MemoryMgmt
         public static void Clear_Search_Results_Browses()
         {
             // Get collection of keys in the Cache
-            List<string> keys = (from KeyValuePair<string, object> thisItem in MemoryCache.Default select thisItem.Key).ToList();
+            List<string> keys = (from KeyValuePair<string, object> thisItem in SharedCache.Instance select thisItem.Key).ToList();
 
             // Delete all items from the Cache
             foreach (string key in keys)
             {
                 if ((key.IndexOf("PAGEDBROWSE_") == 0) || (key.IndexOf("PAGEDRESULTS_") == 0) || (key.IndexOf("TOTALBROWSE_") == 0) || (key.IndexOf("TOTALRESULTS_") == 0))
                 {
-                    MemoryCache.Default.Remove(key);
+                    SharedCache.Instance.Remove(key);
                 }
             }
         }
@@ -117,7 +118,7 @@ namespace SobekCM.Core.MemoryMgmt
                 Tracer.Add_Trace("CachedDataManager.Retrieve_User_Folder_Browse", "");
             }
 
-            object returnValue = MemoryCache.Default.Get("USER_FOLDER_" + User_ID + "_" + Folder_Name.ToLower() + "_" + ResultsPage + "_" + Results_Per_Page);
+            object returnValue = SharedCache.Instance.Get("USER_FOLDER_" + User_ID + "_" + Folder_Name.ToLower() + "_" + ResultsPage + "_" + Results_Per_Page);
             return (returnValue != null) ? (List<iSearch_Title_Result>) returnValue : null;
         }
 
@@ -141,9 +142,9 @@ namespace SobekCM.Core.MemoryMgmt
                 Tracer.Add_Trace("CachedDataManager.Store_User_Folder_Browse", "Adding object '" + key + "' to the cache with expiration of 1 minute");
             }
 
-            if (MemoryCache.Default[key] == null)
+            if (SharedCache.Instance[key] == null)
             {
-                MemoryCache.Default.Set(key, StoreObject, new CacheItemPolicy { SlidingExpiration = TimeSpan.FromMinutes(1) });
+                SharedCache.Instance.Set(key, StoreObject, new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(1) });
             }
         }
 
@@ -163,7 +164,7 @@ namespace SobekCM.Core.MemoryMgmt
                 Tracer.Add_Trace("CachedDataManager.Retrieve_User_Folder_Browse_Statistics", "");
             }
 
-            object returnValue = MemoryCache.Default.Get("USER_FOLDER_" + User_ID + "_" + Folder_Name.ToLower() + "_STATISTICS");
+            object returnValue = SharedCache.Instance.Get("USER_FOLDER_" + User_ID + "_" + Folder_Name.ToLower() + "_STATISTICS");
             return (returnValue != null) ? (Search_Results_Statistics) returnValue : null;
         }
 
@@ -185,9 +186,9 @@ namespace SobekCM.Core.MemoryMgmt
                 Tracer.Add_Trace("CachedDataManager.Store_User_Folder_Browse_Statistics", "Adding object '" + key + "' to the cache with expiration of 1 minute");
             }
 
-            if (MemoryCache.Default[key] == null)
+            if (SharedCache.Instance[key] == null)
             {
-                MemoryCache.Default.Set(key, StoreObject, new CacheItemPolicy { SlidingExpiration = TimeSpan.FromMinutes(1) });
+                SharedCache.Instance.Set(key, StoreObject, new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(1) });
             }
         }
 
@@ -209,12 +210,12 @@ namespace SobekCM.Core.MemoryMgmt
             }
 
             // Get collection of keys in the Cache
-            List<string> keys = (from KeyValuePair<string, object> thisItem in MemoryCache.Default where thisItem.Key.IndexOf(key_start) == 0 select thisItem.Key).ToList();
+            List<string> keys = (from KeyValuePair<string, object> thisItem in SharedCache.Instance where thisItem.Key.IndexOf(key_start) == 0 select thisItem.Key).ToList();
 
             // Delete all items from the Cache
             foreach (string key in keys)
             {
-                MemoryCache.Default.Remove(key);
+                SharedCache.Instance.Remove(key);
             }
         }
 
@@ -235,12 +236,12 @@ namespace SobekCM.Core.MemoryMgmt
             string key_start = "USER_FOLDER_" + User_ID + "_";
 
             // Get collection of keys in the Cache
-            List<string> keys = (from KeyValuePair<string, object> thisItem in MemoryCache.Default where thisItem.Key.IndexOf(key_start) == 0 select thisItem.Key).ToList();
+            List<string> keys = (from KeyValuePair<string, object> thisItem in SharedCache.Instance where thisItem.Key.IndexOf(key_start) == 0 select thisItem.Key).ToList();
 
             // Delete all items from the Cache
             foreach (string key in keys)
             {
-                MemoryCache.Default.Remove(key);
+                SharedCache.Instance.Remove(key);
             }
         }
 
@@ -263,7 +264,7 @@ namespace SobekCM.Core.MemoryMgmt
                 Tracer.Add_Trace("CachedDataManager.Retrieve_Public_Folder_Info", "");
             }
 
-            object returnValue = MemoryCache.Default.Get("FOLDER_INFO_" + UserFolderID);
+            object returnValue = SharedCache.Instance.Get("FOLDER_INFO_" + UserFolderID);
             return (returnValue != null) ? (Public_User_Folder) returnValue : null;
         }
 
@@ -283,7 +284,7 @@ namespace SobekCM.Core.MemoryMgmt
                 Tracer.Add_Trace("CachedDataManager.Retrieve_Public_Folder_Browse", "");
             }
 
-            object returnValue = MemoryCache.Default.Get("FOLDER_BROWSE_" + UserFolderID + "_" + ResultsPage);
+            object returnValue = SharedCache.Instance.Get("FOLDER_BROWSE_" + UserFolderID + "_" + ResultsPage);
             return (returnValue != null) ? (List<iSearch_Title_Result>) returnValue : null;
         }
 
@@ -302,7 +303,7 @@ namespace SobekCM.Core.MemoryMgmt
                 Tracer.Add_Trace("CachedDataManager.Retrieve_Public_Folder_Browse", "");
             }
 
-            object returnValue = MemoryCache.Default.Get("FOLDER_BROWSE_" + UserFolderID + "_STATISTICS");
+            object returnValue = SharedCache.Instance.Get("FOLDER_BROWSE_" + UserFolderID + "_STATISTICS");
             return (returnValue != null) ? (Search_Results_Statistics) returnValue : null;
         }
 
@@ -322,9 +323,9 @@ namespace SobekCM.Core.MemoryMgmt
                 Tracer.Add_Trace("CachedDataManager.Store_Public_Folder_Info", "Adding object '" + key + "' to the cache with expiration of 2 minutes");
             }
 
-            if (MemoryCache.Default[key] == null)
+            if (SharedCache.Instance[key] == null)
             {
-                MemoryCache.Default.Set(key, StoreObject, new CacheItemPolicy { SlidingExpiration = TimeSpan.FromMinutes(2) });
+                SharedCache.Instance.Set(key, StoreObject, new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(2) });
             }
         }
 
@@ -346,9 +347,9 @@ namespace SobekCM.Core.MemoryMgmt
                 Tracer.Add_Trace("CachedDataManager.Store_Public_Folder_Browse", "Adding object '" + key + "' to the cache with expiration of 2 minutes");
             }
 
-            if (MemoryCache.Default[key] == null)
+            if (SharedCache.Instance[key] == null)
             {
-                MemoryCache.Default.Set(key, StoreObject, new CacheItemPolicy { SlidingExpiration = TimeSpan.FromMinutes(2) });
+                SharedCache.Instance.Set(key, StoreObject, new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(2) });
             }
         }
 
@@ -369,9 +370,9 @@ namespace SobekCM.Core.MemoryMgmt
                 Tracer.Add_Trace("CachedDataManager.Store_Public_Folder_Browse", "Adding object '" + key + "' to the cache with expiration of 2 minutes");
             }
 
-            if (MemoryCache.Default[key] == null)
+            if (SharedCache.Instance[key] == null)
             {
-                MemoryCache.Default.Set(key, StoreObject, new CacheItemPolicy { SlidingExpiration = TimeSpan.FromMinutes(2) });
+                SharedCache.Instance.Set(key, StoreObject, new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(2) });
             }
         }
 
@@ -389,17 +390,17 @@ namespace SobekCM.Core.MemoryMgmt
                 Tracer.Add_Trace("CachedDataManager.Clear_Public_Folder_Info", "");
             }
 
-            MemoryCache.Default.Remove("FOLDER_INFO_" + UserFolderID);
+            SharedCache.Instance.Remove("FOLDER_INFO_" + UserFolderID);
 
             string key_start = "FOLDER_BROWSE_" + UserFolderID + "_";
 
             // Get collection of keys in the Cache
-            List<string> keys = (from KeyValuePair<string, object> thisItem in MemoryCache.Default where thisItem.Key.IndexOf(key_start) == 0 select thisItem.Key).ToList();
+            List<string> keys = (from KeyValuePair<string, object> thisItem in SharedCache.Instance where thisItem.Key.IndexOf(key_start) == 0 select thisItem.Key).ToList();
 
             // Delete all items from the Cache
             foreach (string key in keys)
             {
-                MemoryCache.Default.Remove(key);
+                SharedCache.Instance.Remove(key);
             }
         }
 
@@ -427,7 +428,7 @@ namespace SobekCM.Core.MemoryMgmt
             string key = "TOTALBROWSE_" + Aggregation_Code.ToUpper() + "_" + Browse_Name.ToUpper();
 
             // Try to get this from the local cache next
-            object returnValue = MemoryCache.Default.Get(key);
+            object returnValue = SharedCache.Instance.Get(key);
             if (returnValue != null)
             {
                 if (Tracer != null)
@@ -456,14 +457,14 @@ namespace SobekCM.Core.MemoryMgmt
             string key = "TOTALBROWSE_" + Aggregation_Code.ToUpper() + "_" + Browse_Name.ToUpper();
 
             // Store this on the local cache, if not there and storing on the cache server failed
-            if (MemoryCache.Default[key] == null)
+            if (SharedCache.Instance[key] == null)
             {
                 if (Tracer != null)
                 {
                     Tracer.Add_Trace("CachedDataManager.Store_Browse_Result_Statistics", "Adding object '" + key + "' to the local cache with expiration of 1 minute");
                 }
 
-                MemoryCache.Default.Set(key, StoreObject, new CacheItemPolicy { SlidingExpiration = TimeSpan.FromMinutes(1) });
+                SharedCache.Instance.Set(key, StoreObject, new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(1) });
             }
         }
 
@@ -494,7 +495,7 @@ namespace SobekCM.Core.MemoryMgmt
             string key = "PAGEDBROWSE_" + Aggregation_Code.ToUpper() + "_" + Browse_Name.ToUpper() + "_" + Sort + "_" + Results_Per_Page + "_" + Page;
 
             // Try to get this object from the local cache first
-            object returnValue = MemoryCache.Default.Get(key);
+            object returnValue = SharedCache.Instance.Get(key);
             if (returnValue != null)
             {
                 if (Tracer != null)
@@ -531,14 +532,14 @@ namespace SobekCM.Core.MemoryMgmt
                 string key = "PAGEDBROWSE_" + Aggregation_Code.ToUpper() + "_" + Browse_Name.ToUpper() + "_" + Sort + "_" + Results_Per_Page + "_" + currentpage;
 
                 // Store this on the local cache, if not there and storing on the cache server failed
-                if (MemoryCache.Default[key] == null)
+                if (SharedCache.Instance[key] == null)
                 {
                     if (Tracer != null)
                     {
                         Tracer.Add_Trace("CachedDataManager.Store_Info_Browse", "Adding object '" + key + "' to the local cache with expiration of 1 minute");
                     }
 
-                    MemoryCache.Default.Set(key, pageOfResults, new CacheItemPolicy { SlidingExpiration = TimeSpan.FromMinutes(1) });
+                    SharedCache.Instance.Set(key, pageOfResults, new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(1) });
                 }
 
                 currentpage++;
@@ -569,7 +570,7 @@ namespace SobekCM.Core.MemoryMgmt
             string key = "BROWSEBY_" + Aggregation_Code.ToUpper() + "_" + Browse_Name.ToUpper();
 
             // Try to get this object from the local cache if above fails
-            object returnValue = MemoryCache.Default.Get(key);
+            object returnValue = SharedCache.Instance.Get(key);
             if (returnValue != null)
             {
                 if (Tracer != null)
@@ -598,14 +599,14 @@ namespace SobekCM.Core.MemoryMgmt
             string key = "BROWSEBY_" + Aggregation_Code.ToUpper() + "_" + Browse_Name.ToUpper();
 
             // Store this on the local cache, if not there and storing on the cache server failed
-            if (MemoryCache.Default[key] == null)
+            if (SharedCache.Instance[key] == null)
             {
                 if (Tracer != null)
                 {
                     Tracer.Add_Trace("CachedDataManager.Store_Aggregation_Metadata_Browse", "Adding object '" + key + "' to the local cache with expiration of 1 minute");
                 }
 
-                MemoryCache.Default.Set(key, StoreObject, new CacheItemPolicy { SlidingExpiration = TimeSpan.FromMinutes(1) });
+                SharedCache.Instance.Set(key, StoreObject, new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(1) });
             }
         }
 
@@ -693,7 +694,7 @@ namespace SobekCM.Core.MemoryMgmt
 			}
 
 			// Try to get this from the local cache first
-			object returnValue = MemoryCache.Default.Get(key);
+			object returnValue = SharedCache.Instance.Get(key);
 			if (returnValue != null)
 			{
 				if (Tracer != null)
@@ -784,7 +785,7 @@ namespace SobekCM.Core.MemoryMgmt
             }
 
             // Try to get this from the local cache first
-            object returnValue = MemoryCache.Default.Get(key);
+            object returnValue = SharedCache.Instance.Get(key);
             if (returnValue != null)
             {
                 if (Tracer != null)
@@ -869,14 +870,14 @@ namespace SobekCM.Core.MemoryMgmt
 			}
 
 			// Store this on the local cache, if not there and storing on the cache server failed
-			if (MemoryCache.Default[key] == null)
+			if (SharedCache.Instance[key] == null)
 			{
 				if (Tracer != null)
 				{
 					Tracer.Add_Trace("CachedDataManager.Store_Search_Result_Statistics", "Adding object '" + key + "' to the local cache with expiration of 1 minute");
 				}
 
-				MemoryCache.Default.Set(key, StoreObject, new CacheItemPolicy { SlidingExpiration = TimeSpan.FromMinutes(1) });
+				SharedCache.Instance.Set(key, StoreObject, new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(1) });
 			}
 		}
 
@@ -951,14 +952,14 @@ namespace SobekCM.Core.MemoryMgmt
             }
 
             // Store this on the local cache, if not there and storing on the cache server failed
-            if (MemoryCache.Default[key] == null)
+            if (SharedCache.Instance[key] == null)
             {
                 if (Tracer != null)
                 {
                     Tracer.Add_Trace("CachedDataManager.Store_Search_Result_Statistics", "Adding object '" + key + "' to the local cache with expiration of 1 minute");
                 }
 
-                MemoryCache.Default.Set(key, StoreObject, new CacheItemPolicy { SlidingExpiration = TimeSpan.FromMinutes(1) });
+                SharedCache.Instance.Set(key, StoreObject, new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(1) });
             }
         }
 
@@ -1046,7 +1047,7 @@ namespace SobekCM.Core.MemoryMgmt
 			}
 
     		// Try to get this from the local cache next
-			object returnValue = MemoryCache.Default.Get(key);
+			object returnValue = SharedCache.Instance.Get(key);
 			if (returnValue != null)
 			{
 				if (Tracer != null)
@@ -1135,7 +1136,7 @@ namespace SobekCM.Core.MemoryMgmt
             }
 
             // Try to get this from the local cache next
-            object returnValue = MemoryCache.Default.Get(key);
+            object returnValue = SharedCache.Instance.Get(key);
             if (returnValue != null)
             {
                 if (Tracer != null)
@@ -1224,14 +1225,14 @@ namespace SobekCM.Core.MemoryMgmt
 			}
 
 			// Store this on the local cache, if not there and storing on the cache server failed
-			if (MemoryCache.Default[key] == null)
+			if (SharedCache.Instance[key] == null)
 			{
 				if (Tracer != null)
 				{
 					Tracer.Add_Trace("CachedDataManager.Store_Search_Results", "Adding object '" + key + "' to the local cache with expiration of 1 minute");
 				}
 
-				MemoryCache.Default.Set(key, StoreObject, new CacheItemPolicy { SlidingExpiration = TimeSpan.FromMinutes(1) });
+				SharedCache.Instance.Set(key, StoreObject, new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(1) });
 			}
 		}
 
@@ -1309,14 +1310,14 @@ namespace SobekCM.Core.MemoryMgmt
             }
 
             // Store this on the local cache, if not there and storing on the cache server failed
-            if (MemoryCache.Default[key] == null)
+            if (SharedCache.Instance[key] == null)
             {
                 if (Tracer != null)
                 {
                     Tracer.Add_Trace("CachedDataManager.Store_Search_Results", "Adding object '" + key + "' to the local cache with expiration of 1 minute");
                 }
 
-                MemoryCache.Default.Set(key, StoreObject, new CacheItemPolicy { SlidingExpiration = TimeSpan.FromMinutes(1) });
+                SharedCache.Instance.Set(key, StoreObject, new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(1) });
             }
         }
 
@@ -1399,14 +1400,14 @@ namespace SobekCM.Core.MemoryMgmt
 				}
 
 				// Store this on the local cache, if not there and storing on the cache server failed
-				if (MemoryCache.Default[key] == null)
+				if (SharedCache.Instance[key] == null)
 				{
 					if (Tracer != null)
 					{
 						Tracer.Add_Trace("CachedDataManager.Store_Search_Results", "Adding object '" + key + "' to the local cache with expiration of 1 minutes");
 					}
 
-					MemoryCache.Default.Set(key, pageOfResults, new CacheItemPolicy { SlidingExpiration = TimeSpan.FromMinutes(1) });
+					SharedCache.Instance.Set(key, pageOfResults, new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(1) });
 				}
 
 				currentpage++;
@@ -1492,14 +1493,14 @@ namespace SobekCM.Core.MemoryMgmt
                 }
 
                 // Store this on the local cache, if not there and storing on the cache server failed
-                if (MemoryCache.Default[key] == null) 
+                if (SharedCache.Instance[key] == null) 
                 {
                     if (Tracer != null)
                     {
                         Tracer.Add_Trace("CachedDataManager.Store_Search_Results", "Adding object '" + key + "' to the local cache with expiration of 1 minute");
                     }
 
-                    MemoryCache.Default.Set(key, pageOfResults, new CacheItemPolicy { SlidingExpiration = TimeSpan.FromMinutes(1) });
+                    SharedCache.Instance.Set(key, pageOfResults, new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(1) });
                 }
 
                 currentpage++;
@@ -1535,7 +1536,7 @@ namespace SobekCM.Core.MemoryMgmt
         //        key = key + "_SCORE";
 
         //    // Try to get this object
-        //    object returnValue = MemoryCache.Default.Get(key);
+        //    object returnValue = SharedCache.Instance.Get(key);
         //    return (returnValue != null) ? (Solr_Page_Results) returnValue : null;
         //}
 
@@ -1561,9 +1562,9 @@ namespace SobekCM.Core.MemoryMgmt
         //    }
 
         //    // Store this on the cache
-        //    if (MemoryCache.Default[key] == null)
+        //    if (SharedCache.Instance[key] == null)
         //    {
-        //        MemoryCache.Default.Set(key, StoreObject, new CacheItemPolicy { SlidingExpiration = TimeSpan.FromMinutes(5) });
+        //        SharedCache.Instance.Set(key, StoreObject, new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(5) });
         //    }
         //}
 
@@ -1590,7 +1591,7 @@ namespace SobekCM.Core.MemoryMgmt
         //    string key = "TEMPLATE_" + Template_Code;
 
         //    // Try to get this object
-        //    object returnValue = MemoryCache.Default.Get(key);
+        //    object returnValue = SharedCache.Instance.Get(key);
         //    return (returnValue != null) ? (CompleteTemplate) returnValue : null;
         //}
 
@@ -1613,9 +1614,9 @@ namespace SobekCM.Core.MemoryMgmt
         //    }
 
         //    // Store this on the cache
-        //    if (MemoryCache.Default[key] == null)
+        //    if (SharedCache.Instance[key] == null)
         //    {
-        //        MemoryCache.Default.Set(key, StoreObject, new CacheItemPolicy { SlidingExpiration = TimeSpan.FromMinutes(30) });
+        //        SharedCache.Instance.Set(key, StoreObject, new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(30) });
         //    }
         //}
 
@@ -1655,7 +1656,7 @@ namespace SobekCM.Core.MemoryMgmt
 			}
 
 			// Clear this from the local cache
-			MemoryCache.Default.Remove(key);
+			SharedCache.Instance.Remove(key);
 		}
 
 		/// <summary> Retrieves a global project object from the cache  </summary>
@@ -1691,7 +1692,7 @@ namespace SobekCM.Core.MemoryMgmt
 			}
 
 			// Try to get this object
-			object returnValue = MemoryCache.Default.Get(key);
+			object returnValue = SharedCache.Instance.Get(key);
 			return (returnValue != null) ? (SobekCM_Item) returnValue : null;
 		}
 
@@ -1728,9 +1729,9 @@ namespace SobekCM.Core.MemoryMgmt
 			}
 
 			// Store this on the cache
-			if (MemoryCache.Default[key] == null)
+			if (SharedCache.Instance[key] == null)
 			{
-				MemoryCache.Default.Set(key, StoreObject, new CacheItemPolicy { SlidingExpiration = TimeSpan.FromMinutes(15) });
+				SharedCache.Instance.Set(key, StoreObject, new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(15) });
 			}
 		}
 
@@ -1758,7 +1759,7 @@ namespace SobekCM.Core.MemoryMgmt
 			string key = "SITEMAP_" + SiteMap_File;
 
 			// Try to get this object from the local cache 
-			object returnValue = MemoryCache.Default.Get(key);
+			object returnValue = SharedCache.Instance.Get(key);
 			if (returnValue != null)
 			{
 				if (Tracer != null)
@@ -1787,14 +1788,14 @@ namespace SobekCM.Core.MemoryMgmt
 			string key = "SITEMAP_" + SiteMap_File;
 
 			// Store this on the local cache, if not there and storing on the cache server failed
-			if (MemoryCache.Default[key] == null)
+			if (SharedCache.Instance[key] == null)
 			{
 				if (Tracer != null)
 				{
 					Tracer.Add_Trace("CachedDataManager.Store_Site_Map", "Adding object '" + key + "' to the local cache with expiration of 3 minutes");
 				}
 
-				MemoryCache.Default.Set(key, StoreObject, new CacheItemPolicy { SlidingExpiration = TimeSpan.FromMinutes(3) });
+				SharedCache.Instance.Set(key, StoreObject, new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(3) });
 			}
 		}
 

@@ -1,9 +1,10 @@
-﻿#region Using directives
+#region Using directives
+
+using Microsoft.Extensions.Caching.Memory;
 
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.Caching;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.Configuration;
 using SobekCM.Core.Configuration.Localization;
@@ -48,7 +49,7 @@ namespace SobekCM.Core.MemoryMgmt
             string key = "AGGR|" + Aggregation_Code.ToUpper() + "|COMPLETE";
 
             // See if this is in the local cache first
-            Complete_Item_Aggregation returnValue = MemoryCache.Default.Get(key) as Complete_Item_Aggregation;
+            Complete_Item_Aggregation returnValue = SharedCache.Instance.Get(key) as Complete_Item_Aggregation;
             if (returnValue != null)
             {
                 if (Tracer != null)
@@ -99,7 +100,7 @@ namespace SobekCM.Core.MemoryMgmt
                 Tracer.Add_Trace("CachedDataManager.Store_Item_Aggregation", "Adding object '" + key + "' to the local cache with expiration of " + LOCAL_EXPIRATION + " minute(s)");
             }
 
-            MemoryCache.Default.Set(key, StoreObject, new CacheItemPolicy { SlidingExpiration = TimeSpan.FromMinutes(LOCAL_EXPIRATION) });
+            SharedCache.Instance.Set(key, StoreObject, new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(LOCAL_EXPIRATION) });
         }
 
         #endregion
@@ -127,7 +128,7 @@ namespace SobekCM.Core.MemoryMgmt
             string key = "AGGR|" + AggregationCode.ToUpper() + "|" + languageCode;
 
             // See if this is in the local cache first
-            Item_Aggregation returnValue = MemoryCache.Default.Get(key) as Item_Aggregation;
+            Item_Aggregation returnValue = SharedCache.Instance.Get(key) as Item_Aggregation;
             if (returnValue != null)
             {
                 if (Tracer != null)
@@ -181,7 +182,7 @@ namespace SobekCM.Core.MemoryMgmt
                 Tracer.Add_Trace("CachedDataManager.Store_Item_Aggregation", "Adding object '" + key + "' to the local cache with expiration of " + LOCAL_EXPIRATION + " minute(s)");
             }
 
-            MemoryCache.Default.Set(key, StoreObject, new CacheItemPolicy { SlidingExpiration = TimeSpan.FromMinutes(LOCAL_EXPIRATION) });
+            SharedCache.Instance.Set(key, StoreObject, new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(LOCAL_EXPIRATION) });
         }
 
         #endregion
@@ -206,7 +207,7 @@ namespace SobekCM.Core.MemoryMgmt
             const string KEY = "AGGR_HIERARCHY";
 
             // See if this is in the local cache first
-            Aggregation_Hierarchy returnValue = MemoryCache.Default.Get(KEY) as Aggregation_Hierarchy;
+            Aggregation_Hierarchy returnValue = SharedCache.Instance.Get(KEY) as Aggregation_Hierarchy;
             if (returnValue != null)
             {
                 if (Tracer != null)
@@ -254,7 +255,7 @@ namespace SobekCM.Core.MemoryMgmt
                 Tracer.Add_Trace("CachedDataManager.Store_Aggregation_Hierarchy", "Adding object '" + KEY + "' to the local cache with expiration of " + LOCAL_EXPIRATION + " minute(s)");
             }
 
-            MemoryCache.Default.Set(KEY, StoreObject, new CacheItemPolicy { SlidingExpiration = TimeSpan.FromMinutes(LOCAL_EXPIRATION) });
+            SharedCache.Instance.Set(KEY, StoreObject, new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(LOCAL_EXPIRATION) });
         }
 
         /// <summary> Clear the aggregation hierarchy object from the cache </summary>
@@ -268,7 +269,7 @@ namespace SobekCM.Core.MemoryMgmt
 
             // Determine the key
             const string KEY = "AGGR_HIERARCHY";
-            MemoryCache.Default.Remove(KEY);
+            SharedCache.Instance.Remove(KEY);
         }
 
         #endregion
@@ -277,11 +278,11 @@ namespace SobekCM.Core.MemoryMgmt
         public void Clear()
         {
             // Get collection of keys in the Cache
-			List<string> keys = (from KeyValuePair<string, object> thisItem in MemoryCache.Default select thisItem.Key).ToList();
+			List<string> keys = (from KeyValuePair<string, object> thisItem in SharedCache.Instance select thisItem.Key).ToList();
 
 			// Delete all items from the Cache
             foreach (string key in keys.Where(Key => Key.StartsWith("AGGR|"))) {
-                MemoryCache.Default.Remove(key);
+                SharedCache.Instance.Remove(key);
             }
 
             // Delete the hierarchy
@@ -307,12 +308,12 @@ namespace SobekCM.Core.MemoryMgmt
             }
 
             // Get collection of keys in the Cache
-            List<string> keys = (from KeyValuePair<string, object> thisItem in MemoryCache.Default where (thisItem.Key == key_nolanguage) || (thisItem.Key.IndexOf(key_start) == 0) select thisItem.Key).ToList();
+            List<string> keys = (from KeyValuePair<string, object> thisItem in SharedCache.Instance where (thisItem.Key == key_nolanguage) || (thisItem.Key.IndexOf(key_start) == 0) select thisItem.Key).ToList();
 
             // Delete all items from the Cache
             foreach (string key in keys)
             {
-                MemoryCache.Default.Remove(key);
+                SharedCache.Instance.Remove(key);
             }
         }
 
@@ -337,7 +338,7 @@ namespace SobekCM.Core.MemoryMgmt
             string key = "AGGR|" + Aggregation_Code.ToUpper() + "|" + Web_Language_Enum_Converter.Enum_To_Code(Language) + "|" + ChildPageCode;
 
             // See if this is in the local cache first
-            HTML_Based_Content returnValue = MemoryCache.Default.Get(key) as HTML_Based_Content;
+            HTML_Based_Content returnValue = SharedCache.Instance.Get(key) as HTML_Based_Content;
             if (returnValue != null)
             {
                 if (Tracer != null)
@@ -391,7 +392,7 @@ namespace SobekCM.Core.MemoryMgmt
                 Tracer.Add_Trace("CachedDataManager_AggregationServices.Store_Aggregation_HTML_Based_Content", "Adding object '" + key + "' to the local cache with expiration of " + LOCAL_EXPIRATION + " minute(s)");
             }
 
-            MemoryCache.Default.Set(key, StoreObject, new CacheItemPolicy { SlidingExpiration = TimeSpan.FromMinutes(LOCAL_EXPIRATION) });
+            SharedCache.Instance.Set(key, StoreObject, new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(LOCAL_EXPIRATION) });
         }
     }
 }

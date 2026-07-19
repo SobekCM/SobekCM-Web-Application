@@ -1,7 +1,7 @@
-﻿using System;
+using Microsoft.Extensions.Caching.Memory;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.Caching;
 using SobekCM.Core.BriefItem;
 using SobekCM.Core.EAD;
 using SobekCM.Core.Items;
@@ -43,7 +43,7 @@ namespace SobekCM.Core.MemoryMgmt
             string key_start = "ITEM_" + BibID.ToUpper() + "_";
 
             // Build the sorted list of locally cached stuff
-            List<Cached_Object_Info> locallyCached = (from KeyValuePair<string, object> thisItem in MemoryCache.Default select new Cached_Object_Info(thisItem.Key, thisItem.Value.GetType())).ToList();
+            List<Cached_Object_Info> locallyCached = (from KeyValuePair<string, object> thisItem in SharedCache.Instance select new Cached_Object_Info(thisItem.Key, thisItem.Value.GetType())).ToList();
 
             // Determine which keys to expire
             List<string> keys_to_expire = (from cachedObject in locallyCached where cachedObject.Object_Key.IndexOf(key_start) == 0 select cachedObject.Object_Key).ToList();
@@ -51,14 +51,14 @@ namespace SobekCM.Core.MemoryMgmt
             // Clear these from the local cache
             foreach (string expireKey in keys_to_expire)
             {
-                MemoryCache.Default.Remove(expireKey);
+                SharedCache.Instance.Remove(expireKey);
             }
 
             // Now, remove the actual item group
             string key = "ITEM_GROUP_" + BibID.ToUpper();
 
             // Clear the item group from the local cache
-            MemoryCache.Default.Remove(key);
+            SharedCache.Instance.Remove(key);
         }
 
         /// <summary> Removes a global digital resource object from the cache , it it exists </summary>
@@ -89,7 +89,7 @@ namespace SobekCM.Core.MemoryMgmt
             string key_start = "ITEM_" + BibID.ToUpper() + "_" + VID + "_";
 
             // Build the sorted list of locally cached stuff
-            List<Cached_Object_Info> locallyCached = (from KeyValuePair<string, object> thisItem in MemoryCache.Default select new Cached_Object_Info(thisItem.Key, thisItem.Value.GetType())).ToList();
+            List<Cached_Object_Info> locallyCached = (from KeyValuePair<string, object> thisItem in SharedCache.Instance select new Cached_Object_Info(thisItem.Key, thisItem.Value.GetType())).ToList();
 
             // Determine which keys to expire
             List<string> keys_to_expire = (from cachedObject in locallyCached where cachedObject.Object_Key.IndexOf(key_start) == 0 select cachedObject.Object_Key).ToList();
@@ -97,14 +97,14 @@ namespace SobekCM.Core.MemoryMgmt
             // Clear these from the local cache
             foreach (string expireKey in keys_to_expire)
             {
-                MemoryCache.Default.Remove(expireKey);
+                SharedCache.Instance.Remove(expireKey);
             }
 
             // Now, remove the actual item
-            MemoryCache.Default.Remove("ITEM_" + BibID.ToUpper() + "_" + VID);
+            SharedCache.Instance.Remove("ITEM_" + BibID.ToUpper() + "_" + VID);
             if (UserID > 0)
             {
-                MemoryCache.Default.Remove("USERITEM" + UserID + "_ITEM_" + BibID.ToUpper() + "_" + VID);
+                SharedCache.Instance.Remove("USERITEM" + UserID + "_ITEM_" + BibID.ToUpper() + "_" + VID);
             }
         }
 
@@ -129,7 +129,7 @@ namespace SobekCM.Core.MemoryMgmt
             }
 
             // See if this is in the local cache first
-            object returnValue = MemoryCache.Default.Get(key);
+            object returnValue = SharedCache.Instance.Get(key);
             if (returnValue != null)
             {
                 if (Tracer != null)
@@ -188,7 +188,7 @@ namespace SobekCM.Core.MemoryMgmt
                 Tracer.Add_Trace("CachedDataManager_ItemServices.Store_Digital_Resource_Object", "Adding object '" + key + "' to the local cache with expiration of " + length_of_time + " minute");
             }
 
-            MemoryCache.Default.Set(key, StoreObject, new CacheItemPolicy { SlidingExpiration = TimeSpan.FromMinutes(length_of_time) });
+            SharedCache.Instance.Set(key, StoreObject, new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(length_of_time) });
         }
 
 
@@ -216,7 +216,7 @@ namespace SobekCM.Core.MemoryMgmt
             string key = "ITEM_GROUP_" + BibID.ToUpper();
 
             // See if this is in the local cache first
-            object returnValue = MemoryCache.Default.Get(key);
+            object returnValue = SharedCache.Instance.Get(key);
             if (returnValue != null)
             {
                 if (Tracer != null)
@@ -255,7 +255,7 @@ namespace SobekCM.Core.MemoryMgmt
                 Tracer.Add_Trace("CachedDataManager_ItemServices.Store_Digital_Resource_Object", "Adding object '" + key + "' to the local cache with expiration of 1 minute");
             }
 
-            MemoryCache.Default.Set(key, StoreObject, new CacheItemPolicy { SlidingExpiration = TimeSpan.FromMinutes(1) });
+            SharedCache.Instance.Set(key, StoreObject, new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(1) });
         }
 
         #endregion
@@ -277,7 +277,7 @@ namespace SobekCM.Core.MemoryMgmt
             string key = "ITEM_" + BibID.ToUpper() + "_" + VID + "_Brief";
 
             // See if this is in the local cache first
-            object returnValue = MemoryCache.Default.Get(key);
+            object returnValue = SharedCache.Instance.Get(key);
             if (returnValue != null)
             {
                 if (Tracer != null)
@@ -317,7 +317,7 @@ namespace SobekCM.Core.MemoryMgmt
                 Tracer.Add_Trace("CachedDataManager_ItemServices.Store_Digital_Resource_Object", "Adding object '" + key + "' to the local cache with expiration of " + LENGTH_OF_TIME + " minute");
             }
 
-            MemoryCache.Default.Set(key, StoreObject, new CacheItemPolicy { SlidingExpiration = TimeSpan.FromMinutes(LENGTH_OF_TIME) });
+            SharedCache.Instance.Set(key, StoreObject, new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(LENGTH_OF_TIME) });
         }
 
         #endregion
@@ -340,7 +340,7 @@ namespace SobekCM.Core.MemoryMgmt
             }
 
             // Try to get this from the local cache next
-            object returnValue = MemoryCache.Default.Get("ITEMLIST_" + BibID.ToUpper());
+            object returnValue = SharedCache.Instance.Get("ITEMLIST_" + BibID.ToUpper());
             if (returnValue != null)
             {
                 if (Tracer != null)
@@ -371,14 +371,14 @@ namespace SobekCM.Core.MemoryMgmt
 
             // Store this on the local cache, if not there and storing on the cache server failed
             string key = "ITEMLIST_" + BibID.ToUpper();
-            if (MemoryCache.Default[key] == null)
+            if (SharedCache.Instance[key] == null)
             {
                 if (Tracer != null)
                 {
                     Tracer.Add_Trace("CachedDataManager_ItemServices.Store_Items_In_Title", "Adding object '" + key + "' to the local cache with expiration of 1 minutes");
                 }
 
-                MemoryCache.Default.Set(key, StoreObject, new CacheItemPolicy { SlidingExpiration = TimeSpan.FromMinutes(1) });
+                SharedCache.Instance.Set(key, StoreObject, new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(1) });
             }
         }
 
@@ -400,7 +400,7 @@ namespace SobekCM.Core.MemoryMgmt
             string key = "ITEMLIST_" + BibID.ToUpper();
 
             // Clear this from the local cache
-            MemoryCache.Default.Remove(key);
+            SharedCache.Instance.Remove(key);
         }
 
         #endregion
@@ -422,7 +422,7 @@ namespace SobekCM.Core.MemoryMgmt
             string key = "ITEM_" + BibID + "_" + VID + "_EadInfo";
 
             // See if this is in the local cache first
-            object returnValue = MemoryCache.Default.Get(key);
+            object returnValue = SharedCache.Instance.Get(key);
             if (returnValue != null)
             {
                 if (Tracer != null)
@@ -462,7 +462,7 @@ namespace SobekCM.Core.MemoryMgmt
                 Tracer.Add_Trace("CachedDataManager_ItemServices.Store_EAD_Info", "Adding object '" + key + "' to the local cache with expiration of " + LENGTH_OF_TIME + " minute");
             }
 
-            MemoryCache.Default.Set(key, StoreObject, new CacheItemPolicy { SlidingExpiration = TimeSpan.FromMinutes(LENGTH_OF_TIME) });
+            SharedCache.Instance.Set(key, StoreObject, new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(LENGTH_OF_TIME) });
         }
 
         #endregion
@@ -484,7 +484,7 @@ namespace SobekCM.Core.MemoryMgmt
             string key = "ITEM_" + BibID + "_" + VID + "_MarcRecord";
 
             // See if this is in the local cache first
-            object returnValue = MemoryCache.Default.Get(key);
+            object returnValue = SharedCache.Instance.Get(key);
             if (returnValue != null)
             {
                 if (Tracer != null)
@@ -524,7 +524,7 @@ namespace SobekCM.Core.MemoryMgmt
                 Tracer.Add_Trace("CachedDataManager_ItemServices.Store_MARC_Record", "Adding object '" + key + "' to the local cache with expiration of " + LENGTH_OF_TIME + " minute");
             }
 
-            MemoryCache.Default.Set(key, StoreObject, new CacheItemPolicy { SlidingExpiration = TimeSpan.FromMinutes(LENGTH_OF_TIME) });
+            SharedCache.Instance.Set(key, StoreObject, new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(LENGTH_OF_TIME) });
         }
 
         #endregion
@@ -545,7 +545,7 @@ namespace SobekCM.Core.MemoryMgmt
             string key = "ITEM_" + BibID.ToUpper() + "_ItemList";
 
             // See if this is in the local cache first
-            object returnValue = MemoryCache.Default.Get(key);
+            object returnValue = SharedCache.Instance.Get(key);
             if (returnValue != null)
             {
                 if (Tracer != null)
@@ -584,7 +584,7 @@ namespace SobekCM.Core.MemoryMgmt
                 Tracer.Add_Trace("CachedDataManager_ItemServices.Store_Item_List", "Adding object '" + key + "' to the local cache with expiration of " + LENGTH_OF_TIME + " minute");
             }
 
-            MemoryCache.Default.Set(key, StoreObject, new CacheItemPolicy { SlidingExpiration = TimeSpan.FromMinutes(LENGTH_OF_TIME) });
+            SharedCache.Instance.Set(key, StoreObject, new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(LENGTH_OF_TIME) });
         }
 
         /// <summary> Removes the  list of items for a single bibid to the cache  </summary>
@@ -605,7 +605,7 @@ namespace SobekCM.Core.MemoryMgmt
             string key = "ITEM_" + BibID.ToUpper() + "_ItemList";
 
             // Clear this from the local cache
-            MemoryCache.Default.Remove(key);
+            SharedCache.Instance.Remove(key);
         }
 
         #endregion
@@ -627,7 +627,7 @@ namespace SobekCM.Core.MemoryMgmt
             string key = "ITEM_" + BibID + "_" + VID + "_Usage";
 
             // See if this is in the local cache first
-            object returnValue = MemoryCache.Default.Get(key);
+            object returnValue = SharedCache.Instance.Get(key);
             if (returnValue != null)
             {
                 if (Tracer != null)
@@ -667,7 +667,7 @@ namespace SobekCM.Core.MemoryMgmt
                 Tracer.Add_Trace("CachedDataManager_ItemServices.Store_Item_Usage", "Adding object '" + key + "' to the local cache with expiration of " + LENGTH_OF_TIME + " minute");
             }
 
-            MemoryCache.Default.Set(key, StoreObject, new CacheItemPolicy { SlidingExpiration = TimeSpan.FromMinutes(LENGTH_OF_TIME) });
+            SharedCache.Instance.Set(key, StoreObject, new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(LENGTH_OF_TIME) });
         }
 
         #endregion
@@ -689,7 +689,7 @@ namespace SobekCM.Core.MemoryMgmt
             string key = "ITEM_" + BibID + "_" + VID + "_Tracking";
 
             // See if this is in the local cache first
-            object returnValue = MemoryCache.Default.Get(key);
+            object returnValue = SharedCache.Instance.Get(key);
             if (returnValue != null)
             {
                 if (Tracer != null)
@@ -729,7 +729,7 @@ namespace SobekCM.Core.MemoryMgmt
                 Tracer.Add_Trace("CachedDataManager_ItemServices.Store_Item_Tracking", "Adding object '" + key + "' to the local cache with expiration of " + LENGTH_OF_TIME + " minute");
             }
 
-            MemoryCache.Default.Set(key, StoreObject, new CacheItemPolicy { SlidingExpiration = TimeSpan.FromMinutes(LENGTH_OF_TIME) });
+            SharedCache.Instance.Set(key, StoreObject, new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(LENGTH_OF_TIME) });
         }
 
 

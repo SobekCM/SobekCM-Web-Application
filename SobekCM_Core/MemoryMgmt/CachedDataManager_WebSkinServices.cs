@@ -1,9 +1,10 @@
-﻿#region Using directives
+#region Using directives
+
+using Microsoft.Extensions.Caching.Memory;
 
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.Caching;
 using SobekCM.Core.Skins;
 using SobekCM.Tools;
 
@@ -29,12 +30,12 @@ namespace SobekCM.Core.MemoryMgmt
         public void Clear()
         {
             // Get collection of keys in the Cache
-            List<string> keys = (from KeyValuePair<string, object> thisItem in MemoryCache.Default select thisItem.Key).ToList();
+            List<string> keys = (from KeyValuePair<string, object> thisItem in SharedCache.Instance select thisItem.Key).ToList();
 
             // Delete all items from the Cache
             foreach (string key in keys.Where(Key => Key.StartsWith("SKIN|")))
             {
-                MemoryCache.Default.Remove(key);
+                SharedCache.Instance.Remove(key);
             }
         }
 
@@ -58,14 +59,14 @@ namespace SobekCM.Core.MemoryMgmt
 
             string skinKey = "SKIN|" + Skin_Code.ToLower();
             string skinKeyPrefix = skinKey + "|";
-            List<string> keysToRemove = MemoryCache.Default
+            List<string> keysToRemove = SharedCache.Instance
                 .Where(e => e.Key == skinKey || e.Key.IndexOf(skinKeyPrefix) == 0)
                 .Select(e => e.Key)
                 .ToList();
             int values_cleared = keysToRemove.Count;
             foreach (string removeKey in keysToRemove)
             {
-                MemoryCache.Default.Remove(removeKey);
+                SharedCache.Instance.Remove(removeKey);
             }
 
             return values_cleared;
@@ -88,7 +89,7 @@ namespace SobekCM.Core.MemoryMgmt
                 key = key + Language_Code;
 
             // See if this is in the local cache first
-            object returnValue = MemoryCache.Default.Get(key);
+            object returnValue = SharedCache.Instance.Get(key);
             if (returnValue != null)
             {
                 if (Tracer != null)
@@ -131,7 +132,7 @@ namespace SobekCM.Core.MemoryMgmt
             }
 
             // Add to the cache with five minute expiration
-            MemoryCache.Default.Set(key, StoreObject, new CacheItemPolicy { SlidingExpiration = TimeSpan.FromMinutes(5) });
+            SharedCache.Instance.Set(key, StoreObject, new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(5) });
         }
 
         /// <summary> Retrieves the complete html skin object from the cache  </summary>
@@ -148,7 +149,7 @@ namespace SobekCM.Core.MemoryMgmt
             string key = "SKIN|" + Skin_Code.ToLower() + "|COMPLETE";
 
             // See if this is in the local cache first
-            object returnValue = MemoryCache.Default.Get(key);
+            object returnValue = SharedCache.Instance.Get(key);
             if (returnValue != null)
             {
                 if (Tracer != null)
@@ -188,7 +189,7 @@ namespace SobekCM.Core.MemoryMgmt
             }
 
             // Stote the value with five minute expiration
-            MemoryCache.Default.Set(key, StoreObject, new CacheItemPolicy { SlidingExpiration = TimeSpan.FromMinutes(5) });
+            SharedCache.Instance.Set(key, StoreObject, new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(5) });
         }
 
         #endregion

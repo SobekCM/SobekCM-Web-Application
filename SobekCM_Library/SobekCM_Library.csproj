@@ -18,8 +18,6 @@
     </Reference>
     <!-- System.Web compatibility shim for ASP.NET Core migration — provides HttpContext.Current, Request, Session, etc. -->
     <PackageReference Include="Microsoft.AspNetCore.SystemWebAdapters" Version="2.3.0" />
-    <!-- System.Runtime.Caching replaces System.Web.Caching.Cache -->
-    <PackageReference Include="System.Runtime.Caching" Version="10.0.0" />
   </ItemGroup>
 
   <ItemGroup>

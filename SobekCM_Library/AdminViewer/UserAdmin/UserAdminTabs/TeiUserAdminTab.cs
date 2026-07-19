@@ -1,3 +1,5 @@
+using SobekCM.Core.MemoryMgmt;
+using Microsoft.Extensions.Caching.Memory;
 using SobekCM.Core.Users;
 using SobekCM.Engine_Library.Database;
 using SobekCM.Library.TEI;
@@ -10,7 +12,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Runtime.Caching;
 using Microsoft.AspNetCore.Http;
 
 namespace SobekCM.Library.AdminViewer.UserAdmin.UserAdminTabs
@@ -24,7 +25,7 @@ namespace SobekCM.Library.AdminViewer.UserAdmin.UserAdminTabs
         private void getOrCreateTeiConfig()
         {
             // Try to pull the configuration from the cache, otherwise create it manually
-            teiConfig = MemoryCache.Default.Get("TEI.Configuration") as TEI_Configuration;
+            teiConfig = SharedCache.Instance.Get("TEI.Configuration") as TEI_Configuration;
 
             // Did not find it in the cache
             if (teiConfig == null)
@@ -34,7 +35,7 @@ namespace SobekCM.Library.AdminViewer.UserAdmin.UserAdminTabs
                 teiConfig = new TEI_Configuration(plugin_directory);
 
                 // Store on the cache for several minutes
-                MemoryCache.Default.Set("TEI.Configuration", teiConfig, new CacheItemPolicy { SlidingExpiration = TimeSpan.FromMinutes(2) });
+                SharedCache.Instance.Set("TEI.Configuration", teiConfig, new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(2) });
             }
         }
 

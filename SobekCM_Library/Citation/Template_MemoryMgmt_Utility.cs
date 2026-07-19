@@ -1,7 +1,9 @@
 #region Using directives
 
+using SobekCM.Core.MemoryMgmt;
+using Microsoft.Extensions.Caching.Memory;
+
 using System;
-using System.Runtime.Caching;
 using SobekCM.Library.Citation.Template;
 using SobekCM.Tools;
 
@@ -28,7 +30,7 @@ namespace SobekCM.Library.Citation
             }
 
             string key = "TEMPLATE_" + Template_Code;
-            return MemoryCache.Default.Get(key) as CompleteTemplate;
+            return SharedCache.Instance.Get(key) as CompleteTemplate;
         }
 
         /// <summary> Stores the template ( for online submission and editing ) to the cache or caching server </summary>
@@ -44,9 +46,9 @@ namespace SobekCM.Library.Citation
                 Tracer.Add_Trace("Template_MemoryMgmt_Utility.Store_Template", "Adding object '" + key + "' to the cache with expiration of thirty minutes");
             }
 
-            if (MemoryCache.Default[key] == null)
+            if (SharedCache.Instance[key] == null)
             {
-                MemoryCache.Default.Set(key, StoreObject, new CacheItemPolicy { SlidingExpiration = TimeSpan.FromMinutes(30) });
+                SharedCache.Instance.Set(key, StoreObject, new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(30) });
             }
         }
 

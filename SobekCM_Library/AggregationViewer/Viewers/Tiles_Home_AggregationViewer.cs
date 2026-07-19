@@ -1,3 +1,5 @@
+using SobekCM.Core.MemoryMgmt;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
@@ -5,7 +7,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Runtime.Caching;
 using System.Xml;
 using System.Xml.Serialization;
 using Microsoft.Win32;
@@ -93,7 +94,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 
             // Is the metadata cached?
             string cache_key = ViewBag.Hierarchy_Object.Code + ":TILE METADATA";
-            tileMetadata = MemoryCache.Default.Get(cache_key) as Database_Results_Info;
+            tileMetadata = SharedCache.Instance.Get(cache_key) as Database_Results_Info;
             if (tileMetadata == null)
             {
                 // Look for the metadat file
@@ -176,7 +177,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                         fs.Close();
 
                         // Also put this in the cache
-                        MemoryCache.Default.Set(cache_key, tileMetadata, new CacheItemPolicy { SlidingExpiration = TimeSpan.FromMinutes(5) });
+                        SharedCache.Instance.Set(cache_key, tileMetadata, new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(5) });
                     }
                     catch (Exception)
                     {

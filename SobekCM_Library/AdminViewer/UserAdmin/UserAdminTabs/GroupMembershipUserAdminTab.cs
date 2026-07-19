@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SobekCM.Library.UI;
+using Microsoft.AspNetCore.Http;
 
 namespace SobekCM.Library.AdminViewer.UserAdmin.UserAdminTabs
 {
@@ -16,7 +17,7 @@ namespace SobekCM.Library.AdminViewer.UserAdmin.UserAdminTabs
     {
         public string TabName => "Group Membership";
 
-        public bool HandlePostback(NameValueCollection form, User_Object editUser, RequestCache RequestSpecificValues)
+        public bool HandlePostback(IFormCollection form, User_Object editUser, RequestCache RequestSpecificValues)
         {
             // Check the RequestSpecificValues.Current_User groups for update
             bool update_user_groups = false;

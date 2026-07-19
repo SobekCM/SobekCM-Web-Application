@@ -6,6 +6,7 @@ using System.Collections.Specialized;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
+using Microsoft.AspNetCore.Http;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.MemoryMgmt;
@@ -99,7 +100,7 @@ namespace SobekCM.Library.HTML
 					
 					if (action == "email")
 					{
-						string address = form["email_address"].Replace(";", ",").Trim();
+						string address = form["email_address"].TrimFirst().Replace(";", ",");
 						string comments = form["email_comments"].TrimFirst();
 						string format = form["email_format"].TrimFirst().ToUpper();
 						string list_type = form["list_type"].TrimFirst();

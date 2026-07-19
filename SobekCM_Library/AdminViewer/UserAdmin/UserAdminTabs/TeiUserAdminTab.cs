@@ -11,6 +11,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Runtime.Caching;
+using Microsoft.AspNetCore.Http;
 
 namespace SobekCM.Library.AdminViewer.UserAdmin.UserAdminTabs
 {
@@ -37,12 +38,12 @@ namespace SobekCM.Library.AdminViewer.UserAdmin.UserAdminTabs
             }
         }
 
-        public bool HandlePostback(NameValueCollection form, User_Object editUser, RequestCache RequestSpecificValues)
+        public bool HandlePostback(IFormCollection form, User_Object editUser, RequestCache RequestSpecificValues)
         {
             getOrCreateTeiConfig();
 
             // First, check to see if TEI is enabled
-            if (form["admin_user_tei_enabled"] == null)
+            if (String.IsNullOrEmpty(form["admin_user_tei_enabled"].TrimFirst()))
             {
                 // If the setting is already the same, no need to update the database
                 if (editUser.Get_Setting("TEI.Enabled", "false") != "false")
@@ -65,7 +66,7 @@ namespace SobekCM.Library.AdminViewer.UserAdmin.UserAdminTabs
             foreach (string thisFileName in teiConfig.XSLT_Files)
             {
                 // Look for this checkbox
-                if (form["admin_user_tei_xslt_" + thisFileName.ToLower()] == null)
+                if (String.IsNullOrEmpty(form["admin_user_tei_xslt_" + thisFileName.ToLower()].TrimFirst()))
                 {
                     // If the setting is already the same, no need to update the database
                     if (editUser.Get_Setting("TEI.XSLT." + thisFileName.ToUpper(), "false") != "false")
@@ -89,7 +90,7 @@ namespace SobekCM.Library.AdminViewer.UserAdmin.UserAdminTabs
             foreach (string thisFileName in teiConfig.CSS_Files)
             {
                 // Look for this checkbox
-                if (form["admin_user_tei_css_" + thisFileName.ToLower()] == null)
+                if ( String.IsNullOrEmpty(form["admin_user_tei_css_" + thisFileName.ToLower()].TrimFirst()))
                 {
                     // If the setting is already the same, no need to update the database
                     if (editUser.Get_Setting("TEI.CSS." + thisFileName.ToUpper(), "false") != "false")
@@ -113,7 +114,7 @@ namespace SobekCM.Library.AdminViewer.UserAdmin.UserAdminTabs
             foreach (string thisFileName in teiConfig.Mapping_Files)
             {
                 // Look for this checkbox
-                if (form["admin_user_tei_mapping_" + thisFileName.ToLower()] == null)
+                if (String.IsNullOrEmpty(form["admin_user_tei_mapping_" + thisFileName.ToLower()].TrimFirst()))
                 {
                     // If the setting is already the same, no need to update the database
                     if (editUser.Get_Setting("TEI.MAPPING." + thisFileName.ToUpper(), "false") != "false")

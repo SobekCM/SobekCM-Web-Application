@@ -1,4 +1,5 @@
-﻿using SobekCM.Core.Aggregations;
+﻿using Microsoft.AspNetCore.Http;
+using SobekCM.Core.Aggregations;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Users;
 using SobekCM.Library.UI;
@@ -9,13 +10,14 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
+
 namespace SobekCM.Library.AdminViewer.UserAdmin.SubViewers
 {
     public class ViewUser_UsersAdminSubViewer :  abstractUsersAdminSubViewer
     {
         public override string Title => "View User Information";
 
-        public override void HandlePostback(RequestCache RequestSpecificValues)
+        public override void HandlePostback(RequestCache RequestSpecificValues, HttpContext Context)
         {
             // Does nothing ... this really is display only
         }

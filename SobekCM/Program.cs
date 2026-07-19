@@ -11,6 +11,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using SobekCM.Core.Client;
 using SobekCM.Core.FileSystems;
+using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
 using SobekCM.Library.Database;
 using SobekCM.Library.Helpers.CKEditor;
@@ -131,8 +132,7 @@ namespace SobekCM
 
                 writer.WriteLine("<!DOCTYPE html><html><head><title>SobekCM Dashboard</title></head><body>");
 
-                var session = System.Web.HttpContext.Current.Session;
-                if (session["Last_Exception"] is Exception lastException)
+                if (context.SessionObject()[SessionCache_Keys.LastException] is Exception lastException)
                 {
                     if (lastException is SobekCM_Traced_Exception traced)
                     {
@@ -150,7 +150,7 @@ namespace SobekCM
                         if (!string.IsNullOrEmpty(lastException.StackTrace))
                             writer.WriteLine("<h2>Stack Trace</h2><blockquote>" + lastException.StackTrace.Replace("\n", "<br />") + "</blockquote>");
                     }
-                    session.Remove("Last_Exception");
+                    context.SessionObject()[SessionCache_Keys.LastException] = null;
                 }
                 else
                 {
@@ -245,15 +245,12 @@ namespace SobekCM
                     return;
 
                 // Save the current URL to session for "back" navigation
-                var webSession = System.Web.HttpContext.Current.Session;
-                string originalUrl = System.Web.HttpContext.Current.Items.Contains("Original_URL")
-                    ? System.Web.HttpContext.Current.Items["Original_URL"].ToString()
-                    : context.Request.GetDisplayUrl();
+                string originalUrl = context.Items["Original_URL"]?.ToString() ?? context.Request.GetDisplayUrl();
 
                 if (pageGlobals.currentMode.Mode != Display_Mode_Enum.Preferences &&
                     pageGlobals.currentMode.Mode != Display_Mode_Enum.Contact)
                 {
-                    webSession["Last_Mode"] = originalUrl;
+                    context.Session.SetString(SessionCache_Keys.LastMode, originalUrl);
                 }
 
                 context.Response.ContentType = "text/html; charset=utf-8";
@@ -372,16 +369,14 @@ namespace SobekCM
 
             if (!isDark && restrictions > 0)
             {
-                var webContext = System.Web.HttpContext.Current;
-                if (webContext.Session["IP_Range_Membership"] == null)
+                if (context.Session.GetString(SessionCache_Keys.IpRangeMembership) == null)
                 {
                     int ipMask = UI_ApplicationCache_Gateway.IP_Restrictions.Restrictive_Range_Membership(userHostAddress);
-                    webContext.Session["IP_Range_Membership"] = ipMask;
+                    context.Session.SetString(SessionCache_Keys.IpRangeMembership, ipMask.ToString());
                 }
-                int userMask = Convert.ToInt32(webContext.Session["IP_Range_Membership"]);
-                if ((restrictions & userMask) == 0)
+                if (int.TryParse(context.Session.GetString(SessionCache_Keys.IpRangeMembership), out int userMask) && (restrictions & userMask) == 0)
                 {
-                    var possibleUser = webContext.Session["user"] as SobekCM.Core.Users.User_Object;
+                    var possibleUser = CachedDataManager_UserCacheServices.StringToUser(context.Session.GetString(SessionCache_Keys.User));
                     if (possibleUser == null || possibleUser.Authentication_Type != SobekCM.Core.Users.User_Authentication_Type_Enum.Shibboleth)
                         isDark = true;
                 }
@@ -420,8 +415,7 @@ namespace SobekCM
             if (string.IsNullOrEmpty(token))
                 return;
 
-            var webSession = System.Web.HttpContext.Current.Session;
-            if (webSession["#CKEDITOR::" + token] is not CKEditor_Security_Token tokenObj)
+            if (context.SessionObject()["#CKEDITOR::" + token] is not CKEditor_Security_Token tokenObj)
                 return;
 
             if (!Directory.Exists(tokenObj.UploadPath))
@@ -453,8 +447,7 @@ namespace SobekCM
                 return;
             }
 
-            var webSession = System.Web.HttpContext.Current.Session;
-            if (webSession["#UPLOADIFIVE::" + tokenKey] is not UploadiFive_Security_Token tokenObj)
+            if (context.SessionObject()["#UPLOADIFIVE::" + tokenKey] is not UploadiFive_Security_Token tokenObj)
             {
                 context.Response.StatusCode = 401;
                 await context.Response.WriteAsync("No matching server-side token found for this request");

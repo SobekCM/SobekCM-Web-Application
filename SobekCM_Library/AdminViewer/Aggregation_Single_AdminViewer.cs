@@ -1289,9 +1289,9 @@ namespace SobekCM.Library.AdminViewer
                 Directory.CreateDirectory(banner_folder);
             string[] banner_files = SobekCM_File_Utilities.GetFiles(banner_folder, "*.jpg|*.bmp|*.gif|*.png");
             string last_added_banner = String.Empty;
-            if (HttpContext.Current.Items["Uploaded File"] != null)
+            if (Context.Session.GetString(SessionCache_Keys.UploadedFile) != null)
             {
-                string newBanner = HttpContext.Current.Items["Uploaded File"].ToString();
+                string newBanner = Context.Session.GetString(SessionCache_Keys.UploadedFile);
                 last_added_banner = Path.GetFileName(newBanner);
             }
             else

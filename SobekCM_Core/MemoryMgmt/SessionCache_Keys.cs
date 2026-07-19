@@ -3,14 +3,15 @@
     public static class SessionCache_Keys
     {
         // String keys — stored via ISession.SetString / GetString
-        public const string OriginalUrl = "Original_URL";
-        public const string IpRangeMembership = "IP_Range_Membership";
-        public const string InternalHeader = "internal_header";
+        public const string OriginalUrl = "OriginalURL";
+        public const string IpRangeMembership = "IpRangeMembership";
+        public const string InternalHeader = "InternalHeader";
         public const string LastSearch = "LastSearch";
         public const string LastResults = "LastResults";
-        public const string LastMode = "Last_Mode";
-        public const string OnLoadMessage = "ON_LOAD_MESSAGE";
-        public const string OnLoadWindow = "ON_LOAD_WINDOW";
+        public const string LastMode = "LastMode";
+        public const string OnLoadMessage = "OnLoadMessage";
+        public const string OnLoadWindow = "OnLoadWindow";
+        public const string UploadedFile = "UploadedFile";
 
         // Object keys — stored via Context.SessionObject()[key]
         public const string LastException = "Last_Exception";

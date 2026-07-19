@@ -6,7 +6,7 @@ using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Web;
+using Microsoft.AspNetCore.Http;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.Client;
 using SobekCM.Core.MemoryMgmt;
@@ -179,7 +179,7 @@ namespace SobekCM.Library.AdminViewer
                 try
                 {
                     // Pull the standard values
-                    NameValueCollection form = Context.Request.Form;
+                    var form = Context.Request.Form;
 
                     // Get the curret action
                     string action = form["admin_wizard_save"];
@@ -625,7 +625,7 @@ namespace SobekCM.Library.AdminViewer
 
         #region Methods to render (and parse) page 0 - Welcome
 
-        private void Save_Page_Welcome_Postback(NameValueCollection Form)
+        private void Save_Page_Welcome_Postback(IFormCollection Form)
         {
             // Do nothing
             bool do_not_show_flag = (!String.IsNullOrEmpty(Form["admin_wizard_donotshow"].TrimFirst()));
@@ -658,7 +658,7 @@ namespace SobekCM.Library.AdminViewer
 
         #region Methods to render (and parse) page 1 - Basic Information
 
-        private void Save_Page_Basic_Postback(NameValueCollection Form)
+        private void Save_Page_Basic_Postback(IFormCollection Form)
         {
             // Pull the values from the submitted form
             string new_aggregation_code = Form["admin_aggr_code"];
@@ -984,12 +984,12 @@ namespace SobekCM.Library.AdminViewer
 
         #region Methods to render (and parse) page 2 - Visibility
 
-        private void Save_Page_Visibility_Postback(NameValueCollection Form)
+        private void Save_Page_Visibility_Postback(IFormCollection Form)
         {
             string new_thematic_heading = Form["admin_aggr_heading"].TrimFirst();
 
             bool is_active = !String.IsNullOrEmpty(Form["admin_aggr_isactive"].TrimFirst());
-            bool is_hidden = Form["admin_aggr_ishidden"] == null;
+            bool is_hidden = String.IsNullOrEmpty(Form["admin_aggr_ishidden"].TrimFirst());
 
             // Get the thematic heading id (no checks here)
             string thematicHeading = null;
@@ -1144,9 +1144,9 @@ namespace SobekCM.Library.AdminViewer
                 Directory.CreateDirectory(banner_folder);
             string[] banner_files = SobekCM_File_Utilities.GetFiles(banner_folder, "*.jpg|*.bmp|*.gif|*.png");
             string last_added_banner = String.Empty;
-            if (HttpContext.Current.Items["Uploaded File"] != null)
+            if (Context.Session.GetString(SessionCache_Keys.UploadedFile) != null)
             {
-                string newBanner = HttpContext.Current.Items["Uploaded File"].ToString();
+                string newBanner = Context.Session.GetString(SessionCache_Keys.UploadedFile);
                 last_added_banner = Path.GetFileName(newBanner);
             }
             else
@@ -1242,9 +1242,9 @@ namespace SobekCM.Library.AdminViewer
                 Directory.CreateDirectory(button_folder);
             string[] button_files = Directory.GetFiles(button_folder, "*.gif");
             string last_added_button = String.Empty;
-            if (HttpContext.Current.Items["Uploaded File"] != null)
+            if (Context.Session.GetString(SessionCache_Keys.UploadedFile) != null)
             {
-                string newButton = HttpContext.Current.Items["Uploaded File"].ToString();
+                string newButton = Context.Session.GetString(SessionCache_Keys.UploadedFile);
                 last_added_button = Path.GetFileName(newButton);
             }
             else

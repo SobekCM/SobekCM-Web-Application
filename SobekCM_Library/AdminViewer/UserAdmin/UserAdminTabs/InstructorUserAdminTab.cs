@@ -1,4 +1,5 @@
-﻿using SobekCM.Core.Users;
+﻿using Microsoft.AspNetCore.Http;
+using SobekCM.Core.Users;
 using SobekCM.Engine_Library.Database;
 using SobekCM.Tools;
 using System;
@@ -12,7 +13,7 @@ namespace SobekCM.Library.AdminViewer.UserAdmin.UserAdminTabs
     {
         public string TabName => "Instructor";
 
-        public bool HandlePostback(NameValueCollection form, User_Object editUser, RequestCache RequestSpecificValues)
+        public bool HandlePostback(IFormCollection form, User_Object editUser, RequestCache RequestSpecificValues)
         {
             // Get the curret action
             string action = form["admin_user_save"];

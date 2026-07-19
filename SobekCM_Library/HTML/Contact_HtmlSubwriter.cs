@@ -72,7 +72,7 @@ namespace SobekCM.Library.HTML
             }
 
             // If this is a post back, send email
-            if (Context.Request.Form["item_action"] == null) return;
+            if (String.IsNullOrEmpty(Context.Request.Form["item_action"].TrimFirst())) return;
 
             string action = Context.Request.Form["item_action"];
             if (action == "email")

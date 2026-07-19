@@ -67,7 +67,7 @@ namespace SobekCM.Library.HTML
             }
 
             // Get the appropriate admin viewer from the factory
-            adminViewer = AdminViewer_Factory.Get_AdminViewer(RequestSpecificValues);
+            adminViewer = AdminViewer_Factory.Get_AdminViewer(RequestSpecificValues, Context);
         }
 
         #endregion

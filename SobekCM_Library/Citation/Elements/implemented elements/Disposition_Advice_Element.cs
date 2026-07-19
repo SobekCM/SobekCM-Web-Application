@@ -98,12 +98,12 @@ namespace SobekCM.Library.Citation.Elements
         public override void Save_To_Bib(SobekCM_Item Bib)
         {
             // Pull the standard values
-            NameValueCollection form = Context.Request.Form;
+            var form = Context.Request.Form;
 
             string advice = String.Empty;
             string notes = String.Empty;
 
-            foreach (string thisKey in Form.Keys)
+            foreach (string thisKey in form.Keys)
             {
                 if (thisKey.IndexOf("dispositionadvice_select") == 0)
                 {

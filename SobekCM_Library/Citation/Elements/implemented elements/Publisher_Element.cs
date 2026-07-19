@@ -9,6 +9,7 @@ using SobekCM.Core.ApplicationState;
 using SobekCM.Core.Configuration;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Users;
+using SobekCM.Library.UI;
 using SobekCM.Resource_Object;
 
 #endregion
@@ -86,7 +87,7 @@ namespace SobekCM.Library.Citation.Elements
         public override void Save_To_Bib(SobekCM_Item Bib)
         {
             var getKeys = Context.Request.Form.Keys;
-            foreach (string name in from thisKey in getKeys where thisKey.IndexOf(html_element_name) == 0 select Context.Request.Form[thisKey] into name where name.Trim().Length > 0 select name)
+            foreach (string name in from thisKey in getKeys where thisKey.IndexOf(html_element_name) == 0 select Context.Request.Form[thisKey] into name where name.TrimFirst().Length > 0 select name)
             {
                 Bib.Bib_Info.Add_Publisher(name);
             }

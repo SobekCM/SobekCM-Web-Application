@@ -117,9 +117,9 @@ namespace SobekCM.Library.Citation.Elements
             LearningObjectMetadata lomInfo = Bib.Get_Metadata_Module(GlobalVar.IEEE_LOM_METADATA_MODULE_KEY) as LearningObjectMetadata;
 
             // Pull the standard values
-            NameValueCollection form = Context.Request.Form;
+            var form = Context.Request.Form;
 
-            foreach (string thisKey in Form.Keys)
+            foreach (string thisKey in form.Keys)
             {
                 if (thisKey.IndexOf("lomcontext_select") == 0)
                 {

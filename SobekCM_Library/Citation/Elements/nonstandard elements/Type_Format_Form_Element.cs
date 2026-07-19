@@ -1375,7 +1375,7 @@ namespace SobekCM.Library.Citation.Elements
         public override void Save_To_Bib(SobekCM_Item Bib)
         {
             // Pull the standard values
-            NameValueCollection form = Context.Request.Form;
+            var form = Context.Request.Form;
 
             string type = form["form_typeformat_type"].TrimFirst();
             string extent = form["form_typeformat_extent"].TrimFirst();

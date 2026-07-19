@@ -78,7 +78,7 @@ namespace SobekCM.Library.MySobekViewer
             if ((Context.SessionObject()["Selected_Tab"] != null) && !(String.IsNullOrEmpty(Context.SessionObject()["Selected_Tab"].ToString())) && Context.SessionObject()["Selected_Tab"].ToString() == "2")
                 page = 2;
 
-            string sub_page = Context.Request.Form["tracking_new_page"] ?? "";
+            string sub_page = Context.Request.Form["tracking_new_page"].TrimFirst();
             if (sub_page == "2")
             {
                 page = 2;
@@ -116,8 +116,8 @@ namespace SobekCM.Library.MySobekViewer
             }
 
             //See if there were any hidden requests
-            hidden_request = Context.Request.Form["Track_Item_behaviors_request"] ?? String.Empty;
-            hidden_value = Context.Request.Form["Track_Item_hidden_value"] ?? String.Empty;
+            hidden_request = Context.Request.Form["Track_Item_behaviors_request"].TrimFirst();
+            hidden_value = Context.Request.Form["Track_Item_hidden_value"].TrimFirst();
 
 
             //Get the equipment value
@@ -233,9 +233,9 @@ namespace SobekCM.Library.MySobekViewer
 
                 case "read_manual_entry":
                     //Get the related hidden values for the selected manual entry fields
-                    string hidden_bibID = Context.Request.Form["hidden_BibID"] ?? String.Empty;
-                    string hidden_VID = Context.Request.Form["hidden_VID"] ?? String.Empty;
-                    string hidden_event_num = Context.Request.Form["hidden_event_num"] ?? String.Empty;
+                    string hidden_bibID = Context.Request.Form["hidden_BibID"].TrimFirst();
+                    string hidden_VID = Context.Request.Form["hidden_VID"].TrimFirst();
+                    string hidden_event_num = Context.Request.Form["hidden_event_num"].TrimFirst();
                     if (String.IsNullOrEmpty(hidden_bibID) || String.IsNullOrEmpty(hidden_VID) || String.IsNullOrEmpty(hidden_event_num))
                     {
                         error_message = "You must enter a valid BibID and VID!";

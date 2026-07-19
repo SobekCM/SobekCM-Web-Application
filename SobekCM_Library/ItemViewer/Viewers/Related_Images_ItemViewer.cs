@@ -13,6 +13,7 @@ using SobekCM.Library.HTML;
 using SobekCM.Library.ItemViewer.Menu;
 using SobekCM.Tools;
 using Microsoft.AspNetCore.Http;
+using SobekCM.Library.UI;
 
 namespace SobekCM.Library.ItemViewer.Viewers
 {
@@ -132,6 +133,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
         private readonly BriefItemInfo briefItem;
         private readonly Navigation_Object currentRequest;
 
+        private readonly HttpContext Context;
+
         // Empty list of behaviors, prevents an empty set from having to be created over and over
         private static readonly List<HtmlSubwriter_Behaviors_Enum> emptyBehaviors = new List<HtmlSubwriter_Behaviors_Enum>();
 
@@ -142,12 +145,12 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <param name="CurrentRequest"> Information about the current request </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         /// <param name="ViewerCode"> Viewer code for the related images viewer </param>
-        public Related_Images_ItemViewer(BriefItemInfo BriefItem, User_Object CurrentUser, Navigation_Object CurrentRequest, Custom_Tracer Tracer, string ViewerCode, HttpContext context)
+        public Related_Images_ItemViewer(BriefItemInfo BriefItem, User_Object CurrentUser, Navigation_Object CurrentRequest, Custom_Tracer Tracer, string ViewerCode, HttpContext Context)
         {
             // Save the arguments for use later
             briefItem = BriefItem;
             currentRequest = CurrentRequest;
-            this.Context = context;
+            this.Context = Context;
 
             // Get the proper number of thumbnails per page
             if (CurrentUser != null)

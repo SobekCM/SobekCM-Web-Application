@@ -44,7 +44,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 			if (( RequestSpecificValues.Current_Mode.Aggregation_Type == Aggregation_Type_Enum.Child_Page_Edit) && ( !isAdmin))
 				RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Browse_Info;
 
-			NameValueCollection form = Context.Request.Form;
+			var form = Context.Request.Form;
 			if ((RequestSpecificValues.Current_Mode.Aggregation_Type == Aggregation_Type_Enum.Child_Page_Edit) && (!String.IsNullOrEmpty(form["sbkSbia_ChildTextEdit"].TrimFirst())) && ( RequestSpecificValues.Current_User != null ))
 			{
 				string aggregation_folder = UI_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location + "aggregations\\" + ViewBag.Hierarchy_Object.Code + "\\";
@@ -80,7 +80,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 
 
 				// Assign the new text
-                ViewBag.Static_Web_Content.Content = form["sbkSbia_ChildTextEdit"].Replace("%]", "%>").Replace("[%", "<%");
+                ViewBag.Static_Web_Content.Content = form["sbkSbia_ChildTextEdit"].TrimFirst().Replace("%]", "%>").Replace("[%", "<%");
                 ViewBag.Static_Web_Content.Date = DateTime.Now.ToLongDateString();
                 ViewBag.Static_Web_Content.Save_To_File(file);
 

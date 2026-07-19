@@ -36,7 +36,7 @@ namespace SobekCM.Library.ResultsViewer
                 //do a search for all the items in this agg
                 string temp_AggregationId = RequestSpecificValues.Current_Mode.Aggregation;
                 string[] temp_AggregationList = temp_AggregationId.Split(' ');
-                Perform_Aggregation_Search(temp_AggregationList, RequestSpecificValues.Tracer);
+                Perform_Aggregation_Search(temp_AggregationList, RequestSpecificValues.Tracer, Context);
             }
 
         }
@@ -120,7 +120,7 @@ namespace SobekCM.Library.ResultsViewer
         }
         
         //performs an aggregation search based on a single aggregation (can be used to remove aggregation as well
-        public void Perform_Aggregation_Search(string[] aggregationIds, Custom_Tracer Tracer)
+        public static void Perform_Aggregation_Search(string[] aggregationIds, Custom_Tracer Tracer, HttpContext Context)
         {
             //hooks (eventual expansion) 
             int HOOK_maxFIDCount = 8; 
@@ -472,7 +472,7 @@ namespace SobekCM.Library.ResultsViewer
         }
 
         //performs a bounds search
-        public void Perform_Coordinate_Bounds_Search(double swx, double swy, double nex, double ney)
+        public static void Perform_Coordinate_Bounds_Search(double swx, double swy, double nex, double ney, HttpContext Context)
         {
             
             //create them display search results object

@@ -56,7 +56,7 @@ namespace SobekCM.Library.AdminViewer
             }
 
             // Create the subviewer
-            subviewer = UsersAdminSubViewerBuilder.GetSubViewer(RequestSpecificValues);
+            subviewer = UsersAdminSubViewerBuilder.GetSubViewer(RequestSpecificValues, Context);
 
 		    // Perform post back work in the subviewer
 			if (RequestSpecificValues.Current_Mode.isPostBack)

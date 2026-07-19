@@ -706,11 +706,11 @@ namespace SobekCM.Library.ResultsViewer
                     switch (actionType)
                     {
                         case "aggregation":
-                            Google_Map_ResultsViewer_Beta.Perform_Aggregation_Search(aggregationList, Tracer);
+                            Google_Map_ResultsViewer_Beta.Perform_Aggregation_Search(aggregationList, Tracer, Context);
                             break;
                         case "bounds":
                             //HttpContext.Current.Session["MapSearchResultsKey"] = ar[6];
-                            Google_Map_ResultsViewer_Beta.Perform_Coordinate_Bounds_Search(Convert.ToDouble(ar[2]), Convert.ToDouble(ar[3]), Convert.ToDouble(ar[4]), Convert.ToDouble(ar[5]));
+                            Google_Map_ResultsViewer_Beta.Perform_Coordinate_Bounds_Search(Convert.ToDouble(ar[2]), Convert.ToDouble(ar[3]), Convert.ToDouble(ar[4]), Convert.ToDouble(ar[5]), Context);
                             break;
                         case "filter":
                             //split filterlist incoming subset into an array
@@ -721,7 +721,7 @@ namespace SobekCM.Library.ResultsViewer
                             Google_Map_ResultsViewer_Beta.Perform_DateTime_Range_Search(Convert.ToDateTime(ar[3]), Convert.ToDateTime(ar[4]));
                             break;
                         case "coordinate":
-                            Google_Map_ResultsViewer_Beta.Perform_Coordinate_Bounds_Search(Convert.ToDouble(ar[2]), Convert.ToDouble(ar[3]), Convert.ToDouble(ar[4]), Convert.ToDouble(ar[5]));
+                            Google_Map_ResultsViewer_Beta.Perform_Coordinate_Bounds_Search(Convert.ToDouble(ar[2]), Convert.ToDouble(ar[3]), Convert.ToDouble(ar[4]), Convert.ToDouble(ar[5]), Context);
                             //Map_ResultsViewer_Beta.Perform_Coordinate_Bounds_Search(aggregationList, Convert.ToDouble(ar[3]), Convert.ToDouble(ar[4]), Convert.ToDouble(ar[5]), Convert.ToDouble(ar[6]), Tracer);
                             break;
                         case "complete":

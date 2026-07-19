@@ -11,6 +11,7 @@ using SobekCM.Core.ApplicationState;
 using SobekCM.Core.Configuration;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Users;
+using SobekCM.Library.UI;
 using SobekCM.Resource_Object;
 
 #endregion
@@ -114,7 +115,7 @@ namespace SobekCM.Library.Citation.Elements
             {
                 if (thisKey.IndexOf(html_element_name.Replace("_", "")) != 0) continue;
 
-                string code = Context.Request.Form[thisKey].ToLower();
+                string code = Context.Request.Form[thisKey].TrimFirst().ToLower();
                 bool found = false;
                 if (Bib.Behaviors.Wordmark_Count > 0)
                 {

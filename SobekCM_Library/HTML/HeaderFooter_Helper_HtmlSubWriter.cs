@@ -200,7 +200,7 @@ namespace SobekCM.Library.HTML
             }
 
             // Create the mySobek text
-            string mySobekLinks = create_mysobek_link(RequestSpecificValues, url_options, null);
+            string mySobekLinks = create_mysobek_link(RequestSpecificValues, url_options, null, Context);
 
             // Look for some basic mode data
             string collection_code = String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.Aggregation) ? String.Empty : RequestSpecificValues.Current_Mode.Aggregation;
@@ -360,7 +360,7 @@ namespace SobekCM.Library.HTML
         /// <param name="Behaviors"> List of behaviors from the html subwriters </param>
         /// <param name="Current_Aggregation"> Current aggregation object, if there is one </param>
         /// <param name="Current_Item"> Current item object, if there is one </param>
-        public static void Add_Footer(TextWriter Output, RequestCache RequestSpecificValues, List<HtmlSubwriter_Behaviors_Enum> Behaviors, Item_Aggregation Current_Aggregation, BriefItemInfo Current_Item)
+        public static void Add_Footer(TextWriter Output, RequestCache RequestSpecificValues, List<HtmlSubwriter_Behaviors_Enum> Behaviors, Item_Aggregation Current_Aggregation, BriefItemInfo Current_Item, HttpContext Context)
         {
             RequestSpecificValues.Tracer.Add_Trace("HeaderFooter_Helper_HtmlSubWriter.Add_Footer");
 
@@ -395,7 +395,7 @@ namespace SobekCM.Library.HTML
             }
 
             // Create the mySobek text
-            string mySobekLinks = create_mysobek_link(RequestSpecificValues, url_options, "staff login");
+            string mySobekLinks = create_mysobek_link(RequestSpecificValues, url_options, "staff login", Context);
 
             // Get the base url
             string base_url = RequestSpecificValues.Current_Mode.Base_URL;
@@ -475,7 +475,7 @@ namespace SobekCM.Library.HTML
             Output.WriteLine(footerBuilder.ToString().Trim());
         }
 
-        private static string create_mysobek_link( RequestCache RequestSpecificValues, string url_options, string login_text )
+        private static string create_mysobek_link( RequestCache RequestSpecificValues, string url_options, string login_text, HttpContext Context )
         {
             RequestSpecificValues.Tracer.Add_Trace("HeaderFooter_Helper_HtmlSubWriter.create_mysobek_link");
 

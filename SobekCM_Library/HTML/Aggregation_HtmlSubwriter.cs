@@ -183,7 +183,7 @@ namespace SobekCM.Library.HTML
 
             RequestSpecificValues.Tracer.Add_Trace("Aggregation_HtmlSubwriter.Constructor", "Handling post backs from mySobek.");
 
-            NameValueCollection form = Context.Request.Form;
+            var form = Context.Request.Form;
 
             if ( !String.IsNullOrEmpty(form["item_action"].TrimFirst()))
             {
@@ -202,7 +202,7 @@ namespace SobekCM.Library.HTML
                     string remove_code = hierarchyObject.Code;
                     string remove_name = hierarchyObject.Name;
 
-                    if ((!String.IsNullOrEmpty(form["aggregation"].TrimFirst())) && (form["aggregation"].Length > 0))
+                    if ((!String.IsNullOrEmpty(form["aggregation"].TrimFirst())) && (form["aggregation"].TrimFirst().Length > 0))
                     {
                         Item_Aggregation_Related_Aggregations aggrInfo = UI_ApplicationCache_Gateway.Aggregations[form["aggregation"]];
                         if (aggrInfo != null)
@@ -230,7 +230,7 @@ namespace SobekCM.Library.HTML
 
                 if ((action == "email") && ( RequestSpecificValues.Current_User != null ))
                 {
-                    string address = form["email_address"].Replace(";", ",").Trim();
+                    string address = form["email_address"].TrimFirst().Replace(";", ",");
                     string comments = form["email_comments"].TrimFirst();
                     string format = form["email_format"].TrimFirst().ToUpper();
 
@@ -296,7 +296,7 @@ namespace SobekCM.Library.HTML
 
 				// Write to the file now
 				StreamWriter homeWriter = new StreamWriter(file, false);
-			    homeWriter.WriteLine(form["sbkAghsw_HomeTextEdit"].Replace("%]", "%>").Replace("[%", "<%"));
+			    homeWriter.WriteLine(form["sbkAghsw_HomeTextEdit"].TrimFirst().Replace("%]", "%>").Replace("[%", "<%"));
 				homeWriter.Flush();
 				homeWriter.Close();
 
@@ -310,7 +310,7 @@ namespace SobekCM.Library.HTML
                 if (String.Compare("all", hierarchyObject.Code, StringComparison.OrdinalIgnoreCase) == 0)
                 {
                     string home_app_key = "SobekCM_Home_" + RequestSpecificValues.Current_Mode.Language_Code;
-                    SobekCM_Application.State[home_app_key] = form["sbkAghsw_HomeTextEdit"].Replace("%]", "%>").Replace("[%", "<%");
+                    SobekCM_Application.State[home_app_key] = form["sbkAghsw_HomeTextEdit"].TrimFirst().Replace("%]", "%>").Replace("[%", "<%");
                 }
 
 				// Forward along
@@ -517,7 +517,7 @@ namespace SobekCM.Library.HTML
                     case Selection_Panel_Display_Enum.Selectable:
                         if (!String.IsNullOrEmpty(form["show_subaggrs"].TrimFirst()))
                         {
-                            string show_subaggrs = form["show_subaggrs"].ToUpper();
+                            string show_subaggrs = form["show_subaggrs"].TrimFirst().ToUpper();
                             if (show_subaggrs == "TRUE")
                                 RequestSpecificValues.Current_Mode.Show_Selection_Panel = true;
                         }
@@ -869,7 +869,7 @@ namespace SobekCM.Library.HTML
         public override void Add_Header(TextWriter Output)
         {
             RequestSpecificValues.Tracer.Add_Trace("Aggregation_HtmlSubwriter.Add_Header", "Entered. WebPage_Title=[" + WebPage_Title + "].");
-            HeaderFooter_Helper_HtmlSubWriter.Add_Header(Output, RequestSpecificValues, Container_CssClass, WebPage_Title, Subwriter_Behaviors, hierarchyObject, null);
+            HeaderFooter_Helper_HtmlSubWriter.Add_Header(Output, RequestSpecificValues, Container_CssClass, WebPage_Title, Subwriter_Behaviors, hierarchyObject, null, Context);
             RequestSpecificValues.Tracer.Add_Trace("Aggregation_HtmlSubwriter.Add_Header", "Leaving.");
         }
 
@@ -2787,7 +2787,7 @@ namespace SobekCM.Library.HTML
             RequestSpecificValues.Tracer.Add_Trace("Aggregation_HtmlSubwriter.Add_Footer", "Entered...");
 
             Output.WriteLine("<!-- Start of Aggregation_HtmlSubwriter.Add_Footer -->");
-            HeaderFooter_Helper_HtmlSubWriter.Add_Footer(Output, RequestSpecificValues, Subwriter_Behaviors, hierarchyObject, null);
+            HeaderFooter_Helper_HtmlSubWriter.Add_Footer(Output, RequestSpecificValues, Subwriter_Behaviors, hierarchyObject, null, Context);
             Output.WriteLine("<!-- End of Aggregation_HtmlSubwriter.Add_Footer -->");
         }
     }

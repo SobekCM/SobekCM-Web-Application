@@ -52,7 +52,7 @@ namespace SobekCM.Library.HTML
                         {
                             if (option.ToString() != RequestSpecificValues.Current_User.Get_Setting("Statistics_HtmlSubwriter:ItemCountReportOption", "NULL"))
                             {
-                                RequestSpecificValues.Current_User.Add_Setting("Statistics_HtmlSubwriter:ItemCountReportOption", option);
+                                RequestSpecificValues.Current_User.Add_Setting("Statistics_HtmlSubwriter:ItemCountReportOption", option.ToString());
                                 Engine_Database.Set_User_Setting(RequestSpecificValues.Current_User.UserID, "Statistics_HtmlSubwriter:ItemCountReportOption", option.ToString());
                             }
                         }

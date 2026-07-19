@@ -60,7 +60,6 @@ namespace SobekCM.Library.HTML
                 else
                 {
                     // Set this to allow us to have our own error messages, without IIS jumping into it
-                    Context.Response.TrySkipIisCustomErrors = true;
                     Context.Response.StatusCode = 404;
                 }
             }
@@ -73,7 +72,7 @@ namespace SobekCM.Library.HTML
                 canEdit = staticWebContent.Can_Edit(RequestSpecificValues.Current_User);
             }
 
-            NameValueCollection form = Context.Request.Form;
+            var form = Context.Request.Form;
             if ((canEdit) && (RequestSpecificValues.Current_Mode.WebContent_Type == WebContent_Type_Enum.Edit) && (!String.IsNullOrEmpty(form["sbkWchs_TextEdit"].TrimFirst())))
             {
                 string newSource = form["sbkWchs_TextEdit"];

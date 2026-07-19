@@ -1175,7 +1175,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             try
             {
                 // Now, step through each of the pages in the return
-                string[] keysFromForm = Context.Request.Form.Keys;
+                var keysFromForm = Context.Request.Form.Keys;
 
                 foreach (string thisKey in keysFromForm)
                 {
@@ -2556,14 +2556,15 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 thumbnails_per_page = static_pages.Count;
             }
             //Set the thumbnails_per_page to the value from the query string, if present
-            if (RequestSpecificValues.QueryString.TryGetValue("ts", out string tsValue) && int.TryParse(tsValue, out int size_of_thumbnails))
-            {
-                CurrentRequest.Size_Of_Thumbnails = (short)size_of_thumbnails;
-            }
-            else
-            {
-                CurrentRequest.Size_Of_Thumbnails = -1;
-            }
+            // TODO: This needs to be read somewhere else, up the chain, like during navigation object creation or something
+            //if (RequestSpecificValues.QueryString.TryGetValue("ts", out string tsValue) && int.TryParse(tsValue, out int size_of_thumbnails))
+            //{
+            //    CurrentRequest.Size_Of_Thumbnails = (short)size_of_thumbnails;
+            //}
+            //else
+            //{
+            //    CurrentRequest.Size_Of_Thumbnails = -1;
+            //}
 
             //StringBuilder builder = new StringBuilder(4000);
             Output.WriteLine("<div id=\"qc-menubar\">");

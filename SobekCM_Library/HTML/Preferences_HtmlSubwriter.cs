@@ -26,11 +26,11 @@ namespace SobekCM.Library.HTML
         public Preferences_HtmlSubwriter(RequestCache RequestSpecificValues) : base(RequestSpecificValues) 
         {
             // See if there was a hidden request
-            string hidden_request = Context.Request.Form["hidden_request"] ?? String.Empty;
+            string hidden_request = Context.Request.Form["hidden_request"].TrimFirst();
 
             if (hidden_request == "submit")
             {
-                NameValueCollection form = Context.Request.Form;
+                var form = Context.Request.Form;
 
                 string language_option = form["languageDropDown"];
                 switch (language_option)

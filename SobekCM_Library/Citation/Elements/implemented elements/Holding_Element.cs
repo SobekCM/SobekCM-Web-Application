@@ -171,7 +171,7 @@ namespace SobekCM.Library.Citation.Elements
             {
                 if (thisKey.IndexOf(html_element_name.Replace("_", "") + "_select") == 0)
                 {
-                    string thisValue = Context.Request.Form[thisKey].ToUpper();
+                    string thisValue = Context.Request.Form[thisKey].TrimFirst().ToUpper();
 
                     // Get rid of the institution name at the end of the value
                     if (thisValue.IndexOf("|") > 0)

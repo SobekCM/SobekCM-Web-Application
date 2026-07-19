@@ -150,7 +150,7 @@ namespace SobekCM.Library.Citation.Elements
             {
                 if (thisKey.IndexOf(html_element_name.Replace("_", "")) == 0)
                 {
-                    string code = Context.Request.Form[thisKey].ToUpper();
+                    string code = Context.Request.Form[thisKey].TrimFirst().ToUpper();
                     Bib.Behaviors.Add_Aggregation(code);
                 }
             }

@@ -11,6 +11,7 @@ using SobekCM.Core.ApplicationState;
 using SobekCM.Core.Configuration;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Users;
+using SobekCM.Library.UI;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Bib_Info;
 
@@ -96,7 +97,7 @@ namespace SobekCM.Library.Citation.Elements
         {
             // First collect all the places
             var getKeys = Context.Request.Form.Keys;
-            List<string> publication_places = getKeys.Where(thisKey => thisKey.IndexOf(html_element_name) == 0).Select(thisKey => Context.Request.Form[thisKey]).Where(place_temp => place_temp.Length > 0).ToList();
+            List<string> publication_places = getKeys.Where(thisKey => thisKey.IndexOf(html_element_name) == 0).Select(thisKey => Context.Request.Form[thisKey]).Where(place_temp => place_temp.TrimFirst().Length > 0).ToList();
 
             // If no places, done
             if (publication_places.Count == 0)

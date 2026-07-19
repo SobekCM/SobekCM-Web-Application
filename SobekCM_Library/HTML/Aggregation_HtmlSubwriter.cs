@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using System;
 using System.Collections.Generic;
@@ -311,7 +311,7 @@ namespace SobekCM.Library.HTML
                 if (String.Compare("all", hierarchyObject.Code, StringComparison.OrdinalIgnoreCase) == 0)
                 {
                     string home_app_key = "SobekCM_Home_" + RequestSpecificValues.Current_Mode.Language_Code;
-                    HttpContext.Current.Application[home_app_key] = form["sbkAghsw_HomeTextEdit"].Replace("%]", "%>").Replace("[%", "<%");
+                    SobekCM_Application.State[home_app_key] = form["sbkAghsw_HomeTextEdit"].Replace("%]", "%>").Replace("[%", "<%");
                 }
 
 				// Forward along
@@ -1508,7 +1508,7 @@ namespace SobekCM.Library.HTML
                     // page types ( i.e., icon view, brief view, or tree view )
                     string sobekcm_home_page_text;
                     string home_app_key = "SobekCM_Home_" + RequestSpecificValues.Current_Mode.Language_Code;
-                    object sobekcm_home_page_obj = HttpContext.Current.Application[home_app_key];
+                    object sobekcm_home_page_obj = SobekCM_Application.State[home_app_key];
 
                     if (sobekcm_home_page_obj == null)
                     {
@@ -1519,7 +1519,7 @@ namespace SobekCM.Library.HTML
 
                         sobekcm_home_page_text = hierarchyObject.HomePageHtml.Content; //.Get_Home_HTML(RequestSpecificValues.Current_Mode.Language, Tracer);
 
-                        HttpContext.Current.Application[home_app_key] = sobekcm_home_page_text;
+                        SobekCM_Application.State[home_app_key] = sobekcm_home_page_text;
                     }
                     else
                     {

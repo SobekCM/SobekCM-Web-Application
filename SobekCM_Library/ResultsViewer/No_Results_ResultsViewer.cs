@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using System;
 using System.Collections.Generic;
@@ -138,7 +138,7 @@ namespace SobekCM.Library.ResultsViewer
         /// This should probably move into a configuration file or engine endpoint though.  </remarks>
         public static string Get_NoResults_Text()
         {
-            string noResultsText = HttpContext.Current.Application["NORESULTS"] as string;
+            string noResultsText = SobekCM_Application.State["NORESULTS"] as string;
             if (String.IsNullOrEmpty(noResultsText))
             {
                 try
@@ -147,18 +147,18 @@ namespace SobekCM.Library.ResultsViewer
                     if (File.Exists(file))
                     {
                         noResultsText = File.ReadAllText(file);
-                        HttpContext.Current.Application["NORESULTS"] = noResultsText;
+                        SobekCM_Application.State["NORESULTS"] = noResultsText;
                     }
                     else
                     {
                         noResultsText = "NOTPRESENT";
-                        HttpContext.Current.Application["NORESULTS"] = "NOTPRESENT";
+                        SobekCM_Application.State["NORESULTS"] = "NOTPRESENT";
                     }
                 }
                 catch
                 {
                     noResultsText = "NOTPRESENT";
-                    HttpContext.Current.Application["NORESULTS"] = "NOTPRESENT";
+                    SobekCM_Application.State["NORESULTS"] = "NOTPRESENT";
                 }
             }
 
@@ -181,7 +181,7 @@ namespace SobekCM.Library.ResultsViewer
                 sampleFileContent.AppendLine("  <br /><br /><br /><br />");
 
                 string sampleBuild = sampleFileContent.ToString();
-                HttpContext.Current.Application["NORESULTS"] = sampleBuild;
+                SobekCM_Application.State["NORESULTS"] = sampleBuild;
 
                 noResultsText = sampleBuild;
             }

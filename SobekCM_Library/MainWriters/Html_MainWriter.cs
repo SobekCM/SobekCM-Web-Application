@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using System;
 using System.Collections.Generic;
@@ -35,7 +35,7 @@ namespace SobekCM.Library.MainWriters
             RequestSpecificValues.Tracer.Add_Trace("Html_MainWriter.Constructor","");
 
             // Check the IE hack CSS is loaded
-            if (HttpContext.Current.Application["NonIE_Hack_CSS"] == null) 
+            if (SobekCM_Application.State["NonIE_Hack_CSS"] == null) 
             {
                 RequestSpecificValues.Tracer.Add_Trace("Html_MainWriter.Constructor", "The NonIE_Hack_CSS was not loaded.");
 
@@ -45,18 +45,18 @@ namespace SobekCM.Library.MainWriters
                     try
                     {
                         StreamReader reader = new StreamReader(css_file);
-                        HttpContext.Current.Application["NonIE_Hack_CSS"] = reader.ReadToEnd().Trim();
+                        SobekCM_Application.State["NonIE_Hack_CSS"] = reader.ReadToEnd().Trim();
                         reader.Close();
                     }
                     catch (Exception)
                     {
-                        HttpContext.Current.Application["NonIE_Hack_CSS"] = "/* ERROR READING FILE: default/SobekCM_NonIE.css */";
+                        SobekCM_Application.State["NonIE_Hack_CSS"] = "/* ERROR READING FILE: default/SobekCM_NonIE.css */";
                         throw;
                     }
                 }
                 else
                 {
-                    HttpContext.Current.Application["NonIE_Hack_CSS"] = String.Empty;
+                    SobekCM_Application.State["NonIE_Hack_CSS"] = String.Empty;
                 }
             }
             else
@@ -737,7 +737,7 @@ namespace SobekCM.Library.MainWriters
             // Special code for the menus, if this is not IE
             if (HttpContext.Current.Request.Browser.Browser.IndexOf("IE",StringComparison.OrdinalIgnoreCase) < 0 )
 			{
-				string non_ie_hack = HttpContext.Current.Application["NonIE_Hack_CSS"] as string;
+				string non_ie_hack = SobekCM_Application.State["NonIE_Hack_CSS"] as string;
 				if (!String.IsNullOrEmpty(non_ie_hack))
 				{
 					Output.WriteLine("  <style type=\"text/css\">");

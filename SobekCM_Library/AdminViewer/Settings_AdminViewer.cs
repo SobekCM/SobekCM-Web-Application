@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using System;
 using System.Collections.Generic;
@@ -522,7 +522,7 @@ namespace SobekCM.Library.AdminViewer
                             writer.Flush();
                             writer.Close();
 
-                            HttpContext.Current.Application["NORESULTS"] = null;
+                            SobekCM_Application.State["NORESULTS"] = null;
                         }
                         catch
                         {

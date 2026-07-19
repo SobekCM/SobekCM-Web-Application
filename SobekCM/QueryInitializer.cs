@@ -528,7 +528,7 @@ namespace SobekCM
 			CachedDataManager.Clear_Cache();
 
 			// Clear the application portions as well
-			HttpContext.Current.Application.RemoveAll();
+			SobekCM_Application.State.RemoveAll();
 
 			// Refresh the application settings
 		    UI_ApplicationCache_Gateway.ResetSettings();

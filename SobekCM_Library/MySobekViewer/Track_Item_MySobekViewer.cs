@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using System;
 using System.Collections.Generic;
@@ -74,19 +74,19 @@ namespace SobekCM.Library.MySobekViewer
             //Determine the page
             page = 1;
 
-            if ((HttpContext.Current.Session["Selected_Tab"] != null) && !(String.IsNullOrEmpty(HttpContext.Current.Session["Selected_Tab"].ToString())) && HttpContext.Current.Session["Selected_Tab"].ToString() == "2")
+            if ((Context.SessionObject()["Selected_Tab"] != null) && !(String.IsNullOrEmpty(Context.SessionObject()["Selected_Tab"].ToString())) && Context.SessionObject()["Selected_Tab"].ToString() == "2")
                 page = 2;
 
             string sub_page = HttpContext.Current.Request.Form["tracking_new_page"] ?? "";
             if (sub_page == "2")
             {
                 page = 2;
-                HttpContext.Current.Session["Selected_Tab"] = "2";
+                Context.SessionObject()["Selected_Tab"] = "2";
             }
             else if (sub_page == "1")
             {
                 page = 1;
-                HttpContext.Current.Session["Selected_Tab"] = "1";
+                Context.SessionObject()["Selected_Tab"] = "1";
             }
 
 
@@ -120,8 +120,8 @@ namespace SobekCM.Library.MySobekViewer
 
 
             //Get the equipment value
-            //if (HttpContext.Current.Session["Equipment"] != null && !String.IsNullOrEmpty(HttpContext.Current.Session["Equipment"].ToString()))
-            //    equipment = HttpContext.Current.Session["Equipment"].ToString();
+            //if (Context.SessionObject()["Equipment"] != null && !String.IsNullOrEmpty(Context.SessionObject()["Equipment"].ToString()))
+            //    equipment = Context.SessionObject()["Equipment"].ToString();
             if (RequestSpecificValues.Current_User.Get_Setting("Track_Item_MySobekViewer:Equipment") != null && !String.IsNullOrEmpty(RequestSpecificValues.Current_User.Get_Setting("Track_Item_MySobekViewer:Equipment").ToString()))
                 equipment = RequestSpecificValues.Current_User.Get_Setting("Track_Item_MySobekViewer:Equipment").ToString();
 
@@ -129,26 +129,26 @@ namespace SobekCM.Library.MySobekViewer
             {
                 equipment = scanners_list[0];
                 RequestSpecificValues.Current_User.Add_Setting("Track_Item_MySobekViewer:Equipment", equipment);
-                //  HttpContext.Current.Session["Equipment"] = equipment;
+                //  Context.SessionObject()["Equipment"] = equipment;
             }
 
             //Check the hidden value to see if equipment was previously changed
             if (!String.IsNullOrEmpty(HttpContext.Current.Request.Form["hidden_equipment"]))
             {
                 equipment = HttpContext.Current.Request.Form["hidden_equipment"];
-                //   HttpContext.Current.Session["equipment"] = equipment;
+                //   Context.SessionObject()["equipment"] = equipment;
                 RequestSpecificValues.Current_User.Add_Setting("Track_Item_MySobekViewer:Equipment", equipment);
             }
 
 
             //Also get the currently selected RequestSpecificValues.Current_User
-            if (HttpContext.Current.Session["Selected_User"] != null)
-                current_selected_user = (User_Object)HttpContext.Current.Session["Selected_User"];
+            if (Context.SessionObject()["Selected_User"] != null)
+                current_selected_user = (User_Object)Context.SessionObject()["Selected_User"];
 
             else
             {
                 current_selected_user = RequestSpecificValues.Current_User;
-                HttpContext.Current.Session["Selected_User"] = current_selected_user;
+                Context.SessionObject()["Selected_User"] = current_selected_user;
             }
 
             //Check if the selected RequestSpecificValues.Current_User has been changed
@@ -158,15 +158,15 @@ namespace SobekCM.Library.MySobekViewer
                 string temp = HttpContext.Current.Request.Form["hidden_selected_username"];
                 current_selected_user = user_list[temp];
 
-                HttpContext.Current.Session["Selected_User"] = current_selected_user;
+                Context.SessionObject()["Selected_User"] = current_selected_user;
             }
 
             //Get the table of all previous entries created by this RequestSpecificValues.Current_User, for display in the third edit tab
             //        previous_workflows_this_user = Database.SobekCM_Database.Tracking_Get_All_Entries_By_User(current_selected_user.UserName);
 
             //Fetch the dictionaries of current work from the session
-            current_workflows = (HttpContext.Current.Session["Tracking_Current_Workflows"]) as Dictionary<string, Tracking_Workflow>;
-            current_workflows_no_durations = (HttpContext.Current.Session["Tracking_Current_Workflows_No_Duration"]) as Dictionary<string, Tracking_Workflow>;
+            current_workflows = (Context.SessionObject()["Tracking_Current_Workflows"]) as Dictionary<string, Tracking_Workflow>;
+            current_workflows_no_durations = (Context.SessionObject()["Tracking_Current_Workflows_No_Duration"]) as Dictionary<string, Tracking_Workflow>;
 
             //else create new ones
             if (current_workflows == null && page == 1)
@@ -301,12 +301,12 @@ namespace SobekCM.Library.MySobekViewer
                     if (username_column == current_selected_user.UserName && !(String.IsNullOrEmpty(start_event_column)) && (start_event_column == current_start))
                         open_workflows_from_DB.Rows.Add(newRow);
                 }
-                HttpContext.Current.Session["Open_Workflows"] = open_workflows_from_DB;
+                Context.SessionObject()["Open_Workflows"] = open_workflows_from_DB;
 
             }
             else if (!String.IsNullOrEmpty(itemID.ToString()) && itemID != 0 && page == 2)
             {
-                open_workflows_from_DB = HttpContext.Current.Session["Open_Workflows"] as DataTable;
+                open_workflows_from_DB = Context.SessionObject()["Open_Workflows"] as DataTable;
             }
 
 
@@ -428,8 +428,8 @@ namespace SobekCM.Library.MySobekViewer
 
 
             //Fetch the workflow dictionaries from the session if present
-            current_workflows = (HttpContext.Current.Session["Tracking_Current_Workflows"]) as Dictionary<string, Tracking_Workflow>;
-            current_workflows_no_durations = (HttpContext.Current.Session["Tracking_Current_Workflows_No_Duration"]) as Dictionary<string, Tracking_Workflow>;
+            current_workflows = (Context.SessionObject()["Tracking_Current_Workflows"]) as Dictionary<string, Tracking_Workflow>;
+            current_workflows_no_durations = (Context.SessionObject()["Tracking_Current_Workflows_No_Duration"]) as Dictionary<string, Tracking_Workflow>;
 
             //else create new ones
             if (current_workflows == null && page == 1)
@@ -536,8 +536,8 @@ namespace SobekCM.Library.MySobekViewer
             }
 
             //Save the dictionaries back to the session
-            HttpContext.Current.Session["Tracking_Current_Workflows"] = current_workflows;
-            HttpContext.Current.Session["Tracking_Current_Workflows_No_Duration"] = current_workflows_no_durations;
+            Context.SessionObject()["Tracking_Current_Workflows"] = current_workflows;
+            Context.SessionObject()["Tracking_Current_Workflows_No_Duration"] = current_workflows_no_durations;
         }
 
 
@@ -547,8 +547,8 @@ namespace SobekCM.Library.MySobekViewer
         private void Add_New_Workflow()
         {
             //Fetch the workflow dictionaries from the session if present
-            current_workflows = (HttpContext.Current.Session["Tracking_Current_Workflows"]) as Dictionary<string, Tracking_Workflow>;
-            current_workflows_no_durations = (HttpContext.Current.Session["Tracking_Current_Workflows_No_Duration"]) as Dictionary<string, Tracking_Workflow>;
+            current_workflows = (Context.SessionObject()["Tracking_Current_Workflows"]) as Dictionary<string, Tracking_Workflow>;
+            current_workflows_no_durations = (Context.SessionObject()["Tracking_Current_Workflows_No_Duration"]) as Dictionary<string, Tracking_Workflow>;
 
             //else create new ones
             if (current_workflows == null && page == 1)
@@ -733,8 +733,8 @@ namespace SobekCM.Library.MySobekViewer
             }
 
             //Save the dictionaries back to the session
-            HttpContext.Current.Session["Tracking_Current_Workflows"] = current_workflows;
-            HttpContext.Current.Session["Tracking_Current_Workflows_No_Duration"] = current_workflows_no_durations;
+            Context.SessionObject()["Tracking_Current_Workflows"] = current_workflows;
+            Context.SessionObject()["Tracking_Current_Workflows_No_Duration"] = current_workflows_no_durations;
 
         }
 

@@ -44,7 +44,7 @@ namespace SobekCM.Library.MySobekViewer
             validationErrors = new List<string>();
 
             user = RequestSpecificValues.Current_User;
-            registration = (HttpContext.Current.Session["user"] == null);
+            registration = (Context.SessionObject()["user"] == null);
             if (registration)
                 user = new User_Object();
 

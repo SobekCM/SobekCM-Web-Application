@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
@@ -74,7 +74,7 @@ namespace SobekCM.Library.AdminViewer
 
                 // Load the web content, either currenlty from the session (if already editing this aggregation )
                 // or by reading all the appropriate XML and reading data from the database
-                object possibleEditWebContent = HttpContext.Current.Session["Edit_WebContent|" + webContentId];
+                object possibleEditWebContent = Context.SessionObject()["Edit_WebContent|" + webContentId];
                 HTML_Based_Content cachedInstance = possibleEditWebContent as HTML_Based_Content;
                 if (cachedInstance != null)
                 {
@@ -142,7 +142,7 @@ namespace SobekCM.Library.AdminViewer
                         if (action == "z")
                         {
                             // Clear the aggregation from the sessions
-                            HttpContext.Current.Session["Edit_WebContent|" + webContentId] = null;
+                            Context.SessionObject()["Edit_WebContent|" + webContentId] = null;
 
                             // Redirect the RequestSpecificValues.Current_User
                             string url = webContent.URL(UI_ApplicationCache_Gateway.Settings.Servers.Base_URL);
@@ -204,7 +204,7 @@ namespace SobekCM.Library.AdminViewer
                                 return;
 
                             // Save to the admins session
-                            HttpContext.Current.Session["Edit_WebContent|" + webContentId] = webContent;
+                            Context.SessionObject()["Edit_WebContent|" + webContentId] = webContent;
                             RequestSpecificValues.Current_Mode.My_Sobek_SubMode = action;
                             HttpContext.Current.Response.Redirect(UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode), false);
                             HttpContext.Current.ApplicationInstance.CompleteRequest();
@@ -758,7 +758,7 @@ namespace SobekCM.Library.AdminViewer
             //            itemAggregation.Add_Child_Page(newPage);
 
             //            // Save to the admins session
-            //            HttpContext.Current.Session["Edit_Aggregation_" + itemAggregation.Code] = itemAggregation;
+            //            Context.SessionObject()["Edit_Aggregation_" + itemAggregation.Code] = itemAggregation;
 
             //        }
             //    }
@@ -1206,9 +1206,9 @@ namespace SobekCM.Library.AdminViewer
 
         private void Save_Uploads_Postback(NameValueCollection Form)
         {
-            if (HttpContext.Current.Session["WebContent|" + webContentId + "|Uploads"] != null)
+            if (Context.SessionObject()["WebContent|" + webContentId + "|Uploads"] != null)
             {
-                string files = HttpContext.Current.Session["WebContent|" + webContentId + "|Uploads"].ToString().Replace("|", ", ");
+                string files = Context.SessionObject()["WebContent|" + webContentId + "|Uploads"].ToString().Replace("|", ", ");
                 SobekEngineClient.WebContent.Add_Milestone(webContentId, RequestSpecificValues.Current_User.Full_Name, "Uploaded file(s) " + files, RequestSpecificValues.Tracer);
                 HttpContext.Current.Session.Remove("WebContent|" + webContentId + "|Uploads");
             }

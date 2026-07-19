@@ -1,4 +1,4 @@
-﻿using SobekCM.Core.Users;
+using SobekCM.Core.Users;
 using SobekCM.Engine_Library.Database;
 using System;
 using System.Linq;
@@ -46,7 +46,7 @@ namespace SobekCM.Library.AdminViewer.UserAdmin.SubViewers
                 return null;
 
             // Check this admin's session for this RequestSpecificValues.Current_User object
-            Object sessionEditUser = HttpContext.Current.Session["Edit_User_" + edit_userid];
+            Object sessionEditUser = Context.SessionObject()["Edit_User_" + edit_userid];
             if (sessionEditUser != null)
                 return (User_Object)sessionEditUser;
 

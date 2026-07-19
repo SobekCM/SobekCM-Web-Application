@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using System.Web;
+using Microsoft.AspNetCore.Http;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Results;
 using SobekCM.Library.HTML;
@@ -34,6 +34,9 @@ namespace SobekCM.Library.ResultsViewer
         /// <summary> All the necessary, non-global data specific to the current request </summary>
         public RequestCache RequestSpecificValues { get; set; }
 
+        /// <summary> HTTP context for the current request </summary>
+        protected HttpContext Context => RequestSpecificValues?.Context;
+
         /// <summary> Statistics about the results to display including the facets </summary>
         public Search_Results_Statistics ResultsStats { get; set; }
 
@@ -43,12 +46,16 @@ namespace SobekCM.Library.ResultsViewer
         /// <summary> Constructor for a new instance of the abstract_ResultsViewer class  </summary>
         protected abstract_ResultsViewer()
         {
-            // Determine the current user mask
             CurrentUserMask = 0;
-            if ((HttpContext.Current != null) && ( HttpContext.Current.Session["IP_Range_Membership"] != null ))
-            {
-                CurrentUserMask = (int)HttpContext.Current.Session["IP_Range_Membership"];
-            }
+        }
+
+        /// <summary> Resolves the IP range membership from session once RequestSpecificValues is available </summary>
+        protected void ResolveIpRangeMembership()
+        {
+            if (Context == null) return;
+            string ipMask = Context.Session.GetString("IP_Range_Membership");
+            if (int.TryParse(ipMask, out int mask))
+                CurrentUserMask = mask;
         }
 
         public bool CurrentUserHasAccess(iSearch_Item_Result item)

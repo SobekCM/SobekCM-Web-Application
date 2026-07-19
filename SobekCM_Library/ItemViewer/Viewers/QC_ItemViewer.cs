@@ -251,7 +251,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             metsInProcessFile = userInProcessDirectory + "\\" + BriefItem.BibID + "_" + BriefItem.VID + ".mets.xml";
 
             // Is this work in the user's SESSION state?
-            qc_item = HttpContext.Current.Session[BriefItem.BibID + "_" + BriefItem.VID + " QC Work"] as SobekCM_Item;
+            qc_item = Context.SessionObject()[BriefItem.BibID + "_" + BriefItem.VID + " QC Work"] as SobekCM_Item;
             if (qc_item == null)
             {
                 //// Try to pull the full item
@@ -266,7 +266,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 //}
 
                 ////Save to the User's session
-                //HttpContext.Current.Session[BriefItem.BibID + "_" + BriefItem.VID + " QC Work"] = qc_item;
+                //Context.SessionObject()[BriefItem.BibID + "_" + BriefItem.VID + " QC Work"] = qc_item;
 
                 // Is there a temporary METS for this item, which is not expired?
                 if ((File.Exists(metsInProcessFile)) &&
@@ -285,7 +285,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 }
 
                 // Save to the session, so it is easily available for next time
-                HttpContext.Current.Session[BriefItem.BibID + "_" + BriefItem.VID + " QC Work"] = qc_item;
+                Context.SessionObject()[BriefItem.BibID + "_" + BriefItem.VID + " QC Work"] = qc_item;
             }
 
 
@@ -320,17 +320,17 @@ namespace SobekCM.Library.ItemViewer.Viewers
             {
                 // Parse the values and save to the session
                 if (Int32.TryParse(temp_width, out allThumbnailsOuterDiv1Width))
-                    HttpContext.Current.Session["QC_AllThumbnailsWidth"] = allThumbnailsOuterDiv1Width;
+                    Context.SessionObject()["QC_AllThumbnailsWidth"] = allThumbnailsOuterDiv1Width;
                 if (Int32.TryParse(temp_height, out allThumbnailsOuterDiv1Height))
-                    HttpContext.Current.Session["QC_AllThumbnailsHeight"] = allThumbnailsOuterDiv1Height;
+                    Context.SessionObject()["QC_AllThumbnailsHeight"] = allThumbnailsOuterDiv1Height;
 
             }
             else
             {
-                object session_width = HttpContext.Current.Session["QC_AllThumbnailsWidth"];
+                object session_width = Context.SessionObject()["QC_AllThumbnailsWidth"];
                 if (session_width != null)
                     allThumbnailsOuterDiv1Width = (int)session_width;
-                object session_height = HttpContext.Current.Session["QC_AllThumbnailsHeight"];
+                object session_height = Context.SessionObject()["QC_AllThumbnailsHeight"];
                 if (session_height != null)
                     allThumbnailsOuterDiv1Height = (int)session_height;
             }
@@ -397,8 +397,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
                 //Conversion result of autosaveCacheValue(conversion successful or not) saved in autosaveCache
 
-                if (HttpContext.Current.Session["autosave_option"] != null)
-                    autosaveCache = bool.TryParse(HttpContext.Current.Session["autosave_option"].ToString(), out autosaveCacheValue);
+                if (Context.SessionObject()["autosave_option"] != null)
+                    autosaveCache = bool.TryParse(Context.SessionObject()["autosave_option"].ToString(), out autosaveCacheValue);
                 bool convert = bool.TryParse(HttpContext.Current.Request.Form["Autosave_Option"], out autosave_option);
                 if (!convert && !autosaveCache)
                 {
@@ -411,7 +411,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
                 else
                 {
-                    HttpContext.Current.Session["autosave_option"] = autosave_option;
+                    Context.SessionObject()["autosave_option"] = autosave_option;
                 }
             }
             catch (Exception e)
@@ -422,16 +422,16 @@ namespace SobekCM.Library.ItemViewer.Viewers
             // Check for a previously set main thumbnail, or one from the requesting form
             if (!String.IsNullOrEmpty(hidden_main_thumbnail))
             {
-                HttpContext.Current.Session["main_thumbnail_" + qc_item.BibID + "_" + qc_item.VID] = hidden_main_thumbnail;
+                Context.SessionObject()["main_thumbnail_" + qc_item.BibID + "_" + qc_item.VID] = hidden_main_thumbnail;
             }
-            else if (HttpContext.Current.Session["main_thumbnail_" + qc_item.BibID + "_" + qc_item.VID] == null)
+            else if (Context.SessionObject()["main_thumbnail_" + qc_item.BibID + "_" + qc_item.VID] == null)
             {
                 hidden_main_thumbnail = qc_item.Behaviors.Main_Thumbnail.Replace("thm.jpg", "");
-                HttpContext.Current.Session["main_thumbnail_" + qc_item.BibID + "_" + qc_item.VID] = hidden_main_thumbnail;
+                Context.SessionObject()["main_thumbnail_" + qc_item.BibID + "_" + qc_item.VID] = hidden_main_thumbnail;
             }
             else
             {
-                hidden_main_thumbnail = HttpContext.Current.Session["main_thumbnail_" + qc_item.BibID + "_" + qc_item.VID].ToString();
+                hidden_main_thumbnail = Context.SessionObject()["main_thumbnail_" + qc_item.BibID + "_" + qc_item.VID].ToString();
             }
 
             //Get the list of associated errors for this item from the database
@@ -447,7 +447,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 case "save":
                 case "complete":
                     //Save the current time
-                    HttpContext.Current.Session["QC_timeUpdated"] = DateTime.Now.ToString("hh:mm tt");
+                    Context.SessionObject()["QC_timeUpdated"] = DateTime.Now.ToString("hh:mm tt");
 
                     // Read the data from the http form, perform all requests, and
                     // update the qc_item (also updates the session and temporary files)
@@ -670,7 +670,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
 
             //Update the session dictionary with the updated one
-            HttpContext.Current.Session["QC_Errors"] = qc_errors_dictionary;
+            Context.SessionObject()["QC_Errors"] = qc_errors_dictionary;
 
         }
 
@@ -682,14 +682,14 @@ namespace SobekCM.Library.ItemViewer.Viewers
             qc_errors_table = SobekCM_Item_Database.Get_QC_Errors_For_Item(ThisItemID);
             QC_Error thisError = new QC_Error();
 
-            if (HttpContext.Current.Session["QC_Errors"] == null)
+            if (Context.SessionObject()["QC_Errors"] == null)
             {
                 //Build the dictionary of errors from the DataTable pulled
                 qc_errors_dictionary = new Dictionary<string, QC_Error>();
             }
             else
             {
-                qc_errors_dictionary = (Dictionary<string, QC_Error>)HttpContext.Current.Session["QC_Errors"];
+                qc_errors_dictionary = (Dictionary<string, QC_Error>)Context.SessionObject()["QC_Errors"];
             }
             foreach (DataRow thisRow in qc_errors_table.Rows)
             {
@@ -759,7 +759,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 }
             }
             //Save this dictionary to the session
-            HttpContext.Current.Session["QC_Errors"] = qc_errors_dictionary;
+            Context.SessionObject()["QC_Errors"] = qc_errors_dictionary;
         }
 
         #region Perform pre-display work ( retrieving user settings and build child to parent dictionary )
@@ -910,8 +910,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
 
             // Clear the updated item from the session
-            HttpContext.Current.Session[qc_item.BibID + "_" + qc_item.VID + " QC Work"] = null;
-            HttpContext.Current.Session["main_thumbnail_" + qc_item.BibID + "_" + qc_item.VID] = null;
+            Context.SessionObject()[qc_item.BibID + "_" + qc_item.VID + " QC Work"] = null;
+            Context.SessionObject()["main_thumbnail_" + qc_item.BibID + "_" + qc_item.VID] = null;
 
         }
 
@@ -964,7 +964,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             qc_item.Web.Static_PageCount = newPageCount;
 
             // Save the updated item to the session
-            HttpContext.Current.Session[qc_item.BibID + "_" + qc_item.VID + " QC Work"] = qc_item;
+            Context.SessionObject()[qc_item.BibID + "_" + qc_item.VID + " QC Work"] = qc_item;
 
             // Save to the temporary QC work section
             try
@@ -998,7 +998,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 }
 
                 // Save the updated to the session
-                HttpContext.Current.Session[qc_item.BibID + "_" + qc_item.VID + " QC Work"] = qc_item;
+                Context.SessionObject()[qc_item.BibID + "_" + qc_item.VID + " QC Work"] = qc_item;
 
                 // Save to the temporary QC work section
                 // Ensure the directory exists under the user's temporary mySobek InProcess folder
@@ -1417,7 +1417,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 }
 
                 // Save the updated to the session
-                HttpContext.Current.Session[qc_item.BibID + "_" + qc_item.VID + " QC Work"] = qc_item;
+                Context.SessionObject()[qc_item.BibID + "_" + qc_item.VID + " QC Work"] = qc_item;
 
                 // Save to the temporary QC work section
 
@@ -1561,8 +1561,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
             SobekCM_Item_Database.QC_Update_Item_Info(qc_item.BibID, qc_item.VID, CurrentUser.UserName, hidden_main_thumbnail + "thm.jpg", hidden_main_thumbnail + ".jpg", pages_count, files_count, size, notes);
 
             // Clear the updated item from the session
-            HttpContext.Current.Session[qc_item.BibID + "_" + qc_item.VID + " QC Work"] = null;
-            HttpContext.Current.Session["main_thumbnail_" + qc_item.BibID + "_" + qc_item.VID] = null;
+            Context.SessionObject()[qc_item.BibID + "_" + qc_item.VID + " QC Work"] = null;
+            Context.SessionObject()["main_thumbnail_" + qc_item.BibID + "_" + qc_item.VID] = null;
 
             // Clear the cache for this item completely, so the system will recreate the object from the new METS
             CachedDataManager.Items.Remove_Digital_Resource_Object(qc_item.BibID, qc_item.VID, null);

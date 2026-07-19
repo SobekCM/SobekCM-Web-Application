@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
@@ -120,7 +120,7 @@ namespace SobekCM.Library.AdminViewer
                             else
                             {
                                 // Clear settings to be pulled again
-                                HttpContext.Current.Session["Admin_Settigs"] = null;
+                                Context.SessionObject()["Admin_Settigs"] = null;
 
                                 // Assign this to be used by the system
                                 UI_ApplicationCache_Gateway.ResetSettings();
@@ -168,7 +168,7 @@ namespace SobekCM.Library.AdminViewer
                                     actionMessage = "Successfully saved builder folder changes.";
 
                                     // Clear settings to be pulled again
-                                    HttpContext.Current.Session["Admin_Settigs"] = null;
+                                    Context.SessionObject()["Admin_Settigs"] = null;
 
                                     // Assign this to be used by the system
                                     UI_ApplicationCache_Gateway.ResetSettings();

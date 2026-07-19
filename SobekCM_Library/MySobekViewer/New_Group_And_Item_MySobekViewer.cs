@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using System;
 using System.Collections.Generic;
@@ -116,7 +116,7 @@ namespace SobekCM.Library.MySobekViewer
                     {
                         RequestSpecificValues.Current_User.Current_Default_Metadata = newvalue;
                     }
-                    HttpContext.Current.Session["item"] = null;
+                    Context.SessionObject()["item"] = null;
                 }
             }
 
@@ -209,7 +209,7 @@ namespace SobekCM.Library.MySobekViewer
             }
 
             // Look for the item in the session, then directory, then just create a new one
-            if (HttpContext.Current.Session["Item"] == null)
+            if (Context.SessionObject()["Item"] == null)
             {
                 // Clear any old files (older than 24 hours) that are in the directory
                 if (!Directory.Exists(userInProcessDirectory))
@@ -336,12 +336,12 @@ namespace SobekCM.Library.MySobekViewer
                 }
                 
                 // Save this to the session state now
-                HttpContext.Current.Session["Item"] = item;
+                Context.SessionObject()["Item"] = item;
             }
             else
             {
                 RequestSpecificValues.Tracer.Add_Trace("New_Group_And_Item_MySobekViewer.Constructor", "Item found in session cache");
-                item = (SobekCM_Item)HttpContext.Current.Session["Item"];
+                item = (SobekCM_Item)Context.SessionObject()["Item"];
 			}
 
 			#region Special code to handle any uploaded files
@@ -414,7 +414,7 @@ namespace SobekCM.Library.MySobekViewer
                         }
                         if ((file_name_from_keys.Length > 0) && (label_from_keys.Length > 0))
                         {
-                            HttpContext.Current.Session["file_" + file_name_from_keys.Trim()] = label_from_keys.Trim();
+                            Context.SessionObject()["file_" + file_name_from_keys.Trim()] = label_from_keys.Trim();
                             file_name_from_keys = String.Empty;
                             label_from_keys = String.Empty;
                         }
@@ -444,8 +444,8 @@ namespace SobekCM.Library.MySobekViewer
                     }
 
                     // Clear all the information in memory
-                    HttpContext.Current.Session["agreement_date"] = null;
-                    HttpContext.Current.Session["item"] = null;
+                    Context.SessionObject()["agreement_date"] = null;
+                    Context.SessionObject()["item"] = null;
 
                     // Clear any temporarily assigned current project and CompleteTemplate
                     RequestSpecificValues.Current_User.Current_Default_Metadata = null;
@@ -496,7 +496,7 @@ namespace SobekCM.Library.MySobekViewer
 
                     // Create the new METS file and add to the session
                     new_item(null);
-                    HttpContext.Current.Session["Item"] = item;
+                    Context.SessionObject()["Item"] = item;
 
                     // Forward back to the same URL
                     RequestSpecificValues.Current_Mode.My_Sobek_SubMode = "2" + submodeOption;
@@ -514,7 +514,7 @@ namespace SobekCM.Library.MySobekViewer
                     {
 						// Store this agreement in the session state
                         DateTime agreement_date = DateTime.Now;
-                        HttpContext.Current.Session["agreement_date"] = agreement_date;
+                        Context.SessionObject()["agreement_date"] = agreement_date;
 
                         // Also, save this as a text file
                         string agreement_file = userInProcessDirectory + "\\agreement.txt";
@@ -556,17 +556,17 @@ namespace SobekCM.Library.MySobekViewer
                         // Save to the item
                         completeTemplate.Save_To_Bib(item, RequestSpecificValues.Current_User, currentProcessStep - 1);
                         item.Save_METS();
-                        HttpContext.Current.Session["Item"] = item;
+                        Context.SessionObject()["Item"] = item;
 
                         // Save the pertinent data to the METS file package
                         item.METS_Header.Create_Date = DateTime.Now;
-                        if ((HttpContext.Current.Session["agreement_date"] != null) && (HttpContext.Current.Session["agreement_date"].ToString().Length > 0))
+                        if ((Context.SessionObject()["agreement_date"] != null) && (Context.SessionObject()["agreement_date"].ToString().Length > 0))
                         {
                             DateTime asDateTime;
-                            if (DateTime.TryParse(HttpContext.Current.Session["agreement_date"].ToString(), out asDateTime))
+                            if (DateTime.TryParse(Context.SessionObject()["agreement_date"].ToString(), out asDateTime))
                                 item.METS_Header.Create_Date = asDateTime;
                         }
-                        HttpContext.Current.Session["Item"] = item;
+                        Context.SessionObject()["Item"] = item;
 
                         // Save this item, just in case it gets lost somehow
                         item.Source_Directory = userInProcessDirectory;
@@ -613,7 +613,7 @@ namespace SobekCM.Library.MySobekViewer
                             }
                         }
                         item.Save_METS();
-                        HttpContext.Current.Session["Item"] = item;
+                        Context.SessionObject()["Item"] = item;
                     }
 
                     // For now, just forward to the next phase
@@ -868,9 +868,9 @@ namespace SobekCM.Library.MySobekViewer
                             FileInfo fileInfo = new FileInfo(thisFile);
                             SobekCM_File_Info newFile = new SobekCM_File_Info(fileInfo.Name);
                             string label = fileInfo.Name.Replace(fileInfo.Extension, "");
-                            if (HttpContext.Current.Session["file_" + thisFileKey] != null)
+                            if (Context.SessionObject()["file_" + thisFileKey] != null)
                             {
-                                string possible_label = HttpContext.Current.Session["file_" + thisFileKey].ToString();
+                                string possible_label = Context.SessionObject()["file_" + thisFileKey].ToString();
                                 if (possible_label.Length > 0)
                                     label = possible_label;
                             }
@@ -912,9 +912,9 @@ namespace SobekCM.Library.MySobekViewer
                             FileInfo fileInfo = new FileInfo(thisFile);
                             SobekCM_File_Info newFile = new SobekCM_File_Info(fileInfo.Name);
                             string label = fileInfo.Name.Replace( fileInfo.Extension, "");
-                            if (HttpContext.Current.Session["file_" + thisFileKey] != null)
+                            if (Context.SessionObject()["file_" + thisFileKey] != null)
                             {
-                                string possible_label = HttpContext.Current.Session["file_" + thisFileKey].ToString();
+                                string possible_label = Context.SessionObject()["file_" + thisFileKey].ToString();
                                 if (possible_label.Length > 0)
                                     label = possible_label;
                             }
@@ -1736,13 +1736,13 @@ namespace SobekCM.Library.MySobekViewer
                         Output.WriteLine("      <div style=\"padding-left: 90px;\">");
                         Output.WriteLine("        <span style=\"color:gray\">Label:</span>");
                         Output.WriteLine("        <input type=\"hidden\" id=\"upload_file" + file_counter.ToString() + "\" name=\"upload_file" + file_counter.ToString() + "\" value=\"" + fileKey + "\" />");
-                        if (HttpContext.Current.Session["file_" + fileKey] == null)
+                        if (Context.SessionObject()["file_" + fileKey] == null)
                         {
                             Output.WriteLine("      <input type=\"text\" class=\"sbkNgi_UploadFileLabel sbk_Focusable\" id=\"" + input_name + "\" name=\"" + input_name + "\" value=\"\" onchange=\"upload_label_fieldChanged(this.id," + totalFileCount + ");\"></input>");
                         }
                         else
                         {
-                            string label_from_session = HttpContext.Current.Session["file_" + fileKey].ToString();
+                            string label_from_session = Context.SessionObject()["file_" + fileKey].ToString();
                             Output.WriteLine("      <input type=\"text\" class=\"sbkNgi_UploadFileLabel sbk_Focusable\" id=\"" + input_name + "\" name=\"" + input_name + "\" value=\"" + label_from_session + "\" onchange=\"upload_label_fieldChanged(this.id," + totalFileCount + ");\"></input>");
                         }
                         Output.WriteLine("      </div>");
@@ -1820,13 +1820,13 @@ namespace SobekCM.Library.MySobekViewer
                         Output.WriteLine("    <td style=\"text-align:right; color:gray;\">Label:</td>");
                         Output.WriteLine("    <td colspan=\"4\">");
                         Output.WriteLine("      <input type=\"hidden\" id=\"upload_file" + file_counter.ToString() + "\" name=\"upload_file" + file_counter.ToString() + "\" value=\"" + fileKey + "\" />");
-                        if (HttpContext.Current.Session["file_" + fileKey] == null)
+                        if (Context.SessionObject()["file_" + fileKey] == null)
                         {
                             Output.WriteLine("      <input type=\"text\" class=\"sbkNgi_UploadFileLabel sbk_Focusable\" id=\"" + input_name + "\" name=\"" + input_name + "\" onchange=\"upload_label_fieldChanged(this.id," + totalFileCount + ");\"></input>");
                         }
                         else
                         {
-                            string label_from_session = HttpContext.Current.Session["file_" + fileKey].ToString();
+                            string label_from_session = Context.SessionObject()["file_" + fileKey].ToString();
                             Output.WriteLine("      <input type=\"text\" class=\"sbkNgi_UploadFileLabel sbk_Focusable\" id=\"" + input_name + "\" name=\"" + input_name + "\" value=\"" + label_from_session + "\" onchange=\"upload_label_fieldChanged(this.id," + totalFileCount + ");\"></input>");
                         }
                         Output.WriteLine("    </td>");
@@ -2011,7 +2011,7 @@ namespace SobekCM.Library.MySobekViewer
             Output.WriteLine("</td></tr></table></div>");
             Output.WriteLine("<br />");
             item = null;
-            HttpContext.Current.Session["Item"] = null;
+            Context.SessionObject()["Item"] = null;
 
             Output.WriteLine("</div>");
         }

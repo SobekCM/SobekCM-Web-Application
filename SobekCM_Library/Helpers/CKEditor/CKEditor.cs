@@ -3,7 +3,7 @@
 using System;
 using System.IO;
 using System.Text;
-using System.Web;
+using Microsoft.AspNetCore.Http;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Library.UI;
 
@@ -15,6 +15,9 @@ namespace SobekCM.Library.Helpers.CKEditor
     /// the CKEditor jquery library </summary>
     public class CKEditor
     {
+        /// <summary> HTTP context for the current request (required for session token storage) </summary>
+        public HttpContext Context { get; set; }
+
         /// <summary> Constructor for a new instance of the CKEditor class </summary>
 		public CKEditor()
 		{
@@ -81,7 +84,7 @@ namespace SobekCM.Library.Helpers.CKEditor
                 // Create a new security token, save in session, and set token GUID in the form data
                 CKEditor_Security_Token newToken = new CKEditor_Security_Token(UploadPath, UploadURL);
                 string token = newToken.ThisGuid.ToString();
-                HttpContext.Current.Session["#CKEDITOR::" + token] = newToken;
+                Context.SessionObject()["#CKEDITOR::" + token] = newToken;
 
                 Output.WriteLine("               filebrowserImageUploadUrl: '" + FileBrowser_ImageUploadUrl + "?token=" + token + "',");
             }

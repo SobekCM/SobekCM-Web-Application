@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using System;
 using System.Collections.Generic;
@@ -223,7 +223,7 @@ namespace SobekCM.Library.MySobekViewer
                     }
                     if ((file_name_from_keys.Length > 0) && (label_from_keys.Length > 0))
                     {
-                        HttpContext.Current.Session["file_" + currentItem.Web.ItemID + "_" + file_name_from_keys.Trim()] = label_from_keys.Trim();
+                        Context.SessionObject()["file_" + currentItem.Web.ItemID + "_" + file_name_from_keys.Trim()] = label_from_keys.Trim();
                         file_name_from_keys = String.Empty;
                         label_from_keys = String.Empty;
                     }
@@ -525,7 +525,7 @@ namespace SobekCM.Library.MySobekViewer
                         }
                     }
                 }
-                HttpContext.Current.Session[Item_To_Complete.BibID + "_" + Item_To_Complete.VID + " QC Work"] = null;
+                Context.SessionObject()[Item_To_Complete.BibID + "_" + Item_To_Complete.VID + " QC Work"] = null;
 
             }
             catch (Exception ee)

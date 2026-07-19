@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using System;
 using System.Collections.Generic;
@@ -42,12 +42,12 @@ namespace SobekCM.Library.MySobekViewer
 
         private static void Set_Session_File_Label(int itemId, string filename, string label)
         {
-            HttpContext.Current.Session["file_" + itemId + "_" + filename] = label;
+            Context.SessionObject()["file_" + itemId + "_" + filename] = label;
             string registryKey = FILE_KEY_REGISTRY_PREFIX + itemId;
-            if (!(HttpContext.Current.Session[registryKey] is List<string> registry))
+            if (!(Context.SessionObject()[registryKey] is List<string> registry))
             {
                 registry = new List<string>();
-                HttpContext.Current.Session[registryKey] = registry;
+                Context.SessionObject()[registryKey] = registry;
             }
             if (!registry.Contains(filename))
                 registry.Add(filename);
@@ -56,7 +56,7 @@ namespace SobekCM.Library.MySobekViewer
         private static void Clear_Session_File_Labels(int itemId)
         {
             string registryKey = FILE_KEY_REGISTRY_PREFIX + itemId;
-            if (HttpContext.Current.Session[registryKey] is List<string> registry)
+            if (Context.SessionObject()[registryKey] is List<string> registry)
             {
                 foreach (string filename in registry)
                     HttpContext.Current.Session.Remove("file_" + itemId + "_" + filename);
@@ -301,9 +301,9 @@ namespace SobekCM.Library.MySobekViewer
                         FileInfo fileInfo = new FileInfo(thisFile);
                         SobekCM_File_Info newFile = new SobekCM_File_Info(fileInfo.Name);
                         string label = fileInfo.Name.Replace(fileInfo.Extension, "");
-                        if (HttpContext.Current.Session["file_" + currentItem.Web.ItemID + "_" + thisFileKey] != null)
+                        if (Context.SessionObject()["file_" + currentItem.Web.ItemID + "_" + thisFileKey] != null)
                         {
-                            string possible_label = HttpContext.Current.Session["file_" + currentItem.Web.ItemID + "_" + thisFileKey].ToString();
+                            string possible_label = Context.SessionObject()["file_" + currentItem.Web.ItemID + "_" + thisFileKey].ToString();
                             if (possible_label.Length > 0)
                                 label = possible_label;
                         }
@@ -629,7 +629,7 @@ namespace SobekCM.Library.MySobekViewer
 					Output.WriteLine("        <span style=\"color:gray\">Label:</span>");
 		            Output.WriteLine("        <input type=\"hidden\" id=\"upload_file" + file_counter.ToString() + "\" name=\"upload_file" + file_counter.ToString() + "\" value=\"" + fileKey + "\" />");
 
-		            if (HttpContext.Current.Session["file_" + currentItem.Web.ItemID + "_" + fileKey] == null)
+		            if (Context.SessionObject()["file_" + currentItem.Web.ItemID + "_" + fileKey] == null)
 		            {
 			            if (resource_files_to_labels.ContainsKey(fileKey))
 			            {
@@ -643,7 +643,7 @@ namespace SobekCM.Library.MySobekViewer
 		            }
 		            else
 		            {
-			            string label_from_session = HttpContext.Current.Session["file_" + currentItem.Web.ItemID + "_" + fileKey].ToString();
+			            string label_from_session = Context.SessionObject()["file_" + currentItem.Web.ItemID + "_" + fileKey].ToString();
 						Output.WriteLine("        <input type=\"text\" class=\"upload_label_input sbk_Focusable\" id=\"" + input_name + "\" name=\"" + input_name + "\" value=\"" + HttpUtility.HtmlEncode(label_from_session) + "\" ></input>");
 		            }
 

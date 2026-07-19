@@ -252,7 +252,7 @@ namespace SobekCM.Library.HTML
                 if (HttpContext.Current != null)
                 {
                     // Check for IP restriction
-                    int user_mask = (int)HttpContext.Current.Session["IP_Range_Membership"];
+                    int user_mask = (int)Context.SessionObject()["IP_Range_Membership"];
                     int comparison = currentItem.Behaviors.IP_Restriction_Membership & user_mask;
                     if (comparison == 0)
                     {

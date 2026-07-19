@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using System;
 using System.Collections.Generic;
@@ -51,7 +51,7 @@ namespace SobekCM.Library.HTML
             {
                 RequestSpecificValues.Tracer.Add_Trace("MySobek_HtmlSubwriter.Constructor", "Performing logout");
 
-                HttpContext.Current.Session["user"] = null;
+                Context.SessionObject()["user"] = null;
                 HttpContext.Current.Response.Redirect("?", false);
                 HttpContext.Current.ApplicationInstance.CompleteRequest();
                 RequestSpecificValues.Current_Mode.Request_Completed = true;
@@ -189,7 +189,7 @@ namespace SobekCM.Library.HTML
         {
             Tracer.Add_Trace("MySobek_HtmlSubwriter.Write_HTML", "Rendering HTML");
 
-            if ((HttpContext.Current.Session["agreement_date"] == null) && (RequestSpecificValues.Current_Mode.My_Sobek_Type == My_Sobek_Type_Enum.New_Item ) && ((String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.My_Sobek_SubMode)) || (RequestSpecificValues.Current_Mode.My_Sobek_SubMode[0] != '1')))
+            if ((Context.SessionObject()["agreement_date"] == null) && (RequestSpecificValues.Current_Mode.My_Sobek_Type == My_Sobek_Type_Enum.New_Item ) && ((String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.My_Sobek_SubMode)) || (RequestSpecificValues.Current_Mode.My_Sobek_SubMode[0] != '1')))
             {
                 RequestSpecificValues.Current_Mode.My_Sobek_SubMode = "1";
             }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -54,7 +54,7 @@ namespace SobekCM.Library.MySobekViewer
             //}
 
             // Create a new GUID for this task, or get from the session state
-            string guid = HttpContext.Current.Session["Import_Data_Current_GUID"] as string;
+            string guid = Context.SessionObject()["Import_Data_Current_GUID"] as string;
             if (String.IsNullOrEmpty(guid))
             {
                 guid = Guid.NewGuid().ToString();
@@ -132,8 +132,8 @@ namespace SobekCM.Library.MySobekViewer
                             File.Delete(thisFile);
                         Directory.Delete(taskDirectory);
                     }
-                    HttpContext.Current.Session["Import_Data_Current_GUID"] = null;
-                    HttpContext.Current.Session["Import_Data_Current_Worksheet"] = null;
+                    Context.SessionObject()["Import_Data_Current_GUID"] = null;
+                    Context.SessionObject()["Import_Data_Current_Worksheet"] = null;
                     RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
                     UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
                     return;
@@ -151,7 +151,7 @@ namespace SobekCM.Library.MySobekViewer
                     page = 1;
                     file_name = String.Empty;
                     file_type = Import_File_Type_Enum.None;
-                    HttpContext.Current.Session["Import_Data_Current_Worksheet"] = null;
+                    Context.SessionObject()["Import_Data_Current_Worksheet"] = null;
                 }
             }
         }

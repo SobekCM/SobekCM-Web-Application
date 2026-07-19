@@ -18,6 +18,7 @@ using SobekCM.Core.WebContent;
 using SobekCM.Engine_Library.Aggregations;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Library.MainWriters;
+using Microsoft.AspNetCore.Http;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
 
@@ -32,6 +33,9 @@ namespace SobekCM.Library.HTML
 	{
         /// <summary> Protected field contains the information specific to the current request </summary>
         protected RequestCache RequestSpecificValues;
+
+        /// <summary> HTTP context for the current request </summary>
+        protected HttpContext Context => RequestSpecificValues?.Context;
 
         /// <summary> Empty list of behaviors, returned by default </summary>
         /// <remarks> This just prevents an empty set from having to be created over and over </remarks>

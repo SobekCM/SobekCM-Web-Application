@@ -1,4 +1,4 @@
-﻿// HTML5 10/15/2013
+// HTML5 10/15/2013
 
 #region Using directives
 
@@ -100,7 +100,7 @@ namespace SobekCM.Library.MySobekViewer
                         }
 
                         // The user was valid here, so save this user information
-                        HttpContext.Current.Session["user"] = user;
+                        Context.SessionObject()["user"] = user;
 
                         // Should we remember this user via cookies?
                         if (remember_me)

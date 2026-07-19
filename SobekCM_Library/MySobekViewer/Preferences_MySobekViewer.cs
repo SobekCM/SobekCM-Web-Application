@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using System;
 using System.Collections.Generic;
@@ -193,7 +193,7 @@ namespace SobekCM.Library.MySobekViewer
 
 			// Is this for registration
             user = RequestSpecificValues.Current_User;
-			registration = (HttpContext.Current.Session["user"] == null);
+			registration = (Context.SessionObject()["user"] == null);
 			if (registration)
 			{
 				user = new User_Object();
@@ -501,7 +501,7 @@ namespace SobekCM.Library.MySobekViewer
 						}
 
 						user.Is_Just_Registered = true;
-						HttpContext.Current.Session["user"] = user;
+						Context.SessionObject()["user"] = user;
 
                         // Will we be sending an email?
 					    if ((!String.IsNullOrEmpty(UI_ApplicationCache_Gateway.Settings.Email.User_Registration_Email)) || (desire_to_upload))
@@ -558,7 +558,7 @@ namespace SobekCM.Library.MySobekViewer
 					}
 					else
 					{
-						HttpContext.Current.Session["user"] = user;
+						Context.SessionObject()["user"] = user;
                         SobekCM_Database.Save_User(user, String.Empty, user.Authentication_Type, RequestSpecificValues.Tracer);
 
 						// Now, forward back to the My Sobek home page
@@ -592,7 +592,7 @@ namespace SobekCM.Library.MySobekViewer
         {
             get
             {
-                if (HttpContext.Current.Session["user"] == null)
+                if (Context.SessionObject()["user"] == null)
                 {
                     return "Register for My" + RequestSpecificValues.Current_Mode.Instance_Abbreviation;
                 }
@@ -646,8 +646,8 @@ namespace SobekCM.Library.MySobekViewer
 			if (registration)
 			{
 				// If there was a gatorlink ufid, use that
-				if (HttpContext.Current.Session["Gatorlink_UFID"] != null)
-					ufid = HttpContext.Current.Session["Gatorlink_UFID"].ToString();
+				if (Context.SessionObject()["Gatorlink_UFID"] != null)
+					ufid = Context.SessionObject()["Gatorlink_UFID"].ToString();
 
 				Output.WriteLine("  <tr><td style=\"width:" + col1Width + "\">&nbsp;</td><td style=\"width:" + col2Width + "\" class=\"sbkPmsv_InputLabel\"><label for=\"prefUsername\">" + userNameLabel + ":</label></td><td width=\"" + col3Width + "\"><input id=\"prefUserName\" name=\"prefUserName\" class=\"preferences_small_input sbk_Focusable\" value=\"" + username + "\" type=\"text\" />   &nbsp; &nbsp; (minimum of eight digits)</td></tr>");
 				Output.WriteLine("  <tr><td style=\"width:" + col1Width + "\">&nbsp;</td><td class=\"sbkPmsv_InputLabel\"><label for=\"password_enter\">" + passwordLabel + ":</label></td><td>");

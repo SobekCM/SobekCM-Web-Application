@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using Microsoft.AspNetCore.Http;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.WebContent;
 using SobekCM.Tools;
@@ -11,6 +12,9 @@ namespace SobekCM.Library.WebContentViewer.Viewers
     {
         /// <summary> Protected field contains the information specific to the current request </summary>
         protected RequestCache RequestSpecificValues;
+
+        /// <summary> HTTP context for the current request </summary>
+        protected HttpContext Context => RequestSpecificValues?.Context;
 
         /// <summary> Protcted field contains the static web page information for the current request </summary>
         protected HTML_Based_Content StaticPage;

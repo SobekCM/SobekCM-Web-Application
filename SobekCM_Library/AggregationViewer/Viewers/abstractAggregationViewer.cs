@@ -7,6 +7,7 @@ using SobekCM.Core.Aggregations;
 using SobekCM.Core.Configuration;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Navigation;
+using Microsoft.AspNetCore.Http;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
 using SobekCM.Tools;
@@ -30,6 +31,9 @@ namespace SobekCM.Library.AggregationViewer.Viewers
     {
         /// <summary> Protected field contains the information specific to the current request </summary>
         protected RequestCache RequestSpecificValues;
+
+        /// <summary> HTTP context for the current request </summary>
+        protected HttpContext Context => RequestSpecificValues?.Context;
 
         /// <summary> Protected field contains the aggregation-specific request information </summary>
         protected AggregationViewBag ViewBag;

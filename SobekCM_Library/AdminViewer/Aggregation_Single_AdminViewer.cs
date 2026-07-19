@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using System;
 using System.Collections.Generic;
@@ -81,7 +81,7 @@ namespace SobekCM.Library.AdminViewer
 
 			// Load the item aggregation, either currenlty from the session (if already editing this aggregation )
 			// or by reading all the appropriate XML and reading data from the database
-			object possibleEditAggregation = HttpContext.Current.Session["Edit_Aggregation_" + code];
+			object possibleEditAggregation = Context.SessionObject()["Edit_Aggregation_" + code];
             Complete_Item_Aggregation cachedInstance = possibleEditAggregation as Complete_Item_Aggregation;
 		    if (cachedInstance != null)
 		    {
@@ -156,8 +156,8 @@ namespace SobekCM.Library.AdminViewer
 					if (action == "z")
 					{
 						// Clear the aggregation from the sessions
-						HttpContext.Current.Session["Edit_Aggregation_" + itemAggregation.Code] = null;
-						HttpContext.Current.Session["Item_Aggr_Edit_" + itemAggregation.Code + "_NewLanguages"] = null;
+						Context.SessionObject()["Edit_Aggregation_" + itemAggregation.Code] = null;
+						Context.SessionObject()["Item_Aggr_Edit_" + itemAggregation.Code + "_NewLanguages"] = null;
 
 						// Redirect the RequestSpecificValues.Current_User
 						RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Aggregation;
@@ -299,8 +299,8 @@ namespace SobekCM.Library.AdminViewer
 
 
 							// Clear the aggregation from the sessions
-							HttpContext.Current.Session["Edit_Aggregation_" + itemAggregation.Code] = null;
-							HttpContext.Current.Session["Item_Aggr_Edit_" + itemAggregation.Code + "_NewLanguages"] = null;
+							Context.SessionObject()["Edit_Aggregation_" + itemAggregation.Code] = null;
+							Context.SessionObject()["Item_Aggr_Edit_" + itemAggregation.Code + "_NewLanguages"] = null;
 
 							// Redirect the RequestSpecificValues.Current_User
 						    if (action == "save_exit")
@@ -343,7 +343,7 @@ namespace SobekCM.Library.AdminViewer
 							return;
 
 						// Save to the admins session
-						HttpContext.Current.Session["Edit_Aggregation_" + itemAggregation.Code] = itemAggregation;
+						Context.SessionObject()["Edit_Aggregation_" + itemAggregation.Code] = itemAggregation;
 						RequestSpecificValues.Current_Mode.My_Sobek_SubMode = action;
 						HttpContext.Current.Response.Redirect(UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode), false);
 						HttpContext.Current.ApplicationInstance.CompleteRequest();
@@ -633,7 +633,7 @@ namespace SobekCM.Library.AdminViewer
 		private void Save_Page_1_Postback(NameValueCollection Form)
 		{
             // Log any uploaded button
-            if (HttpContext.Current.Session[itemAggregation.Code + "|Button"] != null)
+            if (Context.SessionObject()[itemAggregation.Code + "|Button"] != null)
             {
                 SobekCM_Database.Save_Item_Aggregation_Milestone(itemAggregation.Code, "Button changed" , RequestSpecificValues.Current_User.Full_Name);
                 HttpContext.Current.Session.Remove(itemAggregation.Code + "|Button");
@@ -840,9 +840,9 @@ namespace SobekCM.Library.AdminViewer
         private void Save_Page_Appearance_Postback(NameValueCollection Form)
         {
             // Log any uploaded banners
-            if (HttpContext.Current.Session[itemAggregation.Code + "|Banners"] != null)
+            if (Context.SessionObject()[itemAggregation.Code + "|Banners"] != null)
             {
-                string files = HttpContext.Current.Session[itemAggregation.Code + "|Banners"].ToString().Replace("|", ", ");
+                string files = Context.SessionObject()[itemAggregation.Code + "|Banners"].ToString().Replace("|", ", ");
                 SobekCM_Database.Save_Item_Aggregation_Milestone(itemAggregation.Code, "Added banner file " + files, RequestSpecificValues.Current_User.Full_Name);
                 HttpContext.Current.Session.Remove(itemAggregation.Code + "|Banners");
             }
@@ -902,9 +902,9 @@ namespace SobekCM.Library.AdminViewer
                             itemAggregation.Add_Home_Page_File("html\\home\\" + new_file_name, enumVal, false);
 
                             // Add this to the list of JUST ADDED home pages, which can't be edited or viewed until saved
-                            List<Web_Language_Enum> newLanguages = HttpContext.Current.Session["Item_Aggr_Edit_" + itemAggregation.Code + "_NewLanguages"] as List<Web_Language_Enum> ?? new List<Web_Language_Enum>();
+                            List<Web_Language_Enum> newLanguages = Context.SessionObject()["Item_Aggr_Edit_" + itemAggregation.Code + "_NewLanguages"] as List<Web_Language_Enum> ?? new List<Web_Language_Enum>();
                             newLanguages.Add(enumVal);
-                            HttpContext.Current.Session["Item_Aggr_Edit_" + itemAggregation.Code + "_NewLanguages"] = newLanguages;
+                            Context.SessionObject()["Item_Aggr_Edit_" + itemAggregation.Code + "_NewLanguages"] = newLanguages;
                         }
                         break;
 
@@ -1155,7 +1155,7 @@ namespace SobekCM.Library.AdminViewer
 	        Output.WriteLine("        </tr>");
 
 	        // Get the list of all recently added home page languages
-	        List<Web_Language_Enum> newLanguages = HttpContext.Current.Session["Item_Aggr_Edit_" + itemAggregation.Code + "_NewLanguages"] as List<Web_Language_Enum> ?? new List<Web_Language_Enum>();
+	        List<Web_Language_Enum> newLanguages = Context.SessionObject()["Item_Aggr_Edit_" + itemAggregation.Code + "_NewLanguages"] as List<Web_Language_Enum> ?? new List<Web_Language_Enum>();
 
 	        // Add all the home page information
 	        Web_Language_Enum currLanguage = RequestSpecificValues.Current_Mode.Language;
@@ -3121,7 +3121,7 @@ namespace SobekCM.Library.AdminViewer
 					itemAggregation.Remove_Child_Page(code_to_delete);
 
 					// Save to the admins session
-					HttpContext.Current.Session["Edit_Aggregation_" + itemAggregation.Code] = itemAggregation;
+					Context.SessionObject()["Edit_Aggregation_" + itemAggregation.Code] = itemAggregation;
 				}
 
 				if (action == "save_childpage")
@@ -3206,7 +3206,7 @@ namespace SobekCM.Library.AdminViewer
 						itemAggregation.Add_Child_Page(newPage);
 
 						// Save to the admins session
-						HttpContext.Current.Session["Edit_Aggregation_" + itemAggregation.Code] = itemAggregation;
+						Context.SessionObject()["Edit_Aggregation_" + itemAggregation.Code] = itemAggregation;
 
 					}
 				}
@@ -3460,7 +3460,7 @@ namespace SobekCM.Library.AdminViewer
 						actionMessage = "Deleted '" + code_to_delete + "' subcollection";
 
 					itemAggregation.Remove_Child(code_to_delete);
-					HttpContext.Current.Session["Edit_Aggregation_" + itemAggregation.Code] = itemAggregation;
+					Context.SessionObject()["Edit_Aggregation_" + itemAggregation.Code] = itemAggregation;
 
 				}
 				else
@@ -3604,9 +3604,9 @@ namespace SobekCM.Library.AdminViewer
 
         private void Save_Page_Uploads_Postback(NameValueCollection Form)
         {
-            if (HttpContext.Current.Session[itemAggregation.Code + "|Uploads"] != null)
+            if (Context.SessionObject()[itemAggregation.Code + "|Uploads"] != null)
             {
-                string files = HttpContext.Current.Session[itemAggregation.Code + "|Uploads"].ToString().Replace("|", ", ");
+                string files = Context.SessionObject()[itemAggregation.Code + "|Uploads"].ToString().Replace("|", ", ");
                 SobekCM_Database.Save_Item_Aggregation_Milestone(itemAggregation.Code, "Uploaded file(s) " + files, RequestSpecificValues.Current_User.Full_Name);
                 HttpContext.Current.Session.Remove(itemAggregation.Code + "|Uploads");
             }
@@ -4169,7 +4169,7 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine("        </tr>");
 
 			// Get the list of all recently added child page version languages
-			List<Web_Language_Enum> newLanguages = HttpContext.Current.Session["Item_Aggr_Edit_" + itemAggregation.Code + "_" + childPage + "_NewLanguages"] as List<Web_Language_Enum> ?? new List<Web_Language_Enum>();
+			List<Web_Language_Enum> newLanguages = Context.SessionObject()["Item_Aggr_Edit_" + itemAggregation.Code + "_" + childPage + "_NewLanguages"] as List<Web_Language_Enum> ?? new List<Web_Language_Enum>();
 
 			// Add all the version information for this child page 
 			Web_Language_Enum currLanguage = RequestSpecificValues.Current_Mode.Language;

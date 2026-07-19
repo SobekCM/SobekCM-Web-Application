@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using System;
 using System.Collections.Generic;
@@ -74,7 +74,7 @@ namespace SobekCM.Library.AdminViewer
 
             // Load the new aggregation, either currenlty from the session (if already into this wizard )
             // or by building the new aggregation arguments
-            New_Aggregation_Arguments cachedInstance = HttpContext.Current.Session["Add_Coll_Wizard"] as New_Aggregation_Arguments;
+            New_Aggregation_Arguments cachedInstance = Context.SessionObject()["Add_Coll_Wizard"] as New_Aggregation_Arguments;
             newAggr = cachedInstance ?? new New_Aggregation_Arguments("ALL");
 
             // Set the code?
@@ -193,7 +193,7 @@ namespace SobekCM.Library.AdminViewer
                     if (action == "z")
                     {
                         // Clear the add collection wizard info from the sessions
-                        HttpContext.Current.Session["Add_Coll_Wizard"] = null;
+                        Context.SessionObject()["Add_Coll_Wizard"] = null;
 
                         // Delete all the files
                         if (Directory.Exists(userInProcessDirectory + "\\images\\banners"))
@@ -268,7 +268,7 @@ namespace SobekCM.Library.AdminViewer
                     }
 
                     // Save the changes to the session
-                    HttpContext.Current.Session["Add_Coll_Wizard"] = newAggr;
+                    Context.SessionObject()["Add_Coll_Wizard"] = newAggr;
 
                     // If there was an error message, than do not go on
                     if (actionMessage.Length > 0)
@@ -405,7 +405,7 @@ namespace SobekCM.Library.AdminViewer
                             }
 
                             // Clear the add collection wizard info from the sessions
-                            HttpContext.Current.Session["Add_Coll_Wizard"] = null;
+                            Context.SessionObject()["Add_Coll_Wizard"] = null;
 
                             UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
                         }

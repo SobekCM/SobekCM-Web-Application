@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using System;
 using System.Collections.Generic;
@@ -94,7 +94,7 @@ namespace SobekCM.Library.AdminViewer
 
             // Load the web skin, either currenlty from the session (if already editing this skin )
             // or by building the complete web skin object
-            Complete_Web_Skin_Object cachedInstance = HttpContext.Current.Session["Edit_Skin_" + code + "|object"] as Complete_Web_Skin_Object;
+            Complete_Web_Skin_Object cachedInstance = Context.SessionObject()["Edit_Skin_" + code + "|object"] as Complete_Web_Skin_Object;
             webSkin = cachedInstance ?? SobekEngineClient.WebSkins.Get_Complete_Web_Skin(code, RequestSpecificValues.Tracer);
 
             // If unable to retrieve this skin, send to home
@@ -106,7 +106,7 @@ namespace SobekCM.Library.AdminViewer
             }
 
             // Get the dictionary for updated source files
-            updatedSourceFiles = HttpContext.Current.Session["Edit_Skin_" + code + "|files"] as Dictionary<string, string> ?? new Dictionary<string, string>();
+            updatedSourceFiles = Context.SessionObject()["Edit_Skin_" + code + "|files"] as Dictionary<string, string> ?? new Dictionary<string, string>();
 
             // Get the skin directory and ensure it exists
             skinDirectory = HttpContext.Current.Server.MapPath("design/skins/" + webSkin.Skin_Code);
@@ -133,8 +133,8 @@ namespace SobekCM.Library.AdminViewer
                     if (action == "z")
                     {
                         // Clear the aggregedit web skin info from the sessions
-                        HttpContext.Current.Session["Edit_Skin_" + webSkin.Skin_Code + "|object"] = null;
-                        HttpContext.Current.Session["Edit_Skin_" + webSkin.Skin_Code + "|files"] = null;
+                        Context.SessionObject()["Edit_Skin_" + webSkin.Skin_Code + "|object"] = null;
+                        Context.SessionObject()["Edit_Skin_" + webSkin.Skin_Code + "|files"] = null;
 
                         // Redirect the user to the skins mgmt screen
                         RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Skins_Mgmt;
@@ -331,8 +331,8 @@ namespace SobekCM.Library.AdminViewer
                             if (action == "save_exit")
                             {
                                 // Clear the aggregedit web skin info from the sessions
-                                HttpContext.Current.Session["Edit_Skin_" + webSkin.Skin_Code + "|object"] = null;
-                                HttpContext.Current.Session["Edit_Skin_" + webSkin.Skin_Code + "|files"] = null;
+                                Context.SessionObject()["Edit_Skin_" + webSkin.Skin_Code + "|object"] = null;
+                                Context.SessionObject()["Edit_Skin_" + webSkin.Skin_Code + "|files"] = null;
 
                                 // Redirect the user to the skins mgmt screen
                                 RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Skins_Mgmt;
@@ -418,8 +418,8 @@ namespace SobekCM.Library.AdminViewer
                         }
 
                         // Save the updated info
-                        HttpContext.Current.Session["Edit_Skin_" + webSkin.Skin_Code + "|object"] = webSkin;
-                        HttpContext.Current.Session["Edit_Skin_" + webSkin.Skin_Code + "|files"] = updatedSourceFiles;
+                        Context.SessionObject()["Edit_Skin_" + webSkin.Skin_Code + "|object"] = webSkin;
+                        Context.SessionObject()["Edit_Skin_" + webSkin.Skin_Code + "|files"] = updatedSourceFiles;
 
                         string url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
 

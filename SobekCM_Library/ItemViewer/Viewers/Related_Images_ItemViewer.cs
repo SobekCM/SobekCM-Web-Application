@@ -164,7 +164,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             else
             {
                 int tempValue = 50;
-                object sessionValue = HttpContext.Current.Session["Related_Images_ItemViewer:ThumbnailsPerPage"];
+                object sessionValue = Context.SessionObject()["Related_Images_ItemViewer:ThumbnailsPerPage"];
                 if (sessionValue != null)
                 {
                     int.TryParse(sessionValue.ToString(), out tempValue);
@@ -174,7 +174,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 // Or was there a new value in the URL?
                 if ((currentRequest.Thumbnails_Per_Page.HasValue) && (currentRequest.Thumbnails_Per_Page.Value >= -1))
                 {
-                    HttpContext.Current.Session["Related_Images_ItemViewer:ThumbnailsPerPage"] = currentRequest.Thumbnails_Per_Page;
+                    Context.SessionObject()["Related_Images_ItemViewer:ThumbnailsPerPage"] = currentRequest.Thumbnails_Per_Page;
                     thumbnailsPerPage = currentRequest.Thumbnails_Per_Page.Value;
                 }
             }
@@ -202,7 +202,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             else
             {
                 int tempValue = 1;
-                object sessionValue = HttpContext.Current.Session["Related_Images_ItemViewer:ThumbnailSize"];
+                object sessionValue = Context.SessionObject()["Related_Images_ItemViewer:ThumbnailSize"];
                 if (sessionValue != null)
                 {
                     int.TryParse(sessionValue.ToString(), out tempValue);
@@ -212,7 +212,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 // Or was there a new value in the URL?
                 if ((currentRequest.Size_Of_Thumbnails.HasValue) && (currentRequest.Size_Of_Thumbnails.Value > -1))
                 {
-                    HttpContext.Current.Session["Related_Images_ItemViewer:ThumbnailSize"] = currentRequest.Size_Of_Thumbnails;
+                    Context.SessionObject()["Related_Images_ItemViewer:ThumbnailSize"] = currentRequest.Size_Of_Thumbnails;
                     thumbnailSize = currentRequest.Size_Of_Thumbnails.Value;
                 }
             }

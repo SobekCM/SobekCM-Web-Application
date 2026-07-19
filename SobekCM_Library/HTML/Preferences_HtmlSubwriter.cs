@@ -48,10 +48,10 @@ namespace SobekCM.Library.HTML
                 }
 
                 string defaultViewDropDown = form["defaultViewDropDown"];
-                HttpContext.Current.Session["User_Default_View"] = defaultViewDropDown;
+                Context.SessionObject()["User_Default_View"] = defaultViewDropDown;
 
                 int user_sort = Convert.ToInt32(form["defaultSortDropDown"]);
-                HttpContext.Current.Session["User_Default_Sort"] = user_sort;
+                Context.SessionObject()["User_Default_Sort"] = user_sort;
 
                 RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Aggregation;
 				RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Home;
@@ -83,7 +83,7 @@ namespace SobekCM.Library.HTML
 
             if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.French)
             {
-                preferences = "Préférences";
+                preferences = "Prï¿½fï¿½rences";
                 language = "Langue:";
                 button = "Retour";
             }
@@ -107,8 +107,8 @@ namespace SobekCM.Library.HTML
             Output.WriteLine("        <td align=\"left\">");
             Output.WriteLine("          <select name=\"languageDropDown\" id=\"languageDropDown\">");
             Output.WriteLine(RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.English ? "            <option selected=\"selected\" value=\"en\">English</option>" : "            <option value=\"en\">English</option>");
-            Output.WriteLine(RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.French ? "            <option selected=\"selected\" value=\"fr\">Français</option>" : "            <option value=\"fr\">Français</option>");
-            Output.WriteLine(RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.Spanish ? "            <option selected=\"selected\" value=\"es\">Español</option>" : "            <option value=\"es\">Español</option>");
+            Output.WriteLine(RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.French ? "            <option selected=\"selected\" value=\"fr\">Franï¿½ais</option>" : "            <option value=\"fr\">Franï¿½ais</option>");
+            Output.WriteLine(RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.Spanish ? "            <option selected=\"selected\" value=\"es\">Espaï¿½ol</option>" : "            <option value=\"es\">Espaï¿½ol</option>");
             Output.WriteLine("          </select>");
             Output.WriteLine("        </td>");
             Output.WriteLine("      </tr>");
@@ -116,8 +116,8 @@ namespace SobekCM.Library.HTML
 
 
             string user_view = "default";
-            if (HttpContext.Current.Session["User_Default_View"] != null)
-                user_view = HttpContext.Current.Session["User_Default_View"].ToString();
+            if (Context.SessionObject()["User_Default_View"] != null)
+                user_view = Context.SessionObject()["User_Default_View"].ToString();
 
             Output.WriteLine("      <tr>");
             Output.WriteLine("        <td align=\"left\" width=\"100px\">" + defaultView + "</td>");
@@ -134,8 +134,8 @@ namespace SobekCM.Library.HTML
             Output.WriteLine("      <tr><td colspan=\"2\">&nbsp;</td></tr>");
 
             int user_sort = -1;
-            if (HttpContext.Current.Session["User_Default_Sort"] != null)
-                user_sort = Convert.ToInt32(HttpContext.Current.Session["User_Default_Sort"]);
+            if (Context.SessionObject()["User_Default_Sort"] != null)
+                user_sort = Convert.ToInt32(Context.SessionObject()["User_Default_Sort"]);
 
             Output.WriteLine("      <tr>");
             Output.WriteLine("        <td align=\"left\" width=\"100px\">" + defaultSort + "</td>");

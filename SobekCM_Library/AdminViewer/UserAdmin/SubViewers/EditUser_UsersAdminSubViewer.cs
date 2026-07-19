@@ -1,4 +1,4 @@
-﻿using SobekCM.Core.Navigation;
+using SobekCM.Core.Navigation;
 using SobekCM.Core.Users;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Engine_Library.Database;
@@ -86,7 +86,7 @@ namespace SobekCM.Library.AdminViewer.UserAdmin.SubViewers
             if (action == "cancel")
             {
                 // Clear the RequestSpecificValues.Current_User from the sessions
-                HttpContext.Current.Session["Edit_User_" + editUser.UserID] = null;
+                Context.SessionObject()["Edit_User_" + editUser.UserID] = null;
 
                 // Redirect the RequestSpecificValues.Current_User
                 RequestSpecificValues.Current_Mode.My_Sobek_SubMode = String.Empty;
@@ -146,7 +146,7 @@ namespace SobekCM.Library.AdminViewer.UserAdmin.SubViewers
                 if (successful_save)
                 {
                     // Clear the RequestSpecificValues.Current_User from the sessions
-                    HttpContext.Current.Session["Edit_User_" + editUser.UserID] = null;
+                    Context.SessionObject()["Edit_User_" + editUser.UserID] = null;
 
                     // If this was due to an immediate save, redirect back to editing that user
                     if ( saveImmediately )
@@ -164,7 +164,7 @@ namespace SobekCM.Library.AdminViewer.UserAdmin.SubViewers
             else
             {
                 // Save to the current session
-                HttpContext.Current.Session["Edit_User_" + editUser.UserID] = editUser;
+                Context.SessionObject()["Edit_User_" + editUser.UserID] = editUser;
                 RequestSpecificValues.Current_Mode.My_Sobek_SubMode = action;
                 UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
             }

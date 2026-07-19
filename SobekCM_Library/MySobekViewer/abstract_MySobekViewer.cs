@@ -6,6 +6,7 @@ using System.IO;
 using SobekCM.Core.BriefItem;
 using SobekCM.Core.Navigation;
 using SobekCM.Library.AdminViewer;
+using Microsoft.AspNetCore.Http;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
 using SobekCM.Library.UI;
@@ -35,6 +36,9 @@ namespace SobekCM.Library.MySobekViewer
 
         /// <summary> Protected field contains all the necessary, non-global data specific to the current request </summary>
         protected RequestCache RequestSpecificValues;
+
+        /// <summary> HTTP context for the current request </summary>
+        protected HttpContext Context => RequestSpecificValues?.Context;
 
         /// <summary> Constructor for a new instance of the abstract_MySobekViewer class </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>

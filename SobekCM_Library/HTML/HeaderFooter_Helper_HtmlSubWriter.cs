@@ -529,7 +529,7 @@ namespace SobekCM.Library.HTML
                     }
                 }
 
-                if ((HttpContext.Current != null) && (HttpContext.Current.Session["user"] == null))
+                if (RequestSpecificValues.Current_User == null || !RequestSpecificValues.Current_User.LoggedOn)
                 {
                     if (!String.IsNullOrEmpty(login_text))
                         mySobekLinks = "<a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "my/logon" + mySobekOptions + "\">" + login_text + "</a>";
@@ -538,7 +538,7 @@ namespace SobekCM.Library.HTML
                 }
                 else
                 {
-                    User_Object tempObject = ((User_Object)HttpContext.Current.Session["user"]);
+                    User_Object tempObject = RequestSpecificValues.Current_User;
                     if (tempObject.Nickname.Length > 0)
                     {
                         mySobekLinks = "<a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "my" + mySobekOptions + "\">" + tempObject.Nickname + "'s " + mySobekText + "</a>&nbsp; | &nbsp; <a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "my/logout" + mySobekLogoutOptions + "\">Log Out</a>";

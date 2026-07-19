@@ -2,6 +2,7 @@
 
 using System.Collections.Generic;
 using System.IO;
+using Microsoft.AspNetCore.Http;
 using SobekCM.Library.HTML;
 using SobekCM.Tools;
 
@@ -19,6 +20,9 @@ namespace SobekCM.Library.AdminViewer
 
         /// <summary> Protected field contains the information specific to the current request </summary>
         protected RequestCache RequestSpecificValues;
+
+        /// <summary> HTTP context for the current request </summary>
+        protected HttpContext Context => RequestSpecificValues?.Context;
 
         /// <summary> Constructor for a new instance of the abstract_AdminViewer class </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>

@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using System;
 using System.Collections.Generic;
@@ -85,7 +85,7 @@ namespace SobekCM.Library.AdminViewer
                     edit_usergroupid = -1;
 
                     // Check this admin's session for this RequestSpecificValues.Current_User object
-                    Object sessionEditUser = HttpContext.Current.Session["Edit_UserGroup_" + edit_usergroupid];
+                    Object sessionEditUser = Context.SessionObject()["Edit_UserGroup_" + edit_usergroupid];
                     if (sessionEditUser != null)
                         editGroup = (User_Group)sessionEditUser;
                     else
@@ -96,7 +96,7 @@ namespace SobekCM.Library.AdminViewer
 
                     if (Int32.TryParse(RequestSpecificValues.Current_Mode.My_Sobek_SubMode.Replace("a", "").Replace("b", "").Replace("c", "").Replace("v", ""), out edit_usergroupid))
                     {
-                        Object sessionEditUser = HttpContext.Current.Session["Edit_UserGroup_" + edit_usergroupid];
+                        Object sessionEditUser = Context.SessionObject()["Edit_UserGroup_" + edit_usergroupid];
                         if (sessionEditUser != null)
                             editGroup = (User_Group) sessionEditUser;
                         else
@@ -154,7 +154,7 @@ namespace SobekCM.Library.AdminViewer
                     if (action == "cancel")
                     {
                         // Clear the RequestSpecificValues.Current_User from the sessions
-                        HttpContext.Current.Session["Edit_UserGroup_" + editGroup.UserGroupID] = null;
+                        Context.SessionObject()["Edit_UserGroup_" + editGroup.UserGroupID] = null;
 
                         // Redirect the RequestSpecificValues.Current_User
                         RequestSpecificValues.Current_Mode.My_Sobek_SubMode = String.Empty;
@@ -448,7 +448,7 @@ namespace SobekCM.Library.AdminViewer
                         if (successful_save)
                         {
                             // Clear the RequestSpecificValues.Current_User from the sessions
-                            HttpContext.Current.Session["Edit_UserGroup_" + editGroup.UserGroupID] = null;
+                            Context.SessionObject()["Edit_UserGroup_" + editGroup.UserGroupID] = null;
 
 
                             RequestSpecificValues.Current_Mode.My_Sobek_SubMode = String.Empty;
@@ -458,7 +458,7 @@ namespace SobekCM.Library.AdminViewer
                     else
                     {
                         // Save to the admins session
-                        HttpContext.Current.Session["Edit_UserGroup_" + editGroup.UserGroupID] = editGroup;
+                        Context.SessionObject()["Edit_UserGroup_" + editGroup.UserGroupID] = editGroup;
                         RequestSpecificValues.Current_Mode.My_Sobek_SubMode = action;
                         UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
                     }

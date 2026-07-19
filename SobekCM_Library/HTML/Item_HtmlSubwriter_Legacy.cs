@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using System;
 using System.Collections.Generic;
@@ -117,9 +117,9 @@ namespace SobekCM.Library.HTML
 
             // Determine if the TOC should be shown
             showToc = false;
-            if (HttpContext.Current.Session["Show TOC"] != null)
+            if (Context.SessionObject()["Show TOC"] != null)
             {
-                Boolean.TryParse(HttpContext.Current.Session["Show TOC"].ToString(), out showToc);
+                Boolean.TryParse(Context.SessionObject()["Show TOC"].ToString(), out showToc);
             }
 
             // Try to get the current item
@@ -170,7 +170,7 @@ namespace SobekCM.Library.HTML
             {
                 if (HttpContext.Current != null)
                 {
-                    int user_mask = (int)HttpContext.Current.Session["IP_Range_Membership"];
+                    int user_mask = (int)Context.SessionObject()["IP_Range_Membership"];
                     int comparison = currentItem.Behaviors.IP_Restriction_Membership & user_mask;
                     if (comparison == 0)
                     {

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
@@ -181,19 +181,19 @@ namespace SobekCM.Library.MySobekViewer
             }
 
             // Load some information from the session
-            if (HttpContext.Current.Session["Edit_TEI_mySobekViewer." + bibid + "_" + vid + ".Mapping_File"] != null)
-                mapping_file = HttpContext.Current.Session["Edit_TEI_mySobekViewer." + bibid + "_" + vid + ".Mapping_File"] as string;
-            if (HttpContext.Current.Session["Edit_TEI_mySobekViewer." + bibid + "_" + vid + ".XSLT_File"] != null)
-                xslt_file = HttpContext.Current.Session["Edit_TEI_mySobekViewer." + bibid + "_" + vid + ".XSLT_File"] as string;
-            if (HttpContext.Current.Session["Edit_TEI_mySobekViewer." + bibid + "_" + vid + ".CSS_File"] != null)
-                css_file = HttpContext.Current.Session["Edit_TEI_mySobekViewer." + bibid + "_" + vid + ".CSS_File"] as string;
-            if (HttpContext.Current.Session["Edit_TEI_mySobekViewer." + bibid + "_" + vid + ".Original_TEI_File"] != null)
-                original_tei_file = HttpContext.Current.Session["Edit_TEI_mySobekViewer." + bibid + "_" + vid + ".Original_TEI_File"] as string;
+            if (Context.SessionObject()["Edit_TEI_mySobekViewer." + bibid + "_" + vid + ".Mapping_File"] != null)
+                mapping_file = Context.SessionObject()["Edit_TEI_mySobekViewer." + bibid + "_" + vid + ".Mapping_File"] as string;
+            if (Context.SessionObject()["Edit_TEI_mySobekViewer." + bibid + "_" + vid + ".XSLT_File"] != null)
+                xslt_file = Context.SessionObject()["Edit_TEI_mySobekViewer." + bibid + "_" + vid + ".XSLT_File"] as string;
+            if (Context.SessionObject()["Edit_TEI_mySobekViewer." + bibid + "_" + vid + ".CSS_File"] != null)
+                css_file = Context.SessionObject()["Edit_TEI_mySobekViewer." + bibid + "_" + vid + ".CSS_File"] as string;
+            if (Context.SessionObject()["Edit_TEI_mySobekViewer." + bibid + "_" + vid + ".Original_TEI_File"] != null)
+                original_tei_file = Context.SessionObject()["Edit_TEI_mySobekViewer." + bibid + "_" + vid + ".Original_TEI_File"] as string;
 
             // Pull the current item beig edited
             editingItem = null;
-            if (HttpContext.Current.Session["Edit_TEI_mySobekViewer." + bibid + "_" + vid + ".New_Item"] != null)
-                editingItem = HttpContext.Current.Session["Edit_TEI_mySobekViewer." + bibid + "_" + vid + ".New_Item"] as SobekCM_Item;
+            if (Context.SessionObject()["Edit_TEI_mySobekViewer." + bibid + "_" + vid + ".New_Item"] != null)
+                editingItem = Context.SessionObject()["Edit_TEI_mySobekViewer." + bibid + "_" + vid + ".New_Item"] as SobekCM_Item;
             
             // If any are null or blank, pull from the item
             if ((String.IsNullOrEmpty(mapping_file)) || (String.IsNullOrEmpty(xslt_file)) || (String.IsNullOrEmpty(original_tei_file)) || (editingItem == null))
@@ -214,7 +214,7 @@ namespace SobekCM.Library.MySobekViewer
                 {
                     editingItem = currentItem;
                     editingItem.Source_Directory = userInProcessDirectory;
-                    HttpContext.Current.Session["Edit_TEI_mySobekViewer." + bibid + "_" + vid + ".New_Item"] = editingItem;
+                    Context.SessionObject()["Edit_TEI_mySobekViewer." + bibid + "_" + vid + ".New_Item"] = editingItem;
                 }
 
                 // Settings SHOULD not be null
@@ -238,10 +238,10 @@ namespace SobekCM.Library.MySobekViewer
                         original_tei_file = settingDictionary["TEI.Source_File"];
 
                     // Now, save all these
-                    HttpContext.Current.Session["Edit_TEI_mySobekViewer." + bibid + "_" + vid + ".Mapping_File"] = mapping_file;
-                    HttpContext.Current.Session["Edit_TEI_mySobekViewer." + bibid + "_" + vid + ".XSLT_File"] = xslt_file;
-                    HttpContext.Current.Session["Edit_TEI_mySobekViewer." + bibid + "_" + vid + ".CSS_File"] = css_file;
-                    HttpContext.Current.Session["Edit_TEI_mySobekViewer." + bibid + "_" + vid + ".Original_TEI_File"] = original_tei_file;
+                    Context.SessionObject()["Edit_TEI_mySobekViewer." + bibid + "_" + vid + ".Mapping_File"] = mapping_file;
+                    Context.SessionObject()["Edit_TEI_mySobekViewer." + bibid + "_" + vid + ".XSLT_File"] = xslt_file;
+                    Context.SessionObject()["Edit_TEI_mySobekViewer." + bibid + "_" + vid + ".CSS_File"] = css_file;
+                    Context.SessionObject()["Edit_TEI_mySobekViewer." + bibid + "_" + vid + ".Original_TEI_File"] = original_tei_file;
                 }
             }
 
@@ -323,17 +323,17 @@ namespace SobekCM.Library.MySobekViewer
                         if (thisKey.IndexOf("mapping_select") == 0)
                         {
                             mapping_file = HttpContext.Current.Request.Form[thisKey];
-                            HttpContext.Current.Session["Edit_TEI_mySobekViewer." + bibid + "_" + vid + ".Mapping_File"] = mapping_file;
+                            Context.SessionObject()["Edit_TEI_mySobekViewer." + bibid + "_" + vid + ".Mapping_File"] = mapping_file;
                         }
                         if (thisKey.IndexOf("xslt_select") == 0)
                         {
                             xslt_file = HttpContext.Current.Request.Form[thisKey];
-                            HttpContext.Current.Session["Edit_TEI_mySobekViewer." + bibid + "_" + vid + ".XSLT_File"] = xslt_file;
+                            Context.SessionObject()["Edit_TEI_mySobekViewer." + bibid + "_" + vid + ".XSLT_File"] = xslt_file;
                         }
                         if (thisKey.IndexOf("css_select") == 0)
                         {
                             css_file = HttpContext.Current.Request.Form[thisKey];
-                            HttpContext.Current.Session["Edit_TEI_mySobekViewer." + bibid + "_" + vid + ".CSS_File"] = css_file;
+                            Context.SessionObject()["Edit_TEI_mySobekViewer." + bibid + "_" + vid + ".CSS_File"] = css_file;
                         }
                     }
                 }
@@ -394,11 +394,11 @@ namespace SobekCM.Library.MySobekViewer
                     }
 
                     // Clear all the information in memory
-                    HttpContext.Current.Session["Edit_TEI_mySobekViewer." + bibid + "_" + vid + ".New_Item"] = null;
-                    HttpContext.Current.Session["Edit_TEI_mySobekViewer." + bibid + "_" + vid + ".Mapping_File"] = null;
-                    HttpContext.Current.Session["Edit_TEI_mySobekViewer." + bibid + "_" + vid + ".XSLT_File"] = null;
-                    HttpContext.Current.Session["Edit_TEI_mySobekViewer." + bibid + "_" + vid + ".CSS_File"] = null;
-                    HttpContext.Current.Session["Edit_TEI_mySobekViewer." + bibid + "_" + vid + ".Original_TEI_File"] = null;
+                    Context.SessionObject()["Edit_TEI_mySobekViewer." + bibid + "_" + vid + ".New_Item"] = null;
+                    Context.SessionObject()["Edit_TEI_mySobekViewer." + bibid + "_" + vid + ".Mapping_File"] = null;
+                    Context.SessionObject()["Edit_TEI_mySobekViewer." + bibid + "_" + vid + ".XSLT_File"] = null;
+                    Context.SessionObject()["Edit_TEI_mySobekViewer." + bibid + "_" + vid + ".CSS_File"] = null;
+                    Context.SessionObject()["Edit_TEI_mySobekViewer." + bibid + "_" + vid + ".Original_TEI_File"] = null;
 
 
                     // Clear any temporarily assigned current project and CompleteTemplate
@@ -460,7 +460,7 @@ namespace SobekCM.Library.MySobekViewer
                         // Save to the item
                         completeTemplate.Save_To_Bib(editingItem, RequestSpecificValues.Current_User, currentProcessStep - 4);
                         editingItem.Save_METS();
-                        HttpContext.Current.Session["Edit_TEI_mySobekViewer." + bibid + "_" + vid + ".New_Item"] = editingItem;
+                        Context.SessionObject()["Edit_TEI_mySobekViewer." + bibid + "_" + vid + ".New_Item"] = editingItem;
                     }
 
                     // For now, just forward to the next phase
@@ -720,11 +720,11 @@ namespace SobekCM.Library.MySobekViewer
             }
 
             // Also clear some values from the session
-            HttpContext.Current.Session["Edit_TEI_Item_MySobekViewer." + bibid + "_" + vid + ".Mapping_File"] = null;
-            HttpContext.Current.Session["Edit_TEI_Item_MySobekViewer." + bibid + "_" + vid + ".XSLT_File"] = null;
-            HttpContext.Current.Session["Edit_TEI_Item_MySobekViewer." + bibid + "_" + vid + ".CSS_File"] = null;
-            HttpContext.Current.Session["Edit_TEI_Item_MySobekViewer." + bibid + "_" + vid + ".Original_TEI_File"] = null;
-            HttpContext.Current.Session["Edit_TEI_mySobekViewer." + bibid + "_" + vid + ".New_Item"] = null;
+            Context.SessionObject()["Edit_TEI_Item_MySobekViewer." + bibid + "_" + vid + ".Mapping_File"] = null;
+            Context.SessionObject()["Edit_TEI_Item_MySobekViewer." + bibid + "_" + vid + ".XSLT_File"] = null;
+            Context.SessionObject()["Edit_TEI_Item_MySobekViewer." + bibid + "_" + vid + ".CSS_File"] = null;
+            Context.SessionObject()["Edit_TEI_Item_MySobekViewer." + bibid + "_" + vid + ".Original_TEI_File"] = null;
+            Context.SessionObject()["Edit_TEI_mySobekViewer." + bibid + "_" + vid + ".New_Item"] = null;
 
             if (!criticalErrorEncountered)
             {
@@ -1262,7 +1262,7 @@ namespace SobekCM.Library.MySobekViewer
                             editingItem.Bib_Info.Main_Title.Title = original_title;
 
                         editingItem.Save_METS();
-                        HttpContext.Current.Session["Edit_TEI_mySobekViewer." + bibid + "_" + vid + ".New_Item"] = editingItem;
+                        Context.SessionObject()["Edit_TEI_mySobekViewer." + bibid + "_" + vid + ".New_Item"] = editingItem;
 
                     }
 
@@ -1273,7 +1273,7 @@ namespace SobekCM.Library.MySobekViewer
                 }
 
                 // Save this as the editing item
-                HttpContext.Current.Session["Edit_TEI_mySobekViewer." + bibid + "_" + vid + ".New_Item"] = editingItem;
+                Context.SessionObject()["Edit_TEI_mySobekViewer." + bibid + "_" + vid + ".New_Item"] = editingItem;
 
 
                 Output.WriteLine("<div class=\"sbkMySobek_HomeText\" >");

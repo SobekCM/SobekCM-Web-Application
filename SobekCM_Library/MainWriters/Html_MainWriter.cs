@@ -178,11 +178,11 @@ namespace SobekCM.Library.MainWriters
 
                             builder.Append("\n\nHISTORY\n");
                             if (Context.Session.GetString("LastSearch") != null)
-                                builder.Append("\tLast Search:\t\t" + HttpContext.Current.Session["LastSearch"] + "\n");
-                            if (HttpContext.Current.Session["LastResults"] != null)
-                                builder.Append("\tLast Results:\t\t" + HttpContext.Current.Session["LastResults"] + "\n");
-                            if (HttpContext.Current.Session["Last_Mode"] != null)
-                                builder.Append("\tLast Mode:\t\t\t" + HttpContext.Current.Session["Last_Mode"] + "\n");
+                                builder.Append("\tLast Search:\t\t" + Context.SessionObject()["LastSearch"] + "\n");
+                            if (Context.SessionObject()["LastResults"] != null)
+                                builder.Append("\tLast Results:\t\t" + Context.SessionObject()["LastResults"] + "\n");
+                            if (Context.SessionObject()["Last_Mode"] != null)
+                                builder.Append("\tLast Mode:\t\t\t" + Context.SessionObject()["Last_Mode"] + "\n");
                             builder.Append("\tURL:\t\t\t\t" + HttpContext.Current.Items["Original_URL"]);
                         }
                         catch
@@ -317,7 +317,7 @@ namespace SobekCM.Library.MainWriters
                     SobekCM_Traced_Exception newException = new SobekCM_Traced_Exception("Exception caught while building the mode-specific HTML Subwriter", ee, RequestSpecificValues.Tracer);
 
                     // Save this to the session state, and then forward to the dashboard
-                    HttpContext.Current.Session["Last_Exception"] = newException;
+                    Context.SessionObject()["Last_Exception"] = newException;
                     HttpContext.Current.Response.Redirect("dashboard.aspx", false);
                     RequestSpecificValues.Current_Mode.Request_Completed = true;
                 }
@@ -480,7 +480,7 @@ namespace SobekCM.Library.MainWriters
                     {
                         // Make sure the corresponding 'search' is the latest
                         RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Search;
-                        HttpContext.Current.Session["LastSearch"] = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+                        Context.SessionObject()["LastSearch"] = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
                         RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Results;
 
                         // Add the controls
@@ -800,23 +800,23 @@ namespace SobekCM.Library.MainWriters
             // from a previous action
             if (!RequestSpecificValues.Current_Mode.isPostBack)
             {
-                if ((HttpContext.Current.Session["ON_LOAD_MESSAGE"] != null) || (HttpContext.Current.Session["ON_LOAD_WINDOW"] != null))
+                if ((Context.SessionObject()["ON_LOAD_MESSAGE"] != null) || (Context.SessionObject()["ON_LOAD_WINDOW"] != null))
                 {
                     // ENsure the body attributes list is not null
                     if (bodyAttributes == null)
                         bodyAttributes = new List<Tuple<string, string>>();
 
                     // Handle the previously saved actions
-                    if (HttpContext.Current.Session["ON_LOAD_MESSAGE"] != null)
+                    if (Context.SessionObject()["ON_LOAD_MESSAGE"] != null)
                     {
-                        string on_load_message = HttpContext.Current.Session["ON_LOAD_MESSAGE"].ToString();
+                        string on_load_message = Context.SessionObject()["ON_LOAD_MESSAGE"].ToString();
                         if (on_load_message.Length > 0)
                             bodyAttributes.Add(new Tuple<string, string>("onload", "alert('" + on_load_message + "');"));
                         HttpContext.Current.Session.Remove("ON_LOAD_MESSAGE");
                     }
-                    if (HttpContext.Current.Session["ON_LOAD_WINDOW"] != null)
+                    if (Context.SessionObject()["ON_LOAD_WINDOW"] != null)
                     {
-                        string on_load_window = HttpContext.Current.Session["ON_LOAD_WINDOW"].ToString();
+                        string on_load_window = Context.SessionObject()["ON_LOAD_WINDOW"].ToString();
                         if (on_load_window.Length > 0)
                             bodyAttributes.Add(new Tuple<string, string>("onload", "window.open('" + on_load_window + "', 'new_" + DateTime.Now.Millisecond + "');"));
                         HttpContext.Current.Session.Remove("ON_LOAD_WINDOW");
@@ -950,8 +950,8 @@ namespace SobekCM.Library.MainWriters
                 if (( subwriter.Include_Internal_Header ) && ( !behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Suppress_Internal_Header)))
                 {
                     string return_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
-                    if ((HttpContext.Current != null) && (HttpContext.Current.Session["Original_URL"] != null))
-                        return_url = HttpContext.Current.Session["Original_URL"].ToString();
+                    if ((HttpContext.Current != null) && (Context.SessionObject()["Original_URL"] != null))
+                        return_url = Context.SessionObject()["Original_URL"].ToString();
 
                     Output.WriteLine("<!-- Start the internal header -->");
                     Output.WriteLine("<form name=\"internalHeaderForm\" method=\"post\" action=\"" + return_url + "\" id=\"internalHeaderForm\"> ");
@@ -961,7 +961,7 @@ namespace SobekCM.Library.MainWriters
                     Output.WriteLine();
 
                     // Is the header currently hidden?
-                    if (HttpContext.Current != null && ((HttpContext.Current.Session["internal_header"] != null) && (HttpContext.Current.Session["internal_header"].ToString() == "hidden")))
+                    if (HttpContext.Current != null && ((Context.SessionObject()["internal_header"] != null) && (Context.SessionObject()["internal_header"].ToString() == "hidden")))
                     {
                         Output.WriteLine("  <table cellspacing=\"0\" id=\"internalheader\">");
                         Output.WriteLine("    <tr>");

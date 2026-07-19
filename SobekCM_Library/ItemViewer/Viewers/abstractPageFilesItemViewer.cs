@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using Microsoft.AspNetCore.Http;
 using SobekCM.Core.BriefItem;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Users;
@@ -28,6 +29,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
         /// <summary> Current user, which can help determine how things should display </summary>
         protected User_Object CurrentUser;
+
+        /// <summary> HTTP context for the current request, set by Item_HtmlSubwriter after creation </summary>
+        public HttpContext Context { get; set; }
 
         /// <summary> Empty list of behaviors, returned by default </summary>
         /// <remarks> This just prevents an empty set from having to be created over and over </remarks>

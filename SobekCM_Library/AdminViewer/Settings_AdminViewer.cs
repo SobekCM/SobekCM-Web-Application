@@ -225,13 +225,13 @@ namespace SobekCM.Library.AdminViewer
 			}
 
 			// Load the settings either from the local session, or from the engine
-			currSettings = HttpContext.Current.Session["Admin_Settings"] as Admin_Setting_Collection;
+			currSettings = Context.SessionObject()["Admin_Settings"] as Admin_Setting_Collection;
 			if (currSettings == null)
 			{
 				currSettings = SobekEngineClient.Admin.Get_Admin_Settings(RequestSpecificValues.Tracer);
 				if (currSettings != null)
 				{
-					HttpContext.Current.Session["Admin_Settigs"] = currSettings;
+					Context.SessionObject()["Admin_Settigs"] = currSettings;
 
 					// Build the setting values
 					build_setting_objects_for_display();

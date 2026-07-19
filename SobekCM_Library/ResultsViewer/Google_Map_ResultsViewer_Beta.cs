@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using System;
 using System.Collections.Generic;
@@ -55,7 +55,7 @@ namespace SobekCM.Library.ResultsViewer
             //}
             ////finish processing msrkeyhash and store
             //MSRKeyHashSpecial = Convert.ToInt32(MSRKeyHashSpecial * aggregationIds.Length);
-            //HttpContext.Current.Session["MapSearchResultsKey"] = "MapSearchResults_" + MSRKeyHashSpecial.ToString();
+            //Context.SessionObject()["MapSearchResultsKey"] = "MapSearchResults_" + MSRKeyHashSpecial.ToString();
         }
         
         /// <summary> Adds the controls for this result viewer to the place holder on the main form </summary>
@@ -88,7 +88,7 @@ namespace SobekCM.Library.ResultsViewer
             mapSearchBuilder.AppendLine("     <script type=\"text/javascript\"> ");
             mapSearchBuilder.AppendLine("       function initServerToClientVars(){ ");
             mapSearchBuilder.AppendLine("         baseURL = \"" + RequestSpecificValues.Current_Mode.Base_URL + "\"; ");
-            //mapSearchBuilder.AppendLine("         MSRKey = \"" + HttpContext.Current.Session["MapSearchResultsKey"] + "\"; ");
+            //mapSearchBuilder.AppendLine("         MSRKey = \"" + Context.SessionObject()["MapSearchResultsKey"] + "\"; ");
             mapSearchBuilder.AppendLine("       } ");
             mapSearchBuilder.AppendLine("  ");
             //ADD EXISTING POINTS WITH JSON
@@ -129,9 +129,9 @@ namespace SobekCM.Library.ResultsViewer
             //get fids
             
             //old
-            if (HttpContext.Current.Session["FIDKey"] == null)
-                HttpContext.Current.Session["FIDKey"] = ""; //init
-            string FIDKey = HttpContext.Current.Session["FIDKey"].ToString();
+            if (Context.SessionObject()["FIDKey"] == null)
+                Context.SessionObject()["FIDKey"] = ""; //init
+            string FIDKey = Context.SessionObject()["FIDKey"].ToString();
             List<string> FIDs = (List<string>)HttpContext.Current.Cache[FIDKey];
             List<string> temp_FIDs = new List<string>();
             foreach (string FID in FIDs)
@@ -165,7 +165,7 @@ namespace SobekCM.Library.ResultsViewer
             }
             //finish processing msrkeyhash and store
             MSRKeyHashSpecial = Convert.ToInt32(MSRKeyHashSpecial * aggregationIds.Length);
-            HttpContext.Current.Session["MapSearchResultsKey"] = "MapSearchResults_" + MSRKeyHashSpecial.ToString();
+            Context.SessionObject()["MapSearchResultsKey"] = "MapSearchResults_" + MSRKeyHashSpecial.ToString();
             
             #endregion
 
@@ -203,7 +203,7 @@ namespace SobekCM.Library.ResultsViewer
             displaySearchResults.Columns.Add("Point_Longitude", typeof(string));
             
             //check to see if we already have msr in cache, else get a new msr
-            string MSRKey = HttpContext.Current.Session["MapSearchResultsKey"].ToString();
+            string MSRKey = Context.SessionObject()["MapSearchResultsKey"].ToString();
             if (HttpContext.Current.Cache[MSRKey] == null)
             {
                 #region Create New MSR
@@ -480,9 +480,9 @@ namespace SobekCM.Library.ResultsViewer
             tempDSR.Columns.Add("Point_Latitude", typeof(string));
             tempDSR.Columns.Add("Point_Longitude", typeof(string));
             //get original SR
-            //if (HttpContext.Current.Session["MapSearchResultsKey"] == null)
+            //if (Context.SessionObject()["MapSearchResultsKey"] == null)
             
-            string MSRKey = HttpContext.Current.Session["MapSearchResultsKey"].ToString();
+            string MSRKey = Context.SessionObject()["MapSearchResultsKey"].ToString();
             
             DataTable SR = new DataTable();
             SR = HttpContext.Current.Cache[MSRKey] as DataTable;

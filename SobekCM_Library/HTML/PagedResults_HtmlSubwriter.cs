@@ -229,8 +229,8 @@ namespace SobekCM.Library.HTML
 				else
 				{
 					string user_view = "default";
-					if (HttpContext.Current.Session["User_Default_View"] != null)
-						user_view = HttpContext.Current.Session["User_Default_View"].ToString();
+					if (Context.SessionObject()["User_Default_View"] != null)
+						user_view = Context.SessionObject()["User_Default_View"].ToString();
 					RequestSpecificValues.Current_Mode.Result_Display_Type = hierarchyObject.Default_Result_View;
 				    if ((!String.IsNullOrEmpty(user_view)) && (!String.Equals(user_view, "default", StringComparison.OrdinalIgnoreCase)))
 				    {

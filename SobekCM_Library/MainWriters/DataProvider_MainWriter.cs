@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
-using System.Web;
+using Microsoft.AspNetCore.Http;
 using SobekCM.Core.Navigation;
 using SobekCM.Tools;
 
@@ -18,9 +18,10 @@ namespace SobekCM.Library.MainWriters
 	/// <remarks> This class extends the abstract class <see cref="abstractMainWriter"/>. </remarks>
 	public class DataProvider_MainWriter : abstractMainWriter 
 	{
-		/// <summary> Constructor for a new instance of the DataProvider_MainWriter class </summary>
+        /// <summary> Constructor for a new instance of the DataProvider_MainWriter class </summary>
+        /// <param name="Context"> Context for this individual HTTP request </param>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
-        public DataProvider_MainWriter(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
+        public DataProvider_MainWriter(HttpContext Context, RequestCache RequestSpecificValues) : base(Context, RequestSpecificValues)
 		{
 			// All work done in base class
 		}

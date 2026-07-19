@@ -305,49 +305,49 @@ namespace SobekCM
 
             if ((currentMode.Writer_Type == Writer_Type_Enum.HTML) || (currentMode.Writer_Type == Writer_Type_Enum.HTML_LoggedIn))
             {
-                mainWriter = new Html_MainWriter(requestSpecificValues);
+                mainWriter = new Html_MainWriter(context, requestSpecificValues);
             }
 
 			// Load the OAI writer
 			if (currentMode.Writer_Type == Writer_Type_Enum.OAI)
 			{
-                mainWriter = new Oai_MainWriter(requestSpecificValues.QueryString, requestSpecificValues);
+                mainWriter = new Oai_MainWriter(context, requestSpecificValues.QueryString, requestSpecificValues);
 			}
 
 			// Load the DataSet writer
 			if (currentMode.Writer_Type == Writer_Type_Enum.DataSet)
 			{
-                mainWriter = new Dataset_MainWriter(requestSpecificValues);
+                mainWriter = new Dataset_MainWriter(context, requestSpecificValues);
 			}
 
 			// Load the DataProvider writer
 			if (currentMode.Writer_Type == Writer_Type_Enum.Data_Provider)
 			{
-                mainWriter = new DataProvider_MainWriter(requestSpecificValues);
+                mainWriter = new DataProvider_MainWriter(context, requestSpecificValues);
 			}
 
 			// Load the XML writer
 			if (currentMode.Writer_Type == Writer_Type_Enum.XML)
 			{
-                mainWriter = new Xml_MainWriter(requestSpecificValues);
+                mainWriter = new Xml_MainWriter(context, requestSpecificValues);
 			}
 
 			// Load the JSON writer
 			if (currentMode.Writer_Type == Writer_Type_Enum.JSON)
 			{
-                mainWriter = new Json_MainWriter(requestSpecificValues, UI_ApplicationCache_Gateway.Settings.Servers.Image_URL);
+                mainWriter = new Json_MainWriter(context, requestSpecificValues, UI_ApplicationCache_Gateway.Settings.Servers.Image_URL);
 			}
 
 			// Load the HTML ECHO writer
 			if (currentMode.Writer_Type == Writer_Type_Enum.HTML_Echo)
 			{
-                mainWriter = new Html_Echo_MainWriter(requestSpecificValues, browse_info_display_text);
+                mainWriter = new Html_Echo_MainWriter(context, requestSpecificValues, browse_info_display_text);
 			}
 
 			// Default to HTML
 			if (mainWriter == null)
 			{
-                mainWriter = new Html_MainWriter(requestSpecificValues);
+                mainWriter = new Html_MainWriter(context, requestSpecificValues);
 			}
 		}
 

@@ -2,6 +2,7 @@
 
 using System;
 using System.IO;
+using Microsoft.AspNetCore.Http;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Results;
 using SobekCM.Library.UI;
@@ -17,7 +18,7 @@ namespace SobekCM.Library.MainWriters
     {
         /// <summary> Constructor for a new instance of the Xml_MainWriter class </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
-        public Xml_MainWriter(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
+        public Xml_MainWriter(HttpContext Context, RequestCache RequestSpecificValues) : base(Context, RequestSpecificValues)
         {
             // All work done in the base constructor
         }

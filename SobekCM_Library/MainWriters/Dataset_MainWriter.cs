@@ -1,6 +1,7 @@
 #region Using directives
 
 using System.IO;
+using Microsoft.AspNetCore.Http;
 using SobekCM.Core.Navigation;
 using SobekCM.Tools;
 
@@ -15,8 +16,9 @@ namespace SobekCM.Library.MainWriters
     public class Dataset_MainWriter : abstractMainWriter
     {
         /// <summary> Constructor for a new instance of the Dataset_MainWriter class </summary>
+        /// <param name="Context"> Context for this individual HTTP request </param>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
-        public Dataset_MainWriter(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
+        public Dataset_MainWriter(HttpContext Context, RequestCache RequestSpecificValues) : base(Context, RequestSpecificValues)
    
         {
             // All work done in base class

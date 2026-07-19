@@ -1,6 +1,7 @@
 ﻿#region Using directives
 
 using System.IO;
+using Microsoft.AspNetCore.Http;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.UI_Configuration;
 using SobekCM.Core.UI_Configuration.StaticResources;
@@ -19,9 +20,10 @@ namespace SobekCM.Library.MainWriters
         private readonly string fileToEcho;
 
         /// <summary> Constructor for a new instance of the Text_MainWriter class </summary>
+        /// <param name="Context"> Context for this individual HTTP request </param>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
         /// <param name="HTML_File_To_Echo"> The HTML file to echo </param>
-        public Html_Echo_MainWriter(RequestCache RequestSpecificValues, string HTML_File_To_Echo) : base(RequestSpecificValues)
+        public Html_Echo_MainWriter(HttpContext Context, RequestCache RequestSpecificValues, string HTML_File_To_Echo) : base(Context, RequestSpecificValues)
         {
             fileToEcho = HTML_File_To_Echo;
         }

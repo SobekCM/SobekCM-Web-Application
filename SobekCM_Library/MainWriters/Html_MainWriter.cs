@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using System.Web;
+using Microsoft.AspNetCore.Http;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Skins;
 using SobekCM.Core.UI_Configuration;
@@ -27,9 +27,10 @@ namespace SobekCM.Library.MainWriters
         // Special HTML sub-writers that need to have some persistance between methods
         private readonly abstractHtmlSubwriter subwriter;
 
-	    /// <summary> Constructor for a new instance of the Html_MainWriter class </summary>
+        /// <summary> Constructor for a new instance of the Html_MainWriter class </summary>
+        /// <param name="Context"> Context for this individual HTTP request </param>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
-	    public Html_MainWriter( RequestCache RequestSpecificValues ) : base( RequestSpecificValues )
+        public Html_MainWriter(HttpContext Context, RequestCache RequestSpecificValues ) : base( Context, RequestSpecificValues )
 	    {
             // Add a trace
             RequestSpecificValues.Tracer.Add_Trace("Html_MainWriter.Constructor","");

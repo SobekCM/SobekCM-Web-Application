@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Microsoft.AspNetCore.Http;
 using SobekCM.Core.Client;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Results;
@@ -28,9 +29,10 @@ namespace SobekCM.Library.MainWriters
         private readonly string currentGreenstoneImageRoot = String.Empty;
 
         /// <summary> Constructor for a new instance of the Json_MainWriter class </summary>
+        /// <param name="Context"> Context for this individual HTTP request </param>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
         /// <param name="Current_Image_Root"> Current root directory to pull images and metadata for digital resources </param>
-        public Json_MainWriter(RequestCache RequestSpecificValues, string Current_Image_Root) : base(RequestSpecificValues)        
+        public Json_MainWriter(HttpContext Context,RequestCache RequestSpecificValues, string Current_Image_Root) : base(Context, RequestSpecificValues)        
         {
             currentGreenstoneImageRoot = Current_Image_Root;
         }

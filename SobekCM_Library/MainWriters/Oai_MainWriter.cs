@@ -7,7 +7,7 @@ using System.Data;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Web;
+using Microsoft.AspNetCore.Http;
 using SobekCM.Core.Configuration;
 using SobekCM.Core.Configuration.OAIPMH;
 using SobekCM.Core.Navigation;
@@ -43,10 +43,10 @@ namespace SobekCM.Library.MainWriters
         private List<string> metadataPrefixes;
 
         /// <summary> Constructor for a new instance of the Oai_MainWriter class </summary>
+        /// <param name="Context"> Context for this individual HTTP request </param>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
         /// <param name="Query_String"> URL Query string to parse for OAI-PMH verbs and other values </param>
-        public Oai_MainWriter(Dictionary<string, string> Query_String, RequestCache RequestSpecificValues) : base(RequestSpecificValues)
-   
+        public Oai_MainWriter(HttpContext Context, Dictionary<string, string> Query_String, RequestCache RequestSpecificValues) : base(Context, RequestSpecificValues)   
         {
             // Build list of valid arguments
             validArgs = new List<string>
@@ -67,7 +67,7 @@ namespace SobekCM.Library.MainWriters
             queryString = Query_String;
 
             // Set the response type
-            HttpContext.Current.Response.ContentType = "text/xml";
+            Context.Response.ContentType = "text/xml";
 
             // Determine some global settings
             if (UI_ApplicationCache_Gateway.Configuration.OAI_PMH != null)

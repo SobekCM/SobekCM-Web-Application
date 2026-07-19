@@ -1,6 +1,7 @@
 #region Using directives
 
 using System.IO;
+using Microsoft.AspNetCore.Http;
 using SobekCM.Core.Navigation;
 using SobekCM.Tools;
 
@@ -14,15 +15,21 @@ namespace SobekCM.Library.MainWriters
         /// <summary> Protected field contains the information specific to the current request </summary>
         protected RequestCache RequestSpecificValues;
 
+        /// <summary> Context for this individual HTTP request </summary>
+        protected HttpContext Context;
+
         /// <summary> Constructor for a new instance of the abstractMainWriter abstract class </summary>
+        /// <param name="Context"> Context for this individual HTTP request </param>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
-        protected abstractMainWriter( RequestCache RequestSpecificValues )
+        protected abstractMainWriter(HttpContext Context, RequestCache RequestSpecificValues )
         {
+            this.Context = Context;
             this.RequestSpecificValues = RequestSpecificValues;
         }
 
         /// <summary> Gets the enumeration of the type of main writer </summary>
         public abstract Writer_Type_Enum Writer_Type { get; }
+
 
         /// <summary> Returns a flag indicating whether the navigation form should be included in the page </summary>
         /// <value> This value can be override by child classes, but by default this returns FALSE </value>

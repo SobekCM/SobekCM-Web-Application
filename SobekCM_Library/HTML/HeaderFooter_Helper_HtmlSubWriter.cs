@@ -295,7 +295,7 @@ namespace SobekCM.Library.HTML
             banner = "<!-- banner start -->\r\n" + banner + "<!-- banner end -->\r\n";
 
             // Get the session id and user id
-            string sessionId = Context.Session.SessionID ?? String.Empty;
+            string sessionId = Context.Session.Id;
             string userid = ((RequestSpecificValues.Current_User != null) && (RequestSpecificValues.Current_User.UserID > 0)) ? RequestSpecificValues.Current_User.UserID.ToString() : String.Empty;
 
             // Add the appropriate header
@@ -431,7 +431,7 @@ namespace SobekCM.Library.HTML
                 version = version.Split(" ".ToCharArray())[0];
 
             // Get the session id
-            string sessionId = Context.Session.SessionID ?? String.Empty;
+            string sessionId = Context.Session.Id;
             string userid = ((RequestSpecificValues.Current_User != null) && (RequestSpecificValues.Current_User.UserID > 0)) ? RequestSpecificValues.Current_User.UserID.ToString() : String.Empty;
 
             StringBuilder footerBuilder = new StringBuilder();

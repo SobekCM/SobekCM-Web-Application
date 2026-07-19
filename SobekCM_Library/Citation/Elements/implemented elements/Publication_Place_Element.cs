@@ -97,7 +97,7 @@ namespace SobekCM.Library.Citation.Elements
         {
             // First collect all the places
             var getKeys = Context.Request.Form.Keys;
-            List<string> publication_places = getKeys.Where(thisKey => thisKey.IndexOf(html_element_name) == 0).Select(thisKey => Context.Request.Form[thisKey]).Where(place_temp => place_temp.TrimFirst().Length > 0).ToList();
+            List<string> publication_places = getKeys.Where(thisKey => thisKey.IndexOf(html_element_name) == 0).Select(thisKey => Context.Request.Form[thisKey]).Where(place_temp => place_temp.TrimFirst().Length > 0).Select(place_temp => place_temp.ToString()).ToList();
 
             // If no places, done
             if (publication_places.Count == 0)

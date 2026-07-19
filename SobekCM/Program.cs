@@ -113,16 +113,16 @@ namespace SobekCM
                 await UploadiFive_Upload_Handler(context);
             });
 
-            // ── Map search callback (replaces CallBacks.aspx WebMethod) ──────────────
-            app.MapPost("/default/callbacks/callbacks.aspx/MapSearch", async (HttpContext context) =>
-            {
-                string sendData = "";
-                using var reader = new StreamReader(context.Request.Body);
-                sendData = await reader.ReadToEndAsync();
-                SobekCM_Database.Connection_String = UI_ApplicationCache_Gateway.Settings.Database_Connection.Connection_String;
-                object result = Google_Map_ResultsViewer.Process_MapSearch_Callback(sendData);
-                await context.Response.WriteAsJsonAsync(result);
-            });
+            //// ── Map search callback (replaces CallBacks.aspx WebMethod) ──────────────
+            //app.MapPost("/default/callbacks/callbacks.aspx/MapSearch", async (HttpContext context) =>
+            //{
+            //    string sendData = "";
+            //    using var reader = new StreamReader(context.Request.Body);
+            //    sendData = await reader.ReadToEndAsync();
+            //    SobekCM_Database.Connection_String = UI_ApplicationCache_Gateway.Settings.Database_Connection.Connection_String;
+            //    object result = Google_Map_ResultsViewer.Process_MapSearch_Callback(sendData);
+            //    await context.Response.WriteAsJsonAsync(result);
+            //});
 
             // ── Dashboard (replaces Dashboard.aspx) ──────────────────────────────────
             app.Map("/dashboard.aspx", async (HttpContext context) =>
@@ -495,8 +495,9 @@ namespace SobekCM
 
                 if (!string.IsNullOrEmpty(tokenObj.ReturnToken))
                 {
-                    string existing = webSession[tokenObj.ReturnToken] as string;
-                    webSession[tokenObj.ReturnToken] = string.IsNullOrEmpty(existing) ? filename : existing + "|" + filename;
+                    string existing = context.Session.GetString(tokenObj.ReturnToken);
+                    string newToken = string.IsNullOrEmpty(existing) ? filename : existing + "|" + filename;
+                    context.Session.SetString(tokenObj.ReturnToken, newToken);
                 }
 
                 context.Response.StatusCode = 200;

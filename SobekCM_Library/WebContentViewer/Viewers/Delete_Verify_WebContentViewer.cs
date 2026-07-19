@@ -56,7 +56,7 @@ namespace SobekCM.Library.WebContentViewer.Viewers
                 errorMessage = "ERROR: You do not have permission to delete this page";
                 canDelete = false;
             }
-            else if ( HttpContext.Current.Request.RequestType == "POST" )
+            else if ( Context.Request.Method == "POST" )
             {
                 string save_value = Context.Request.Form["admin_delete_item"];
 
@@ -125,7 +125,7 @@ namespace SobekCM.Library.WebContentViewer.Viewers
             }
 
             // Start the form
-            string return_url = (RequestSpecificValues.Current_Mode.Base_URL + HttpContext.Current.Request.RawUrl).Replace("//", "/").Replace("http:/", "http://");
+            string return_url = (RequestSpecificValues.Current_Mode.Base_URL + Context.Items["Original_URL"]).Replace("//", "/").Replace("http:/", "http://");
             Output.WriteLine("<form name=\"itemNavForm\" method=\"post\" action=\"" + return_url + "\" id=\"itemNavForm\">");
 
             // Add the hidden field

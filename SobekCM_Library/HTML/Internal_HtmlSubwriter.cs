@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data;
 using System.IO;
+using System.Linq;
 using Microsoft.AspNetCore.Http;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.ApplicationState;
@@ -462,8 +463,9 @@ namespace SobekCM.Library.HTML
         {
             Tracer.Add_Trace("Internal_HtmlSubwriter.add_cache_html", "Rendering HTML");
 
-            HttpApplicationState applicationState = HttpContext.Current.Application;
-            var session = HttpContext.Current.Session;
+            SobekCM_Application.ApplicationState applicationState = SobekCM_Application.State;
+            ISession session = Context.Session;
+            List<string> sessionKeys = session.Keys.ToList();
 
             string global_values = "GLOBAL VALUES";
             string application_state = "APPLICATION STATE VALUES";
@@ -672,8 +674,7 @@ namespace SobekCM.Library.HTML
                 try
                 {
                     // Now, get the information from the Session
-                    //	System.Collections.Specialized.NameObjectCollectionBase.KeysCollection sessionkeys = Session.Keys;
-                    if (session.Count == 0)
+                    if (sessionKeys.Count == 0)
                     {
                         Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\" colspan=\"2\"></td></tr>");
                         Output.WriteLine("  <tr align=\"left\">");
@@ -683,13 +684,14 @@ namespace SobekCM.Library.HTML
                     }
                     else
                     {
-                        foreach (string thisKey in session)
+                        foreach (string thisKey in sessionKeys)
                         {
                             // Add this row
+                            session.TryGetValue(thisKey, out byte[] sessionValue);
                             Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\" colspan=\"2\"></td></tr>");
                             Output.WriteLine("  <tr align=\"left\">");
                             Output.WriteLine("    <td>" + thisKey + "</td>");
-                            Output.WriteLine("    <td>" + session[thisKey]?.GetType().FullName + "</td>");
+                            Output.WriteLine("    <td>" + (sessionValue != null ? "byte[" + sessionValue.Length + "]" : "NULL") + "</td>");
                             Output.WriteLine("  </tr>");
                         }
                     }

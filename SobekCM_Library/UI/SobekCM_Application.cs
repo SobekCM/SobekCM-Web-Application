@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using System.Linq;
 
 namespace SobekCM.Library.UI
 {
@@ -20,6 +21,9 @@ namespace SobekCM.Library.UI
                     else _store[key] = value;
                 }
             }
+
+            /// <summary> All keys currently held in the application state store </summary>
+            public string[] AllKeys => _store.Keys.ToArray();
 
             public void RemoveAll() => _store.Clear();
         }

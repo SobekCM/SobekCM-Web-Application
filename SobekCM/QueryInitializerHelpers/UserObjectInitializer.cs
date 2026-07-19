@@ -1,7 +1,4 @@
-﻿using DocumentFormat.OpenXml.InkML;
-using Microsoft.AspNetCore.Http;
-using Microsoft.IdentityModel.Tokens;
-using SobekCM.Core.Configuration.Authentication;
+﻿using Microsoft.AspNetCore.Http;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Users;
@@ -11,9 +8,7 @@ using SobekCM.Library.Database;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
 using System;
-using System.IO;
 using System.Linq;
-using System.Text;
 
 namespace SobekCM.QueryInitializerHelpers
 {
@@ -84,11 +79,8 @@ namespace SobekCM.QueryInitializerHelpers
                         User_Object mirroredUser = Engine_Database.Get_User(userid, tracer);
                         if (mirroredUser != null)
                         {
-                            // Replace the user information in the session state
-                            using var sessionMs = new MemoryStream();
-                            ProtoBuf.Serializer.Serialize(sessionMs, mirroredUser);
-                            context.Session.Set(SessionCache_Keys.User, sessionMs.ToArray());
-                            request.Current_User = mirroredUser; 
+                            context.Session.SetString(SessionCache_Keys.User, CachedDataManager_UserCacheServices.UserToString(mirroredUser));
+                            request.Current_User = mirroredUser;
                         }
                     }
                     catch (Exception)
@@ -133,7 +125,6 @@ namespace SobekCM.QueryInitializerHelpers
 
                 // Delete from memory
                 context.Session.Remove(SessionCache_Keys.User);
-                context.Session.Remove(SessionCache_Keys.UserId);
 
                 // Determine new redirect location
                 string redirect = currentMode.Base_URL;
@@ -150,13 +141,7 @@ namespace SobekCM.QueryInitializerHelpers
             }
 
             // If there is already a user logged on, do nothing here
-            byte[] sessionUserBytes = context.Session.Get(SessionCache_Keys.User);
-            User_Object sessionUser = null;
-            if (sessionUserBytes != null && sessionUserBytes.Length > 0)
-            {
-                using var ms = new MemoryStream(sessionUserBytes);
-                sessionUser = ProtoBuf.Serializer.Deserialize<User_Object>(ms);
-            }
+            User_Object sessionUser = CachedDataManager_UserCacheServices.StringToUser(context.Session.GetString(SessionCache_Keys.User));
 
             if (sessionUser == null)
             {
@@ -191,9 +176,7 @@ namespace SobekCM.QueryInitializerHelpers
                             });
 
                             // Also add user to session
-                            using var sessionMs = new MemoryStream();
-                            ProtoBuf.Serializer.Serialize(sessionMs, sessionUser);
-                            context.Session.Set(SessionCache_Keys.User, sessionMs.ToArray());
+                            context.Session.SetString(SessionCache_Keys.User, CachedDataManager_UserCacheServices.UserToString(sessionUser));
                             request.Current_User = sessionUser;
                         }
                     }

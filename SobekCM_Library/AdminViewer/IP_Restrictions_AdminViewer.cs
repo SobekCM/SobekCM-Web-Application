@@ -1,4 +1,4 @@
-// HTML5 - 10/14
+﻿// HTML5 - 10/14
 
 #region Using directives
 
@@ -9,6 +9,7 @@ using System.IO;
 using System.Linq;
 using Microsoft.AspNetCore.Http;
 using SobekCM.Core.ApplicationState;
+using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.UI_Configuration;
 using SobekCM.Core.UI_Configuration.StaticResources;
@@ -128,7 +129,7 @@ namespace SobekCM.Library.AdminViewer
                             entered_message = String.Empty;
 
                             // Need to recalcualte the IP range membership for the current user
-					        Context.SessionObject()["IP_Range_Membership"] = null;
+					        Context.Session.Remove(SessionCache_Keys.IpRangeMembership);
 					    }
 					    else
 					        actionMessage = "Error saving new IP range '" + entered_title + "'";
@@ -145,7 +146,7 @@ namespace SobekCM.Library.AdminViewer
                         actionMessage = "Deleted IP range '" + delete_title + "'";
 
                         // Need to recalcualte the IP range membership for the current user
-                        Context.SessionObject()["IP_Range_Membership"] = null;
+                        Context.Session.Remove(SessionCache_Keys.IpRangeMembership);
                     }
                     else
                         actionMessage = "Error deleting new IP range '" + delete_title + "'";
@@ -228,7 +229,7 @@ namespace SobekCM.Library.AdminViewer
                         }
 
                         // Need to recalcualte the IP range membership for the current user
-                        Context.SessionObject()["IP_Range_Membership"] = null;
+                        Context.Session.Remove(SessionCache_Keys.IpRangeMembership);
                     }
                     catch (Exception)
                     {

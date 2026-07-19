@@ -67,7 +67,7 @@ namespace SobekCM.Library.AdminViewer
             }
 
 			// Get the wordmark directory and ensure it exists
-			wordmarkDirectory = HttpContext.Current.Server.MapPath("design/wordmarks");
+			wordmarkDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "design", "wordmarks");
 	        if (!Directory.Exists(wordmarkDirectory))
 		        Directory.CreateDirectory(wordmarkDirectory);
 

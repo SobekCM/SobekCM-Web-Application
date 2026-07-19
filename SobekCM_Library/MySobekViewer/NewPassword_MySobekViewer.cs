@@ -1,9 +1,10 @@
-#region Using directives
+﻿#region Using directives
 
 using System;
 using System.Collections.Generic;
 using System.IO;
 using SobekCM.Core.Navigation;
+using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.UI_Configuration.StaticResources;
 using SobekCM.Core.Users;
 using SobekCM.Engine_Library.Configuration;
@@ -45,7 +46,7 @@ namespace SobekCM.Library.MySobekViewer
             validationErrors = new List<string>();
 
             user = RequestSpecificValues.Current_User;
-            registration = (Context.SessionObject()["user"] == null);
+            registration = (Context.Session.GetString(SessionCache_Keys.User) == null);
             if (registration)
                 user = new User_Object();
 

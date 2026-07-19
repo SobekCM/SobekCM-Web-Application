@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.ApplicationState;
 using SobekCM.Core.Client;
@@ -241,8 +240,7 @@ namespace SobekCM
             SobekCM_Traced_Exception newException = new SobekCM_Traced_Exception(response.Message, response.InnerException, tracer);
 
             // Save this to the session state
-            var json = JsonConvert.SerializeObject(newException);
-            context.Session.SetString(SessionCache_Keys.LastException, json);
+            context.SessionObject()[SessionCache_Keys.LastException] = newException;
 
 			// Forward to the dashboard if appropriate
             if (userip == "127.0.0.1" || userip == "::1" || context.Request.Host.ToString().IndexOf("localhost") >= 0)

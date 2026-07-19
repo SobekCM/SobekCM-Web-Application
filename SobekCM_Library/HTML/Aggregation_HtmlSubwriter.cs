@@ -1,4 +1,4 @@
-#region Using directives
+﻿#region Using directives
 
 using System;
 using System.Collections.Generic;
@@ -192,7 +192,7 @@ namespace SobekCM.Library.HTML
                 {
                     SobekCM_Database.User_Set_Aggregation_Home_Page_Flag(RequestSpecificValues.Current_User.UserID, hierarchyObject.ID, true, RequestSpecificValues.Tracer);
                     RequestSpecificValues.Current_User.Set_Aggregation_Home_Page_Flag(hierarchyObject.Code, hierarchyObject.Name, true);
-                    HttpContext.Current.Session.Add("ON_LOAD_MESSAGE", "Added aggregation to your home page");
+                    Context.Session.SetString(SessionCache_Keys.OnLoadMessage, "Added aggregation to your home page");
                 }
 
                 if (( action == "remove_aggregation") && ( RequestSpecificValues.Current_User != null ))
@@ -216,7 +216,7 @@ namespace SobekCM.Library.HTML
 
                     if (RequestSpecificValues.Current_Mode.Home_Type != Home_Type_Enum.Personalized)
                     {
-                        HttpContext.Current.Session.Add("ON_LOAD_MESSAGE", "Removed aggregation from your home page");
+                        Context.Session.SetString(SessionCache_Keys.OnLoadMessage, "Removed aggregation from your home page");
                     }
                 }
 
@@ -245,7 +245,7 @@ namespace SobekCM.Library.HTML
 
                         // Send the email
                         string any_error = URL_Email_Helper.Send_Email(address, cc_list, comments, RequestSpecificValues.Current_User.Full_Name, RequestSpecificValues.Current_Mode.Instance_Abbreviation, is_html_format, Context.Items["Original_URL"].ToString(), hierarchyObject.Name, "Collection", RequestSpecificValues.Current_User.UserID);
-                        HttpContext.Current.Session.Add("ON_LOAD_MESSAGE", any_error.Length > 0 ? any_error : "Your email has been sent");
+                        Context.Session.SetString(SessionCache_Keys.OnLoadMessage, any_error.Length > 0 ? any_error : "Your email has been sent");
 
                         RequestSpecificValues.Current_Mode.isPostBack = true;
 

@@ -1,4 +1,4 @@
-#region Using directives
+﻿#region Using directives
 
 using System;
 using System.Collections.Generic;
@@ -8,6 +8,7 @@ using System.IO;
 using System.Text;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.Configuration.Localization;
+using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Results;
 using SobekCM.Core.Search;
@@ -115,7 +116,7 @@ namespace SobekCM.Library.HTML
 
 							// Send the email
 							string any_error = URL_Email_Helper.Send_Email(address, cc_list, comments, RequestSpecificValues.Current_User.Full_Name, RequestSpecificValues.Current_Mode.Instance_Abbreviation, is_html_format, Context.Items["Original_URL"].ToString(), url_description, list_type, RequestSpecificValues.Current_User.UserID);
-							HttpContext.Current.Session.Add("ON_LOAD_MESSAGE", any_error.Length > 0 ? any_error : "Your email has been sent");
+							Context.Session.SetString(SessionCache_Keys.OnLoadMessage, any_error.Length > 0 ? any_error : "Your email has been sent");
 
 							RequestSpecificValues.Current_Mode.isPostBack = true;
 
@@ -141,14 +142,14 @@ namespace SobekCM.Library.HTML
 						{
 							if (open_searches)
 							{
-								HttpContext.Current.Session.Add("ON_LOAD_WINDOW", "?m=lms");
+								Context.Session.SetString(SessionCache_Keys.OnLoadWindow, "?m=lms");
 							}
 
-							HttpContext.Current.Session.Add("ON_LOAD_MESSAGE", "Search has been saved to your saved searches.");
+							Context.Session.SetString(SessionCache_Keys.OnLoadMessage, "Search has been saved to your saved searches.");
 						}
 						else
 						{
-							HttpContext.Current.Session.Add("ON_LOAD_MESSAGE", "ERROR encountered while saving!");
+							Context.Session.SetString(SessionCache_Keys.OnLoadMessage, "ERROR encountered while saving!");
 						}
 
 						// Do this to force a return trip (cirumnavigate cacheing)
@@ -498,7 +499,7 @@ namespace SobekCM.Library.HTML
 
                 // Load the HTML that can be used to customize the search/results bar
                 string html_source = String.Empty;
-                string fileToRead = HttpContext.Current.Server.MapPath("default/fragments/search_browse_bar.html");
+                string fileToRead = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "default", "fragments", "search_browse_bar.html");
                 if (File.Exists(fileToRead))
                 {
                     html_source = File.ReadAllText(fileToRead);

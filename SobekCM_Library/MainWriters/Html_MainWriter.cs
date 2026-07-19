@@ -1,10 +1,11 @@
-#region Using directives
+﻿#region Using directives
 
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using Microsoft.AspNetCore.Http;
+using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Skins;
 using SobekCM.Core.UI_Configuration;
@@ -77,18 +78,18 @@ namespace SobekCM.Library.MainWriters
                 if ((internalHeaderAction == "hide") || (internalHeaderAction == "show"))
                 {
                     // Pull the current visibility from the session
-                    bool shown = !((Context.Session.GetString("internal_header") != null) && (Context.Session.GetString("internal_header").ToString() == "hidden"));
+                    bool shown = !((Context.Session.GetString(SessionCache_Keys.InternalHeader) != null) && (Context.Session.GetString(SessionCache_Keys.InternalHeader).ToString() == "hidden"));
 
                     if ((internalHeaderAction == "hide") && (shown))
                     {
-                        Context.Session.SetString("internal_header", "hidden");
+                        Context.Session.SetString(SessionCache_Keys.InternalHeader, "hidden");
                         UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
                         return;
                     }
 
                     if ((internalHeaderAction == "show") && (!shown))
                     {
-                        Context.Session.SetString("internal_header", "shown");
+                        Context.Session.SetString(SessionCache_Keys.InternalHeader, "shown");
                         UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
                         return;
                     }
@@ -150,8 +151,8 @@ namespace SobekCM.Library.MainWriters
                         string lastMode = String.Empty;
                         try
                         {
-                            if (Context.Session.GetString("Last_Mode") != null)
-                                lastMode = Context.Session.GetString("Last_Mode").ToString();
+                            if (Context.Session.GetString(SessionCache_Keys.LastMode) != null)
+                                lastMode = Context.Session.GetString(SessionCache_Keys.LastMode);
 
                             builder.Append("\tIP Address:\t\t\t" + (Context.Connection.RemoteIpAddress?.ToString() ?? "") + "\n");
                             builder.Append("\tHost Name:\t\t\t" + (Context.Connection.RemoteIpAddress?.ToString() ?? "") + "\n");
@@ -179,12 +180,12 @@ namespace SobekCM.Library.MainWriters
                                 }
 
                             builder.Append("\n\nHISTORY\n");
-                            if (Context.Session.GetString("LastSearch") != null)
-                                builder.Append("\tLast Search:\t\t" + Context.SessionObject()["LastSearch"] + "\n");
-                            if (Context.SessionObject()["LastResults"] != null)
-                                builder.Append("\tLast Results:\t\t" + Context.SessionObject()["LastResults"] + "\n");
-                            if (Context.SessionObject()["Last_Mode"] != null)
-                                builder.Append("\tLast Mode:\t\t\t" + Context.SessionObject()["Last_Mode"] + "\n");
+                            if (Context.Session.GetString(SessionCache_Keys.LastSearch) != null)
+                                builder.Append("\tLast Search:\t\t" + Context.Session.GetString(SessionCache_Keys.LastSearch) + "\n");
+                            if (Context.Session.GetString(SessionCache_Keys.LastResults) != null)
+                                builder.Append("\tLast Results:\t\t" + Context.Session.GetString(SessionCache_Keys.LastResults) + "\n");
+                            if (Context.Session.GetString(SessionCache_Keys.LastMode) != null)
+                                builder.Append("\tLast Mode:\t\t\t" + Context.Session.GetString(SessionCache_Keys.LastMode) + "\n");
                             builder.Append("\tURL:\t\t\t\t" + Context.Items["Original_URL"]);
                         }
                         catch
@@ -316,7 +317,7 @@ namespace SobekCM.Library.MainWriters
                     SobekCM_Traced_Exception newException = new SobekCM_Traced_Exception("Exception caught while building the mode-specific HTML Subwriter", ee, RequestSpecificValues.Tracer);
 
                     // Save this to the session state, and then forward to the dashboard
-                    Context.SessionObject()["Last_Exception"] = newException;
+                    Context.SessionObject()[SessionCache_Keys.LastException] = newException;
                     Context.Response.Redirect("dashboard.aspx");
                     RequestSpecificValues.Current_Mode.Request_Completed = true;
                 }
@@ -479,7 +480,7 @@ namespace SobekCM.Library.MainWriters
                     {
                         // Make sure the corresponding 'search' is the latest
                         RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Search;
-                        Context.SessionObject()["LastSearch"] = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+                        Context.Session.SetString(SessionCache_Keys.LastSearch, UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode));
                         RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Results;
 
                         // Add the controls
@@ -800,26 +801,24 @@ namespace SobekCM.Library.MainWriters
             // from a previous action
             if (!RequestSpecificValues.Current_Mode.isPostBack)
             {
-                if ((Context.SessionObject()["ON_LOAD_MESSAGE"] != null) || (Context.SessionObject()["ON_LOAD_WINDOW"] != null))
+                string on_load_message_val = Context.Session.GetString(SessionCache_Keys.OnLoadMessage);
+                string on_load_window_val = Context.Session.GetString(SessionCache_Keys.OnLoadWindow);
+                if (!String.IsNullOrEmpty(on_load_message_val) || !String.IsNullOrEmpty(on_load_window_val))
                 {
-                    // ENsure the body attributes list is not null
+                    // Ensure the body attributes list is not null
                     if (bodyAttributes == null)
                         bodyAttributes = new List<Tuple<string, string>>();
 
                     // Handle the previously saved actions
-                    if (Context.SessionObject()["ON_LOAD_MESSAGE"] != null)
+                    if (!String.IsNullOrEmpty(on_load_message_val))
                     {
-                        string on_load_message = Context.SessionObject()["ON_LOAD_MESSAGE"].ToString();
-                        if (on_load_message.Length > 0)
-                            bodyAttributes.Add(new Tuple<string, string>("onload", "alert('" + on_load_message + "');"));
-                        Context.SessionObject()["ON_LOAD_MESSAGE"] = null;
+                        bodyAttributes.Add(new Tuple<string, string>("onload", "alert('" + on_load_message_val + "');"));
+                        Context.Session.Remove(SessionCache_Keys.OnLoadMessage);
                     }
-                    if (Context.SessionObject()["ON_LOAD_WINDOW"] != null)
+                    if (!String.IsNullOrEmpty(on_load_window_val))
                     {
-                        string on_load_window = Context.SessionObject()["ON_LOAD_WINDOW"].ToString();
-                        if (on_load_window.Length > 0)
-                            bodyAttributes.Add(new Tuple<string, string>("onload", "window.open('" + on_load_window + "', 'new_" + DateTime.Now.Millisecond + "');"));
-                        Context.SessionObject()["ON_LOAD_WINDOW"] = null;
+                        bodyAttributes.Add(new Tuple<string, string>("onload", "window.open('" + on_load_window_val + "', 'new_" + DateTime.Now.Millisecond + "');"));
+                        Context.Session.Remove(SessionCache_Keys.OnLoadWindow);
                     }
                 }
             }
@@ -950,8 +949,8 @@ namespace SobekCM.Library.MainWriters
                 if (( subwriter.Include_Internal_Header ) && ( !behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Suppress_Internal_Header)))
                 {
                     string return_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
-                    if (Context.SessionObject()["Original_URL"] != null)
-                        return_url = Context.SessionObject()["Original_URL"].ToString();
+                    if (Context.Session.GetString(SessionCache_Keys.OriginalUrl) != null)
+                        return_url = Context.Session.GetString(SessionCache_Keys.OriginalUrl);
 
                     Output.WriteLine("<!-- Start the internal header -->");
                     Output.WriteLine("<form name=\"internalHeaderForm\" method=\"post\" action=\"" + return_url + "\" id=\"internalHeaderForm\"> ");
@@ -961,7 +960,7 @@ namespace SobekCM.Library.MainWriters
                     Output.WriteLine();
 
                     // Is the header currently hidden?
-                    if ((Context.SessionObject()["internal_header"] != null) && (Context.SessionObject()["internal_header"].ToString() == "hidden"))
+                    if (Context.Session.GetString(SessionCache_Keys.InternalHeader) == "hidden")
                     {
                         Output.WriteLine("  <table cellspacing=\"0\" id=\"internalheader\">");
                         Output.WriteLine("    <tr>");

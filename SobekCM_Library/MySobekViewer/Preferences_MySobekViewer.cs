@@ -1,4 +1,4 @@
-#region Using directives
+﻿#region Using directives
 
 using System;
 using System.Collections.Generic;
@@ -9,6 +9,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using SobekCM.Core.Configuration;
+using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.UI_Configuration;
@@ -193,7 +194,7 @@ namespace SobekCM.Library.MySobekViewer
 
 			// Is this for registration
             user = RequestSpecificValues.Current_User;
-			registration = (Context.SessionObject()["user"] == null);
+			registration = (Context.Session.GetString(SessionCache_Keys.User) == null);
 			if (registration)
 			{
 				user = new User_Object();
@@ -501,7 +502,7 @@ namespace SobekCM.Library.MySobekViewer
 						}
 
 						user.Is_Just_Registered = true;
-						Context.SessionObject()["user"] = user;
+						Context.Session.SetString(SessionCache_Keys.User, CachedDataManager_UserCacheServices.UserToString(user));
 
                         // Will we be sending an email?
 					    if ((!String.IsNullOrEmpty(UI_ApplicationCache_Gateway.Settings.Email.User_Registration_Email)) || (desire_to_upload))
@@ -558,7 +559,7 @@ namespace SobekCM.Library.MySobekViewer
 					}
 					else
 					{
-						Context.SessionObject()["user"] = user;
+						Context.Session.SetString(SessionCache_Keys.User, CachedDataManager_UserCacheServices.UserToString(user));
                         SobekCM_Database.Save_User(user, String.Empty, user.Authentication_Type, RequestSpecificValues.Tracer);
 
 						// Now, forward back to the My Sobek home page
@@ -592,7 +593,7 @@ namespace SobekCM.Library.MySobekViewer
         {
             get
             {
-                if (Context.SessionObject()["user"] == null)
+                if (Context.Session.GetString(SessionCache_Keys.User) == null)
                 {
                     return "Register for My" + RequestSpecificValues.Current_Mode.Instance_Abbreviation;
                 }

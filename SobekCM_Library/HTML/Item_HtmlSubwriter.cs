@@ -1,4 +1,4 @@
-#region Using directives
+﻿#region Using directives
 
 using System;
 using System.Collections.Generic;
@@ -251,7 +251,7 @@ namespace SobekCM.Library.HTML
                 if (Context != null)
                 {
                     // Check for IP restriction
-                    int user_mask = (int)Context.SessionObject()["IP_Range_Membership"];
+                    int.TryParse(Context.Session.GetString(SessionCache_Keys.IpRangeMembership), out int user_mask);
                     int comparison = currentItem.Behaviors.IP_Restriction_Membership & user_mask;
                     if (comparison == 0)
                     {
@@ -410,7 +410,7 @@ namespace SobekCM.Library.HTML
                                     cc_list = String.Empty;
 
                                 // Send the email
-                                Context.Session.Add("ON_LOAD_MESSAGE", !Item_Email_Helper.Send_Email(address, cc_list, comments, RequestSpecificValues.Current_User.Full_Name, RequestSpecificValues.Current_Mode.Instance_Abbreviation, currentItem, is_html_format, Context.Items["Original_URL"].ToString(), RequestSpecificValues.Current_User.UserID)
+                                Context.Session.SetString(SessionCache_Keys.OnLoadMessage, !Item_Email_Helper.Send_Email(address, cc_list, comments, RequestSpecificValues.Current_User.Full_Name, RequestSpecificValues.Current_Mode.Instance_Abbreviation, currentItem, is_html_format, Context.Items["Original_URL"].ToString(), RequestSpecificValues.Current_User.UserID)
                                     ? "Error encountered while sending email" : "Your email has been sent");
 
                                 Context.Response.Redirect(Context.Items["Original_URL"].ToString());
@@ -432,16 +432,16 @@ namespace SobekCM.Library.HTML
                                 // Ensure this user folder is not sitting in the cache
                                 CachedDataManager.Remove_User_Folder_Browse(RequestSpecificValues.Current_User.UserID, foldername, RequestSpecificValues.Tracer);
 
-                                Context.Session.Add("ON_LOAD_MESSAGE", "Item was saved to your bookshelf.");
+                                Context.Session.SetString(SessionCache_Keys.OnLoadMessage, "Item was saved to your bookshelf.");
 
                                 if (open_bookshelf)
                                 {
-                                    Context.Session.Add("ON_LOAD_WINDOW", "?m=lmfl" + foldername.Replace("\"", "%22").Replace("'", "%27").Replace("=", "%3D").Replace("&", "%26") + "&vp=1");
+                                    Context.Session.SetString(SessionCache_Keys.OnLoadWindow, "?m=lmfl" + foldername.Replace("\"", "%22").Replace("'", "%27").Replace("=", "%3D").Replace("&", "%26") + "&vp=1");
                                 }
                             }
                             else
                             {
-                                Context.Session.Add("ON_LOAD_MESSAGE", "ERROR encountered while trying to save to your bookshelf.");
+                                Context.Session.SetString(SessionCache_Keys.OnLoadMessage, "ERROR encountered while trying to save to your bookshelf.");
                             }
 
                             Context.Response.Redirect(Context.Items["Original_URL"].ToString());
@@ -455,11 +455,11 @@ namespace SobekCM.Library.HTML
                             {
                                 RequestSpecificValues.Current_User.Remove_From_Bookshelves(currentItem.BibID, currentItem.VID);
                                 CachedDataManager.Remove_All_User_Folder_Browses(RequestSpecificValues.Current_User.UserID, RequestSpecificValues.Tracer);
-                                Context.Session.Add("ON_LOAD_MESSAGE", "Item was removed from your bookshelves.");
+                                Context.Session.SetString(SessionCache_Keys.OnLoadMessage, "Item was removed from your bookshelves.");
                             }
                             else
                             {
-                                Context.Session.Add("ON_LOAD_MESSAGE", "ERROR encountered while trying to remove item from your bookshelves.");
+                                Context.Session.SetString(SessionCache_Keys.OnLoadMessage, "ERROR encountered while trying to remove item from your bookshelves.");
                             }
 
                             Context.Response.Redirect(Context.Items["Original_URL"].ToString());

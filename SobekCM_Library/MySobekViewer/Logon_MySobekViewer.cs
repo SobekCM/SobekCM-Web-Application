@@ -2,10 +2,7 @@
 
 #region Using directives
 
-using Azure.Core;
-using DocumentFormat.OpenXml.InkML;
 using Microsoft.AspNetCore.Http;
-using ProtoBuf;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.UI_Configuration;
@@ -104,9 +101,7 @@ namespace SobekCM.Library.MySobekViewer
                         }
 
                         // The user was valid here, so save this user information
-                        using var sessionMs = new MemoryStream();
-                        Serializer.Serialize(sessionMs, user);
-                        Context.Session.Set(SessionCache_Keys.User, sessionMs.ToArray());
+                        Context.Session.SetString(SessionCache_Keys.User, CachedDataManager_UserCacheServices.UserToString(user));
                         RequestSpecificValues.Current_User = user;
 
                         // Should we remember this user via cookies?

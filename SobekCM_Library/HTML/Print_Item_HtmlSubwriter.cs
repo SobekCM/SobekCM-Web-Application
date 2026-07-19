@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using SobekCM.Core.BriefItem;
 using SobekCM.Core.Client;
+using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.UI_Configuration;
 using SobekCM.Core.UI_Configuration.StaticResources;
@@ -70,7 +71,7 @@ namespace SobekCM.Library.HTML
             {
                 if (Context != null)
                 {
-                    int user_mask = (int)Context.SessionObject()["IP_Range_Membership"];
+                    int.TryParse(Context.Session.GetString(SessionCache_Keys.IpRangeMembership), out int user_mask);
                     int comparison = currentItem.Behaviors.IP_Restriction_Membership & user_mask;
                     if (comparison == 0)
                     {

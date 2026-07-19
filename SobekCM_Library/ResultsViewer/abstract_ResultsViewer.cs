@@ -1,10 +1,11 @@
-#region Using directives
+﻿#region Using directives
 
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using Microsoft.AspNetCore.Http;
+using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Results;
 using SobekCM.Library.HTML;
@@ -53,7 +54,7 @@ namespace SobekCM.Library.ResultsViewer
         protected void ResolveIpRangeMembership()
         {
             if (Context == null) return;
-            string ipMask = Context.Session.GetString("IP_Range_Membership");
+            string ipMask = Context.Session.GetString(SessionCache_Keys.IpRangeMembership);
             if (int.TryParse(ipMask, out int mask))
                 CurrentUserMask = mask;
         }

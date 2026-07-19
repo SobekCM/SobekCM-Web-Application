@@ -1,4 +1,4 @@
-#region Using directives
+﻿#region Using directives
 
 using System;
 using System.Collections.Generic;
@@ -50,7 +50,7 @@ namespace SobekCM.Library.HTML
             {
                 RequestSpecificValues.Tracer.Add_Trace("MySobek_HtmlSubwriter.Constructor", "Performing logout");
 
-                Context.SessionObject()["user"] = null;
+                Context.Session.Remove(SessionCache_Keys.User);
                 Context.Response.Redirect("?");
                 RequestSpecificValues.Current_Mode.Request_Completed = true;
                 return;

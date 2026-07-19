@@ -152,8 +152,9 @@ namespace SobekCM.Tools
 			{
 				// Open the necessary file streams
 				FileStream projectDataFile = new FileStream(Filename, FileMode.Open, FileAccess.Read);
-			    DESCryptoServiceProvider desProvider = new DESCryptoServiceProvider
-			                                               {Key = Encoding.ASCII.GetBytes(Key), IV = Encoding.ASCII.GetBytes(Iv)};
+			    DES desProvider = DES.Create();
+			    desProvider.Key = Encoding.ASCII.GetBytes(Key);
+			    desProvider.IV = Encoding.ASCII.GetBytes(Iv);
 			    CryptoStream cryptoStreamDecrypt = new CryptoStream(projectDataFile, desProvider.CreateDecryptor(), CryptoStreamMode.Read );
 				StreamReader streamInput = new StreamReader(cryptoStreamDecrypt);
 
@@ -185,8 +186,9 @@ namespace SobekCM.Tools
 			{
 				// Open file streams necessary
 				FileStream projectDataFile = new FileStream(Filename, FileMode.OpenOrCreate, FileAccess.Write);
-			    DESCryptoServiceProvider desProvider = new DESCryptoServiceProvider
-			                                               {Key = Encoding.ASCII.GetBytes(Key), IV = Encoding.ASCII.GetBytes(Iv)};
+			    DES desProvider = DES.Create();
+			    desProvider.Key = Encoding.ASCII.GetBytes(Key);
+			    desProvider.IV = Encoding.ASCII.GetBytes(Iv);
 			    CryptoStream cryptoStreamEncrypt = new CryptoStream(projectDataFile, desProvider.CreateEncryptor(), CryptoStreamMode.Write );
 
 				// Get to the correct position in the file to write
@@ -238,11 +240,10 @@ namespace SobekCM.Tools
             MemoryStream ms = new MemoryStream();
 
             // set the private key
-            DESCryptoServiceProvider desProvider = new DESCryptoServiceProvider
-                                                       {
-                                                           Key = Encoding.ASCII.GetBytes(Key),
-                                                           IV = Encoding.ASCII.GetBytes(Iv)
-                                                       };
+            DES desProvider = DES.Create();
+            desProvider.Key = Encoding.ASCII.GetBytes(Key);
+            desProvider.IV = Encoding.ASCII.GetBytes(Iv)
+                                                       ;
 
             // create an Encryptor from the Provider Service instance
             ICryptoTransform encrypto = desProvider.CreateEncryptor();
@@ -274,8 +275,9 @@ namespace SobekCM.Tools
 			MemoryStream ms = new MemoryStream();
 
 			// set the private key
-		    DESCryptoServiceProvider desProvider = new DESCryptoServiceProvider
-		                                               {Key = Encoding.ASCII.GetBytes(Key), IV = Encoding.ASCII.GetBytes(Iv)};
+		    DES desProvider = DES.Create();
+		    desProvider.Key = Encoding.ASCII.GetBytes(Key);
+		    desProvider.IV = Encoding.ASCII.GetBytes(Iv);
 
 		    // create an Encryptor from the Provider Service instance
 			ICryptoTransform encrypto = desProvider.CreateEncryptor();
@@ -308,8 +310,9 @@ namespace SobekCM.Tools
 			MemoryStream ms = new MemoryStream(bytIn, 0, bytIn.Length);
 
 			// set the private key
-		    DESCryptoServiceProvider desProvider = new DESCryptoServiceProvider
-		                                               {Key = Encoding.ASCII.GetBytes(Key), IV = Encoding.ASCII.GetBytes(Iv)};
+		    DES desProvider = DES.Create();
+		    desProvider.Key = Encoding.ASCII.GetBytes(Key);
+		    desProvider.IV = Encoding.ASCII.GetBytes(Iv);
 
 		    // create a Decryptor from the Provider Service instance
 			ICryptoTransform encrypto = desProvider.CreateDecryptor();

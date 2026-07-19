@@ -1079,7 +1079,9 @@ namespace SobekCM.Resource_Object.Behaviors
 				MemoryStream ms = new MemoryStream();
 
 				// set the private key
-				DESCryptoServiceProvider desProvider = new DESCryptoServiceProvider {Key = Encoding.ASCII.GetBytes("U7+x$Swa"), IV = Encoding.ASCII.GetBytes(BibID.Substring(2))};
+				DES desProvider = DES.Create();
+				desProvider.Key = Encoding.ASCII.GetBytes("U7+x$Swa");
+				desProvider.IV = Encoding.ASCII.GetBytes(BibID.Substring(2));
 
 				// create an Encryptor from the Provider Service instance
 				ICryptoTransform encrypto = desProvider.CreateEncryptor();

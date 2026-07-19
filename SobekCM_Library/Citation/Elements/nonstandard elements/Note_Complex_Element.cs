@@ -546,7 +546,7 @@ namespace SobekCM.Library.Citation.Elements
                     }
 
                     string addtl = String.Empty;
-                    if (Context.Request.Form[addtl_key] != null)
+                    if (!String.IsNullOrEmpty(Context.Request.Form[addtl_key].TrimFirst()))
                     {
                         addtl = Context.Request.Form[addtl_key].TrimFirst();
                     }

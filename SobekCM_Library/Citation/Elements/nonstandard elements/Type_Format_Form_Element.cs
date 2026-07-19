@@ -14,6 +14,7 @@ using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Users;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Bib_Info;
+using SobekCM.Library.UI;
 
 #endregion
 
@@ -1376,12 +1377,12 @@ namespace SobekCM.Library.Citation.Elements
             // Pull the standard values
             NameValueCollection form = Context.Request.Form;
 
-            string type = form["form_typeformat_type"].Trim();
-            string extent = form["form_typeformat_extent"].Trim();
-            string datestart = form["form_typeformat_datestart"].Trim();
-            string dateend = form["form_typeformat_dateend"].Trim();
-            string placecode = form["form_typeformat_placecode"].Trim();
-            string langcode = form["form_typeformat_langcode"].Trim();
+            string type = form["form_typeformat_type"].TrimFirst();
+            string extent = form["form_typeformat_extent"].TrimFirst();
+            string datestart = form["form_typeformat_datestart"].TrimFirst();
+            string dateend = form["form_typeformat_dateend"].TrimFirst();
+            string placecode = form["form_typeformat_placecode"].TrimFirst();
+            string langcode = form["form_typeformat_langcode"].TrimFirst();
 
             // Apply the type
             if (Bib.Bib_Info.SobekCM_Type == TypeOfResource_SobekCM_Enum.Project )

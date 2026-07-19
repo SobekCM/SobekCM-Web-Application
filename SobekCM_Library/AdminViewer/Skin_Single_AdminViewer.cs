@@ -692,9 +692,9 @@ namespace SobekCM.Library.AdminViewer
 
         private void Save_Page_1_Postback(NameValueCollection Form)
         {
-            string edit_base_code = Form["webskin_basecode"].ToUpper().Trim();
-            string edit_banner_link = Form["webskin_bannerlink"].Trim();
-            string edit_notes = Form["webskin_notes"].Trim();
+            string edit_base_code = Form["webskin_basecode"].TrimFirst().ToUpper();
+            string edit_banner_link = Form["webskin_bannerlink"].TrimFirst();
+            string edit_notes = Form["webskin_notes"].TrimFirst();
 
             bool override_banner = false;
             bool suppress_top_nav = false;
@@ -827,7 +827,7 @@ namespace SobekCM.Library.AdminViewer
         private void Save_Page_2_Postback(NameValueCollection Form)
         {
             // Check for action flag
-            string css_contents = Form["css_source_content"].Trim();
+            string css_contents = Form["css_source_content"].TrimFirst();
             if (css_contents.Length == 0)
                 css_contents = "/**  CSS for " + webSkin.Skin_Code + " web skin **/";
 
@@ -1589,7 +1589,7 @@ namespace SobekCM.Library.AdminViewer
         private void Save_Page_6_Postback(NameValueCollection Form)
         {
             // Check for action flag
-            string javascript_contents = Form["javascript_source_content"].Trim();
+            string javascript_contents = Form["javascript_source_content"].TrimFirst();
             updatedSourceFiles["Javascript"] = javascript_contents;
         }
 

@@ -90,18 +90,18 @@ namespace SobekCM.Library.MySobekViewer
                 current_folder_id = userFolder.Folder_ID;
             }
 
-            if ((RequestSpecificValues.Current_Mode.isPostBack) || ((Context.Request.Form["item_action"] != null) && (Context.Request.Form["item_action"].Length > 0 )))
+            if ((RequestSpecificValues.Current_Mode.isPostBack) || ((!String.IsNullOrEmpty(Context.Request.Form["item_action"].TrimFirst())) && (Context.Request.Form["item_action"].Length > 0 )))
             {
                 try
                 {
                     // Pull the standard values
                     var form = Context.Request.Form;
 
-                    string item_action = form["item_action"].Replace(",","").ToUpper().Trim();
+                    string item_action = form["item_action"].TrimFirst().Replace(",","").ToUpper();
                     string bookshelf_items = form["bookshelf_items"].TrimFirst().Replace("%22", "\"").Replace("%27", "'").Replace("%3D", "=").Replace("%26", "&");
                     string bookshelf_params = form["bookshelf_params"].TrimFirst();
                     string add_bookshelf = String.Empty;
-                    if ( form["add_bookshelf"] != null )
+                    if ( !String.IsNullOrEmpty(form["add_bookshelf"].TrimFirst()) )
                         add_bookshelf = form["add_bookshelf"].TrimFirst();
 
                     if (item_action == "REFRESH_FOLDER")

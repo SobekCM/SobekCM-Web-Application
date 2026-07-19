@@ -637,16 +637,16 @@ namespace SobekCM.Library.AdminViewer
                 Context.Session.Remove(itemAggregation.Code + "|Button");
             }
 
-			if (Form["admin_aggr_name"] != null) itemAggregation.Name = Form["admin_aggr_name"];
-			if (Form["admin_aggr_shortname"] != null) itemAggregation.ShortName = Form["admin_aggr_shortname"];
-			if (Form["admin_aggr_link"] != null) itemAggregation.External_Link = Form["admin_aggr_link"];
-			if ( Form["admin_aggr_desc"] != null ) itemAggregation.Description = Form["admin_aggr_desc"];
-			if (Form["admin_aggr_email"] != null) itemAggregation.Contact_Email = Form["admin_aggr_email"];
-			itemAggregation.Active = Form["admin_aggr_isactive"] != null;
+			if (!String.IsNullOrEmpty(Form["admin_aggr_name"].TrimFirst())) itemAggregation.Name = Form["admin_aggr_name"];
+			if (!String.IsNullOrEmpty(Form["admin_aggr_shortname"].TrimFirst())) itemAggregation.ShortName = Form["admin_aggr_shortname"];
+			if (!String.IsNullOrEmpty(Form["admin_aggr_link"].TrimFirst())) itemAggregation.External_Link = Form["admin_aggr_link"];
+			if ( !String.IsNullOrEmpty(Form["admin_aggr_desc"].TrimFirst()) ) itemAggregation.Description = Form["admin_aggr_desc"];
+			if (!String.IsNullOrEmpty(Form["admin_aggr_email"].TrimFirst())) itemAggregation.Contact_Email = Form["admin_aggr_email"];
+			itemAggregation.Active = !String.IsNullOrEmpty(Form["admin_aggr_isactive"].TrimFirst());
 			itemAggregation.Hidden = Form["admin_aggr_ishidden"] == null;
 			if ((RequestSpecificValues.Current_User.Is_System_Admin) || (RequestSpecificValues.Current_User.Is_Portal_Admin))
 			{
-			    if ((Form["admin_aggr_heading"] != null) && (Form["admin_aggr_heading"] != "-1"))
+			    if ((!String.IsNullOrEmpty(Form["admin_aggr_heading"].TrimFirst())) && (Form["admin_aggr_heading"] != "-1"))
 			    {
 			        itemAggregation.Thematic_Heading = new Thematic_Heading(Convert.ToInt32(Form["admin_aggr_heading"]), String.Empty);
 			    }
@@ -1009,7 +1009,7 @@ namespace SobekCM.Library.AdminViewer
             itemAggregation.Default_Skin = null;
             foreach (string thisKey in Form.Keys)
             {
-                if ((thisKey.IndexOf("admin_aggr_skin_") == 0) && ( Form[thisKey] != null ) && ( Form[thisKey].Length > 0 ))
+                if ((thisKey.IndexOf("admin_aggr_skin_") == 0) && ( !String.IsNullOrEmpty(Form[thisKey].TrimFirst()) ) && ( Form[thisKey].Length > 0 ))
                 {
                     if (itemAggregation.Web_Skins == null)
                         itemAggregation.Web_Skins = new List<string>();
@@ -1019,7 +1019,7 @@ namespace SobekCM.Library.AdminViewer
                 }
             }
 
-            if (Form["admin_aggr_home_browse"] != null)
+            if (!String.IsNullOrEmpty(Form["admin_aggr_home_browse"].TrimFirst()))
                 itemAggregation.BrowseOnHomePage = Form["admin_aggr_home_browse"];
             else
                 itemAggregation.BrowseOnHomePage = "NONE";
@@ -1621,14 +1621,14 @@ namespace SobekCM.Library.AdminViewer
 		    decimal latitude = 0;
 		    decimal longitude = 0;
 		    int zoom = 5;
-		    if (Form["admin_aggr_mapsearch_type"] != null)
+		    if (!String.IsNullOrEmpty(Form["admin_aggr_mapsearch_type"].TrimFirst()))
 		    {
                 // Ensure this is not null
 		        int map_search_type = Convert.ToInt32(Form["admin_aggr_mapsearch_type"]);
                 if (map_search_type == -1)
                 {
                     itemAggregation.Map_Search_Display = new Item_Aggregation_Map_Coverage_Info(Item_Aggregation_Map_Coverage_Type_Enum.EXTENT);
-                    if ((Form["admin_aggr_mapsearch_zoom"] != null) && (Form["admin_aggr_mapsearch_latitude"] != null) && (Form["admin_aggr_mapsearch_longitude"] != null))
+                    if ((!String.IsNullOrEmpty(Form["admin_aggr_mapsearch_zoom"].TrimFirst())) && (!String.IsNullOrEmpty(Form["admin_aggr_mapsearch_latitude"].TrimFirst())) && (!String.IsNullOrEmpty(Form["admin_aggr_mapsearch_longitude"].TrimFirst())))
                     {
                         decimal customLatitude;
                         decimal customLongitude;
@@ -1709,14 +1709,14 @@ namespace SobekCM.Library.AdminViewer
             latitude = 0;
             longitude = 0;
             zoom = 5;
-            if (Form["admin_aggr_mapbrowse_type"] != null)
+            if (!String.IsNullOrEmpty(Form["admin_aggr_mapbrowse_type"].TrimFirst()))
             {
                 // Ensure this is not null
                 int map_browse_type = Convert.ToInt32(Form["admin_aggr_mapbrowse_type"]);
                 if (map_browse_type == -1)
                 {
                     itemAggregation.Map_Browse_Display = new Item_Aggregation_Map_Coverage_Info(Item_Aggregation_Map_Coverage_Type_Enum.EXTENT);
-                    if ((Form["admin_aggr_mapbrowse_zoom"] != null) && (Form["admin_aggr_mapbrowse_latitude"] != null) && (Form["admin_aggr_mapbrowse_longitude"] != null))
+                    if ((!String.IsNullOrEmpty(Form["admin_aggr_mapbrowse_zoom"].TrimFirst())) && (!String.IsNullOrEmpty(Form["admin_aggr_mapbrowse_latitude"].TrimFirst())) && (!String.IsNullOrEmpty(Form["admin_aggr_mapbrowse_longitude"].TrimFirst())))
                     {
                         decimal customLatitude;
                         decimal customLongitude;
@@ -1801,7 +1801,7 @@ namespace SobekCM.Library.AdminViewer
 			StringBuilder displayOptionsBldr = new StringBuilder();
 
             // Choose the basic search
-		    if (Form["basicsearch"] != null)
+		    if (!String.IsNullOrEmpty(Form["basicsearch"].TrimFirst()))
 		    {
                 string basicValue = Form["basicsearch"];
 		        switch (basicValue)
@@ -1825,7 +1825,7 @@ namespace SobekCM.Library.AdminViewer
 		    }
 
             // Choose the advanced search
-            if (Form["advancedsearch"] != null)
+            if (!String.IsNullOrEmpty(Form["advancedsearch"].TrimFirst()))
             {
                 string basicValue = Form["advancedsearch"];
                 switch (basicValue)
@@ -1844,13 +1844,13 @@ namespace SobekCM.Library.AdminViewer
                 }
             }
 
-			if (Form["admin_aggr_dloctextsearch"] != null) displayOptionsBldr.Append("C");
-			if (Form["admin_aggr_textsearch"] != null) displayOptionsBldr.Append("F");
-			if (Form["admin_aggr_newspsearch"] != null) displayOptionsBldr.Append("N");
-			if (Form["admin_aggr_mapsearch"] != null) displayOptionsBldr.Append("M");
+			if (!String.IsNullOrEmpty(Form["admin_aggr_dloctextsearch"].TrimFirst())) displayOptionsBldr.Append("C");
+			if (!String.IsNullOrEmpty(Form["admin_aggr_textsearch"].TrimFirst())) displayOptionsBldr.Append("F");
+			if (!String.IsNullOrEmpty(Form["admin_aggr_newspsearch"].TrimFirst())) displayOptionsBldr.Append("N");
+			if (!String.IsNullOrEmpty(Form["admin_aggr_mapsearch"].TrimFirst())) displayOptionsBldr.Append("M");
           //  if (Form["admin_aggr_mapsearchbeta"] != null) displayOptionsBldr.Append("Q");
-			if (Form["admin_aggr_mapbrowse"] != null) displayOptionsBldr.Append("G");
-			if (Form["admin_aggr_allitems"] != null) displayOptionsBldr.Append("I");
+			if (!String.IsNullOrEmpty(Form["admin_aggr_mapbrowse"].TrimFirst())) displayOptionsBldr.Append("G");
+			if (!String.IsNullOrEmpty(Form["admin_aggr_allitems"].TrimFirst())) displayOptionsBldr.Append("I");
             
 
 			itemAggregation.Display_Options = displayOptionsBldr.ToString();
@@ -2363,7 +2363,7 @@ namespace SobekCM.Library.AdminViewer
 			// Reset the facets
 			itemAggregation.Clear_Facets();
             short aggr_id;
-            if (Form["admin_aggr_facet1"] != null) 
+            if (!String.IsNullOrEmpty(Form["admin_aggr_facet1"].TrimFirst())) 
             {
                 if (( short.TryParse(Form["admin_aggr_facet1"], out aggr_id )) && (aggr_id > 0))
                 {
@@ -2374,14 +2374,14 @@ namespace SobekCM.Library.AdminViewer
 
                         if ( !String.IsNullOrEmpty(Form["admin_aggr_facet1_display"]))
                         {
-                            mType.DisplayTerm = Form["admin_aggr_facet1_display"].Trim();
+                            mType.DisplayTerm = Form["admin_aggr_facet1_display"].TrimFirst();
                         }
 
                         itemAggregation.Add_Facet(mType);
                     }
                 }
             }
-            if (Form["admin_aggr_facet2"] != null)
+            if (!String.IsNullOrEmpty(Form["admin_aggr_facet2"].TrimFirst()))
             {
                 if ((short.TryParse(Form["admin_aggr_facet2"], out aggr_id)) && (aggr_id > 0))
                 {
@@ -2392,14 +2392,14 @@ namespace SobekCM.Library.AdminViewer
 
                         if (!String.IsNullOrEmpty(Form["admin_aggr_facet2_display"]))
                         {
-                            mType.DisplayTerm = Form["admin_aggr_facet2_display"].Trim();
+                            mType.DisplayTerm = Form["admin_aggr_facet2_display"].TrimFirst();
                         }
 
                         itemAggregation.Add_Facet(mType);
                     }
                 }
             }
-            if (Form["admin_aggr_facet3"] != null) 
+            if (!String.IsNullOrEmpty(Form["admin_aggr_facet3"].TrimFirst())) 
             {
                 if ((short.TryParse(Form["admin_aggr_facet3"], out aggr_id)) && (aggr_id > 0))
                 {
@@ -2410,14 +2410,14 @@ namespace SobekCM.Library.AdminViewer
 
                         if (!String.IsNullOrEmpty(Form["admin_aggr_facet3_display"]))
                         {
-                            mType.DisplayTerm = Form["admin_aggr_facet3_display"].Trim();
+                            mType.DisplayTerm = Form["admin_aggr_facet3_display"].TrimFirst();
                         }
 
                         itemAggregation.Add_Facet(mType);
                     }
                 }
             }
-            if (Form["admin_aggr_facet4"] != null) 
+            if (!String.IsNullOrEmpty(Form["admin_aggr_facet4"].TrimFirst())) 
             {
                 if ((short.TryParse(Form["admin_aggr_facet4"], out aggr_id)) && (aggr_id > 0))
                 {
@@ -2428,14 +2428,14 @@ namespace SobekCM.Library.AdminViewer
 
                         if (!String.IsNullOrEmpty(Form["admin_aggr_facet4_display"]))
                         {
-                            mType.DisplayTerm = Form["admin_aggr_facet4_display"].Trim();
+                            mType.DisplayTerm = Form["admin_aggr_facet4_display"].TrimFirst();
                         }
 
                         itemAggregation.Add_Facet(mType);
                     }
                 }
             }
-            if (Form["admin_aggr_facet5"] != null)
+            if (!String.IsNullOrEmpty(Form["admin_aggr_facet5"].TrimFirst()))
             {
                 if ((short.TryParse(Form["admin_aggr_facet5"], out aggr_id)) && (aggr_id > 0))
                 {
@@ -2446,14 +2446,14 @@ namespace SobekCM.Library.AdminViewer
 
                         if (!String.IsNullOrEmpty(Form["admin_aggr_facet5_display"]))
                         {
-                            mType.DisplayTerm = Form["admin_aggr_facet5_display"].Trim();
+                            mType.DisplayTerm = Form["admin_aggr_facet5_display"].TrimFirst();
                         }
 
                         itemAggregation.Add_Facet(mType);
                     }
                 }
             }
-            if (Form["admin_aggr_facet6"] != null) 
+            if (!String.IsNullOrEmpty(Form["admin_aggr_facet6"].TrimFirst())) 
             {
                 if ((short.TryParse(Form["admin_aggr_facet6"], out aggr_id)) && (aggr_id > 0))
                 {
@@ -2464,14 +2464,14 @@ namespace SobekCM.Library.AdminViewer
 
                         if (!String.IsNullOrEmpty(Form["admin_aggr_facet6_display"]))
                         {
-                            mType.DisplayTerm = Form["admin_aggr_facet6_display"].Trim();
+                            mType.DisplayTerm = Form["admin_aggr_facet6_display"].TrimFirst();
                         }
 
                         itemAggregation.Add_Facet(mType);
                     }
                 }
             }
-            if (Form["admin_aggr_facet7"] != null) 
+            if (!String.IsNullOrEmpty(Form["admin_aggr_facet7"].TrimFirst())) 
             {
                 if ((short.TryParse(Form["admin_aggr_facet7"], out aggr_id)) && (aggr_id > 0))
                 {
@@ -2482,14 +2482,14 @@ namespace SobekCM.Library.AdminViewer
 
                         if (!String.IsNullOrEmpty(Form["admin_aggr_facet7_display"]))
                         {
-                            mType.DisplayTerm = Form["admin_aggr_facet7_display"].Trim();
+                            mType.DisplayTerm = Form["admin_aggr_facet7_display"].TrimFirst();
                         }
 
                         itemAggregation.Add_Facet(mType);
                     }
                 }
             }
-            if (Form["admin_aggr_facet8"] != null) 
+            if (!String.IsNullOrEmpty(Form["admin_aggr_facet8"].TrimFirst())) 
             {
                 if ((short.TryParse(Form["admin_aggr_facet8"], out aggr_id)) && ( aggr_id > 0 ))
                 {
@@ -2500,7 +2500,7 @@ namespace SobekCM.Library.AdminViewer
 
                         if (!String.IsNullOrEmpty(Form["admin_aggr_facet8_display"]))
                         {
-                            mType.DisplayTerm = Form["admin_aggr_facet8_display"].Trim();
+                            mType.DisplayTerm = Form["admin_aggr_facet8_display"].TrimFirst();
                         }
 
                         itemAggregation.Add_Facet(mType);
@@ -2513,7 +2513,7 @@ namespace SobekCM.Library.AdminViewer
             itemAggregation.Default_Result_View = String.Empty;
 
 			// Add the default result view
-            if (Form["admin_aggr_default_view"] != null)
+            if (!String.IsNullOrEmpty(Form["admin_aggr_default_view"].TrimFirst()))
 			{
                 string thisView = Form["admin_aggr_default_view"];
 
@@ -2523,16 +2523,16 @@ namespace SobekCM.Library.AdminViewer
 			}
 
 			// Add the result views
-			if (Form["admin_aggr_result_view1"] != null) add_result_view( Form["admin_aggr_result_view1"] );
-			if (Form["admin_aggr_result_view2"] != null) add_result_view( Form["admin_aggr_result_view2"] );
-			if (Form["admin_aggr_result_view3"] != null) add_result_view( Form["admin_aggr_result_view3"] );
-			if (Form["admin_aggr_result_view4"] != null) add_result_view( Form["admin_aggr_result_view4"] );
-			if (Form["admin_aggr_result_view5"] != null) add_result_view( Form["admin_aggr_result_view5"] );
-            if (Form["admin_aggr_result_view6"] != null) add_result_view(Form["admin_aggr_result_view6"]);
-            if (Form["admin_aggr_result_view7"] != null) add_result_view(Form["admin_aggr_result_view7"]);
-            if (Form["admin_aggr_result_view8"] != null) add_result_view(Form["admin_aggr_result_view8"]);
-            if (Form["admin_aggr_result_view9"] != null) add_result_view(Form["admin_aggr_result_view9"]);
-            if (Form["admin_aggr_result_view10"] != null) add_result_view(Form["admin_aggr_result_view10"]);
+			if (!String.IsNullOrEmpty(Form["admin_aggr_result_view1"].TrimFirst())) add_result_view( Form["admin_aggr_result_view1"] );
+			if (!String.IsNullOrEmpty(Form["admin_aggr_result_view2"].TrimFirst())) add_result_view( Form["admin_aggr_result_view2"] );
+			if (!String.IsNullOrEmpty(Form["admin_aggr_result_view3"].TrimFirst())) add_result_view( Form["admin_aggr_result_view3"] );
+			if (!String.IsNullOrEmpty(Form["admin_aggr_result_view4"].TrimFirst())) add_result_view( Form["admin_aggr_result_view4"] );
+			if (!String.IsNullOrEmpty(Form["admin_aggr_result_view5"].TrimFirst())) add_result_view( Form["admin_aggr_result_view5"] );
+            if (!String.IsNullOrEmpty(Form["admin_aggr_result_view6"].TrimFirst())) add_result_view(Form["admin_aggr_result_view6"]);
+            if (!String.IsNullOrEmpty(Form["admin_aggr_result_view7"].TrimFirst())) add_result_view(Form["admin_aggr_result_view7"]);
+            if (!String.IsNullOrEmpty(Form["admin_aggr_result_view8"].TrimFirst())) add_result_view(Form["admin_aggr_result_view8"]);
+            if (!String.IsNullOrEmpty(Form["admin_aggr_result_view9"].TrimFirst())) add_result_view(Form["admin_aggr_result_view9"]);
+            if (!String.IsNullOrEmpty(Form["admin_aggr_result_view10"].TrimFirst())) add_result_view(Form["admin_aggr_result_view10"]);
 		}
 
 		private void add_result_view( string Result )
@@ -2733,7 +2733,7 @@ namespace SobekCM.Library.AdminViewer
 			// Look for the default browse by
 			short default_browseby_id = 0;
 			itemAggregation.Default_BrowseBy = null;
-			if (Form["admin_aggr_default_browseby"] != null)
+			if (!String.IsNullOrEmpty(Form["admin_aggr_default_browseby"].TrimFirst()))
 			{
 				string default_browseby = Form["admin_aggr_default_browseby"];
 				if (Int16.TryParse(default_browseby, out default_browseby_id))
@@ -2758,7 +2758,7 @@ namespace SobekCM.Library.AdminViewer
 			// Now, get all the new browse bys
 			for (int i = 0; i < metadata_browse_bys.Count + 10; i++)
 			{
-				if (Form["admin_aggr_browseby_" + i] != null)
+				if (!String.IsNullOrEmpty(Form["admin_aggr_browseby_" + i].TrimFirst()))
 				{
 					short browseby_id = Convert.ToInt16(Form["admin_aggr_browseby_" + i]);
 					if ((browseby_id > 0) && (default_browseby_id != browseby_id))
@@ -2773,9 +2773,9 @@ namespace SobekCM.Library.AdminViewer
 				}
 			}
 
-			itemAggregation.OAI_Enabled = Form["admin_aggr_oai_flag"] != null;
+			itemAggregation.OAI_Enabled = !String.IsNullOrEmpty(Form["admin_aggr_oai_flag"].TrimFirst());
 
-			if (Form["admin_aggr_oai_metadata"] != null)
+			if (!String.IsNullOrEmpty(Form["admin_aggr_oai_metadata"].TrimFirst()))
 				itemAggregation.OAI_Metadata = Form["admin_aggr_oai_metadata"];
 		}
 
@@ -3877,7 +3877,7 @@ namespace SobekCM.Library.AdminViewer
 			string action = Form["admin_aggr_action"];
 			if (action == "save_css")
 			{
-				string css_contents = Form["admin_aggr_css_edit"].Trim();
+				string css_contents = Form["admin_aggr_css_edit"].TrimFirst();
 				if ( css_contents.Length == 0 )
 					css_contents = "/**  Aggregation-level CSS for " + itemAggregation.Code + " **/";
 			    string file = aggregationDirectory + "\\" + itemAggregation.Code + ".css";

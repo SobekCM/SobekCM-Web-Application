@@ -1,4 +1,4 @@
-﻿using SobekCM.Core.Users;
+using SobekCM.Core.Users;
 using SobekCM.Engine_Library.Database;
 using SobekCM.Tools;
 using System;
@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SobekCM.Library.UI;
 
 namespace SobekCM.Library.AdminViewer.UserAdmin.UserAdminTabs
 {
@@ -23,7 +24,7 @@ namespace SobekCM.Library.AdminViewer.UserAdmin.UserAdminTabs
             List<Simple_User_Group_Info> newGroups = new List<Simple_User_Group_Info>();
             foreach (User_Group thisRow in userGroup)
             {
-                if (form["group_" + thisRow.UserGroupID] != null)
+                if (!String.IsNullOrEmpty(form["group_" + thisRow.UserGroupID].TrimFirst()))
                 {
                     newGroups.Add(new Simple_User_Group_Info(thisRow.UserGroupID, thisRow.Name));
                 }

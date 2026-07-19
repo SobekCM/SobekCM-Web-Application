@@ -8,6 +8,7 @@ using SobekCM.Core.Configuration;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Users;
 using SobekCM.Resource_Object;
+using SobekCM.Library.UI;
 
 #endregion
 
@@ -52,7 +53,7 @@ namespace SobekCM.Library.Citation.Elements
         /// <param name="Bib"> Object into which to save the user's data, entered into the html rendered by this element </param>
         public override void Save_To_Bib(SobekCM_Item Bib)
         {
-            if (Context.Request.Form[html_element_name] != null)
+            if (!String.IsNullOrEmpty(Context.Request.Form[html_element_name].TrimFirst()))
             {
                 Bib.Behaviors.Dark_Flag = true;
                 Bib.Behaviors.IP_Restriction_Membership = -1;

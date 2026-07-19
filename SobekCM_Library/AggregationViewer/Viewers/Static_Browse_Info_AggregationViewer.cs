@@ -44,7 +44,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 				RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Browse_Info;
 
 			NameValueCollection form = Context.Request.Form;
-			if ((RequestSpecificValues.Current_Mode.Aggregation_Type == Aggregation_Type_Enum.Child_Page_Edit) && (form["sbkSbia_ChildTextEdit"] != null) && ( RequestSpecificValues.Current_User != null ))
+			if ((RequestSpecificValues.Current_Mode.Aggregation_Type == Aggregation_Type_Enum.Child_Page_Edit) && (!String.IsNullOrEmpty(form["sbkSbia_ChildTextEdit"].TrimFirst())) && ( RequestSpecificValues.Current_User != null ))
 			{
 				string aggregation_folder = UI_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location + "aggregations\\" + ViewBag.Hierarchy_Object.Code + "\\";
 
@@ -55,15 +55,15 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 				{
 					ViewBag.Static_Web_Content.Title = form["admin_childpage_title"];
 				}
-				if (form["admin_childpage_author"] != null)
+				if (!String.IsNullOrEmpty(form["admin_childpage_author"].TrimFirst()))
 					ViewBag.Static_Web_Content.Author = form["admin_childpage_author"];
-				if (form["admin_childpage_date"] != null)
+				if (!String.IsNullOrEmpty(form["admin_childpage_date"].TrimFirst()))
 					ViewBag.Static_Web_Content.Date = form["admin_childpage_date"];
-				if (form["admin_childpage_description"] != null)
+				if (!String.IsNullOrEmpty(form["admin_childpage_description"].TrimFirst()))
 					ViewBag.Static_Web_Content.Description = form["admin_childpage_description"];
-				if (form["admin_childpage_keywords"] != null)
+				if (!String.IsNullOrEmpty(form["admin_childpage_keywords"].TrimFirst()))
 					ViewBag.Static_Web_Content.Keywords = form["admin_childpage_keywords"];
-				if (form["admin_childpage_extrahead"] != null)
+				if (!String.IsNullOrEmpty(form["admin_childpage_extrahead"].TrimFirst()))
 					ViewBag.Static_Web_Content.Extra_Head_Info = form["admin_childpage_extrahead"];
 
 

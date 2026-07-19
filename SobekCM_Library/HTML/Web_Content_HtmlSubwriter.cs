@@ -74,7 +74,7 @@ namespace SobekCM.Library.HTML
             }
 
             NameValueCollection form = Context.Request.Form;
-            if ((canEdit) && (RequestSpecificValues.Current_Mode.WebContent_Type == WebContent_Type_Enum.Edit) && (form["sbkWchs_TextEdit"] != null))
+            if ((canEdit) && (RequestSpecificValues.Current_Mode.WebContent_Type == WebContent_Type_Enum.Edit) && (!String.IsNullOrEmpty(form["sbkWchs_TextEdit"].TrimFirst())))
             {
                 string newSource = form["sbkWchs_TextEdit"];
                 if (!String.IsNullOrEmpty(newSource))

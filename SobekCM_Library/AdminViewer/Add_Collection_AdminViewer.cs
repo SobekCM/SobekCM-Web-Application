@@ -628,7 +628,7 @@ namespace SobekCM.Library.AdminViewer
         private void Save_Page_Welcome_Postback(NameValueCollection Form)
         {
             // Do nothing
-            bool do_not_show_flag = (Form["admin_wizard_donotshow"] != null);
+            bool do_not_show_flag = (!String.IsNullOrEmpty(Form["admin_wizard_donotshow"].TrimFirst()));
             if (do_not_show_flag)
             {
                 RequestSpecificValues.Current_User.Add_Setting("Add_Collection_AdminViewer:Skip Welcome", "true");
@@ -665,10 +665,10 @@ namespace SobekCM.Library.AdminViewer
             string new_type = Form["admin_aggr_type"];
             string new_parent = String.Empty;
             bool parent_locked = true;
-            string new_name = Form["admin_aggr_name"].Trim();
-            string new_shortname = Form["admin_aggr_shortname"].Trim();
-            string new_description = Form["admin_aggr_desc"].Trim();
-            string new_link = Form["admin_aggr_link"].Trim();
+            string new_name = Form["admin_aggr_name"].TrimFirst();
+            string new_shortname = Form["admin_aggr_shortname"].TrimFirst();
+            string new_description = Form["admin_aggr_desc"].TrimFirst();
+            string new_link = Form["admin_aggr_link"].TrimFirst();
 
 
             // Convert to the integer id for the parent and begin to do checking
@@ -677,7 +677,7 @@ namespace SobekCM.Library.AdminViewer
 
             if ((!newAggr.ParentLocked.HasValue) || (!newAggr.ParentLocked.Value))
             {
-                new_parent = Form["admin_aggr_parent"].Trim();
+                new_parent = Form["admin_aggr_parent"].TrimFirst();
                 parent_locked = false;
                 if (String.IsNullOrEmpty(new_parent))
                 {
@@ -986,9 +986,9 @@ namespace SobekCM.Library.AdminViewer
 
         private void Save_Page_Visibility_Postback(NameValueCollection Form)
         {
-            string new_thematic_heading = Form["admin_aggr_heading"].Trim();
+            string new_thematic_heading = Form["admin_aggr_heading"].TrimFirst();
 
-            bool is_active = Form["admin_aggr_isactive"] != null;
+            bool is_active = !String.IsNullOrEmpty(Form["admin_aggr_isactive"].TrimFirst());
             bool is_hidden = Form["admin_aggr_ishidden"] == null;
 
             // Get the thematic heading id (no checks here)

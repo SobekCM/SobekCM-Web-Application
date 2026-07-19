@@ -253,7 +253,7 @@ namespace SobekCM.Library.Citation.Elements
 
 
                 string language = String.Empty;
-                if (Context.Request.Form[language_key] != null)
+                if (!String.IsNullOrEmpty(Context.Request.Form[language_key].TrimFirst()))
                 {
                     language = Context.Request.Form[language_key].TrimFirst();
                 }

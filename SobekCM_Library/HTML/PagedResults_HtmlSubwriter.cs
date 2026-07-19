@@ -82,7 +82,7 @@ namespace SobekCM.Library.HTML
 
 			// Try to get the facet configuration information
 			facetInformation = "00000000";
-			if (Context.Request.Form["facet"] != null)
+			if (!String.IsNullOrEmpty(Context.Request.Form["facet"].TrimFirst()))
 				facetInformation = Context.Request.Form["facet"].PadRight(7, '0');
 
 			if ( true ) // if (currentMode.isPostBack)
@@ -91,17 +91,17 @@ namespace SobekCM.Library.HTML
 				NameValueCollection form = Context.Request.Form;
 
 			
-				if (form["item_action"] != null)
+				if (!String.IsNullOrEmpty(form["item_action"].TrimFirst()))
 				{
-					string action = form["item_action"].ToLower().Trim();
-					string url_description = form["url_description"].Trim();
+					string action = form["item_action"].TrimFirst().ToLower();
+					string url_description = form["url_description"].TrimFirst();
 					
 					if (action == "email")
 					{
 						string address = form["email_address"].Replace(";", ",").Trim();
-						string comments = form["email_comments"].Trim();
-						string format = form["email_format"].Trim().ToUpper();
-						string list_type = form["list_type"].Trim();
+						string comments = form["email_comments"].TrimFirst();
+						string format = form["email_format"].TrimFirst().ToUpper();
+						string list_type = form["list_type"].TrimFirst();
 
 						if (address.Length > 0)
 						{
@@ -133,8 +133,8 @@ namespace SobekCM.Library.HTML
 
 					if (action == "save_search")
 					{
-						string usernotes = Context.Request.Form["add_notes"].Trim();
-						bool open_searches = Context.Request.Form["open_searches"] != null;
+						string usernotes = Context.Request.Form["add_notes"].TrimFirst();
+						bool open_searches = !String.IsNullOrEmpty(Context.Request.Form["open_searches"].TrimFirst());
 
 						string original_url = Context.Items["Original_URL"].ToString();
                         if (SobekCM_Database.Save_User_Search(RequestSpecificValues.Current_User.UserID, original_url, url_description, 0, usernotes, RequestSpecificValues.Tracer) != -1000)

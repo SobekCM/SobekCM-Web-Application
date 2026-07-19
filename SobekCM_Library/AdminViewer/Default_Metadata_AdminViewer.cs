@@ -78,9 +78,9 @@ namespace SobekCM.Library.AdminViewer
                     // Pull the standard values
                     NameValueCollection form = Context.Request.Form;
 
-                    string save_value = form["admin_project_tosave"].ToUpper().Trim();
-                    string delete_value = form["admin_project_delete"].ToUpper().Trim();
-                    string code_value = form["admin_project_code"].ToUpper().Trim();
+                    string save_value = form["admin_project_tosave"].TrimFirst().ToUpper();
+                    string delete_value = form["admin_project_delete"].TrimFirst().ToUpper();
+                    string code_value = form["admin_project_code"].TrimFirst().ToUpper();
 
                     // Was this a delete request?
                     if ((RequestSpecificValues.Current_User.Is_System_Admin) && (delete_value.Length > 0))
@@ -124,9 +124,9 @@ namespace SobekCM.Library.AdminViewer
                         if (save_value == code_value)
                         {
                             entered_code = code_value;
-                            entered_base = form["admin_project_base"].ToUpper().Trim();
-                            entered_name = form["admin_project_name"].Trim().Replace("\"", "'");
-                            entered_desc = form["admin_project_desc"].Trim().Replace("\"", "'");
+                            entered_base = form["admin_project_base"].TrimFirst().ToUpper();
+                            entered_name = form["admin_project_name"].TrimFirst().Replace("\"", "'");
+                            entered_desc = form["admin_project_desc"].TrimFirst().Replace("\"", "'");
 
                             if (entered_name.Length == 0)
                                 entered_name = entered_code;
@@ -194,8 +194,8 @@ namespace SobekCM.Library.AdminViewer
                         }
                         else
                         {
-                            string edit_name = form["form_project_name"].Trim().Replace("\"", "'");
-                            string edit_description = form["form_project_desc"].Trim().Replace("\"", "'");
+                            string edit_name = form["form_project_name"].TrimFirst().Replace("\"", "'");
+                            string edit_description = form["form_project_desc"].TrimFirst().Replace("\"", "'");
 
                             // Save this existing interface
                             if (SobekCM_Database.Save_Default_Metadata(save_value.ToUpper(), edit_name, edit_description, -1, RequestSpecificValues.Tracer))

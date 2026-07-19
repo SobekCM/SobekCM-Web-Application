@@ -184,9 +184,9 @@ namespace SobekCM.Library.HTML
 
             NameValueCollection form = Context.Request.Form;
 
-            if ( form["item_action"] != null)
+            if ( !String.IsNullOrEmpty(form["item_action"].TrimFirst()))
             {
-                string action = form["item_action"].ToLower().Trim();
+                string action = form["item_action"].TrimFirst().ToLower();
 
                 if ((action == "add_aggregation") && ( RequestSpecificValues.Current_User != null ))
                 {
@@ -201,7 +201,7 @@ namespace SobekCM.Library.HTML
                     string remove_code = hierarchyObject.Code;
                     string remove_name = hierarchyObject.Name;
 
-                    if ((form["aggregation"] != null) && (form["aggregation"].Length > 0))
+                    if ((!String.IsNullOrEmpty(form["aggregation"].TrimFirst())) && (form["aggregation"].Length > 0))
                     {
                         Item_Aggregation_Related_Aggregations aggrInfo = UI_ApplicationCache_Gateway.Aggregations[form["aggregation"]];
                         if (aggrInfo != null)
@@ -230,8 +230,8 @@ namespace SobekCM.Library.HTML
                 if ((action == "email") && ( RequestSpecificValues.Current_User != null ))
                 {
                     string address = form["email_address"].Replace(";", ",").Trim();
-                    string comments = form["email_comments"].Trim();
-                    string format = form["email_format"].Trim().ToUpper();
+                    string comments = form["email_comments"].TrimFirst();
+                    string format = form["email_format"].TrimFirst().ToUpper();
 
                     if (address.Length > 0)
                     {
@@ -268,7 +268,7 @@ namespace SobekCM.Library.HTML
 
             RequestSpecificValues.Tracer.Add_Trace("Aggregation_HtmlSubwriter.Constructor", "Handle post backs from editing home page text.");
 
-            if (( RequestSpecificValues.Current_Mode.Aggregation_Type == Aggregation_Type_Enum.Home_Edit ) && ( form["sbkAghsw_HomeTextEdit"] != null))
+            if (( RequestSpecificValues.Current_Mode.Aggregation_Type == Aggregation_Type_Enum.Home_Edit ) && ( !String.IsNullOrEmpty(form["sbkAghsw_HomeTextEdit"].TrimFirst())))
 			{
 				string aggregation_folder = UI_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location + "aggregations\\" + hierarchyObject.Code + "\\";
 			    if (!Directory.Exists(aggregation_folder))
@@ -514,7 +514,7 @@ namespace SobekCM.Library.HTML
                 switch (collectionViewer.Selection_Panel_Display)
                 {
                     case Selection_Panel_Display_Enum.Selectable:
-                        if (form["show_subaggrs"] != null)
+                        if (!String.IsNullOrEmpty(form["show_subaggrs"].TrimFirst()))
                         {
                             string show_subaggrs = form["show_subaggrs"].ToUpper();
                             if (show_subaggrs == "TRUE")

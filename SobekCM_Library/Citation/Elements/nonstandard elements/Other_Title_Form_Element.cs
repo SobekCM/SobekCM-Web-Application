@@ -462,7 +462,7 @@ namespace SobekCM.Library.Citation.Elements
                     string type = Context.Request.Form[thisKey].TrimFirst();
                     string diff = thisKey.Replace("formothertitletype_", "");
                     string display = String.Empty;
-                    if ( Context.Request.Form["formothertitledisplay_" + diff] != null )
+                    if ( !String.IsNullOrEmpty(Context.Request.Form["formothertitledisplay_" + diff].TrimFirst()) )
                         display = Context.Request.Form["formothertitledisplay_" + diff].TrimFirst();
                     string nonsort = Context.Request.Form["formothertitlenonsort_" + diff].TrimFirst();
                     string title = Context.Request.Form["formothertitletitle_" + diff].TrimFirst();

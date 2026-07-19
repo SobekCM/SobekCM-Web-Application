@@ -10,6 +10,7 @@ using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
 using SobekCM.Tools;
 using Microsoft.AspNetCore.Http;
+using SobekCM.Library.UI;
 
 #endregion
 
@@ -41,7 +42,7 @@ namespace SobekCM.Library.MySobekViewer
                 // Pull the standard values
                 var form = Context.Request.Form;
 
-                string item_action = form["item_action"].ToUpper().Trim();
+                string item_action = form["item_action"].TrimFirst().ToUpper();
                 string folder_id = form["folder_id"].TrimFirst();
 
                 if (item_action == "REMOVE")

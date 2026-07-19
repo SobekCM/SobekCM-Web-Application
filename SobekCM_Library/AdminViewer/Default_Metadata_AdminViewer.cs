@@ -76,7 +76,7 @@ namespace SobekCM.Library.AdminViewer
                 try
                 {
                     // Pull the standard values
-                    NameValueCollection form = Context.Request.Form;
+                    var form = Context.Request.Form;
 
                     string save_value = form["admin_project_tosave"].TrimFirst().ToUpper();
                     string delete_value = form["admin_project_delete"].TrimFirst().ToUpper();

@@ -23,7 +23,7 @@ namespace SobekCM.Library.ResultsViewer
         {
  
             //holds actions from page
-            string payload = Context.Request.Form["payload"] ?? String.Empty;
+            string payload = Context.Request.Form["payload"].TrimFirst();
             
             // See if there were hidden requests
             if (!String.IsNullOrEmpty(payload))
@@ -94,8 +94,8 @@ namespace SobekCM.Library.ResultsViewer
             mapSearchBuilder.AppendLine("  ");
             //ADD EXISTING POINTS WITH JSON
             mapSearchBuilder.AppendLine("       function initJSON(){ ");
-            if (HttpContext.Current.Items["DSR"]!=null)
-                mapSearchBuilder.AppendLine("       DSR = JSON.stringify(" + HttpContext.Current.Items["DSR"].ToString() + "); ");
+            if (Context.Items["DSR"]!=null)
+                mapSearchBuilder.AppendLine("       DSR = JSON.stringify(" + Context.Items["DSR"].ToString() + "); ");
             mapSearchBuilder.AppendLine("       } ");
             mapSearchBuilder.AppendLine("     </script> ");
             mapSearchBuilder.AppendLine("  ");
@@ -120,7 +120,7 @@ namespace SobekCM.Library.ResultsViewer
         }
         
         //performs an aggregation search based on a single aggregation (can be used to remove aggregation as well
-        public static void Perform_Aggregation_Search(string[] aggregationIds, Custom_Tracer Tracer)
+        public void Perform_Aggregation_Search(string[] aggregationIds, Custom_Tracer Tracer)
         {
             //hooks (eventual expansion) 
             int HOOK_maxFIDCount = 8; 
@@ -133,7 +133,7 @@ namespace SobekCM.Library.ResultsViewer
             if (Context.SessionObject()["FIDKey"] == null)
                 Context.SessionObject()["FIDKey"] = ""; //init
             string FIDKey = Context.SessionObject()["FIDKey"].ToString();
-            List<string> FIDs = (List<string>)HttpContext.Current.Cache[FIDKey];
+            List<string> FIDs = (List<string>) Context.SessionObject()[FIDKey];
             List<string> temp_FIDs = new List<string>();
             foreach (string FID in FIDs)
             {
@@ -205,7 +205,7 @@ namespace SobekCM.Library.ResultsViewer
             
             //check to see if we already have msr in cache, else get a new msr
             string MSRKey = Context.SessionObject()["MapSearchResultsKey"].ToString();
-            if (HttpContext.Current.Cache[MSRKey] == null)
+            if (Context.SessionObject()[MSRKey] == null)
             {
                 #region Create New MSR
                 
@@ -320,17 +320,17 @@ namespace SobekCM.Library.ResultsViewer
                 displaySearchResults.Rows.Add("neBounds", nex.ToString(), ney.ToString());
 
                 //assign and hold the current search result datatable, from now on we will be using this as the base layer..
-                HttpContext.Current.Cache[MSRKey] = searchResults;
-                HttpContext.Current.Cache[MSRKey + "_Created"] = DateTime.Now;
+                Context.SessionObject()[MSRKey] = searchResults;
+                Context.SessionObject()[MSRKey + "_Created"] = DateTime.Now;
 
                 #endregion
             }
             else
             {
-                if (HttpContext.Current.Cache[MSRKey + "_Created"] != null)
+                if (Context.SessionObject()[MSRKey + "_Created"] != null)
                 {
                     //determine if MSR is more than 30 mins old
-                    if ((DateTime.Now.Subtract(Convert.ToDateTime(HttpContext.Current.Cache[MSRKey + "_Created"].ToString())).TotalMinutes) > 30)
+                    if ((DateTime.Now.Subtract(Convert.ToDateTime(Context.SessionObject()[MSRKey + "_Created"].ToString())).TotalMinutes) > 30)
                     {
                         #region Create new MSR
 
@@ -429,8 +429,8 @@ namespace SobekCM.Library.ResultsViewer
                         displaySearchResults.Rows.Add("neBounds", nex.ToString(), ney.ToString());
 
                         //assign and hold the current search result datatable, from now on we will be using this as the base layer..
-                        HttpContext.Current.Cache[MSRKey] = searchResults;
-                        HttpContext.Current.Cache[MSRKey + "_Created"] = DateTime.Now;
+                        Context.SessionObject()[MSRKey] = searchResults;
+                        Context.SessionObject()[MSRKey + "_Created"] = DateTime.Now;
 
                         #endregion
                     }
@@ -439,7 +439,7 @@ namespace SobekCM.Library.ResultsViewer
                         #region Use Existing MSR
 
                         //assign cached MSR to active MSR
-                        searchResults = HttpContext.Current.Cache[MSRKey] as DataTable;
+                        searchResults = Context.SessionObject()[MSRKey] as DataTable;
 
                         //add to the DSR
                         foreach (DataRow searchResult in searchResults.Rows)
@@ -465,14 +465,14 @@ namespace SobekCM.Library.ResultsViewer
             object DSR = Create_JSON_Search_Results_Object(displaySearchResults);
 
             //send json obj to page and tell page to read it (via callback results)
-            HttpContext.Current.Items["DSR"] = DSR;
+            Context.SessionObject()["DSR"] = DSR;
 
             #endregion
 
         }
 
         //performs a bounds search
-        public static void Perform_Coordinate_Bounds_Search(double swx, double swy, double nex, double ney)
+        public void Perform_Coordinate_Bounds_Search(double swx, double swy, double nex, double ney)
         {
             
             //create them display search results object
@@ -486,7 +486,7 @@ namespace SobekCM.Library.ResultsViewer
             string MSRKey = Context.SessionObject()["MapSearchResultsKey"].ToString();
             
             DataTable SR = new DataTable();
-            SR = HttpContext.Current.Cache[MSRKey] as DataTable;
+            SR = Context.SessionObject()[MSRKey] as DataTable;
 
             //add only the points within the bounds to the dsr
             foreach (DataRow result in SR.Rows)
@@ -514,7 +514,7 @@ namespace SobekCM.Library.ResultsViewer
             object DSR = Create_JSON_Search_Results_Object(tempDSR);
 
             //add the dsr to the session state
-            HttpContext.Current.Items["DSR"] = DSR;
+            Context.SessionObject()["DSR"] = DSR;
 
         }
 

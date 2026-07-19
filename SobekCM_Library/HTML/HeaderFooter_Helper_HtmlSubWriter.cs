@@ -27,7 +27,7 @@ namespace SobekCM.Library.HTML
         /// <param name="Behaviors"> List of behaviors from the html subwriters </param>
         /// <param name="Current_Aggregation"> Current aggregation object, if there is one </param>
         /// <param name="Current_Item"> Current item object, if there is one </param>
-        public static void Add_Header(TextWriter Output, RequestCache RequestSpecificValues, string Container_CssClass, string Web_Page_Title, List<HtmlSubwriter_Behaviors_Enum> Behaviors, Item_Aggregation Current_Aggregation, BriefItemInfo Current_Item )
+        public static void Add_Header(TextWriter Output, RequestCache RequestSpecificValues, string Container_CssClass, string Web_Page_Title, List<HtmlSubwriter_Behaviors_Enum> Behaviors, Item_Aggregation Current_Aggregation, BriefItemInfo Current_Item, HttpContext Context )
         {
             // Get the url options
             string url_options = UrlWriterHelper.URL_Options(RequestSpecificValues.Current_Mode);
@@ -295,7 +295,7 @@ namespace SobekCM.Library.HTML
             banner = "<!-- banner start -->\r\n" + banner + "<!-- banner end -->\r\n";
 
             // Get the session id and user id
-            string sessionId = HttpContext.Current.Session.SessionID ?? String.Empty;
+            string sessionId = Context.Session.SessionID ?? String.Empty;
             string userid = ((RequestSpecificValues.Current_User != null) && (RequestSpecificValues.Current_User.UserID > 0)) ? RequestSpecificValues.Current_User.UserID.ToString() : String.Empty;
 
             // Add the appropriate header
@@ -431,7 +431,7 @@ namespace SobekCM.Library.HTML
                 version = version.Split(" ".ToCharArray())[0];
 
             // Get the session id
-            string sessionId = HttpContext.Current.Session.SessionID ?? String.Empty;
+            string sessionId = Context.Session.SessionID ?? String.Empty;
             string userid = ((RequestSpecificValues.Current_User != null) && (RequestSpecificValues.Current_User.UserID > 0)) ? RequestSpecificValues.Current_User.UserID.ToString() : String.Empty;
 
             StringBuilder footerBuilder = new StringBuilder();
@@ -486,8 +486,8 @@ namespace SobekCM.Library.HTML
                 string mySobekOptions = url_options;
                 string mySobekLogoutOptions = url_options;
                 string return_url = String.Empty;
-                if ((HttpContext.Current != null) && (HttpContext.Current.Items["Original_URL"] != null))
-                    return_url = HttpContext.Current.Items["Original_URL"].ToString().ToLower().Replace(RequestSpecificValues.Current_Mode.Base_URL.ToLower(), "");
+                if ((Context != null) && (Context.Items["Original_URL"] != null))
+                    return_url = Context.Items["Original_URL"].ToString().ToLower().Replace(RequestSpecificValues.Current_Mode.Base_URL.ToLower(), "");
                 if (return_url.IndexOf("?") > 0)
                     return_url = return_url.Substring(0, return_url.IndexOf("?"));
                 if (return_url.IndexOf("my/") == 0)

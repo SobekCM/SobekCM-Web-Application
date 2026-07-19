@@ -33,7 +33,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         protected RequestCache RequestSpecificValues;
 
         /// <summary> HTTP context for the current request </summary>
-        protected HttpContext Context => RequestSpecificValues?.Context;
+        protected HttpContext Context;
 
         /// <summary> Protected field contains the aggregation-specific request information </summary>
         protected AggregationViewBag ViewBag;
@@ -45,10 +45,11 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         /// <summary> Constructor for objects which implement this abstract class  </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
         /// <param name="ViewBag"> Aggregation-specific request information, such as aggregation object and any browse object requested </param>
-        protected abstractAggregationViewer(RequestCache RequestSpecificValues, AggregationViewBag ViewBag)
+        protected abstractAggregationViewer(RequestCache RequestSpecificValues, AggregationViewBag ViewBag, HttpContext Context)
         {
             this.RequestSpecificValues = RequestSpecificValues;
             this.ViewBag = ViewBag;
+            this.Context = Context;
         }
 
         #region iAggregationViewer Members

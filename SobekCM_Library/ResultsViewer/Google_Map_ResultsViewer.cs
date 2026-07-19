@@ -664,7 +664,7 @@ namespace SobekCM.Library.ResultsViewer
         /// <summary> for some reason I cannot put this in the beta??? </summary>
         /// <param name="sendData">The send data.</param>
         /// <returns></returns>
-        public static object Process_MapSearch_Callback(string sendData)
+        public object Process_MapSearch_Callback(string sendData)
         {
             //blank tracer
             Custom_Tracer Tracer = new Custom_Tracer();
@@ -735,7 +735,7 @@ namespace SobekCM.Library.ResultsViewer
             #endregion
 
             //return HttpContext.Current.Session["SearchResultsJSON"].ToString();
-            return HttpContext.Current.Items["DSR"];
+            return Context.Items["DSR"];
         }
 
     }

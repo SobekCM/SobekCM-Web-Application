@@ -61,7 +61,7 @@ namespace SobekCM.Library.AdminViewer
 		    // Perform post back work in the subviewer
 			if (RequestSpecificValues.Current_Mode.isPostBack)
 			{
-                subviewer.HandlePostback(RequestSpecificValues);
+                subviewer.HandlePostback(RequestSpecificValues, Context);
 			}
 		}
 

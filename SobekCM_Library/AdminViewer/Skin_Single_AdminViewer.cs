@@ -119,7 +119,7 @@ namespace SobekCM.Library.AdminViewer
                 try
                 {
                     // Pull the standard values
-                    NameValueCollection form = Context.Request.Form;
+                    var form = Context.Request.Form;
 
                     // Get the curret action
                     string action = form["admin_skin_save"];
@@ -690,7 +690,7 @@ namespace SobekCM.Library.AdminViewer
 
         #region Methods to render (and parse) page 1 - Basic Information
 
-        private void Save_Page_1_Postback(NameValueCollection Form)
+        private void Save_Page_1_Postback(IFormCollection Form)
         {
             string edit_base_code = Form["webskin_basecode"].TrimFirst().ToUpper();
             string edit_banner_link = Form["webskin_bannerlink"].TrimFirst();
@@ -824,7 +824,7 @@ namespace SobekCM.Library.AdminViewer
 
         #region Methods to render (and parse) page 2 - Stylesheet
 
-        private void Save_Page_2_Postback(NameValueCollection Form)
+        private void Save_Page_2_Postback(IFormCollection Form)
         {
             // Check for action flag
             string css_contents = Form["css_source_content"].TrimFirst();
@@ -887,7 +887,7 @@ namespace SobekCM.Library.AdminViewer
 
         #region Methods to render (and parse) page 3 - HTML (headers and footers)
 
-        private void Save_Page_3_Postback(NameValueCollection Form)
+        private void Save_Page_3_Postback(IFormCollection Form)
         {
             Web_Language_Enum current_language = Web_Language_Enum.DEFAULT;
 
@@ -1239,7 +1239,7 @@ namespace SobekCM.Library.AdminViewer
 
         #region Methods to render (and parse) page 4 - Banners
 
-        private void Save_Page_4_Postback(NameValueCollection Form)
+        private void Save_Page_4_Postback(IFormCollection Form)
         {
  
         }
@@ -1258,7 +1258,7 @@ namespace SobekCM.Library.AdminViewer
 
         #region Methods to render (and parse) page 5 -  Uploads
 
-        private void Save_Page_Uploads_Postback(NameValueCollection Form)
+        private void Save_Page_Uploads_Postback(IFormCollection Form)
         {
             string action = Form["admin_skin_action"];
             if ((action.Length > 0) && (action.IndexOf("delete_") == 0))
@@ -1586,7 +1586,7 @@ namespace SobekCM.Library.AdminViewer
 
         #region Methods to render (and parse) page 6 - Javascript
 
-        private void Save_Page_6_Postback(NameValueCollection Form)
+        private void Save_Page_6_Postback(IFormCollection Form)
         {
             // Check for action flag
             string javascript_contents = Form["javascript_source_content"].TrimFirst();

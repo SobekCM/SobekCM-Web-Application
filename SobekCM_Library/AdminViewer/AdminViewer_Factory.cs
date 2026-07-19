@@ -106,7 +106,7 @@ namespace SobekCM.Library.AdminViewer
                             if (projectObject != null)
                             {
                                 RequestSpecificValues.Tracer.Add_Trace("AdminViewer_Factory.Get_AdminViewer", "Valid default metadata set found in cache");
-                                return new Edit_Item_Metadata_MySobekViewer(projectObject, RequestSpecificValues);
+                                return new Edit_Item_Metadata_MySobekViewer(projectObject, RequestSpecificValues, Context);
                             }
                             else
                             {
@@ -125,7 +125,7 @@ namespace SobekCM.Library.AdminViewer
 
                                     CachedDataManager.Store_Project(RequestSpecificValues.Current_User.UserID, project_code, pmets_item, RequestSpecificValues.Tracer);
 
-                                    return new Edit_Item_Metadata_MySobekViewer(pmets_item, RequestSpecificValues);
+                                    return new Edit_Item_Metadata_MySobekViewer(pmets_item, RequestSpecificValues, Context);
                                 }
                             }
                         }

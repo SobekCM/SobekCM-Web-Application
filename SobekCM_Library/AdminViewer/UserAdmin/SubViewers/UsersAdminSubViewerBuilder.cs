@@ -1,16 +1,20 @@
+using Microsoft.AspNetCore.Http;
 using SobekCM.Core.Users;
 using SobekCM.Engine_Library.Database;
+using SobekCM.Library.UI;
 using System;
 using System.Linq;
+
+
 
 namespace SobekCM.Library.AdminViewer.UserAdmin.SubViewers
 {
     public static class UsersAdminSubViewerBuilder
     {
-        public static iUsersAdminSubViewer GetSubViewer(RequestCache RequestSpecificValues)
+        public static iUsersAdminSubViewer GetSubViewer(RequestCache RequestSpecificValues, HttpContext Context)
         {
             // Get the user to edit, if there was a user id in the submode
-            User_Object User = get_user(RequestSpecificValues);
+            User_Object User = get_user(RequestSpecificValues, Context);
 
             iUsersAdminSubViewer subviewer;
 
@@ -35,7 +39,7 @@ namespace SobekCM.Library.AdminViewer.UserAdmin.SubViewers
         /// <summary> Get the user to edit, if there was a user id in the submode </summary>
         /// <param name="RequestSpecificValues"></param>
         /// <returns> User, or NULL if there was no match </returns>
-        private static User_Object get_user(RequestCache RequestSpecificValues)
+        private static User_Object get_user(RequestCache RequestSpecificValues, HttpContext Context)
         {
             if (String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.My_Sobek_SubMode)) return null;
 

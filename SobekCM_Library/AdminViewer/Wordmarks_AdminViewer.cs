@@ -272,7 +272,7 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine("<script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Jquery_Ui_1_10_3_Custom_Js + "\"></script>");
 
 			// Start this added form
-			string post_url = System.Net.WebUtility.HtmlEncode(HttpContext.Current.Items["Original_URL"].ToString());
+			string post_url = System.Net.WebUtility.HtmlEncode(Context.Items["Original_URL"].ToString());
 			Output.WriteLine("<form name=\"sbkAdm_AddedForm\" method=\"post\" action=\"" + post_url + "\" id=\"sbkAdm_AddedForm\" >");
 
 			// Add the hidden field

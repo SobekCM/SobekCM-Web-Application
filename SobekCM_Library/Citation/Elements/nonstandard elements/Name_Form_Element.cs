@@ -12,6 +12,7 @@ using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Users;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Bib_Info;
+using SobekCM.Library.UI;
 
 #endregion
 
@@ -280,20 +281,20 @@ namespace SobekCM.Library.Citation.Elements
             {
                 if (thisKey.IndexOf("form_name_type_") == 0)
                 {
-                    string type = Context.Request.Form[thisKey].Trim();
+                    string type = Context.Request.Form[thisKey].TrimFirst();
                     string diff = thisKey.Replace("form_name_type_", "");
-                    string main = Context.Request.Form["form_name_main_" + diff].Trim();
-                    string full = Context.Request.Form["form_name_full_" + diff ].Trim();
-                    string given = Context.Request.Form["form_name_given_" + diff].Trim();
-                    string family = Context.Request.Form["form_name_family_" + diff].Trim();
-                    string display = Context.Request.Form["form_name_display_" + diff].Trim();
-                    string terms = Context.Request.Form["form_name_terms_" + diff].Trim();
-                    string dates = Context.Request.Form["form_name_dates_" + diff].Trim();
-                    string desc = Context.Request.Form["form_name_desc_" + diff].Trim();
-                    string affiliation = Context.Request.Form["form_name_affiliation_" + diff].Trim();
-                    string role1 = Context.Request.Form["form_name_role1_" + diff].Trim();
-                    string role2 = Context.Request.Form["form_name_role2_" + diff].Trim();
-                    string role3 = Context.Request.Form["form_name_role3_" + diff].Trim();
+                    string main = Context.Request.Form["form_name_main_" + diff].TrimFirst();
+                    string full = Context.Request.Form["form_name_full_" + diff ].TrimFirst();
+                    string given = Context.Request.Form["form_name_given_" + diff].TrimFirst();
+                    string family = Context.Request.Form["form_name_family_" + diff].TrimFirst();
+                    string display = Context.Request.Form["form_name_display_" + diff].TrimFirst();
+                    string terms = Context.Request.Form["form_name_terms_" + diff].TrimFirst();
+                    string dates = Context.Request.Form["form_name_dates_" + diff].TrimFirst();
+                    string desc = Context.Request.Form["form_name_desc_" + diff].TrimFirst();
+                    string affiliation = Context.Request.Form["form_name_affiliation_" + diff].TrimFirst();
+                    string role1 = Context.Request.Form["form_name_role1_" + diff].TrimFirst();
+                    string role2 = Context.Request.Form["form_name_role2_" + diff].TrimFirst();
+                    string role3 = Context.Request.Form["form_name_role3_" + diff].TrimFirst();
 
                     if ((full.Length > 0) || (given.Length > 0) || (family.Length > 0))
                     {

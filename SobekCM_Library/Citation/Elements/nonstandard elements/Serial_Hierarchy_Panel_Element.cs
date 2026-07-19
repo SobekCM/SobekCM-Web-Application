@@ -11,6 +11,7 @@ using SobekCM.Core.Configuration;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Users;
 using SobekCM.Resource_Object;
+using SobekCM.Library.UI;
 
 #endregion
 
@@ -162,12 +163,12 @@ namespace SobekCM.Library.Citation.Elements
         public override void Save_To_Bib(SobekCM_Item Bib)
         {
             // Get these values directly
-            string enum1Text = Context.Request.Form["form_serialhierarchy_enum1text"].Trim();
-            string enum1OrderString = Context.Request.Form["form_serialhierarchy_enum1order"].Trim();
-            string enum2Text = Context.Request.Form["form_serialhierarchy_enum2text"].Trim();
-            string enum2OrderString = Context.Request.Form["form_serialhierarchy_enum2order"].Trim();
-            string enum3Text = Context.Request.Form["form_serialhierarchy_enum3text"].Trim();
-            string enum3OrderString = Context.Request.Form["form_serialhierarchy_enum3order"].Trim();
+            string enum1Text = Context.Request.Form["form_serialhierarchy_enum1text"].TrimFirst();
+            string enum1OrderString = Context.Request.Form["form_serialhierarchy_enum1order"].TrimFirst();
+            string enum2Text = Context.Request.Form["form_serialhierarchy_enum2text"].TrimFirst();
+            string enum2OrderString = Context.Request.Form["form_serialhierarchy_enum2order"].TrimFirst();
+            string enum3Text = Context.Request.Form["form_serialhierarchy_enum3text"].TrimFirst();
+            string enum3OrderString = Context.Request.Form["form_serialhierarchy_enum3order"].TrimFirst();
 
             // Check to see if the title is in enum1text
             if (enum1Text == "[TITLE]")

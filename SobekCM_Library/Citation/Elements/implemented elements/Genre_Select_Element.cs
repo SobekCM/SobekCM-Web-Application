@@ -13,6 +13,7 @@ using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Users;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Bib_Info;
+using SobekCM.Library.UI;
 
 #endregion
 
@@ -98,7 +99,7 @@ namespace SobekCM.Library.Citation.Elements
             {
                 if (thisKey.IndexOf(id) != 0) continue;
 
-                string genre = Context.Request.Form[thisKey].Trim();
+                string genre = Context.Request.Form[thisKey].TrimFirst();
                 
                 Bib.Bib_Info.Add_Genre(genre);
             }

@@ -13,6 +13,7 @@ using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Users;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Bib_Info;
+using SobekCM.Library.UI;
 
 #endregion
 
@@ -246,33 +247,33 @@ namespace SobekCM.Library.Citation.Elements
                 if (thisKey.IndexOf("formmaintitlenonsort") == 0)
                 {
                     Bib.Bib_Info.Main_Title.NonSort = Context.Request.Form[thisKey];
-                    string title = Context.Request.Form["formmaintitletitle"].Trim();
+                    string title = Context.Request.Form["formmaintitletitle"].TrimFirst();
                     if ( title.Length > 0 )
                         Bib.Bib_Info.Main_Title.Title = title;
-                    Bib.Bib_Info.Main_Title.Subtitle = Context.Request.Form["formmaintitlesubtitle"].Trim();
+                    Bib.Bib_Info.Main_Title.Subtitle = Context.Request.Form["formmaintitlesubtitle"].TrimFirst();
 
-                    string statement = Context.Request.Form["formmaintitlestatement"].Trim();
+                    string statement = Context.Request.Form["formmaintitlestatement"].TrimFirst();
                     if ( statement.Length > 0 )
                     {
                         Bib.Bib_Info.Add_Note( statement, Note_Type_Enum.StatementOfResponsibility );
                     }
 
-                    string partnum1 = Context.Request.Form["formmaintitlepartnum1"].Trim();
-                    string partnum2 = Context.Request.Form["formmaintitlepartnum2"].Trim();
+                    string partnum1 = Context.Request.Form["formmaintitlepartnum1"].TrimFirst();
+                    string partnum2 = Context.Request.Form["formmaintitlepartnum2"].TrimFirst();
                     if ( partnum1.Length > 0 )
                         Bib.Bib_Info.Main_Title.Add_Part_Number( partnum1 );
                     if ( partnum2.Length > 0 )
                         Bib.Bib_Info.Main_Title.Add_Part_Number(partnum2);
                     
-                    string partname1 = Context.Request.Form["formmaintitlepartname1"].Trim();
-                    string partname2 = Context.Request.Form["formmaintitlepartname2"].Trim();
+                    string partname1 = Context.Request.Form["formmaintitlepartname1"].TrimFirst();
+                    string partname2 = Context.Request.Form["formmaintitlepartname2"].TrimFirst();
                     if ( partname1.Length > 0 )
                         Bib.Bib_Info.Main_Title.Add_Part_Name( partname1 );
                     if ( partname2.Length > 0 )
                         Bib.Bib_Info.Main_Title.Add_Part_Name(partname2);
 
-                    Bib.Bib_Info.Main_Title.Authority = Context.Request.Form["formmaintitleauthority"].Trim();
-                    Bib.Bib_Info.Main_Title.Language = Context.Request.Form["formmaintitlelanguage"].Trim();
+                    Bib.Bib_Info.Main_Title.Authority = Context.Request.Form["formmaintitleauthority"].TrimFirst();
+                    Bib.Bib_Info.Main_Title.Language = Context.Request.Form["formmaintitlelanguage"].TrimFirst();
                 }
             }
         }

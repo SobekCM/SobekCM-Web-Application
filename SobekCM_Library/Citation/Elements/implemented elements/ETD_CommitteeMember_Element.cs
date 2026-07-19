@@ -10,6 +10,7 @@ using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Users;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Metadata_Modules;
+using SobekCM.Library.UI;
 
 #endregion
 
@@ -85,7 +86,7 @@ namespace SobekCM.Library.Citation.Elements
 				{
 					Thesis_Dissertation_Info etdInfo = Bib.Get_Metadata_Module(GlobalVar.THESIS_METADATA_MODULE_KEY) as Thesis_Dissertation_Info;
 
-					string value = Context.Request.Form[thisKey].Trim();
+					string value = Context.Request.Form[thisKey].TrimFirst();
 					if (value.Length > 0)
 					{
 						if (etdInfo == null)

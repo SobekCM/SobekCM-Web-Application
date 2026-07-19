@@ -11,6 +11,7 @@ using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Users;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Bib_Info;
+using SobekCM.Library.UI;
 
 #endregion
 
@@ -458,20 +459,20 @@ namespace SobekCM.Library.Citation.Elements
             {
                 if (thisKey.IndexOf("formothertitletype_") == 0)
                 {
-                    string type = Context.Request.Form[thisKey].Trim();
+                    string type = Context.Request.Form[thisKey].TrimFirst();
                     string diff = thisKey.Replace("formothertitletype_", "");
                     string display = String.Empty;
                     if ( Context.Request.Form["formothertitledisplay_" + diff] != null )
-                        display = Context.Request.Form["formothertitledisplay_" + diff].Trim();
-                    string nonsort = Context.Request.Form["formothertitlenonsort_" + diff].Trim();
-                    string title = Context.Request.Form["formothertitletitle_" + diff].Trim();
-                    string subtitle = Context.Request.Form["formothertitlesubtitle_" + diff].Trim();
-                    string partnum1 = Context.Request.Form["formothertitlepartnum1_" + diff].Trim();
-                    string partnum2 = Context.Request.Form["formothertitlepartnum2_" + diff].Trim();
-                    string partname1 = Context.Request.Form["formothertitlepartname1_" + diff].Trim();
-                    string partname2 = Context.Request.Form["formothertitlepartname2_" + diff].Trim();
-                    string authority = Context.Request.Form["formothertitleauthority_" + diff].Trim();
-                    string language = Context.Request.Form["formothertitlelanguage_" + diff].Trim();
+                        display = Context.Request.Form["formothertitledisplay_" + diff].TrimFirst();
+                    string nonsort = Context.Request.Form["formothertitlenonsort_" + diff].TrimFirst();
+                    string title = Context.Request.Form["formothertitletitle_" + diff].TrimFirst();
+                    string subtitle = Context.Request.Form["formothertitlesubtitle_" + diff].TrimFirst();
+                    string partnum1 = Context.Request.Form["formothertitlepartnum1_" + diff].TrimFirst();
+                    string partnum2 = Context.Request.Form["formothertitlepartnum2_" + diff].TrimFirst();
+                    string partname1 = Context.Request.Form["formothertitlepartname1_" + diff].TrimFirst();
+                    string partname2 = Context.Request.Form["formothertitlepartname2_" + diff].TrimFirst();
+                    string authority = Context.Request.Form["formothertitleauthority_" + diff].TrimFirst();
+                    string language = Context.Request.Form["formothertitlelanguage_" + diff].TrimFirst();
 
                     if (title.Length > 0)
                     {

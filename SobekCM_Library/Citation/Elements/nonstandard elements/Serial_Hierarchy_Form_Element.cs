@@ -13,6 +13,7 @@ using SobekCM.Core.Users;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Behaviors;
 using SobekCM.Resource_Object.Bib_Info;
+using SobekCM.Library.UI;
 
 #endregion
 
@@ -224,19 +225,19 @@ namespace SobekCM.Library.Citation.Elements
         public override void Save_To_Bib(SobekCM_Item Bib)
         {
             // Get these values directly
-            string primary = Context.Request.Form["form_serialhierarchy_primary"].Trim();
-            string enum1Text = Context.Request.Form["form_serialhierarchy_enum1text"].Trim();
-            string enum1OrderString = Context.Request.Form["form_serialhierarchy_enum1order"].Trim();
-            string enum2Text = Context.Request.Form["form_serialhierarchy_enum2text"].Trim();
-            string enum2OrderString = Context.Request.Form["form_serialhierarchy_enum2order"].Trim();
-            string enum3Text = Context.Request.Form["form_serialhierarchy_enum3text"].Trim();
-            string enum3OrderString = Context.Request.Form["form_serialhierarchy_enum3order"].Trim();
-            string chrono1Text = Context.Request.Form["form_serialhierarchy_chrono1text"].Trim();
-            string chrono1OrderString = Context.Request.Form["form_serialhierarchy_chrono1order"].Trim();
-            string chrono2Text = Context.Request.Form["form_serialhierarchy_chrono2text"].Trim();
-            string chrono2OrderString = Context.Request.Form["form_serialhierarchy_chrono2order"].Trim();
-            string chrono3Text = Context.Request.Form["form_serialhierarchy_chrono3text"].Trim();
-            string chrono3OrderString = Context.Request.Form["form_serialhierarchy_chrono3order"].Trim();
+            string primary = Context.Request.Form["form_serialhierarchy_primary"].TrimFirst();
+            string enum1Text = Context.Request.Form["form_serialhierarchy_enum1text"].TrimFirst();
+            string enum1OrderString = Context.Request.Form["form_serialhierarchy_enum1order"].TrimFirst();
+            string enum2Text = Context.Request.Form["form_serialhierarchy_enum2text"].TrimFirst();
+            string enum2OrderString = Context.Request.Form["form_serialhierarchy_enum2order"].TrimFirst();
+            string enum3Text = Context.Request.Form["form_serialhierarchy_enum3text"].TrimFirst();
+            string enum3OrderString = Context.Request.Form["form_serialhierarchy_enum3order"].TrimFirst();
+            string chrono1Text = Context.Request.Form["form_serialhierarchy_chrono1text"].TrimFirst();
+            string chrono1OrderString = Context.Request.Form["form_serialhierarchy_chrono1order"].TrimFirst();
+            string chrono2Text = Context.Request.Form["form_serialhierarchy_chrono2text"].TrimFirst();
+            string chrono2OrderString = Context.Request.Form["form_serialhierarchy_chrono2order"].TrimFirst();
+            string chrono3Text = Context.Request.Form["form_serialhierarchy_chrono3text"].TrimFirst();
+            string chrono3OrderString = Context.Request.Form["form_serialhierarchy_chrono3order"].TrimFirst();
 
             // Check to see if the title is in enum1text
             if (enum1Text == "[TITLE]")

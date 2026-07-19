@@ -12,6 +12,7 @@ using SobekCM.Core.Users;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Metadata_Modules;
 using SobekCM.Resource_Object.Metadata_Modules.LearningObjects;
+using SobekCM.Library.UI;
 
 #endregion
 
@@ -109,7 +110,7 @@ namespace SobekCM.Library.Citation.Elements
             foreach (string thisKey in getKeys.Where(thisKey => thisKey.IndexOf(html_element_name.Replace("_", "")) == 0))
             {
                 // Get the value from the form element
-                string value = Context.Request.Form[thisKey].Trim();
+                string value = Context.Request.Form[thisKey].TrimFirst();
                 if (value.Length > 0)
                 {
                     // There is a value, so ensure learning object metadata does exist

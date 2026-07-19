@@ -268,7 +268,7 @@ namespace SobekCM.Library.Citation.Elements
                 {
                     // Get the viewer type
                     //string key = thisKey.Replace("viewer_type", "");
-                    string type = Context.Request.Form[thisKey].Trim();
+                    string type = Context.Request.Form[thisKey].TrimFirst();
 
                     // Ensure no other view of this type already exists
                     if (addedViewTypes.ContainsKey(type))
@@ -302,11 +302,11 @@ namespace SobekCM.Library.Citation.Elements
                     //{
                     //    if (Context.Request.Form[file_key] != null)
                     //    {
-                    //        file = Context.Request.Form[file_key].Trim();
+                    //        file = Context.Request.Form[file_key].TrimFirst();
                     //    }
                     //    if (Context.Request.Form[label_key] != null)
                     //    {
-                    //        label = Context.Request.Form[label_key].Trim();
+                    //        label = Context.Request.Form[label_key].TrimFirst();
                     //    }
                     //}
 

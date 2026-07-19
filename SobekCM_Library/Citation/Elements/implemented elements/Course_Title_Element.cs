@@ -11,6 +11,7 @@ using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Users;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Bib_Info;
+using SobekCM.Library.UI;
 
 #endregion
 
@@ -106,7 +107,7 @@ namespace SobekCM.Library.Citation.Elements
         public override void Save_To_Bib(SobekCM_Item Bib)
         {
             string[] getKeys = Context.Request.Form.AllKeys;
-            foreach (string new_value in from thisKey in getKeys where thisKey.IndexOf(html_element_name.Replace("_", "")) == 0 select Context.Request.Form[thisKey].Trim())
+            foreach (string new_value in from thisKey in getKeys where thisKey.IndexOf(html_element_name.Replace("_", "")) == 0 select Context.Request.Form[thisKey].TrimFirst())
             {
                 if (new_value.Length > 0)
                 {

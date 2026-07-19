@@ -11,6 +11,7 @@ using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Users;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Bib_Info;
+using SobekCM.Library.UI;
 
 #endregion
 
@@ -189,9 +190,9 @@ namespace SobekCM.Library.Citation.Elements
                         string loc2_key = id + "_secondloc" + key;
                         string loc3_key = id + "_thirdloc" + key;
 
-                        string loc1 = Context.Request.Form[loc1_key].Trim();
-                        string loc2 = Context.Request.Form[loc2_key].Trim();
-                        string loc3 = Context.Request.Form[loc3_key].Trim();
+                        string loc1 = Context.Request.Form[loc1_key].TrimFirst();
+                        string loc2 = Context.Request.Form[loc2_key].TrimFirst();
+                        string loc3 = Context.Request.Form[loc3_key].TrimFirst();
 
                         Publisher_Info publisher = Bib.Bib_Info.Add_Manufacturer(name);
                         if (loc1.Length > 0)

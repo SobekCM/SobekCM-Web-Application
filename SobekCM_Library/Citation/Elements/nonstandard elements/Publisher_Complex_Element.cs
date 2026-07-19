@@ -11,6 +11,7 @@ using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Users;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Bib_Info;
+using SobekCM.Library.UI;
 
 #endregion
 
@@ -181,16 +182,16 @@ namespace SobekCM.Library.Citation.Elements
             {
                 if ((thisKey.IndexOf(id) == 0) && (thisKey.IndexOf("loc") < 0))
                 {
-                    string name = Context.Request.Form[thisKey].Trim();
+                    string name = Context.Request.Form[thisKey].TrimFirst();
 
                     string key = thisKey.Replace(id + "_name", "");
                     string loc1_key = id + "_firstloc" + key;
                     string loc2_key = id + "_secondloc" + key;
                     string loc3_key = id + "_thirdloc" + key;
 
-                    string loc1 = Context.Request.Form[loc1_key].Trim();
-                    string loc2 = Context.Request.Form[loc2_key].Trim();
-                    string loc3 = Context.Request.Form[loc3_key].Trim();
+                    string loc1 = Context.Request.Form[loc1_key].TrimFirst();
+                    string loc2 = Context.Request.Form[loc2_key].TrimFirst();
+                    string loc3 = Context.Request.Form[loc3_key].TrimFirst();
 
                     if ((name.Length > 0) || (loc1.Length > 0) || (loc2.Length > 0) || (loc3.Length > 0))
                     {

@@ -10,6 +10,7 @@ using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Users;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Metadata_Modules;
+using SobekCM.Library.UI;
 
 #endregion
 
@@ -173,13 +174,13 @@ namespace SobekCM.Library.Citation.Elements
                     string diff = thisKey.Replace("formzootaxonkingdom_", "");
 
                     zooInfo.Kingdom = Context.Request.Form[thisKey];
-                    zooInfo.Phylum = Context.Request.Form["formzootaxonphylum_" + diff].Trim();
-                    zooInfo.Class = Context.Request.Form["formzootaxonclass_" + diff].Trim();
-                    zooInfo.Order = Context.Request.Form["formzootaxonorder_" + diff].Trim();
-                    zooInfo.Family = Context.Request.Form["formzootaxonfamily_" + diff].Trim();
-                    zooInfo.Genus = Context.Request.Form["formzootaxongenus_" + diff].Trim();
-                    zooInfo.Specific_Epithet = Context.Request.Form["formzootaxonspecies_" + diff].Trim();
-                    zooInfo.Common_Name = Context.Request.Form["formzootaxoncommon_" + diff].Trim();
+                    zooInfo.Phylum = Context.Request.Form["formzootaxonphylum_" + diff].TrimFirst();
+                    zooInfo.Class = Context.Request.Form["formzootaxonclass_" + diff].TrimFirst();
+                    zooInfo.Order = Context.Request.Form["formzootaxonorder_" + diff].TrimFirst();
+                    zooInfo.Family = Context.Request.Form["formzootaxonfamily_" + diff].TrimFirst();
+                    zooInfo.Genus = Context.Request.Form["formzootaxongenus_" + diff].TrimFirst();
+                    zooInfo.Specific_Epithet = Context.Request.Form["formzootaxonspecies_" + diff].TrimFirst();
+                    zooInfo.Common_Name = Context.Request.Form["formzootaxoncommon_" + diff].TrimFirst();
 
                     Bib.Add_Metadata_Module(GlobalVar.ZOOLOGICAL_TAXONOMY_METADATA_MODULE_KEY, zooInfo);
                 }

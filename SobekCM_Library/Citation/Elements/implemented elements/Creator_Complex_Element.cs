@@ -11,6 +11,7 @@ using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Users;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Bib_Info;
+using SobekCM.Library.UI;
 
 #endregion
 
@@ -229,7 +230,7 @@ namespace SobekCM.Library.Citation.Elements
 
                 if (thisKey.IndexOf(html_element_name.Replace("_", "") + "_select") == 0)
                 {
-                    string creator_type = Context.Request.Form[thisKey].Trim();
+                    string creator_type = Context.Request.Form[thisKey].TrimFirst();
 
                     if (creator_text.Trim().Length > 0)
                     {

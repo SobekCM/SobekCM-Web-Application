@@ -12,6 +12,7 @@ using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Users;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Bib_Info;
+using SobekCM.Library.UI;
 
 #endregion
 
@@ -427,7 +428,7 @@ namespace SobekCM.Library.Citation.Elements
                     string addtl_key = id + "_input" + key;
                     string textarea_key = id + "_textarea" + key;
 
-                    string type = Context.Request.Form[thisKey].Trim();
+                    string type = Context.Request.Form[thisKey].TrimFirst();
                     Note_Type_Enum type_enum = Note_Type_Enum.NONE;
                     switch (type)
                     {
@@ -547,9 +548,9 @@ namespace SobekCM.Library.Citation.Elements
                     string addtl = String.Empty;
                     if (Context.Request.Form[addtl_key] != null)
                     {
-                        addtl = Context.Request.Form[addtl_key].Trim();
+                        addtl = Context.Request.Form[addtl_key].TrimFirst();
                     }
-                    string textarea = Context.Request.Form[textarea_key].Trim();
+                    string textarea = Context.Request.Form[textarea_key].TrimFirst();
 
                     if (textarea.Length > 0)
                     {

@@ -12,6 +12,7 @@ using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Users;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Bib_Info;
+using SobekCM.Library.UI;
 
 #endregion
 
@@ -216,21 +217,21 @@ namespace SobekCM.Library.Citation.Elements
                 {
                     string diff = thisKey.Replace("formspatialcontinent_", "");
                     string continent = Context.Request.Form[thisKey];
-                    string country = Context.Request.Form["formspatialcountry_" + diff].Trim();
-                    string province = Context.Request.Form["formspatialprovince_" + diff].Trim();
-                    string region = Context.Request.Form["formspatialregion_" + diff].Trim();
-                    string state = Context.Request.Form["formspatialstate_" + diff].Trim();
-                    string territory = Context.Request.Form["formspatialterritory_" + diff].Trim();
-                    string county = Context.Request.Form["formspatialcounty_" + diff].Trim();
-                    string city = Context.Request.Form["formspatialcity_" + diff].Trim();
-                    string citysection = Context.Request.Form["formspatialsectioncity_" + diff].Trim();
-                    string island = Context.Request.Form["formspatialisland_" + diff].Trim();
-                    string area = Context.Request.Form["formspatialarea_" + diff].Trim();
+                    string country = Context.Request.Form["formspatialcountry_" + diff].TrimFirst();
+                    string province = Context.Request.Form["formspatialprovince_" + diff].TrimFirst();
+                    string region = Context.Request.Form["formspatialregion_" + diff].TrimFirst();
+                    string state = Context.Request.Form["formspatialstate_" + diff].TrimFirst();
+                    string territory = Context.Request.Form["formspatialterritory_" + diff].TrimFirst();
+                    string county = Context.Request.Form["formspatialcounty_" + diff].TrimFirst();
+                    string city = Context.Request.Form["formspatialcity_" + diff].TrimFirst();
+                    string citysection = Context.Request.Form["formspatialsectioncity_" + diff].TrimFirst();
+                    string island = Context.Request.Form["formspatialisland_" + diff].TrimFirst();
+                    string area = Context.Request.Form["formspatialarea_" + diff].TrimFirst();
 
-                    string authority = Context.Request.Form["formspatialauthority_" + diff].Trim();
-                    string language = Context.Request.Form["formspatiallanguage_" + diff].Trim();
+                    string authority = Context.Request.Form["formspatialauthority_" + diff].TrimFirst();
+                    string language = Context.Request.Form["formspatiallanguage_" + diff].TrimFirst();
 
-                    string type = Context.Request.Form["formspatialtype_" + diff].Trim();
+                    string type = Context.Request.Form["formspatialtype_" + diff].TrimFirst();
 
 
                     if ((area.Length > 0) || (continent.Length > 0) || (country.Length > 0) || (province.Length > 0) ||

@@ -11,6 +11,7 @@ using SobekCM.Core.Users;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Metadata_Modules;
 using SobekCM.Resource_Object.Metadata_Modules.LearningObjects;
+using SobekCM.Library.UI;
 
 #endregion
 
@@ -120,7 +121,7 @@ namespace SobekCM.Library.Citation.Elements
                 if (thisKey.IndexOf(html_element_name.Replace("_","")) == 0)
                 {
                     // Get the value from the combo box
-                    string value = Context.Request.Form[thisKey].Trim();
+                    string value = Context.Request.Form[thisKey].TrimFirst();
 
                     // Try to get any existing learning object metadata module
                     LearningObjectMetadata lomInfo = Bib.Get_Metadata_Module(GlobalVar.IEEE_LOM_METADATA_MODULE_KEY) as LearningObjectMetadata;

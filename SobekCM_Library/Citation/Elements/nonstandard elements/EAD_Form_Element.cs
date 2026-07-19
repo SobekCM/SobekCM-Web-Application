@@ -9,6 +9,7 @@ using SobekCM.Core.Configuration;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Users;
 using SobekCM.Resource_Object;
+using SobekCM.Library.UI;
 
 #endregion
 
@@ -142,8 +143,8 @@ namespace SobekCM.Library.Citation.Elements
         /// <param name="Bib"> Object into which to save the user's data, entered into the html rendered by this element </param>
         public override void Save_To_Bib(SobekCM_Item Bib)
         {
-            Bib.Bib_Info.Location.EAD_Name = Context.Request.Form["formead_name"].Trim();
-            Bib.Bib_Info.Location.EAD_URL = Context.Request.Form["formead_url"].Trim();
+            Bib.Bib_Info.Location.EAD_Name = Context.Request.Form["formead_name"].TrimFirst();
+            Bib.Bib_Info.Location.EAD_URL = Context.Request.Form["formead_url"].TrimFirst();
         }
 
         #endregion

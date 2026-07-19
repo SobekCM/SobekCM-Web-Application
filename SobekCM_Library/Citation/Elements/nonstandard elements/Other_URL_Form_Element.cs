@@ -10,6 +10,7 @@ using SobekCM.Core.Configuration;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Users;
 using SobekCM.Resource_Object;
+using SobekCM.Library.UI;
 
 #endregion
 
@@ -148,7 +149,7 @@ namespace SobekCM.Library.Citation.Elements
         public override void Save_To_Bib(SobekCM_Item Bib)
         {
 
-            Bib.Bib_Info.Location.Other_URL = Context.Request.Form["form_relatedurl_url"].Trim();
+            Bib.Bib_Info.Location.Other_URL = Context.Request.Form["form_relatedurl_url"].TrimFirst();
             if ( Bib.Bib_Info.Location.Other_URL.Length == 0 )
             {
                 Bib.Bib_Info.Location.Other_URL_Display_Label = String.Empty;
@@ -156,8 +157,8 @@ namespace SobekCM.Library.Citation.Elements
             }
             else
             {
-                Bib.Bib_Info.Location.Other_URL_Display_Label = Context.Request.Form["form_relatedurl_label"].Trim();
-                Bib.Bib_Info.Location.Other_URL_Note = Context.Request.Form["form_relatedurl_note"].Trim();
+                Bib.Bib_Info.Location.Other_URL_Display_Label = Context.Request.Form["form_relatedurl_label"].TrimFirst();
+                Bib.Bib_Info.Location.Other_URL_Note = Context.Request.Form["form_relatedurl_note"].TrimFirst();
             }
         }
 

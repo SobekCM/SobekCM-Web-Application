@@ -69,7 +69,7 @@ namespace SobekCM.Library.MainWriters
             if (Context.Request.Form["internal_header_action"] != null)
             {
                 // Pull the action value
-                string internalHeaderAction = Context.Request.Form["internal_header_action"].Trim();
+                string internalHeaderAction = Context.Request.Form["internal_header_action"].TrimFirst();
 
                 RequestSpecificValues.Tracer.Add_Trace("Html_MainWriter.Consructor", "Internal header action=[" + internalHeaderAction + "].");
 

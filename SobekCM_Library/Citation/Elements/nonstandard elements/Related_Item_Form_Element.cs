@@ -11,6 +11,7 @@ using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Users;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Bib_Info;
+using SobekCM.Library.UI;
 
 #endregion
 
@@ -267,13 +268,13 @@ namespace SobekCM.Library.Citation.Elements
                 {
                     string diff = thisKey.Replace("form_relateditem_relation_", "");
                     string relation = Context.Request.Form[thisKey];
-                    string display = Context.Request.Form["form_relateditem_display_" + diff].Trim();
-                    string title = Context.Request.Form["form_relateditem_title_" + diff].Trim();
-                    string url = Context.Request.Form["form_relateditem_url_" + diff].Trim();
-                    string sobekid = Context.Request.Form["form_relateditem_sobekid_" + diff].Trim();
-                    string issn = Context.Request.Form["form_relateditem_issn_" + diff].Trim();
-                    string oclc = Context.Request.Form["form_relateditem_oclc_" + diff].Trim();
-                    string lccn = Context.Request.Form["form_relateditem_lccn_" + diff].Trim();
+                    string display = Context.Request.Form["form_relateditem_display_" + diff].TrimFirst();
+                    string title = Context.Request.Form["form_relateditem_title_" + diff].TrimFirst();
+                    string url = Context.Request.Form["form_relateditem_url_" + diff].TrimFirst();
+                    string sobekid = Context.Request.Form["form_relateditem_sobekid_" + diff].TrimFirst();
+                    string issn = Context.Request.Form["form_relateditem_issn_" + diff].TrimFirst();
+                    string oclc = Context.Request.Form["form_relateditem_oclc_" + diff].TrimFirst();
+                    string lccn = Context.Request.Form["form_relateditem_lccn_" + diff].TrimFirst();
 
                     if ((title.Length > 0) || (url.Length > 0) || (sobekid.Length > 0) || (issn.Length > 0) ||
                         (oclc.Length > 0) || (lccn.Length > 0))

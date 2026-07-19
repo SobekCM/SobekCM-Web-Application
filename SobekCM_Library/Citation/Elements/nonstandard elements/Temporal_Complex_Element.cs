@@ -12,6 +12,7 @@ using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Users;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Bib_Info;
+using SobekCM.Library.UI;
 
 #endregion
 
@@ -151,14 +152,14 @@ namespace SobekCM.Library.Citation.Elements
             {
                 if ((thisKey.IndexOf(id) == 0) && (thisKey.IndexOf("end") < 0) && (thisKey.IndexOf("period") < 0))
                 {
-                    string start = Context.Request.Form[thisKey].Trim();
+                    string start = Context.Request.Form[thisKey].TrimFirst();
 
                     string key = thisKey.Replace(id + "_start", "");
                     string end_key = id + "_end" + key;
                     string period_key = id + "_period" + key;
 
-                    string end = Context.Request.Form[end_key].Trim();
-                    string period = Context.Request.Form[period_key].Trim();
+                    string end = Context.Request.Form[end_key].TrimFirst();
+                    string period = Context.Request.Form[period_key].TrimFirst();
 
                     if ((start.Length > 0) || (end.Length > 0) || (period.Length > 0))
                     {

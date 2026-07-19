@@ -11,6 +11,7 @@ using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Users;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Bib_Info;
+using SobekCM.Library.UI;
 
 #endregion
 
@@ -219,7 +220,7 @@ namespace SobekCM.Library.Citation.Elements
                 string language_key = "complexabstract_language" + key;
                 string textarea_key = "complexabstract_textarea" + key;
 
-                string display = Context.Request.Form[thisKey].Trim();
+                string display = Context.Request.Form[thisKey].TrimFirst();
                 string displayLabel = "Abstract";
                 string type = String.Empty;
                 switch( display )
@@ -254,9 +255,9 @@ namespace SobekCM.Library.Citation.Elements
                 string language = String.Empty;
                 if (Context.Request.Form[language_key] != null)
                 {
-                    language = Context.Request.Form[language_key].Trim();
+                    language = Context.Request.Form[language_key].TrimFirst();
                 }
-                string textarea = Context.Request.Form[textarea_key].Trim();
+                string textarea = Context.Request.Form[textarea_key].TrimFirst();
 
                 if (textarea.Length > 0)
                 {

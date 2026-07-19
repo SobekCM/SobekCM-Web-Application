@@ -12,6 +12,7 @@ using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Users;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Bib_Info;
+using SobekCM.Library.UI;
 
 #endregion
 
@@ -369,20 +370,20 @@ namespace SobekCM.Library.Citation.Elements
                 if (thisKey.IndexOf("formsubjecttype_") == 0) 
                 {
                     string diff = thisKey.Replace("formsubjecttype_","");
-                    string topic1 = Context.Request.Form["formsubjecttopic1_" + diff].Trim();
-                    string topic2 = Context.Request.Form["formsubjecttopic2_" + diff].Trim();
-                    string topic3 = Context.Request.Form["formsubjecttopic3_" + diff].Trim();
-                    string topic4 = Context.Request.Form["formsubjecttopic4_" + diff].Trim();
-                    string temporal1 = Context.Request.Form["formsubjecttemporal1_" + diff].Trim();
-                    string temporal2 = Context.Request.Form["formsubjecttemporal2_" + diff].Trim();
-                    string geographic1 = Context.Request.Form["formsubjectgeo1_" + diff].Trim();
-                    string geographic2 = Context.Request.Form["formsubjectgeo2_" + diff].Trim();
-                    string genre1 = Context.Request.Form["formsubjectgenre1_" + diff].Trim();
-                    string genre2 = Context.Request.Form["formsubjectgenre2_" + diff].Trim();
-                    string occcupation = Context.Request.Form["formsubjectoccup1_" + diff].Trim();
-                    string authority = Context.Request.Form["formsubjectauthority_" + diff].Trim();
-                    string language = Context.Request.Form["formsubjectlanguage_" + diff].Trim();
-                    string marc = Context.Request.Form["formsubjectmap_" + diff].Trim();
+                    string topic1 = Context.Request.Form["formsubjecttopic1_" + diff].TrimFirst();
+                    string topic2 = Context.Request.Form["formsubjecttopic2_" + diff].TrimFirst();
+                    string topic3 = Context.Request.Form["formsubjecttopic3_" + diff].TrimFirst();
+                    string topic4 = Context.Request.Form["formsubjecttopic4_" + diff].TrimFirst();
+                    string temporal1 = Context.Request.Form["formsubjecttemporal1_" + diff].TrimFirst();
+                    string temporal2 = Context.Request.Form["formsubjecttemporal2_" + diff].TrimFirst();
+                    string geographic1 = Context.Request.Form["formsubjectgeo1_" + diff].TrimFirst();
+                    string geographic2 = Context.Request.Form["formsubjectgeo2_" + diff].TrimFirst();
+                    string genre1 = Context.Request.Form["formsubjectgenre1_" + diff].TrimFirst();
+                    string genre2 = Context.Request.Form["formsubjectgenre2_" + diff].TrimFirst();
+                    string occcupation = Context.Request.Form["formsubjectoccup1_" + diff].TrimFirst();
+                    string authority = Context.Request.Form["formsubjectauthority_" + diff].TrimFirst();
+                    string language = Context.Request.Form["formsubjectlanguage_" + diff].TrimFirst();
+                    string marc = Context.Request.Form["formsubjectmap_" + diff].TrimFirst();
 
                     if ((topic1.Length > 0) || (topic2.Length > 0) || (topic3.Length > 0) || (topic4.Length > 0) ||
                         (temporal1.Length > 0) || (temporal2.Length > 0) || (geographic1.Length > 0) || (geographic2.Length > 0) ||

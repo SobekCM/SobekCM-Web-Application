@@ -12,6 +12,7 @@ using SobekCM.Core.Configuration;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Users;
 using SobekCM.Resource_Object;
+using SobekCM.Library.UI;
 
 #endregion
 
@@ -96,7 +97,7 @@ namespace SobekCM.Library.Citation.Elements
             {
                 if (thisKey.IndexOf(id) != 0) continue;
 
-                string audience = Context.Request.Form[thisKey].Trim();
+                string audience = Context.Request.Form[thisKey].TrimFirst();
                 string scheme = String.Empty;
                 string audience_caps = audience.ToUpper();
                 if ((audience_caps == "ADOLESCENT") || (audience_caps == "ADULT") || (audience_caps == "GENERAL") || (audience_caps == "PRIMARY") || (audience_caps == "PRE-ADOLESCENT") || (audience_caps == "JUVENILE") || (audience_caps == "PRESCHOOL") || ( audience_caps == "SPECIALIZED" ))

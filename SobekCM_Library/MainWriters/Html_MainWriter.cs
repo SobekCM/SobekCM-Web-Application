@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using System;
 using System.Collections.Generic;
@@ -186,7 +186,7 @@ namespace SobekCM.Library.MainWriters
                                 builder.Append("\tLast Results:\t\t" + Context.Session.GetString(SessionCache_Keys.LastResults) + "\n");
                             if (Context.Session.GetString(SessionCache_Keys.LastMode) != null)
                                 builder.Append("\tLast Mode:\t\t\t" + Context.Session.GetString(SessionCache_Keys.LastMode) + "\n");
-                            builder.Append("\tURL:\t\t\t\t" + Context.Items["Original_URL"]);
+                            builder.Append("\tURL:\t\t\t\t" + Context.Items[RequestCache_Keys.OriginalUrl]);
                         }
                         catch
                         {
@@ -1024,10 +1024,10 @@ namespace SobekCM.Library.MainWriters
                 Output.WriteLine("<div id=\"sbkHmw_TraceRouter\" style=\"display:none;\">");
 
                 Output.WriteLine("<br /><br /><b>URL REWRITE</b>");
-                if (Context.Items["Original_URL"] == null)
+                if (Context.Items[RequestCache_Keys.OriginalUrl] == null)
                     Output.WriteLine("<br /><br />Original URL: <i>None found</i><br />");
                 else
-                    Output.WriteLine("<br /><br />Original URL: " + System.Net.WebUtility.HtmlEncode(Context.Items["Original_URL"]?.ToString()) + "<br />");
+                    Output.WriteLine("<br /><br />Original URL: " + System.Net.WebUtility.HtmlEncode(Context.Items[RequestCache_Keys.OriginalUrl]?.ToString()) + "<br />");
 
                 Output.WriteLine("Current URL: " + System.Net.WebUtility.HtmlEncode($"{Context.Request.Path}{Context.Request.QueryString}") + "<br />");
 
@@ -1059,7 +1059,7 @@ namespace SobekCM.Library.MainWriters
                         if (ObjErr.InnerException != null)
                         {
                             err = "<b>" + (context?.Connection.RemoteIpAddress?.ToString() ?? "") + "</b><br /><br />" +
-                                  "Error in!!: " + context?.Items["Original_URL"] + "<br /><br />" +
+                                  "Error in!!: " + context?.Items[RequestCache_Keys.OriginalUrl] + "<br /><br />" +
                                   "Error Message: " + ObjErr.Message + "<br /><br />" +
                                   "Inner Exception: " + ObjErr.InnerException.Message + "<br /><br />" +
                                   "Stack Trace: " + ObjErr.InnerException.StackTrace + "<br /><br />";
@@ -1067,7 +1067,7 @@ namespace SobekCM.Library.MainWriters
                         else
                         {
                             err = "<b>" + (context?.Connection.RemoteIpAddress?.ToString() ?? "") + "</b><br /><br />" +
-                                  "Error in!!: " + context?.Items["Original_URL"] + "<br /><br />" +
+                                  "Error in!!: " + context?.Items[RequestCache_Keys.OriginalUrl] + "<br /><br />" +
                                   "Error Message: " + ObjErr.Message + "<br /><br />" +
                                   "Stack Trace: " + ObjErr.StackTrace + "<br /><br />";
 

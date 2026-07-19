@@ -245,7 +245,7 @@ namespace SobekCM
                     return;
 
                 // Save the current URL to session for "back" navigation
-                string originalUrl = context.Items["Original_URL"]?.ToString() ?? context.Request.GetDisplayUrl();
+                string originalUrl = context.Items[RequestCache_Keys.OriginalUrl]?.ToString() ?? context.Request.GetDisplayUrl();
 
                 if (pageGlobals.currentMode.Mode != Display_Mode_Enum.Preferences &&
                     pageGlobals.currentMode.Mode != Display_Mode_Enum.Contact)

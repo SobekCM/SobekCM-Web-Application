@@ -1,22 +1,41 @@
 using System;
+using SobekCM.Core.MemoryMgmt;
 using System.Collections.Generic;
+using SobekCM.Core.MemoryMgmt;
 using System.IO;
+using SobekCM.Core.MemoryMgmt;
 using System.Linq;
+using SobekCM.Core.MemoryMgmt;
 using System.Text;
+using SobekCM.Core.MemoryMgmt;
 using System.Threading.Tasks;
+using SobekCM.Core.MemoryMgmt;
 using Microsoft.AspNetCore.Http;
+using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Aggregations;
+using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
+using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Results;
+using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Search;
+using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Users;
+using SobekCM.Core.MemoryMgmt;
 using SobekCM.Engine_Library.Configuration;
+using SobekCM.Core.MemoryMgmt;
 using SobekCM.Engine_Library.Database;
+using SobekCM.Core.MemoryMgmt;
 using SobekCM.Engine_Library.Solr.v5;
+using SobekCM.Core.MemoryMgmt;
 using SobekCM.Library.HTML;
+using SobekCM.Core.MemoryMgmt;
 using SobekCM.Library.ResultsViewer;
+using SobekCM.Core.MemoryMgmt;
 using SobekCM.Library.UI;
+using SobekCM.Core.MemoryMgmt;
 using SobekCM.Tools;
+using SobekCM.Core.MemoryMgmt;
 
 namespace SobekCM.Library.AggregationViewer.Viewers
 {
@@ -110,7 +129,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 
             if ((canEditHomePage) && (RequestSpecificValues.Current_Mode.Aggregation_Type == Aggregation_Type_Enum.Home_Edit))
             {
-                string post_url = System.Net.WebUtility.HtmlEncode(Context.Items["Original_URL"].ToString());
+                string post_url = System.Net.WebUtility.HtmlEncode(Context.Items[RequestCache_Keys.OriginalUrl].ToString());
                 Output.WriteLine("<form name=\"home_edit_form\" method=\"post\" action=\"" + post_url + "\" id=\"addedForm\" >");
                 Output.WriteLine("  <textarea id=\"sbkAghsw_HomeTextEdit\" name=\"sbkAghsw_HomeTextEdit\" >");
                 Output.WriteLine(home_html.Replace("<%", "[%").Replace("%>", "%]"));

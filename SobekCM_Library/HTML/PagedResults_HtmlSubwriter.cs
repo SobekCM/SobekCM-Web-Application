@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using System;
 using System.Collections.Generic;
@@ -116,13 +116,13 @@ namespace SobekCM.Library.HTML
 								cc_list = String.Empty;
 
 							// Send the email
-							string any_error = URL_Email_Helper.Send_Email(address, cc_list, comments, RequestSpecificValues.Current_User.Full_Name, RequestSpecificValues.Current_Mode.Instance_Abbreviation, is_html_format, Context.Items["Original_URL"].ToString(), url_description, list_type, RequestSpecificValues.Current_User.UserID);
+							string any_error = URL_Email_Helper.Send_Email(address, cc_list, comments, RequestSpecificValues.Current_User.Full_Name, RequestSpecificValues.Current_Mode.Instance_Abbreviation, is_html_format, Context.Items[RequestCache_Keys.OriginalUrl].ToString(), url_description, list_type, RequestSpecificValues.Current_User.UserID);
 							Context.Session.SetString(SessionCache_Keys.OnLoadMessage, any_error.Length > 0 ? any_error : "Your email has been sent");
 
 							RequestSpecificValues.Current_Mode.isPostBack = true;
 
 							// Do this to force a return trip (cirumnavigate cacheing)
-							string original_url = Context.Items["Original_URL"].ToString();
+							string original_url = Context.Items[RequestCache_Keys.OriginalUrl].ToString();
 							if ( original_url.IndexOf("?") < 0 )
 								Context.Response.Redirect(original_url + "?p=" + DateTime.Now.Millisecond);
 							else
@@ -138,7 +138,7 @@ namespace SobekCM.Library.HTML
 						string usernotes = Context.Request.Form["add_notes"].TrimFirst();
 						bool open_searches = !String.IsNullOrEmpty(Context.Request.Form["open_searches"].TrimFirst());
 
-						string original_url = Context.Items["Original_URL"].ToString();
+						string original_url = Context.Items[RequestCache_Keys.OriginalUrl].ToString();
                         if (SobekCM_Database.Save_User_Search(RequestSpecificValues.Current_User.UserID, original_url, url_description, 0, usernotes, RequestSpecificValues.Tracer) != -1000)
 						{
 							if (open_searches)
@@ -480,7 +480,7 @@ namespace SobekCM.Library.HTML
                 // Start the form for this, unless we are already in an appropriate form
                 if (Outer_Form_Name.Length == 0)
                 {
-                    string post_url = System.Net.WebUtility.HtmlEncode(Context.Items["Original_URL"].ToString());
+                    string post_url = System.Net.WebUtility.HtmlEncode(Context.Items[RequestCache_Keys.OriginalUrl].ToString());
                     Output.WriteLine("<form name=\"sort_form\" id=\"addedForm\" method=\"post\" action=\"" + post_url + "\" >");
                 }
 
@@ -882,7 +882,7 @@ namespace SobekCM.Library.HTML
 
                     // Calculate the title and url
                     string title = System.Net.WebUtility.HtmlEncode(summation);
-                    string share_url = Context.Items["Original_URL"].ToString().Replace("&", "%26").Replace("?", "%3F").Replace("http://", "").Replace("=", "%3D").Replace("\"", "&quot;");
+                    string share_url = Context.Items[RequestCache_Keys.OriginalUrl].ToString().Replace("&", "%26").Replace("?", "%3F").Replace("http://", "").Replace("=", "%3D").Replace("\"", "&quot;");
 
                     Output.WriteLine("<!-- Share form -->");
                     Output.WriteLine("<div class=\"share_popup_div\" id=\"share_form\" style=\"display:none;\">");

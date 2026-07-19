@@ -117,7 +117,7 @@ namespace SobekCM.Library.MySobekViewer
                         }
 
                         // Forward back to their original URL (unless the original URL was this logon page)
-                        string raw_url = Context.Items["Original_URL"].ToString();
+                        string raw_url = Context.Items[RequestCache_Keys.OriginalUrl].ToString();
                         if (raw_url.ToLower().IndexOf("my/logon") > 0)
                         {
                             if ( !String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.Return_URL))

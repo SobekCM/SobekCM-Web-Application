@@ -1,5 +1,6 @@
 #region Using directives
 
+using SobekCM.Core.MemoryMgmt;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -347,7 +348,7 @@ namespace SobekCM.Library.HTML
                 }
 
                 // Start this form
-                string post_url = System.Net.WebUtility.HtmlEncode(Context.Items["Original_URL"].ToString());
+                string post_url = System.Net.WebUtility.HtmlEncode(Context.Items[RequestCache_Keys.OriginalUrl].ToString());
                 Output.WriteLine("<form name=\"email_form\" method=\"post\" action=\"" + post_url + "\" id=\"addedForm\" >");
 
                 // Add the hidden field

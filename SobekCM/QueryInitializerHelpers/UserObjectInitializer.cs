@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Users;
@@ -53,11 +53,11 @@ namespace SobekCM.QueryInitializerHelpers
                 {
                     if (currentMode.TOC_Display == TOC_Display_Type_Enum.Hide)
                     {
-                        context.Items["Show TOC"] = false;
+                        context.Items[RequestCache_Keys.ShowToc] = false;
                     }
                     else
                     {
-                        context.Items["Show TOC"] = true;
+                        context.Items[RequestCache_Keys.ShowToc] = true;
                     }
                 }
 

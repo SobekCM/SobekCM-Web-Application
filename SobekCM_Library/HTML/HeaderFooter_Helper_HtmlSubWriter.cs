@@ -1,5 +1,6 @@
 #region Using directives
 
+using SobekCM.Core.MemoryMgmt;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -486,8 +487,8 @@ namespace SobekCM.Library.HTML
                 string mySobekOptions = url_options;
                 string mySobekLogoutOptions = url_options;
                 string return_url = String.Empty;
-                if ((Context != null) && (Context.Items["Original_URL"] != null))
-                    return_url = Context.Items["Original_URL"].ToString().ToLower().Replace(RequestSpecificValues.Current_Mode.Base_URL.ToLower(), "");
+                if ((Context != null) && (Context.Items[RequestCache_Keys.OriginalUrl] != null))
+                    return_url = Context.Items[RequestCache_Keys.OriginalUrl].ToString().ToLower().Replace(RequestSpecificValues.Current_Mode.Base_URL.ToLower(), "");
                 if (return_url.IndexOf("?") > 0)
                     return_url = return_url.Substring(0, return_url.IndexOf("?"));
                 if (return_url.IndexOf("my/") == 0)

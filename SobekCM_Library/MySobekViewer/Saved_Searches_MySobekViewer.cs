@@ -1,5 +1,6 @@
 #region Using directives
 
+using SobekCM.Core.MemoryMgmt;
 using System;
 using System.Collections.Specialized;
 using System.Data;
@@ -52,7 +53,7 @@ namespace SobekCM.Library.MySobekViewer
                         SobekCM_Database.Delete_User_Search(folder_id_int, RequestSpecificValues.Tracer);
                 }
 
-                Context.Response.Redirect(Context.Items["Original_URL"].ToString());
+                Context.Response.Redirect(Context.Items[RequestCache_Keys.OriginalUrl].ToString());
                 RequestSpecificValues.Current_Mode.Request_Completed = true;
             }
         }

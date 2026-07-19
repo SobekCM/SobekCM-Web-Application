@@ -481,7 +481,7 @@ namespace SobekCM.Library.HTML
             // Write the banner and main menu
             write_banner_and_menu(Output, Tracer);
 
-            string post_url = System.Net.WebUtility.HtmlEncode(Context.Items["Original_URL"].ToString());
+            string post_url = System.Net.WebUtility.HtmlEncode(Context.Items[RequestCache_Keys.OriginalUrl].ToString());
             Output.WriteLine("<form name=\"home_edit_form\" method=\"post\" action=\"" + post_url + "\" id=\"addedForm\" >");
 
             //const string TITLE_HELP = "Help for the title place holder";

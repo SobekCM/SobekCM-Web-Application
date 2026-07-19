@@ -246,7 +246,7 @@ namespace SobekCM.Library.MySobekViewer
                     // so any error that occurs should be obvious to the RequestSpecificValues.Current_User
                 }
 
-                string return_url = Context.Items["Original_URL"].ToString();
+                string return_url = Context.Items[RequestCache_Keys.OriginalUrl].ToString();
                 Context.Response.Redirect(return_url);
                 RequestSpecificValues.Current_Mode.Request_Completed = true;
             }

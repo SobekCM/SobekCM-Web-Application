@@ -125,7 +125,7 @@ namespace SobekCM.Library.WebContentViewer.Viewers
             }
 
             // Start the form
-            string return_url = (RequestSpecificValues.Current_Mode.Base_URL + Context.Items["Original_URL"]).Replace("//", "/").Replace("http:/", "http://");
+            string return_url = (RequestSpecificValues.Current_Mode.Base_URL + Context.Items[RequestCache_Keys.OriginalUrl]).Replace("//", "/").Replace("http:/", "http://");
             Output.WriteLine("<form name=\"itemNavForm\" method=\"post\" action=\"" + return_url + "\" id=\"itemNavForm\">");
 
             // Add the hidden field

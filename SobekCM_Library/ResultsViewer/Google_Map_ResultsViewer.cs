@@ -1,5 +1,6 @@
 #region Using directives
 
+using SobekCM.Core.MemoryMgmt;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -735,7 +736,7 @@ namespace SobekCM.Library.ResultsViewer
             #endregion
 
             //return HttpContext.Current.Session["SearchResultsJSON"].ToString();
-            return Context.Items["DSR"];
+            return Context.Items[RequestCache_Keys.DisplaySearchResults];
         }
 
     }

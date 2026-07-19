@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using System;
 using System.Collections.Generic;
@@ -411,10 +411,10 @@ namespace SobekCM.Library.HTML
                                     cc_list = String.Empty;
 
                                 // Send the email
-                                Context.Session.SetString(SessionCache_Keys.OnLoadMessage, !Item_Email_Helper.Send_Email(address, cc_list, comments, RequestSpecificValues.Current_User.Full_Name, RequestSpecificValues.Current_Mode.Instance_Abbreviation, currentItem, is_html_format, Context.Items["Original_URL"].ToString(), RequestSpecificValues.Current_User.UserID)
+                                Context.Session.SetString(SessionCache_Keys.OnLoadMessage, !Item_Email_Helper.Send_Email(address, cc_list, comments, RequestSpecificValues.Current_User.Full_Name, RequestSpecificValues.Current_Mode.Instance_Abbreviation, currentItem, is_html_format, Context.Items[RequestCache_Keys.OriginalUrl].ToString(), RequestSpecificValues.Current_User.UserID)
                                     ? "Error encountered while sending email" : "Your email has been sent");
 
-                                Context.Response.Redirect(Context.Items["Original_URL"].ToString());
+                                Context.Response.Redirect(Context.Items[RequestCache_Keys.OriginalUrl].ToString());
                                 RequestSpecificValues.Current_Mode.Request_Completed = true;
                                 return;
                             }
@@ -445,7 +445,7 @@ namespace SobekCM.Library.HTML
                                 Context.Session.SetString(SessionCache_Keys.OnLoadMessage, "ERROR encountered while trying to save to your bookshelf.");
                             }
 
-                            Context.Response.Redirect(Context.Items["Original_URL"].ToString());
+                            Context.Response.Redirect(Context.Items[RequestCache_Keys.OriginalUrl].ToString());
                             RequestSpecificValues.Current_Mode.Request_Completed = true;
                             return;
                         }
@@ -463,7 +463,7 @@ namespace SobekCM.Library.HTML
                                 Context.Session.SetString(SessionCache_Keys.OnLoadMessage, "ERROR encountered while trying to remove item from your bookshelves.");
                             }
 
-                            Context.Response.Redirect(Context.Items["Original_URL"].ToString());
+                            Context.Response.Redirect(Context.Items[RequestCache_Keys.OriginalUrl].ToString());
                             RequestSpecificValues.Current_Mode.Request_Completed = true;
                             return;
                         }
@@ -483,7 +483,7 @@ namespace SobekCM.Library.HTML
                                 RequestSpecificValues.Current_User.Has_Descriptive_Tags = true;
                             }
 
-                            Context.Response.Redirect(Context.Items["Original_URL"].ToString());
+                            Context.Response.Redirect(Context.Items[RequestCache_Keys.OriginalUrl].ToString());
                             RequestSpecificValues.Current_Mode.Request_Completed = true;
                             return;
                         }
@@ -498,7 +498,7 @@ namespace SobekCM.Library.HTML
                                     SobekCM_Database.Delete_Description_Tag(tagid, RequestSpecificValues.Tracer);
                                 }
                             }
-                            Context.Response.Redirect(Context.Items["Original_URL"].ToString());
+                            Context.Response.Redirect(Context.Items[RequestCache_Keys.OriginalUrl].ToString());
                             RequestSpecificValues.Current_Mode.Request_Completed = true;
                             return;
                         }

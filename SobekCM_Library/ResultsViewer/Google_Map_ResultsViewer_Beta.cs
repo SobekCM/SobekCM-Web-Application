@@ -1,5 +1,6 @@
 #region Using directives
 
+using SobekCM.Core.MemoryMgmt;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -94,8 +95,8 @@ namespace SobekCM.Library.ResultsViewer
             mapSearchBuilder.AppendLine("  ");
             //ADD EXISTING POINTS WITH JSON
             mapSearchBuilder.AppendLine("       function initJSON(){ ");
-            if (Context.Items["DSR"]!=null)
-                mapSearchBuilder.AppendLine("       DSR = JSON.stringify(" + Context.Items["DSR"].ToString() + "); ");
+            if (Context.Items[RequestCache_Keys.DisplaySearchResults]!=null)
+                mapSearchBuilder.AppendLine("       DSR = JSON.stringify(" + Context.Items[RequestCache_Keys.DisplaySearchResults].ToString() + "); ");
             mapSearchBuilder.AppendLine("       } ");
             mapSearchBuilder.AppendLine("     </script> ");
             mapSearchBuilder.AppendLine("  ");
@@ -198,7 +199,7 @@ namespace SobekCM.Library.ResultsViewer
             }
             #endregion
 
-            //create DSR columns
+            //create display search results columns
             displaySearchResults.Columns.Add("ItemID", typeof(string));
             displaySearchResults.Columns.Add("Point_Latitude", typeof(string));
             displaySearchResults.Columns.Add("Point_Longitude", typeof(string));
@@ -302,7 +303,7 @@ namespace SobekCM.Library.ResultsViewer
                             filterValues.Add(searchResult[filterName.Replace(" ", "_")].ToString());
                     }
 
-                    //add to the DSR (id/lat/lng) only if lat/lng not null
+                    //add to the display search results (id/lat/lng) only if lat/lng not null
                     if (!string.IsNullOrEmpty(b))
                         displaySearchResults.Rows.Add(a, b, c);
 
@@ -411,7 +412,7 @@ namespace SobekCM.Library.ResultsViewer
                                     filterValues.Add(searchResult[filterName.Replace(" ", "_")].ToString());
                             }
 
-                            //add to the DSR (id/lat/lng) only if lat/lng not null
+                            //add to the display search results (id/lat/lng) only if lat/lng not null
                             if (!string.IsNullOrEmpty(b))
                                 displaySearchResults.Rows.Add(a, b, c);
 
@@ -441,7 +442,7 @@ namespace SobekCM.Library.ResultsViewer
                         //assign cached MSR to active MSR
                         searchResults = Context.SessionObject()[MSRKey] as DataTable;
 
-                        //add to the DSR
+                        //add to the display search results
                         foreach (DataRow searchResult in searchResults.Rows)
                         {
                             //get itemID
@@ -451,7 +452,7 @@ namespace SobekCM.Library.ResultsViewer
                             string b = searchResult["Point_Latitude"].ToString();
                             string c = searchResult["Point_Longitude"].ToString();
 
-                            //add to the DSR (id/lat/lng) only if lat/lng not null
+                            //add to the display search results (id/lat/lng) only if lat/lng not null
                             if (!string.IsNullOrEmpty(b))
                                 displaySearchResults.Rows.Add(a, b, c);
                         }
@@ -462,10 +463,10 @@ namespace SobekCM.Library.ResultsViewer
             }
             
             //call json writer with these results
-            object DSR = Create_JSON_Search_Results_Object(displaySearchResults);
+            object displaySearchResultsJson = Create_JSON_Search_Results_Object(displaySearchResults);
 
             //send json obj to page and tell page to read it (via callback results)
-            Context.SessionObject()["DSR"] = DSR;
+            Context.SessionObject()[SessionCache_Keys.DisplaySearchResults] = displaySearchResultsJson;
 
             #endregion
 
@@ -476,19 +477,19 @@ namespace SobekCM.Library.ResultsViewer
         {
             
             //create them display search results object
-            DataTable tempDSR = new DataTable();
-            tempDSR.Columns.Add("ItemID", typeof (string));
-            tempDSR.Columns.Add("Point_Latitude", typeof(string));
-            tempDSR.Columns.Add("Point_Longitude", typeof(string));
+            DataTable displaySearchResults = new DataTable();
+            displaySearchResults.Columns.Add("ItemID", typeof (string));
+            displaySearchResults.Columns.Add("Point_Latitude", typeof(string));
+            displaySearchResults.Columns.Add("Point_Longitude", typeof(string));
             //get original SR
             //if (Context.SessionObject()["MapSearchResultsKey"] == null)
-            
+
             string MSRKey = Context.SessionObject()["MapSearchResultsKey"].ToString();
-            
+
             DataTable SR = new DataTable();
             SR = Context.SessionObject()[MSRKey] as DataTable;
 
-            //add only the points within the bounds to the dsr
+            //add only the points within the bounds to the display search results
             foreach (DataRow result in SR.Rows)
             {
                 //get itemID
@@ -503,18 +504,18 @@ namespace SobekCM.Library.ResultsViewer
                 double cLat = Convert.ToDouble(b);
                 double cLng = Convert.ToDouble(c);
 
-                //if there is a valid lat/lng, determine if point is within bounds and add it to the tempDSR if so
+                //if there is a valid lat/lng, determine if point is within bounds and add it to the display search results if so
                 if (cLat!=-360)
                     if (((cLat > swx) & (cLat < nex)) & ((cLng > swy) & (cLng < ney)))
-                        tempDSR.Rows.Add(a, cLat.ToString(), cLng.ToString());
+                        displaySearchResults.Rows.Add(a, cLat.ToString(), cLng.ToString());
 
             }
 
             //call json writer with these results
-            object DSR = Create_JSON_Search_Results_Object(tempDSR);
+            object displaySearchResultsJson = Create_JSON_Search_Results_Object(displaySearchResults);
 
-            //add the dsr to the session state
-            Context.SessionObject()["DSR"] = DSR;
+            //add the display search results to the session state
+            Context.SessionObject()[SessionCache_Keys.DisplaySearchResults] = displaySearchResultsJson;
 
         }
 

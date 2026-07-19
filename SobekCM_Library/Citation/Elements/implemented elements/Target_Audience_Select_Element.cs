@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using System;
 using System.Collections.Generic;
@@ -6,7 +6,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Web;
+using Microsoft.AspNetCore.Http;
 using SobekCM.Core.ApplicationState;
 using SobekCM.Core.Configuration;
 using SobekCM.Core.Configuration.Localization;
@@ -76,12 +76,12 @@ namespace SobekCM.Library.Citation.Elements
         public override void Save_To_Bib(SobekCM_Item Bib)
         {
             string id = html_element_name.Replace("_", "");
-            string[] getKeys = HttpContext.Current.Request.Form.AllKeys;
+            string[] getKeys = Context.Request.Form.AllKeys;
             foreach (string thisKey in getKeys)
             {
                 if (thisKey.IndexOf(id) != 0) continue;
 
-                string audience = HttpContext.Current.Request.Form[thisKey].Trim();
+                string audience = Context.Request.Form[thisKey].Trim();
                 string scheme = String.Empty;
                 string audience_caps = audience.ToUpper();
                 if ((audience_caps == "ADOLESCENT") || (audience_caps == "ADULT") || (audience_caps == "GENERAL") || (audience_caps == "PRIMARY") || (audience_caps == "PRE-ADOLESCENT") || (audience_caps == "JUVENILE") || (audience_caps == "PRESCHOOL") || (audience_caps == "SPECIALIZED"))

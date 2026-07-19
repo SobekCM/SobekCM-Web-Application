@@ -1,11 +1,11 @@
-﻿#region Using directives
+#region Using directives
 
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
 using System.Text;
-using System.Web;
+using Microsoft.AspNetCore.Http;
 using SobekCM.Core.ApplicationState;
 using SobekCM.Core.Configuration;
 using SobekCM.Core.Configuration.Localization;
@@ -98,7 +98,7 @@ namespace SobekCM.Library.Citation.Elements
         public override void Save_To_Bib(SobekCM_Item Bib)
         {
             // Pull the standard values
-            NameValueCollection form = HttpContext.Current.Request.Form;
+            NameValueCollection form = Context.Request.Form;
 
             string advice = String.Empty;
             string notes = String.Empty;

@@ -1,9 +1,9 @@
-﻿#region Using directives
+#region Using directives
 
 using System;
 using System.IO;
 using System.Text;
-using System.Web;
+using Microsoft.AspNetCore.Http;
 using System.Xml;
 using SobekCM.Core.ApplicationState;
 using SobekCM.Core.Configuration;
@@ -148,7 +148,7 @@ namespace SobekCM.Library.Citation.Elements
         public override void Save_To_Bib(SobekCM_Item Bib)
         {
 
-            Bib.Bib_Info.Location.Other_URL = HttpContext.Current.Request.Form["form_relatedurl_url"].Trim();
+            Bib.Bib_Info.Location.Other_URL = Context.Request.Form["form_relatedurl_url"].Trim();
             if ( Bib.Bib_Info.Location.Other_URL.Length == 0 )
             {
                 Bib.Bib_Info.Location.Other_URL_Display_Label = String.Empty;
@@ -156,8 +156,8 @@ namespace SobekCM.Library.Citation.Elements
             }
             else
             {
-                Bib.Bib_Info.Location.Other_URL_Display_Label = HttpContext.Current.Request.Form["form_relatedurl_label"].Trim();
-                Bib.Bib_Info.Location.Other_URL_Note = HttpContext.Current.Request.Form["form_relatedurl_note"].Trim();
+                Bib.Bib_Info.Location.Other_URL_Display_Label = Context.Request.Form["form_relatedurl_label"].Trim();
+                Bib.Bib_Info.Location.Other_URL_Note = Context.Request.Form["form_relatedurl_note"].Trim();
             }
         }
 

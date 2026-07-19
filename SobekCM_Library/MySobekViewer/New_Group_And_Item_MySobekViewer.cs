@@ -554,7 +554,7 @@ namespace SobekCM.Library.MySobekViewer
                     if ((currentProcessStep > 1) && (currentProcessStep < 8))
                     {
                         // Save to the item
-                        completeTemplate.Save_To_Bib(item, RequestSpecificValues.Current_User, currentProcessStep - 1);
+                        completeTemplate.Save_To_Bib(item, RequestSpecificValues.Current_User, currentProcessStep - 1, Context);
                         item.Save_METS();
                         Context.SessionObject()["Item"] = item;
 

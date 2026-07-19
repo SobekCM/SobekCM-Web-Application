@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using System;
 using System.Collections.Generic;
@@ -6,7 +6,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Web;
+using Microsoft.AspNetCore.Http;
 using SobekCM.Core.ApplicationState;
 using SobekCM.Core.Configuration;
 using SobekCM.Core.Configuration.Localization;
@@ -95,8 +95,8 @@ namespace SobekCM.Library.Citation.Elements
         public override void Save_To_Bib(SobekCM_Item Bib)
         {
             // First collect all the places
-            string[] getKeys = HttpContext.Current.Request.Form.AllKeys;
-            List<string> publication_places = getKeys.Where(thisKey => thisKey.IndexOf(html_element_name) == 0).Select(thisKey => HttpContext.Current.Request.Form[thisKey]).Where(place_temp => place_temp.Length > 0).ToList();
+            string[] getKeys = Context.Request.Form.AllKeys;
+            List<string> publication_places = getKeys.Where(thisKey => thisKey.IndexOf(html_element_name) == 0).Select(thisKey => Context.Request.Form[thisKey]).Where(place_temp => place_temp.Length > 0).ToList();
 
             // If no places, done
             if (publication_places.Count == 0)

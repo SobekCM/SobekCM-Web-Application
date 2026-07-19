@@ -1,9 +1,9 @@
-﻿#region Using directives
+#region Using directives
 
 using System;
 using System.IO;
 using System.Text;
-using System.Web;
+using Microsoft.AspNetCore.Http;
 using System.Xml;
 using SobekCM.Core.ApplicationState;
 using SobekCM.Core.Configuration;
@@ -453,25 +453,25 @@ namespace SobekCM.Library.Citation.Elements
         /// <param name="Bib"> Object into which to save the user's data, entered into the html rendered by this element </param>
         public override void Save_To_Bib(SobekCM_Item Bib)
         {
-            string[] getKeys = HttpContext.Current.Request.Form.AllKeys;
+            string[] getKeys = Context.Request.Form.AllKeys;
             foreach (string thisKey in getKeys)
             {
                 if (thisKey.IndexOf("formothertitletype_") == 0)
                 {
-                    string type = HttpContext.Current.Request.Form[thisKey].Trim();
+                    string type = Context.Request.Form[thisKey].Trim();
                     string diff = thisKey.Replace("formothertitletype_", "");
                     string display = String.Empty;
-                    if ( HttpContext.Current.Request.Form["formothertitledisplay_" + diff] != null )
-                        display = HttpContext.Current.Request.Form["formothertitledisplay_" + diff].Trim();
-                    string nonsort = HttpContext.Current.Request.Form["formothertitlenonsort_" + diff].Trim();
-                    string title = HttpContext.Current.Request.Form["formothertitletitle_" + diff].Trim();
-                    string subtitle = HttpContext.Current.Request.Form["formothertitlesubtitle_" + diff].Trim();
-                    string partnum1 = HttpContext.Current.Request.Form["formothertitlepartnum1_" + diff].Trim();
-                    string partnum2 = HttpContext.Current.Request.Form["formothertitlepartnum2_" + diff].Trim();
-                    string partname1 = HttpContext.Current.Request.Form["formothertitlepartname1_" + diff].Trim();
-                    string partname2 = HttpContext.Current.Request.Form["formothertitlepartname2_" + diff].Trim();
-                    string authority = HttpContext.Current.Request.Form["formothertitleauthority_" + diff].Trim();
-                    string language = HttpContext.Current.Request.Form["formothertitlelanguage_" + diff].Trim();
+                    if ( Context.Request.Form["formothertitledisplay_" + diff] != null )
+                        display = Context.Request.Form["formothertitledisplay_" + diff].Trim();
+                    string nonsort = Context.Request.Form["formothertitlenonsort_" + diff].Trim();
+                    string title = Context.Request.Form["formothertitletitle_" + diff].Trim();
+                    string subtitle = Context.Request.Form["formothertitlesubtitle_" + diff].Trim();
+                    string partnum1 = Context.Request.Form["formothertitlepartnum1_" + diff].Trim();
+                    string partnum2 = Context.Request.Form["formothertitlepartnum2_" + diff].Trim();
+                    string partname1 = Context.Request.Form["formothertitlepartname1_" + diff].Trim();
+                    string partname2 = Context.Request.Form["formothertitlepartname2_" + diff].Trim();
+                    string authority = Context.Request.Form["formothertitleauthority_" + diff].Trim();
+                    string language = Context.Request.Form["formothertitlelanguage_" + diff].Trim();
 
                     if (title.Length > 0)
                     {

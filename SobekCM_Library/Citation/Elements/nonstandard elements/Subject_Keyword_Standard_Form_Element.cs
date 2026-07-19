@@ -1,10 +1,10 @@
-﻿#region Using directives
+#region Using directives
 
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Web;
+using Microsoft.AspNetCore.Http;
 using System.Xml;
 using SobekCM.Core.ApplicationState;
 using SobekCM.Core.Configuration;
@@ -363,26 +363,26 @@ namespace SobekCM.Library.Citation.Elements
         /// <param name="Bib"> Object into which to save the user's data, entered into the html rendered by this element </param>
         public override void Save_To_Bib(SobekCM_Item Bib)
         {
-            string[] getKeys = HttpContext.Current.Request.Form.AllKeys;
+            string[] getKeys = Context.Request.Form.AllKeys;
             foreach (string thisKey in getKeys)
             {
                 if (thisKey.IndexOf("formsubjecttype_") == 0) 
                 {
                     string diff = thisKey.Replace("formsubjecttype_","");
-                    string topic1 = HttpContext.Current.Request.Form["formsubjecttopic1_" + diff].Trim();
-                    string topic2 = HttpContext.Current.Request.Form["formsubjecttopic2_" + diff].Trim();
-                    string topic3 = HttpContext.Current.Request.Form["formsubjecttopic3_" + diff].Trim();
-                    string topic4 = HttpContext.Current.Request.Form["formsubjecttopic4_" + diff].Trim();
-                    string temporal1 = HttpContext.Current.Request.Form["formsubjecttemporal1_" + diff].Trim();
-                    string temporal2 = HttpContext.Current.Request.Form["formsubjecttemporal2_" + diff].Trim();
-                    string geographic1 = HttpContext.Current.Request.Form["formsubjectgeo1_" + diff].Trim();
-                    string geographic2 = HttpContext.Current.Request.Form["formsubjectgeo2_" + diff].Trim();
-                    string genre1 = HttpContext.Current.Request.Form["formsubjectgenre1_" + diff].Trim();
-                    string genre2 = HttpContext.Current.Request.Form["formsubjectgenre2_" + diff].Trim();
-                    string occcupation = HttpContext.Current.Request.Form["formsubjectoccup1_" + diff].Trim();
-                    string authority = HttpContext.Current.Request.Form["formsubjectauthority_" + diff].Trim();
-                    string language = HttpContext.Current.Request.Form["formsubjectlanguage_" + diff].Trim();
-                    string marc = HttpContext.Current.Request.Form["formsubjectmap_" + diff].Trim();
+                    string topic1 = Context.Request.Form["formsubjecttopic1_" + diff].Trim();
+                    string topic2 = Context.Request.Form["formsubjecttopic2_" + diff].Trim();
+                    string topic3 = Context.Request.Form["formsubjecttopic3_" + diff].Trim();
+                    string topic4 = Context.Request.Form["formsubjecttopic4_" + diff].Trim();
+                    string temporal1 = Context.Request.Form["formsubjecttemporal1_" + diff].Trim();
+                    string temporal2 = Context.Request.Form["formsubjecttemporal2_" + diff].Trim();
+                    string geographic1 = Context.Request.Form["formsubjectgeo1_" + diff].Trim();
+                    string geographic2 = Context.Request.Form["formsubjectgeo2_" + diff].Trim();
+                    string genre1 = Context.Request.Form["formsubjectgenre1_" + diff].Trim();
+                    string genre2 = Context.Request.Form["formsubjectgenre2_" + diff].Trim();
+                    string occcupation = Context.Request.Form["formsubjectoccup1_" + diff].Trim();
+                    string authority = Context.Request.Form["formsubjectauthority_" + diff].Trim();
+                    string language = Context.Request.Form["formsubjectlanguage_" + diff].Trim();
+                    string marc = Context.Request.Form["formsubjectmap_" + diff].Trim();
 
                     if ((topic1.Length > 0) || (topic2.Length > 0) || (topic3.Length > 0) || (topic4.Length > 0) ||
                         (temporal1.Length > 0) || (temporal2.Length > 0) || (geographic1.Length > 0) || (geographic2.Length > 0) ||

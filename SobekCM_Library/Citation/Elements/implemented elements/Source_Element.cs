@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using System;
 using System.Collections.Generic;
@@ -6,7 +6,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Web;
+using Microsoft.AspNetCore.Http;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.ApplicationState;
 using SobekCM.Core.Configuration;
@@ -163,12 +163,12 @@ namespace SobekCM.Library.Citation.Elements
         /// <param name="Bib"> Object into which to save the user's data, entered into the html rendered by this element </param>
         public override void Save_To_Bib(SobekCM_Item Bib)
         {
-            string[] getKeys = HttpContext.Current.Request.Form.AllKeys;
+            string[] getKeys = Context.Request.Form.AllKeys;
             foreach (string thisKey in getKeys)
             {
                 if (thisKey.IndexOf(html_element_name.Replace("_", "") + "_select") == 0)
                 {
-                    string thisValue = HttpContext.Current.Request.Form[thisKey].ToUpper();
+                    string thisValue = Context.Request.Form[thisKey].ToUpper();
 
                     // Get rid of the institution name at the end of the value
                     if (thisValue.IndexOf("|") > 0)
@@ -179,7 +179,7 @@ namespace SobekCM.Library.Citation.Elements
 
                 if (thisKey.IndexOf(html_element_name.Replace("_", "") + "_text") == 0)
                 {
-                    string temp = HttpContext.Current.Request.Form[thisKey];
+                    string temp = Context.Request.Form[thisKey];
                     if ((temp.Trim().Length == 0) && (Bib.Bib_Info.Source.Code.Length > 0))
                     {
                         if ((codeToNameDictionary != null) && (codeToNameDictionary.ContainsKey(Bib.Bib_Info.Source.Code)))

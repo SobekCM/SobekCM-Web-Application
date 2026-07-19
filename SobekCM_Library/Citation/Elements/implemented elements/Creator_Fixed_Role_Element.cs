@@ -1,10 +1,10 @@
-﻿#region Using directives
+#region Using directives
 
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Web;
+using Microsoft.AspNetCore.Http;
 using SobekCM.Core.ApplicationState;
 using SobekCM.Core.Configuration;
 using SobekCM.Core.Configuration.Localization;
@@ -136,12 +136,12 @@ namespace SobekCM.Library.Citation.Elements
         public override void Save_To_Bib(SobekCM_Item Bib)
         {
             string special_id = LabelFromTemplateFile.Replace(" ", "").Replace("_","").ToLower() + "fixedcreator";
-            string[] getKeys = HttpContext.Current.Request.Form.AllKeys;
+            string[] getKeys = Context.Request.Form.AllKeys;
             foreach (string thisKey in getKeys)
             {
                 if (thisKey.IndexOf(special_id) == 0)
                 {
-                    Bib.Bib_Info.Add_Named_Entity(new Name_Info(HttpContext.Current.Request.Form[thisKey], FixedTypeFromTemplateFile));
+                    Bib.Bib_Info.Add_Named_Entity(new Name_Info(Context.Request.Form[thisKey], FixedTypeFromTemplateFile));
                 }
             }
         }

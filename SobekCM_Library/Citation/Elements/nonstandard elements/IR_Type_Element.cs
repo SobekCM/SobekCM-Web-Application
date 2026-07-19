@@ -1,11 +1,11 @@
-﻿#region Using directives
+#region Using directives
 
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Web;
+using Microsoft.AspNetCore.Http;
 using System.Xml;
 using SobekCM.Core.ApplicationState;
 using SobekCM.Core.Configuration;
@@ -281,13 +281,13 @@ namespace SobekCM.Library.Citation.Elements
         /// <param name="Bib"> Object into which to save the user's data, entered into the html rendered by this element </param>
         public override void Save_To_Bib(SobekCM_Item Bib)
         {
-            string[] getKeys = HttpContext.Current.Request.Form.AllKeys;
+            string[] getKeys = Context.Request.Form.AllKeys;
             string type = String.Empty;
             foreach (string thisKey in getKeys)
             {
                 if (thisKey == "irtype")
                 {
-                    type = HttpContext.Current.Request.Form[thisKey];
+                    type = Context.Request.Form[thisKey];
                     if ((type != "Select Material Type") && ( type != "Other" ))
                     {
 	                    Bib.Bib_Info.SobekCM_Type_String = type;
@@ -302,17 +302,17 @@ namespace SobekCM.Library.Citation.Elements
 
                 if (thisKey == "irtype_otherinput")
                 {
-                    string other_type = HttpContext.Current.Request.Form[thisKey];
+                    string other_type = Context.Request.Form[thisKey];
                     if (other_type.Trim().Length > 0)
                     {
                         Bib.Bib_Info.SobekCM_Type = TypeOfResource_SobekCM_Enum.Archival;
-                        Bib.Bib_Info.Original_Description.Extent = HttpContext.Current.Request.Form[thisKey];
+                        Bib.Bib_Info.Original_Description.Extent = Context.Request.Form[thisKey];
                     }
                 }
 
                 if (thisKey.IndexOf("largerbody") == 0)
                 {
-                    string largerbody = HttpContext.Current.Request.Form[thisKey];
+                    string largerbody = Context.Request.Form[thisKey];
                     if (largerbody.Trim().Length > 0)
                     {
                         switch (type)

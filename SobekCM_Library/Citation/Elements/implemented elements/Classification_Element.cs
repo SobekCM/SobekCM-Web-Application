@@ -1,9 +1,9 @@
-﻿#region Using directives
+#region Using directives
 
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using System.Web;
+using Microsoft.AspNetCore.Http;
 using SobekCM.Core.ApplicationState;
 using SobekCM.Core.Configuration;
 using SobekCM.Core.Configuration.Localization;
@@ -111,19 +111,19 @@ namespace SobekCM.Library.Citation.Elements
             // Collect all the strings from the form
             Dictionary<string, string> classifications = new Dictionary<string, string>();
             Dictionary<string, string> authorities = new Dictionary<string, string>();
-            string[] getKeys = HttpContext.Current.Request.Form.AllKeys;
+            string[] getKeys = Context.Request.Form.AllKeys;
             foreach (string thisKey in getKeys)
             {
                 if (thisKey.IndexOf(html_element_name.Replace("_", "") + "_text") == 0)
                 {
-                    string term = HttpContext.Current.Request.Form[thisKey];
+                    string term = Context.Request.Form[thisKey];
                     string index = thisKey.Replace(html_element_name.Replace("_", "") + "_text", "");
                     classifications[index] = term;
                 }
 
                 if (thisKey.IndexOf(html_element_name.Replace("_", "") + "_select") == 0)
                 {
-                    string scheme = HttpContext.Current.Request.Form[thisKey];
+                    string scheme = Context.Request.Form[thisKey];
                     string index = thisKey.Replace(html_element_name.Replace("_", "") + "_select", "");
                     authorities[index] = scheme.ToLower();
                 }

@@ -1,9 +1,9 @@
-﻿#region Using directives
+#region Using directives
 
 using System;
 using System.IO;
 using System.Text;
-using System.Web;
+using Microsoft.AspNetCore.Http;
 using System.Xml;
 using SobekCM.Core.ApplicationState;
 using SobekCM.Core.Configuration;
@@ -260,20 +260,20 @@ namespace SobekCM.Library.Citation.Elements
         /// <param name="Bib"> Object into which to save the user's data, entered into the html rendered by this element </param>
         public override void Save_To_Bib(SobekCM_Item Bib)
         {
-            string[] getKeys = HttpContext.Current.Request.Form.AllKeys;
+            string[] getKeys = Context.Request.Form.AllKeys;
             foreach (string thisKey in getKeys)
             {
                 if (thisKey.IndexOf("form_relateditem_relation_") == 0)
                 {
                     string diff = thisKey.Replace("form_relateditem_relation_", "");
-                    string relation = HttpContext.Current.Request.Form[thisKey];
-                    string display = HttpContext.Current.Request.Form["form_relateditem_display_" + diff].Trim();
-                    string title = HttpContext.Current.Request.Form["form_relateditem_title_" + diff].Trim();
-                    string url = HttpContext.Current.Request.Form["form_relateditem_url_" + diff].Trim();
-                    string sobekid = HttpContext.Current.Request.Form["form_relateditem_sobekid_" + diff].Trim();
-                    string issn = HttpContext.Current.Request.Form["form_relateditem_issn_" + diff].Trim();
-                    string oclc = HttpContext.Current.Request.Form["form_relateditem_oclc_" + diff].Trim();
-                    string lccn = HttpContext.Current.Request.Form["form_relateditem_lccn_" + diff].Trim();
+                    string relation = Context.Request.Form[thisKey];
+                    string display = Context.Request.Form["form_relateditem_display_" + diff].Trim();
+                    string title = Context.Request.Form["form_relateditem_title_" + diff].Trim();
+                    string url = Context.Request.Form["form_relateditem_url_" + diff].Trim();
+                    string sobekid = Context.Request.Form["form_relateditem_sobekid_" + diff].Trim();
+                    string issn = Context.Request.Form["form_relateditem_issn_" + diff].Trim();
+                    string oclc = Context.Request.Form["form_relateditem_oclc_" + diff].Trim();
+                    string lccn = Context.Request.Form["form_relateditem_lccn_" + diff].Trim();
 
                     if ((title.Length > 0) || (url.Length > 0) || (sobekid.Length > 0) || (issn.Length > 0) ||
                         (oclc.Length > 0) || (lccn.Length > 0))

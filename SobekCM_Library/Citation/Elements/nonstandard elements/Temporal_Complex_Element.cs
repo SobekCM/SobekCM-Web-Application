@@ -1,10 +1,10 @@
-﻿#region Using directives
+#region Using directives
 
 using System;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Text;
-using System.Web;
+using Microsoft.AspNetCore.Http;
 using System.Xml;
 using SobekCM.Core.ApplicationState;
 using SobekCM.Core.Configuration;
@@ -146,19 +146,19 @@ namespace SobekCM.Library.Citation.Elements
         {
             const string HTML_ELEMENT_NAME = "complex_temporal";
             string id = HTML_ELEMENT_NAME.Replace("_", "");
-            string[] getKeys = HttpContext.Current.Request.Form.AllKeys;
+            string[] getKeys = Context.Request.Form.AllKeys;
             foreach (string thisKey in getKeys)
             {
                 if ((thisKey.IndexOf(id) == 0) && (thisKey.IndexOf("end") < 0) && (thisKey.IndexOf("period") < 0))
                 {
-                    string start = HttpContext.Current.Request.Form[thisKey].Trim();
+                    string start = Context.Request.Form[thisKey].Trim();
 
                     string key = thisKey.Replace(id + "_start", "");
                     string end_key = id + "_end" + key;
                     string period_key = id + "_period" + key;
 
-                    string end = HttpContext.Current.Request.Form[end_key].Trim();
-                    string period = HttpContext.Current.Request.Form[period_key].Trim();
+                    string end = Context.Request.Form[end_key].Trim();
+                    string period = Context.Request.Form[period_key].Trim();
 
                     if ((start.Length > 0) || (end.Length > 0) || (period.Length > 0))
                     {

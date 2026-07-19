@@ -1,9 +1,9 @@
-﻿#region Using directives
+#region Using directives
 
 using System;
 using System.IO;
 using System.Text;
-using System.Web;
+using Microsoft.AspNetCore.Http;
 using System.Xml;
 using SobekCM.Core.ApplicationState;
 using SobekCM.Core.Configuration;
@@ -210,7 +210,7 @@ namespace SobekCM.Library.Citation.Elements
         /// <param name="Bib"> Object into which to save the user's data, entered into the html rendered by this element </param>
         public override void Save_To_Bib(SobekCM_Item Bib)
         {
-            string[] getKeys = HttpContext.Current.Request.Form.AllKeys;
+            string[] getKeys = Context.Request.Form.AllKeys;
             foreach (string thisKey in getKeys)
             {
                 if (thisKey.IndexOf("complexabstract_type") != 0) continue;
@@ -219,7 +219,7 @@ namespace SobekCM.Library.Citation.Elements
                 string language_key = "complexabstract_language" + key;
                 string textarea_key = "complexabstract_textarea" + key;
 
-                string display = HttpContext.Current.Request.Form[thisKey].Trim();
+                string display = Context.Request.Form[thisKey].Trim();
                 string displayLabel = "Abstract";
                 string type = String.Empty;
                 switch( display )
@@ -252,11 +252,11 @@ namespace SobekCM.Library.Citation.Elements
 
 
                 string language = String.Empty;
-                if (HttpContext.Current.Request.Form[language_key] != null)
+                if (Context.Request.Form[language_key] != null)
                 {
-                    language = HttpContext.Current.Request.Form[language_key].Trim();
+                    language = Context.Request.Form[language_key].Trim();
                 }
-                string textarea = HttpContext.Current.Request.Form[textarea_key].Trim();
+                string textarea = Context.Request.Form[textarea_key].Trim();
 
                 if (textarea.Length > 0)
                 {

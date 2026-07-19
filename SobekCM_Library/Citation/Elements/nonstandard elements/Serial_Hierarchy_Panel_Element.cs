@@ -1,10 +1,10 @@
-﻿#region Using directives
+#region Using directives
 
 using System;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Web;
+using Microsoft.AspNetCore.Http;
 using System.Xml;
 using SobekCM.Core.ApplicationState;
 using SobekCM.Core.Configuration;
@@ -162,12 +162,12 @@ namespace SobekCM.Library.Citation.Elements
         public override void Save_To_Bib(SobekCM_Item Bib)
         {
             // Get these values directly
-            string enum1Text = HttpContext.Current.Request.Form["form_serialhierarchy_enum1text"].Trim();
-            string enum1OrderString = HttpContext.Current.Request.Form["form_serialhierarchy_enum1order"].Trim();
-            string enum2Text = HttpContext.Current.Request.Form["form_serialhierarchy_enum2text"].Trim();
-            string enum2OrderString = HttpContext.Current.Request.Form["form_serialhierarchy_enum2order"].Trim();
-            string enum3Text = HttpContext.Current.Request.Form["form_serialhierarchy_enum3text"].Trim();
-            string enum3OrderString = HttpContext.Current.Request.Form["form_serialhierarchy_enum3order"].Trim();
+            string enum1Text = Context.Request.Form["form_serialhierarchy_enum1text"].Trim();
+            string enum1OrderString = Context.Request.Form["form_serialhierarchy_enum1order"].Trim();
+            string enum2Text = Context.Request.Form["form_serialhierarchy_enum2text"].Trim();
+            string enum2OrderString = Context.Request.Form["form_serialhierarchy_enum2order"].Trim();
+            string enum3Text = Context.Request.Form["form_serialhierarchy_enum3text"].Trim();
+            string enum3OrderString = Context.Request.Form["form_serialhierarchy_enum3order"].Trim();
 
             // Check to see if the title is in enum1text
             if (enum1Text == "[TITLE]")

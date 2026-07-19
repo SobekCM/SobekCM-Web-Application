@@ -19,7 +19,8 @@
       "PowerShell(Get-ChildItem \"C:\\\\Program Files \\(x86\\)\\\\Microsoft Visual Studio\\\\Shared\\\\NuGetPackages\" | Where-Object { $_.Name -match \"microsoft.aspnetcore\" } | Select-Object Name)",
       "PowerShell(dotnet nuget locals all --list)",
       "PowerShell(cmd /c \"dir /s /b C:\\\\Users\\\\mark.v.sullivan\\\\.nuget\\\\packages\\\\microsoft.aspnetcore.systemwebadapters\\\\2.3.0\")",
-      "PowerShell(cmd /c \"dir /s /b C:\\\\GitHub\\\\SobekCM-Web-Application\\\\SobekCM\\\\obj\\\\Debug\" 2>&1)"
+      "PowerShell(cmd /c \"dir /s /b C:\\\\GitHub\\\\SobekCM-Web-Application\\\\SobekCM\\\\obj\\\\Debug\" 2>&1)",
+      "PowerShell(Select-String -Path \"c:\\\\GitHub\\\\SobekCM-Web-Application\\\\SobekCM_Library\\\\MySobekViewer\\\\Edit_Item_Metadata_MySobekViewer.cs\" -Pattern \"Save_To_Bib\" | Select-Object -First 5 | ForEach-Object { $_.Line.Trim\\(\\) })"
     ]
   }
 }

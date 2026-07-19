@@ -1,10 +1,10 @@
-﻿#region Using directives
+#region Using directives
 
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using System.Web;
+using Microsoft.AspNetCore.Http;
 using SobekCM.Core.ApplicationState;
 using SobekCM.Core.Configuration;
 using SobekCM.Core.Configuration.Localization;
@@ -109,18 +109,18 @@ namespace SobekCM.Library.Citation.Elements.implemented_elements
         {
             List<Coordinate_Point> points = new List<Coordinate_Point>();
 
-            string[] getKeys = HttpContext.Current.Request.Form.AllKeys;
+            string[] getKeys = Context.Request.Form.AllKeys;
             string latitude = String.Empty;
             foreach (string thisKey in getKeys)
             {
                 if (thisKey.IndexOf(html_element_name.Replace("_", "") + "_first") == 0)
                 {
-                    latitude = HttpContext.Current.Request.Form[thisKey];
+                    latitude = Context.Request.Form[thisKey];
                 }
 
                 if (thisKey.IndexOf(html_element_name.Replace("_", "") + "_second") != 0) continue;
 
-                string longitude = HttpContext.Current.Request.Form[thisKey];
+                string longitude = Context.Request.Form[thisKey];
                 if ((latitude.Length > 0) && (longitude.Length > 0))
                 {
                     double latitude_double, longitude_double;

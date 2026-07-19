@@ -1,8 +1,8 @@
-﻿#region Using directives
+#region Using directives
 
 using System.IO;
 using System.Text;
-using System.Web;
+using Microsoft.AspNetCore.Http;
 using SobekCM.Core.ApplicationState;
 using SobekCM.Core.Configuration;
 using SobekCM.Core.Configuration.Localization;
@@ -53,7 +53,7 @@ namespace SobekCM.Library.Citation.Elements
         /// <param name="Bib"> Object into which to save the user's data, entered into the html rendered by this element </param>
         public override void Save_To_Bib(SobekCM_Item Bib)
         {
-            if (HttpContext.Current.Request.Form[html_element_name] != null)
+            if (Context.Request.Form[html_element_name] != null)
             {
                 Bib.Web.Additional_Work_Needed = true;
             }

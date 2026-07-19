@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using System;
 using System.Collections.Generic;
@@ -6,7 +6,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Web;
+using Microsoft.AspNetCore.Http;
 using SobekCM.Core.ApplicationState;
 using SobekCM.Core.Configuration;
 using SobekCM.Core.Configuration.Localization;
@@ -136,7 +136,7 @@ namespace SobekCM.Library.Citation.Elements
         public override void Save_To_Bib(SobekCM_Item Bib)
         {
             // Collect the list of download_files and download_labels from the form
-            string[] getKeys = HttpContext.Current.Request.Form.AllKeys;
+            string[] getKeys = Context.Request.Form.AllKeys;
             string filename = String.Empty;
             List<string> download_files = new List<string>();
             List<string> download_labels = new List<string>();
@@ -144,14 +144,14 @@ namespace SobekCM.Library.Citation.Elements
             {
                 if (thisKey.IndexOf(html_element_name.Replace("_", "") + "_select") == 0)
                 {
-                    filename = HttpContext.Current.Request.Form[thisKey];
+                    filename = Context.Request.Form[thisKey];
                 }
 
                 if (thisKey.IndexOf(html_element_name.Replace("_", "") + "_text") == 0)
                 {                    
                     if (filename.Length > 0)
                     {
-                        string label = HttpContext.Current.Request.Form[thisKey];
+                        string label = Context.Request.Form[thisKey];
                         download_files.Add(filename.Replace(".*",""));
                         download_labels.Add(label);
                     }

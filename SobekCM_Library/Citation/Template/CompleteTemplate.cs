@@ -6,6 +6,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Text;
+using Microsoft.AspNetCore.Http;
 using SobekCM.Core.ApplicationState;
 using SobekCM.Core.Configuration;
 using SobekCM.Core.Configuration.Localization;
@@ -231,7 +232,8 @@ namespace SobekCM.Library.Citation.Template
         /// <summary> Saves the data entered by the user through this template to the provided bibliographic object </summary>
         /// <param name="Bib"> Object into which to save the user-entered data </param>
         /// <param name="Current_User"> Current user, who's rights may impact the way an element is rendered </param>
-        public void Save_To_Bib( SobekCM_Item Bib, User_Object Current_User )
+        /// <param name="context"> HTTP context for the current request, passed to each element for form data access </param>
+        public void Save_To_Bib( SobekCM_Item Bib, User_Object Current_User, HttpContext context )
         {
             // Go through each of the elements and prepare to save
             foreach (abstract_Element thisElement in templatePages.SelectMany(ThisPage => ThisPage.Panels.SelectMany(ThisPanel => ThisPanel.Elements)))
@@ -248,6 +250,7 @@ namespace SobekCM.Library.Citation.Template
             // Now, step through and save them all
             foreach (abstract_Element thisElement in templatePages.SelectMany(ThisPage => ThisPage.Panels.SelectMany(ThisPanel => ThisPanel.Elements)))
             {
+                thisElement.Context = context;
                 thisElement.Save_To_Bib(Bib);
             }
         }
@@ -256,7 +259,8 @@ namespace SobekCM.Library.Citation.Template
         /// <param name="Bib"> Object into which to save the user-entered data </param>
         /// <param name="Current_User"> Current user, who's rights may impact the way an element is rendered </param>
         /// <param name="Page">Page number of the template to save</param>
-        public void Save_To_Bib(SobekCM_Item Bib, User_Object Current_User, int Page)
+        /// <param name="context"> HTTP context for the current request, passed to each element for form data access </param>
+        public void Save_To_Bib(SobekCM_Item Bib, User_Object Current_User, int Page, HttpContext context)
         {
             // If this is not a valid page, just return
             if ((Page < 1) || (Page > templatePages.Count))
@@ -280,6 +284,7 @@ namespace SobekCM.Library.Citation.Template
             // Now, step through and save them all
             foreach (abstract_Element thisElement in thisPage.Panels.SelectMany(ThisPanel => ThisPanel.Elements))
             {
+                thisElement.Context = context;
                 thisElement.Save_To_Bib(Bib);
             }
         }

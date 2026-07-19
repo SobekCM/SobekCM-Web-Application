@@ -1,10 +1,10 @@
-﻿#region Using directives
+#region Using directives
 
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Web;
+using Microsoft.AspNetCore.Http;
 using SobekCM.Core.ApplicationState;
 using SobekCM.Core.Configuration;
 using SobekCM.Core.Configuration.Localization;
@@ -105,11 +105,11 @@ namespace SobekCM.Library.Citation.Elements
             LearningObjectMetadata lomInfo = Bib.Get_Metadata_Module(GlobalVar.IEEE_LOM_METADATA_MODULE_KEY) as LearningObjectMetadata;
 
 
-            string[] getKeys = HttpContext.Current.Request.Form.AllKeys;
+            string[] getKeys = Context.Request.Form.AllKeys;
             foreach (string thisKey in getKeys.Where(thisKey => thisKey.IndexOf(html_element_name.Replace("_", "")) == 0))
             {
                 // Get the value from the form element
-                string value = HttpContext.Current.Request.Form[thisKey].Trim();
+                string value = Context.Request.Form[thisKey].Trim();
                 if (value.Length > 0)
                 {
                     // There is a value, so ensure learning object metadata does exist

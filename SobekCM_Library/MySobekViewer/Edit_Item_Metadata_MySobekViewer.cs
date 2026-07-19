@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using System;
 using System.Collections.Generic;
@@ -229,7 +229,7 @@ namespace SobekCM.Library.MySobekViewer
 
 
 		        // Save these changes to bib
-		        completeTemplate.Save_To_Bib(currentItem, RequestSpecificValues.Current_User, ((int) page));
+		        completeTemplate.Save_To_Bib(currentItem, RequestSpecificValues.Current_User, (int) page, Context);
 
 		        // See if the RequestSpecificValues.Current_User asked for a new element of a complex form type
 		        delayed_popup = String.Empty;

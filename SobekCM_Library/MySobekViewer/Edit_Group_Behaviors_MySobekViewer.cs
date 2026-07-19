@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using System;
 using System.Collections.Generic;
@@ -126,7 +126,7 @@ namespace SobekCM.Library.MySobekViewer
            else if (hidden_request == "save")
            {
                // Save these changes to bib
-               completeTemplate.Save_To_Bib(currentItem, RequestSpecificValues.Current_User, 1);
+               completeTemplate.Save_To_Bib(currentItem, RequestSpecificValues.Current_User, 1, Context);
 
                // Save the group title
                SobekCM_Item_Database.Update_Item_Group(currentItem.BibID, currentItem.Behaviors.GroupTitle, currentItem.Bib_Info.SortSafeTitle(currentItem.Behaviors.GroupTitle, true), String.Empty, currentItem.Behaviors.Primary_Identifier.Type, currentItem.Behaviors.Primary_Identifier.Identifier );

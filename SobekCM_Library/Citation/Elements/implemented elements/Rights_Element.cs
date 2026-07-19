@@ -1,11 +1,11 @@
-﻿#region Using directives
+#region Using directives
 
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Web;
+using Microsoft.AspNetCore.Http;
 using SobekCM.Core.ApplicationState;
 using SobekCM.Core.Configuration;
 using SobekCM.Core.Configuration.Localization;
@@ -215,10 +215,10 @@ namespace SobekCM.Library.Citation.Elements
         /// <param name="Bib"> Object into which to save the user's data, entered into the html rendered by this element </param>
         public override void Save_To_Bib(SobekCM_Item Bib)
         {
-            string[] getKeys = HttpContext.Current.Request.Form.AllKeys;
+            string[] getKeys = Context.Request.Form.AllKeys;
             foreach (string thisKey in getKeys.Where(thisKey => thisKey.IndexOf(html_element_name.Replace("_", "")) == 0))
             {
-                string access_text = HttpContext.Current.Request.Form[thisKey];
+                string access_text = Context.Request.Form[thisKey];
                 Bib.Bib_Info.Add_AccessCondition(access_text);
 
                 if ( !String.IsNullOrWhiteSpace(access_text))

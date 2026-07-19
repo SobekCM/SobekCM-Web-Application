@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Xml;
+using Microsoft.AspNetCore.Http;
 using SobekCM.Core.ApplicationState;
 using SobekCM.Core.Configuration;
 using SobekCM.Core.Configuration.Localization;
@@ -65,6 +66,9 @@ namespace SobekCM.Library.Citation.Elements
         {
             // Do nothing 
         }
+
+        /// <summary> HTTP context for the current request, set by CompleteTemplate before calling Save_To_Bib </summary>
+        public HttpContext Context { get; set; }
 
         /// <summary> Page within the template that this element appears </summary>
         public int Template_Page { get; set; }

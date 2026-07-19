@@ -1,11 +1,11 @@
-﻿#region Using directives
+#region Using directives
 
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Web;
+using Microsoft.AspNetCore.Http;
 using System.Xml;
 using SobekCM.Core.ApplicationState;
 using SobekCM.Core.Configuration.Localization;
@@ -418,7 +418,7 @@ namespace SobekCM.Library.Citation.Elements
         {
             const string HTML_ELEMENT_NAME = "complex_note";
             string id = HTML_ELEMENT_NAME.Replace("_","");
-            string[] getKeys = HttpContext.Current.Request.Form.AllKeys;
+            string[] getKeys = Context.Request.Form.AllKeys;
             foreach (string thisKey in getKeys)
             {
                 if (thisKey.IndexOf("complexnote_type") == 0)
@@ -427,7 +427,7 @@ namespace SobekCM.Library.Citation.Elements
                     string addtl_key = id + "_input" + key;
                     string textarea_key = id + "_textarea" + key;
 
-                    string type = HttpContext.Current.Request.Form[thisKey].Trim();
+                    string type = Context.Request.Form[thisKey].Trim();
                     Note_Type_Enum type_enum = Note_Type_Enum.NONE;
                     switch (type)
                     {
@@ -545,11 +545,11 @@ namespace SobekCM.Library.Citation.Elements
                     }
 
                     string addtl = String.Empty;
-                    if (HttpContext.Current.Request.Form[addtl_key] != null)
+                    if (Context.Request.Form[addtl_key] != null)
                     {
-                        addtl = HttpContext.Current.Request.Form[addtl_key].Trim();
+                        addtl = Context.Request.Form[addtl_key].Trim();
                     }
-                    string textarea = HttpContext.Current.Request.Form[textarea_key].Trim();
+                    string textarea = Context.Request.Form[textarea_key].Trim();
 
                     if (textarea.Length > 0)
                     {

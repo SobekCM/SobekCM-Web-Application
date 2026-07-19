@@ -1,8 +1,8 @@
-﻿#region Using directives
+#region Using directives
 
 using System.IO;
 using System.Text;
-using System.Web;
+using Microsoft.AspNetCore.Http;
 using System.Xml;
 using SobekCM.Core.ApplicationState;
 using SobekCM.Core.Configuration;
@@ -165,21 +165,21 @@ namespace SobekCM.Library.Citation.Elements
             if (zooInfo == null)
                 zooInfo = new Zoological_Taxonomy_Info();
 
-            string[] getKeys = HttpContext.Current.Request.Form.AllKeys;
+            string[] getKeys = Context.Request.Form.AllKeys;
             foreach (string thisKey in getKeys)
             {
                 if (thisKey.IndexOf("formzootaxonkingdom_") == 0)
                 {
                     string diff = thisKey.Replace("formzootaxonkingdom_", "");
 
-                    zooInfo.Kingdom = HttpContext.Current.Request.Form[thisKey];
-                    zooInfo.Phylum = HttpContext.Current.Request.Form["formzootaxonphylum_" + diff].Trim();
-                    zooInfo.Class = HttpContext.Current.Request.Form["formzootaxonclass_" + diff].Trim();
-                    zooInfo.Order = HttpContext.Current.Request.Form["formzootaxonorder_" + diff].Trim();
-                    zooInfo.Family = HttpContext.Current.Request.Form["formzootaxonfamily_" + diff].Trim();
-                    zooInfo.Genus = HttpContext.Current.Request.Form["formzootaxongenus_" + diff].Trim();
-                    zooInfo.Specific_Epithet = HttpContext.Current.Request.Form["formzootaxonspecies_" + diff].Trim();
-                    zooInfo.Common_Name = HttpContext.Current.Request.Form["formzootaxoncommon_" + diff].Trim();
+                    zooInfo.Kingdom = Context.Request.Form[thisKey];
+                    zooInfo.Phylum = Context.Request.Form["formzootaxonphylum_" + diff].Trim();
+                    zooInfo.Class = Context.Request.Form["formzootaxonclass_" + diff].Trim();
+                    zooInfo.Order = Context.Request.Form["formzootaxonorder_" + diff].Trim();
+                    zooInfo.Family = Context.Request.Form["formzootaxonfamily_" + diff].Trim();
+                    zooInfo.Genus = Context.Request.Form["formzootaxongenus_" + diff].Trim();
+                    zooInfo.Specific_Epithet = Context.Request.Form["formzootaxonspecies_" + diff].Trim();
+                    zooInfo.Common_Name = Context.Request.Form["formzootaxoncommon_" + diff].Trim();
 
                     Bib.Add_Metadata_Module(GlobalVar.ZOOLOGICAL_TAXONOMY_METADATA_MODULE_KEY, zooInfo);
                 }

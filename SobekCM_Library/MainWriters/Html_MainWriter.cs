@@ -183,7 +183,7 @@ namespace SobekCM.Library.MainWriters
                                 builder.Append("\tLast Results:\t\t" + Context.SessionObject()["LastResults"] + "\n");
                             if (Context.SessionObject()["Last_Mode"] != null)
                                 builder.Append("\tLast Mode:\t\t\t" + Context.SessionObject()["Last_Mode"] + "\n");
-                            builder.Append("\tURL:\t\t\t\t" + HttpContext.Current.Items["Original_URL"]);
+                            builder.Append("\tURL:\t\t\t\t" + Context.Items["Original_URL"]);
                         }
                         catch
                         {
@@ -291,11 +291,11 @@ namespace SobekCM.Library.MainWriters
                 // value though.
                 if (htmlSkin == null)
                 {
-                    HttpContext.Current.Response.StatusCode = 404;
-                    HttpContext.Current.Response.Output.WriteLine("404 - INVALID URL");
-                    HttpContext.Current.Response.Output.WriteLine("Web skin indicated is invalid, default web skin invalid - line 1029");
-                    HttpContext.Current.Response.Output.WriteLine(RequestSpecificValues.Tracer.Text_Trace);
-                    HttpContext.Current.ApplicationInstance.CompleteRequest();
+                    Context.Response.StatusCode = 404;
+                    Context.Response.Output.WriteLine("404 - INVALID URL");
+                    Context.Response.Output.WriteLine("Web skin indicated is invalid, default web skin invalid - line 1029");
+                    Context.Response.Output.WriteLine(RequestSpecificValues.Tracer.Text_Trace);
+                    Context.ApplicationInstance.CompleteRequest();
                     RequestSpecificValues.Current_Mode.Request_Completed = true;
 
                     return;

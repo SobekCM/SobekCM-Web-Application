@@ -1,11 +1,11 @@
-﻿#region Using directives
+#region Using directives
 
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Web;
+using Microsoft.AspNetCore.Http;
 using System.Xml;
 using SobekCM.Core.ApplicationState;
 using SobekCM.Core.Configuration;
@@ -260,7 +260,7 @@ namespace SobekCM.Library.Citation.Elements
             Bib.Behaviors.Clear_Views();
 
             // Save each view
-            string[] getKeys = HttpContext.Current.Request.Form.AllKeys;
+            string[] getKeys = Context.Request.Form.AllKeys;
             Dictionary<string, string> addedViewTypes = new Dictionary<string,string>(StringComparer.OrdinalIgnoreCase);
             foreach (string thisKey in getKeys)
             {
@@ -268,7 +268,7 @@ namespace SobekCM.Library.Citation.Elements
                 {
                     // Get the viewer type
                     //string key = thisKey.Replace("viewer_type", "");
-                    string type = HttpContext.Current.Request.Form[thisKey].Trim();
+                    string type = Context.Request.Form[thisKey].Trim();
 
                     // Ensure no other view of this type already exists
                     if (addedViewTypes.ContainsKey(type))
@@ -300,13 +300,13 @@ namespace SobekCM.Library.Citation.Elements
                     //// Get the details information for html and html map
                     //if (type == "HTML")
                     //{
-                    //    if (HttpContext.Current.Request.Form[file_key] != null)
+                    //    if (Context.Request.Form[file_key] != null)
                     //    {
-                    //        file = HttpContext.Current.Request.Form[file_key].Trim();
+                    //        file = Context.Request.Form[file_key].Trim();
                     //    }
-                    //    if (HttpContext.Current.Request.Form[label_key] != null)
+                    //    if (Context.Request.Form[label_key] != null)
                     //    {
-                    //        label = HttpContext.Current.Request.Form[label_key].Trim();
+                    //        label = Context.Request.Form[label_key].Trim();
                     //    }
                     //}
 

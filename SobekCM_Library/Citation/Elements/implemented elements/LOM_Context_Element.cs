@@ -1,11 +1,11 @@
-﻿#region Using directives
+#region Using directives
 
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
 using System.Text;
-using System.Web;
+using Microsoft.AspNetCore.Http;
 using SobekCM.Core.ApplicationState;
 using SobekCM.Core.Configuration;
 using SobekCM.Core.Configuration.Localization;
@@ -117,7 +117,7 @@ namespace SobekCM.Library.Citation.Elements
             LearningObjectMetadata lomInfo = Bib.Get_Metadata_Module(GlobalVar.IEEE_LOM_METADATA_MODULE_KEY) as LearningObjectMetadata;
 
             // Pull the standard values
-            NameValueCollection form = HttpContext.Current.Request.Form;
+            NameValueCollection form = Context.Request.Form;
 
             foreach (string thisKey in form.AllKeys)
             {

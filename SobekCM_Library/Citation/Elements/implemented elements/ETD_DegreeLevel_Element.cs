@@ -1,9 +1,9 @@
-﻿#region Using directives
+#region Using directives
 
 using System;
 using System.IO;
 using System.Text;
-using System.Web;
+using Microsoft.AspNetCore.Http;
 using SobekCM.Core.ApplicationState;
 using SobekCM.Core.Configuration;
 using SobekCM.Core.Configuration.Localization;
@@ -93,14 +93,14 @@ namespace SobekCM.Library.Citation.Elements
 		/// <param name="Bib"> Object into which to save the user's data, entered into the html rendered by this element </param>
 		public override void Save_To_Bib(SobekCM_Item Bib)
 		{
-			string[] getKeys = HttpContext.Current.Request.Form.AllKeys;
+			string[] getKeys = Context.Request.Form.AllKeys;
 			foreach (string thisKey in getKeys)
 			{
 				if (thisKey.IndexOf(html_element_name.Replace("_", "")) == 0)
 				{
 					Thesis_Dissertation_Info etdInfo = Bib.Get_Metadata_Module(GlobalVar.THESIS_METADATA_MODULE_KEY) as Thesis_Dissertation_Info;
 
-					string value = HttpContext.Current.Request.Form[thisKey].Trim().ToLower();
+					string value = Context.Request.Form[thisKey].Trim().ToLower();
 					if (value.Length > 0)
 					{
 						if (etdInfo == null)

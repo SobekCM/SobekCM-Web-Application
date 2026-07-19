@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using System;
 using System.Collections.Generic;
@@ -138,7 +138,7 @@ namespace SobekCM.Library.MySobekViewer
                 string oldTrackingBox = currentItem.Tracking.Tracking_Box;
 
                 // Save these changes to bib
-                completeTemplate.Save_To_Bib(currentItem, RequestSpecificValues.Current_User, 1);
+                completeTemplate.Save_To_Bib(currentItem, RequestSpecificValues.Current_User, 1, Context);
 
                 // Save the behaviors
                 SobekCM_Item_Database.Save_Behaviors(currentItem, currentItem.Behaviors.Text_Searchable, false, false);

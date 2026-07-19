@@ -1,9 +1,9 @@
-﻿#region Using directives
+#region Using directives
 
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Text;
-using System.Web;
+using Microsoft.AspNetCore.Http;
 using System.Xml;
 using SobekCM.Core.ApplicationState;
 using SobekCM.Core.Configuration;
@@ -176,21 +176,21 @@ namespace SobekCM.Library.Citation.Elements
         {
             const string HTML_ELEMENT_NAME = "complex_publisher";
             string id = HTML_ELEMENT_NAME.Replace("_","");
-            string[] getKeys = HttpContext.Current.Request.Form.AllKeys;
+            string[] getKeys = Context.Request.Form.AllKeys;
             foreach (string thisKey in getKeys)
             {
                 if ((thisKey.IndexOf(id) == 0) && (thisKey.IndexOf("loc") < 0))
                 {
-                    string name = HttpContext.Current.Request.Form[thisKey].Trim();
+                    string name = Context.Request.Form[thisKey].Trim();
 
                     string key = thisKey.Replace(id + "_name", "");
                     string loc1_key = id + "_firstloc" + key;
                     string loc2_key = id + "_secondloc" + key;
                     string loc3_key = id + "_thirdloc" + key;
 
-                    string loc1 = HttpContext.Current.Request.Form[loc1_key].Trim();
-                    string loc2 = HttpContext.Current.Request.Form[loc2_key].Trim();
-                    string loc3 = HttpContext.Current.Request.Form[loc3_key].Trim();
+                    string loc1 = Context.Request.Form[loc1_key].Trim();
+                    string loc2 = Context.Request.Form[loc2_key].Trim();
+                    string loc3 = Context.Request.Form[loc3_key].Trim();
 
                     if ((name.Length > 0) || (loc1.Length > 0) || (loc2.Length > 0) || (loc3.Length > 0))
                     {

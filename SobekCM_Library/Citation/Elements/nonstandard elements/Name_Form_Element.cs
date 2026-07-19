@@ -1,10 +1,10 @@
-﻿#region Using directives
+#region Using directives
 
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using System.Web;
+using Microsoft.AspNetCore.Http;
 using System.Xml;
 using SobekCM.Core.ApplicationState;
 using SobekCM.Core.Configuration;
@@ -275,25 +275,25 @@ namespace SobekCM.Library.Citation.Elements
         public override void Save_To_Bib(SobekCM_Item Bib)
         {
             bool main_is_found = false;
-            string[] getKeys = HttpContext.Current.Request.Form.AllKeys;
+            string[] getKeys = Context.Request.Form.AllKeys;
             foreach (string thisKey in getKeys)
             {
                 if (thisKey.IndexOf("form_name_type_") == 0)
                 {
-                    string type = HttpContext.Current.Request.Form[thisKey].Trim();
+                    string type = Context.Request.Form[thisKey].Trim();
                     string diff = thisKey.Replace("form_name_type_", "");
-                    string main = HttpContext.Current.Request.Form["form_name_main_" + diff].Trim();
-                    string full = HttpContext.Current.Request.Form["form_name_full_" + diff ].Trim();
-                    string given = HttpContext.Current.Request.Form["form_name_given_" + diff].Trim();
-                    string family = HttpContext.Current.Request.Form["form_name_family_" + diff].Trim();
-                    string display = HttpContext.Current.Request.Form["form_name_display_" + diff].Trim();
-                    string terms = HttpContext.Current.Request.Form["form_name_terms_" + diff].Trim();
-                    string dates = HttpContext.Current.Request.Form["form_name_dates_" + diff].Trim();
-                    string desc = HttpContext.Current.Request.Form["form_name_desc_" + diff].Trim();
-                    string affiliation = HttpContext.Current.Request.Form["form_name_affiliation_" + diff].Trim();
-                    string role1 = HttpContext.Current.Request.Form["form_name_role1_" + diff].Trim();
-                    string role2 = HttpContext.Current.Request.Form["form_name_role2_" + diff].Trim();
-                    string role3 = HttpContext.Current.Request.Form["form_name_role3_" + diff].Trim();
+                    string main = Context.Request.Form["form_name_main_" + diff].Trim();
+                    string full = Context.Request.Form["form_name_full_" + diff ].Trim();
+                    string given = Context.Request.Form["form_name_given_" + diff].Trim();
+                    string family = Context.Request.Form["form_name_family_" + diff].Trim();
+                    string display = Context.Request.Form["form_name_display_" + diff].Trim();
+                    string terms = Context.Request.Form["form_name_terms_" + diff].Trim();
+                    string dates = Context.Request.Form["form_name_dates_" + diff].Trim();
+                    string desc = Context.Request.Form["form_name_desc_" + diff].Trim();
+                    string affiliation = Context.Request.Form["form_name_affiliation_" + diff].Trim();
+                    string role1 = Context.Request.Form["form_name_role1_" + diff].Trim();
+                    string role2 = Context.Request.Form["form_name_role2_" + diff].Trim();
+                    string role3 = Context.Request.Form["form_name_role3_" + diff].Trim();
 
                     if ((full.Length > 0) || (given.Length > 0) || (family.Length > 0))
                     {

@@ -1,11 +1,11 @@
-﻿#region Using directives
+#region Using directives
 
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Web;
+using Microsoft.AspNetCore.Http;
 using System.Xml;
 using SobekCM.Core.ApplicationState;
 using SobekCM.Core.Configuration;
@@ -240,39 +240,39 @@ namespace SobekCM.Library.Citation.Elements
         /// <param name="Bib"> Object into which to save the user's data, entered into the html rendered by this element </param>
         public override void Save_To_Bib(SobekCM_Item Bib)
         {
-            string[] getKeys = HttpContext.Current.Request.Form.AllKeys;
+            string[] getKeys = Context.Request.Form.AllKeys;
             foreach (string thisKey in getKeys)
             {
                 if (thisKey.IndexOf("formmaintitlenonsort") == 0)
                 {
-                    Bib.Bib_Info.Main_Title.NonSort = HttpContext.Current.Request.Form[thisKey];
-                    string title = HttpContext.Current.Request.Form["formmaintitletitle"].Trim();
+                    Bib.Bib_Info.Main_Title.NonSort = Context.Request.Form[thisKey];
+                    string title = Context.Request.Form["formmaintitletitle"].Trim();
                     if ( title.Length > 0 )
                         Bib.Bib_Info.Main_Title.Title = title;
-                    Bib.Bib_Info.Main_Title.Subtitle = HttpContext.Current.Request.Form["formmaintitlesubtitle"].Trim();
+                    Bib.Bib_Info.Main_Title.Subtitle = Context.Request.Form["formmaintitlesubtitle"].Trim();
 
-                    string statement = HttpContext.Current.Request.Form["formmaintitlestatement"].Trim();
+                    string statement = Context.Request.Form["formmaintitlestatement"].Trim();
                     if ( statement.Length > 0 )
                     {
                         Bib.Bib_Info.Add_Note( statement, Note_Type_Enum.StatementOfResponsibility );
                     }
 
-                    string partnum1 = HttpContext.Current.Request.Form["formmaintitlepartnum1"].Trim();
-                    string partnum2 = HttpContext.Current.Request.Form["formmaintitlepartnum2"].Trim();
+                    string partnum1 = Context.Request.Form["formmaintitlepartnum1"].Trim();
+                    string partnum2 = Context.Request.Form["formmaintitlepartnum2"].Trim();
                     if ( partnum1.Length > 0 )
                         Bib.Bib_Info.Main_Title.Add_Part_Number( partnum1 );
                     if ( partnum2.Length > 0 )
                         Bib.Bib_Info.Main_Title.Add_Part_Number(partnum2);
                     
-                    string partname1 = HttpContext.Current.Request.Form["formmaintitlepartname1"].Trim();
-                    string partname2 = HttpContext.Current.Request.Form["formmaintitlepartname2"].Trim();
+                    string partname1 = Context.Request.Form["formmaintitlepartname1"].Trim();
+                    string partname2 = Context.Request.Form["formmaintitlepartname2"].Trim();
                     if ( partname1.Length > 0 )
                         Bib.Bib_Info.Main_Title.Add_Part_Name( partname1 );
                     if ( partname2.Length > 0 )
                         Bib.Bib_Info.Main_Title.Add_Part_Name(partname2);
 
-                    Bib.Bib_Info.Main_Title.Authority = HttpContext.Current.Request.Form["formmaintitleauthority"].Trim();
-                    Bib.Bib_Info.Main_Title.Language = HttpContext.Current.Request.Form["formmaintitlelanguage"].Trim();
+                    Bib.Bib_Info.Main_Title.Authority = Context.Request.Form["formmaintitleauthority"].Trim();
+                    Bib.Bib_Info.Main_Title.Language = Context.Request.Form["formmaintitlelanguage"].Trim();
                 }
             }
         }

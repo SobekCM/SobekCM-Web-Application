@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using System;
 using System.Collections;
@@ -220,7 +220,7 @@ namespace SobekCM.Library.MySobekViewer
 						saveItem.Bib_Info.Location.Other_URL_Note = String.Empty;
 
                         // Save the CompleteTemplate changes to this item
-                        completeTemplate.Save_To_Bib(saveItem, RequestSpecificValues.Current_User, 1);
+                        completeTemplate.Save_To_Bib(saveItem, RequestSpecificValues.Current_User, 1, Context);
 
                         // Save this item and copy over
                         complete_item_submission(saveItem, RequestSpecificValues.Tracer);

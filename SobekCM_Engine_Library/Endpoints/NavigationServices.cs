@@ -24,7 +24,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="QueryString"></param>
         /// <param name="Protocol"></param>
         /// <param name="IsDebug"></param>
-        public void ResolveUrl(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug )
+        public void ResolveUrl(CompatHttpResponse Response, List<string> UrlSegments, Dictionary<string, string> QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug )
         {
             Custom_Tracer tracer = new Custom_Tracer();
             tracer.Add_Trace("NavigationServices.ResolveUrl", "Parse request and return navigation object");
@@ -93,9 +93,9 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="RequestUserLanguages"> List of user languages requested (via browser settings) </param>
         /// <param name="Tracer">The tracer.</param>
         /// <returns> Fully built navigation controller object </returns>
-        public Navigation_Object get_navigation_object(NameValueCollection RequestQueryString, string BaseUrl, string[] RequestUserLanguages, Custom_Tracer Tracer)
+        public Navigation_Object get_navigation_object(Dictionary<string, string> RequestQueryString, string BaseUrl, string[] RequestUserLanguages, Custom_Tracer Tracer)
         {
-            NameValueCollection keys = RequestQueryString.Copy();
+            Dictionary<string, string> keys = new(RequestQueryString);
 
             string redirect_url = RequestQueryString["urlrelative"];
             redirect_url = redirect_url.Replace("/url-resolver/json", "").Replace("/url-resolver/json-p", "").Replace("/url-resolver/protobuf", "").Replace("/url-resolver/xml", "");

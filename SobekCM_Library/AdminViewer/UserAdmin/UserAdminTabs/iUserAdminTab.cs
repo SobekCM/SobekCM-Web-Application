@@ -1,4 +1,5 @@
-﻿using SobekCM.Core.Users;
+﻿using Microsoft.AspNetCore.Http;
+using SobekCM.Core.Users;
 using SobekCM.Tools;
 using System.Collections.Specialized;
 using System.IO;
@@ -9,7 +10,7 @@ namespace SobekCM.Library.AdminViewer.UserAdmin.UserAdminTabs
     {
         string TabName { get; }
 
-        bool HandlePostback(NameValueCollection form, User_Object editUser, RequestCache RequestSpecificValues);
+        bool HandlePostback(IFormCollection form, User_Object editUser, RequestCache RequestSpecificValues);
 
         void RenderHtml(TextWriter Output, User_Object editUser, RequestCache RequestSpecificValues, Custom_Tracer Tracer);
     }

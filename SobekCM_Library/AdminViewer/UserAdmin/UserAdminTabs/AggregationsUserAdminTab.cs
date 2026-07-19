@@ -1,4 +1,5 @@
-﻿using SobekCM.Core.Aggregations;
+﻿using Microsoft.AspNetCore.Http;
+using SobekCM.Core.Aggregations;
 using SobekCM.Core.Users;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
@@ -16,9 +17,9 @@ namespace SobekCM.Library.AdminViewer.UserAdmin.UserAdminTabs
     {
         public string TabName => "Aggregations";
 
-        public bool HandlePostback(NameValueCollection form, User_Object editUser, RequestCache RequestSpecificValues)
+        public bool HandlePostback(IFormCollection form, User_Object editUser, RequestCache RequestSpecificValues)
         {
-            string[] getKeys = Form.Keys;
+            var getKeys = form.Keys;
 
             Dictionary<string, User_Permissioned_Aggregation> aggregations = new Dictionary<string, User_Permissioned_Aggregation>();
 

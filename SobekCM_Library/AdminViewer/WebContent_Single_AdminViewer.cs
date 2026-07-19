@@ -1208,7 +1208,7 @@ namespace SobekCM.Library.AdminViewer
             {
                 string files = Context.SessionObject()["WebContent|" + webContentId + "|Uploads"].ToString().Replace("|", ", ");
                 SobekEngineClient.WebContent.Add_Milestone(webContentId, RequestSpecificValues.Current_User.Full_Name, "Uploaded file(s) " + files, RequestSpecificValues.Tracer);
-                HttpContext.Current.Session.Remove("WebContent|" + webContentId + "|Uploads");
+                Context.Session.Remove("WebContent|" + webContentId + "|Uploads");
             }
 
             string action = Form["admin_webcontent_action"];

@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Http;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.Users;
 using SobekCM.Engine_Library.Database;
@@ -19,9 +20,9 @@ namespace SobekCM.Library.AdminViewer.UserAdmin.UserAdminTabs
     {
         public string TabName => "Basic Information";
 
-        public bool HandlePostback(NameValueCollection form, User_Object editUser, RequestCache RequestSpecificValues)
+        public bool HandlePostback(IFormCollection form, User_Object editUser, RequestCache RequestSpecificValues)
         {
-            string[] getKeys = Form.Keys;
+            var getKeys = form.Keys;
 
             string editTemplate = "Standard";
             List<string> projects = new List<string>();

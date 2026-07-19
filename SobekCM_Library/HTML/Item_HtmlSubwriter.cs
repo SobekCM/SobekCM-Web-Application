@@ -248,7 +248,7 @@ namespace SobekCM.Library.HTML
             {
                 RequestSpecificValues.Tracer.Add_Trace("item_HtmlSubwriter.Constructor", "Item is IP restricted.");
 
-                if (HttpContext.Current != null)
+                if (Context != null)
                 {
                     // Check for IP restriction
                     int user_mask = (int)Context.SessionObject()["IP_Range_Membership"];
@@ -388,17 +388,17 @@ namespace SobekCM.Library.HTML
                 if (RequestSpecificValues.Current_Mode.isPostBack)
                 {
                     // Handle any actions from standard user action (i.e., email, add to bookshelf, etc. )
-                    if (Context.Request.Form["item_action"] != null)
+                    if (!String.IsNullOrEmpty(Context.Request.Form["item_action"].TrimFirst()))
                     {
-                        string action = Context.Request.Form["item_action"].ToLower().Trim();
+                        string action = Context.Request.Form["item_action"].TrimFirst().ToLower();
 
                         RequestSpecificValues.Tracer.Add_Trace("item_HtmlSubwriter.Constructor", "This is a postback, action=[" + action + "].");
 
                         if (action == "email")
                         {
-                            string address = Context.Request.Form["email_address"].Replace(";", ",").Trim();
-                            string comments = Context.Request.Form["email_comments"].Trim();
-                            string format = Context.Request.Form["email_format"].Trim().ToUpper();
+                            string address = Context.Request.Form["email_address"].TrimFirst().Replace(";", ",");
+                            string comments = Context.Request.Form["email_comments"].TrimFirst();
+                            string format = Context.Request.Form["email_format"].TrimFirst().ToUpper();
                             if (address.Length > 0)
                             {
                                 // Determine the email format
@@ -421,9 +421,9 @@ namespace SobekCM.Library.HTML
 
                         if (action == "add_item")
                         {
-                            string usernotes = Context.Request.Form["add_notes"].Trim();
-                            string foldername = Context.Request.Form["add_bookshelf"].Trim();
-                            bool open_bookshelf = Context.Request.Form["open_bookshelf"] != null;
+                            string usernotes = Context.Request.Form["add_notes"].TrimFirst();
+                            string foldername = Context.Request.Form["add_bookshelf"].TrimFirst();
+                            bool open_bookshelf = (bool) String.IsNullOrEmpty(Context.Request.Form["open_bookshelf"].TrimFirst());
 
                             if (SobekCM_Database.Add_Item_To_User_Folder(RequestSpecificValues.Current_User.UserID, foldername, currentItem.BibID, currentItem.VID, 0, usernotes, RequestSpecificValues.Tracer))
                             {
@@ -474,7 +474,7 @@ namespace SobekCM.Library.HTML
                             {
                                 tagid = Convert.ToInt32(action.Replace("add_tag_", ""));
                             }
-                            string description = Context.Request.Form["add_tag"].Trim();
+                            string description = Context.Request.Form["add_tag"].TrimFirst();
                             int new_tagid = SobekCM_Database.Add_Description_Tag(RequestSpecificValues.Current_User.UserID, tagid, currentItem.Web.ItemID, description, RequestSpecificValues.Tracer);
                             if (new_tagid > 0)
                             {
@@ -508,14 +508,14 @@ namespace SobekCM.Library.HTML
                 if ((Context != null) && (Context.Request.Form["internal_header_action"] != null) && (RequestSpecificValues.Current_User != null))
                 {
                     // Pull the action value
-                    string internalHeaderAction = Context.Request.Form["internal_header_action"].Trim();
+                    string internalHeaderAction = Context.Request.Form["internal_header_action"].TrimFirst();
 
                     RequestSpecificValues.Tracer.Add_Trace("item_HtmlSubwriter.Constructor", "Internal header action=[" + internalHeaderAction + "].");
 
                     // Was this to save the item comments?
                     if (internalHeaderAction == "save_comments")
                     {
-                        string new_comments = Context.Request.Form["intheader_internal_notes"].Trim();
+                        string new_comments = Context.Request.Form["intheader_internal_notes"].TrimFirst();
                         if (SobekCM_Item_Database.Save_Item_Internal_Comments(currentItem.Web.ItemID, new_comments))
                             currentItem.Web.Internal_Comments = new_comments;
                     }

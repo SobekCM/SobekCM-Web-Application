@@ -95,7 +95,7 @@ namespace SobekCM.Library.MySobekViewer
                 try
                 {
                     // Pull the standard values
-                    NameValueCollection form = Context.Request.Form;
+                    var form = Context.Request.Form;
 
                     string item_action = form["item_action"].Replace(",","").ToUpper().Trim();
                     string bookshelf_items = form["bookshelf_items"].TrimFirst().Replace("%22", "\"").Replace("%27", "'").Replace("%3D", "=").Replace("%26", "&");

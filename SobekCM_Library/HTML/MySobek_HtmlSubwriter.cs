@@ -68,7 +68,7 @@ namespace SobekCM.Library.HTML
             RequestSpecificValues.Tracer.Add_Trace("MySobek_HtmlSubwriter.Constructor", "Building the my sobek viewer object");
 
             // Get the appropriate mysobek viewer from the factory
-            mySobekViewer = MySobekViewer_Factory.Get_MySobekViewer(RequestSpecificValues);
+            mySobekViewer = MySobekViewer_Factory.Get_MySobekViewer(RequestSpecificValues, Context);
         }
 
         #endregion

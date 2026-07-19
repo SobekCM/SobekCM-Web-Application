@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Http;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Users;
 using SobekCM.Engine_Library.Configuration;
@@ -72,13 +73,13 @@ namespace SobekCM.Library.AdminViewer.UserAdmin.SubViewers
 
         public override string Title => "Edit User";
 
-        public override void HandlePostback(RequestCache RequestSpecificValues)
+        public override void HandlePostback(RequestCache RequestSpecificValues, HttpContext Context)
         {
             // Determine which page you are on
             set_current_page(RequestSpecificValues);
 
             // Get a reference to this form and get the action from hidden field
-            NameValueCollection form = Context.Request.Form;
+            var form = Context.Request.Form;
             string action = form["admin_user_save"];
 
             // If this is CANCEL, get rid of the currrent edit object in the session

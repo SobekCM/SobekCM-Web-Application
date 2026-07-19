@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Http;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Users;
 using SobekCM.Engine_Library.Configuration;
@@ -12,6 +13,7 @@ using System.Data;
 using System.IO;
 using System.Text;
 
+
 namespace SobekCM.Library.AdminViewer.UserAdmin.SubViewers
 {
     public class UserList_UsersAdminSubViewer : abstractUsersAdminSubViewer
@@ -20,7 +22,7 @@ namespace SobekCM.Library.AdminViewer.UserAdmin.SubViewers
 
         public override string Title => "Registered Users and Groups";
 
-        public override void HandlePostback(RequestCache RequestSpecificValues)
+        public override void HandlePostback(RequestCache RequestSpecificValues, HttpContext Context)
         {
             try
             {

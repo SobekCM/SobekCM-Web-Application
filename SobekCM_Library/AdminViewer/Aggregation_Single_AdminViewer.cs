@@ -628,13 +628,13 @@ namespace SobekCM.Library.AdminViewer
 
 		#region Methods to render (and parse) page 1 - Basic Information
 
-		private void Save_Page_1_Postback(NameValueCollection Form)
+		private void Save_Page_1_Postback(IFormCollection Form)
 		{
             // Log any uploaded button
             if (Context.SessionObject()[itemAggregation.Code + "|Button"] != null)
             {
                 SobekCM_Database.Save_Item_Aggregation_Milestone(itemAggregation.Code, "Button changed" , RequestSpecificValues.Current_User.Full_Name);
-                HttpContext.Current.Session.Remove(itemAggregation.Code + "|Button");
+                Context.Session.Remove(itemAggregation.Code + "|Button");
             }
 
 			if (Form["admin_aggr_name"] != null) itemAggregation.Name = Form["admin_aggr_name"];
@@ -835,14 +835,14 @@ namespace SobekCM.Library.AdminViewer
 
         #region Methods to render (and parse) -  Appearance
 
-        private void Save_Page_Appearance_Postback(NameValueCollection Form)
+        private void Save_Page_Appearance_Postback(IFormCollection Form)
         {
             // Log any uploaded banners
             if (Context.SessionObject()[itemAggregation.Code + "|Banners"] != null)
             {
                 string files = Context.SessionObject()[itemAggregation.Code + "|Banners"].ToString().Replace("|", ", ");
                 SobekCM_Database.Save_Item_Aggregation_Milestone(itemAggregation.Code, "Added banner file " + files, RequestSpecificValues.Current_User.Full_Name);
-                HttpContext.Current.Session.Remove(itemAggregation.Code + "|Banners");
+                Context.Session.Remove(itemAggregation.Code + "|Banners");
             }
 
             // Some interesting custom actions on this page, so get the actions
@@ -1615,7 +1615,7 @@ namespace SobekCM.Library.AdminViewer
 
 		#region Methods to render (and parse) page 2 - Search
 
-		private void Save_Page_2_Postback(NameValueCollection Form)
+		private void Save_Page_2_Postback(IFormCollection Form)
 		{
             // Get the map search type
 		    decimal latitude = 0;
@@ -2358,7 +2358,7 @@ namespace SobekCM.Library.AdminViewer
 
 		#region Methods to render (and parse) page 3 - Facets and result views
 
-		private void Save_Page_3_Postback(NameValueCollection Form)
+		private void Save_Page_3_Postback(IFormCollection Form)
 		{
 			// Reset the facets
 			itemAggregation.Clear_Facets();
@@ -3108,7 +3108,7 @@ namespace SobekCM.Library.AdminViewer
 
 		#region Methods to render (and parse) page 7 - Child pages
 
-		private void Save_Page_7_Postback(NameValueCollection Form)
+		private void Save_Page_7_Postback(IFormCollection Form)
 		{
 			string action = Form["admin_aggr_action"];
 			if (!String.IsNullOrEmpty(action))
@@ -3433,7 +3433,7 @@ namespace SobekCM.Library.AdminViewer
 
 		#region Methods to render (and parse) page 8 -  Subcollections
 
-		private void Save_Page_8_Postback(NameValueCollection Form)
+		private void Save_Page_8_Postback(IFormCollection Form)
 		{
 			string action = Form["admin_aggr_action"];
 			if ((String.IsNullOrEmpty(action)) || ((action != "save_aggr") && ( action.IndexOf("delete_") < 0 )))
@@ -3600,13 +3600,13 @@ namespace SobekCM.Library.AdminViewer
 
         #region Methods to render (and parse) page 9 -  Uploads
 
-        private void Save_Page_Uploads_Postback(NameValueCollection Form)
+        private void Save_Page_Uploads_Postback(IFormCollection Form)
         {
             if (Context.SessionObject()[itemAggregation.Code + "|Uploads"] != null)
             {
                 string files = Context.SessionObject()[itemAggregation.Code + "|Uploads"].ToString().Replace("|", ", ");
                 SobekCM_Database.Save_Item_Aggregation_Milestone(itemAggregation.Code, "Uploaded file(s) " + files, RequestSpecificValues.Current_User.Full_Name);
-                HttpContext.Current.Session.Remove(itemAggregation.Code + "|Uploads");
+                Context.Session.Remove(itemAggregation.Code + "|Uploads");
             }
             string action = Form["admin_aggr_action"];
             if ((action.Length > 0) && ( action.IndexOf("delete_") == 0))
@@ -3871,7 +3871,7 @@ namespace SobekCM.Library.AdminViewer
 
 		#region Methods to render (and parse) CSS page
 
-		private void Save_Page_CSS_Postback(NameValueCollection Form)
+		private void Save_Page_CSS_Postback(IFormCollection Form)
 		{
 			// Check for action flag
 			string action = Form["admin_aggr_action"];

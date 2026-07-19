@@ -2791,7 +2791,7 @@ namespace SobekCM.Library.Database
 		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> TRUE if successful, otherwise FALSE </returns>
 		/// <remarks> This calls the 'mySobek_Add_User_Templates_Link' stored procedure</remarks> 
-		public static bool Update_SobekCM_User_Templates(int UserID, ReadOnlyCollection<string> Templates, Custom_Tracer Tracer)
+		public static bool Update_SobekCM_User_Templates(int UserID, List<string> Templates, Custom_Tracer Tracer)
 		{
 			if (Tracer != null)
 			{
@@ -2886,7 +2886,7 @@ namespace SobekCM.Library.Database
 		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> TRUE if successful, otherwise FALSE </returns>
 		/// <remarks> This calls the 'mySobek_Add_User_DefaultMetadata_Link' stored procedure</remarks> 
-		public static bool Update_SobekCM_User_DefaultMetadata(int UserID, ReadOnlyCollection<string> MetadataSets, Custom_Tracer Tracer)
+		public static bool Update_SobekCM_User_DefaultMetadata(int UserID, List<string> MetadataSets, Custom_Tracer Tracer)
 		{
 			if (Tracer != null)
 			{

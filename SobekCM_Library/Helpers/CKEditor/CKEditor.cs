@@ -39,9 +39,9 @@ namespace SobekCM.Library.Helpers.CKEditor
         /// added to the output stream here </param>
         public void Add_To_Stream(TextWriter Output, bool Include_Script_Reference )
         {
-            if (HttpContext.Current == null)
+            if (Context == null)
             {
-                Output.WriteLine("<!-- Unable to add CKEditor due to HTTPContext.Current being null -->");
+                Output.WriteLine("<!-- Unable to add CKEditor due to Context being null -->");
                 return;
             }
 

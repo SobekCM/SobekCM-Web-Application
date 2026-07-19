@@ -268,6 +268,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             // Create the CKEditor object
             CKEditor editor = new CKEditor
             {
+                Context = Context,
                 BaseUrl = CurrentRequest.Base_URL,
                 Language = CurrentRequest.Language,
                 TextAreaID = "sbkOeriv_HtmlEdit",

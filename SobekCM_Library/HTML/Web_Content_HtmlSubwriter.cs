@@ -654,6 +654,7 @@ namespace SobekCM.Library.HTML
                     // Create the CKEditor object
                     CKEditor editor = new CKEditor
                     {
+                        Context = Context,
                         BaseUrl = RequestSpecificValues.Current_Mode.Base_URL,
                         Language = RequestSpecificValues.Current_Mode.Language,
                         TextAreaID = "sbkWchs_TextEdit",

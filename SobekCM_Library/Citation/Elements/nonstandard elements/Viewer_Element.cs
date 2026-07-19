@@ -260,7 +260,7 @@ namespace SobekCM.Library.Citation.Elements
             Bib.Behaviors.Clear_Views();
 
             // Save each view
-            string[] getKeys = Context.Request.Form.Keys;
+            var getKeys = Context.Request.Form.Keys;
             Dictionary<string, string> addedViewTypes = new Dictionary<string,string>(StringComparer.OrdinalIgnoreCase);
             foreach (string thisKey in getKeys)
             {

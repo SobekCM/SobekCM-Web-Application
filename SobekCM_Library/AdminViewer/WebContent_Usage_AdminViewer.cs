@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using Microsoft.AspNetCore.Http;
 using SobekCM.Core.Client;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.UI_Configuration;
@@ -32,7 +33,7 @@ namespace SobekCM.Library.AdminViewer
         /// <summary> Constructor for a new instance of the WebContent_Usage_AdminViewer class </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
         /// <remarks> Postback from handling an edit or new aggregation is handled here in the constructor </remarks>
-        public WebContent_Usage_AdminViewer(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
+        public WebContent_Usage_AdminViewer(RequestCache RequestSpecificValues, HttpContext Context) : base(RequestSpecificValues, Context)
         {
             RequestSpecificValues.Tracer.Add_Trace("WebContent_Usage_AdminViewer.Constructor", String.Empty);
             actionMessage = String.Empty;
@@ -73,25 +74,25 @@ namespace SobekCM.Library.AdminViewer
             year2 = -1;
 
             // Get any level filter information from the query string
-            if (!String.IsNullOrEmpty(HttpContext.Current.Request.QueryString["l1"]))
+            if (!String.IsNullOrEmpty(RequestSpecificValues.QueryString["l1"]))
             {
-                level1 = HttpContext.Current.Request.QueryString["l1"];
+                level1 = RequestSpecificValues.QueryString["l1"];
 
-                if (!String.IsNullOrEmpty(HttpContext.Current.Request.QueryString["l2"]))
+                if (!String.IsNullOrEmpty(RequestSpecificValues.QueryString["l2"]))
                 {
-                    level2 = HttpContext.Current.Request.QueryString["l2"];
+                    level2 = RequestSpecificValues.QueryString["l2"];
 
-                    if (!String.IsNullOrEmpty(HttpContext.Current.Request.QueryString["l3"]))
+                    if (!String.IsNullOrEmpty(RequestSpecificValues.QueryString["l3"]))
                     {
-                        level3 = HttpContext.Current.Request.QueryString["l3"];
+                        level3 = RequestSpecificValues.QueryString["l3"];
 
-                        if (!String.IsNullOrEmpty(HttpContext.Current.Request.QueryString["l4"]))
+                        if (!String.IsNullOrEmpty(RequestSpecificValues.QueryString["l4"]))
                         {
-                            level4 = HttpContext.Current.Request.QueryString["l4"];
+                            level4 = RequestSpecificValues.QueryString["l4"];
 
-                            if (!String.IsNullOrEmpty(HttpContext.Current.Request.QueryString["l5"]))
+                            if (!String.IsNullOrEmpty(RequestSpecificValues.QueryString["l5"]))
                             {
-                                level5 = HttpContext.Current.Request.QueryString["l5"];
+                                level5 = RequestSpecificValues.QueryString["l5"];
                             }
                         }
                     }
@@ -99,9 +100,9 @@ namespace SobekCM.Library.AdminViewer
             }
 
             // Get the year and month filters
-            if (!String.IsNullOrEmpty(HttpContext.Current.Request.QueryString["d1"]))
+            if (!String.IsNullOrEmpty(RequestSpecificValues.QueryString["d1"]))
             {
-                string date1 = HttpContext.Current.Request.QueryString["d1"];
+                string date1 = RequestSpecificValues.QueryString["d1"];
                 if (date1.Length == 6)
                 {
                     int year1possible;
@@ -113,9 +114,9 @@ namespace SobekCM.Library.AdminViewer
                     }
                 }
             }
-            if (!String.IsNullOrEmpty(HttpContext.Current.Request.QueryString["d2"]))
+            if (!String.IsNullOrEmpty(RequestSpecificValues.QueryString["d2"]))
             {
-                string date2 = HttpContext.Current.Request.QueryString["d2"];
+                string date2 = RequestSpecificValues.QueryString["d2"];
                 if (date2.Length == 6)
                 {
                     int year2possible;

@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
+using Microsoft.AspNetCore.Http;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.Client;
 using SobekCM.Core.MemoryMgmt;
@@ -57,7 +58,7 @@ namespace SobekCM.Library.AdminViewer
         /// <summary> Constructor for a new instance of the Aggregations_Mgmt_AdminViewer class </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
         /// <remarks> Postback from handling an edit or new aggregation is handled here in the constructor </remarks>
-        public Aggregations_Mgmt_AdminViewer(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
+        public Aggregations_Mgmt_AdminViewer(RequestCache RequestSpecificValues, HttpContext Context) : base(RequestSpecificValues, Context)
         {
             RequestSpecificValues.Tracer.Add_Trace("Aggregations_Mgmt_AdminViewer.Constructor", String.Empty);
 
@@ -89,21 +90,21 @@ namespace SobekCM.Library.AdminViewer
                 try
                 {
                     // Pull the standard values
-                    NameValueCollection form = HttpContext.Current.Request.Form;
+                    var form = Context.Request.Form;
 
-                    string save_value = form["admin_aggr_tosave"].ToUpper().Trim();
+                    string save_value = form["admin_aggr_tosave"].TrimFirst().ToUpper();
                     string new_aggregation_code = String.Empty;
-                    if (form["admin_aggr_code"] != null)
-                        new_aggregation_code = form["admin_aggr_code"].ToUpper().Trim();
+                    if (!String.IsNullOrEmpty(form["admin_aggr_code"].TrimFirst()))
+                        new_aggregation_code = form["admin_aggr_code"].TrimFirst().ToUpper();
 
                     // Check for reset request as well
                     string reset_aggregation_code = String.Empty;
-                    if (form["admin_aggr_reset"] != null)
-                        reset_aggregation_code = form["admin_aggr_reset"].ToLower().Trim();
+                    if (!String.IsNullOrEmpty(form["admin_aggr_reset"].TrimFirst()))
+                        reset_aggregation_code = form["admin_aggr_reset"].TrimFirst().ToLower();
 
                     string delete_aggregation_code = String.Empty;
-                    if (form["admin_aggr_delete"] != null)
-                        delete_aggregation_code = form["admin_aggr_delete"].ToLower().Trim();
+                    if (!String.IsNullOrEmpty(form["admin_aggr_delete"].TrimFirst()))
+                        delete_aggregation_code = form["admin_aggr_delete"].TrimFirst().ToLower();
 
                     // Was this to delete the aggregation?
                     if (delete_aggregation_code.Length > 0)
@@ -154,12 +155,12 @@ namespace SobekCM.Library.AdminViewer
 
                             // Pull the values from the submitted form
                             string new_type = form["admin_aggr_type"];
-                            string new_parent = form["admin_aggr_parent"].Trim();
-                            string new_name = form["admin_aggr_name"].Trim();
-                            string new_shortname = form["admin_aggr_shortname"].Trim();
-                            string new_description = form["admin_aggr_desc"].Trim();
-                            string new_link = form["admin_aggr_link"].Trim();
-                            string new_thematic_heading = form["admin_aggr_heading"].Trim();
+                            string new_parent = form["admin_aggr_parent"].TrimFirst();
+                            string new_name = form["admin_aggr_name"].TrimFirst();
+                            string new_shortname = form["admin_aggr_shortname"].TrimFirst();
+                            string new_description = form["admin_aggr_desc"].TrimFirst();
+                            string new_link = form["admin_aggr_link"].TrimFirst();
+                            string new_thematic_heading = form["admin_aggr_heading"].TrimFirst();
 
                             object temp_object = form["admin_aggr_isactive"];
                             if (temp_object != null)
@@ -287,7 +288,7 @@ namespace SobekCM.Library.AdminViewer
 
                                 // Get the thematic heading id (no checks here)
                                 string thematicHeading = null;
-                                if (form["admin_aggr_heading"] != null)
+                                if (!String.IsNullOrEmpty(form["admin_aggr_heading"].TrimFirst()))
                                 {
                                     int thematicHeadingId = Convert.ToInt32(form["admin_aggr_heading"]);
                                     foreach (Thematic_Heading thisHeading in UI_ApplicationCache_Gateway.Thematic_Headings)

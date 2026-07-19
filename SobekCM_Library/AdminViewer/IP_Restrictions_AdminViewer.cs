@@ -7,6 +7,7 @@ using System.Collections.Specialized;
 using System.Data;
 using System.IO;
 using System.Linq;
+using Microsoft.AspNetCore.Http;
 using SobekCM.Core.ApplicationState;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.UI_Configuration;
@@ -50,7 +51,7 @@ namespace SobekCM.Library.AdminViewer
 		/// <summary> Constructor for a new instance of the IP_Restrictions_AdminViewer class </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
         /// <remarks> Postback from handling an edit or new item aggregation alias is handled here in the constructor </remarks>
-        public IP_Restrictions_AdminViewer(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
+        public IP_Restrictions_AdminViewer(RequestCache RequestSpecificValues, HttpContext Context) : base(RequestSpecificValues, Context)
         {
 		    RequestSpecificValues.Tracer.Add_Trace("IP_Restrictions_AdminViewer.Constructor", String.Empty);
 
@@ -101,16 +102,16 @@ namespace SobekCM.Library.AdminViewer
                     return;
 
 				// Get a reference to this form
-				NameValueCollection form = HttpContext.Current.Request.Form;
+				var form = Context.Request.Form;
 
-				string action = form["action"].Trim();
+				string action = form["action"].TrimFirst();
 
 				if (action == "new")
 				{
 					// Pull the main values
-                    entered_title = form["new_admin_title"].Trim();
-                    entered_notes = form["new_admin_notes"].Trim();
-                    entered_message = form["new_admin_message"].Trim();
+                    entered_title = form["new_admin_title"].TrimFirst();
+                    entered_notes = form["new_admin_notes"].TrimFirst();
+                    entered_message = form["new_admin_message"].TrimFirst();
 
                     if ((entered_title.Length == 0) || (entered_message.Length == 0))
 					{
@@ -154,9 +155,9 @@ namespace SobekCM.Library.AdminViewer
                     try
                     {
                         // Pull the main values
-                        string title = form["admin_title"].Trim();
-                        string notes = form["admin_notes"].Trim();
-                        string message = form["admin_message"].Trim();
+                        string title = form["admin_title"].TrimFirst();
+                        string notes = form["admin_notes"].TrimFirst();
+                        string message = form["admin_message"].TrimFirst();
 
                         if (title.Length == 0)
                         {
@@ -170,7 +171,7 @@ namespace SobekCM.Library.AdminViewer
                         thisRange.Item_Restricted_Statement = message;
 
                         // Now check each individual IP address range
-                        string[] getKeys = Form.Keys;
+                        var getKeys = form.Keys;
                         int single_ip_index = 0;
                         foreach (string thisKey in getKeys)
                         {
@@ -179,9 +180,9 @@ namespace SobekCM.Library.AdminViewer
                             {
                                 // Get the basic information for this single ip address
                                 string ip_index = thisKey.Replace("admin_ipstart_", "");
-                                string thisIpStart = form["admin_ipstart_" + ip_index].Trim();
-                                string thisIpEnd = form["admin_ipend_" + ip_index].Trim();
-                                string thisIpNote = form["admin_iplabel_" + ip_index].Trim();
+                                string thisIpStart = form["admin_ipstart_" + ip_index].TrimFirst();
+                                string thisIpEnd = form["admin_ipend_" + ip_index].TrimFirst();
+                                string thisIpNote = form["admin_iplabel_" + ip_index].TrimFirst();
 
                                 // Does this match an existing IP range?
                                 if ((ip_index.IndexOf("new") < 0) && (single_ip_index < details.Tables[1].Rows.Count))

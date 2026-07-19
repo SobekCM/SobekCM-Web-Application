@@ -6,6 +6,7 @@ using System;
 using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
+using Microsoft.AspNetCore.Http;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.UI_Configuration;
@@ -41,7 +42,7 @@ namespace SobekCM.Library.AdminViewer
         /// <summary> Constructor for a new instance of the Thematic_Headings_AdminViewer class </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
         /// <remarks> Postback from handling an edit or new thematic heading is handled here in the constructor </remarks>
-        public Thematic_Headings_AdminViewer(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
+        public Thematic_Headings_AdminViewer(RequestCache RequestSpecificValues, HttpContext Context) : base(RequestSpecificValues, Context)
         {
             RequestSpecificValues.Tracer.Add_Trace("Thematic_Headings_AdminViewer.Constructor", String.Empty);
 
@@ -63,7 +64,7 @@ namespace SobekCM.Library.AdminViewer
                 try
                 {
                     // Pull the standard values from the form
-                    NameValueCollection form = HttpContext.Current.Request.Form;
+                    var form = Context.Request.Form;
                     string save_value = form["admin_heading_tosave"];
                     string action_value = form["admin_heading_action"];
 

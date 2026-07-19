@@ -2,6 +2,7 @@
 
 using System;
 using System.IO;
+using Microsoft.AspNetCore.Http;
 using SobekCM.Core.Navigation;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Library.AdminViewer.UserAdmin.SubViewers;
@@ -32,7 +33,7 @@ namespace SobekCM.Library.AdminViewer
 		/// <summary> Constructor for a new instance of the Users_AdminViewer class </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
 		/// <remarks> Postback from a RequestSpecificValues.Current_User edit or from reseting a RequestSpecificValues.Current_User's password is handled here in the constructor </remarks>
-        public Users_AdminViewer(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
+        public Users_AdminViewer(RequestCache RequestSpecificValues, HttpContext Context) : base(RequestSpecificValues, Context)
 		{
             RequestSpecificValues.Tracer.Add_Trace("Users_AdminViewer.Constructor", String.Empty);
 

@@ -90,7 +90,7 @@ namespace SobekCM.Library.Citation.Elements
         /// <param name="Bib"> Object into which to save the user's data, entered into the html rendered by this element </param>
         public override void Save_To_Bib(SobekCM_Item Bib)
         {
-            string[] getKeys = Context.Request.Form.Keys;
+            var getKeys = Context.Request.Form.Keys;
             foreach (string code in from thisKey in getKeys where thisKey.IndexOf(html_element_name.Replace("_", "")) == 0 select Context.Request.Form[thisKey] into code where !Bib.Behaviors.Web_Skins.Contains(code) select code)
             {
                 Bib.Behaviors.Add_Web_Skin(code);

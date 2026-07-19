@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using Microsoft.AspNetCore.Http;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
 using SobekCM.Engine_Library.Database;
@@ -16,83 +17,83 @@ namespace SobekCM.Library.AdminViewer
         /// <summary> Returns the appropriate admin viewer, based on requst and system settings </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request  </param>
         /// <returns> Built admin viewer </returns>
-        public static iMySobek_Admin_Viewer Get_AdminViewer(RequestCache RequestSpecificValues)
+        public static iMySobek_Admin_Viewer Get_AdminViewer(RequestCache RequestSpecificValues, HttpContext Context)
         {
 
             RequestSpecificValues.Tracer.Add_Trace("Admin_HtmlSubwriter.Get_AdminViewer", "Building the admin viewer object");
             switch (RequestSpecificValues.Current_Mode.Admin_Type)
             {
                 case Admin_Type_Enum.Add_Collection_Wizard:
-                    return new Add_Collection_AdminViewer(RequestSpecificValues);
+                    return new Add_Collection_AdminViewer(RequestSpecificValues, Context);
 
                 case Admin_Type_Enum.Aggregation_Single:
-                    return new Aggregation_Single_AdminViewer(RequestSpecificValues);
+                    return new Aggregation_Single_AdminViewer(RequestSpecificValues, Context);
 
                 case Admin_Type_Enum.Aggregations_Mgmt:
-                    return new Aggregations_Mgmt_AdminViewer(RequestSpecificValues);
+                    return new Aggregations_Mgmt_AdminViewer(RequestSpecificValues, Context);
 
                 case Admin_Type_Enum.Home:
-                    return new Home_AdminViewer(RequestSpecificValues);
+                    return new Home_AdminViewer(RequestSpecificValues, Context);
 
                 case Admin_Type_Enum.Builder_Status:
-                    return new Builder_AdminViewer(RequestSpecificValues);
+                    return new Builder_AdminViewer(RequestSpecificValues, Context);
 
                 case Admin_Type_Enum.Builder_Folder_Mgmt:
-                    return new Builder_Folder_Mgmt_AdminViewer(RequestSpecificValues);
+                    return new Builder_Folder_Mgmt_AdminViewer(RequestSpecificValues, Context);
 
                 case Admin_Type_Enum.Skins_Single:
-                    return new Skin_Single_AdminViewer(RequestSpecificValues);
+                    return new Skin_Single_AdminViewer(RequestSpecificValues, Context);
 
                 case Admin_Type_Enum.Skins_Mgmt:
-                    return new Skins_AdminViewer(RequestSpecificValues);
+                    return new Skins_AdminViewer(RequestSpecificValues, Context);
 
                 case Admin_Type_Enum.Aliases:
-                    return new Aliases_AdminViewer(RequestSpecificValues);
+                    return new Aliases_AdminViewer(RequestSpecificValues, Context);
 
                 case Admin_Type_Enum.WebContent_Add_New:
-                    return new WebContent_Add_New_AdminViewer(RequestSpecificValues);
+                    return new WebContent_Add_New_AdminViewer(RequestSpecificValues, Context);
 
                 case Admin_Type_Enum.WebContent_Mgmt:
-                    return new WebContent_Mgmt_AdminViewer(RequestSpecificValues);
+                    return new WebContent_Mgmt_AdminViewer(RequestSpecificValues, Context);
 
                 case Admin_Type_Enum.WebContent_History:
-                    return new WebContent_History_AdminViewer(RequestSpecificValues);
+                    return new WebContent_History_AdminViewer(RequestSpecificValues, Context);
 
                 case Admin_Type_Enum.WebContent_Single:
-                    return new WebContent_Single_AdminViewer(RequestSpecificValues);
+                    return new WebContent_Single_AdminViewer(RequestSpecificValues, Context);
 
                 case Admin_Type_Enum.WebContent_Usage:
-                    return new WebContent_Usage_AdminViewer(RequestSpecificValues);
+                    return new WebContent_Usage_AdminViewer(RequestSpecificValues, Context);
 
                 case Admin_Type_Enum.Wordmarks:
-                    return new Wordmarks_AdminViewer(RequestSpecificValues);
+                    return new Wordmarks_AdminViewer(RequestSpecificValues, Context);
 
                 case Admin_Type_Enum.URL_Portals:
-                    return new Portals_AdminViewer(RequestSpecificValues);
+                    return new Portals_AdminViewer(RequestSpecificValues, Context);
 
                 case Admin_Type_Enum.Users:
-                    return new Users_AdminViewer(RequestSpecificValues);
+                    return new Users_AdminViewer(RequestSpecificValues, Context);
 
                 case Admin_Type_Enum.User_Groups:
-                    return new User_Group_AdminViewer(RequestSpecificValues);
+                    return new User_Group_AdminViewer(RequestSpecificValues, Context);
 
                 case Admin_Type_Enum.User_Permissions_Reports:
-                    return new Permissions_Reports_AdminViewer(RequestSpecificValues);
+                    return new Permissions_Reports_AdminViewer(RequestSpecificValues, Context);
 
                 case Admin_Type_Enum.User_Requests:
-                    return new User_Requests_AdminViewer(RequestSpecificValues);
+                    return new User_Requests_AdminViewer(RequestSpecificValues, Context);
 
                 case Admin_Type_Enum.IP_Restrictions:
-                    return new IP_Restrictions_AdminViewer(RequestSpecificValues);
+                    return new IP_Restrictions_AdminViewer(RequestSpecificValues, Context);
 
                 case Admin_Type_Enum.Thematic_Headings:
-                    return new Thematic_Headings_AdminViewer(RequestSpecificValues);
+                    return new Thematic_Headings_AdminViewer(RequestSpecificValues, Context);
 
                 case Admin_Type_Enum.TEI:
-                    return new TEI_PlugIn_AdminViewer(RequestSpecificValues);
+                    return new TEI_PlugIn_AdminViewer(RequestSpecificValues, Context);
 
                 case Admin_Type_Enum.Settings:
-                    return new Settings_AdminViewer(RequestSpecificValues);
+                    return new Settings_AdminViewer(RequestSpecificValues, Context);
 
                 case Admin_Type_Enum.Default_Metadata:
                     if ((!String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.My_Sobek_SubMode)) && (RequestSpecificValues.Current_Mode.My_Sobek_SubMode.Length > 1))
@@ -131,7 +132,7 @@ namespace SobekCM.Library.AdminViewer
                     }
 
                     // If it made it here, it must be manage all the default metadatas
-                    return new Default_Metadata_AdminViewer(RequestSpecificValues);
+                    return new Default_Metadata_AdminViewer(RequestSpecificValues, Context);
 
 
             }

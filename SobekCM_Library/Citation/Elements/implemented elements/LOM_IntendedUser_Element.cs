@@ -136,7 +136,7 @@ namespace SobekCM.Library.Citation.Elements
             // Try to get any existing learning object metadata module
             LearningObjectMetadata lomInfo = Bib.Get_Metadata_Module(GlobalVar.IEEE_LOM_METADATA_MODULE_KEY) as LearningObjectMetadata;
 
-            string[] getKeys = Context.Request.Form.Keys;
+            var getKeys = Context.Request.Form.Keys;
             foreach (string thisKey in getKeys)
             {
                 if (thisKey.IndexOf(html_element_name.Replace("_", "")) == 0)

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using Microsoft.AspNetCore.Http;
 using SobekCM.Core.Client;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.UI_Configuration;
@@ -26,7 +27,7 @@ namespace SobekCM.Library.AdminViewer
         /// <summary> Constructor for a new instance of the WebContent_History_AdminViewer class </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
         /// <remarks> Postback from handling an edit or new aggregation is handled here in the constructor </remarks>
-        public WebContent_History_AdminViewer(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
+        public WebContent_History_AdminViewer(RequestCache RequestSpecificValues, HttpContext Context) : base(RequestSpecificValues, Context)
         {
             RequestSpecificValues.Tracer.Add_Trace("WebContent_History_AdminViewer.Constructor", String.Empty);
             actionMessage = String.Empty;
@@ -63,34 +64,34 @@ namespace SobekCM.Library.AdminViewer
             userFilter = String.Empty;
 
             // Get any userfilter
-            if (!String.IsNullOrEmpty(HttpContext.Current.Request.QueryString["user"]))
+            if (!String.IsNullOrEmpty(RequestSpecificValues.QueryString["user"]))
             {
-                userFilter = HttpContext.Current.Request.QueryString["user"];
+                userFilter = RequestSpecificValues.QueryString["user"];
             }
 
             // If no user filter, try to find the level filters
             if (String.IsNullOrEmpty(userFilter))
             {
                 // Get any level filter information from the query string
-                if (!String.IsNullOrEmpty(HttpContext.Current.Request.QueryString["l1"]))
+                if (!String.IsNullOrEmpty(RequestSpecificValues.QueryString["l1"]))
                 {
-                    level1 = HttpContext.Current.Request.QueryString["l1"];
+                    level1 = RequestSpecificValues.QueryString["l1"];
 
-                    if (!String.IsNullOrEmpty(HttpContext.Current.Request.QueryString["l2"]))
+                    if (!String.IsNullOrEmpty(RequestSpecificValues.QueryString["l2"]))
                     {
-                        level2 = HttpContext.Current.Request.QueryString["l2"];
+                        level2 = RequestSpecificValues.QueryString["l2"];
 
-                        if (!String.IsNullOrEmpty(HttpContext.Current.Request.QueryString["l3"]))
+                        if (!String.IsNullOrEmpty(RequestSpecificValues.QueryString["l3"]))
                         {
-                            level3 = HttpContext.Current.Request.QueryString["l3"];
+                            level3 = RequestSpecificValues.QueryString["l3"];
 
-                            if (!String.IsNullOrEmpty(HttpContext.Current.Request.QueryString["l4"]))
+                            if (!String.IsNullOrEmpty(RequestSpecificValues.QueryString["l4"]))
                             {
-                                level4 = HttpContext.Current.Request.QueryString["l4"];
+                                level4 = RequestSpecificValues.QueryString["l4"];
 
-                                if (!String.IsNullOrEmpty(HttpContext.Current.Request.QueryString["l5"]))
+                                if (!String.IsNullOrEmpty(RequestSpecificValues.QueryString["l5"]))
                                 {
-                                    level5 = HttpContext.Current.Request.QueryString["l5"];
+                                    level5 = RequestSpecificValues.QueryString["l5"];
                                 }
                             }
                         }

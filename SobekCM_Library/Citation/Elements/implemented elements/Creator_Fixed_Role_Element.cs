@@ -136,7 +136,7 @@ namespace SobekCM.Library.Citation.Elements
         public override void Save_To_Bib(SobekCM_Item Bib)
         {
             string special_id = LabelFromTemplateFile.Replace(" ", "").Replace("_","").ToLower() + "fixedcreator";
-            string[] getKeys = Context.Request.Form.Keys;
+            var getKeys = Context.Request.Form.Keys;
             foreach (string thisKey in getKeys)
             {
                 if (thisKey.IndexOf(special_id) == 0)

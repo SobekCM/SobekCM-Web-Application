@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.Caching;
 using System.Text;
+using Microsoft.AspNetCore.Http;
 using SobekCM.Core.Navigation;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Engine_Library.Database;
@@ -33,7 +34,7 @@ namespace SobekCM.Library.AdminViewer
         /// <summary> Constructor for a new instance of the TEI_PlugIn_AdminViewer class </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
         /// <remarks> Postback from handling an edit or new aggregation is handled here in the constructor </remarks>
-        public TEI_PlugIn_AdminViewer(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
+        public TEI_PlugIn_AdminViewer(RequestCache RequestSpecificValues, HttpContext Context) : base(RequestSpecificValues, Context)
         {
             // Ensure the user is the system admin
             if ((RequestSpecificValues.Current_User == null) || ((!RequestSpecificValues.Current_User.Is_System_Admin) && (!RequestSpecificValues.Current_User.Is_Portal_Admin)))
@@ -114,13 +115,13 @@ namespace SobekCM.Library.AdminViewer
             if (RequestSpecificValues.Current_Mode.isPostBack)
             {
                 // Get a reference to this form
-                NameValueCollection form = HttpContext.Current.Request.Form;
+                var form = Context.Request.Form;
 
                 // Get the curret action
                 string action = form["tei_admin_action"];
                 if (action == "save")
                 {
-                    string[] getKeys = Form.Keys;
+                    var getKeys = form.Keys;
 
                     actionMessage = "All changes saved";
 
@@ -138,7 +139,7 @@ namespace SobekCM.Library.AdminViewer
                                     string user_file_key = "admin_user_tei_xslt_" + thisFileName.ToLower() + "_" + thisUser.Item2;
 
                                     // Look for this checkbox
-                                    if (form[user_file_key] == null)
+                                    if (!String.IsNullOrEmpty(form[user_file_key].TrimFirst()))
                                     {
                                         // If the setting is already the same, no need to update the database
                                         if (teiUserSettings.Select("UserID=" + thisUser.Item2 + " and Setting_Key='TEI.XSLT." + thisFileName.ToUpper() + "'").Length > 0)
@@ -170,7 +171,7 @@ namespace SobekCM.Library.AdminViewer
                                     string user_file_key = "admin_user_tei_css_" + thisFileName.ToLower() + "_" + thisUser.Item2;
 
                                     // Look for this checkbox
-                                    if (form[user_file_key] == null)
+                                    if (String.IsNullOrEmpty(form[user_file_key].TrimFirst()))
                                     {
                                         // If the setting is already the same, no need to update the database
                                         if (teiUserSettings.Select("UserID=" + thisUser.Item2 + " and Setting_Key='TEI.CSS." + thisFileName.ToUpper() + "'").Length > 0)
@@ -202,7 +203,7 @@ namespace SobekCM.Library.AdminViewer
                                     string user_file_key = "admin_user_tei_mapping_" + thisFileName.ToLower() + "_" + thisUser.Item2;
 
                                     // Look for this checkbox
-                                    if (form[user_file_key] == null)
+                                    if (String.IsNullOrEmpty(form[user_file_key]))
                                     {
                                         // If the setting is already the same, no need to update the database
                                         if (teiUserSettings.Select("UserID=" + thisUser.Item2 + " and Setting_Key='TEI.MAPPING." + thisFileName.ToUpper() + "'").Length > 0)
@@ -434,7 +435,7 @@ namespace SobekCM.Library.AdminViewer
 
 
             // Get the current view type
-            string view = HttpContext.Current.Request.QueryString["view"];
+            string view = RequestSpecificValues.QueryString["view"];
 
             // Get the URl for the other view type
             string url = UrlWriterHelper.Redirect_URL( RequestSpecificValues.Current_Mode );

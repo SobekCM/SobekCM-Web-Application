@@ -92,7 +92,7 @@ namespace SobekCM.Library.Citation.Elements
         public override void Save_To_Bib(SobekCM_Item Bib)
         {
             string id = html_element_name.Replace("_", "");
-            string[] getKeys = Context.Request.Form.Keys;
+            var getKeys = Context.Request.Form.Keys;
             foreach (string thisKey in getKeys)
             {
                 if (thisKey.IndexOf(id) != 0) continue;

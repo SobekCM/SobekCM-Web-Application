@@ -182,6 +182,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         private string volumeErrorCode = String.Empty;
 
         private readonly List<abstract_TreeNode> static_pages;
+        private HttpContext Context;
 
         /// <summary> Constructor for a new instance of the QC_ItemViewer class, used to perform quality control and 
         /// create the structural metadata ( page names and divisions ) for an online digital resource </summary>

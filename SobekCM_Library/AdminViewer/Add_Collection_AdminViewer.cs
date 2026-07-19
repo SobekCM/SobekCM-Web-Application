@@ -6,6 +6,7 @@ using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Web;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.Client;
 using SobekCM.Core.MemoryMgmt;
@@ -38,7 +39,7 @@ namespace SobekCM.Library.AdminViewer
         /// <summary> Constructor for a new instance of the Add_Collection_AdminViewer class </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
         /// <remarks> Postback from handling an edit or new aggregation is handled here in the constructor </remarks>
-        public Add_Collection_AdminViewer(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
+        public Add_Collection_AdminViewer(RequestCache RequestSpecificValues, HttpContext Context) : base(RequestSpecificValues, Context)
         {
             RequestSpecificValues.Tracer.Add_Trace("Add_Collection_AdminViewer.Constructor", String.Empty);
 

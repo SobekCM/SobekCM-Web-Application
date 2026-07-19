@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
+using Microsoft.AspNetCore.Http;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.UI_Configuration;
@@ -42,7 +43,7 @@ namespace SobekCM.Library.AdminViewer
         /// <summary> Constructor for a new instance of the Aliases_AdminViewer class </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
         /// <remarks> Postback from handling an edit or new item aggregation alias is handled here in the constructor </remarks>
-        public Aliases_AdminViewer(RequestCache RequestSpecificValues)  : base(RequestSpecificValues)
+        public Aliases_AdminViewer(RequestCache RequestSpecificValues, HttpContext Context)  : base(RequestSpecificValues, Context)
         {
             RequestSpecificValues.Tracer.Add_Trace("Aliases_AdminViewer.Constructor", String.Empty);
 
@@ -64,10 +65,10 @@ namespace SobekCM.Library.AdminViewer
                 try
                 {
                     // Pull the standard values
-                    NameValueCollection form = HttpContext.Current.Request.Form;
+                    var form = Context.Request.Form;
 
-                    string save_value = form["admin_forwarding_tosave"].ToLower().Trim();
-                    string new_alias = form["admin_forwarding_alias"].ToLower().Trim();
+                    string save_value = form["admin_forwarding_tosave"].TrimFirst().ToLower();
+                    string new_alias = form["admin_forwarding_alias"].TrimFirst().ToLower();
 
                     // Was this a save request
                     if (save_value.Length > 0)
@@ -95,7 +96,7 @@ namespace SobekCM.Library.AdminViewer
                             // Was this to save a new alias (from the main page) or edit an existing (from the popup form)?
                             if (save_value == new_alias)
                             {
-                                string new_code = form["admin_forwarding_code"].ToLower().Trim();
+                                string new_code = form["admin_forwarding_code"].TrimFirst().ToLower();
 
 								// Validate the code
 								if (new_code.Length > 20)
@@ -133,7 +134,7 @@ namespace SobekCM.Library.AdminViewer
                             }
                             else
                             {
-                                string edit_code = form["form_forwarding_code"].ToLower().Trim();
+                                string edit_code = form["form_forwarding_code"].TrimFirst().ToLower();
 
                                 // Save this existing forwarding
                                 if (SobekCM_Database.Save_Aggregation_Alias(save_value, edit_code, RequestSpecificValues.Tracer))
@@ -260,8 +261,8 @@ namespace SobekCM.Library.AdminViewer
 
             // Add line for alias
             string code = String.Empty;
-            if ((HttpContext.Current != null) && (!String.IsNullOrEmpty(HttpContext.Current.Request.QueryString["code"])))
-                code = HttpContext.Current.Request.QueryString["code"];
+            if (!String.IsNullOrEmpty(RequestSpecificValues.QueryString["code"]))
+                code = RequestSpecificValues.QueryString["code"];
 
 			Output.WriteLine("        <tr><td style=\"width:120px;\"><label for=\"admin_forwarding_alias\">Alias:</label></td><td colspan=\"2\"><input class=\"sbkAav_input sbkAdmin_Focusable\" name=\"admin_forwarding_alias\" id=\"admin_forwarding_alias\" type=\"text\" value=\"" + code + "\" /></td></tr>");
 

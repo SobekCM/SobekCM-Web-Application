@@ -90,7 +90,7 @@ namespace SobekCM.Library.Citation.Elements
         {
             string subject_text = String.Empty;
 
-            string[] getKeys = Context.Request.Form.Keys;
+            var getKeys = Context.Request.Form.Keys;
             foreach (string thisKey in getKeys)
             {
                 if (thisKey.IndexOf(html_element_name.Replace("_", "") + "_text") == 0)

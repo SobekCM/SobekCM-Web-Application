@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Tools;
 
@@ -11,7 +12,7 @@ namespace SobekCM.Library.AdminViewer
 {
     public class User_Requests_AdminViewer : abstract_AdminViewer
     {
-        public User_Requests_AdminViewer(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
+        public User_Requests_AdminViewer(RequestCache RequestSpecificValues, HttpContext Context) : base(RequestSpecificValues, Context)
         {
 
         }

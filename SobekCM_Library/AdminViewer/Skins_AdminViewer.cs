@@ -7,6 +7,7 @@ using System.Collections.Specialized;
 using System.Data;
 using System.IO;
 using System.Linq;
+using Microsoft.AspNetCore.Http;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.UI_Configuration;
@@ -44,7 +45,7 @@ namespace SobekCM.Library.AdminViewer
         /// <summary> Constructor for a new instance of the Skins_AdminViewer class </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
         /// <remarks> Postback from handling an edit or new html skin is handled here in the constructor </remarks>
-        public Skins_AdminViewer(RequestCache RequestSpecificValues)  : base(RequestSpecificValues)
+        public Skins_AdminViewer(RequestCache RequestSpecificValues, HttpContext Context)  : base(RequestSpecificValues, Context)
         {
             RequestSpecificValues.Tracer.Add_Trace("Skins_AdminViewer.Constructor", String.Empty);
 
@@ -66,12 +67,12 @@ namespace SobekCM.Library.AdminViewer
                 try
                 {
                     // Pull the standard values
-                    NameValueCollection form = HttpContext.Current.Request.Form;
+                    var form = Context.Request.Form;
 
-                    string reset_value = form["admin_interface_reset"].ToLower();
-                    string save_value = form["admin_interface_tosave"].ToUpper().Trim();
-					string delete_value = form["admin_interface_delete"].ToUpper().Trim();
-                    string new_interface_code = form["admin_interface_code"].ToUpper().Trim();
+                    string reset_value = form["admin_interface_reset"].TrimFirst().ToLower();
+                    string save_value = form["admin_interface_tosave"].TrimFirst().ToUpper();
+					string delete_value = form["admin_interface_delete"].TrimFirst().ToUpper();
+                    string new_interface_code = form["admin_interface_code"].TrimFirst().ToUpper();
 
                     // Was this a reset request?
                     if (reset_value.Length > 0)
@@ -144,9 +145,9 @@ namespace SobekCM.Library.AdminViewer
                             // Was this to save a new interface (from the main page) or edit an existing (from the popup form)?
                             if (save_value == new_interface_code)
                             {
-                                string new_base_code = form["admin_interface_basecode"].ToUpper().Trim();
-                                string new_banner_link = form["admin_interface_link"].Trim();
-                                string new_notes = form["admin_interface_notes"].Trim();
+                                string new_base_code = form["admin_interface_basecode"].TrimFirst().ToUpper();
+                                string new_banner_link = form["admin_interface_link"].TrimFirst();
+                                string new_notes = form["admin_interface_notes"].TrimFirst();
 
                                 temp_object = form["admin_interface_banner_override"];
                                 if (temp_object != null)
@@ -384,9 +385,9 @@ namespace SobekCM.Library.AdminViewer
                             }
                             else
                             {
-                                string edit_base_code = form["form_interface_basecode"].ToUpper().Trim();
-                                string edit_banner_link = form["form_interface_link"].Trim();
-                                string edit_notes = form["form_interface_notes"].Trim();
+                                string edit_base_code = form["form_interface_basecode"].TrimFirst().ToUpper();
+                                string edit_banner_link = form["form_interface_link"].TrimFirst();
+                                string edit_notes = form["form_interface_notes"].TrimFirst();
 
                                 temp_object = form["form_interface_banner_override"];
                                 if (temp_object != null)

@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using Microsoft.AspNetCore.Http;
 using SobekCM.Core.Builder;
 using SobekCM.Core.Client;
 using SobekCM.Core.Configuration;
@@ -190,7 +191,7 @@ namespace SobekCM.Library.AdminViewer
 		/// <summary> Constructor for a new instance of the Thematic_Headings_AdminViewer class </summary>
 		/// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
 		/// <remarks> Postback from handling saving the new settings is handled here in the constructor </remarks>
-		public Settings_AdminViewer(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
+		public Settings_AdminViewer(RequestCache RequestSpecificValues, HttpContext Context) : base(RequestSpecificValues, Context)
 		{
             // Determine the extension codes
             extensionCodes = new List<string>();
@@ -433,7 +434,7 @@ namespace SobekCM.Library.AdminViewer
             // Is this a post-back requesting to save all this data?
             if (RequestSpecificValues.Current_Mode.isPostBack)
 			{
-				NameValueCollection form = HttpContext.Current.Request.Form;
+				var form = Context.Request.Form;
 
 				if (form["admin_settings_order"] == "category")
 				{
@@ -494,7 +495,7 @@ namespace SobekCM.Library.AdminViewer
 			        {
 			            try
 			            {
-			                string missing_contents = form["missing_page_content"].Trim();
+			                string missing_contents = form["missing_page_content"].TrimFirst();
 			                string file_name = Path.Combine(UI_ApplicationCache_Gateway.Settings.Servers.Application_Server_Network, "design", "webcontent", "missing.html");
 			                StreamWriter writer = new StreamWriter(file_name, false);
 			                writer.Write(missing_contents);
@@ -514,7 +515,7 @@ namespace SobekCM.Library.AdminViewer
 			        {
                         try
                         {
-                            string no_results_content = form["no_results_content"].Trim();
+                            string no_results_content = form["no_results_content"].TrimFirst();
                             string file_name = Path.Combine(UI_ApplicationCache_Gateway.Settings.Servers.Application_Server_Network, "design", "webcontent", "noresults.html");
                             StreamWriter writer = new StreamWriter(file_name, false);
                             writer.Write(no_results_content);
@@ -533,7 +534,7 @@ namespace SobekCM.Library.AdminViewer
                     {
                         try
                         {
-                            string usage_email_content = form["usage_email_content"].Trim();
+                            string usage_email_content = form["usage_email_content"].TrimFirst();
                             string email_dir = Path.Combine(UI_ApplicationCache_Gateway.Settings.Servers.Application_Server_Network, "design", "extra", "stats");
                             if (!Directory.Exists(email_dir))
                                 Directory.CreateDirectory(email_dir);
@@ -593,7 +594,7 @@ namespace SobekCM.Library.AdminViewer
 	            return;
 
 	        // Get the collection of values posted back from user
-	        NameValueCollection form = HttpContext.Current.Request.Form;
+	        var form = Context.Request.Form;
 
 	        // First, create the setting lookup by ID, and the list of IDs to look for
 	        List<short> settingIds = new List<short>();
@@ -615,7 +616,7 @@ namespace SobekCM.Library.AdminViewer
 	            // Get the setting information
 	            Admin_Setting_Value thisValue = settingsObjsById[id];
 
-	            if (form["setting" + id] != null)
+	            if (!String.IsNullOrEmpty(form["setting" + id].TrimFirst()))
 	            {
 	                newValues.Add(new Simple_Setting(thisValue.Key, form["setting" + id], thisValue.SettingID));
 	            }
@@ -2311,7 +2312,7 @@ namespace SobekCM.Library.AdminViewer
 
             // Determine the column to soret 
             string columnSort = "Name";
-            string possibleOrder = HttpContext.Current.Request.QueryString["o"];
+            string possibleOrder = RequestSpecificValues.QueryString["o"];
             if (!String.IsNullOrEmpty(possibleOrder))
             {
                 switch (possibleOrder)

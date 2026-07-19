@@ -8,6 +8,7 @@ using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
 using System.Text;
+using Microsoft.AspNetCore.Http;
 using SobekCM.Core.ApplicationState;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.UI_Configuration;
@@ -49,7 +50,7 @@ namespace SobekCM.Library.AdminViewer
         /// <summary> Constructor for a new instance of the Wordmarks_AdminViewer class </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
         /// <remarks> Postback from editing an existing wordmark, deleting a wordmark, or creating a new wordmark is handled here in the constructor </remarks>
-        public Wordmarks_AdminViewer(RequestCache RequestSpecificValues)  : base(RequestSpecificValues)
+        public Wordmarks_AdminViewer(RequestCache RequestSpecificValues, HttpContext Context)  : base(RequestSpecificValues, Context)
         {
             RequestSpecificValues.Tracer.Add_Trace("Wordmarks_AdminViewer.Constructor", String.Empty);
 
@@ -80,16 +81,16 @@ namespace SobekCM.Library.AdminViewer
                 try
                 {
                     // Pull the standard values
-                    NameValueCollection form = HttpContext.Current.Request.Form;
-                    if (form["admin_wordmark_action"] != null)
+                    var form = Context.Request.Form;
+                    if (!String.IsNullOrEmpty(form["admin_wordmark_action"].TrimFirst()))
 					{
-                        string action_value = form["admin_wordmark_action"].ToUpper().Trim();
-		                string delete_value = form["admin_wordmark_code_delete"].ToUpper().Trim();
-		                string save_value = form["admin_wordmark_code_tosave"].ToUpper().Trim();
+                        string action_value = form["admin_wordmark_action"].TrimFirst().ToUpper();
+		                string delete_value = form["admin_wordmark_code_delete"].TrimFirst().ToUpper();
+		                string save_value = form["admin_wordmark_code_tosave"].TrimFirst().ToUpper();
 
                         string new_wordmark_code = String.Empty;
-                        if ( form["admin_wordmark_code"] != null )
-                            new_wordmark_code = form["admin_wordmark_code"].ToUpper().Trim();
+                        if ( !String.IsNullOrEmpty(form["admin_wordmark_code"].TrimFirst()))
+                            new_wordmark_code = form["admin_wordmark_code"].TrimFirst().ToUpper();
 
 		                // Was this a reset request?
 					    if ((action_value == "DELETE") && (delete_value.Length > 0))
@@ -180,9 +181,9 @@ namespace SobekCM.Library.AdminViewer
 					                // Was this to save a new interface (from the main page) or edit an existing (from the popup form)?
 					                if (save_value == new_wordmark_code)
 					                {
-					                    string new_file = form["admin_wordmark_file"].Trim();
-					                    string new_link = form["admin_wordmark_link"].Trim();
-					                    string new_title = form["admin_wordmark_title"].Trim();
+					                    string new_file = form["admin_wordmark_file"].TrimFirst();
+					                    string new_link = form["admin_wordmark_link"].TrimFirst();
+					                    string new_title = form["admin_wordmark_title"].TrimFirst();
 
 					                    // Save this new wordmark
 					                    if (SobekCM_Database.Save_Icon(new_wordmark_code, new_file, new_link, new_title, RequestSpecificValues.Tracer) > 0)
@@ -199,9 +200,9 @@ namespace SobekCM.Library.AdminViewer
 
 					        if (action_value == "EDIT")
 					        {
-					            string edit_file = form["form_wordmark_file"].Trim();
-					            string edit_link = form["form_wordmark_link"].Trim();
-					            string edit_title = form["form_wordmark_title"].Trim();
+					            string edit_file = form["form_wordmark_file"].TrimFirst();
+					            string edit_link = form["form_wordmark_link"].TrimFirst();
+					            string edit_title = form["form_wordmark_title"].TrimFirst();
 
 					            // Save this existing wordmark
 					            if (SobekCM_Database.Save_Icon(save_value, edit_file, edit_link, edit_title, RequestSpecificValues.Tracer) > 0)

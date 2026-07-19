@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
 using System.Text;
+using Microsoft.AspNetCore.Http;
 using SobekCM.Core.Client;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Message;
@@ -40,7 +41,7 @@ namespace SobekCM.Library.AdminViewer
         /// <summary> Constructor for a new instance of the WebContent_Add_New_AdminViewer class </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
         /// <remarks> Postback from handling an edit or new aggregation is handled here in the constructor </remarks>
-        public WebContent_Add_New_AdminViewer(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
+        public WebContent_Add_New_AdminViewer(RequestCache RequestSpecificValues, HttpContext Context) : base(RequestSpecificValues, Context)
         {
             RequestSpecificValues.Tracer.Add_Trace("WebContent_Add_New_AdminViewer.Constructor", String.Empty);
 
@@ -61,40 +62,40 @@ namespace SobekCM.Library.AdminViewer
             if (RequestSpecificValues.Current_Mode.isPostBack)
             {
                 // Pull the standard values
-                NameValueCollection form = HttpContext.Current.Request.Form;
+                var form = Context.Request.Form;
 
                 // Get the values from the form
-                if (form["admin_webcontent_title"] != null) title = form["admin_webcontent_title"];
-                if (form["admin_webcontent_desc"] != null) description = form["admin_webcontent_desc"];
-                if (form["admin_webcontent_redirect"] != null) redirect_url = form["admin_webcontent_redirect"];
-                if (form["admin_webcontent_skin"] != null) webSkin = form["admin_webcontent_skin"];
-                inheritFromParent = form["admin_webcontent_inherit"] != null;
+                if (!String.IsNullOrEmpty(form["admin_webcontent_title"].TrimFirst())) title = form["admin_webcontent_title"].TrimFirst();
+                if (!String.IsNullOrEmpty(form["admin_webcontent_desc"].TrimFirst())) description = form["admin_webcontent_desc"].TrimFirst();
+                if (!String.IsNullOrEmpty(form["admin_webcontent_redirect"].TrimFirst())) redirect_url = form["admin_webcontent_redirect"].TrimFirst();
+                if (!String.IsNullOrEmpty(form["admin_webcontent_skin"].TrimFirst())) webSkin = form["admin_webcontent_skin"].TrimFirst();
+                inheritFromParent = !String.IsNullOrEmpty(form["admin_webcontent_inherit"].TrimFirst());
 
                 // Get the level values from the form
-                if ((form["admin_webcontent_level1"] != null) && (!String.IsNullOrEmpty(form["admin_webcontent_level1"])))
+                if (!String.IsNullOrEmpty(form["admin_webcontent_level1"].TrimFirst()))
                 {
-                    level1 = form["admin_webcontent_level1"];
-                    if ((form["admin_webcontent_level2"] != null) && (!String.IsNullOrEmpty(form["admin_webcontent_level2"])))
+                    level1 = form["admin_webcontent_level1"].TrimFirst();
+                    if (!String.IsNullOrEmpty(form["admin_webcontent_level2"].TrimFirst()))
                     {
-                        level2 = form["admin_webcontent_level2"];
-                        if ((form["admin_webcontent_level3"] != null) && (!String.IsNullOrEmpty(form["admin_webcontent_level3"])))
+                        level2 = form["admin_webcontent_level2"].TrimFirst();
+                        if (!String.IsNullOrEmpty(form["admin_webcontent_level3"].TrimFirst()))
                         {
-                            level3 = form["admin_webcontent_level3"];
-                            if ((form["admin_webcontent_level4"] != null) && (!String.IsNullOrEmpty(form["admin_webcontent_level4"])))
+                            level3 = form["admin_webcontent_level3"].TrimFirst();
+                            if (!String.IsNullOrEmpty(form["admin_webcontent_level4"].TrimFirst()))
                             {
-                                level4 = form["admin_webcontent_level4"];
-                                if ((form["admin_webcontent_level5"] != null) && (!String.IsNullOrEmpty(form["admin_webcontent_level5"])))
+                                level4 = form["admin_webcontent_level4"].TrimFirst();
+                                if (!String.IsNullOrEmpty(form["admin_webcontent_level5"].TrimFirst()))
                                 {
-                                    level5 = form["admin_webcontent_level5"];
-                                    if ((form["admin_webcontent_level6"] != null) && (!String.IsNullOrEmpty(form["admin_webcontent_level6"])))
+                                    level5 = form["admin_webcontent_level5"].TrimFirst();
+                                    if (!String.IsNullOrEmpty(form["admin_webcontent_level6"].TrimFirst()))
                                     {
-                                        level6 = form["admin_webcontent_level6"];
-                                        if ((form["admin_webcontent_level7"] != null) && (!String.IsNullOrEmpty(form["admin_webcontent_level7"])))
+                                        level6 = form["admin_webcontent_level6"].TrimFirst();
+                                        if (!String.IsNullOrEmpty(form["admin_webcontent_level7"].TrimFirst()))
                                         {
-                                            level7 = form["admin_webcontent_level7"];
-                                            if ((form["admin_webcontent_level8"] != null) && (!String.IsNullOrEmpty(form["admin_webcontent_level8"])))
+                                            level7 = form["admin_webcontent_level7"].TrimFirst();
+                                            if (!String.IsNullOrEmpty(form["admin_webcontent_level8"].TrimFirst()))
                                             {
-                                                level8 = form["admin_webcontent_level8"];
+                                                level8 = form["admin_webcontent_level8"].TrimFirst();
                                             }
                                         }
                                     }
@@ -115,7 +116,7 @@ namespace SobekCM.Library.AdminViewer
                         actionMessage = actionMessage + " &nbsp; &nbsp; &nbsp; LEVEL1 is a required field.<br />";
                 }
 
-                string save_value = HttpContext.Current.Request.Form["admin_webcontent_save"];
+                string save_value = Context.Request.Form["admin_webcontent_save"];
                 if ((!String.IsNullOrEmpty(save_value)) && (save_value == "save"))
                 {
                     // Just ensure everything is emptied out

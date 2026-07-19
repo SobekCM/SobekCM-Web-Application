@@ -6,6 +6,7 @@ using System;
 using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
+using Microsoft.AspNetCore.Http;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.ApplicationState;
 using SobekCM.Core.Navigation;
@@ -50,7 +51,7 @@ namespace SobekCM.Library.AdminViewer
 
         /// <summary> Constructor for a new instance of the Portals_AdminViewer class </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
-        public Portals_AdminViewer(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
+        public Portals_AdminViewer(RequestCache RequestSpecificValues, HttpContext Context) : base(RequestSpecificValues, Context)
         {
             RequestSpecificValues.Tracer.Add_Trace("Portals_AdminViewer.Constructor", String.Empty);
 
@@ -87,7 +88,7 @@ namespace SobekCM.Library.AdminViewer
                     try
                     {
                         // Pull the standard values from the form
-                        NameValueCollection form = HttpContext.Current.Request.Form;
+                        var form = Context.Request.Form;
                         string save_value = form["admin_portal_tosave"];
                         string action_value = form["admin_portal_action"];
 
@@ -98,12 +99,12 @@ namespace SobekCM.Library.AdminViewer
                             {
                                 case "edit":
                                     // Get the values from the form for this new portal
-                                    string edit_name = form["form_portal_name"].Trim();
-                                    string edit_abbr = form["form_portal_abbr"].Trim();
-                                    string edit_skin = form["form_portal_skin"].Trim();
-                                    string edit_aggr = String.IsNullOrEmpty(form["form_portal_aggregation"]) ? String.Empty : form["form_portal_aggregation"].Trim();
-                                    string edit_url = form["form_portal_url"].Trim();
-                                    string edit_purl = form["form_portal_purl"].Trim();
+                                    string edit_name = form["form_portal_name"].TrimFirst();
+                                    string edit_abbr = form["form_portal_abbr"].TrimFirst();
+                                    string edit_skin = form["form_portal_skin"].TrimFirst();
+                                    string edit_aggr = String.IsNullOrEmpty(form["form_portal_aggregation"]) ? String.Empty : form["form_portal_aggregation"].TrimFirst();
+                                    string edit_url = form["form_portal_url"].TrimFirst();
+                                    string edit_purl = form["form_portal_purl"].TrimFirst();
                                     int portalid = Convert.ToInt32(save_value);
 
                                     // Look for this to see if this was the pre-existing default
@@ -183,8 +184,8 @@ namespace SobekCM.Library.AdminViewer
                                     // Get the values from the form for this new portal
                                     entered_portal_name = form["admin_portal_name"];
                                     entered_sys_abbrev = form["admin_portal_abbr"];
-                                    entered_web_skin = form["admin_portal_skin"].ToLower();
-                                    entered_aggregation = form["admin_portal_aggregation"].ToLower();
+                                    entered_web_skin = form["admin_portal_skin"].TrimFirst().ToLower();
+                                    entered_aggregation = form["admin_portal_aggregation"].TrimFirst().ToLower();
                                     entered_url_segment = form["admin_portal_url"];
                                     entered_base_purl = form["admin_portal_purl"];
 

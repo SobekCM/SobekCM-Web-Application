@@ -276,7 +276,7 @@ namespace SobekCM.Library.Citation.Elements
         public override void Save_To_Bib(SobekCM_Item Bib)
         {
             bool main_is_found = false;
-            string[] getKeys = Context.Request.Form.Keys;
+            var getKeys = Context.Request.Form.Keys;
             foreach (string thisKey in getKeys)
             {
                 if (thisKey.IndexOf("form_name_type_") == 0)

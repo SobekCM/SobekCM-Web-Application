@@ -6,6 +6,7 @@ using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
 using System.Text;
+using Microsoft.AspNetCore.Http;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.Client;
 using SobekCM.Core.Configuration.Localization;
@@ -61,7 +62,7 @@ namespace SobekCM.Library.AdminViewer
 		/// <summary> Constructor for a new instance of the Aggregation_Single_AdminViewer class </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
 		/// <remarks> Postback from handling an edit or new aggregation is handled here in the constructor </remarks>
-        public Aggregation_Single_AdminViewer(RequestCache RequestSpecificValues)  : base(RequestSpecificValues)
+        public Aggregation_Single_AdminViewer(RequestCache RequestSpecificValues, HttpContext Context)  : base(RequestSpecificValues, Context)
 		{
             RequestSpecificValues.Tracer.Add_Trace("Aggregation_Single_AdminViewer.Constructor", String.Empty);
 
@@ -141,7 +142,7 @@ namespace SobekCM.Library.AdminViewer
 				try
 				{
 					// Pull the standard values
-					NameValueCollection form = HttpContext.Current.Request.Form;
+					var form = Context.Request.Form;
 
 					// Get the curret action
 					string action = form["admin_aggr_save"];

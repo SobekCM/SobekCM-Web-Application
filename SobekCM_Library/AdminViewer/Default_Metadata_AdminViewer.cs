@@ -6,6 +6,7 @@ using System;
 using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
+using Microsoft.AspNetCore.Http;
 using SobekCM.Core.ApplicationState;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.UI_Configuration;
@@ -49,7 +50,7 @@ namespace SobekCM.Library.AdminViewer
         /// <summary> Constructor for a new instance of the Default_Metadata_AdminViewer class </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
         /// <remarks> Postback from handling a new project is handled here in the constructor </remarks>
-        public Default_Metadata_AdminViewer(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
+        public Default_Metadata_AdminViewer(RequestCache RequestSpecificValues, HttpContext Context) : base(RequestSpecificValues, Context)
         {
             RequestSpecificValues.Tracer.Add_Trace("Default_Metadata_AdminViewer.Constructor", String.Empty);
 

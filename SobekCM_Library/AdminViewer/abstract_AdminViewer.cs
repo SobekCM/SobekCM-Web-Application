@@ -22,13 +22,14 @@ namespace SobekCM.Library.AdminViewer
         protected RequestCache RequestSpecificValues;
 
         /// <summary> HTTP context for the current request </summary>
-        protected HttpContext Context => RequestSpecificValues?.Context;
+        protected HttpContext Context;
 
         /// <summary> Constructor for a new instance of the abstract_AdminViewer class </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
-        protected abstract_AdminViewer(RequestCache RequestSpecificValues)
+        protected abstract_AdminViewer(RequestCache RequestSpecificValues, HttpContext Context)
         {
             this.RequestSpecificValues = RequestSpecificValues;
+            this.Context = Context;
         }
         
         /// <summary> Title for the page that displays this viewer, this is shown in the search box at the top of the page, just below the banner </summary>

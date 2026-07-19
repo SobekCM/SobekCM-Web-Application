@@ -1,8 +1,5 @@
-using System;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.IO;
-using System.Text;
+using Microsoft.AspNetCore.Http;
+using Microsoft.IdentityModel.Tokens;
 using SobekCM.Core.Client;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Message;
@@ -15,6 +12,11 @@ using SobekCM.Engine_Library.Configuration;
 using SobekCM.Library.HTML;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
+using System;
+using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.IO;
+using System.Text;
 
 namespace SobekCM.Library.AdminViewer
 {
@@ -42,7 +44,7 @@ namespace SobekCM.Library.AdminViewer
         /// <summary> Constructor for a new instance of the WebContent_Single_AdminViewer class </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
 		/// <remarks> Postback from handling an edit or new aggregation is handled here in the constructor </remarks>
-        public WebContent_Single_AdminViewer(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
+        public WebContent_Single_AdminViewer(RequestCache RequestSpecificValues, HttpContext Context) : base(RequestSpecificValues, Context)
 		{
             RequestSpecificValues.Tracer.Add_Trace("WebContent_Single_AdminViewer.Constructor", String.Empty);
 
@@ -127,7 +129,7 @@ namespace SobekCM.Library.AdminViewer
                     try
                     {
                         // Pull the standard values
-                        NameValueCollection form = HttpContext.Current.Request.Form;
+                        var form = Context.Request.Form;
 
                         // Get the curret action
                         string action = form["admin_webcontent_save"];
@@ -445,18 +447,18 @@ namespace SobekCM.Library.AdminViewer
 
 		#region Methods to render (and parse) page 1 - General Information
 
-		private void Save_Page_General_Postback(NameValueCollection Form)
+		private void Save_Page_General_Postback(IFormCollection Form)
 		{
-            if (Form["admin_webcontent_title"] != null) webContent.Title = Form["admin_webcontent_title"];
-            if (Form["admin_webcontent_author"] != null) webContent.Author = Form["admin_webcontent_author"];
-            if (Form["admin_webcontent_desc"] != null) webContent.Description = Form["admin_webcontent_desc"];
-            if (Form["admin_webcontent_keywords"] != null) webContent.Keywords = Form["admin_webcontent_keywords"];
-            if (Form["admin_webcontent_head"] != null) webContent.Extra_Head_Info = Form["admin_webcontent_head"];
-            if (Form["admin_webcontent_redirect"] != null) webContent.Redirect = Form["admin_webcontent_redirect"];
-            if (Form["admin_webcontent_skin"] != null) webContent.Web_Skin = Form["admin_webcontent_skin"];
-            if (Form["admin_webcontent_banner"] != null) webContent.Banner = Form["admin_webcontent_banner"];
-            if (Form["admin_webcontent_sitemap"] != null) webContent.SiteMap = Form["admin_webcontent_sitemap"];
-            webContent.IncludeMenu = Form["admin_webcontent_menu"] != null;
+            if (!String.IsNullOrEmpty(Form["admin_webcontent_title"].TrimFirst())) webContent.Title = Form["admin_webcontent_title"];
+            if (!String.IsNullOrEmpty(Form["admin_webcontent_author"].TrimFirst())) webContent.Author = Form["admin_webcontent_author"];
+            if (!String.IsNullOrEmpty(Form["admin_webcontent_desc"].TrimFirst())) webContent.Description = Form["admin_webcontent_desc"];
+            if (!String.IsNullOrEmpty(Form["admin_webcontent_keywords"].TrimFirst())) webContent.Keywords = Form["admin_webcontent_keywords"];
+            if (!String.IsNullOrEmpty(Form["admin_webcontent_head"].TrimFirst())) webContent.Extra_Head_Info = Form["admin_webcontent_head"];
+            if (!String.IsNullOrEmpty(Form["admin_webcontent_redirect"].TrimFirst())) webContent.Redirect = Form["admin_webcontent_redirect"];
+            if (!String.IsNullOrEmpty(Form["admin_webcontent_skin"].TrimFirst())) webContent.Web_Skin = Form["admin_webcontent_skin"];
+            if (!String.IsNullOrEmpty(Form["admin_webcontent_banner"].TrimFirst())) webContent.Banner = Form["admin_webcontent_banner"];
+            if (!String.IsNullOrEmpty(Form["admin_webcontent_sitemap"].TrimFirst())) webContent.SiteMap = Form["admin_webcontent_sitemap"];
+            webContent.IncludeMenu = !String.IsNullOrEmpty(Form["admin_webcontent_menu"].TrimFirst());
 		}
 
 		private void Add_Page_General( TextWriter Output )
@@ -666,7 +668,7 @@ namespace SobekCM.Library.AdminViewer
 
 		#region Methods to render (and parse) page 4 - Child pages
 
-        private void Save_Child_Pages_Postback(NameValueCollection Form)
+        private void Save_Child_Pages_Postback(IFormCollection Form)
 		{
             //string action = Form["admin_webcontent_action"];
             //if (!String.IsNullOrEmpty(action))
@@ -1200,7 +1202,7 @@ namespace SobekCM.Library.AdminViewer
 
         #region Methods to render (and parse) page 5 -  Uploads
 
-        private void Save_Uploads_Postback(NameValueCollection Form)
+        private void Save_Uploads_Postback(IFormCollection Form)
         {
             if (Context.SessionObject()["WebContent|" + webContentId + "|Uploads"] != null)
             {

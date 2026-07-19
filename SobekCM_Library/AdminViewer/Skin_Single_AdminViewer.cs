@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
 using System.Text;
+using Microsoft.AspNetCore.Http;
 using SobekCM.Core.Client;
 using SobekCM.Core.Configuration;
 using SobekCM.Core.Configuration.Localization;
@@ -53,7 +54,7 @@ namespace SobekCM.Library.AdminViewer
         /// <summary> Constructor for a new instance of the Skin_Single_AdminViewer class </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
         /// <remarks> Postback from handling an edit or new aggregation is handled here in the constructor </remarks>
-        public Skin_Single_AdminViewer(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
+        public Skin_Single_AdminViewer(RequestCache RequestSpecificValues, HttpContext Context) : base(RequestSpecificValues, Context)
         {
             RequestSpecificValues.Tracer.Add_Trace("Skin_Single_AdminViewer.Constructor", String.Empty);
 
@@ -108,7 +109,7 @@ namespace SobekCM.Library.AdminViewer
             updatedSourceFiles = Context.SessionObject()["Edit_Skin_" + code + "|files"] as Dictionary<string, string> ?? new Dictionary<string, string>();
 
             // Get the skin directory and ensure it exists
-            skinDirectory = HttpContext.Current.Server.MapPath("design/skins/" + webSkin.Skin_Code);
+            skinDirectory = Context.Server.MapPath("design/skins/" + webSkin.Skin_Code);
             if (!Directory.Exists(skinDirectory))
                 Directory.CreateDirectory(skinDirectory);
 
@@ -118,7 +119,7 @@ namespace SobekCM.Library.AdminViewer
                 try
                 {
                     // Pull the standard values
-                    NameValueCollection form = HttpContext.Current.Request.Form;
+                    NameValueCollection form = Context.Request.Form;
 
                     // Get the curret action
                     string action = form["admin_skin_save"];

@@ -339,7 +339,7 @@ namespace SobekCM.Library.MySobekViewer
                 // If this is a request from stage 8, save the new labels and url first
                 if (currentProcessStep == 8)
                 {
-                    string[] getKeys = Context.Request.Form.Keys;
+                    var getKeys = Context.Request.Form.Keys;
                     string file_name_from_keys = String.Empty;
                     string label_from_keys = String.Empty;
                     foreach (string thisKey in getKeys)

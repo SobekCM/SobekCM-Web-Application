@@ -136,7 +136,7 @@ namespace SobekCM.Library.Citation.Elements
         public override void Save_To_Bib(SobekCM_Item Bib)
         {
             // Collect the list of download_files and download_labels from the form
-            string[] getKeys = Context.Request.Form.Keys;
+            var getKeys = Context.Request.Form.Keys;
             string filename = String.Empty;
             List<string> download_files = new List<string>();
             List<string> download_labels = new List<string>();

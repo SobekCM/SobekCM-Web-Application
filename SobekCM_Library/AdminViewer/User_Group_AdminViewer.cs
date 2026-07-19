@@ -8,6 +8,7 @@ using System.Data;
 using System.IO;
 using System.Linq;
 using System.Text;
+using Microsoft.AspNetCore.Http;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.UI_Configuration;
@@ -49,7 +50,7 @@ namespace SobekCM.Library.AdminViewer
         /// <summary> Constructor for a new instance of the User_Group_AdminViewer class </summary>
         /// <param name="RequestSpecificValues"> Mode / navigation information for the current request</param>
         /// <remarks> Postback from a user group edit is handled here in the constructor </remarks>
-        public User_Group_AdminViewer(RequestCache RequestSpecificValues)  : base(RequestSpecificValues)
+        public User_Group_AdminViewer(RequestCache RequestSpecificValues, HttpContext Context)  : base(RequestSpecificValues, Context)
         {
             RequestSpecificValues.Tracer.Add_Trace("User_Group_AdminViewer.Constructor", String.Empty);
 
@@ -143,8 +144,8 @@ namespace SobekCM.Library.AdminViewer
                         page = 3;
 
                     // Get a reference to this form
-                    NameValueCollection form = HttpContext.Current.Request.Form;
-                    string[] getKeys = Form.Keys;
+                    var form = Context.Request.Form;
+                    var getKeys = form.Keys;
 
                     // Get the curret action
                     string action = form["admin_user_group_save"];
@@ -181,11 +182,11 @@ namespace SobekCM.Library.AdminViewer
                                 switch (thisKey)
                                 {
                                     case "groupName":
-                                        editGroup.Name = form[thisKey].Trim();
+                                        editGroup.Name = form[thisKey].TrimFirst();
                                         break;
 
                                     case "groupDescription":
-                                        editGroup.Description = form[thisKey].Trim();
+                                        editGroup.Description = form[thisKey].TrimFirst();
                                         break;
 
                                     case "admin_user_submit":

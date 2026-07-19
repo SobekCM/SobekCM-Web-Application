@@ -106,7 +106,7 @@ namespace SobekCM.Library.Citation.Elements
             Dictionary<string,string> terms = new Dictionary<string,string>();
             Dictionary<string,string> schemes = new Dictionary<string,string>();
 
-            string[] getKeys = Context.Request.Form.Keys;
+            var getKeys = Context.Request.Form.Keys;
             foreach (string thisKey in getKeys)
             {
                 if (thisKey.IndexOf(html_element_name.Replace("_", "") + "_first") == 0)

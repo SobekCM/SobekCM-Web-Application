@@ -95,7 +95,7 @@ namespace SobekCM.Library.Citation.Elements
         public override void Save_To_Bib(SobekCM_Item Bib)
         {
             // First collect all the places
-            string[] getKeys = Context.Request.Form.Keys;
+            var getKeys = Context.Request.Form.Keys;
             List<string> publication_places = getKeys.Where(thisKey => thisKey.IndexOf(html_element_name) == 0).Select(thisKey => Context.Request.Form[thisKey]).Where(place_temp => place_temp.Length > 0).ToList();
 
             // If no places, done

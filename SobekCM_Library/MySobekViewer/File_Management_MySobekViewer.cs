@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Web;
 using SobekCM.Core.Client;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
@@ -39,7 +40,7 @@ namespace SobekCM.Library.MySobekViewer
         // Session key tracking helpers — adapter's HttpSessionState does not expose Keys enumeration
         private const string FILE_KEY_REGISTRY_PREFIX = "file_keyset_";
 
-        private static void Set_Session_File_Label(int itemId, string filename, string label)
+        private void Set_Session_File_Label(int itemId, string filename, string label)
         {
             Context.SessionObject()["file_" + itemId + "_" + filename] = label;
             string registryKey = FILE_KEY_REGISTRY_PREFIX + itemId;
@@ -52,7 +53,7 @@ namespace SobekCM.Library.MySobekViewer
                 registry.Add(filename);
         }
 
-        private static void Clear_Session_File_Labels(int itemId)
+        private void Clear_Session_File_Labels(int itemId)
         {
             string registryKey = FILE_KEY_REGISTRY_PREFIX + itemId;
             if (Context.SessionObject()[registryKey] is List<string> registry)
@@ -67,7 +68,7 @@ namespace SobekCM.Library.MySobekViewer
 
         /// <summary> Constructor for a new instance of the File_Management_MySobekViewer class </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
-        public File_Management_MySobekViewer(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
+        public File_Management_MySobekViewer(RequestCache RequestSpecificValues, HttpContext Context) : base(RequestSpecificValues, Context)
         {
             RequestSpecificValues.Tracer.Add_Trace("File_Management_MySobekViewer.Constructor", String.Empty);
 

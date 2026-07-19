@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
+using Microsoft.AspNetCore.Http;
 using SobekCM.Core.Builder;
 using SobekCM.Core.Client;
 using SobekCM.Core.Navigation;
@@ -37,7 +38,7 @@ namespace SobekCM.Library.AdminViewer
 
         /// <summary> Constructor for a new instance of the Builder_Folder_Mgmt_AdminViewer class </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
-        public Builder_Folder_Mgmt_AdminViewer(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
+        public Builder_Folder_Mgmt_AdminViewer(RequestCache RequestSpecificValues, HttpContext Context) : base(RequestSpecificValues, Context)
         {
             // Verify this user can edit this
             bool allowEdit = (((!UI_ApplicationCache_Gateway.Settings.Servers.isHosted) && (RequestSpecificValues.Current_User.Is_System_Admin)) || (RequestSpecificValues.Current_User.Is_Host_Admin));
@@ -66,7 +67,7 @@ namespace SobekCM.Library.AdminViewer
                 try
                 {
                     // Pull the standard values from the form
-                    NameValueCollection form = HttpContext.Current.Request.Form;
+                    var form = Context.Request.Form;
                     string action_value = form["admin_builder_folder_action"];
 
                     // Get the entered values 
@@ -74,12 +75,12 @@ namespace SobekCM.Library.AdminViewer
                     failuresFolder = form["admin_folder_error"];
                     inboundFolder = form["admin_folder_network"];
                     processingFolder = form["admin_folder_processing"];
-                    performChecksum = (form["admin_folder_checksum"] != null);
-                    archiveTiffs = (form["admin_folder_archive_tiff"] != null);
-                    archiveAllFiles = (form["admin_folder_archive_all"] != null);
-                    allowDeletes = (form["admin_folder_allow_delete"] != null);
-                    allowFoldersNoMetadata = (form["admin_folder_no_metadata"] != null);
-                    allowMetadataUpdates = (form["admin_folder_allow_updates"] != null);
+                    performChecksum = !String.IsNullOrEmpty(form["admin_folder_checksum"].TrimFirst());
+                    archiveTiffs = !String.IsNullOrEmpty(form["admin_folder_archive_tiff"].TrimFirst());
+                    archiveAllFiles = !String.IsNullOrEmpty(form["admin_folder_archive_all"].TrimFirst());
+                    allowDeletes = !String.IsNullOrEmpty(form["admin_folder_allow_delete"].TrimFirst());
+                    allowFoldersNoMetadata = !String.IsNullOrEmpty(form["admin_folder_no_metadata"].TrimFirst());
+                    allowMetadataUpdates = !String.IsNullOrEmpty(form["admin_folder_allow_updates"].TrimFirst());
 
                     // Get the hidden values
                     bibIdRestrictions = form["admin_builder_folder_restrictions"];

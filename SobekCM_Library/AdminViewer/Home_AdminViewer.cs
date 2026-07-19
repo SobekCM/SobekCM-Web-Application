@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using Microsoft.AspNetCore.Http;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.UI_Configuration;
 using SobekCM.Core.UI_Configuration.StaticResources;
@@ -63,7 +64,7 @@ namespace SobekCM.Library.AdminViewer
 
 	    /// <summary> Constructor for a new instance of the Home_AdminViewer class </summary>
 	    /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
-	    public Home_AdminViewer(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
+	    public Home_AdminViewer(RequestCache RequestSpecificValues, HttpContext Context) : base(RequestSpecificValues, Context)
 	    {
 	        RequestSpecificValues.Tracer.Add_Trace("Home_AdminViewer.Constructor", String.Empty);
 
@@ -93,7 +94,7 @@ namespace SobekCM.Library.AdminViewer
 	        if (RequestSpecificValues.Current_Mode.isPostBack)
 	        {
 	            // Get the new preference
-	            string new_preference = HttpContext.Current.Request.Form["admin_menu_preference"];
+	            string new_preference = Context.Request.Form["admin_menu_preference"];
 	            if ((!String.IsNullOrEmpty(new_preference)) && (new_preference != menu_preference))
 	            {
 	                // Save the new preference

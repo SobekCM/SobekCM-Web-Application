@@ -100,7 +100,7 @@ namespace SobekCM.Library.Citation.Elements
         public override void Save_To_Bib(SobekCM_Item Bib)
         {
             string special_id = FixedTypeFromTemplateFile.Replace(" ", "_").ToLower() + "fixedidentifier";
-            string[] getKeys = Context.Request.Form.Keys;
+            var getKeys = Context.Request.Form.Keys;
             foreach (string thisKey in getKeys.Where(thisKey => thisKey.IndexOf(special_id) == 0))
             {
                 Bib.Bib_Info.Add_Identifier(Context.Request.Form[thisKey], FixedTypeFromTemplateFile);

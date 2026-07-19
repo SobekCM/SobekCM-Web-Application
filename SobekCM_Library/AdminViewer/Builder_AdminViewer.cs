@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using Microsoft.AspNetCore.Http;
 using SobekCM.Core.Builder;
 using SobekCM.Core.Client;
 using SobekCM.Core.Navigation;
@@ -43,7 +44,7 @@ namespace SobekCM.Library.AdminViewer
 
         /// <summary> Constructor for a new instance of the Builder_AdminViewer class </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
-        public Builder_AdminViewer(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
+        public Builder_AdminViewer(RequestCache RequestSpecificValues, HttpContext Context) : base(RequestSpecificValues, Context)
         {
             // Ensure the user is the system admin
             if ((RequestSpecificValues.Current_User == null) || ((!RequestSpecificValues.Current_User.Is_System_Admin) && (!RequestSpecificValues.Current_User.Is_Portal_Admin )))
@@ -61,7 +62,7 @@ namespace SobekCM.Library.AdminViewer
                     (RequestSpecificValues.Current_User.Is_Host_Admin))
                 {
                     // Pull the hidden value
-                    string save_value = HttpContext.Current.Request.Form["admin_builder_tosave"].ToUpper().Trim();
+                    string save_value = Context.Request.Form["admin_builder_tosave"].TrimFirst().ToUpper();
                     if (save_value.Length > 0)
                     {
                         // Set this value
@@ -376,9 +377,9 @@ namespace SobekCM.Library.AdminViewer
             // Get the two dates from the query string and append to the data source URl at the same time
             DateTime? date1 = null;
             DateTime? date2 = null;
-            if (!String.IsNullOrEmpty(HttpContext.Current.Request.QueryString["date1"]))
+            if (!String.IsNullOrEmpty(RequestSpecificValues.QueryString["date1"]))
             {
-                string date1_string = HttpContext.Current.Request.QueryString["date1"];
+                string date1_string = RequestSpecificValues.QueryString["date1"];
                 DateTime temp;
                 if (DateTime.TryParse(date1_string, out temp))
                 {
@@ -387,9 +388,9 @@ namespace SobekCM.Library.AdminViewer
                     added_arg = true;
                 }
             }
-            if (!String.IsNullOrEmpty(HttpContext.Current.Request.QueryString["date2"]))
+            if (!String.IsNullOrEmpty(RequestSpecificValues.QueryString["date2"]))
             {
-                string date2_string = HttpContext.Current.Request.QueryString["date2"];
+                string date2_string = RequestSpecificValues.QueryString["date2"];
                 DateTime temp;
                 if (DateTime.TryParse(date2_string, out temp))
                 {
@@ -403,8 +404,8 @@ namespace SobekCM.Library.AdminViewer
             }
 
             // Get the other query string filter values
-            string currentFilter = String.IsNullOrEmpty(HttpContext.Current.Request.QueryString["filter"]) ? String.Empty : HttpContext.Current.Request.QueryString["filter"];
-            bool includeNoWorkFlag = ((!String.IsNullOrEmpty(HttpContext.Current.Request.QueryString["showall"])) && (HttpContext.Current.Request.QueryString["showall"].ToLower() == "true"));
+            string currentFilter = String.IsNullOrEmpty(RequestSpecificValues.QueryString["filter"]) ? String.Empty : RequestSpecificValues.QueryString["filter"];
+            bool includeNoWorkFlag = ((!String.IsNullOrEmpty(RequestSpecificValues.QueryString["showall"])) && (RequestSpecificValues.QueryString["showall"].ToLower() == "true"));
 
             // Finish building the data source url
             if (!String.IsNullOrEmpty(currentFilter))

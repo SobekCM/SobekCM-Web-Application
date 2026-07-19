@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Runtime.Caching;
+using Microsoft.AspNetCore.Http;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.UI_Configuration;
 using SobekCM.Core.UI_Configuration.StaticResources;
@@ -26,7 +27,7 @@ namespace SobekCM.Library.AdminViewer
 
         /// <summary> Constructor for a new version of the <see cref="Permissions_Reports_AdminViewer"/> class. </summary>
         /// <param name="RequestSpecificValues">All the necessary, non-global data specific to the current request</param>
-        public Permissions_Reports_AdminViewer(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
+        public Permissions_Reports_AdminViewer(RequestCache RequestSpecificValues, HttpContext Context) : base(RequestSpecificValues, Context)
         {
             RequestSpecificValues.Tracer.Add_Trace("Permissions_Reports_AdminViewer.Constructor", String.Empty);
             actionMessage = String.Empty;
@@ -52,7 +53,7 @@ namespace SobekCM.Library.AdminViewer
             // If this is posted back, look for the reset
             if (RequestSpecificValues.Current_Mode.isPostBack)
             {
-                string reset_value = HttpContext.Current.Request.Form[""];
+                string reset_value = Context.Request.Form[""];
                 if ((!String.IsNullOrEmpty(reset_value)) && (reset_value == "reset"))
                 {
                     // Just ensure everything is emptied out
@@ -726,9 +727,9 @@ namespace SobekCM.Library.AdminViewer
 
                     // Now, was an aggregation selected
                     string current_aggr_code = String.Empty;
-                    if (!String.IsNullOrEmpty(HttpContext.Current.Request.QueryString["aggr"]))
+                    if (!String.IsNullOrEmpty(RequestSpecificValues.QueryString["aggr"]))
                     {
-                        current_aggr_code = HttpContext.Current.Request.QueryString["aggr"];
+                        current_aggr_code = RequestSpecificValues.QueryString["aggr"];
                     }
 
                     // Get the current URL

@@ -316,22 +316,22 @@ namespace SobekCM.Library.MySobekViewer
                 // Was this where the mapping, xslt, and css is set?
                 if (currentProcessStep == 1)
                 {
-                    string[] getKeys = Context.Request.Form.Keys;
+                    var getKeys = Context.Request.Form.Keys;
                     foreach (string thisKey in getKeys)
                     {
                         if (thisKey.IndexOf("mapping_select") == 0)
                         {
-                            mapping_file = HttpContext.Current.Request.Form[thisKey];
+                            mapping_file = Context.Request.Form[thisKey];
                             Context.SessionObject()["Edit_TEI_mySobekViewer." + bibid + "_" + vid + ".Mapping_File"] = mapping_file;
                         }
                         if (thisKey.IndexOf("xslt_select") == 0)
                         {
-                            xslt_file = HttpContext.Current.Request.Form[thisKey];
+                            xslt_file = Context.Request.Form[thisKey];
                             Context.SessionObject()["Edit_TEI_mySobekViewer." + bibid + "_" + vid + ".XSLT_File"] = xslt_file;
                         }
                         if (thisKey.IndexOf("css_select") == 0)
                         {
-                            css_file = HttpContext.Current.Request.Form[thisKey];
+                            css_file = Context.Request.Form[thisKey];
                             Context.SessionObject()["Edit_TEI_mySobekViewer." + bibid + "_" + vid + ".CSS_File"] = css_file;
                         }
                     }
@@ -341,7 +341,7 @@ namespace SobekCM.Library.MySobekViewer
                 if (currentProcessStep == 2)
                 {
                     // Get the content of the edited source
-                    string new_output = HttpContext.Current.Request.Form["tei_source_content"];
+                    string new_output = Context.Request.Form["tei_source_content"];
 
                     // If the user is editing the current TEI file, make a new version under the
                     // user process folder now
@@ -374,7 +374,7 @@ namespace SobekCM.Library.MySobekViewer
 
                 }
 
-                string action = HttpContext.Current.Request.Form["action"];
+                string action = Context.Request.Form["action"];
                 if (action == "cancel")
                 {
                     // Clear all files in the RequestSpecificValues.Current_User process folder
@@ -413,7 +413,7 @@ namespace SobekCM.Library.MySobekViewer
 
                 if (action == "next_phase")
                 {
-                    string next_phase = HttpContext.Current.Request.Form["phase"];
+                    string next_phase = Context.Request.Form["phase"];
 
                     if (currentProcessStep == 1)
                     {

@@ -1,5 +1,6 @@
-﻿#region Using directives
+#region Using directives
 
+using Microsoft.AspNetCore.Http;
 using System.IO;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.Navigation;
@@ -27,8 +28,8 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         /// <summary> Constructor for a new instance of the No_Search_AggregationViewer class </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
         /// <param name="ViewBag"> Aggregation-specific request information, such as aggregation object and any browse object requested </param>
-        public No_Search_AggregationViewer(RequestCache RequestSpecificValues, AggregationViewBag ViewBag)
-            : base(RequestSpecificValues, ViewBag)
+        public No_Search_AggregationViewer(RequestCache RequestSpecificValues, AggregationViewBag ViewBag, HttpContext Context)
+            : base(RequestSpecificValues, ViewBag, Context)
         {
             // Do nothing
         }

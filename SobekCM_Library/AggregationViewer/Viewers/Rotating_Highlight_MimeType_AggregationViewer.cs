@@ -1,5 +1,6 @@
 #region Using directives
 
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -39,8 +40,8 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         /// <summary> Constructor for a new instance of the Rotating_Highlight_MimeType_AggregationViewer class </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
         /// <param name="ViewBag"> Aggregation-specific request information, such as aggregation object and any browse object requested </param>
-        public Rotating_Highlight_MimeType_AggregationViewer(RequestCache RequestSpecificValues, AggregationViewBag ViewBag)
-            : base(RequestSpecificValues, ViewBag)
+        public Rotating_Highlight_MimeType_AggregationViewer(RequestCache RequestSpecificValues, AggregationViewBag ViewBag, HttpContext Context)
+            : base(RequestSpecificValues, ViewBag, Context)
         {
             // Determine the sub text to use
             const string SUB_CODE = "s=";

@@ -26,7 +26,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         private bool canEditHomePage;
         private bool ifEditNoCkEditor;
 
-        public Thumbnails_Home_AggregationViewer(RequestCache RequestSpecificValues, AggregationViewBag ViewBag) : base(RequestSpecificValues, ViewBag)
+        public Thumbnails_Home_AggregationViewer(RequestCache RequestSpecificValues, AggregationViewBag ViewBag, HttpContext Context) : base(RequestSpecificValues, ViewBag, Context)
         {
             hierarchyObject = ViewBag.Hierarchy_Object;
 

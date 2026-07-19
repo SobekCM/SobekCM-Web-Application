@@ -1,5 +1,6 @@
 #region Using directives
 
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
@@ -36,8 +37,8 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 	    /// <summary> Constructor for a new instance of the Static_Browse_Info_AggregationViewer class </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
         /// <param name="ViewBag"> Aggregation-specific request information, such as aggregation object and any browse object requested </param>
-        public Static_Browse_Info_AggregationViewer(RequestCache RequestSpecificValues, AggregationViewBag ViewBag)
-            : base(RequestSpecificValues, ViewBag)
+        public Static_Browse_Info_AggregationViewer(RequestCache RequestSpecificValues, AggregationViewBag ViewBag, HttpContext Context)
+            : base(RequestSpecificValues, ViewBag, Context)
         {
 			bool isAdmin = (RequestSpecificValues.Current_User != null) && (RequestSpecificValues.Current_User.Is_Aggregation_Admin(ViewBag.Hierarchy_Object.Code));
 			if (( RequestSpecificValues.Current_Mode.Aggregation_Type == Aggregation_Type_Enum.Child_Page_Edit) && ( !isAdmin))

@@ -1,5 +1,6 @@
-﻿#region Using directives
+#region Using directives
 
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -37,8 +38,8 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         /// <summary> Constructor for a new instance of the Item_Count_AggregationViewer class </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
         /// <param name="ViewBag"> Aggregation-specific request information, such as aggregation object and any browse object requested </param>
-        public Item_Count_AggregationViewer(RequestCache RequestSpecificValues, AggregationViewBag ViewBag)
-            : base(RequestSpecificValues, ViewBag)
+        public Item_Count_AggregationViewer(RequestCache RequestSpecificValues, AggregationViewBag ViewBag, HttpContext Context)
+            : base(RequestSpecificValues, ViewBag, Context)
         {
             // All work done in the base constructor
         }

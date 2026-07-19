@@ -1,4 +1,5 @@
-﻿using System;
+using Microsoft.AspNetCore.Http;
+using System;
 using System.IO;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.Configuration.Localization;
@@ -19,8 +20,8 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         /// <summary> Constructor for a new instance of the Basic_Text_Search_Combined_AggregationViewer class </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
         /// <param name="ViewBag"> Aggregation-specific request information, such as aggregation object and any browse object requested </param>
-        public Basic_Text_Search_Combined_AggregationViewer(RequestCache RequestSpecificValues, AggregationViewBag ViewBag)
-            : base(RequestSpecificValues, ViewBag)
+        public Basic_Text_Search_Combined_AggregationViewer(RequestCache RequestSpecificValues, AggregationViewBag ViewBag, HttpContext Context)
+            : base(RequestSpecificValues, ViewBag, Context)
         {
             // Determine the sub text to use
             const string SUB_CODE = "s=";

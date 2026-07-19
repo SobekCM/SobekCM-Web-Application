@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -35,7 +36,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         protected List<Tiles_Home_Single_Tile> selectedTiles = new List<Tiles_Home_Single_Tile>();
         protected Database_Results_Info tileMetadata;
 
-        public Tiles_Home_AggregationViewer(RequestCache RequestSpecificValues, AggregationViewBag ViewBag) : base(RequestSpecificValues, ViewBag)
+        public Tiles_Home_AggregationViewer(RequestCache RequestSpecificValues, AggregationViewBag ViewBag, HttpContext Context) : base(RequestSpecificValues, ViewBag, Context)
         {
             // Get the list of tiles
             string aggregation_tile_directory = Path.Combine(UI_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location, ViewBag.Hierarchy_Object.ObjDirectory, "images", "tiles");

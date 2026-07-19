@@ -1,5 +1,6 @@
-﻿#region Using directives
+#region Using directives
 
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Data;
 using System.IO;
@@ -22,8 +23,8 @@ namespace SobekCM.Library.AggregationViewer
         /// <summary> Constructor for a new instance of the Work_History_AggregationViewer class </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
         /// <param name="ViewBag"> Aggregation-specific request information, such as aggregation object and any browse object requested </param>
-        public Work_History_AggregationViewer(RequestCache RequestSpecificValues, AggregationViewBag ViewBag)
-            : base(RequestSpecificValues, ViewBag)
+        public Work_History_AggregationViewer(RequestCache RequestSpecificValues, AggregationViewBag ViewBag, HttpContext Context)
+            : base(RequestSpecificValues, ViewBag, Context)
         {
             // User must AT LEAST be logged on, return
             if ((RequestSpecificValues.Current_User == null) || (!RequestSpecificValues.Current_User.LoggedOn))

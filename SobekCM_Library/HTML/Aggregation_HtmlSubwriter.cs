@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using System;
 using System.Collections.Generic;
@@ -379,7 +379,7 @@ namespace SobekCM.Library.HTML
 
             if (RequestSpecificValues.Current_Mode.Mode == Display_Mode_Enum.Search)
             {
-                collectionViewer = AggregationViewer_Factory.Get_Viewer(RequestSpecificValues.Current_Mode.Search_Type, RequestSpecificValues, viewBag);
+                collectionViewer = AggregationViewer_Factory.Get_Viewer(RequestSpecificValues.Current_Mode.Search_Type, RequestSpecificValues, viewBag, Context);
             }
 
 			if (RequestSpecificValues.Current_Mode.Mode == Display_Mode_Enum.Aggregation)
@@ -403,7 +403,7 @@ namespace SobekCM.Library.HTML
                                 string[] jpeg_tiles = Directory.GetFiles(aggregation_tile_directory, "*.jpg");
                                 if (jpeg_tiles.Length > 0)
                                 {
-                                    collectionViewer = new Tiles_Home_AggregationViewer(RequestSpecificValues, viewBag);
+                                    collectionViewer = new Tiles_Home_AggregationViewer(RequestSpecificValues, viewBag, Context);
                                     RequestSpecificValues.Tracer.Add_Trace("Aggregation_HtmlSubwriter.Constructor", "There are " + jpeg_tiles.Length + " jpeg files.");
                                 }
                             }
@@ -412,13 +412,13 @@ namespace SobekCM.Library.HTML
                             if (collectionViewer == null)
                             {
                                 RequestSpecificValues.Tracer.Add_Trace("Aggregation_HtmlSubwriter.Constructor", "collectionViewer was not built, building.");
-                                collectionViewer = AggregationViewer_Factory.Get_Viewer(hierarchyObject.Views_And_Searches[0], RequestSpecificValues, viewBag);
+                                collectionViewer = AggregationViewer_Factory.Get_Viewer(hierarchyObject.Views_And_Searches[0], RequestSpecificValues, viewBag, Context);
                             }
                         }
                         else
                         {
                             RequestSpecificValues.Tracer.Add_Trace("Aggregation_HtmlSubwriter.Constructor", "Is a hierarchyObject.Custom_Home_Page.");
-                            collectionViewer = new Custom_Home_Page_AggregationViewer(RequestSpecificValues, viewBag);
+                            collectionViewer = new Custom_Home_Page_AggregationViewer(RequestSpecificValues, viewBag, Context);
                         }
 						break;
 
@@ -428,79 +428,79 @@ namespace SobekCM.Library.HTML
                         if (datasetBrowseResultsStats == null)
 						{
                             RequestSpecificValues.Tracer.Add_Trace("Aggregation_HtmlSubwriter.Constructor", "datasetBrowseResultsStats was null, creating new static browse. ");
-                            collectionViewer = new Static_Browse_Info_AggregationViewer(RequestSpecificValues, viewBag);
+                            collectionViewer = new Static_Browse_Info_AggregationViewer(RequestSpecificValues, viewBag, Context);
 						}
 						else
 						{
                             RequestSpecificValues.Tracer.Add_Trace("Aggregation_HtmlSubwriter.Constructor", "datasetBrowseResultsStats was not null, creating new dataset browse. " + datasetBrowseResultsStats.Total_Items + " total items.");
-                            collectionViewer = new DataSet_Browse_Info_AggregationViewer(RequestSpecificValues, viewBag);
+                            collectionViewer = new DataSet_Browse_Info_AggregationViewer(RequestSpecificValues, viewBag, Context);
 						}
 						break;
 
 					case Aggregation_Type_Enum.Child_Page_Edit:
                         RequestSpecificValues.Tracer.Add_Trace("Aggregation_HtmlSubwriter.Constructor", "Child_Page_Edit agg type.");
 
-                       collectionViewer = new Static_Browse_Info_AggregationViewer(RequestSpecificValues, viewBag);
+                       collectionViewer = new Static_Browse_Info_AggregationViewer(RequestSpecificValues, viewBag, Context);
 						break;
 
 					case Aggregation_Type_Enum.Browse_By:
                         RequestSpecificValues.Tracer.Add_Trace("Aggregation_HtmlSubwriter.Constructor", "Browse_By agg type.");
 
-                       collectionViewer = new Metadata_Browse_AggregationViewer(RequestSpecificValues, viewBag);
+                       collectionViewer = new Metadata_Browse_AggregationViewer(RequestSpecificValues, viewBag, Context);
 						break;
 
 					case Aggregation_Type_Enum.Browse_Map:
                         RequestSpecificValues.Tracer.Add_Trace("Aggregation_HtmlSubwriter.Constructor", "Browse_Map agg type.");
 
-                       collectionViewer = new Map_Browse_AggregationViewer(RequestSpecificValues, viewBag);
+                       collectionViewer = new Map_Browse_AggregationViewer(RequestSpecificValues, viewBag, Context);
 						break;
 
                     case Aggregation_Type_Enum.Browse_Map_Beta:
                         RequestSpecificValues.Tracer.Add_Trace("Aggregation_HtmlSubwriter.Constructor", "Browse_Map_Beta agg type.");
 
-                       collectionViewer = new Map_Browse_AggregationViewer_Beta(RequestSpecificValues, viewBag);
+                       collectionViewer = new Map_Browse_AggregationViewer_Beta(RequestSpecificValues, viewBag, Context);
                         break;
 
 					case Aggregation_Type_Enum.Item_Count:
                         RequestSpecificValues.Tracer.Add_Trace("Aggregation_HtmlSubwriter.Constructor", "Item_Count agg type.");
 
-                       collectionViewer = new Item_Count_AggregationViewer(RequestSpecificValues, viewBag);
+                       collectionViewer = new Item_Count_AggregationViewer(RequestSpecificValues, viewBag, Context);
 						break;
 
 					case Aggregation_Type_Enum.Usage_Statistics:
                         RequestSpecificValues.Tracer.Add_Trace("Aggregation_HtmlSubwriter.Constructor", "Usage_Statistics agg type.");
 
-                       collectionViewer = new Usage_Statistics_AggregationViewer(RequestSpecificValues, viewBag);
+                       collectionViewer = new Usage_Statistics_AggregationViewer(RequestSpecificValues, viewBag, Context);
 						break;
 
 					case Aggregation_Type_Enum.Private_Items:
                         RequestSpecificValues.Tracer.Add_Trace("Aggregation_HtmlSubwriter.Constructor", "Private_Items agg type.");
 
-                       collectionViewer = new Private_Items_AggregationViewer(RequestSpecificValues, viewBag);
+                       collectionViewer = new Private_Items_AggregationViewer(RequestSpecificValues, viewBag, Context);
 						break;
 
                     case Aggregation_Type_Enum.Manage_Menu:
                         RequestSpecificValues.Tracer.Add_Trace("Aggregation_HtmlSubwriter.Constructor", "Manage_Menu agg type.");
 
-                       collectionViewer = new Manage_Menu_AggregationViewer(RequestSpecificValues, viewBag);
+                       collectionViewer = new Manage_Menu_AggregationViewer(RequestSpecificValues, viewBag, Context);
                         break;
 
                     case Aggregation_Type_Enum.User_Permissions:
                         RequestSpecificValues.Tracer.Add_Trace("Aggregation_HtmlSubwriter.Constructor", "User_Permissions agg type.");
 
-                       collectionViewer = new User_Permissions_AggregationViewer(RequestSpecificValues, viewBag);
+                       collectionViewer = new User_Permissions_AggregationViewer(RequestSpecificValues, viewBag, Context);
                         break;
 
                     case Aggregation_Type_Enum.Work_History:
                         RequestSpecificValues.Tracer.Add_Trace("Aggregation_HtmlSubwriter.Constructor", "Work_History agg type.");
 
-                       collectionViewer = new Work_History_AggregationViewer(RequestSpecificValues, viewBag);
+                       collectionViewer = new Work_History_AggregationViewer(RequestSpecificValues, viewBag, Context);
                         break;
 
                     case Aggregation_Type_Enum.Empty:
                         RequestSpecificValues.Tracer.Add_Trace("Aggregation_HtmlSubwriter.Constructor", "Empty agg type.");
 
-                       collectionViewer = new Empty_AggregationViewer(RequestSpecificValues, viewBag);
+                       collectionViewer = new Empty_AggregationViewer(RequestSpecificValues, viewBag, Context);
                         break;
 				}
 			}

@@ -643,7 +643,7 @@ namespace SobekCM.Library.AdminViewer
 			if ( !String.IsNullOrEmpty(Form["admin_aggr_desc"].TrimFirst()) ) itemAggregation.Description = Form["admin_aggr_desc"];
 			if (!String.IsNullOrEmpty(Form["admin_aggr_email"].TrimFirst())) itemAggregation.Contact_Email = Form["admin_aggr_email"];
 			itemAggregation.Active = !String.IsNullOrEmpty(Form["admin_aggr_isactive"].TrimFirst());
-			itemAggregation.Hidden = Form["admin_aggr_ishidden"] == null;
+			itemAggregation.Hidden = !String.IsNullOrEmpty(Form["admin_aggr_ishidden"].TrimFirst());
 			if ((RequestSpecificValues.Current_User.Is_System_Admin) || (RequestSpecificValues.Current_User.Is_Portal_Admin))
 			{
 			    if ((!String.IsNullOrEmpty(Form["admin_aggr_heading"].TrimFirst())) && (Form["admin_aggr_heading"] != "-1"))
@@ -1009,7 +1009,7 @@ namespace SobekCM.Library.AdminViewer
             itemAggregation.Default_Skin = null;
             foreach (string thisKey in Form.Keys)
             {
-                if ((thisKey.IndexOf("admin_aggr_skin_") == 0) && ( !String.IsNullOrEmpty(Form[thisKey].TrimFirst()) ) && ( Form[thisKey].Length > 0 ))
+                if ((thisKey.IndexOf("admin_aggr_skin_") == 0) && ( !String.IsNullOrEmpty(Form[thisKey].TrimFirst())) && ( Form[thisKey].TrimFirst().Length > 0 ))
                 {
                     if (itemAggregation.Web_Skins == null)
                         itemAggregation.Web_Skins = new List<string>();
@@ -2719,7 +2719,7 @@ namespace SobekCM.Library.AdminViewer
 
 		#region Methods to render (and parse) page 4 - Metadata (Metadata browses and OAI/PMH)
 
-		private void Save_Page_4_Postback(NameValueCollection Form)
+		private void Save_Page_4_Postback(IFormCollection Form)
 		{
 			// Get the metadata browses
 			List<Complete_Item_Aggregation_Child_Page> metadata_browse_bys = itemAggregation.Browse_By_Pages(UI_ApplicationCache_Gateway.Settings.System.Default_UI_Language).Where(ThisBrowse => ThisBrowse.Browse_Type == Item_Aggregation_Child_Visibility_Enum.Metadata_Browse_By).Where(ThisBrowse => ThisBrowse.Source_Data_Type == Item_Aggregation_Child_Source_Data_Enum.Database_Table).ToList();
@@ -3949,7 +3949,7 @@ namespace SobekCM.Library.AdminViewer
 
 		#region Methods to render (and parse) the single Child Page 
 
-		private void Save_Child_Page_Postback(NameValueCollection Form)
+		private void Save_Child_Page_Postback(IFormCollection Form)
 		{
 			string code = RequestSpecificValues.Current_Mode.My_Sobek_SubMode.Substring(2);
 			Complete_Item_Aggregation_Child_Page childPage = itemAggregation.Child_Page_By_Code(code);

@@ -88,7 +88,7 @@ namespace SobekCM.Library.HTML
 			if ( true ) // if (currentMode.isPostBack)
 			{
 				// Pull the standard values
-				NameValueCollection form = Context.Request.Form;
+				var form = Context.Request.Form;
 
 			
 				if (!String.IsNullOrEmpty(form["item_action"].TrimFirst()))

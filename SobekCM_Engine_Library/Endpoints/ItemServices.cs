@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using System;
 using System.Collections.Generic;
@@ -7,7 +7,6 @@ using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Web;
 
 using Jil;
 using SobekCM.Core.BriefItem;
@@ -2538,7 +2537,7 @@ namespace SobekCM.Engine_Library.Endpoints
                 StringBuilder responseBuilder = new StringBuilder();
 
                 // Calculate the title and url
-                string title = HttpUtility.HtmlEncode(sobekItem.Bib_Info.Main_Title.Title);
+                string title = System.Net.WebUtility.HtmlEncode(sobekItem.Bib_Info.Main_Title.Title);
                 string share_url = Engine_ApplicationCache_Gateway.Settings.Servers.Base_URL + "/" + bibid + "/" + vid;
 
                 responseBuilder.AppendLine("<!-- Share form -->");
@@ -2680,16 +2679,16 @@ namespace SobekCM.Engine_Library.Endpoints
                 {
                     if (folder.Folder_Name.Length > 80)
                     {
-                        responseBuilder.Append("<option value=\"" + HttpUtility.HtmlEncode(folder.Folder_Name) + "\">" + HttpUtility.HtmlEncode(folder.Folder_Name.Substring(0, 75)) + "...</option>");
+                        responseBuilder.Append("<option value=\"" + System.Net.WebUtility.HtmlEncode(folder.Folder_Name) + "\">" + System.Net.WebUtility.HtmlEncode(folder.Folder_Name.Substring(0, 75)) + "...</option>");
                     }
                     else
                     {
                         if (folder.Folder_Name != "Submitted Items")
                         {
                             if (folder.Folder_Name == "My Bookshelf")
-                                responseBuilder.Append("<option value=\"" + HttpUtility.HtmlEncode(folder.Folder_Name) + "\" selected=\"selected\" >" + HttpUtility.HtmlEncode(folder.Folder_Name) + "</option>");
+                                responseBuilder.Append("<option value=\"" + System.Net.WebUtility.HtmlEncode(folder.Folder_Name) + "\" selected=\"selected\" >" + System.Net.WebUtility.HtmlEncode(folder.Folder_Name) + "</option>");
                             else
-                                responseBuilder.Append("<option value=\"" + HttpUtility.HtmlEncode(folder.Folder_Name) + "\">" + HttpUtility.HtmlEncode(folder.Folder_Name) + "</option>");
+                                responseBuilder.Append("<option value=\"" + System.Net.WebUtility.HtmlEncode(folder.Folder_Name) + "\">" + System.Net.WebUtility.HtmlEncode(folder.Folder_Name) + "</option>");
                         }
                     }
                 }

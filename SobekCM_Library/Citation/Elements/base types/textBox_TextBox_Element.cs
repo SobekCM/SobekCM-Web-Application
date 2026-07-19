@@ -1,9 +1,8 @@
-﻿#region Using directives
+#region Using directives
 
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Web;
 using System.Xml;
 using SobekCM.Core.ApplicationState;
 using SobekCM.Core.Configuration.Localization;
@@ -105,7 +104,7 @@ namespace SobekCM.Library.Citation.Elements
                     }
 
                     // Write the first text box
-					Output.Write("<input name=\"" + id_name + "_first" + i + "\" id=\"" + id_name + "_first" + i + "\" class=\"" + html_element_name + "_first_input sbk_Focusable\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(InstanceValuesText1[i - 1]) + "\" ");
+					Output.Write("<input name=\"" + id_name + "_first" + i + "\" id=\"" + id_name + "_first" + i + "\" class=\"" + html_element_name + "_first_input sbk_Focusable\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(InstanceValuesText1[i - 1]) + "\" ");
                     if (textBox1Events != null)
                         textBox1Events.Add_Events_HTML(Output);
                     Output.Write(" />");
@@ -117,7 +116,7 @@ namespace SobekCM.Library.Citation.Elements
                     }
 
                     // Write the second text box
-                    Output.Write("<input name=\"" + id_name + "_second" + i + "\" id=\"" + id_name + "_second" + i + "\" class=\"" + html_element_name + "_second_input sbk_Focusable\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(InstanceValuesText2[i - 1]) + "\" ");
+                    Output.Write("<input name=\"" + id_name + "_second" + i + "\" id=\"" + id_name + "_second" + i + "\" class=\"" + html_element_name + "_second_input sbk_Focusable\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(InstanceValuesText2[i - 1]) + "\" ");
                     if (textBox2Events != null)
                         textBox2Events.Add_Events_HTML(Output);
                     Output.Write(" />");
@@ -208,7 +207,7 @@ namespace SobekCM.Library.Citation.Elements
             }
 
             // Write the first text box
-            Output.Write("<input name=\"" + id_name + "_first" + i + "\" id=\"" + id_name + "_first" + i + "\" class=\"" + html_element_name + "_first_input sbk_Focusable\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(InstanceValueText1) + "\" ");
+            Output.Write("<input name=\"" + id_name + "_first" + i + "\" id=\"" + id_name + "_first" + i + "\" class=\"" + html_element_name + "_first_input sbk_Focusable\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(InstanceValueText1) + "\" ");
             if (textBox1Events != null)
                 textBox1Events.Add_Events_HTML(Output);
             Output.Write(" />");
@@ -220,7 +219,7 @@ namespace SobekCM.Library.Citation.Elements
             }
 
             // Write the second text box
-			Output.Write("<input name=\"" + id_name + "_second" + i + "\" id=\"" + id_name + "_second" + i + "\" class=\"" + html_element_name + "_second_input sbk_Focusable\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(InstanceValueText2) + "\" ");
+			Output.Write("<input name=\"" + id_name + "_second" + i + "\" id=\"" + id_name + "_second" + i + "\" class=\"" + html_element_name + "_second_input sbk_Focusable\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(InstanceValueText2) + "\" ");
             if (textBox2Events != null)
                 textBox2Events.Add_Events_HTML(Output);
             Output.Write(" />");

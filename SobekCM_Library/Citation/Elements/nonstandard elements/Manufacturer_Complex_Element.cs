@@ -106,12 +106,12 @@ namespace SobekCM.Library.Citation.Elements
                 for (int i = 1; i <= manufacturers.Count; i++)
                 {
                     Output.WriteLine("              <span class=\"metadata_sublabel2\">" + Translator.Get_Translation("Name", CurrentLanguage) + ":</span>");
-					Output.WriteLine("              <input name=\"" + id_name + "_name" + i + "\" id=\"" + id_name + "_name" + i + "\" class=\"" + html_element_name + "_name_input sbk_Focusable\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(manufacturers[i - 1].Name) + "\" /><br />");
+					Output.WriteLine("              <input name=\"" + id_name + "_name" + i + "\" id=\"" + id_name + "_name" + i + "\" class=\"" + html_element_name + "_name_input sbk_Focusable\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(manufacturers[i - 1].Name) + "\" /><br />");
                     Output.WriteLine("              <span class=\"metadata_sublabel2\">" + Translator.Get_Translation("Location(s)", CurrentLanguage) + ":</span>");
                     ReadOnlyCollection<Origin_Info_Place> places = manufacturers[i - 1].Places;
                     if ((places.Count > 0) && (places[0].Place_Text.Length > 0))
                     {
-						Output.WriteLine("              <input name=\"" + id_name + "_firstloc" + i + "\" id=\"" + id_name + "_firstloc" + i + "\" class=\"" + html_element_name + "_location_input sbk_Focusable\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(places[0].Place_Text) + "\" />");
+						Output.WriteLine("              <input name=\"" + id_name + "_firstloc" + i + "\" id=\"" + id_name + "_firstloc" + i + "\" class=\"" + html_element_name + "_location_input sbk_Focusable\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(places[0].Place_Text) + "\" />");
                     }
                     else
                     {
@@ -119,7 +119,7 @@ namespace SobekCM.Library.Citation.Elements
                     }
                     if ((places.Count > 1) && (places[1].Place_Text.Length > 0))
                     {
-						Output.WriteLine("              <input name=\"" + id_name + "_secondloc" + i + "\" id=\"" + id_name + "_secondloc" + i + "\" class=\"" + html_element_name + "_location_input sbk_Focusable\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(places[1].Place_Text) + "\" />");
+						Output.WriteLine("              <input name=\"" + id_name + "_secondloc" + i + "\" id=\"" + id_name + "_secondloc" + i + "\" class=\"" + html_element_name + "_location_input sbk_Focusable\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(places[1].Place_Text) + "\" />");
                     }
                     else
                     {
@@ -127,7 +127,7 @@ namespace SobekCM.Library.Citation.Elements
                     }
                     if ((places.Count > 2) && (places[2].Place_Text.Length > 0))
                     {
-						Output.Write("              <input name=\"" + id_name + "_thirdloc" + i + "\" id=\"" + id_name + "_thirdloc" + i + "\" class=\"" + html_element_name + "_location_input sbk_Focusable\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(places[2].Place_Text) + "\" />");
+						Output.Write("              <input name=\"" + id_name + "_thirdloc" + i + "\" id=\"" + id_name + "_thirdloc" + i + "\" class=\"" + html_element_name + "_location_input sbk_Focusable\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(places[2].Place_Text) + "\" />");
                     }
                     else
                     {

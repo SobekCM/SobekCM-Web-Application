@@ -8,7 +8,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Web;
 using SobekCM.Core.Items;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
@@ -425,16 +424,16 @@ namespace SobekCM.Library.MySobekViewer
                     {
                         if (folder.Folder_Name.Length > 80)
                         {
-                            Output.Write("<option value=\"" + HttpUtility.HtmlEncode(folder.Folder_Name) + "\">" + HttpUtility.HtmlEncode(folder.Folder_Name.Substring(0, 75)) + "...</option>");
+                            Output.Write("<option value=\"" + System.Net.WebUtility.HtmlEncode(folder.Folder_Name) + "\">" + System.Net.WebUtility.HtmlEncode(folder.Folder_Name.Substring(0, 75)) + "...</option>");
                         }
                         else
                         {
                             if (folder.Folder_Name != "Submitted Items")
                             {
                                 if (folder.Folder_Name == properFolderName)
-                                    Output.Write("<option value=\"" + HttpUtility.HtmlEncode(folder.Folder_Name) + "\" selected=\"selected\" >" + HttpUtility.HtmlEncode(folder.Folder_Name) + "</option>");
+                                    Output.Write("<option value=\"" + System.Net.WebUtility.HtmlEncode(folder.Folder_Name) + "\" selected=\"selected\" >" + System.Net.WebUtility.HtmlEncode(folder.Folder_Name) + "</option>");
                                 else
-                                    Output.Write("<option value=\"" + HttpUtility.HtmlEncode(folder.Folder_Name) + "\">" + HttpUtility.HtmlEncode(folder.Folder_Name) + "</option>");
+                                    Output.Write("<option value=\"" + System.Net.WebUtility.HtmlEncode(folder.Folder_Name) + "\">" + System.Net.WebUtility.HtmlEncode(folder.Folder_Name) + "</option>");
                             }
                         }
                     }
@@ -511,13 +510,13 @@ namespace SobekCM.Library.MySobekViewer
 
                         if (folder.Folder_Name.Length > 80)
                         {
-                            Output.Write("<option value=\"" + folder.Folder_ID + "\">" + HttpUtility.HtmlEncode(folder.Folder_Name.Substring(0, 75)) + "...</option>");
+                            Output.Write("<option value=\"" + folder.Folder_ID + "\">" + System.Net.WebUtility.HtmlEncode(folder.Folder_Name.Substring(0, 75)) + "...</option>");
                         }
                         else
                         {
                             if (folder.Folder_Name != "Submitted Items")
                             {
-                                Output.Write("<option value=\"" + folder.Folder_ID + "\">" + HttpUtility.HtmlEncode(folder.Folder_Name) + "</option>");
+                                Output.Write("<option value=\"" + folder.Folder_ID + "\">" + System.Net.WebUtility.HtmlEncode(folder.Folder_Name) + "</option>");
                             }
                         }
                     }

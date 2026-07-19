@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
-using System.Web;
 using SobekCM.Core.Builder;
 using SobekCM.Core.Client;
 using SobekCM.Core.Navigation;
@@ -332,28 +331,28 @@ namespace SobekCM.Library.AdminViewer
             // Add line for descriptive name
             Output.WriteLine("  <tr>");
             Output.WriteLine("    <td id=\"sbkBfmav_DisplayTable_LabelCol\"><label for=\"admin_folder_name\">Descriptive Name:</label></td>");
-            Output.WriteLine("    <td id=\"sbkBfmav_DisplayTable_EntryCol\"><input class=\"sbkBfmav_DescNameBox sbkAdmin_Focusable\" name=\"admin_folder_name\" id=\"admin_folder_name\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(folderName ?? String.Empty) + "\" /></td>");
+            Output.WriteLine("    <td id=\"sbkBfmav_DisplayTable_EntryCol\"><input class=\"sbkBfmav_DescNameBox sbkAdmin_Focusable\" name=\"admin_folder_name\" id=\"admin_folder_name\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(folderName ?? String.Empty) + "\" /></td>");
             Output.WriteLine("    <td colspan=\"2\"><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources_Gateway.Help_Button_Jpg + "\" onclick=\"alert('" + NAME_HELP + "');\"  title=\"" + NAME_HELP + "\" /></td>");
             Output.WriteLine("  </tr>");
 
             // Add the network folder
             Output.WriteLine("  <tr>");
             Output.WriteLine("    <td><label for=\"admin_folder_network\">Inbound Folder:</label></td>");
-            Output.WriteLine("    <td colspan=\"2\"><input class=\"sbkBfmav_NetworkInput sbkAdmin_Focusable\" name=\"admin_folder_network\" id=\"admin_folder_network\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(inboundFolder ?? String.Empty) + "\" /></td>");
+            Output.WriteLine("    <td colspan=\"2\"><input class=\"sbkBfmav_NetworkInput sbkAdmin_Focusable\" name=\"admin_folder_network\" id=\"admin_folder_network\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(inboundFolder ?? String.Empty) + "\" /></td>");
             Output.WriteLine("    <td id=\"sbkBfmav_DisplayTable_LastCol\"><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources_Gateway.Help_Button_Jpg + "\" onclick=\"alert('" + INBOUND_HELP + "');\"  title=\"" + INBOUND_HELP + "\" /></td>");
             Output.WriteLine("  </tr>");
 
             // Add the processing folder
             Output.WriteLine("  <tr>");
             Output.WriteLine("    <td><label for=\"admin_folder_processing\">Processing Folder:</label></td>");
-            Output.WriteLine("    <td colspan=\"2\"><input class=\"sbkBfmav_NetworkInput sbkAdmin_Focusable\" name=\"admin_folder_processing\" id=\"admin_folder_processing\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(processingFolder ?? String.Empty) + "\" /></td>");
+            Output.WriteLine("    <td colspan=\"2\"><input class=\"sbkBfmav_NetworkInput sbkAdmin_Focusable\" name=\"admin_folder_processing\" id=\"admin_folder_processing\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(processingFolder ?? String.Empty) + "\" /></td>");
             Output.WriteLine("    <td><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources_Gateway.Help_Button_Jpg + "\" onclick=\"alert('" + PROCESSING_HELP + "');\"  title=\"" + PROCESSING_HELP + "\" /></td>");
             Output.WriteLine("  </tr>");
 
             // Add the error folder
             Output.WriteLine("  <tr>");
             Output.WriteLine("    <td><label for=\"admin_folder_error\">Failures Folder:</label></td>");
-            Output.WriteLine("    <td colspan=\"2\"><input class=\"sbkBfmav_NetworkInput sbkAdmin_Focusable\" name=\"admin_folder_error\" id=\"admin_folder_error\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(failuresFolder ?? String.Empty) + "\" /></td>");
+            Output.WriteLine("    <td colspan=\"2\"><input class=\"sbkBfmav_NetworkInput sbkAdmin_Focusable\" name=\"admin_folder_error\" id=\"admin_folder_error\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(failuresFolder ?? String.Empty) + "\" /></td>");
             Output.WriteLine("    <td><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources_Gateway.Help_Button_Jpg + "\" onclick=\"alert('" + FAILURES_HELP + "');\"  title=\"" + FAILURES_HELP + "\" /></td>");
             Output.WriteLine("  </tr>");
 

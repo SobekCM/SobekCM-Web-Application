@@ -1,8 +1,7 @@
-﻿#region Using directives
+#region Using directives
 
 using System;
 using System.Text;
-using System.Web;
 using SobekCM.Core.Configuration;
 using SobekCM.Core.Configuration.Localization;
 
@@ -114,11 +113,11 @@ namespace SobekCM.Core.Navigation
                     if (!String.IsNullOrEmpty(Current_Mode.Aggregation))
                     {
                         if (!String.IsNullOrEmpty(Current_Mode.Error_Message))
-                            return this_base_url + "contact/" + Current_Mode.Aggregation + "?em=" + HttpUtility.HtmlEncode(Current_Mode.Error_Message) + urlOptions2;
+                            return this_base_url + "contact/" + Current_Mode.Aggregation + "?em=" + System.Net.WebUtility.HtmlEncode(Current_Mode.Error_Message) + urlOptions2;
                         return this_base_url + "contact/" + Current_Mode.Aggregation + urlOptions1;
                     }
                     if (!String.IsNullOrEmpty(Current_Mode.Error_Message))
-                        return this_base_url + "contact?em=" + HttpUtility.HtmlEncode(Current_Mode.Error_Message) + urlOptions2;
+                        return this_base_url + "contact?em=" + System.Net.WebUtility.HtmlEncode(Current_Mode.Error_Message) + urlOptions2;
                     return this_base_url + "contact" + urlOptions1;
 
                 case Display_Mode_Enum.Contact_Sent:
@@ -178,13 +177,13 @@ namespace SobekCM.Core.Navigation
                         case My_Sobek_Type_Enum.Logon:
                             if (!String.IsNullOrEmpty(Current_Mode.Return_URL))
                             {
-                                return this_base_url + "my/logon?return=" + HttpUtility.UrlEncode(Current_Mode.Return_URL).Replace("%2c", ",") + urlOptions2;
+                                return this_base_url + "my/logon?return=" + System.Net.WebUtility.UrlEncode(Current_Mode.Return_URL).Replace("%2c", ",") + urlOptions2;
                             }
                             return this_base_url + "my/logon" + urlOptions1;
 
                         case My_Sobek_Type_Enum.Home:
                             if (!String.IsNullOrEmpty(Current_Mode.Return_URL))
-                                return this_base_url + "my/home?return=" + HttpUtility.UrlEncode(Current_Mode.Return_URL).Replace("%2c", ",") + urlOptions2;
+                                return this_base_url + "my/home?return=" + System.Net.WebUtility.UrlEncode(Current_Mode.Return_URL).Replace("%2c", ",") + urlOptions2;
                             return this_base_url + "my/home" + urlOptions1;
 
                         case My_Sobek_Type_Enum.Delete_Item:
@@ -297,14 +296,14 @@ namespace SobekCM.Core.Navigation
                                 }
 
                                 if (modified_return_url.Length > 0)
-                                    return this_base_url + "my/logout?return=" + HttpUtility.UrlEncode(modified_return_url).Replace("%2c", ",") + urlOptions2;
+                                    return this_base_url + "my/logout?return=" + System.Net.WebUtility.UrlEncode(modified_return_url).Replace("%2c", ",") + urlOptions2;
                                 return this_base_url + "my/logout" + urlOptions1;
                             }
                             return this_base_url + "my/logout" + urlOptions1;
 
                         case My_Sobek_Type_Enum.Shibboleth_Landing:
                             if (!String.IsNullOrEmpty(Current_Mode.Return_URL))
-                                return this_base_url + "my/shibboleth?return=" + HttpUtility.UrlEncode(Current_Mode.Return_URL).Replace("%2c", ",") + urlOptions2;
+                                return this_base_url + "my/shibboleth?return=" + System.Net.WebUtility.UrlEncode(Current_Mode.Return_URL).Replace("%2c", ",") + urlOptions2;
                             return this_base_url + "my/shibboleth" + urlOptions1;
 
                         case My_Sobek_Type_Enum.Saved_Searches:
@@ -545,7 +544,7 @@ namespace SobekCM.Core.Navigation
                             // Add either the text search or text display, if they exist
                             if (!String.IsNullOrEmpty(Current_Mode.Text_Search))
                             {
-                                itemDisplayBuilder.Append("?search=" + HttpUtility.UrlEncode(Current_Mode.Text_Search));
+                                itemDisplayBuilder.Append("?search=" + System.Net.WebUtility.UrlEncode(Current_Mode.Text_Search));
                                 query_string_started = true;
                             }
 
@@ -701,7 +700,7 @@ namespace SobekCM.Core.Navigation
                     // Add the page into the search results URL
                     if ((Current_Mode.Page.HasValue ) && ( Current_Mode.Page.Value > 1))
                     {
-                        results_url_builder.Append(HttpUtility.UrlEncode(Current_Mode.Page.ToString()) + "/");
+                        results_url_builder.Append(System.Net.WebUtility.UrlEncode(Current_Mode.Page.ToString()) + "/");
                     }
 
                     bool queryStringBegun = false;
@@ -711,7 +710,7 @@ namespace SobekCM.Core.Navigation
                     {
                         if ((Current_Mode.Search_Type == Search_Type_Enum.Basic) && (Current_Mode.Search_String.Length > 0))
                         {
-                            results_url_builder.Append("?t=" + HttpUtility.UrlEncode(Current_Mode.Search_String).Replace("%2c", ",").Replace("%20","+"));
+                            results_url_builder.Append("?t=" + System.Net.WebUtility.UrlEncode(Current_Mode.Search_String).Replace("%2c", ",").Replace("%20","+"));
 
                             queryStringBegun = true;
                         }
@@ -720,24 +719,24 @@ namespace SobekCM.Core.Navigation
                         {
                             if (Current_Mode.Search_String.Length > 0)
                             {
-                                results_url_builder.Append("?t=" + HttpUtility.UrlEncode(Current_Mode.Search_String).Replace("%2c", ",").Replace("%20","+") + "&f=" + HttpUtility.UrlEncode(Current_Mode.Search_Fields).Replace("%2c", ","));
+                                results_url_builder.Append("?t=" + System.Net.WebUtility.UrlEncode(Current_Mode.Search_String).Replace("%2c", ",").Replace("%20","+") + "&f=" + System.Net.WebUtility.UrlEncode(Current_Mode.Search_Fields).Replace("%2c", ","));
                             }
                             else
                             {
-                                results_url_builder.Append("?f=" + HttpUtility.UrlEncode(Current_Mode.Search_Fields).Replace("%2c", ",").Replace("%20","+"));
+                                results_url_builder.Append("?f=" + System.Net.WebUtility.UrlEncode(Current_Mode.Search_Fields).Replace("%2c", ",").Replace("%20","+"));
                             }
                             queryStringBegun = true;
                         }
 
                         if (Current_Mode.Search_Type == Search_Type_Enum.Full_Text)
                         {
-                            results_url_builder.Append("?text=" + HttpUtility.UrlEncode(Current_Mode.Search_String).Replace("%2c", ",").Replace("%20","+"));
+                            results_url_builder.Append("?text=" + System.Net.WebUtility.UrlEncode(Current_Mode.Search_String).Replace("%2c", ",").Replace("%20","+"));
                             queryStringBegun = true;
                         }
 
                         if ((Current_Mode.Search_Type == Search_Type_Enum.Map) && ( !String.IsNullOrEmpty(Current_Mode.Coordinates)))
                         {
-                            results_url_builder.Append("?coord=" + HttpUtility.UrlEncode(Current_Mode.Coordinates).Replace("%2c", ",").Replace("%20","+"));
+                            results_url_builder.Append("?coord=" + System.Net.WebUtility.UrlEncode(Current_Mode.Coordinates).Replace("%2c", ",").Replace("%20","+"));
                             queryStringBegun = true;
                         }
 
@@ -825,7 +824,7 @@ namespace SobekCM.Core.Navigation
                         case Aggregation_Type_Enum.Browse_By:
                             string browse_by_mode = String.Empty;
                             if (!String.IsNullOrEmpty(Current_Mode.Info_Browse_Mode))
-                                browse_by_mode = HttpUtility.UrlEncode(Current_Mode.Info_Browse_Mode.Replace(" ", "_"));
+                                browse_by_mode = System.Net.WebUtility.UrlEncode(Current_Mode.Info_Browse_Mode.Replace(" ", "_"));
                             if ((!String.IsNullOrEmpty(adjusted_aggregation)) && ((String.IsNullOrEmpty(Current_Mode.Default_Aggregation)) || (adjusted_aggregation != Current_Mode.Default_Aggregation)))
                             {
                                 if ((Current_Mode.Page > 1) && (browse_by_mode.Length > 0))
@@ -892,7 +891,7 @@ namespace SobekCM.Core.Navigation
                             {
                                 if (!String.IsNullOrEmpty(adjusted_aggregation))
                                 {
-                                    return this_base_url + adjusted_aggregation + "/itemcount/" + HttpUtility.UrlEncode(Current_Mode.Info_Browse_Mode) + urlOptions1;
+                                    return this_base_url + adjusted_aggregation + "/itemcount/" + System.Net.WebUtility.UrlEncode(Current_Mode.Info_Browse_Mode) + urlOptions1;
                                 }
                                 return this_base_url + "itemcount/" + Current_Mode.Info_Browse_Mode + urlOptions1;
                             }
@@ -910,7 +909,7 @@ namespace SobekCM.Core.Navigation
                             {
                                 if (!String.IsNullOrEmpty(adjusted_aggregation))
                                 {
-                                    return this_base_url + adjusted_aggregation + "/usage/" + HttpUtility.UrlEncode(Current_Mode.Info_Browse_Mode) + urlOptions1;
+                                    return this_base_url + adjusted_aggregation + "/usage/" + System.Net.WebUtility.UrlEncode(Current_Mode.Info_Browse_Mode) + urlOptions1;
                                 }
                                 return this_base_url + "usage/" + Current_Mode.Info_Browse_Mode + urlOptions1; 
                             }
@@ -957,7 +956,7 @@ namespace SobekCM.Core.Navigation
 
                             if ((!String.IsNullOrEmpty(adjusted_aggregation)) && ((String.IsNullOrEmpty(Current_Mode.Default_Aggregation)) || (adjusted_aggregation != Current_Mode.Default_Aggregation)))
                             {
-                                string current_info_browse_mode = HttpUtility.UrlEncode(Current_Mode.Info_Browse_Mode);
+                                string current_info_browse_mode = System.Net.WebUtility.UrlEncode(Current_Mode.Info_Browse_Mode);
 
                                 if (Current_Mode.Page > 1)
                                 {

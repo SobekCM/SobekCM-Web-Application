@@ -7,7 +7,6 @@ using System.IO;
 using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Web;
 using SobekCM.Core;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.Configuration;
@@ -348,7 +347,7 @@ namespace SobekCM.Library.HTML
                 }
 
                 // Start this form
-                string post_url = HttpUtility.HtmlEncode(Context.Items["Original_URL"].ToString());
+                string post_url = System.Net.WebUtility.HtmlEncode(Context.Items["Original_URL"].ToString());
                 Output.WriteLine("<form name=\"email_form\" method=\"post\" action=\"" + post_url + "\" id=\"addedForm\" >");
 
                 // Add the hidden field

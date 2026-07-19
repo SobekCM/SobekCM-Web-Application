@@ -1,4 +1,4 @@
-﻿using SobekCM.Core.Client;
+using SobekCM.Core.Client;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
 using SobekCM.Engine_Library.Configuration;
@@ -14,7 +14,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Web;
 
 namespace SobekCM.Library.MySobekViewer
 {
@@ -328,7 +327,7 @@ namespace SobekCM.Library.MySobekViewer
             foreach( Division_TreeNode rootnode in currentItem.Divisions.OpenTextbook_Tree.Roots )
             {
                 Output.WriteLine("  <div class=\"oer_div_outer\">");
-                Output.WriteLine("    <div class=\"oer_div_outer_title\">" + HttpUtility.HtmlEncode(rootnode.Label) + "</div>");
+                Output.WriteLine("    <div class=\"oer_div_outer_title\">" + System.Net.WebUtility.HtmlEncode(rootnode.Label) + "</div>");
 
 
                 if ((rootnode.Nodes != null ) && (rootnode.Nodes.Count > 0))
@@ -356,12 +355,12 @@ namespace SobekCM.Library.MySobekViewer
                                 if (label.Length > 50)
                                     label = label.Substring(0, 45) + "...";
                                     
-                                Output.WriteLine("        <div class=\"oer_div_inner_title\">" + HttpUtility.HtmlEncode(label) + "</div>");
+                                Output.WriteLine("        <div class=\"oer_div_inner_title\">" + System.Net.WebUtility.HtmlEncode(label) + "</div>");
 
                                 Output.WriteLine("        <div class=\"oer_div_inner_toolbox_outer\">");
                                 Output.WriteLine("          <div class=\"oer_div_inner_toolbox\" style=\"display:none;\">");
-                                Output.WriteLine($"            <a title=\"Edit the division title\" href=\"{javascript_req}\" onkeypress=\"return edit_division_keypress('{chapter_index}', '{division_index}', '{HttpUtility.HtmlEncode(rootnode.Label).Replace("'", "")}', '{isMozilla.ToString()}');\" onclick=\"return edit_division('{chapter_index}', '{division_index}', '{HttpUtility.HtmlEncode(rootnode.Label).Replace("'", "")}');\">edit</a> &nbsp;");
-                                Output.WriteLine($"            <a title=\"Delete this division\" href=\"{javascript_req}\" onkeypress=\"return delete_division('{chapter_index}', '{division_index}', '{HttpUtility.HtmlEncode(childNode.Label).Replace("'", "")}');\" onclick=\"return delete_division('{chapter_index}', '{division_index}', '{HttpUtility.HtmlEncode(childNode.Label).Replace("'", "")}');\">delete</a>");
+                                Output.WriteLine($"            <a title=\"Edit the division title\" href=\"{javascript_req}\" onkeypress=\"return edit_division_keypress('{chapter_index}', '{division_index}', '{System.Net.WebUtility.HtmlEncode(rootnode.Label).Replace("'", "")}', '{isMozilla.ToString()}');\" onclick=\"return edit_division('{chapter_index}', '{division_index}', '{System.Net.WebUtility.HtmlEncode(rootnode.Label).Replace("'", "")}');\">edit</a> &nbsp;");
+                                Output.WriteLine($"            <a title=\"Delete this division\" href=\"{javascript_req}\" onkeypress=\"return delete_division('{chapter_index}', '{division_index}', '{System.Net.WebUtility.HtmlEncode(childNode.Label).Replace("'", "")}');\" onclick=\"return delete_division('{chapter_index}', '{division_index}', '{System.Net.WebUtility.HtmlEncode(childNode.Label).Replace("'", "")}');\">delete</a>");
                                 Output.WriteLine("          </div>");
                                 Output.WriteLine("        </div>");
 
@@ -386,10 +385,10 @@ namespace SobekCM.Library.MySobekViewer
                 Output.WriteLine($"        <a title=\"Add a new division in this chapter\" href=\"{javascript_req}\" onkeypress=\"return show_division_form_keypress('{chapter_index}', '{isMozilla.ToString()}');\" onclick=\"return show_division_form('{chapter_index}');\">new division</a> &nbsp;");
                 Output.WriteLine($"        <a title=\"Add a new chapter BEFORE this chapter\" href=\"{javascript_req}\" onkeypress=\"return show_chapter_form_keypress('{chapter_index}', '{isMozilla.ToString()}');\" onclick=\"return show_chapter_form('{chapter_index}');\">add before</a> &nbsp;");
                 Output.WriteLine($"        <a title=\"Add a new chapter AFTER this chapter\" href=\"{javascript_req}\" onkeypress=\"return show_chapter_form_keypress('{chapter_index + 1}', '{isMozilla.ToString()}');\" onclick=\"return show_chapter_form('{chapter_index + 1}');\">add after</a> &nbsp;");
-                Output.WriteLine($"        <a title=\"Edit the chapter type and/or title\" href=\"{javascript_req}\" onkeypress=\"return edit_chapter_keypress('{chapter_index}', '{HttpUtility.HtmlEncode(rootnode.Label).Replace("'", "")}', '{HttpUtility.HtmlEncode(rootnode.Type).Replace("'", "")}', '{isMozilla.ToString()}');\" onclick=\"return edit_chapter('{chapter_index}', '{HttpUtility.HtmlEncode(rootnode.Label).Replace("'", "")}', '{HttpUtility.HtmlEncode(rootnode.Type).Replace("'", "")}');\">edit</a> &nbsp;");
+                Output.WriteLine($"        <a title=\"Edit the chapter type and/or title\" href=\"{javascript_req}\" onkeypress=\"return edit_chapter_keypress('{chapter_index}', '{System.Net.WebUtility.HtmlEncode(rootnode.Label).Replace("'", "")}', '{System.Net.WebUtility.HtmlEncode(rootnode.Type).Replace("'", "")}', '{isMozilla.ToString()}');\" onclick=\"return edit_chapter('{chapter_index}', '{System.Net.WebUtility.HtmlEncode(rootnode.Label).Replace("'", "")}', '{System.Net.WebUtility.HtmlEncode(rootnode.Type).Replace("'", "")}');\">edit</a> &nbsp;");
                 if (allowDelete)
                 {
-                    Output.WriteLine($"        <a title=\"Delete this chapter\" href=\"{javascript_req}\" onkeypress=\"return delete_chapter('{chapter_index}', '{HttpUtility.HtmlEncode(rootnode.Label).Replace("'","")}');\" onclick=\"return delete_chapter('{chapter_index}', '{HttpUtility.HtmlEncode(rootnode.Label).Replace("'", "")}');\">delete</a>");
+                    Output.WriteLine($"        <a title=\"Delete this chapter\" href=\"{javascript_req}\" onkeypress=\"return delete_chapter('{chapter_index}', '{System.Net.WebUtility.HtmlEncode(rootnode.Label).Replace("'","")}');\" onclick=\"return delete_chapter('{chapter_index}', '{System.Net.WebUtility.HtmlEncode(rootnode.Label).Replace("'", "")}');\">delete</a>");
                 }
                 Output.WriteLine("      </div>");
                 Output.WriteLine("    </div>");

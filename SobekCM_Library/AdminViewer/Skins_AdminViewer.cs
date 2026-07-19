@@ -1,4 +1,4 @@
-﻿// HTML5 - 10/12/2013
+// HTML5 - 10/12/2013
 
 #region Using directives
 
@@ -7,7 +7,6 @@ using System.Collections.Specialized;
 using System.Data;
 using System.IO;
 using System.Linq;
-using System.Web;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.UI_Configuration;

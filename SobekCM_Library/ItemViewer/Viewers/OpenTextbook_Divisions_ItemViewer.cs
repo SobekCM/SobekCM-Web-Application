@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Web;
 using SobekCM.Core.BriefItem;
 using SobekCM.Core.FileSystems;
 using SobekCM.Core.Navigation;
@@ -346,13 +345,13 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 displayFileName = CurrentRequest.Base_URL + "files/" + BriefItem.BibID + "/" + BriefItem.VID + "/" + filename;
 
 
-            string name_for_image = HttpUtility.HtmlEncode(BriefItem.Title);
+            string name_for_image = System.Net.WebUtility.HtmlEncode(BriefItem.Title);
 
 
             if ((BriefItem.Images != null) && (BriefItem.Images.Count > 1) && (Current_Page - 1 < BriefItem.Images.Count))
             {
                 string name_of_page = BriefItem.Images[Current_Page - 1].Label;
-                name_for_image = name_for_image + " - " + HttpUtility.HtmlEncode(name_of_page);
+                name_for_image = name_for_image + " - " + System.Net.WebUtility.HtmlEncode(name_of_page);
             }
 
             // Read the text

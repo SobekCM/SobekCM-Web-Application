@@ -1,4 +1,4 @@
-﻿// HTML5 - 10/13/2013
+// HTML5 - 10/13/2013
 
 #region Using directives
 
@@ -6,7 +6,6 @@ using System;
 using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
-using System.Web;
 using SobekCM.Core.ApplicationState;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.UI_Configuration;
@@ -402,7 +401,7 @@ namespace SobekCM.Library.AdminViewer
                     Output.WriteLine("      <td>" + thisSet.Code + "</td>");
                     Output.WriteLine("      <td>" + thisSet.Name + "</td>");
                     Output.WriteLine("    </tr>");
-                    Output.WriteLine("    <tr><td></td><td colspan=\"2\" class=\"sbkPav_DescriptionCell\">" + HttpUtility.HtmlEncode(thisSet.Description) + "</td></tr>");
+                    Output.WriteLine("    <tr><td></td><td colspan=\"2\" class=\"sbkPav_DescriptionCell\">" + System.Net.WebUtility.HtmlEncode(thisSet.Description) + "</td></tr>");
                     Output.WriteLine("    <tr><td class=\"sbkAdm_TableRule\" colspan=\"3\"></td></tr>");
                 }
 

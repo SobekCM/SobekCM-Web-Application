@@ -1,4 +1,4 @@
-﻿// hTML5
+// hTML5
 
 #region Using directives
 
@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
-using System.Web;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.UI_Configuration;
@@ -274,7 +273,7 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("              <option value=\"\"></option>");
             foreach (Item_Aggregation_Related_Aggregations thisAggr in aggrCodes)
             {
-                Output.WriteLine("              <option value=\"" + thisAggr.Code + "\">" + thisAggr.Code + " - " + HttpUtility.HtmlEncode(thisAggr.ShortName) + "</option>");
+                Output.WriteLine("              <option value=\"" + thisAggr.Code + "\">" + thisAggr.Code + " - " + System.Net.WebUtility.HtmlEncode(thisAggr.ShortName) + "</option>");
 
             }
             Output.WriteLine("            </select>");

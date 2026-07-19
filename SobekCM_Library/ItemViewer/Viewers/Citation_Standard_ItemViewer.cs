@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Web;
 using SobekCM.Core.BriefItem;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Navigation;
@@ -288,7 +287,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             // Now, try to add the thumbnail from any page images here
             if (BriefItem.Behaviors.Dark_Flag != true)
             {
-                string name_for_image = HttpUtility.HtmlEncode(BriefItem.Title);
+                string name_for_image = System.Net.WebUtility.HtmlEncode(BriefItem.Title);
 
                 if (( currentFlags != null ) && (currentFlags.ItemRestrictedFromUser))
                 {
@@ -320,7 +319,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                         }
 
                         string name_of_page = BriefItem.Images[0].Label;
-                        name_for_image = name_for_image + " - " + HttpUtility.HtmlEncode(name_of_page);
+                        name_for_image = name_for_image + " - " + System.Net.WebUtility.HtmlEncode(name_of_page);
 
 
                         // If a jpeg was found, show it
@@ -787,15 +786,15 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
         private static string display_text_from_value(string Value)
         {
-            return HttpUtility.HtmlEncode(Value).Replace("&lt;i&gt;", "<i>").Replace("&lt;/i&gt;", "</i>");
+            return System.Net.WebUtility.HtmlEncode(Value).Replace("&lt;i&gt;", "<i>").Replace("&lt;/i&gt;", "</i>");
         }
 
         private static string display_url_from_value(string Value, List<string> URIs)
         {
             if ((URIs == null) || (URIs.Count == 0))
-                return "<a href=\"" + Value + "\">" + HttpUtility.HtmlEncode(Value) + "</a>";
+                return "<a href=\"" + Value + "\">" + System.Net.WebUtility.HtmlEncode(Value) + "</a>";
 
-            return "<a href=\"" + URIs[0] + "\">" + HttpUtility.HtmlEncode(Value).Replace("&lt;i&gt;", "<i>").Replace("&lt;/i&gt;", "</i>") + "</a>";
+            return "<a href=\"" + URIs[0] + "\">" + System.Net.WebUtility.HtmlEncode(Value).Replace("&lt;i&gt;", "<i>").Replace("&lt;/i&gt;", "</i>") + "</a>";
         }
 
         private static string display_text_from_value(string Value, List<string> URIs )
@@ -803,13 +802,13 @@ namespace SobekCM.Library.ItemViewer.Viewers
             if ((URIs == null) || (URIs.Count == 0))
                 return display_text_from_value(Value);
 
-            return "<a href=\"" + URIs[0] + "\">" + HttpUtility.HtmlEncode(Value).Replace("&lt;i&gt;", "<i>").Replace("&lt;/i&gt;", "</i>") + "</a>";
+            return "<a href=\"" + URIs[0] + "\">" + System.Net.WebUtility.HtmlEncode(Value).Replace("&lt;i&gt;", "<i>").Replace("&lt;/i&gt;", "</i>") + "</a>";
         }
 
         private static string search_link_from_value(string Value)
         {
             string replacedValue = Value.Replace("&amp;", "&").Replace("&", "").Replace("  ", " ");
-            string urlEncode = HttpUtility.UrlEncode(replacedValue);
+            string urlEncode = System.Net.WebUtility.UrlEncode(replacedValue);
             return urlEncode != null ? urlEncode.Replace(",", "").Replace("&amp;", "&").Replace("&", "").Replace(" ", "+") : String.Empty;
         }
 

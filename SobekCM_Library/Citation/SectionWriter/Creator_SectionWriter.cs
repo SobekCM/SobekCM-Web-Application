@@ -1,9 +1,8 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Web;
 using SobekCM.Core.BriefItem;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.UI_Configuration.Citation;
@@ -85,13 +84,13 @@ namespace SobekCM.Library.Citation.SectionWriter
 
         private static string display_text_from_value(string Value)
         {
-            return HttpUtility.HtmlEncode(Value).Replace("&lt;i&gt;", "<i>").Replace("&lt;/i&gt;", "</i>");
+            return System.Net.WebUtility.HtmlEncode(Value).Replace("&lt;i&gt;", "<i>").Replace("&lt;/i&gt;", "</i>");
         }
 
         private static string search_link_from_value(string Value)
         {
             string replacedValue = Value.Replace("&amp;", "&").Replace("&", "").Replace("  ", " ");
-            string urlEncode = HttpUtility.UrlEncode(replacedValue);
+            string urlEncode = System.Net.WebUtility.UrlEncode(replacedValue);
             return urlEncode != null ? urlEncode.Replace(",", "").Replace("&amp;", "&").Replace("&", "").Replace(" ", "+") : String.Empty;
         }
     }

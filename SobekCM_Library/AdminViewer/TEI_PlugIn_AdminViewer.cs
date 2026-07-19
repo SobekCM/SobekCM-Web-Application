@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Data;
@@ -6,7 +6,6 @@ using System.IO;
 using System.Linq;
 using System.Runtime.Caching;
 using System.Text;
-using System.Web;
 using SobekCM.Core.Navigation;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Engine_Library.Database;

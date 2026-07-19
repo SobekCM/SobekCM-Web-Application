@@ -698,7 +698,7 @@ namespace SobekCM.Library.HTML
                         Output.WriteLine("          <tr style=\"text-align:left; height:14px;\">");
                         Output.WriteLine("            <td class=\"intheader_label\">COMMENTS:</td>");
                         Output.WriteLine("            <td>");
-                        Output.WriteLine("              <textarea rows=\"" + ROWS + "\" cols=\"" + ACTUAL_COLS + "\" name=\"intheader_internal_notes\" id=\"intheader_internal_notes\" class=\"intheader_comments_input sbkIsw_Focusable\">" + HttpUtility.HtmlEncode(internal_comments_normalized) + "</textarea>");
+                        Output.WriteLine("              <textarea rows=\"" + ROWS + "\" cols=\"" + ACTUAL_COLS + "\" name=\"intheader_internal_notes\" id=\"intheader_internal_notes\" class=\"intheader_comments_input sbkIsw_Focusable\">" + System.Net.WebUtility.HtmlEncode(internal_comments_normalized) + "</textarea>");
                         Output.WriteLine("            </td>");
                         Output.WriteLine("            <td>");
                         Output.WriteLine("              <button title=\"Save new internal comments\" class=\"internalheader_button\" onclick=\"save_internal_notes(); return false;\">SAVE</button>");
@@ -720,7 +720,7 @@ namespace SobekCM.Library.HTML
                         Output.WriteLine("          <tr style=\"text-align:left; height:14px;\">");
                         Output.WriteLine("            <td class=\"intheader_label\">COMMENTS:</td>");
                         Output.WriteLine("            <td>");
-                        Output.WriteLine("              <textarea readonly=\"readonly\" rows=\"" + ROWS + "\" cols=\"" + ACTUAL_COLS + "\" name=\"intheader_internal_notes\" id=\"intheader_internal_notes\" class=\"intheader_comments_input\" onfocus=\"javascript:textbox_enter('intheader_internal_notes','intheader_comments_input_focused')\" onblur=\"javascript:textbox_leave('intheader_internal_notes','intheader_comments_input')\">" + HttpUtility.HtmlEncode(internal_comments_normalized) + "</textarea>");
+                        Output.WriteLine("              <textarea readonly=\"readonly\" rows=\"" + ROWS + "\" cols=\"" + ACTUAL_COLS + "\" name=\"intheader_internal_notes\" id=\"intheader_internal_notes\" class=\"intheader_comments_input\" onfocus=\"javascript:textbox_enter('intheader_internal_notes','intheader_comments_input_focused')\" onblur=\"javascript:textbox_leave('intheader_internal_notes','intheader_comments_input')\">" + System.Net.WebUtility.HtmlEncode(internal_comments_normalized) + "</textarea>");
                         Output.WriteLine("            </td>");
                         Output.WriteLine("          </tr>");
                         Output.WriteLine("        </table>");

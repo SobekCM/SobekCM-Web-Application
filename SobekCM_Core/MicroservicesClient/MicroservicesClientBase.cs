@@ -2,11 +2,10 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Text;
-using System.Web;
 using Jil;
 using ProtoBuf;
 using SobekCM.Tools;
@@ -243,15 +242,10 @@ namespace SobekCM.Core.MicroservicesClient
                 request.ContentType = "application/x-www-form-urlencoded";
 
                 // Build and encode the post data
-                NameValueCollection outgoingQueryString = HttpUtility.ParseQueryString(String.Empty);
-                if (PostData != null)
-                {
-                    foreach (KeyValuePair<string, string> thisFieldData in PostData)
-                    {
-                        outgoingQueryString.Add(thisFieldData.Key, thisFieldData.Value);
-                    }
-                }
-                byte[] byteArray = Encoding.UTF8.GetBytes(outgoingQueryString.ToString());
+                string encodedPostData = PostData != null
+                    ? string.Join("&", PostData.Select(kv => $"{Uri.EscapeDataString(kv.Key)}={Uri.EscapeDataString(kv.Value ?? string.Empty)}"))
+                    : string.Empty;
+                byte[] byteArray = Encoding.UTF8.GetBytes(encodedPostData);
 
                 // Set the ContentLength property of the WebRequest.
                 request.ContentLength = byteArray.Length;

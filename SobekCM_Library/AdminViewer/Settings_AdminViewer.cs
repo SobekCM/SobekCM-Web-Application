@@ -8,7 +8,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Web;
 using SobekCM.Core.Builder;
 using SobekCM.Core.Client;
 using SobekCM.Core.Configuration;
@@ -1343,7 +1342,7 @@ namespace SobekCM.Library.AdminViewer
 				}
 				else
 				{
-					Output.WriteLine("                    " + HttpUtility.HtmlEncode(Value.Value).Replace(",", ", "));
+					Output.WriteLine("                    " + System.Net.WebUtility.HtmlEncode(Value.Value).Replace(",", ", "));
 				}
 			}
 			else
@@ -1455,9 +1454,9 @@ namespace SobekCM.Library.AdminViewer
 				else
 				{
 					if ((Value.Width.HasValue) && (Value.Width.Value > 0))
-						Output.WriteLine("                    <input id=\"setting" + Value.SettingID + "\" name=\"setting" + Value.SettingID + "\" class=\"sbkSeav_input sbkAdmin_Focusable\" type=\"text\"  style=\"width: " + Value.Width + "px;\" value=\"" + HttpUtility.HtmlEncode(setting_value) + "\" />");
+						Output.WriteLine("                    <input id=\"setting" + Value.SettingID + "\" name=\"setting" + Value.SettingID + "\" class=\"sbkSeav_input sbkAdmin_Focusable\" type=\"text\"  style=\"width: " + Value.Width + "px;\" value=\"" + System.Net.WebUtility.HtmlEncode(setting_value) + "\" />");
 					else
-						Output.WriteLine("                    <input id=\"setting" + Value.SettingID + "\" name=\"setting" + Value.SettingID + "\" class=\"sbkSeav_input sbkAdmin_Focusable\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(setting_value) + "\" />");
+						Output.WriteLine("                    <input id=\"setting" + Value.SettingID + "\" name=\"setting" + Value.SettingID + "\" class=\"sbkSeav_input sbkAdmin_Focusable\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(setting_value) + "\" />");
 				}
 			}
 

@@ -175,7 +175,7 @@ namespace SobekCM.Library.Citation.Elements
                                                   : "<option value=\"succeeding\">Succeeding</option>");
 
                     PopupFormBuilder.Append("</select></td>");
-                    PopupFormBuilder.AppendLine("      <td style=\"width:255px\">Display Label: &nbsp; <input class=\"form_relateditem_medium_input sbk_Focusable\" name=\"form_relateditem_display_" + item_index + "\" id=\"form_relateditem_display_" + item_index + "\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(thisItem.URL_Display_Label) + "\" /></td>");
+                    PopupFormBuilder.AppendLine("      <td style=\"width:255px\">Display Label: &nbsp; <input class=\"form_relateditem_medium_input sbk_Focusable\" name=\"form_relateditem_display_" + item_index + "\" id=\"form_relateditem_display_" + item_index + "\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(thisItem.URL_Display_Label) + "\" /></td>");
                     PopupFormBuilder.AppendLine("    </tr>");
 
                     string issn = String.Empty;
@@ -207,16 +207,16 @@ namespace SobekCM.Library.Citation.Elements
                     if (thisItem.hasMainTitle)
                         related_title = thisItem.Main_Title.Title;
 
-					PopupFormBuilder.AppendLine("    <tr><td>Title:</td><td colspan=\"2\"><input class=\"form_relateditem_large_input sbk_Focusable\" name=\"form_relateditem_title_" + item_index + "\" id=\"form_relateditem_title_" + item_index + "\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(related_title) + "\" /></td></tr>");
-					PopupFormBuilder.AppendLine("    <tr><td>URL:</td><td colspan=\"2\"><input class=\"form_relateditem_large_input sbk_Focusable\" name=\"form_relateditem_url_" + item_index + "\" id=\"form_relateditem_url_" + item_index + "\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(thisItem.URL) + "\" /></td></tr>");
+					PopupFormBuilder.AppendLine("    <tr><td>Title:</td><td colspan=\"2\"><input class=\"form_relateditem_large_input sbk_Focusable\" name=\"form_relateditem_title_" + item_index + "\" id=\"form_relateditem_title_" + item_index + "\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(related_title) + "\" /></td></tr>");
+					PopupFormBuilder.AppendLine("    <tr><td>URL:</td><td colspan=\"2\"><input class=\"form_relateditem_large_input sbk_Focusable\" name=\"form_relateditem_url_" + item_index + "\" id=\"form_relateditem_url_" + item_index + "\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(thisItem.URL) + "\" /></td></tr>");
 
                     // Add the system ID and ISSN row
-					PopupFormBuilder.AppendLine("    <tr><td>System ID:</td><td><input class=\"form_relateditem_medium_input sbk_Focusable\" name=\"form_relateditem_sobekid_" + item_index + "\" id=\"form_relateditem_sobekid_" + item_index + "\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(thisItem.SobekCM_ID) + "\" /></td>");
-					PopupFormBuilder.AppendLine("        <td>ISSN: &nbsp; <input class=\"form_relateditem_medium_input sbk_Focusable\" name=\"form_relateditem_issn_" + item_index + "\" id=\"form_relateditem_issn_" + item_index + "\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(issn) + "\" /></td></tr>");
+					PopupFormBuilder.AppendLine("    <tr><td>System ID:</td><td><input class=\"form_relateditem_medium_input sbk_Focusable\" name=\"form_relateditem_sobekid_" + item_index + "\" id=\"form_relateditem_sobekid_" + item_index + "\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(thisItem.SobekCM_ID) + "\" /></td>");
+					PopupFormBuilder.AppendLine("        <td>ISSN: &nbsp; <input class=\"form_relateditem_medium_input sbk_Focusable\" name=\"form_relateditem_issn_" + item_index + "\" id=\"form_relateditem_issn_" + item_index + "\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(issn) + "\" /></td></tr>");
 
                     // Add the OCLC and LCCN row
-                    PopupFormBuilder.AppendLine("    <tr><td>OCLC:</td><td><input class=\"form_relateditem_medium_input sbk_Focusable\" name=\"form_relateditem_oclc_" + item_index + "\" id=\"form_relateditem_oclc_" + item_index + "\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(oclc) + "\" /></td>");
-					PopupFormBuilder.AppendLine("        <td>LCCN: &nbsp; <input class=\"form_relateditem_medium_input sbk_Focusable\" name=\"form_relateditem_lccn_" + item_index + "\" id=\"form_relateditem_lccn_" + item_index + "\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(lccn) + "\" /></td></tr>");
+                    PopupFormBuilder.AppendLine("    <tr><td>OCLC:</td><td><input class=\"form_relateditem_medium_input sbk_Focusable\" name=\"form_relateditem_oclc_" + item_index + "\" id=\"form_relateditem_oclc_" + item_index + "\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(oclc) + "\" /></td>");
+					PopupFormBuilder.AppendLine("        <td>LCCN: &nbsp; <input class=\"form_relateditem_medium_input sbk_Focusable\" name=\"form_relateditem_lccn_" + item_index + "\" id=\"form_relateditem_lccn_" + item_index + "\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(lccn) + "\" /></td></tr>");
 
 					// Finish the popup form and add the CLOSE button
 					PopupFormBuilder.AppendLine("    <tr style=\"height:35px; text-align: center; vertical-align: bottom;\">");

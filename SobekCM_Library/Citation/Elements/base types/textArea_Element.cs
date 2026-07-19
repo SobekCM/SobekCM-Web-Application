@@ -1,9 +1,8 @@
-﻿#region Using directives
+#region Using directives
 
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Web;
 using System.Xml;
 using SobekCM.Core.ApplicationState;
 using SobekCM.Core.Configuration.Localization;
@@ -108,12 +107,12 @@ namespace SobekCM.Library.Citation.Elements
                 Output.Write("              <textarea rows=\"" + Rows + "\" cols=\"" + actual_cols + "\" name=\"" + id_name + i + "\" id=\"" + id_name + i + "\" class=\"" + html_element_name + "_input sbk_Focusable\" ");
 
                 if (!String.IsNullOrWhiteSpace(Placeholder))
-                    Output.Write(" placeholder=\"" + HttpUtility.HtmlEncode(Placeholder) + "\"");
+                    Output.Write(" placeholder=\"" + System.Net.WebUtility.HtmlEncode(Placeholder) + "\"");
 
                 if (textAreaEvents != null)
                     textAreaEvents.Add_Events_HTML(Output);
 
-                Output.Write(" >" + HttpUtility.HtmlEncode(allValues[i]) + "</textarea>");
+                Output.Write(" >" + System.Net.WebUtility.HtmlEncode(allValues[i]) + "</textarea>");
 
                 if (i == allValues.Count - 1)
                 {
@@ -188,10 +187,10 @@ namespace SobekCM.Library.Citation.Elements
 
 			Output.Write("              <textarea rows=\"" + Rows + "\" cols=\"" + actual_cols + "\" name=\"" + id_name + i + "\" id=\"" + id_name + i + "\" class=\"" + html_element_name + "_input sbk_Focusable\" ");
             if (!String.IsNullOrWhiteSpace(Placeholder))
-                Output.Write(" placeholder=\"" + HttpUtility.HtmlEncode(Placeholder) + "\"");
+                Output.Write(" placeholder=\"" + System.Net.WebUtility.HtmlEncode(Placeholder) + "\"");
             if ( textAreaEvents != null )
                 textAreaEvents.Add_Events_HTML(Output);
-            Output.WriteLine(" >" + HttpUtility.HtmlEncode(InstanceValue) + "</textarea></div>");
+            Output.WriteLine(" >" + System.Net.WebUtility.HtmlEncode(InstanceValue) + "</textarea></div>");
 
             Output.WriteLine("            </div>");
             Output.WriteLine("          </td>");

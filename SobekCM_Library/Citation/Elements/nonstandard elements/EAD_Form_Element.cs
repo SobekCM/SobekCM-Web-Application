@@ -95,8 +95,8 @@ namespace SobekCM.Library.Citation.Elements
             {
                 Output.Write("              <a title=\"Click to edit the related EAD information\" href=\"" + Base_URL + "l/technical/javascriptrequired\" onfocus=\"link_focused2('form_ead_term')\" onblur=\"link_blurred2('form_ead_term')\" onkeypress=\"return popup_keypress_focus('form_ead', 'formead_name', '" + IsMozilla.ToString() + "' );\" onclick=\"return popup_focus('form_ead', 'formead_name' );\"><div class=\"form_linkline form_ead_line\" id=\"form_ead_term\">");
                 Output.Write(Bib.Bib_Info.Location.EAD_Name.Length > 0
-                                 ? HttpUtility.HtmlEncode(Bib.Bib_Info.Location.EAD_Name)
-                                 : HttpUtility.HtmlEncode(Bib.Bib_Info.Location.EAD_URL));
+                                 ? System.Net.WebUtility.HtmlEncode(Bib.Bib_Info.Location.EAD_Name)
+                                 : System.Net.WebUtility.HtmlEncode(Bib.Bib_Info.Location.EAD_URL));
             }
             Output.WriteLine("</div></a>");
             Output.WriteLine("              </div>");
@@ -118,8 +118,8 @@ namespace SobekCM.Library.Citation.Elements
 			PopupFormBuilder.AppendLine("  <table class=\"sbkMetadata_PopupTable\">");
 
             // Add the rows of data
-			PopupFormBuilder.AppendLine("    <tr><td style=\"width:90px\">EAD Name:</td><td><input class=\"formead_input sbk_Focusable\" name=\"formead_name\" id=\"formead_name\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(Bib.Bib_Info.Location.EAD_Name) + "\" /></td></tr>");
-			PopupFormBuilder.AppendLine("    <tr><td>EAD URL:</td><td><input class=\"formead_input sbk_Focusable\" name=\"formead_url\" id=\"formead_url\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(Bib.Bib_Info.Location.EAD_URL) + "\" /></td></tr>");
+			PopupFormBuilder.AppendLine("    <tr><td style=\"width:90px\">EAD Name:</td><td><input class=\"formead_input sbk_Focusable\" name=\"formead_name\" id=\"formead_name\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(Bib.Bib_Info.Location.EAD_Name) + "\" /></td></tr>");
+			PopupFormBuilder.AppendLine("    <tr><td>EAD URL:</td><td><input class=\"formead_input sbk_Focusable\" name=\"formead_url\" id=\"formead_url\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(Bib.Bib_Info.Location.EAD_URL) + "\" /></td></tr>");
 
             // Finish the popup form and add the CLOSE button
             PopupFormBuilder.AppendLine("    <tr style=\"height:35px; text-align: center; vertical-align: bottom;\">");

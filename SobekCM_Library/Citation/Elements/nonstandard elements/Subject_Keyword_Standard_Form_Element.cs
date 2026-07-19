@@ -179,7 +179,7 @@ namespace SobekCM.Library.Citation.Elements
                     PopupFormBuilder.Append("    <tr><td>Topical Term(s):</td><td colspan=\"2\">");
                     if (standSubject.Topics_Count >= 1)
                     {
-                        PopupFormBuilder.Append("<input class=\"formsubject_medium_input sbk_Focusable\" name=\"formsubjecttopic1_" + subject_index + "\" id=\"formsubjecttopic1_" + subject_index + "\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(standSubject.Topics[0]) + "\" />");
+                        PopupFormBuilder.Append("<input class=\"formsubject_medium_input sbk_Focusable\" name=\"formsubjecttopic1_" + subject_index + "\" id=\"formsubjecttopic1_" + subject_index + "\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(standSubject.Topics[0]) + "\" />");
                     }
                     else
                     {
@@ -188,7 +188,7 @@ namespace SobekCM.Library.Citation.Elements
 
                     if (standSubject.Topics_Count >= 2)
                     {
-						PopupFormBuilder.Append("<input class=\"formsubject_medium_input sbk_Focusable\" name=\"formsubjecttopic2_" + subject_index + "\" id=\"formsubjecttopic2_" + subject_index + "\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(standSubject.Topics[1]) + "\" />");
+						PopupFormBuilder.Append("<input class=\"formsubject_medium_input sbk_Focusable\" name=\"formsubjecttopic2_" + subject_index + "\" id=\"formsubjecttopic2_" + subject_index + "\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(standSubject.Topics[1]) + "\" />");
                     }
                     else
                     {
@@ -200,7 +200,7 @@ namespace SobekCM.Library.Citation.Elements
                     PopupFormBuilder.Append("    <tr><td>&nbsp;</td><td colspan=\"2\">");
                     if (standSubject.Topics_Count >= 3)
                     {
-						PopupFormBuilder.Append("<input class=\"formsubject_medium_input sbk_Focusable\" name=\"formsubjecttopic3_" + subject_index + "\" id=\"formsubjecttopic3_" + subject_index + "\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(standSubject.Topics[2]) + "\" />");
+						PopupFormBuilder.Append("<input class=\"formsubject_medium_input sbk_Focusable\" name=\"formsubjecttopic3_" + subject_index + "\" id=\"formsubjecttopic3_" + subject_index + "\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(standSubject.Topics[2]) + "\" />");
                     }
                     else
                     {
@@ -209,7 +209,7 @@ namespace SobekCM.Library.Citation.Elements
 
                     if (standSubject.Topics_Count >= 4)
                     {
-						PopupFormBuilder.Append("<input class=\"formsubject_medium_input sbk_Focusable\" name=\"formsubjecttopic4_" + subject_index + "\" id=\"formsubjecttopic4_" + subject_index + "\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(standSubject.Topics[3]) + "\" />");
+						PopupFormBuilder.Append("<input class=\"formsubject_medium_input sbk_Focusable\" name=\"formsubjecttopic4_" + subject_index + "\" id=\"formsubjecttopic4_" + subject_index + "\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(standSubject.Topics[3]) + "\" />");
                     }
                     else
                     {
@@ -221,7 +221,7 @@ namespace SobekCM.Library.Citation.Elements
                     PopupFormBuilder.Append("    <tr><td>Chronological Term(s):</td><td colspan=\"2\">");
                     if (standSubject.Temporals_Count >= 1)
                     {
-						PopupFormBuilder.Append("<input class=\"formsubject_medium_input sbk_Focusable\" name=\"formsubjecttemporal1_" + subject_index + "\" id=\"formsubjecttemporal1_" + subject_index + "\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(standSubject.Temporals[0]) + "\" />");
+						PopupFormBuilder.Append("<input class=\"formsubject_medium_input sbk_Focusable\" name=\"formsubjecttemporal1_" + subject_index + "\" id=\"formsubjecttemporal1_" + subject_index + "\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(standSubject.Temporals[0]) + "\" />");
                     }
                     else
                     {
@@ -230,7 +230,7 @@ namespace SobekCM.Library.Citation.Elements
 
                     if (standSubject.Temporals_Count >= 2)
                     {
-						PopupFormBuilder.Append("<input class=\"formsubject_medium_input sbk_Focusable\" name=\"formsubjecttemporal2_" + subject_index + "\" id=\"formsubjecttemporal2_" + subject_index + "\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(standSubject.Temporals[1]) + "\" />");
+						PopupFormBuilder.Append("<input class=\"formsubject_medium_input sbk_Focusable\" name=\"formsubjecttemporal2_" + subject_index + "\" id=\"formsubjecttemporal2_" + subject_index + "\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(standSubject.Temporals[1]) + "\" />");
                     }
                     else
                     {
@@ -242,7 +242,7 @@ namespace SobekCM.Library.Citation.Elements
                     PopupFormBuilder.Append("    <tr><td>Geographic Term(s):</td><td colspan=\"2\">");
                     if (standSubject.Geographics_Count >= 1)
                     {
-						PopupFormBuilder.Append("<input class=\"formsubject_medium_input sbk_Focusable\" name=\"formsubjectgeo1_" + subject_index + "\" id=\"formsubjectgeo1_" + subject_index + "\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(standSubject.Geographics[0]) + "\" />");
+						PopupFormBuilder.Append("<input class=\"formsubject_medium_input sbk_Focusable\" name=\"formsubjectgeo1_" + subject_index + "\" id=\"formsubjectgeo1_" + subject_index + "\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(standSubject.Geographics[0]) + "\" />");
                     }
                     else
                     {
@@ -251,7 +251,7 @@ namespace SobekCM.Library.Citation.Elements
 
                     if (standSubject.Geographics_Count >= 2)
                     {
-						PopupFormBuilder.Append("<input class=\"formsubject_medium_input sbk_Focusable\" name=\"formsubjectgeo2_" + subject_index + "\" id=\"formsubjectgeo2_" + subject_index + "\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(standSubject.Geographics[1]) + "\" />");
+						PopupFormBuilder.Append("<input class=\"formsubject_medium_input sbk_Focusable\" name=\"formsubjectgeo2_" + subject_index + "\" id=\"formsubjectgeo2_" + subject_index + "\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(standSubject.Geographics[1]) + "\" />");
                     }
                     else
                     {
@@ -263,7 +263,7 @@ namespace SobekCM.Library.Citation.Elements
                     PopupFormBuilder.Append("    <tr><td>Form / Genre Term(s):</td><td colspan=\"2\">");
                     if (standSubject.Genres_Count >= 1)
                     {
-						PopupFormBuilder.Append("<input class=\"formsubject_medium_input sbk_Focusable\" name=\"formsubjectgenre1_" + subject_index + "\" id=\"formsubjectgenre1_" + subject_index + "\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(standSubject.Genres[0]) + "\" />");
+						PopupFormBuilder.Append("<input class=\"formsubject_medium_input sbk_Focusable\" name=\"formsubjectgenre1_" + subject_index + "\" id=\"formsubjectgenre1_" + subject_index + "\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(standSubject.Genres[0]) + "\" />");
                     }
                     else
                     {
@@ -272,7 +272,7 @@ namespace SobekCM.Library.Citation.Elements
 
                     if (standSubject.Genres_Count >= 2)
                     {
-						PopupFormBuilder.Append("<input class=\"formsubject_medium_input sbk_Focusable\" name=\"formsubjectgenre2_" + subject_index + "\" id=\"formsubjectgenre2_" + subject_index + "\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(standSubject.Genres[1]) + "\" />");
+						PopupFormBuilder.Append("<input class=\"formsubject_medium_input sbk_Focusable\" name=\"formsubjectgenre2_" + subject_index + "\" id=\"formsubjectgenre2_" + subject_index + "\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(standSubject.Genres[1]) + "\" />");
                     }
                     else
                     {
@@ -284,7 +284,7 @@ namespace SobekCM.Library.Citation.Elements
                     PopupFormBuilder.Append("    <tr><td>Occupation:</td><td colspan=\"2\">");
                     if (standSubject.Occupations_Count >= 1)
                     {
-						PopupFormBuilder.Append("<input class=\"formsubject_large_input sbk_Focusable\" name=\"formsubjectoccup1_" + subject_index + "\" id=\"formsubjectoccup1_" + subject_index + "\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(standSubject.Occupations[0]) + "\" />");
+						PopupFormBuilder.Append("<input class=\"formsubject_large_input sbk_Focusable\" name=\"formsubjectoccup1_" + subject_index + "\" id=\"formsubjectoccup1_" + subject_index + "\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(standSubject.Occupations[0]) + "\" />");
                     }
                     else
                     {
@@ -296,7 +296,7 @@ namespace SobekCM.Library.Citation.Elements
                     PopupFormBuilder.Append("    <tr><td>Authority:</td><td>");
                     if (standSubject.Authority.Length > 0 )
                     {
-						PopupFormBuilder.Append("<input class=\"formsubject_small_input sbk_Focusable\" name=\"formsubjectauthority_" + subject_index + "\" id=\"formsubjectauthority_" + subject_index + "\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(standSubject.Authority) + "\" />");
+						PopupFormBuilder.Append("<input class=\"formsubject_small_input sbk_Focusable\" name=\"formsubjectauthority_" + subject_index + "\" id=\"formsubjectauthority_" + subject_index + "\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(standSubject.Authority) + "\" />");
                     }
                     else
                     {
@@ -305,7 +305,7 @@ namespace SobekCM.Library.Citation.Elements
                     PopupFormBuilder.Append("</td><td width=\"255px\" > &nbsp; Language: &nbsp; ");
                     if (standSubject.Language.Length > 0)
                     {
-						PopupFormBuilder.Append("<input class=\"formsubject_small_input sbk_Focusable\" name=\"formsubjectlanguage_" + subject_index + "\" id=\"formsubjectlanguage_" + subject_index + "\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(standSubject.Language) + "\" />");
+						PopupFormBuilder.Append("<input class=\"formsubject_small_input sbk_Focusable\" name=\"formsubjectlanguage_" + subject_index + "\" id=\"formsubjectlanguage_" + subject_index + "\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(standSubject.Language) + "\" />");
                     }
                     else
                     {

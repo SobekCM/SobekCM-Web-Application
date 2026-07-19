@@ -1,11 +1,10 @@
-﻿#region Using directives
+#region Using directives
 
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
-using System.Web;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Navigation;
@@ -116,7 +115,7 @@ namespace SobekCM.Library.HTML
                     string[] first_splitter = first_pre_menu_option.Replace("[", "").Replace("]", "").Split(";".ToCharArray());
                     if (first_splitter.Length > 0)
                     {
-                        Output.WriteLine("    <li><a href=\"" + first_splitter[1] + "\" title=\"" + HttpUtility.HtmlEncode(first_splitter[0]) + "\">" + HttpUtility.HtmlEncode(first_splitter[0]) + "</a></li>");
+                        Output.WriteLine("    <li><a href=\"" + first_splitter[1] + "\" title=\"" + System.Net.WebUtility.HtmlEncode(first_splitter[0]) + "\">" + System.Net.WebUtility.HtmlEncode(first_splitter[0]) + "</a></li>");
                     }
                 }
                 if (second_pre_menu_option.Length > 0)
@@ -124,7 +123,7 @@ namespace SobekCM.Library.HTML
                     string[] second_splitter = second_pre_menu_option.Replace("[", "").Replace("]", "").Split(";".ToCharArray());
                     if (second_splitter.Length > 0)
                     {
-                        Output.WriteLine("    <li><a href=\"" + second_splitter[1] + "\" title=\"" + HttpUtility.HtmlEncode(second_splitter[0]) + "\">" + HttpUtility.HtmlEncode(second_splitter[0]) + "</a></li>");
+                        Output.WriteLine("    <li><a href=\"" + second_splitter[1] + "\" title=\"" + System.Net.WebUtility.HtmlEncode(second_splitter[0]) + "\">" + System.Net.WebUtility.HtmlEncode(second_splitter[0]) + "</a></li>");
                     }
                 }
             }
@@ -754,7 +753,7 @@ namespace SobekCM.Library.HTML
                     string[] first_splitter = first_pre_menu_option.Replace("[", "").Replace("]", "").Split(";".ToCharArray());
                     if (first_splitter.Length > 0)
                     {
-                        Output.WriteLine("    <li><a href=\"" + first_splitter[1] + "\" title=\"" + HttpUtility.HtmlEncode(first_splitter[0]) + "\">" + HttpUtility.HtmlEncode(first_splitter[0]) + "</a></li>");
+                        Output.WriteLine("    <li><a href=\"" + first_splitter[1] + "\" title=\"" + System.Net.WebUtility.HtmlEncode(first_splitter[0]) + "\">" + System.Net.WebUtility.HtmlEncode(first_splitter[0]) + "</a></li>");
                     }
                 }
                 if (second_pre_menu_option.Length > 0)
@@ -762,7 +761,7 @@ namespace SobekCM.Library.HTML
                     string[] second_splitter = second_pre_menu_option.Replace("[", "").Replace("]", "").Split(";".ToCharArray());
                     if (second_splitter.Length > 0)
                     {
-                        Output.WriteLine("    <li><a href=\"" + second_splitter[1] + "\" title=\"" + HttpUtility.HtmlEncode(second_splitter[0]) + "\">" + HttpUtility.HtmlEncode(second_splitter[0]) + "</a></li>");
+                        Output.WriteLine("    <li><a href=\"" + second_splitter[1] + "\" title=\"" + System.Net.WebUtility.HtmlEncode(second_splitter[0]) + "\">" + System.Net.WebUtility.HtmlEncode(second_splitter[0]) + "</a></li>");
                     }
                 }
             }

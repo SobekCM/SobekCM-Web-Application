@@ -1,10 +1,9 @@
-﻿#region Using directives
+#region Using directives
 
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Web;
 using SobekCM.Core;
 using SobekCM.Core.BriefItem;
 using SobekCM.Core.UI_Configuration.Citation;
@@ -115,22 +114,22 @@ namespace SobekCM.Library.Email
                                 {
                                     if (String.IsNullOrEmpty(thisValue.Language))
                                     {
-                                        valueArray.Add(HttpUtility.HtmlEncode(thisValue.Value));
+                                        valueArray.Add(System.Net.WebUtility.HtmlEncode(thisValue.Value));
                                     }
                                     else
                                     {
-                                        valueArray.Add(HttpUtility.HtmlEncode(thisValue.Value) + " ( " + thisValue.Language + " )");
+                                        valueArray.Add(System.Net.WebUtility.HtmlEncode(thisValue.Value) + " ( " + thisValue.Language + " )");
                                     }
                                 }
                                 else
                                 {
                                     if (String.IsNullOrEmpty(thisValue.Language))
                                     {
-                                        valueArray.Add(HttpUtility.HtmlEncode(thisValue.Value) + " ( " + thisValue.Authority + " )");
+                                        valueArray.Add(System.Net.WebUtility.HtmlEncode(thisValue.Value) + " ( " + thisValue.Authority + " )");
                                     }
                                     else
                                     {
-                                        valueArray.Add(HttpUtility.HtmlEncode(thisValue.Value) + " ( " + thisValue.Authority + ", " + thisValue.Language + " )");
+                                        valueArray.Add(System.Net.WebUtility.HtmlEncode(thisValue.Value) + " ( " + thisValue.Authority + ", " + thisValue.Language + " )");
                                     }
                                 }
 
@@ -156,22 +155,22 @@ namespace SobekCM.Library.Email
                                 {
                                     if (String.IsNullOrEmpty(thisValue.Language))
                                     {
-                                        messageBuilder.Append(Single_Citation_HTML_Row(label, HttpUtility.HtmlEncode(thisValue.Value)));
+                                        messageBuilder.Append(Single_Citation_HTML_Row(label, System.Net.WebUtility.HtmlEncode(thisValue.Value)));
                                     }
                                     else
                                     {
-                                        messageBuilder.Append(Single_Citation_HTML_Row(label, HttpUtility.HtmlEncode(thisValue.Value) + " ( " + thisValue.Language + " )"));
+                                        messageBuilder.Append(Single_Citation_HTML_Row(label, System.Net.WebUtility.HtmlEncode(thisValue.Value) + " ( " + thisValue.Language + " )"));
                                     }
                                 }
                                 else
                                 {
                                     if (String.IsNullOrEmpty(thisValue.Language))
                                     {
-                                        messageBuilder.Append(Single_Citation_HTML_Row(label, HttpUtility.HtmlEncode(thisValue.Value) + " ( " + thisValue.Authority + " )"));
+                                        messageBuilder.Append(Single_Citation_HTML_Row(label, System.Net.WebUtility.HtmlEncode(thisValue.Value) + " ( " + thisValue.Authority + " )"));
                                     }
                                     else
                                     {
-                                        messageBuilder.Append(Single_Citation_HTML_Row(label, HttpUtility.HtmlEncode(thisValue.Value) + " ( " + thisValue.Authority + ", " + thisValue.Language + " )"));
+                                        messageBuilder.Append(Single_Citation_HTML_Row(label, System.Net.WebUtility.HtmlEncode(thisValue.Value) + " ( " + thisValue.Authority + ", " + thisValue.Language + " )"));
                                     }
                                 }
 
@@ -241,7 +240,7 @@ namespace SobekCM.Library.Email
                 }
                 else
                 {
-                    Results.Append("<br />" + HttpUtility.HtmlEncode(thisValue));
+                    Results.Append("<br />" + System.Net.WebUtility.HtmlEncode(thisValue));
                 }
             }
             Results.AppendLine("</td></tr>");
@@ -252,7 +251,7 @@ namespace SobekCM.Library.Email
             // Only add if there is a value
             if (Value.Length > 0)
             {
-                return "<tr><td>" + Row_Name + ":</td><td>" + HttpUtility.HtmlEncode( Value ) + "</td></tr>" + Environment.NewLine;
+                return "<tr><td>" + Row_Name + ":</td><td>" + System.Net.WebUtility.HtmlEncode( Value ) + "</td></tr>" + Environment.NewLine;
             }
             return String.Empty;
         }
@@ -321,22 +320,22 @@ namespace SobekCM.Library.Email
                                 {
                                     if (String.IsNullOrEmpty(thisValue.Language))
                                     {
-                                        valueArray.Add(HttpUtility.HtmlEncode(thisValue.Value));
+                                        valueArray.Add(System.Net.WebUtility.HtmlEncode(thisValue.Value));
                                     }
                                     else
                                     {
-                                        valueArray.Add(HttpUtility.HtmlEncode(thisValue.Value) + " ( " + thisValue.Language + " )");
+                                        valueArray.Add(System.Net.WebUtility.HtmlEncode(thisValue.Value) + " ( " + thisValue.Language + " )");
                                     }
                                 }
                                 else
                                 {
                                     if (String.IsNullOrEmpty(thisValue.Language))
                                     {
-                                        valueArray.Add(HttpUtility.HtmlEncode(thisValue.Value) + " ( " + thisValue.Authority + " )");
+                                        valueArray.Add(System.Net.WebUtility.HtmlEncode(thisValue.Value) + " ( " + thisValue.Authority + " )");
                                     }
                                     else
                                     {
-                                        valueArray.Add(HttpUtility.HtmlEncode(thisValue.Value) + " ( " + thisValue.Authority + ", " + thisValue.Language + " )");
+                                        valueArray.Add(System.Net.WebUtility.HtmlEncode(thisValue.Value) + " ( " + thisValue.Authority + ", " + thisValue.Language + " )");
                                     }
                                 }
 
@@ -362,22 +361,22 @@ namespace SobekCM.Library.Email
                                 {
                                     if (String.IsNullOrEmpty(thisValue.Language))
                                     {
-                                        messageBuilder.Append(Single_Citation_Text_Row(label, HttpUtility.HtmlEncode(thisValue.Value)));
+                                        messageBuilder.Append(Single_Citation_Text_Row(label, System.Net.WebUtility.HtmlEncode(thisValue.Value)));
                                     }
                                     else
                                     {
-                                        messageBuilder.Append(Single_Citation_Text_Row(label, HttpUtility.HtmlEncode(thisValue.Value) + " ( " + thisValue.Language + " )"));
+                                        messageBuilder.Append(Single_Citation_Text_Row(label, System.Net.WebUtility.HtmlEncode(thisValue.Value) + " ( " + thisValue.Language + " )"));
                                     }
                                 }
                                 else
                                 {
                                     if (String.IsNullOrEmpty(thisValue.Language))
                                     {
-                                        messageBuilder.Append(Single_Citation_Text_Row(label, HttpUtility.HtmlEncode(thisValue.Value) + " ( " + thisValue.Authority + " )"));
+                                        messageBuilder.Append(Single_Citation_Text_Row(label, System.Net.WebUtility.HtmlEncode(thisValue.Value) + " ( " + thisValue.Authority + " )"));
                                     }
                                     else
                                     {
-                                        messageBuilder.Append(Single_Citation_Text_Row(label, HttpUtility.HtmlEncode(thisValue.Value) + " ( " + thisValue.Authority + ", " + thisValue.Language + " )"));
+                                        messageBuilder.Append(Single_Citation_Text_Row(label, System.Net.WebUtility.HtmlEncode(thisValue.Value) + " ( " + thisValue.Authority + ", " + thisValue.Language + " )"));
                                     }
                                 }
 
@@ -444,7 +443,7 @@ namespace SobekCM.Library.Email
                 }
                 else
                 {
-                    Results.Append(Environment.NewLine + "\t" + String.Empty.PadRight(30, ' ') + "   " + HttpUtility.HtmlEncode(thisValue));
+                    Results.Append(Environment.NewLine + "\t" + String.Empty.PadRight(30, ' ') + "   " + System.Net.WebUtility.HtmlEncode(thisValue));
                 }
             }
             Results.AppendLine();
@@ -455,7 +454,7 @@ namespace SobekCM.Library.Email
             // Only add if there is a value
             if (Value.Length > 0)
             {
-                return "\t" + Row_Name.ToUpper().Replace(" ", "_").PadRight(30, ' ') + ":  " + HttpUtility.HtmlEncode(Value) + Environment.NewLine;
+                return "\t" + Row_Name.ToUpper().Replace(" ", "_").PadRight(30, ' ') + ":  " + System.Net.WebUtility.HtmlEncode(Value) + Environment.NewLine;
             }
             return String.Empty;
         }

@@ -6,7 +6,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Web;
 using SobekCM.Core.Client;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
@@ -634,7 +633,7 @@ namespace SobekCM.Library.MySobekViewer
 			            if (resource_files_to_labels.ContainsKey(fileKey))
 			            {
 				            Set_Session_File_Label(currentItem.Web.ItemID, fileKey, resource_files_to_labels[fileKey]);
-							Output.WriteLine("        <input type=\"text\" class=\"upload_label_input sbk_Focusable\" id=\"" + input_name + "\" name=\"" + input_name + "\" value=\"" + HttpUtility.HtmlEncode(resource_files_to_labels[fileKey]) + "\" ></input>");
+							Output.WriteLine("        <input type=\"text\" class=\"upload_label_input sbk_Focusable\" id=\"" + input_name + "\" name=\"" + input_name + "\" value=\"" + System.Net.WebUtility.HtmlEncode(resource_files_to_labels[fileKey]) + "\" ></input>");
 			            }
 			            else
 			            {
@@ -644,7 +643,7 @@ namespace SobekCM.Library.MySobekViewer
 		            else
 		            {
 			            string label_from_session = Context.SessionObject()["file_" + currentItem.Web.ItemID + "_" + fileKey].ToString();
-						Output.WriteLine("        <input type=\"text\" class=\"upload_label_input sbk_Focusable\" id=\"" + input_name + "\" name=\"" + input_name + "\" value=\"" + HttpUtility.HtmlEncode(label_from_session) + "\" ></input>");
+						Output.WriteLine("        <input type=\"text\" class=\"upload_label_input sbk_Focusable\" id=\"" + input_name + "\" name=\"" + input_name + "\" value=\"" + System.Net.WebUtility.HtmlEncode(label_from_session) + "\" ></input>");
 		            }
 
 					Output.WriteLine("      </div>");

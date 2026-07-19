@@ -1,11 +1,10 @@
-﻿#region Using directives
+#region Using directives
 
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Web;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Results;
 using SobekCM.Core.Search;
@@ -429,7 +428,7 @@ namespace SobekCM.Library.ResultsViewer
 										Builder.AppendLine("\t\t\t\t<tr valign=\"top\"><td>&nbsp;</td><td>" + UI_ApplicationCache_Gateway.Translation.Get_Translation(display_field, RequestSpecificValues.Current_Mode.Language) + ":</td><td>");
 										value_found = true;
 									}
-									Builder.Append(HttpUtility.HtmlEncode(thisValue) + "<br />");
+									Builder.Append(System.Net.WebUtility.HtmlEncode(thisValue) + "<br />");
 								}
 							}
 
@@ -440,7 +439,7 @@ namespace SobekCM.Library.ResultsViewer
 						}
 						else
 						{
-							Builder.AppendLine("\t\t\t\t<tr height=\"10px\"><td>&nbsp;</td><td>" + UI_ApplicationCache_Gateway.Translation.Get_Translation(display_field, RequestSpecificValues.Current_Mode.Language) + ":</td><td>" + HttpUtility.HtmlEncode(value) + "</td></tr>");
+							Builder.AppendLine("\t\t\t\t<tr height=\"10px\"><td>&nbsp;</td><td>" + UI_ApplicationCache_Gateway.Translation.Get_Translation(display_field, RequestSpecificValues.Current_Mode.Language) + ":</td><td>" + System.Net.WebUtility.HtmlEncode(value) + "</td></tr>");
 						}
 					}
 				}

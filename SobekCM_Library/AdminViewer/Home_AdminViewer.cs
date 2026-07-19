@@ -1,11 +1,10 @@
-﻿// HTML5 10/12/2013
+// HTML5 10/12/2013
 
 #region Using directives
 
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Web;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.UI_Configuration;
 using SobekCM.Core.UI_Configuration.StaticResources;

@@ -3,7 +3,6 @@
 using System;
 using System.Collections.Specialized;
 using System.IO;
-using System.Web;
 using SobekCM.Core.Configuration;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Navigation;

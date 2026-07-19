@@ -1,10 +1,9 @@
-﻿#region Using directives
+#region Using directives
 
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Web;
 using System.Xml;
 using SobekCM.Core.ApplicationState;
 using SobekCM.Core.Configuration.Localization;
@@ -203,12 +202,12 @@ namespace SobekCM.Library.Citation.Elements
 
                     if ((i < PossibleSelectItems.Count) && (thisOption == SelectValues[i - 1]))
                     {
-                        Output.Write("<option value=\"" + HttpUtility.HtmlEncode(value) + "\" selected=\"selected=\">" + thisOption + "</option>");
+                        Output.Write("<option value=\"" + System.Net.WebUtility.HtmlEncode(value) + "\" selected=\"selected=\">" + thisOption + "</option>");
                         found_option = true;
                     }
                     else
                     {
-                        Output.Write("<option value=\"" + HttpUtility.HtmlEncode(value) + "\" >" + thisOption + "</option>");
+                        Output.Write("<option value=\"" + System.Net.WebUtility.HtmlEncode(value) + "\" >" + thisOption + "</option>");
                     }
                 }
 
@@ -222,7 +221,7 @@ namespace SobekCM.Library.Citation.Elements
                     if ((codeStatementMappingPresent) && (CodeToStatementDictionary.ContainsKey(option)))
                         value = option + "|" + CodeToStatementDictionary[option];
 
-                    Output.Write("<option value=\"" + HttpUtility.HtmlEncode(value) + "\" selected=\"selected=\">" + option + "</option>");
+                    Output.Write("<option value=\"" + System.Net.WebUtility.HtmlEncode(value) + "\" selected=\"selected=\">" + option + "</option>");
                 }
                 Output.Write("</select>");
 
@@ -233,7 +232,7 @@ namespace SobekCM.Library.Citation.Elements
                 }
 
                 // Write the text box
-				Output.Write("<input name=\"" + id_name + "_text" + i + "\" id=\"" + id_name + "_text" + i + "\" class=\"" + html_element_name + "_input sbk_Focusable\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(TextValues[i - 1]) + "\" ");
+				Output.Write("<input name=\"" + id_name + "_text" + i + "\" id=\"" + id_name + "_text" + i + "\" class=\"" + html_element_name + "_input sbk_Focusable\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(TextValues[i - 1]) + "\" ");
                 if (textBoxEvents != null)
                     textBoxEvents.Add_Events_HTML(Output);
                 Output.Write(" />");
@@ -379,12 +378,12 @@ namespace SobekCM.Library.Citation.Elements
 
                 if ((i < PossibleSelectItems.Count) && (thisOption == SelectValue))
                 {
-                    Output.Write("<option value=\"" + HttpUtility.HtmlEncode(value) + "\" selected=\"selected=\">" + thisOption + "</option>");
+                    Output.Write("<option value=\"" + System.Net.WebUtility.HtmlEncode(value) + "\" selected=\"selected=\">" + thisOption + "</option>");
                     found_option = true;
                 }
                 else
                 {
-                    Output.Write("<option value=\"" + HttpUtility.HtmlEncode(value) + "\" >" + thisOption + "</option>");
+                    Output.Write("<option value=\"" + System.Net.WebUtility.HtmlEncode(value) + "\" >" + thisOption + "</option>");
                 }
             }
 
@@ -398,7 +397,7 @@ namespace SobekCM.Library.Citation.Elements
                 if ((codeStatementMappingPresent) && (CodeToStatementDictionary.ContainsKey(option)))
                     value = option + "|" + CodeToStatementDictionary[option];
 
-                Output.Write("<option value=\"" + HttpUtility.HtmlEncode(value) + "\" selected=\"selected=\">" + option + "</option>");
+                Output.Write("<option value=\"" + System.Net.WebUtility.HtmlEncode(value) + "\" selected=\"selected=\">" + option + "</option>");
             }
             Output.Write("</select>");
 
@@ -409,7 +408,7 @@ namespace SobekCM.Library.Citation.Elements
             }
 
             // Write the text box
-            Output.Write("<input name=\"" + id_name + "_text" + i + "\" id=\"" + id_name + "_text" + i + "\" class=\"" + html_element_name + "_input sbk_Focusable\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(TextValue) + "\" ");
+            Output.Write("<input name=\"" + id_name + "_text" + i + "\" id=\"" + id_name + "_text" + i + "\" class=\"" + html_element_name + "_input sbk_Focusable\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(TextValue) + "\" ");
             if (textBoxEvents != null)
                 textBoxEvents.Add_Events_HTML(Output);
             Output.Write(" />");

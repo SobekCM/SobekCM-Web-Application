@@ -20,7 +20,8 @@
       "PowerShell(dotnet nuget locals all --list)",
       "PowerShell(cmd /c \"dir /s /b C:\\\\Users\\\\mark.v.sullivan\\\\.nuget\\\\packages\\\\microsoft.aspnetcore.systemwebadapters\\\\2.3.0\")",
       "PowerShell(cmd /c \"dir /s /b C:\\\\GitHub\\\\SobekCM-Web-Application\\\\SobekCM\\\\obj\\\\Debug\" 2>&1)",
-      "PowerShell(Select-String -Path \"c:\\\\GitHub\\\\SobekCM-Web-Application\\\\SobekCM_Library\\\\MySobekViewer\\\\Edit_Item_Metadata_MySobekViewer.cs\" -Pattern \"Save_To_Bib\" | Select-Object -First 5 | ForEach-Object { $_.Line.Trim\\(\\) })"
+      "PowerShell(Select-String -Path \"c:\\\\GitHub\\\\SobekCM-Web-Application\\\\SobekCM_Library\\\\MySobekViewer\\\\Edit_Item_Metadata_MySobekViewer.cs\" -Pattern \"Save_To_Bib\" | Select-Object -First 5 | ForEach-Object { $_.Line.Trim\\(\\) })",
+      "PowerShell(Get-Content \"c:\\\\GitHub\\\\SobekCM-Web-Application\\\\SobekCM_Engine_Library\\\\Client\\\\MicroservicesClientBase.cs\" | Select-Object -Skip 240 -First 20 | ForEach-Object -Begin { $i = 241 } -Process { Write-Host \"${i}: $_\"; $i++ })"
     ]
   }
 }

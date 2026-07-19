@@ -159,9 +159,9 @@ namespace SobekCM.Library.Citation.Elements
                     Output.WriteLine("                </select>");
                     
                     Output.WriteLine("                <span class=\"metadata_sublabel\">Language:</span>");
-					Output.WriteLine("                <input name=\"" + id_name + "_language1\" id=\"" + id_name + "_language1\" class=\"" + html_element_name + "_language sbk_Focusable\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(thisAbstract.Language) + "\" />");
+					Output.WriteLine("                <input name=\"" + id_name + "_language1\" id=\"" + id_name + "_language1\" class=\"" + html_element_name + "_language sbk_Focusable\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(thisAbstract.Language) + "\" />");
                     Output.WriteLine("              </div>");
-					Output.Write("              <textarea rows=\"" + Rows + "\" cols=\"" + actual_cols + "\" name=\"" + id_name + "_textarea" + i + "\" id=\"" + id_name + "_textarea" + i + "\" class=\"" + html_element_name + "_input sbk_Focusable\" >" + HttpUtility.HtmlEncode(thisAbstract.Abstract_Text) + "</textarea>");
+					Output.Write("              <textarea rows=\"" + Rows + "\" cols=\"" + actual_cols + "\" name=\"" + id_name + "_textarea" + i + "\" id=\"" + id_name + "_textarea" + i + "\" class=\"" + html_element_name + "_input sbk_Focusable\" >" + System.Net.WebUtility.HtmlEncode(thisAbstract.Abstract_Text) + "</textarea>");
 
 
                     if ( i < Bib.Bib_Info.Notes_Count )

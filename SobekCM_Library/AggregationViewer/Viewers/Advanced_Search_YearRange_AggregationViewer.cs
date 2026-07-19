@@ -1,9 +1,8 @@
-﻿#region Using directives
+#region Using directives
 
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Web;
 using System.Runtime.Caching;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.Configuration.Localization;

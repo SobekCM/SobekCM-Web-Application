@@ -4,7 +4,6 @@
 
 using System;
 using System.IO;
-using System.Web;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.UI_Configuration;
 using SobekCM.Core.UI_Configuration.StaticResources;

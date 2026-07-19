@@ -149,23 +149,23 @@ namespace SobekCM.Library.Citation.Elements
 
             // Add the rows of enumeration data
             PopupFormBuilder.Append("    <tr><td style=\"width:90px\">&nbsp;</td><td style=\"width:100px\">(Volume):</td>");
-            PopupFormBuilder.Append("<td><input type=\"text\" class=\"form_serialhierarchy_text_input sbk_Focusable\" id=\"form_serialhierarchy_enum1text\" name=\"form_serialhierarchy_enum1text\" value=\"" + HttpUtility.HtmlEncode(enum1) + "\" ></td>");
+            PopupFormBuilder.Append("<td><input type=\"text\" class=\"form_serialhierarchy_text_input sbk_Focusable\" id=\"form_serialhierarchy_enum1text\" name=\"form_serialhierarchy_enum1text\" value=\"" + System.Net.WebUtility.HtmlEncode(enum1) + "\" ></td>");
             if ( Bib.Bib_Info.Series_Part_Info.Enum1_Index >= 0 )
-				PopupFormBuilder.AppendLine("<td><input type=\"text\" class=\"form_serialhierarchy_order_input sbk_Focusable\" id=\"form_serialhierarchy_enum1order\" name=\"form_serialhierarchy_enum1order\" value=\"" + HttpUtility.HtmlEncode(Bib.Bib_Info.Series_Part_Info.Enum1_Index.ToString()) + "\" ></td></tr>");
+				PopupFormBuilder.AppendLine("<td><input type=\"text\" class=\"form_serialhierarchy_order_input sbk_Focusable\" id=\"form_serialhierarchy_enum1order\" name=\"form_serialhierarchy_enum1order\" value=\"" + System.Net.WebUtility.HtmlEncode(Bib.Bib_Info.Series_Part_Info.Enum1_Index.ToString()) + "\" ></td></tr>");
             else
                 PopupFormBuilder.AppendLine("<td><input type=\"text\" class=\"form_serialhierarchy_order_input sbk_Focusable\" id=\"form_serialhierarchy_enum1order\" name=\"form_serialhierarchy_enum1order\" value=\"\" ></td></tr>");
 
             PopupFormBuilder.Append("    <tr><td>&nbsp;</td><td>(Issue):</td>");
-            PopupFormBuilder.Append("<td><input type=\"text\" class=\"form_serialhierarchy_text_input sbk_Focusable\" id=\"form_serialhierarchy_enum2text\" name=\"form_serialhierarchy_enum2text\" value=\"" + HttpUtility.HtmlEncode(Bib.Bib_Info.Series_Part_Info.Enum2) + "\" ></td>");
+            PopupFormBuilder.Append("<td><input type=\"text\" class=\"form_serialhierarchy_text_input sbk_Focusable\" id=\"form_serialhierarchy_enum2text\" name=\"form_serialhierarchy_enum2text\" value=\"" + System.Net.WebUtility.HtmlEncode(Bib.Bib_Info.Series_Part_Info.Enum2) + "\" ></td>");
             if (Bib.Bib_Info.Series_Part_Info.Enum2_Index >= 0)
-				PopupFormBuilder.AppendLine("<td><input type=\"text\" class=\"form_serialhierarchy_order_input sbk_Focusable\" id=\"form_serialhierarchy_enum2order\" name=\"form_serialhierarchy_enum2order\" value=\"" + HttpUtility.HtmlEncode(Bib.Bib_Info.Series_Part_Info.Enum2_Index.ToString()) + "\" ></td></tr>");
+				PopupFormBuilder.AppendLine("<td><input type=\"text\" class=\"form_serialhierarchy_order_input sbk_Focusable\" id=\"form_serialhierarchy_enum2order\" name=\"form_serialhierarchy_enum2order\" value=\"" + System.Net.WebUtility.HtmlEncode(Bib.Bib_Info.Series_Part_Info.Enum2_Index.ToString()) + "\" ></td></tr>");
             else
 				PopupFormBuilder.AppendLine("<td><input type=\"text\" class=\"form_serialhierarchy_order_input sbk_Focusable\" id=\"form_serialhierarchy_enum2order\" name=\"form_serialhierarchy_enum2order\" value=\"\" ></td></tr>");
 
             PopupFormBuilder.Append("    <tr><td>&nbsp;</td><td>(Part):</td>");
-			PopupFormBuilder.Append("<td><input type=\"text\" class=\"form_serialhierarchy_text_input sbk_Focusable\" id=\"form_serialhierarchy_enum3text\" name=\"form_serialhierarchy_enum3text\" value=\"" + HttpUtility.HtmlEncode(Bib.Bib_Info.Series_Part_Info.Enum3) + "\" ></td>");
+			PopupFormBuilder.Append("<td><input type=\"text\" class=\"form_serialhierarchy_text_input sbk_Focusable\" id=\"form_serialhierarchy_enum3text\" name=\"form_serialhierarchy_enum3text\" value=\"" + System.Net.WebUtility.HtmlEncode(Bib.Bib_Info.Series_Part_Info.Enum3) + "\" ></td>");
             if (Bib.Bib_Info.Series_Part_Info.Enum3_Index >= 0)
-				PopupFormBuilder.AppendLine("<td><input type=\"text\" class=\"form_serialhierarchy_order_input sbk_Focusable\" id=\"form_serialhierarchy_enum3order\" name=\"form_serialhierarchy_enum3order\" value=\"" + HttpUtility.HtmlEncode(Bib.Bib_Info.Series_Part_Info.Enum3_Index.ToString()) + "\" ></td></tr>");
+				PopupFormBuilder.AppendLine("<td><input type=\"text\" class=\"form_serialhierarchy_order_input sbk_Focusable\" id=\"form_serialhierarchy_enum3order\" name=\"form_serialhierarchy_enum3order\" value=\"" + System.Net.WebUtility.HtmlEncode(Bib.Bib_Info.Series_Part_Info.Enum3_Index.ToString()) + "\" ></td></tr>");
             else
 				PopupFormBuilder.AppendLine("<td><input type=\"text\" class=\"form_serialhierarchy_order_input sbk_Focusable\" id=\"form_serialhierarchy_enum3order\" name=\"form_serialhierarchy_enum3order\" value=\"\" ></td></tr>");
 
@@ -180,23 +180,23 @@ namespace SobekCM.Library.Citation.Elements
 
             // Add the rows of chronological data
             PopupFormBuilder.Append("    <tr><td>&nbsp;</td><td>Year:</td>");
-			PopupFormBuilder.Append("<td><input type=\"text\" class=\"form_serialhierarchy_text_input sbk_Focusable\" id=\"form_serialhierarchy_chrono1text\" name=\"form_serialhierarchy_chrono1text\" value=\"" + HttpUtility.HtmlEncode(Bib.Bib_Info.Series_Part_Info.Year) + "\" ></td>");
+			PopupFormBuilder.Append("<td><input type=\"text\" class=\"form_serialhierarchy_text_input sbk_Focusable\" id=\"form_serialhierarchy_chrono1text\" name=\"form_serialhierarchy_chrono1text\" value=\"" + System.Net.WebUtility.HtmlEncode(Bib.Bib_Info.Series_Part_Info.Year) + "\" ></td>");
             if (Bib.Bib_Info.Series_Part_Info.Year_Index >= 0)
-				PopupFormBuilder.AppendLine("<td><input type=\"text\" class=\"form_serialhierarchy_order_input sbk_Focusable\" id=\"form_serialhierarchy_chrono1order\" name=\"form_serialhierarchy_chrono1order\" value=\"" + HttpUtility.HtmlEncode(Bib.Bib_Info.Series_Part_Info.Year_Index.ToString()) + "\" ></td></tr>");
+				PopupFormBuilder.AppendLine("<td><input type=\"text\" class=\"form_serialhierarchy_order_input sbk_Focusable\" id=\"form_serialhierarchy_chrono1order\" name=\"form_serialhierarchy_chrono1order\" value=\"" + System.Net.WebUtility.HtmlEncode(Bib.Bib_Info.Series_Part_Info.Year_Index.ToString()) + "\" ></td></tr>");
             else
 				PopupFormBuilder.AppendLine("<td><input type=\"text\" class=\"form_serialhierarchy_order_input sbk_Focusable\" id=\"form_serialhierarchy_chrono1order\" name=\"form_serialhierarchy_chrono1order\" value=\"\" ></td></tr>");
 
             PopupFormBuilder.Append("    <tr><td>&nbsp;</td><td>(Month):</td>");
-			PopupFormBuilder.Append("<td><input type=\"text\" class=\"form_serialhierarchy_text_input sbk_Focusable\" id=\"form_serialhierarchy_chrono2text\" name=\"form_serialhierarchy_chrono2text\" value=\"" + HttpUtility.HtmlEncode(Bib.Bib_Info.Series_Part_Info.Month) + "\" ></td>");
+			PopupFormBuilder.Append("<td><input type=\"text\" class=\"form_serialhierarchy_text_input sbk_Focusable\" id=\"form_serialhierarchy_chrono2text\" name=\"form_serialhierarchy_chrono2text\" value=\"" + System.Net.WebUtility.HtmlEncode(Bib.Bib_Info.Series_Part_Info.Month) + "\" ></td>");
             if (Bib.Bib_Info.Series_Part_Info.Month_Index >= 0)
-				PopupFormBuilder.AppendLine("<td><input type=\"text\" class=\"form_serialhierarchy_order_input sbk_Focusable\" id=\"form_serialhierarchy_chrono2order\" name=\"form_serialhierarchy_chrono2order\" value=\"" + HttpUtility.HtmlEncode(Bib.Bib_Info.Series_Part_Info.Month_Index.ToString()) + "\" ></td></tr>");
+				PopupFormBuilder.AppendLine("<td><input type=\"text\" class=\"form_serialhierarchy_order_input sbk_Focusable\" id=\"form_serialhierarchy_chrono2order\" name=\"form_serialhierarchy_chrono2order\" value=\"" + System.Net.WebUtility.HtmlEncode(Bib.Bib_Info.Series_Part_Info.Month_Index.ToString()) + "\" ></td></tr>");
             else
 				PopupFormBuilder.AppendLine("<td><input type=\"text\" class=\"form_serialhierarchy_order_input sbk_Focusable\" id=\"form_serialhierarchy_chrono2order\" name=\"form_serialhierarchy_chrono2order\" value=\"\" ></td></tr>");
 
             PopupFormBuilder.Append("    <tr><td>&nbsp;</td><td>(Day):</td>");
-			PopupFormBuilder.Append("<td><input type=\"text\" class=\"form_serialhierarchy_text_input sbk_Focusable\" id=\"form_serialhierarchy_chrono3text\" name=\"form_serialhierarchy_chrono3text\" value=\"" + HttpUtility.HtmlEncode(Bib.Bib_Info.Series_Part_Info.Day) + "\" ></td>");
+			PopupFormBuilder.Append("<td><input type=\"text\" class=\"form_serialhierarchy_text_input sbk_Focusable\" id=\"form_serialhierarchy_chrono3text\" name=\"form_serialhierarchy_chrono3text\" value=\"" + System.Net.WebUtility.HtmlEncode(Bib.Bib_Info.Series_Part_Info.Day) + "\" ></td>");
             if (Bib.Bib_Info.Series_Part_Info.Day_Index >= 0)
-				PopupFormBuilder.AppendLine("<td><input type=\"text\" class=\"form_serialhierarchy_order_input sbk_Focusable\" id=\"form_serialhierarchy_chrono3order\" name=\"form_serialhierarchy_chrono3order\" value=\"" + HttpUtility.HtmlEncode(Bib.Bib_Info.Series_Part_Info.Day_Index.ToString()) + "\" ></td></tr>");
+				PopupFormBuilder.AppendLine("<td><input type=\"text\" class=\"form_serialhierarchy_order_input sbk_Focusable\" id=\"form_serialhierarchy_chrono3order\" name=\"form_serialhierarchy_chrono3order\" value=\"" + System.Net.WebUtility.HtmlEncode(Bib.Bib_Info.Series_Part_Info.Day_Index.ToString()) + "\" ></td></tr>");
             else
 				PopupFormBuilder.AppendLine("<td><input type=\"text\" class=\"form_serialhierarchy_order_input sbk_Focusable\" id=\"form_serialhierarchy_chrono3order\" name=\"form_serialhierarchy_chrono3order\" value=\"\" ></td></tr>");
 

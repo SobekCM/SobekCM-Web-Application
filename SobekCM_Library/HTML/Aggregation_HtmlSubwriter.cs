@@ -8,7 +8,6 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Web;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.Client;
 using SobekCM.Core.Configuration.Localization;
@@ -1071,7 +1070,7 @@ namespace SobekCM.Library.HTML
             // Write the search box
             if ((!behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Suppress_SearchForm)) && ((collectionViewer == null ) || ( !collectionViewer.Is_Internal_View )))
             {
-                string post_url = HttpUtility.HtmlEncode(Context.Items["Original_URL"].ToString());
+                string post_url = System.Net.WebUtility.HtmlEncode(Context.Items["Original_URL"].ToString());
                 RequestSpecificValues.Tracer.Add_Trace("Aggregation_HtmlSubwriter.Write_HTML", "search box post_url=[" + post_url + "].");
 
                 if ( !String.IsNullOrEmpty(collectionViewer.Search_Script_Action))
@@ -1316,7 +1315,7 @@ namespace SobekCM.Library.HTML
             else
             {
 				// Calculate the title and url
-				string title = HttpUtility.HtmlEncode(hierarchyObject.Name.Replace("'",""));
+				string title = System.Net.WebUtility.HtmlEncode(hierarchyObject.Name.Replace("'",""));
 				string share_url = Context.Items["Original_URL"].ToString().Replace("&", "%26").Replace("?", "%3F").Replace("http://", "").Replace("=", "%3D").Replace("\"", "&quot;");
 
                 // Figure out where the files are being found
@@ -1396,7 +1395,7 @@ namespace SobekCM.Library.HTML
 
                 if ((canEditHomePage) && (RequestSpecificValues.Current_Mode.Aggregation_Type == Aggregation_Type_Enum.Home_Edit))
 	            {
-					string post_url = HttpUtility.HtmlEncode(Context.Items["Original_URL"].ToString());
+					string post_url = System.Net.WebUtility.HtmlEncode(Context.Items["Original_URL"].ToString());
 					Output.WriteLine("<form name=\"home_edit_form\" method=\"post\" action=\"" + post_url + "\" id=\"addedForm\" >");
 					Output.WriteLine("  <textarea id=\"sbkAghsw_HomeTextEdit\" name=\"sbkAghsw_HomeTextEdit\" >");
 					Output.WriteLine(home_html.Replace("<%","[%").Replace("%>","%]"));
@@ -1528,7 +1527,7 @@ namespace SobekCM.Library.HTML
 
 	                if ((isAdmin) && (RequestSpecificValues.Current_Mode.Aggregation_Type == Aggregation_Type_Enum.Home_Edit))
 	                {
-		                string post_url = HttpUtility.HtmlEncode(Context.Items["Original_URL"].ToString());
+		                string post_url = System.Net.WebUtility.HtmlEncode(Context.Items["Original_URL"].ToString());
 		                Output.WriteLine("<form name=\"home_edit_form\" method=\"post\" action=\"" + post_url + "\" id=\"addedForm\" >");
 		                Output.WriteLine("  <textarea id=\"sbkAghsw_HomeTextEdit\" name=\"sbkAghsw_HomeTextEdit\" >");
                         Output.WriteLine(sobekcm_home_page_text.Replace("<%", "[%").Replace("%>", "%]"));

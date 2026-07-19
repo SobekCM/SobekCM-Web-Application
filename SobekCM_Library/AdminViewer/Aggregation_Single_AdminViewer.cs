@@ -6,7 +6,6 @@ using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Web;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.Client;
 using SobekCM.Core.Configuration.Localization;
@@ -678,7 +677,7 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\">");
 			Output.WriteLine("    <td style=\"width:50px\">&nbsp;</td>");
 			Output.WriteLine("    <td style=\"width: 145px\" class=\"sbkSaav_TableLabel\">Parent Code(s):</td>");
-			Output.WriteLine("    <td> " + HttpUtility.HtmlEncode(itemAggregation.Parent_Codes) + "</td>");
+			Output.WriteLine("    <td> " + System.Net.WebUtility.HtmlEncode(itemAggregation.Parent_Codes) + "</td>");
 			Output.WriteLine("  </tr>");
 
 			// Add the full name line
@@ -686,7 +685,7 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine("    <td>&nbsp;</td>");
 			Output.WriteLine("    <td class=\"sbkSaav_TableLabel\"><label for=\"admin_aggr_name\">Name (full):</label></td>");
 			Output.WriteLine("    <td>");
-			Output.WriteLine("      <table class=\"sbkSaav_InnerTable\"><tr><td><input class=\"sbkSaav_large_input sbkAdmin_Focusable\" name=\"admin_aggr_name\" id=\"admin_aggr_name\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(itemAggregation.Name) + "\" /></td>");
+			Output.WriteLine("      <table class=\"sbkSaav_InnerTable\"><tr><td><input class=\"sbkSaav_large_input sbkAdmin_Focusable\" name=\"admin_aggr_name\" id=\"admin_aggr_name\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(itemAggregation.Name) + "\" /></td>");
 			Output.WriteLine("        <td><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources_Gateway.Help_Button_Jpg + "\" onclick=\"alert('" + LONG_NAME_HELP + "');\"  title=\"" + LONG_NAME_HELP + "\" /></td></tr></table>");
 			Output.WriteLine("     </td>");
 			Output.WriteLine("  </tr>");
@@ -696,7 +695,7 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine("    <td>&nbsp;</td>");
 			Output.WriteLine("    <td class=\"sbkSaav_TableLabel\"><label for=\"admin_aggr_shortname\">Name (short):</label></td>");
 			Output.WriteLine("    <td>");
-			Output.WriteLine("      <table class=\"sbkSaav_InnerTable\"><tr><td><input class=\"sbkSaav_medium_input sbkAdmin_Focusable\" name=\"admin_aggr_shortname\" id=\"admin_aggr_shortname\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(itemAggregation.ShortName) + "\" /></td>");
+			Output.WriteLine("      <table class=\"sbkSaav_InnerTable\"><tr><td><input class=\"sbkSaav_medium_input sbkAdmin_Focusable\" name=\"admin_aggr_shortname\" id=\"admin_aggr_shortname\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(itemAggregation.ShortName) + "\" /></td>");
 			Output.WriteLine("        <td><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources_Gateway.Help_Button_Jpg + "\" onclick=\"alert('" + SHORT_NAME_HELP + "');\"  title=\"" + SHORT_NAME_HELP + "\" /></td></tr></table>");
 			Output.WriteLine("     </td>");
 			Output.WriteLine("  </tr>");
@@ -706,7 +705,7 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine("    <td>&nbsp;</td>");
 			Output.WriteLine("    <td class=\"sbkSaav_TableLabel2\"><label for=\"admin_aggr_desc\">Description:</label></td>");
 			Output.WriteLine("    <td>");
-			Output.WriteLine("      <table class=\"sbkSaav_InnerTable2\"><tr style=\"vertical-align:top\"><td><textarea class=\"sbkSaav_large_textbox sbkAdmin_Focusable\" rows=\"6\" name=\"admin_aggr_desc\" id=\"admin_aggr_desc\">" + HttpUtility.HtmlEncode(itemAggregation.Description) + "</textarea></td>");
+			Output.WriteLine("      <table class=\"sbkSaav_InnerTable2\"><tr style=\"vertical-align:top\"><td><textarea class=\"sbkSaav_large_textbox sbkAdmin_Focusable\" rows=\"6\" name=\"admin_aggr_desc\" id=\"admin_aggr_desc\">" + System.Net.WebUtility.HtmlEncode(itemAggregation.Description) + "</textarea></td>");
 			Output.WriteLine("        <td><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources_Gateway.Help_Button_Jpg + "\" onclick=\"alert('" + DESCRIPTION_HELP + "');\"  title=\"" + DESCRIPTION_HELP + "\" /></td></tr></table>");
 			Output.WriteLine("     </td>");
 			Output.WriteLine("  </tr>");
@@ -716,7 +715,7 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine("    <td>&nbsp;</td>");
 			Output.WriteLine("    <td class=\"sbkSaav_TableLabel\"><label for=\"admin_aggr_email\">Contact Email:</label></td>");
 			Output.WriteLine("    <td>");
-			Output.WriteLine("      <table class=\"sbkSaav_InnerTable\"><tr><td><input class=\"sbkSaav_large_input sbkAdmin_Focusable\" name=\"admin_aggr_email\" id=\"admin_aggr_email\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(itemAggregation.Contact_Email) + "\" /></td>");
+			Output.WriteLine("      <table class=\"sbkSaav_InnerTable\"><tr><td><input class=\"sbkSaav_large_input sbkAdmin_Focusable\" name=\"admin_aggr_email\" id=\"admin_aggr_email\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(itemAggregation.Contact_Email) + "\" /></td>");
 			Output.WriteLine("        <td><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources_Gateway.Help_Button_Jpg + "\" onclick=\"alert('" + EMAIL_HELP + "');\"  title=\"" + EMAIL_HELP + "\" /></td></tr></table>");
 			Output.WriteLine("     </td>");
 			Output.WriteLine("  </tr>");
@@ -728,7 +727,7 @@ namespace SobekCM.Library.AdminViewer
 				Output.WriteLine("    <td>&nbsp;</td>");
 				Output.WriteLine("    <td class=\"sbkSaav_TableLabel\"><label for=\"admin_aggr_link\">External Link:</label></td>");
 				Output.WriteLine("    <td>");
-				Output.WriteLine("      <table class=\"sbkSaav_InnerTable\"><tr><td><input class=\"sbkSaav_large_input sbkAdmin_Focusable\" name=\"admin_aggr_link\" id=\"admin_aggr_link\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(itemAggregation.External_Link) + "\" /></td>");
+				Output.WriteLine("      <table class=\"sbkSaav_InnerTable\"><tr><td><input class=\"sbkSaav_large_input sbkAdmin_Focusable\" name=\"admin_aggr_link\" id=\"admin_aggr_link\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(itemAggregation.External_Link) + "\" /></td>");
 				Output.WriteLine("        <td><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources_Gateway.Help_Button_Jpg + "\" onclick=\"alert('" + LINK_HELP + "');\"  title=\"" + LINK_HELP + "\" /></td></tr></table>");
 				Output.WriteLine("     </td>");
 				Output.WriteLine("  </tr>");
@@ -812,11 +811,11 @@ namespace SobekCM.Library.AdminViewer
 				{
 					if (thematic_heading_id == thisHeading.ID)
 					{
-						Output.WriteLine("            <option value=\"" + thisHeading.ID + "\" selected=\"selected\" >" + HttpUtility.HtmlEncode(thisHeading.Text) + "</option>");
+						Output.WriteLine("            <option value=\"" + thisHeading.ID + "\" selected=\"selected\" >" + System.Net.WebUtility.HtmlEncode(thisHeading.Text) + "</option>");
 					}
 					else
 					{
-						Output.WriteLine("            <option value=\"" + thisHeading.ID + "\">" + HttpUtility.HtmlEncode(thisHeading.Text) + "</option>");
+						Output.WriteLine("            <option value=\"" + thisHeading.ID + "\">" + System.Net.WebUtility.HtmlEncode(thisHeading.Text) + "</option>");
 					}
 				}
 				Output.WriteLine("          </select>");
@@ -1249,7 +1248,7 @@ namespace SobekCM.Library.AdminViewer
 	        foreach (string possible_language in Web_Language_Enum_Converter.Language_Name_Array)
 	        {
 	            if (!existing_languages.Contains(possible_language))
-	                Output.Write("<option value=\"" + Web_Language_Enum_Converter.Name_To_Code(possible_language) + "\">" + HttpUtility.HtmlEncode(possible_language) + "</option>");
+	                Output.Write("<option value=\"" + Web_Language_Enum_Converter.Name_To_Code(possible_language) + "\">" + System.Net.WebUtility.HtmlEncode(possible_language) + "</option>");
 	        }
 	        Output.WriteLine();
 	        Output.WriteLine("        </td>");
@@ -1263,11 +1262,11 @@ namespace SobekCM.Library.AdminViewer
 	            {
 	                if ((thisHomeSource.Key == Web_Language_Enum.DEFAULT) || (thisHomeSource.Key == UI_ApplicationCache_Gateway.Settings.System.Default_UI_Language))
 	                {
-	                    Output.Write("<option value=\"" + thisHomeSource.Value + "\">" + HttpUtility.HtmlEncode(Web_Language_Enum_Converter.Enum_To_Name(UI_ApplicationCache_Gateway.Settings.System.Default_UI_Language)) + "</option>");
+	                    Output.Write("<option value=\"" + thisHomeSource.Value + "\">" + System.Net.WebUtility.HtmlEncode(Web_Language_Enum_Converter.Enum_To_Name(UI_ApplicationCache_Gateway.Settings.System.Default_UI_Language)) + "</option>");
 	                }
 	                else
 	                {
-	                    Output.Write("<option value=\"" + thisHomeSource.Value + "\">" + HttpUtility.HtmlEncode(Web_Language_Enum_Converter.Enum_To_Name(thisHomeSource.Key)) + "</option>");
+	                    Output.Write("<option value=\"" + thisHomeSource.Value + "\">" + System.Net.WebUtility.HtmlEncode(Web_Language_Enum_Converter.Enum_To_Name(thisHomeSource.Key)) + "</option>");
 	                }
 	            }
 	        }
@@ -1453,9 +1452,9 @@ namespace SobekCM.Library.AdminViewer
 	            foreach (string possible_language in Web_Language_Enum_Converter.Language_Name_Array)
 	            {
 	                if (possible_language == language_name_default)
-	                    Output.Write("<option value=\"" + Web_Language_Enum_Converter.Name_To_Code(possible_language) + "\" selected=\"selected\">" + HttpUtility.HtmlEncode(possible_language) + "</option>");
+	                    Output.Write("<option value=\"" + Web_Language_Enum_Converter.Name_To_Code(possible_language) + "\" selected=\"selected\">" + System.Net.WebUtility.HtmlEncode(possible_language) + "</option>");
 	                else
-	                    Output.Write("<option value=\"" + Web_Language_Enum_Converter.Name_To_Code(possible_language) + "\">" + HttpUtility.HtmlEncode(possible_language) + "</option>");
+	                    Output.Write("<option value=\"" + Web_Language_Enum_Converter.Name_To_Code(possible_language) + "\">" + System.Net.WebUtility.HtmlEncode(possible_language) + "</option>");
 
 	            }
 	            Output.WriteLine();
@@ -1600,11 +1599,11 @@ namespace SobekCM.Library.AdminViewer
             {
                 if (String.Compare(Skin, skinCode, StringComparison.OrdinalIgnoreCase) == 0)
                 {
-                    Output.Write("<option value=\"" + skinCode + "\" selected=\"selected\" >" + HttpUtility.HtmlEncode(skinCode) + "</option>");
+                    Output.Write("<option value=\"" + skinCode + "\" selected=\"selected\" >" + System.Net.WebUtility.HtmlEncode(skinCode) + "</option>");
                 }
                 else
                 {
-                    Output.Write("<option value=\"" + skinCode + "\">" + HttpUtility.HtmlEncode(skinCode) + "</option>");
+                    Output.Write("<option value=\"" + skinCode + "\">" + System.Net.WebUtility.HtmlEncode(skinCode) + "</option>");
                 }
             }
             Output.WriteLine("</select>");
@@ -2698,11 +2697,11 @@ namespace SobekCM.Library.AdminViewer
 					{
 						if (metadataField.ID == FacetID)
 						{
-							Output.Write("<option value=\"" + metadataField.ID + "\" selected=\"selected\" >" + HttpUtility.HtmlEncode(metadataField.Display_Term) + "</option>");
+							Output.Write("<option value=\"" + metadataField.ID + "\" selected=\"selected\" >" + System.Net.WebUtility.HtmlEncode(metadataField.Display_Term) + "</option>");
 						}
 						else
 						{
-							Output.Write("<option value=\"" + metadataField.ID + "\">" + HttpUtility.HtmlEncode(metadataField.Display_Term) + "</option>");
+							Output.Write("<option value=\"" + metadataField.ID + "\">" + System.Net.WebUtility.HtmlEncode(metadataField.Display_Term) + "</option>");
 						}
 					}
 				}
@@ -2712,7 +2711,7 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine(" &nbsp; &nbsp; ");
 
             Output.Write("<input class=\"sbkSaav_medium_input\" name=\"admin_aggr_facet" + FacetCounter + "_display\" id=\"admin_aggr_facet" + FacetCounter + "_display\"");
-            Output.Write(FacetID != -1 ? " value=\"" + HttpUtility.HtmlEncode(DisplayTerm) + "\"" : " value=\"\"");
+            Output.Write(FacetID != -1 ? " value=\"" + System.Net.WebUtility.HtmlEncode(DisplayTerm) + "\"" : " value=\"\"");
             Output.WriteLine(" />");
 		}
 		#endregion
@@ -2902,7 +2901,7 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\">");
 			Output.WriteLine("    <td colspan=\"2\">&nbsp;</td>");
 			Output.WriteLine("    <td>");
-			Output.WriteLine("       <textarea rows=\"12\" name=\"admin_aggr_oai_metadata\" id=\"admin_aggr_oai_metadata\" class=\"sbkSaav_large_textbox sbkAdmin_Focusable\">" + HttpUtility.HtmlEncode(itemAggregation.OAI_Metadata) + "</textarea>");
+			Output.WriteLine("       <textarea rows=\"12\" name=\"admin_aggr_oai_metadata\" id=\"admin_aggr_oai_metadata\" class=\"sbkSaav_large_textbox sbkAdmin_Focusable\">" + System.Net.WebUtility.HtmlEncode(itemAggregation.OAI_Metadata) + "</textarea>");
 			Output.WriteLine("     </td>");
 			Output.WriteLine("  </tr>");
 			Output.WriteLine("</table>");
@@ -2947,11 +2946,11 @@ namespace SobekCM.Library.AdminViewer
 					{
 						if (String.Equals(metadataField.Display_Term, Value, StringComparison.OrdinalIgnoreCase))
 						{
-							Output.Write("<option value=\"" + metadataField.ID + "\" selected=\"selected\" >" + HttpUtility.HtmlEncode(metadataField.Display_Term) + "</option>");
+							Output.Write("<option value=\"" + metadataField.ID + "\" selected=\"selected\" >" + System.Net.WebUtility.HtmlEncode(metadataField.Display_Term) + "</option>");
 						}
 						else
 						{
-							Output.Write("<option value=\"" + metadataField.ID + "\">" + HttpUtility.HtmlEncode(metadataField.Display_Term) + "</option>");
+							Output.Write("<option value=\"" + metadataField.ID + "\">" + System.Net.WebUtility.HtmlEncode(metadataField.Display_Term) + "</option>");
 						}
 					}
 				}
@@ -3022,10 +3021,10 @@ namespace SobekCM.Library.AdminViewer
 		private void Highlight_Writer_Helper(TextWriter Output, int HighlightCounter, Complete_Item_Aggregation_Highlights Highlight, int Max_Text, int Max_Tooltips)
 		{
 			// Add the image line
-			Output.WriteLine("<tr><td> &nbsp; &nbsp; <label for=\"admin_aggr_image_" + HighlightCounter + "\">Image:</label></td><td colspan=\"2\"><input class=\"admin_aggr_large_input\" name=\"admin_aggr_image_" + HighlightCounter + "\" id=\"admin_aggr_image_" + HighlightCounter + "\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(Highlight.Image) + "\" onfocus=\"javascript:textbox_enter('admin_aggr_image_" + HighlightCounter + "', 'admin_aggr_large_input_focused')\" onblur=\"javascript:textbox_leave('admin_aggr_image_" + HighlightCounter + "', 'admin_aggr_large_input')\" /></td></tr>");
+			Output.WriteLine("<tr><td> &nbsp; &nbsp; <label for=\"admin_aggr_image_" + HighlightCounter + "\">Image:</label></td><td colspan=\"2\"><input class=\"admin_aggr_large_input\" name=\"admin_aggr_image_" + HighlightCounter + "\" id=\"admin_aggr_image_" + HighlightCounter + "\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(Highlight.Image) + "\" onfocus=\"javascript:textbox_enter('admin_aggr_image_" + HighlightCounter + "', 'admin_aggr_large_input_focused')\" onblur=\"javascript:textbox_leave('admin_aggr_image_" + HighlightCounter + "', 'admin_aggr_large_input')\" /></td></tr>");
 
 			// Add the link line
-			Output.WriteLine("<tr><td> &nbsp; &nbsp; <label for=\"admin_aggr_link_" + HighlightCounter + "\">Link:</label></td><td colspan=\"2\"><input class=\"admin_aggr_large_input\" name=\"admin_aggr_link_" + HighlightCounter + "\" id=\"admin_aggr_image_" + HighlightCounter + "\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(Highlight.Link) + "\" onfocus=\"javascript:textbox_enter('admin_aggr_image_" + HighlightCounter + "', 'admin_aggr_large_input_focused')\" onblur=\"javascript:textbox_leave('admin_aggr_link_" + HighlightCounter + "', 'admin_aggr_large_input')\" /></td></tr>");
+			Output.WriteLine("<tr><td> &nbsp; &nbsp; <label for=\"admin_aggr_link_" + HighlightCounter + "\">Link:</label></td><td colspan=\"2\"><input class=\"admin_aggr_large_input\" name=\"admin_aggr_link_" + HighlightCounter + "\" id=\"admin_aggr_image_" + HighlightCounter + "\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(Highlight.Link) + "\" onfocus=\"javascript:textbox_enter('admin_aggr_image_" + HighlightCounter + "', 'admin_aggr_large_input_focused')\" onblur=\"javascript:textbox_leave('admin_aggr_link_" + HighlightCounter + "', 'admin_aggr_large_input')\" /></td></tr>");
 
 			// Add lines for the text
 			Output.Write(Max_Text == 1 ? "<tr><td> &nbsp; &nbsp; Text:</td><td>" : "<tr valign=\"top\"><td><br /> &nbsp; &nbsp; Text:</td><td>");
@@ -3049,17 +3048,17 @@ namespace SobekCM.Library.AdminViewer
 				{
 					if (language == Web_Language_Enum_Converter.Code_To_Enum(possible_language))
 					{
-						Output.Write("<option value=\"" + possible_language + "\" selected=\"selected\" >" + HttpUtility.HtmlEncode(possible_language) + "</option>");
+						Output.Write("<option value=\"" + possible_language + "\" selected=\"selected\" >" + System.Net.WebUtility.HtmlEncode(possible_language) + "</option>");
 					}
 					else
 					{
-						Output.Write("<option value=\"" + possible_language + "\">" + HttpUtility.HtmlEncode(possible_language) + "</option>");
+						Output.Write("<option value=\"" + possible_language + "\">" + System.Net.WebUtility.HtmlEncode(possible_language) + "</option>");
 					}
 				}
 				Output.WriteLine("</select> &nbsp; &nbsp; ");
 
 				// Add the text to the text box
-				Output.Write("<input class=\"admin_aggr_medium_input\" name=\"" + id2 + "\" id=\"" + id2 + "\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(text) + "\" onfocus=\"javascript:textbox_enter('" + id2 + "', 'admin_aggr_medium_input_focused')\" onblur=\"javascript:textbox_leave('" + id2 + "', 'admin_aggr_medium_input')\" /><br />");
+				Output.Write("<input class=\"admin_aggr_medium_input\" name=\"" + id2 + "\" id=\"" + id2 + "\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(text) + "\" onfocus=\"javascript:textbox_enter('" + id2 + "', 'admin_aggr_medium_input_focused')\" onblur=\"javascript:textbox_leave('" + id2 + "', 'admin_aggr_medium_input')\" /><br />");
 			}
 			Output.WriteLine("</td></tr>");
 
@@ -3085,17 +3084,17 @@ namespace SobekCM.Library.AdminViewer
 				{
 					if (language == Web_Language_Enum_Converter.Code_To_Enum(possible_language))
 					{
-						Output.Write("<option value=\"" + possible_language + "\" selected=\"selected\" >" + HttpUtility.HtmlEncode(possible_language) + "</option>");
+						Output.Write("<option value=\"" + possible_language + "\" selected=\"selected\" >" + System.Net.WebUtility.HtmlEncode(possible_language) + "</option>");
 					}
 					else
 					{
-						Output.Write("<option value=\"" + possible_language + "\">" + HttpUtility.HtmlEncode(possible_language) + "</option>");
+						Output.Write("<option value=\"" + possible_language + "\">" + System.Net.WebUtility.HtmlEncode(possible_language) + "</option>");
 					}
 				}
 				Output.WriteLine("</select> &nbsp; &nbsp; ");
 
 				// Add the text to the text box
-				Output.Write("<input class=\"admin_aggr_medium_input\" name=\"" + id2 + "\" id=\"" + id2 + "\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(text) + "\" onfocus=\"javascript:textbox_enter('" + id2 + "', 'admin_aggr_medium_input_focused')\" onblur=\"javascript:textbox_leave('" + id2 + "', 'admin_aggr_medium_input')\" /><br />");
+				Output.Write("<input class=\"admin_aggr_medium_input\" name=\"" + id2 + "\" id=\"" + id2 + "\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(text) + "\" onfocus=\"javascript:textbox_enter('" + id2 + "', 'admin_aggr_medium_input_focused')\" onblur=\"javascript:textbox_leave('" + id2 + "', 'admin_aggr_medium_input')\" /><br />");
 			}
 			Output.WriteLine("</td></tr>");
 
@@ -3359,7 +3358,7 @@ namespace SobekCM.Library.AdminViewer
 			// Add the default language label
 			Output.WriteLine("        <tr>");
 			Output.WriteLine("          <td><label for=\"admin_aggr_label\">Title (default):</label></td>");
-			Output.WriteLine("          <td colspan=\"2\"><input class=\"sbkSaav_SubLargeInput sbkAdmin_Focusable\" name=\"admin_aggr_label\" id=\"admin_aggr_label\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(childPageLabel ?? String.Empty) + "\" /></td>");
+			Output.WriteLine("          <td colspan=\"2\"><input class=\"sbkSaav_SubLargeInput sbkAdmin_Focusable\" name=\"admin_aggr_label\" id=\"admin_aggr_label\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(childPageLabel ?? String.Empty) + "\" /></td>");
 			Output.WriteLine("          <td style=\"width:30px\"><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources_Gateway.Help_Button_Jpg + "\" onclick=\"alert('" + LABEL_HELP + "');\"  title=\"" + LABEL_HELP + "\" /></td>");
 			Output.WriteLine("        </tr>");
 
@@ -4261,7 +4260,7 @@ namespace SobekCM.Library.AdminViewer
 			foreach (string possible_language in Web_Language_Enum_Converter.Language_Name_Array)
 			{
 				if (!existing_languages.Contains(possible_language))
-					Output.Write("<option value=\"" + Web_Language_Enum_Converter.Name_To_Code(possible_language) + "\">" + HttpUtility.HtmlEncode(possible_language) + "</option>");
+					Output.Write("<option value=\"" + Web_Language_Enum_Converter.Name_To_Code(possible_language) + "\">" + System.Net.WebUtility.HtmlEncode(possible_language) + "</option>");
 			}
 			Output.WriteLine();
 			Output.WriteLine("          </td>");
@@ -4287,11 +4286,11 @@ namespace SobekCM.Library.AdminViewer
 		        {
 		            if ((thisHomeSource.Key == Web_Language_Enum.DEFAULT) || (thisHomeSource.Key == UI_ApplicationCache_Gateway.Settings.System.Default_UI_Language))
 		            {
-		                Output.Write("<option value=\"" + thisHomeSource.Value + "\">" + HttpUtility.HtmlEncode(Web_Language_Enum_Converter.Enum_To_Name(UI_ApplicationCache_Gateway.Settings.System.Default_UI_Language)) + "</option>");
+		                Output.Write("<option value=\"" + thisHomeSource.Value + "\">" + System.Net.WebUtility.HtmlEncode(Web_Language_Enum_Converter.Enum_To_Name(UI_ApplicationCache_Gateway.Settings.System.Default_UI_Language)) + "</option>");
 		            }
 		            else
 		            {
-		                Output.Write("<option value=\"" + thisHomeSource.Value + "\">" + HttpUtility.HtmlEncode(Web_Language_Enum_Converter.Enum_To_Name(thisHomeSource.Key)) + "</option>");
+		                Output.Write("<option value=\"" + thisHomeSource.Value + "\">" + System.Net.WebUtility.HtmlEncode(Web_Language_Enum_Converter.Enum_To_Name(thisHomeSource.Key)) + "</option>");
 		            }
 		        }
 		    }

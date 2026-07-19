@@ -1,10 +1,9 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Web;
 using System.Runtime.Caching;
 using System.Xml;
 using System.Xml.Serialization;
@@ -311,7 +310,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 
                     if ((!String.IsNullOrEmpty(titleResult.Primary_Identifier_Type)) && (!String.IsNullOrEmpty(titleResult.Primary_Identifier)))
                     {
-                        Output.WriteLine("\t\t\t\t<tr><td>" + UI_ApplicationCache_Gateway.Translation.Get_Translation(titleResult.Primary_Identifier_Type, RequestSpecificValues.Current_Mode.Language) + ":</td><td>&nbsp;</td><td>" + HttpUtility.HtmlDecode(titleResult.Primary_Identifier) + "</td></tr>");
+                        Output.WriteLine("\t\t\t\t<tr><td>" + UI_ApplicationCache_Gateway.Translation.Get_Translation(titleResult.Primary_Identifier_Type, RequestSpecificValues.Current_Mode.Language) + ":</td><td>&nbsp;</td><td>" + System.Net.WebUtility.HtmlDecode(titleResult.Primary_Identifier) + "</td></tr>");
                     }
 
                     if ((RequestSpecificValues.Current_User != null) && (RequestSpecificValues.Current_User.LoggedOn) && (RequestSpecificValues.Current_User.Is_Internal_User))
@@ -348,7 +347,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 
                         if (value == "*")
                         {
-                            Output.WriteLine("\t\t\t\t<tr><td>" + UI_ApplicationCache_Gateway.Translation.Get_Translation(display_field, RequestSpecificValues.Current_Mode.Language) + ":</td><td>&nbsp;</td><td>" + HttpUtility.HtmlDecode(VARIES_STRING) + "</td></tr>");
+                            Output.WriteLine("\t\t\t\t<tr><td>" + UI_ApplicationCache_Gateway.Translation.Get_Translation(display_field, RequestSpecificValues.Current_Mode.Language) + ":</td><td>&nbsp;</td><td>" + System.Net.WebUtility.HtmlDecode(VARIES_STRING) + "</td></tr>");
                         }
                         else if (value.Trim().Length > 0)
                         {
@@ -366,7 +365,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                                             Output.WriteLine("\t\t\t\t<tr valign=\"top\"><td>" + UI_ApplicationCache_Gateway.Translation.Get_Translation(display_field, RequestSpecificValues.Current_Mode.Language) + ":</td><td>&nbsp;</td><td>");
                                             value_found = true;
                                         }
-                                        Output.Write(HttpUtility.HtmlDecode(thisValue) + "<br />");
+                                        Output.Write(System.Net.WebUtility.HtmlDecode(thisValue) + "<br />");
                                     }
                                 }
 
@@ -377,7 +376,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                             }
                             else
                             {
-                                Output.WriteLine("\t\t\t\t<tr><td>" + UI_ApplicationCache_Gateway.Translation.Get_Translation(display_field, RequestSpecificValues.Current_Mode.Language) + ":</td><td>&nbsp;</td><td>" + HttpUtility.HtmlDecode(value) + "</td></tr>");
+                                Output.WriteLine("\t\t\t\t<tr><td>" + UI_ApplicationCache_Gateway.Translation.Get_Translation(display_field, RequestSpecificValues.Current_Mode.Language) + ":</td><td>&nbsp;</td><td>" + System.Net.WebUtility.HtmlDecode(value) + "</td></tr>");
                             }
                         }
                     }

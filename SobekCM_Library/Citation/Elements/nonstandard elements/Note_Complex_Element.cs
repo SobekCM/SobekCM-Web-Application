@@ -347,12 +347,12 @@ namespace SobekCM.Library.Citation.Elements
                         if (note_display_label.Length > 0)
                         {
                             Output.Write("<span class=\"metadata_sublabel\" id=\"complexnote_inputtext" + i + "\" name=\"complexnote_inputtext" + i + "\">" + display_label_prompt + ":</span>");
-                            Output.WriteLine("<input class=\"complexnote_input sbk_Focusable\" id=\"complexnote_inputtext" + i + "\" name=\"complexnote_input" + i + "\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(note_display_label) + "\" />");
+                            Output.WriteLine("<input class=\"complexnote_input sbk_Focusable\" id=\"complexnote_inputtext" + i + "\" name=\"complexnote_input" + i + "\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(note_display_label) + "\" />");
                         }
 
                         Output.WriteLine("              </div>");
 
-                        Output.Write("              <textarea rows=\"" + Rows + "\" cols=\"" + actual_cols + "\" name=\"" + id_name + "_textarea" + i + "\" id=\"" + id_name + "_textarea" + i + "\" class=\"" + html_element_name + "_input sbk_Focusable\" >" + HttpUtility.HtmlEncode(thisNote.Note) + "</textarea>");
+                        Output.Write("              <textarea rows=\"" + Rows + "\" cols=\"" + actual_cols + "\" name=\"" + id_name + "_textarea" + i + "\" id=\"" + id_name + "_textarea" + i + "\" class=\"" + html_element_name + "_input sbk_Focusable\" >" + System.Net.WebUtility.HtmlEncode(thisNote.Note) + "</textarea>");
 
                         if (i < Bib.Bib_Info.Notes_Count)
                         {

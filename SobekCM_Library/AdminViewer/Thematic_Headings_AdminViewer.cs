@@ -1,4 +1,4 @@
-﻿// HTML5 = 10/12/2013 MVS
+// HTML5 = 10/12/2013 MVS
 
 #region Using directives
 
@@ -6,7 +6,6 @@ using System;
 using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
-using System.Web;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.UI_Configuration;

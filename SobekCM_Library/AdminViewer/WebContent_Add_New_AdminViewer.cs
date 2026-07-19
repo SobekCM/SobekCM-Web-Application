@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
 using System.Text;
-using System.Web;
 using SobekCM.Core.Client;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Message;
@@ -333,49 +332,49 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\">");
             Output.WriteLine("    <td style=\"width:50px\">&nbsp;</td>");
             Output.WriteLine("    <td style=\"width: 145px\" class=\"sbkSaav_TableLabel\"><label for=\"admin_webcontent_level1\">Level 1:</label></td>");
-            Output.WriteLine("    <td><input class=\"sbkWcav_small_input sbkAdmin_Focusable\" name=\"admin_webcontent_level1\" id=\"admin_webcontent_level1\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(level1) + "\" onkeyup=\"new_webcontent_determine_url('" + baseUrl + "');\" /></td>");
+            Output.WriteLine("    <td><input class=\"sbkWcav_small_input sbkAdmin_Focusable\" name=\"admin_webcontent_level1\" id=\"admin_webcontent_level1\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(level1) + "\" onkeyup=\"new_webcontent_determine_url('" + baseUrl + "');\" /></td>");
             Output.WriteLine("  </tr>");
 
             Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\">");
             Output.WriteLine("    <td style=\"width:50px\">&nbsp;</td>");
             Output.WriteLine("    <td style=\"width: 145px\" class=\"sbkSaav_TableLabel\"><label for=\"admin_webcontent_level2\">Level 2:</label></td>");
-            Output.WriteLine("    <td><input class=\"sbkWcav_small_input sbkAdmin_Focusable\" name=\"admin_webcontent_level2\" id=\"admin_webcontent_level2\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(level2) + "\" onkeyup=\"new_webcontent_determine_url('" + baseUrl + "');\"  /></td>");
+            Output.WriteLine("    <td><input class=\"sbkWcav_small_input sbkAdmin_Focusable\" name=\"admin_webcontent_level2\" id=\"admin_webcontent_level2\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(level2) + "\" onkeyup=\"new_webcontent_determine_url('" + baseUrl + "');\"  /></td>");
             Output.WriteLine("  </tr>");
 
             Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\">");
             Output.WriteLine("    <td style=\"width:50px\">&nbsp;</td>");
             Output.WriteLine("    <td style=\"width: 145px\" class=\"sbkSaav_TableLabel\"><label for=\"admin_webcontent_level3\">Level 3:</label></td>");
-            Output.WriteLine("    <td><input class=\"sbkWcav_small_input sbkAdmin_Focusable\" name=\"admin_webcontent_level3\" id=\"admin_webcontent_level3\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(level3) + "\" onkeyup=\"new_webcontent_determine_url('" + baseUrl + "');\"  /></td>");
+            Output.WriteLine("    <td><input class=\"sbkWcav_small_input sbkAdmin_Focusable\" name=\"admin_webcontent_level3\" id=\"admin_webcontent_level3\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(level3) + "\" onkeyup=\"new_webcontent_determine_url('" + baseUrl + "');\"  /></td>");
             Output.WriteLine("  </tr>");
 
             Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\">");
             Output.WriteLine("    <td style=\"width:50px\">&nbsp;</td>");
             Output.WriteLine("    <td style=\"width: 145px\" class=\"sbkSaav_TableLabel\"><label for=\"admin_webcontent_level4\">Level 4:</label></td>");
-            Output.WriteLine("    <td><input class=\"sbkWcav_small_input sbkAdmin_Focusable\" name=\"admin_webcontent_level4\" id=\"admin_webcontent_level4\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(level4) + "\" onkeyup=\"new_webcontent_determine_url('" + baseUrl + "');\"  /></td>");
+            Output.WriteLine("    <td><input class=\"sbkWcav_small_input sbkAdmin_Focusable\" name=\"admin_webcontent_level4\" id=\"admin_webcontent_level4\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(level4) + "\" onkeyup=\"new_webcontent_determine_url('" + baseUrl + "');\"  /></td>");
             Output.WriteLine("  </tr>");
 
             Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\">");
             Output.WriteLine("    <td style=\"width:50px\">&nbsp;</td>");
             Output.WriteLine("    <td style=\"width: 145px\" class=\"sbkSaav_TableLabel\"><label for=\"admin_webcontent_level5\">Level 5:</label></td>");
-            Output.WriteLine("    <td><input class=\"sbkWcav_small_input sbkAdmin_Focusable\" name=\"admin_webcontent_level5\" id=\"admin_webcontent_level5\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(level5) + "\" onkeyup=\"new_webcontent_determine_url('" + baseUrl + "');\"  /></td>");
+            Output.WriteLine("    <td><input class=\"sbkWcav_small_input sbkAdmin_Focusable\" name=\"admin_webcontent_level5\" id=\"admin_webcontent_level5\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(level5) + "\" onkeyup=\"new_webcontent_determine_url('" + baseUrl + "');\"  /></td>");
             Output.WriteLine("  </tr>");
 
             Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\">");
             Output.WriteLine("    <td style=\"width:50px\">&nbsp;</td>");
             Output.WriteLine("    <td style=\"width: 145px\" class=\"sbkSaav_TableLabel\"><label for=\"admin_webcontent_level6\">Level 6:</label></td>");
-            Output.WriteLine("    <td><input class=\"sbkWcav_small_input sbkAdmin_Focusable\" name=\"admin_webcontent_level6\" id=\"admin_webcontent_level6\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(level6) + "\" onkeyup=\"new_webcontent_determine_url('" + baseUrl + "');\"  /></td>");
+            Output.WriteLine("    <td><input class=\"sbkWcav_small_input sbkAdmin_Focusable\" name=\"admin_webcontent_level6\" id=\"admin_webcontent_level6\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(level6) + "\" onkeyup=\"new_webcontent_determine_url('" + baseUrl + "');\"  /></td>");
             Output.WriteLine("  </tr>");
 
             Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\">");
             Output.WriteLine("    <td style=\"width:50px\">&nbsp;</td>");
             Output.WriteLine("    <td style=\"width: 145px\" class=\"sbkSaav_TableLabel\"><label for=\"admin_webcontent_level7\">Level 7:</label></td>");
-            Output.WriteLine("    <td><input class=\"sbkWcav_small_input sbkAdmin_Focusable\" name=\"admin_webcontent_level7\" id=\"admin_webcontent_level7\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(level7) + "\" onkeyup=\"new_webcontent_determine_url('" + baseUrl + "');\"  /></td>");
+            Output.WriteLine("    <td><input class=\"sbkWcav_small_input sbkAdmin_Focusable\" name=\"admin_webcontent_level7\" id=\"admin_webcontent_level7\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(level7) + "\" onkeyup=\"new_webcontent_determine_url('" + baseUrl + "');\"  /></td>");
             Output.WriteLine("  </tr>");
 
             Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\">");
             Output.WriteLine("    <td style=\"width:50px\">&nbsp;</td>");
             Output.WriteLine("    <td style=\"width: 145px\" class=\"sbkSaav_TableLabel\"><label for=\"admin_webcontent_level8\">Level 8:</label></td>");
-            Output.WriteLine("    <td><input class=\"sbkWcav_small_input sbkAdmin_Focusable\" name=\"admin_webcontent_level8\" id=\"admin_webcontent_level8\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(level8) + "\" onkeyup=\"new_webcontent_determine_url('" + baseUrl + "');\"  /></td>");
+            Output.WriteLine("    <td><input class=\"sbkWcav_small_input sbkAdmin_Focusable\" name=\"admin_webcontent_level8\" id=\"admin_webcontent_level8\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(level8) + "\" onkeyup=\"new_webcontent_determine_url('" + baseUrl + "');\"  /></td>");
             Output.WriteLine("  </tr>");
 
             // Determine the initial url
@@ -429,7 +428,7 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("    <td>&nbsp;</td>");
             Output.WriteLine("    <td class=\"sbkSaav_TableLabel\"><label for=\"admin_webcontent_title\">Title:</label></td>");
             Output.WriteLine("    <td>");
-            Output.WriteLine("      <table class=\"sbkSaav_InnerTable\"><tr><td><input class=\"sbkWcav_large_input sbkAdmin_Focusable\" name=\"admin_webcontent_title\" id=\"admin_webcontent_title\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(title) + "\" /></td>");
+            Output.WriteLine("      <table class=\"sbkSaav_InnerTable\"><tr><td><input class=\"sbkWcav_large_input sbkAdmin_Focusable\" name=\"admin_webcontent_title\" id=\"admin_webcontent_title\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(title) + "\" /></td>");
             Output.WriteLine("        <td><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources_Gateway.Help_Button_Jpg + "\" onclick=\"alert('" + TITLE_HELP + "');\"  title=\"" + TITLE_HELP + "\" /></td></tr></table>");
             Output.WriteLine("     </td>");
             Output.WriteLine("  </tr>");
@@ -439,7 +438,7 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("    <td>&nbsp;</td>");
             Output.WriteLine("    <td class=\"sbkSaav_TableLabel2\"><label for=\"admin_webcontent_desc\">Description:</label></td>");
             Output.WriteLine("    <td>");
-            Output.WriteLine("      <table class=\"sbkSaav_InnerTable2\"><tr style=\"vertical-align:top\"><td><textarea class=\"sbkWcav_large_textbox sbkAdmin_Focusable\" rows=\"6\" name=\"admin_webcontent_desc\" id=\"admin_webcontent_desc\">" + HttpUtility.HtmlEncode(description) + "</textarea></td>");
+            Output.WriteLine("      <table class=\"sbkSaav_InnerTable2\"><tr style=\"vertical-align:top\"><td><textarea class=\"sbkWcav_large_textbox sbkAdmin_Focusable\" rows=\"6\" name=\"admin_webcontent_desc\" id=\"admin_webcontent_desc\">" + System.Net.WebUtility.HtmlEncode(description) + "</textarea></td>");
             Output.WriteLine("        <td><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources_Gateway.Help_Button_Jpg + "\" onclick=\"alert('" + DESCRIPTION_HELP + "');\"  title=\"" + DESCRIPTION_HELP + "\" /></td></tr></table>");
             Output.WriteLine("     </td>");
             Output.WriteLine("  </tr>");
@@ -449,7 +448,7 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("    <td>&nbsp;</td>");
             Output.WriteLine("    <td class=\"sbkSaav_TableLabel\"><label for=\"admin_webcontent_redirect\">Redirect URL:</label></td>");
             Output.WriteLine("    <td>");
-            Output.WriteLine("      <table class=\"sbkSaav_InnerTable\"><tr><td><input class=\"sbkWcav_large_input sbkAdmin_Focusable\" name=\"admin_webcontent_redirect\" id=\"admin_webcontent_redirect\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(redirect_url) + "\" /></td>");
+            Output.WriteLine("      <table class=\"sbkSaav_InnerTable\"><tr><td><input class=\"sbkWcav_large_input sbkAdmin_Focusable\" name=\"admin_webcontent_redirect\" id=\"admin_webcontent_redirect\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(redirect_url) + "\" /></td>");
             Output.WriteLine("        <td><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources_Gateway.Help_Button_Jpg + "\" onclick=\"alert('" + REDIRECT_HELP + "');\"  title=\"" + REDIRECT_HELP + "\" /></td></tr></table>");
             Output.WriteLine("     </td>");
             Output.WriteLine("  </tr>");
@@ -494,11 +493,11 @@ namespace SobekCM.Library.AdminViewer
             {
                 if (String.Compare(webSkin, skinCode, StringComparison.OrdinalIgnoreCase) == 0)
                 {
-                    Output.Write("<option value=\"" + skinCode + "\" selected=\"selected\" >" + HttpUtility.HtmlEncode(skinCode) + "</option>");
+                    Output.Write("<option value=\"" + skinCode + "\" selected=\"selected\" >" + System.Net.WebUtility.HtmlEncode(skinCode) + "</option>");
                 }
                 else
                 {
-                    Output.Write("<option value=\"" + skinCode + "\">" + HttpUtility.HtmlEncode(skinCode) + "</option>");
+                    Output.Write("<option value=\"" + skinCode + "\">" + System.Net.WebUtility.HtmlEncode(skinCode) + "</option>");
                 }
             }
             Output.WriteLine("</select>");

@@ -1,4 +1,4 @@
-﻿// HTML5 10/14/2013
+// HTML5 10/14/2013
 
 #region Using directives
 
@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
-using System.Web;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.Client;
 using SobekCM.Core.MemoryMgmt;
@@ -524,13 +523,13 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("      </tr>");
 
             // Add the full name line
-            Output.WriteLine("      <tr><td><label for=\"admin_aggr_name\">Name (full):</label></td><td colspan=\"2\"><input class=\"sbkAsav_large_input sbkAdmin_Focusable\" name=\"admin_aggr_name\" id=\"admin_aggr_name\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(enteredName) + "\" onchange=\"if ( $('#admin_aggr_shortname').val().length == 0 ) { $('#admin_aggr_shortname').val(this.value); }\" /></td></tr>");
+            Output.WriteLine("      <tr><td><label for=\"admin_aggr_name\">Name (full):</label></td><td colspan=\"2\"><input class=\"sbkAsav_large_input sbkAdmin_Focusable\" name=\"admin_aggr_name\" id=\"admin_aggr_name\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(enteredName) + "\" onchange=\"if ( $('#admin_aggr_shortname').val().length == 0 ) { $('#admin_aggr_shortname').val(this.value); }\" /></td></tr>");
 
             // Add the short name line
-            Output.WriteLine("      <tr><td><label for=\"admin_aggr_shortname\">Name (short):</label></td><td colspan=\"2\"><input class=\"sbkAsav_large_input sbkAdmin_Focusable\" name=\"admin_aggr_shortname\" id=\"admin_aggr_shortname\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(enteredShortname) + "\" onchange=\"if ( $('#admin_aggr_name').val().length == 0 ) { $('#admin_aggr_name').val(this.value); }\" /></td></tr>");
+            Output.WriteLine("      <tr><td><label for=\"admin_aggr_shortname\">Name (short):</label></td><td colspan=\"2\"><input class=\"sbkAsav_large_input sbkAdmin_Focusable\" name=\"admin_aggr_shortname\" id=\"admin_aggr_shortname\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(enteredShortname) + "\" onchange=\"if ( $('#admin_aggr_name').val().length == 0 ) { $('#admin_aggr_name').val(this.value); }\" /></td></tr>");
 
             // Add the link line
-            Output.WriteLine("      <tr id=\"external_link_row\" style=\"display:none;\"><td><label for=\"admin_aggr_link\">External Link:</label></td><td colspan=\"2\"><input class=\"sbkAsav_large_input sbkAdmin_Focusable\" name=\"admin_aggr_link\" id=\"admin_aggr_link\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(enteredLink) + "\" /></td></tr>");
+            Output.WriteLine("      <tr id=\"external_link_row\" style=\"display:none;\"><td><label for=\"admin_aggr_link\">External Link:</label></td><td colspan=\"2\"><input class=\"sbkAsav_large_input sbkAdmin_Focusable\" name=\"admin_aggr_link\" id=\"admin_aggr_link\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(enteredLink) + "\" /></td></tr>");
 
             // Add the thematic heading line
             Output.WriteLine("      <tr>");
@@ -541,9 +540,9 @@ namespace SobekCM.Library.AdminViewer
             foreach (Thematic_Heading thisHeading in UI_ApplicationCache_Gateway.Thematic_Headings)
             {
                 if ( thisHeading.Text == enteredThematicHeading )
-                    Output.Write("            <option value=\"" + thisHeading.ID + "\" selected=\"selected\">" + HttpUtility.HtmlEncode(thisHeading.Text) + "</option>");
+                    Output.Write("            <option value=\"" + thisHeading.ID + "\" selected=\"selected\">" + System.Net.WebUtility.HtmlEncode(thisHeading.Text) + "</option>");
                 else
-                    Output.Write("            <option value=\"" + thisHeading.ID + "\">" + HttpUtility.HtmlEncode(thisHeading.Text) + "</option>");
+                    Output.Write("            <option value=\"" + thisHeading.ID + "\">" + System.Net.WebUtility.HtmlEncode(thisHeading.Text) + "</option>");
             }
             Output.WriteLine("          </select>");
             Output.WriteLine("        </td>");
@@ -552,7 +551,7 @@ namespace SobekCM.Library.AdminViewer
 
 
             // Add the description box
-            Output.WriteLine("      <tr style=\"vertical-align:top\"><td><label for=\"admin_aggr_desc\">Description:</label></td><td colspan=\"2\"><textarea rows=\"6\" name=\"admin_aggr_desc\" id=\"admin_aggr_desc\" class=\"sbkAsav_input sbkAdmin_Focusable\">" + HttpUtility.HtmlEncode(enteredDescription) + "</textarea></td></tr>");
+            Output.WriteLine("      <tr style=\"vertical-align:top\"><td><label for=\"admin_aggr_desc\">Description:</label></td><td colspan=\"2\"><textarea rows=\"6\" name=\"admin_aggr_desc\" id=\"admin_aggr_desc\" class=\"sbkAsav_input sbkAdmin_Focusable\">" + System.Net.WebUtility.HtmlEncode(enteredDescription) + "</textarea></td></tr>");
 
             // Add checkboxes for is active and is hidden
             Output.Write(enteredIsActive

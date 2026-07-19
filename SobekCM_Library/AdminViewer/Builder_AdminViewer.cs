@@ -1,4 +1,4 @@
-﻿// HTML5 - 10/14
+// HTML5 - 10/14
 
 #region Using directives
 
@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using System.Web;
 using SobekCM.Core.Builder;
 using SobekCM.Core.Client;
 using SobekCM.Core.Navigation;
@@ -601,7 +600,7 @@ namespace SobekCM.Library.AdminViewer
                 else
                     Output.WriteLine("        <td class=\"sbkSeav_TableCenterCell\"><img src=\"" + Static_Resources_Gateway.Checkmark_Png + "\" alt=\"no\" /></td>");
 
-                Output.WriteLine("        <td>" + HttpUtility.HtmlEncode(schedTask.Description) + "</td>");
+                Output.WriteLine("        <td>" + System.Net.WebUtility.HtmlEncode(schedTask.Description) + "</td>");
                 Output.WriteLine("        <td>" + schedTask.DaysOfWeek + "</td>");
                 Output.WriteLine("        <td>" + schedTask.TimesOfDay + "</td>");
 
@@ -610,9 +609,9 @@ namespace SobekCM.Library.AdminViewer
                     Output.WriteLine("        <td>" + schedTask.LastRun + "</td>");
                     
                     if ( !String.IsNullOrEmpty( schedTask.LastRun.Message ))
-                        Output.WriteLine("        <td>" + HttpUtility.HtmlEncode(schedTask.LastRun.Outcome) + " ( " + schedTask.LastRun.Message + " )</td>");
+                        Output.WriteLine("        <td>" + System.Net.WebUtility.HtmlEncode(schedTask.LastRun.Outcome) + " ( " + schedTask.LastRun.Message + " )</td>");
                     else
-                        Output.WriteLine("        <td>" + HttpUtility.HtmlEncode(schedTask.LastRun.Outcome) + "</td>");
+                        Output.WriteLine("        <td>" + System.Net.WebUtility.HtmlEncode(schedTask.LastRun.Outcome) + "</td>");
                 }
                 else
                 {

@@ -1,9 +1,8 @@
-﻿#region Using directives
+#region Using directives
 
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Web;
 using System.Xml;
 using SobekCM.Core.ApplicationState;
 using SobekCM.Core.Configuration.Localization;
@@ -92,9 +91,9 @@ namespace SobekCM.Library.Citation.Elements
             for (int i = 1; i <= TextValues.Count; i++)
             {
                 // Write the text box
-                Output.Write("        <input name=\"" + id_name + "_text" + i + "\" id=\"" + id_name + "_text" + i + "\" class=\"" + html_element_name + "_input sbk_Focusable\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(TextValues[i - 1]) + "\" ");
+                Output.Write("        <input name=\"" + id_name + "_text" + i + "\" id=\"" + id_name + "_text" + i + "\" class=\"" + html_element_name + "_input sbk_Focusable\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(TextValues[i - 1]) + "\" ");
                 if (!String.IsNullOrWhiteSpace(Placeholder))
-                    Output.Write(" placeholder=\"" + HttpUtility.HtmlEncode(Placeholder) + "\"");
+                    Output.Write(" placeholder=\"" + System.Net.WebUtility.HtmlEncode(Placeholder) + "\"");
                 if (textBoxEvents != null)
                     textBoxEvents.Add_Events_HTML(Output);
                 Output.Write(" />");

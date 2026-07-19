@@ -1,5 +1,4 @@
-﻿using System.Text;
-using System.Web;
+using System.Text;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.BriefItem;
 using SobekCM.Core.Navigation;
@@ -53,7 +52,7 @@ namespace SobekCM.Library.Citation.SectionWriter
                     else Output.AppendLine("<br />");
 
                     // Write this
-                    Output.AppendLine("<a href=\"" + CurrentRequest.Base_URL + code + "\">" + HttpUtility.HtmlEncode(aggr.Name) + "</a>");
+                    Output.AppendLine("<a href=\"" + CurrentRequest.Base_URL + code + "\">" + System.Net.WebUtility.HtmlEncode(aggr.Name) + "</a>");
                 }
             }
 

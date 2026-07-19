@@ -180,7 +180,7 @@ namespace SobekCM.Library.Citation.Elements
                     //Output.Write("<span class=\"metadata_sublabel\">Label:</span>");
 
                     //// Add the label input
-                    //Output.Write("<input name=\"" + id_name + "_label" + viewCount + "\" id=\"" + id_name + "_label" + viewCount + "\" class=\"" + html_element_name + "_label_input sbk_Focusable\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(thisView.Label) + "\" /></span>");
+                    //Output.Write("<input name=\"" + id_name + "_label" + viewCount + "\" id=\"" + id_name + "_label" + viewCount + "\" class=\"" + html_element_name + "_label_input sbk_Focusable\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(thisView.Label) + "\" /></span>");
 
                     Output.WriteLine("<br />");
 

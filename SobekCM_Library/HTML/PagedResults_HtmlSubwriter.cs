@@ -6,7 +6,6 @@ using System.Collections.Specialized;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
-using System.Web;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Navigation;
@@ -479,7 +478,7 @@ namespace SobekCM.Library.HTML
                 // Start the form for this, unless we are already in an appropriate form
                 if (Outer_Form_Name.Length == 0)
                 {
-                    string post_url = HttpUtility.HtmlEncode(Context.Items["Original_URL"].ToString());
+                    string post_url = System.Net.WebUtility.HtmlEncode(Context.Items["Original_URL"].ToString());
                     Output.WriteLine("<form name=\"sort_form\" id=\"addedForm\" method=\"post\" action=\"" + post_url + "\" >");
                 }
 
@@ -796,7 +795,7 @@ namespace SobekCM.Library.HTML
                 {
                     Output.WriteLine("<input type=\"hidden\" id=\"item_action\" name=\"item_action\" value=\"\" />");
                 }
-                Output.WriteLine("<input type=\"hidden\" id=\"url_description\" name=\"url_description\" value=\"" + HttpUtility.HtmlEncode(summation) + "\" />");
+                Output.WriteLine("<input type=\"hidden\" id=\"url_description\" name=\"url_description\" value=\"" + System.Net.WebUtility.HtmlEncode(summation) + "\" />");
                 Output.WriteLine("<input type=\"hidden\" id=\"list_type\" name=\"list_type\" value=\"" + currentName + "\" />");
                 Output.WriteLine();
 
@@ -880,7 +879,7 @@ namespace SobekCM.Library.HTML
                     #region Share form
 
                     // Calculate the title and url
-                    string title = HttpUtility.HtmlEncode(summation);
+                    string title = System.Net.WebUtility.HtmlEncode(summation);
                     string share_url = Context.Items["Original_URL"].ToString().Replace("&", "%26").Replace("?", "%3F").Replace("http://", "").Replace("=", "%3D").Replace("\"", "&quot;");
 
                     Output.WriteLine("<!-- Share form -->");
@@ -1100,11 +1099,11 @@ namespace SobekCM.Library.HTML
 							        // Add the term
 							        if (terms[i].Contains(" "))
 							        {
-                                        Output.Write("\"" + HttpUtility.HtmlEncode(terms[i].Replace("''''", "'").Replace("''", "'")).Replace("%2c", ",").Replace("+", " ") + "\" ");
+                                        Output.Write("\"" + System.Net.WebUtility.HtmlEncode(terms[i].Replace("''''", "'").Replace("''", "'")).Replace("%2c", ",").Replace("+", " ") + "\" ");
 							        }
 							        else
 							        {
-                                        Output.Write("'" + HttpUtility.HtmlEncode(terms[i].Replace("''''", "'").Replace("''", "'")).Replace("%2c", ",").Replace("+", " ") + "' ");
+                                        Output.Write("'" + System.Net.WebUtility.HtmlEncode(terms[i].Replace("''''", "'").Replace("''", "'")).Replace("%2c", ",").Replace("+", " ") + "' ");
 							        }
 
 							        // Does the field start with a negative?
@@ -1207,11 +1206,11 @@ namespace SobekCM.Library.HTML
 								// Add the term
 								if (terms[i].Contains(" "))
 								{
-									Output.Write("\"" + HttpUtility.UrlEncode(terms[i].Replace("''''", "'").Replace("''", "'")) + "\" ");
+									Output.Write("\"" + System.Net.WebUtility.UrlEncode(terms[i].Replace("''''", "'").Replace("''", "'")) + "\" ");
 								}
 								else
 								{
-									Output.Write("'" + HttpUtility.UrlEncode(terms[i].Replace("''''", "'").Replace("''", "'")) + "' ");
+									Output.Write("'" + System.Net.WebUtility.UrlEncode(terms[i].Replace("''''", "'").Replace("''", "'")) + "' ");
 								}
 
 								// Does the field start with a negative?
@@ -1295,7 +1294,7 @@ namespace SobekCM.Library.HTML
             //    return UI_ApplicationCache_Gateway.Translation.Get_Translation("full text", RequestSpecificValues.Current_Mode.Language);
 
 			Metadata_Search_Field field = UI_ApplicationCache_Gateway.Settings.Metadata_Search_Field_By_Code(Code);
-			return (field != null) ? in_language + UI_ApplicationCache_Gateway.Translation.Get_Translation(field.Display_Term, RequestSpecificValues.Current_Mode.Language) : in_language + HttpUtility.UrlEncode(Code);
+			return (field != null) ? in_language + UI_ApplicationCache_Gateway.Translation.Get_Translation(field.Display_Term, RequestSpecificValues.Current_Mode.Language) : in_language + System.Net.WebUtility.UrlEncode(Code);
 		}
 
 		#region Methods to create the facets on the left side of the results
@@ -1315,7 +1314,7 @@ namespace SobekCM.Library.HTML
 	        string sort_by_frequency = UI_ApplicationCache_Gateway.Translation.Get_Translation("Sort these facets by frequency", RequestSpecificValues.Current_Mode.Language);
 	        string sort_alphabetically = UI_ApplicationCache_Gateway.Translation.Get_Translation("Sort these facets alphabetically", RequestSpecificValues.Current_Mode.Language);
 
-	        builder.AppendLine("<input type=\"hidden\" id=\"facet\" name=\"facet\" value=\"" + HttpUtility.HtmlEncode(facetInformation) + "\" />");
+	        builder.AppendLine("<input type=\"hidden\" id=\"facet\" name=\"facet\" value=\"" + System.Net.WebUtility.HtmlEncode(facetInformation) + "\" />");
 
 	        builder.AppendLine("<script type=\"text/javascript\">");
 	        builder.AppendLine("  //<![CDATA[");
@@ -1614,7 +1613,7 @@ namespace SobekCM.Library.HTML
 				SortedList<string, string> order_facets = new SortedList<string, string>();
 				while ((facet_count < total_facets_to_show) && (facet_count < Collection.Count))
 				{
-                    order_facets[Collection[facet_count].Facet.ToUpper()] = "<a href=\"\" onclick=\"return add_facet('" + SearchCode + "','" + HttpUtility.HtmlEncode(Collection[facet_count].Facet.Replace("&", "")).Replace("'", "\\'").Replace(",", "").Replace("&", "") + "');\">" + Collection[facet_count].Facet.Replace("&", "&amp;").Replace("&amp;amp;", "&amp;") + "</a> ( " + Collection[facet_count].Frequency + " ) <br />";
+                    order_facets[Collection[facet_count].Facet.ToUpper()] = "<a href=\"\" onclick=\"return add_facet('" + SearchCode + "','" + System.Net.WebUtility.HtmlEncode(Collection[facet_count].Facet.Replace("&", "")).Replace("'", "\\'").Replace(",", "").Replace("&", "") + "');\">" + Collection[facet_count].Facet.Replace("&", "&amp;").Replace("&amp;amp;", "&amp;") + "</a> ( " + Collection[facet_count].Frequency + " ) <br />";
 					facet_count++;
 				}
 				foreach (string html in order_facets.Values)
@@ -1626,7 +1625,7 @@ namespace SobekCM.Library.HTML
 			{
 				while ((facet_count < total_facets_to_show) && (facet_count < Collection.Count))
 				{
-					Builder.AppendLine("<a href=\"\" onclick=\"return add_facet('" + SearchCode + "','" + HttpUtility.HtmlEncode(Collection[facet_count].Facet.Replace("&", "")).Replace("'", "\\'").Replace(",", "").Replace("&", "") + "');\">" + Collection[facet_count].Facet.Replace("&", "&amp;" ).Replace("&amp;amp;","&amp;") + "</a> ( " + Collection[facet_count].Frequency + " ) <br />");
+					Builder.AppendLine("<a href=\"\" onclick=\"return add_facet('" + SearchCode + "','" + System.Net.WebUtility.HtmlEncode(Collection[facet_count].Facet.Replace("&", "")).Replace("'", "\\'").Replace(",", "").Replace("&", "") + "');\">" + Collection[facet_count].Facet.Replace("&", "&amp;" ).Replace("&amp;amp;","&amp;") + "</a> ( " + Collection[facet_count].Frequency + " ) <br />");
 					facet_count++;
 				}
 			}
@@ -1695,7 +1694,7 @@ namespace SobekCM.Library.HTML
                 SortedList<string, string> order_facets = new SortedList<string, string>();
                 while ((facet_count < total_facets_to_show) && (facet_count < Collection.Count))
                 {
-                    order_facets[Collection[facet_count].Facet.ToUpper()] = "<li><a onclick=\"add_facet_callback('" + SearchCode + "','" + HttpUtility.HtmlEncode(Collection[facet_count].Facet.Replace("&", "")).Replace("'", "\\'").Replace(",", "").Replace("&", "") + "');\">" + Collection[facet_count].Facet.Replace("&", "&amp;") + "</a> ( " + Collection[facet_count].Frequency + " ) </li>";
+                    order_facets[Collection[facet_count].Facet.ToUpper()] = "<li><a onclick=\"add_facet_callback('" + SearchCode + "','" + System.Net.WebUtility.HtmlEncode(Collection[facet_count].Facet.Replace("&", "")).Replace("'", "\\'").Replace(",", "").Replace("&", "") + "');\">" + Collection[facet_count].Facet.Replace("&", "&amp;") + "</a> ( " + Collection[facet_count].Frequency + " ) </li>";
                     facet_count++;
                 }
                 foreach (string html in order_facets.Values)
@@ -1707,7 +1706,7 @@ namespace SobekCM.Library.HTML
             {
                 while ((facet_count < total_facets_to_show) && (facet_count < Collection.Count))
                 {
-                    Builder.AppendLine("<li><a onclick=\"add_facet_callback('" + SearchCode + "','" + HttpUtility.HtmlEncode(Collection[facet_count].Facet.Replace("&", "")).Replace("'", "\\'").Replace(",", "").Replace("&", "") + "');\">" + Collection[facet_count].Facet.Replace("&", "&amp;") + "</a> ( " + Collection[facet_count].Frequency + " )</li>");
+                    Builder.AppendLine("<li><a onclick=\"add_facet_callback('" + SearchCode + "','" + System.Net.WebUtility.HtmlEncode(Collection[facet_count].Facet.Replace("&", "")).Replace("'", "\\'").Replace(",", "").Replace("&", "") + "');\">" + Collection[facet_count].Facet.Replace("&", "&amp;") + "</a> ( " + Collection[facet_count].Frequency + " )</li>");
                     facet_count++;
                 }
             }

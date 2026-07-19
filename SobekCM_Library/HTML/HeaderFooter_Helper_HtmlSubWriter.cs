@@ -1,10 +1,9 @@
-﻿#region Using directives
+#region Using directives
 
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using System.Web;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.BriefItem;
 using SobekCM.Core.Configuration.Localization;
@@ -496,8 +495,8 @@ namespace SobekCM.Library.HTML
                 if (logout_return_url.IndexOf("l/") == 0)
                     logout_return_url = logout_return_url.Substring(2);
 
-                return_url = HttpUtility.UrlEncode(return_url);
-                logout_return_url = HttpUtility.UrlEncode(logout_return_url);
+                return_url = System.Net.WebUtility.UrlEncode(return_url);
+                logout_return_url = System.Net.WebUtility.UrlEncode(logout_return_url);
 
                 if ((url_options.Length > 0) || (return_url.Length > 0))
                 {

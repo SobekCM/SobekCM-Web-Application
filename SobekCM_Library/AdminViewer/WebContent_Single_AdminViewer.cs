@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
 using System.Text;
-using System.Web;
 using SobekCM.Core.Client;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Message;
@@ -491,7 +490,7 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine("    <td>&nbsp;</td>");
             Output.WriteLine("    <td class=\"sbkSaav_TableLabel\"><label for=\"admin_webcontent_title\">Title:</label></td>");
 			Output.WriteLine("    <td>");
-            Output.WriteLine("      <table class=\"sbkSaav_InnerTable\"><tr><td><input class=\"sbkWcav_large_input sbkAdmin_Focusable\" name=\"admin_webcontent_title\" id=\"admin_webcontent_title\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(webContent.Title) + "\" /></td>");
+            Output.WriteLine("      <table class=\"sbkSaav_InnerTable\"><tr><td><input class=\"sbkWcav_large_input sbkAdmin_Focusable\" name=\"admin_webcontent_title\" id=\"admin_webcontent_title\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(webContent.Title) + "\" /></td>");
             Output.WriteLine("        <td><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources_Gateway.Help_Button_Jpg + "\" onclick=\"alert('" + TITLE_HELP + "');\"  title=\"" + TITLE_HELP + "\" /></td></tr></table>");
 			Output.WriteLine("     </td>");
 			Output.WriteLine("  </tr>");
@@ -501,7 +500,7 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine("    <td>&nbsp;</td>");
             Output.WriteLine("    <td class=\"sbkSaav_TableLabel\"><label for=\"admin_webcontent_author\">Author(s):</label></td>");
 			Output.WriteLine("    <td>");
-            Output.WriteLine("      <table class=\"sbkSaav_InnerTable\"><tr><td><input class=\"sbkWcav_large_input sbkAdmin_Focusable\" name=\"admin_webcontent_author\" id=\"admin_webcontent_author\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(webContent.Author) + "\" /></td>");
+            Output.WriteLine("      <table class=\"sbkSaav_InnerTable\"><tr><td><input class=\"sbkWcav_large_input sbkAdmin_Focusable\" name=\"admin_webcontent_author\" id=\"admin_webcontent_author\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(webContent.Author) + "\" /></td>");
             Output.WriteLine("        <td><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources_Gateway.Help_Button_Jpg + "\" onclick=\"alert('" + AUTHOR_HELP + "');\"  title=\"" + AUTHOR_HELP + "\" /></td></tr></table>");
 			Output.WriteLine("     </td>");
 			Output.WriteLine("  </tr>");
@@ -511,7 +510,7 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine("    <td>&nbsp;</td>");
 			Output.WriteLine("    <td class=\"sbkSaav_TableLabel2\"><label for=\"admin_webcontent_desc\">Description:</label></td>");
 			Output.WriteLine("    <td>");
-            Output.WriteLine("      <table class=\"sbkSaav_InnerTable2\"><tr style=\"vertical-align:top\"><td><textarea class=\"sbkWcav_large_textbox sbkAdmin_Focusable\" rows=\"6\" name=\"admin_webcontent_desc\" id=\"admin_webcontent_desc\">" + HttpUtility.HtmlEncode(webContent.Description) + "</textarea></td>");
+            Output.WriteLine("      <table class=\"sbkSaav_InnerTable2\"><tr style=\"vertical-align:top\"><td><textarea class=\"sbkWcav_large_textbox sbkAdmin_Focusable\" rows=\"6\" name=\"admin_webcontent_desc\" id=\"admin_webcontent_desc\">" + System.Net.WebUtility.HtmlEncode(webContent.Description) + "</textarea></td>");
 			Output.WriteLine("        <td><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources_Gateway.Help_Button_Jpg + "\" onclick=\"alert('" + DESCRIPTION_HELP + "');\"  title=\"" + DESCRIPTION_HELP + "\" /></td></tr></table>");
 			Output.WriteLine("     </td>");
 			Output.WriteLine("  </tr>");
@@ -521,7 +520,7 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine("    <td>&nbsp;</td>");
             Output.WriteLine("    <td class=\"sbkSaav_TableLabel\"><label for=\"admin_webcontent_keywords\">Keywords:</label></td>");
 			Output.WriteLine("    <td>");
-            Output.WriteLine("      <table class=\"sbkSaav_InnerTable\"><tr><td><input class=\"sbkWcav_large_input sbkAdmin_Focusable\" name=\"admin_webcontent_keywords\" id=\"admin_webcontent_keywords\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(webContent.Keywords) + "\" /></td>");
+            Output.WriteLine("      <table class=\"sbkSaav_InnerTable\"><tr><td><input class=\"sbkWcav_large_input sbkAdmin_Focusable\" name=\"admin_webcontent_keywords\" id=\"admin_webcontent_keywords\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(webContent.Keywords) + "\" /></td>");
             Output.WriteLine("        <td><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources_Gateway.Help_Button_Jpg + "\" onclick=\"alert('" + KEYWORD_HELP + "');\"  title=\"" + KEYWORD_HELP + "\" /></td></tr></table>");
 			Output.WriteLine("     </td>");
 			Output.WriteLine("  </tr>");
@@ -531,7 +530,7 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("    <td>&nbsp;</td>");
             Output.WriteLine("    <td class=\"sbkSaav_TableLabel2\"><label for=\"admin_webcontent_head\">Extra Head Content:</label></td>");
             Output.WriteLine("    <td>");
-            Output.WriteLine("      <table class=\"sbkSaav_InnerTable2\"><tr style=\"vertical-align:top\"><td><textarea class=\"sbkWcav_jumbo_textbox sbkAdmin_Focusable\" rows=\"6\" name=\"admin_webcontent_head\" id=\"admin_webcontent_head\">" + HttpUtility.HtmlEncode(webContent.Extra_Head_Info) + "</textarea></td>");
+            Output.WriteLine("      <table class=\"sbkSaav_InnerTable2\"><tr style=\"vertical-align:top\"><td><textarea class=\"sbkWcav_jumbo_textbox sbkAdmin_Focusable\" rows=\"6\" name=\"admin_webcontent_head\" id=\"admin_webcontent_head\">" + System.Net.WebUtility.HtmlEncode(webContent.Extra_Head_Info) + "</textarea></td>");
             Output.WriteLine("        <td><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources_Gateway.Help_Button_Jpg + "\" onclick=\"alert('" + EXTRA_HEADER_HELP + "');\"  title=\"" + EXTRA_HEADER_HELP + "\" /></td></tr></table>");
             Output.WriteLine("     </td>");
             Output.WriteLine("  </tr>");
@@ -541,7 +540,7 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("    <td>&nbsp;</td>");
             Output.WriteLine("    <td class=\"sbkSaav_TableLabel\"><label for=\"admin_webcontent_redirect\">Redirect URL:</label></td>");
             Output.WriteLine("    <td>");
-            Output.WriteLine("      <table class=\"sbkSaav_InnerTable\"><tr><td><input class=\"sbkWcav_large_input sbkAdmin_Focusable\" name=\"admin_webcontent_redirect\" id=\"admin_webcontent_redirect\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(webContent.Redirect) + "\" /></td>");
+            Output.WriteLine("      <table class=\"sbkSaav_InnerTable\"><tr><td><input class=\"sbkWcav_large_input sbkAdmin_Focusable\" name=\"admin_webcontent_redirect\" id=\"admin_webcontent_redirect\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(webContent.Redirect) + "\" /></td>");
             Output.WriteLine("        <td><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources_Gateway.Help_Button_Jpg + "\" onclick=\"alert('" + REDIRECT_HELP + "');\"  title=\"" + REDIRECT_HELP + "\" /></td></tr></table>");
             Output.WriteLine("     </td>");
             Output.WriteLine("  </tr>");
@@ -573,11 +572,11 @@ namespace SobekCM.Library.AdminViewer
             {
                 if (String.Compare(webContent.Web_Skin, skinCode, StringComparison.OrdinalIgnoreCase) == 0)
                 {
-                    Output.Write("<option value=\"" + skinCode + "\" selected=\"selected\" >" + HttpUtility.HtmlEncode(skinCode) + "</option>");
+                    Output.Write("<option value=\"" + skinCode + "\" selected=\"selected\" >" + System.Net.WebUtility.HtmlEncode(skinCode) + "</option>");
                 }
                 else
                 {
-                    Output.Write("<option value=\"" + skinCode + "\">" + HttpUtility.HtmlEncode(skinCode) + "</option>");
+                    Output.Write("<option value=\"" + skinCode + "\">" + System.Net.WebUtility.HtmlEncode(skinCode) + "</option>");
                 }
             }
             Output.WriteLine("</select>");
@@ -593,7 +592,7 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("    <td>&nbsp;</td>");
             Output.WriteLine("    <td class=\"sbkSaav_TableLabel\"><label for=\"admin_webcontent_banner\">Banner:</label></td>");
             Output.WriteLine("    <td>");
-            Output.WriteLine("      <table class=\"sbkSaav_InnerTable\"><tr><td><input class=\"sbkWcav_large_input sbkAdmin_Focusable\" name=\"admin_webcontent_banner\" id=\"admin_webcontent_banner\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(webContent.Banner) + "\" /></td>");
+            Output.WriteLine("      <table class=\"sbkSaav_InnerTable\"><tr><td><input class=\"sbkWcav_large_input sbkAdmin_Focusable\" name=\"admin_webcontent_banner\" id=\"admin_webcontent_banner\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(webContent.Banner) + "\" /></td>");
             Output.WriteLine("        <td><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources_Gateway.Help_Button_Jpg + "\" onclick=\"alert('" + BANNER_HELP + "');\"  title=\"" + BANNER_HELP + "\" /></td></tr></table>");
             Output.WriteLine("     </td>");
             Output.WriteLine("  </tr>");
@@ -627,11 +626,11 @@ namespace SobekCM.Library.AdminViewer
 		        {
 		            if (String.Compare(webContent.SiteMap, siteCode, StringComparison.OrdinalIgnoreCase) == 0)
 		            {
-		                Output.Write("<option value=\"" + siteCode + "\" selected=\"selected\" >" + HttpUtility.HtmlEncode(siteCode) + "</option>");
+		                Output.Write("<option value=\"" + siteCode + "\" selected=\"selected\" >" + System.Net.WebUtility.HtmlEncode(siteCode) + "</option>");
 		            }
 		            else
 		            {
-		                Output.Write("<option value=\"" + siteCode + "\">" + HttpUtility.HtmlEncode(siteCode) + "</option>");
+		                Output.Write("<option value=\"" + siteCode + "\">" + System.Net.WebUtility.HtmlEncode(siteCode) + "</option>");
 		            }
 		        }
 		    }
@@ -1127,7 +1126,7 @@ namespace SobekCM.Library.AdminViewer
             //// Add the default language label
             //Output.WriteLine("        <tr>");
             //Output.WriteLine("          <td><label for=\"admin_webcontent_label\">Title (default):</label></td>");
-            //Output.WriteLine("          <td colspan=\"2\"><input class=\"sbkSaav_SubLargeInput sbkAdmin_Focusable\" name=\"admin_webcontent_label\" id=\"admin_webcontent_label\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(childPageLabel ?? String.Empty) + "\" /></td>");
+            //Output.WriteLine("          <td colspan=\"2\"><input class=\"sbkSaav_SubLargeInput sbkAdmin_Focusable\" name=\"admin_webcontent_label\" id=\"admin_webcontent_label\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(childPageLabel ?? String.Empty) + "\" /></td>");
             //Output.WriteLine("          <td style=\"width:30px\"><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources.Help_Button_Jpg + "\" onclick=\"alert('" + LABEL_HELP + "');\"  title=\"" + LABEL_HELP + "\" /></td>");
             //Output.WriteLine("        </tr>");
 

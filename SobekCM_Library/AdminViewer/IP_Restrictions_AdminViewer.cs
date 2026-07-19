@@ -7,7 +7,6 @@ using System.Collections.Specialized;
 using System.Data;
 using System.IO;
 using System.Linq;
-using System.Web;
 using SobekCM.Core.ApplicationState;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.UI_Configuration;
@@ -351,14 +350,14 @@ namespace SobekCM.Library.AdminViewer
                 // Add line for range title
                 Output.WriteLine("      <tr>");
                 Output.WriteLine("        <td style=\"width:120px;\"><label for=\"admin_title\">Title:</label></td>");
-				Output.WriteLine("        <td><input class=\"sbkIpav_large_input sbkAdmin_Focusable\" name=\"admin_title\" id=\"admin_title\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(thisRange.Title) + "\" " + readonly_tag + " /></td>");
+				Output.WriteLine("        <td><input class=\"sbkIpav_large_input sbkAdmin_Focusable\" name=\"admin_title\" id=\"admin_title\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(thisRange.Title) + "\" " + readonly_tag + " /></td>");
                 Output.WriteLine("      </tr>");
 
 				// Add the notes text area box
-				Output.WriteLine("      <tr style=\"vertical-align:top\"><td><label for=\"admin_notes\">Notes:</label></td><td colspan=\"2\"><textarea rows=\"5\" name=\"admin_notes\" id=\"admin_notes\" class=\"sbkIpav_input sbkAdmin_Focusable\"" + readonly_tag + ">" + HttpUtility.HtmlEncode(thisRange.Notes) + "</textarea></td></tr>");
+				Output.WriteLine("      <tr style=\"vertical-align:top\"><td><label for=\"admin_notes\">Notes:</label></td><td colspan=\"2\"><textarea rows=\"5\" name=\"admin_notes\" id=\"admin_notes\" class=\"sbkIpav_input sbkAdmin_Focusable\"" + readonly_tag + ">" + System.Net.WebUtility.HtmlEncode(thisRange.Notes) + "</textarea></td></tr>");
 
 				// Add the message text area box
-				Output.WriteLine("      <tr style=\"vertical-align:top\"><td><label for=\"admin_message\">Message:</label></td><td colspan=\"2\"><textarea rows=\"10\" name=\"admin_message\" id=\"admin_message\" class=\"sbkIpav_input sbkAdmin_Focusable\"" + readonly_tag + " >" + HttpUtility.HtmlEncode(thisRange.Item_Restricted_Statement) + "</textarea></td></tr>");
+				Output.WriteLine("      <tr style=\"vertical-align:top\"><td><label for=\"admin_message\">Message:</label></td><td colspan=\"2\"><textarea rows=\"10\" name=\"admin_message\" id=\"admin_message\" class=\"sbkIpav_input sbkAdmin_Focusable\"" + readonly_tag + " >" + System.Net.WebUtility.HtmlEncode(thisRange.Item_Restricted_Statement) + "</textarea></td></tr>");
 
                 Output.WriteLine("    </table>");
                 Output.WriteLine("  </div>");
@@ -389,7 +388,7 @@ namespace SobekCM.Library.AdminViewer
                     // Add the rest of the row with data
 					Output.WriteLine("      <td><input class=\"sbkIpav_small_input sbkAdmin_Focusable\" name=\"admin_ipstart_" + ip_primary + "\" id=\"admin_ipstart_" + ip_primary + "\" type=\"text\" value=\"" + thisRow["StartIP"].ToString().Trim() + "\" /></td>");
 					Output.WriteLine("      <td><input class=\"sbkIpav_small_input sbkAdmin_Focusable\" name=\"admin_ipend_" + ip_primary + "\" id=\"admin_ipend_" + ip_primary + "\" type=\"text\" value=\"" + thisRow["EndIP"].ToString().Trim() + "\" /></td>");
-					Output.WriteLine("      <td><input class=\"sbkIpav_medium_input sbkAdmin_Focusable\" name=\"admin_iplabel_" + ip_primary + "\" id=\"admin_iplabel_" + ip_primary + "\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(thisRow["Notes"].ToString().Trim()) + "\" /></td>");
+					Output.WriteLine("      <td><input class=\"sbkIpav_medium_input sbkAdmin_Focusable\" name=\"admin_iplabel_" + ip_primary + "\" id=\"admin_iplabel_" + ip_primary + "\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(thisRow["Notes"].ToString().Trim()) + "\" /></td>");
                     Output.WriteLine("     </tr>");
 					Output.WriteLine("    <tr><td class=\"sbkAdm_TableRule\" colspan=\"" + columns  + "\"></td></tr>");
                 }
@@ -435,14 +434,14 @@ namespace SobekCM.Library.AdminViewer
 		        // Add line for range title
 		        Output.WriteLine("      <tr>");
 		        Output.WriteLine("        <td style=\"width:120px;\"><label for=\"admin_title\">Title:</label></td>");
-		        Output.WriteLine("        <td><input class=\"sbkIpav_large_input sbkAdmin_Focusable\" name=\"new_admin_title\" id=\"new_admin_title\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(entered_title) + "\" /></td>");
+		        Output.WriteLine("        <td><input class=\"sbkIpav_large_input sbkAdmin_Focusable\" name=\"new_admin_title\" id=\"new_admin_title\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(entered_title) + "\" /></td>");
 		        Output.WriteLine("      </tr>");
 
 		        // Add the notes text area box
-                Output.WriteLine("      <tr style=\"vertical-align:top\"><td><label for=\"admin_notes\">Notes:</label></td><td colspan=\"2\"><textarea rows=\"5\" name=\"new_admin_notes\" id=\"new_admin_notes\" class=\"sbkIpav_input sbkAdmin_Focusable\" >" + HttpUtility.HtmlEncode(entered_notes) + "</textarea></td></tr>");
+                Output.WriteLine("      <tr style=\"vertical-align:top\"><td><label for=\"admin_notes\">Notes:</label></td><td colspan=\"2\"><textarea rows=\"5\" name=\"new_admin_notes\" id=\"new_admin_notes\" class=\"sbkIpav_input sbkAdmin_Focusable\" >" + System.Net.WebUtility.HtmlEncode(entered_notes) + "</textarea></td></tr>");
 
 		        // Add the message text area box
-                Output.WriteLine("      <tr style=\"vertical-align:top\"><td><label for=\"admin_message\">Message:</label></td><td colspan=\"2\"><textarea rows=\"10\" name=\"new_admin_message\" id=\"new_admin_message\" class=\"sbkIpav_input sbkAdmin_Focusable\" >" + HttpUtility.HtmlEncode(entered_message) + "</textarea></td></tr>");
+                Output.WriteLine("      <tr style=\"vertical-align:top\"><td><label for=\"admin_message\">Message:</label></td><td colspan=\"2\"><textarea rows=\"10\" name=\"new_admin_message\" id=\"new_admin_message\" class=\"sbkIpav_input sbkAdmin_Focusable\" >" + System.Net.WebUtility.HtmlEncode(entered_message) + "</textarea></td></tr>");
 		        // Add the SAVE button
 				Output.WriteLine("      <tr style=\"height:30px; text-align: center;\"><td></td><td><button title=\"Save new IP restrictive range\" class=\"sbkAdm_RoundButton\" onclick=\"return save_new_ip_range();\">SAVE <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button></td></tr>");
 		        Output.WriteLine("    </table>");
@@ -488,15 +487,15 @@ namespace SobekCM.Library.AdminViewer
                     Output.WriteLine("<a title=\"Click to " + action_verb + " this group of IP addresses\" href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + action_verb + "</a>");
 
                     if (!readOnlyMode)
-                        Output.WriteLine("| <a title=\"Click to delete this group of IP addresses\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\"  onclick=\"return delete_ip_group(" + existingRange.RangeID + ", '" + HttpUtility.HtmlEncode(existingRange.Title) + "');\">delete</a>");
+                        Output.WriteLine("| <a title=\"Click to delete this group of IP addresses\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\"  onclick=\"return delete_ip_group(" + existingRange.RangeID + ", '" + System.Net.WebUtility.HtmlEncode(existingRange.Title) + "');\">delete</a>");
                     else
                         Output.WriteLine("| <a title=\"Only SYSTEM administrators can delete a group of IP addresses\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\"  onclick=\"alert('Only SYSTEM administrators can delete a group of IP addresses'); return false;\">delete</a>");
 
 
                     Output.WriteLine(" )</td>");
 
-                    Output.WriteLine("      <td>" + HttpUtility.HtmlEncode(existingRange.Title) + "</td>");
-                    Output.WriteLine("      <td>" + HttpUtility.HtmlEncode(existingRange.Notes) + "</td>");
+                    Output.WriteLine("      <td>" + System.Net.WebUtility.HtmlEncode(existingRange.Title) + "</td>");
+                    Output.WriteLine("      <td>" + System.Net.WebUtility.HtmlEncode(existingRange.Notes) + "</td>");
                     Output.WriteLine("    </tr>");
                     Output.WriteLine("    <tr><td class=\"sbkAdm_TableRule\" colspan=\"3\"></td></tr>");
                 }

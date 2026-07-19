@@ -1,10 +1,9 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Web;
 using SobekCM.Core.BriefItem;
 using SobekCM.Core.Client;
 using SobekCM.Core.Configuration.Localization;
@@ -573,23 +572,23 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 Output.WriteLine("    <td><a href=\"" + redirect_url.Replace("<%VID%>", thisItem.VID) + "\">" + thisItem.VID + "</a></td>");
                 if ( String.IsNullOrEmpty(thisItem.Level1_Text))
                 {
-                    Output.WriteLine("    <td>" + HttpUtility.HtmlEncode(thisItem.Title) + "</td>");
+                    Output.WriteLine("    <td>" + System.Net.WebUtility.HtmlEncode(thisItem.Title) + "</td>");
                 }
                 else
                 {
-                    Output.WriteLine("    <td>" + HttpUtility.HtmlEncode(thisItem.Level1_Text) + "</td>");
+                    Output.WriteLine("    <td>" + System.Net.WebUtility.HtmlEncode(thisItem.Level1_Text) + "</td>");
                 }
                 if (depth > 1)
                 {
                     if ( !String.IsNullOrEmpty(thisItem.Level2_Text))
-                        Output.WriteLine("    <td>" + HttpUtility.HtmlEncode(thisItem.Level2_Text) + "</td>");
+                        Output.WriteLine("    <td>" + System.Net.WebUtility.HtmlEncode(thisItem.Level2_Text) + "</td>");
                     else
                         Output.WriteLine("    <td>&nbsp;</td>");
                 }
                 if (depth > 2)
                 {
                     if (!String.IsNullOrEmpty(thisItem.Level3_Text))
-                        Output.WriteLine("    <td>" + HttpUtility.HtmlEncode(thisItem.Level3_Text) + "</td>");
+                        Output.WriteLine("    <td>" + System.Net.WebUtility.HtmlEncode(thisItem.Level3_Text) + "</td>");
                     else
                         Output.WriteLine("    <td>&nbsp;</td>");
                 }

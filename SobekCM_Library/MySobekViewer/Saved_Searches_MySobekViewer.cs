@@ -4,7 +4,6 @@ using System;
 using System.Collections.Specialized;
 using System.Data;
 using System.IO;
-using System.Web;
 using SobekCM.Core.Navigation;
 using SobekCM.Library.Database;
 using SobekCM.Library.HTML;

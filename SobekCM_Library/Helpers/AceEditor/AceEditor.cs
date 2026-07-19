@@ -1,6 +1,5 @@
-﻿using System;
+using System;
 using System.IO;
-using System.Web;
 using SobekCM.Library.UI;
 
 namespace SobekCM.Library.Helpers.AceEditor
@@ -89,7 +88,7 @@ namespace SobekCM.Library.Helpers.AceEditor
             Output.WriteLine("<textarea style=\"visibility:hidden;position:absolute;\" id=\"" + ContentsId + "\" name=\"" + ContentsId + "\" ></textarea>");
             Output.WriteLine("<div id=\"" + EditorId + "Div\">");
             Output.WriteLine("<pre id=\"" + EditorId + "\">");
-            Output.WriteLine(HttpUtility.HtmlEncode(Contents));
+            Output.WriteLine(System.Net.WebUtility.HtmlEncode(Contents));
             Output.WriteLine("</pre>  ");
             Output.WriteLine("</div>");
             Output.WriteLine();

@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using System;
 using System.Collections.Generic;
@@ -255,7 +255,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				{
 					Output.WriteLine("              <tr>");
 					Output.WriteLine("                <td class=\"sbkDvd_SingleRowColumn1\">" + tbl.Columns[i].ColumnName.Replace("_", " ") + ":</td>");
-					Output.WriteLine("                <td class=\"sbkDvd_SingleRowColumn2\">" + HttpUtility.HtmlEncode(thisRow[i]) + "</td>");
+					Output.WriteLine("                <td class=\"sbkDvd_SingleRowColumn2\">" + System.Net.WebUtility.HtmlEncode(thisRow[i]) + "</td>");
 					Output.WriteLine("              <tr>");
 				}
 				Output.WriteLine("            </table>");
@@ -287,7 +287,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				if ((itemDataset.Tables.Count == 1) || ((CurrentMode.SubPage < itemDataset.Tables.Count + 2) && (CurrentMode.SubPage >= 2)))
 				{
 					Output.WriteLine("            <div id=\"sbkDvd_SearchDiv\">Filter Results for ");
-					Output.WriteLine("              <input type=\"textbox\" id=\"sbkDvd_SearchBox1\" name=\"bkDvd_SearchBox1\" value=\"" + HttpUtility.HtmlEncode(term) + "\" />");
+					Output.WriteLine("              <input type=\"textbox\" id=\"sbkDvd_SearchBox1\" name=\"bkDvd_SearchBox1\" value=\"" + System.Net.WebUtility.HtmlEncode(term) + "\" />");
 					Output.WriteLine("              in");
 					Output.WriteLine("              <select id=\"sbkDvd_Select1\" name=\"bkDvd_Select1\">");
 
@@ -401,7 +401,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				//	Output.WriteLine(INDENT + "        <td>" + row_number + "</td>");
 				//	foreach (DataColumn thisColumn in eachColumn)
 				//	{
-				//		Output.WriteLine(INDENT + "        <td>" + HttpUtility.HtmlEncode(thisRow[thisColumn]) + "</td>");
+				//		Output.WriteLine(INDENT + "        <td>" + System.Net.WebUtility.HtmlEncode(thisRow[thisColumn]) + "</td>");
 				//	}
 				//	Output.WriteLine(INDENT + "      </tr>");
 				//	row_number++;

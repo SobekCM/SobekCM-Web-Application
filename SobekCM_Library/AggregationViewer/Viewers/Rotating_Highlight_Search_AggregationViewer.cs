@@ -1,9 +1,8 @@
-﻿#region Using directives
+#region Using directives
 
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Web;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Navigation;
@@ -200,9 +199,9 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                     Output.WriteLine("          <div class=\"contentdiv\" style=\"width:" + width + "px\">");
                     string highlight_text = String.Empty;
                     if (!String.IsNullOrEmpty(highlight.Text))
-                        highlight_text = HttpUtility.HtmlEncode(highlight.Text);
+                        highlight_text = System.Net.WebUtility.HtmlEncode(highlight.Text);
                     else if (!String.IsNullOrEmpty(highlight.Tooltip))
-                        highlight_text = HttpUtility.HtmlEncode(highlight.Tooltip);
+                        highlight_text = System.Net.WebUtility.HtmlEncode(highlight.Tooltip);
                     if (!String.IsNullOrEmpty(highlight.Link))
                     {
                         Output.WriteLine("            <a href=\"" + highlight.Link + "\" title=\"" + highlight_text + "\" >");
@@ -243,7 +242,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             {
                 if ( (ViewBag.Hierarchy_Object.Highlights != null ) && (ViewBag.Hierarchy_Object.Highlights.Count > 0))
                 {
-                    Output.WriteLine("            <a href=\"" + ViewBag.Hierarchy_Object.Highlights[0].Link + "\" title=\"" + HttpUtility.HtmlEncode(ViewBag.Hierarchy_Object.Highlights[0].Text) + "\" >");
+                    Output.WriteLine("            <a href=\"" + ViewBag.Hierarchy_Object.Highlights[0].Link + "\" title=\"" + System.Net.WebUtility.HtmlEncode(ViewBag.Hierarchy_Object.Highlights[0].Text) + "\" >");
                     if (ViewBag.Hierarchy_Object.Highlights[0].Image.IndexOf("http:") >= 0)
                         Output.WriteLine("              <img src=\"" + ViewBag.Hierarchy_Object.Highlights[0].Image + "\" />");
                     else

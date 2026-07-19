@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using System;
 using SobekCM.Core.BriefItem;
@@ -37,7 +37,7 @@ namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
                         //    if (hieroSubj.Country.Length > 0)
                         //    {
                         //        if (spatial_builder.Length > 0) spatial_builder.Append(" -- ");
-                        //        spatial_builder.Append(search_link.Replace("<%VALUE%>", HttpUtility.HtmlEncode(hieroSubj.Country).Replace(",", "").Replace("&", "").Replace(" ", "+")).Replace("<%CODE%>", "CO") + hieroSubj.Country + search_link_end);
+                        //        spatial_builder.Append(search_link.Replace("<%VALUE%>", System.Net.WebUtility.HtmlEncode(hieroSubj.Country).Replace(",", "").Replace("&", "").Replace(" ", "+")).Replace("<%CODE%>", "CO") + hieroSubj.Country + search_link_end);
                         //    }
                         //    if (hieroSubj.Province.Length > 0)
                         //    {
@@ -52,7 +52,7 @@ namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
                         //    if (hieroSubj.State.Length > 0)
                         //    {
                         //        if (spatial_builder.Length > 0) spatial_builder.Append(" -- ");
-                        //        spatial_builder.Append(search_link.Replace("<%VALUE%>", HttpUtility.HtmlEncode(hieroSubj.State).Replace(",", "").Replace("&", "").Replace(" ", "+")).Replace("<%CODE%>", "ST") + hieroSubj.State + search_link_end);
+                        //        spatial_builder.Append(search_link.Replace("<%VALUE%>", System.Net.WebUtility.HtmlEncode(hieroSubj.State).Replace(",", "").Replace("&", "").Replace(" ", "+")).Replace("<%CODE%>", "ST") + hieroSubj.State + search_link_end);
                         //    }
                         //    if (hieroSubj.Territory.Length > 0)
                         //    {
@@ -62,12 +62,12 @@ namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
                         //    if (hieroSubj.County.Length > 0)
                         //    {
                         //        if (spatial_builder.Length > 0) spatial_builder.Append(" -- ");
-                        //        spatial_builder.Append(search_link.Replace("<%VALUE%>", HttpUtility.HtmlEncode(hieroSubj.County).Replace(",", "").Replace("&", "".Replace(" ", "+"))).Replace("<%CODE%>", "CT") + hieroSubj.County + search_link_end);
+                        //        spatial_builder.Append(search_link.Replace("<%VALUE%>", System.Net.WebUtility.HtmlEncode(hieroSubj.County).Replace(",", "").Replace("&", "".Replace(" ", "+"))).Replace("<%CODE%>", "CT") + hieroSubj.County + search_link_end);
                         //    }
                         //    if (hieroSubj.City.Length > 0)
                         //    {
                         //        if (spatial_builder.Length > 0) spatial_builder.Append(" -- ");
-                        //        spatial_builder.Append(search_link.Replace("<%VALUE%>", HttpUtility.HtmlEncode(hieroSubj.City).Replace(",", "").Replace("&", "").Replace(" ", "+")).Replace("<%CODE%>", "CI") + hieroSubj.City + search_link_end);
+                        //        spatial_builder.Append(search_link.Replace("<%VALUE%>", System.Net.WebUtility.HtmlEncode(hieroSubj.City).Replace(",", "").Replace("&", "").Replace(" ", "+")).Replace("<%CODE%>", "CI") + hieroSubj.City + search_link_end);
                         //    }
                         //    if (hieroSubj.CitySection.Length > 0)
                         //    {

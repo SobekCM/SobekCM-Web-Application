@@ -10,7 +10,6 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Web;
 using DocumentFormat.OpenXml.Drawing.Diagrams;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.Configuration.Localization;
@@ -1840,7 +1839,7 @@ namespace SobekCM.Library.MySobekViewer
             {
                 Output.WriteLine("Enter a URL for this digital resource:");
                 Output.WriteLine("<blockquote>");
-                Output.WriteLine("<input type=\"text\" class=\"upload_url_input\" id=\"url_input\" name=\"url_input\" value=\"" + HttpUtility.HtmlEncode(item.Bib_Info.Location.Other_URL) + "\" ></input>");
+                Output.WriteLine("<input type=\"text\" class=\"upload_url_input\" id=\"url_input\" name=\"url_input\" value=\"" + System.Net.WebUtility.HtmlEncode(item.Bib_Info.Location.Other_URL) + "\" ></input>");
                 Output.WriteLine("</blockquote>");
             }
 

@@ -110,7 +110,7 @@ namespace SobekCM.Library.Citation.Elements
                     Output.Write("<span class=\"metadata_sublabel\">" + Translator.Get_Translation("End Year", CurrentLanguage) + ":</span>");
 					Output.Write("<input name=\"" + id_name + "_end" + i + "\" id=\"" + id_name + "_end" + i + "\" class=\"" + html_element_name + "_year_input sbk_Focusable\" type=\"text\" value=\"" + temporalSubjects[i - 1].End_Year.ToString().Replace("-1", "") + "\" />");
                     Output.Write("<span class=\"metadata_sublabel\">" + Translator.Get_Translation("Period", CurrentLanguage) + ":</span>");
-					Output.Write("<input name=\"" + id_name + "_period" + i + "\" id=\"" + id_name + "_period" + i + "\" class=\"" + html_element_name + "_period_input sbk_Focusable\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(temporalSubjects[i - 1].TimePeriod) + "\" />");
+					Output.Write("<input name=\"" + id_name + "_period" + i + "\" id=\"" + id_name + "_period" + i + "\" class=\"" + html_element_name + "_period_input sbk_Focusable\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(temporalSubjects[i - 1].TimePeriod) + "\" />");
 
                     Output.WriteLine(i < temporalSubjects.Count ? "<br />" : "\n            </div>");
                 }

@@ -91,8 +91,8 @@ namespace SobekCM.Library.Citation.Elements
             Output.WriteLine("    <tr><td style=\"width:100px\">Level 1:</td>");
             if (Bib.Behaviors.Serial_Info.Count > 0)
             {
-                Output.WriteLine("<td><input type=\"text\" class=\"form_serialhierarchy_text_input sbk_Focusable\" id=\"form_serialhierarchy_enum1text\" name=\"form_serialhierarchy_enum1text\" value=\"" + HttpUtility.HtmlEncode(Bib.Behaviors.Serial_Info[0].Display) + "\" /></td>");
-				Output.WriteLine("<td><input type=\"text\" class=\"form_serialhierarchy_order_input sbk_Focusable\" id=\"form_serialhierarchy_enum1order\" name=\"form_serialhierarchy_enum1order\" value=\"" + HttpUtility.HtmlEncode(Bib.Behaviors.Serial_Info[0].Order.ToString()) + "\" /></td></tr>");
+                Output.WriteLine("<td><input type=\"text\" class=\"form_serialhierarchy_text_input sbk_Focusable\" id=\"form_serialhierarchy_enum1text\" name=\"form_serialhierarchy_enum1text\" value=\"" + System.Net.WebUtility.HtmlEncode(Bib.Behaviors.Serial_Info[0].Display) + "\" /></td>");
+				Output.WriteLine("<td><input type=\"text\" class=\"form_serialhierarchy_order_input sbk_Focusable\" id=\"form_serialhierarchy_enum1order\" name=\"form_serialhierarchy_enum1order\" value=\"" + System.Net.WebUtility.HtmlEncode(Bib.Behaviors.Serial_Info[0].Order.ToString()) + "\" /></td></tr>");
             }
             else
             {
@@ -103,8 +103,8 @@ namespace SobekCM.Library.Citation.Elements
             Output.WriteLine("    <tr><td>Level 2:</td>");
             if (Bib.Behaviors.Serial_Info.Count > 1)
             {
-				Output.WriteLine("<td><input type=\"text\" class=\"form_serialhierarchy_text_input sbk_Focusable\" id=\"form_serialhierarchy_enum2text\" name=\"form_serialhierarchy_enum2text\" value=\"" + HttpUtility.HtmlEncode(Bib.Behaviors.Serial_Info[1].Display) + "\"  /></td>");
-				Output.WriteLine("<td><input type=\"text\" class=\"form_serialhierarchy_order_input sbk_Focusable\" id=\"form_serialhierarchy_enum2order\" name=\"form_serialhierarchy_enum2order\" value=\"" + HttpUtility.HtmlEncode(Bib.Behaviors.Serial_Info[1].Order.ToString()) + "\" /></td></tr>");
+				Output.WriteLine("<td><input type=\"text\" class=\"form_serialhierarchy_text_input sbk_Focusable\" id=\"form_serialhierarchy_enum2text\" name=\"form_serialhierarchy_enum2text\" value=\"" + System.Net.WebUtility.HtmlEncode(Bib.Behaviors.Serial_Info[1].Display) + "\"  /></td>");
+				Output.WriteLine("<td><input type=\"text\" class=\"form_serialhierarchy_order_input sbk_Focusable\" id=\"form_serialhierarchy_enum2order\" name=\"form_serialhierarchy_enum2order\" value=\"" + System.Net.WebUtility.HtmlEncode(Bib.Behaviors.Serial_Info[1].Order.ToString()) + "\" /></td></tr>");
             }
             else
             {
@@ -115,8 +115,8 @@ namespace SobekCM.Library.Citation.Elements
             Output.WriteLine("    <tr><td>Level 3:</td>");
             if (Bib.Behaviors.Serial_Info.Count > 2)
             {
-				Output.WriteLine("<td><input type=\"text\" class=\"form_serialhierarchy_text_input sbk_Focusable\" id=\"form_serialhierarchy_enum3text\" name=\"form_serialhierarchy_enum3text\" value=\"" + HttpUtility.HtmlEncode(Bib.Behaviors.Serial_Info[2].Display) + "\" /></td>");
-				Output.WriteLine("<td><input type=\"text\" class=\"form_serialhierarchy_order_input sbk_Focusable\" id=\"form_serialhierarchy_enum3order\" name=\"form_serialhierarchy_enum3order\" value=\"" + HttpUtility.HtmlEncode(Bib.Behaviors.Serial_Info[2].Order.ToString()) + "\" /></td></tr>");
+				Output.WriteLine("<td><input type=\"text\" class=\"form_serialhierarchy_text_input sbk_Focusable\" id=\"form_serialhierarchy_enum3text\" name=\"form_serialhierarchy_enum3text\" value=\"" + System.Net.WebUtility.HtmlEncode(Bib.Behaviors.Serial_Info[2].Display) + "\" /></td>");
+				Output.WriteLine("<td><input type=\"text\" class=\"form_serialhierarchy_order_input sbk_Focusable\" id=\"form_serialhierarchy_enum3order\" name=\"form_serialhierarchy_enum3order\" value=\"" + System.Net.WebUtility.HtmlEncode(Bib.Behaviors.Serial_Info[2].Order.ToString()) + "\" /></td></tr>");
             }
             else
             {

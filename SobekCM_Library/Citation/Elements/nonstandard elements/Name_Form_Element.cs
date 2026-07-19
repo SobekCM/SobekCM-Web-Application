@@ -175,24 +175,24 @@ namespace SobekCM.Library.Citation.Elements
                 PopupFormBuilder.AppendLine("    </tr>");
 
                 // Add the full name box
-                PopupFormBuilder.AppendLine("    <tr><td>Full Name:</td><td colspan=\"2\"><input type=\"text\" class=\"form_name_large_input sbk_Focusable\" id=\"form_name_full_" + name_count + "\" name=\"form_name_full_" + name_count + "\" value=\"" + HttpUtility.HtmlEncode(thisName.Full_Name) + "\" /></td></tr>");
+                PopupFormBuilder.AppendLine("    <tr><td>Full Name:</td><td colspan=\"2\"><input type=\"text\" class=\"form_name_large_input sbk_Focusable\" id=\"form_name_full_" + name_count + "\" name=\"form_name_full_" + name_count + "\" value=\"" + System.Net.WebUtility.HtmlEncode(thisName.Full_Name) + "\" /></td></tr>");
 
                 // Add the given name and family name(s)
-				PopupFormBuilder.Append("    <tr><td><span  id=\"name_personallabel1_" + name_count + "\" style=\"display:" + personal_values_display + ";\" >Given Names:</span></td><td><input type=\"text\" class=\"form_name_medium_input sbk_Focusable\" id=\"form_name_given_" + name_count + "\" name=\"form_name_given_" + name_count + "\" value=\"" + HttpUtility.HtmlEncode(thisName.Given_Name) + "\" style=\"display:" + personal_values_display + ";\" /></td>");
-				PopupFormBuilder.AppendLine("<td><span  id=\"name_personallabel2_" + name_count + "\" style=\"display:" + personal_values_display + ";\" >Family Name:</span><input type=\"text\" class=\"form_name_medium_input sbk_Focusable\" id=\"form_name_family_" + name_count + "\" name=\"form_name_family_" + name_count + "\" value=\"" + HttpUtility.HtmlEncode(thisName.Family_Name) + "\" style=\"display:" + personal_values_display + ";\" /></td></tr>");
+				PopupFormBuilder.Append("    <tr><td><span  id=\"name_personallabel1_" + name_count + "\" style=\"display:" + personal_values_display + ";\" >Given Names:</span></td><td><input type=\"text\" class=\"form_name_medium_input sbk_Focusable\" id=\"form_name_given_" + name_count + "\" name=\"form_name_given_" + name_count + "\" value=\"" + System.Net.WebUtility.HtmlEncode(thisName.Given_Name) + "\" style=\"display:" + personal_values_display + ";\" /></td>");
+				PopupFormBuilder.AppendLine("<td><span  id=\"name_personallabel2_" + name_count + "\" style=\"display:" + personal_values_display + ";\" >Family Name:</span><input type=\"text\" class=\"form_name_medium_input sbk_Focusable\" id=\"form_name_family_" + name_count + "\" name=\"form_name_family_" + name_count + "\" value=\"" + System.Net.WebUtility.HtmlEncode(thisName.Family_Name) + "\" style=\"display:" + personal_values_display + ";\" /></td></tr>");
 
                 // Add the display form and terms of address
-				PopupFormBuilder.Append("    <tr><td><span  id=\"name_personallabel3_" + name_count + "\" style=\"display:" + personal_values_display + ";\" >Display Form:</span></td><td><input type=\"text\" class=\"form_name_medium_input sbk_Focusable\" id=\"form_name_display_" + name_count + "\" name=\"form_name_display_" + name_count + "\" value=\"" + HttpUtility.HtmlEncode(thisName.Display_Form) + "\" style=\"display:" + personal_values_display + ";\" /></td>");
-				PopupFormBuilder.AppendLine("<td><span  id=\"name_personallabel4_" + name_count + "\" style=\"display:" + personal_values_display + ";\" >Terms of Address:</span><input type=\"text\" class=\"form_name_small_input sbk_Focusable\" id=\"form_name_terms_" + name_count + "\" name=\"form_name_terms_" + name_count + "\" value=\"" + HttpUtility.HtmlEncode(thisName.Terms_Of_Address) + "\" style=\"display:" + personal_values_display + ";\" /></td></tr>");
+				PopupFormBuilder.Append("    <tr><td><span  id=\"name_personallabel3_" + name_count + "\" style=\"display:" + personal_values_display + ";\" >Display Form:</span></td><td><input type=\"text\" class=\"form_name_medium_input sbk_Focusable\" id=\"form_name_display_" + name_count + "\" name=\"form_name_display_" + name_count + "\" value=\"" + System.Net.WebUtility.HtmlEncode(thisName.Display_Form) + "\" style=\"display:" + personal_values_display + ";\" /></td>");
+				PopupFormBuilder.AppendLine("<td><span  id=\"name_personallabel4_" + name_count + "\" style=\"display:" + personal_values_display + ";\" >Terms of Address:</span><input type=\"text\" class=\"form_name_small_input sbk_Focusable\" id=\"form_name_terms_" + name_count + "\" name=\"form_name_terms_" + name_count + "\" value=\"" + System.Net.WebUtility.HtmlEncode(thisName.Terms_Of_Address) + "\" style=\"display:" + personal_values_display + ";\" /></td></tr>");
 
                 // Add the dates
-				PopupFormBuilder.AppendLine("    <tr><td>Dates:</td><td colspan=\"2\"><input type=\"text\" class=\"form_name_medium_input sbk_Focusable\" id=\"form_name_dates_" + name_count + "\" name=\"form_name_dates_" + name_count + "\" value=\"" + HttpUtility.HtmlEncode(thisName.Dates) + "\" /></td></tr>");
+				PopupFormBuilder.AppendLine("    <tr><td>Dates:</td><td colspan=\"2\"><input type=\"text\" class=\"form_name_medium_input sbk_Focusable\" id=\"form_name_dates_" + name_count + "\" name=\"form_name_dates_" + name_count + "\" value=\"" + System.Net.WebUtility.HtmlEncode(thisName.Dates) + "\" /></td></tr>");
 
                 // Add the description
-				PopupFormBuilder.AppendLine("    <tr><td><span id=\"name_desc_location_span_" + name_count + "\">" + description_location_display + ":</span></td><td colspan=\"2\"><input type=\"text\" class=\"form_name_large_input sbk_Focusable\" id=\"form_name_desc_" + name_count + "\" name=\"form_name_desc_" + name_count + "\" value=\"" + HttpUtility.HtmlEncode(thisName.Description) + "\" /></td></tr>");
+				PopupFormBuilder.AppendLine("    <tr><td><span id=\"name_desc_location_span_" + name_count + "\">" + description_location_display + ":</span></td><td colspan=\"2\"><input type=\"text\" class=\"form_name_large_input sbk_Focusable\" id=\"form_name_desc_" + name_count + "\" name=\"form_name_desc_" + name_count + "\" value=\"" + System.Net.WebUtility.HtmlEncode(thisName.Description) + "\" /></td></tr>");
 
                 // Add the affiliation
-				PopupFormBuilder.AppendLine("    <tr><td>Affiliation:</td><td colspan=\"2\"><input type=\"text\" class=\"form_name_large_input sbk_Focusable\" id=\"form_name_affiliation_" + name_count + "\" name=\"form_name_affiliation_" + name_count + "\" value=\"" + HttpUtility.HtmlEncode(thisName.Affiliation) + "\" /></td></tr>");
+				PopupFormBuilder.AppendLine("    <tr><td>Affiliation:</td><td colspan=\"2\"><input type=\"text\" class=\"form_name_large_input sbk_Focusable\" id=\"form_name_affiliation_" + name_count + "\" name=\"form_name_affiliation_" + name_count + "\" value=\"" + System.Net.WebUtility.HtmlEncode(thisName.Affiliation) + "\" /></td></tr>");
 
                 // Determine the roles to display
                 string role1 = String.Empty;
@@ -223,9 +223,9 @@ namespace SobekCM.Library.Citation.Elements
 
                 // Add the roles
                 PopupFormBuilder.Append("    <tr><td>Roles:</td><td colspan=\"2\">");
-                PopupFormBuilder.Append("<input type=\"text\" class=\"form_name_small_input sbk_Focusable\" id=\"form_name_role1_" + name_count + "\" name=\"form_name_role1_" + name_count + "\" value=\"" + HttpUtility.HtmlEncode(role1) + "\" />");
-				PopupFormBuilder.Append("<input type=\"text\" class=\"form_name_small_input sbk_Focusable\" id=\"form_name_role2_" + name_count + "\" name=\"form_name_role2_" + name_count + "\" value=\"" + HttpUtility.HtmlEncode(role2) + "\" />");
-				PopupFormBuilder.Append("<input type=\"text\" class=\"form_name_small_input sbk_Focusable\" id=\"form_name_role3_" + name_count + "\" name=\"form_name_role3_" + name_count + "\" value=\"" + HttpUtility.HtmlEncode(role3) + "\" />");
+                PopupFormBuilder.Append("<input type=\"text\" class=\"form_name_small_input sbk_Focusable\" id=\"form_name_role1_" + name_count + "\" name=\"form_name_role1_" + name_count + "\" value=\"" + System.Net.WebUtility.HtmlEncode(role1) + "\" />");
+				PopupFormBuilder.Append("<input type=\"text\" class=\"form_name_small_input sbk_Focusable\" id=\"form_name_role2_" + name_count + "\" name=\"form_name_role2_" + name_count + "\" value=\"" + System.Net.WebUtility.HtmlEncode(role2) + "\" />");
+				PopupFormBuilder.Append("<input type=\"text\" class=\"form_name_small_input sbk_Focusable\" id=\"form_name_role3_" + name_count + "\" name=\"form_name_role3_" + name_count + "\" value=\"" + System.Net.WebUtility.HtmlEncode(role3) + "\" />");
                 PopupFormBuilder.AppendLine("</td></tr>");
 
 				// Close the form and add the button

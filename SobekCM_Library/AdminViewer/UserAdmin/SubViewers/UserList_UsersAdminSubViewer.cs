@@ -1,4 +1,4 @@
-﻿using SobekCM.Core.Navigation;
+using SobekCM.Core.Navigation;
 using SobekCM.Core.Users;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Engine_Library.Database;
@@ -11,7 +11,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Text;
-using System.Web;
 
 namespace SobekCM.Library.AdminViewer.UserAdmin.SubViewers
 {

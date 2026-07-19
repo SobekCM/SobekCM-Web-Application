@@ -1,4 +1,4 @@
-﻿using SobekCM.Core.Users;
+using SobekCM.Core.Users;
 using SobekCM.Engine_Library.Database;
 using SobekCM.Library.TEI;
 using SobekCM.Library.UI;
@@ -11,7 +11,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Runtime.Caching;
-using System.Web;
 
 namespace SobekCM.Library.AdminViewer.UserAdmin.UserAdminTabs
 {

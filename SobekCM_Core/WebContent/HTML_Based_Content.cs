@@ -1,10 +1,9 @@
-﻿#region Using directives
+#region Using directives
 
 using System;
 using System.IO;
 using System.Runtime.Serialization;
 using System.Text;
-using System.Web;
 using System.Xml.Serialization;
 using ProtoBuf;
 using SobekCM.Core.Aggregations;
@@ -467,25 +466,25 @@ namespace SobekCM.Core.WebContent
 				writer.WriteLine("<html>");
 				writer.WriteLine("  <head>");
 				if (!String.IsNullOrEmpty(Title))
-					writer.WriteLine("    <title>" + HttpUtility.HtmlEncode(Title) + "</title>");
+					writer.WriteLine("    <title>" + System.Net.WebUtility.HtmlEncode(Title) + "</title>");
 				if (!String.IsNullOrEmpty(Author))
-					writer.WriteLine("    <meta name=\"author\" content=\"" + HttpUtility.HtmlEncode(Author) + "\" />");
+					writer.WriteLine("    <meta name=\"author\" content=\"" + System.Net.WebUtility.HtmlEncode(Author) + "\" />");
 				if (!String.IsNullOrEmpty(Date))
 					writer.WriteLine("    <meta name=\"date\" content=\"" + Date + "\" />");
 				if (!String.IsNullOrEmpty(Keywords))
-					writer.WriteLine("    <meta name=\"keywords\" content=\"" + HttpUtility.HtmlEncode(Keywords) + "\" />");
+					writer.WriteLine("    <meta name=\"keywords\" content=\"" + System.Net.WebUtility.HtmlEncode(Keywords) + "\" />");
 				if (!String.IsNullOrEmpty(Description))
-					writer.WriteLine("    <meta name=\"description\" content=\"" + HttpUtility.HtmlEncode(Description) + "\" />");
+					writer.WriteLine("    <meta name=\"description\" content=\"" + System.Net.WebUtility.HtmlEncode(Description) + "\" />");
 				if (!String.IsNullOrEmpty(Banner))
-					writer.WriteLine("    <meta name=\"banner\" content=\"" + HttpUtility.HtmlEncode(Banner) + "\" />");
+					writer.WriteLine("    <meta name=\"banner\" content=\"" + System.Net.WebUtility.HtmlEncode(Banner) + "\" />");
 				if (!String.IsNullOrEmpty(Thumbnail))
-					writer.WriteLine("    <meta name=\"thumbnail\" content=\"" + HttpUtility.HtmlEncode(Thumbnail) + "\" />");
+					writer.WriteLine("    <meta name=\"thumbnail\" content=\"" + System.Net.WebUtility.HtmlEncode(Thumbnail) + "\" />");
 				if (!String.IsNullOrEmpty(code))
-					writer.WriteLine("    <meta name=\"code\" content=\"" + HttpUtility.HtmlEncode(code) + "\" />");
+					writer.WriteLine("    <meta name=\"code\" content=\"" + System.Net.WebUtility.HtmlEncode(code) + "\" />");
 				if (!String.IsNullOrEmpty(SiteMap))
-					writer.WriteLine("    <meta name=\"sitemap\" content=\"" + HttpUtility.HtmlEncode(SiteMap) + "\" />");
+					writer.WriteLine("    <meta name=\"sitemap\" content=\"" + System.Net.WebUtility.HtmlEncode(SiteMap) + "\" />");
 				if (!String.IsNullOrEmpty(Web_Skin))
-					writer.WriteLine("    <meta name=\"webskin\" content=\"" + HttpUtility.HtmlEncode(Web_Skin) + "\" />");
+					writer.WriteLine("    <meta name=\"webskin\" content=\"" + System.Net.WebUtility.HtmlEncode(Web_Skin) + "\" />");
                 if ((IncludeMenu.HasValue) && (IncludeMenu.Value))
                     writer.WriteLine("    <meta name=\"menu\" content=\"true\" />");
 

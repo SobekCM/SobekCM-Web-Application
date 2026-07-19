@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Web;
 using SobekCM.Core.BriefItem;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Navigation;
@@ -323,11 +322,11 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 string url_options = UrlWriterHelper.URL_Options(CurrentRequest);
                 if (url_options.Length > 0)
                 {
-                    url_options = url_options + "&search=" + HttpUtility.UrlEncode(originalSearchString);
+                    url_options = url_options + "&search=" + System.Net.WebUtility.UrlEncode(originalSearchString);
                 }
                 else
                 {
-                    url_options = "?search=" + HttpUtility.UrlEncode(originalSearchString);
+                    url_options = "?search=" + System.Net.WebUtility.UrlEncode(originalSearchString);
                 }
                 int current_displayed_result = ((results.Page_Number - 1) * 20) + 1;
                 bool first = true;

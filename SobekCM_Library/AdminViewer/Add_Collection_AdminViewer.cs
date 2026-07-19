@@ -6,7 +6,6 @@ using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Web;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.Client;
 using SobekCM.Core.MemoryMgmt;
@@ -822,7 +821,7 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("    <td>&nbsp;</td>");
             Output.WriteLine("    <td class=\"sbkSaav_TableLabel\"><label for=\"admin_aggr_name\">Name (full):</label></td>");
             Output.WriteLine("    <td>");
-            Output.WriteLine("      <input class=\"sbkAcw_large_input sbkAdmin_Focusable\" name=\"admin_aggr_name\" id=\"admin_aggr_name\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(newAggr.Name) + "\" onchange=\"if ( $('#admin_aggr_shortname').val().length == 0 ) { $('#admin_aggr_shortname').val(this.value); }\" />");
+            Output.WriteLine("      <input class=\"sbkAcw_large_input sbkAdmin_Focusable\" name=\"admin_aggr_name\" id=\"admin_aggr_name\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(newAggr.Name) + "\" onchange=\"if ( $('#admin_aggr_shortname').val().length == 0 ) { $('#admin_aggr_shortname').val(this.value); }\" />");
             Output.WriteLine("      <div class=\"sbkAcw_InlineHelp\">Enter the full name for this new collection.  This will be used throughout the system to identify this collection.  The only place this will not appear is in the breadcrumbs, where the shorter version below will be used.</div>");
             Output.WriteLine("    </td>");
             Output.WriteLine("  </tr>");
@@ -832,7 +831,7 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("    <td>&nbsp;</td>");
             Output.WriteLine("    <td class=\"sbkSaav_TableLabel\"><label for=\"admin_aggr_shortname\">Name (short):</label></td>");
             Output.WriteLine("    <td>");
-            Output.WriteLine("      <input class=\"sbkAcw_medium_input sbkAdmin_Focusable\" name=\"admin_aggr_shortname\" id=\"admin_aggr_shortname\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(newAggr.ShortName) + "\" onchange=\"if ( $('#admin_aggr_name').val().length == 0 ) { $('#admin_aggr_name').val(this.value); }\" />");
+            Output.WriteLine("      <input class=\"sbkAcw_medium_input sbkAdmin_Focusable\" name=\"admin_aggr_shortname\" id=\"admin_aggr_shortname\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(newAggr.ShortName) + "\" onchange=\"if ( $('#admin_aggr_name').val().length == 0 ) { $('#admin_aggr_name').val(this.value); }\" />");
             Output.WriteLine("      <div class=\"sbkAcw_InlineHelp\">Enter a shorter version of the name to be used in the breadcrumbs.  Generally, try to keep this as short as possible, as items may appear in multiple collections.</div>");
             Output.WriteLine("    </td>");
             Output.WriteLine("  </tr>");
@@ -842,7 +841,7 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("    <td>&nbsp;</td>");
             Output.WriteLine("    <td class=\"sbkSaav_TableLabel2\"><label for=\"admin_aggr_desc\">Description:</label></td>");
             Output.WriteLine("    <td>");
-            Output.WriteLine("      <textarea class=\"sbkAcw_input sbkAdmin_Focusable\" rows=\"6\" name=\"admin_aggr_desc\" id=\"admin_aggr_desc\">" + HttpUtility.HtmlEncode(newAggr.Description) + "</textarea>");
+            Output.WriteLine("      <textarea class=\"sbkAcw_input sbkAdmin_Focusable\" rows=\"6\" name=\"admin_aggr_desc\" id=\"admin_aggr_desc\">" + System.Net.WebUtility.HtmlEncode(newAggr.Description) + "</textarea>");
             Output.WriteLine("      <div class=\"sbkAcw_InlineHelp\">Enter a brief description of this new collection.  This description is public and will appear wherever the collection appears, such as under the thematic headings on the home page or as a subcollection under the parent collection(s).</div>");
             Output.WriteLine("    </td>");
             Output.WriteLine("  </tr>");
@@ -970,7 +969,7 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("    <td>&nbsp;</td>");
             Output.WriteLine("    <td class=\"sbkSaav_TableLabel\"><label for=\"admin_aggr_link\">External Link:</label></td>");
             Output.WriteLine("    <td>");
-            Output.WriteLine("      <input class=\"sbkAcw_large_input sbkAdmin_Focusable\" name=\"admin_aggr_link\" id=\"admin_aggr_link\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(newAggr.External_Link) + "\" />");
+            Output.WriteLine("      <input class=\"sbkAcw_large_input sbkAdmin_Focusable\" name=\"admin_aggr_link\" id=\"admin_aggr_link\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(newAggr.External_Link) + "\" />");
             Output.WriteLine("      <div class=\"sbkAcw_InlineHelp\">Institutional collections can have an external link added.  The link will be displayed in the citation of any digital resources associated with this institution, linked to the source institution or holding location text.</div>");
             Output.WriteLine("    </td>");
             Output.WriteLine("  </tr>");
@@ -1082,14 +1081,14 @@ namespace SobekCM.Library.AdminViewer
             foreach (Thematic_Heading thisHeading in UI_ApplicationCache_Gateway.Thematic_Headings)
             {
                 if (thisHeading.Text == newAggr.Thematic_Heading)
-                    Output.Write("        <option value=\"" + thisHeading.ID + "\" selected=\"selected\">" + HttpUtility.HtmlEncode(thisHeading.Text) + "</option>");
+                    Output.Write("        <option value=\"" + thisHeading.ID + "\" selected=\"selected\">" + System.Net.WebUtility.HtmlEncode(thisHeading.Text) + "</option>");
                 else
-                    Output.Write("        <option value=\"" + thisHeading.ID + "\">" + HttpUtility.HtmlEncode(thisHeading.Text) + "</option>");
+                    Output.Write("        <option value=\"" + thisHeading.ID + "\">" + System.Net.WebUtility.HtmlEncode(thisHeading.Text) + "</option>");
             }
             Output.WriteLine("      </select>");
 
             if ((newAggr.NewThematicHeading.HasValue) && (newAggr.NewThematicHeading.Value))
-                Output.WriteLine("      <input class=\"sbkAcw_large_input sbkAdmin_Focusable\" name=\"admin_aggr_newheading\" id=\"admin_aggr_newheading\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(newAggr.Thematic_Heading) + "\" style=\"display:block;\" />");
+                Output.WriteLine("      <input class=\"sbkAcw_large_input sbkAdmin_Focusable\" name=\"admin_aggr_newheading\" id=\"admin_aggr_newheading\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(newAggr.Thematic_Heading) + "\" style=\"display:block;\" />");
             else
                 Output.WriteLine("      <input class=\"sbkAcw_large_input sbkAdmin_Focusable\" name=\"admin_aggr_newheading\" id=\"admin_aggr_newheading\" type=\"text\" value=\"\" style=\"display:none;\" />");
 

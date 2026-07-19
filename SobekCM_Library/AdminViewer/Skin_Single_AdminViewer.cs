@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
 using System.Text;
-using System.Web;
 using SobekCM.Core.Client;
 using SobekCM.Core.Configuration;
 using SobekCM.Core.Configuration.Localization;
@@ -737,7 +736,7 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\">");
             Output.WriteLine("    <td style=\"width:50px\">&nbsp;</td>");
             Output.WriteLine("    <td style=\"width: 145px\" class=\"sbkSaav_TableLabel\">Web Skin Code:</td>");
-            Output.WriteLine("    <td> " + HttpUtility.HtmlEncode(webSkin.Skin_Code) + "</td>");
+            Output.WriteLine("    <td> " + System.Net.WebUtility.HtmlEncode(webSkin.Skin_Code) + "</td>");
             Output.WriteLine("  </tr>");
 
             // Add the base skin code
@@ -770,7 +769,7 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("    <td>&nbsp;</td>");
             Output.WriteLine("    <td class=\"sbkSaav_TableLabel\"><label for=\"webskin_bannerlink\">Banner Link:</label></td>");
             Output.WriteLine("    <td>");
-            Output.WriteLine("      <table class=\"sbkSaav_InnerTable\"><tr><td><input class=\"sbkSaav_medium_input sbkAdmin_Focusable\" name=\"webskin_bannerlink\" id=\"webskin_bannerlink\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(webSkin.Banner_Link) + "\" /></td>");
+            Output.WriteLine("      <table class=\"sbkSaav_InnerTable\"><tr><td><input class=\"sbkSaav_medium_input sbkAdmin_Focusable\" name=\"webskin_bannerlink\" id=\"webskin_bannerlink\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(webSkin.Banner_Link) + "\" /></td>");
             Output.WriteLine("        <td><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources_Gateway.Help_Button_Jpg + "\" onclick=\"alert('" + BANNER_LINK_HELP + "');\"  title=\"" + BANNER_LINK_HELP + "\" /></td></tr></table>");
             Output.WriteLine("     </td>");
             Output.WriteLine("  </tr>");
@@ -780,7 +779,7 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("    <td>&nbsp;</td>");
             Output.WriteLine("    <td class=\"sbkSaav_TableLabel2\"><label for=\"webskin_notes\">Notes:</label></td>");
             Output.WriteLine("    <td>");
-            Output.WriteLine("      <table class=\"sbkSaav_InnerTable2\"><tr style=\"vertical-align:top\"><td><textarea class=\"sbkSaav_large_textbox sbkAdmin_Focusable\" rows=\"6\" name=\"webskin_notes\" id=\"webskin_notes\">" + HttpUtility.HtmlEncode(webSkin.Notes) + "</textarea></td>");
+            Output.WriteLine("      <table class=\"sbkSaav_InnerTable2\"><tr style=\"vertical-align:top\"><td><textarea class=\"sbkSaav_large_textbox sbkAdmin_Focusable\" rows=\"6\" name=\"webskin_notes\" id=\"webskin_notes\">" + System.Net.WebUtility.HtmlEncode(webSkin.Notes) + "</textarea></td>");
             Output.WriteLine("        <td><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources_Gateway.Help_Button_Jpg + "\" onclick=\"alert('" + NOTES_HELP + "');\"  title=\"" + NOTES_HELP + "\" /></td></tr></table>");
             Output.WriteLine("     </td>");
             Output.WriteLine("  </tr>");
@@ -1003,7 +1002,7 @@ namespace SobekCM.Library.AdminViewer
             foreach (string possible_language in Web_Language_Enum_Converter.Language_Name_Array)
             {
                 if (!existing_languages.Contains(possible_language))
-                    Output.Write("<option value=\"" + Web_Language_Enum_Converter.Name_To_Code(possible_language) + "\">" + HttpUtility.HtmlEncode(possible_language) + "</option>");
+                    Output.Write("<option value=\"" + Web_Language_Enum_Converter.Name_To_Code(possible_language) + "\">" + System.Net.WebUtility.HtmlEncode(possible_language) + "</option>");
             }
             Output.WriteLine();
             Output.WriteLine("        </td>");
@@ -1026,7 +1025,7 @@ namespace SobekCM.Library.AdminViewer
                         thisLangTerm = "DEFAULT";
                     }
 
-                    Output.WriteLine("          <option value=\"" + thisLangCode + "\">" + HttpUtility.HtmlEncode(thisLangTerm) + "</option>");
+                    Output.WriteLine("          <option value=\"" + thisLangCode + "\">" + System.Net.WebUtility.HtmlEncode(thisLangTerm) + "</option>");
                 }
 
                 Output.WriteLine("</select>");
@@ -1069,10 +1068,10 @@ namespace SobekCM.Library.AdminViewer
 
                     if (languageSupport.Key == current_language)
                     {
-                        Output.WriteLine("          <option value=\"" + thisLangCode + "\" selected=\"selected\">" + HttpUtility.HtmlEncode(thisLangTerm) + "</option>");
+                        Output.WriteLine("          <option value=\"" + thisLangCode + "\" selected=\"selected\">" + System.Net.WebUtility.HtmlEncode(thisLangTerm) + "</option>");
                     }
                     else
-                        Output.WriteLine("          <option value=\"" + thisLangCode + "\">" + HttpUtility.HtmlEncode(thisLangTerm) + "</option>");
+                        Output.WriteLine("          <option value=\"" + thisLangCode + "\">" + System.Net.WebUtility.HtmlEncode(thisLangTerm) + "</option>");
                 }
 
                 Output.WriteLine("        </select></td>");
@@ -1102,7 +1101,7 @@ namespace SobekCM.Library.AdminViewer
                 Output.WriteLine("    <td>&nbsp;</td>");
                 Output.WriteLine("    <td class=\"sbkSaav_TableLabel2\"><label for=\"webskin_header_source\">Standard Header:</label></td>");
                 Output.WriteLine("    <td>");
-                Output.WriteLine("      <table class=\"sbkSaav_InnerTable2\"><tr style=\"vertical-align:top\"><td><textarea class=\"sbkSsav_html_textbox sbkAdmin_Focusable\" rows=\"30\" name=\"webskin_header_source\" id=\"webskin_header_source\">" + HttpUtility.HtmlEncode(header_source) + "</textarea></td>");
+                Output.WriteLine("      <table class=\"sbkSaav_InnerTable2\"><tr style=\"vertical-align:top\"><td><textarea class=\"sbkSsav_html_textbox sbkAdmin_Focusable\" rows=\"30\" name=\"webskin_header_source\" id=\"webskin_header_source\">" + System.Net.WebUtility.HtmlEncode(header_source) + "</textarea></td>");
                 Output.WriteLine("        <td><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources_Gateway.Help_Button_Jpg + "\" onclick=\"alert('" + HEADER_HELP + "');\"  title=\"" + HEADER_HELP + "\" /></td></tr></table>");
                 Output.WriteLine("     </td>");
                 Output.WriteLine("  </tr>");
@@ -1112,7 +1111,7 @@ namespace SobekCM.Library.AdminViewer
                 Output.WriteLine("    <td>&nbsp;</td>");
                 Output.WriteLine("    <td class=\"sbkSaav_TableLabel2\"><label for=\"webskin_footer_source\">Standard Footer:</label></td>");
                 Output.WriteLine("    <td>");
-                Output.WriteLine("      <table class=\"sbkSaav_InnerTable2\"><tr style=\"vertical-align:top\"><td><textarea class=\"sbkSsav_html_textbox sbkAdmin_Focusable\" rows=\"30\" name=\"webskin_footer_source\" id=\"webskin_footer_source\">" + HttpUtility.HtmlEncode(footer_source) + "</textarea></td>");
+                Output.WriteLine("      <table class=\"sbkSaav_InnerTable2\"><tr style=\"vertical-align:top\"><td><textarea class=\"sbkSsav_html_textbox sbkAdmin_Focusable\" rows=\"30\" name=\"webskin_footer_source\" id=\"webskin_footer_source\">" + System.Net.WebUtility.HtmlEncode(footer_source) + "</textarea></td>");
                 Output.WriteLine("        <td><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources_Gateway.Help_Button_Jpg + "\" onclick=\"alert('" + FOOTER_HELP + "');\"  title=\"" + FOOTER_HELP + "\" /></td></tr></table>");
                 Output.WriteLine("     </td>");
                 Output.WriteLine("  </tr>");
@@ -1125,7 +1124,7 @@ namespace SobekCM.Library.AdminViewer
                 Output.WriteLine("    <td class=\"sbkSaav_TableLabel\"><label for=\"webskin_header_item_source\">Item Header:</label></td>");
                 Output.WriteLine("    <td>");
                 Output.WriteLine("      <a title=\"Copy the HTML for the standard header down to this item header\" href=\"\" onclick=\"for(var i in CKEDITOR.instances) { CKEDITOR.instances[i].updateElement(); } return copy_skin_header_html();\">Copy from the standard header</a> <br />");
-                Output.WriteLine("      <table class=\"sbkSaav_InnerTable2\"><tr style=\"vertical-align:top\"><td><textarea class=\"sbkSsav_html_textbox sbkAdmin_Focusable\" rows=\"30\" name=\"webskin_header_item_source\" id=\"webskin_header_item_source\">" + HttpUtility.HtmlEncode(header_item_source) + "</textarea></td>");
+                Output.WriteLine("      <table class=\"sbkSaav_InnerTable2\"><tr style=\"vertical-align:top\"><td><textarea class=\"sbkSsav_html_textbox sbkAdmin_Focusable\" rows=\"30\" name=\"webskin_header_item_source\" id=\"webskin_header_item_source\">" + System.Net.WebUtility.HtmlEncode(header_item_source) + "</textarea></td>");
                 Output.WriteLine("        <td><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources_Gateway.Help_Button_Jpg + "\" onclick=\"alert('" + HEADER_ITEM_HELP + "');\"  title=\"" + HEADER_ITEM_HELP + "\" /></td></tr></table>");
                 Output.WriteLine("     </td>");
                 Output.WriteLine("  </tr>");
@@ -1136,7 +1135,7 @@ namespace SobekCM.Library.AdminViewer
                 Output.WriteLine("    <td class=\"sbkSaav_TableLabel\"><label for=\"webskin_footer_item_source\">Item Footer:</label></td>");
                 Output.WriteLine("    <td>");
                 Output.WriteLine("      <a title=\"Copy the HTML for the standard footer down to this item footer\" href=\"\" onclick=\"for(var i in CKEDITOR.instances) { CKEDITOR.instances[i].updateElement(); } return copy_skin_footer_html();\">Copy from the standard footer</a> <br />");
-                Output.WriteLine("      <table class=\"sbkSaav_InnerTable2\"><tr style=\"vertical-align:top\"><td><textarea class=\"sbkSsav_html_textbox sbkAdmin_Focusable\" rows=\"30\" name=\"webskin_footer_item_source\" id=\"webskin_footer_item_source\">" + HttpUtility.HtmlEncode(footer_item_source) + "</textarea></td>");
+                Output.WriteLine("      <table class=\"sbkSaav_InnerTable2\"><tr style=\"vertical-align:top\"><td><textarea class=\"sbkSsav_html_textbox sbkAdmin_Focusable\" rows=\"30\" name=\"webskin_footer_item_source\" id=\"webskin_footer_item_source\">" + System.Net.WebUtility.HtmlEncode(footer_item_source) + "</textarea></td>");
                 Output.WriteLine("        <td><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources_Gateway.Help_Button_Jpg + "\" onclick=\"alert('" + FOOTER_ITEM_HELP + "');\"  title=\"" + FOOTER_ITEM_HELP + "\" /></td></tr></table>");
                 Output.WriteLine("     </td>");
                 Output.WriteLine("  </tr>");

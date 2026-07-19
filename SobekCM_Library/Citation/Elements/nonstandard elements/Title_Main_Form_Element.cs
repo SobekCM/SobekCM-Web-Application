@@ -93,7 +93,7 @@ namespace SobekCM.Library.Citation.Elements
                 {
                     if (thisNote.Note_Type == Note_Type_Enum.StatementOfResponsibility)
                     {
-                        statement_responsibility = HttpUtility.HtmlEncode(thisNote.Note);
+                        statement_responsibility = System.Net.WebUtility.HtmlEncode(thisNote.Note);
                         break;
                     }
                 }
@@ -154,21 +154,21 @@ namespace SobekCM.Library.Citation.Elements
 
             // Add the nonsort and language text boxes
             PopupFormBuilder.Append("    <tr><td>Non Sort:</td><td>");
-            PopupFormBuilder.Append("<input class=\"formtitle_small_input sbk_Focusable\" name=\"formmaintitlenonsort\" id=\"formmainttitlenonsort\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(Bib.Bib_Info.Main_Title.NonSort) + "\" />");
+            PopupFormBuilder.Append("<input class=\"formtitle_small_input sbk_Focusable\" name=\"formmaintitlenonsort\" id=\"formmainttitlenonsort\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(Bib.Bib_Info.Main_Title.NonSort) + "\" />");
             PopupFormBuilder.Append("</td><td style=\"width:255px\" >Language: &nbsp; ");
-			PopupFormBuilder.Append("<input class=\"formtitle_small_input sbk_Focusable\" name=\"formmaintitlelanguage\" id=\"formmainttitlelanguage\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(Bib.Bib_Info.Main_Title.Language) + "\" />");
+			PopupFormBuilder.Append("<input class=\"formtitle_small_input sbk_Focusable\" name=\"formmaintitlelanguage\" id=\"formmainttitlelanguage\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(Bib.Bib_Info.Main_Title.Language) + "\" />");
             PopupFormBuilder.AppendLine("</td></tr>");
 
             // Add the title, subtitle, and statement of responsibility
-			PopupFormBuilder.AppendLine("    <tr><td>Title:</td><td colspan=\"2\"><input class=\"formtitle_large_input sbk_Focusable\" name=\"formmaintitletitle\" id=\"formmaintitletitle\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(Bib.Bib_Info.Main_Title.Title) + "\" /></td></tr>");
-			PopupFormBuilder.AppendLine("    <tr><td>Sub Title:</td><td colspan=\"2\"><input class=\"formtitle_large_input sbk_Focusable\" name=\"formmaintitlesubtitle\" id=\"formmaintitlesubtitle\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(Bib.Bib_Info.Main_Title.Subtitle) + "\" /></td></tr>");
+			PopupFormBuilder.AppendLine("    <tr><td>Title:</td><td colspan=\"2\"><input class=\"formtitle_large_input sbk_Focusable\" name=\"formmaintitletitle\" id=\"formmaintitletitle\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(Bib.Bib_Info.Main_Title.Title) + "\" /></td></tr>");
+			PopupFormBuilder.AppendLine("    <tr><td>Sub Title:</td><td colspan=\"2\"><input class=\"formtitle_large_input sbk_Focusable\" name=\"formmaintitlesubtitle\" id=\"formmaintitlesubtitle\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(Bib.Bib_Info.Main_Title.Subtitle) + "\" /></td></tr>");
 			PopupFormBuilder.AppendLine("    <tr><td colspan=\"3\">Statement of Responsibility: &nbsp; &nbsp; <input class=\"formtitle_medium_input sbk_Focusable\" name=\"formmaintitlestatement\" id=\"formmaintitlestatement\" type=\"text\" value=\"" + statement_responsibility + "\" /></td></tr>");
 
             // Add the part numbers
             PopupFormBuilder.Append("    <tr><td>Part Numbers:</td><td colspan=\"2\">");
             if ( Bib.Bib_Info.Main_Title.Part_Numbers_Count > 0 )
             {
-				PopupFormBuilder.Append("<input class=\"formtitle_small_input sbk_Focusable\" name=\"formmaintitlepartnum1\" id=\"formmaintitlepartnum1\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(Bib.Bib_Info.Main_Title.Part_Numbers[0]) + "\" />");
+				PopupFormBuilder.Append("<input class=\"formtitle_small_input sbk_Focusable\" name=\"formmaintitlepartnum1\" id=\"formmaintitlepartnum1\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(Bib.Bib_Info.Main_Title.Part_Numbers[0]) + "\" />");
             }
             else
             {
@@ -176,7 +176,7 @@ namespace SobekCM.Library.Citation.Elements
             }
             if (Bib.Bib_Info.Main_Title.Part_Numbers_Count > 1)
             {
-				PopupFormBuilder.Append("<input class=\"formtitle_small_input sbk_Focusable\" name=\"formmaintitlepartnum2\" id=\"formmaintitlepartnum2\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(Bib.Bib_Info.Main_Title.Part_Numbers[1]) + "\" />");
+				PopupFormBuilder.Append("<input class=\"formtitle_small_input sbk_Focusable\" name=\"formmaintitlepartnum2\" id=\"formmaintitlepartnum2\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(Bib.Bib_Info.Main_Title.Part_Numbers[1]) + "\" />");
             }
             else
             {
@@ -188,7 +188,7 @@ namespace SobekCM.Library.Citation.Elements
             PopupFormBuilder.Append("    <tr><td>Part Names:</td><td>");
             if (Bib.Bib_Info.Main_Title.Part_Names_Count > 0)
             {
-				PopupFormBuilder.Append("<input class=\"formtitle_small_input sbk_Focusable\" name=\"formmaintitlepartname1\" id=\"formmaintitlepartname1\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(Bib.Bib_Info.Main_Title.Part_Names[0]) + "\" />");
+				PopupFormBuilder.Append("<input class=\"formtitle_small_input sbk_Focusable\" name=\"formmaintitlepartname1\" id=\"formmaintitlepartname1\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(Bib.Bib_Info.Main_Title.Part_Names[0]) + "\" />");
             }
             else
             {
@@ -196,13 +196,13 @@ namespace SobekCM.Library.Citation.Elements
             }
             if (Bib.Bib_Info.Main_Title.Part_Names_Count > 1)
             {
-				PopupFormBuilder.Append("<input class=\"formtitle_small_input sbk_Focusable\" name=\"formmaintitlepartname2\" id=\"formmaintitlepartname2\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(Bib.Bib_Info.Main_Title.Part_Names[1]) + "\" />");
+				PopupFormBuilder.Append("<input class=\"formtitle_small_input sbk_Focusable\" name=\"formmaintitlepartname2\" id=\"formmaintitlepartname2\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(Bib.Bib_Info.Main_Title.Part_Names[1]) + "\" />");
             }
             else
             {
 				PopupFormBuilder.Append("<input class=\"formtitle_small_input sbk_Focusable\" name=\"formmaintitlepartname2\" id=\"formmaintitlepartname2\" type=\"text\" value=\"\" />");
             }
-			PopupFormBuilder.Append("<td>Authority: &nbsp; <input class=\"formtitle_small_input sbk_Focusable\" name=\"formmaintitleauthority\" id=\"formmaintitleauthority\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(Bib.Bib_Info.Main_Title.Authority) + "\" />");
+			PopupFormBuilder.Append("<td>Authority: &nbsp; <input class=\"formtitle_small_input sbk_Focusable\" name=\"formmaintitleauthority\" id=\"formmaintitleauthority\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(Bib.Bib_Info.Main_Title.Authority) + "\" />");
             PopupFormBuilder.AppendLine("</td></tr>");
 
 			// Finish the popup form and add the CLOSE button

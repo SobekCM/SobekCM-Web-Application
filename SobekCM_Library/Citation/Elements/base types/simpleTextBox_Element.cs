@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
-using System.Web;
 using System.Xml;
 using SobekCM.Core.ApplicationState;
 using SobekCM.Core.Configuration.Localization;
@@ -181,10 +180,10 @@ namespace SobekCM.Library.Citation.Elements
 
                 for (int i = 1; i <= allValues.Count; i++)
                 {
-                    Output.Write("              <input name=\"" + HTML_ID_Name + i + "\" id=\"" + HTML_ID_Name + i + "\" class=\"" + html_element_name + "_input sbk_Focusable\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(allValues[i - 1].Replace("<i>", "").Replace("</i>", "")) + "\" ");
+                    Output.Write("              <input name=\"" + HTML_ID_Name + i + "\" id=\"" + HTML_ID_Name + i + "\" class=\"" + html_element_name + "_input sbk_Focusable\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(allValues[i - 1].Replace("<i>", "").Replace("</i>", "")) + "\" ");
 
                     if (!String.IsNullOrWhiteSpace(Placeholder))
-                        Output.Write(" placeholder=\"" + HttpUtility.HtmlEncode(Placeholder) + "\"");
+                        Output.Write(" placeholder=\"" + System.Net.WebUtility.HtmlEncode(Placeholder) + "\"");
 
                     if (textBoxEvents != null) 
                         textBoxEvents.Add_Events_HTML(Output);
@@ -293,9 +292,9 @@ namespace SobekCM.Library.Citation.Elements
                 Output.WriteLine("          <td>");
                 Output.WriteLine("            <div id=\"" + HTML_ID_Name + "_div\">");
 
-                Output.Write("              <input name=\"" + HTML_ID_Name + "1\" id=\"" + HTML_ID_Name + "1\" class=\"" + html_element_name + "_input sbk_Focusable\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(InstanceValue.Replace("<i>", "").Replace("</i>", "")) + "\" ");
+                Output.Write("              <input name=\"" + HTML_ID_Name + "1\" id=\"" + HTML_ID_Name + "1\" class=\"" + html_element_name + "_input sbk_Focusable\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(InstanceValue.Replace("<i>", "").Replace("</i>", "")) + "\" ");
                 if (!String.IsNullOrWhiteSpace(Placeholder))
-                    Output.Write(" placeholder=\"" + HttpUtility.HtmlEncode(Placeholder) + "\"");
+                    Output.Write(" placeholder=\"" + System.Net.WebUtility.HtmlEncode(Placeholder) + "\"");
                 if (textBoxEvents != null)
                     textBoxEvents.Add_Events_HTML(Output);
                 Output.WriteLine(" />");

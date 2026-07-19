@@ -95,10 +95,10 @@ namespace SobekCM.Library.Citation.Elements
             else
             {
                 Output.Write("              <a title=\"Click to edit the related URL information\" href=\"" + Base_URL + "l/technical/javascriptrequired\" onfocus=\"link_focused2('form_related_url_term')\" onblur=\"link_blurred2('form_related_url_term')\" onkeypress=\"return popup_keypress_focus('form_related_url', 'form_relatedurl_label', '" + IsMozilla.ToString() + "' );\" onclick=\"return popup_focus('form_related_url', 'form_relatedurl_label' );\"><div class=\"form_linkline form_related_url_line\" id=\"form_related_url_term\">");
-                Output.Write(HttpUtility.HtmlEncode(Bib.Bib_Info.Location.Other_URL));
+                Output.Write(System.Net.WebUtility.HtmlEncode(Bib.Bib_Info.Location.Other_URL));
                 if (Bib.Bib_Info.Location.Other_URL_Display_Label.Length > 0 )
                 {
-                    Output.Write(" ( <i>" + HttpUtility.HtmlEncode(Bib.Bib_Info.Location.Other_URL_Display_Label) + "</i> )");
+                    Output.Write(" ( <i>" + System.Net.WebUtility.HtmlEncode(Bib.Bib_Info.Location.Other_URL_Display_Label) + "</i> )");
                 }
             }
             Output.WriteLine("</div></a>");
@@ -121,9 +121,9 @@ namespace SobekCM.Library.Citation.Elements
 			PopupFormBuilder.AppendLine("  <table class=\"sbkMetadata_PopupTable\">");
 
             // Add the rows of data
-            PopupFormBuilder.AppendLine("    <tr><td style=\"width:70px\">Label:</td><td><input class=\"form_relatedurl_input sbk_Focusable\" name=\"form_relatedurl_label\" id=\"form_relatedurl_label\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(Bib.Bib_Info.Location.Other_URL_Display_Label) + "\" /></td></tr>");
-			PopupFormBuilder.AppendLine("    <tr><td>URL:</td><td><input class=\"form_relatedurl_input sbk_Focusable\" name=\"form_relatedurl_url\" id=\"form_relatedurl_url\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(Bib.Bib_Info.Location.Other_URL) + "\" /></td></tr>");
-			PopupFormBuilder.AppendLine("    <tr><td>Note:</td><td><input class=\"form_relatedurl_input sbk_Focusable\" name=\"form_relatedurl_note\" id=\"form_relatedurl_note\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(Bib.Bib_Info.Location.Other_URL_Note) + "\" /></td></tr>");
+            PopupFormBuilder.AppendLine("    <tr><td style=\"width:70px\">Label:</td><td><input class=\"form_relatedurl_input sbk_Focusable\" name=\"form_relatedurl_label\" id=\"form_relatedurl_label\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(Bib.Bib_Info.Location.Other_URL_Display_Label) + "\" /></td></tr>");
+			PopupFormBuilder.AppendLine("    <tr><td>URL:</td><td><input class=\"form_relatedurl_input sbk_Focusable\" name=\"form_relatedurl_url\" id=\"form_relatedurl_url\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(Bib.Bib_Info.Location.Other_URL) + "\" /></td></tr>");
+			PopupFormBuilder.AppendLine("    <tr><td>Note:</td><td><input class=\"form_relatedurl_input sbk_Focusable\" name=\"form_relatedurl_note\" id=\"form_relatedurl_note\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(Bib.Bib_Info.Location.Other_URL_Note) + "\" /></td></tr>");
 
 
 			// Finish the popup form and add the CLOSE button

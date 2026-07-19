@@ -1,4 +1,4 @@
-﻿using SobekCM.Core.Aggregations;
+using SobekCM.Core.Aggregations;
 using SobekCM.Core.Users;
 using SobekCM.Engine_Library.Database;
 using SobekCM.Library.UI;
@@ -12,7 +12,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Web;
 
 namespace SobekCM.Library.AdminViewer.UserAdmin.UserAdminTabs
 {
@@ -365,7 +364,7 @@ namespace SobekCM.Library.AdminViewer.UserAdmin.UserAdminTabs
                     Output.Write(" checked=\"checked\"");
                 }
                 
-                Output.WriteLine(" /> &nbsp; <acronym title=\"" + HttpUtility.HtmlEncode(template_desc.Replace("\"", "'")) + "\"><label for=\"admin_user_template_" + template_code + "\">" + template_name + "</label></acronym></td></tr>");
+                Output.WriteLine(" /> &nbsp; <acronym title=\"" + System.Net.WebUtility.HtmlEncode(template_desc.Replace("\"", "'")) + "\"><label for=\"admin_user_template_" + template_code + "\">" + template_name + "</label></acronym></td></tr>");
                 
                 Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\"></td></tr>");
             }

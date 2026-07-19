@@ -1,7 +1,6 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Web;
 using SobekCM.Core.BriefItem;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Users;
@@ -159,7 +158,7 @@ namespace SobekCM.Library.ItemViewer.Menu
                     string[] first_splitter = first_pre_menu_option.Replace("[", "").Replace("]", "").Split(";".ToCharArray());
                     if (first_splitter.Length > 0)
                     {
-                        Output.WriteLine("\t\t<li><a href=\"" + first_splitter[1] + "\" title=\"" + HttpUtility.HtmlEncode(first_splitter[0]) + "\">" + HttpUtility.HtmlEncode(first_splitter[0]) + "</a></li>");
+                        Output.WriteLine("\t\t<li><a href=\"" + first_splitter[1] + "\" title=\"" + System.Net.WebUtility.HtmlEncode(first_splitter[0]) + "\">" + System.Net.WebUtility.HtmlEncode(first_splitter[0]) + "</a></li>");
                     }
                 }
                 if (second_pre_menu_option.Length > 0)
@@ -167,7 +166,7 @@ namespace SobekCM.Library.ItemViewer.Menu
                     string[] second_splitter = second_pre_menu_option.Replace("[", "").Replace("]", "").Split(";".ToCharArray());
                     if (second_splitter.Length > 0)
                     {
-                        Output.WriteLine("\t\t<li><a href=\"" + second_splitter[1] + "\" title=\"" + HttpUtility.HtmlEncode(second_splitter[0]) + "\">" + HttpUtility.HtmlEncode(second_splitter[0]) + "</a></li>");
+                        Output.WriteLine("\t\t<li><a href=\"" + second_splitter[1] + "\" title=\"" + System.Net.WebUtility.HtmlEncode(second_splitter[0]) + "\">" + System.Net.WebUtility.HtmlEncode(second_splitter[0]) + "</a></li>");
                     }
                 }
                 if (third_pre_menu_option.Length > 0)
@@ -175,7 +174,7 @@ namespace SobekCM.Library.ItemViewer.Menu
                     string[] third_splitter = third_pre_menu_option.Replace("[", "").Replace("]", "").Split(";".ToCharArray());
                     if (third_splitter.Length > 0)
                     {
-                        Output.WriteLine("\t\t<li><a href=\"" + third_splitter[1] + "\" title=\"" + HttpUtility.HtmlEncode(third_splitter[0]) + "\">" + HttpUtility.HtmlEncode(third_splitter[0]) + "</a></li>");
+                        Output.WriteLine("\t\t<li><a href=\"" + third_splitter[1] + "\" title=\"" + System.Net.WebUtility.HtmlEncode(third_splitter[0]) + "\">" + System.Net.WebUtility.HtmlEncode(third_splitter[0]) + "</a></li>");
                     }
                 }
             }

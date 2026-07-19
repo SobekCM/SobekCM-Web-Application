@@ -4,7 +4,6 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Web;
 using SobekCM.Core.BriefItem;
 using SobekCM.Core.Client;
 using SobekCM.Core.FileSystems;
@@ -1483,7 +1482,7 @@ namespace SobekCM.Library.MySobekViewer
             // Now, try to add the thumbnail from any page images here
             if (BriefItem.Behaviors.Dark_Flag != true)
             {
-                string name_for_image = HttpUtility.HtmlEncode(BriefItem.Title);
+                string name_for_image = System.Net.WebUtility.HtmlEncode(BriefItem.Title);
 
                 if (!String.IsNullOrEmpty(BriefItem.Behaviors.Main_Thumbnail))
                 {
@@ -1509,7 +1508,7 @@ namespace SobekCM.Library.MySobekViewer
                         }
 
                         string name_of_page = BriefItem.Images[0].Label;
-                        name_for_image = name_for_image + " - " + HttpUtility.HtmlEncode(name_of_page);
+                        name_for_image = name_for_image + " - " + System.Net.WebUtility.HtmlEncode(name_of_page);
 
 
                         // If a jpeg was found, show it
@@ -1917,13 +1916,13 @@ namespace SobekCM.Library.MySobekViewer
 
         private static string display_text_from_value(string Value)
         {
-            return HttpUtility.HtmlEncode(Value).Replace("&lt;i&gt;", "<i>").Replace("&lt;/i&gt;", "</i>");
+            return System.Net.WebUtility.HtmlEncode(Value).Replace("&lt;i&gt;", "<i>").Replace("&lt;/i&gt;", "</i>");
         }
 
         private static string search_link_from_value(string Value)
         {
             string replacedValue = Value.Replace("&amp;", "&").Replace("&", "").Replace("  ", " ");
-            string urlEncode = HttpUtility.UrlEncode(replacedValue);
+            string urlEncode = System.Net.WebUtility.UrlEncode(replacedValue);
             return urlEncode != null ? urlEncode.Replace(",", "").Replace("&amp;", "&").Replace("&", "").Replace(" ", "+") : String.Empty;
         }
 

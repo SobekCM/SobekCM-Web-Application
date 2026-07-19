@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using System.Web;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Results;
 using SobekCM.Core.Search;
@@ -211,7 +210,7 @@ namespace SobekCM.Library.ResultsViewer
 
 					if (value == "*")
 					{
-						resultsBldr.AppendLine("\t\t\t\t<dt>" + UI_ApplicationCache_Gateway.Translation.Get_Translation(display_field, RequestSpecificValues.Current_Mode.Language) + ":</dt><dd>" + HttpUtility.HtmlDecode(VARIES_STRING) + "</dd>");
+						resultsBldr.AppendLine("\t\t\t\t<dt>" + UI_ApplicationCache_Gateway.Translation.Get_Translation(display_field, RequestSpecificValues.Current_Mode.Language) + ":</dt><dd>" + System.Net.WebUtility.HtmlDecode(VARIES_STRING) + "</dd>");
 					}
 					else if ( value.Trim().Length > 0 )
 					{
@@ -229,7 +228,7 @@ namespace SobekCM.Library.ResultsViewer
 										resultsBldr.Append("\t\t\t\t<dt>" + UI_ApplicationCache_Gateway.Translation.Get_Translation(display_field, RequestSpecificValues.Current_Mode.Language) + ":</dt>");
 										value_found = true;
 									}
-									resultsBldr.Append("<dd>" + HttpUtility.HtmlDecode(thisValue) + "</dd>");
+									resultsBldr.Append("<dd>" + System.Net.WebUtility.HtmlDecode(thisValue) + "</dd>");
 								}
 							}
 
@@ -240,7 +239,7 @@ namespace SobekCM.Library.ResultsViewer
 						}
 						else
 						{
-							resultsBldr.AppendLine("\t\t\t\t<dt>" + UI_ApplicationCache_Gateway.Translation.Get_Translation(display_field, RequestSpecificValues.Current_Mode.Language) + ":</dt><dd>" + HttpUtility.HtmlDecode(value) + "</dd>");
+							resultsBldr.AppendLine("\t\t\t\t<dt>" + UI_ApplicationCache_Gateway.Translation.Get_Translation(display_field, RequestSpecificValues.Current_Mode.Language) + ":</dt><dd>" + System.Net.WebUtility.HtmlDecode(value) + "</dd>");
 						}
 					}
 				}

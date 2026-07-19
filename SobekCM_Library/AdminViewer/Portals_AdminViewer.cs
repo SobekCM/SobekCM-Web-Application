@@ -1,4 +1,4 @@
-﻿// HTML5 10/14/2013
+// HTML5 10/14/2013
 
 #region Using directives
 
@@ -6,7 +6,6 @@ using System;
 using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
-using System.Web;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.ApplicationState;
 using SobekCM.Core.Navigation;
@@ -392,7 +391,7 @@ namespace SobekCM.Library.AdminViewer
                     if (display.Length > 40)
                         display = display.Substring(0, 40) + "...";
 
-                    Output.WriteLine("              <option value=\"" + thisAggr.Code.ToUpper() + "\">" + HttpUtility.HtmlEncode(display) + "</option>");
+                    Output.WriteLine("              <option value=\"" + thisAggr.Code.ToUpper() + "\">" + System.Net.WebUtility.HtmlEncode(display) + "</option>");
                 }
             }
             Output.WriteLine("            </select>");
@@ -464,14 +463,14 @@ namespace SobekCM.Library.AdminViewer
                 // Add the line for the url portal name
                 Output.WriteLine("      <tr>");
                 Output.WriteLine("        <td style=\"width:145px;\"><label for=\"admin_portal_name\">Portal Name:</label></td>");
-                Output.WriteLine("        <td><input class=\"sbkPoav_input sbkAdmin_Focusable\" name=\"admin_portal_name\" id=\"admin_portal_name\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(newPortal.Name) + "\" /></td>");
+                Output.WriteLine("        <td><input class=\"sbkPoav_input sbkAdmin_Focusable\" name=\"admin_portal_name\" id=\"admin_portal_name\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(newPortal.Name) + "\" /></td>");
                 Output.WriteLine("        <td><img class=\"sbkPoav_HelpButton\" src=\"" + Static_Resources_Gateway.Help_Button_Jpg + "\" onclick=\"alert('" + PORTAL_NAME_HELP.Replace("'", "").Replace("\\", "\\\\").Replace("\n", "\\n") + "');\" title=\"" + PORTAL_NAME_HELP.Replace("'", "").Replace("\\", "\\\\").Replace("\n", " ") + "\" /></td>");
                 Output.WriteLine("      </tr>");
 
                 // Add the line for the url portal abbreviation
                 Output.WriteLine("      <tr>");
                 Output.WriteLine("        <td><label for=\"admin_portal_abbr\">System Abbreviation:</label></td>");
-                Output.WriteLine("        <td><input class=\"sbkPoav_input sbkAdmin_Focusable\" name=\"admin_portal_abbr\" id=\"admin_portal_abbr\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(newPortal.Abbreviation) + "\" /></td>");
+                Output.WriteLine("        <td><input class=\"sbkPoav_input sbkAdmin_Focusable\" name=\"admin_portal_abbr\" id=\"admin_portal_abbr\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(newPortal.Abbreviation) + "\" /></td>");
                 Output.WriteLine("        <td><img class=\"sbkPoav_HelpButton\" src=\"" + Static_Resources_Gateway.Help_Button_Jpg + "\" onclick=\"alert('" + ABBREVIATION_HELP.Replace("'", "").Replace("\\", "\\\\").Replace("\n", "\\n") + "');\" title=\"" + ABBREVIATION_HELP.Replace("'", "").Replace("\\", "\\\\").Replace("\n", " ") + "\" /></td>");
                 Output.WriteLine("      </tr>");
 
@@ -481,7 +480,7 @@ namespace SobekCM.Library.AdminViewer
 
                 Output.WriteLine("        <td>");
 
-                //Output.WriteLine("        <input class=\"sbkPoav_input sbkAdmin_Focusable\" name=\"admin_portal_skin\" id=\"admin_portal_skin\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(newPortal.Default_Web_Skin) + "\" />");
+                //Output.WriteLine("        <input class=\"sbkPoav_input sbkAdmin_Focusable\" name=\"admin_portal_skin\" id=\"admin_portal_skin\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(newPortal.Default_Web_Skin) + "\" />");
 
                 Output.WriteLine("          <select class=\"sbkPoav_select\" name=\"admin_portal_skin\" id=\"admin_portal_skin\">");
 
@@ -526,9 +525,9 @@ namespace SobekCM.Library.AdminViewer
                             display = display.Substring(0, 40) + "...";
 
                         if (String.Compare(thisAggr.Code, newPortal.Default_Aggregation, StringComparison.OrdinalIgnoreCase) == 0)
-                            Output.WriteLine("              <option value=\"" + thisAggr.Code + "\" selected=\"selected\">" + HttpUtility.HtmlEncode(display) + "</option>");
+                            Output.WriteLine("              <option value=\"" + thisAggr.Code + "\" selected=\"selected\">" + System.Net.WebUtility.HtmlEncode(display) + "</option>");
                         else
-                            Output.WriteLine("              <option value=\"" + thisAggr.Code + "\">" + HttpUtility.HtmlEncode(display) + "</option>");
+                            Output.WriteLine("              <option value=\"" + thisAggr.Code + "\">" + System.Net.WebUtility.HtmlEncode(display) + "</option>");
                     }
                 }
                 Output.WriteLine("            </select>");
@@ -539,14 +538,14 @@ namespace SobekCM.Library.AdminViewer
                 // Add the line for the base url segment
                 Output.WriteLine("      <tr>");
                 Output.WriteLine("        <td><label for=\"admin_portal_url\">URL Segment:</label></td>");
-                Output.WriteLine("        <td><input class=\"sbkPoav_input sbkAdmin_Focusable\" name=\"admin_portal_url\" id=\"admin_portal_url\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(newPortal.URL_Segment) + "\" /></td>");
+                Output.WriteLine("        <td><input class=\"sbkPoav_input sbkAdmin_Focusable\" name=\"admin_portal_url\" id=\"admin_portal_url\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(newPortal.URL_Segment) + "\" /></td>");
                 Output.WriteLine("        <td><img class=\"sbkPoav_HelpButton\" src=\"" + Static_Resources_Gateway.Help_Button_Jpg + "\" onclick=\"alert('" + URL_SEGMENT_HELP.Replace("'", "").Replace("\\", "\\\\").Replace("\n", "\\n") + "');\" title=\"" + URL_SEGMENT_HELP.Replace("'", "").Replace("\\", "\\\\").Replace("\n", " ") + "\" /></td>");
                 Output.WriteLine("      </tr>");
 
                 // Add the line for the base purl 
                 Output.WriteLine("      <tr>");
                 Output.WriteLine("        <td><label for=\"admin_portal_purl\">Base PURL:</label></td>");
-                Output.WriteLine("        <td><input class=\"sbkPoav_input sbkAdmin_Focusable\" name=\"admin_portal_purl\" id=\"admin_portal_purl\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(newPortal.Base_PURL) + "\" /></td>");
+                Output.WriteLine("        <td><input class=\"sbkPoav_input sbkAdmin_Focusable\" name=\"admin_portal_purl\" id=\"admin_portal_purl\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(newPortal.Base_PURL) + "\" /></td>");
                 Output.WriteLine("        <td><img class=\"sbkPoav_HelpButton\" src=\"" + Static_Resources_Gateway.Help_Button_Jpg + "\" onclick=\"alert('" + BASE_PURL_HELP.Replace("'", "").Replace("\\", "\\\\").Replace("\n", "\\n") + "');\" title=\"" + BASE_PURL_HELP.Replace("'", "").Replace("\\", "\\\\").Replace("\n", " ") + "\" /></td>");
                 Output.WriteLine("      </tr>");
 
@@ -581,19 +580,19 @@ namespace SobekCM.Library.AdminViewer
                     Output.Write("      <td class=\"sbkAdm_ActionLink\" >( ");
                     Portal thisPortal = UI_ApplicationCache_Gateway.URL_Portals.Default_Portal;
                     if (readOnlyMode)
-                        Output.WriteLine("      <a title=\"View this portal\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return portal_form_popup( '" + thisPortal.ID + "','" + HttpUtility.HtmlEncode(thisPortal.Name.Replace("'", "")) + "','" + thisPortal.Abbreviation + "','" + thisPortal.Default_Web_Skin + "','" + thisPortal.Default_Aggregation.ToUpper() + "','" + thisPortal.URL_Segment + "','" + thisPortal.Base_PURL + "');\">view</a> ) </td>");
+                        Output.WriteLine("      <a title=\"View this portal\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return portal_form_popup( '" + thisPortal.ID + "','" + System.Net.WebUtility.HtmlEncode(thisPortal.Name.Replace("'", "")) + "','" + thisPortal.Abbreviation + "','" + thisPortal.Default_Web_Skin + "','" + thisPortal.Default_Aggregation.ToUpper() + "','" + thisPortal.URL_Segment + "','" + thisPortal.Base_PURL + "');\">view</a> ) </td>");
                     else
-                        Output.WriteLine("      <a title=\"Edit this portal\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return portal_form_popup( '" + thisPortal.ID + "','" + HttpUtility.HtmlEncode(thisPortal.Name.Replace("'", "")) + "','" + thisPortal.Abbreviation + "','" + thisPortal.Default_Web_Skin + "','" + thisPortal.Default_Aggregation.ToUpper() + "','" + thisPortal.URL_Segment + "','" + thisPortal.Base_PURL + "');\">edit</a> ) </td>");
+                        Output.WriteLine("      <a title=\"Edit this portal\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return portal_form_popup( '" + thisPortal.ID + "','" + System.Net.WebUtility.HtmlEncode(thisPortal.Name.Replace("'", "")) + "','" + thisPortal.Abbreviation + "','" + thisPortal.Default_Web_Skin + "','" + thisPortal.Default_Aggregation.ToUpper() + "','" + thisPortal.URL_Segment + "','" + thisPortal.Base_PURL + "');\">edit</a> ) </td>");
                 }
                 else
                 {
                     Output.WriteLine("    <td>&nbsp;</td>");
                 }
             }
-            Output.WriteLine("      <td>" + HttpUtility.HtmlEncode(UI_ApplicationCache_Gateway.URL_Portals.Default_Portal.Name) + "</td>");
-            Output.WriteLine("      <td>" + HttpUtility.HtmlEncode(UI_ApplicationCache_Gateway.URL_Portals.Default_Portal.Abbreviation) + "</td>");
-            Output.WriteLine("      <td>" + HttpUtility.HtmlEncode(UI_ApplicationCache_Gateway.URL_Portals.Default_Portal.Default_Web_Skin) + "</td>");
-            Output.WriteLine("      <td>" + HttpUtility.HtmlEncode(UI_ApplicationCache_Gateway.URL_Portals.Default_Portal.Default_Aggregation) + "</td>");
+            Output.WriteLine("      <td>" + System.Net.WebUtility.HtmlEncode(UI_ApplicationCache_Gateway.URL_Portals.Default_Portal.Name) + "</td>");
+            Output.WriteLine("      <td>" + System.Net.WebUtility.HtmlEncode(UI_ApplicationCache_Gateway.URL_Portals.Default_Portal.Abbreviation) + "</td>");
+            Output.WriteLine("      <td>" + System.Net.WebUtility.HtmlEncode(UI_ApplicationCache_Gateway.URL_Portals.Default_Portal.Default_Web_Skin) + "</td>");
+            Output.WriteLine("      <td>" + System.Net.WebUtility.HtmlEncode(UI_ApplicationCache_Gateway.URL_Portals.Default_Portal.Default_Aggregation) + "</td>");
             Output.WriteLine("      <td id=\"sbkPoav_DefaultCell\">default</td>");
 
             Output.WriteLine("    </tr>");
@@ -610,19 +609,19 @@ namespace SobekCM.Library.AdminViewer
                         Output.Write("      <td class=\"sbkAdm_ActionLink\" >( ");
                         if (readOnlyMode)
                         {
-                            Output.Write("<a title=\"View this portal\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return portal_form_popup( '" + thisPortal.ID + "','" + HttpUtility.HtmlEncode(thisPortal.Name.Replace("'", "")) + "','" + thisPortal.Abbreviation + "','" + thisPortal.Default_Web_Skin + "','" + thisPortal.Default_Aggregation.ToUpper() + "','" + thisPortal.URL_Segment + "','" + thisPortal.Base_PURL + "');\">view</a> )</td>");
+                            Output.Write("<a title=\"View this portal\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return portal_form_popup( '" + thisPortal.ID + "','" + System.Net.WebUtility.HtmlEncode(thisPortal.Name.Replace("'", "")) + "','" + thisPortal.Abbreviation + "','" + thisPortal.Default_Web_Skin + "','" + thisPortal.Default_Aggregation.ToUpper() + "','" + thisPortal.URL_Segment + "','" + thisPortal.Base_PURL + "');\">view</a> )</td>");
                         }
                         else
                         {
-                            Output.Write("<a title=\"Edit this portal\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return portal_form_popup( '" + thisPortal.ID + "','" + HttpUtility.HtmlEncode(thisPortal.Name.Replace("'", "")) + "','" + thisPortal.Abbreviation + "','" + thisPortal.Default_Web_Skin + "','" + thisPortal.Default_Aggregation.ToUpper() + "','" + thisPortal.URL_Segment + "','" + thisPortal.Base_PURL + "');\">edit</a> | ");
-                            Output.WriteLine("<a title=\"Delete this portal\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return delete_portal('" + thisPortal.ID + "','" + HttpUtility.HtmlEncode(thisPortal.Name.Replace("'", "")) + "');\">delete</a> )</td>");
+                            Output.Write("<a title=\"Edit this portal\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return portal_form_popup( '" + thisPortal.ID + "','" + System.Net.WebUtility.HtmlEncode(thisPortal.Name.Replace("'", "")) + "','" + thisPortal.Abbreviation + "','" + thisPortal.Default_Web_Skin + "','" + thisPortal.Default_Aggregation.ToUpper() + "','" + thisPortal.URL_Segment + "','" + thisPortal.Base_PURL + "');\">edit</a> | ");
+                            Output.WriteLine("<a title=\"Delete this portal\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return delete_portal('" + thisPortal.ID + "','" + System.Net.WebUtility.HtmlEncode(thisPortal.Name.Replace("'", "")) + "');\">delete</a> )</td>");
                         }
                     }
-                    Output.WriteLine("      <td>" + HttpUtility.HtmlEncode(thisPortal.Name) + "</td>");
-                    Output.WriteLine("      <td>" + HttpUtility.HtmlEncode(thisPortal.Abbreviation) + "</td>");
-                    Output.WriteLine("      <td>" + HttpUtility.HtmlEncode(thisPortal.Default_Web_Skin) + "</td>");
-                    Output.WriteLine("      <td>" + HttpUtility.HtmlEncode(thisPortal.Default_Aggregation) + "</td>");
-                    Output.WriteLine("      <td>" + HttpUtility.HtmlEncode(thisPortal.URL_Segment) + "</td>");
+                    Output.WriteLine("      <td>" + System.Net.WebUtility.HtmlEncode(thisPortal.Name) + "</td>");
+                    Output.WriteLine("      <td>" + System.Net.WebUtility.HtmlEncode(thisPortal.Abbreviation) + "</td>");
+                    Output.WriteLine("      <td>" + System.Net.WebUtility.HtmlEncode(thisPortal.Default_Web_Skin) + "</td>");
+                    Output.WriteLine("      <td>" + System.Net.WebUtility.HtmlEncode(thisPortal.Default_Aggregation) + "</td>");
+                    Output.WriteLine("      <td>" + System.Net.WebUtility.HtmlEncode(thisPortal.URL_Segment) + "</td>");
                     Output.WriteLine("    </tr>");
                     Output.WriteLine("    <tr><td class=\"sbkAdm_TableRule\" colspan=\"" + columns + "\"></td></tr>");
                 }

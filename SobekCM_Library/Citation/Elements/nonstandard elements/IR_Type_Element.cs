@@ -206,7 +206,7 @@ namespace SobekCM.Library.Citation.Elements
             if (other_value)
             {
                 Output.WriteLine("              <span class=\"metadata_sublabel\" id=\"irtype_othertext\" name=\"irtype_othertext\">" + Translator.Get_Translation("Specify Type", CurrentLanguage) + ":</span>");
-                Output.WriteLine("              <input type=\"text\" class=\"irtype_other_input sbk_Focusable\" id=\"irtype_otherinput\" name=\"irtype_otherinput\" value=\"" + HttpUtility.HtmlEncode(Bib.Bib_Info.Original_Description.Extent) + "\" />");
+                Output.WriteLine("              <input type=\"text\" class=\"irtype_other_input sbk_Focusable\" id=\"irtype_otherinput\" name=\"irtype_otherinput\" value=\"" + System.Net.WebUtility.HtmlEncode(Bib.Bib_Info.Original_Description.Extent) + "\" />");
 
             }
             Output.WriteLine("              </div>");
@@ -255,7 +255,7 @@ namespace SobekCM.Library.Citation.Elements
                 Output.WriteLine("    <td>");
                 Output.WriteLine("      <table><tr><td>");
                 Output.WriteLine("      <div id=\"" + html_element_name_irtype + "_div\">");
-                Output.WriteLine("      <input name=\"" + id_name + "\" id=\"" + id_name + "\" class=\"" + html_element_name_irtype + "_input sbk_Focusable\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(larger_value.Replace("<i>", "").Replace("</i>", "")) + "\" /></div>");
+                Output.WriteLine("      <input name=\"" + id_name + "\" id=\"" + id_name + "\" class=\"" + html_element_name_irtype + "_input sbk_Focusable\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(larger_value.Replace("<i>", "").Replace("</i>", "")) + "\" /></div>");
                 Output.WriteLine("    </td>");
                 Output.WriteLine("         <td vstyle=\"vertical-align=:bottom\" >");
                 Output.WriteLine("            <a target=\"_" + html_element_name_irtype.ToUpper() + "\"  title=\"" + Translator.Get_Translation("Get help.", CurrentLanguage) + "\" href=\"" + Help_URL(Skin_Code, Base_URL) + "\" ><img class=\"help_button\" src=\"" + HELP_BUTTON_URL + "\" /></a>");

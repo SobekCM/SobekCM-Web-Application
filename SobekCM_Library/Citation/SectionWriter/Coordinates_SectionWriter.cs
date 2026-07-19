@@ -1,7 +1,6 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Text;
-using System.Web;
 using SobekCM.Core.BriefItem;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.UI_Configuration.Citation;
@@ -53,7 +52,7 @@ namespace SobekCM.Library.Citation.SectionWriter
                     // Add this coordiante
                     if (Item.GeoSpatial.Points[i].Label.Length > 0)
                     {
-                        Output.Append("          <span itemprop=\"geo\" itemscope itemtype=\"http://schema.org/GeoCoordinates\"><span itemprop=\"latitude\">" + Item.GeoSpatial.Points[i].Latitude + "</span> x <span itemprop=\"longitude\">" + Item.GeoSpatial.Points[i].Longitude + "</span> ( <span itemprop=\"name\">" + HttpUtility.HtmlEncode(Item.GeoSpatial.Points[i].Label) + "</span> )</span>");
+                        Output.Append("          <span itemprop=\"geo\" itemscope itemtype=\"http://schema.org/GeoCoordinates\"><span itemprop=\"latitude\">" + Item.GeoSpatial.Points[i].Latitude + "</span> x <span itemprop=\"longitude\">" + Item.GeoSpatial.Points[i].Longitude + "</span> ( <span itemprop=\"name\">" + System.Net.WebUtility.HtmlEncode(Item.GeoSpatial.Points[i].Label) + "</span> )</span>");
                     }
                     else
                     {
@@ -89,7 +88,7 @@ namespace SobekCM.Library.Citation.SectionWriter
 
                     if (polygon.Label.Length > 0)
                     {
-                        polygonBuilder.Append(" ( " + HttpUtility.HtmlEncode(polygon.Label) + " )");
+                        polygonBuilder.Append(" ( " + System.Net.WebUtility.HtmlEncode(polygon.Label) + " )");
                     }
                     if (polygonBuilder.ToString().Trim().Length > 0)
                     {

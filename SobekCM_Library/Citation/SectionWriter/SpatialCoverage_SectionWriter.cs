@@ -1,7 +1,6 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Text;
-using System.Web;
 using SobekCM.Core.BriefItem;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.UI_Configuration.Citation;
@@ -80,19 +79,19 @@ namespace SobekCM.Library.Citation.SectionWriter
                             break;
 
                         case "Country":
-                            spatial_builder.Append(SearchLink.Replace("<%VALUE%>", HttpUtility.HtmlEncode(thisValue.Value.Replace("&amp;", "&").Replace("&", "").Replace("  ", " ")).Replace(",", "").Replace("&amp;", "&").Replace("&", "").Replace(" ", "+")).Replace("<%CODE%>", "CO") + thisValue.Value + SearchLinkEnd);
+                            spatial_builder.Append(SearchLink.Replace("<%VALUE%>", System.Net.WebUtility.HtmlEncode(thisValue.Value.Replace("&amp;", "&").Replace("&", "").Replace("  ", " ")).Replace(",", "").Replace("&amp;", "&").Replace("&", "").Replace(" ", "+")).Replace("<%CODE%>", "CO") + thisValue.Value + SearchLinkEnd);
                             break;
 
                         case "State":
-                            spatial_builder.Append(SearchLink.Replace("<%VALUE%>", HttpUtility.HtmlEncode(thisValue.Value.Replace("&amp;", "&").Replace("&", "").Replace("  ", " ")).Replace(",", "").Replace("&amp;", "&").Replace("&", "").Replace(" ", "+")).Replace("<%CODE%>", "ST") + thisValue.Value + SearchLinkEnd);
+                            spatial_builder.Append(SearchLink.Replace("<%VALUE%>", System.Net.WebUtility.HtmlEncode(thisValue.Value.Replace("&amp;", "&").Replace("&", "").Replace("  ", " ")).Replace(",", "").Replace("&amp;", "&").Replace("&", "").Replace(" ", "+")).Replace("<%CODE%>", "ST") + thisValue.Value + SearchLinkEnd);
                             break;
 
                         case "County":
-                            spatial_builder.Append(SearchLink.Replace("<%VALUE%>", HttpUtility.HtmlEncode(thisValue.Value.Replace("&amp;", "&").Replace("&", "").Replace("  ", " ")).Replace(",", "").Replace("&amp;", "&").Replace("&", "").Replace(" ", "+")).Replace("<%CODE%>", "CT") + thisValue.Value + SearchLinkEnd);
+                            spatial_builder.Append(SearchLink.Replace("<%VALUE%>", System.Net.WebUtility.HtmlEncode(thisValue.Value.Replace("&amp;", "&").Replace("&", "").Replace("  ", " ")).Replace(",", "").Replace("&amp;", "&").Replace("&", "").Replace(" ", "+")).Replace("<%CODE%>", "CT") + thisValue.Value + SearchLinkEnd);
                             break;
 
                         case "City":
-                            spatial_builder.Append(SearchLink.Replace("<%VALUE%>", HttpUtility.HtmlEncode(thisValue.Value.Replace("&amp;", "&").Replace("&", "").Replace("  ", " ")).Replace(",", "").Replace("&amp;", "&").Replace("&", "").Replace(" ", "+")).Replace("<%CODE%>", "CI") + thisValue.Value + SearchLinkEnd);
+                            spatial_builder.Append(SearchLink.Replace("<%VALUE%>", System.Net.WebUtility.HtmlEncode(thisValue.Value.Replace("&amp;", "&").Replace("&", "").Replace("  ", " ")).Replace(",", "").Replace("&amp;", "&").Replace("&", "").Replace(" ", "+")).Replace("<%CODE%>", "CI") + thisValue.Value + SearchLinkEnd);
                             break;
                     }
                 }

@@ -2048,7 +2048,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 // Add the text box for entering the name of this page
                 Output.WriteLine("    <tr>");
                 Output.WriteLine("      <td class=\"sbkQc_PaginationText\">" + pagination_text + "</td>");
-                Output.WriteLine("      <td><input type=\"text\" id=\"textbox" + page_index + "\" name=\"textbox" + page_index + "\" class=\"" + pagination_box + "\" value=\"" + HttpUtility.HtmlEncode(thisPage.Label) + "\" onchange=\"PaginationTextChanged(this.id);\"></input></td>");
+                Output.WriteLine("      <td><input type=\"text\" id=\"textbox" + page_index + "\" name=\"textbox" + page_index + "\" class=\"" + pagination_box + "\" value=\"" + System.Net.WebUtility.HtmlEncode(thisPage.Label) + "\" onchange=\"PaginationTextChanged(this.id);\"></input></td>");
                 Output.WriteLine("    </tr>");
 
                 // Was this a new parent?
@@ -2118,11 +2118,11 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
                 if (newParent)
                 {
-                    Output.WriteLine("      <td><input type=\"text\" id=\"txtDivName" + page_index + "\" name=\"txtDivName" + page_index + "\" class=\"" + pagination_box + "\" value=\"" + HttpUtility.HtmlEncode(parentLabel) + "\" onchange=\"DivNameTextChanged(this.id);\"/></td>");
+                    Output.WriteLine("      <td><input type=\"text\" id=\"txtDivName" + page_index + "\" name=\"txtDivName" + page_index + "\" class=\"" + pagination_box + "\" value=\"" + System.Net.WebUtility.HtmlEncode(parentLabel) + "\" onchange=\"DivNameTextChanged(this.id);\"/></td>");
                 }
                 else
                 {
-                    Output.WriteLine("      <td><input type=\"text\" disabled=\"disabled\" id=\"txtDivName" + page_index + "\" name=\"txtDivName" + page_index + "\" class=\"" + pagination_box + "\" value=\"" + HttpUtility.HtmlEncode(parentLabel) + "\" onchange=\"DivNameTextChanged(this.id);\"/></td></tr>");
+                    Output.WriteLine("      <td><input type=\"text\" disabled=\"disabled\" id=\"txtDivName" + page_index + "\" name=\"txtDivName" + page_index + "\" class=\"" + pagination_box + "\" value=\"" + System.Net.WebUtility.HtmlEncode(parentLabel) + "\" onchange=\"DivNameTextChanged(this.id);\"/></td></tr>");
                 }
                 Output.WriteLine("    </tr>");
 
@@ -2554,11 +2554,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 thumbnails_per_page = static_pages.Count;
             }
             //Set the thumbnails_per_page to the value from the query string, if present
-            Uri uri = HttpContext.Current.Request.Url;
-
-            if (uri.Query.IndexOf("ts") > 0)
+            if (RequestSpecificValues.QueryString.TryGetValue("ts", out string tsValue) && int.TryParse(tsValue, out int size_of_thumbnails))
             {
-                int size_of_thumbnails = Convert.ToInt32(HttpUtility.ParseQueryString(uri.Query).Get("ts"));
                 CurrentRequest.Size_Of_Thumbnails = (short)size_of_thumbnails;
             }
             else

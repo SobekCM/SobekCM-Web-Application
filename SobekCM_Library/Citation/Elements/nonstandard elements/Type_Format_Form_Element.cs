@@ -661,23 +661,23 @@ namespace SobekCM.Library.Citation.Elements
 
             // Add the extent information
             PopupFormBuilder.Append("    <tr><td> &nbsp; &nbsp; Physical Desc:</td><td colspan=\"2\">");
-            PopupFormBuilder.Append("<input class=\"formtype_large_input sbk_Focusable\" name=\"form_typeformat_extent\" id=\"form_typeformat_extent\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(Bib.Bib_Info.Original_Description.Extent) + "\" />");
+            PopupFormBuilder.Append("<input class=\"formtype_large_input sbk_Focusable\" name=\"form_typeformat_extent\" id=\"form_typeformat_extent\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(Bib.Bib_Info.Original_Description.Extent) + "\" />");
             PopupFormBuilder.AppendLine("</td></tr>");
 
             // Add the date range info
             PopupFormBuilder.Append("    <tr><td> &nbsp; &nbsp; Year Range:</td><td colspan=\"2\">");
-			PopupFormBuilder.Append("<span class=\"metadata_sublabel2\">Start Year:</span><input class=\"formtype_small_input sbk_Focusable\" name=\"form_typeformat_datestart\" id=\"form_typeformat_datestart\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(Bib.Bib_Info.Origin_Info.MARC_DateIssued_Start) + "\" />");
-			PopupFormBuilder.Append("<span class=\"metadata_sublabel\">End Year:</span><input class=\"formtype_small_input sbk_Focusable\" name=\"form_typeformat_dateend\" id=\"form_typeformat_dateend\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(Bib.Bib_Info.Origin_Info.MARC_DateIssued_End) + "\" />");
+			PopupFormBuilder.Append("<span class=\"metadata_sublabel2\">Start Year:</span><input class=\"formtype_small_input sbk_Focusable\" name=\"form_typeformat_datestart\" id=\"form_typeformat_datestart\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(Bib.Bib_Info.Origin_Info.MARC_DateIssued_Start) + "\" />");
+			PopupFormBuilder.Append("<span class=\"metadata_sublabel\">End Year:</span><input class=\"formtype_small_input sbk_Focusable\" name=\"form_typeformat_dateend\" id=\"form_typeformat_dateend\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(Bib.Bib_Info.Origin_Info.MARC_DateIssued_End) + "\" />");
             PopupFormBuilder.AppendLine("</td></tr>");
 
             // Add the place code info
             PopupFormBuilder.Append("    <tr><td> &nbsp; &nbsp; Place Code:</td><td colspan=\"2\">");
-			PopupFormBuilder.Append("<input class=\"formtype_small_input sbk_Focusable\" name=\"form_typeformat_placecode\" id=\"form_typeformat_placecode\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(place_code) + "\" />");
+			PopupFormBuilder.Append("<input class=\"formtype_small_input sbk_Focusable\" name=\"form_typeformat_placecode\" id=\"form_typeformat_placecode\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(place_code) + "\" />");
             PopupFormBuilder.AppendLine("</td></tr>");
 
             // Add the language code info
             PopupFormBuilder.Append("    <tr><td> &nbsp; &nbsp; Language Code:</td><td colspan=\"2\">");
-			PopupFormBuilder.Append("<input class=\"formtype_small_input sbk_Focusable\" name=\"form_typeformat_langcode\" id=\"form_typeformat_langcode\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(language_code) + "\" />");
+			PopupFormBuilder.Append("<input class=\"formtype_small_input sbk_Focusable\" name=\"form_typeformat_langcode\" id=\"form_typeformat_langcode\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(language_code) + "\" />");
             PopupFormBuilder.AppendLine("</td></tr>");
 
             #endregion
@@ -963,8 +963,8 @@ namespace SobekCM.Library.Citation.Elements
 
                 // Add the projection code and scale
                 PopupFormBuilder.Append("    <tr><td> &nbsp; &nbsp; Projection Code:</td><td>");
-				PopupFormBuilder.Append("<input class=\"formtype_small_input sbk_Focusable\" name=\"form_typeformat_projcode\" id=\"form_typeformat_projcode\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(projection) + "\" /></td>");
-				PopupFormBuilder.AppendLine("<td width=\"250px\">Scale: &nbsp; &nbsp; <input class=\"formtype_small_input sbk_Focusable\" name=\"form_typeformat_scale\" id=\"form_typeformat_scale\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(scale) + "\" /></td></tr>");
+				PopupFormBuilder.Append("<input class=\"formtype_small_input sbk_Focusable\" name=\"form_typeformat_projcode\" id=\"form_typeformat_projcode\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(projection) + "\" /></td>");
+				PopupFormBuilder.AppendLine("<td width=\"250px\">Scale: &nbsp; &nbsp; <input class=\"formtype_small_input sbk_Focusable\" name=\"form_typeformat_scale\" id=\"form_typeformat_scale\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(scale) + "\" /></td></tr>");
 
                 // Add the subtype
                 PopupFormBuilder.Append("    <tr><td> &nbsp; &nbsp; Sub-type:</td><td colspan=\"2\">");

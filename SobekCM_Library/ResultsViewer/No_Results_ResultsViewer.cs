@@ -6,7 +6,6 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
-using System.Web;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Results;
 using SobekCM.Library.UI;
@@ -102,7 +101,7 @@ namespace SobekCM.Library.ResultsViewer
 
                 if (union_catalog_matches > 0)
                 {
-                    susMangoSearchQuery = "?st=" + HttpUtility.HtmlEncode(terms) + "&ix=kw";
+                    susMangoSearchQuery = "?st=" + System.Net.WebUtility.HtmlEncode(terms) + "&ix=kw";
                     noResultsText = noResultsText.Replace("[%SusMangoSpanDisplay%]", "inline-block").Replace("[%SusMangoSearchEnding%]", susMangoSearchQuery).Replace("[%SusMangoCount%]", number_to_string(union_catalog_matches));
                 }
                 else

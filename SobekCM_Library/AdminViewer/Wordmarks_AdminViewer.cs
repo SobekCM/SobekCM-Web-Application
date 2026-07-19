@@ -1,4 +1,4 @@
-﻿// HTML5 = 10/12/2013 MVS
+// HTML5 = 10/12/2013 MVS
 
 #region Using directives
 
@@ -8,7 +8,6 @@ using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Web;
 using SobekCM.Core.ApplicationState;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.UI_Configuration;
@@ -272,7 +271,7 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine("<script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Jquery_Ui_1_10_3_Custom_Js + "\"></script>");
 
 			// Start this added form
-			string post_url = HttpUtility.HtmlEncode(HttpContext.Current.Items["Original_URL"].ToString());
+			string post_url = System.Net.WebUtility.HtmlEncode(HttpContext.Current.Items["Original_URL"].ToString());
 			Output.WriteLine("<form name=\"sbkAdm_AddedForm\" method=\"post\" action=\"" + post_url + "\" id=\"sbkAdm_AddedForm\" >");
 
 			// Add the hidden field
@@ -476,7 +475,7 @@ namespace SobekCM.Library.AdminViewer
 
 			        // Build the action links
 			        Output.Write("<br /><span class=\"sbkAdm_ActionLink\" >( ");
-			        Output.Write("<a title=\"Click to edit\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return wordmark_form_popup( '" + thisIcon.Code + "', '" + HttpUtility.HtmlEncode(thisIcon.Title.Replace("'", "")) + "','" + thisIcon.Image_FileName + "','" + HttpUtility.HtmlEncode(thisIcon.Link) + "');\">edit</a> | ");
+			        Output.Write("<a title=\"Click to edit\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return wordmark_form_popup( '" + thisIcon.Code + "', '" + System.Net.WebUtility.HtmlEncode(thisIcon.Title.Replace("'", "")) + "','" + thisIcon.Image_FileName + "','" + System.Net.WebUtility.HtmlEncode(thisIcon.Link) + "');\">edit</a> | ");
 			        Output.Write("<a title=\"Click to delete\" href=\"javascript:delete_wordmark('" + thisIcon.Code + "');\">delete</a> )</span>");
 			        Output.WriteLine("</td>");
 

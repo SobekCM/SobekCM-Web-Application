@@ -95,6 +95,15 @@ namespace SobekCM
                 await next();
             });
 
+            // ── Pretty URL rewriting (replaces the old SobekCM_URL_Rewriter IHttpModule) ──
+            // Runs after UseStaticFiles, so requests for files that actually exist on disk
+            // never reach it; only handles requests that fall through as bare item/aggregation
+            // paths, e.g. /AA00008275/00001/3j
+            app.Use(async (context, next) =>
+            {
+                await PrettyUrl_Rewrite(context, next);
+            });
+
             // ── File serving endpoint (replaces Files.aspx) ──────────────────────────
             app.Map("/files/{**urlrelative}", async (HttpContext context, string urlrelative) =>
             {
@@ -315,6 +324,172 @@ namespace SobekCM
             });
 
             app.Run();
+        }
+
+        /// <summary> Rewrites bare item/aggregation paths (e.g. /AA00008275/00001/3j) into the
+        /// urlrelative query parameter the rest of the pipeline expects, and handles a handful of
+        /// passthroughs and special cases that used to live in the SobekCM_URL_Rewriter IHttpModule. </summary>
+        /// <remarks> Portal resolution no longer needs to be threaded through here — <see cref="SobekCM.QueryInitializerHelpers.UrlInitializer"/>
+        /// already derives Base_URL directly from the request host. The old rewriter's static-file
+        /// extension checks are also gone: UseStaticFiles, registered earlier in the pipeline, already
+        /// serves anything that exists on disk before this middleware ever runs. </remarks>
+        private static async Task PrettyUrl_Rewrite(HttpContext context, Func<Task> next)
+        {
+            string relative = (context.Request.Path.Value ?? "").Trim('/').ToLower();
+            string host = context.Request.Host.Host;
+
+            // Leave requests for already-mapped routes alone — otherwise a direct hit to e.g.
+            // /sobekcm_data.aspx would fall into the generic rewrite below and get a bogus
+            // urlrelative=sobekcm_data.aspx injected into its query string.
+            if (relative == "robots.txt" || relative == "htmleditfilehandler.ashx" || relative == "uploadifivefilehandler.ashx" ||
+                relative == "dashboard.aspx" || relative == "sobekcm_data.aspx" || relative == "sobekcm_oai.aspx" ||
+                relative.StartsWith("files/"))
+            {
+                await next();
+                return;
+            }
+
+            // Block AmazonBot entirely
+            string userAgent = context.Request.Headers.UserAgent.ToString();
+            if (userAgent.IndexOf("amazonbot", StringComparison.OrdinalIgnoreCase) >= 0)
+            {
+                context.Response.Redirect("https://sobekdigital.com/about/", true);
+                return;
+            }
+
+            // USFLDC-specific passthrough and redirection service (OHPi is part of the same USF integration)
+            if (relative.IndexOf("ohpi/") >= 0)
+            {
+                await next();
+                return;
+            }
+            if ((relative.Length == 0) && context.Request.QueryString.HasValue &&
+                (host.Contains("usf.edu") || host.Contains("usf.sobek.ufl.edu")))
+            {
+                USFLDC_Redirection_Service(context);
+                return;
+            }
+
+            // Per-portal favicon, e.g. design/favicons/dcdp.uoc.cw/favicon.ico
+            if (relative == "favicon.ico")
+            {
+                string faviconPath = Path.Combine(UI_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location, "favicons", host, "favicon.ico");
+                if (File.Exists(faviconPath))
+                {
+                    context.Response.ContentType = "image/x-icon";
+                    await context.Response.SendFileAsync(faviconPath);
+                    return;
+                }
+                await next();
+                return;
+            }
+
+            // Nothing to rewrite for the site root
+            if (relative.Length == 0)
+            {
+                await next();
+                return;
+            }
+
+            // Save the pre-rewrite URL for later reference (e.g. "back" links, email logs)
+            context.Items[RequestCache_Keys.OriginalUrl] = $"{context.Request.Scheme}://{context.Request.Host}{context.Request.Path}{context.Request.QueryString}";
+
+            // dataset/, xml/, json/, dataprovider/ prefixed paths route to the data endpoint
+            if (relative.StartsWith("dataset/") || relative.StartsWith("xml/") || relative.StartsWith("json/") || relative.StartsWith("dataprovider/"))
+            {
+                Add_UrlRelative_To_QueryString(context, relative);
+                context.Request.Path = "/sobekcm_data.aspx";
+                await next();
+                return;
+            }
+
+            // Everything else: fold the path into urlrelative and let the main fallback handler resolve it
+            Add_UrlRelative_To_QueryString(context, relative);
+            await next();
+        }
+
+        private static void Add_UrlRelative_To_QueryString(HttpContext context, string relative)
+        {
+            string existing = context.Request.QueryString.HasValue ? context.Request.QueryString.Value.TrimStart('?') : "";
+            string merged = "urlrelative=" + Uri.EscapeDataString(relative);
+            if (!string.IsNullOrEmpty(existing))
+                merged += "&" + existing;
+            context.Request.QueryString = new QueryString("?" + merged);
+        }
+
+        /// <summary> Ported from the old SobekCM_URL_Rewriter.Rewriter.USFLDC_Redirection_Service —
+        /// resolves legacy USF PURL handles (item, browse/search, or collection) to the equivalent
+        /// SobekCM URL. Kept for USF's benefit; may be dropped in the future. </summary>
+        private static void USFLDC_Redirection_Service(HttpContext context)
+        {
+            const string URL_ERROR = "http://guides.lib.usf.edu/content.php?pid=87781&sid=744350";
+
+            string purlHandle;
+            try
+            {
+                purlHandle = context.Request.QueryString.Value.Substring(1);
+            }
+            catch
+            {
+                purlHandle = "";
+            }
+
+            if (purlHandle == "m1" || purlHandle.StartsWith("m1."))
+            {
+                // Courtesy permanently moved redirect for former partner MCPL for the MCPLHPC (CID=M01)
+                context.Response.Redirect("http://cdm16681.contentdm.oclc.org", true);
+            }
+            else if (purlHandle.Contains(".") && !purlHandle.Contains("browse") && !purlHandle.Contains("search"))
+            {
+                // item purl
+                if (purlHandle.Contains("-ead"))
+                {
+                    // It is an EAD item purl
+                    int pos1 = purlHandle.IndexOf("-");
+                    int len = pos1 - 4;
+                    string doi = "U29-" + int.Parse(purlHandle.Substring(4, len)).ToString("D5") + "-" + purlHandle.Substring(pos1 + 1, 3);
+                    string url = "http://dis.lib.usf.edu/aeon/eads/index.html?eadrequest=true&ead_id=" + doi;
+                    context.Response.Redirect(url, true);
+                    return;
+                }
+
+                string packageid = SobekCM_Database.Get_BibID_VID_From_Identifier(purlHandle);
+                context.Response.Redirect(packageid != null ? packageid.ToUpper() : URL_ERROR, true);
+            }
+            else if (purlHandle.Contains(".browse") || purlHandle.Contains(".search"))
+            {
+                // browse or search purl
+                string purlHandleOriginal = purlHandle;
+                int pos1 = purlHandle.IndexOf(".");
+                purlHandle = purlHandle.Substring(0, pos1);
+
+                if (purlHandle.Length == 2)
+                    purlHandle = purlHandle.Substring(0, 1) + "0" + purlHandle.Substring(1);
+
+                string aggregationCode = SobekCM_Database.Get_AggregationCode_From_CID(purlHandle.ToUpper());
+                if (aggregationCode != null)
+                {
+                    string action = purlHandleOriginal.Contains(".browse") ? "/all" : "/advanced";
+                    context.Response.Redirect(aggregationCode.ToLower() + action, true);
+                }
+                else
+                {
+                    context.Response.Redirect(URL_ERROR, true);
+                }
+            }
+            else if (purlHandle.Length == 2 || purlHandle.Length == 3)
+            {
+                // collection purl
+                if (purlHandle.Length == 2)
+                    purlHandle = purlHandle.Substring(0, 1) + "0" + purlHandle.Substring(1);
+
+                string aggregationCode = SobekCM_Database.Get_AggregationCode_From_CID(purlHandle.ToUpper());
+                context.Response.Redirect(aggregationCode != null ? aggregationCode.ToLower() : URL_ERROR, true);
+            }
+            else
+            {
+                context.Response.Redirect(URL_ERROR, true);
+            }
         }
 
         private static async Task Files_Handler(HttpContext context, string urlrelative)

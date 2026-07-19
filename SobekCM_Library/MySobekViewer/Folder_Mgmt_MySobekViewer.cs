@@ -89,12 +89,12 @@ namespace SobekCM.Library.MySobekViewer
                 current_folder_id = userFolder.Folder_ID;
             }
 
-            if ((RequestSpecificValues.Current_Mode.isPostBack) || ((HttpContext.Current.Request.Form["item_action"] != null) && (HttpContext.Current.Request.Form["item_action"].Length > 0 )))
+            if ((RequestSpecificValues.Current_Mode.isPostBack) || ((Context.Request.Form["item_action"] != null) && (Context.Request.Form["item_action"].Length > 0 )))
             {
                 try
                 {
                     // Pull the standard values
-                    NameValueCollection form = HttpContext.Current.Request.Form;
+                    NameValueCollection form = Context.Request.Form;
 
                     string item_action = form["item_action"].Replace(",","").ToUpper().Trim();
                     string bookshelf_items = form["bookshelf_items"].Trim().Replace("%22", "\"").Replace("%27", "'").Replace("%3D", "=").Replace("%26", "&");

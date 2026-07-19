@@ -59,11 +59,11 @@ namespace SobekCM.Library.HTML
                 configuration = aggregation.ContactForm;
 
             postBackValues = new Dictionary<string, string>();
-            foreach (string thisKey in HttpContext.Current.Request.Form.AllKeys)
+            foreach (string thisKey in Context.Request.Form.Keys)
             {
                 if (thisKey != "item_action")
                 {
-                    string value = HttpContext.Current.Request.Form[thisKey];
+                    string value = Context.Request.Form[thisKey];
                     if (!String.IsNullOrEmpty(value))
                     {
                         postBackValues[thisKey] = value;

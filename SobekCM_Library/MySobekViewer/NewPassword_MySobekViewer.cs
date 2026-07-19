@@ -54,7 +54,7 @@ namespace SobekCM.Library.MySobekViewer
             string new_password = String.Empty;
             string new_password2 = String.Empty;
 
-            string[] getKeys = HttpContext.Current.Request.Form.AllKeys;
+            string[] getKeys = HttpContext.Current.Request.Form.Keys;
             foreach (string thisKey in getKeys)
             {
                 switch (thisKey)

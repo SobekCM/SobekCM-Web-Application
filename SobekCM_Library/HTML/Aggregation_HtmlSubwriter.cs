@@ -182,7 +182,7 @@ namespace SobekCM.Library.HTML
 
             RequestSpecificValues.Tracer.Add_Trace("Aggregation_HtmlSubwriter.Constructor", "Handling post backs from mySobek.");
 
-            NameValueCollection form = HttpContext.Current.Request.Form;
+            NameValueCollection form = Context.Request.Form;
 
             if ( form["item_action"] != null)
             {

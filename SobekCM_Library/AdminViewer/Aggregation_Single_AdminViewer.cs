@@ -1006,7 +1006,7 @@ namespace SobekCM.Library.AdminViewer
             // Set the web skin
             itemAggregation.Web_Skins = null;
             itemAggregation.Default_Skin = null;
-            foreach (string thisKey in Form.AllKeys)
+            foreach (string thisKey in Form.Keys)
             {
                 if ((thisKey.IndexOf("admin_aggr_skin_") == 0) && ( Form[thisKey] != null ) && ( Form[thisKey].Length > 0 ))
                 {

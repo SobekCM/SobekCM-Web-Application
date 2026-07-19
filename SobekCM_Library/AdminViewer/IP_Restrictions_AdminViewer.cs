@@ -170,7 +170,7 @@ namespace SobekCM.Library.AdminViewer
                         thisRange.Item_Restricted_Statement = message;
 
                         // Now check each individual IP address range
-                        string[] getKeys = form.AllKeys;
+                        string[] getKeys = Form.Keys;
                         int single_ip_index = 0;
                         foreach (string thisKey in getKeys)
                         {

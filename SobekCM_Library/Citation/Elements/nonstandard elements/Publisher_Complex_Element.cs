@@ -177,7 +177,7 @@ namespace SobekCM.Library.Citation.Elements
         {
             const string HTML_ELEMENT_NAME = "complex_publisher";
             string id = HTML_ELEMENT_NAME.Replace("_","");
-            string[] getKeys = Context.Request.Form.AllKeys;
+            string[] getKeys = Context.Request.Form.Keys;
             foreach (string thisKey in getKeys)
             {
                 if ((thisKey.IndexOf(id) == 0) && (thisKey.IndexOf("loc") < 0))

@@ -144,7 +144,7 @@ namespace SobekCM.Library.AdminViewer
 
                     // Get a reference to this form
                     NameValueCollection form = HttpContext.Current.Request.Form;
-                    string[] getKeys = form.AllKeys;
+                    string[] getKeys = Form.Keys;
 
                     // Get the curret action
                     string action = form["admin_user_group_save"];

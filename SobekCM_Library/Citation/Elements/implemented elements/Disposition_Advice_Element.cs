@@ -103,7 +103,7 @@ namespace SobekCM.Library.Citation.Elements
             string advice = String.Empty;
             string notes = String.Empty;
 
-            foreach (string thisKey in form.AllKeys)
+            foreach (string thisKey in Form.Keys)
             {
                 if (thisKey.IndexOf("dispositionadvice_select") == 0)
                 {

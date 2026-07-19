@@ -111,7 +111,7 @@ namespace SobekCM.Library.Citation.Elements
             // Collect all the strings from the form
             Dictionary<string, string> classifications = new Dictionary<string, string>();
             Dictionary<string, string> authorities = new Dictionary<string, string>();
-            string[] getKeys = Context.Request.Form.AllKeys;
+            string[] getKeys = Context.Request.Form.Keys;
             foreach (string thisKey in getKeys)
             {
                 if (thisKey.IndexOf(html_element_name.Replace("_", "") + "_text") == 0)

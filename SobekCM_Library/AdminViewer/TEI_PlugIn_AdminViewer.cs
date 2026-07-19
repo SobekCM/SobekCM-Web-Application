@@ -120,7 +120,7 @@ namespace SobekCM.Library.AdminViewer
                 string action = form["tei_admin_action"];
                 if (action == "save")
                 {
-                    string[] getKeys = form.AllKeys;
+                    string[] getKeys = Form.Keys;
 
                     actionMessage = "All changes saved";
 

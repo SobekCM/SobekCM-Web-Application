@@ -82,7 +82,7 @@ namespace SobekCM.Library.Citation.Elements
             VRACore_Info vraInfo = Bib.Get_Metadata_Module(GlobalVar.VRACORE_METADATA_MODULE_KEY) as VRACore_Info;
 
 
-            string[] getKeys = Context.Request.Form.AllKeys;
+            string[] getKeys = Context.Request.Form.Keys;
             foreach (string thisKey in getKeys.Where(ThisKey => ThisKey.IndexOf(html_element_name.Replace("_", "")) == 0))
             {
                 // Get the value from the form element

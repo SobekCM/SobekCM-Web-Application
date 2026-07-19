@@ -207,7 +207,7 @@ namespace SobekCM.Library.MySobekViewer
             // If this is post-back, handle it
             if (RequestSpecificValues.Current_Mode.isPostBack)
             {
-                string[] getKeys = HttpContext.Current.Request.Form.AllKeys;
+                string[] getKeys = HttpContext.Current.Request.Form.Keys;
                 string file_name_from_keys = String.Empty;
                 string label_from_keys = String.Empty;
                 foreach (string thisKey in getKeys)

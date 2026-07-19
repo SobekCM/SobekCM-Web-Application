@@ -316,7 +316,7 @@ namespace SobekCM.Library.MySobekViewer
                 // Was this where the mapping, xslt, and css is set?
                 if (currentProcessStep == 1)
                 {
-                    string[] getKeys = HttpContext.Current.Request.Form.AllKeys;
+                    string[] getKeys = Context.Request.Form.Keys;
                     foreach (string thisKey in getKeys)
                     {
                         if (thisKey.IndexOf("mapping_select") == 0)

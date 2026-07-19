@@ -109,7 +109,7 @@ namespace SobekCM.Library.Citation.Elements.implemented_elements
         {
             List<Coordinate_Point> points = new List<Coordinate_Point>();
 
-            string[] getKeys = Context.Request.Form.AllKeys;
+            string[] getKeys = Context.Request.Form.Keys;
             string latitude = String.Empty;
             foreach (string thisKey in getKeys)
             {

@@ -166,7 +166,7 @@ namespace SobekCM.Library.Citation.Elements
             if (zooInfo == null)
                 zooInfo = new Zoological_Taxonomy_Info();
 
-            string[] getKeys = Context.Request.Form.AllKeys;
+            string[] getKeys = Context.Request.Form.Keys;
             foreach (string thisKey in getKeys)
             {
                 if (thisKey.IndexOf("formzootaxonkingdom_") == 0)

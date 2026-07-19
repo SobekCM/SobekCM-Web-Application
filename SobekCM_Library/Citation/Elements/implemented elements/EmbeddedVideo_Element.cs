@@ -84,7 +84,7 @@ namespace SobekCM.Library.Citation.Elements
         /// <param name="Bib"> Object into which to save the user's data, entered into the html rendered by this element </param>
         public override void Save_To_Bib(SobekCM_Item Bib)
         {
-            string[] getKeys = Context.Request.Form.AllKeys;
+            string[] getKeys = Context.Request.Form.Keys;
             foreach (string thisKey in getKeys.Where(ThisKey => ThisKey.IndexOf(html_element_name) == 0))
             {
                 string video_embedding_html = Context.Request.Form[thisKey];

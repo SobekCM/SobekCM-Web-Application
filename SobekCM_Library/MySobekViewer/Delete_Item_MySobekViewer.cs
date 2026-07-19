@@ -116,8 +116,8 @@ namespace SobekCM.Library.MySobekViewer
                 Debug.Assert(RequestSpecificValues.Current_User != null, "User != null");
 
                 // Pull the standard values
-                string save_value = HttpContext.Current.Request.Form["admin_delete_item"];
-                string text_value = HttpContext.Current.Request.Form["admin_delete_confirm"];
+                string save_value = Context.Request.Form["admin_delete_item"];
+                string text_value = Context.Request.Form["admin_delete_confirm"];
 
                 // Better say "DELETE", or just send back to the item
                 if (( save_value == null ) || ( save_value.ToUpper() != "DELETE" ) || ( text_value.ToUpper() != "DELETE"))

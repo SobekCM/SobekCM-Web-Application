@@ -68,7 +68,7 @@ namespace SobekCM.Library.HTML
             restriction_message = String.Empty;
             if (currentItem.Behaviors.IP_Restriction_Membership > 0)
             {
-                if (HttpContext.Current != null)
+                if (Context != null)
                 {
                     int user_mask = (int)Context.SessionObject()["IP_Range_Membership"];
                     int comparison = currentItem.Behaviors.IP_Restriction_Membership & user_mask;

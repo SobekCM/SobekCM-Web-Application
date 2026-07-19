@@ -113,7 +113,7 @@ namespace SobekCM.Library.Citation.Elements
             NameValueCollection form = Context.Request.Form;
 
             int i = 1;
-            foreach (string thisKey in form.AllKeys)
+            foreach (string thisKey in Form.Keys)
             {
                 if (thisKey.IndexOf("container_select") == 0)
                 {

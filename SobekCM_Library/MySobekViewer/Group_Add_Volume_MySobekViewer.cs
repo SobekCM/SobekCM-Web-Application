@@ -186,7 +186,7 @@ namespace SobekCM.Library.MySobekViewer
             else if (hidden_request.IndexOf("save") == 0 )
             {
                 // Get the VID that used as a source for this
-                string vid = HttpContext.Current.Request.Form["base_volume"];
+                string vid = Context.Request.Form["base_volume"];
 
                 if (string.IsNullOrEmpty(vid))
                 {

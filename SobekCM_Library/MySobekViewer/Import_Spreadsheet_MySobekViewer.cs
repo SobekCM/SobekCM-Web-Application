@@ -57,7 +57,7 @@ namespace SobekCM.Library.MySobekViewer
             if (String.IsNullOrEmpty(guid))
             {
                 guid = Guid.NewGuid().ToString();
-                HttpContext.Current.Session.Add("Import_Data_Current_GUID", guid);
+                Context.Session.SetString("Import_Data_Current_GUID", guid);
             }
 
             // Determine the in process directory for this

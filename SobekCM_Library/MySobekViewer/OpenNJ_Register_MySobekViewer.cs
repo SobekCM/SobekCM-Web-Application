@@ -138,7 +138,7 @@ namespace SobekCM.Library.MySobekViewer
             if (RequestSpecificValues.Current_Mode.isPostBack)
             {
                 // Loop through and get the dataa
-                string[] getKeys = HttpContext.Current.Request.Form.AllKeys;
+                string[] getKeys = HttpContext.Current.Request.Form.Keys;
                 foreach (string thisKey in getKeys)
                 {
                     switch (thisKey)

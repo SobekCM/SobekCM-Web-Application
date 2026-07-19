@@ -21,7 +21,7 @@ namespace SobekCM.Library.AdminViewer.UserAdmin.UserAdminTabs
 
         public bool HandlePostback(NameValueCollection form, User_Object editUser, RequestCache RequestSpecificValues)
         {
-            string[] getKeys = form.AllKeys;
+            string[] getKeys = Form.Keys;
 
             string editTemplate = "Standard";
             List<string> projects = new List<string>();

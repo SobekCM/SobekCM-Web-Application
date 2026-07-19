@@ -100,10 +100,10 @@ namespace SobekCM.Library.MySobekViewer
              templateCode = RequestSpecificValues.Current_User.Current_Template;
             if (RequestSpecificValues.Current_Mode.isPostBack)
             {
-                string action1 = HttpContext.Current.Request.Form["action"];
+                string action1 = Context.Request.Form["action"];
                 if ((action1 != null) && ((action1 == "template") || (action1 == "project")))
                 {
-                    string newvalue = HttpContext.Current.Request.Form["phase"];
+                    string newvalue = Context.Request.Form["phase"];
                     if ((action1 == "template") && ( newvalue != templateCode ))
                     {
                         RequestSpecificValues.Current_User.Current_Template = newvalue;
@@ -398,7 +398,7 @@ namespace SobekCM.Library.MySobekViewer
                 // If this is a request from stage 8, save the new labels and url first
                 if (currentProcessStep == 8)
                 {
-                    string[] getKeys = HttpContext.Current.Request.Form.AllKeys;
+                    string[] getKeys = HttpContext.Current.Request.Form.Keys;
                     string file_name_from_keys = String.Empty;
                     string label_from_keys = String.Empty;
                     foreach (string thisKey in getKeys)

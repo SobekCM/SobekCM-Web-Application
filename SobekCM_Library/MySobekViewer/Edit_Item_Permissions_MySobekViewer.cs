@@ -105,14 +105,14 @@ namespace SobekCM.Library.MySobekViewer
                 // Get the restriction mask and isDark flag
                 if (HttpContext.Current.Request.Form["restrictionMask"] != null)
                 {
-                    ipRestrictionMask = short.Parse(HttpContext.Current.Request.Form["restrictionMask"]);
-                    isDark = bool.Parse(HttpContext.Current.Request.Form["isDark"]);
+                    ipRestrictionMask = short.Parse(Context.Request.Form["restrictionMask"]);
+                    isDark = bool.Parse(Context.Request.Form["isDark"]);
                 }
 
                 // Look for embargo date
-                if (HttpContext.Current.Request.Form["embargoDateBox"] != null)
+                if (Context.Request.Form["embargoDateBox"] != null)
                 {
-                    string embargoText = HttpContext.Current.Request.Form["embargoDateBox"];
+                    string embargoText = Context.Request.Form["embargoDateBox"];
                     DateTime embargoDateNew;
                     if (DateTime.TryParse(embargoText, out embargoDateNew))
                     {

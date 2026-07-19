@@ -199,7 +199,7 @@ namespace SobekCM.Library.MySobekViewer
 	        if (RequestSpecificValues.Current_Mode.isPostBack)
 	        {
 		        // See if there was a hidden request
-		        string hidden_request = HttpContext.Current.Request.Form["new_element_requested"] ?? String.Empty;
+		        string hidden_request = Context.Request.Form["new_element_requested"] ?? String.Empty;
 
 		        // If this was a cancel request do that
 		        if (hidden_request == "cancel")

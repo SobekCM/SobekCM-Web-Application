@@ -66,21 +66,21 @@ namespace SobekCM.Library.MySobekViewer
                 string possible_password = String.Empty;
                 bool remember_me = false;
 
-                string[] getKeys = HttpContext.Current.Request.Form.AllKeys;
+                string[] getKeys = HttpContext.Current.Request.Form.Keys;
                 foreach (string thisKey in getKeys)
                 {
                     switch (thisKey)
                     {
                         case "logon_username":
-                            possible_username = HttpContext.Current.Request.Form[thisKey].Trim();
+                            possible_username = Context.Request.Form[thisKey].Trim();
                             break;
 
                         case "logon_password":
-                            possible_password = HttpContext.Current.Request.Form[thisKey].Trim();
+                            possible_password = Context.Request.Form[thisKey].Trim();
                             break;
 
                         case "rememberme":
-                            if (HttpContext.Current.Request.Form[thisKey].Trim() == "rememberme")
+                            if (Context.Request.Form[thisKey].Trim() == "rememberme")
                                 remember_me = true;
                             break;
                     }

@@ -60,8 +60,8 @@ namespace SobekCM.Library.HTML
                 else
                 {
                     // Set this to allow us to have our own error messages, without IIS jumping into it
-                    HttpContext.Current.Response.TrySkipIisCustomErrors = true;
-                    HttpContext.Current.Response.StatusCode = 404;
+                    Context.Response.TrySkipIisCustomErrors = true;
+                    Context.Response.StatusCode = 404;
                 }
             }
 

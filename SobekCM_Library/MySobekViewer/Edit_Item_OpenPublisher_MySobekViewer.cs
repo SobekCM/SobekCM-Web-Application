@@ -140,8 +140,8 @@ namespace SobekCM.Library.MySobekViewer
                     UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
                 }
 
-                string action_value = HttpContext.Current.Request.Form["action_value"] ?? String.Empty;
-                string action_index = HttpContext.Current.Request.Form["action_index"] ?? String.Empty;
+                string action_value = Context.Request.Form["action_value"] ?? String.Empty;
+                string action_index = Context.Request.Form["action_index"] ?? String.Empty;
 
                 if ( action_requested == "new_chapter")
                 {

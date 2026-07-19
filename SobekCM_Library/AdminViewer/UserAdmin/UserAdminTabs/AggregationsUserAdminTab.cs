@@ -18,7 +18,7 @@ namespace SobekCM.Library.AdminViewer.UserAdmin.UserAdminTabs
 
         public bool HandlePostback(NameValueCollection form, User_Object editUser, RequestCache RequestSpecificValues)
         {
-            string[] getKeys = form.AllKeys;
+            string[] getKeys = Form.Keys;
 
             Dictionary<string, User_Permissioned_Aggregation> aggregations = new Dictionary<string, User_Permissioned_Aggregation>();
 

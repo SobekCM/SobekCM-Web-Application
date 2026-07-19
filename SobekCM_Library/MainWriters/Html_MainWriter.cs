@@ -40,7 +40,7 @@ namespace SobekCM.Library.MainWriters
             {
                 RequestSpecificValues.Tracer.Add_Trace("Html_MainWriter.Constructor", "The NonIE_Hack_CSS was not loaded.");
 
-                string css_file = Context.Server.MapPath("default/SobekCM_NonIE.css");
+                string css_file = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "default", "SobekCM_NonIE.css");
                 if (File.Exists(css_file))
                 {
                     try
@@ -128,7 +128,7 @@ namespace SobekCM.Library.MainWriters
                         {
                             if ( String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.Error_Message))
                                 RequestSpecificValues.Current_Mode.Error_Message = "Unknown exception caught";
-                            Email_Information(RequestSpecificValues.Current_Mode.Error_Message, RequestSpecificValues.Current_Mode.Caught_Exception, RequestSpecificValues.Tracer, false);
+                            Email_Information(RequestSpecificValues.Current_Mode.Error_Message, RequestSpecificValues.Current_Mode.Caught_Exception, RequestSpecificValues.Tracer, false, Context);
                         }
                         break;
 
@@ -153,14 +153,16 @@ namespace SobekCM.Library.MainWriters
                             if (Context.Session.GetString("Last_Mode") != null)
                                 lastMode = Context.Session.GetString("Last_Mode").ToString();
 
-                            builder.Append("\tIP Address:\t\t\t" + Context.Request.UserHostAddress + "\n");
-                            builder.Append("\tHost Name:\t\t\t" + Context.Request.UserHostName + "\n");
-                            builder.Append("\tBrowser:\t\t\t" + Context.Request.Browser.Browser + "\n");
-                            builder.Append("\tBrowser Platform:\t\t" + Context.Request.Browser.Platform + "\n");
-                            builder.Append("\tBrowser Version:\t\t" + Context.Request.Browser.Version + "\n");
+                            builder.Append("\tIP Address:\t\t\t" + (Context.Connection.RemoteIpAddress?.ToString() ?? "") + "\n");
+                            builder.Append("\tHost Name:\t\t\t" + (Context.Connection.RemoteIpAddress?.ToString() ?? "") + "\n");
+                            string contactUserAgent = Context.Request.Headers.UserAgent.ToString();
+                            builder.Append("\tBrowser:\t\t\t" + contactUserAgent + "\n");
+                            builder.Append("\tBrowser Platform:\t\t" + "UNKNOWN" + "\n");
+                            builder.Append("\tBrowser Version:\t\t" + "UNKNOWN" + "\n");
                             builder.Append("\tBrowser Language:\t\t");
                             bool first = true;
-                            string[] languages = Context.Request.UserLanguages;
+                            string acceptLangHeader = Context.Request.Headers["Accept-Language"].ToString();
+                            string[] languages = string.IsNullOrEmpty(acceptLangHeader) ? null : acceptLangHeader.Split(',');
 
                             if (languages != null)
                                 foreach (string thisLanguage in languages)
@@ -259,7 +261,7 @@ namespace SobekCM.Library.MainWriters
                         {
                             if (String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.Error_Message))
                                 RequestSpecificValues.Current_Mode.Error_Message = "Unknown exception caught";
-                            Email_Information(RequestSpecificValues.Current_Mode.Error_Message, RequestSpecificValues.Current_Mode.Caught_Exception, RequestSpecificValues.Tracer, false);
+                            Email_Information(RequestSpecificValues.Current_Mode.Error_Message, RequestSpecificValues.Current_Mode.Caught_Exception, RequestSpecificValues.Tracer, false, Context);
                         }
                         break;
 
@@ -292,10 +294,7 @@ namespace SobekCM.Library.MainWriters
                 if (htmlSkin == null)
                 {
                     Context.Response.StatusCode = 404;
-                    Context.Response.Output.WriteLine("404 - INVALID URL");
-                    Context.Response.Output.WriteLine("Web skin indicated is invalid, default web skin invalid - line 1029");
-                    Context.Response.Output.WriteLine(RequestSpecificValues.Tracer.Text_Trace);
-                    Context.ApplicationInstance.CompleteRequest();
+                    Context.Response.WriteAsync("404 - INVALID URL\nWeb skin indicated is invalid, default web skin invalid\n" + RequestSpecificValues.Tracer.Text_Trace).GetAwaiter().GetResult();
                     RequestSpecificValues.Current_Mode.Request_Completed = true;
 
                     return;
@@ -306,8 +305,8 @@ namespace SobekCM.Library.MainWriters
             catch (Exception ee)
             {
                 // Send to the dashboard
-                string remoteAddr = HttpContext.Current.Request.UserHostAddress ?? "";
-                if (remoteAddr == "127.0.0.1" || remoteAddr == "::1" || HttpContext.Current.Request.Url.ToString().IndexOf("localhost") >= 0)
+                string remoteAddr = Context.Connection.RemoteIpAddress?.ToString() ?? "";
+                if (remoteAddr == "127.0.0.1" || remoteAddr == "::1" || Context.Request.Host.ToString().Contains("localhost"))
                 {
                     RequestSpecificValues.Tracer.Add_Trace("Html_MainWriter.Constructor", "Exception caught!", Custom_Trace_Type_Enum.Error);
                     RequestSpecificValues.Tracer.Add_Trace("Html_MainWriter.Constructor", ee.Message, Custom_Trace_Type_Enum.Error);
@@ -736,7 +735,8 @@ namespace SobekCM.Library.MainWriters
             // End Materlize framework support
 
             // Special code for the menus, if this is not IE
-            if (HttpContext.Current.Request.Browser.Browser.IndexOf("IE",StringComparison.OrdinalIgnoreCase) < 0 )
+            string hmwUserAgent = Context.Request.Headers.UserAgent.ToString();
+            if (!hmwUserAgent.Contains("MSIE", StringComparison.OrdinalIgnoreCase) && !hmwUserAgent.Contains("Trident/", StringComparison.OrdinalIgnoreCase))
 			{
 				string non_ie_hack = SobekCM_Application.State["NonIE_Hack_CSS"] as string;
 				if (!String.IsNullOrEmpty(non_ie_hack))
@@ -812,14 +812,14 @@ namespace SobekCM.Library.MainWriters
                         string on_load_message = Context.SessionObject()["ON_LOAD_MESSAGE"].ToString();
                         if (on_load_message.Length > 0)
                             bodyAttributes.Add(new Tuple<string, string>("onload", "alert('" + on_load_message + "');"));
-                        HttpContext.Current.Session.Remove("ON_LOAD_MESSAGE");
+                        Context.SessionObject()["ON_LOAD_MESSAGE"] = null;
                     }
                     if (Context.SessionObject()["ON_LOAD_WINDOW"] != null)
                     {
                         string on_load_window = Context.SessionObject()["ON_LOAD_WINDOW"].ToString();
                         if (on_load_window.Length > 0)
                             bodyAttributes.Add(new Tuple<string, string>("onload", "window.open('" + on_load_window + "', 'new_" + DateTime.Now.Millisecond + "');"));
-                        HttpContext.Current.Session.Remove("ON_LOAD_WINDOW");
+                        Context.SessionObject()["ON_LOAD_WINDOW"] = null;
                     }
                 }
             }
@@ -867,7 +867,7 @@ namespace SobekCM.Library.MainWriters
             }
             catch (Exception ee)
             {
-                Email_Information("Error caught in Html_MainWriter", ee, Tracer, true);
+                Email_Information("Error caught in Html_MainWriter", ee, Tracer, true, Context);
                 throw new SobekCM_Traced_Exception("Error caught in Html_MainWriter.Write_Html", ee, Tracer);
             }
         }
@@ -950,7 +950,7 @@ namespace SobekCM.Library.MainWriters
                 if (( subwriter.Include_Internal_Header ) && ( !behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Suppress_Internal_Header)))
                 {
                     string return_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
-                    if ((HttpContext.Current != null) && (Context.SessionObject()["Original_URL"] != null))
+                    if (Context.SessionObject()["Original_URL"] != null)
                         return_url = Context.SessionObject()["Original_URL"].ToString();
 
                     Output.WriteLine("<!-- Start the internal header -->");
@@ -961,7 +961,7 @@ namespace SobekCM.Library.MainWriters
                     Output.WriteLine();
 
                     // Is the header currently hidden?
-                    if (HttpContext.Current != null && ((Context.SessionObject()["internal_header"] != null) && (Context.SessionObject()["internal_header"].ToString() == "hidden")))
+                    if ((Context.SessionObject()["internal_header"] != null) && (Context.SessionObject()["internal_header"].ToString() == "hidden"))
                     {
                         Output.WriteLine("  <table cellspacing=\"0\" id=\"internalheader\">");
                         Output.WriteLine("    <tr>");
@@ -1014,7 +1014,7 @@ namespace SobekCM.Library.MainWriters
             subwriter.Add_Footer(Output);
 
             // Add the time and trace at the end
-			if ((HttpContext.Current.Request.Url.AbsoluteUri.Contains("shibboleth")) || (RequestSpecificValues.Current_Mode.Trace_Flag_Simple) || ((RequestSpecificValues.Current_User != null) && (RequestSpecificValues.Current_User.Is_System_Admin)))
+			if (Context.Request.Path.ToString().Contains("shibboleth", StringComparison.OrdinalIgnoreCase) || (RequestSpecificValues.Current_Mode.Trace_Flag_Simple) || ((RequestSpecificValues.Current_User != null) && (RequestSpecificValues.Current_User.Is_System_Admin)))
             {
                 Output.WriteLine("<style type=\"text/css\">");
                 Output.WriteLine("table.Traceroute { border-width: 2px; border-style: solid; border-color: gray; border-collapse: collapse; background-color: white; font-size: small; }");
@@ -1028,9 +1028,9 @@ namespace SobekCM.Library.MainWriters
                 if (Context.Items["Original_URL"] == null)
                     Output.WriteLine("<br /><br />Original URL: <i>None found</i><br />");
                 else
-                    Output.WriteLine("<br /><br />Original URL: " + HttpUtility.HtmlEncode(Context.Items["Original_URL"]) + "<br />");
+                    Output.WriteLine("<br /><br />Original URL: " + System.Net.WebUtility.HtmlEncode(Context.Items["Original_URL"]?.ToString()) + "<br />");
 
-                Output.WriteLine("Current URL: " + HttpUtility.HtmlEncode(HttpContext.Current.Request.Url) + "<br />");
+                Output.WriteLine("Current URL: " + System.Net.WebUtility.HtmlEncode($"{Context.Request.Path}{Context.Request.QueryString}") + "<br />");
 
 
                 Output.WriteLine("<br /><br /><b>TRACE ROUTE</b>");
@@ -1046,7 +1046,7 @@ namespace SobekCM.Library.MainWriters
 
         #region Method to email information during an error
 
-        private static void Email_Information(string EmailTitle, Exception ObjErr, Custom_Tracer Tracer, bool Redirect )
+        private static void Email_Information(string EmailTitle, Exception ObjErr, Custom_Tracer Tracer, bool Redirect, HttpContext context = null)
         {
             // Is there an error email address in the configuration?
             if (UI_ApplicationCache_Gateway.Settings.Email.System_Error_Email.Length > 0)
@@ -1059,16 +1059,16 @@ namespace SobekCM.Library.MainWriters
                     {
                         if (ObjErr.InnerException != null)
                         {
-                            err = "<b>" + HttpContext.Current.Request.UserHostAddress + "</b><br /><br />" +
-                                  "Error in!!: " + Context.Items["Original_URL"] + "<br /><br />" +
+                            err = "<b>" + (context?.Connection.RemoteIpAddress?.ToString() ?? "") + "</b><br /><br />" +
+                                  "Error in!!: " + context?.Items["Original_URL"] + "<br /><br />" +
                                   "Error Message: " + ObjErr.Message + "<br /><br />" +
                                   "Inner Exception: " + ObjErr.InnerException.Message + "<br /><br />" +
                                   "Stack Trace: " + ObjErr.InnerException.StackTrace + "<br /><br />";
                         }
                         else
                         {
-                            err = "<b>" + HttpContext.Current.Request.UserHostAddress + "</b><br /><br />" +
-                                  "Error in!!: " + Context.Items["Original_URL"] + "<br /><br />" +
+                            err = "<b>" + (context?.Connection.RemoteIpAddress?.ToString() ?? "") + "</b><br /><br />" +
+                                  "Error in!!: " + context?.Items["Original_URL"] + "<br /><br />" +
                                   "Error Message: " + ObjErr.Message + "<br /><br />" +
                                   "Stack Trace: " + ObjErr.StackTrace + "<br /><br />";
 
@@ -1079,7 +1079,7 @@ namespace SobekCM.Library.MainWriters
                     }
                     else
                     {
-                        err = "<b>" + HttpContext.Current.Request.UserHostAddress + "</b><br /><br />";
+                        err = "<b>" + (context?.Connection.RemoteIpAddress?.ToString() ?? "") + "</b><br /><br />";
                     }
 
                     // Email the error message
@@ -1103,8 +1103,8 @@ namespace SobekCM.Library.MainWriters
                 StreamWriter writer = new StreamWriter(AppDomain.CurrentDomain.BaseDirectory + "\\temp\\exceptions.txt", true);
                 writer.WriteLine();
                 writer.WriteLine("Error Caught in Application_Error event ( " + DateTime.Now.ToString() + ")");
-                writer.WriteLine("User Host Address: " + HttpContext.Current.Request.UserHostAddress);
-                writer.WriteLine("Requested URL: " + HttpContext.Current.Request.Url);
+                writer.WriteLine("User Host Address: " + (context?.Connection.RemoteIpAddress?.ToString() ?? ""));
+                writer.WriteLine("Requested URL: " + $"{context?.Request.Path}{context?.Request.QueryString}");
                 if (ObjErr is SobekCM_Traced_Exception)
                 {
                     SobekCM_Traced_Exception sobekException = (SobekCM_Traced_Exception)ObjErr;
@@ -1133,7 +1133,7 @@ namespace SobekCM.Library.MainWriters
             // Forward to our error message
             if (Redirect)
             {
-                Context.Response.Redirect(UI_ApplicationCache_Gateway.Settings.Servers.System_Error_URL);
+                context?.Response.Redirect(UI_ApplicationCache_Gateway.Settings.Servers.System_Error_URL);
             }
         }
 

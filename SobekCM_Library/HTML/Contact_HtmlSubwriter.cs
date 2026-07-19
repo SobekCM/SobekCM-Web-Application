@@ -198,8 +198,7 @@ namespace SobekCM.Library.HTML
                 // Send back to the home for this collection, sub, or group
                 if (email_error)
                 {
-                    HttpContext.Current.Response.Redirect(UI_ApplicationCache_Gateway.Settings.Servers.System_Error_URL, false);
-                    HttpContext.Current.ApplicationInstance.CompleteRequest();
+                    Context.Response.Redirect(UI_ApplicationCache_Gateway.Settings.Servers.System_Error_URL);
                 }
                 else
                 {
@@ -349,7 +348,7 @@ namespace SobekCM.Library.HTML
                 }
 
                 // Start this form
-                string post_url = HttpUtility.HtmlEncode(HttpContext.Current.Items["Original_URL"].ToString());
+                string post_url = HttpUtility.HtmlEncode(Context.Items["Original_URL"].ToString());
                 Output.WriteLine("<form name=\"email_form\" method=\"post\" action=\"" + post_url + "\" id=\"addedForm\" >");
 
                 // Add the hidden field

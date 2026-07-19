@@ -92,9 +92,9 @@ namespace SobekCM.Library.MySobekViewer
                 userInProcessDirectory = Path.Combine(UI_ApplicationCache_Gateway.Settings.Servers.In_Process_Submission_Location, RequestSpecificValues.Current_User.UserName.Replace(".","").Replace("@","") + "\\newgroup");
 
             // Is this for remixing?
-            if (!String.IsNullOrEmpty(HttpContext.Current.Request.QueryString["remix"]))
+            if (!String.IsNullOrEmpty(Context.Request.QueryString["remix"]))
             {
-                remixBib = HttpContext.Current.Request.QueryString["remix"];
+                remixBib = Context.Request.QueryString["remix"];
             }
 
             // Handle postback for changing the CompleteTemplate or project
@@ -728,8 +728,7 @@ namespace SobekCM.Library.MySobekViewer
         {
             base.RequestSpecificValues.Current_Mode.Request_Completed = true;
             string redirect_url = Redirect_URL();
-            HttpContext.Current.Response.Redirect(redirect_url, false);
-            HttpContext.Current.ApplicationInstance.CompleteRequest();
+            Context.Response.Redirect(redirect_url);
         }
 
         private string Redirect_URL()
@@ -2224,5 +2223,4 @@ namespace SobekCM.Library.MySobekViewer
     }
 }
   
-
 

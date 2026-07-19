@@ -104,7 +104,7 @@ namespace SobekCM.Library.MySobekViewer
             if (!RequestSpecificValues.Current_User.Can_Edit_This_Item(currentItem.BibID, currentItem.Bib_Info.SobekCM_Type_String, currentItem.Bib_Info.Source.Code, currentItem.Bib_Info.HoldingCode, currentItem.Behaviors.Aggregation_Code_List))
             {
                 RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
-                HttpContext.Current.Response.Redirect(UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode));
+                Context.Response.Redirect(UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode));
             }
 
             // Is this a project
@@ -266,15 +266,13 @@ namespace SobekCM.Library.MySobekViewer
 
 					case "complicate":
 						currentItem.Using_Complex_Template = true;
-				        HttpContext.Current.Response.Redirect( "?" + HttpContext.Current.Request.QueryString, false);
-						HttpContext.Current.ApplicationInstance.CompleteRequest();
+				        Context.Response.Redirect($"{Context.Request.Path}{Context.Request.QueryString}");
 						RequestSpecificValues.Current_Mode.Request_Completed = true;
 				        return;
 
 					case "simplify":
 						currentItem.Using_Complex_Template = false;
-				        HttpContext.Current.Response.Redirect( "?" + HttpContext.Current.Request.QueryString, false);
-						HttpContext.Current.ApplicationInstance.CompleteRequest();
+				        Context.Response.Redirect($"{Context.Request.Path}{Context.Request.QueryString}");
 						RequestSpecificValues.Current_Mode.Request_Completed = true;
 				        return;
 		        }
@@ -292,8 +290,7 @@ namespace SobekCM.Library.MySobekViewer
 						if (isProject)
 							RequestSpecificValues.Current_Mode.My_Sobek_SubMode = page_requested + currentItem.BibID;
 
-						HttpContext.Current.Response.Redirect(UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "#CompleteTemplate", false);
-						HttpContext.Current.ApplicationInstance.CompleteRequest();
+						Context.Response.Redirect(UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "#CompleteTemplate");
 						RequestSpecificValues.Current_Mode.Request_Completed = true;
 					}
 				}
@@ -750,6 +747,5 @@ namespace SobekCM.Library.MySobekViewer
     }
 }
   
-
 
 

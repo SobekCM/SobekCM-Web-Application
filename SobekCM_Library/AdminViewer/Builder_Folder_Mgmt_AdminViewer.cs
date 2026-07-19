@@ -103,8 +103,7 @@ namespace SobekCM.Library.AdminViewer
                             // Determine URL
                             string returnUrl = RequestSpecificValues.Current_Mode.Base_URL + "l/admin/settings/builder/folders";
                             RequestSpecificValues.Current_Mode.Request_Completed = true;
-                            HttpContext.Current.Response.Redirect(returnUrl, false);
-                            HttpContext.Current.ApplicationInstance.CompleteRequest();
+                            Context.Response.Redirect(returnUrl);
                             return;
                         }
 
@@ -128,8 +127,7 @@ namespace SobekCM.Library.AdminViewer
                                 // Return to the folder list
                                 string returnUrl = RequestSpecificValues.Current_Mode.Base_URL + "l/admin/settings/builder/folders";
                                 RequestSpecificValues.Current_Mode.Request_Completed = true;
-                                HttpContext.Current.Response.Redirect(returnUrl, false);
-                                HttpContext.Current.ApplicationInstance.CompleteRequest();
+                                Context.Response.Redirect(returnUrl);
                                 return;
                             }
                         }

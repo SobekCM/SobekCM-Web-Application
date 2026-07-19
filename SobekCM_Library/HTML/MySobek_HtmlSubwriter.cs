@@ -52,8 +52,7 @@ namespace SobekCM.Library.HTML
                 RequestSpecificValues.Tracer.Add_Trace("MySobek_HtmlSubwriter.Constructor", "Performing logout");
 
                 Context.SessionObject()["user"] = null;
-                HttpContext.Current.Response.Redirect("?", false);
-                HttpContext.Current.ApplicationInstance.CompleteRequest();
+                Context.Response.Redirect("?");
                 RequestSpecificValues.Current_Mode.Request_Completed = true;
                 return;
             }

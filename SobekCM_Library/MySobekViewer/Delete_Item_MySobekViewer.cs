@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using System;
 using System.Collections.Generic;
@@ -123,8 +123,7 @@ namespace SobekCM.Library.MySobekViewer
                 // Better say "DELETE", or just send back to the item
                 if (( save_value == null ) || ( save_value.ToUpper() != "DELETE" ) || ( text_value.ToUpper() != "DELETE"))
                 {
-                    HttpContext.Current.Response.Redirect(RequestSpecificValues.Current_Mode.Base_URL + RequestSpecificValues.Current_Mode.BibID + "/" + RequestSpecificValues.Current_Mode.VID, false);
-                    HttpContext.Current.ApplicationInstance.CompleteRequest();
+                    Context.Response.Redirect(RequestSpecificValues.Current_Mode.Base_URL + RequestSpecificValues.Current_Mode.BibID + "/" + RequestSpecificValues.Current_Mode.VID);
                     RequestSpecificValues.Current_Mode.Request_Completed = true;
                 }
                 else
@@ -363,4 +362,3 @@ namespace SobekCM.Library.MySobekViewer
 		}
     }
 }
-

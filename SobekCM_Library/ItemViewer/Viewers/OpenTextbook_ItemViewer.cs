@@ -197,8 +197,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     // Forward along
                     CurrentRequest.Request_Completed = true;
                     CurrentRequest.ViewerSubCode = String.Empty;
-                    HttpContext.Current.Response.Redirect(UrlWriterHelper.Redirect_URL(CurrentRequest), false);
-                    HttpContext.Current.ApplicationInstance.CompleteRequest();
+                    Context.Response.Redirect(UrlWriterHelper.Redirect_URL(CurrentRequest));
 
                     return;
                 }

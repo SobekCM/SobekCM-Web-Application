@@ -147,8 +147,7 @@ namespace SobekCM.Library.AdminViewer
                             // Redirect the RequestSpecificValues.Current_User
                             string url = webContent.URL(UI_ApplicationCache_Gateway.Settings.Servers.Base_URL);
                             RequestSpecificValues.Current_Mode.Request_Completed = true;
-                            HttpContext.Current.Response.Redirect(url, false);
-                            HttpContext.Current.ApplicationInstance.CompleteRequest();
+                            Context.Response.Redirect(url);
                             return;
                         }
 
@@ -191,8 +190,7 @@ namespace SobekCM.Library.AdminViewer
                             if (action == "save_exit")
                             {
                                 RequestSpecificValues.Current_Mode.Request_Completed = true;
-                                HttpContext.Current.Response.Redirect(webContent.URL(RequestSpecificValues.Current_Mode.Base_URL), false);
-                                HttpContext.Current.ApplicationInstance.CompleteRequest();
+                                Context.Response.Redirect(webContent.URL(RequestSpecificValues.Current_Mode.Base_URL));
                                 return;
                             }
 
@@ -206,8 +204,7 @@ namespace SobekCM.Library.AdminViewer
                             // Save to the admins session
                             Context.SessionObject()["Edit_WebContent|" + webContentId] = webContent;
                             RequestSpecificValues.Current_Mode.My_Sobek_SubMode = action;
-                            HttpContext.Current.Response.Redirect(UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode), false);
-                            HttpContext.Current.ApplicationInstance.CompleteRequest();
+                            Context.Response.Redirect(UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode));
                             RequestSpecificValues.Current_Mode.Request_Completed = true;
                         }
                     }
@@ -791,21 +788,21 @@ namespace SobekCM.Library.AdminViewer
             }
 
             // Get any level filter information from the query string
-            if ((fixed_depth < 2) && (!String.IsNullOrEmpty(HttpContext.Current.Request.QueryString["l2"])))
+            if ((fixed_depth < 2) && (!String.IsNullOrEmpty(Context.Request.QueryString["l2"])))
             {
-                level2 = HttpContext.Current.Request.QueryString["l2"];
+                level2 = Context.Request.QueryString["l2"];
             }
-            if ((fixed_depth < 3) && (!String.IsNullOrEmpty(level2)) && (!String.IsNullOrEmpty(HttpContext.Current.Request.QueryString["l3"])))
+            if ((fixed_depth < 3) && (!String.IsNullOrEmpty(level2)) && (!String.IsNullOrEmpty(Context.Request.QueryString["l3"])))
             {
-                level3 = HttpContext.Current.Request.QueryString["l3"];
+                level3 = Context.Request.QueryString["l3"];
             }
-            if ((fixed_depth < 4) && (!String.IsNullOrEmpty(level3)) && (!String.IsNullOrEmpty(HttpContext.Current.Request.QueryString["l4"])))
+            if ((fixed_depth < 4) && (!String.IsNullOrEmpty(level3)) && (!String.IsNullOrEmpty(Context.Request.QueryString["l4"])))
             {
-                level4 = HttpContext.Current.Request.QueryString["l4"];
+                level4 = Context.Request.QueryString["l4"];
             }
-            if ((fixed_depth < 5) && (!String.IsNullOrEmpty(level4)) && (!String.IsNullOrEmpty(HttpContext.Current.Request.QueryString["l5"])))
+            if ((fixed_depth < 5) && (!String.IsNullOrEmpty(level4)) && (!String.IsNullOrEmpty(Context.Request.QueryString["l5"])))
             {
-                level5 = HttpContext.Current.Request.QueryString["l5"];
+                level5 = Context.Request.QueryString["l5"];
             }
 
 

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
@@ -170,8 +170,7 @@ namespace SobekCM.Library.AdminViewer
                                 else
                                 {
                                     RequestSpecificValues.Current_Mode.Request_Completed = true;
-                                    HttpContext.Current.Response.Redirect(msg.URI, false);
-                                    HttpContext.Current.ApplicationInstance.CompleteRequest();
+                                    Context.Response.Redirect(msg.URI);
                                     return;
                                 }
                             }
@@ -191,34 +190,34 @@ namespace SobekCM.Library.AdminViewer
             else
             {
                 // Get any level filter information from the query string
-                if (!String.IsNullOrEmpty(HttpContext.Current.Request.QueryString["l1"]))
+                if (!String.IsNullOrEmpty(Context.Request.QueryString["l1"]))
                 {
-                    level1 = HttpContext.Current.Request.QueryString["l1"];
+                    level1 = Context.Request.QueryString["l1"];
 
-                    if (!String.IsNullOrEmpty(HttpContext.Current.Request.QueryString["l2"]))
+                    if (!String.IsNullOrEmpty(Context.Request.QueryString["l2"]))
                     {
-                        level2 = HttpContext.Current.Request.QueryString["l2"];
+                        level2 = Context.Request.QueryString["l2"];
 
-                        if (!String.IsNullOrEmpty(HttpContext.Current.Request.QueryString["l3"]))
+                        if (!String.IsNullOrEmpty(Context.Request.QueryString["l3"]))
                         {
-                            level3 = HttpContext.Current.Request.QueryString["l3"];
+                            level3 = Context.Request.QueryString["l3"];
 
-                            if (!String.IsNullOrEmpty(HttpContext.Current.Request.QueryString["l4"]))
+                            if (!String.IsNullOrEmpty(Context.Request.QueryString["l4"]))
                             {
-                                level4 = HttpContext.Current.Request.QueryString["l4"];
+                                level4 = Context.Request.QueryString["l4"];
 
-                                if (!String.IsNullOrEmpty(HttpContext.Current.Request.QueryString["l5"]))
+                                if (!String.IsNullOrEmpty(Context.Request.QueryString["l5"]))
                                 {
-                                    level5 = HttpContext.Current.Request.QueryString["l5"];
-                                    if (!String.IsNullOrEmpty(HttpContext.Current.Request.QueryString["l6"]))
+                                    level5 = Context.Request.QueryString["l5"];
+                                    if (!String.IsNullOrEmpty(Context.Request.QueryString["l6"]))
                                     {
-                                        level6 = HttpContext.Current.Request.QueryString["l6"];
-                                        if (!String.IsNullOrEmpty(HttpContext.Current.Request.QueryString["l7"]))
+                                        level6 = Context.Request.QueryString["l6"];
+                                        if (!String.IsNullOrEmpty(Context.Request.QueryString["l7"]))
                                         {
-                                            level7 = HttpContext.Current.Request.QueryString["l7"];
-                                            if (!String.IsNullOrEmpty(HttpContext.Current.Request.QueryString["l8"]))
+                                            level7 = Context.Request.QueryString["l7"];
+                                            if (!String.IsNullOrEmpty(Context.Request.QueryString["l8"]))
                                             {
-                                                level8 = HttpContext.Current.Request.QueryString["l8"];
+                                                level8 = Context.Request.QueryString["l8"];
                                             }
                                         }
                                     }

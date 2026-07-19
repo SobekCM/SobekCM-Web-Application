@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using System;
 using System.Collections.Generic;
@@ -95,8 +95,7 @@ namespace SobekCM.Library.HTML
 
                     // Forward along
                     RequestSpecificValues.Current_Mode.Request_Completed = true;
-                    HttpContext.Current.Response.Redirect(staticWebContent.URL(RequestSpecificValues.Current_Mode.Base_URL), false);
-                    HttpContext.Current.ApplicationInstance.CompleteRequest();
+                    Context.Response.Redirect(staticWebContent.URL(RequestSpecificValues.Current_Mode.Base_URL));
 
                     return;
                 }
@@ -484,7 +483,7 @@ namespace SobekCM.Library.HTML
             // Write the banner and main menu
             write_banner_and_menu(Output, Tracer);
 
-            string post_url = HttpUtility.HtmlEncode(HttpContext.Current.Items["Original_URL"].ToString());
+            string post_url = HttpUtility.HtmlEncode(Context.Items["Original_URL"].ToString());
             Output.WriteLine("<form name=\"home_edit_form\" method=\"post\" action=\"" + post_url + "\" id=\"addedForm\" >");
 
             //const string TITLE_HELP = "Help for the title place holder";

@@ -113,12 +113,12 @@ namespace SobekCM.Library.MySobekViewer
                         }
 
                         // Forward back to their original URL (unless the original URL was this logon page)
-                        string raw_url = HttpContext.Current.Items["Original_URL"].ToString();
+                        string raw_url = Context.Items["Original_URL"].ToString();
                         if (raw_url.ToLower().IndexOf("my/logon") > 0)
                         {
                             if ( !String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.Return_URL))
                             {
-                                HttpContext.Current.Response.Redirect(RequestSpecificValues.Current_Mode.Return_URL, false);
+                                Context.Response.Redirect(RequestSpecificValues.Current_Mode.Return_URL);
                                 RequestSpecificValues.Current_Mode.Request_Completed = true;
                                 return;
                             }
@@ -130,8 +130,7 @@ namespace SobekCM.Library.MySobekViewer
                         }
                         else
                         {
-                            HttpContext.Current.Response.Redirect(raw_url, false);
-                            HttpContext.Current.ApplicationInstance.CompleteRequest();
+                            Context.Response.Redirect(raw_url);
                             RequestSpecificValues.Current_Mode.Request_Completed = true;
                         }
                     }

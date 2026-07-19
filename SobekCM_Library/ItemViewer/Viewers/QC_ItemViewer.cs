@@ -461,8 +461,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                         if (hidden_request == "save")
                         {
                             // Forward back to the QC form 
-                            HttpContext.Current.Response.Redirect(HttpContext.Current.Request.RawUrl, false);
-                            HttpContext.Current.ApplicationInstance.CompleteRequest();
+                            Context.Response.Redirect($"{Context.Request.Path}{Context.Request.QueryString}");
                             CurrentRequest.Request_Completed = true;
                         }
                         else if (hidden_request == "complete")
@@ -484,15 +483,13 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
                 case "clear_pagination":
                     ClearPagination();
-                    HttpContext.Current.Response.Redirect(HttpContext.Current.Request.RawUrl, false);
-                    HttpContext.Current.ApplicationInstance.CompleteRequest();
+                    Context.Response.Redirect($"{Context.Request.Path}{Context.Request.QueryString}");
                     CurrentRequest.Request_Completed = true;
                     break;
 
                 case "clear_reorder":
                     Clear_Pagination_And_Reorder_Pages();
-                    HttpContext.Current.Response.Redirect(HttpContext.Current.Request.RawUrl, false);
-                    HttpContext.Current.ApplicationInstance.CompleteRequest();
+                    Context.Response.Redirect($"{Context.Request.Path}{Context.Request.QueryString}");
                     CurrentRequest.Request_Completed = true;
                     break;
 
@@ -514,8 +511,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     // Since we deleted a page, we need to roll out our new version
                     Move_Temp_Changes_To_Production();
 
-                    HttpContext.Current.Response.Redirect(HttpContext.Current.Request.RawUrl, false);
-                    HttpContext.Current.ApplicationInstance.CompleteRequest();
+                    Context.Response.Redirect($"{Context.Request.Path}{Context.Request.QueryString}");
                     CurrentRequest.Request_Completed = true;
                     break;
 
@@ -535,8 +531,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     // Since we deleted a page, we need to roll out our new version
                     Move_Temp_Changes_To_Production();
 
-                    HttpContext.Current.Response.Redirect(HttpContext.Current.Request.RawUrl, false);
-                    HttpContext.Current.ApplicationInstance.CompleteRequest();
+                    Context.Response.Redirect($"{Context.Request.Path}{Context.Request.QueryString}");
                     CurrentRequest.Request_Completed = true;
                     break;
 
@@ -545,8 +540,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     // update the qc_item (also updates the session and temporary files)
                     Save_From_Form_Request_To_Item(hidden_move_destination_fileName, String.Empty);
 
-                    HttpContext.Current.Response.Redirect(HttpContext.Current.Request.RawUrl, false);
-                    HttpContext.Current.ApplicationInstance.CompleteRequest();
+                    Context.Response.Redirect($"{Context.Request.Path}{Context.Request.QueryString}");
                     CurrentRequest.Request_Completed = true;
                     break;
             }
@@ -2422,7 +2416,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             get
             {
                 //Get the querystring, if any, from the current url
-                string curr_url = HttpContext.Current.Request.RawUrl;
+                string curr_url = $"{Context.Request.Path}{Context.Request.QueryString}";
                 string queryString = null;
 
                 //Check if query string variables exist in the url

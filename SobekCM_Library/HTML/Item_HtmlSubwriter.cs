@@ -411,11 +411,10 @@ namespace SobekCM.Library.HTML
                                     cc_list = String.Empty;
 
                                 // Send the email
-                                HttpContext.Current.Session.Add("ON_LOAD_MESSAGE", !Item_Email_Helper.Send_Email(address, cc_list, comments, RequestSpecificValues.Current_User.Full_Name, RequestSpecificValues.Current_Mode.Instance_Abbreviation, currentItem, is_html_format, HttpContext.Current.Items["Original_URL"].ToString(), RequestSpecificValues.Current_User.UserID)
+                                HttpContext.Current.Session.Add("ON_LOAD_MESSAGE", !Item_Email_Helper.Send_Email(address, cc_list, comments, RequestSpecificValues.Current_User.Full_Name, RequestSpecificValues.Current_Mode.Instance_Abbreviation, currentItem, is_html_format, Context.Items["Original_URL"].ToString(), RequestSpecificValues.Current_User.UserID)
                                     ? "Error encountered while sending email" : "Your email has been sent");
 
-                                HttpContext.Current.Response.Redirect(HttpContext.Current.Items["Original_URL"].ToString(), false);
-                                HttpContext.Current.ApplicationInstance.CompleteRequest();
+                                Context.Response.Redirect(Context.Items["Original_URL"].ToString());
                                 RequestSpecificValues.Current_Mode.Request_Completed = true;
                                 return;
                             }
@@ -446,8 +445,7 @@ namespace SobekCM.Library.HTML
                                 HttpContext.Current.Session.Add("ON_LOAD_MESSAGE", "ERROR encountered while trying to save to your bookshelf.");
                             }
 
-                            HttpContext.Current.Response.Redirect(HttpContext.Current.Items["Original_URL"].ToString(), false);
-                            HttpContext.Current.ApplicationInstance.CompleteRequest();
+                            Context.Response.Redirect(Context.Items["Original_URL"].ToString());
                             RequestSpecificValues.Current_Mode.Request_Completed = true;
                             return;
                         }
@@ -465,8 +463,7 @@ namespace SobekCM.Library.HTML
                                 HttpContext.Current.Session.Add("ON_LOAD_MESSAGE", "ERROR encountered while trying to remove item from your bookshelves.");
                             }
 
-                            HttpContext.Current.Response.Redirect(HttpContext.Current.Items["Original_URL"].ToString(), false);
-                            HttpContext.Current.ApplicationInstance.CompleteRequest();
+                            Context.Response.Redirect(Context.Items["Original_URL"].ToString());
                             RequestSpecificValues.Current_Mode.Request_Completed = true;
                             return;
                         }
@@ -486,8 +483,7 @@ namespace SobekCM.Library.HTML
                                 RequestSpecificValues.Current_User.Has_Descriptive_Tags = true;
                             }
 
-                            HttpContext.Current.Response.Redirect(HttpContext.Current.Items["Original_URL"].ToString(), false);
-                            HttpContext.Current.ApplicationInstance.CompleteRequest();
+                            Context.Response.Redirect(Context.Items["Original_URL"].ToString());
                             RequestSpecificValues.Current_Mode.Request_Completed = true;
                             return;
                         }
@@ -502,8 +498,7 @@ namespace SobekCM.Library.HTML
                                     SobekCM_Database.Delete_Description_Tag(tagid, RequestSpecificValues.Tracer);
                                 }
                             }
-                            HttpContext.Current.Response.Redirect(HttpContext.Current.Items["Original_URL"].ToString(), false);
-                            HttpContext.Current.ApplicationInstance.CompleteRequest();
+                            Context.Response.Redirect(Context.Items["Original_URL"].ToString());
                             RequestSpecificValues.Current_Mode.Request_Completed = true;
                             return;
                         }

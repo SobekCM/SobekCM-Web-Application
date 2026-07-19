@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using System;
 using System.Collections.Generic;
@@ -98,8 +98,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 				else
 					redirect_url = redirect_url + "?refresh=always";
 				RequestSpecificValues.Current_Mode.Request_Completed = true;
-				HttpContext.Current.Response.Redirect(redirect_url, false);
-				HttpContext.Current.ApplicationInstance.CompleteRequest();
+				Context.Response.Redirect(redirect_url);
 			}
         }
 
@@ -175,7 +174,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 				const string EXTRA_HEAD_HELP = "Help for the extra head place holder";
 
 
-				string post_url = HttpUtility.HtmlEncode(HttpContext.Current.Items["Original_URL"].ToString());
+				string post_url = HttpUtility.HtmlEncode(Context.Items["Original_URL"].ToString());
 				Output.WriteLine("<form name=\"home_edit_form\" method=\"post\" action=\"" + post_url + "\" id=\"addedForm\" >");
 
 				Output.WriteLine("  <a href=\"\" onclick=\"return show_header_info()\" id=\"sbkSbia_HeaderInfoDivShowLink\">show header data (advanced)</a><br />");

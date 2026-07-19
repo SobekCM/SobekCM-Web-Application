@@ -425,7 +425,7 @@ namespace SobekCM
 				}
 
 				SobekCM_Assistant assistant = new SobekCM_Assistant();
-                assistant.Get_Search_Results(currentMode, hierarchyObject, UI_ApplicationCache_Gateway.Search_Stop_Words, currentUser, tracer, out searchResultStatistics, out pagedSearchResults);
+                assistant.Get_Search_Results(currentMode, hierarchyObject, UI_ApplicationCache_Gateway.Search_Stop_Words, currentUser, tracer, out searchResultStatistics, out pagedSearchResults, context);
 
 				if ((!currentMode.isPostBack) && (UI_ApplicationCache_Gateway.Search_History != null))
 				{

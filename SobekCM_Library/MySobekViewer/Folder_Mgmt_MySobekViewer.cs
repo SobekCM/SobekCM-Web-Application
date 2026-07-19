@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using System;
 using System.Collections.Generic;
@@ -72,8 +72,7 @@ namespace SobekCM.Library.MySobekViewer
                     if (userFolder == null)
                     {
                         // Invalid folder.. should not have gotten this far though
-                        HttpContext.Current.Response.Redirect(RequestSpecificValues.Current_Mode.Base_URL, false);
-                        HttpContext.Current.ApplicationInstance.CompleteRequest();
+                        Context.Response.Redirect(RequestSpecificValues.Current_Mode.Base_URL);
                         RequestSpecificValues.Current_Mode.Request_Completed = true;
                         return;
                     }
@@ -247,9 +246,8 @@ namespace SobekCM.Library.MySobekViewer
                     // so any error that occurs should be obvious to the RequestSpecificValues.Current_User
                 }
 
-                string return_url = HttpContext.Current.Items["Original_URL"].ToString();
-                HttpContext.Current.Response.Redirect(return_url, false);
-                HttpContext.Current.ApplicationInstance.CompleteRequest();
+                string return_url = Context.Items["Original_URL"].ToString();
+                Context.Response.Redirect(return_url);
                 RequestSpecificValues.Current_Mode.Request_Completed = true;
             }
         }
@@ -840,5 +838,4 @@ namespace SobekCM.Library.MySobekViewer
     }
 }
   
-
 

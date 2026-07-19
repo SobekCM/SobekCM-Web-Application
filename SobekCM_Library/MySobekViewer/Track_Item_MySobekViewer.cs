@@ -62,7 +62,7 @@ namespace SobekCM.Library.MySobekViewer
             if (RequestSpecificValues.Current_User == null)
             {
                 RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
-                HttpContext.Current.Response.Redirect(UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode));
+                Context.Response.Redirect(UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode));
             }
 
 

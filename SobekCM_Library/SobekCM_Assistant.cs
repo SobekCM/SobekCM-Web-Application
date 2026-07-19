@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Web;
+using Microsoft.AspNetCore.Http;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.Client;
 using SobekCM.Core.MemoryMgmt;
@@ -520,12 +520,13 @@ namespace SobekCM.Library
         /// <param name="Complete_Result_Set_Info"> [OUT] Information about the entire set of results </param>
         /// <param name="Paged_Results"> [OUT] List of search results for the requested page of results </param>
         public void Get_Search_Results(Navigation_Object Current_Mode,
-                                       Item_Aggregation Aggregation_Object, 
+                                       Item_Aggregation Aggregation_Object,
                                        List<string> Search_Stop_Words,
                                        User_Object Current_User,
                                        Custom_Tracer Tracer,
                                        out Search_Results_Statistics Complete_Result_Set_Info,
-                                       out List<iSearch_Title_Result> Paged_Results )
+                                       out List<iSearch_Title_Result> Paged_Results,
+                                       HttpContext context = null)
         {
             if (Tracer != null)
             {
@@ -761,7 +762,7 @@ namespace SobekCM.Library
                                 Perform_Solr_Search(Tracer, terms, web_fields, date_start, date_end, Aggregation_Object, current_page_index, sort, results_per_page, Current_User, out recomputed_search_statistics, out Paged_Results, need_search_statistics);
                             else
                             {
-                                Perform_Database_Search(Tracer, terms, web_fields, date_start, date_end, actualCount, Current_Mode, sort, Aggregation_Object, results_per_page, !special_search_type, out recomputed_search_statistics, out pagesOfResults, need_search_statistics);
+                                Perform_Database_Search(Tracer, terms, web_fields, date_start, date_end, actualCount, Current_Mode, sort, Aggregation_Object, results_per_page, !special_search_type, out recomputed_search_statistics, out pagesOfResults, need_search_statistics, context);
                                 if (( pagesOfResults != null ) && ( pagesOfResults.Count > 0 ))
                                     Paged_Results = pagesOfResults[0];
                             }
@@ -943,7 +944,7 @@ namespace SobekCM.Library
             }
         }
 
-        private void Perform_Database_Search(Custom_Tracer Tracer, List<string> Terms, List<string> Web_Fields, Nullable<DateTime> StartDate, Nullable<DateTime> EndDate, int ActualCount, Navigation_Object Current_Mode, int Current_Sort, Item_Aggregation Aggregation_Object, int Results_Per_Page, bool Potentially_Include_Facets, out Search_Results_Statistics Complete_Result_Set_Info, out List<List<iSearch_Title_Result>> Paged_Results, bool Need_Search_Statistics)
+        private void Perform_Database_Search(Custom_Tracer Tracer, List<string> Terms, List<string> Web_Fields, Nullable<DateTime> StartDate, Nullable<DateTime> EndDate, int ActualCount, Navigation_Object Current_Mode, int Current_Sort, Item_Aggregation Aggregation_Object, int Results_Per_Page, bool Potentially_Include_Facets, out Search_Results_Statistics Complete_Result_Set_Info, out List<List<iSearch_Title_Result>> Paged_Results, bool Need_Search_Statistics, HttpContext context = null)
         {
             if (Tracer != null)
             {
@@ -1010,8 +1011,7 @@ namespace SobekCM.Library
                                 string redirect_url = Current_Mode.Base_URL + bibid + "/" + vid;
                                 if ( Current_Mode.Writer_Type == Writer_Type_Enum.HTML_LoggedIn )
                                     redirect_url = Current_Mode.Base_URL + "l/" + bibid + "/" + vid;
-                                HttpContext.Current.Response.Redirect(redirect_url, false);
-                                HttpContext.Current.ApplicationInstance.CompleteRequest();
+                                context?.Response.Redirect(redirect_url);
                                 Current_Mode.Request_Completed = true;
                                 Paged_Results = null;
                                 return;
@@ -1021,8 +1021,7 @@ namespace SobekCM.Library
                                 string redirect_url = Current_Mode.Base_URL + bibid;
                                 if (Current_Mode.Writer_Type == Writer_Type_Enum.HTML_LoggedIn)
                                     redirect_url = Current_Mode.Base_URL + "l/" + bibid;
-                                HttpContext.Current.Response.Redirect(redirect_url, false);
-                                HttpContext.Current.ApplicationInstance.CompleteRequest();
+                                context?.Response.Redirect(redirect_url);
                                 Current_Mode.Request_Completed = true;
                                 Paged_Results = null;
                                 return;

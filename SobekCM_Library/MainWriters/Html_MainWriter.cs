@@ -318,7 +318,7 @@ namespace SobekCM.Library.MainWriters
 
                     // Save this to the session state, and then forward to the dashboard
                     Context.SessionObject()["Last_Exception"] = newException;
-                    HttpContext.Current.Response.Redirect("dashboard.aspx", false);
+                    Context.Response.Redirect("dashboard.aspx");
                     RequestSpecificValues.Current_Mode.Request_Completed = true;
                 }
                 else
@@ -1025,10 +1025,10 @@ namespace SobekCM.Library.MainWriters
                 Output.WriteLine("<div id=\"sbkHmw_TraceRouter\" style=\"display:none;\">");
 
                 Output.WriteLine("<br /><br /><b>URL REWRITE</b>");
-                if (HttpContext.Current.Items["Original_URL"] == null)
+                if (Context.Items["Original_URL"] == null)
                     Output.WriteLine("<br /><br />Original URL: <i>None found</i><br />");
                 else
-                    Output.WriteLine("<br /><br />Original URL: " + HttpUtility.HtmlEncode(HttpContext.Current.Items["Original_URL"]) + "<br />");
+                    Output.WriteLine("<br /><br />Original URL: " + HttpUtility.HtmlEncode(Context.Items["Original_URL"]) + "<br />");
 
                 Output.WriteLine("Current URL: " + HttpUtility.HtmlEncode(HttpContext.Current.Request.Url) + "<br />");
 
@@ -1060,7 +1060,7 @@ namespace SobekCM.Library.MainWriters
                         if (ObjErr.InnerException != null)
                         {
                             err = "<b>" + HttpContext.Current.Request.UserHostAddress + "</b><br /><br />" +
-                                  "Error in!!: " + HttpContext.Current.Items["Original_URL"] + "<br /><br />" +
+                                  "Error in!!: " + Context.Items["Original_URL"] + "<br /><br />" +
                                   "Error Message: " + ObjErr.Message + "<br /><br />" +
                                   "Inner Exception: " + ObjErr.InnerException.Message + "<br /><br />" +
                                   "Stack Trace: " + ObjErr.InnerException.StackTrace + "<br /><br />";
@@ -1068,7 +1068,7 @@ namespace SobekCM.Library.MainWriters
                         else
                         {
                             err = "<b>" + HttpContext.Current.Request.UserHostAddress + "</b><br /><br />" +
-                                  "Error in!!: " + HttpContext.Current.Items["Original_URL"] + "<br /><br />" +
+                                  "Error in!!: " + Context.Items["Original_URL"] + "<br /><br />" +
                                   "Error Message: " + ObjErr.Message + "<br /><br />" +
                                   "Stack Trace: " + ObjErr.StackTrace + "<br /><br />";
 
@@ -1133,8 +1133,7 @@ namespace SobekCM.Library.MainWriters
             // Forward to our error message
             if (Redirect)
             {
-                HttpContext.Current.Response.Redirect(UI_ApplicationCache_Gateway.Settings.Servers.System_Error_URL, false);
-                HttpContext.Current.ApplicationInstance.CompleteRequest();
+                Context.Response.Redirect(UI_ApplicationCache_Gateway.Settings.Servers.System_Error_URL);
             }
         }
 

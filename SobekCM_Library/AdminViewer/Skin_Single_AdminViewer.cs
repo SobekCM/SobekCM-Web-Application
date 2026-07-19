@@ -438,8 +438,7 @@ namespace SobekCM.Library.AdminViewer
                             }
                         }
 
-                        HttpContext.Current.Response.Redirect(url, false);
-                        HttpContext.Current.ApplicationInstance.CompleteRequest();
+                        Context.Response.Redirect(url);
                         RequestSpecificValues.Current_Mode.Request_Completed = true;
                     }
                 }
@@ -892,9 +891,9 @@ namespace SobekCM.Library.AdminViewer
         {
             Web_Language_Enum current_language = Web_Language_Enum.DEFAULT;
 
-            if (!String.IsNullOrEmpty(HttpContext.Current.Request.QueryString["lang"]))
+            if (!String.IsNullOrEmpty(Context.Request.QueryString["lang"]))
             {
-                string current_language_code = HttpContext.Current.Request.QueryString["lang"];
+                string current_language_code = Context.Request.QueryString["lang"];
                 current_language = current_language_code.ToLower() == "def" ? Web_Language_Enum.DEFAULT : Web_Language_Enum_Converter.Code_To_Enum(current_language_code);
             }
 
@@ -940,9 +939,9 @@ namespace SobekCM.Library.AdminViewer
         {
             Web_Language_Enum current_language = Web_Language_Enum.DEFAULT;
 
-            if (!String.IsNullOrEmpty(HttpContext.Current.Request.QueryString["lang"]))
+            if (!String.IsNullOrEmpty(Context.Request.QueryString["lang"]))
             {
-                string current_language_code = HttpContext.Current.Request.QueryString["lang"];
+                string current_language_code = Context.Request.QueryString["lang"];
                 current_language = current_language_code.ToLower() == "def" ? Web_Language_Enum.DEFAULT : Web_Language_Enum_Converter.Code_To_Enum(current_language_code);
             }
 

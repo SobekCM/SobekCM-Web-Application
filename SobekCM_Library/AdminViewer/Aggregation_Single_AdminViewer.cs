@@ -322,8 +322,7 @@ namespace SobekCM.Library.AdminViewer
                                     wizard_url = wizard_url + "&parent=" + itemAggregation.Code;
 
                                 RequestSpecificValues.Current_Mode.Request_Completed = true;
-                                HttpContext.Current.Response.Redirect(wizard_url, false);
-                                HttpContext.Current.ApplicationInstance.CompleteRequest();
+                                Context.Response.Redirect(wizard_url);
 
                             }
                             else
@@ -345,8 +344,7 @@ namespace SobekCM.Library.AdminViewer
 						// Save to the admins session
 						Context.SessionObject()["Edit_Aggregation_" + itemAggregation.Code] = itemAggregation;
 						RequestSpecificValues.Current_Mode.My_Sobek_SubMode = action;
-						HttpContext.Current.Response.Redirect(UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode), false);
-						HttpContext.Current.ApplicationInstance.CompleteRequest();
+						Context.Response.Redirect(UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode));
 						RequestSpecificValues.Current_Mode.Request_Completed = true;
 					}
 				}

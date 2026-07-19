@@ -58,9 +58,9 @@ namespace SobekCM.Library.AdminViewer
             
             // Was there a parent indicated?
             string parent_locked = String.Empty;
-            if (!String.IsNullOrEmpty(HttpContext.Current.Request.QueryString["parent"]))
+            if (!String.IsNullOrEmpty(Context.Request.QueryString["parent"]))
             {
-                parent_locked = HttpContext.Current.Request.QueryString["parent"];
+                parent_locked = Context.Request.QueryString["parent"];
 
                 // Ensure that aggregation exists
                 if (UI_ApplicationCache_Gateway.Aggregations[parent_locked.ToUpper()] == null)
@@ -78,9 +78,9 @@ namespace SobekCM.Library.AdminViewer
             newAggr = cachedInstance ?? new New_Aggregation_Arguments("ALL");
 
             // Set the code?
-            if (!String.IsNullOrEmpty(HttpContext.Current.Request.QueryString["code"]))
+            if (!String.IsNullOrEmpty(Context.Request.QueryString["code"]))
             {
-                newAggr.Code = HttpContext.Current.Request.QueryString["code"];
+                newAggr.Code = Context.Request.QueryString["code"];
             }
 
             // Lock the parent?
@@ -417,8 +417,7 @@ namespace SobekCM.Library.AdminViewer
                     else
                     {
                         RequestSpecificValues.Current_Mode.My_Sobek_SubMode = action;
-                        HttpContext.Current.Response.Redirect(UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode), false);
-                        HttpContext.Current.ApplicationInstance.CompleteRequest();
+                        Context.Response.Redirect(UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode));
                         RequestSpecificValues.Current_Mode.Request_Completed = true;
                     }
                 }
@@ -429,9 +428,9 @@ namespace SobekCM.Library.AdminViewer
             }
             else
             {
-                if (!String.IsNullOrEmpty(HttpContext.Current.Request.QueryString["code"]))
+                if (!String.IsNullOrEmpty(Context.Request.QueryString["code"]))
                 {
-                    newAggr.Code = HttpContext.Current.Request.QueryString["code"];
+                    newAggr.Code = Context.Request.QueryString["code"];
                 }
             }
         }

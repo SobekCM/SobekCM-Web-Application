@@ -92,7 +92,7 @@ namespace SobekCM.Library.MySobekViewer
                 if (success)
                 {
                     user.Is_Temporary_Password = false;
-                    string raw_url = HttpContext.Current.Request.RawUrl;
+                    string raw_url = $"{Context.Request.Path}{Context.Request.QueryString}";
                     if (raw_url.ToUpper().IndexOf("M=HML") > 0)
                     {
                         RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
@@ -100,8 +100,7 @@ namespace SobekCM.Library.MySobekViewer
                     }
                     else
                     {
-                        HttpContext.Current.Response.Redirect(raw_url, false);
-                        HttpContext.Current.ApplicationInstance.CompleteRequest();
+                        Context.Response.Redirect(raw_url);
                         RequestSpecificValues.Current_Mode.Request_Completed = true;
                     }
                 }

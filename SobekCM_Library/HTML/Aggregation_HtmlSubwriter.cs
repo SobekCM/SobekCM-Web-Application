@@ -245,19 +245,18 @@ namespace SobekCM.Library.HTML
                             cc_list = String.Empty;
 
                         // Send the email
-                        string any_error = URL_Email_Helper.Send_Email(address, cc_list, comments, RequestSpecificValues.Current_User.Full_Name, RequestSpecificValues.Current_Mode.Instance_Abbreviation, is_html_format, HttpContext.Current.Items["Original_URL"].ToString(), hierarchyObject.Name, "Collection", RequestSpecificValues.Current_User.UserID);
+                        string any_error = URL_Email_Helper.Send_Email(address, cc_list, comments, RequestSpecificValues.Current_User.Full_Name, RequestSpecificValues.Current_Mode.Instance_Abbreviation, is_html_format, Context.Items["Original_URL"].ToString(), hierarchyObject.Name, "Collection", RequestSpecificValues.Current_User.UserID);
                         HttpContext.Current.Session.Add("ON_LOAD_MESSAGE", any_error.Length > 0 ? any_error : "Your email has been sent");
 
                         RequestSpecificValues.Current_Mode.isPostBack = true;
 
                         // Do this to force a return trip (cirumnavigate cacheing)
-                        string original_url = HttpContext.Current.Items["Original_URL"].ToString();
+                        string original_url = Context.Items["Original_URL"].ToString();
                         if (original_url.IndexOf("?") < 0)
-                            HttpContext.Current.Response.Redirect(original_url + "?p=" + DateTime.Now.Millisecond, false);
+                            Context.Response.Redirect(original_url + "?p=" + DateTime.Now.Millisecond);
                         else
-                            HttpContext.Current.Response.Redirect(original_url + "&p=" + DateTime.Now.Millisecond, false);
+                            Context.Response.Redirect(original_url + "&p=" + DateTime.Now.Millisecond);
 
-                        HttpContext.Current.ApplicationInstance.CompleteRequest();
                         RequestSpecificValues.Current_Mode.Request_Completed = true;
                         return;
                     }
@@ -322,8 +321,7 @@ namespace SobekCM.Library.HTML
 				else
 					redirect_url = redirect_url + "?refresh=always";
 				RequestSpecificValues.Current_Mode.Request_Completed = true;
-				HttpContext.Current.Response.Redirect(redirect_url, false);
-				HttpContext.Current.ApplicationInstance.CompleteRequest();
+				Context.Response.Redirect(redirect_url);
 
 				return;
             }
@@ -1071,7 +1069,7 @@ namespace SobekCM.Library.HTML
             // Write the search box
             if ((!behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Suppress_SearchForm)) && ((collectionViewer == null ) || ( !collectionViewer.Is_Internal_View )))
             {
-                string post_url = HttpUtility.HtmlEncode(HttpContext.Current.Items["Original_URL"].ToString());
+                string post_url = HttpUtility.HtmlEncode(Context.Items["Original_URL"].ToString());
                 RequestSpecificValues.Tracer.Add_Trace("Aggregation_HtmlSubwriter.Write_HTML", "search box post_url=[" + post_url + "].");
 
                 if ( !String.IsNullOrEmpty(collectionViewer.Search_Script_Action))
@@ -1317,7 +1315,7 @@ namespace SobekCM.Library.HTML
             {
 				// Calculate the title and url
 				string title = HttpUtility.HtmlEncode(hierarchyObject.Name.Replace("'",""));
-				string share_url = HttpContext.Current.Items["Original_URL"].ToString().Replace("&", "%26").Replace("?", "%3F").Replace("http://", "").Replace("=", "%3D").Replace("\"", "&quot;");
+				string share_url = Context.Items["Original_URL"].ToString().Replace("&", "%26").Replace("?", "%3F").Replace("http://", "").Replace("=", "%3D").Replace("\"", "&quot;");
 
                 // Figure out where the files are being found
                 string facebookImage = Static_Resources_Gateway.Facebook_Share_Gif;
@@ -1396,7 +1394,7 @@ namespace SobekCM.Library.HTML
 
                 if ((canEditHomePage) && (RequestSpecificValues.Current_Mode.Aggregation_Type == Aggregation_Type_Enum.Home_Edit))
 	            {
-					string post_url = HttpUtility.HtmlEncode(HttpContext.Current.Items["Original_URL"].ToString());
+					string post_url = HttpUtility.HtmlEncode(Context.Items["Original_URL"].ToString());
 					Output.WriteLine("<form name=\"home_edit_form\" method=\"post\" action=\"" + post_url + "\" id=\"addedForm\" >");
 					Output.WriteLine("  <textarea id=\"sbkAghsw_HomeTextEdit\" name=\"sbkAghsw_HomeTextEdit\" >");
 					Output.WriteLine(home_html.Replace("<%","[%").Replace("%>","%]"));
@@ -1528,7 +1526,7 @@ namespace SobekCM.Library.HTML
 
 	                if ((isAdmin) && (RequestSpecificValues.Current_Mode.Aggregation_Type == Aggregation_Type_Enum.Home_Edit))
 	                {
-		                string post_url = HttpUtility.HtmlEncode(HttpContext.Current.Items["Original_URL"].ToString());
+		                string post_url = HttpUtility.HtmlEncode(Context.Items["Original_URL"].ToString());
 		                Output.WriteLine("<form name=\"home_edit_form\" method=\"post\" action=\"" + post_url + "\" id=\"addedForm\" >");
 		                Output.WriteLine("  <textarea id=\"sbkAghsw_HomeTextEdit\" name=\"sbkAghsw_HomeTextEdit\" >");
                         Output.WriteLine(sobekcm_home_page_text.Replace("<%", "[%").Replace("%>", "%]"));

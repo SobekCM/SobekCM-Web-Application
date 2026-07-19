@@ -12,6 +12,7 @@ using SobekCM.Engine_Library.Configuration;
 using SobekCM.Library.HTML;
 using SobekCM.Library.ItemViewer.Menu;
 using SobekCM.Tools;
+using Microsoft.AspNetCore.Http;
 
 namespace SobekCM.Library.ItemViewer.Viewers
 {
@@ -113,9 +114,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <returns> Fully built and initialized <see cref="Related_Images_ItemViewer"/> object </returns>
         /// <remarks> This method is called whenever a request requires the actual viewer to be created to render the HTML for
         /// the digital resource requested.  The created viewer is then destroyed at the end of the request </remarks>
-        public virtual iItemViewer Create_Viewer(BriefItemInfo CurrentItem, User_Object CurrentUser, Navigation_Object CurrentRequest, Custom_Tracer Tracer, RequestCache_RequestFlags CurrentFlags)
+        public virtual iItemViewer Create_Viewer(BriefItemInfo CurrentItem, User_Object CurrentUser, Navigation_Object CurrentRequest, Custom_Tracer Tracer, RequestCache_RequestFlags CurrentFlags, HttpContext Context)
         {
-            return new Related_Images_ItemViewer(CurrentItem, CurrentUser, CurrentRequest, Tracer, ViewerCode);
+            return new Related_Images_ItemViewer(CurrentItem, CurrentUser, CurrentRequest, Tracer, ViewerCode, Context);
         }
     }
 
@@ -141,11 +142,12 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <param name="CurrentRequest"> Information about the current request </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         /// <param name="ViewerCode"> Viewer code for the related images viewer </param>
-        public Related_Images_ItemViewer(BriefItemInfo BriefItem, User_Object CurrentUser, Navigation_Object CurrentRequest, Custom_Tracer Tracer, string ViewerCode)
+        public Related_Images_ItemViewer(BriefItemInfo BriefItem, User_Object CurrentUser, Navigation_Object CurrentRequest, Custom_Tracer Tracer, string ViewerCode, HttpContext context)
         {
             // Save the arguments for use later
             briefItem = BriefItem;
             currentRequest = CurrentRequest;
+            this.Context = context;
 
             // Get the proper number of thumbnails per page
             if (CurrentUser != null)
@@ -613,7 +615,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             get
             {
                 //Get the querystring, if any, from the current url
-                string curr_url = HttpContext.Current.Request.RawUrl;
+                string curr_url = $"{Context.Request.Path}{Context.Request.QueryString}";
                 string queryString = null;
 
                 //Check if query string variables exist in the url

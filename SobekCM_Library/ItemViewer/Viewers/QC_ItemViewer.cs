@@ -30,6 +30,7 @@ using SobekCM.Resource_Object.Divisions;
 using SobekCM.Resource_Object.Utilities;
 using SobekCM.Tools;
 using SobekCM_Resource_Database;
+using Microsoft.AspNetCore.Http;
 
 namespace SobekCM.Library.ItemViewer.Viewers
 {
@@ -120,9 +121,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <returns> Fully built and initialized <see cref="QC_ItemViewer"/> object </returns>
         /// <remarks> This method is called whenever a request requires the actual viewer to be created to render the HTML for
         /// the digital resource requested.  The created viewer is then destroyed at the end of the request </remarks>
-        public virtual iItemViewer Create_Viewer(BriefItemInfo CurrentItem, User_Object CurrentUser, Navigation_Object CurrentRequest, Custom_Tracer Tracer, RequestCache_RequestFlags CurrentFlags)
+        public virtual iItemViewer Create_Viewer(BriefItemInfo CurrentItem, User_Object CurrentUser, Navigation_Object CurrentRequest, Custom_Tracer Tracer, RequestCache_RequestFlags CurrentFlags, HttpContext Context)
         {
-            return new QC_ItemViewer(CurrentItem, CurrentUser, CurrentRequest, Tracer );
+            return new QC_ItemViewer(CurrentItem, CurrentUser, CurrentRequest, Tracer, Context);
         }
     }
 
@@ -189,12 +190,13 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <param name="CurrentUser"> Current user, who may or may not be logged on </param>
         /// <param name="CurrentRequest"> Information about the current request </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        public QC_ItemViewer(BriefItemInfo BriefItem, User_Object CurrentUser, Navigation_Object CurrentRequest, Custom_Tracer Tracer )
+        public QC_ItemViewer(BriefItemInfo BriefItem, User_Object CurrentUser, Navigation_Object CurrentRequest, Custom_Tracer Tracer, HttpContext context)
         {
             // Save the arguments for use later
             this.BriefItem = BriefItem;
             this.CurrentUser = CurrentUser;
             this.CurrentRequest = CurrentRequest;
+            this.Context = context;
 
             // If there is no user, send to the login
             if (CurrentUser == null)
@@ -313,8 +315,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
             // If this was a post-back keep the required height and width for the qc area
             allThumbnailsOuterDiv1Width = -1;
             allThumbnailsOuterDiv1Height = -1;
-            string temp_width = HttpContext.Current.Request.Form["QC_window_width"] ?? String.Empty;
-            string temp_height = HttpContext.Current.Request.Form["QC_window_height"] ?? String.Empty;
+            string temp_width = Context.Request.Form["QC_window_width"].TrimFirst();
+            string temp_height = Context.Request.Form["QC_window_height"].TrimFirst();
 
             if ((temp_width.Length > 0) && (temp_height.Length > 0))
             {
@@ -336,18 +338,18 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
 
             // See if there were hidden requests
-            hidden_request = HttpContext.Current.Request.Form["QC_behaviors_request"] ?? String.Empty;
-            hidden_main_thumbnail = HttpContext.Current.Request.Form["Main_Thumbnail_File"] ?? String.Empty;
-            hidden_move_relative_position = HttpContext.Current.Request.Form["QC_move_relative_position"] ?? String.Empty;
-            hidden_move_destination_fileName = HttpContext.Current.Request.Form["QC_move_destination"] ?? String.Empty;
-            autonumber_number_system = HttpContext.Current.Request.Form["Autonumber_number_system"] ?? String.Empty;
-            string temp = HttpContext.Current.Request.Form["autonumber_mode_from_form"] ?? "0";
+            hidden_request = Context.Request.Form["QC_behaviors_request"].TrimFirst();
+            hidden_main_thumbnail = Context.Request.Form["Main_Thumbnail_File"].TrimFirst();
+            hidden_move_relative_position = Context.Request.Form["QC_move_relative_position"].TrimFirst();
+            hidden_move_destination_fileName = Context.Request.Form["QC_move_destination"].TrimFirst();
+            autonumber_number_system = Context.Request.Form["Autonumber_number_system"].TrimFirst();
+            string temp = Context.Request.Form["autonumber_mode_from_form"].TrimFirst() ?? "0";
             Int32.TryParse(temp, out autonumber_mode_from_form);
-            autonumber_text_only = HttpContext.Current.Request.Form["Autonumber_text_without_number"] ?? String.Empty;
-            autonumber_number_only = HttpContext.Current.Request.Form["Autonumber_number_only"] ?? String.Empty;
-            autonumber_number_system = HttpContext.Current.Request.Form["Autonumber_number_system"] ?? String.Empty;
-            hidden_autonumber_filename = HttpContext.Current.Request.Form["Autonumber_last_filename"] ?? String.Empty;
-            temp = HttpContext.Current.Request.Form["QC_sortable_option"] ?? "-1";
+            autonumber_text_only = Context.Request.Form["Autonumber_text_without_number"].TrimFirst();
+            autonumber_number_only = Context.Request.Form["Autonumber_number_only"].TrimFirst();
+            autonumber_number_system = Context.Request.Form["Autonumber_number_system"].TrimFirst();
+            hidden_autonumber_filename = Context.Request.Form["Autonumber_last_filename"].TrimFirst();
+            temp = Context.Request.Form["QC_sortable_option"].TrimFirst() ?? "-1";
 
             // Check for sortable ( aka, Drag and drop pages ) setting - is it different than user's setting?
             if (Int32.TryParse(temp, out makeSortable) && (makeSortable > 0) && (makeSortable <= 3))
@@ -360,7 +362,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
 
             // Check for the autonumber option - is it different than user's setting?
-            temp = HttpContext.Current.Request.Form["QC_autonumber_option"] ?? "-1";
+            temp = Context.Request.Form["QC_autonumber_option"].TrimFirst() ?? "-1";
             if ((Int32.TryParse(temp, out autonumber_mode)) && (autonumber_mode >= 0) && (autonumber_mode <= 2))
             {
                 if (autonumber_mode.ToString() != CurrentUser.Get_Setting("QC_ItemViewer:AutonumberingMode", "NULL"))
@@ -381,9 +383,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
 
             //Get any notes/comments entered by the user
-            notes = HttpContext.Current.Request.Form["txtComments"] ?? String.Empty;
+            notes = Context.Request.Form["txtComments"].TrimFirst();
 
-            if (!(Int32.TryParse(HttpContext.Current.Request.Form["QC_Sortable"], out makeSortable))) makeSortable = 3;
+            if (!(Int32.TryParse(Context.Request.Form["QC_Sortable"].TrimFirst(), out makeSortable))) makeSortable = 3;
             // If the hidden move relative position is BEFORE, it is before the very first page
             if (hidden_move_relative_position == "Before")
                 hidden_move_destination_fileName = "[BEFORE FIRST]";
@@ -399,7 +401,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
                 if (Context.SessionObject()["autosave_option"] != null)
                     autosaveCache = bool.TryParse(Context.SessionObject()["autosave_option"].ToString(), out autosaveCacheValue);
-                bool convert = bool.TryParse(HttpContext.Current.Request.Form["Autosave_Option"], out autosave_option);
+                bool convert = bool.TryParse(Context.Request.Form["Autosave_Option"].TrimFirst(), out autosave_option);
                 if (!convert && !autosaveCache)
                 {
                     autosave_option = true;
@@ -494,15 +496,15 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     break;
 
                 case "save_error":
-                    string error_code = HttpContext.Current.Request.Form["QC_error_number"] ?? String.Empty;
-                    string affected_page_index = HttpContext.Current.Request.Form["QC_affected_file"] ?? String.Empty;
+                    string error_code = Context.Request.Form["QC_error_number"].TrimFirst();
+                    string affected_page_index = Context.Request.Form["QC_affected_file"].TrimFirst();
                     SaveQcError(itemID, error_code, affected_page_index);
                     break;
 
                 case "delete_page":
                     // Read the data from the http form, perform all requests, and
                     // update the qc_item (also updates the session and temporary files)
-                    string filename_to_delete = HttpContext.Current.Request.Form["QC_affected_file"] ?? String.Empty;
+                    string filename_to_delete = Context.Request.Form["QC_affected_file"].TrimFirst();
                     if (Save_From_Form_Request_To_Item(String.Empty, filename_to_delete))
                     {
                         Delete_Resource_File(filename_to_delete);
@@ -590,10 +592,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
                 case "4":
                     //thisError.ErrorName = "Other (specify)";
-                    thisError.ErrorName = HttpContext.Current.Request.Form["txtErrorOther1"] ?? String.Empty;
+                    thisError.ErrorName = Context.Request.Form["txtErrorOther1"].TrimFirst();
                     if (String.IsNullOrEmpty(thisError.ErrorName))
                         thisError.ErrorName = "Other (specify)";
-                    thisError.Description = HttpContext.Current.Request.Form["txtErrorOther1"] ?? String.Empty;
+                    thisError.Description = Context.Request.Form["txtErrorOther1"].TrimFirst();
                     break;
 
                 case "5":
@@ -618,8 +620,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
                 case "10":
                     //thisError.ErrorName = "Other (specify)";
-                    thisError.ErrorName = HttpContext.Current.Request.Form["txtErrorOther2"] ?? "Other (specify)";
-                    thisError.Description = HttpContext.Current.Request.Form["txtErrorOther2"] ?? String.Empty;
+                    thisError.ErrorName = Context.Request.Form["txtErrorOther2"].TrimFirst() ?? "Other (specify)";
+                    thisError.Description = Context.Request.Form["txtErrorOther2"].TrimFirst();
                     break;
 
                 //11 indicates no Volume error, so simply delete any volume errors present for this item
@@ -709,7 +711,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
                     case "4":
                         thisError.ErrorName = "Other (specify)";
-                        thisError.Description = HttpContext.Current.Request.Form["txtErrorOther1"] ?? String.Empty;
+                        thisError.Description = Context.Request.Form["txtErrorOther1"].TrimFirst();
                         break;
 
                     case "5":
@@ -734,7 +736,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
                     case "10":
                         thisError.ErrorName = "Other (specify)";
-                        thisError.Description = HttpContext.Current.Request.Form["txtErrorOther2"] ?? String.Empty;
+                        thisError.Description = Context.Request.Form["txtErrorOther2"].TrimFirst();
                         break;
 
                     //Volume error cases
@@ -1173,7 +1175,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             try
             {
                 // Now, step through each of the pages in the return
-                string[] keysFromForm = HttpContext.Current.Request.Form.AllKeys;
+                string[] keysFromForm = Context.Request.Form.Keys;
 
                 foreach (string thisKey in keysFromForm)
                 {
@@ -1181,34 +1183,34 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     if ((thisKey.IndexOf("filename") == 0) && (thisKey.Length > 8))
                     {
                         // Create the qc viewer page information, and assign the filename
-                        QC_Viewer_Page_Division_Info thisInfo = new QC_Viewer_Page_Division_Info { Filename = HttpContext.Current.Request.Form[thisKey] };
+                        QC_Viewer_Page_Division_Info thisInfo = new QC_Viewer_Page_Division_Info { Filename = Context.Request.Form[thisKey].TrimFirst() };
 
                         // Get the index to use for all the other keys
                         string thisIndex = thisKey.Substring(8);
 
                         // Get the page name 
-                        thisInfo.Page_Label = HttpContext.Current.Request.Form["textbox" + thisIndex];
+                        thisInfo.Page_Label = Context.Request.Form["textbox" + thisIndex].TrimFirst();
 
                         // Was this page selected with the checkbox?  (for bulk delete or move)
                         //Get this info only if the move/delete operations are explicitly triggered
                         if (hidden_request == "delete_page" || hidden_request == "delete_selected_pages" || hidden_request == "move_selected_pages")
                         {
-                            if ((HttpContext.Current.Request.Form["chkMoveThumbnail" + thisIndex] != null) || (thisInfo.Filename == FilenameToOmit))
+                            if ((Context.Request.Form["chkMoveThumbnail" + thisIndex].Count > 0) || (thisInfo.Filename == FilenameToOmit))
                             {
                                 thisInfo.Checkbox_Selected = true;
                                 Selected_Page_Div_From_Form.Add(thisInfo);
                             }
                         }
                         // Is this a new division?
-                        if (HttpContext.Current.Request.Form["newdiv" + thisIndex] != null)
+                        if (Context.Request.Form["newdiv" + thisIndex].Count > 0)
                         {
                             thisInfo.New_Division = true;
 
                             // Get the new division type/label
-                            thisInfo.Division_Type = HttpContext.Current.Request.Form["selectDivType" + thisIndex].Trim().Replace("!", "");
+                            thisInfo.Division_Type = Context.Request.Form["selectDivType" + thisIndex].TrimFirst().Replace("!", "");
                             thisInfo.Division_Label = String.Empty;
-                            if (HttpContext.Current.Request.Form["txtDivName" + thisIndex] != null)
-                                thisInfo.Division_Label = HttpContext.Current.Request.Form["txtDivName" + thisIndex].Trim();
+                            if (Context.Request.Form["txtDivName" + thisIndex].Count > 0)
+                                thisInfo.Division_Label = Context.Request.Form["txtDivName" + thisIndex].TrimFirst();
                             if (thisInfo.Division_Type.Length == 0)
                                 thisInfo.Division_Type = "Chapter";
 

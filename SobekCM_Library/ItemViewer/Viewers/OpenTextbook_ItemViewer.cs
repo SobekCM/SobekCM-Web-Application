@@ -11,9 +11,9 @@ using SobekCM.Engine_Library.Configuration;
 using SobekCM.Library.ItemViewer.Menu;
 using SobekCM.Tools;
 using SobekCM.Library.Helpers.CKEditor;
-using System.Collections.Specialized;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Client;
+using Microsoft.AspNetCore.Http;
 
 namespace SobekCM.Library.ItemViewer.Viewers
 {
@@ -96,9 +96,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <returns> Fully built and initialized <see cref="OpenTextbook_ItemViewer"/> object </returns>
         /// <remarks> This method is called whenever a request requires the actual viewer to be created to render the HTML for
         /// the digital resource requested.  The created viewer is then destroyed at the end of the request </remarks>
-        public override iItemViewer Create_Viewer(BriefItemInfo CurrentItem, User_Object CurrentUser, Navigation_Object CurrentRequest, Custom_Tracer Tracer, RequestCache_RequestFlags CurrentFlags)
+        public override iItemViewer Create_Viewer(BriefItemInfo CurrentItem, User_Object CurrentUser, Navigation_Object CurrentRequest, Custom_Tracer Tracer, RequestCache_RequestFlags CurrentFlags, HttpContext Context)
         {
-            return new OpenTextbook_ItemViewer(CurrentItem, CurrentUser, CurrentRequest, Tracer, ViewerCode.ToLower(), FileExtensions);
+            return new OpenTextbook_ItemViewer(CurrentItem, CurrentUser, CurrentRequest, Tracer, ViewerCode.ToLower(), FileExtensions, Context);
         }
     }
 
@@ -121,7 +121,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         /// <param name="OpenTextbook_ViewerCode"> OpenTextbook viewer code, as determined by configuration files </param>
         /// <param name="FileExtensions"> File extensions that this viewer allows, as determined by configuration files </param>
-        public OpenTextbook_ItemViewer(BriefItemInfo BriefItem, User_Object CurrentUser, Navigation_Object CurrentRequest, Custom_Tracer Tracer, string OpenTextbook_ViewerCode, string[] FileExtensions)
+        public OpenTextbook_ItemViewer(BriefItemInfo BriefItem, User_Object CurrentUser, Navigation_Object CurrentRequest, Custom_Tracer Tracer, string OpenTextbook_ViewerCode, string[] FileExtensions, HttpContext context)
         {
             // Add the trace
             if (Tracer != null)
@@ -131,6 +131,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             this.BriefItem = BriefItem;
             this.CurrentUser = CurrentUser;
             this.CurrentRequest = CurrentRequest;
+            this.Context = context;
 
             // Set the behavior properties
             Behaviors = EmptyBehaviors;
@@ -168,8 +169,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
             set_file_information(new string[] { "HTML" });
 
             // Handle postbacks
-            NameValueCollection form = HttpContext.Current.Request.Form;
-            if ((canEdit) && (isEditMode) && (form["sbkOeriv_HtmlEdit"] != null))
+            var form = Context.Request.Form;
+            if ((canEdit) && (isEditMode) && (form["sbkOeriv_HtmlEdit"].Count > 0))
             {
                 string newSource = form["sbkOeriv_HtmlEdit"];
                 if (!String.IsNullOrEmpty(newSource))

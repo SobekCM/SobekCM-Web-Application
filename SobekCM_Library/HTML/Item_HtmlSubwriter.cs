@@ -230,7 +230,7 @@ namespace SobekCM.Library.HTML
             RequestSpecificValues.Flags.ItemCheckedOutByOtherUser = false;
             if (currentItem.Behaviors.Single_Use)
             {
-                if (!Engine_ApplicationCache_Gateway.Checked_List.Check_Out(currentItem.Web.ItemID, HttpContext.Current.Request.UserHostAddress))
+                if (!Engine_ApplicationCache_Gateway.Checked_List.Check_Out(currentItem.Web.ItemID, Context.Request.UserHostAddress))
                 {
                     RequestSpecificValues.Tracer.Add_Trace("item_HtmlSubwriter.Constructor", "Item is checked out by another user.");
                     RequestSpecificValues.Flags.ItemCheckedOutByOtherUser = true;
@@ -388,17 +388,17 @@ namespace SobekCM.Library.HTML
                 if (RequestSpecificValues.Current_Mode.isPostBack)
                 {
                     // Handle any actions from standard user action (i.e., email, add to bookshelf, etc. )
-                    if (HttpContext.Current.Request.Form["item_action"] != null)
+                    if (Context.Request.Form["item_action"] != null)
                     {
-                        string action = HttpContext.Current.Request.Form["item_action"].ToLower().Trim();
+                        string action = Context.Request.Form["item_action"].ToLower().Trim();
 
                         RequestSpecificValues.Tracer.Add_Trace("item_HtmlSubwriter.Constructor", "This is a postback, action=[" + action + "].");
 
                         if (action == "email")
                         {
-                            string address = HttpContext.Current.Request.Form["email_address"].Replace(";", ",").Trim();
-                            string comments = HttpContext.Current.Request.Form["email_comments"].Trim();
-                            string format = HttpContext.Current.Request.Form["email_format"].Trim().ToUpper();
+                            string address = Context.Request.Form["email_address"].Replace(";", ",").Trim();
+                            string comments = Context.Request.Form["email_comments"].Trim();
+                            string format = Context.Request.Form["email_format"].Trim().ToUpper();
                             if (address.Length > 0)
                             {
                                 // Determine the email format
@@ -410,7 +410,7 @@ namespace SobekCM.Library.HTML
                                     cc_list = String.Empty;
 
                                 // Send the email
-                                HttpContext.Current.Session.Add("ON_LOAD_MESSAGE", !Item_Email_Helper.Send_Email(address, cc_list, comments, RequestSpecificValues.Current_User.Full_Name, RequestSpecificValues.Current_Mode.Instance_Abbreviation, currentItem, is_html_format, Context.Items["Original_URL"].ToString(), RequestSpecificValues.Current_User.UserID)
+                                Context.Session.Add("ON_LOAD_MESSAGE", !Item_Email_Helper.Send_Email(address, cc_list, comments, RequestSpecificValues.Current_User.Full_Name, RequestSpecificValues.Current_Mode.Instance_Abbreviation, currentItem, is_html_format, Context.Items["Original_URL"].ToString(), RequestSpecificValues.Current_User.UserID)
                                     ? "Error encountered while sending email" : "Your email has been sent");
 
                                 Context.Response.Redirect(Context.Items["Original_URL"].ToString());
@@ -421,9 +421,9 @@ namespace SobekCM.Library.HTML
 
                         if (action == "add_item")
                         {
-                            string usernotes = HttpContext.Current.Request.Form["add_notes"].Trim();
-                            string foldername = HttpContext.Current.Request.Form["add_bookshelf"].Trim();
-                            bool open_bookshelf = HttpContext.Current.Request.Form["open_bookshelf"] != null;
+                            string usernotes = Context.Request.Form["add_notes"].Trim();
+                            string foldername = Context.Request.Form["add_bookshelf"].Trim();
+                            bool open_bookshelf = Context.Request.Form["open_bookshelf"] != null;
 
                             if (SobekCM_Database.Add_Item_To_User_Folder(RequestSpecificValues.Current_User.UserID, foldername, currentItem.BibID, currentItem.VID, 0, usernotes, RequestSpecificValues.Tracer))
                             {
@@ -432,16 +432,16 @@ namespace SobekCM.Library.HTML
                                 // Ensure this user folder is not sitting in the cache
                                 CachedDataManager.Remove_User_Folder_Browse(RequestSpecificValues.Current_User.UserID, foldername, RequestSpecificValues.Tracer);
 
-                                HttpContext.Current.Session.Add("ON_LOAD_MESSAGE", "Item was saved to your bookshelf.");
+                                Context.Session.Add("ON_LOAD_MESSAGE", "Item was saved to your bookshelf.");
 
                                 if (open_bookshelf)
                                 {
-                                    HttpContext.Current.Session.Add("ON_LOAD_WINDOW", "?m=lmfl" + foldername.Replace("\"", "%22").Replace("'", "%27").Replace("=", "%3D").Replace("&", "%26") + "&vp=1");
+                                    Context.Session.Add("ON_LOAD_WINDOW", "?m=lmfl" + foldername.Replace("\"", "%22").Replace("'", "%27").Replace("=", "%3D").Replace("&", "%26") + "&vp=1");
                                 }
                             }
                             else
                             {
-                                HttpContext.Current.Session.Add("ON_LOAD_MESSAGE", "ERROR encountered while trying to save to your bookshelf.");
+                                Context.Session.Add("ON_LOAD_MESSAGE", "ERROR encountered while trying to save to your bookshelf.");
                             }
 
                             Context.Response.Redirect(Context.Items["Original_URL"].ToString());
@@ -455,11 +455,11 @@ namespace SobekCM.Library.HTML
                             {
                                 RequestSpecificValues.Current_User.Remove_From_Bookshelves(currentItem.BibID, currentItem.VID);
                                 CachedDataManager.Remove_All_User_Folder_Browses(RequestSpecificValues.Current_User.UserID, RequestSpecificValues.Tracer);
-                                HttpContext.Current.Session.Add("ON_LOAD_MESSAGE", "Item was removed from your bookshelves.");
+                                Context.Session.Add("ON_LOAD_MESSAGE", "Item was removed from your bookshelves.");
                             }
                             else
                             {
-                                HttpContext.Current.Session.Add("ON_LOAD_MESSAGE", "ERROR encountered while trying to remove item from your bookshelves.");
+                                Context.Session.Add("ON_LOAD_MESSAGE", "ERROR encountered while trying to remove item from your bookshelves.");
                             }
 
                             Context.Response.Redirect(Context.Items["Original_URL"].ToString());
@@ -474,7 +474,7 @@ namespace SobekCM.Library.HTML
                             {
                                 tagid = Convert.ToInt32(action.Replace("add_tag_", ""));
                             }
-                            string description = HttpContext.Current.Request.Form["add_tag"].Trim();
+                            string description = Context.Request.Form["add_tag"].Trim();
                             int new_tagid = SobekCM_Database.Add_Description_Tag(RequestSpecificValues.Current_User.UserID, tagid, currentItem.Web.ItemID, description, RequestSpecificValues.Tracer);
                             if (new_tagid > 0)
                             {
@@ -505,17 +505,17 @@ namespace SobekCM.Library.HTML
                 }
 
                 // Handle any request from the internal header for the item
-                if ((HttpContext.Current != null) && (HttpContext.Current.Request.Form["internal_header_action"] != null) && (RequestSpecificValues.Current_User != null))
+                if ((Context != null) && (Context.Request.Form["internal_header_action"] != null) && (RequestSpecificValues.Current_User != null))
                 {
                     // Pull the action value
-                    string internalHeaderAction = HttpContext.Current.Request.Form["internal_header_action"].Trim();
+                    string internalHeaderAction = Context.Request.Form["internal_header_action"].Trim();
 
                     RequestSpecificValues.Tracer.Add_Trace("item_HtmlSubwriter.Constructor", "Internal header action=[" + internalHeaderAction + "].");
 
                     // Was this to save the item comments?
                     if (internalHeaderAction == "save_comments")
                     {
-                        string new_comments = HttpContext.Current.Request.Form["intheader_internal_notes"].Trim();
+                        string new_comments = Context.Request.Form["intheader_internal_notes"].Trim();
                         if (SobekCM_Item_Database.Save_Item_Internal_Comments(currentItem.Web.ItemID, new_comments))
                             currentItem.Web.Internal_Comments = new_comments;
                     }
@@ -554,7 +554,7 @@ namespace SobekCM.Library.HTML
                         prototyper = ItemViewer_Factory.Get_Viewer_By_ViewType(viewerType);
                         if ((prototyper != null) && (prototyper.Has_Access(currentItem, RequestSpecificValues.Current_User, isRestricted)))
                         {
-                            pageViewer = prototyper.Create_Viewer(currentItem, RequestSpecificValues.Current_User, RequestSpecificValues.Current_Mode, RequestSpecificValues.Tracer, RequestSpecificValues.Flags);
+                            pageViewer = prototyper.Create_Viewer(currentItem, RequestSpecificValues.Current_User, RequestSpecificValues.Current_Mode, RequestSpecificValues.Tracer, RequestSpecificValues.Flags, Context);
                             break;
                         }
                     }

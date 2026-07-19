@@ -28,8 +28,6 @@
     <Compile Remove="SobekCM_Library_Settings_BACKUP.cs" />
     <!-- Duplicate class moved to WebContentViewer/Viewers/ -->
     <Compile Remove="AdminViewer\Work_History_WebContentViewer.cs" />
-    <!-- Legacy item subwriter using Web Forms TreeView; excluded until fully migrated -->
-    <Compile Remove="HTML\Item_HtmlSubwriter_Legacy.cs" />
   </ItemGroup>
 
   <ItemGroup>

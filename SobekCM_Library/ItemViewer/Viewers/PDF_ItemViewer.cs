@@ -12,6 +12,7 @@ using SobekCM.Engine_Library.Configuration;
 using SobekCM.Library.HTML;
 using SobekCM.Library.ItemViewer.Menu;
 using SobekCM.Tools;
+using Microsoft.AspNetCore.Http;
 
 namespace SobekCM.Library.ItemViewer.Viewers
 {
@@ -113,9 +114,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <returns> Fully built and initialized <see cref="PDF_ItemViewer"/> object </returns>
         /// <remarks> This method is called whenever a request requires the actual viewer to be created to render the HTML for
         /// the digital resource requested.  The created viewer is then destroyed at the end of the request </remarks>
-        public virtual iItemViewer Create_Viewer(BriefItemInfo CurrentItem, User_Object CurrentUser, Navigation_Object CurrentRequest, Custom_Tracer Tracer, RequestCache_RequestFlags CurrentFlags)
+        public virtual iItemViewer Create_Viewer(BriefItemInfo CurrentItem, User_Object CurrentUser, Navigation_Object CurrentRequest, Custom_Tracer Tracer, RequestCache_RequestFlags CurrentFlags, HttpContext Context)
         {
-            return new PDF_ItemViewer(CurrentItem, CurrentUser, CurrentRequest, Tracer, FileExtensions);
+            return new PDF_ItemViewer(CurrentItem, CurrentUser, CurrentRequest, Tracer, FileExtensions, Context);
         }
     }
 
@@ -136,12 +137,13 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <param name="CurrentRequest"> Information about the current request </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         /// <param name="FileExtensions"> List of file extensions this video viewer should show </param>
-        public PDF_ItemViewer(BriefItemInfo BriefItem, User_Object CurrentUser, Navigation_Object CurrentRequest, Custom_Tracer Tracer, string[] FileExtensions)
+        public PDF_ItemViewer(BriefItemInfo BriefItem, User_Object CurrentUser, Navigation_Object CurrentRequest, Custom_Tracer Tracer, string[] FileExtensions, HttpContext context)
         {
             // Save the arguments for use later
             this.BriefItem = BriefItem;
             this.CurrentUser = CurrentUser;
             this.CurrentRequest = CurrentRequest;
+            this.Context = context;
 
             // Determine if this should be written as an iFrame
             writeAsIframe = ((!String.IsNullOrEmpty(CurrentRequest.Browser_Type)) && (CurrentRequest.Browser_Type.IndexOf("CHROME") == 0));
@@ -149,12 +151,13 @@ namespace SobekCM.Library.ItemViewer.Viewers
             // Set the behavior properties
             Behaviors = new List<HtmlSubwriter_Behaviors_Enum> {HtmlSubwriter_Behaviors_Enum.Suppress_Footer};
 
-            // Determine if a particular video was selected 
+            // Determine if a particular video was selected
             pdf = 1;
-            if (!String.IsNullOrEmpty(HttpContext.Current.Request.QueryString["pdf"]))
+            string pdfParam = context?.Request.Query["pdf"].ToString();
+            if (!String.IsNullOrEmpty(pdfParam))
             {
                 int tryPdf;
-                if (Int32.TryParse(HttpContext.Current.Request.QueryString["pdf"], out tryPdf))
+                if (Int32.TryParse(pdfParam, out tryPdf))
                 {
                     if (tryPdf < 1)
                         tryPdf = 1;

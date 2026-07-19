@@ -17,6 +17,7 @@ using SobekCM.Engine_Library.Solr.v5;
 using SobekCM.Library.ItemViewer.Menu;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
+using Microsoft.AspNetCore.Http;
 
 namespace SobekCM.Library.ItemViewer.Viewers
 {
@@ -100,7 +101,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <returns> Fully built and initialized <see cref="Text_Search_ItemViewer"/> object </returns>
         /// <remarks> This method is called whenever a request requires the actual viewer to be created to render the HTML for
         /// the digital resource requested.  The created viewer is then destroyed at the end of the request </remarks>
-        public virtual iItemViewer Create_Viewer(BriefItemInfo CurrentItem, User_Object CurrentUser, Navigation_Object CurrentRequest, Custom_Tracer Tracer, RequestCache_RequestFlags CurrentFlags)
+        public virtual iItemViewer Create_Viewer(BriefItemInfo CurrentItem, User_Object CurrentUser, Navigation_Object CurrentRequest, Custom_Tracer Tracer, RequestCache_RequestFlags CurrentFlags, HttpContext Context)
         {
             return new Text_Search_ItemViewer(CurrentItem, CurrentUser, CurrentRequest, Tracer );
         }

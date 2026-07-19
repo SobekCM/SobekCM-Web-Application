@@ -23,6 +23,7 @@ using SobekCM.Resource_Object.Metadata_Modules;
 using SobekCM.Resource_Object.Metadata_Modules.GeoSpatial;
 using SobekCM.Tools;
 using SobekCM_Resource_Database;
+using Microsoft.AspNetCore.Http;
 
 namespace SobekCM.Library.ItemViewer.Viewers
 {
@@ -113,9 +114,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <returns> Fully built and initialized <see cref="Google_Coordinate_Entry_ItemViewer"/> object </returns>
         /// <remarks> This method is called whenever a request requires the actual viewer to be created to render the HTML for
         /// the digital resource requested.  The created viewer is then destroyed at the end of the request </remarks>
-        public virtual iItemViewer Create_Viewer(BriefItemInfo CurrentItem, User_Object CurrentUser, Navigation_Object CurrentRequest, Custom_Tracer Tracer, RequestCache_RequestFlags CurrentFlags)
+        public virtual iItemViewer Create_Viewer(BriefItemInfo CurrentItem, User_Object CurrentUser, Navigation_Object CurrentRequest, Custom_Tracer Tracer, RequestCache_RequestFlags CurrentFlags, HttpContext Context)
         {
-            return new Google_Coordinate_Entry_ItemViewer(CurrentItem, CurrentUser, CurrentRequest, Tracer );
+            return new Google_Coordinate_Entry_ItemViewer(CurrentItem, CurrentUser, CurrentRequest, Tracer, Context);
         }
     }
 
@@ -138,12 +139,13 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <param name="CurrentUser"> Current user, who may or may not be logged on </param>
         /// <param name="CurrentRequest"> Information about the current request </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        public Google_Coordinate_Entry_ItemViewer(BriefItemInfo BriefItem, User_Object CurrentUser, Navigation_Object CurrentRequest, Custom_Tracer Tracer )
+        public Google_Coordinate_Entry_ItemViewer(BriefItemInfo BriefItem, User_Object CurrentUser, Navigation_Object CurrentRequest, Custom_Tracer Tracer, HttpContext context)
         {
             // Save the arguments for use later
             this.BriefItem = BriefItem;
             this.CurrentUser = CurrentUser;
             this.CurrentRequest = CurrentRequest;
+            this.Context = context;
 
             try
             {
@@ -174,8 +176,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 }
 
                 //holds actions from page
-                string action = HttpContext.Current.Request.Form["action"] ?? String.Empty;
-                string payload = HttpContext.Current.Request.Form["payload"] ?? String.Empty;
+                string action = context?.Request.Form["action"].TrimFirst() ?? String.Empty;
+                string payload = context?.Request.Form["payload"].ToString() ?? String.Empty;
 
                 // See if there were hidden requests
                 if (!String.IsNullOrEmpty(action))

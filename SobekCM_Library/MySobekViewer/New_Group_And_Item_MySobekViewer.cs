@@ -527,7 +527,7 @@ namespace SobekCM.Library.MySobekViewer
                             writer.WriteLine("User: " + RequestSpecificValues.Current_User.Full_Name);
   
                         writer.WriteLine("Date: " + agreement_date.ToString());
-                        writer.WriteLine("IP Address: " + Context.Request.UserHostAddress);
+                        writer.WriteLine("IP Address: " + (Context.Connection.RemoteIpAddress?.ToString() ?? ""));
                         writer.WriteLine();
                         writer.WriteLine(completeTemplate.Permissions_Agreement);
                         writer.Flush();

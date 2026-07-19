@@ -22,7 +22,8 @@
       "PowerShell(cmd /c \"dir /s /b C:\\\\GitHub\\\\SobekCM-Web-Application\\\\SobekCM\\\\obj\\\\Debug\" 2>&1)",
       "PowerShell(Select-String -Path \"c:\\\\GitHub\\\\SobekCM-Web-Application\\\\SobekCM_Library\\\\MySobekViewer\\\\Edit_Item_Metadata_MySobekViewer.cs\" -Pattern \"Save_To_Bib\" | Select-Object -First 5 | ForEach-Object { $_.Line.Trim\\(\\) })",
       "PowerShell(Get-Content \"c:\\\\GitHub\\\\SobekCM-Web-Application\\\\SobekCM_Engine_Library\\\\Client\\\\MicroservicesClientBase.cs\" | Select-Object -Skip 240 -First 20 | ForEach-Object -Begin { $i = 241 } -Process { Write-Host \"${i}: $_\"; $i++ })",
-      "PowerShell(Select-String -rp \"c:\\\\GitHub\\\\SobekCM-Web-Application\" -Pattern \"Serializer|ProtoContract|protobuf\" -CaseSensitive:$false | Select-String -Pattern \"\\\\.cs:\" | Where-Object {$_ -notmatch \"commented|\\\\/\\\\/\"} | Select-Object -First 10 | Select-Object Line)"
+      "PowerShell(Select-String -rp \"c:\\\\GitHub\\\\SobekCM-Web-Application\" -Pattern \"Serializer|ProtoContract|protobuf\" -CaseSensitive:$false | Select-String -Pattern \"\\\\.cs:\" | Where-Object {$_ -notmatch \"commented|\\\\/\\\\/\"} | Select-Object -First 10 | Select-Object Line)",
+      "PowerShell(cd \"c:\\\\GitHub\\\\SobekCM-Web-Application\" && dotnet build SobekCM_Library/SobekCM_Library.csproj -v quiet 2>&1 | Where-Object { $_ -match \"error CS\" } | Sort-Object | Get-Unique)"
     ]
   }
 }

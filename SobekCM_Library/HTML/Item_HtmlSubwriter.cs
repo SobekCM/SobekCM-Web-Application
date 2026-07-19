@@ -231,7 +231,7 @@ namespace SobekCM.Library.HTML
             RequestSpecificValues.Flags.ItemCheckedOutByOtherUser = false;
             if (currentItem.Behaviors.Single_Use)
             {
-                if (!Engine_ApplicationCache_Gateway.Checked_List.Check_Out(currentItem.Web.ItemID, Context.Request.UserHostAddress))
+                if (!Engine_ApplicationCache_Gateway.Checked_List.Check_Out(currentItem.Web.ItemID, Context.Connection.RemoteIpAddress?.ToString() ?? ""))
                 {
                     RequestSpecificValues.Tracer.Add_Trace("item_HtmlSubwriter.Constructor", "Item is checked out by another user.");
                     RequestSpecificValues.Flags.ItemCheckedOutByOtherUser = true;

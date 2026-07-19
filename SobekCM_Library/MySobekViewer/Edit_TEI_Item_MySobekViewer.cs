@@ -20,6 +20,7 @@ using SobekCM.Library.Citation.SectionWriter;
 using SobekCM.Library.Citation.Template;
 using SobekCM.Library.Database;
 using SobekCM.Library.Helpers.AceEditor;
+using Microsoft.AspNetCore.Http;
 // using SobekCM.Library.Helpers.UploadiFive;
 using SobekCM.Library.HTML;
 using SobekCM.Library.UI;
@@ -73,7 +74,7 @@ namespace SobekCM.Library.MySobekViewer
 
         /// <summary> Constructor for a new instance of the Edit_TEI_Item_MySobekViewer class </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
-        public Edit_TEI_Item_MySobekViewer(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
+        public Edit_TEI_Item_MySobekViewer(RequestCache RequestSpecificValues, HttpContext Context) : base(RequestSpecificValues, Context)
         {
             RequestSpecificValues.Tracer.Add_Trace("Edit_TEI_Item_MySobekViewer.Constructor", String.Empty);
 

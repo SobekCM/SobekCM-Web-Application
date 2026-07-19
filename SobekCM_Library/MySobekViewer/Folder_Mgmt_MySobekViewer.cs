@@ -21,6 +21,7 @@ using SobekCM.Library.UI;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Divisions;
 using SobekCM.Tools;
+using Microsoft.AspNetCore.Http;
 
 #endregion
 
@@ -47,7 +48,7 @@ namespace SobekCM.Library.MySobekViewer
 
         /// <summary> Constructor for a new instance of the Folder_Mgmt_MySobekViewer class </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
-        public Folder_Mgmt_MySobekViewer(RequestCache RequestSpecificValues)  : base(RequestSpecificValues)
+        public Folder_Mgmt_MySobekViewer(RequestCache RequestSpecificValues, HttpContext Context) : base(RequestSpecificValues, Context)
         {
             RequestSpecificValues.Tracer.Add_Trace("Folder_Mgmt_MySobekViewer.Constructor", String.Empty);
 
@@ -97,11 +98,11 @@ namespace SobekCM.Library.MySobekViewer
                     NameValueCollection form = Context.Request.Form;
 
                     string item_action = form["item_action"].Replace(",","").ToUpper().Trim();
-                    string bookshelf_items = form["bookshelf_items"].Trim().Replace("%22", "\"").Replace("%27", "'").Replace("%3D", "=").Replace("%26", "&");
-                    string bookshelf_params = form["bookshelf_params"].Trim();
+                    string bookshelf_items = form["bookshelf_items"].TrimFirst().Replace("%22", "\"").Replace("%27", "'").Replace("%3D", "=").Replace("%26", "&");
+                    string bookshelf_params = form["bookshelf_params"].TrimFirst();
                     string add_bookshelf = String.Empty;
                     if ( form["add_bookshelf"] != null )
-                        add_bookshelf = form["add_bookshelf"].Trim();
+                        add_bookshelf = form["add_bookshelf"].TrimFirst();
 
                     if (item_action == "REFRESH_FOLDER")
                     {
@@ -120,7 +121,7 @@ namespace SobekCM.Library.MySobekViewer
 
                     if (item_action == "NEW_BOOKSHELF")
                     {
-                        string folder_name = form["new_bookshelf_name"].Trim().Replace("<", "(").Replace(">", ")");
+                        string folder_name = form["new_bookshelf_name"].TrimFirst().Replace("<", "(").Replace(">", ")");
                         int parent_id = Convert.ToInt32(form["new_bookshelf_parent"]);
 
                         if (SobekCM_Database.Edit_User_Folder(-1, RequestSpecificValues.Current_User.UserID, parent_id, folder_name, false, String.Empty, RequestSpecificValues.Tracer) > 0)
@@ -204,9 +205,9 @@ namespace SobekCM.Library.MySobekViewer
 
                     //if ( item_action == "EMAIL" )
                     //{
-                    //    string comments = form["email_comments"].Trim().Replace(">",")").Replace("<","(");
-                    //    string email = form["email_address"].Trim();
-                    //    string format = HttpContext.Current.Request.Form["email_format"].Trim().ToUpper();
+                    //    string comments = form["email_comments"].TrimFirst().Replace(">",")").Replace("<","(");
+                    //    string email = form["email_address"].TrimFirst();
+                    //    string format = Context.Request.Form["email_format"].TrimFirst().ToUpper();
 
                     //        string[] split = bookshelf_items.Split("_".ToCharArray());
                     //        if (split.Length == 2)
@@ -228,7 +229,7 @@ namespace SobekCM.Library.MySobekViewer
 
                     if ( item_action == "EDIT_NOTES" )
                     {
-                        string notes = form["add_notes"].Trim().Replace(">",")").Replace("<","(");
+                        string notes = form["add_notes"].TrimFirst().Replace(">",")").Replace("<","(");
 
                             string[] split = bookshelf_items.Split("_".ToCharArray());
                             if (split.Length == 2)

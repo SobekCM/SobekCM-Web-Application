@@ -82,13 +82,13 @@ namespace SobekCM.Library.HTML
 
 			// Try to get the facet configuration information
 			facetInformation = "00000000";
-			if (HttpContext.Current.Request.Form["facet"] != null)
-				facetInformation = HttpContext.Current.Request.Form["facet"].PadRight(7, '0');
+			if (Context.Request.Form["facet"] != null)
+				facetInformation = Context.Request.Form["facet"].PadRight(7, '0');
 
 			if ( true ) // if (currentMode.isPostBack)
 			{
 				// Pull the standard values
-				NameValueCollection form = HttpContext.Current.Request.Form;
+				NameValueCollection form = Context.Request.Form;
 
 			
 				if (form["item_action"] != null)
@@ -133,8 +133,8 @@ namespace SobekCM.Library.HTML
 
 					if (action == "save_search")
 					{
-						string usernotes = HttpContext.Current.Request.Form["add_notes"].Trim();
-						bool open_searches = HttpContext.Current.Request.Form["open_searches"] != null;
+						string usernotes = Context.Request.Form["add_notes"].Trim();
+						bool open_searches = Context.Request.Form["open_searches"] != null;
 
 						string original_url = Context.Items["Original_URL"].ToString();
                         if (SobekCM_Database.Save_User_Search(RequestSpecificValues.Current_User.UserID, original_url, url_description, 0, usernotes, RequestSpecificValues.Tracer) != -1000)

@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using System;
 using System.Data;
@@ -6,6 +6,7 @@ using System.IO;
 using SobekCM.Engine_Library.Database;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
+using Microsoft.AspNetCore.Http;
 
 #endregion
 
@@ -15,7 +16,7 @@ namespace SobekCM.Library.MySobekViewer
     {
         /// <summary> Constructor for a new instance of the User_Tags_MySobekViewer class </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
-        public User_Usage_Stats_MySobekViewer(RequestCache RequestSpecificValues)  : base(RequestSpecificValues)
+        public User_Usage_Stats_MySobekViewer(RequestCache RequestSpecificValues, HttpContext Context) : base(RequestSpecificValues, Context)
         {
             RequestSpecificValues.Tracer.Add_Trace("User_Usage_Stats_MySobekViewer.Constructor", String.Empty);
         }

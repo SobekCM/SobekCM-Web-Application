@@ -14,6 +14,7 @@ using SobekCM.Engine_Library.Configuration;
 using SobekCM.Library.Database;
 using SobekCM.Tools;
 using SobekCM_Resource_Database;
+using Microsoft.AspNetCore.Http;
 
 #endregion
 
@@ -53,7 +54,7 @@ namespace SobekCM.Library.MySobekViewer
 
         /// <summary> Constructor for a new instance of the Track_Item_MySobekViewer class </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
-        public Track_Item_MySobekViewer(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
+        public Track_Item_MySobekViewer(RequestCache RequestSpecificValues, HttpContext Context) : base(RequestSpecificValues, Context)
         {
             RequestSpecificValues.Tracer.Add_Trace("Track_Item_MySobekViewer.Constructor", String.Empty);
 
@@ -76,7 +77,7 @@ namespace SobekCM.Library.MySobekViewer
             if ((Context.SessionObject()["Selected_Tab"] != null) && !(String.IsNullOrEmpty(Context.SessionObject()["Selected_Tab"].ToString())) && Context.SessionObject()["Selected_Tab"].ToString() == "2")
                 page = 2;
 
-            string sub_page = HttpContext.Current.Request.Form["tracking_new_page"] ?? "";
+            string sub_page = Context.Request.Form["tracking_new_page"] ?? "";
             if (sub_page == "2")
             {
                 page = 2;
@@ -114,8 +115,8 @@ namespace SobekCM.Library.MySobekViewer
             }
 
             //See if there were any hidden requests
-            hidden_request = HttpContext.Current.Request.Form["Track_Item_behaviors_request"] ?? String.Empty;
-            hidden_value = HttpContext.Current.Request.Form["Track_Item_hidden_value"] ?? String.Empty;
+            hidden_request = Context.Request.Form["Track_Item_behaviors_request"] ?? String.Empty;
+            hidden_value = Context.Request.Form["Track_Item_hidden_value"] ?? String.Empty;
 
 
             //Get the equipment value
@@ -132,9 +133,9 @@ namespace SobekCM.Library.MySobekViewer
             }
 
             //Check the hidden value to see if equipment was previously changed
-            if (!String.IsNullOrEmpty(HttpContext.Current.Request.Form["hidden_equipment"]))
+            if (!String.IsNullOrEmpty(Context.Request.Form["hidden_equipment"]))
             {
-                equipment = HttpContext.Current.Request.Form["hidden_equipment"];
+                equipment = Context.Request.Form["hidden_equipment"];
                 //   Context.SessionObject()["equipment"] = equipment;
                 RequestSpecificValues.Current_User.Add_Setting("Track_Item_MySobekViewer:Equipment", equipment);
             }
@@ -151,10 +152,10 @@ namespace SobekCM.Library.MySobekViewer
             }
 
             //Check if the selected RequestSpecificValues.Current_User has been changed
-            if (!String.IsNullOrEmpty(HttpContext.Current.Request.Form["hidden_selected_username"]))
+            if (!String.IsNullOrEmpty(Context.Request.Form["hidden_selected_username"]))
             {
                 current_selected_user = new User_Object();
-                string temp = HttpContext.Current.Request.Form["hidden_selected_username"];
+                string temp = Context.Request.Form["hidden_selected_username"];
                 current_selected_user = user_list[temp];
 
                 Context.SessionObject()["Selected_User"] = current_selected_user;
@@ -183,8 +184,8 @@ namespace SobekCM.Library.MySobekViewer
                 if (page == 1)
                 {
                     //Get the the form field values from the first tab
-                    start_Time = Convert.ToDateTime(HttpContext.Current.Request.Form["txtStartTime"]).ToString("hh:mm tt");
-                    end_Time = Convert.ToDateTime(HttpContext.Current.Request.Form["txtEndTime"]).ToString("hh:mm tt");
+                    start_Time = Convert.ToDateTime(Context.Request.Form["txtStartTime"]).ToString("hh:mm tt");
+                    end_Time = Convert.ToDateTime(Context.Request.Form["txtEndTime"]).ToString("hh:mm tt");
                 }
             }
 
@@ -231,9 +232,9 @@ namespace SobekCM.Library.MySobekViewer
 
                 case "read_manual_entry":
                     //Get the related hidden values for the selected manual entry fields
-                    string hidden_bibID = HttpContext.Current.Request.Form["hidden_BibID"] ?? String.Empty;
-                    string hidden_VID = HttpContext.Current.Request.Form["hidden_VID"] ?? String.Empty;
-                    string hidden_event_num = HttpContext.Current.Request.Form["hidden_event_num"] ?? String.Empty;
+                    string hidden_bibID = Context.Request.Form["hidden_BibID"] ?? String.Empty;
+                    string hidden_VID = Context.Request.Form["hidden_VID"] ?? String.Empty;
+                    string hidden_event_num = Context.Request.Form["hidden_event_num"] ?? String.Empty;
                     if (String.IsNullOrEmpty(hidden_bibID) || String.IsNullOrEmpty(hidden_VID) || String.IsNullOrEmpty(hidden_event_num))
                     {
                         error_message = "You must enter a valid BibID and VID!";
@@ -259,8 +260,8 @@ namespace SobekCM.Library.MySobekViewer
 
 
                 case "save":
-                    int thisWorkflowId = Convert.ToInt32(HttpContext.Current.Request.Form["Track_Item_hidden_value"]);
-                    int hidden_itemID = Convert.ToInt32(HttpContext.Current.Request.Form["hidden_itemID"]);
+                    int thisWorkflowId = Convert.ToInt32(Context.Request.Form["Track_Item_hidden_value"]);
+                    int hidden_itemID = Convert.ToInt32(Context.Request.Form["hidden_itemID"]);
                     current_workflow_id = thisWorkflowId;
                     itemID = hidden_itemID;
                     Get_Bib_VID_from_ItemID(hidden_itemID);
@@ -269,7 +270,7 @@ namespace SobekCM.Library.MySobekViewer
                     break;
 
                 case "delete":
-                    int WorkflowId = Convert.ToInt32(HttpContext.Current.Request.Form["Track_Item_hidden_value"]);
+                    int WorkflowId = Convert.ToInt32(Context.Request.Form["Track_Item_hidden_value"]);
                     current_workflow_id = WorkflowId;
                     SobekCM_Database.Tracking_Delete_Workflow(WorkflowId);
                     if (page == 1 && current_workflows.ContainsKey(current_workflow_id.ToString()))
@@ -339,21 +340,21 @@ namespace SobekCM.Library.MySobekViewer
             }
             if (page == 1)
             {
-                //    DateTime.TryParse(HttpContext.Current.Request.Form["txtStartDate" + thisWorkflowId_string], out new_date);
-                new_date = Convert.ToDateTime(HttpContext.Current.Request.Form["txtStartDate" + thisWorkflowId_string]);
-                selected_ddl_workflow = Convert.ToInt32(HttpContext.Current.Request.Form["ddlEvent" + thisWorkflowId_string]);
+                //    DateTime.TryParse(Context.Request.Form["txtStartDate" + thisWorkflowId_string], out new_date);
+                new_date = Convert.ToDateTime(Context.Request.Form["txtStartDate" + thisWorkflowId_string]);
+                selected_ddl_workflow = Convert.ToInt32(Context.Request.Form["ddlEvent" + thisWorkflowId_string]);
             }
             else
             {
-                //       DateTime.TryParse(HttpContext.Current.Request.Form["txtStartDate2"], out new_date);
-                new_date = Convert.ToDateTime(HttpContext.Current.Request.Form["txtStartDate2"]);
-                selected_ddl_workflow = Convert.ToInt32(HttpContext.Current.Request.Form["ddlEvent2"]);
+                //       DateTime.TryParse(Context.Request.Form["txtStartDate2"], out new_date);
+                new_date = Convert.ToDateTime(Context.Request.Form["txtStartDate2"]);
+                selected_ddl_workflow = Convert.ToInt32(Context.Request.Form["ddlEvent2"]);
             }
 
             if (page == 1)
             {
-                new_start_time = String.IsNullOrEmpty(HttpContext.Current.Request.Form["txtStartTime" + thisWorkflowId_string]) ? "" : Convert.ToDateTime(HttpContext.Current.Request.Form["txtStartTime" + thisWorkflowId_string]).ToString("hh:mm tt");
-                new_end_time = String.IsNullOrEmpty(HttpContext.Current.Request.Form["txtEndTime" + thisWorkflowId_string]) ? "" : Convert.ToDateTime(HttpContext.Current.Request.Form["txtEndTime" + thisWorkflowId_string]).ToString("hh:mm tt");
+                new_start_time = String.IsNullOrEmpty(Context.Request.Form["txtStartTime" + thisWorkflowId_string]) ? "" : Convert.ToDateTime(Context.Request.Form["txtStartTime" + thisWorkflowId_string]).ToString("hh:mm tt");
+                new_end_time = String.IsNullOrEmpty(Context.Request.Form["txtEndTime" + thisWorkflowId_string]) ? "" : Convert.ToDateTime(Context.Request.Form["txtEndTime" + thisWorkflowId_string]).ToString("hh:mm tt");
                 if (selected_ddl_workflow == 1)
                 {
                     this_event = 1;

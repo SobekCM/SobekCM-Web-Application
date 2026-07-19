@@ -9,6 +9,7 @@ using SobekCM.Library.Database;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
 using SobekCM.Tools;
+using Microsoft.AspNetCore.Http;
 
 #endregion
 
@@ -31,17 +32,17 @@ namespace SobekCM.Library.MySobekViewer
     {
         /// <summary> Constructor for a new instance of the Saved_Searches_MySobekViewer class </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
-        public Saved_Searches_MySobekViewer(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
+        public Saved_Searches_MySobekViewer(RequestCache RequestSpecificValues, HttpContext Context) : base(RequestSpecificValues, Context)
         {
             RequestSpecificValues.Tracer.Add_Trace("Saved_Searches_MySobekViewer.Constructor", String.Empty);
 
             if (RequestSpecificValues.Current_Mode.isPostBack)
             {
                 // Pull the standard values
-                NameValueCollection form = HttpContext.Current.Request.Form;
+                var form = Context.Request.Form;
 
                 string item_action = form["item_action"].ToUpper().Trim();
-                string folder_id = form["folder_id"].Trim();
+                string folder_id = form["folder_id"].TrimFirst();
 
                 if (item_action == "REMOVE")
                 {

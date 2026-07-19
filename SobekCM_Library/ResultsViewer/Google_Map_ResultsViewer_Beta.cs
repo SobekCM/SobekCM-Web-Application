@@ -21,7 +21,7 @@ namespace SobekCM.Library.ResultsViewer
         {
  
             //holds actions from page
-            string payload = HttpContext.Current.Request.Form["payload"] ?? String.Empty;
+            string payload = Context.Request.Form["payload"] ?? String.Empty;
             
             // See if there were hidden requests
             if (!String.IsNullOrEmpty(payload))

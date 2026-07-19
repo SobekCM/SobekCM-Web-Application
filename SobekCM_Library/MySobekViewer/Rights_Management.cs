@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -6,12 +6,13 @@ using System.Text;
 using System.Threading.Tasks;
 using SobekCM.Core.Navigation;
 using SobekCM.Tools;
+using Microsoft.AspNetCore.Http;
 
 namespace SobekCM.Library.MySobekViewer
 {
     class Rights_Management_MySobekViewer : abstract_MySobekViewer
     {
-        public Rights_Management_MySobekViewer(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
+        public Rights_Management_MySobekViewer(RequestCache RequestSpecificValues, HttpContext Context) : base(RequestSpecificValues, Context)
         {
             // With the user logged in at this point check for the permission, if not held, go back
             if (RequestSpecificValues.Current_User.Get_Setting("Rights_Management_MySobekViewer", string.Empty) != "true")

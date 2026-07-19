@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using System.IO;
 using SobekCM.Core.Navigation;
@@ -6,6 +6,7 @@ using SobekCM.Library.AdminViewer;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
 using SobekCM.Tools;
+using Microsoft.AspNetCore.Http;
 
 #endregion
 
@@ -27,7 +28,7 @@ namespace SobekCM.Library.MySobekViewer
     {
         /// <summary> Constructor for a new instance of the Group_AutoFill_Volume_MySobekViewer class </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
-        public Group_AutoFill_Volume_MySobekViewer(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
+        public Group_AutoFill_Volume_MySobekViewer(RequestCache RequestSpecificValues, HttpContext Context) : base(RequestSpecificValues, Context)
         {
             // This is currently a place holder class and does nothing
         }

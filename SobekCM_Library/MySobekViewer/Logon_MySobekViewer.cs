@@ -2,8 +2,11 @@
 
 #region Using directives
 
-using System;
-using System.IO;
+using Azure.Core;
+using DocumentFormat.OpenXml.InkML;
+using Microsoft.AspNetCore.Http;
+using ProtoBuf;
+using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.UI_Configuration;
 using SobekCM.Core.UI_Configuration.StaticResources;
@@ -15,6 +18,8 @@ using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
+using System;
+using System.IO;
 
 #endregion
 
@@ -40,7 +45,7 @@ namespace SobekCM.Library.MySobekViewer
 
         /// <summary> Constructor for a new instance of the Home_MySobekViewer class </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
-        public Logon_MySobekViewer(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
+        public Logon_MySobekViewer(RequestCache RequestSpecificValues, HttpContext Context) : base(RequestSpecificValues, Context)
         {
             // Check to see if (non-admin) logon is currently disabled
             if (UI_ApplicationCache_Gateway.Settings.System.Disable_Standard_User_Logon_Flag)
@@ -66,21 +71,21 @@ namespace SobekCM.Library.MySobekViewer
                 string possible_password = String.Empty;
                 bool remember_me = false;
 
-                string[] getKeys = HttpContext.Current.Request.Form.Keys;
+                var getKeys = Context.Request.Form.Keys;
                 foreach (string thisKey in getKeys)
                 {
                     switch (thisKey)
                     {
                         case "logon_username":
-                            possible_username = Context.Request.Form[thisKey].Trim();
+                            possible_username = Context.Request.Form[thisKey].TrimFirst();
                             break;
 
                         case "logon_password":
-                            possible_password = Context.Request.Form[thisKey].Trim();
+                            possible_password = Context.Request.Form[thisKey].TrimFirst();
                             break;
 
                         case "rememberme":
-                            if (Context.Request.Form[thisKey].Trim() == "rememberme")
+                            if (Context.Request.Form[thisKey].TrimFirst() == "rememberme")
                                 remember_me = true;
                             break;
                     }
@@ -99,16 +104,21 @@ namespace SobekCM.Library.MySobekViewer
                         }
 
                         // The user was valid here, so save this user information
-                        Context.SessionObject()["user"] = user;
+                        using var sessionMs = new MemoryStream();
+                        Serializer.Serialize(sessionMs, user);
+                        Context.Session.Set(SessionCache_Keys.User, sessionMs.ToArray());
+                        RequestSpecificValues.Current_User = user;
 
                         // Should we remember this user via cookies?
                         if (remember_me)
                         {
-                            HttpCookie userCookie = new HttpCookie("SobekUser");
-                            userCookie.Values["userid"] = user.UserID.ToString();
-                            userCookie.Values["security_hash"] = user.Security_Hash(HttpContext.Current.Request.UserHostAddress);
-                            userCookie.Expires = DateTime.Now.AddDays(14);
-                            HttpContext.Current.Response.Cookies.Add(userCookie);
+                            string userIp = Context.Connection.RemoteIpAddress?.ToString();
+                            string cookieValue = $"userid={user.UserID}&security_hash={user.Security_Hash(userIp)}";
+                            Context.Response.Cookies.Append("SobekUser", cookieValue, new CookieOptions
+                            {
+                                Expires = DateTimeOffset.Now.AddDays(30),
+                                HttpOnly = true
+                            });
                         }
 
                         // Forward back to their original URL (unless the original URL was this logon page)

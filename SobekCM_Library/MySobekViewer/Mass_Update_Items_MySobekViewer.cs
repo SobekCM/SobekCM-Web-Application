@@ -19,6 +19,7 @@ using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Database;
 using SobekCM.Tools;
 using SobekCM_Resource_Database;
+using Microsoft.AspNetCore.Http;
 
 #endregion
 
@@ -47,7 +48,7 @@ namespace SobekCM.Library.MySobekViewer
 
         /// <summary> Constructor for a new instance of the Mass_Update_Items_MySobekViewer class </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
-        public Mass_Update_Items_MySobekViewer(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
+        public Mass_Update_Items_MySobekViewer(RequestCache RequestSpecificValues, HttpContext Context) : base(RequestSpecificValues, Context)
         {
             RequestSpecificValues.Tracer.Add_Trace("Mass_Update_Items_MySobekViewer.Constructor", String.Empty);
 
@@ -118,7 +119,7 @@ namespace SobekCM.Library.MySobekViewer
             }
 
             // See if there was a hidden request
-            string hidden_request = Context.Request.Form["behaviors_request"] ?? String.Empty;
+            string hidden_request = Context.Request.Form["behaviors_request"].TrimFirst() ?? String.Empty;
 
             // If this was a cancel request do that
             if (hidden_request == "cancel")

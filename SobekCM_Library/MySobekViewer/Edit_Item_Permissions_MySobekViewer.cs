@@ -21,6 +21,7 @@ using SobekCM.Resource_Object.Database;
 using SobekCM.Resource_Object.Metadata_Modules;
 using SobekCM.Tools;
 using SobekCM_Resource_Database;
+using Microsoft.AspNetCore.Http;
 
 #endregion
 
@@ -37,7 +38,7 @@ namespace SobekCM.Library.MySobekViewer
 
         /// <summary> Constructor for a new instance of the Edit_Item_Permissions_MySobekViewer class  </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
-        public Edit_Item_Permissions_MySobekViewer(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
+        public Edit_Item_Permissions_MySobekViewer(RequestCache RequestSpecificValues, HttpContext Context) : base(RequestSpecificValues, Context)
         {
             // If no user then that is an error
             if ((RequestSpecificValues.Current_User == null) || (!RequestSpecificValues.Current_User.LoggedOn))
@@ -103,14 +104,14 @@ namespace SobekCM.Library.MySobekViewer
             if (RequestSpecificValues.Current_Mode.isPostBack)
             {
                 // Get the restriction mask and isDark flag
-                if (HttpContext.Current.Request.Form["restrictionMask"] != null)
+                if (!String.IsNullOrEmpty(Context.Request.Form["restrictionMask"].TrimFirst()))
                 {
                     ipRestrictionMask = short.Parse(Context.Request.Form["restrictionMask"]);
                     isDark = bool.Parse(Context.Request.Form["isDark"]);
                 }
 
                 // Look for embargo date
-                if (Context.Request.Form["embargoDateBox"] != null)
+                if (!String.IsNullOrEmpty(Context.Request.Form["embargoDateBox"].TrimFirst()))
                 {
                     string embargoText = Context.Request.Form["embargoDateBox"];
                     DateTime embargoDateNew;
@@ -127,7 +128,7 @@ namespace SobekCM.Library.MySobekViewer
                 foreach (IP_Restriction_Range thisRange in UI_ApplicationCache_Gateway.IP_Restrictions.IpRanges)
                 {
                     // Is this check box checked?
-                    if (HttpContext.Current.Request.Form["range" + thisRange.RangeID] != null)
+                    if (!String.IsNullOrEmpty(Context.Request.Form["range" + thisRange.RangeID].TrimFirst()))
                     {
                         checked_mask += ((short)Math.Pow(2, (thisRange.RangeID - 1)));
                     }
@@ -135,10 +136,10 @@ namespace SobekCM.Library.MySobekViewer
                 
 
                 // Handle any request from the internal header for the item
-                if (HttpContext.Current.Request.Form["permissions_action"] != null)
+                if (!String.IsNullOrEmpty(Context.Request.Form["permissions_action"].TrimFirst()))
                 {
                     // Pull the action value
-                    string action = HttpContext.Current.Request.Form["permissions_action"].Trim();
+                    string action = Context.Request.Form["permissions_action"].TrimFirst();
 
                     // Is this to change accessibility?
                     if ((action == "public") || (action == "private") || (action == "restricted") || ( action == "dark" ))
@@ -158,7 +159,7 @@ namespace SobekCM.Library.MySobekViewer
                                 break;
 
                             case "restricted":
-                                ipRestrictionMask = short.Parse(HttpContext.Current.Request.Form["selectRestrictionMask"]);
+                                ipRestrictionMask = short.Parse(Context.Request.Form["selectRestrictionMask"].TrimFirst());
                                 restrictedSelected = true;
                                 isDark = false;
                                 break;
@@ -172,9 +173,9 @@ namespace SobekCM.Library.MySobekViewer
                 }
 
                 // Was the SAVE button pushed?
-                if (HttpContext.Current.Request.Form["behaviors_request"] != null)
+                if (!String.IsNullOrEmpty(Context.Request.Form["behaviors_request"].TrimFirst()))
                 {
-                    string behaviorRequest = HttpContext.Current.Request.Form["behaviors_request"];
+                    string behaviorRequest = Context.Request.Form["behaviors_request"].TrimFirst();
                     if (behaviorRequest == "save")
                     {
                         currentItem.Behaviors.IP_Restriction_Membership = ipRestrictionMask;
@@ -205,10 +206,10 @@ namespace SobekCM.Library.MySobekViewer
                             // If this is making it public, check for the email address
                             if (ipRestrictionMask == 0 )
                             {
-                                string emailRequest = HttpContext.Current.Request.Form["email_submittor"];
+                                string emailRequest = Context.Request.Form["email_submittor"].TrimFirst();
                                 if ( emailRequest == "yes_email")
                                 {
-                                    string emailContent = HttpContext.Current.Request.Form["email_content"];
+                                    string emailContent = Context.Request.Form["email_content"].TrimFirst();
                                     if ( !String.IsNullOrWhiteSpace(emailContent))
                                     {
                                         Item_Submittor_Info submittor = SobekEngineClient.Items.Get_Submittor_Info(currentItem.BibID, currentItem.VID, RequestSpecificValues.Tracer);

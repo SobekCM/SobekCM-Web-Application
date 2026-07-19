@@ -73,7 +73,7 @@ namespace SobekCM.Library.HTML
                 canEdit = staticWebContent.Can_Edit(RequestSpecificValues.Current_User);
             }
 
-            NameValueCollection form = HttpContext.Current.Request.Form;
+            NameValueCollection form = Context.Request.Form;
             if ((canEdit) && (RequestSpecificValues.Current_Mode.WebContent_Type == WebContent_Type_Enum.Edit) && (form["sbkWchs_TextEdit"] != null))
             {
                 string newSource = form["sbkWchs_TextEdit"];

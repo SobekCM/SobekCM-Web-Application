@@ -72,9 +72,9 @@ namespace SobekCM.Library.HTML
             }
 
             // If this is a post back, send email
-            if (HttpContext.Current.Request.Form["item_action"] == null) return;
+            if (Context.Request.Form["item_action"] == null) return;
 
-            string action = HttpContext.Current.Request.Form["item_action"];
+            string action = Context.Request.Form["item_action"];
             if (action == "email")
             {
                 // Some values to collect information

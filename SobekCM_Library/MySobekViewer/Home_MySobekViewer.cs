@@ -1,4 +1,4 @@
-﻿// HTML5 10/30/2013
+// HTML5 10/30/2013
 
 #region Using directives
 
@@ -10,6 +10,7 @@ using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
+using Microsoft.AspNetCore.Http;
 
 #endregion
 
@@ -31,7 +32,7 @@ namespace SobekCM.Library.MySobekViewer
     {
         /// <summary> Constructor for a new instance of the Home_MySobekViewer class </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
-        public Home_MySobekViewer(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
+        public Home_MySobekViewer(RequestCache RequestSpecificValues, HttpContext Context) : base(RequestSpecificValues, Context)
         {
             RequestSpecificValues.Tracer.Add_Trace("Home_MySobekViewer.Constructor", String.Empty);
         }

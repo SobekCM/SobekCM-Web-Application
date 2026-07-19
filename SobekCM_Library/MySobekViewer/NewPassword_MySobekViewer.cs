@@ -11,6 +11,8 @@ using SobekCM.Library.Database;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
 using SobekCM.Tools;
+using Microsoft.AspNetCore.Http;
+using SobekCM.Library.UI;
 
 #endregion
 
@@ -36,7 +38,7 @@ namespace SobekCM.Library.MySobekViewer
 
         /// <summary> Constructor for a new instance of the NewPassword_MySobekViewer class </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
-        public NewPassword_MySobekViewer(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
+        public NewPassword_MySobekViewer(RequestCache RequestSpecificValues, HttpContext Context) : base(RequestSpecificValues, Context)
         {
             RequestSpecificValues.Tracer.Add_Trace("NewPassword_MySobekViewer.Constructor", String.Empty);
 
@@ -54,21 +56,21 @@ namespace SobekCM.Library.MySobekViewer
             string new_password = String.Empty;
             string new_password2 = String.Empty;
 
-            string[] getKeys = HttpContext.Current.Request.Form.Keys;
+            var getKeys = Context.Request.Form.Keys;
             foreach (string thisKey in getKeys)
             {
                 switch (thisKey)
                 {
                     case "current_password_enter":
-                        current_password = HttpContext.Current.Request.Form[thisKey];
+                        current_password = Context.Request.Form[thisKey].TrimFirst();
                         break;
 
                     case "new_password_enter":
-                        new_password = HttpContext.Current.Request.Form[thisKey];
+                        new_password = Context.Request.Form[thisKey].TrimFirst();
                         break;
 
                     case "new_password_confirm":
-                        new_password2 = HttpContext.Current.Request.Form[thisKey];
+                        new_password2 = Context.Request.Form[thisKey].TrimFirst();
                         break;
                 }
             }

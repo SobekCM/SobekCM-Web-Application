@@ -6,7 +6,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Web;
 using SobekCM.Core.Client;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
@@ -15,6 +14,7 @@ using SobekCM.Core.UI_Configuration.StaticResources;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Engine_Library.Email;
 using SobekCM.Library.AdminViewer;
+using Microsoft.AspNetCore.Http;
 // using SobekCM.Library.Helpers.UploadiFive;
 using SobekCM.Library.HTML;
 using SobekCM.Library.UI;
@@ -59,9 +59,9 @@ namespace SobekCM.Library.MySobekViewer
             if (Context.SessionObject()[registryKey] is List<string> registry)
             {
                 foreach (string filename in registry)
-                    HttpContext.Current.Session.Remove("file_" + itemId + "_" + filename);
+                    Context.Session.Remove("file_" + itemId + "_" + filename);
             }
-            HttpContext.Current.Session.Remove(registryKey);
+            Context.Session.Remove(registryKey);
         }
 
         #region Constructor
@@ -114,18 +114,18 @@ namespace SobekCM.Library.MySobekViewer
             // If this is post-back, handle it
             if (RequestSpecificValues.Current_Mode.isPostBack)
             {
-                string[] getKeys = HttpContext.Current.Request.Form.Keys;
+                var getKeys = Context.Request.Form.Keys;
                 string file_name_from_keys = String.Empty;
                 string label_from_keys = String.Empty;
                 foreach (string thisKey in getKeys)
                 {
                     if (thisKey.IndexOf("upload_file") == 0)
                     {
-                        file_name_from_keys = HttpContext.Current.Request.Form[thisKey];
+                        file_name_from_keys = Context.Request.Form[thisKey];
                     }
                     if (thisKey.IndexOf("upload_label") == 0)
                     {
-                        label_from_keys = HttpContext.Current.Request.Form[thisKey];
+                        label_from_keys = Context.Request.Form[thisKey];
                     }
                     if ((file_name_from_keys.Length > 0) && (label_from_keys.Length > 0))
                     {
@@ -136,14 +136,14 @@ namespace SobekCM.Library.MySobekViewer
 
                     if (thisKey == "url_input")
                     {
-                        currentItem.Bib_Info.Location.Other_URL = HttpContext.Current.Request.Form[thisKey];
+                        currentItem.Bib_Info.Location.Other_URL = Context.Request.Form[thisKey];
                     }
                 }
 
-                string action = HttpContext.Current.Request.Form["action"];
+                string action = Context.Request.Form["action"];
                 if (action == "delete")
                 {
-                    string filename = HttpContext.Current.Request.Form["phase"];
+                    string filename = Context.Request.Form["phase"];
                     try
                     {
                         if (File.Exists(digitalResourceDirectory + "\\" + filename))
@@ -173,7 +173,7 @@ namespace SobekCM.Library.MySobekViewer
 
                 if ( action == "next_phase")
                 {
-                    int phase = Convert.ToInt32(HttpContext.Current.Request.Form["phase"]);
+                    int phase = Convert.ToInt32(Context.Request.Form["phase"]);
                     switch( phase )
                     {
                         case 2:

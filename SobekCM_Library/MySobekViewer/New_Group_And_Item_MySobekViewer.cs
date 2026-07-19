@@ -24,6 +24,7 @@ using SobekCM.Library.AdminViewer;
 using SobekCM.Library.Citation;
 using SobekCM.Library.Citation.Template;
 using SobekCM.Library.Database;
+using Microsoft.AspNetCore.Http;
 // using SobekCM.Library.Helpers.UploadiFive;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
@@ -72,7 +73,7 @@ namespace SobekCM.Library.MySobekViewer
 
         /// <summary> Constructor for a new instance of the New_Group_And_Item_MySobekViewer class </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
-        public New_Group_And_Item_MySobekViewer(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
+        public New_Group_And_Item_MySobekViewer(RequestCache RequestSpecificValues, HttpContext Context) : base(RequestSpecificValues, Context)
         {
             RequestSpecificValues.Tracer.Add_Trace("New_Group_And_Item_MySobekViewer.Constructor", String.Empty);
 
@@ -398,18 +399,18 @@ namespace SobekCM.Library.MySobekViewer
                 // If this is a request from stage 8, save the new labels and url first
                 if (currentProcessStep == 8)
                 {
-                    string[] getKeys = HttpContext.Current.Request.Form.Keys;
+                    var getKeys = Context.Request.Form.Keys;
                     string file_name_from_keys = String.Empty;
                     string label_from_keys = String.Empty;
                     foreach (string thisKey in getKeys)
                     {
                         if (thisKey.IndexOf("upload_file") == 0)
                         {
-                            file_name_from_keys = HttpContext.Current.Request.Form[thisKey];
+                            file_name_from_keys = Context.Request.Form[thisKey];
                         }
                         if (thisKey.IndexOf("upload_label") == 0)
                         {
-                            label_from_keys = HttpContext.Current.Request.Form[thisKey];
+                            label_from_keys = Context.Request.Form[thisKey];
                         }
                         if ((file_name_from_keys.Length > 0) && (label_from_keys.Length > 0))
                         {
@@ -420,12 +421,12 @@ namespace SobekCM.Library.MySobekViewer
 
                         if (thisKey == "url_input")
                         {
-                            item.Bib_Info.Location.Other_URL = HttpContext.Current.Request.Form[thisKey];
+                            item.Bib_Info.Location.Other_URL = Context.Request.Form[thisKey];
                         }
                     }
                 }
 
-                string action = HttpContext.Current.Request.Form["action"];
+                string action = Context.Request.Form["action"];
                 if (action == "cancel")
                 {
                     // Clear all files in the RequestSpecificValues.Current_User process folder
@@ -470,7 +471,7 @@ namespace SobekCM.Library.MySobekViewer
 
                 if ( action == "delete" )
                 {
-                    string filename = HttpContext.Current.Request.Form["phase"];
+                    string filename = Context.Request.Form["phase"];
                     try
                     {
                         if (File.Exists(userInProcessDirectory + "\\" + filename))
@@ -506,7 +507,7 @@ namespace SobekCM.Library.MySobekViewer
                 if (action == "next_phase")
                 {
 
-                    string next_phase = HttpContext.Current.Request.Form["phase"];
+                    string next_phase = Context.Request.Form["phase"];
 
                     // If this goes from step 1 to step 2, write the permissions first
                     if ((currentProcessStep == 1) && (next_phase == "2") && ( completeTemplate.Permissions_Agreement.Length > 0 ))
@@ -526,21 +527,21 @@ namespace SobekCM.Library.MySobekViewer
                             writer.WriteLine("User: " + RequestSpecificValues.Current_User.Full_Name);
   
                         writer.WriteLine("Date: " + agreement_date.ToString());
-                        writer.WriteLine("IP Address: " + HttpContext.Current.Request.UserHostAddress);
+                        writer.WriteLine("IP Address: " + Context.Request.UserHostAddress);
                         writer.WriteLine();
                         writer.WriteLine(completeTemplate.Permissions_Agreement);
                         writer.Flush();
                         writer.Close();
 
-						if (HttpContext.Current.Request.Form["setNewDefaultCheckBox"] != null )
+						if (!String.IsNullOrEmpty(Context.Request.Form["setNewDefaultCheckBox"].TrimFirst()))
 						{
                             // Set the default metadata preference first
-							string prefProject = HttpContext.Current.Request.Form["prefProject"];
+							string prefProject = Context.Request.Form["prefProject"];
                             if ( !String.IsNullOrEmpty(prefProject))
                                 RequestSpecificValues.Current_User.Set_Current_Default_Metadata(prefProject.Trim());
 
                             // Set the template code next
-							string prefTemplate = HttpContext.Current.Request.Form["prefTemplate"];
+							string prefTemplate = Context.Request.Form["prefTemplate"];
                             if ( !String.IsNullOrEmpty(prefTemplate))
     							RequestSpecificValues.Current_User.Set_Default_Template(prefTemplate.Trim());
 							

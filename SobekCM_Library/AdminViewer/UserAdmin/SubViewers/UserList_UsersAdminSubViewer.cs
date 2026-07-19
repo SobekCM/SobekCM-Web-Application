@@ -24,7 +24,7 @@ namespace SobekCM.Library.AdminViewer.UserAdmin.SubViewers
         {
             try
             {
-                string reset_value = HttpContext.Current.Request.Form["admin_user_reset"];
+                string reset_value = Context.Request.Form["admin_user_reset"];
                 if (reset_value.Length > 0)
                 {
                     int userid = Convert.ToInt32(reset_value);
@@ -76,7 +76,7 @@ namespace SobekCM.Library.AdminViewer.UserAdmin.SubViewers
                     }
                 }
 
-                string delete_value = HttpContext.Current.Request.Form["admin_user_group_delete"];
+                string delete_value = Context.Request.Form["admin_user_group_delete"];
                 if (delete_value.Length > 0)
                 {
                     int deleteId = Convert.ToInt32(delete_value);

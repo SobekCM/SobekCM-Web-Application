@@ -78,7 +78,7 @@ namespace SobekCM.Library.AdminViewer.UserAdmin.SubViewers
             set_current_page(RequestSpecificValues);
 
             // Get a reference to this form and get the action from hidden field
-            NameValueCollection form = HttpContext.Current.Request.Form;
+            NameValueCollection form = Context.Request.Form;
             string action = form["admin_user_save"];
 
             // If this is CANCEL, get rid of the currrent edit object in the session

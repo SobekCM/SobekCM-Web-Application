@@ -22,6 +22,7 @@ using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Bib_Info;
 using SobekCM.Resource_Object.Metadata_File_ReaderWriters;
 using SobekCM.Tools;
+using Microsoft.AspNetCore.Http;
 
 #endregion
 
@@ -55,7 +56,7 @@ namespace SobekCM.Library.MySobekViewer
         /// <summary> Constructor for a new instance of the Edit_Item_Metadata_MySobekViewer class </summary>
         /// <param name="DefaultMetadata"> Default metadata object, if that is how this is being used </param>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
-        public Edit_Item_Metadata_MySobekViewer( SobekCM_Item DefaultMetadata, RequestCache RequestSpecificValues) : base(RequestSpecificValues)
+        public Edit_Item_Metadata_MySobekViewer(SobekCM_Item DefaultMetadata, RequestCache RequestSpecificValues, HttpContext Context) : base(RequestSpecificValues, Context)
         {
             RequestSpecificValues.Tracer.Add_Trace("Edit_Item_Metadata_MySobekViewer.Constructor", String.Empty);
 
@@ -199,7 +200,7 @@ namespace SobekCM.Library.MySobekViewer
 	        if (RequestSpecificValues.Current_Mode.isPostBack)
 	        {
 		        // See if there was a hidden request
-		        string hidden_request = Context.Request.Form["new_element_requested"] ?? String.Empty;
+		        string hidden_request = Context.Request.Form["new_element_requested"].TrimFirst() ?? String.Empty;
 
 		        // If this was a cancel request do that
 		        if (hidden_request == "cancel")

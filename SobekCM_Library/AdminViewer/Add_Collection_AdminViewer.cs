@@ -179,7 +179,7 @@ namespace SobekCM.Library.AdminViewer
                 try
                 {
                     // Pull the standard values
-                    NameValueCollection form = HttpContext.Current.Request.Form;
+                    NameValueCollection form = Context.Request.Form;
 
                     // Get the curret action
                     string action = form["admin_wizard_save"];

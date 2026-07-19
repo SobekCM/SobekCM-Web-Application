@@ -14,6 +14,8 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using SobekCM.Library.UI;
 
 namespace SobekCM.Library.MySobekViewer
 {
@@ -29,7 +31,7 @@ namespace SobekCM.Library.MySobekViewer
 
         /// <summary> Constructor for a new instance of the Edit_Item_OpenPublisher_MySobekViewer class </summary>
         ///  <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
-        public Edit_Item_OpenPublisher_MySobekViewer(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
+        public Edit_Item_OpenPublisher_MySobekViewer(RequestCache RequestSpecificValues, HttpContext Context) : base(RequestSpecificValues, Context)
         {
             isMozilla = ((!String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.Browser_Type)) && (RequestSpecificValues.Current_Mode.Browser_Type.ToUpper().IndexOf("FIREFOX") >= 0));
 
@@ -92,7 +94,7 @@ namespace SobekCM.Library.MySobekViewer
             if (RequestSpecificValues.Current_Mode.isPostBack)
             {
                 // See if there was a hidden request
-                string action_requested = HttpContext.Current.Request.Form["action_requested"] ?? String.Empty;
+                string action_requested = Context.Request.Form["action_requested"].TrimFirst() ?? String.Empty;
 
                 if ( action_requested == "cancel")
                 {
@@ -140,8 +142,8 @@ namespace SobekCM.Library.MySobekViewer
                     UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
                 }
 
-                string action_value = Context.Request.Form["action_value"] ?? String.Empty;
-                string action_index = Context.Request.Form["action_index"] ?? String.Empty;
+                string action_value = Context.Request.Form["action_value"].TrimFirst() ?? String.Empty;
+                string action_index = Context.Request.Form["action_index"].TrimFirst() ?? String.Empty;
 
                 if ( action_requested == "new_chapter")
                 {

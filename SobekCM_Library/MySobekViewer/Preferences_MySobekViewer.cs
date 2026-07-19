@@ -22,6 +22,7 @@ using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
+using Microsoft.AspNetCore.Http;
 
 #endregion
 
@@ -92,7 +93,7 @@ namespace SobekCM.Library.MySobekViewer
 
 	    /// <summary> Constructor for a new instance of the Preferences_MySobekViewer class </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
-        public Preferences_MySobekViewer(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
+        public Preferences_MySobekViewer(RequestCache RequestSpecificValues, HttpContext Context) : base(RequestSpecificValues, Context)
         {
 	        RequestSpecificValues.Tracer.Add_Trace("Preferences_MySobekViewer.Constructor", String.Empty);
 
@@ -222,61 +223,61 @@ namespace SobekCM.Library.MySobekViewer
 			if (RequestSpecificValues.Current_Mode.isPostBack)
 			{
 				// Loop through and get the dataa
-				string[] getKeys = HttpContext.Current.Request.Form.Keys;
+				var getKeys = Context.Request.Form.Keys;
 				foreach (string thisKey in getKeys)
 				{
 					switch (thisKey)
 					{
 						case "prefUserName":
-							username = HttpContext.Current.Request.Form[thisKey];
+							username = Context.Request.Form[thisKey];
 							break;
 
 						case "password_enter":
-							password = HttpContext.Current.Request.Form[thisKey];
+							password = Context.Request.Form[thisKey];
 							break;
 
 						case "password_confirm":
-							password2 = HttpContext.Current.Request.Form[thisKey];
+							password2 = Context.Request.Form[thisKey];
 							break;
 
 						case "prefUfid":
-							ufid = HttpContext.Current.Request.Form[thisKey].Trim().Replace("-", "");
+							ufid = Context.Request.Form[thisKey].TrimFirst().Replace("-", "");
 							break;
 
 						case "prefFamilyName":
-							family_name = HttpContext.Current.Request.Form[thisKey];
+							family_name = Context.Request.Form[thisKey];
 							break;
 
 						case "prefGivenName":
-							given_name = HttpContext.Current.Request.Form[thisKey];
+							given_name = Context.Request.Form[thisKey];
 							break;
 
 						case "prefNickName":
-							nickname = HttpContext.Current.Request.Form[thisKey];
+							nickname = Context.Request.Form[thisKey];
 							break;
 
 						case "prefEmail":
-							email = HttpContext.Current.Request.Form[thisKey];
+							email = Context.Request.Form[thisKey];
 							break;
 
 						case "prefOrganization":
-							organization = HttpContext.Current.Request.Form[thisKey];
+							organization = Context.Request.Form[thisKey];
 							break;
 
 						case "prefCollege":
-							college = HttpContext.Current.Request.Form[thisKey];
+							college = Context.Request.Form[thisKey];
 							break;
 
 						case "prefDepartment":
-							department = HttpContext.Current.Request.Form[thisKey];
+							department = Context.Request.Form[thisKey];
 							break;
 
 						case "prefUnit":
-							unit = HttpContext.Current.Request.Form[thisKey];
+							unit = Context.Request.Form[thisKey];
 							break;
 
 						case "prefLanguage":
-							string language_temp = HttpContext.Current.Request.Form[thisKey];
+							string language_temp = Context.Request.Form[thisKey];
 							if (language_temp == "es")
 								language = "Español";
 							if (language_temp == "fr")
@@ -284,31 +285,31 @@ namespace SobekCM.Library.MySobekViewer
 							break;
 
 						case "prefTemplate":
-							template = HttpContext.Current.Request.Form[thisKey];
+							template = Context.Request.Form[thisKey];
 							break;
 
 						case "prefProject":
-							project = HttpContext.Current.Request.Form[thisKey];
+							project = Context.Request.Form[thisKey];
 							break;
 
 						case "prefAllowSubmit":
-							string submit_value = HttpContext.Current.Request.Form[thisKey];
+							string submit_value = Context.Request.Form[thisKey];
 							if (submit_value == "allowsubmit")
 								desire_to_upload = true;
 							break;
 
 						case "prefSendEmail":
-							string submit_value2 = HttpContext.Current.Request.Form[thisKey];
+							string submit_value2 = Context.Request.Form[thisKey];
 							send_email_on_submission = submit_value2 == "sendemail";
 							break;
 
 						case "prefEmailStats":
-							string submit_value3 = HttpContext.Current.Request.Form[thisKey];
+							string submit_value3 = Context.Request.Form[thisKey];
 							send_usages_emails = submit_value3 == "sendemail";
 							break;
 
 						case "prefRights":
-							default_rights = HttpContext.Current.Request.Form[thisKey];
+							default_rights = Context.Request.Form[thisKey];
 							break;
 
 					}

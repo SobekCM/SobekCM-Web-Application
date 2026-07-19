@@ -57,12 +57,12 @@ namespace SobekCM.Library.WebContentViewer.Viewers
             }
             else if ( HttpContext.Current.Request.RequestType == "POST" )
             {
-                string save_value = HttpContext.Current.Request.Form["admin_delete_item"];
+                string save_value = Context.Request.Form["admin_delete_item"];
 
                 // Better say "DELETE", or just send back to the item
                 if (( save_value != null ) && ( String.Compare(save_value,"DELETE", StringComparison.OrdinalIgnoreCase) == 0))
                 {
-                    string entered_value = HttpContext.Current.Request.Form["admin_delete_confirm"];
+                    string entered_value = Context.Request.Form["admin_delete_confirm"];
                     if ((entered_value == null) || (entered_value.ToUpper() != "DELETE"))
                     {
                         errorMessage = "ERROR: To verify this deletion, type DELETE into the text box and press CONFIRM";

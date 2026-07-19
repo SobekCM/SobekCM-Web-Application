@@ -5,6 +5,7 @@ using System.Text;
 using ClosedXML.Excel;
 using SobekCM.Core.Navigation;
 using SobekCM.Engine_Library.Configuration;
+using Microsoft.AspNetCore.Http;
 // using SobekCM.Library.Helpers.UploadiFive;
 using SobekCM.Library.HTML;
 using SobekCM.Library.UI;
@@ -40,7 +41,7 @@ namespace SobekCM.Library.MySobekViewer
         private readonly int page;
         private readonly Import_File_Type_Enum file_type;
 
-        public Import_Spreadsheet_MySobekViewer(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
+        public Import_Spreadsheet_MySobekViewer(RequestCache RequestSpecificValues, HttpContext Context) : base(RequestSpecificValues, Context)
         {
             RequestSpecificValues.Tracer.Add_Trace("Import_Spreadsheet_MySobekViewer.Constructor", String.Empty);
 
@@ -121,7 +122,7 @@ namespace SobekCM.Library.MySobekViewer
             // Handle postback for changing the CompleteTemplate or project
             if (RequestSpecificValues.Current_Mode.isPostBack)
             {
-                string action1 = HttpContext.Current.Request.Form["action"];
+                string action1 = Context.Request.Form["action"].TrimFirst();
                 if (action1 == "cancel") 
                 {
                     if (Directory.Exists(taskDirectory))

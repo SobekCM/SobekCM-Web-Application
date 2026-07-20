@@ -38,9 +38,7 @@ namespace SobekCM.Library.HTML
     {
         #region Private class members 
 
-        private readonly int searchResultsCount;
         private readonly bool showZoomable;
-        private bool tocSelectedComplete;
         private readonly bool userCanEditItem;
         private readonly List<HtmlSubwriter_Behaviors_Enum> behaviors;
         private string buttonsHtml;
@@ -52,7 +50,6 @@ namespace SobekCM.Library.HTML
         private readonly bool is_tei;
 
         private BriefItemInfo currentItem;
-        private SobekCM_Items_In_Title itemsInTitle;
 
         private iItemViewerPrototyper prototyper;
         private iItemViewer pageViewer;
@@ -84,8 +81,6 @@ namespace SobekCM.Library.HTML
             {
                 RequestSpecificValues.Tracer.Add_Trace("item_HtmlSubwriter.Constructor", "Will not show zoomable.");
             }
-
-            searchResultsCount = 0;
 
             // Try to get the current item
             RequestSpecificValues.Tracer.Add_Trace("Item_HtmlSubwriter.Constructor", "Get the item information from the engine for [" + RequestSpecificValues.Current_Mode.BibID + "/" + RequestSpecificValues.Current_Mode.VID + "].");

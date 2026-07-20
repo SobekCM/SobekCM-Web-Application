@@ -42,7 +42,6 @@ namespace SobekCM.Resource_Object
         private bool show_validation_errors;
         private Nullable<int> siblings;
         private string vid;
-        private Dictionary<string, SobekCM_File_Info> viewer_to_file;
 
         /// <summary> Flag indicates additional work is needed </summary>
         public bool Additional_Work_Needed { get; set; }

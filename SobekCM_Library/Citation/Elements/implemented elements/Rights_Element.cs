@@ -19,7 +19,7 @@ namespace SobekCM.Library.Citation.Elements
     /// <remarks> This class extends the <see cref="TextArea_Element"/> class. </remarks>
     public class Rights_Element : TextArea_Element
     {
-        private const bool INCLUDE_UF_RIGHTS = false;
+        public bool INCLUDE_UF_RIGHTS = false;
 
         private string baseURL;
 

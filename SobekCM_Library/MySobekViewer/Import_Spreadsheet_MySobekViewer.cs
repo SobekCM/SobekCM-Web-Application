@@ -33,7 +33,6 @@ namespace SobekCM.Library.MySobekViewer
             MarcXML
         }
 
-        private readonly string guid;
         private readonly string taskDirectory;
         private readonly string taskUrl;
         private readonly string file_name;

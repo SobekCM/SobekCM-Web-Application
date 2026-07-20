@@ -308,6 +308,9 @@ namespace SobekCM.Library.MySobekViewer
         /// <returns> Newly scaled image, without changing the original source image </returns>
         public static Image ScaleImage(Image SourceImage, int MaxWidth, int MaxHeight)
         {
+            if (!OperatingSystem.IsWindowsVersionAtLeast(6, 1))
+                return SourceImage;
+
             var ratioX = (double)MaxWidth / SourceImage.Width;
             var ratioY = (double)MaxHeight / SourceImage.Height;
             var ratio = Math.Min(ratioX, ratioY);
@@ -547,6 +550,9 @@ namespace SobekCM.Library.MySobekViewer
 
         private static Image SafeImageFromFile(string FilePath, ref FileStream ReuseStream)
         {
+            if (!OperatingSystem.IsWindowsVersionAtLeast(6, 1))
+                return null;
+
             // http://stackoverflow.com/questions/18250848/how-to-prevent-the-image-fromfile-method-to-lock-the-file
 
             Bitmap img;

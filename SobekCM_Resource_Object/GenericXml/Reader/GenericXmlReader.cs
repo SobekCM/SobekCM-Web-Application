@@ -657,7 +657,6 @@ namespace SobekCM.Resource_Object.GenericXml.Reader
                 //    }
                 //}
 
-                bool text_found = false;
                 if (readerXml.NodeType == XmlNodeType.Element)
                 {
                     // Create the node for this top-level element
@@ -666,9 +665,6 @@ namespace SobekCM.Resource_Object.GenericXml.Reader
 
                     // Add this to the stack
                     currentStack.Push(topNode);
-
-                    if (topNode.NodeName == "text")
-                        text_found = true;
 
                     // It may be that mapping exists right here at this level
                     // Create the path for this

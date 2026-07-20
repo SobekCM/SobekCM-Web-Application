@@ -15,7 +15,6 @@ namespace SobekCM.Library.AdminViewer.UserAdmin.SubViewers
 {
     public class EditUser_UsersAdminSubViewer : abstractUsersAdminSubViewer
     {
-        private bool tei_plugin_enabled;
         private List<iUserAdminTab> tabs;
         private iUserAdminTab currentTab;
 

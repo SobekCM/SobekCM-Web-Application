@@ -1046,8 +1046,6 @@ namespace SobekCM.Engine_Library.Endpoints
             // Set the return values to NULL initially
             Complete_Result_Set_Info = null;
 
-            const bool INCLUDE_PRIVATE = false;
-
             var links = new List<short>();
             var db_fields = new List<short>();
             List<string> db_terms = Terms.ToList();

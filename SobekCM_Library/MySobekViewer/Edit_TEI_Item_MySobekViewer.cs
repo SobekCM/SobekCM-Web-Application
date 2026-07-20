@@ -525,29 +525,6 @@ namespace SobekCM.Library.MySobekViewer
 
         #endregion
 
-        #region Code to re-scale an image
-
-        /// <summary> Scales an existing SourceImage to a new max width / max height </summary>
-        /// <param name="SourceImage"> Source image </param>
-        /// <param name="MaxWidth"> Maximum width for the new image </param>
-        /// <param name="MaxHeight"> Maximum height for the new image </param>
-        /// <returns> Newly scaled image, without changing the original source image </returns>
-        public static Image ScaleImage(Image SourceImage, int MaxWidth, int MaxHeight)
-        {
-            var ratioX = (double)MaxWidth / SourceImage.Width;
-            var ratioY = (double)MaxHeight / SourceImage.Height;
-            var ratio = Math.Min(ratioX, ratioY);
-
-            var newWidth = (int)(SourceImage.Width * ratio);
-            var newHeight = (int)(SourceImage.Height * ratio);
-
-            var newImage = new Bitmap(newWidth, newHeight);
-            Graphics.FromImage(newImage).DrawImage(SourceImage, 0, 0, newWidth, newHeight);
-            return newImage;
-        }
-
-        #endregion
-
         #region Method commpletes the item submission on the way to the congratulations screen
 
         private bool complete_item_submission(SobekCM_Item Item_To_Complete, Custom_Tracer Tracer)

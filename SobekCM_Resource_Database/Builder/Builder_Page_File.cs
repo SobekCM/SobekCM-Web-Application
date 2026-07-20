@@ -177,6 +177,8 @@ namespace SobekCM_Resource_Database.Builder
         /// <returns> TRUE if successful, otherwise FALSE </returns>
         public bool Load_Image(string Directory)
         {
+            if (!OperatingSystem.IsWindowsVersionAtLeast(6, 1)) return false;
+
             if (File.Exists(Directory + FileName + ".QC.jpg"))
             {
                 try
@@ -196,6 +198,8 @@ namespace SobekCM_Resource_Database.Builder
         /// <summary> Clears the loaded quality control thumbnail image from the Bitmap object when complete </summary>
         public void Clear_Loaded_Image()
         {
+            if (!OperatingSystem.IsWindowsVersionAtLeast(6, 1)) return;
+
             if (thisImage != null)
             {
                 thisImage.Dispose();
@@ -211,6 +215,9 @@ namespace SobekCM_Resource_Database.Builder
         /// <param name="Scale"> Scale to draw the quality control thumbnail, used to control size</param>
         public void Draw(Graphics G, Pen BorderPen, int X, int Y, float Scale)
         {
+            if (!OperatingSystem.IsWindowsVersionAtLeast(6, 1))
+                return;
+
             int currWidth = (int)(Scale * thisImage.Width);
             int currHeight = (int)(Scale * thisImage.Height);
 

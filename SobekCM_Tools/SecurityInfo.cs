@@ -67,6 +67,8 @@ namespace SobekCM.Tools
         {
             get
             {
+                if (!OperatingSystem.IsWindowsVersionAtLeast(6, 1)) return "Only works on windows";
+
                 AppDomain.CurrentDomain.SetPrincipalPolicy(PrincipalPolicy.WindowsPrincipal);
                 WindowsPrincipal principal = (WindowsPrincipal)Thread.CurrentPrincipal;
                 WindowsIdentity identity = (WindowsIdentity)principal.Identity;
@@ -80,6 +82,8 @@ namespace SobekCM.Tools
         {
             get
             {
+                if (!OperatingSystem.IsWindowsVersionAtLeast(6, 1)) return "Only works on windows";
+                
                 AppDomain.CurrentDomain.SetPrincipalPolicy(PrincipalPolicy.WindowsPrincipal);
                 WindowsPrincipal principal = (WindowsPrincipal)Thread.CurrentPrincipal;
                 WindowsIdentity identity = (WindowsIdentity)principal.Identity;
@@ -96,6 +100,8 @@ namespace SobekCM.Tools
         {
             try
             {
+                if(!OperatingSystem.IsWindowsVersionAtLeast(6, 1)) return "Only works on windows";
+
                 RegistryKey fetcher = Registry.LocalMachine;
                 fetcher = fetcher.OpenSubKey(KeyLocation);
                 if (fetcher != null)
@@ -120,6 +126,7 @@ namespace SobekCM.Tools
         {
             try
             {
+                if (!OperatingSystem.IsWindowsVersionAtLeast(6, 1)) return "Only works on windows";
 
                 RegistryKey fetcher = Registry.CurrentUser;
                 fetcher = fetcher.OpenSubKey(KeyLocation);

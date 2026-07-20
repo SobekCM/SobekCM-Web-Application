@@ -1,7 +1,5 @@
 ﻿#region Using directives
 
-using System;
-using System.Collections.Generic;
 using SobekCM.Core.BriefItem;
 using SobekCM.Core.EAD;
 using SobekCM.Core.Items;
@@ -11,6 +9,8 @@ using SobekCM.Core.MicroservicesClient;
 using SobekCM.Engine_Library.Endpoints;
 using SobekCM.Resource_Object;
 using SobekCM.Tools;
+using System;
+using System.Collections.Generic;
 
 #endregion
 
@@ -33,7 +33,7 @@ namespace SobekCM.Core.Client
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         /// <param name="StatusCode"> [OUT] Status code from this request ( 200 = success, 404 = not a valid item, 500 = server error, etc. ) </param>
         /// <returns> Fully built brief digital item object </returns>
-        public BriefItemInfo Get_Item_Brief(string BibID, string VID, bool UseCache, Custom_Tracer Tracer, out int StatusCode )
+        public BriefItemInfo Get_Item_Brief(string BibID, string VID, bool UseCache, Custom_Tracer Tracer, out int StatusCode)
         {
             StatusCode = 200;
 
@@ -279,7 +279,7 @@ namespace SobekCM.Core.Client
         public void Clear_Item_Cache(string BibID, string VID, Custom_Tracer Tracer)
         {
             // Add a beginning trace
-            Tracer.Add_Trace("SobekEngineClient_ItemEndpoints.Clear_Item_Cache", "Clear item cache for " + BibID + ":" + VID );
+            Tracer.Add_Trace("SobekEngineClient_ItemEndpoints.Clear_Item_Cache", "Clear item cache for " + BibID + ":" + VID);
 
             // Get the endpoint
             MicroservicesClient_Endpoint endpoint = GetEndpointConfig("Items.ClearCache", Tracer);
@@ -291,7 +291,7 @@ namespace SobekCM.Core.Client
             string returnValue = Deserialize<string>(url, endpoint.Protocol, Tracer);
 
             // Add the message to the trace
-            Tracer.Add_Trace("SobekEngineClient_ItemEndpoints.Clear_Item_Cache", "Response: " + returnValue );
+            Tracer.Add_Trace("SobekEngineClient_ItemEndpoints.Clear_Item_Cache", "Response: " + returnValue);
         }
 
         /// <summary> Clears the engine cache of all items related to a particular title, or all volumes within a single BibID </summary>
@@ -300,7 +300,7 @@ namespace SobekCM.Core.Client
         public void Clear_Item_Group_Cache(string BibID, Custom_Tracer Tracer)
         {
             // Add a beginning trace
-            Tracer.Add_Trace("SobekEngineClient_ItemEndpoints.Clear_Item_Cache", "Clear all items cache for " + BibID );
+            Tracer.Add_Trace("SobekEngineClient_ItemEndpoints.Clear_Item_Cache", "Clear all items cache for " + BibID);
 
             // Get the endpoint
             MicroservicesClient_Endpoint endpoint = GetEndpointConfig("Items.ClearCache", Tracer);
@@ -320,7 +320,7 @@ namespace SobekCM.Core.Client
         /// <param name="VID"> Volume identifier (VID) for the digital resource </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         /// <returns>Information about the online submittor, if there was one</returns>
-        public Item_Submittor_Info Get_Submittor_Info(string BibID, string VID, Custom_Tracer Tracer )
+        public Item_Submittor_Info Get_Submittor_Info(string BibID, string VID, Custom_Tracer Tracer)
         {
             // Add a beginning trace
             Tracer.Add_Trace("SobekEngineClient_ItemEndpoints.Get_Submittor_Info", "Get submittor information for " + BibID);

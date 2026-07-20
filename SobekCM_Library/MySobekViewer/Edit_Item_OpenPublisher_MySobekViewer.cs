@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Http;
 using SobekCM.Core.Client;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
@@ -5,17 +6,13 @@ using SobekCM.Engine_Library.Configuration;
 using SobekCM.Engine_Library.Items;
 using SobekCM.Library.AdminViewer;
 using SobekCM.Library.HTML;
+using SobekCM.Library.UI;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Divisions;
 using SobekCM.Tools;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using SobekCM.Library.UI;
 
 namespace SobekCM.Library.MySobekViewer
 {
@@ -96,22 +93,22 @@ namespace SobekCM.Library.MySobekViewer
                 // See if there was a hidden request
                 string action_requested = Context.Request.Form["action_requested"].TrimFirst() ?? String.Empty;
 
-                if ( action_requested == "cancel")
+                if (action_requested == "cancel")
                 {
                     RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Item_Display;
                     UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
                     return;
                 }
 
-                if ( action_requested == "save")
+                if (action_requested == "save")
                 {
                     // Ensure there is a HTML file under each division
-                    foreach(abstract_TreeNode node in currentItem.Divisions.OpenTextbook_Tree.Roots)
+                    foreach (abstract_TreeNode node in currentItem.Divisions.OpenTextbook_Tree.Roots)
                     {
-                        if ( !node.Page)
+                        if (!node.Page)
                         {
                             Division_TreeNode divNode = (Division_TreeNode)node;
-                            if (( divNode.Nodes == null ) || (divNode.Nodes.Count == 0))
+                            if ((divNode.Nodes == null) || (divNode.Nodes.Count == 0))
                             {
                                 Page_TreeNode page = new Page_TreeNode();
                                 page.Label = node.Label;
@@ -145,12 +142,12 @@ namespace SobekCM.Library.MySobekViewer
                 string action_value = Context.Request.Form["action_value"].TrimFirst() ?? String.Empty;
                 string action_index = Context.Request.Form["action_index"].TrimFirst() ?? String.Empty;
 
-                if ( action_requested == "new_chapter")
+                if (action_requested == "new_chapter")
                 {
                     if (String.IsNullOrEmpty(action_value))
                         action_value = "Untitled";
-                    
-                    if ((!String.IsNullOrEmpty(action_index)) && ( Int32.TryParse(action_index, out int chapter_index )))
+
+                    if ((!String.IsNullOrEmpty(action_index)) && (Int32.TryParse(action_index, out int chapter_index)))
                     {
                         var divNode = new Division_TreeNode("Chapter", action_value);
 
@@ -177,7 +174,7 @@ namespace SobekCM.Library.MySobekViewer
                     }
                 }
 
-                if ( action_requested == "new_division")
+                if (action_requested == "new_division")
                 {
                     if (String.IsNullOrEmpty(action_value))
                         action_value = "Untitled";
@@ -194,7 +191,7 @@ namespace SobekCM.Library.MySobekViewer
                     }
                 }
 
-                if ( action_requested == "delete_chapter")
+                if (action_requested == "delete_chapter")
                 {
                     if ((!String.IsNullOrEmpty(action_index)) && (Int32.TryParse(action_index, out int chapter_index)))
                     {
@@ -207,7 +204,7 @@ namespace SobekCM.Library.MySobekViewer
 
                 if (action_requested == "delete_division")
                 {
-                    if ((!String.IsNullOrEmpty(action_index)) && (action_index.IndexOf("|") > 0 ))
+                    if ((!String.IsNullOrEmpty(action_index)) && (action_index.IndexOf("|") > 0))
                     {
                         string[] split = action_index.Split('|');
                         if ((Int32.TryParse(split[0], out int chapter_index)) && (Int32.TryParse(split[1], out int division_index)))
@@ -299,7 +296,7 @@ namespace SobekCM.Library.MySobekViewer
             Output.WriteLine("  <br />");
             Output.WriteLine("  <h2>Resource Structure</h2>");
 
-            
+
             Output.WriteLine("  <div id=\"oer_button_div\">");
             Output.WriteLine("        <button onclick=\"op_div_cancel_form(); return false;\" class=\"sbkMySobek_BigButton\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"sbkMySobek_RoundButton_LeftImg\" alt=\"\" /> CANCEL </button> &nbsp; &nbsp; ");
             Output.WriteLine("        <button onclick=\"op_div_save_form(); return false;\" class=\"sbkMySobek_BigButton\"> SAVE <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkMySobek_RoundButton_RightImg\" alt=\"\" /></button>");
@@ -326,13 +323,13 @@ namespace SobekCM.Library.MySobekViewer
             int chapter_index = 0;
             int division_index = 0;
             int overall_index = 0;
-            foreach( Division_TreeNode rootnode in currentItem.Divisions.OpenTextbook_Tree.Roots )
+            foreach (Division_TreeNode rootnode in currentItem.Divisions.OpenTextbook_Tree.Roots)
             {
                 Output.WriteLine("  <div class=\"oer_div_outer\">");
                 Output.WriteLine("    <div class=\"oer_div_outer_title\">" + System.Net.WebUtility.HtmlEncode(rootnode.Label) + "</div>");
 
 
-                if ((rootnode.Nodes != null ) && (rootnode.Nodes.Count > 0))
+                if ((rootnode.Nodes != null) && (rootnode.Nodes.Count > 0))
                 {
                     division_index = 0;
                     bool foundDivisions = false;
@@ -356,7 +353,7 @@ namespace SobekCM.Library.MySobekViewer
                                 string label = childNode.Label;
                                 if (label.Length > 50)
                                     label = label.Substring(0, 45) + "...";
-                                    
+
                                 Output.WriteLine("        <div class=\"oer_div_inner_title\">" + System.Net.WebUtility.HtmlEncode(label) + "</div>");
 
                                 Output.WriteLine("        <div class=\"oer_div_inner_toolbox_outer\">");
@@ -370,13 +367,13 @@ namespace SobekCM.Library.MySobekViewer
 
                                 division_index++;
                                 overall_index++;
-                            }                            
+                            }
                         }
 
                         // Add the plus sign
                         Output.WriteLine($"      <div class=\"oer_div_add_button\" onclick=\"return show_division_form('{chapter_index}');\">");
-                        Output.WriteLine( "        <div class=\"oer_div_inner_title\">+</div>");
-                        Output.WriteLine( "      </div>");
+                        Output.WriteLine("        <div class=\"oer_div_inner_title\">+</div>");
+                        Output.WriteLine("      </div>");
 
                         Output.WriteLine("    </div>");
                     }
@@ -390,7 +387,7 @@ namespace SobekCM.Library.MySobekViewer
                 Output.WriteLine($"        <a title=\"Edit the chapter type and/or title\" href=\"{javascript_req}\" onkeypress=\"return edit_chapter_keypress('{chapter_index}', '{System.Net.WebUtility.HtmlEncode(rootnode.Label).Replace("'", "")}', '{System.Net.WebUtility.HtmlEncode(rootnode.Type).Replace("'", "")}', '{isMozilla.ToString()}');\" onclick=\"return edit_chapter('{chapter_index}', '{System.Net.WebUtility.HtmlEncode(rootnode.Label).Replace("'", "")}', '{System.Net.WebUtility.HtmlEncode(rootnode.Type).Replace("'", "")}');\">edit</a> &nbsp;");
                 if (allowDelete)
                 {
-                    Output.WriteLine($"        <a title=\"Delete this chapter\" href=\"{javascript_req}\" onkeypress=\"return delete_chapter('{chapter_index}', '{System.Net.WebUtility.HtmlEncode(rootnode.Label).Replace("'","")}');\" onclick=\"return delete_chapter('{chapter_index}', '{System.Net.WebUtility.HtmlEncode(rootnode.Label).Replace("'", "")}');\">delete</a>");
+                    Output.WriteLine($"        <a title=\"Delete this chapter\" href=\"{javascript_req}\" onkeypress=\"return delete_chapter('{chapter_index}', '{System.Net.WebUtility.HtmlEncode(rootnode.Label).Replace("'", "")}');\" onclick=\"return delete_chapter('{chapter_index}', '{System.Net.WebUtility.HtmlEncode(rootnode.Label).Replace("'", "")}');\">delete</a>");
                 }
                 Output.WriteLine("      </div>");
                 Output.WriteLine("    </div>");
@@ -401,10 +398,10 @@ namespace SobekCM.Library.MySobekViewer
             }
 
             Output.WriteLine("</div>");
-            
 
 
-            
+
+
             Output.WriteLine("</div>");
             Output.WriteLine("</div>");
             Output.WriteLine();
@@ -441,7 +438,7 @@ namespace SobekCM.Library.MySobekViewer
             // Add the rows of data
             Output.WriteLine("    <tr><td style=\"width:70px\"><label for=\"form_chapter_type\">Type:</label></td><td><input class=\"form_new_chapter_input sbk_Focusable\" name=\"form_chapter_type\" id=\"form_chapter_type\" type=\"text\" value=\"\" /></td></tr>");
             Output.WriteLine("    <tr><td><label for=\"form_chapter_title\">Title:</label></td><td><input class=\"form_new_chapter_input sbk_Focusable\" name=\"form_chapter_title\" id=\"form_chapter_title\" type=\"text\" value=\"\" onkeypress=\"op_handle_title_keypress(event)\"/></td></tr>");
-            
+
 
             // Finish the popup form and add the CLOSE button
             Output.WriteLine("    <tr style=\"height:35px; text-align: center; vertical-align: bottom;\">");

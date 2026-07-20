@@ -3,11 +3,6 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using SobekCM.Engine_Library.ApplicationState;
-using SolrNet;
-using SolrNet.Commands.Parameters;
 
 #endregion
 

@@ -1,16 +1,16 @@
 #region Using directives
 
-using System;
-using System.Data;
-using System.IO;
-using System.Linq;
+using Microsoft.AspNetCore.Http;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Users;
 using SobekCM.Library.Database;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
 using SobekCM.Tools;
-using Microsoft.AspNetCore.Http;
+using System;
+using System.Data;
+using System.IO;
+using System.Linq;
 
 #endregion
 
@@ -40,7 +40,8 @@ namespace SobekCM.Library.MySobekViewer
         /// <summary> Title for the page that displays this viewer, this is shown in the search box at the top of the page, just below the banner </summary>
         public override string Web_Title
         {
-            get {
+            get
+            {
                 return String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.My_Sobek_SubMode) ? "My Descriptive Tags" : "Descriptive Tags";
             }
         }
@@ -52,8 +53,8 @@ namespace SobekCM.Library.MySobekViewer
         {
             Tracer.Add_Trace("User_Tags_MySobekViewer.Write_HTML", String.Empty);
 
-			Output.WriteLine("<h1>" + Web_Title + "</h1>");
-			Output.WriteLine();
+            Output.WriteLine("<h1>" + Web_Title + "</h1>");
+            Output.WriteLine();
 
             Output.WriteLine("<div class=\"SobekHomeText\">");
             string submode = String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.My_Sobek_SubMode) ? String.Empty : RequestSpecificValues.Current_Mode.My_Sobek_SubMode;
@@ -106,18 +107,18 @@ namespace SobekCM.Library.MySobekViewer
             // If there is no submode, just pull this users descriptive tags
             if (submode.Length == 0)
             {
-                    Output.WriteLine("<table width=\"750px\" border=\"0\" align=\"center\" cellpadding=\"1\" cellspacing=\"0\">");
-                    Output.WriteLine("  <tr>");
-                    Output.WriteLine("    <td bgcolor=\"#cccccc\">");
-                    Output.WriteLine("      <table width=\"100%\" border=\"0\" align=\"center\" cellpadding=\"2\" cellspacing=\"0\">");
-                    Output.WriteLine("        <tr>");
-                    Output.WriteLine("          <td bgcolor=\"#f4f4f4\"> &nbsp; <span class=\"groupname\"><span class=\"groupnamecaps\">&nbsp;Y</span>OUR <span class=\"groupnamecaps\">D</span>ESCRIPTIVE <span class=\"groupnamecaps\">T</span>AGS </span></td>");
-                    Output.WriteLine("        </tr>");
-                    Output.WriteLine("      </table>");
-                    Output.WriteLine("    </td>");
-                    Output.WriteLine("  </tr>");
-                    Output.WriteLine("</table>");
-             
+                Output.WriteLine("<table width=\"750px\" border=\"0\" align=\"center\" cellpadding=\"1\" cellspacing=\"0\">");
+                Output.WriteLine("  <tr>");
+                Output.WriteLine("    <td bgcolor=\"#cccccc\">");
+                Output.WriteLine("      <table width=\"100%\" border=\"0\" align=\"center\" cellpadding=\"2\" cellspacing=\"0\">");
+                Output.WriteLine("        <tr>");
+                Output.WriteLine("          <td bgcolor=\"#f4f4f4\"> &nbsp; <span class=\"groupname\"><span class=\"groupnamecaps\">&nbsp;Y</span>OUR <span class=\"groupnamecaps\">D</span>ESCRIPTIVE <span class=\"groupnamecaps\">T</span>AGS </span></td>");
+                Output.WriteLine("        </tr>");
+                Output.WriteLine("      </table>");
+                Output.WriteLine("    </td>");
+                Output.WriteLine("  </tr>");
+                Output.WriteLine("</table>");
+
 
                 // Get the tags by this RequestSpecificValues.Current_User
                 DataTable allTags = SobekCM_Database.View_Tags_By_User(RequestSpecificValues.Current_User.UserID, Tracer);

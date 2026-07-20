@@ -1,11 +1,11 @@
 ﻿#region Using directives
 
+using SobekCM.Resource_Object.MARC;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Text;
-using SobekCM.Resource_Object.MARC;
 
 #endregion
 
@@ -91,12 +91,12 @@ namespace SobekCM.Resource_Object.Bib_Info
             {
                 if (nonSort[nonSort.Length - 1] == ' ')
                     return Convert_String_To_XML_Safe(nonSort + title);
-                
+
                 if (nonSort[nonSort.Length - 1] == '\'')
                 {
                     return Convert_String_To_XML_Safe(nonSort + title);
                 }
-                
+
                 return Convert_String_To_XML_Safe(nonSort + " " + title);
             }
             return Convert_String_To_XML_Safe(title);
@@ -428,7 +428,8 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// there are no part numbers, the Part_Numbers property creates a readonly collection to pass back out.</remarks>
         public int Part_Numbers_Count
         {
-            get {
+            get
+            {
                 return partNumbers == null ? 0 : partNumbers.Count;
             }
         }
@@ -438,7 +439,8 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// Even if there are no part numbers, this property creates a readonly collection to pass back out.</remarks>
         public ReadOnlyCollection<string> Part_Numbers
         {
-            get {
+            get
+            {
                 return partNumbers == null ? new ReadOnlyCollection<string>(new List<string>()) : new ReadOnlyCollection<string>(partNumbers);
             }
         }
@@ -448,7 +450,8 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// there are no part names, the Part_Names property creates a readonly collection to pass back out.</remarks>
         public int Part_Names_Count
         {
-            get {
+            get
+            {
                 return partNames == null ? 0 : partNames.Count;
             }
         }
@@ -458,7 +461,8 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// Even if there are no part names, this property creates a readonly collection to pass back out.</remarks>
         public ReadOnlyCollection<string> Part_Names
         {
-            get {
+            get
+            {
                 return partNames == null ? new ReadOnlyCollection<string>(new List<string>()) : new ReadOnlyCollection<string>(partNames);
             }
         }

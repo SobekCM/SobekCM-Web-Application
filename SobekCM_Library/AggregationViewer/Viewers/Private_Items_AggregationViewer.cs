@@ -1,26 +1,22 @@
 #region Using directives
 
 using Microsoft.AspNetCore.Http;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.Client;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Results;
-using SobekCM.Core.UI_Configuration;
-using SobekCM.Core.UI_Configuration.StaticResources;
 using SobekCM.Core.Users;
 using SobekCM.Engine_Library.Configuration;
-using SobekCM.Engine_Library.Database;
 using SobekCM.Engine_Library.Navigation;
-using SobekCM.Library.Database;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Text;
 
 #endregion
 
@@ -194,7 +190,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 
 
             // Get the URL for the sort options
-            short sort = RequestSpecificValues.Current_Mode.Sort.HasValue ? RequestSpecificValues.Current_Mode.Sort.Value : ((short) 0);
+            short sort = RequestSpecificValues.Current_Mode.Sort.HasValue ? RequestSpecificValues.Current_Mode.Sort.Value : ((short)0);
             RequestSpecificValues.Current_Mode.Sort = 0;
             string url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
             RequestSpecificValues.Current_Mode.Sort = sort;
@@ -296,7 +292,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                         Output.WriteLine(privateItems.TotalTitles + " titles.</p>");
                 }
             }
-            
+
             Output.WriteLine("</div>");
 
             // Add the checkbox to open in a new window
@@ -353,7 +349,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 }
 
                 // Get the current page
-                ushort current_page = RequestSpecificValues.Current_Mode.Page.HasValue ? RequestSpecificValues.Current_Mode.Page.Value : ((ushort) 1 );
+                ushort current_page = RequestSpecificValues.Current_Mode.Page.HasValue ? RequestSpecificValues.Current_Mode.Page.Value : ((ushort)1);
 
                 // Put in a string builder and save, so we can repeat at the bottom
                 StringBuilder buttonBuilder = new StringBuilder();
@@ -377,8 +373,8 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 // Calculate the maximum number of pages
                 ushort pages = (ushort)(Math.Ceiling(privateItems.TotalTitles / RESULTS_PER_PAGE));
 
-                int start_title = (int) (1 + ((current_page - 1)*RESULTS_PER_PAGE));
-                int end_title = (int) (Math.Min(start_title + RESULTS_PER_PAGE, privateItems.TotalTitles));
+                int start_title = (int)(1 + ((current_page - 1) * RESULTS_PER_PAGE));
+                int end_title = (int)(Math.Min(start_title + RESULTS_PER_PAGE, privateItems.TotalTitles));
 
                 buttonBuilder.AppendLine("<span style=\"text-align:center;margin-left:auto; margin-right:auto\">" + start_title + " - " + end_title + " of " + privateItems.TotalTitles + " matching titles</span>");
 
@@ -411,7 +407,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             }
 
             Output.WriteLine("<br />");
-           
+
             // Start the table to display
             Output.WriteLine("</div>");
             Output.WriteLine("<center>");
@@ -438,7 +434,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                     Output.WriteLine("        <tr><td width=\"180px\"><a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + thisTitle.BibID + "\">" + thisTitle.BibID + "</a></td><td width=\"180px\">" + thisTitle.Type + "</td><td>( " + thisTitle.Item_Count + " volumes out of " + thisTitle.CompleteItemCount + " total volumes )</td></tr>");
                     Output.WriteLine("      </table>");
                     Output.WriteLine("    </td>");
-                    Output.WriteLine("    <td align=\"center\" width=\"200px\"><span class=\"privateTableBibDaysNumber\">" + Math.Floor( DateTime.Now.Subtract( thisTitle.LastActivityDate ).TotalDays ) + "</span><br />days ago</td>");
+                    Output.WriteLine("    <td align=\"center\" width=\"200px\"><span class=\"privateTableBibDaysNumber\">" + Math.Floor(DateTime.Now.Subtract(thisTitle.LastActivityDate).TotalDays) + "</span><br />days ago</td>");
                     Output.WriteLine("    <td align=\"center\" width=\"200px\"><span class=\"privateTableBibDaysNumber\">" + Math.Floor(DateTime.Now.Subtract(thisTitle.LastMilestoneDate).TotalDays) + "</span><br />days ago</td>");
                     Output.WriteLine("  </tr>");
 
@@ -452,24 +448,25 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                         Output.WriteLine("      <table>");
                         Output.Write("        <tr><td colspan=\"3\"><a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + thisTitle.BibID + "/" + thisItem.VID + "\"><span class=\"privateTableItemTitle\">" + thisItem.Title + "</span></a>");
 
-                        if (( !String.IsNullOrEmpty(thisItem.Creator) ) && ( thisItem.Creator.Length > 2 ))
+                        if ((!String.IsNullOrEmpty(thisItem.Creator)) && (thisItem.Creator.Length > 2))
                             Output.Write(" ( " + thisItem.Creator.Substring(2) + " )");
-                        
+
                         Output.WriteLine("</td></tr>");
                         Output.Write("        <tr><td width=\"180px\"><a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + thisTitle.BibID + "/" + thisItem.VID + "\">" + thisTitle.BibID + " : " + thisItem.VID + "</a></td>");
-                        if ( !String.IsNullOrEmpty(thisItem.PubDate))
+                        if (!String.IsNullOrEmpty(thisItem.PubDate))
                             Output.WriteLine("<td>Dated " + thisItem.PubDate + "</td><td></td></tr>");
                         else
                             Output.WriteLine("<td></td><td></td></tr>");
-                        if ( !String.IsNullOrEmpty(thisItem.Internal_Comments))
+                        if (!String.IsNullOrEmpty(thisItem.Internal_Comments))
                             Output.WriteLine("              <tr><td colspan=\"3\">&ldquo;" + thisItem.Internal_Comments + "&rdquo;</td></tr>");
-                        if ( thisItem.EmbargoDate.HasValue )
-                            Output.WriteLine("              <tr><td colspan=\"3\">" + String.Format(EMBARGO_DATE_STRING , thisItem.EmbargoDate.Value.ToShortDateString()) + "</td></tr>");
+                        if (thisItem.EmbargoDate.HasValue)
+                            Output.WriteLine("              <tr><td colspan=\"3\">" + String.Format(EMBARGO_DATE_STRING, thisItem.EmbargoDate.Value.ToShortDateString()) + "</td></tr>");
                         Output.WriteLine("      </table>");
                         Output.WriteLine("    </td>");
-                        Output.WriteLine("    <td align=\"center\" width=\"200px\">" + thisItem.LastActivityType.ToLower() + "<br /><span class=\"privateTableItemDaysNumber\">" + Math.Floor( DateTime.Now.Subtract( thisItem.LastActivityDate ).TotalDays ) + "</span><br />days ago</td>");
+                        Output.WriteLine("    <td align=\"center\" width=\"200px\">" + thisItem.LastActivityType.ToLower() + "<br /><span class=\"privateTableItemDaysNumber\">" + Math.Floor(DateTime.Now.Subtract(thisItem.LastActivityDate).TotalDays) + "</span><br />days ago</td>");
                         Output.WriteLine("    <td align=\"center\" width=\"200px\">" + thisItem.Last_Milestone_String + "<br /><span class=\"privateTableItemDaysNumber\">" + Math.Floor(DateTime.Now.Subtract(thisItem.LastMilestoneDate).TotalDays) + "</span><br />days ago</td>");
-                        Output.WriteLine("  </tr>");                    }
+                        Output.WriteLine("  </tr>");
+                    }
                 }
                 else
                 {

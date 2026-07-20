@@ -1,10 +1,10 @@
 ﻿#region Using directives
 
+using SobekCM.Core.Builder;
+using SobekCM.Core.Settings;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using SobekCM.Core.Builder;
-using SobekCM.Core.Settings;
 
 #endregion
 
@@ -48,13 +48,13 @@ namespace SobekCM.Engine_Library.Settings
 
                 return true;
             }
-            catch 
+            catch
             {
                 return false;
             }
         }
 
-        private static void Set_NonScheduled_Modules(Builder_Settings SettingsObject, DataTable BuilderFoldersTable, Dictionary<int, List<Builder_Module_Setting>> SetidToModules, bool IncludeModuleDescriptions )
+        private static void Set_NonScheduled_Modules(Builder_Settings SettingsObject, DataTable BuilderFoldersTable, Dictionary<int, List<Builder_Module_Setting>> SetidToModules, bool IncludeModuleDescriptions)
         {
             DataColumn assemblyColumn = BuilderFoldersTable.Columns["Assembly"];
             DataColumn classColumn = BuilderFoldersTable.Columns["Class"];
@@ -66,7 +66,7 @@ namespace SobekCM.Engine_Library.Settings
             DataColumn typeAbbrevColumn = BuilderFoldersTable.Columns["TypeAbbrev"];
 
 
-            Dictionary<int,List<Builder_Module_Setting>> folderSettings = new Dictionary<int, List<Builder_Module_Setting>>();
+            Dictionary<int, List<Builder_Module_Setting>> folderSettings = new Dictionary<int, List<Builder_Module_Setting>>();
             foreach (DataRow thisRow in BuilderFoldersTable.Rows)
             {
                 string type = thisRow[typeAbbrevColumn].ToString().ToUpper();
@@ -116,7 +116,7 @@ namespace SobekCM.Engine_Library.Settings
                         }
                         else
                         {
-                            SetidToModules[setId] = new List<Builder_Module_Setting> {newSetting};
+                            SetidToModules[setId] = new List<Builder_Module_Setting> { newSetting };
                         }
                         break;
                 }
@@ -202,19 +202,19 @@ namespace SobekCM.Engine_Library.Settings
                     Allow_Deletes = Convert.ToBoolean(thisRow["Allow_Deletes"]),
                     Allow_Folders_No_Metadata = Convert.ToBoolean(thisRow["Allow_Folders_No_Metadata"]),
                     Allow_Metadata_Updates = Convert.ToBoolean(thisRow["Allow_Metadata_Updates"]),
-                    BibID_Roots_Restrictions = thisRow["BibID_Roots_Restrictions"].ToString(), 
-                    Builder_Module_Set = {SetID = Convert.ToInt32(thisRow["ModuleSetID"]), SetName = thisRow["SetName"].ToString()}
+                    BibID_Roots_Restrictions = thisRow["BibID_Roots_Restrictions"].ToString(),
+                    Builder_Module_Set = { SetID = Convert.ToInt32(thisRow["ModuleSetID"]), SetName = thisRow["SetName"].ToString() }
                 };
 
 
-                if (( thisRow["ModuleSetID"] != null) && ( thisRow["ModuleSetID"].ToString().Length > 0 ))
+                if ((thisRow["ModuleSetID"] != null) && (thisRow["ModuleSetID"].ToString().Length > 0))
                 {
                     int id = Int32.Parse(thisRow["ModuleSetID"].ToString());
                     if (FolderToSetDictionary.ContainsKey(id))
                         FolderToSetDictionary[id].Add(newFolder);
                     else
                     {
-                        FolderToSetDictionary[id] = new List<Builder_Source_Folder> {newFolder};
+                        FolderToSetDictionary[id] = new List<Builder_Source_Folder> { newFolder };
                     }
                 }
 

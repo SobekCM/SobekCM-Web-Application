@@ -10,7 +10,7 @@ namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
 {
     /// <summary> Maps all the zoological taxonomic specific metadata from the METS-based SobekCM_Item object
     /// to the BriefItem, used for most the public functions of the front-end </summary>
-    public class Zoological_Taxonomy_BriefItemMapper: IBriefItemMapper
+    public class Zoological_Taxonomy_BriefItemMapper : IBriefItemMapper
     {
         /// <summary> Map one or more data elements from the original METS-based object to the
         /// BriefItem object </summary>
@@ -21,7 +21,7 @@ namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
         {
             // Try to get the zoological taxonomy data
             Zoological_Taxonomy_Info taxonInfo = Original.Get_Metadata_Module(GlobalVar.ZOOLOGICAL_TAXONOMY_METADATA_MODULE_KEY) as Zoological_Taxonomy_Info;
-            
+
             // Add the taxonomic data if it exists
             if ((taxonInfo != null) && (taxonInfo.hasData))
             {

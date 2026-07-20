@@ -1,17 +1,15 @@
 #region Using directives
 
+using SobekCM.Core.ApplicationState;
+using SobekCM.Core.Configuration.Localization;
+using SobekCM.Core.Users;
+using SobekCM.Library.UI;
+using SobekCM.Resource_Object;
+using SobekCM.Resource_Object.Bib_Info;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using Microsoft.AspNetCore.Http;
-using SobekCM.Core.ApplicationState;
-using SobekCM.Core.Configuration;
-using SobekCM.Core.Configuration.Localization;
-using SobekCM.Core.Users;
-using SobekCM.Resource_Object;
-using SobekCM.Resource_Object.Bib_Info;
-using SobekCM.Library.UI;
 
 #endregion
 
@@ -67,9 +65,9 @@ namespace SobekCM.Library.Citation.Elements
             }
 
             string course_title = string.Empty;
-            foreach( Title_Info titleInfo in Bib.Bib_Info.Other_Titles)
+            foreach (Title_Info titleInfo in Bib.Bib_Info.Other_Titles)
             {
-                if ( titleInfo.Title_Type == Title_Type_Enum.Course)
+                if (titleInfo.Title_Type == Title_Type_Enum.Course)
                 {
                     course_title = titleInfo.ToString();
                     if (!string.IsNullOrWhiteSpace(course_title))
@@ -96,7 +94,7 @@ namespace SobekCM.Library.Citation.Elements
                 }
             }
 
-            foreach( Title_Info titleInfo in courseTitles)
+            foreach (Title_Info titleInfo in courseTitles)
             {
                 Bib.Bib_Info.Remove_Other_Title(titleInfo);
             }

@@ -1,14 +1,6 @@
 #region Using directives
 
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Drawing;
-using System.Drawing.Imaging;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
+using Microsoft.AspNetCore.Http;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.BriefItem;
 using SobekCM.Core.MemoryMgmt;
@@ -22,7 +14,6 @@ using SobekCM.Library.Citation;
 using SobekCM.Library.Citation.SectionWriter;
 using SobekCM.Library.Citation.Template;
 using SobekCM.Library.Database;
-using Microsoft.AspNetCore.Http;
 // using SobekCM.Library.Helpers.UploadiFive;
 using SobekCM.Library.UI;
 using SobekCM.Resource_Object;
@@ -35,6 +26,15 @@ using SobekCM.Resource_Object.Metadata_File_ReaderWriters;
 using SobekCM.Resource_Object.Utilities;
 using SobekCM.Tools;
 using SobekCM_Resource_Database;
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Drawing;
+using System.Drawing.Imaging;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Text.RegularExpressions;
 using Image = System.Drawing.Image;
 
 #endregion
@@ -88,7 +88,7 @@ namespace SobekCM.Library.MySobekViewer
                 UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
                 return;
             }
-            
+
             // Ensure this user is enabled to add TEI 
             string user_tei_enabled = RequestSpecificValues.Current_User.Get_Setting("TEI.Enabled", "false");
             if (String.Compare(user_tei_enabled, "true", StringComparison.OrdinalIgnoreCase) != 0)
@@ -148,11 +148,11 @@ namespace SobekCM.Library.MySobekViewer
             }
 
             // Load some information from the session
-            if ( Context.SessionObject()["New_TEI_mySobekViewer.Mapping_File"] != null )
+            if (Context.SessionObject()["New_TEI_mySobekViewer.Mapping_File"] != null)
                 mapping_file = Context.SessionObject()["New_TEI_mySobekViewer.Mapping_File"] as string;
-            if ( Context.SessionObject()["New_TEI_mySobekViewer.XSLT_File"] != null )
+            if (Context.SessionObject()["New_TEI_mySobekViewer.XSLT_File"] != null)
                 xslt_file = Context.SessionObject()["New_TEI_mySobekViewer.XSLT_File"] as string;
-            if ( Context.SessionObject()["New_TEI_mySobekViewer.CSS_File"] != null )
+            if (Context.SessionObject()["New_TEI_mySobekViewer.CSS_File"] != null)
                 css_file = Context.SessionObject()["New_TEI_mySobekViewer.CSS_File"] as string;
 
 
@@ -1403,7 +1403,7 @@ namespace SobekCM.Library.MySobekViewer
 
                             // Since this exists, add to the css file list
                             css_files.Add(file);
-                         }
+                        }
                     }
                 }
 
@@ -1559,7 +1559,7 @@ namespace SobekCM.Library.MySobekViewer
                 Output.WriteLine("      <div class=\"sbkMySobek_RightButtons\">");
                 Output.WriteLine("        <button onclick=\"return new_item_next_phase(3);\" class=\"sbkMySobek_BigButton\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"sbkMySobek_RoundButton_LeftImg\" alt=\"\" /> BACK </button> &nbsp; &nbsp; ");
 
-                if ( !error )
+                if (!error)
                     Output.WriteLine("        <button onclick=\"return new_item_next_phase(5);\" class=\"sbkMySobek_BigButton\"> NEXT <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkMySobek_RoundButton_RightImg\" alt=\"\" /></button>");
 
                 Output.WriteLine("      </div>");
@@ -1996,7 +1996,7 @@ namespace SobekCM.Library.MySobekViewer
             StringBuilder result = new StringBuilder();
 
             // Need to convert this current item to a brief item
-            BriefItemInfo BriefItem = BriefItem_Factory.Create(item, Tracer); 
+            BriefItemInfo BriefItem = BriefItem_Factory.Create(item, Tracer);
 
             // Now, try to add the thumbnail from any page images here
             if (BriefItem.Behaviors.Dark_Flag != true)
@@ -2500,7 +2500,7 @@ namespace SobekCM.Library.MySobekViewer
                 add_upload_controls_tei(Output, "", ".xml", Tracer);
             }
 
-            if  (currentProcessStep == 8)
+            if (currentProcessStep == 8)
             {
                 // Add the upload controls to the file place holder
                 add_upload_controls(Output, "Add a new related file for this package:", UI_ApplicationCache_Gateway.Settings.Resources.Upload_Image_Types + "," + UI_ApplicationCache_Gateway.Settings.Resources.Upload_File_Types, Tracer);
@@ -2529,7 +2529,7 @@ namespace SobekCM.Library.MySobekViewer
 
             Output.WriteLine("<script src=\"" + Static_Resources_Gateway.Sobekcm_Metadata_Js + "\" type=\"text/javascript\"></script>");
 
-            if (( currentProcessStep == 2 ) || ((completeTemplate.Upload_Types == CompleteTemplate.Template_Upload_Types.File) || (completeTemplate.Upload_Types == CompleteTemplate.Template_Upload_Types.File_or_URL)))
+            if ((currentProcessStep == 2) || ((completeTemplate.Upload_Types == CompleteTemplate.Template_Upload_Types.File) || (completeTemplate.Upload_Types == CompleteTemplate.Template_Upload_Types.File_or_URL)))
             {
                 Output.WriteLine(Prompt);
                 Output.WriteLine("<blockquote>");
@@ -2746,7 +2746,7 @@ namespace SobekCM.Library.MySobekViewer
 
             if (currentProcessStep == 4)
             {
-                Output.WriteLine("  <link href=\"" + Static_Resources_Gateway.Sobekcm_Item_Css + "\" rel=\"stylesheet\" type=\"text/css\" />");    
+                Output.WriteLine("  <link href=\"" + Static_Resources_Gateway.Sobekcm_Item_Css + "\" rel=\"stylesheet\" type=\"text/css\" />");
             }
 
             return false;

@@ -1,16 +1,15 @@
 ﻿#region Using directives
 
+using ProtoBuf;
+using SobekCM.Core.Configuration.Localization;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Xml;
 using System.Xml.Serialization;
-using ProtoBuf;
-using SobekCM.Core.Configuration.Localization;
 
 #endregion
 
@@ -24,7 +23,7 @@ namespace SobekCM.Core.Configuration
     {
         private static bool attemptedRead;
         private static Dictionary<string, QualityControl_Profile> profilesDictionary;
-        
+
         /// <summary> Static constructor for the QualityControl_Configuration class </summary>
         public QualityControl_Configuration()
         {
@@ -107,8 +106,8 @@ namespace SobekCM.Core.Configuration
             // Create the default profile
             QualityControl_Profile newProfile = new QualityControl_Profile
             {
-                Default_Profile = true, 
-                Profile_Name = "System Default", 
+                Default_Profile = true,
+                Profile_Name = "System Default",
                 Profile_Description = "Default profile used when no config file is present"
             };
             Add_Profile(newProfile);
@@ -116,7 +115,11 @@ namespace SobekCM.Core.Configuration
             // Add back cover
             QualityControl_Division_Config div1 = new QualityControl_Division_Config
             {
-                ID = 1, TypeName = "Back Cover", isActive = true, isNameable = false, BaseTypeName = "Cover"
+                ID = 1,
+                TypeName = "Back Cover",
+                isActive = true,
+                isNameable = false,
+                BaseTypeName = "Cover"
             };
             div1.Add_Translation(Web_Language_Enum.Spanish, "Portada Posterior");
             div1.Add_Translation(Web_Language_Enum.French, "Couverture Arrière");
@@ -125,7 +128,10 @@ namespace SobekCM.Core.Configuration
             // Add back matter
             QualityControl_Division_Config div2 = new QualityControl_Division_Config
             {
-                ID = 2, TypeName = "Back Matter", isActive = true, isNameable = false
+                ID = 2,
+                TypeName = "Back Matter",
+                isActive = true,
+                isNameable = false
             };
             div2.Add_Translation(Web_Language_Enum.Spanish, "Materia Posterior");
             div2.Add_Translation(Web_Language_Enum.French, "Matière Arrière");
@@ -134,7 +140,10 @@ namespace SobekCM.Core.Configuration
             // Add chapter ( misorder of the object names here and below matters not)
             QualityControl_Division_Config div4 = new QualityControl_Division_Config
             {
-                ID = 3, TypeName = "Chapter", isActive = true, isNameable = true
+                ID = 3,
+                TypeName = "Chapter",
+                isActive = true,
+                isNameable = true
             };
             div4.Add_Translation(Web_Language_Enum.Spanish, "Capítulo");
             div4.Add_Translation(Web_Language_Enum.French, "Chapitre");
@@ -143,7 +152,11 @@ namespace SobekCM.Core.Configuration
             // Add front cover
             QualityControl_Division_Config div3 = new QualityControl_Division_Config
             {
-                ID = 4, TypeName = "Front Cover", isActive = true, isNameable = false, BaseTypeName = "Cover"
+                ID = 4,
+                TypeName = "Front Cover",
+                isActive = true,
+                isNameable = false,
+                BaseTypeName = "Cover"
             };
             div3.Add_Translation(Web_Language_Enum.Spanish, "Portada Delantera");
             div3.Add_Translation(Web_Language_Enum.French, "Couverture Frente");
@@ -152,7 +165,10 @@ namespace SobekCM.Core.Configuration
             // Add front matter
             QualityControl_Division_Config div5 = new QualityControl_Division_Config
             {
-                ID = 5, TypeName = "Front Matter", isActive = true, isNameable = false
+                ID = 5,
+                TypeName = "Front Matter",
+                isActive = true,
+                isNameable = false
             };
             div5.Add_Translation(Web_Language_Enum.Spanish, "Materia Delantera");
             div5.Add_Translation(Web_Language_Enum.French, "Préliminaires");
@@ -161,7 +177,10 @@ namespace SobekCM.Core.Configuration
             // Add index
             QualityControl_Division_Config div6 = new QualityControl_Division_Config
             {
-                ID = 6, TypeName = "Index", isActive = true, isNameable = true
+                ID = 6,
+                TypeName = "Index",
+                isActive = true,
+                isNameable = true
             };
             div6.Add_Translation(Web_Language_Enum.Spanish, "Indice");
             div6.Add_Translation(Web_Language_Enum.French, "Indice");
@@ -170,7 +189,11 @@ namespace SobekCM.Core.Configuration
             // Add introduction
             QualityControl_Division_Config div7 = new QualityControl_Division_Config
             {
-                ID = 7, TypeName = "Introduction", isActive = true, isNameable = false, BaseTypeName = "Chapter"
+                ID = 7,
+                TypeName = "Introduction",
+                isActive = true,
+                isNameable = false,
+                BaseTypeName = "Chapter"
             };
             div7.Add_Translation(Web_Language_Enum.Spanish, "Introducción");
             div7.Add_Translation(Web_Language_Enum.French, "Introduction");
@@ -179,7 +202,10 @@ namespace SobekCM.Core.Configuration
             // Add spine
             QualityControl_Division_Config div8 = new QualityControl_Division_Config
             {
-                ID = 8, TypeName = "Spine", isActive = true, isNameable = false
+                ID = 8,
+                TypeName = "Spine",
+                isActive = true,
+                isNameable = false
             };
             div8.Add_Translation(Web_Language_Enum.Spanish, "Canto");
             div8.Add_Translation(Web_Language_Enum.French, "Épine de livre");
@@ -188,7 +214,11 @@ namespace SobekCM.Core.Configuration
             // Add table of contents
             QualityControl_Division_Config div9 = new QualityControl_Division_Config
             {
-                ID = 9, TypeName = "Table of Contents", isActive = true, isNameable = false, BaseTypeName = "Contents"
+                ID = 9,
+                TypeName = "Table of Contents",
+                isActive = true,
+                isNameable = false,
+                BaseTypeName = "Contents"
             };
             div9.Add_Translation(Web_Language_Enum.Spanish, "Contenidos");
             div9.Add_Translation(Web_Language_Enum.French, "Table des Matières");
@@ -197,7 +227,11 @@ namespace SobekCM.Core.Configuration
             // Add title page
             QualityControl_Division_Config div10 = new QualityControl_Division_Config
             {
-                ID = 10, TypeName = "Title Page", isActive = true, isNameable = false, BaseTypeName = "Title"
+                ID = 10,
+                TypeName = "Title Page",
+                isActive = true,
+                isNameable = false,
+                BaseTypeName = "Title"
             };
             div10.Add_Translation(Web_Language_Enum.Spanish, "Titre");
             div10.Add_Translation(Web_Language_Enum.French, "Titulario");
@@ -226,7 +260,7 @@ namespace SobekCM.Core.Configuration
                 writer.WriteLine("\t\thttp://digital.uflib.ufl.edu/metadata/sobekcm_config/sobekcm_config.xsd\">");
                 writer.WriteLine("\t<QualityControl>");
                 writer.WriteLine("\t\t<Profiles>");
-              
+
                 foreach (QualityControl_Profile profile in profilesDictionary.Values)
                 {
                     writer.Write("\t\t\t<Profile ");
@@ -238,7 +272,7 @@ namespace SobekCM.Core.Configuration
                     foreach (QualityControl_Division_Config thisConfig in profile.Division_Types)
                     {
                         writer.Write("\t\t\t\t<DivisionType DivisionID=\"" + thisConfig.ID + "\" type=\"" + Convert_String_To_XML_Safe(thisConfig.TypeName) + "\" ");
-                        if ( !thisConfig.isActive ) writer.Write( "isActive=\"false\" ");
+                        if (!thisConfig.isActive) writer.Write("isActive=\"false\" ");
                         writer.Write(thisConfig.isNameable ? "isNameable=\"true\" " : "isNameable=\"false\" ");
                         if (thisConfig.BaseTypeName.Length > 0)
                             writer.Write("base=\"" + Convert_String_To_XML_Safe(thisConfig.BaseTypeName) + "\" ");
@@ -267,7 +301,7 @@ namespace SobekCM.Core.Configuration
                 writer.Flush();
                 writer.Close();
             }
-            catch 
+            catch
             {
                 returnValue = false;
             }
@@ -349,7 +383,7 @@ namespace SobekCM.Core.Configuration
         /// <param name="Profile_Name"> Name associated with this profile </param>
         /// <param name="Profile_Description"> Description associated with this profile </param>
         /// <param name="Default_Profile"> Flag indicates if this is the default profile </param>
-        public QualityControl_Profile( string Profile_Name, string Profile_Description, bool Default_Profile )
+        public QualityControl_Profile(string Profile_Name, string Profile_Description, bool Default_Profile)
         {
             Division_Types = new List<QualityControl_Division_Config>();
             divisionTypeLookup = new Dictionary<string, QualityControl_Division_Config>();
@@ -364,12 +398,12 @@ namespace SobekCM.Core.Configuration
         [XmlArray("divisionTypes")]
         [XmlArrayItem("type", typeof(QualityControl_Division_Config))]
         [ProtoMember(3)]
-        public List<QualityControl_Division_Config> Division_Types { get; set;  }
+        public List<QualityControl_Division_Config> Division_Types { get; set; }
 
 
         /// <summary> Add a new division type to this profile </summary>
         /// <param name="Division_Config"> New division type to add </param>
-        public void Add_Division_Type(QualityControl_Division_Config Division_Config )
+        public void Add_Division_Type(QualityControl_Division_Config Division_Config)
         {
             Division_Types.Add(Division_Config);
             divisionTypeLookup[Division_Config.TypeName] = Division_Config;
@@ -377,7 +411,7 @@ namespace SobekCM.Core.Configuration
 
         /// <summary> Remove a division type from this profile </summary>
         /// <param name="Division_Config"> Division type to remove </param>
-        public void Remove_Division_Type( QualityControl_Division_Config Division_Config )
+        public void Remove_Division_Type(QualityControl_Division_Config Division_Config)
         {
             Division_Types.Remove(Division_Config);
             divisionTypeLookup.Remove(Division_Config.TypeName);
@@ -391,7 +425,7 @@ namespace SobekCM.Core.Configuration
         [IgnoreDataMember]
         public QualityControl_Division_Config this[string TypeName]
         {
-            get 
+            get
             {
                 // Ensure the dictionary exists and is current
                 if ((divisionTypeLookup == null) || (divisionTypeLookup.Count != Division_Types.Count))
@@ -412,24 +446,24 @@ namespace SobekCM.Core.Configuration
     #endregion
 
     #region QualityControl_Division_Config class 
- 
+
     /// <summary> Configuration information for a single possible division type </summary>
     [Serializable, DataContract, ProtoContract]
     [XmlRoot("QualityControlDivisionConfig")]
-    public class QualityControl_Division_Config  
+    public class QualityControl_Division_Config
     {
         /// <summary> Key for this division configuration information </summary>
         /// <remarks> This may be used for updating the data or something, not currently used?? </remarks>
         [XmlIgnore]
         [IgnoreDataMember]
-        internal int ID { get; set;  }
+        internal int ID { get; set; }
 
         /// <summary> Name of this type, which the user selects.  This is also the default name, if
         /// a translation for this name is not provided in a requested language </summary>
         [DataMember(Name = "name", EmitDefaultValue = false)]
         [XmlAttribute("name")]
         [ProtoMember(1)]
-        public string TypeName { get; set;  }
+        public string TypeName { get; set; }
 
         /// <summary> Flag indicates if this division is currently active </summary>
         [DataMember(Name = "active", EmitDefaultValue = false)]
@@ -441,7 +475,7 @@ namespace SobekCM.Core.Configuration
         [DataMember(Name = "nameable", EmitDefaultValue = false)]
         [XmlAttribute("nameable")]
         [ProtoMember(3)]
-        public bool isNameable  {  get; set;  }
+        public bool isNameable { get; set; }
 
         /// <summary> If this is set, then the typename is actually used as the division label
         /// and this is used as the type within the METS structure map </summary>
@@ -496,7 +530,7 @@ namespace SobekCM.Core.Configuration
         /// <param name="isNameable"> Flag indicates if the user will be asked for a name when this division is chosen </param>
         /// <param name="BaseTypeName"> If this is set, then the typename is actually used as the division label
         /// and this is used as the type within the METS structure map </param>
-        public QualityControl_Division_Config(int ID, string TypeName, bool isActive, bool isNameable, string BaseTypeName )
+        public QualityControl_Division_Config(int ID, string TypeName, bool isActive, bool isNameable, string BaseTypeName)
         {
             TypeTranslations = new List<Web_Language_Translation_Value>();
             typeTranslationsDictionary = new Dictionary<Web_Language_Enum, string>();
@@ -526,7 +560,7 @@ namespace SobekCM.Core.Configuration
         /// <param name="useDefaultIfNotPresent"> Flag determines if the default type should be returned
         /// if the specified language does not exist </param>
         /// <returns> Transalted type, or an empty string </returns>
-        public string Get_Translation( Web_Language_Enum Language, bool useDefaultIfNotPresent )
+        public string Get_Translation(Web_Language_Enum Language, bool useDefaultIfNotPresent)
         {
             if (typeTranslationsDictionary.ContainsKey(Language))
                 return typeTranslationsDictionary[Language];
@@ -537,7 +571,7 @@ namespace SobekCM.Core.Configuration
         /// <summary> Add a translated type for this division </summary>
         /// <param name="Language"> Language for this translation </param>
         /// <param name="Translation"> Translation of the type of this division </param>
-        public void Add_Translation( Web_Language_Enum Language, string Translation )
+        public void Add_Translation(Web_Language_Enum Language, string Translation)
         {
             TypeTranslations.Add(new Web_Language_Translation_Value(Language, Translation));
             typeTranslationsDictionary[Language] = Translation;

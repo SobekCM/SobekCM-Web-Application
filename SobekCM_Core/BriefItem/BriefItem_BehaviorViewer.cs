@@ -1,7 +1,7 @@
-﻿using System;
+﻿using ProtoBuf;
+using System;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
-using ProtoBuf;
 
 namespace SobekCM.Core.BriefItem
 {
@@ -21,7 +21,7 @@ namespace SobekCM.Core.BriefItem
         /// <param name="MenuOrder"> Order this displays in the item main menu </param>
         /// <param name="Excluded"> Flag indicates if this viewer is explicitly excluded from this digital resource </param>
         /// <param name="Label"> Label associated with this viewer for display in the item menu for the digital resource </param>
-        public BriefItem_BehaviorViewer(string ViewerType, float MenuOrder, bool Excluded, string Label )
+        public BriefItem_BehaviorViewer(string ViewerType, float MenuOrder, bool Excluded, string Label)
         {
             this.ViewerType = ViewerType;
             this.MenuOrder = MenuOrder;

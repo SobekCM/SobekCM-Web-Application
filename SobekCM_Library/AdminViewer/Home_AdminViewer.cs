@@ -2,71 +2,68 @@
 
 #region Using directives
 
-using System;
-using System.Collections.Generic;
-using System.IO;
 using Microsoft.AspNetCore.Http;
 using SobekCM.Core.Navigation;
-using SobekCM.Core.UI_Configuration;
-using SobekCM.Core.UI_Configuration.StaticResources;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Engine_Library.Database;
-using SobekCM.Library.Database;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
+using System;
+using System.Collections.Generic;
+using System.IO;
 
 #endregion
 
 namespace SobekCM.Library.AdminViewer
 {
-	/// <summary> Class allows a system admin to view the administrative home page, with all their options in a menu  </summary>
-	/// <remarks> This class extends the <see cref="abstract_AdminViewer"/> class.<br /><br />
-	/// MySobek Viewers are used for registration and authentication with mySobek, as well as performing any task which requires
-	/// authentication, such as online submittal, metadata editing, and system administrative tasks.<br /><br />
-	/// During a valid html request, the following steps occur:
-	/// <ul>
-	/// <li>Application state is built/verified by the Application_State_Builder </li>
-	/// <li>Request is analyzed by the QueryString_Analyzer and output as a <see cref="Navigation_Object"/>  </li>
-	/// <li>Main writer is created for rendering the output, in his case the <see cref="Html_MainWriter"/> </li>
-	/// <li>The HTML writer will create the necessary subwriter.  Since this action requires authentication, an instance of the  <see cref="MySobek_HtmlSubwriter"/> class is created. </li>
-	/// <li>The mySobek subwriter creates an instance of this viewer to display the system admin home page </li>
-	/// </ul></remarks>
-	public class Home_AdminViewer : abstract_AdminViewer
-	{
+    /// <summary> Class allows a system admin to view the administrative home page, with all their options in a menu  </summary>
+    /// <remarks> This class extends the <see cref="abstract_AdminViewer"/> class.<br /><br />
+    /// MySobek Viewers are used for registration and authentication with mySobek, as well as performing any task which requires
+    /// authentication, such as online submittal, metadata editing, and system administrative tasks.<br /><br />
+    /// During a valid html request, the following steps occur:
+    /// <ul>
+    /// <li>Application state is built/verified by the Application_State_Builder </li>
+    /// <li>Request is analyzed by the QueryString_Analyzer and output as a <see cref="Navigation_Object"/>  </li>
+    /// <li>Main writer is created for rendering the output, in his case the <see cref="Html_MainWriter"/> </li>
+    /// <li>The HTML writer will create the necessary subwriter.  Since this action requires authentication, an instance of the  <see cref="MySobek_HtmlSubwriter"/> class is created. </li>
+    /// <li>The mySobek subwriter creates an instance of this viewer to display the system admin home page </li>
+    /// </ul></remarks>
+    public class Home_AdminViewer : abstract_AdminViewer
+    {
         private string menu_preference;
-	    private Dictionary<string, List<string>> categories_dictionary = new Dictionary<String, List<String>>();
-	    private SortedList<string, string> icons = new SortedList<String, String>();
+        private Dictionary<string, List<string>> categories_dictionary = new Dictionary<String, List<String>>();
+        private SortedList<string, string> icons = new SortedList<String, String>();
 
         // Constants for the brief explanations
         private const string ADD_COLLECTION_WIZARD_BRIEF = "Add a new collection (or any other type of aggregation) using the wizard.  This will guide you the process of adding a new collection and uploading the banner and button.";
-		private const string EDIT_CURR_SKIN_BRIEF = "Edit the web skin currently in use.  This allows editing of headers and footers, implementing general style changes via CSS, and uploading web-skin related images and documents.";
-		private const string USERS_AND_GROUPS_BRIEF = "Edit users and user groups and assign new permissions either directly to users or through the user group membership.";
+        private const string EDIT_CURR_SKIN_BRIEF = "Edit the web skin currently in use.  This allows editing of headers and footers, implementing general style changes via CSS, and uploading web-skin related images and documents.";
+        private const string USERS_AND_GROUPS_BRIEF = "Edit users and user groups and assign new permissions either directly to users or through the user group membership.";
         private const string USER_REQUESTS_BRIEF = "View any pending user requests, such as to submit material or join a user group.";
-		private const string URL_PORTALS_BRIEF = "URL portals define the different web skins and default aggregations to be displayed for different incoming base URLs.";
-		private const string WEB_SKINS_BRIEF = "View, edit, and create web skins to modify the overall look and feel of the site by editing headers, footers, and the CSS stylesheets.";
-		private const string ALIASES_BRIEF = "Manage the various aggregation aliases which allow different URLs to point to the same aggregation.";
-		private const string AGGR_MGMT_BRIEF = "Manage all the aggregations ( collections, institutions, exhibits, etc.. ) by adding new aggregations, deleting existing aggregations, and other administrative tasks.";
-		private const string THEMATIC_HEADING_BRIEF = "Manage the thematic headings, which allow collections within this instance to be added to and categorized on the main repository home page.";
-		private const string DEFAULT_METADATA_BRIEF = "Manage the default metadata sets which can be assigned to users to provide some standard metadata for all items added through the online templates.";
-		private const string WORDMARKS_BRIEF = "Manage the wordmarks that can be associated with digital reousrces to appear when viewing the item.  These are often used to attribute contributors and granting agencies.";
-		private const string BUILDER_STATUS_BRIEF = "Check the current builder status and view recent logs and errors that the builder may have encountered.";
-		private const string RESTRICTIONS_BRIEF = "Edit the IP ranges which may be used to restrict access to digital resources to certain institutions or sets of computers, rather than allowing open, public access.";
-		private const string SETTINGS_BRIEF = "These settings control the basic operation and behavior of the entire repository.";
+        private const string URL_PORTALS_BRIEF = "URL portals define the different web skins and default aggregations to be displayed for different incoming base URLs.";
+        private const string WEB_SKINS_BRIEF = "View, edit, and create web skins to modify the overall look and feel of the site by editing headers, footers, and the CSS stylesheets.";
+        private const string ALIASES_BRIEF = "Manage the various aggregation aliases which allow different URLs to point to the same aggregation.";
+        private const string AGGR_MGMT_BRIEF = "Manage all the aggregations ( collections, institutions, exhibits, etc.. ) by adding new aggregations, deleting existing aggregations, and other administrative tasks.";
+        private const string THEMATIC_HEADING_BRIEF = "Manage the thematic headings, which allow collections within this instance to be added to and categorized on the main repository home page.";
+        private const string DEFAULT_METADATA_BRIEF = "Manage the default metadata sets which can be assigned to users to provide some standard metadata for all items added through the online templates.";
+        private const string WORDMARKS_BRIEF = "Manage the wordmarks that can be associated with digital reousrces to appear when viewing the item.  These are often used to attribute contributors and granting agencies.";
+        private const string BUILDER_STATUS_BRIEF = "Check the current builder status and view recent logs and errors that the builder may have encountered.";
+        private const string RESTRICTIONS_BRIEF = "Edit the IP ranges which may be used to restrict access to digital resources to certain institutions or sets of computers, rather than allowing open, public access.";
+        private const string SETTINGS_BRIEF = "These settings control the basic operation and behavior of the entire repository.";
         private const string RESET_CACHE_BRIEF = "This resets the cache and many of the application values and forces the web application to pull all the data fresh from the design folders and from the database.";
-		private const string PERMISSIONS_BRIEF = "View reports on the different top-level permissions that have been provided to users, either directly or through user group membership.";
+        private const string PERMISSIONS_BRIEF = "View reports on the different top-level permissions that have been provided to users, either directly or through user group membership.";
         private const string WEB_MGMT_BRIEF = "Manage the top-level static web content pages within this system and all the existing web content redirects.";
         private const string WEB_HISTORY_BRIEF = "View the complete list of recent updates to the top-level static web content pages, including page, user, and change type.";
         private const string WEB_USAGE_BRIEF = "View the online usage statistics reports related to the top-level static web content pages.";
         private const string TEI_BRIEF = "Administer portions of the TEI module, including user permissions and managing uploaded XSLTs, CSS files, and mapping files.";
 
 
-	    /// <summary> Constructor for a new instance of the Home_AdminViewer class </summary>
-	    /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
-	    public Home_AdminViewer(RequestCache RequestSpecificValues, HttpContext Context) : base(RequestSpecificValues, Context)
-	    {
-	        RequestSpecificValues.Tracer.Add_Trace("Home_AdminViewer.Constructor", String.Empty);
+        /// <summary> Constructor for a new instance of the Home_AdminViewer class </summary>
+        /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
+        public Home_AdminViewer(RequestCache RequestSpecificValues, HttpContext Context) : base(RequestSpecificValues, Context)
+        {
+            RequestSpecificValues.Tracer.Add_Trace("Home_AdminViewer.Constructor", String.Empty);
 
             // Ensure there is a user
             if (RequestSpecificValues.Current_User == null)
@@ -87,33 +84,33 @@ namespace SobekCM.Library.AdminViewer
             }
 
             menu_preference = "brief";
-            if ( RequestSpecificValues.Current_User != null )
+            if (RequestSpecificValues.Current_User != null)
                 menu_preference = RequestSpecificValues.Current_User.Get_Setting("Home_AdminViewer:View Preference", "brief");
 
-	        // Was this a post-back, which would only be due to a preference change
-	        if ((RequestSpecificValues.Current_Mode.isPostBack) && (Context.Request.HasFormContentType))
-	        {
-	            // Get the new preference
-	            string new_preference = Context.Request.Form["admin_menu_preference"];
-	            if ((!String.IsNullOrEmpty(new_preference)) && (new_preference != menu_preference))
-	            {
-	                // Save the new preference
-	                menu_preference = new_preference;
-	                if (RequestSpecificValues.Current_User != null)
-	                {
-	                    RequestSpecificValues.Current_User.Add_Setting("Home_AdminViewer:View Preference", menu_preference);
+            // Was this a post-back, which would only be due to a preference change
+            if ((RequestSpecificValues.Current_Mode.isPostBack) && (Context.Request.HasFormContentType))
+            {
+                // Get the new preference
+                string new_preference = Context.Request.Form["admin_menu_preference"];
+                if ((!String.IsNullOrEmpty(new_preference)) && (new_preference != menu_preference))
+                {
+                    // Save the new preference
+                    menu_preference = new_preference;
+                    if (RequestSpecificValues.Current_User != null)
+                    {
+                        RequestSpecificValues.Current_User.Add_Setting("Home_AdminViewer:View Preference", menu_preference);
                         Engine_Database.Set_User_Setting(RequestSpecificValues.Current_User.UserID, "Home_AdminViewer:View Preference", menu_preference);
-	                }
-	            }
-	        }
+                    }
+                }
+            }
 
-	        // Add all the known categories
-	        categories_dictionary["common"] = new List<string>();
-	        categories_dictionary["appearance"] = new List<string>();
-	        categories_dictionary["collections"] = new List<string>();
-	        categories_dictionary["items"] = new List<string>();
-	        categories_dictionary["settings"] = new List<string>();
-	        categories_dictionary["permissions"] = new List<string>();
+            // Add all the known categories
+            categories_dictionary["common"] = new List<string>();
+            categories_dictionary["appearance"] = new List<string>();
+            categories_dictionary["collections"] = new List<string>();
+            categories_dictionary["items"] = new List<string>();
+            categories_dictionary["settings"] = new List<string>();
+            categories_dictionary["permissions"] = new List<string>();
             categories_dictionary["web"] = new List<string>();
 
             // Build the icons lists
@@ -235,12 +232,12 @@ namespace SobekCM.Library.AdminViewer
                 categories_dictionary["settings"].Add(resetIcon);
             }
 
-	        // View permissions report
-	        RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.User_Permissions_Reports;
-	        string permissionsUrl = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
-	        string permissionsIcon = "  <a href=\"" + permissionsUrl + "\" title=\"" + PERMISSIONS_BRIEF + "\"><div class=\"sbkHav_ButtonDiv\"><img src=\"" + Static_Resources_Gateway.User_Permission_Img + "\" /><span class=\"sbkHav_ButtonText\">User Permissions<br />Reports</span></div></a>";
-	        icons["User Permissions Reports"] = permissionsIcon;
-	        categories_dictionary["permissions"].Add(permissionsIcon);
+            // View permissions report
+            RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.User_Permissions_Reports;
+            string permissionsUrl = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+            string permissionsIcon = "  <a href=\"" + permissionsUrl + "\" title=\"" + PERMISSIONS_BRIEF + "\"><div class=\"sbkHav_ButtonDiv\"><img src=\"" + Static_Resources_Gateway.User_Permission_Img + "\" /><span class=\"sbkHav_ButtonText\">User Permissions<br />Reports</span></div></a>";
+            icons["User Permissions Reports"] = permissionsIcon;
+            categories_dictionary["permissions"].Add(permissionsIcon);
 
             // View user rqeuests report
             if ((RequestSpecificValues.Current_User.Is_User_Admin) || (RequestSpecificValues.Current_User.Is_System_Admin))
@@ -291,22 +288,22 @@ namespace SobekCM.Library.AdminViewer
             // Edit users (REPEAT FROM COMMON TASKS CATEGORY)
             if ((RequestSpecificValues.Current_User.Is_User_Admin) || (RequestSpecificValues.Current_User.Is_System_Admin))
             {
-	            // Edit users
-	            categories_dictionary["permissions"].Add(usersIcon);
-	        }
+                // Edit users
+                categories_dictionary["permissions"].Add(usersIcon);
+            }
 
-	        RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Home;
-	    }
+            RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Home;
+        }
 
-	    /// <summary> Title for the page that displays this viewer, this is shown in the search box at the top of the page, just below the banner </summary>
-		/// <value> The value of this message changes, depending on if this is the RequestSpecificValues.Current_User's first time here.  It is always a welcoming message though </value>
-		public override string Web_Title
-		{
-			get
-			{
-				return "System Administrative Tasks";
-			}
-		}
+        /// <summary> Title for the page that displays this viewer, this is shown in the search box at the top of the page, just below the banner </summary>
+        /// <value> The value of this message changes, depending on if this is the RequestSpecificValues.Current_User's first time here.  It is always a welcoming message though </value>
+        public override string Web_Title
+        {
+            get
+            {
+                return "System Administrative Tasks";
+            }
+        }
 
 
         /// <summary> Gets the URL for the icon related to this administrative task </summary>
@@ -323,11 +320,11 @@ namespace SobekCM.Library.AdminViewer
             Tracer.Add_Trace("Home_AdminViewer.Write_HTML", "Do nothing");
         }
 
-		/// <summary> Add the HTML to be displayed in the main SobekCM viewer area </summary>
-		/// <param name="Output"> Textwriter to write the HTML for this viewer</param>
-		/// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <summary> Add the HTML to be displayed in the main SobekCM viewer area </summary>
+        /// <param name="Output"> Textwriter to write the HTML for this viewer</param>
+        /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
         public override void Write_ItemNavForm_Opening(TextWriter Output, Custom_Tracer Tracer)
-		{
+        {
             Tracer.Add_Trace("Home_AdminViewer.Write_ItemNavForm_Opening", String.Empty);
 
             // Add the hidden field
@@ -335,11 +332,11 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("<input type=\"hidden\" id=\"admin_menu_preference\" name=\"admin_menu_preference\" value=\"\" />");
             Output.WriteLine();
 
-		    Output.WriteLine("<div class=\"sbkHav_ViewPrerence\">");
-		    Output.WriteLine("  <span style=\"font-weight:bold\">View Type:</span>");
+            Output.WriteLine("<div class=\"sbkHav_ViewPrerence\">");
+            Output.WriteLine("  <span style=\"font-weight:bold\">View Type:</span>");
             Output.WriteLine("  <select id=\"viewTypeSelect\" name=\"viewTypeSelect\" onchange=\"$('#admin_menu_preference').val(this.value);$('form#itemNavForm').submit();\">");
 
-            if ( menu_preference == "alphabetical")
+            if (menu_preference == "alphabetical")
                 Output.WriteLine("    <option value=\"alphabetical\" selected=\"selected\">Alphabetical</option>");
             else
                 Output.WriteLine("    <option value=\"alphabetical\">Alphabetical</option>");
@@ -359,38 +356,38 @@ namespace SobekCM.Library.AdminViewer
             else
                 Output.WriteLine("    <option value=\"classic\">Classic</option>");
 
-		    Output.WriteLine("  </select>");
-		    Output.WriteLine("</div>");
-		    Output.WriteLine();
+            Output.WriteLine("  </select>");
+            Output.WriteLine("</div>");
+            Output.WriteLine();
 
 
-			Output.WriteLine("<div class=\"sbkHav_MainText\" >");
-			Output.WriteLine("  <h1>What would you like to manage today?</h1>");
+            Output.WriteLine("<div class=\"sbkHav_MainText\" >");
+            Output.WriteLine("  <h1>What would you like to manage today?</h1>");
 
-		    switch (menu_preference)
-		    {
-		        case "categories":
-		            write_categorized(Output);
-		            break;
+            switch (menu_preference)
+            {
+                case "categories":
+                    write_categorized(Output);
+                    break;
 
                 case "alphabetical":
-		            write_alphabetical(Output);
-		            break;
+                    write_alphabetical(Output);
+                    break;
 
                 case "classic":
                     write_classic(Output);
                     break;
 
                 default:
-		            write_brief(Output);
+                    write_brief(Output);
                     break;
-		    }
+            }
 
 
-			Output.WriteLine("  <p>For clarification on any of these options, <a href=\"" + UI_ApplicationCache_Gateway.Settings.System.Help_URL(RequestSpecificValues.Current_Mode.Base_URL) + "adminhelp/tasks\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</p>");
-			Output.WriteLine("  <p>You are currently running version " + UI_ApplicationCache_Gateway.Settings.Static.Current_Web_Version + ". ( <a href=\"http://sobekrepository.org/sobekcm/development/history\">see release notes</a> )</p>");
-			Output.WriteLine("</div>");
-		}
+            Output.WriteLine("  <p>For clarification on any of these options, <a href=\"" + UI_ApplicationCache_Gateway.Settings.System.Help_URL(RequestSpecificValues.Current_Mode.Base_URL) + "adminhelp/tasks\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</p>");
+            Output.WriteLine("  <p>You are currently running version " + UI_ApplicationCache_Gateway.Settings.Static.Current_Web_Version + ". ( <a href=\"http://sobekrepository.org/sobekcm/development/history\">see release notes</a> )</p>");
+            Output.WriteLine("</div>");
+        }
 
         private void write_brief(TextWriter Output)
         {
@@ -398,7 +395,7 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("  <br />");
             Output.WriteLine("  <h2 id=\"common\">Common Tasks</h2>");
             Output.WriteLine("  <div id=\"sbkHav_ButtonOuterDiv\" style=\"padding-top:0\">");
-	        display_single_category(Output, "common", String.Empty);
+            display_single_category(Output, "common", String.Empty);
             Output.WriteLine("  </div>");
 
             RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Administrative;
@@ -606,7 +603,7 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("      </td>");
             Output.WriteLine("    </tr>");
 
-            if ((RequestSpecificValues.Current_User.Is_User_Admin) || ( RequestSpecificValues.Current_User.Is_System_Admin))
+            if ((RequestSpecificValues.Current_User.Is_User_Admin) || (RequestSpecificValues.Current_User.Is_System_Admin))
             {
                 // Edit users
                 RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Users;
@@ -617,7 +614,7 @@ namespace SobekCM.Library.AdminViewer
                 Output.WriteLine("      <td><a href=\"" + users_url + "\"><img src=\"" + Static_Resources_Gateway.Users_Img_Large + "\" /></a></td>");
                 Output.WriteLine("      <td>");
                 Output.WriteLine("        <a href=\"" + users_url + "\">Users and Groups</a>");
-                Output.WriteLine("        <div class=\"sbkMmav_Desc\">" + USERS_AND_GROUPS_BRIEF  + "</div>");
+                Output.WriteLine("        <div class=\"sbkMmav_Desc\">" + USERS_AND_GROUPS_BRIEF + "</div>");
                 Output.WriteLine("      </td>");
                 Output.WriteLine("    </tr>");
                 Output.WriteLine("    <tr class=\"sbkMmav_SpacerRow\"><td colspan=\"3\"></td></tr>");
@@ -700,11 +697,11 @@ namespace SobekCM.Library.AdminViewer
         }
 
 
-	    private void write_categorized(TextWriter Output)
-	    {
+        private void write_categorized(TextWriter Output)
+        {
             Output.WriteLine("  <div id=\"sbkHav_ButtonOuterDiv\">");
 
-	        display_single_category(Output, "common", "Common Tasks");
+            display_single_category(Output, "common", "Common Tasks");
             display_single_category(Output, "appearance", "Appearance");
             display_single_category(Output, "collections", "Collections");
             display_single_category(Output, "common", "Common Tasks");
@@ -715,29 +712,29 @@ namespace SobekCM.Library.AdminViewer
             display_single_category(Output, "extensions", "Extensions");
 
             Output.WriteLine("  </div>");
-	    }
-        
-	    private void display_single_category(TextWriter Output, string Category, string Title)
-	    {
-	        if ((categories_dictionary.ContainsKey(Category)) && ( categories_dictionary[Category].Count > 0 ))
-	        {
-	            Output.WriteLine();
-                if ( Title.Length > 0 )
-    	            Output.WriteLine("  <h2 id=\"" + Category + "\">" + Title + "</h2>");
+        }
 
-	            foreach (string icon in categories_dictionary[Category])
-	            {
-	                Output.WriteLine(icon);
-	            }
-	        }
-	    }
+        private void display_single_category(TextWriter Output, string Category, string Title)
+        {
+            if ((categories_dictionary.ContainsKey(Category)) && (categories_dictionary[Category].Count > 0))
+            {
+                Output.WriteLine();
+                if (Title.Length > 0)
+                    Output.WriteLine("  <h2 id=\"" + Category + "\">" + Title + "</h2>");
+
+                foreach (string icon in categories_dictionary[Category])
+                {
+                    Output.WriteLine(icon);
+                }
+            }
+        }
 
         private void write_classic(TextWriter Output)
         {
             Output.WriteLine("  <div id=\"sbkHav_ClassicDiv\">");
 
             // Add collection wizard
-            if (icons["Add Collection Wizard"] != null) Output.WriteLine(icons["Add Collection Wizard"].Replace("sbkHav_ButtonDiv","sbkHav_ButtonDiv2").Replace("<br />"," "));
+            if (icons["Add Collection Wizard"] != null) Output.WriteLine(icons["Add Collection Wizard"].Replace("sbkHav_ButtonDiv", "sbkHav_ButtonDiv2").Replace("<br />", " "));
 
             // Edit item aggregation
             if (icons["Aggregation Management"] != null) Output.WriteLine(icons["Aggregation Management"].Replace("sbkHav_ButtonDiv", "sbkHav_ButtonDiv2").Replace("<br />", " "));
@@ -776,7 +773,7 @@ namespace SobekCM.Library.AdminViewer
             if (icons["Builder Status"] != null) Output.WriteLine(icons["Builder Status"].Replace("sbkHav_ButtonDiv", "sbkHav_ButtonDiv2").Replace("<br />", " "));
 
             // Reset cache
-            if (icons["Web Content Pages"] != null) Output.WriteLine(icons["Web Content Pages"].Replace("Manage ","").Replace("sbkHav_ButtonDiv", "sbkHav_ButtonDiv2").Replace("<br />", " "));
+            if (icons["Web Content Pages"] != null) Output.WriteLine(icons["Web Content Pages"].Replace("Manage ", "").Replace("sbkHav_ButtonDiv", "sbkHav_ButtonDiv2").Replace("<br />", " "));
 
             // Reset cache
             if (icons["Reset Cache"] != null) Output.WriteLine(icons["Reset Cache"].Replace("sbkHav_ButtonDiv", "sbkHav_ButtonDiv2").Replace("<br />", " "));
@@ -796,5 +793,5 @@ namespace SobekCM.Library.AdminViewer
 
             Output.WriteLine("  </div>");
         }
-	}
+    }
 }

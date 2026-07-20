@@ -69,7 +69,7 @@ namespace SobekCM.Resource_Object.Tracking
         {
             get
             {
-                if ((firstFlagsByte & ((byte) 1)) > 0)
+                if ((firstFlagsByte & ((byte)1)) > 0)
                     return true;
                 else
                     return false;
@@ -78,12 +78,12 @@ namespace SobekCM.Resource_Object.Tracking
             {
                 if (value)
                 {
-                    firstFlagsByte = (byte) (firstFlagsByte | ((byte) 1));
+                    firstFlagsByte = (byte)(firstFlagsByte | ((byte)1));
                 }
                 else
                 {
                     if (Material_Rec_Date_Estimated)
-                        firstFlagsByte = (byte) (firstFlagsByte ^ ((byte) 1));
+                        firstFlagsByte = (byte)(firstFlagsByte ^ ((byte)1));
                 }
             }
         }
@@ -97,7 +97,7 @@ namespace SobekCM.Resource_Object.Tracking
         {
             get
             {
-                if ((firstFlagsByte & ((byte) 2)) > 0)
+                if ((firstFlagsByte & ((byte)2)) > 0)
                     return true;
                 else
                     return false;
@@ -106,11 +106,11 @@ namespace SobekCM.Resource_Object.Tracking
             {
                 if (value)
                 {
-                    firstFlagsByte = (byte) (firstFlagsByte | ((byte) 2));
+                    firstFlagsByte = (byte)(firstFlagsByte | ((byte)2));
                 }
                 else
                 {
-                    firstFlagsByte = (byte) (firstFlagsByte & ((byte) 253));
+                    firstFlagsByte = (byte)(firstFlagsByte & ((byte)253));
                 }
             }
         }
@@ -124,7 +124,7 @@ namespace SobekCM.Resource_Object.Tracking
         {
             get
             {
-                if ((firstFlagsByte & ((byte) 4)) > 0)
+                if ((firstFlagsByte & ((byte)4)) > 0)
                     return true;
                 else
                     return false;
@@ -134,12 +134,12 @@ namespace SobekCM.Resource_Object.Tracking
                 Born_Digital_Is_Null = false;
                 if (value)
                 {
-                    firstFlagsByte = (byte) (firstFlagsByte | ((byte) 4));
+                    firstFlagsByte = (byte)(firstFlagsByte | ((byte)4));
                 }
                 else
                 {
                     if (Born_Digital)
-                        firstFlagsByte = (byte) (firstFlagsByte ^ ((byte) 4));
+                        firstFlagsByte = (byte)(firstFlagsByte ^ ((byte)4));
                 }
             }
         }
@@ -153,7 +153,7 @@ namespace SobekCM.Resource_Object.Tracking
         {
             get
             {
-                if ((firstFlagsByte & ((byte) 8)) > 0)
+                if ((firstFlagsByte & ((byte)8)) > 0)
                     return true;
                 else
                     return false;
@@ -169,7 +169,7 @@ namespace SobekCM.Resource_Object.Tracking
         {
             get
             {
-                if ((firstFlagsByte & ((byte) 16)) > 0)
+                if ((firstFlagsByte & ((byte)16)) > 0)
                     return true;
                 else
                     return false;
@@ -178,12 +178,12 @@ namespace SobekCM.Resource_Object.Tracking
             {
                 if (value)
                 {
-                    firstFlagsByte = (byte) (firstFlagsByte | ((byte) 16));
+                    firstFlagsByte = (byte)(firstFlagsByte | ((byte)16));
                 }
                 else
                 {
                     if (Locally_Archived)
-                        firstFlagsByte = (byte) (firstFlagsByte ^ ((byte) 16));
+                        firstFlagsByte = (byte)(firstFlagsByte ^ ((byte)16));
                 }
             }
         }
@@ -197,7 +197,7 @@ namespace SobekCM.Resource_Object.Tracking
         {
             get
             {
-                if ((firstFlagsByte & ((byte) 32)) > 0)
+                if ((firstFlagsByte & ((byte)32)) > 0)
                     return true;
                 else
                     return false;
@@ -206,12 +206,12 @@ namespace SobekCM.Resource_Object.Tracking
             {
                 if (value)
                 {
-                    firstFlagsByte = (byte) (firstFlagsByte | ((byte) 32));
+                    firstFlagsByte = (byte)(firstFlagsByte | ((byte)32));
                 }
                 else
                 {
                     if (Remotely_Archived)
-                        firstFlagsByte = (byte) (firstFlagsByte ^ ((byte) 32));
+                        firstFlagsByte = (byte)(firstFlagsByte ^ ((byte)32));
                 }
             }
         }
@@ -225,7 +225,7 @@ namespace SobekCM.Resource_Object.Tracking
         {
             get
             {
-                if ((firstFlagsByte & ((byte) 64)) > 0)
+                if ((firstFlagsByte & ((byte)64)) > 0)
                     return true;
                 else
                     return false;
@@ -241,7 +241,7 @@ namespace SobekCM.Resource_Object.Tracking
         {
             get
             {
-                if ((firstFlagsByte & ((byte) 128)) > 0)
+                if ((firstFlagsByte & ((byte)128)) > 0)
                     return true;
                 else
                     return false;
@@ -250,12 +250,12 @@ namespace SobekCM.Resource_Object.Tracking
             {
                 if (value)
                 {
-                    firstFlagsByte = (byte) (firstFlagsByte | ((byte) 128));
+                    firstFlagsByte = (byte)(firstFlagsByte | ((byte)128));
                 }
                 else
                 {
                     if (Track_By_Month)
-                        firstFlagsByte = (byte) (firstFlagsByte ^ ((byte) 128));
+                        firstFlagsByte = (byte)(firstFlagsByte ^ ((byte)128));
                 }
             }
         }
@@ -274,7 +274,7 @@ namespace SobekCM.Resource_Object.Tracking
         {
             get
             {
-                if ((secondFlagsByte & ((byte) 1)) > 0)
+                if ((secondFlagsByte & ((byte)1)) > 0)
                     return true;
                 else
                     return false;
@@ -283,12 +283,12 @@ namespace SobekCM.Resource_Object.Tracking
             {
                 if (value)
                 {
-                    secondFlagsByte = (byte) (secondFlagsByte | ((byte) 1));
+                    secondFlagsByte = (byte)(secondFlagsByte | ((byte)1));
                 }
                 else
                 {
                     if (Large_Format)
-                        secondFlagsByte = (byte) (secondFlagsByte ^ ((byte) 1));
+                        secondFlagsByte = (byte)(secondFlagsByte ^ ((byte)1));
                 }
             }
         }
@@ -303,7 +303,7 @@ namespace SobekCM.Resource_Object.Tracking
         {
             get
             {
-                if ((secondFlagsByte & ((byte) 2)) > 0)
+                if ((secondFlagsByte & ((byte)2)) > 0)
                     return true;
                 else
                     return false;
@@ -312,12 +312,12 @@ namespace SobekCM.Resource_Object.Tracking
             {
                 if (value)
                 {
-                    secondFlagsByte = (byte) (secondFlagsByte | ((byte) 2));
+                    secondFlagsByte = (byte)(secondFlagsByte | ((byte)2));
                 }
                 else
                 {
                     if (Never_Overlay_Record)
-                        secondFlagsByte = (byte) (secondFlagsByte ^ ((byte) 2));
+                        secondFlagsByte = (byte)(secondFlagsByte ^ ((byte)2));
                 }
             }
         }
@@ -500,7 +500,7 @@ namespace SobekCM.Resource_Object.Tracking
         /// <param name="Tracking_Info"> DataSet with all the history, media, and archives information </param>
         public void Set_Tracking_Info(DataSet Tracking_Info)
         {
-            firstFlagsByte = (byte) 8;
+            firstFlagsByte = (byte)8;
 
             // Pull all the worklog history values out of the table
             worklogWorkHistory.Clear();
@@ -533,7 +533,7 @@ namespace SobekCM.Resource_Object.Tracking
 
             // Set flag about archived files ( but don't keep the files right now )
             if (Tracking_Info.Tables[2].Rows.Count > 0)
-                firstFlagsByte = (byte) (firstFlagsByte | ((byte) 64));
+                firstFlagsByte = (byte)(firstFlagsByte | ((byte)64));
 
             // Pull all the archive media values out of the table
             archiveMedia.Clear();
@@ -559,62 +559,62 @@ namespace SobekCM.Resource_Object.Tracking
             }
 
             // Pull all the single tracking values out of the dataset
-	        if (Tracking_Info.Tables[3].Rows.Count > 0)
-	        {
-		        DataRow itemRow = Tracking_Info.Tables[3].Rows[0];
-		        Locally_Archived = Convert.ToBoolean(itemRow["Locally_Archived"]);
-		        Remotely_Archived = Convert.ToBoolean(itemRow["Remotely_Archived"]);
-		        Born_Digital = Convert.ToBoolean(itemRow["Born_Digital"]);
-		        if (itemRow["Disposition_Advice"] == DBNull.Value)
-			        dispositionAdvice = -1;
-		        else
-			        dispositionAdvice = Convert.ToInt16(itemRow["Disposition_Advice"]);
-		        if (itemRow["Material_Received_Date"] == DBNull.Value)
-			        material_recd_date = null;
-		        else
-			        material_recd_date = Convert.ToDateTime(itemRow["Material_Received_Date"]);
-		        Material_Rec_Date_Estimated = Convert.ToBoolean(itemRow["Material_Recd_Date_Estimated"]);
-		        if (itemRow["VIDSource"] != DBNull.Value)
-			        vid_source = itemRow["VIDSource"].ToString();
-		        lastMilestone = Convert.ToInt16(itemRow["Last_Milestone"]);
-		        if (itemRow["Milestone_DigitalAcquisition"] == DBNull.Value)
-			        digitalAcquisition = null;
-		        else
-			        digitalAcquisition = Convert.ToDateTime(itemRow["Milestone_DigitalAcquisition"]);
-		        if (itemRow["Milestone_ImageProcessing"] == DBNull.Value)
-			        imageProcessing = null;
-		        else
-			        imageProcessing = Convert.ToDateTime(itemRow["Milestone_ImageProcessing"]);
-		        if (itemRow["Milestone_QualityControl"] == DBNull.Value)
-			        qualityControl = null;
-		        else
-			        qualityControl = Convert.ToDateTime(itemRow["Milestone_QualityControl"]);
-		        if (itemRow["Milestone_OnlineComplete"] == DBNull.Value)
-			        onlineComplete = null;
-		        else
-			        onlineComplete = Convert.ToDateTime(itemRow["Milestone_OnlineComplete"]);
-		        if (itemRow["Disposition_Date"] == DBNull.Value)
-			        disposition_date = null;
-		        else
-			        disposition_date = Convert.ToDateTime(itemRow["Disposition_Date"]);
-		        if (itemRow["Disposition_Type"] == DBNull.Value)
-			        dispositionType = -1;
-		        else
-			        dispositionType = Convert.ToInt16(itemRow["Disposition_Type"]);
-		        if (itemRow["Tracking_Box"] == DBNull.Value)
-			        trackingBox = String.Empty;
-		        else
-			        trackingBox = itemRow["Tracking_Box"].ToString();
-		        if (itemRow["Disposition_Advice_Notes"] == DBNull.Value)
-			        dispositionAdviceNotes = String.Empty;
-		        else
-			        dispositionAdviceNotes = itemRow["Disposition_Advice_Notes"].ToString();
-		        if (itemRow["Disposition_Notes"] == DBNull.Value)
-			        dispositionNotes = String.Empty;
-		        else
-			        dispositionNotes = itemRow["Disposition_Notes"].ToString();
-		        Born_Digital = Convert.ToBoolean(itemRow["Born_Digital"]);
-	        }
+            if (Tracking_Info.Tables[3].Rows.Count > 0)
+            {
+                DataRow itemRow = Tracking_Info.Tables[3].Rows[0];
+                Locally_Archived = Convert.ToBoolean(itemRow["Locally_Archived"]);
+                Remotely_Archived = Convert.ToBoolean(itemRow["Remotely_Archived"]);
+                Born_Digital = Convert.ToBoolean(itemRow["Born_Digital"]);
+                if (itemRow["Disposition_Advice"] == DBNull.Value)
+                    dispositionAdvice = -1;
+                else
+                    dispositionAdvice = Convert.ToInt16(itemRow["Disposition_Advice"]);
+                if (itemRow["Material_Received_Date"] == DBNull.Value)
+                    material_recd_date = null;
+                else
+                    material_recd_date = Convert.ToDateTime(itemRow["Material_Received_Date"]);
+                Material_Rec_Date_Estimated = Convert.ToBoolean(itemRow["Material_Recd_Date_Estimated"]);
+                if (itemRow["VIDSource"] != DBNull.Value)
+                    vid_source = itemRow["VIDSource"].ToString();
+                lastMilestone = Convert.ToInt16(itemRow["Last_Milestone"]);
+                if (itemRow["Milestone_DigitalAcquisition"] == DBNull.Value)
+                    digitalAcquisition = null;
+                else
+                    digitalAcquisition = Convert.ToDateTime(itemRow["Milestone_DigitalAcquisition"]);
+                if (itemRow["Milestone_ImageProcessing"] == DBNull.Value)
+                    imageProcessing = null;
+                else
+                    imageProcessing = Convert.ToDateTime(itemRow["Milestone_ImageProcessing"]);
+                if (itemRow["Milestone_QualityControl"] == DBNull.Value)
+                    qualityControl = null;
+                else
+                    qualityControl = Convert.ToDateTime(itemRow["Milestone_QualityControl"]);
+                if (itemRow["Milestone_OnlineComplete"] == DBNull.Value)
+                    onlineComplete = null;
+                else
+                    onlineComplete = Convert.ToDateTime(itemRow["Milestone_OnlineComplete"]);
+                if (itemRow["Disposition_Date"] == DBNull.Value)
+                    disposition_date = null;
+                else
+                    disposition_date = Convert.ToDateTime(itemRow["Disposition_Date"]);
+                if (itemRow["Disposition_Type"] == DBNull.Value)
+                    dispositionType = -1;
+                else
+                    dispositionType = Convert.ToInt16(itemRow["Disposition_Type"]);
+                if (itemRow["Tracking_Box"] == DBNull.Value)
+                    trackingBox = String.Empty;
+                else
+                    trackingBox = itemRow["Tracking_Box"].ToString();
+                if (itemRow["Disposition_Advice_Notes"] == DBNull.Value)
+                    dispositionAdviceNotes = String.Empty;
+                else
+                    dispositionAdviceNotes = itemRow["Disposition_Advice_Notes"].ToString();
+                if (itemRow["Disposition_Notes"] == DBNull.Value)
+                    dispositionNotes = String.Empty;
+                else
+                    dispositionNotes = itemRow["Disposition_Notes"].ToString();
+                Born_Digital = Convert.ToBoolean(itemRow["Born_Digital"]);
+            }
         }
 
         #endregion

@@ -44,7 +44,8 @@ namespace SobekCM.Resource_Object.OAI.Reader
         /// <summary> Flag indicates if this record has one or more TITLE elements </summary>
         public bool hasTitles
         {
-            get {
+            get
+            {
                 return (titles != null) && (titles.Count > 0);
             }
         }
@@ -52,7 +53,8 @@ namespace SobekCM.Resource_Object.OAI.Reader
         /// <summary> Collection of TITLE elements associated with this record </summary>
         public ReadOnlyCollection<string> Titles
         {
-            get {
+            get
+            {
                 return titles == null ? new ReadOnlyCollection<string>(new List<string>()) : new ReadOnlyCollection<string>(titles);
             }
         }
@@ -60,7 +62,8 @@ namespace SobekCM.Resource_Object.OAI.Reader
         /// <summary> Flag indicates if this record has one or more CREATOR elements </summary>
         public bool hasCreators
         {
-            get {
+            get
+            {
                 return (creators != null) && (creators.Count > 0);
             }
         }
@@ -68,7 +71,8 @@ namespace SobekCM.Resource_Object.OAI.Reader
         /// <summary> Collection of CREATOR elements associated with this record </summary>
         public ReadOnlyCollection<string> Creators
         {
-            get {
+            get
+            {
                 return creators == null ? new ReadOnlyCollection<string>(new List<string>()) : new ReadOnlyCollection<string>(creators);
             }
         }
@@ -76,7 +80,8 @@ namespace SobekCM.Resource_Object.OAI.Reader
         /// <summary> Flag indicates if this record has one or more SUBJECT elements </summary>
         public bool hasSubjects
         {
-            get {
+            get
+            {
                 return (subjects != null) && (subjects.Count > 0);
             }
         }
@@ -84,7 +89,8 @@ namespace SobekCM.Resource_Object.OAI.Reader
         /// <summary> Collection of SUBJECT elements associated with this record </summary>
         public ReadOnlyCollection<string> Subjects
         {
-            get {
+            get
+            {
                 return subjects == null ? new ReadOnlyCollection<string>(new List<string>()) : new ReadOnlyCollection<string>(subjects);
             }
         }
@@ -92,7 +98,8 @@ namespace SobekCM.Resource_Object.OAI.Reader
         /// <summary> Flag indicates if this record has one or more DESCRIPTION elements </summary>
         public bool hasDescriptions
         {
-            get {
+            get
+            {
                 return (descriptions != null) && (descriptions.Count > 0);
             }
         }
@@ -100,7 +107,8 @@ namespace SobekCM.Resource_Object.OAI.Reader
         /// <summary> Collection of DESCRIPTION elements associated with this record </summary>
         public ReadOnlyCollection<string> Descriptions
         {
-            get {
+            get
+            {
                 return descriptions == null ? new ReadOnlyCollection<string>(new List<string>()) : new ReadOnlyCollection<string>(descriptions);
             }
         }
@@ -108,7 +116,8 @@ namespace SobekCM.Resource_Object.OAI.Reader
         /// <summary> Flag indicates if this record has one or more PUBLISHER elements </summary>
         public bool hasPublishers
         {
-            get {
+            get
+            {
                 return (publishers != null) && (publishers.Count > 0);
             }
         }
@@ -116,7 +125,8 @@ namespace SobekCM.Resource_Object.OAI.Reader
         /// <summary> Collection of PUBLISHER elements associated with this record </summary>
         public ReadOnlyCollection<string> Publishers
         {
-            get {
+            get
+            {
                 return publishers == null ? new ReadOnlyCollection<string>(new List<string>()) : new ReadOnlyCollection<string>(publishers);
             }
         }
@@ -124,7 +134,8 @@ namespace SobekCM.Resource_Object.OAI.Reader
         /// <summary> Flag indicates if this record has one or more CONTRIBUTOR elements </summary>
         public bool hasContributors
         {
-            get {
+            get
+            {
                 return (contributors != null) && (contributors.Count > 0);
             }
         }
@@ -132,7 +143,8 @@ namespace SobekCM.Resource_Object.OAI.Reader
         /// <summary> Collection of CONTRIBUTOR elements associated with this record </summary>
         public ReadOnlyCollection<string> Contributors
         {
-            get {
+            get
+            {
                 return contributors == null ? new ReadOnlyCollection<string>(new List<string>()) : new ReadOnlyCollection<string>(contributors);
             }
         }
@@ -140,7 +152,8 @@ namespace SobekCM.Resource_Object.OAI.Reader
         /// <summary> Flag indicates if this record has one or more DATE elements </summary>
         public bool hasDates
         {
-            get {
+            get
+            {
                 return (dates != null) && (dates.Count > 0);
             }
         }
@@ -148,7 +161,8 @@ namespace SobekCM.Resource_Object.OAI.Reader
         /// <summary> Collection of DATES elements associated with this record </summary>
         public ReadOnlyCollection<string> Dates
         {
-            get {
+            get
+            {
                 return dates == null ? new ReadOnlyCollection<string>(new List<string>()) : new ReadOnlyCollection<string>(dates);
             }
         }
@@ -156,7 +170,8 @@ namespace SobekCM.Resource_Object.OAI.Reader
         /// <summary> Flag indicates if this record has one or more TYPE elements </summary>
         public bool hasTypes
         {
-            get {
+            get
+            {
                 return (types != null) && (types.Count > 0);
             }
         }
@@ -164,7 +179,8 @@ namespace SobekCM.Resource_Object.OAI.Reader
         /// <summary> Collection of TYPE elements associated with this record </summary>
         public ReadOnlyCollection<string> Types
         {
-            get {
+            get
+            {
                 return types == null ? new ReadOnlyCollection<string>(new List<string>()) : new ReadOnlyCollection<string>(types);
             }
         }
@@ -172,7 +188,8 @@ namespace SobekCM.Resource_Object.OAI.Reader
         /// <summary> Flag indicates if this record has one or more FORMAT elements </summary>
         public bool hasFormats
         {
-            get {
+            get
+            {
                 return (formats != null) && (formats.Count > 0);
             }
         }
@@ -180,7 +197,8 @@ namespace SobekCM.Resource_Object.OAI.Reader
         /// <summary> Collection of FORMAT elements associated with this record </summary>
         public ReadOnlyCollection<string> Formats
         {
-            get {
+            get
+            {
                 return formats == null ? new ReadOnlyCollection<string>(new List<string>()) : new ReadOnlyCollection<string>(formats);
             }
         }
@@ -188,7 +206,8 @@ namespace SobekCM.Resource_Object.OAI.Reader
         /// <summary> Flag indicates if this record has one or more IDENTIFIER elements </summary>
         public bool hasIdentifiers
         {
-            get {
+            get
+            {
                 return (identifiers != null) && (identifiers.Count > 0);
             }
         }
@@ -196,7 +215,8 @@ namespace SobekCM.Resource_Object.OAI.Reader
         /// <summary> Collection of IDENTIFIER elements associated with this record </summary>
         public ReadOnlyCollection<string> Identifiers
         {
-            get {
+            get
+            {
                 return identifiers == null ? new ReadOnlyCollection<string>(new List<string>()) : new ReadOnlyCollection<string>(identifiers);
             }
         }
@@ -204,7 +224,8 @@ namespace SobekCM.Resource_Object.OAI.Reader
         /// <summary> Flag indicates if this record has one or more SOURCE elements </summary>
         public bool hasSources
         {
-            get {
+            get
+            {
                 return (sources != null) && (sources.Count > 0);
             }
         }
@@ -212,7 +233,8 @@ namespace SobekCM.Resource_Object.OAI.Reader
         /// <summary> Collection of SOURCE elements associated with this record </summary>
         public ReadOnlyCollection<string> Sources
         {
-            get {
+            get
+            {
                 return sources == null ? new ReadOnlyCollection<string>(new List<string>()) : new ReadOnlyCollection<string>(sources);
             }
         }
@@ -220,7 +242,8 @@ namespace SobekCM.Resource_Object.OAI.Reader
         /// <summary> Flag indicates if this record has one or more LANGUAGE elements </summary>
         public bool hasLanguages
         {
-            get {
+            get
+            {
                 return (languages != null) && (languages.Count > 0);
             }
         }
@@ -228,7 +251,8 @@ namespace SobekCM.Resource_Object.OAI.Reader
         /// <summary> Collection of LANGUAGE elements associated with this record </summary>
         public ReadOnlyCollection<string> Languages
         {
-            get {
+            get
+            {
                 return languages == null ? new ReadOnlyCollection<string>(new List<string>()) : new ReadOnlyCollection<string>(languages);
             }
         }
@@ -236,7 +260,8 @@ namespace SobekCM.Resource_Object.OAI.Reader
         /// <summary> Flag indicates if this record has one or more RELATION elements </summary>
         public bool hasRelations
         {
-            get {
+            get
+            {
                 return (relations != null) && (relations.Count > 0);
             }
         }
@@ -244,7 +269,8 @@ namespace SobekCM.Resource_Object.OAI.Reader
         /// <summary> Collection of RELATION elements associated with this record </summary>
         public ReadOnlyCollection<string> Relations
         {
-            get {
+            get
+            {
                 return relations == null ? new ReadOnlyCollection<string>(new List<string>()) : new ReadOnlyCollection<string>(relations);
             }
         }
@@ -252,7 +278,8 @@ namespace SobekCM.Resource_Object.OAI.Reader
         /// <summary> Flag indicates if this record has one or more COVERAGE elements </summary>
         public bool hasCoverages
         {
-            get {
+            get
+            {
                 return (coverages != null) && (coverages.Count > 0);
             }
         }
@@ -260,7 +287,8 @@ namespace SobekCM.Resource_Object.OAI.Reader
         /// <summary> Collection of COVERAGE elements associated with this record </summary>
         public ReadOnlyCollection<string> Coverages
         {
-            get {
+            get
+            {
                 return coverages == null ? new ReadOnlyCollection<string>(new List<string>()) : new ReadOnlyCollection<string>(coverages);
             }
         }
@@ -268,7 +296,8 @@ namespace SobekCM.Resource_Object.OAI.Reader
         /// <summary> Flag indicates if this record has one or more RIGHTS elements </summary>
         public bool hasRights
         {
-            get {
+            get
+            {
                 return (rights != null) && (rights.Count > 0);
             }
         }
@@ -276,7 +305,8 @@ namespace SobekCM.Resource_Object.OAI.Reader
         /// <summary> Collection of RIGHTS elements associated with this record </summary>
         public ReadOnlyCollection<string> Rights
         {
-            get {
+            get
+            {
                 return rights == null ? new ReadOnlyCollection<string>(new List<string>()) : new ReadOnlyCollection<string>(rights);
             }
         }

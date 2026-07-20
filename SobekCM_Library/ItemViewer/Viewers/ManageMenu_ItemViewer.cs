@@ -1,16 +1,14 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
+using Microsoft.AspNetCore.Http;
 using SobekCM.Core.BriefItem;
 using SobekCM.Core.Navigation;
-using SobekCM.Core.UI_Configuration;
-using SobekCM.Core.UI_Configuration.StaticResources;
 using SobekCM.Core.Users;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Library.ItemViewer.Menu;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
-using Microsoft.AspNetCore.Http;
+using System;
+using System.Collections.Generic;
+using System.IO;
 
 namespace SobekCM.Library.ItemViewer.Viewers
 {
@@ -62,7 +60,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         public virtual bool Has_Access(BriefItemInfo CurrentItem, User_Object CurrentUser, bool IsRestricted)
         {
             // If there is no user (or they aren't logged in) then obviously, they can't edit this
-            if ((CurrentUser == null) || ( !CurrentUser.LoggedOn ))
+            if ((CurrentUser == null) || (!CurrentUser.LoggedOn))
             {
                 return false;
             }
@@ -86,7 +84,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <param name="CurrentRequest"> Information about the current request </param>
         /// <param name="MenuItems"> List of menu items, to which this method may add one or more menu items </param>
         /// <param name="IsRestricted"> Flag indicates if this item is restricted AND the current user is outside the ranges or not in the proper groups</param> 
-        public virtual void Add_Menu_Items(BriefItemInfo CurrentItem, User_Object CurrentUser, Navigation_Object CurrentRequest, List<Item_MenuItem> MenuItems, bool IsRestricted )
+        public virtual void Add_Menu_Items(BriefItemInfo CurrentItem, User_Object CurrentUser, Navigation_Object CurrentRequest, List<Item_MenuItem> MenuItems, bool IsRestricted)
         {
             // Again, ensure access
             if (!Has_Access(CurrentItem, CurrentUser, false))
@@ -123,9 +121,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
                 // Look for openpublishing type item
                 bool is_openpublisher = false;
-                foreach( var viewer in CurrentItem.Behaviors.Viewers)
+                foreach (var viewer in CurrentItem.Behaviors.Viewers)
                 {
-                    if ( viewer.ViewerType == OpenTextbook_ItemViewer_Prototyper.VIEWER_TYPE)
+                    if (viewer.ViewerType == OpenTextbook_ItemViewer_Prototyper.VIEWER_TYPE)
                     {
                         is_openpublisher = true;
                         break;
@@ -165,7 +163,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 MenuItems.Add(new Item_MenuItem("Manage", "Manage Download Files", null, manage_downloads, "nevermatchthis"));
 
                 // Add the menu item for managing pages and divisions
-                if ( is_openpublisher)
+                if (is_openpublisher)
                 {
                     // Add the menu item for open publisher
                     CurrentRequest.Mode = Display_Mode_Enum.My_Sobek;
@@ -329,7 +327,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     }
                 }
 
-                
+
                 // Start the citation table
                 Output.WriteLine("  <td align=\"left\"><div class=\"sbkMmiv_ViewerTitle\">Manage this Item</div></td>");
                 Output.WriteLine("</tr>");
@@ -525,7 +523,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 Output.WriteLine("\t\t\t\t</tr>");
                 Output.WriteLine("\t\t\t\t<tr class=\"sbkMmiv_SpacerRow\"><td colspan=\"3\"></td></tr>");
 
-                if (( BriefItem.Web != null ) && (BriefItem.Web.Siblings.HasValue) && (BriefItem.Web.Siblings > 1) && ( UI_ApplicationCache_Gateway.Settings.Resources.Allow_Behavior_Mass_Update))
+                if ((BriefItem.Web != null) && (BriefItem.Web.Siblings.HasValue) && (BriefItem.Web.Siblings > 1) && (UI_ApplicationCache_Gateway.Settings.Resources.Allow_Behavior_Mass_Update))
                 {
                     // Add ability to mass update all items for this group
                     CurrentRequest.Mode = Display_Mode_Enum.My_Sobek;

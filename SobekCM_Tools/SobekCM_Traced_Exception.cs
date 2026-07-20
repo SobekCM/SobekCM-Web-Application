@@ -17,7 +17,7 @@ namespace SobekCM.Tools
         /// <param name="Message"> The error message that explains the reason for the exception </param>
         /// <param name="Inner_Exception"> The exception which is the cause of the current exception </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        public SobekCM_Traced_Exception(string Message, Exception Inner_Exception, Custom_Tracer Tracer ) : base( Message, Inner_Exception )
+        public SobekCM_Traced_Exception(string Message, Exception Inner_Exception, Custom_Tracer Tracer) : base(Message, Inner_Exception)
         {
             tracer = Tracer;
             if (tracer != null)
@@ -38,7 +38,8 @@ namespace SobekCM.Tools
         /// <summary> Returns the trace route (from the stored tracer object) as text </summary>
         public string Trace_Route
         {
-            get {
+            get
+            {
                 return tracer != null ? tracer.Text_Trace : String.Empty;
             }
         }

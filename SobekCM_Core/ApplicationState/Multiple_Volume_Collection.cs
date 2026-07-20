@@ -23,7 +23,7 @@ namespace SobekCM.Core.ApplicationState
                 return null;
 
             // If the BibiD length is not valid, return null;
-            if (( String.IsNullOrEmpty(BibID)) || (BibID.Length != 10))
+            if ((String.IsNullOrEmpty(BibID)) || (BibID.Length != 10))
                 return null;
 
             // Get the first six to find first
@@ -32,7 +32,7 @@ namespace SobekCM.Core.ApplicationState
 
             // It did find it, so go to the next step
             Int16 last_four;
-            if ( Int16.TryParse(BibID.Substring(6, 4), out last_four ))
+            if (Int16.TryParse(BibID.Substring(6, 4), out last_four))
             {
                 if (lookupDictionary[short_bib].ContainsKey(last_four))
                     return lookupDictionary[short_bib][last_four];
@@ -60,7 +60,7 @@ namespace SobekCM.Core.ApplicationState
 
             // Add this to the search mechanism
             string short_bibid = (BibID.Length > 6) ? BibID.Substring(0, 6) : BibID;
-            if ( !lookupDictionary.ContainsKey(short_bibid))
+            if (!lookupDictionary.ContainsKey(short_bibid))
             {
                 Dictionary<short, Multiple_Volume_Item> innerDictionary = new Dictionary<short, Multiple_Volume_Item>();
                 lookupDictionary[short_bibid] = innerDictionary;

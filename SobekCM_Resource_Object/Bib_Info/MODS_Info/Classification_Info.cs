@@ -1,8 +1,8 @@
 ﻿#region Using directives
 
+using SobekCM.Resource_Object.MARC;
 using System;
 using System.IO;
-using SobekCM.Resource_Object.MARC;
 
 #endregion
 
@@ -96,7 +96,7 @@ namespace SobekCM.Resource_Object.Bib_Info
 
             MARC_Field returnValue = new MARC_Field
             {
-                Indicators = "  ", 
+                Indicators = "  ",
                 Tag = 84
             };
 

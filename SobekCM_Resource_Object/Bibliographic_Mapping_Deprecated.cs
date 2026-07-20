@@ -1,14 +1,13 @@
 #region Using directives
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text.RegularExpressions;
-using SobekCM.Resource_Object.Behaviors;
 using SobekCM.Resource_Object.Bib_Info;
 using SobekCM.Resource_Object.Metadata_Modules;
 using SobekCM.Resource_Object.Metadata_Modules.GeoSpatial;
 using SobekCM.Resource_Object.Metadata_Modules.VRACore;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text.RegularExpressions;
 
 #endregion
 
@@ -1213,7 +1212,7 @@ namespace SobekCM.Resource_Object
                     break;
                 case Mapped_Fields.Alternate_Title_Language:
                     List<Title_Info> otherTitles = Package.Bib_Info.Other_Titles.Where(ThisTitle => ThisTitle.Title_Type == Title_Type_Enum.Alternative).ToList();
-		            if (otherTitles.Count > 0)
+                    if (otherTitles.Count > 0)
                     {
                         otherTitles[otherTitles.Count - 1].Language = Data;
                     }
@@ -1259,14 +1258,14 @@ namespace SobekCM.Resource_Object
                             lastNamedEntity.Family_Name = Data;
                         else
                         {
-                            Name_Info newNameEntity = new Name_Info {Family_Name = Data};
-	                        Package.Bib_Info.Add_Named_Entity(newNameEntity);
+                            Name_Info newNameEntity = new Name_Info { Family_Name = Data };
+                            Package.Bib_Info.Add_Named_Entity(newNameEntity);
                         }
                     }
                     else
                     {
-                        Name_Info newNameEntity = new Name_Info {Family_Name = Data};
-	                    Package.Bib_Info.Add_Named_Entity(newNameEntity);
+                        Name_Info newNameEntity = new Name_Info { Family_Name = Data };
+                        Package.Bib_Info.Add_Named_Entity(newNameEntity);
                     }
                     break;
                 case Mapped_Fields.Creator_Given_Name:
@@ -1277,14 +1276,14 @@ namespace SobekCM.Resource_Object
                             lastNamedEntity.Given_Name = Data;
                         else
                         {
-                            Name_Info newNameEntity = new Name_Info {Given_Name = Data};
-	                        Package.Bib_Info.Add_Named_Entity(newNameEntity);
+                            Name_Info newNameEntity = new Name_Info { Given_Name = Data };
+                            Package.Bib_Info.Add_Named_Entity(newNameEntity);
                         }
                     }
                     else
                     {
-                        Name_Info newNameEntity = new Name_Info {Given_Name = Data};
-	                    Package.Bib_Info.Add_Named_Entity(newNameEntity);
+                        Name_Info newNameEntity = new Name_Info { Given_Name = Data };
+                        Package.Bib_Info.Add_Named_Entity(newNameEntity);
                     }
                     break;
                 case Mapped_Fields.Creator_Role:
@@ -1649,9 +1648,9 @@ namespace SobekCM.Resource_Object
                 case Mapped_Fields.Scale:
                     Guarantee_Cartographics(Package).Scale = Data;
                     break;
-                    //case Mapped_Fields.Spatial_Coverage:
-                    //    Package.Bib_Info.Hierarchical_Spatials[0].Area = Data;
-                    //    break;
+                //case Mapped_Fields.Spatial_Coverage:
+                //    Package.Bib_Info.Hierarchical_Spatials[0].Area = Data;
+                //    break;
                 case Mapped_Fields.Icon_Wordmarks:
                 case Mapped_Fields.Wordmark:
                     //    Package.Processing_Parameters.Icons.Add(Data, String.Empty);
@@ -1792,9 +1791,9 @@ namespace SobekCM.Resource_Object
                     break;
 
                 case Mapped_Fields.Material_Received_Date:
-		            DateTime materialReceivedDate;
-		            if (DateTime.TryParse(Data, out materialReceivedDate))
-			            Package.Tracking.Material_Received_Date = materialReceivedDate;
+                    DateTime materialReceivedDate;
+                    if (DateTime.TryParse(Data, out materialReceivedDate))
+                        Package.Tracking.Material_Received_Date = materialReceivedDate;
                     break;
 
                 case Mapped_Fields.Materials:
@@ -1868,7 +1867,7 @@ namespace SobekCM.Resource_Object
                 {
                     if (subject.Class_Type == Subject_Info_Type.Hierarchical_Spatial)
                     {
-                        return (Subject_Info_HierarchicalGeographic) subject;
+                        return (Subject_Info_HierarchicalGeographic)subject;
                     }
                 }
             }
@@ -1888,7 +1887,7 @@ namespace SobekCM.Resource_Object
                 {
                     if (subject.Class_Type == Subject_Info_Type.Cartographics)
                     {
-                        return (Subject_Info_Cartographics) subject;
+                        return (Subject_Info_Cartographics)subject;
                     }
                 }
             }

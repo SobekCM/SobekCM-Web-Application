@@ -1,17 +1,16 @@
 #region Using directives
 
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.IO;
-using System.Text;
-using Microsoft.AspNetCore.Http;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.ApplicationState;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Users;
 using SobekCM.Library.UI;
 using SobekCM.Resource_Object;
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.IO;
+using System.Text;
 
 #endregion
 
@@ -90,7 +89,7 @@ namespace SobekCM.Library.Citation.Elements
         /// <param name="Translator"> Language support object which handles simple translational duties </param>
         /// <param name="Base_URL"> Base URL for the current request </param>
         /// <remarks> This simple element does not append any popup form to the popup_form_builder</remarks>
-        public override void Render_Template_HTML(TextWriter Output, SobekCM_Item Bib, string Skin_Code, bool IsMozilla, StringBuilder PopupFormBuilder, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL )
+        public override void Render_Template_HTML(TextWriter Output, SobekCM_Item Bib, string Skin_Code, bool IsMozilla, StringBuilder PopupFormBuilder, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL)
         {
             // Check that an acronym exists
             if (Acronym.Length == 0)
@@ -118,11 +117,11 @@ namespace SobekCM.Library.Citation.Elements
 
             // This should always have a blank value
             if (!PossibleSelectItems.Contains(String.Empty))
-                PossibleSelectItems.Insert(0,String.Empty);
+                PossibleSelectItems.Insert(0, String.Empty);
 
             // Check the user to see if this should be limited
             bool some_set_as_selectable = false;
-            List<string> possibles = new List<string> {Bib.Bib_Info.Location.Holding_Code.ToUpper()};
+            List<string> possibles = new List<string> { Bib.Bib_Info.Location.Holding_Code.ToUpper() };
             if ((!Current_User.Is_Internal_User) && (Current_User.PermissionedAggregations != null))
             {
                 // Are there aggregationPermissions set aside for the user?

@@ -28,7 +28,7 @@ namespace SobekCM.Resource_Object.Divisions
         }
 
         /// <summary> Constructor for an empty instance of the Division_TreeNode class </summary>
-        public Division_TreeNode() 
+        public Division_TreeNode()
         {
             // Set the collection of children
             children = new List<abstract_TreeNode>();
@@ -101,16 +101,16 @@ namespace SobekCM.Resource_Object.Divisions
                 {
                     return LongLabel.Substring(0, spaceLocation) + "...";
                 }
-                
+
                 spaceLocation = LongLabel.IndexOf(" ", SHORT_LENGTH - 5, StringComparison.Ordinal);
                 if ((spaceLocation >= 0) && (spaceLocation <= SHORT_LENGTH + 5))
                 {
                     return LongLabel.Substring(0, spaceLocation) + "...";
                 }
-                
+
                 return LongLabel.Substring(0, SHORT_LENGTH) + "...";
             }
-            
+
             return LongLabel;
         }
     }

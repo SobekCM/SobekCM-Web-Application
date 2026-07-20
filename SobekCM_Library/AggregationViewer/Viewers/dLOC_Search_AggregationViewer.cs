@@ -1,15 +1,15 @@
 #region Using directives
 
 using Microsoft.AspNetCore.Http;
-using System;
-using System.Collections.Generic;
-using System.IO;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Navigation;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
 using SobekCM.Tools;
+using System;
+using System.Collections.Generic;
+using System.IO;
 
 #endregion
 
@@ -47,7 +47,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 
             // Determine the complete script action name
             Display_Mode_Enum displayMode = RequestSpecificValues.Current_Mode.Mode;
-	        Aggregation_Type_Enum aggrType = RequestSpecificValues.Current_Mode.Aggregation_Type;
+            Aggregation_Type_Enum aggrType = RequestSpecificValues.Current_Mode.Aggregation_Type;
             Search_Type_Enum searchType = RequestSpecificValues.Current_Mode.Search_Type;
             RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Results;
             RequestSpecificValues.Current_Mode.Search_Type = Search_Type_Enum.Full_Text;
@@ -73,7 +73,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             Search_Script_Action = "dloc_search_sobekcm('" + arg1 + "', '" + browse_url + "');";
 
             RequestSpecificValues.Current_Mode.Mode = displayMode;
-	        RequestSpecificValues.Current_Mode.Aggregation_Type = aggrType;
+            RequestSpecificValues.Current_Mode.Aggregation_Type = aggrType;
             RequestSpecificValues.Current_Mode.Search_Type = searchType;
             RequestSpecificValues.Current_Mode.Search_String = search_string;
             RequestSpecificValues.Current_Mode.Info_Browse_Mode = String.Empty;
@@ -133,14 +133,14 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 include_newspaper = "Accès aux journaux inclus?";
             }
 
-			Output.WriteLine("  <table id=\"sbkDsav_SearchPanel\" >");
-			Output.WriteLine("    <tr>");
-			Output.WriteLine("      <td style=\"text-align:right;width:27%;\" id=\"sbkBsav_SearchPrompt\"><label for=\"SobekHomeSearchBox\">" + search_collection + ":</label></td>");
-			Output.WriteLine("      <td style=\"width:3%;\">&nbsp;</td>");
-			Output.WriteLine("      <td style=\"width:60%;\"><input name=\"u_search\" type=\"text\" class=\"sbkBsav_SearchBox sbk_Focusable\" id=\"SobekHomeSearchBox\" value=\"" + textBoxValue + "\" onkeydown=\"return fnTrapKD(event, 'dloc', '" + arg1 + "', '" + arg2 + "','" + browse_url + "');\" /></td>");
-			Output.WriteLine("      <td style=\"width:10%;\"><button class=\"sbk_GoButton\" title=\"" + search_collection + "\" onclick=\"" + Search_Script_Action + ";return false;\">Go</button></td>");
-			Output.WriteLine("      <td><div id=\"circular_progress\" name=\"circular_progress\" class=\"hidden_progress\">&nbsp;</div></td>");
-			Output.WriteLine("    </tr>");
+            Output.WriteLine("  <table id=\"sbkDsav_SearchPanel\" >");
+            Output.WriteLine("    <tr>");
+            Output.WriteLine("      <td style=\"text-align:right;width:27%;\" id=\"sbkBsav_SearchPrompt\"><label for=\"SobekHomeSearchBox\">" + search_collection + ":</label></td>");
+            Output.WriteLine("      <td style=\"width:3%;\">&nbsp;</td>");
+            Output.WriteLine("      <td style=\"width:60%;\"><input name=\"u_search\" type=\"text\" class=\"sbkBsav_SearchBox sbk_Focusable\" id=\"SobekHomeSearchBox\" value=\"" + textBoxValue + "\" onkeydown=\"return fnTrapKD(event, 'dloc', '" + arg1 + "', '" + arg2 + "','" + browse_url + "');\" /></td>");
+            Output.WriteLine("      <td style=\"width:10%;\"><button class=\"sbk_GoButton\" title=\"" + search_collection + "\" onclick=\"" + Search_Script_Action + ";return false;\">Go</button></td>");
+            Output.WriteLine("      <td><div id=\"circular_progress\" name=\"circular_progress\" class=\"hidden_progress\">&nbsp;</div></td>");
+            Output.WriteLine("    </tr>");
             Output.WriteLine("    <tr style=\"vertical-align:top\">");
             Output.WriteLine("      <td colspan=\"2\">&nbsp;</td>");
             Output.WriteLine("      <td colspan=\"3\">");

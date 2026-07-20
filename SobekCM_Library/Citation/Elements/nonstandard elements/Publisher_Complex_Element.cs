@@ -1,17 +1,15 @@
 #region Using directives
 
+using SobekCM.Core.ApplicationState;
+using SobekCM.Core.Configuration.Localization;
+using SobekCM.Core.Users;
+using SobekCM.Library.UI;
+using SobekCM.Resource_Object;
+using SobekCM.Resource_Object.Bib_Info;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Text;
-using Microsoft.AspNetCore.Http;
 using System.Xml;
-using SobekCM.Core.ApplicationState;
-using SobekCM.Core.Configuration;
-using SobekCM.Core.Configuration.Localization;
-using SobekCM.Core.Users;
-using SobekCM.Resource_Object;
-using SobekCM.Resource_Object.Bib_Info;
-using SobekCM.Library.UI;
 
 #endregion
 
@@ -27,7 +25,7 @@ namespace SobekCM.Library.Citation.Elements
             Repeatable = true;
             Title = "Publisher";
             html_element_name = "complex_publisher";
-	        help_page = "publisher";
+            help_page = "publisher";
         }
 
         #region iElement Members
@@ -43,7 +41,7 @@ namespace SobekCM.Library.Citation.Elements
         /// <param name="Translator"> Language support object which handles simple translational duties </param>
         /// <param name="Base_URL"> Base URL for the current request </param>
         /// <remarks> This simple element does not append any popup form to the popup_form_builder</remarks>
-        public override void Render_Template_HTML(TextWriter Output, SobekCM_Item Bib, string Skin_Code, bool IsMozilla, StringBuilder PopupFormBuilder, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL )
+        public override void Render_Template_HTML(TextWriter Output, SobekCM_Item Bib, string Skin_Code, bool IsMozilla, StringBuilder PopupFormBuilder, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL)
         {
             // Check that an acronym exists
             if (Acronym.Length == 0)
@@ -92,11 +90,11 @@ namespace SobekCM.Library.Citation.Elements
             {
                 const int i = 1;
                 Output.WriteLine("              <span class=\"metadata_sublabel2\">" + Translator.Get_Translation("Name", CurrentLanguage) + ":</span>");
-				Output.WriteLine("              <input name=\"" + id_name + "_name" + i + "\" id=\"" + id_name + "_name" + i + "\" class=\"" + html_element_name + "_name_input sbk_Focusable\" type=\"text\" value=\"\" /><br />");
+                Output.WriteLine("              <input name=\"" + id_name + "_name" + i + "\" id=\"" + id_name + "_name" + i + "\" class=\"" + html_element_name + "_name_input sbk_Focusable\" type=\"text\" value=\"\" /><br />");
                 Output.WriteLine("              <span class=\"metadata_sublabel2\">" + Translator.Get_Translation("Location(s)", CurrentLanguage) + ":</span>");
                 Output.WriteLine("              <input name=\"" + id_name + "_firstloc" + i + "\" id=\"" + id_name + "_firstloc" + i + "\" class=\"" + html_element_name + "_location_input sbk_Focusable\" type=\"text\" value=\"\" />");
-				Output.WriteLine("              <input name=\"" + id_name + "_secondloc" + i + "\" id=\"" + id_name + "_secondloc" + i + "\" class=\"" + html_element_name + "_location_input sbk_Focusable\" type=\"text\" value=\"\" />");
-				Output.Write("              <input name=\"" + id_name + "_thirdloc" + i + "\" id=\"" + id_name + "_thirdloc" + i + "\" class=\"" + html_element_name + "_location_input sbk_Focusable\" type=\"text\" value=\"\" />");
+                Output.WriteLine("              <input name=\"" + id_name + "_secondloc" + i + "\" id=\"" + id_name + "_secondloc" + i + "\" class=\"" + html_element_name + "_location_input sbk_Focusable\" type=\"text\" value=\"\" />");
+                Output.Write("              <input name=\"" + id_name + "_thirdloc" + i + "\" id=\"" + id_name + "_thirdloc" + i + "\" class=\"" + html_element_name + "_location_input sbk_Focusable\" type=\"text\" value=\"\" />");
                 Output.WriteLine("</div>");
                 Output.WriteLine("          </td>");
             }
@@ -106,32 +104,32 @@ namespace SobekCM.Library.Citation.Elements
                 for (int i = 1; i <= publishers.Count; i++)
                 {
                     Output.WriteLine("              <span class=\"metadata_sublabel2\">" + Translator.Get_Translation("Name", CurrentLanguage) + ":</span>");
-					Output.WriteLine("              <input name=\"" + id_name + "_name" + i + "\" id=\"" + id_name + "_name" + i + "\" class=\"" + html_element_name + "_name_input sbk_Focusable\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(publishers[i - 1].Name) + "\" /><br />");
+                    Output.WriteLine("              <input name=\"" + id_name + "_name" + i + "\" id=\"" + id_name + "_name" + i + "\" class=\"" + html_element_name + "_name_input sbk_Focusable\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(publishers[i - 1].Name) + "\" /><br />");
                     Output.WriteLine("              <span class=\"metadata_sublabel2\">" + Translator.Get_Translation("Location(s)", CurrentLanguage) + ":</span>");
                     ReadOnlyCollection<Origin_Info_Place> places = publishers[i - 1].Places;
                     if ((places.Count > 0) && (places[0].Place_Text.Length > 0))
                     {
-						Output.WriteLine("              <input name=\"" + id_name + "_firstloc" + i + "\" id=\"" + id_name + "_firstloc" + i + "\" class=\"" + html_element_name + "_location_input sbk_Focusable\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(places[0].Place_Text) + "\" />");
+                        Output.WriteLine("              <input name=\"" + id_name + "_firstloc" + i + "\" id=\"" + id_name + "_firstloc" + i + "\" class=\"" + html_element_name + "_location_input sbk_Focusable\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(places[0].Place_Text) + "\" />");
                     }
                     else
                     {
-						Output.WriteLine("              <input name=\"" + id_name + "_firstloc" + i + "\" id=\"" + id_name + "_firstloc" + i + "\" class=\"" + html_element_name + "_location_input sbk_Focusable\" type=\"text\" value=\"\" />");
+                        Output.WriteLine("              <input name=\"" + id_name + "_firstloc" + i + "\" id=\"" + id_name + "_firstloc" + i + "\" class=\"" + html_element_name + "_location_input sbk_Focusable\" type=\"text\" value=\"\" />");
                     }
                     if ((places.Count > 1) && (places[1].Place_Text.Length > 0))
                     {
-						Output.WriteLine("              <input name=\"" + id_name + "_secondloc" + i + "\" id=\"" + id_name + "_secondloc" + i + "\" class=\"" + html_element_name + "_location_input sbk_Focusable\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(places[1].Place_Text) + "\" />");
+                        Output.WriteLine("              <input name=\"" + id_name + "_secondloc" + i + "\" id=\"" + id_name + "_secondloc" + i + "\" class=\"" + html_element_name + "_location_input sbk_Focusable\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(places[1].Place_Text) + "\" />");
                     }
                     else
                     {
-						Output.WriteLine("              <input name=\"" + id_name + "_secondloc" + i + "\" id=\"" + id_name + "_secondloc" + i + "\" class=\"" + html_element_name + "_location_input sbk_Focusable\" type=\"text\" value=\"\" />");
+                        Output.WriteLine("              <input name=\"" + id_name + "_secondloc" + i + "\" id=\"" + id_name + "_secondloc" + i + "\" class=\"" + html_element_name + "_location_input sbk_Focusable\" type=\"text\" value=\"\" />");
                     }
                     if ((places.Count > 2) && (places[2].Place_Text.Length > 0))
                     {
-						Output.Write("              <input name=\"" + id_name + "_thirdloc" + i + "\" id=\"" + id_name + "_thirdloc" + i + "\" class=\"" + html_element_name + "_location_input sbk_Focusable\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(places[2].Place_Text) + "\" />");
+                        Output.Write("              <input name=\"" + id_name + "_thirdloc" + i + "\" id=\"" + id_name + "_thirdloc" + i + "\" class=\"" + html_element_name + "_location_input sbk_Focusable\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(places[2].Place_Text) + "\" />");
                     }
                     else
                     {
-						Output.Write("              <input name=\"" + id_name + "_thirdloc" + i + "\" id=\"" + id_name + "_thirdloc" + i + "\" class=\"" + html_element_name + "_location_input sbk_Focusable\" type=\"text\" value=\"\" />");
+                        Output.Write("              <input name=\"" + id_name + "_thirdloc" + i + "\" id=\"" + id_name + "_thirdloc" + i + "\" class=\"" + html_element_name + "_location_input sbk_Focusable\" type=\"text\" value=\"\" />");
                     }
 
                     if (i < publishers.Count)
@@ -176,7 +174,7 @@ namespace SobekCM.Library.Citation.Elements
         public override void Save_To_Bib(SobekCM_Item Bib)
         {
             const string HTML_ELEMENT_NAME = "complex_publisher";
-            string id = HTML_ELEMENT_NAME.Replace("_","");
+            string id = HTML_ELEMENT_NAME.Replace("_", "");
             var getKeys = Context.Request.Form.Keys;
             foreach (string thisKey in getKeys)
             {
@@ -214,7 +212,7 @@ namespace SobekCM.Library.Citation.Elements
         /// <summary> Reads the inner data from the CompleteTemplate XML format </summary>
         /// <param name="XMLReader"> Current template xml configuration reader </param>
         /// <remarks> This procedure does not currently read any inner xml (not yet necessary) </remarks>
-        protected override void Inner_Read_Data( XmlReader XMLReader )
+        protected override void Inner_Read_Data(XmlReader XMLReader)
         {
             // Do nothing
         }

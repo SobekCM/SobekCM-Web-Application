@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Net.NetworkInformation;
-using System.Net.Sockets;
-using System.Reflection;
-using System.Xml;
-using SobekCM.Core.BriefItem;
+﻿using SobekCM.Core.BriefItem;
 using SobekCM.Core.Configuration;
 using SobekCM.Core.Configuration.Authentication;
 using SobekCM.Core.Configuration.Engine;
@@ -24,6 +17,13 @@ using SobekCM.Engine_Library.ApplicationState;
 using SobekCM.Engine_Library.Database;
 using SobekCM.Engine_Library.Items.BriefItems.Mappers;
 using SobekCM.Resource_Object.Configuration;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Net.NetworkInformation;
+using System.Net.Sockets;
+using System.Reflection;
+using System.Xml;
 
 namespace SobekCM.Engine_Library.Configuration
 {
@@ -34,7 +34,7 @@ namespace SobekCM.Engine_Library.Configuration
 
         /// <summary> Refreshes the values from the database settings </summary>
         /// <returns> A fully built instance-wide setting object </returns>
-        public static InstanceWide_Configuration Read_Config_Files( InstanceWide_Settings Settings)
+        public static InstanceWide_Configuration Read_Config_Files(InstanceWide_Settings Settings)
         {
             // Get the directories to read
             List<string> configurationDirectories = new List<string>();
@@ -149,7 +149,7 @@ namespace SobekCM.Engine_Library.Configuration
             // Start to build the instance wide configuration
             InstanceWide_Configuration returnValue = new InstanceWide_Configuration();
 
-           
+
             // Add an initial log, with the data
             returnValue.Source.Add_Log("Beginning to read configuration files (" + DateTime.Now.ToShortDateString() + ")");
 
@@ -246,7 +246,7 @@ namespace SobekCM.Engine_Library.Configuration
             // If the file doesn't exist, that is strange.. but not an error per se
             if (!File.Exists(ConfigFile))
             {
-                return true;    
+                return true;
             }
 
             // Add to the log
@@ -270,7 +270,7 @@ namespace SobekCM.Engine_Library.Configuration
             // Streams used for reading
             Stream readerStream = null;
             XmlTextReader readerXml = null;
-            
+
             try
             {
                 // Check the file for the last modified date
@@ -320,7 +320,7 @@ namespace SobekCM.Engine_Library.Configuration
                                 ConfigObj.Source.Add_Log("        Parsing ENGINE subtree");
                                 if (readerXml.MoveToAttribute("ClearAll"))
                                 {
-                                    if ((readerXml.Value.Trim().ToLower() == "true") && ( ConfigObj.Engine != null ))
+                                    if ((readerXml.Value.Trim().ToLower() == "true") && (ConfigObj.Engine != null))
                                     {
                                         ConfigObj.Engine.ClearAll();
                                     }
@@ -384,7 +384,7 @@ namespace SobekCM.Engine_Library.Configuration
                                     readerXml.MoveToElement();
 
                                     // Savethe code though, if it wasn't an asterisk
-                                    if (( code != "*") && ( !ConfigObj.UI.StaticResources.Static_Resource_Codes.Contains(code.ToLower())))
+                                    if ((code != "*") && (!ConfigObj.UI.StaticResources.Static_Resource_Codes.Contains(code.ToLower())))
                                         ConfigObj.UI.StaticResources.Static_Resource_Codes.Add(code.ToLower());
                                 }
                                 if (readerXml.MoveToAttribute("baseUrl"))
@@ -506,7 +506,7 @@ namespace SobekCM.Engine_Library.Configuration
                             case "file":
                                 string key = (ReaderXml.MoveToAttribute("key")) ? ReaderXml.Value.Trim() : null;
                                 string source = (ReaderXml.MoveToAttribute("source")) ? ReaderXml.Value.Trim() : null;
-                                if ((!String.IsNullOrEmpty(key)) && (!String.IsNullOrEmpty(source))) 
+                                if ((!String.IsNullOrEmpty(key)) && (!String.IsNullOrEmpty(source)))
                                     config.Add_File(key.ToLower(), source.Replace("[%BASEURL%]", Base_URL));
                                 break;
                         }
@@ -941,7 +941,7 @@ namespace SobekCM.Engine_Library.Configuration
 
         /// <summary> Read the configuration file for the brief item mapping sets </summary>
         /// <returns> TRUE if successful, otherwise FALSE </returns>
-        private static bool read_briefitem_mapping_details(XmlReader ReaderXml, InstanceWide_Configuration Config )
+        private static bool read_briefitem_mapping_details(XmlReader ReaderXml, InstanceWide_Configuration Config)
         {
             // Ensure the brief item mapping exists
             if (Config.BriefItemMapping == null)
@@ -984,7 +984,7 @@ namespace SobekCM.Engine_Library.Configuration
                                 BriefItemMapping_Set thisSet = Config.BriefItemMapping.GetMappingSet(id);
                                 if (thisSet == null)
                                 {
-                                    thisSet = new BriefItemMapping_Set {SetName = id};
+                                    thisSet = new BriefItemMapping_Set { SetName = id };
                                     Config.BriefItemMapping.Add_MappingSet(thisSet);
                                 }
 
@@ -1288,9 +1288,9 @@ namespace SobekCM.Engine_Library.Configuration
         private static void read_mapeditor_details(XmlReader ReaderXml, InstanceWide_Configuration Config)
         {
             // Ensure the config object exists
-            if ( Config.UI.MapEditor == null )
+            if (Config.UI.MapEditor == null)
                 Config.UI.MapEditor = new MapEditor_Configuration();
-            
+
 
             while (ReaderXml.Read())
             {
@@ -1351,22 +1351,22 @@ namespace SobekCM.Engine_Library.Configuration
                     switch (ReaderXml.Name.ToLower())
                     {
                         case "mapping":
-                            read_microservices_details_mapping(ReaderXml.ReadSubtree(), Config.Engine, null );
+                            read_microservices_details_mapping(ReaderXml.ReadSubtree(), Config.Engine, null);
                             break;
 
                         case "components":
-                            read_microservices_details_components(ReaderXml.ReadSubtree(), Config.Engine );
+                            read_microservices_details_components(ReaderXml.ReadSubtree(), Config.Engine);
                             break;
 
                         case "restrictionranges":
-                            read_engine_details_restrictionranges(ReaderXml.ReadSubtree(), Config.Engine );
+                            read_engine_details_restrictionranges(ReaderXml.ReadSubtree(), Config.Engine);
                             break;
                     }
                 }
             }
         }
 
-        private static void read_microservices_details_mapping(XmlReader ReaderXml, Engine_Server_Configuration Config, Engine_Path_Endpoint ParentSegment )
+        private static void read_microservices_details_mapping(XmlReader ReaderXml, Engine_Server_Configuration Config, Engine_Path_Endpoint ParentSegment)
         {
             while (ReaderXml.Read())
             {
@@ -1398,7 +1398,7 @@ namespace SobekCM.Engine_Library.Configuration
                                         path = Config.GetRoot(segment.ToLower());
                                     else
                                     {
-                                        path = new Engine_Path_Endpoint {Segment = segment};
+                                        path = new Engine_Path_Endpoint { Segment = segment };
                                         Config.AddRoot(segment.ToLower(), path);
                                     }
                                 }
@@ -1411,7 +1411,7 @@ namespace SobekCM.Engine_Library.Configuration
                                     else
                                     {
                                         path = new Engine_Path_Endpoint { Segment = segment };
-                                        ParentSegment.AddChild(path.Segment, path );
+                                        ParentSegment.AddChild(path.Segment, path);
                                     }
 
                                 }
@@ -1573,7 +1573,7 @@ namespace SobekCM.Engine_Library.Configuration
 
         private static void read_microservices_simple_endpoint_details(XmlReader ReaderXml, Engine_Path_Endpoint ParentSegment)
         {
-            Engine_Path_Endpoint endpoint = new Engine_Path_Endpoint {IsEndpoint = true};
+            Engine_Path_Endpoint endpoint = new Engine_Path_Endpoint { IsEndpoint = true };
 
             string componentid = String.Empty;
             string restrictionid = String.Empty;
@@ -1643,7 +1643,7 @@ namespace SobekCM.Engine_Library.Configuration
             }
         }
 
-        private static void read_microservices_details_components(XmlReader ReaderXml, Engine_Server_Configuration Config )
+        private static void read_microservices_details_components(XmlReader ReaderXml, Engine_Server_Configuration Config)
         {
             while (ReaderXml.Read())
             {
@@ -1674,7 +1674,7 @@ namespace SobekCM.Engine_Library.Configuration
             }
         }
 
-        private static void read_engine_details_restrictionranges(XmlReader ReaderXml, Engine_Server_Configuration Config )
+        private static void read_engine_details_restrictionranges(XmlReader ReaderXml, Engine_Server_Configuration Config)
         {
             Engine_RestrictionRange currentRange = null;
 
@@ -1817,9 +1817,9 @@ namespace SobekCM.Engine_Library.Configuration
                     }
                 }
             }
-            catch 
+            catch
             {
-                
+
             }
 
             return returnValue;
@@ -1836,7 +1836,7 @@ namespace SobekCM.Engine_Library.Configuration
                 engine_config_finalize_handle_single_mapping(pathEndpoint.PutMapping, components, restrictionRanges);
                 engine_config_finalize_handle_single_mapping(pathEndpoint.DeleteMapping, components, restrictionRanges);
             }
-            
+
             // Now, step through any children as well
             if ((pathEndpoint.Children != null) && (pathEndpoint.Children.Count > 0))
             {
@@ -1865,7 +1865,7 @@ namespace SobekCM.Engine_Library.Configuration
             }
 
             // Map any restriction range
-            if (!String.IsNullOrEmpty(mapping.RestrictionRangeSetId)) 
+            if (!String.IsNullOrEmpty(mapping.RestrictionRangeSetId))
             {
                 string[] restrictions = mapping.RestrictionRangeSetId.Split(" |,".ToCharArray());
                 foreach (string thisRestriction in restrictions)
@@ -1907,7 +1907,7 @@ namespace SobekCM.Engine_Library.Configuration
             }
         }
 
-        private static void read_qc_profiles(XmlReader ReaderXml, QualityControl_Configuration Config )
+        private static void read_qc_profiles(XmlReader ReaderXml, QualityControl_Configuration Config)
         {
             int unnamed_profile_counter = 1;
 
@@ -1971,7 +1971,7 @@ namespace SobekCM.Engine_Library.Configuration
 
                                         if ((!String.IsNullOrEmpty(language)) && (!String.IsNullOrEmpty(text)))
                                         {
-                                            thisConfig.Add_Translation(Web_Language_Enum_Converter.Code_To_Enum(language), text );
+                                            thisConfig.Add_Translation(Web_Language_Enum_Converter.Code_To_Enum(language), text);
                                         }
                                     }
                                 }
@@ -1992,13 +1992,13 @@ namespace SobekCM.Engine_Library.Configuration
         private static bool read_metadata_details(XmlReader ReaderXml, InstanceWide_Configuration Config)
         {
             bool errorEncountered = false;
-                
+
             // Ensure the config object exists
             if (Config.Metadata == null)
                 Config.Metadata = new Metadata_Configuration();
 
             // Clear al the current (probably default) settings
-            if ( Config.Metadata.isDefault )
+            if (Config.Metadata.isDefault)
                 Config.Metadata.Clear();
 
             // Some collections to read into
@@ -2074,14 +2074,14 @@ namespace SobekCM.Engine_Library.Configuration
                 {
                     if (ReaderXml.Name.ToLower() == "clear")
                         Config.Clear_Metadata_File_ReaderWriter_Config();
-                    
+
                     if (ReaderXml.Name.ToLower() == "readerwriter")
-                        read_metadata_file_readerwriter_config(ReaderXml.ReadSubtree(), Config );
+                        read_metadata_file_readerwriter_config(ReaderXml.ReadSubtree(), Config);
                 }
             }
         }
 
-        private static void read_metadata_file_readerwriter_config(XmlReader ReaderXml, Metadata_Configuration Config )
+        private static void read_metadata_file_readerwriter_config(XmlReader ReaderXml, Metadata_Configuration Config)
         {
             Metadata_File_ReaderWriter_Config returnValue = new Metadata_File_ReaderWriter_Config();
             ReaderXml.Read();
@@ -2158,7 +2158,7 @@ namespace SobekCM.Engine_Library.Configuration
             Config.Add_Metadata_File_ReaderWriter(returnValue);
         }
 
-        private static void read_mets_readerwriter_configs(XmlReader ReaderXml, Dictionary<string, METS_Section_ReaderWriter_Config> ReaderWriters, Metadata_Configuration Config )
+        private static void read_mets_readerwriter_configs(XmlReader ReaderXml, Dictionary<string, METS_Section_ReaderWriter_Config> ReaderWriters, Metadata_Configuration Config)
         {
             while (ReaderXml.Read())
             {
@@ -2174,7 +2174,7 @@ namespace SobekCM.Engine_Library.Configuration
             }
         }
 
-        private static METS_Section_ReaderWriter_Config read_mets_section_readerwriter_config(XmlReader ReaderXml )
+        private static METS_Section_ReaderWriter_Config read_mets_section_readerwriter_config(XmlReader ReaderXml)
         {
             METS_Section_ReaderWriter_Config returnValue = new METS_Section_ReaderWriter_Config();
 
@@ -2267,7 +2267,7 @@ namespace SobekCM.Engine_Library.Configuration
             return returnValue;
         }
 
-        private static void read_metadata_modules_config(XmlReader ReaderXml, Metadata_Configuration Config )
+        private static void read_metadata_modules_config(XmlReader ReaderXml, Metadata_Configuration Config)
         {
             while (ReaderXml.Read())
             {
@@ -2324,7 +2324,7 @@ namespace SobekCM.Engine_Library.Configuration
             }
         }
 
-        private static void read_mets_writing_config(XmlReader ReaderXml, Dictionary<string, METS_Section_ReaderWriter_Config> ReaderWriters, Metadata_Configuration Config )
+        private static void read_mets_writing_config(XmlReader ReaderXml, Dictionary<string, METS_Section_ReaderWriter_Config> ReaderWriters, Metadata_Configuration Config)
         {
             bool inPackage = false;
             bool inDivision = false;
@@ -2368,7 +2368,7 @@ namespace SobekCM.Engine_Library.Configuration
                             }
                             else
                             {
-                                Config.Add_METS_Writing_Profile(profile); 
+                                Config.Add_METS_Writing_Profile(profile);
                             }
 
                             break;
@@ -2743,7 +2743,7 @@ namespace SobekCM.Engine_Library.Configuration
                             {
                                 // Get the ID for this section writer
                                 string id = ReaderXml.Value.Trim();
-                                
+
                                 // Get or create the section writer in this section with that id
                                 SectionWriterConfig newStyleConfig = Section.GetOrCreateWriter(id);
 
@@ -2770,8 +2770,8 @@ namespace SobekCM.Engine_Library.Configuration
 
         #region Section reads the citation configuration information
 
-            private static
-            bool read_citation_details(XmlReader ReaderXml, InstanceWide_Configuration Config)
+        private static
+        bool read_citation_details(XmlReader ReaderXml, InstanceWide_Configuration Config)
         {
             bool errorEncountered = false;
 
@@ -2901,7 +2901,7 @@ namespace SobekCM.Engine_Library.Configuration
                             break;
 
                         case "clear":
-                            if ( currFieldSet != null )
+                            if (currFieldSet != null)
                                 currFieldSet.Clear_Elements();
                             break;
 
@@ -2985,7 +2985,7 @@ namespace SobekCM.Engine_Library.Configuration
                             break;
 
                         case "remove":
-                            if (( currFieldSet != null ) && ( ReaderXml.MoveToAttribute("Code")))
+                            if ((currFieldSet != null) && (ReaderXml.MoveToAttribute("Code")))
                                 currFieldSet.Remove_Element(ReaderXml.Value.Trim());
                             currElement = null;
                             break;
@@ -3097,7 +3097,7 @@ namespace SobekCM.Engine_Library.Configuration
 
         #region Section reads all the extension information
 
-        private static ExtensionInfo read_extension_config_file(string ConfigFile )
+        private static ExtensionInfo read_extension_config_file(string ConfigFile)
         {
             // Add to the log
             string directoryName = "Unknown";
@@ -3167,7 +3167,7 @@ namespace SobekCM.Engine_Library.Configuration
             return returnObj;
         }
 
-        private static ExtensionInfo read_extension_details(XmlReader readerXml, InstanceWide_Configuration config, string SourceDirectoryName, string SourceDirectory )
+        private static ExtensionInfo read_extension_details(XmlReader readerXml, InstanceWide_Configuration config, string SourceDirectoryName, string SourceDirectory)
         {
             // NOTE: When the basic extension details are being read for non-active plug-ins, the config
             //       object is NULL.  When they are active, the config object is not null.

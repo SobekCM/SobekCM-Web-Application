@@ -1,5 +1,8 @@
 ﻿#region Using directives
 
+using SobekCM.Resource_Object.Bib_Info;
+using SobekCM.Resource_Object.Metadata_Modules;
+using SobekCM.Resource_Object.Metadata_Modules.EAD;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -7,9 +10,6 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml;
 using System.Xml.Xsl;
-using SobekCM.Resource_Object.Bib_Info;
-using SobekCM.Resource_Object.Metadata_Modules;
-using SobekCM.Resource_Object.Metadata_Modules.EAD;
 
 #endregion
 
@@ -210,7 +210,7 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
                                     }
                                     else
                                     {
-                                        string[] likely_description_standards = {"DACS", "APPM", "AACR2", "RDA", "ISADG", "ISAD", "MAD", "RAD"};
+                                        string[] likely_description_standards = { "DACS", "APPM", "AACR2", "RDA", "ISADG", "ISAD", "MAD", "RAD" };
                                         foreach (string likely_standard in likely_description_standards)
                                         {
                                             if (descrules_text.IndexOf(likely_standard) >= 0)
@@ -349,7 +349,7 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
                                                 {
                                                     Subject_Info_Name newName = new Subject_Info_Name
                                                     {
-                                                        Full_Name = Trim_Final_Punctuation(reader2.Value), 
+                                                        Full_Name = Trim_Final_Punctuation(reader2.Value),
                                                         Authority = source
                                                     };
                                                     Return_Package.Bib_Info.Add_Subject(newName);

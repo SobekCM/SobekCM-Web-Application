@@ -1,11 +1,11 @@
 ﻿#region Using directives
 
+using ProtoBuf;
+using SobekCM.Core.BriefItem;
 using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
-using ProtoBuf;
-using SobekCM.Core.BriefItem;
 
 #endregion
 
@@ -45,7 +45,7 @@ namespace SobekCM.Core.ResultTitle
         /// <param name="Value"> Value as a simple string </param>
         public BriefItem_DescTermValue Add_Value(string Value)
         {
-            if ( Values == null )
+            if (Values == null)
                 Values = new List<BriefItem_DescTermValue>();
 
             BriefItem_DescTermValue newValue = new BriefItem_DescTermValue(Value);

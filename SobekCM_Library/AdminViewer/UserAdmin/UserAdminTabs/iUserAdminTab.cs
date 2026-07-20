@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using SobekCM.Core.Users;
 using SobekCM.Tools;
-using System.Collections.Specialized;
 using System.IO;
 
 namespace SobekCM.Library.AdminViewer.UserAdmin.UserAdminTabs

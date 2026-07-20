@@ -1,19 +1,15 @@
 #region Using directives
 
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.IO;
-using System.Linq;
-using System.Text;
-using Microsoft.AspNetCore.Http;
 using SobekCM.Core.ApplicationState;
-using SobekCM.Core.Configuration;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Users;
+using SobekCM.Library.UI;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Bib_Info;
-using SobekCM.Library.UI;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Text;
 
 #endregion
 
@@ -88,7 +84,7 @@ namespace SobekCM.Library.Citation.Elements
         {
             Bib.Bib_Info.Clear_Genres();
         }
-        
+
         /// <summary> Saves the data rendered by this element to the provided bibliographic object during postback </summary>
         /// <param name="Bib"> Object into which to save the user's data, entered into the html rendered by this element </param>
         public override void Save_To_Bib(SobekCM_Item Bib)
@@ -100,7 +96,7 @@ namespace SobekCM.Library.Citation.Elements
                 if (thisKey.IndexOf(id) != 0) continue;
 
                 string genre = Context.Request.Form[thisKey].TrimFirst();
-                
+
                 Bib.Bib_Info.Add_Genre(genre);
             }
         }

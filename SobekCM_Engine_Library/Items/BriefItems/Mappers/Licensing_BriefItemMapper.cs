@@ -1,6 +1,5 @@
 ﻿#region Using directives
 
-using System;
 using SobekCM.Core.BriefItem;
 using SobekCM.Resource_Object;
 
@@ -20,9 +19,9 @@ namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
         public bool MapToBriefItem(SobekCM_Item Original, BriefItemInfo New)
         {
             // Add the licensing
-            if ( Original.Bib_Info.LicensingCount > 0 )
+            if (Original.Bib_Info.LicensingCount > 0)
             {
-                foreach( string licensing in Original.Bib_Info.Licensing)
+                foreach (string licensing in Original.Bib_Info.Licensing)
                 {
                     New.Add_Description("Licensing", licensing);
                 }

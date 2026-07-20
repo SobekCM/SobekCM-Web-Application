@@ -1,9 +1,9 @@
-﻿using System;
+﻿using ProtoBuf;
+using SobekCM.Core.BriefItem;
+using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
-using ProtoBuf;
-using SobekCM.Core.BriefItem;
 
 namespace SobekCM.Core.Configuration
 {
@@ -58,7 +58,7 @@ namespace SobekCM.Core.Configuration
 
         /// <summary> Add a new mapping set </summary>
         /// <param name="NewSet"> New brief item mapping set </param>
-        public void Add_MappingSet( BriefItemMapping_Set NewSet )
+        public void Add_MappingSet(BriefItemMapping_Set NewSet)
         {
             MappingSets.Add(NewSet);
 

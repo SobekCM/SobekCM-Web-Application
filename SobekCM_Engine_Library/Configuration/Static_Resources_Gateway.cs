@@ -1,8 +1,5 @@
 #region Using directives
 
-using System;
-using System.IO;
-using System.Xml;
 using SobekCM.Core.Client;
 using SobekCM.Core.UI_Configuration.StaticResources;
 using SobekCM.Tools;
@@ -25,7 +22,7 @@ namespace SobekCM.Engine_Library.Configuration
 
             if (SobekEngineClient.Admin == null)
             {
-                throw new SobekCM_Traced_Exception("SobekEngineClient.Admin is null in Static_Resources_Gateway", null, tracer );
+                throw new SobekCM_Traced_Exception("SobekEngineClient.Admin is null in Static_Resources_Gateway", null, tracer);
             }
 
             config = SobekEngineClient.Admin.Get_Static_Resources_Configuration(tracer);
@@ -1163,7 +1160,7 @@ namespace SobekCM.Engine_Library.Configuration
         public static string Zoomout_Png { get { return config.Zoomout_Png; } }
 
         /// <summary> OpenSeaDragon image prefix URL, used to load the zooming images in the OpenSeaDragon JPEG2000 viewer ( http://cdn.sobekrepository.org/includes/openseadragon/1.2.1/images/ by default)</summary>
-        public static string OpenSeaDragon_Image_Prefix { get { return config.OpenSeaDragon_Image_Prefix;  } }
+        public static string OpenSeaDragon_Image_Prefix { get { return config.OpenSeaDragon_Image_Prefix; } }
 
     }
 }

@@ -1,12 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using SobekCM.Core.BriefItem;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.UI_Configuration.Citation;
 using SobekCM.Tools;
+using System;
+using System.Text;
 
 namespace SobekCM.Library.Citation.SectionWriter
 {

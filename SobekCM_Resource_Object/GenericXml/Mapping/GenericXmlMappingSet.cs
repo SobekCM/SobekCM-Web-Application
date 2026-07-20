@@ -1,11 +1,11 @@
-﻿using System;
+﻿using ProtoBuf;
+using SobekCM.Resource_Object.GenericXml.Reader;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization;
 using System.Xml;
 using System.Xml.Serialization;
-using ProtoBuf;
-using SobekCM.Resource_Object.GenericXml.Reader;
 
 namespace SobekCM.Resource_Object.GenericXml.Mapping
 {
@@ -117,12 +117,12 @@ namespace SobekCM.Resource_Object.GenericXml.Mapping
             return i;
         }
 
-        public bool Save(string MappingSetFile )
+        public bool Save(string MappingSetFile)
         {
             try
             {
                 // Open a stream to the file
-                StreamWriter outputFile = new StreamWriter(MappingSetFile, false );
+                StreamWriter outputFile = new StreamWriter(MappingSetFile, false);
 
                 // Create the XML serializer
                 XmlSerializer x = new XmlSerializer(this.GetType());
@@ -197,7 +197,7 @@ namespace SobekCM.Resource_Object.GenericXml.Mapping
             return null;
         }
 
-        public PathMappingInstructions Get_Matching_Path_Instructions(GenericXmlPath Path, string AttributeName )
+        public PathMappingInstructions Get_Matching_Path_Instructions(GenericXmlPath Path, string AttributeName)
         {
             if (searchNodes.Count == 0)
                 build_search_tree();
@@ -233,7 +233,7 @@ namespace SobekCM.Resource_Object.GenericXml.Mapping
             foreach (GenericXmlMappingPath mapping in Mappings)
             {
                 // Handle the first node first
-                if (( mapping.XmlPath != null ) && ( mapping.XmlPath.PathNodes != null ) && ( mapping.XmlPath.PathNodes.Count > 0 ))
+                if ((mapping.XmlPath != null) && (mapping.XmlPath.PathNodes != null) && (mapping.XmlPath.PathNodes.Count > 0))
                 {
                     // Handle the root node
                     GenericXmlMappingTreeNode rootNode = null;

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace SobekCM.Engine_Library.Items
+﻿namespace SobekCM.Engine_Library.Items
 {
     public enum SobekCM_Item_Error_Type_Enum : byte
     {
@@ -40,7 +34,7 @@ namespace SobekCM.Engine_Library.Items
         /// <summary> Constructor for a new instance of the SobekCM_Item_Error class </summary>
         /// <param name="Type"> Type, or classification, of this error </param>
         /// <param name="Message"> Error message with additional details </param>
-        public SobekCM_Item_Error(SobekCM_Item_Error_Type_Enum Type, string Message )
+        public SobekCM_Item_Error(SobekCM_Item_Error_Type_Enum Type, string Message)
         {
             this.Type = Type;
         }

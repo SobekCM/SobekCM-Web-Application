@@ -1,15 +1,13 @@
 #region Using directives
 
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
-using Microsoft.AspNetCore.Http;
 using SobekCM.Core.ApplicationState;
-using SobekCM.Core.Configuration;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Users;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Bib_Info;
+using System.Collections.Generic;
+using System.IO;
+using System.Text;
 
 #endregion
 
@@ -26,10 +24,10 @@ namespace SobekCM.Library.Citation.Elements
             SecondLabel = "Authority";
             Repeatable = true;
 
-            Add_Select_Item("", "");            
+            Add_Select_Item("", "");
             Add_Select_Item("CANDOCS", "candocs");
             Add_Select_Item("DDC", "ddc");
-            Add_Select_Item("LCC", "lcc");            
+            Add_Select_Item("LCC", "lcc");
             Add_Select_Item("NLM", "nlm");
             Add_Select_Item("SUDOCS", "sudocs");
             Add_Select_Item("UDC", "udc");
@@ -133,7 +131,7 @@ namespace SobekCM.Library.Citation.Elements
             foreach (string index in classifications.Keys)
             {
                 Classification_Info newClassification = new Classification_Info
-                                                            {Classification = classifications[index]};
+                { Classification = classifications[index] };
                 if (authorities.ContainsKey(index))
                 {
                     newClassification.Authority = authorities[index];

@@ -1,15 +1,14 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Reflection.Emit;
+using Microsoft.AspNetCore.Http;
 using SobekCM.Core.BriefItem;
 using SobekCM.Core.FileSystems;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Users;
 using SobekCM.Library.ItemViewer.Menu;
 using SobekCM.Tools;
-using Microsoft.AspNetCore.Http;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 
 namespace SobekCM.Library.ItemViewer.Viewers
 {
@@ -23,7 +22,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             ViewerType = "VIDEO";
             ViewerCode = "video";
 
-            FileExtensions = new string[] {"WEBM", "OGG", "MP4"};
+            FileExtensions = new string[] { "WEBM", "OGG", "MP4" };
         }
 
         /// <summary> Name of this viewer, which matches the viewer name from the database and 
@@ -44,8 +43,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
         public virtual bool Include_Viewer(BriefItemInfo CurrentItem)
         {
             // If the FileExtensions IS null, that is an error
-            if ( FileExtensions == null ) 
-                FileExtensions = new string[] {"WEBM", "OGG", "MP4"};
+            if (FileExtensions == null)
+                FileExtensions = new string[] { "WEBM", "OGG", "MP4" };
 
             // Check to see if there are any Video files attached, but allow the configuration 
             // to actually rule which files are necessary to be shown ( i.e., maybe 'PDFA' will be an extension
@@ -78,7 +77,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <param name="CurrentRequest"> Information about the current request </param>
         /// <param name="MenuItems"> List of menu items, to which this method may add one or more menu items </param>
         /// <param name="IpRestricted"> Flag indicates if this item is IP restricted AND if the current user is outside the ranges </param>
-        public virtual void Add_Menu_Items(BriefItemInfo CurrentItem, User_Object CurrentUser, Navigation_Object CurrentRequest, List<Item_MenuItem> MenuItems, bool IpRestricted )
+        public virtual void Add_Menu_Items(BriefItemInfo CurrentItem, User_Object CurrentUser, Navigation_Object CurrentRequest, List<Item_MenuItem> MenuItems, bool IpRestricted)
         {
             // Get the URL for this
             string previous_code = CurrentRequest.ViewerCode;
@@ -169,7 +168,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             {
                 foreach (BriefItem_File thisFileInfo in downloadPage.Files)
                 {
-                    string extension = thisFileInfo.File_Extension.Replace(".","");
+                    string extension = thisFileInfo.File_Extension.Replace(".", "");
                     foreach (string thisPossibleFileExtension in FileExtensions)
                     {
                         if (String.Compare(extension, thisPossibleFileExtension, StringComparison.OrdinalIgnoreCase) == 0)

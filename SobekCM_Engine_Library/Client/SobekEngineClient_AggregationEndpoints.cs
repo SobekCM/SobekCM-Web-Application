@@ -1,7 +1,6 @@
 ﻿#region Using directives
 
 using SobekCM.Core.Aggregations;
-using SobekCM.Core.Configuration;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Message;
 using SobekCM.Core.MicroservicesClient;
@@ -54,7 +53,7 @@ namespace SobekCM.Core.Client
         /// <param name="ChildPageCode"> Code the requested child page </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         /// <returns> Fully built object, based on the aggregation configuration and reading the source HTML file </returns>
-        public HTML_Based_Content Get_Aggregation_HTML_Child_Page(string AggregationCode, Web_Language_Enum RequestedLanguage, Web_Language_Enum DefaultLanguage, string ChildPageCode, Custom_Tracer Tracer )
+        public HTML_Based_Content Get_Aggregation_HTML_Child_Page(string AggregationCode, Web_Language_Enum RequestedLanguage, Web_Language_Enum DefaultLanguage, string ChildPageCode, Custom_Tracer Tracer)
         {
             return AggregationServices.get_item_aggregation_html_child_page(AggregationCode, RequestedLanguage, DefaultLanguage, ChildPageCode, Tracer);
         }

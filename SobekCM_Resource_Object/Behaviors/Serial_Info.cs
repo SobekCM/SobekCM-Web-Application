@@ -24,7 +24,8 @@ namespace SobekCM.Resource_Object.Behaviors
         /// <summary> Gets the number of hierarchies in this serial hierarchy </summary>
         public int Count
         {
-            get {
+            get
+            {
                 return hierarchy == null ? 0 : hierarchy.Count;
             }
         }

@@ -1,10 +1,10 @@
 ﻿#region Using directives
 
+using SobekCM.Resource_Object.METS_Sec_ReaderWriters;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using SobekCM.Resource_Object.METS_Sec_ReaderWriters;
 
 #endregion
 

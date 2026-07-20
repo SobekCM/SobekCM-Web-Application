@@ -1,10 +1,10 @@
 ﻿#region Using directives
 
+using ProtoBuf;
 using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
-using ProtoBuf;
 
 #endregion
 

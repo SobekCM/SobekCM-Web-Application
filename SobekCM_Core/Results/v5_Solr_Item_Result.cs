@@ -62,7 +62,7 @@ namespace SobekCM.Core.Results
         public string Group_Restrictions { get; set; }
 
         /// <summary> Restriction message (to be displayed if restricted) </summary>
-        public string RestrictedMsg { get; set;  }
+        public string RestrictedMsg { get; set; }
 
         #endregion
     }

@@ -1,17 +1,16 @@
 #region Using directives
 
+using Microsoft.AspNetCore.Http;
 using SobekCM.Core.MemoryMgmt;
-using System;
-using System.Collections.Specialized;
-using System.Data;
-using System.IO;
 using SobekCM.Core.Navigation;
 using SobekCM.Library.Database;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
-using SobekCM.Tools;
-using Microsoft.AspNetCore.Http;
 using SobekCM.Library.UI;
+using SobekCM.Tools;
+using System;
+using System.Data;
+using System.IO;
 
 #endregion
 
@@ -82,55 +81,55 @@ namespace SobekCM.Library.MySobekViewer
             DataTable searchesTable = SobekCM_Database.Get_User_Searches(RequestSpecificValues.Current_User.UserID, Tracer);
 
 
-			Output.WriteLine("<!-- Hidden field is used for postbacks to indicate what to save and reset -->");
-			Output.WriteLine("<input type=\"hidden\" id=\"item_action\" name=\"item_action\" value=\"\" />");
-			Output.WriteLine("<input type=\"hidden\" id=\"folder_id\" name=\"folder_id\" value=\"\" />");
+            Output.WriteLine("<!-- Hidden field is used for postbacks to indicate what to save and reset -->");
+            Output.WriteLine("<input type=\"hidden\" id=\"item_action\" name=\"item_action\" value=\"\" />");
+            Output.WriteLine("<input type=\"hidden\" id=\"folder_id\" name=\"folder_id\" value=\"\" />");
 
-			Output.WriteLine("<h1>" + Web_Title + "</h1>");
-			Output.WriteLine();
+            Output.WriteLine("<h1>" + Web_Title + "</h1>");
+            Output.WriteLine();
 
-			Output.WriteLine("<div class=\"SobekHomeText\" >");
-			if (searchesTable.Rows.Count > 0)
-			{
+            Output.WriteLine("<div class=\"SobekHomeText\" >");
+            if (searchesTable.Rows.Count > 0)
+            {
 
-				Output.WriteLine("  <blockquote>");
-				Output.WriteLine("  <table border=\"0px\" cellspacing=\"0px\" class=\"statsTable\">");
-				Output.WriteLine("    <tr align=\"left\" bgcolor=\"#0022a7\" >");
-				Output.WriteLine("      <th width=\"120px\" align=\"left\"><span style=\"color: White\"> &nbsp; ACTIONS</span></th>");
-				Output.WriteLine("      <th width=\"480px\" align=\"left\"><span style=\"color: White\">SAVED SEARCH</span></th>");
-				Output.WriteLine("     </tr>");
-				Output.WriteLine("    <tr><td bgcolor=\"#e7e7e7\" colspan=\"2\"></td></tr>");
+                Output.WriteLine("  <blockquote>");
+                Output.WriteLine("  <table border=\"0px\" cellspacing=\"0px\" class=\"statsTable\">");
+                Output.WriteLine("    <tr align=\"left\" bgcolor=\"#0022a7\" >");
+                Output.WriteLine("      <th width=\"120px\" align=\"left\"><span style=\"color: White\"> &nbsp; ACTIONS</span></th>");
+                Output.WriteLine("      <th width=\"480px\" align=\"left\"><span style=\"color: White\">SAVED SEARCH</span></th>");
+                Output.WriteLine("     </tr>");
+                Output.WriteLine("    <tr><td bgcolor=\"#e7e7e7\" colspan=\"2\"></td></tr>");
 
 
 
-				// Write the data for each interface
-				foreach (DataRow thisRow in searchesTable.Rows)
-				{
-					int usersearchid = Convert.ToInt32(thisRow["UserSearchID"]);
-					string search_url = thisRow["SearchURL"].ToString();
-					string search_desc = thisRow["UserNotes"].ToString();
+                // Write the data for each interface
+                foreach (DataRow thisRow in searchesTable.Rows)
+                {
+                    int usersearchid = Convert.ToInt32(thisRow["UserSearchID"]);
+                    string search_url = thisRow["SearchURL"].ToString();
+                    string search_desc = thisRow["UserNotes"].ToString();
 
-					// Build the action links
-					Output.WriteLine("    <tr align=\"left\" valign=\"center\" >");
-					Output.Write("      <td class=\"SobekFolderActionLink\" >( ");
-					Output.Write("<a title=\"Click to delete this saved search\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return delete_search('" + usersearchid + "');\">delete</a> | ");
-					Output.WriteLine("<a title=\"Click to view this search\" href=\"" + search_url + "\">view</a> )</td>");
-					Output.WriteLine("      <td><a href=\"" + search_url + "\">" + search_desc + "</a></td>");
-					Output.WriteLine("     </tr>");
-					Output.WriteLine("    <tr><td bgcolor=\"#e7e7e7\" colspan=\"2\"></td></tr>");
-				}
+                    // Build the action links
+                    Output.WriteLine("    <tr align=\"left\" valign=\"center\" >");
+                    Output.Write("      <td class=\"SobekFolderActionLink\" >( ");
+                    Output.Write("<a title=\"Click to delete this saved search\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return delete_search('" + usersearchid + "');\">delete</a> | ");
+                    Output.WriteLine("<a title=\"Click to view this search\" href=\"" + search_url + "\">view</a> )</td>");
+                    Output.WriteLine("      <td><a href=\"" + search_url + "\">" + search_desc + "</a></td>");
+                    Output.WriteLine("     </tr>");
+                    Output.WriteLine("    <tr><td bgcolor=\"#e7e7e7\" colspan=\"2\"></td></tr>");
+                }
 
-				Output.WriteLine("  </table>");
-				Output.WriteLine("  </blockquote>");
+                Output.WriteLine("  </table>");
+                Output.WriteLine("  </blockquote>");
 
-			}
-			else
-			{
-				Output.WriteLine("<blockquote>You do not have any saved searches or browses.<br /><br />To add a search or browse, use the ADD button while viewing the results of your search or browse.</blockquote><br />");
-			}
-			Output.WriteLine("</div>");
+            }
+            else
+            {
+                Output.WriteLine("<blockquote>You do not have any saved searches or browses.<br /><br />To add a search or browse, use the ADD button while viewing the results of your search or browse.</blockquote><br />");
+            }
+            Output.WriteLine("</div>");
         }
     }
 }
-  
+
 

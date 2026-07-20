@@ -23,12 +23,12 @@
 
 #region Using directives
 
+using ProtoBuf;
 using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Xml.Serialization;
-using ProtoBuf;
 
 #endregion
 
@@ -72,10 +72,10 @@ namespace SobekCM.Core.MARC
                 {
                     foreach (MARC_Transfer_Field marcField in Fields)
                     {
-                        if ( dictionary.ContainsKey(marcField.Tag ))
+                        if (dictionary.ContainsKey(marcField.Tag))
                             dictionary[marcField.Tag].Add(marcField);
                         else
-                            dictionary[marcField.Tag] = new List<MARC_Transfer_Field> {marcField};
+                            dictionary[marcField.Tag] = new List<MARC_Transfer_Field> { marcField };
                     }
                 }
 
@@ -268,9 +268,9 @@ namespace SobekCM.Core.MARC
             int i = xml_safe.IndexOf("&");
             while (i >= 0)
             {
-                if ((i != xml_safe.IndexOf("&amp;", i, StringComparison.OrdinalIgnoreCase)) && 
+                if ((i != xml_safe.IndexOf("&amp;", i, StringComparison.OrdinalIgnoreCase)) &&
                     (i != xml_safe.IndexOf("&quot;", i, StringComparison.OrdinalIgnoreCase)) &&
-                    (i != xml_safe.IndexOf("&gt;", i, StringComparison.OrdinalIgnoreCase)) && 
+                    (i != xml_safe.IndexOf("&gt;", i, StringComparison.OrdinalIgnoreCase)) &&
                     (i != xml_safe.IndexOf("&lt;", i, StringComparison.OrdinalIgnoreCase)))
                 {
                     xml_safe = xml_safe.Substring(0, i + 1) + "amp;" + xml_safe.Substring(i + 1);

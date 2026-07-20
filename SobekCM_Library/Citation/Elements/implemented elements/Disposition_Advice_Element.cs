@@ -1,18 +1,15 @@
 #region Using directives
 
-using System;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.IO;
-using System.Text;
-using Microsoft.AspNetCore.Http;
 using SobekCM.Core.ApplicationState;
-using SobekCM.Core.Configuration;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Settings;
 using SobekCM.Core.Users;
 using SobekCM.Library.UI;
 using SobekCM.Resource_Object;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Text;
 
 #endregion
 
@@ -78,8 +75,8 @@ namespace SobekCM.Library.Citation.Elements
             }
 
             string term = String.Empty;
-            if ( Bib.Tracking.Disposition_Advice > 0 )
-                term =  UI_ApplicationCache_Gateway.Settings.Disposition_Term_Future( Bib.Tracking.Disposition_Advice);
+            if (Bib.Tracking.Disposition_Advice > 0)
+                term = UI_ApplicationCache_Gateway.Settings.Disposition_Term_Future(Bib.Tracking.Disposition_Advice);
             render_helper(Output, term, Bib.Tracking.Disposition_Advice_Notes, Skin_Code, Current_User, CurrentLanguage, Translator, Base_URL, false);
         }
 
@@ -110,7 +107,7 @@ namespace SobekCM.Library.Citation.Elements
                     advice = form[thisKey];
                 }
 
-                if ( thisKey.IndexOf("dispositionadvice_text") == 0 )
+                if (thisKey.IndexOf("dispositionadvice_text") == 0)
                 {
                     notes = form[thisKey];
                 }
@@ -118,7 +115,7 @@ namespace SobekCM.Library.Citation.Elements
 
             if (advice.Length > 0)
             {
-                Bib.Tracking.Disposition_Advice = (short) UI_ApplicationCache_Gateway.Settings.Disposition_ID_Future(advice);
+                Bib.Tracking.Disposition_Advice = (short)UI_ApplicationCache_Gateway.Settings.Disposition_ID_Future(advice);
                 Bib.Tracking.Disposition_Advice_Notes = notes;
 
             }

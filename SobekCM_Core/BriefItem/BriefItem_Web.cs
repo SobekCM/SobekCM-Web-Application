@@ -1,10 +1,9 @@
-﻿using System;
+﻿using ProtoBuf;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
-using ProtoBuf;
-using SobekCM.Resource_Object.Behaviors;
 
 namespace SobekCM.Core.BriefItem
 {
@@ -197,7 +196,7 @@ namespace SobekCM.Core.BriefItem
             // Now, just look to see if it exists (but check first to see if a period was passed in)
             if ((Extension.Length > 1) && (Extension[0] == '.'))
                 return fileExtensionLookupDictionary.ContainsKey(Extension.Substring(1));
-            
+
             // No period, so simple test
             return fileExtensionLookupDictionary.ContainsKey(Extension);
         }

@@ -1,26 +1,22 @@
 #region Using directives
 
-using System;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.IO;
-using System.Linq;
-using System.Text;
 using Microsoft.AspNetCore.Http;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.Client;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Message;
 using SobekCM.Core.Navigation;
-using SobekCM.Core.UI_Configuration;
-using SobekCM.Core.UI_Configuration.StaticResources;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Engine_Library.Database;
-using SobekCM.Library.Database;
 // using SobekCM.Library.Helpers.UploadiFive;
 using SobekCM.Library.HTML;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
 
 #endregion
 
@@ -48,14 +44,14 @@ namespace SobekCM.Library.AdminViewer
             string page_code = RequestSpecificValues.Current_Mode.My_Sobek_SubMode;
 
             // If the user is not logged in, they shouldn't be here
-            if ((RequestSpecificValues.Current_User == null) || (!RequestSpecificValues.Current_User.LoggedOn ))
+            if ((RequestSpecificValues.Current_User == null) || (!RequestSpecificValues.Current_User.LoggedOn))
             {
                 RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.My_Sobek;
                 RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
                 UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
                 return;
             }
-            
+
             // Was there a parent indicated?
             string parent_locked = String.Empty;
             if (!String.IsNullOrEmpty(RequestSpecificValues.QueryString["parent"]))
@@ -87,7 +83,7 @@ namespace SobekCM.Library.AdminViewer
             if (parent_locked.Length > 0)
             {
                 // If not already locked, use ths as the parent
-                if ((!newAggr.ParentLocked.HasValue) || ( !newAggr.ParentLocked.Value ))
+                if ((!newAggr.ParentLocked.HasValue) || (!newAggr.ParentLocked.Value))
                 {
                     newAggr.ParentLocked = true;
                     newAggr.ParentCode = parent_locked;
@@ -156,21 +152,21 @@ namespace SobekCM.Library.AdminViewer
 
             // If this was set to page 0, but the user has chosen not to see that again,
             // move straight onto page 1
-            if ((page == 0 ) && ( Convert.ToBoolean(RequestSpecificValues.Current_User.Get_Setting("Add_Collection_AdminViewer:Skip Welcome", "false"))))
+            if ((page == 0) && (Convert.ToBoolean(RequestSpecificValues.Current_User.Get_Setting("Add_Collection_AdminViewer:Skip Welcome", "false"))))
             {
                 page = 1;
             }
 
             // Determine the in process directory for this
-            if (( !String.IsNullOrEmpty(RequestSpecificValues.Current_User.ShibbID)) && ( RequestSpecificValues.Current_User.ShibbID.Trim().Length > 0 ))
+            if ((!String.IsNullOrEmpty(RequestSpecificValues.Current_User.ShibbID)) && (RequestSpecificValues.Current_User.ShibbID.Trim().Length > 0))
             {
                 userInProcessDirectory = Path.Combine(UI_ApplicationCache_Gateway.Settings.Servers.In_Process_Submission_Location, RequestSpecificValues.Current_User.ShibbID + "\\addcoll");
-                userInProcessUrl = Path.Combine(UI_ApplicationCache_Gateway.Settings.Servers.Application_Server_URL, "mySobek/InProcess", RequestSpecificValues.Current_User.ShibbID, "addcoll").Replace("\\","/");
+                userInProcessUrl = Path.Combine(UI_ApplicationCache_Gateway.Settings.Servers.Application_Server_URL, "mySobek/InProcess", RequestSpecificValues.Current_User.ShibbID, "addcoll").Replace("\\", "/");
             }
             else
             {
                 userInProcessDirectory = Path.Combine(UI_ApplicationCache_Gateway.Settings.Servers.In_Process_Submission_Location, RequestSpecificValues.Current_User.UserName.Replace(".", "").Replace("@", "") + "\\addcoll");
-                userInProcessUrl = Path.Combine(UI_ApplicationCache_Gateway.Settings.Servers.Application_Server_URL, "mySobek/InProcess", RequestSpecificValues.Current_User.UserName.Replace(".", "").Replace("@", ""), "addcoll").Replace("\\", "/"); 
+                userInProcessUrl = Path.Combine(UI_ApplicationCache_Gateway.Settings.Servers.Application_Server_URL, "mySobek/InProcess", RequestSpecificValues.Current_User.UserName.Replace(".", "").Replace("@", ""), "addcoll").Replace("\\", "/");
             }
 
             // If this is a postback, handle any events first
@@ -439,7 +435,7 @@ namespace SobekCM.Library.AdminViewer
         /// requests from the main HTML subwriter </summary>
         public override List<HtmlSubwriter_Behaviors_Enum> Viewer_Behaviors
         {
-            get { return new List<HtmlSubwriter_Behaviors_Enum> {HtmlSubwriter_Behaviors_Enum.Suppress_Banner}; }
+            get { return new List<HtmlSubwriter_Behaviors_Enum> { HtmlSubwriter_Behaviors_Enum.Suppress_Banner }; }
         }
 
         /// <summary> Title for the page that displays this viewer, this is shown in the search box at the top of the page, just below the banner </summary>
@@ -507,16 +503,16 @@ namespace SobekCM.Library.AdminViewer
             {
                 Output.WriteLine("    <button title=\"Cancel this new collection\" class=\"sbkAdm_RoundButton\" onclick=\"return new_wizard_edit_page('z');\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"sbkAdm_RoundButton_LeftImg\" alt=\"\" /> CANCEL</button> &nbsp; &nbsp; ");
             }
-            else if ( page < 5 )
+            else if (page < 5)
             {
-                Output.WriteLine("    <button title=\"Back to the previous page of the add new collection wizard\" class=\"sbkAdm_RoundButton\" onclick=\"return new_wizard_edit_page('" + page_to_char(page -1 ) + "');\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"sbkAdm_RoundButton_LeftImg\" alt=\"\" /> BACK</button> &nbsp; &nbsp; ");
+                Output.WriteLine("    <button title=\"Back to the previous page of the add new collection wizard\" class=\"sbkAdm_RoundButton\" onclick=\"return new_wizard_edit_page('" + page_to_char(page - 1) + "');\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"sbkAdm_RoundButton_LeftImg\" alt=\"\" /> BACK</button> &nbsp; &nbsp; ");
             }
 
             if (page < 4)
             {
                 Output.WriteLine("    <button title=\"Next page of the add new collection wizard\" class=\"sbkAdm_RoundButton\" onclick=\"new_wizard_edit_page('" + page_to_char(page + 1) + "');\">NEXT <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button>");
             }
-            else if ( page == 4 )
+            else if (page == 4)
             {
                 Output.WriteLine("    <button title=\"Save changes to this item Aggregation\" class=\"sbkAdm_RoundButton\" onclick=\"new_wizard_edit_page('save');\">SAVE <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button>");
             }
@@ -537,7 +533,7 @@ namespace SobekCM.Library.AdminViewer
             // Start the outer tab containe
             Output.WriteLine("  <div id=\"tabContainer\" class=\"fulltabs\">");
 
- 
+
             // Add the single tab.  When users click on a tab, it goes back to the server (here)
             // to render the correct tab content
             Output.WriteLine("    <div class=\"tabscontent\">");
@@ -929,7 +925,7 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("    <td>");
             Output.WriteLine("      <select class=\"sbkAsav_select \" name=\"admin_aggr_type\" id=\"admin_aggr_type\" onchange=\"return aggr_display_external_link(this);\">");
 
-            Output.WriteLine(((newAggr.Type == "Collection") || ( newAggr.Type == String.Empty ))
+            Output.WriteLine(((newAggr.Type == "Collection") || (newAggr.Type == String.Empty))
                 ? "        <option value=\"coll\" selected=\"selected\" >Collection</option>"
                 : "        <option value=\"coll\">Collection</option>");
 
@@ -1012,7 +1008,7 @@ namespace SobekCM.Library.AdminViewer
                 {
                     string newHeading = Form["admin_aggr_newheading"];
                     if (!String.IsNullOrEmpty(newHeading))
- {
+                    {
                         newAggr.NewThematicHeading = true;
                         thematicHeading = Form["admin_aggr_newheading"];
                     }
@@ -1069,12 +1065,12 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("    <td>");
             Output.WriteLine("      <select class=\"sbkAsav_select_large\" name=\"admin_aggr_heading\" id=\"admin_aggr_heading\" onchange=\"if ( this.value == -2 ) $('#admin_aggr_newheading').css('display', 'block'); else $('#admin_aggr_newheading').css('display', 'none');\">");
 
-            if ( String.IsNullOrEmpty(newAggr.Thematic_Heading))
+            if (String.IsNullOrEmpty(newAggr.Thematic_Heading))
                 Output.WriteLine("        <option value=\"-1\" selected=\"selected\" ></option>");
             else
                 Output.WriteLine("        <option value=\"-1\"></option>");
 
-            if (( newAggr.NewThematicHeading.HasValue ) && ( newAggr.NewThematicHeading.Value ))
+            if ((newAggr.NewThematicHeading.HasValue) && (newAggr.NewThematicHeading.Value))
                 Output.WriteLine("        <option value=\"-2\" selected=\"selected\" >&lt;NEW THEMATIC HEADING&gt;</option>");
             else
                 Output.WriteLine("        <option value=\"-2\" >&lt;NEW THEMATIC HEADING&gt;</option>");
@@ -1170,7 +1166,7 @@ namespace SobekCM.Library.AdminViewer
                 Output.WriteLine("    <td class=\"sbkSaav_TableLabel2\"><label for=\"admin_aggr_desc\">Uploaded Banner:</label></td>");
                 Output.WriteLine("    <td>");
 
-                string url = Path.Combine( userInProcessUrl, "images/banners", last_added_banner).Replace("\\","/");
+                string url = Path.Combine(userInProcessUrl, "images/banners", last_added_banner).Replace("\\", "/");
                 Output.WriteLine("      <img src=\"" + url + "\" alt=\"Access Denied\" style=\"max-width:500px; border: 1px #888888 solid;\" />");
                 Output.WriteLine("    </td>");
                 Output.WriteLine("  </tr>");
@@ -1268,7 +1264,7 @@ namespace SobekCM.Library.AdminViewer
                 Output.WriteLine("    <td class=\"sbkSaav_TableLabel2\"><label for=\"admin_aggr_desc\">Current Button:</label></td>");
                 Output.WriteLine("    <td>");
 
-                string url = Path.Combine( userInProcessUrl, "images/buttons", last_added_button).Replace("\\", "/");
+                string url = Path.Combine(userInProcessUrl, "images/buttons", last_added_button).Replace("\\", "/");
                 Output.WriteLine("      <img src=\"" + url + "\" alt=\"Access Denied\" style=\"border: 1px #888888 solid;\" />");
                 Output.WriteLine("    </td>");
                 Output.WriteLine("  </tr>");
@@ -1286,7 +1282,7 @@ namespace SobekCM.Library.AdminViewer
                     string url = UI_ApplicationCache_Gateway.Settings.Servers.Application_Server_URL + "design/aggregations/default_button.gif";
                     Output.WriteLine("      <img src=\"" + url + "\" alt=\"Access Denied\" style=\"border: 1px #888888 solid;\" />");
                     Output.WriteLine("    </td>");
-                    Output.WriteLine("  </tr>"); 
+                    Output.WriteLine("  </tr>");
                 }
             }
 
@@ -1347,7 +1343,7 @@ namespace SobekCM.Library.AdminViewer
                     int next_decimal = 65;
                     if (!Directory.Exists(userInProcessDirectory + "\\images\\banners"))
                         Directory.CreateDirectory(userInProcessDirectory + "\\images\\banners");
-                    while (Directory.GetFiles(userInProcessDirectory + "\\images\\banners\\", new_file + ".*").Length > 0 )
+                    while (Directory.GetFiles(userInProcessDirectory + "\\images\\banners\\", new_file + ".*").Length > 0)
                     {
                         new_file = code + "_" + Convert.ToChar(next_decimal++);
                     }
@@ -1360,7 +1356,7 @@ namespace SobekCM.Library.AdminViewer
                     int next_decimal2 = 65;
                     if (!Directory.Exists(userInProcessDirectory + "\\images\\buttons"))
                         Directory.CreateDirectory(userInProcessDirectory + "\\images\\buttons");
-                    while (Directory.GetFiles(userInProcessDirectory + "\\images\\buttons\\", new_file2 + ".*").Length > 0 )
+                    while (Directory.GetFiles(userInProcessDirectory + "\\images\\buttons\\", new_file2 + ".*").Length > 0)
                     {
                         new_file2 = code2 + "_" + Convert.ToChar(next_decimal2++);
                     }

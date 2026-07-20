@@ -107,13 +107,13 @@ namespace SobekCM_Resource_Database.Builder
         private static bool IsRomanNumerals(string StrToTest)
         {
             return (Regex.Match(StrToTest, @"^[ivxlcdm]+$", RegexOptions.IgnoreCase).Success);
-////			return (!Regex.IsMatch(strToTest,@"^[^ivxlcdm]$",System.Text.RegularExpressions.RegexOptions.IgnoreCase));
+            ////			return (!Regex.IsMatch(strToTest,@"^[^ivxlcdm]$",System.Text.RegularExpressions.RegexOptions.IgnoreCase));
         }
 
         private static bool IsNumeric(string StrToTest)
         {
-                int test;
-                return Int32.TryParse(StrToTest, out test);
+            int test;
+            return Int32.TryParse(StrToTest, out test);
         }
     }
 }

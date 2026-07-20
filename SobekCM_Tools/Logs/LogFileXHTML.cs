@@ -248,7 +248,7 @@ namespace SobekCM.Tools.Logs
         /// </ul></remarks>
         /// <exception cref="LogFile_Exception"> A <see cref="LogFile_Exception"/> will be thrown here if the directory for
         /// the log file does not exist, and can not be created. </exception>
-        public LogFileXhtml(string NewFileName, string Title, string AppName )
+        public LogFileXhtml(string NewFileName, string Title, string AppName)
         {
             SetupLogFile(NewFileName, Title, AppName, "", false);
         }
@@ -265,7 +265,7 @@ namespace SobekCM.Tools.Logs
         /// </ul></remarks>
         /// <exception cref="LogFile_Exception"> A <see cref="LogFile_Exception"/> will be thrown here if the directory for
         /// the log file does not exist, and can not be created. </exception>
-        public LogFileXhtml(string NewFileName, string Title, string AppName, string RowHeader )
+        public LogFileXhtml(string NewFileName, string Title, string AppName, string RowHeader)
         {
             SetupLogFile(NewFileName, Title, AppName, RowHeader, false);
         }
@@ -282,7 +282,7 @@ namespace SobekCM.Tools.Logs
         /// </ul></remarks>
         /// <exception cref="LogFile_Exception"> A <see cref="LogFile_Exception"/> will be thrown here if the directory for
         /// the log file does not exist, and can not be created, unless the <see cref="LogFileXhtml.SuppressExceptions"/> flag is set to true. </exception>
-        public LogFileXhtml(string NewFileName, bool SuppressExceptions )
+        public LogFileXhtml(string NewFileName, bool SuppressExceptions)
         {
             SetupLogFile(NewFileName, NewFileName, "", "", SuppressExceptions);
         }
@@ -356,7 +356,7 @@ namespace SobekCM.Tools.Logs
             isOpen = false;
 
             // If the app name is too long, truncate it
-            if ( AppName.Length > 30 )
+            if (AppName.Length > 30)
                 AppName = AppName.Substring(0, 30);
             appName = AppName;
 
@@ -382,7 +382,7 @@ namespace SobekCM.Tools.Logs
             }
             catch
             {
-                if ( !SuppressExceptionsFlag )
+                if (!SuppressExceptionsFlag)
                     throw new LogFile_Exception("Unable to create the directory [" + new FileInfo(Log_FileName).DirectoryName + "] in a LogFileXHTML object.");
             }
 
@@ -434,7 +434,7 @@ namespace SobekCM.Tools.Logs
             if (isOpen)
                 CloseConnection();
 
-            if ( File.Exists(FileName) )
+            if (File.Exists(FileName))
                 File.Delete(FileName);
 
             DateCreated = DateTime.Now;
@@ -472,7 +472,7 @@ namespace SobekCM.Tools.Logs
         /// closing the connection, unless the <see cref="LogFileXhtml.SuppressExceptions"/> flag is set to true. </exception>
         public bool Close()
         {
-            if ( isOpen )
+            if (isOpen)
             {
                 isOpen = false;
                 return CloseConnection();
@@ -532,7 +532,7 @@ namespace SobekCM.Tools.Logs
                 OpenConnection();
 
             ErrorCount++;
-            
+
             if (!isOpen)
                 CloseConnection();
 
@@ -566,22 +566,22 @@ namespace SobekCM.Tools.Logs
             {
                 Process toRun = new Process();
                 ProcessStartInfo psI = new ProcessStartInfo("C:\\Program Files\\Internet Explorer\\IEXPLORE.exe")
-                                           {
-                                               UseShellExecute = false,
-                                               Arguments = "\"" + FileName + "\"",
-                                               RedirectStandardInput = true,
-                                               RedirectStandardOutput = false,
-                                               RedirectStandardError = false,
-                                               CreateNoWindow = false
-                                           };
+                {
+                    UseShellExecute = false,
+                    Arguments = "\"" + FileName + "\"",
+                    RedirectStandardInput = true,
+                    RedirectStandardOutput = false,
+                    RedirectStandardError = false,
+                    CreateNoWindow = false
+                };
                 toRun.StartInfo = psI;
                 toRun.Start();
                 return true;
             }
-            catch 
+            catch
             {
-                if ( !SuppressExceptions )
-                    throw new LogFile_Exception("Unable to display the log file " + FileName + "." );
+                if (!SuppressExceptions)
+                    throw new LogFile_Exception("Unable to display the log file " + FileName + ".");
                 return false;
             }
         }
@@ -617,10 +617,10 @@ namespace SobekCM.Tools.Logs
         /// <param name="Bold"> Flag tells whether text of this style should be emboldened </param>
         /// <returns> TRUE if this style was successfully added, otherwise FALSE </returns>
         /// <example> To see examples, look at the examples listed under the main <see cref="LogFileXhtml"/> class. </example>
-        public bool AddNewStyle( string StyleName, string FontColor, bool Bold )
+        public bool AddNewStyle(string StyleName, string FontColor, bool Bold)
         {
             // Call the complete method, passing in these values and the defaults
-            return AddNewStyle(StyleName, FontColor, "medium", Bold, false );
+            return AddNewStyle(StyleName, FontColor, "medium", Bold, false);
         }
 
         /// <summary> [NOT YET FULLY IMPLEMENTED] <br /> <br /> Create a new style for this log file. </summary>
@@ -649,10 +649,10 @@ namespace SobekCM.Tools.Logs
         /// <param name="FontColor"> Color for text of this style </param>
         /// <returns> TRUE if this style was successfully added, otherwise FALSE </returns>
         /// <example> To see examples, look at the examples listed under the main <see cref="LogFileXhtml"/> class. </example>
-        public bool AddNewStyle( string StyleName, string FontColor )
+        public bool AddNewStyle(string StyleName, string FontColor)
         {
             // Call the complete method, passing in these values and the defaults
-            return AddNewStyle(StyleName, FontColor, "medium", false, false );
+            return AddNewStyle(StyleName, FontColor, "medium", false, false);
         }
 
         /// <summary> [NOT YET FULLY IMPLEMENTED] <br /> <br /> Create a new style for this log file. </summary>
@@ -689,10 +689,10 @@ namespace SobekCM.Tools.Logs
         /// <param name="FontSize"> Size for the text of this style </param>
         /// <returns> TRUE if this style was successfully added, otherwise FALSE </returns>
         /// <example> To see examples, look at the examples listed under the main <see cref="LogFileXhtml"/> class. </example>
-        public bool AddNewStyle( string StyleName, string FontColor, string FontSize )
+        public bool AddNewStyle(string StyleName, string FontColor, string FontSize)
         {
             // Call the complete method, passing in these values and the defaults
-            return AddNewStyle(StyleName, FontColor, FontSize, false, false );
+            return AddNewStyle(StyleName, FontColor, FontSize, false, false);
         }
 
         /// <summary> [NOT YET FULLY IMPLEMENTED] <br /> <br /> Create a new style for this log file. </summary>
@@ -730,10 +730,10 @@ namespace SobekCM.Tools.Logs
         /// <param name="Bold"> Flag tells whether text of this style should be emboldened </param>
         /// <returns> TRUE if this style was successfully added, otherwise FALSE </returns>
         /// <example> To see examples, look at the examples listed under the main <see cref="LogFileXhtml"/> class. </example>
-        public bool AddNewStyle( string StyleName, string FontColor, string FontSize, bool Bold )
+        public bool AddNewStyle(string StyleName, string FontColor, string FontSize, bool Bold)
         {
             // Call the complete method, passing in these values and the defaults
-            return AddNewStyle(StyleName, FontColor, FontSize, Bold, false );
+            return AddNewStyle(StyleName, FontColor, FontSize, Bold, false);
         }
 
         /// <summary> [NOT YET FULLY IMPLEMENTED] <br /> <br /> Create a new style for this log file. </summary>
@@ -772,10 +772,10 @@ namespace SobekCM.Tools.Logs
         /// <param name="Italics"> Flag tells whether text of this style should be italicized </param>
         /// <returns> TRUE if this style was successfully added, otherwise FALSE </returns>
         /// <example> To see examples, look at the examples listed under the main <see cref="LogFileXhtml"/> class. </example>
-        public bool AddNewStyle( string StyleName, string FontColor, string FontSize, bool Bold, bool Italics )
+        public bool AddNewStyle(string StyleName, string FontColor, string FontSize, bool Bold, bool Italics)
         {
             // Create a new log file XHTML Style object
-           // LogFileXHTML_Style newStyle = new LogFileXHTML_Style( bold, font_color, font_size, italics, style_name );
+            // LogFileXHTML_Style newStyle = new LogFileXHTML_Style( bold, font_color, font_size, italics, style_name );
 
             return true;
         }
@@ -789,7 +789,7 @@ namespace SobekCM.Tools.Logs
         private string TextOfLogFile()
         {
             //Read from file
-            StreamReader sr = new StreamReader( FileName );
+            StreamReader sr = new StreamReader(FileName);
 
             //Single line from fileIO.txt 
             String strLine;
@@ -798,8 +798,8 @@ namespace SobekCM.Tools.Logs
             StringBuilder entireFile = new StringBuilder();
 
             //Continues to output one line at a time until end of file(EOF) is reached
-            while ( (strLine = sr.ReadLine()) != null)
-                entireFile.Append( strLine + "\n" );
+            while ((strLine = sr.ReadLine()) != null)
+                entireFile.Append(strLine + "\n");
 
             //Cleanup
             sr.Close();
@@ -812,7 +812,7 @@ namespace SobekCM.Tools.Logs
         /// <returns> TRUE if successful, otherwise FALSE </returns>
         /// <exception cref="LogFile_Exception"> A <see cref="LogFile_Exception"/> will be thrown if there is an error
         /// while processing, unless the <see cref="LogFileXhtml.SuppressExceptions"/> flag is set to true. </exception>
-        private bool Write(string Msg, string StyleType, bool Strong )
+        private bool Write(string Msg, string StyleType, bool Strong)
         {
             bool noError = true;
 
@@ -830,8 +830,8 @@ namespace SobekCM.Tools.Logs
             }
             catch
             {
-                if ( !SuppressExceptions )
-                    throw new LogFile_Exception("Unable to write to the log file " + FileName + "." );
+                if (!SuppressExceptions)
+                    throw new LogFile_Exception("Unable to write to the log file " + FileName + ".");
                 noError = false;
             }
 
@@ -873,8 +873,8 @@ namespace SobekCM.Tools.Logs
                 }
                 catch
                 {	// unable to either open or create the log file
-                    if ( !SuppressExceptions )
-                        throw new LogFile_Exception("Unable to open the connection to the log file " + FileName + "." );
+                    if (!SuppressExceptions)
+                        throw new LogFile_Exception("Unable to open the connection to the log file " + FileName + ".");
                     return false;
                 }
             }
@@ -885,34 +885,34 @@ namespace SobekCM.Tools.Logs
         /// <exception cref="LogFile_Exception"> A <see cref="LogFile_Exception"/> will be thrown if there is an error
         /// while processing, unless the <see cref="LogFileXhtml.SuppressExceptions"/> flag is set to true. </exception>
         private bool CreateHeader()
-        {	
+        {
             try
             {
                 // Create the header with references, style sheet, etc...
                 // Also, create the beginning of the body with the title to display
-                WriteToLog(COMPLETE_NEW_HEADER + NEW_START_BODY1 + title +  NEW_START_BODY2 );
+                WriteToLog(COMPLETE_NEW_HEADER + NEW_START_BODY1 + title + NEW_START_BODY2);
 
                 // Insert the title into the header
-                if ( title.Length > 25 )
-                    WriteAtPos( TITLE_POSITION, title.Substring(0,25) + " </title>");			
+                if (title.Length > 25)
+                    WriteAtPos(TITLE_POSITION, title.Substring(0, 25) + " </title>");
                 else
-                    WriteAtPos( TITLE_POSITION, title + " </title>");
+                    WriteAtPos(TITLE_POSITION, title + " </title>");
 
                 // Insert the other META data into the header
-                WriteAtPos( CREATE_DATE_POSITION, DateCreated.ToString() );
-                WriteAtPos( ROW_HEADER_POSITION, eachRowHeader + "\">" );
-                WriteAtPos( DATE_STAMP_POSITION, DateStampingEnabled.ToString() + "\">" );
-                WriteAtPos( APPLICATION_POSITION, appName + "\">" );
+                WriteAtPos(CREATE_DATE_POSITION, DateCreated.ToString());
+                WriteAtPos(ROW_HEADER_POSITION, eachRowHeader + "\">");
+                WriteAtPos(DATE_STAMP_POSITION, DateStampingEnabled.ToString() + "\">");
+                WriteAtPos(APPLICATION_POSITION, appName + "\">");
 
                 // Write the current position into the header
-                SaveCurrentPosition( );
+                SaveCurrentPosition();
 
                 return true;
             }
             catch
             {
-                if ( !SuppressExceptions )
-                    throw new LogFile_Exception("Unable to create the XHTML header for the log file " + FileName + "." );
+                if (!SuppressExceptions)
+                    throw new LogFile_Exception("Unable to create the XHTML header for the log file " + FileName + ".");
                 return false;
             }
         }
@@ -920,17 +920,17 @@ namespace SobekCM.Tools.Logs
         /// <summary> Saves the current position into the XHTML header </summary>
         /// <exception cref="LogFile_Exception"> A <see cref="LogFile_Exception"/> will be thrown if there is an error
         /// while processing, unless the <see cref="LogFileXhtml.SuppressExceptions"/> flag is set to true. </exception>
-        private void SaveCurrentPosition( )
+        private void SaveCurrentPosition()
         {
-            WriteAtPos( POSITION_POSITION, currentPosition + "\">" );
+            WriteAtPos(POSITION_POSITION, currentPosition + "\">");
         }
 
         /// <summary> Saves the number of current errors into the XHTML header </summary>
         /// <exception cref="LogFile_Exception"> A <see cref="LogFile_Exception"/> will be thrown if there is an error
         /// while processing, unless the <see cref="LogFileXhtml.SuppressExceptions"/> flag is set to true. </exception>
-        private void SaveErrorCount( )
+        private void SaveErrorCount()
         {
-            WriteAtPos( ERROR_POSITION, ErrorCount + "\">" );
+            WriteAtPos(ERROR_POSITION, ErrorCount + "\">");
         }
 
         /// <summary>  Writes at a certain position in the log File </summary>
@@ -938,14 +938,14 @@ namespace SobekCM.Tools.Logs
         /// <param name="Msg"> Message to write </param>
         /// <exception cref="LogFile_Exception"> A <see cref="LogFile_Exception"/> will be thrown if there is an error
         /// while processing, unless the <see cref="LogFileXhtml.SuppressExceptions"/> flag is set to true. </exception>
-        private void WriteAtPos( int NewPosition, string Msg )
+        private void WriteAtPos(int NewPosition, string Msg)
         {
             int nextPosition = currentPosition;
             currentPosition = NewPosition;
             WriteToLog(Msg);
             currentPosition = nextPosition;
         }
-    
+
         /// <summary> Reads the header information </summary>
         /// <returns> FALSE if it was corrupted </returns>
         /// <exception cref="LogFile_Exception"> A <see cref="LogFile_Exception"/> will be thrown if there is an error
@@ -957,7 +957,7 @@ namespace SobekCM.Tools.Logs
                 StringBuilder tempRead = new StringBuilder("          ");
 
                 // Input all of the information in the header
-                while (! tempRead.ToString().Substring(tempRead.Length-8, 7).Equals("</head>"))
+                while (!tempRead.ToString().Substring(tempRead.Length - 8, 7).Equals("</head>"))
                     tempRead.Append(Convert.ToChar(logFileStream.ReadByte()));
 
                 // Remove spacer used at beginning of tempRead initially
@@ -967,7 +967,7 @@ namespace SobekCM.Tools.Logs
                 string tempReadString = tempRead.ToString();
                 currentPosition = Convert.ToInt32(tempReadString.Substring(POSITION_POSITION, 11).Split('\"')[0]);
                 string dateString = tempReadString.Substring(CREATE_DATE_POSITION, 23);
-                dateString = dateString.Split('\"')[0].Replace("-","").Trim();
+                dateString = dateString.Split('\"')[0].Replace("-", "").Trim();
                 DateCreated = Convert.ToDateTime(dateString);
                 eachRowHeader = tempReadString.Substring(ROW_HEADER_POSITION, 23).Split('\"')[0];
                 DateStampingEnabled = Convert.ToBoolean(tempReadString.Substring(DATE_STAMP_POSITION, 6).Split('\"')[0]);
@@ -976,8 +976,8 @@ namespace SobekCM.Tools.Logs
             }
             catch
             {
-                if ( !SuppressExceptions )
-                    throw new LogFile_Exception("Unable to read the XHTML header of the log file " + FileName + "." );
+                if (!SuppressExceptions)
+                    throw new LogFile_Exception("Unable to read the XHTML header of the log file " + FileName + ".");
                 return false;
             }
         }
@@ -991,13 +991,13 @@ namespace SobekCM.Tools.Logs
         /// <returns> The configured line </returns>
         /// <exception cref="LogFile_Exception"> A <see cref="LogFile_Exception"/> will be thrown if there is an error
         /// while processing, unless the <see cref="LogFileXhtml.SuppressExceptions"/> flag is set to true. </exception>
-        private string ConfigureText(string OrigMsg, string StyleType, bool Strong )
+        private string ConfigureText(string OrigMsg, string StyleType, bool Strong)
         {
             // Declare the new stringBuilder and set to the original message
             StringBuilder lineBuilder = new StringBuilder(OrigMsg);
 
             // If this text should be strong add the strong tags
-            if ( Strong )
+            if (Strong)
             {
                 lineBuilder.Insert(0, "<strong>");
                 lineBuilder.Append("</strong>");
@@ -1009,7 +1009,7 @@ namespace SobekCM.Tools.Logs
                 lineBuilder.Insert(0, DateTime.Now.ToString() + " - ");
 
             // Finally, insert the <div> tags
-            lineBuilder.Insert(0,"<div class=\"" + StyleType + "\"> ");
+            lineBuilder.Insert(0, "<div class=\"" + StyleType + "\"> ");
             lineBuilder.Append("</div>\r\n");
 
             return lineBuilder.ToString();
@@ -1027,15 +1027,15 @@ namespace SobekCM.Tools.Logs
             {
                 logFileStream.Position = currentPosition;
                 int character;
-                for ( character = 0 ; character < msg.Length ; ++character )
+                for (character = 0; character < msg.Length; ++character)
                     logFileStream.WriteByte(Convert.ToByte(msg[character]));
                 currentPosition += msg.Length;
                 return true;
             }
             catch
             {
-                if ( !SuppressExceptions )
-                    throw new LogFile_Exception("Unable to write to the log file " + FileName + "." );
+                if (!SuppressExceptions)
+                    throw new LogFile_Exception("Unable to write to the log file " + FileName + ".");
                 return false;
             }
         }
@@ -1053,10 +1053,10 @@ namespace SobekCM.Tools.Logs
                 logFileStream.Close();
                 return true;
             }
-            catch ( Exception ee )
+            catch (Exception ee)
             {
-                if ( !SuppressExceptions )
-                    throw new LogFile_Exception("Unable to close the connection to the log file " + FileName + ". \n\n" + ee );
+                if (!SuppressExceptions)
+                    throw new LogFile_Exception("Unable to close the connection to the log file " + FileName + ". \n\n" + ee);
                 return false;
             }
         }

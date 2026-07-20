@@ -15,7 +15,7 @@ namespace SobekCM.QueryInitializerHelpers
     {
         public QueryInitializerHelperResponse Initialize(HttpContext context, RequestCache request, Custom_Tracer tracer)
         {
-            if ( !context.Items.ContainsKey(RequestCache_Keys.BaseUrl) || !context.Items.ContainsKey(RequestCache_Keys.RequestUrl) )
+            if (!context.Items.ContainsKey(RequestCache_Keys.BaseUrl) || !context.Items.ContainsKey(RequestCache_Keys.RequestUrl))
             {
                 return new QueryInitializerHelperResponse(false, "The ServerDirectoryInitializer must be used after the BaseUrlInitializer in the query initializer list.");
             }

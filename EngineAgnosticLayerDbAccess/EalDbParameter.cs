@@ -20,7 +20,7 @@ namespace EngineAgnosticLayerDbAccess
 
         /// <summary> Constructor for a new Engine Agnostic Layer database parameter </summary>
         /// <param name="ParameterName"> Name of this parameter </param>
-        public EalDbParameter(string ParameterName) 
+        public EalDbParameter(string ParameterName)
         {
             DbType = DbType.String;
             Direction = ParameterDirection.Input;

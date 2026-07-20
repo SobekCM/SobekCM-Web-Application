@@ -1,7 +1,5 @@
 ﻿#region Using directives
 
-using System;
-using System.Collections.Generic;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.ApplicationState;
 using SobekCM.Core.Client;
@@ -13,6 +11,8 @@ using SobekCM.Core.WebContent.Hierarchy;
 using SobekCM.Engine_Library.ApplicationState;
 using SobekCM.Library.HtmlLayout;
 using SobekCM.Library.ItemViewer;
+using System;
+using System.Collections.Generic;
 
 #endregion
 
@@ -77,7 +77,7 @@ namespace SobekCM.Library.UI
         }
 
         /// <summary> Get the dictionary of icon/wordmarks (or build the collection and return it) </summary>
-        public static Dictionary<string, Wordmark_Icon> Icon_List    
+        public static Dictionary<string, Wordmark_Icon> Icon_List
         {
             get { return Engine_ApplicationCache_Gateway.Icon_List; }
         }

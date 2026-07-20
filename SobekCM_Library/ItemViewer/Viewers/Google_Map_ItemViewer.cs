@@ -1,7 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
+using Microsoft.AspNetCore.Http;
 using SobekCM.Core.BriefItem;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Users;
@@ -9,7 +6,10 @@ using SobekCM.Engine_Library.Configuration;
 using SobekCM.Library.ItemViewer.Menu;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
-using Microsoft.AspNetCore.Http;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Text;
 
 namespace SobekCM.Library.ItemViewer.Viewers
 {
@@ -43,7 +43,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <returns> TRUE if this viewer should generally be included with this item, otherwise FALSE </returns>
         public virtual bool Include_Viewer(BriefItemInfo CurrentItem)
         {
-            return (( CurrentItem.GeoSpatial != null ) && ( CurrentItem.GeoSpatial.hasData ));
+            return ((CurrentItem.GeoSpatial != null) && (CurrentItem.GeoSpatial.hasData));
         }
 
         /// <summary> Flag indicates if this viewer should be override on checkout </summary>
@@ -71,7 +71,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <param name="CurrentRequest"> Information about the current request </param>
         /// <param name="MenuItems"> List of menu items, to which this method may add one or more menu items </param>
         /// <param name="IsRestricted"> Flag indicates if this item is restricted AND the current user is outside the ranges or not in the proper groups</param>
-        public virtual void Add_Menu_Items(BriefItemInfo CurrentItem, User_Object CurrentUser, Navigation_Object CurrentRequest, List<Item_MenuItem> MenuItems, bool IsRestricted )
+        public virtual void Add_Menu_Items(BriefItemInfo CurrentItem, User_Object CurrentUser, Navigation_Object CurrentRequest, List<Item_MenuItem> MenuItems, bool IsRestricted)
         {
             // Determine the label to show on the menu
             string label = "Map It!";
@@ -83,7 +83,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 }
                 else
                 {
-                    if (((CurrentItem.Images != null ) && ( CurrentItem.Images.Count > 1)) || ( String.Compare(CurrentItem.Type, "map", StringComparison.OrdinalIgnoreCase) != 0 ))
+                    if (((CurrentItem.Images != null) && (CurrentItem.Images.Count > 1)) || (String.Compare(CurrentItem.Type, "map", StringComparison.OrdinalIgnoreCase) != 0))
                     {
                         label = "Search Results";
                     }
@@ -273,7 +273,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                         string currentViewerCode = CurrentRequest.ViewerCode;
                         CurrentRequest.ViewerCode = "XXXXXXXX";
                         string redirect_url = UrlWriterHelper.Redirect_URL(CurrentRequest);
-                       
+
                         CurrentRequest.ViewerCode = currentViewerCode;
 
                         // Add each polygon 

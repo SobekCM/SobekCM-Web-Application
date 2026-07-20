@@ -1,7 +1,7 @@
-﻿using System;
+﻿using ProtoBuf;
+using System;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
-using ProtoBuf;
 
 
 namespace SobekCM.Core.Items
@@ -22,7 +22,7 @@ namespace SobekCM.Core.Items
         [XmlAttribute("date")]
         [ProtoMember(2)]
         public string CompletedDate { get; set; }
-        
+
         /// <summary> Personal name, username, or vendor name for the party that performed this work </summary>
         [DataMember(EmitDefaultValue = false, Name = "worker")]
         [XmlAttribute("worker")]

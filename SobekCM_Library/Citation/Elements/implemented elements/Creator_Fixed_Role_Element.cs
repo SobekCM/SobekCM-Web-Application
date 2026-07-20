@@ -1,16 +1,14 @@
 #region Using directives
 
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using Microsoft.AspNetCore.Http;
 using SobekCM.Core.ApplicationState;
-using SobekCM.Core.Configuration;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Users;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Bib_Info;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
 
 #endregion
 
@@ -25,7 +23,7 @@ namespace SobekCM.Library.Citation.Elements
             : base("Creator", "creator")
         {
             Repeatable = true;
-	        help_page = "creatorfixed";
+            help_page = "creatorfixed";
         }
 
 
@@ -40,7 +38,7 @@ namespace SobekCM.Library.Citation.Elements
         /// <param name="Translator"> Language support object which handles simple translational duties </param>
         /// <param name="Base_URL"> Base URL for the current request </param>
         /// <remarks> This simple element does not append any popup form to the popup_form_builder</remarks>
-        public override void Render_Template_HTML(TextWriter Output, SobekCM_Item Bib, string Skin_Code, bool IsMozilla, StringBuilder PopupFormBuilder, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL )
+        public override void Render_Template_HTML(TextWriter Output, SobekCM_Item Bib, string Skin_Code, bool IsMozilla, StringBuilder PopupFormBuilder, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL)
         {
             // Check that an acronym exists
             if (Acronym.Length == 0)
@@ -66,7 +64,7 @@ namespace SobekCM.Library.Citation.Elements
                 }
             }
 
-            if (( LabelFromTemplateFile.Length > 0 ) && ( FixedTypeFromTemplateFile.Length == 0 ))
+            if ((LabelFromTemplateFile.Length > 0) && (FixedTypeFromTemplateFile.Length == 0))
             {
                 FixedTypeFromTemplateFile = LabelFromTemplateFile;
             }
@@ -75,30 +73,30 @@ namespace SobekCM.Library.Citation.Elements
                 LabelFromTemplateFile = FixedTypeFromTemplateFile;
             }
 
-                List<string> instanceValues = new List<string>();
-                if (( Bib.Bib_Info.hasMainEntityName ) && ( Bib.Bib_Info.Main_Entity_Name.ToString().Length > 0))
+            List<string> instanceValues = new List<string>();
+            if ((Bib.Bib_Info.hasMainEntityName) && (Bib.Bib_Info.Main_Entity_Name.ToString().Length > 0))
+            {
+                string main_name_as_string = Bib.Bib_Info.Main_Entity_Name.ToString(false);
+                if ((main_name_as_string != "unknown") && (main_name_as_string.Length > 0))
                 {
-                    string main_name_as_string = Bib.Bib_Info.Main_Entity_Name.ToString(false);
-                    if ((main_name_as_string != "unknown") && (main_name_as_string.Length > 0))
+                    if (Bib.Bib_Info.Main_Entity_Name.Roles.Any(thisRole => thisRole.Role.ToUpper() == LabelFromTemplateFile.ToUpper()))
                     {
-                        if (Bib.Bib_Info.Main_Entity_Name.Roles.Any(thisRole => thisRole.Role.ToUpper() == LabelFromTemplateFile.ToUpper()))
-                        {
-                            instanceValues.Add(main_name_as_string);
-                        }
+                        instanceValues.Add(main_name_as_string);
                     }
                 }
-                if (Bib.Bib_Info.Names_Count > 0)
-                {
-                    instanceValues.AddRange(from thisName in Bib.Bib_Info.Names let name_as_string = thisName.ToString(false) where (name_as_string != "unknown") && (name_as_string.Length > 0) where thisName.Roles.Any(thisRole => thisRole.Role.ToUpper() == LabelFromTemplateFile.ToUpper()) select name_as_string);
-                }
+            }
+            if (Bib.Bib_Info.Names_Count > 0)
+            {
+                instanceValues.AddRange(from thisName in Bib.Bib_Info.Names let name_as_string = thisName.ToString(false) where (name_as_string != "unknown") && (name_as_string.Length > 0) where thisName.Roles.Any(thisRole => thisRole.Role.ToUpper() == LabelFromTemplateFile.ToUpper()) select name_as_string);
+            }
 
-                Title = LabelFromTemplateFile;
-                if (LabelFromTemplateFile.Length == 0)
-                    Title = "MISSING LABEL!";
+            Title = LabelFromTemplateFile;
+            if (LabelFromTemplateFile.Length == 0)
+                Title = "MISSING LABEL!";
 
 
 
-                render_helper(Output, instanceValues, Skin_Code, Current_User, CurrentLanguage, Translator, Base_URL, FixedTypeFromTemplateFile.Replace(" ", "").Replace("_", "").ToLower() + "fixedcreator");
+            render_helper(Output, instanceValues, Skin_Code, Current_User, CurrentLanguage, Translator, Base_URL, FixedTypeFromTemplateFile.Replace(" ", "").Replace("_", "").ToLower() + "fixedcreator");
         }
 
         /// <summary> Prepares the bib object for the save, by clearing any existing data in this element's related field(s) </summary>
@@ -108,7 +106,7 @@ namespace SobekCM.Library.Citation.Elements
         public override void Prepare_For_Save(SobekCM_Item Bib, User_Object Current_User)
         {
 
-            if (( Bib.Bib_Info.hasMainEntityName ) && ( Bib.Bib_Info.Main_Entity_Name.ToString().Length > 0))
+            if ((Bib.Bib_Info.hasMainEntityName) && (Bib.Bib_Info.Main_Entity_Name.ToString().Length > 0))
             {
                 string main_name_as_string = Bib.Bib_Info.Main_Entity_Name.ToString();
                 if ((main_name_as_string != "unknown") && (main_name_as_string.Length > 0))
@@ -135,7 +133,7 @@ namespace SobekCM.Library.Citation.Elements
         /// <param name="Bib"> Object into which to save the user's data, entered into the html rendered by this element </param>
         public override void Save_To_Bib(SobekCM_Item Bib)
         {
-            string special_id = LabelFromTemplateFile.Replace(" ", "").Replace("_","").ToLower() + "fixedcreator";
+            string special_id = LabelFromTemplateFile.Replace(" ", "").Replace("_", "").ToLower() + "fixedcreator";
             var getKeys = Context.Request.Form.Keys;
             foreach (string thisKey in getKeys)
             {

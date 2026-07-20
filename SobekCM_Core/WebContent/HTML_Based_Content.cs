@@ -1,14 +1,14 @@
 #region Using directives
 
+using ProtoBuf;
+using SobekCM.Core.Aggregations;
+using SobekCM.Core.Users;
+using SobekCM.Tools;
 using System;
 using System.IO;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Xml.Serialization;
-using ProtoBuf;
-using SobekCM.Core.Aggregations;
-using SobekCM.Core.Users;
-using SobekCM.Tools;
 
 #endregion
 
@@ -60,7 +60,7 @@ namespace SobekCM.Core.WebContent
         /// <param name="Title"> Title to display with this item </param>
         /// <param name="Source"> Source file for this static web-based content object </param>
         /// <remarks> This constructor is mostly used with passing back errors to be displayed. </remarks>
-        public HTML_Based_Content(string Text, string Title, string Source )
+        public HTML_Based_Content(string Text, string Title, string Source)
         {
             // Set the necessary values to empty initially
             code = String.Empty;
@@ -165,7 +165,8 @@ namespace SobekCM.Core.WebContent
         [XmlAttribute("includeMenu")]
         public string IncludeMenu_AsString
         {
-            get {
+            get
+            {
                 return IncludeMenu.HasValue ? IncludeMenu.ToString() : null;
             }
             set
@@ -358,7 +359,7 @@ namespace SobekCM.Core.WebContent
         /// <returns> Web content page URL </returns>
         public string URL(string BaseURL)
         {
-            if (( !String.IsNullOrEmpty( BaseURL) ) && ( BaseURL[BaseURL.Length - 1] != '/'))
+            if ((!String.IsNullOrEmpty(BaseURL)) && (BaseURL[BaseURL.Length - 1] != '/'))
             {
                 return BaseURL + "/" + UrlSegments;
             }
@@ -375,7 +376,7 @@ namespace SobekCM.Core.WebContent
         /// <returns> TRUE if the provided user has rights to edit this page, otherwise FALSE </returns>
         public bool Can_Edit(User_Object CurrentUser)
         {
-            if ((Locked.HasValue ) && ( Locked.Value))
+            if ((Locked.HasValue) && (Locked.Value))
                 return false;
 
             if ((CurrentUser.Is_Portal_Admin) || (CurrentUser.Is_System_Admin))
@@ -455,58 +456,58 @@ namespace SobekCM.Core.WebContent
 
         #endregion
 
-		/// <summary> Saves all this data to a file </summary>
-		/// <param name="File"> Name (and path) of the file to save </param>
-		/// <returns> TRUE if successful, otherwise FALSE </returns>
-		public bool Save_To_File( string File)
-		{
-			try
-			{
-				StreamWriter writer = new StreamWriter(File, false);
-				writer.WriteLine("<html>");
-				writer.WriteLine("  <head>");
-				if (!String.IsNullOrEmpty(Title))
-					writer.WriteLine("    <title>" + System.Net.WebUtility.HtmlEncode(Title) + "</title>");
-				if (!String.IsNullOrEmpty(Author))
-					writer.WriteLine("    <meta name=\"author\" content=\"" + System.Net.WebUtility.HtmlEncode(Author) + "\" />");
-				if (!String.IsNullOrEmpty(Date))
-					writer.WriteLine("    <meta name=\"date\" content=\"" + Date + "\" />");
-				if (!String.IsNullOrEmpty(Keywords))
-					writer.WriteLine("    <meta name=\"keywords\" content=\"" + System.Net.WebUtility.HtmlEncode(Keywords) + "\" />");
-				if (!String.IsNullOrEmpty(Description))
-					writer.WriteLine("    <meta name=\"description\" content=\"" + System.Net.WebUtility.HtmlEncode(Description) + "\" />");
-				if (!String.IsNullOrEmpty(Banner))
-					writer.WriteLine("    <meta name=\"banner\" content=\"" + System.Net.WebUtility.HtmlEncode(Banner) + "\" />");
-				if (!String.IsNullOrEmpty(Thumbnail))
-					writer.WriteLine("    <meta name=\"thumbnail\" content=\"" + System.Net.WebUtility.HtmlEncode(Thumbnail) + "\" />");
-				if (!String.IsNullOrEmpty(code))
-					writer.WriteLine("    <meta name=\"code\" content=\"" + System.Net.WebUtility.HtmlEncode(code) + "\" />");
-				if (!String.IsNullOrEmpty(SiteMap))
-					writer.WriteLine("    <meta name=\"sitemap\" content=\"" + System.Net.WebUtility.HtmlEncode(SiteMap) + "\" />");
-				if (!String.IsNullOrEmpty(Web_Skin))
-					writer.WriteLine("    <meta name=\"webskin\" content=\"" + System.Net.WebUtility.HtmlEncode(Web_Skin) + "\" />");
+        /// <summary> Saves all this data to a file </summary>
+        /// <param name="File"> Name (and path) of the file to save </param>
+        /// <returns> TRUE if successful, otherwise FALSE </returns>
+        public bool Save_To_File(string File)
+        {
+            try
+            {
+                StreamWriter writer = new StreamWriter(File, false);
+                writer.WriteLine("<html>");
+                writer.WriteLine("  <head>");
+                if (!String.IsNullOrEmpty(Title))
+                    writer.WriteLine("    <title>" + System.Net.WebUtility.HtmlEncode(Title) + "</title>");
+                if (!String.IsNullOrEmpty(Author))
+                    writer.WriteLine("    <meta name=\"author\" content=\"" + System.Net.WebUtility.HtmlEncode(Author) + "\" />");
+                if (!String.IsNullOrEmpty(Date))
+                    writer.WriteLine("    <meta name=\"date\" content=\"" + Date + "\" />");
+                if (!String.IsNullOrEmpty(Keywords))
+                    writer.WriteLine("    <meta name=\"keywords\" content=\"" + System.Net.WebUtility.HtmlEncode(Keywords) + "\" />");
+                if (!String.IsNullOrEmpty(Description))
+                    writer.WriteLine("    <meta name=\"description\" content=\"" + System.Net.WebUtility.HtmlEncode(Description) + "\" />");
+                if (!String.IsNullOrEmpty(Banner))
+                    writer.WriteLine("    <meta name=\"banner\" content=\"" + System.Net.WebUtility.HtmlEncode(Banner) + "\" />");
+                if (!String.IsNullOrEmpty(Thumbnail))
+                    writer.WriteLine("    <meta name=\"thumbnail\" content=\"" + System.Net.WebUtility.HtmlEncode(Thumbnail) + "\" />");
+                if (!String.IsNullOrEmpty(code))
+                    writer.WriteLine("    <meta name=\"code\" content=\"" + System.Net.WebUtility.HtmlEncode(code) + "\" />");
+                if (!String.IsNullOrEmpty(SiteMap))
+                    writer.WriteLine("    <meta name=\"sitemap\" content=\"" + System.Net.WebUtility.HtmlEncode(SiteMap) + "\" />");
+                if (!String.IsNullOrEmpty(Web_Skin))
+                    writer.WriteLine("    <meta name=\"webskin\" content=\"" + System.Net.WebUtility.HtmlEncode(Web_Skin) + "\" />");
                 if ((IncludeMenu.HasValue) && (IncludeMenu.Value))
                     writer.WriteLine("    <meta name=\"menu\" content=\"true\" />");
 
-				if ( !String.IsNullOrEmpty(Extra_Head_Info))
-					writer.WriteLine(Extra_Head_Info);
+                if (!String.IsNullOrEmpty(Extra_Head_Info))
+                    writer.WriteLine(Extra_Head_Info);
 
-				writer.WriteLine("  </head>");
-				writer.WriteLine("  <body>");
-				writer.WriteLine(Content);
-				writer.WriteLine("  </body>");
-				writer.WriteLine("</html>");
-				writer.WriteLine();
-				writer.Flush();
-				writer.Close();
+                writer.WriteLine("  </head>");
+                writer.WriteLine("  <body>");
+                writer.WriteLine(Content);
+                writer.WriteLine("  </body>");
+                writer.WriteLine("</html>");
+                writer.WriteLine();
+                writer.Flush();
+                writer.Close();
 
 
-				return true;
-			}
-			catch 
-			{
-				return false;
-			}
-		}
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
     }
 }

@@ -1,23 +1,18 @@
 #region Using directives
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using Microsoft.AspNetCore.Http;
 using SobekCM.Core.BriefItem;
 using SobekCM.Core.Client;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
-using SobekCM.Core.UI_Configuration;
-using SobekCM.Core.UI_Configuration.StaticResources;
-using SobekCM.Engine_Library.ApplicationState;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Library.ItemViewer.Viewers;
 using SobekCM.Library.UI;
-using SobekCM.Resource_Object;
-using SobekCM.Resource_Object.Divisions;
 using SobekCM.Tools;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 
 #endregion
 
@@ -33,7 +28,7 @@ namespace SobekCM.Library.HTML
 
         /// <summary> Constructor for a new instancee of the Print_Item_HtmlSubwriter class </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
-        public Print_Item_HtmlSubwriter(RequestCache RequestSpecificValues) : base(RequestSpecificValues) 
+        public Print_Item_HtmlSubwriter(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
         {
             // Ensure BibID and VID provided
             RequestSpecificValues.Tracer.Add_Trace("Print_Item_HtmlSubwriter.Constructor", "Validate provided bibid / vid");
@@ -48,7 +43,7 @@ namespace SobekCM.Library.HTML
 
             RequestSpecificValues.Tracer.Add_Trace("Print_Item_HtmlSubwriter.Constructor", "Try to pull this brief item");
             int statusCode;
-            currentItem = SobekEngineClient.Items.Get_Item_Brief(RequestSpecificValues.Current_Mode.BibID, RequestSpecificValues.Current_Mode.VID, true, RequestSpecificValues.Tracer, out statusCode );
+            currentItem = SobekEngineClient.Items.Get_Item_Brief(RequestSpecificValues.Current_Mode.BibID, RequestSpecificValues.Current_Mode.VID, true, RequestSpecificValues.Tracer, out statusCode);
             if (currentItem == null)
             {
                 RequestSpecificValues.Tracer.Add_Trace("Print_Item_HtmlSubwriter.Constructor", "Unable to build brief item");
@@ -112,7 +107,7 @@ namespace SobekCM.Library.HTML
             // Determine some variables
             bool include_brief_citation = false;
             string mode = RequestSpecificValues.Current_Mode.ViewerCode.ToLower();
-            if (mode.Length < 2 )
+            if (mode.Length < 2)
                 mode = "jj1";
             if (mode[0] == '1')
             {
@@ -140,7 +135,7 @@ namespace SobekCM.Library.HTML
 
                 case "jj":
                     if (mode.Length == 2)
-                        print_pages(include_brief_citation,1, 1, Output);
+                        print_pages(include_brief_citation, 1, 1, Output);
                     else
                     {
                         if (mode[2] == '*')
@@ -157,7 +152,7 @@ namespace SobekCM.Library.HTML
                                     string[] splitter = page_part.Split("-".ToCharArray());
                                     int from_page = Convert.ToInt32(splitter[0]) + 1;
                                     int to_page = Convert.ToInt32(splitter[1]) + 1;
-                                    print_pages(include_brief_citation,  Math.Min(to_page, from_page), Math.Max(to_page, from_page), Output);
+                                    print_pages(include_brief_citation, Math.Min(to_page, from_page), Math.Max(to_page, from_page), Output);
                                 }
                                 else
                                 {
@@ -180,7 +175,7 @@ namespace SobekCM.Library.HTML
             return true;
         }
 
-        private void print_brief_citation( string image_width, TextWriter Output)
+        private void print_brief_citation(string image_width, TextWriter Output)
         {
             if (RequestSpecificValues.Current_Mode.Base_Skin_Or_Skin == "ufdc")
             {
@@ -208,7 +203,7 @@ namespace SobekCM.Library.HTML
         private void print_pages(bool include_brief_citation, int from_page, int to_page, TextWriter Output)
         {
             if (include_brief_citation)
-                print_brief_citation("700", Output );
+                print_brief_citation("700", Output);
 
             int page_index = from_page - 1;
             while (page_index < to_page)
@@ -237,7 +232,7 @@ namespace SobekCM.Library.HTML
         private void print_thumbnails(bool include_brief_citation, TextWriter Output)
         {
             if (include_brief_citation)
-                print_brief_citation("550", Output );
+                print_brief_citation("550", Output);
 
             Output.WriteLine("<table cellspacing=\"10px\" class=\"thumbnails\">");
             Output.WriteLine("  <tr align=\"center\" valign=\"top\">");
@@ -314,7 +309,7 @@ namespace SobekCM.Library.HTML
                 List<Tuple<string, string>> returnValue = new List<Tuple<string, string>>();
 
                 returnValue.Add(new Tuple<string, string>("onload", "window.print();window.close();"));
- 
+
                 return returnValue;
             }
         }
@@ -322,7 +317,8 @@ namespace SobekCM.Library.HTML
         /// <summary> Title for this web page </summary>
         public override string WebPage_Title
         {
-            get {
+            get
+            {
                 return currentItem != null ? currentItem.Title : "{0} Item";
             }
         }
@@ -337,7 +333,7 @@ namespace SobekCM.Library.HTML
 
             // Write the style sheet to use 
             Output.WriteLine("  <link href=\"" + Static_Resources_Gateway.Sobekcm_Item_Css + "\" rel=\"stylesheet\" type=\"text/css\" />");
- 
+
             // Write the style sheet to use 
             Output.WriteLine("  <link href=\"" + Static_Resources_Gateway.Sobekcm_Print_Css + "\" rel=\"stylesheet\" type=\"text/css\" title=\"standard\" />");
         }
@@ -346,14 +342,14 @@ namespace SobekCM.Library.HTML
         /// requests from the main HTML writer. </summary>
         public override List<HtmlSubwriter_Behaviors_Enum> Subwriter_Behaviors
         {
-            get { return new List<HtmlSubwriter_Behaviors_Enum>() {HtmlSubwriter_Behaviors_Enum.Suppress_Footer}; }
+            get { return new List<HtmlSubwriter_Behaviors_Enum>() { HtmlSubwriter_Behaviors_Enum.Suppress_Footer }; }
         }
 
-		/// <summary> Gets the CSS class of the container that the page is wrapped within </summary>
-		/// <value> Always returns an empty string </value>
-		public override string Container_CssClass
-		{
-			get { return String.Empty; }
-		}
+        /// <summary> Gets the CSS class of the container that the page is wrapped within </summary>
+        /// <value> Always returns an empty string </value>
+        public override string Container_CssClass
+        {
+            get { return String.Empty; }
+        }
     }
 }

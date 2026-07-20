@@ -1,10 +1,10 @@
 ﻿#region Using directives
 
+using ProtoBuf;
 using System;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Xml.Serialization;
-using ProtoBuf;
 
 #endregion
 
@@ -16,7 +16,7 @@ namespace SobekCM.Core.Builder
     public class Builder_Module_Setting
     {
         /// <summary> [DataMember] Name of the assembly DLL (if not a part of the standard SobekCM assembly </summary>
-        [DataMember(Name="assembly",EmitDefaultValue = false)]
+        [DataMember(Name = "assembly", EmitDefaultValue = false)]
         [XmlAttribute("assembly")]
         [ProtoMember(1)]
         public string Assembly { get; set; }

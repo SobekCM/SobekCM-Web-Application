@@ -1,11 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using SobekCM.Core.Aggregations;
+﻿using SobekCM.Core.Aggregations;
 using SobekCM.Core.BriefItem;
 using SobekCM.Engine_Library.ApplicationState;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Behaviors;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
 {
@@ -57,7 +57,7 @@ namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
             // Copy over the viewers
             foreach (View_Object origView in Original.Behaviors.Views)
             {
-                New.Behaviors.Viewers.Add(new BriefItem_BehaviorViewer(origView.View_Type, origView.MenuOrder, origView.Exclude, origView.Label, origView.Attributes ));
+                New.Behaviors.Viewers.Add(new BriefItem_BehaviorViewer(origView.View_Type, origView.MenuOrder, origView.Exclude, origView.Label, origView.Attributes));
             }
 
             // Copy over the wordmarks
@@ -71,7 +71,7 @@ namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
             }
 
             // Copy over the citation set, if it exists
-            if ( !String.IsNullOrEmpty(Original.Behaviors.CitationSet))
+            if (!String.IsNullOrEmpty(Original.Behaviors.CitationSet))
                 New.Behaviors.CitationSet = Original.Behaviors.CitationSet;
 
             // Copy over all the loose settings, if they exist

@@ -1,8 +1,8 @@
-﻿using System;
+﻿using EngineAgnosticLayerDbAccess;
+using SobekCM.Core.MicroservicesClient;
+using System;
 using System.IO;
 using System.Xml;
-using EngineAgnosticLayerDbAccess;
-using SobekCM.Core.MicroservicesClient;
 
 namespace SobekCM.Builder_Library.Settings
 {
@@ -138,7 +138,7 @@ namespace SobekCM.Builder_Library.Settings
             }
         }
 
-        private static void read_instances(XmlReader ReaderXml )
+        private static void read_instances(XmlReader ReaderXml)
         {
             Single_Instance_Configuration singleInstance = new Single_Instance_Configuration();
 
@@ -179,8 +179,8 @@ namespace SobekCM.Builder_Library.Settings
                 else if ((ReaderXml.NodeType == XmlNodeType.EndElement) && (ReaderXml.Name.ToLower() == "instance"))
                 {
                     // Esnure it has SOME name
-                    if ( String.IsNullOrWhiteSpace(singleInstance.Name))
-                        singleInstance.Name = "Connection" + ( MultiInstance_Builder_Settings.Instances.Count + 1);
+                    if (String.IsNullOrWhiteSpace(singleInstance.Name))
+                        singleInstance.Name = "Connection" + (MultiInstance_Builder_Settings.Instances.Count + 1);
 
                     // Add this to the list of instances
                     MultiInstance_Builder_Settings.Instances.Add(singleInstance);

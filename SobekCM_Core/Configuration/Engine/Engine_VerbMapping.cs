@@ -1,11 +1,9 @@
-﻿using System;
+﻿using ProtoBuf;
+using SobekCM.Tools.IpRangeUtilities;
+using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Reflection;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
-using ProtoBuf;
-using SobekCM.Tools.IpRangeUtilities;
 
 namespace SobekCM.Core.Configuration.Engine
 {
@@ -89,7 +87,7 @@ namespace SobekCM.Core.Configuration.Engine
         /// <param name="Enabled"> Flag indicates if this endpoint is enabled or disabled </param>
         /// <param name="Protocol"> Protocol which this endpoint utilizes ( JSON or Protocol Buffer ) </param>
         /// <param name="RequestType"> Request type expected for this endpoint ( either a GET or a POST ) </param>
-        public Engine_VerbMapping(string Method, bool Enabled, Microservice_Endpoint_Protocol_Enum Protocol, Microservice_Endpoint_RequestType_Enum RequestType, string ComponentId, string RestrictionRangeId )
+        public Engine_VerbMapping(string Method, bool Enabled, Microservice_Endpoint_Protocol_Enum Protocol, Microservice_Endpoint_RequestType_Enum RequestType, string ComponentId, string RestrictionRangeId)
         {
             this.Method = Method;
             this.Enabled = Enabled;

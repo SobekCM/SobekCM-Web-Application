@@ -1,8 +1,8 @@
 ﻿
 #region Using directives
 
-using System.Collections.Generic;
 using SobekCM.Core.Settings;
+using System.Collections.Generic;
 
 #endregion
 

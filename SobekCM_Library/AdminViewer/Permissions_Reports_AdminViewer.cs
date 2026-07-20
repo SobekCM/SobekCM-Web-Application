@@ -1,21 +1,18 @@
 #region Using directives
 
-using SobekCM.Core.MemoryMgmt;
-using Microsoft.Extensions.Caching.Memory;
-
-using System;
-using System.Collections.Generic;
-using System.Data;
-using System.IO;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Caching.Memory;
+using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
-using SobekCM.Core.UI_Configuration;
-using SobekCM.Core.UI_Configuration.StaticResources;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Library.Database;
 using SobekCM.Library.HTML;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.IO;
 
 #endregion
 
@@ -80,7 +77,7 @@ namespace SobekCM.Library.AdminViewer
         {
             get { return "User Permissions Reports"; }
         }
-        
+
         /// <summary> Gets the URL for the icon related to this administrative task </summary>
         public override string Viewer_Icon
         {
@@ -163,12 +160,12 @@ namespace SobekCM.Library.AdminViewer
                 Output.WriteLine("  <br />");
             }
 
-           
+
             Output.WriteLine("  <div class=\"sbkPrav_ButtonsDiv\">");
             Output.WriteLine("    <button title=\"Refresh all permissions\" class=\"sbkPrav_RoundButton\" onclick=\"$('#admin_permissions_reset').val('reset');\"> REFRESH </button>");
             Output.WriteLine("  </div>");
             Output.WriteLine("  <input type=\"hidden\" id=\"admin_permissions_reset\" name=\"admin_permissions_reset\" value=\"\" />");
-    
+
 
 
             Output.WriteLine("  <p style=\"text-align: left; padding:0 20px 0 70px;width:800px;\">This report allows you to view the permissions that are set for users and groups within this repository both globally and at the individual aggregation and user level.</p>");
@@ -191,7 +188,7 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("  <div id=\"tabContainer\" class=\"fulltabs sbkAdm_HomeTabs\">");
             Output.WriteLine("  <div class=\"tabs\">");
             Output.WriteLine("    <ul>");
-            
+
             RequestSpecificValues.Current_Mode.My_Sobek_SubMode = "XyzzyXyzzy";
             string url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
             RequestSpecificValues.Current_Mode.My_Sobek_SubMode = last_mode;
@@ -202,7 +199,7 @@ namespace SobekCM.Library.AdminViewer
             }
             else
             {
-                Output.WriteLine("      <li onclick=\"window.location.href=\'" + url.Replace("XyzzyXyzzy","a") + "';return false;\"> GLOBAL LIST </li>");
+                Output.WriteLine("      <li onclick=\"window.location.href=\'" + url.Replace("XyzzyXyzzy", "a") + "';return false;\"> GLOBAL LIST </li>");
             }
 
             if (page == 2)
@@ -1209,7 +1206,7 @@ namespace SobekCM.Library.AdminViewer
             return Value ? "Y" : "";
         }
 
-        private void add_user_list(TextWriter Output, List<string> UserList, string Title, bool Multicolumn )
+        private void add_user_list(TextWriter Output, List<string> UserList, string Title, bool Multicolumn)
         {
             if (!Multicolumn)
             {
@@ -1230,7 +1227,7 @@ namespace SobekCM.Library.AdminViewer
 
 
                 // How many rows?
-                int rows = ((UserList.Count - 1)/3) + 1;
+                int rows = ((UserList.Count - 1) / 3) + 1;
                 Output.WriteLine("      <td>");
                 Output.WriteLine("        <blockquote>");
                 for (int i = 0; i < rows; i++)
@@ -1241,7 +1238,7 @@ namespace SobekCM.Library.AdminViewer
 
                 Output.WriteLine("      <td>");
                 Output.WriteLine("        <blockquote>");
-                for (int i = rows; i < ( 2 *rows ) && i < UserList.Count ; i++)
+                for (int i = rows; i < (2 * rows) && i < UserList.Count; i++)
                     Output.WriteLine("          " + UserList[i] + "<br />");
                 Output.WriteLine("        </blockquote>");
                 Output.WriteLine("      </td>");

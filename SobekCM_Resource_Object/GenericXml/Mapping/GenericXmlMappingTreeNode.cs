@@ -1,9 +1,6 @@
-﻿using System;
+﻿using SobekCM.Resource_Object.GenericXml.Reader;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using SobekCM.Resource_Object.GenericXml.Reader;
 
 namespace SobekCM.Resource_Object.GenericXml.Mapping
 {
@@ -15,7 +12,7 @@ namespace SobekCM.Resource_Object.GenericXml.Mapping
 
         public PathMappingInstructions Instructions { get; set; }
 
-        public Dictionary<string, PathMappingInstructions> AttributeInstructions { get; set; } 
+        public Dictionary<string, PathMappingInstructions> AttributeInstructions { get; set; }
 
         public GenericXmlMappingTreeNode()
         {

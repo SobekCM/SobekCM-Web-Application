@@ -1,18 +1,16 @@
 #region Using directives
 
+using SobekCM.Core.ApplicationState;
+using SobekCM.Core.Configuration.Localization;
+using SobekCM.Core.Users;
+using SobekCM.Resource_Object;
+using SobekCM.Resource_Object.Bib_Info;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using Microsoft.AspNetCore.Http;
 using System.Xml;
-using SobekCM.Core.ApplicationState;
-using SobekCM.Core.Configuration;
-using SobekCM.Core.Configuration.Localization;
-using SobekCM.Core.Users;
-using SobekCM.Resource_Object;
-using SobekCM.Resource_Object.Bib_Info;
 
 #endregion
 
@@ -42,9 +40,9 @@ namespace SobekCM.Library.Citation.Elements
             items = new List<string>();
             Title = Title;
             html_element_name = "type_ir";
-	        help_page = "typeir";
+            help_page = "typeir";
             default_values = new List<string>();
-           
+
         }
 
         #region iElement Members
@@ -60,7 +58,7 @@ namespace SobekCM.Library.Citation.Elements
         /// <param name="Translator"> Language support object which handles simple translational duties </param>
         /// <param name="Base_URL"> Base URL for the current request </param>
         /// <remarks> This simple element does not append any popup form to the popup_form_builder</remarks>
-        public override void Render_Template_HTML(TextWriter Output, SobekCM_Item Bib, string Skin_Code, bool IsMozilla, StringBuilder PopupFormBuilder, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL )
+        public override void Render_Template_HTML(TextWriter Output, SobekCM_Item Bib, string Skin_Code, bool IsMozilla, StringBuilder PopupFormBuilder, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL)
         {
             // Check that an acronym exists
             if (Acronym.Length == 0)
@@ -106,7 +104,7 @@ namespace SobekCM.Library.Citation.Elements
                     larger_text = "Book Title:";
                     larger_value = Bib.Bib_Info.SeriesTitle.ToString();
                     break;
-                
+
                 case "Conference Papers":
                 case "Conference Proceedings":
                     larger_text = "Conference Name:";
@@ -127,12 +125,12 @@ namespace SobekCM.Library.Citation.Elements
                     larger_text = "Course Name:";
                     larger_value = Bib.Bib_Info.SeriesTitle.ToString();
                     break;
-                    
+
                 case "Journal Article":
                     larger_text = "Journal Citation:";
                     larger_value = Bib.Bib_Info.SeriesTitle.ToString();
                     break;
-                
+
                 case "Technical Reports":
                     larger_text = "Series Title:";
                     larger_value = Bib.Bib_Info.SeriesTitle.ToString();
@@ -151,7 +149,7 @@ namespace SobekCM.Library.Citation.Elements
                     break;
             }
 
-            string id_name ="irtype";
+            string id_name = "irtype";
             string html_element_name_irtype = "ir_type";
             string title = "Material Type";
 
@@ -288,15 +286,15 @@ namespace SobekCM.Library.Citation.Elements
                 if (thisKey == "irtype")
                 {
                     type = Context.Request.Form[thisKey];
-                    if ((type != "Select Material Type") && ( type != "Other" ))
+                    if ((type != "Select Material Type") && (type != "Other"))
                     {
-	                    Bib.Bib_Info.SobekCM_Type_String = type;
+                        Bib.Bib_Info.SobekCM_Type_String = type;
 
-	                    if (Bib.Bib_Info.SobekCM_Type == TypeOfResource_SobekCM_Enum.UNKNOWN)
-	                    {
-		                    Bib.Bib_Info.SobekCM_Type = TypeOfResource_SobekCM_Enum.Archival;
-		                    Bib.Bib_Info.Original_Description.Extent = type;
-	                    }
+                        if (Bib.Bib_Info.SobekCM_Type == TypeOfResource_SobekCM_Enum.UNKNOWN)
+                        {
+                            Bib.Bib_Info.SobekCM_Type = TypeOfResource_SobekCM_Enum.Archival;
+                            Bib.Bib_Info.Original_Description.Extent = type;
+                        }
                     }
                 }
 
@@ -342,10 +340,10 @@ namespace SobekCM.Library.Citation.Elements
                                 if (!found_conference_name)
                                 {
                                     Name_Info conferenceName = new Name_Info
-                                                                   {
-                                                                       Name_Type = Name_Info_Type_Enum.Conference,
-                                                                       Full_Name = largerbody
-                                                                   };
+                                    {
+                                        Name_Type = Name_Info_Type_Enum.Conference,
+                                        Full_Name = largerbody
+                                    };
                                     Bib.Bib_Info.Add_Named_Entity(conferenceName);
                                 }
                                 break;
@@ -382,7 +380,7 @@ namespace SobekCM.Library.Citation.Elements
         /// <summary> Reads the inner data from the CompleteTemplate XML format </summary>
         /// <param name="XMLReader"> Current template xml configuration reader </param>
         /// <remarks> This reads the possible values for the type combo box from a <i>options</i> subelement and the default value from a <i>value</i> subelement </remarks>
-        protected override void Inner_Read_Data( XmlReader XMLReader )
+        protected override void Inner_Read_Data(XmlReader XMLReader)
         {
             default_values.Clear();
             while (XMLReader.Read())

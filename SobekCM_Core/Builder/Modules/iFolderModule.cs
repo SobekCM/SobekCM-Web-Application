@@ -1,7 +1,7 @@
 ﻿#region Using directives
 
-using System.Collections.Generic;
 using SobekCM.Core.Settings;
+using System.Collections.Generic;
 
 #endregion
 
@@ -14,7 +14,7 @@ namespace SobekCM.Builder_Library.Modules.Folders
         List<string> Arguments { get; set; }
 
         /// <summary> Link to the instance-wide settings which may be required for this process </summary>
-        InstanceWide_Settings Settings { get; set;  }
+        InstanceWide_Settings Settings { get; set; }
 
         /// <summary> Method performs the work of the folder-level builder module </summary>
         /// <param name="BuilderFolder"> Builder folder upon which to perform all work </param>

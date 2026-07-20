@@ -2,7 +2,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Text;
 
 #endregion
@@ -143,7 +142,7 @@ namespace SobekCM.Resource_Object.Metadata_Modules
                 StringBuilder builder = new StringBuilder();
 
                 // Add the kingdom
-                if ( !String.IsNullOrEmpty(kingdom))
+                if (!String.IsNullOrEmpty(kingdom))
                 {
                     builder.Append(kingdom + " -- ");
                     metadataTerms.Add(new KeyValuePair<string, string>("ZT Kingdom", kingdom));
@@ -208,7 +207,7 @@ namespace SobekCM.Resource_Object.Metadata_Modules
                 // Add the scientific name
                 if ((!String.IsNullOrEmpty(genus)) && (!String.IsNullOrEmpty(specificEpithet)))
                 {
-                    metadataTerms.Add(new KeyValuePair<string, string>("ZT Scientific Name", genus + " " + specificEpithet ));
+                    metadataTerms.Add(new KeyValuePair<string, string>("ZT Scientific Name", genus + " " + specificEpithet));
                     metadataTerms.Add(new KeyValuePair<string, string>("ZT All Taxonomy", genus + " " + specificEpithet));
                 }
 
@@ -307,7 +306,7 @@ namespace SobekCM.Resource_Object.Metadata_Modules
                     builder.Append(" -- ");
                 builder.Append(specificEpithet);
             }
-            if (builder.Length > 0 )
+            if (builder.Length > 0)
                 return builder.ToString();
             if (!String.IsNullOrEmpty(commonName))
                 return commonName;

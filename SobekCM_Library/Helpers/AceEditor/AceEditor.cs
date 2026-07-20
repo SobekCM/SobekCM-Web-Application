@@ -1,6 +1,6 @@
+using SobekCM.Library.UI;
 using System;
 using System.IO;
-using SobekCM.Library.UI;
 
 namespace SobekCM.Library.Helpers.AceEditor
 {
@@ -12,14 +12,14 @@ namespace SobekCM.Library.Helpers.AceEditor
 
         /// <summary> This Ace editor will be used for editing CSS stylesheets </summary>
         CSS,
-        
+
         /// <summary> THis Ace editor will be used for editing HTML </summary>
         /// <remarks> This is currently not supported (as of 12/2016), as CKEditor is used for HTML editing </remarks>
         HTML,
 
         /// <summary> This Ace editor will be used for editing Javascript code </summary>
         Javascript,
-        
+
         /// <summary> This Ace editor will be used for editing XML code </summary>
         XML
     }
@@ -60,7 +60,7 @@ namespace SobekCM.Library.Helpers.AceEditor
         /// <param name="Contents"> added to the output stream here (might not if there are multiple AceEditor areas on the same page )</param>
         public void Add_To_Stream(TextWriter Output, string Contents)
         {
-            Add_To_Stream(Output, Contents, true );
+            Add_To_Stream(Output, Contents, true);
         }
 
         /// <summary> Add the Ace editor and all the necessary html/javascript to enable an Ace editor here on the page </summary>
@@ -151,5 +151,5 @@ namespace SobekCM.Library.Helpers.AceEditor
         }
     }
 
-    
+
 }

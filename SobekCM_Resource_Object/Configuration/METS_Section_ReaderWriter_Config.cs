@@ -1,12 +1,12 @@
 ﻿#region Using directives
 
+using ProtoBuf;
+using SobekCM.Tools;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
-using ProtoBuf;
-using SobekCM.Tools;
 
 #endregion
 
@@ -127,7 +127,7 @@ namespace SobekCM.Resource_Object.Configuration
         /// <summary> METS section reader/writer object associated with this configuration </summary>
         [XmlIgnore]
         [IgnoreDataMember]
-        public object ReaderWriterObject { get; private set;  }
+        public object ReaderWriterObject { get; private set; }
 
         /// <summary> If there is an error while creating the reader/writer object, the error is stored here </summary>
         [DataMember(Name = "loadError")]
@@ -153,10 +153,10 @@ namespace SobekCM.Resource_Object.Configuration
                         dllAssembly = Assembly.LoadFrom(assemblyFilePath);
                     }
                 }
-                
-              //  Assembly dllAssembly = Assembly..LoadFrom( Code_Assembly );
+
+                //  Assembly dllAssembly = Assembly..LoadFrom( Code_Assembly );
                 Type readerWriterType = dllAssembly.GetType(Code_Namespace + "." + Code_Class);
-                ReaderWriterObject = Activator.CreateInstance(readerWriterType); 
+                ReaderWriterObject = Activator.CreateInstance(readerWriterType);
                 return true;
             }
             catch (Exception ee)
@@ -226,7 +226,7 @@ namespace SobekCM.Resource_Object.Configuration
         {
             if (Options == null)
                 Options = new List<StringKeyValuePair>();
-            
+
             // Ensure the dictionary is built
             if ((optionsDictionary == null) || ((optionsDictionary.Count != Options.Count)))
             {
@@ -318,7 +318,7 @@ namespace SobekCM.Resource_Object.Configuration
         /// <param name="MD_Type"> Standard metadata type within the METS dmdSec/amdSec metadata definition tags (or OTHER)</param>
         /// <param name="Label"> Label associated with this METS section within the METS dmdSec/amdSec metadata definition tags (used when writing)</param>
         /// <param name="isDefault"> Flag indicates if this is the default mapping, which means it would be used when writing a new METS file</param>
-        public METS_Section_ReaderWriter_Mapping( string MD_Type, string Label, bool isDefault )
+        public METS_Section_ReaderWriter_Mapping(string MD_Type, string Label, bool isDefault)
         {
             this.MD_Type = MD_Type;
             Other_MD_Type = String.Empty;

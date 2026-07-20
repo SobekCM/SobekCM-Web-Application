@@ -1,8 +1,3 @@
-using System;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
@@ -17,9 +12,13 @@ using SobekCM.Core.Navigation;
 using SobekCM.Library.Database;
 using SobekCM.Library.Helpers.CKEditor;
 using SobekCM.Library.MainWriters;
-using SobekCM.Library.ResultsViewer;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
+using System;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace SobekCM
 {
@@ -54,12 +53,12 @@ namespace SobekCM
             SessionObjectStore.IdleTimeout = sessionIdleTimeout;
 
             // Wire System.Web.HttpContext.Current.Session to ASP.NET Core ISession
-        //    builder.Services.AddSystemWebAdapters().AddWrappedAspNetCoreSession();
+            //    builder.Services.AddSystemWebAdapters().AddWrappedAspNetCoreSession();
 
             var app = builder.Build();
 
             app.UseSession();
-        //    app.UseSystemWebAdapters();
+            //    app.UseSystemWebAdapters();
 
             // Static files (CSS, JS, images) served from wwwroot
             var contentTypeProvider = new FileExtensionContentTypeProvider();
@@ -262,7 +261,7 @@ namespace SobekCM
             // ── Main SobekCM catch-all (replaces SobekCM.aspx) ──────────────────────
             app.MapFallback(async (HttpContext context) =>
             {
-               //context.Response.Redirect("/sobekcm.aspx" + context.Request.QueryString);
+                //context.Response.Redirect("/sobekcm.aspx" + context.Request.QueryString);
                 bool isPostBack = string.Equals(context.Request.Method, "POST", StringComparison.OrdinalIgnoreCase);
                 var pageGlobals = new QueryInitializer(context, "SOBEKCM");
 

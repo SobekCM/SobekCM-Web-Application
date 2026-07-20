@@ -1,6 +1,3 @@
-using System;
-using System.IO;
-using Microsoft.AspNetCore.Http;
 using SobekCM.Core.Client;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Message;
@@ -9,6 +6,8 @@ using SobekCM.Core.WebContent;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
+using System;
+using System.IO;
 
 namespace SobekCM.Library.WebContentViewer.Viewers
 {
@@ -25,7 +24,7 @@ namespace SobekCM.Library.WebContentViewer.Viewers
         /// <param name="RequestSpecificValues">  All the necessary, non-global data specific to the current request  </param>
         /// <param name="StaticPage"> Static page info for this request </param>
         public Delete_Verify_WebContentViewer(RequestCache RequestSpecificValues, HTML_Based_Content StaticPage)
-            : base(RequestSpecificValues, StaticPage )
+            : base(RequestSpecificValues, StaticPage)
         {
             // Pull the web content page
             if (RequestSpecificValues.Current_Mode.WebContentID.HasValue)
@@ -56,12 +55,12 @@ namespace SobekCM.Library.WebContentViewer.Viewers
                 errorMessage = "ERROR: You do not have permission to delete this page";
                 canDelete = false;
             }
-            else if ( Context.Request.Method == "POST" )
+            else if (Context.Request.Method == "POST")
             {
                 string save_value = Context.Request.Form["admin_delete_item"];
 
                 // Better say "DELETE", or just send back to the item
-                if (( save_value != null ) && ( String.Compare(save_value,"DELETE", StringComparison.OrdinalIgnoreCase) == 0))
+                if ((save_value != null) && (String.Compare(save_value, "DELETE", StringComparison.OrdinalIgnoreCase) == 0))
                 {
                     string entered_value = Context.Request.Form["admin_delete_confirm"];
                     if ((entered_value == null) || (entered_value.ToUpper() != "DELETE"))
@@ -100,7 +99,7 @@ namespace SobekCM.Library.WebContentViewer.Viewers
 
 
         /// <summary> Gets the type of specialized web content viewer </summary>
-        public override WebContent_Type_Enum Type { get { return WebContent_Type_Enum.Delete_Verify; }}
+        public override WebContent_Type_Enum Type { get { return WebContent_Type_Enum.Delete_Verify; } }
 
         /// <summary> Title for the page that displays this viewer, this is shown in the search box at the top of the page, just below the banner </summary>
         public override string Viewer_Title

@@ -1,15 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Data;
-
+﻿using SobekCM.Core.Configuration.Engine;
 using SobekCM.Core.Configuration.Extensions;
 using SobekCM.Core.Message;
 using SobekCM.Core.Settings;
 using SobekCM.Engine_Library.ApplicationState;
 using SobekCM.Engine_Library.Database;
-using SobekCM.Core.Configuration.Engine;
 using SobekCM.Tools;
+using System;
+using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.Data;
 
 namespace SobekCM.Engine_Library.Endpoints
 {
@@ -39,7 +38,7 @@ namespace SobekCM.Engine_Library.Endpoints
                 DataSet adminSet = Engine_Database.Get_Settings_Complete(true, tracer);
 
                 // If the returned value from the database was NULL, there was an error
-                if ((adminSet == null) || (adminSet.Tables.Count == 0) || ( adminSet.Tables[0].Rows.Count == 0))
+                if ((adminSet == null) || (adminSet.Tables.Count == 0) || (adminSet.Tables[0].Rows.Count == 0))
                 {
                     Response.ContentType = "text/plain";
                     Response.Output.WriteLine("Error completing request");
@@ -78,7 +77,7 @@ namespace SobekCM.Engine_Library.Endpoints
                     DataColumn optionsColumn = adminSet.Tables[0].Columns["Options"];
                     DataColumn idColumn = adminSet.Tables[0].Columns["SettingID"];
                     DataColumn dimensionsColumn = adminSet.Tables[0].Columns["Dimensions"];
-                    
+
                     //Setting_Key, Setting_Value, TabPage, Heading, Hidden, Reserved, Help, Options
 
                     // Build the return values
@@ -87,12 +86,12 @@ namespace SobekCM.Engine_Library.Endpoints
                         // Build the value object
                         Admin_Setting_Value thisValue = new Admin_Setting_Value
                         {
-                            Key = thisRow[keyColumn].ToString(), 
-                            Value = thisRow[valueColumn] == DBNull.Value ? null : thisRow[valueColumn].ToString(), 
-                            TabPage = thisRow[tabPageColumn] == DBNull.Value ? null : thisRow[tabPageColumn].ToString(), 
-                            Heading = thisRow[headingColumn] == DBNull.Value ? null : thisRow[headingColumn].ToString(), 
-                            Hidden = bool.Parse(thisRow[hiddenColumn].ToString()), 
-                            Reserved = short.Parse(thisRow[reservedColumn].ToString()), 
+                            Key = thisRow[keyColumn].ToString(),
+                            Value = thisRow[valueColumn] == DBNull.Value ? null : thisRow[valueColumn].ToString(),
+                            TabPage = thisRow[tabPageColumn] == DBNull.Value ? null : thisRow[tabPageColumn].ToString(),
+                            Heading = thisRow[headingColumn] == DBNull.Value ? null : thisRow[headingColumn].ToString(),
+                            Hidden = bool.Parse(thisRow[hiddenColumn].ToString()),
+                            Reserved = short.Parse(thisRow[reservedColumn].ToString()),
                             Help = thisRow[helpColumn] == DBNull.Value ? null : thisRow[helpColumn].ToString(),
                             SettingID = short.Parse(thisRow[idColumn].ToString())
                         };
@@ -110,7 +109,7 @@ namespace SobekCM.Engine_Library.Endpoints
                                 if (dimensions.IndexOf("|") >= 0)
                                 {
                                     string[] splitter = dimensions.Split("|".ToCharArray());
-                                    if ((splitter[0].Length > 0) && ( short.TryParse(splitter[0], out testWidth )))
+                                    if ((splitter[0].Length > 0) && (short.TryParse(splitter[0], out testWidth)))
                                     {
                                         thisValue.Width = testWidth;
                                         if ((splitter[1].Length > 0) && (short.TryParse(splitter[1], out testHeight)))
@@ -125,7 +124,7 @@ namespace SobekCM.Engine_Library.Endpoints
                                     if (short.TryParse(dimensions, out testWidth))
                                     {
                                         thisValue.Width = testWidth;
-                                    } 
+                                    }
                                 }
                             }
                         }
@@ -134,7 +133,7 @@ namespace SobekCM.Engine_Library.Endpoints
                         if (thisRow[optionsColumn] != DBNull.Value)
                         {
                             string[] options = thisRow[optionsColumn].ToString().Split("|".ToCharArray());
-                            foreach( string thisOption in options )
+                            foreach (string thisOption in options)
                                 thisValue.Add_Option(thisOption.Trim());
                         }
 
@@ -585,7 +584,7 @@ namespace SobekCM.Engine_Library.Endpoints
                     {
                         responder.Message = "Cannot enable the extension due to configuration errors";
                         responder.Success = false;
-                        foreach( string thisMessage in thisExtension.ConfigurationErrors )
+                        foreach (string thisMessage in thisExtension.ConfigurationErrors)
                             responder.Add_Error(thisMessage);
                     }
                     else
@@ -652,7 +651,7 @@ namespace SobekCM.Engine_Library.Endpoints
                 // Create the message to return
                 EnableExtensionMessage responder = new EnableExtensionMessage
                 {
-                    Success = true, 
+                    Success = true,
                     Message = "Disable request received by the engine"
                 };
 

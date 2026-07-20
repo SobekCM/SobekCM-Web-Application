@@ -1,13 +1,13 @@
 #region Using directives
 
+using SobekCM.Core.ApplicationState;
+using SobekCM.Core.Configuration.Localization;
+using SobekCM.Core.Users;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Xml;
-using SobekCM.Core.ApplicationState;
-using SobekCM.Core.Configuration.Localization;
-using SobekCM.Core.Users;
 
 #endregion
 
@@ -36,7 +36,7 @@ namespace SobekCM.Library.Citation.Elements
         /// <summary> Constructor for a new instance of the SimpleTextBox_Element class </summary>
         /// <param name="Title"> Title for this element </param>
         /// <param name="Html_Element_Name"> Name for the html components and styles for this element </param>
-        protected SimpleTextBox_Element( string Title, string Html_Element_Name )
+        protected SimpleTextBox_Element(string Title, string Html_Element_Name)
         {
             base.Title = Title;
             html_element_name = Html_Element_Name;
@@ -185,9 +185,9 @@ namespace SobekCM.Library.Citation.Elements
                     if (!String.IsNullOrWhiteSpace(Placeholder))
                         Output.Write(" placeholder=\"" + System.Net.WebUtility.HtmlEncode(Placeholder) + "\"");
 
-                    if (textBoxEvents != null) 
+                    if (textBoxEvents != null)
                         textBoxEvents.Add_Events_HTML(Output);
-                    
+
 
 
                     if (i == allValues.Count)
@@ -235,7 +235,7 @@ namespace SobekCM.Library.Citation.Elements
         /// <param name="CurrentLanguage"> Current user-interface language </param>
         /// <param name="Translator"> Language support object which handles simple translational duties </param>
         /// <param name="Base_URL"> Base URL for the current request </param>
-        protected void render_helper(TextWriter Output, string InstanceValue, string Skin_Code, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL )
+        protected void render_helper(TextWriter Output, string InstanceValue, string Skin_Code, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL)
         {
             string id_name = html_element_name.Replace("_", "");
             render_helper(Output, InstanceValue, Skin_Code, Current_User, CurrentLanguage, Translator, Base_URL, id_name);

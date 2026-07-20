@@ -1,14 +1,14 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+using Microsoft.AspNetCore.Http;
 using SobekCM.Core.BriefItem;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Users;
 using SobekCM.Library.ItemViewer.Menu;
 using SobekCM.Tools;
-using Microsoft.AspNetCore.Http;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 
 namespace SobekCM.Library.ItemViewer.Viewers
 {
@@ -167,7 +167,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             Output.WriteLine("          <td>");
             Output.WriteLine("            <div id=\"sbkDiv_MainArea\">");
-            Add_Download_Links(Output, BriefItem, CurrentRequest, CurrentUser, Tracer );
+            Add_Download_Links(Output, BriefItem, CurrentRequest, CurrentUser, Tracer);
             Output.WriteLine("            </div>");
             Output.WriteLine("          </td>");
         }

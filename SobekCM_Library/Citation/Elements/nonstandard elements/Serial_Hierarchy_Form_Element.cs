@@ -1,19 +1,17 @@
 #region Using directives
 
+using SobekCM.Core.ApplicationState;
+using SobekCM.Core.Configuration.Localization;
+using SobekCM.Core.Users;
+using SobekCM.Library.UI;
+using SobekCM.Resource_Object;
+using SobekCM.Resource_Object.Behaviors;
+using SobekCM.Resource_Object.Bib_Info;
 using System;
 using System.IO;
 using System.Linq;
 using System.Text;
-using Microsoft.AspNetCore.Http;
 using System.Xml;
-using SobekCM.Core.ApplicationState;
-using SobekCM.Core.Configuration;
-using SobekCM.Core.Configuration.Localization;
-using SobekCM.Core.Users;
-using SobekCM.Resource_Object;
-using SobekCM.Resource_Object.Behaviors;
-using SobekCM.Resource_Object.Bib_Info;
-using SobekCM.Library.UI;
 
 #endregion
 
@@ -29,7 +27,7 @@ namespace SobekCM.Library.Citation.Elements
             Repeatable = false;
             Title = "Serial Hierarchy";
             html_element_name = "form_serial_hierarchy";
-	        help_page = "serialhierarchy";
+            help_page = "serialhierarchy";
         }
 
         #region iElement Members
@@ -45,7 +43,7 @@ namespace SobekCM.Library.Citation.Elements
         /// <param name="Translator"> Language support object which handles simple translational duties </param>
         /// <param name="Base_URL"> Base URL for the current request </param>
         /// <remarks> This element appends a popup form to the popup_form_builder</remarks>
-        public override void Render_Template_HTML(TextWriter Output, SobekCM_Item Bib, string Skin_Code, bool IsMozilla, StringBuilder PopupFormBuilder, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL )
+        public override void Render_Template_HTML(TextWriter Output, SobekCM_Item Bib, string Skin_Code, bool IsMozilla, StringBuilder PopupFormBuilder, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL)
         {
             // Check that an acronym exists
             if (Acronym.Length == 0)
@@ -107,12 +105,12 @@ namespace SobekCM.Library.Citation.Elements
             Output.WriteLine("    </td>");
             Output.WriteLine("  </tr>");
             Output.WriteLine();
-            
+
             // Determine which is primary, the enumeration or chronology.
             bool enum_primary = true;
-            if ( Bib.Behaviors.Serial_Info.Count > 0)
+            if (Bib.Behaviors.Serial_Info.Count > 0)
             {
-                if ( Bib.Bib_Info.Series_Part_Info.Year == Bib.Behaviors.Serial_Info[0].Display)
+                if (Bib.Bib_Info.Series_Part_Info.Year == Bib.Behaviors.Serial_Info[0].Display)
                 {
                     enum_primary = false;
                 }
@@ -120,7 +118,7 @@ namespace SobekCM.Library.Citation.Elements
             else
             {
                 // If no default, set it by type
-                if (Bib.Bib_Info.SobekCM_Type == TypeOfResource_SobekCM_Enum.Newspaper )
+                if (Bib.Bib_Info.SobekCM_Type == TypeOfResource_SobekCM_Enum.Newspaper)
                 {
                     enum_primary = false;
                 }
@@ -128,10 +126,10 @@ namespace SobekCM.Library.Citation.Elements
 
             // Add the popup form
             PopupFormBuilder.AppendLine("<!-- Serial Hierarchy Form -->");
-			PopupFormBuilder.AppendLine("<div class=\"serial_hierarchy_popup_div sbkMetadata_PopupDiv\" id=\"form_serial_hierarchy\" style=\"display:none;\">");
-			PopupFormBuilder.AppendLine("  <div class=\"sbkMetadata_PopupTitle\"><table style=\"width:100%\"><tr><td style=\"text-align:left\">Edit Serial Hierarchy</td><td style=\"text-align:right\"><a href=\"" + Help_URL(Skin_Code, Base_URL) + "\" alt=\"HELP\" target=\"_" + html_element_name.ToUpper() + "\" >?</a> &nbsp; <a href=\"#template\" alt=\"CLOSE\" onclick=\"close_serial_hierarchy()\">X</a> &nbsp; </td></tr></table></div>");
+            PopupFormBuilder.AppendLine("<div class=\"serial_hierarchy_popup_div sbkMetadata_PopupDiv\" id=\"form_serial_hierarchy\" style=\"display:none;\">");
+            PopupFormBuilder.AppendLine("  <div class=\"sbkMetadata_PopupTitle\"><table style=\"width:100%\"><tr><td style=\"text-align:left\">Edit Serial Hierarchy</td><td style=\"text-align:right\"><a href=\"" + Help_URL(Skin_Code, Base_URL) + "\" alt=\"HELP\" target=\"_" + html_element_name.ToUpper() + "\" >?</a> &nbsp; <a href=\"#template\" alt=\"CLOSE\" onclick=\"close_serial_hierarchy()\">X</a> &nbsp; </td></tr></table></div>");
             PopupFormBuilder.AppendLine("  <br />");
-			PopupFormBuilder.AppendLine("  <table class=\"sbkMetadata_PopupTable\">");
+            PopupFormBuilder.AppendLine("  <table class=\"sbkMetadata_PopupTable\">");
 
             // Add the Enumeration Information title
             PopupFormBuilder.AppendLine("    <tr><td colspan=\"4\" class=\"SobekEditItemSectionTitle_first\" >Enumeration Information</td></tr>");
@@ -150,27 +148,27 @@ namespace SobekCM.Library.Citation.Elements
             // Add the rows of enumeration data
             PopupFormBuilder.Append("    <tr><td style=\"width:90px\">&nbsp;</td><td style=\"width:100px\">(Volume):</td>");
             PopupFormBuilder.Append("<td><input type=\"text\" class=\"form_serialhierarchy_text_input sbk_Focusable\" id=\"form_serialhierarchy_enum1text\" name=\"form_serialhierarchy_enum1text\" value=\"" + System.Net.WebUtility.HtmlEncode(enum1) + "\" ></td>");
-            if ( Bib.Bib_Info.Series_Part_Info.Enum1_Index >= 0 )
-				PopupFormBuilder.AppendLine("<td><input type=\"text\" class=\"form_serialhierarchy_order_input sbk_Focusable\" id=\"form_serialhierarchy_enum1order\" name=\"form_serialhierarchy_enum1order\" value=\"" + System.Net.WebUtility.HtmlEncode(Bib.Bib_Info.Series_Part_Info.Enum1_Index.ToString()) + "\" ></td></tr>");
+            if (Bib.Bib_Info.Series_Part_Info.Enum1_Index >= 0)
+                PopupFormBuilder.AppendLine("<td><input type=\"text\" class=\"form_serialhierarchy_order_input sbk_Focusable\" id=\"form_serialhierarchy_enum1order\" name=\"form_serialhierarchy_enum1order\" value=\"" + System.Net.WebUtility.HtmlEncode(Bib.Bib_Info.Series_Part_Info.Enum1_Index.ToString()) + "\" ></td></tr>");
             else
                 PopupFormBuilder.AppendLine("<td><input type=\"text\" class=\"form_serialhierarchy_order_input sbk_Focusable\" id=\"form_serialhierarchy_enum1order\" name=\"form_serialhierarchy_enum1order\" value=\"\" ></td></tr>");
 
             PopupFormBuilder.Append("    <tr><td>&nbsp;</td><td>(Issue):</td>");
             PopupFormBuilder.Append("<td><input type=\"text\" class=\"form_serialhierarchy_text_input sbk_Focusable\" id=\"form_serialhierarchy_enum2text\" name=\"form_serialhierarchy_enum2text\" value=\"" + System.Net.WebUtility.HtmlEncode(Bib.Bib_Info.Series_Part_Info.Enum2) + "\" ></td>");
             if (Bib.Bib_Info.Series_Part_Info.Enum2_Index >= 0)
-				PopupFormBuilder.AppendLine("<td><input type=\"text\" class=\"form_serialhierarchy_order_input sbk_Focusable\" id=\"form_serialhierarchy_enum2order\" name=\"form_serialhierarchy_enum2order\" value=\"" + System.Net.WebUtility.HtmlEncode(Bib.Bib_Info.Series_Part_Info.Enum2_Index.ToString()) + "\" ></td></tr>");
+                PopupFormBuilder.AppendLine("<td><input type=\"text\" class=\"form_serialhierarchy_order_input sbk_Focusable\" id=\"form_serialhierarchy_enum2order\" name=\"form_serialhierarchy_enum2order\" value=\"" + System.Net.WebUtility.HtmlEncode(Bib.Bib_Info.Series_Part_Info.Enum2_Index.ToString()) + "\" ></td></tr>");
             else
-				PopupFormBuilder.AppendLine("<td><input type=\"text\" class=\"form_serialhierarchy_order_input sbk_Focusable\" id=\"form_serialhierarchy_enum2order\" name=\"form_serialhierarchy_enum2order\" value=\"\" ></td></tr>");
+                PopupFormBuilder.AppendLine("<td><input type=\"text\" class=\"form_serialhierarchy_order_input sbk_Focusable\" id=\"form_serialhierarchy_enum2order\" name=\"form_serialhierarchy_enum2order\" value=\"\" ></td></tr>");
 
             PopupFormBuilder.Append("    <tr><td>&nbsp;</td><td>(Part):</td>");
-			PopupFormBuilder.Append("<td><input type=\"text\" class=\"form_serialhierarchy_text_input sbk_Focusable\" id=\"form_serialhierarchy_enum3text\" name=\"form_serialhierarchy_enum3text\" value=\"" + System.Net.WebUtility.HtmlEncode(Bib.Bib_Info.Series_Part_Info.Enum3) + "\" ></td>");
+            PopupFormBuilder.Append("<td><input type=\"text\" class=\"form_serialhierarchy_text_input sbk_Focusable\" id=\"form_serialhierarchy_enum3text\" name=\"form_serialhierarchy_enum3text\" value=\"" + System.Net.WebUtility.HtmlEncode(Bib.Bib_Info.Series_Part_Info.Enum3) + "\" ></td>");
             if (Bib.Bib_Info.Series_Part_Info.Enum3_Index >= 0)
-				PopupFormBuilder.AppendLine("<td><input type=\"text\" class=\"form_serialhierarchy_order_input sbk_Focusable\" id=\"form_serialhierarchy_enum3order\" name=\"form_serialhierarchy_enum3order\" value=\"" + System.Net.WebUtility.HtmlEncode(Bib.Bib_Info.Series_Part_Info.Enum3_Index.ToString()) + "\" ></td></tr>");
+                PopupFormBuilder.AppendLine("<td><input type=\"text\" class=\"form_serialhierarchy_order_input sbk_Focusable\" id=\"form_serialhierarchy_enum3order\" name=\"form_serialhierarchy_enum3order\" value=\"" + System.Net.WebUtility.HtmlEncode(Bib.Bib_Info.Series_Part_Info.Enum3_Index.ToString()) + "\" ></td></tr>");
             else
-				PopupFormBuilder.AppendLine("<td><input type=\"text\" class=\"form_serialhierarchy_order_input sbk_Focusable\" id=\"form_serialhierarchy_enum3order\" name=\"form_serialhierarchy_enum3order\" value=\"\" ></td></tr>");
+                PopupFormBuilder.AppendLine("<td><input type=\"text\" class=\"form_serialhierarchy_order_input sbk_Focusable\" id=\"form_serialhierarchy_enum3order\" name=\"form_serialhierarchy_enum3order\" value=\"\" ></td></tr>");
 
             // Add the Chronological Information title
-			PopupFormBuilder.AppendLine("    <tr><td colspan=\"4\" class=\"SobekEditItemSectionTitle sbk_Focusable\" >Chronological Information</td></tr>");
+            PopupFormBuilder.AppendLine("    <tr><td colspan=\"4\" class=\"SobekEditItemSectionTitle sbk_Focusable\" >Chronological Information</td></tr>");
 
             // Add the chronology as primary radio button
             PopupFormBuilder.Append("    <tr><td colspan=\"2\"> &nbsp; &nbsp; <input type=\"radio\" id=\"form_serialhierarchy_primary_chrono\" name=\"form_serialhierarchy_primary\" value=\"chrono\"");
@@ -180,34 +178,34 @@ namespace SobekCM.Library.Citation.Elements
 
             // Add the rows of chronological data
             PopupFormBuilder.Append("    <tr><td>&nbsp;</td><td>Year:</td>");
-			PopupFormBuilder.Append("<td><input type=\"text\" class=\"form_serialhierarchy_text_input sbk_Focusable\" id=\"form_serialhierarchy_chrono1text\" name=\"form_serialhierarchy_chrono1text\" value=\"" + System.Net.WebUtility.HtmlEncode(Bib.Bib_Info.Series_Part_Info.Year) + "\" ></td>");
+            PopupFormBuilder.Append("<td><input type=\"text\" class=\"form_serialhierarchy_text_input sbk_Focusable\" id=\"form_serialhierarchy_chrono1text\" name=\"form_serialhierarchy_chrono1text\" value=\"" + System.Net.WebUtility.HtmlEncode(Bib.Bib_Info.Series_Part_Info.Year) + "\" ></td>");
             if (Bib.Bib_Info.Series_Part_Info.Year_Index >= 0)
-				PopupFormBuilder.AppendLine("<td><input type=\"text\" class=\"form_serialhierarchy_order_input sbk_Focusable\" id=\"form_serialhierarchy_chrono1order\" name=\"form_serialhierarchy_chrono1order\" value=\"" + System.Net.WebUtility.HtmlEncode(Bib.Bib_Info.Series_Part_Info.Year_Index.ToString()) + "\" ></td></tr>");
+                PopupFormBuilder.AppendLine("<td><input type=\"text\" class=\"form_serialhierarchy_order_input sbk_Focusable\" id=\"form_serialhierarchy_chrono1order\" name=\"form_serialhierarchy_chrono1order\" value=\"" + System.Net.WebUtility.HtmlEncode(Bib.Bib_Info.Series_Part_Info.Year_Index.ToString()) + "\" ></td></tr>");
             else
-				PopupFormBuilder.AppendLine("<td><input type=\"text\" class=\"form_serialhierarchy_order_input sbk_Focusable\" id=\"form_serialhierarchy_chrono1order\" name=\"form_serialhierarchy_chrono1order\" value=\"\" ></td></tr>");
+                PopupFormBuilder.AppendLine("<td><input type=\"text\" class=\"form_serialhierarchy_order_input sbk_Focusable\" id=\"form_serialhierarchy_chrono1order\" name=\"form_serialhierarchy_chrono1order\" value=\"\" ></td></tr>");
 
             PopupFormBuilder.Append("    <tr><td>&nbsp;</td><td>(Month):</td>");
-			PopupFormBuilder.Append("<td><input type=\"text\" class=\"form_serialhierarchy_text_input sbk_Focusable\" id=\"form_serialhierarchy_chrono2text\" name=\"form_serialhierarchy_chrono2text\" value=\"" + System.Net.WebUtility.HtmlEncode(Bib.Bib_Info.Series_Part_Info.Month) + "\" ></td>");
+            PopupFormBuilder.Append("<td><input type=\"text\" class=\"form_serialhierarchy_text_input sbk_Focusable\" id=\"form_serialhierarchy_chrono2text\" name=\"form_serialhierarchy_chrono2text\" value=\"" + System.Net.WebUtility.HtmlEncode(Bib.Bib_Info.Series_Part_Info.Month) + "\" ></td>");
             if (Bib.Bib_Info.Series_Part_Info.Month_Index >= 0)
-				PopupFormBuilder.AppendLine("<td><input type=\"text\" class=\"form_serialhierarchy_order_input sbk_Focusable\" id=\"form_serialhierarchy_chrono2order\" name=\"form_serialhierarchy_chrono2order\" value=\"" + System.Net.WebUtility.HtmlEncode(Bib.Bib_Info.Series_Part_Info.Month_Index.ToString()) + "\" ></td></tr>");
+                PopupFormBuilder.AppendLine("<td><input type=\"text\" class=\"form_serialhierarchy_order_input sbk_Focusable\" id=\"form_serialhierarchy_chrono2order\" name=\"form_serialhierarchy_chrono2order\" value=\"" + System.Net.WebUtility.HtmlEncode(Bib.Bib_Info.Series_Part_Info.Month_Index.ToString()) + "\" ></td></tr>");
             else
-				PopupFormBuilder.AppendLine("<td><input type=\"text\" class=\"form_serialhierarchy_order_input sbk_Focusable\" id=\"form_serialhierarchy_chrono2order\" name=\"form_serialhierarchy_chrono2order\" value=\"\" ></td></tr>");
+                PopupFormBuilder.AppendLine("<td><input type=\"text\" class=\"form_serialhierarchy_order_input sbk_Focusable\" id=\"form_serialhierarchy_chrono2order\" name=\"form_serialhierarchy_chrono2order\" value=\"\" ></td></tr>");
 
             PopupFormBuilder.Append("    <tr><td>&nbsp;</td><td>(Day):</td>");
-			PopupFormBuilder.Append("<td><input type=\"text\" class=\"form_serialhierarchy_text_input sbk_Focusable\" id=\"form_serialhierarchy_chrono3text\" name=\"form_serialhierarchy_chrono3text\" value=\"" + System.Net.WebUtility.HtmlEncode(Bib.Bib_Info.Series_Part_Info.Day) + "\" ></td>");
+            PopupFormBuilder.Append("<td><input type=\"text\" class=\"form_serialhierarchy_text_input sbk_Focusable\" id=\"form_serialhierarchy_chrono3text\" name=\"form_serialhierarchy_chrono3text\" value=\"" + System.Net.WebUtility.HtmlEncode(Bib.Bib_Info.Series_Part_Info.Day) + "\" ></td>");
             if (Bib.Bib_Info.Series_Part_Info.Day_Index >= 0)
-				PopupFormBuilder.AppendLine("<td><input type=\"text\" class=\"form_serialhierarchy_order_input sbk_Focusable\" id=\"form_serialhierarchy_chrono3order\" name=\"form_serialhierarchy_chrono3order\" value=\"" + System.Net.WebUtility.HtmlEncode(Bib.Bib_Info.Series_Part_Info.Day_Index.ToString()) + "\" ></td></tr>");
+                PopupFormBuilder.AppendLine("<td><input type=\"text\" class=\"form_serialhierarchy_order_input sbk_Focusable\" id=\"form_serialhierarchy_chrono3order\" name=\"form_serialhierarchy_chrono3order\" value=\"" + System.Net.WebUtility.HtmlEncode(Bib.Bib_Info.Series_Part_Info.Day_Index.ToString()) + "\" ></td></tr>");
             else
-				PopupFormBuilder.AppendLine("<td><input type=\"text\" class=\"form_serialhierarchy_order_input sbk_Focusable\" id=\"form_serialhierarchy_chrono3order\" name=\"form_serialhierarchy_chrono3order\" value=\"\" ></td></tr>");
+                PopupFormBuilder.AppendLine("<td><input type=\"text\" class=\"form_serialhierarchy_order_input sbk_Focusable\" id=\"form_serialhierarchy_chrono3order\" name=\"form_serialhierarchy_chrono3order\" value=\"\" ></td></tr>");
 
 
-			// Finish the popup form and add the CLOSE button
-			PopupFormBuilder.AppendLine("    <tr style=\"height:35px; text-align: center; vertical-align: bottom;\">");
-			PopupFormBuilder.AppendLine("      <td colspan=\"3\"><button title=\"Close\" class=\"sbkMetadata_RoundButton\" onclick=\"return close_serial_hierarchy();\">CLOSE</button></td>");
-			PopupFormBuilder.AppendLine("    </tr>");
-			PopupFormBuilder.AppendLine("  </table>");
-			PopupFormBuilder.AppendLine("</div>");
-			PopupFormBuilder.AppendLine();
+            // Finish the popup form and add the CLOSE button
+            PopupFormBuilder.AppendLine("    <tr style=\"height:35px; text-align: center; vertical-align: bottom;\">");
+            PopupFormBuilder.AppendLine("      <td colspan=\"3\"><button title=\"Close\" class=\"sbkMetadata_RoundButton\" onclick=\"return close_serial_hierarchy();\">CLOSE</button></td>");
+            PopupFormBuilder.AppendLine("    </tr>");
+            PopupFormBuilder.AppendLine("  </table>");
+            PopupFormBuilder.AppendLine("</div>");
+            PopupFormBuilder.AppendLine();
         }
 
         /// <summary> Prepares the bib object for the save, by clearing any existing data in this element's related field(s) </summary>
@@ -247,7 +245,7 @@ namespace SobekCM.Library.Citation.Elements
 
             // Set the serial part information portion first (which contains both enum and chrono values)
             Bib.Bib_Info.Series_Part_Info.Enum1 = enum1Text;
-            Bib.Bib_Info.Series_Part_Info.Enum1_Index = convert_string_to_int_safely ( enum1OrderString );
+            Bib.Bib_Info.Series_Part_Info.Enum1_Index = convert_string_to_int_safely(enum1OrderString);
             Bib.Bib_Info.Series_Part_Info.Enum2 = enum2Text;
             Bib.Bib_Info.Series_Part_Info.Enum2_Index = convert_string_to_int_safely(enum2OrderString);
             Bib.Bib_Info.Series_Part_Info.Enum3 = enum3Text;
@@ -354,7 +352,7 @@ namespace SobekCM.Library.Citation.Elements
 
         #endregion
 
-        private static string show_hierarchy_value( Serial_Info serialInfo )
+        private static string show_hierarchy_value(Serial_Info serialInfo)
         {
             StringBuilder builder = new StringBuilder();
             if ((serialInfo != null) && (serialInfo.Count > 0))
@@ -379,7 +377,7 @@ namespace SobekCM.Library.Citation.Elements
 
         private static int convert_string_to_int_safely(string string_value)
         {
-            if ( string_value.Length == 0 )
+            if (string_value.Length == 0)
                 return -1;
 
             if (string_value.Any(thisChar => !Char.IsNumber(thisChar)))
@@ -402,7 +400,7 @@ namespace SobekCM.Library.Citation.Elements
         /// <summary> Reads the inner data from the CompleteTemplate XML format </summary>
         /// <param name="XMLReader"> Current template xml configuration reader </param>
         /// <remarks> This procedure does not currently read any inner xml (not yet necessary) </remarks>
-        protected override void Inner_Read_Data( XmlReader XMLReader )
+        protected override void Inner_Read_Data(XmlReader XMLReader)
         {
             // Do nothing
         }

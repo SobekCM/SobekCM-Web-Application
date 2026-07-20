@@ -1,11 +1,11 @@
 ﻿#region Using directives
 
-using System;
-using System.IO;
-using System.Text;
 using Microsoft.AspNetCore.Http;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Library.UI;
+using System;
+using System.IO;
+using System.Text;
 
 #endregion
 
@@ -20,9 +20,9 @@ namespace SobekCM.Library.Helpers.CKEditor
 
         /// <summary> Constructor for a new instance of the CKEditor class </summary>
 		public CKEditor()
-		{
+        {
             Start_In_Source_Mode = false;
-		}
+        }
 
         /// <summary> Add the file input and the necessary script section, with
         /// all the options specfiedi here, directly to the streamwriter </summary>
@@ -37,7 +37,7 @@ namespace SobekCM.Library.Helpers.CKEditor
         /// <param name="Output"> Writer to write to the stream </param>
         /// <param name="Include_Script_Reference"> Flag indicates if the CKEditor script reference should be
         /// added to the output stream here </param>
-        public void Add_To_Stream(TextWriter Output, bool Include_Script_Reference )
+        public void Add_To_Stream(TextWriter Output, bool Include_Script_Reference)
         {
             if (Context == null)
             {
@@ -47,7 +47,7 @@ namespace SobekCM.Library.Helpers.CKEditor
 
             if (Include_Script_Reference)
             {
-                if ( !String.IsNullOrEmpty(BaseUrl))
+                if (!String.IsNullOrEmpty(BaseUrl))
                     Output.WriteLine("  <script type=\"text/javascript\" src=\"" + BaseUrl + "default/ckeditor/4.4.7/ckeditor.js\"></script>");
                 else
                     Output.WriteLine("  <script type=\"text/javascript\" src=\"" + UI_ApplicationCache_Gateway.Settings.Servers.Application_Server_URL + "default/ckeditor/4.4.7/ckeditor.js\"></script>");
@@ -124,7 +124,7 @@ namespace SobekCM.Library.Helpers.CKEditor
         }
 
         /// <summary> Base URL for the system </summary>
-        public string BaseUrl { get; set;  }
+        public string BaseUrl { get; set; }
 
         /// <summary> URL for the JSON for the Image Browser plug-in, which tells which 
         /// files are on the server when the user browser the server while adding an image to the HTML </summary>
@@ -137,15 +137,15 @@ namespace SobekCM.Library.Helpers.CKEditor
         public string UploadURL { get; set; }
 
         /// <summary> ID of the existing text area where the HTML to edit resides </summary>
-        public string TextAreaID {  get; set;  }
+        public string TextAreaID { get; set; }
 
         /// <summary> Language to use for the interface </summary>
-        public Web_Language_Enum Language { get; set;  }
+        public Web_Language_Enum Language { get; set; }
 
         /// <summary> URL for the file upload handler on the server </summary>
         public string FileBrowser_ImageUploadUrl { get; set; }
 
         /// <summary> Flag indicates if it should start in source mode </summary>
-        public bool Start_In_Source_Mode { get; set;  }
+        public bool Start_In_Source_Mode { get; set; }
     }
 }

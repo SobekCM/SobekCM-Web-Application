@@ -1,17 +1,15 @@
 #region Using directives
 
+using SobekCM.Core.ApplicationState;
+using SobekCM.Core.Configuration.Localization;
+using SobekCM.Core.Users;
+using SobekCM.Library.UI;
+using SobekCM.Resource_Object;
 using System;
 using System.IO;
 using System.Linq;
 using System.Text;
-using Microsoft.AspNetCore.Http;
 using System.Xml;
-using SobekCM.Core.ApplicationState;
-using SobekCM.Core.Configuration;
-using SobekCM.Core.Configuration.Localization;
-using SobekCM.Core.Users;
-using SobekCM.Resource_Object;
-using SobekCM.Library.UI;
 
 #endregion
 
@@ -27,7 +25,7 @@ namespace SobekCM.Library.Citation.Elements
             Repeatable = false;
             Title = "Serial Hierarchy";
             html_element_name = "panel_serial_hierarchy";
-			help_page = "serialhierarchy2";
+            help_page = "serialhierarchy2";
         }
 
         #region iElement Members
@@ -92,36 +90,36 @@ namespace SobekCM.Library.Citation.Elements
             if (Bib.Behaviors.Serial_Info.Count > 0)
             {
                 Output.WriteLine("<td><input type=\"text\" class=\"form_serialhierarchy_text_input sbk_Focusable\" id=\"form_serialhierarchy_enum1text\" name=\"form_serialhierarchy_enum1text\" value=\"" + System.Net.WebUtility.HtmlEncode(Bib.Behaviors.Serial_Info[0].Display) + "\" /></td>");
-				Output.WriteLine("<td><input type=\"text\" class=\"form_serialhierarchy_order_input sbk_Focusable\" id=\"form_serialhierarchy_enum1order\" name=\"form_serialhierarchy_enum1order\" value=\"" + System.Net.WebUtility.HtmlEncode(Bib.Behaviors.Serial_Info[0].Order.ToString()) + "\" /></td></tr>");
+                Output.WriteLine("<td><input type=\"text\" class=\"form_serialhierarchy_order_input sbk_Focusable\" id=\"form_serialhierarchy_enum1order\" name=\"form_serialhierarchy_enum1order\" value=\"" + System.Net.WebUtility.HtmlEncode(Bib.Behaviors.Serial_Info[0].Order.ToString()) + "\" /></td></tr>");
             }
             else
             {
-				Output.WriteLine("<td><input type=\"text\" class=\"form_serialhierarchy_text_input sbk_Focusable\" id=\"form_serialhierarchy_enum1text\" name=\"form_serialhierarchy_enum1text\" value=\"\" /></td>");
-				Output.WriteLine("<td><input type=\"text\" class=\"form_serialhierarchy_order_input sbk_Focusable\" id=\"form_serialhierarchy_enum1order\" name=\"form_serialhierarchy_enum1order\" value=\"\" /></td></tr>");
+                Output.WriteLine("<td><input type=\"text\" class=\"form_serialhierarchy_text_input sbk_Focusable\" id=\"form_serialhierarchy_enum1text\" name=\"form_serialhierarchy_enum1text\" value=\"\" /></td>");
+                Output.WriteLine("<td><input type=\"text\" class=\"form_serialhierarchy_order_input sbk_Focusable\" id=\"form_serialhierarchy_enum1order\" name=\"form_serialhierarchy_enum1order\" value=\"\" /></td></tr>");
             }
 
             Output.WriteLine("    <tr><td>Level 2:</td>");
             if (Bib.Behaviors.Serial_Info.Count > 1)
             {
-				Output.WriteLine("<td><input type=\"text\" class=\"form_serialhierarchy_text_input sbk_Focusable\" id=\"form_serialhierarchy_enum2text\" name=\"form_serialhierarchy_enum2text\" value=\"" + System.Net.WebUtility.HtmlEncode(Bib.Behaviors.Serial_Info[1].Display) + "\"  /></td>");
-				Output.WriteLine("<td><input type=\"text\" class=\"form_serialhierarchy_order_input sbk_Focusable\" id=\"form_serialhierarchy_enum2order\" name=\"form_serialhierarchy_enum2order\" value=\"" + System.Net.WebUtility.HtmlEncode(Bib.Behaviors.Serial_Info[1].Order.ToString()) + "\" /></td></tr>");
+                Output.WriteLine("<td><input type=\"text\" class=\"form_serialhierarchy_text_input sbk_Focusable\" id=\"form_serialhierarchy_enum2text\" name=\"form_serialhierarchy_enum2text\" value=\"" + System.Net.WebUtility.HtmlEncode(Bib.Behaviors.Serial_Info[1].Display) + "\"  /></td>");
+                Output.WriteLine("<td><input type=\"text\" class=\"form_serialhierarchy_order_input sbk_Focusable\" id=\"form_serialhierarchy_enum2order\" name=\"form_serialhierarchy_enum2order\" value=\"" + System.Net.WebUtility.HtmlEncode(Bib.Behaviors.Serial_Info[1].Order.ToString()) + "\" /></td></tr>");
             }
             else
             {
-				Output.WriteLine("<td><input type=\"text\" class=\"form_serialhierarchy_text_input sbk_Focusable\" id=\"form_serialhierarchy_enum2text\" name=\"form_serialhierarchy_enum2text\" value=\"\" /></td>");
-				Output.WriteLine("<td><input type=\"text\" class=\"form_serialhierarchy_order_input sbk_Focusable\" id=\"form_serialhierarchy_enum2order\" name=\"form_serialhierarchy_enum2order\" value=\"\" /></td></tr>");
+                Output.WriteLine("<td><input type=\"text\" class=\"form_serialhierarchy_text_input sbk_Focusable\" id=\"form_serialhierarchy_enum2text\" name=\"form_serialhierarchy_enum2text\" value=\"\" /></td>");
+                Output.WriteLine("<td><input type=\"text\" class=\"form_serialhierarchy_order_input sbk_Focusable\" id=\"form_serialhierarchy_enum2order\" name=\"form_serialhierarchy_enum2order\" value=\"\" /></td></tr>");
             }
 
             Output.WriteLine("    <tr><td>Level 3:</td>");
             if (Bib.Behaviors.Serial_Info.Count > 2)
             {
-				Output.WriteLine("<td><input type=\"text\" class=\"form_serialhierarchy_text_input sbk_Focusable\" id=\"form_serialhierarchy_enum3text\" name=\"form_serialhierarchy_enum3text\" value=\"" + System.Net.WebUtility.HtmlEncode(Bib.Behaviors.Serial_Info[2].Display) + "\" /></td>");
-				Output.WriteLine("<td><input type=\"text\" class=\"form_serialhierarchy_order_input sbk_Focusable\" id=\"form_serialhierarchy_enum3order\" name=\"form_serialhierarchy_enum3order\" value=\"" + System.Net.WebUtility.HtmlEncode(Bib.Behaviors.Serial_Info[2].Order.ToString()) + "\" /></td></tr>");
+                Output.WriteLine("<td><input type=\"text\" class=\"form_serialhierarchy_text_input sbk_Focusable\" id=\"form_serialhierarchy_enum3text\" name=\"form_serialhierarchy_enum3text\" value=\"" + System.Net.WebUtility.HtmlEncode(Bib.Behaviors.Serial_Info[2].Display) + "\" /></td>");
+                Output.WriteLine("<td><input type=\"text\" class=\"form_serialhierarchy_order_input sbk_Focusable\" id=\"form_serialhierarchy_enum3order\" name=\"form_serialhierarchy_enum3order\" value=\"" + System.Net.WebUtility.HtmlEncode(Bib.Behaviors.Serial_Info[2].Order.ToString()) + "\" /></td></tr>");
             }
             else
             {
-				Output.WriteLine("<td><input type=\"text\" class=\"form_serialhierarchy_text_input sbk_Focusable\" id=\"form_serialhierarchy_enum3text\" name=\"form_serialhierarchy_enum3text\" value=\"\" /></td>");
-				Output.WriteLine("<td><input type=\"text\" class=\"form_serialhierarchy_order_input sbk_Focusable\" id=\"form_serialhierarchy_enum3order\" name=\"form_serialhierarchy_enum3order\" value=\"\" /></td></tr>");
+                Output.WriteLine("<td><input type=\"text\" class=\"form_serialhierarchy_text_input sbk_Focusable\" id=\"form_serialhierarchy_enum3text\" name=\"form_serialhierarchy_enum3text\" value=\"\" /></td>");
+                Output.WriteLine("<td><input type=\"text\" class=\"form_serialhierarchy_order_input sbk_Focusable\" id=\"form_serialhierarchy_enum3order\" name=\"form_serialhierarchy_enum3order\" value=\"\" /></td></tr>");
             }
 
             Output.WriteLine("      </table>");
@@ -181,26 +179,26 @@ namespace SobekCM.Library.Citation.Elements
             {
                 int level = 1;
                 int enum1Order = convert_string_to_int_safely(enum1OrderString);
-                if ( enum1Order < 0 )
+                if (enum1Order < 0)
                 {
                     enum1Order = convert_string_to_int_safely(enum1Text);
                 }
-                if ( enum1Order < 0 )
+                if (enum1Order < 0)
                 {
                     enum1Order = convert_string_to_int_safely(Bib.VID.Replace("VID", ""));
                 }
-                if ( enum1Order >= 0 )
+                if (enum1Order >= 0)
                 {
                     Bib.Behaviors.Serial_Info.Add_Hierarchy(level++, enum1Order, enum1Text);
 
                     if (enum2Text.Length > 0)
                     {
                         int enum2Order = convert_string_to_int_safely(enum2OrderString);
-                        if ( enum2Order < 0 )
+                        if (enum2Order < 0)
                         {
                             enum2Order = convert_string_to_int_safely(enum2Text);
                         }
-                        if ( enum2Order >= 0 )
+                        if (enum2Order >= 0)
                         {
                             Bib.Behaviors.Serial_Info.Add_Hierarchy(level++, enum2Order, enum2Text);
 
@@ -249,7 +247,7 @@ namespace SobekCM.Library.Citation.Elements
         /// <summary> Reads the inner data from the CompleteTemplate XML format </summary>
         /// <param name="XMLReader"> Current template xml configuration reader </param>
         /// <remarks> This procedure does not currently read any inner xml (not yet necessary) </remarks>
-        protected override void Inner_Read_Data( XmlReader XMLReader )
+        protected override void Inner_Read_Data(XmlReader XMLReader)
         {
             // Do nothing
         }

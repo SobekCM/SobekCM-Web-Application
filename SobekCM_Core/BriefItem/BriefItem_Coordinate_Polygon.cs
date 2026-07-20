@@ -1,11 +1,11 @@
 ﻿#region Using directives
 
+using ProtoBuf;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
-using ProtoBuf;
 
 #endregion
 
@@ -217,7 +217,7 @@ namespace SobekCM.Core.BriefItem
             // Otherwise, there is some overlap
             return true;
         }
-        
+
         /// <summary> Forces a recalculation of the bounding box for this area and returns the 
         /// new bounding box </summary>
         /// <returns>Rectangular bounding box, with the first point in the upper left corner 

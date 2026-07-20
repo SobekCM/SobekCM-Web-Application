@@ -1,9 +1,9 @@
 #region Using directives
 
+using ProtoBuf;
 using System;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
-using ProtoBuf;
 
 #endregion
 
@@ -30,8 +30,8 @@ namespace SobekCM.Core.Builder
             Allow_Deletes = false;
             Allow_Folders_No_Metadata = false;
             Allow_Metadata_Updates = false;
-	        //Can_Move_To_Content_Folder = true;
-	        BibID_Roots_Restrictions = String.Empty;
+            //Can_Move_To_Content_Folder = true;
+            BibID_Roots_Restrictions = String.Empty;
             IncomingFolderID = -1;
 
             Builder_Module_Set = new Builder_Module_Set_Info();
@@ -123,18 +123,18 @@ namespace SobekCM.Core.Builder
         {
             return new Builder_Source_Folder
             {
-                Allow_Deletes = Allow_Deletes, 
-                Allow_Folders_No_Metadata = Allow_Folders_No_Metadata, 
-                Allow_Metadata_Updates = Allow_Metadata_Updates, 
-                Archive_All_Files = Archive_All_Files, 
-                Archive_TIFFs = Archive_TIFFs, 
-                BibID_Roots_Restrictions = BibID_Roots_Restrictions, 
-                Builder_Module_Set = Builder_Module_Set, 
-                Failures_Folder = Failures_Folder, 
-                Folder_Name = Folder_Name, 
-                Inbound_Folder = Inbound_Folder, 
-                IncomingFolderID = IncomingFolderID, 
-                Perform_Checksum = Perform_Checksum, 
+                Allow_Deletes = Allow_Deletes,
+                Allow_Folders_No_Metadata = Allow_Folders_No_Metadata,
+                Allow_Metadata_Updates = Allow_Metadata_Updates,
+                Archive_All_Files = Archive_All_Files,
+                Archive_TIFFs = Archive_TIFFs,
+                BibID_Roots_Restrictions = BibID_Roots_Restrictions,
+                Builder_Module_Set = Builder_Module_Set,
+                Failures_Folder = Failures_Folder,
+                Folder_Name = Folder_Name,
+                Inbound_Folder = Inbound_Folder,
+                IncomingFolderID = IncomingFolderID,
+                Perform_Checksum = Perform_Checksum,
                 Processing_Folder = Processing_Folder
             };
         }

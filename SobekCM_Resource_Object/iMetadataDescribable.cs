@@ -1,9 +1,9 @@
 ﻿#region Using directives
 
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using SobekCM.Resource_Object.Bib_Info;
 using SobekCM.Resource_Object.Metadata_Modules;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 #endregion
 

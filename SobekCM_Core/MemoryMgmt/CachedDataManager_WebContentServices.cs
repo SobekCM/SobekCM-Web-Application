@@ -1,12 +1,12 @@
 using Microsoft.Extensions.Caching.Memory;
+using SobekCM.Core.WebContent;
+using SobekCM.Core.WebContent.Hierarchy;
+using SobekCM.Tools;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Text;
-using SobekCM.Core.WebContent;
-using SobekCM.Core.WebContent.Hierarchy;
-using SobekCM.Tools;
 
 namespace SobekCM.Core.MemoryMgmt
 {
@@ -30,7 +30,7 @@ namespace SobekCM.Core.MemoryMgmt
         /// <param name="WebContentID"> Primary key for this web content page (or redirect) </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
         /// <returns> Either NULL or the fully built HTML based content object </returns>
-        public HTML_Based_Content Retrieve_Page_Details( int WebContentID, Custom_Tracer Tracer)
+        public HTML_Based_Content Retrieve_Page_Details(int WebContentID, Custom_Tracer Tracer)
         {
             // If the cache is disabled, just return before even tracing
             if (settings.Disabled)

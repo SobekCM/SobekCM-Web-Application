@@ -1,14 +1,12 @@
 ﻿#region Using directives
 
-using System;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-
+using SobekCM.Core.Configuration.Engine;
 using SobekCM.Core.Navigation;
 using SobekCM.Engine_Library.ApplicationState;
-using SobekCM.Core.Configuration.Engine;
 using SobekCM.Engine_Library.Navigation;
 using SobekCM.Tools;
+using System;
+using System.Collections.Generic;
 
 #endregion
 
@@ -24,7 +22,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="QueryString"></param>
         /// <param name="Protocol"></param>
         /// <param name="IsDebug"></param>
-        public void ResolveUrl(CompatHttpResponse Response, List<string> UrlSegments, Dictionary<string, string> QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug )
+        public void ResolveUrl(CompatHttpResponse Response, List<string> UrlSegments, Dictionary<string, string> QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
         {
             Custom_Tracer tracer = new Custom_Tracer();
             tracer.Add_Trace("NavigationServices.ResolveUrl", "Parse request and return navigation object");
@@ -45,7 +43,7 @@ namespace SobekCM.Engine_Library.Endpoints
                 returnValue.Browser_Type = "UNKNOWN";
 
                 // If this was debug mode, then just write the tracer
-                if ( IsDebug )
+                if (IsDebug)
                 {
                     Response.ContentType = "text/plain";
                     Response.Output.WriteLine("DEBUG MODE DETECTED");
@@ -67,7 +65,7 @@ namespace SobekCM.Engine_Library.Endpoints
             }
             catch (Exception ee)
             {
-                if ( IsDebug )
+                if (IsDebug)
                 {
                     Response.ContentType = "text/plain";
                     Response.Output.WriteLine("EXCEPTION CAUGHT!");

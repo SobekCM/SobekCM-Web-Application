@@ -1,13 +1,13 @@
 #region Using directives
 
+using SobekCM.Core.ApplicationState;
+using SobekCM.Core.Configuration.Localization;
+using SobekCM.Core.Users;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Xml;
-using SobekCM.Core.ApplicationState;
-using SobekCM.Core.Configuration.Localization;
-using SobekCM.Core.Users;
 
 #endregion
 
@@ -56,7 +56,7 @@ namespace SobekCM.Library.Citation.Elements
 
         /// <summary> Adds a possible, selectable value to the combo/select box </summary>
         /// <param name="Newitem"> New possible, selectable value </param>
-        public void Add_Item(string Newitem )
+        public void Add_Item(string Newitem)
         {
             PossibleSelectItems.Add(Newitem);
         }
@@ -190,7 +190,7 @@ namespace SobekCM.Library.Citation.Elements
                 }
 
                 // Write the combo box
-                Output.Write("            <select class=\"" + html_element_name + "_select\" name=\"" + id_name + "_select" + i + "\" id=\"" + id_name + "_select" + i + "\" onblur=\"javascript:selectbox_leave('" + id_name + "_select" + i + "','" + html_element_name + "_select', '" + html_element_name + "_select_init')\" " + javascript + " >" );
+                Output.Write("            <select class=\"" + html_element_name + "_select\" name=\"" + id_name + "_select" + i + "\" id=\"" + id_name + "_select" + i + "\" onblur=\"javascript:selectbox_leave('" + id_name + "_select" + i + "','" + html_element_name + "_select', '" + html_element_name + "_select_init')\" " + javascript + " >");
 
                 bool found_option = false;
                 foreach (string thisOption in PossibleSelectItems)
@@ -232,7 +232,7 @@ namespace SobekCM.Library.Citation.Elements
                 }
 
                 // Write the text box
-				Output.Write("<input name=\"" + id_name + "_text" + i + "\" id=\"" + id_name + "_text" + i + "\" class=\"" + html_element_name + "_input sbk_Focusable\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(TextValues[i - 1]) + "\" ");
+                Output.Write("<input name=\"" + id_name + "_text" + i + "\" id=\"" + id_name + "_text" + i + "\" class=\"" + html_element_name + "_input sbk_Focusable\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(TextValues[i - 1]) + "\" ");
                 if (textBoxEvents != null)
                     textBoxEvents.Add_Events_HTML(Output);
                 Output.Write(" />");
@@ -344,7 +344,7 @@ namespace SobekCM.Library.Citation.Elements
             Output.Write("            <select class=\"" + html_element_name + "_select\" name=\"" + id_name + "_select" + i + "\" id=\"" + id_name + "_select" + i + "\" onblur=\"javascript:selectbox_leave('" + id_name + "_select" + i + "','" + html_element_name + "_select', '" + html_element_name + "_select_init')\"" + javascript + " >");
 
             // Apply any default
-            if ((String.IsNullOrEmpty(SelectValue)) && (PossibleSelectItems.Count > 0 ))
+            if ((String.IsNullOrEmpty(SelectValue)) && (PossibleSelectItems.Count > 0))
             {
                 if ((DefaultCodes != null) && (DefaultCodes.Count > 0))
                 {
@@ -361,7 +361,7 @@ namespace SobekCM.Library.Citation.Elements
                 else if (!PossibleSelectItems.Contains(SelectValue ?? String.Empty))
                 {
                     SelectValue = PossibleSelectItems[0];
-                    if ((codeStatementMappingPresent) && ( CodeToStatementDictionary.ContainsKey(SelectValue)))
+                    if ((codeStatementMappingPresent) && (CodeToStatementDictionary.ContainsKey(SelectValue)))
                     {
                         TextValue = CodeToStatementDictionary[SelectValue];
                     }
@@ -439,7 +439,7 @@ namespace SobekCM.Library.Citation.Elements
         /// <summary> Reads the inner data from the CompleteTemplate XML format </summary>
         /// <param name="XMLReader"> Current template xml configuration reader </param>
         /// <remarks> This reads the possible values for the combo box from an <i>options</i> subelement.  The default value for the combo box is from a <i>code</i> subelement and the default value for the text box is from a <i>statement</i> subelement. </remarks>
-        protected override void Inner_Read_Data( XmlReader XMLReader )
+        protected override void Inner_Read_Data(XmlReader XMLReader)
         {
             while (XMLReader.Read())
             {

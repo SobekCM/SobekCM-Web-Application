@@ -1,11 +1,11 @@
-﻿using System;
-using System.Runtime.Serialization;
-using System.Xml.Serialization;
-using ProtoBuf;
+﻿using ProtoBuf;
 using SobekCM.Core.UI_Configuration.Citation;
 using SobekCM.Core.UI_Configuration.StaticResources;
 using SobekCM.Core.UI_Configuration.TemplateElements;
 using SobekCM.Core.UI_Configuration.Viewers;
+using System;
+using System.Runtime.Serialization;
+using System.Xml.Serialization;
 
 namespace SobekCM.Core.UI_Configuration
 {
@@ -17,10 +17,10 @@ namespace SobekCM.Core.UI_Configuration
     {
 
 
-       // [DataMember(Name = "staticResources", EmitDefaultValue = false)]
-       // [XmlElement("staticResources")]
-       // [ProtoMember(1)]
-       // public Static_Resources StaticResources { get; set; }
+        // [DataMember(Name = "staticResources", EmitDefaultValue = false)]
+        // [XmlElement("staticResources")]
+        // [ProtoMember(1)]
+        // public Static_Resources StaticResources { get; set; }
 
         /// <summary> Configuration for the citation within SobekCM, including the elements, group of element,
         /// order, and other details for rendering the citation within SobekCM  </summary>

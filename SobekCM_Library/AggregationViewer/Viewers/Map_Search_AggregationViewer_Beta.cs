@@ -1,15 +1,13 @@
 #region Using directives
 
 using Microsoft.AspNetCore.Http;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
 using SobekCM.Core.Aggregations;
-using SobekCM.Core.UI_Configuration;
-using SobekCM.Core.UI_Configuration.StaticResources;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Library.HTML;
 using SobekCM.Tools;
+using System.Collections.Generic;
+using System.IO;
+using System.Text;
 
 #endregion
 
@@ -64,7 +62,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             mapSearchBuilder.AppendLine("     <script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Gmaps_Infobox_Js + "\" /></script> ");
             mapSearchBuilder.AppendLine("     <script type=\"text/javascript\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/mapsearch/custom_geoObjects.js\"></script>  ");
             mapSearchBuilder.AppendLine("     <script type=\"text/javascript\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/mapsearch/sobekcm_mapsearch.js\"></script> ");
-            mapSearchBuilder.AppendLine("     <link rel=\"stylesheet\" href=\"" + Static_Resources_Gateway.Jquery_1_10_2_Js +  "default/external_jquery_ui_1.10.4.css\"> ");
+            mapSearchBuilder.AppendLine("     <link rel=\"stylesheet\" href=\"" + Static_Resources_Gateway.Jquery_1_10_2_Js + "default/external_jquery_ui_1.10.4.css\"> ");
             mapSearchBuilder.AppendLine("     <link rel=\"stylesheet\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/SobekCM_MapSearch.css\"> ");
 
             //apply theming

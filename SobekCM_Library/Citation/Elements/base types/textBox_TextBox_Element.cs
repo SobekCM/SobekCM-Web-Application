@@ -1,12 +1,12 @@
 #region Using directives
 
+using SobekCM.Core.ApplicationState;
+using SobekCM.Core.Configuration.Localization;
+using SobekCM.Core.Users;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Xml;
-using SobekCM.Core.ApplicationState;
-using SobekCM.Core.Configuration.Localization;
-using SobekCM.Core.Users;
 
 #endregion
 
@@ -15,7 +15,7 @@ namespace SobekCM.Library.Citation.Elements
     /// <summary> Abstract base class for all elements which are made up of two text boxes  </summary>
     /// <remarks> This class implements the <see cref="iElement"/> interface and extends the <see cref="abstract_Element"/> class. </remarks>
     public abstract class TextBox_TextBox_Element : abstract_Element
-	{
+    {
         /// <summary> Protected field holds any label to place before the first text box </summary>
         protected string FirstLabel;
 
@@ -26,12 +26,12 @@ namespace SobekCM.Library.Citation.Elements
         /// <param name="Title"> Title for this element </param>
         /// <param name="Html_Element_Name"> Name for the html components and styles for this element </param>
         protected TextBox_TextBox_Element(string Title, string Html_Element_Name)
-		{
-			base.Title = Title;
+        {
+            base.Title = Title;
             html_element_name = Html_Element_Name;
             FirstLabel = String.Empty;
             SecondLabel = String.Empty;
-		}
+        }
 
         /// <summary> Method helps to render the html for all elements based on TextBox_TextBox_Element class </summary>
         /// <param name="Output"> Output for the generate html for this element </param>
@@ -42,9 +42,9 @@ namespace SobekCM.Library.Citation.Elements
         /// <param name="CurrentLanguage"> Current user-interface language </param>
         /// <param name="Translator"> Language support object which handles simple translational duties </param>
         /// <param name="Base_URL"> Base URL for the current request </param>
-        protected void render_helper(TextWriter Output, List<string> InstanceValuesText1, List<string> InstanceValuesText2, string Skin_Code, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL )
+        protected void render_helper(TextWriter Output, List<string> InstanceValuesText1, List<string> InstanceValuesText2, string Skin_Code, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL)
         {
-            if ((InstanceValuesText1.Count == 0) && ( InstanceValuesText2.Count == 0 ))
+            if ((InstanceValuesText1.Count == 0) && (InstanceValuesText2.Count == 0))
             {
                 render_helper(Output, String.Empty, String.Empty, Skin_Code, Current_User, CurrentLanguage, Translator, Base_URL);
                 return;
@@ -59,7 +59,7 @@ namespace SobekCM.Library.Citation.Elements
 
             string id_name = html_element_name.Replace("_", "");
 
-            Output.WriteLine("  <!-- " + Title.Replace(":","") + " Element -->");
+            Output.WriteLine("  <!-- " + Title.Replace(":", "") + " Element -->");
             Output.WriteLine("  <tr>");
             Output.WriteLine("    <td style=\"width:" + LEFT_MARGIN + "px\">&nbsp;</td>");
             if (Title.IndexOf(":") < 0)
@@ -86,53 +86,53 @@ namespace SobekCM.Library.Citation.Elements
             }
             Output.WriteLine("    <td>");
 
-                Output.WriteLine("      <table>");
-                Output.WriteLine("        <tr>");
-                Output.WriteLine("          <td>");
-                Output.WriteLine("            <div id=\"" + html_element_name + "_div\">");
+            Output.WriteLine("      <table>");
+            Output.WriteLine("        <tr>");
+            Output.WriteLine("          <td>");
+            Output.WriteLine("            <div id=\"" + html_element_name + "_div\">");
 
-                for (int i = 1; i <= InstanceValuesText1.Count; i++)
+            for (int i = 1; i <= InstanceValuesText1.Count; i++)
+            {
+                // Write the first text
+                if (FirstLabel.Length > 0)
                 {
-                    // Write the first text
-                    if (FirstLabel.Length > 0)
-                    {
-                        Output.Write("              <span class=\"metadata_sublabel2\">" + Translator.Get_Translation(FirstLabel, CurrentLanguage) + ":</span>");
-                    }
-                    else
-                    {
-                        Output.Write("              ");
-                    }
-
-                    // Write the first text box
-					Output.Write("<input name=\"" + id_name + "_first" + i + "\" id=\"" + id_name + "_first" + i + "\" class=\"" + html_element_name + "_first_input sbk_Focusable\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(InstanceValuesText1[i - 1]) + "\" ");
-                    if (textBox1Events != null)
-                        textBox1Events.Add_Events_HTML(Output);
-                    Output.Write(" />");
-
-                    // Write the second text
-                    if (SecondLabel.Length > 0)
-                    {
-                        Output.Write("<span class=\"metadata_sublabel\">" + Translator.Get_Translation(SecondLabel, CurrentLanguage) + ":</span>");
-                    }
-
-                    // Write the second text box
-                    Output.Write("<input name=\"" + id_name + "_second" + i + "\" id=\"" + id_name + "_second" + i + "\" class=\"" + html_element_name + "_second_input sbk_Focusable\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(InstanceValuesText2[i - 1]) + "\" ");
-                    if (textBox2Events != null)
-                        textBox2Events.Add_Events_HTML(Output);
-                    Output.Write(" />");
-                    Output.WriteLine(i < InstanceValuesText1.Count ? "<br />" : "</div>");
+                    Output.Write("              <span class=\"metadata_sublabel2\">" + Translator.Get_Translation(FirstLabel, CurrentLanguage) + ":</span>");
+                }
+                else
+                {
+                    Output.Write("              ");
                 }
 
-                Output.WriteLine("          </td>");
-                Output.WriteLine("          <td style=\"vertical-align:bottom\" >");
-                if (Repeatable)
+                // Write the first text box
+                Output.Write("<input name=\"" + id_name + "_first" + i + "\" id=\"" + id_name + "_first" + i + "\" class=\"" + html_element_name + "_first_input sbk_Focusable\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(InstanceValuesText1[i - 1]) + "\" ");
+                if (textBox1Events != null)
+                    textBox1Events.Add_Events_HTML(Output);
+                Output.Write(" />");
+
+                // Write the second text
+                if (SecondLabel.Length > 0)
                 {
-                    Output.WriteLine("            <a title=\"" + Translator.Get_Translation("Click to add another " + Title.ToLower(), CurrentLanguage) + ".\" href=\"" + Base_URL + "l/technical/javascriptrequired\" onmousedown=\"return add_two_text_box_element('" + html_element_name + "','" + FirstLabel + "','" + SecondLabel + "');\"><img class=\"repeat_button\" src=\"" + REPEAT_BUTTON_URL + "\" /></a>");
+                    Output.Write("<span class=\"metadata_sublabel\">" + Translator.Get_Translation(SecondLabel, CurrentLanguage) + ":</span>");
                 }
-                Output.WriteLine("            <a target=\"_" + html_element_name.ToUpper() + "\"  title=\"" + Translator.Get_Translation("Get help.", CurrentLanguage) + "\" href=\"" + Help_URL(Skin_Code, Base_URL) + "\" ><img class=\"help_button\" src=\"" + HELP_BUTTON_URL + "\" /></a>");
-                Output.WriteLine("          </td>"); Output.WriteLine("        </tr>");
-                Output.WriteLine("      </table>");
-         
+
+                // Write the second text box
+                Output.Write("<input name=\"" + id_name + "_second" + i + "\" id=\"" + id_name + "_second" + i + "\" class=\"" + html_element_name + "_second_input sbk_Focusable\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(InstanceValuesText2[i - 1]) + "\" ");
+                if (textBox2Events != null)
+                    textBox2Events.Add_Events_HTML(Output);
+                Output.Write(" />");
+                Output.WriteLine(i < InstanceValuesText1.Count ? "<br />" : "</div>");
+            }
+
+            Output.WriteLine("          </td>");
+            Output.WriteLine("          <td style=\"vertical-align:bottom\" >");
+            if (Repeatable)
+            {
+                Output.WriteLine("            <a title=\"" + Translator.Get_Translation("Click to add another " + Title.ToLower(), CurrentLanguage) + ".\" href=\"" + Base_URL + "l/technical/javascriptrequired\" onmousedown=\"return add_two_text_box_element('" + html_element_name + "','" + FirstLabel + "','" + SecondLabel + "');\"><img class=\"repeat_button\" src=\"" + REPEAT_BUTTON_URL + "\" /></a>");
+            }
+            Output.WriteLine("            <a target=\"_" + html_element_name.ToUpper() + "\"  title=\"" + Translator.Get_Translation("Get help.", CurrentLanguage) + "\" href=\"" + Help_URL(Skin_Code, Base_URL) + "\" ><img class=\"help_button\" src=\"" + HELP_BUTTON_URL + "\" /></a>");
+            Output.WriteLine("          </td>"); Output.WriteLine("        </tr>");
+            Output.WriteLine("      </table>");
+
             Output.WriteLine("    </td>");
             Output.WriteLine("  </tr>");
             Output.WriteLine();
@@ -219,7 +219,7 @@ namespace SobekCM.Library.Citation.Elements
             }
 
             // Write the second text box
-			Output.Write("<input name=\"" + id_name + "_second" + i + "\" id=\"" + id_name + "_second" + i + "\" class=\"" + html_element_name + "_second_input sbk_Focusable\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(InstanceValueText2) + "\" ");
+            Output.Write("<input name=\"" + id_name + "_second" + i + "\" id=\"" + id_name + "_second" + i + "\" class=\"" + html_element_name + "_second_input sbk_Focusable\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(InstanceValueText2) + "\" ");
             if (textBox2Events != null)
                 textBox2Events.Add_Events_HTML(Output);
             Output.Write(" />");
@@ -246,7 +246,7 @@ namespace SobekCM.Library.Citation.Elements
         /// <summary> Reads the inner data from the CompleteTemplate XML format </summary>
         /// <param name="XMLReader"> Current template xml configuration reader </param>
         /// <remarks> This procedure does not currently read any inner xml (not yet necessary) </remarks>
-        protected override void Inner_Read_Data( XmlReader XMLReader )
+        protected override void Inner_Read_Data(XmlReader XMLReader)
         {
             // Do nothing
         }
@@ -284,7 +284,7 @@ namespace SobekCM.Library.Citation.Elements
             // Add this event
             textBox1Events.Add_Event(Event, EventText);
         }
-        
+
         /// <summary> Add some event text to an event on the second text box for the citation control </summary>
         /// <param name="Event"> Type of the event to add text to </param>
         /// <param name="EventText"> Text (html format) to add to the event, such as "getElementById('demo').innerHTML = Date()", or "myFunction();return false;", etc.. </param>
@@ -299,5 +299,5 @@ namespace SobekCM.Library.Citation.Elements
         }
 
         #endregion
-	}
+    }
 }

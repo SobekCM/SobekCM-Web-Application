@@ -1,9 +1,8 @@
 #region Using directives
 
-using System;
-using System.IO;
-using System.Xml;
 using SobekCM.Library.Citation.Elements;
+using System;
+using System.Xml;
 
 #endregion
 
@@ -16,49 +15,49 @@ namespace SobekCM.Library.Citation.Template
         /// <param name="XML_File"> Filename of the CompleteTemplate XML configuraiton file to read  </param>
         /// <param name="ThisCompleteTemplate"> CompleteTemplate object to populate form the configuration file </param>
         /// <param name="exclude_divisions"> Flag indicates whether to include the structure map, if included in the CompleteTemplate file </param>
-        public void Read_XML( string XML_File, CompleteTemplate ThisCompleteTemplate, bool exclude_divisions )
+        public void Read_XML(string XML_File, CompleteTemplate ThisCompleteTemplate, bool exclude_divisions)
         {
             // Load this MXF File
             XmlDocument templateXml = new XmlDocument();
-            templateXml.Load( XML_File );
+            templateXml.Load(XML_File);
 
             // create the node reader
-            XmlNodeReader nodeReader = new XmlNodeReader( templateXml );
+            XmlNodeReader nodeReader = new XmlNodeReader(templateXml);
 
             // Read through all main input CompleteTemplate tag is found
-            move_to_node( nodeReader, "input_template" );
+            move_to_node(nodeReader, "input_template");
 
             // Process all of the header information for this CompleteTemplate
-            process_template_header( nodeReader, ThisCompleteTemplate );
+            process_template_header(nodeReader, ThisCompleteTemplate);
 
             // Process all of the input portion / hierarchy
             process_inputs(nodeReader, ThisCompleteTemplate, exclude_divisions);
 
             // Process any constant sectoin
-            process_constants( nodeReader, ThisCompleteTemplate );
+            process_constants(nodeReader, ThisCompleteTemplate);
 
             // Do any final processing
             ThisCompleteTemplate.Build_Final_Adjustment_And_Checks();
 
         }
 
-        private void process_template_header( XmlNodeReader nodeReader, CompleteTemplate ThisCompleteTemplate )
+        private void process_template_header(XmlNodeReader nodeReader, CompleteTemplate ThisCompleteTemplate)
         {
             // Read all the nodes
-            while ( nodeReader.Read() )
+            while (nodeReader.Read())
             {
                 // Get the node name, trimmed and to upper
                 string nodeName = nodeReader.Name.Trim().ToUpper();
 
                 // If this is the inputs or constant start tag, return
-                if (( nodeReader.NodeType == XmlNodeType.Element ) && 
-                    (( nodeName == "INPUTS" ) || ( nodeName == "CONSTANTS" )))
+                if ((nodeReader.NodeType == XmlNodeType.Element) &&
+                    ((nodeName == "INPUTS") || (nodeName == "CONSTANTS")))
                 {
                     return;
                 }
 
                 // If this is the beginning tag for an element, assign the next values accordingly
-                if ( nodeReader.NodeType == XmlNodeType.Element )
+                if (nodeReader.NodeType == XmlNodeType.Element)
                 {
                     // switch the rest based on the tag name
                     switch (nodeName)
@@ -141,7 +140,7 @@ namespace SobekCM.Library.Citation.Template
                                 case "PRIVATE":
                                     ThisCompleteTemplate.Default_Visibility = -1;
                                     break;
-                                    
+
                                 case "PUBLIC":
                                     ThisCompleteTemplate.Default_Visibility = 0;
                                     break;
@@ -168,7 +167,7 @@ namespace SobekCM.Library.Citation.Template
             }
         }
 
-        private void process_inputs( XmlNodeReader nodeReader, CompleteTemplate ThisCompleteTemplate, bool exclude_divisions )
+        private void process_inputs(XmlNodeReader nodeReader, CompleteTemplate ThisCompleteTemplate, bool exclude_divisions)
         {
             // Keep track of the current pages and panels
             Template_Page currentPage = null;
@@ -176,51 +175,51 @@ namespace SobekCM.Library.Citation.Template
             bool inPanel = false;
 
             // Read all the nodes
-            while ( nodeReader.Read() )
+            while (nodeReader.Read())
             {
                 // Get the node name, trimmed and to upper
                 string nodeName = nodeReader.Name.Trim().ToUpper();
 
                 // If this is the inputs or constant start tag, return
-                if ((( nodeReader.NodeType == XmlNodeType.EndElement ) && ( nodeName == "INPUTS" )) ||
-                    (( nodeReader.NodeType == XmlNodeType.Element ) && ( nodeReader.Name == "CONSTANTS")))
+                if (((nodeReader.NodeType == XmlNodeType.EndElement) && (nodeName == "INPUTS")) ||
+                    ((nodeReader.NodeType == XmlNodeType.Element) && (nodeReader.Name == "CONSTANTS")))
                 {
                     return;
                 }
 
                 // If this is the beginning tag for an element, assign the next values accordingly
-                if ( nodeReader.NodeType == XmlNodeType.Element )
+                if (nodeReader.NodeType == XmlNodeType.Element)
                 {
                     // Does this start a new page?
-                    if ( nodeName == "PAGE" )
+                    if (nodeName == "PAGE")
                     {
                         // Set the inPanel flag to false
                         inPanel = false;
 
                         // Create the new page and add to this CompleteTemplate
                         currentPage = new Template_Page();
-                        ThisCompleteTemplate.Add_Page( currentPage );
+                        ThisCompleteTemplate.Add_Page(currentPage);
                     }
 
                     // Does this start a new panel?
-                    if (( nodeName == "PANEL" ) && ( currentPage != null ))
+                    if ((nodeName == "PANEL") && (currentPage != null))
                     {
                         // Set the inPanel flag to true
                         inPanel = true;
 
                         // Create the new panel and add to the current page
                         currentPanel = new Template_Panel();
-                        currentPage.Add_Panel( currentPanel );
+                        currentPage.Add_Panel(currentPanel);
                     }
 
                     // Is this a name element?
                     if ((nodeName == "NAME") && (currentPage != null))
                     {
                         // Get the text
-                        string title = read_text_node( nodeReader );
+                        string title = read_text_node(nodeReader);
 
                         // Set the name for either the page or panel
-                        if ( inPanel )
+                        if (inPanel)
                         {
                             currentPanel.Title = title;
                         }
@@ -246,7 +245,7 @@ namespace SobekCM.Library.Citation.Template
                     // Is this a new element?
                     if ((nodeName == "ELEMENT") && (nodeReader.HasAttributes) && (currentPanel != null))
                     {
-                        abstract_Element currentElement = process_element( nodeReader, ThisCompleteTemplate.InputPages.Count );
+                        abstract_Element currentElement = process_element(nodeReader, ThisCompleteTemplate.InputPages.Count);
                         if (currentElement != null)
                         {
                             currentPanel.Add_Element(currentElement);
@@ -256,7 +255,7 @@ namespace SobekCM.Library.Citation.Template
             }
         }
 
-        private abstract_Element process_element( XmlNodeReader nodeReader, int current_page_count )
+        private abstract_Element process_element(XmlNodeReader nodeReader, int current_page_count)
         {
             string type = String.Empty;
             string subtype = String.Empty;
@@ -266,25 +265,25 @@ namespace SobekCM.Library.Citation.Template
             do
             {
                 // Get the type attribute
-                if ( nodeReader.Name.ToUpper().Trim() == "TYPE" )
+                if (nodeReader.Name.ToUpper().Trim() == "TYPE")
                 {
                     type = nodeReader.Value;
                 }
 
                 // Get the subtype attribute
-                if ( nodeReader.Name.ToUpper().Trim() == "SUBTYPE" )
+                if (nodeReader.Name.ToUpper().Trim() == "SUBTYPE")
                 {
                     subtype = nodeReader.Value;
                 }
 
-            } while (nodeReader.MoveToNextAttribute() );
+            } while (nodeReader.MoveToNextAttribute());
 
             // Make sure a type was specified
-            if ( type == String.Empty )
+            if (type == String.Empty)
                 return null;
 
             // Build the element
-            abstract_Element newElement = Element_Factory.getElement( type, subtype );
+            abstract_Element newElement = Element_Factory.getElement(type, subtype);
 
             // If thie element was null, return null
             if (newElement == null)
@@ -321,20 +320,20 @@ namespace SobekCM.Library.Citation.Template
                     case "TITLE":
                         newElement.Title = nodeReader.Value;
                         break;
-                    }
-            } while (nodeReader.MoveToNextAttribute() );
+                }
+            } while (nodeReader.MoveToNextAttribute());
 
             // Move back to the element, if there were attributes (should be)
             nodeReader.MoveToElement();
 
             // Is there element_data?
-            if ( !nodeReader.IsEmptyElement )
+            if (!nodeReader.IsEmptyElement)
             {
                 nodeReader.Read();
-                if (( nodeReader.NodeType == XmlNodeType.Element ) && ( nodeReader.Name.ToLower() == "element_data" ))
+                if ((nodeReader.NodeType == XmlNodeType.Element) && (nodeReader.Name.ToLower() == "element_data"))
                 {
                     // Let the element process this inner data
-                    newElement.Read_XML( nodeReader.ReadSubtree());
+                    newElement.Read_XML(nodeReader.ReadSubtree());
                 }
             }
 
@@ -342,24 +341,24 @@ namespace SobekCM.Library.Citation.Template
             return newElement;
         }
 
-        private void process_constants( XmlNodeReader nodeReader, CompleteTemplate ThisCompleteTemplate )
+        private void process_constants(XmlNodeReader nodeReader, CompleteTemplate ThisCompleteTemplate)
         {
             // Read all the nodes
-            while ( nodeReader.Read() )
+            while (nodeReader.Read())
             {
                 // Get the node name, trimmed and to upper
                 string nodeName = nodeReader.Name.Trim().ToUpper();
 
                 // If this is the inputs or constant start tag, return
-                if (( nodeReader.NodeType == XmlNodeType.EndElement ) && ( nodeName == "CONSTANTS" ))
+                if ((nodeReader.NodeType == XmlNodeType.EndElement) && (nodeName == "CONSTANTS"))
                 {
                     return;
                 }
 
                 // If this is the beginning tag for an element, assign the next values accordingly
-                if (( nodeReader.NodeType == XmlNodeType.Element ) && ( nodeName == "ELEMENT" ) && ( nodeReader.HasAttributes ))
+                if ((nodeReader.NodeType == XmlNodeType.Element) && (nodeName == "ELEMENT") && (nodeReader.HasAttributes))
                 {
-                    abstract_Element newConstant = process_element( nodeReader, -1 );
+                    abstract_Element newConstant = process_element(nodeReader, -1);
                     if (newConstant != null)
                     {
                         newConstant.isConstant = true;
@@ -369,17 +368,17 @@ namespace SobekCM.Library.Citation.Template
             }
         }
 
-        private static void move_to_node( XmlNodeReader nodeReader, string nodeName )
+        private static void move_to_node(XmlNodeReader nodeReader, string nodeName)
         {
-            while (( nodeReader.Read() ) && ( nodeReader.Name.Trim() != nodeName ))
+            while ((nodeReader.Read()) && (nodeReader.Name.Trim() != nodeName))
             {
                 // Do nothing here... 
             }
         }
 
-        private static string read_text_node( XmlNodeReader nodeReader )
+        private static string read_text_node(XmlNodeReader nodeReader)
         {
-            if (( nodeReader.Read() ) && ( nodeReader.NodeType == XmlNodeType.Text ))
+            if ((nodeReader.Read()) && (nodeReader.NodeType == XmlNodeType.Text))
             {
                 return nodeReader.Value.Trim();
             }

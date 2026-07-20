@@ -1,11 +1,11 @@
 ﻿#region Using directives
 
+using ProtoBuf;
+using SobekCM.Tools;
 using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
-using ProtoBuf;
-using SobekCM.Tools;
 
 #endregion
 
@@ -132,7 +132,7 @@ namespace SobekCM.Resource_Object.Configuration
         /// <returns> TRUE if the property should be serialized, otherwise FALSE </returns>
         public bool ShouldSerializeOptions()
         {
-            return (Options != null ) && ( Options.Count > 0 );
+            return (Options != null) && (Options.Count > 0);
         }
 
         /// <summary> Method suppresses XML Serialization of the Code_Assembly property if it is empty </summary>

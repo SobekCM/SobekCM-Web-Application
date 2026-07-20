@@ -50,12 +50,12 @@ namespace SobekCM.Core.OpenPublishing
         {
             get
             {
-                if ( tags == null )
+                if (tags == null)
                 {
                     tags = new HashSet<string>();
-                    if(TagsList != null )
+                    if (TagsList != null)
                     {
-                        foreach( string tag in TagsList)
+                        foreach (string tag in TagsList)
                         {
                             tags.Add(tag);
                         }

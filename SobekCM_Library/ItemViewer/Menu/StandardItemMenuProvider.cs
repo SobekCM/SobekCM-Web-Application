@@ -1,14 +1,13 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
 using SobekCM.Core.BriefItem;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Users;
-using SobekCM.Engine_Library.ApplicationState;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Library.ItemViewer.Viewers;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
+using System;
+using System.Collections.Generic;
+using System.IO;
 
 namespace SobekCM.Library.ItemViewer.Menu
 {
@@ -58,19 +57,19 @@ namespace SobekCM.Library.ItemViewer.Menu
                     CurrentMode.Return_URL = String.Empty;
                 }
 
-                if ( CurrentUser != null && CurrentUser.LoggedOn && CurrentUser.Can_Submit)
+                if (CurrentUser != null && CurrentUser.LoggedOn && CurrentUser.Can_Submit)
                 {
                     can_submit = true;
                 }
 
                 Output.WriteLine("\t<div id=\"menu-right-actions\">");
 
-                if ( can_submit )
+                if (can_submit)
                 {
                     CurrentMode.Mode = Display_Mode_Enum.My_Sobek;
                     CurrentMode.My_Sobek_Type = My_Sobek_Type_Enum.New_Item;
                     string remixUrl = UrlWriterHelper.Redirect_URL(CurrentMode);
-                    if ( remixUrl.IndexOf("?") < 0 )
+                    if (remixUrl.IndexOf("?") < 0)
                     {
                         remixUrl = remixUrl + "?remix=" + CurrentItem.BibID + CurrentItem.VID;
                     }
@@ -84,7 +83,7 @@ namespace SobekCM.Library.ItemViewer.Menu
 
                 }
 
-                if (( CurrentItem.Web != null ) && ( CurrentItem.Web.ItemID > 0))
+                if ((CurrentItem.Web != null) && (CurrentItem.Web.ItemID > 0))
                 {
                     string print_item_form_open_url = UI_ApplicationCache_Gateway.Settings.Servers.Engine_URL + "items/html/print/" + CurrentItem.BibID + "/" + CurrentItem.VID + "/" + CurrentMode.ViewerCode;
                     Output.WriteLine("\t\t<span id=\"printbuttonitem\" class=\"action-sf-menu-item\" onclick=\"print_form_open('" + print_item_form_open_url + "');\"><img src=\"" + Static_Resources_Gateway.Printer_Png + "\" alt=\"\" style=\"vertical-align:middle\" /><span id=\"printbuttonspan\">" + print_text + "</span></span>");
@@ -198,14 +197,14 @@ namespace SobekCM.Library.ItemViewer.Menu
                     topMenuToChildren[menuItem.MenuStripText].Add(menuItem);
                 else
                 {
-                    topMenuToChildren[menuItem.MenuStripText] = new List<Item_MenuItem> {menuItem};
+                    topMenuToChildren[menuItem.MenuStripText] = new List<Item_MenuItem> { menuItem };
                 }
             }
-            
+
             // Now, step through the menu items
             foreach (Item_MenuItem topMenuItem in menuItems)
             {
-                HTML_Helper(Output, topMenuItem, CurrentMode, CurrentCode, topMenuToChildren, Include_Links );
+                HTML_Helper(Output, topMenuItem, CurrentMode, CurrentCode, topMenuToChildren, Include_Links);
             }
 
             // Set current submode back
@@ -225,7 +224,7 @@ namespace SobekCM.Library.ItemViewer.Menu
             Output.WriteLine();
         }
 
-        private static void HTML_Helper(TextWriter Output, Item_MenuItem MenuItem, Navigation_Object Current_Mode, string CurrentViewerCode, Dictionary<string, List<Item_MenuItem>> TopMenuToChildren, bool Include_Links )
+        private static void HTML_Helper(TextWriter Output, Item_MenuItem MenuItem, Navigation_Object Current_Mode, string CurrentViewerCode, Dictionary<string, List<Item_MenuItem>> TopMenuToChildren, bool Include_Links)
         {
             // If there are NO matches, left this top-level menu part was already taken care of
             if ((!TopMenuToChildren.ContainsKey(MenuItem.MenuStripText)) || (TopMenuToChildren[MenuItem.MenuStripText].Count == 0))
@@ -233,7 +232,7 @@ namespace SobekCM.Library.ItemViewer.Menu
 
             // Is there only one menu part here
             List<Item_MenuItem> children = TopMenuToChildren[MenuItem.MenuStripText];
-            if ((children.Count == 1) && ( String.IsNullOrEmpty(MenuItem.MidMenuText )))
+            if ((children.Count == 1) && (String.IsNullOrEmpty(MenuItem.MidMenuText)))
             {
                 if (String.Compare(MenuItem.Code, CurrentViewerCode, StringComparison.OrdinalIgnoreCase) == 0)
                 {

@@ -1,7 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+using Microsoft.AspNetCore.Http;
 using SobekCM.Core.BriefItem;
 using SobekCM.Core.FileSystems;
 using SobekCM.Core.Navigation;
@@ -10,7 +7,10 @@ using SobekCM.Core.XSLT;
 using SobekCM.Library.ItemViewer.Menu;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
-using Microsoft.AspNetCore.Http;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 
 namespace SobekCM.Library.ItemViewer.Viewers
 {
@@ -44,7 +44,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         public virtual bool Include_Viewer(BriefItemInfo CurrentItem)
         {
             // Look for the source TEI in the item settings
-            if (( CurrentItem.Behaviors.Settings == null ) || ( CurrentItem.Behaviors.Settings.Count == 0 ))
+            if ((CurrentItem.Behaviors.Settings == null) || (CurrentItem.Behaviors.Settings.Count == 0))
             {
                 return false;
             }
@@ -52,7 +52,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             // Try to get the TEI file settings
             string tei_file = CurrentItem.Behaviors.Get_Setting("TEI.Source_File");
             string xslt_file = CurrentItem.Behaviors.Get_Setting("TEI.XSLT");
-            if ((tei_file != null) && (xslt_file != null ))
+            if ((tei_file != null) && (xslt_file != null))
             {
                 // Ensure the TEI file really exists
                 if (!SobekFileSystem.FileExists(CurrentItem, tei_file))
@@ -64,7 +64,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     // This may just not have the path on it
                     if ((xslt_file.IndexOf("/") < 0) && (xslt_file.IndexOf("\\") < 0))
                     {
-                        xslt_file = Path.Combine( UI_ApplicationCache_Gateway.Settings.Servers.Application_Server_Network, "plugins\\tei\\xslt", xslt_file);
+                        xslt_file = Path.Combine(UI_ApplicationCache_Gateway.Settings.Servers.Application_Server_Network, "plugins\\tei\\xslt", xslt_file);
                         if (!File.Exists(xslt_file)) return false;
                     }
                     else return false;
@@ -270,7 +270,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             Output.WriteLine("          <td>");
             Output.WriteLine("            <div id=\"sbkEad_MainArea\">");
 
-            if (!String.IsNullOrWhiteSpace( CurrentRequest.Text_Search))
+            if (!String.IsNullOrWhiteSpace(CurrentRequest.Text_Search))
             {
                 // Get any search terms
                 List<string> terms = new List<string>();

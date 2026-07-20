@@ -1,9 +1,8 @@
-﻿using System.IO;
-using System.Text;
-using SobekCM.Core.BriefItem;
+﻿using SobekCM.Core.BriefItem;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.UI_Configuration.Citation;
 using SobekCM.Tools;
+using System.Text;
 
 namespace SobekCM.Library.Citation.SectionWriter
 {
@@ -25,6 +24,6 @@ namespace SobekCM.Library.Citation.SectionWriter
         /// <param name="SearchLinkEnd"> End of the search link that can be used to allow the web patron to select a term and run a search against this instance  </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         /// <param name="CurrentRequest"> Information about this request, such as URL, etc.</param>
-        void Write_Citation_Section(CitationElement ElementInfo, StringBuilder Output, BriefItemInfo Item, int LeftColumnWidth, string SearchLink, string SearchLinkEnd, Custom_Tracer Tracer, Navigation_Object CurrentRequest );
+        void Write_Citation_Section(CitationElement ElementInfo, StringBuilder Output, BriefItemInfo Item, int LeftColumnWidth, string SearchLink, string SearchLinkEnd, Custom_Tracer Tracer, Navigation_Object CurrentRequest);
     }
 }

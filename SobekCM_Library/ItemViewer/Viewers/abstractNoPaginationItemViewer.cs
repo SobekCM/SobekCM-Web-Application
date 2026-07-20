@@ -1,12 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using SobekCM.Core.BriefItem;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Users;
 using SobekCM.Library.HTML;
 using SobekCM.Tools;
+using System;
+using System.Collections.Generic;
+using System.IO;
 
 namespace SobekCM.Library.ItemViewer.Viewers
 {
@@ -57,7 +57,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// more dynamically </remarks>
         public virtual List<HtmlSubwriter_Behaviors_Enum> ItemViewer_Behaviors
         {
-            get { return Behaviors;  }
+            get { return Behaviors; }
         }
 
         /// <summary> Layout for this item viewer to use, which overrides the default viewer </summary>
@@ -139,9 +139,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
         /// <summary> Gets the url to go to the first page </summary>
         /// <value> This always returns NULL, since this does not have paging enabled </value>
-        public string First_Page_URL 
+        public string First_Page_URL
         {
-            get {  return null; }
+            get { return null; }
         }
 
         /// <summary> Gets the url to go to the previous page </summary>

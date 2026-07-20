@@ -1,9 +1,9 @@
 ﻿#region Using directives
 
+using SobekCM.Resource_Object.MARC;
 using System;
 using System.Collections.Generic;
 using System.Text;
-using SobekCM.Resource_Object.MARC;
 
 #endregion
 
@@ -37,7 +37,7 @@ namespace SobekCM.Resource_Object
         {
             // Try to pull some values from the options
             string cataloging_source_code = String.Empty;
-            if ((Options.ContainsKey("MarcXML_File_ReaderWriter:MARC Cataloging Source Code")) && (Options["MarcXML_File_ReaderWriter:MARC Cataloging Source Code"] != null ))
+            if ((Options.ContainsKey("MarcXML_File_ReaderWriter:MARC Cataloging Source Code")) && (Options["MarcXML_File_ReaderWriter:MARC Cataloging Source Code"] != null))
                 cataloging_source_code = Options["MarcXML_File_ReaderWriter:MARC Cataloging Source Code"].ToString();
 
             string location_code = String.Empty;
@@ -63,7 +63,7 @@ namespace SobekCM.Resource_Object
             string thumbnail_base = String.Empty;
             if ((Options.ContainsKey("MarcXML_File_ReaderWriter:Image_Base")) && (Options["MarcXML_File_ReaderWriter:Image_Base"] != null))
                 thumbnail_base = Options["MarcXML_File_ReaderWriter:Image_Base"].ToString();
-            
+
             // Get all the standard tags
             MARC_Record tags = Package.To_MARC_Record(cataloging_source_code, location_code, reproduction_agency, reproduction_place, system_name, system_abbreviation, thumbnail_base);
 

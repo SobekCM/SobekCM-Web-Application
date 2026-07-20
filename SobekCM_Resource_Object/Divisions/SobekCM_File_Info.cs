@@ -3,7 +3,6 @@
 using System;
 using System.Drawing;
 using System.IO;
-using SobekCM.Resource_Object.Behaviors;
 
 #endregion
 
@@ -1175,9 +1174,9 @@ namespace SobekCM.Resource_Object.Divisions
                 try
                 {
                     // Get the height and width of this JPEG file
-                    Bitmap image = (Bitmap) Image.FromFile(File_Location + "/" + System_Name);
-                    Width = (ushort) image.Width;
-                    Height = (ushort) image.Height;
+                    Bitmap image = (Bitmap)Image.FromFile(File_Location + "/" + System_Name);
+                    Width = (ushort)image.Width;
+                    Height = (ushort)image.Height;
                     image.Dispose();
                     return true;
                 }
@@ -1212,7 +1211,7 @@ namespace SobekCM.Resource_Object.Divisions
             {
                 // Get the height and width of this JPEG file
                 FileStream reader = new FileStream(File, FileMode.Open, FileAccess.Read);
-                int[] previousValues = {0, 0, 0, 0};
+                int[] previousValues = { 0, 0, 0, 0 };
                 int bytevalue = reader.ReadByte();
                 int count = 1;
                 while (bytevalue != -1)
@@ -1229,7 +1228,7 @@ namespace SobekCM.Resource_Object.Divisions
                     {
                         break;
                     }
-                    
+
                     // Is this the first four bytes and does it match the output from Kakadu 3-2?
                     if ((count == 4) && (previousValues[0] == 255) && (previousValues[1] == 79) &&
                         (previousValues[2] == 255) && (previousValues[3] == 81))
@@ -1240,15 +1239,15 @@ namespace SobekCM.Resource_Object.Divisions
                         reader.ReadByte();
                         break;
                     }
-                        
+
                     // Read the next byte
                     bytevalue = reader.ReadByte();
                     count++;
                 }
 
                 // Now, read ahead for the height and width
-                Height = (ushort) ((((((reader.ReadByte()*256) + reader.ReadByte())*256) + reader.ReadByte())*256) + reader.ReadByte());
-                Width = (ushort) ((((((reader.ReadByte()*256) + reader.ReadByte())*256) + reader.ReadByte())*256) + reader.ReadByte());
+                Height = (ushort)((((((reader.ReadByte() * 256) + reader.ReadByte()) * 256) + reader.ReadByte()) * 256) + reader.ReadByte());
+                Width = (ushort)((((((reader.ReadByte() * 256) + reader.ReadByte()) * 256) + reader.ReadByte()) * 256) + reader.ReadByte());
                 reader.Close();
 
                 return true;

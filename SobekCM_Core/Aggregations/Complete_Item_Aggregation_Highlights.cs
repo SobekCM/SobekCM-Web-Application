@@ -1,13 +1,12 @@
 ﻿#region Using directives
 
+using ProtoBuf;
+using SobekCM.Core.Configuration.Localization;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.Serialization;
-using ProtoBuf;
-using SobekCM.Core.Configuration;
-using SobekCM.Core.Configuration.Localization;
 
 #endregion
 
@@ -50,11 +49,11 @@ namespace SobekCM.Core.Aggregations
         [DataMember(Name = "image", EmitDefaultValue = false), ProtoMember(1)]
         public string Image { get; set; }
 
-        internal void Write_In_Configuration_XML_File( StreamWriter Writer )
+        internal void Write_In_Configuration_XML_File(StreamWriter Writer)
         {
             Writer.WriteLine("    <hi:highlight>");
             Writer.WriteLine("      <hi:source>" + Image + "</hi:source>");
-            if ( !String.IsNullOrEmpty(Link))
+            if (!String.IsNullOrEmpty(Link))
             {
                 Writer.WriteLine("      <hi:link>" + Link + "</hi:link>");
             }

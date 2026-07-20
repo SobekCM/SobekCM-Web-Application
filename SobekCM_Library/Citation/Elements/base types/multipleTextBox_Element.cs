@@ -1,13 +1,12 @@
 #region Using directives
 
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.IO;
-using System.Xml;
 using SobekCM.Core.ApplicationState;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Users;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Xml;
 
 #endregion
 
@@ -60,7 +59,7 @@ namespace SobekCM.Library.Citation.Elements
         /// <param name="CurrentLanguage"> Current user-interface language </param>
         /// <param name="Translator"> Language support object which handles simple translational duties </param>
         /// <param name="Base_URL"> Base URL for the current request </param>
-        protected void render_helper(TextWriter Output, IList<string> InstanceValues, string Skin_Code, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL )
+        protected void render_helper(TextWriter Output, IList<string> InstanceValues, string Skin_Code, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL)
         {
             List<string> allValues = new List<string>();
             allValues.AddRange(InstanceValues);
@@ -129,7 +128,7 @@ namespace SobekCM.Library.Citation.Elements
                     }
                     else
                     {
-						Output.Write("              <input name=\"" + id_name + i + "\" id=\"" + id_name + i + "\" class=\"" + html_element_name + "_input sbk_Focusable\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(allValues[i - 1].Replace("<i>", "").Replace("</i>", "")) + "\" ");
+                        Output.Write("              <input name=\"" + id_name + i + "\" id=\"" + id_name + i + "\" class=\"" + html_element_name + "_input sbk_Focusable\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(allValues[i - 1].Replace("<i>", "").Replace("</i>", "")) + "\" ");
                         if (textBoxEvents != null)
                             textBoxEvents.Add_Events_HTML(Output);
                         Output.WriteLine("/>>");
@@ -147,7 +146,7 @@ namespace SobekCM.Library.Citation.Elements
                     Output.WriteLine("            " + ViewChoicesString.Replace("<%WEBSKIN%>", Skin_Code).Replace("<%?URLOPTS%>", "") + "&nbsp; ");
                 }
 
-                if ((Repeatable) && (( MaxBoxes < 0 ) || ( allValues.Count < MaxBoxes )))
+                if ((Repeatable) && ((MaxBoxes < 0) || (allValues.Count < MaxBoxes)))
                 {
                     Output.WriteLine("          <span id=\"" + html_element_name + "_repeaticon\" name=\"" + html_element_name + "_repeaticon\"><img title=\"" + Translator.Get_Translation("Click to add another " + Title.ToLower(), CurrentLanguage) + ".\" alt=\"+\" class=\"repeat_button\" src=\"" + REPEAT_BUTTON_URL + "\" onmousedown=\"add_new_multi_element('" + html_element_name + "', " + InstanceValues.Count + "," + MaxBoxes + "," + BoxesPerLine + "); return false;\" /></span>");
                 }
@@ -174,7 +173,7 @@ namespace SobekCM.Library.Citation.Elements
         /// <param name="CurrentLanguage"> Current user-interface language </param>
         /// <param name="Translator"> Language support object which handles simple translational duties </param>
         /// <param name="Base_URL"> Base URL for the current request </param>
-        protected void render_helper(TextWriter Output, string InstanceValue, string Skin_Code, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL )
+        protected void render_helper(TextWriter Output, string InstanceValue, string Skin_Code, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL)
         {
             string id_name = html_element_name.Replace("_", "");
 
@@ -252,11 +251,11 @@ namespace SobekCM.Library.Citation.Elements
         /// <summary> Reads the inner data from the CompleteTemplate XML format </summary>
         /// <param name="XMLReader"> Current template xml configuration reader </param>
         /// <remarks> This reads the default value from a <i>value</i> subelement </remarks>
-        protected override void Inner_Read_Data( XmlReader XMLReader )
+        protected override void Inner_Read_Data(XmlReader XMLReader)
         {
-            while ( XMLReader.Read() )
+            while (XMLReader.Read())
             {
-                if (( XMLReader.NodeType == XmlNodeType.Element ) && ( XMLReader.Name.ToLower() == "value" ))
+                if ((XMLReader.NodeType == XmlNodeType.Element) && (XMLReader.Name.ToLower() == "value"))
                 {
                     XMLReader.Read();
                     DefaultValues.Add(XMLReader.Value.Trim());

@@ -43,11 +43,11 @@
         /// <summary> External URL for this item within a title within a collection of results </summary>
         string Link { get; }
 
-		/// <summary> Spatial coverage as KML for this item within a title result for map display </summary>
-		string Spatial_KML { get; }
+        /// <summary> Spatial coverage as KML for this item within a title result for map display </summary>
+        string Spatial_KML { get; }
 
-		/// <summary> COinS OpenURL format of citation for citation sharing </summary>
-		string COinS_OpenURL { get; }
+        /// <summary> COinS OpenURL format of citation for citation sharing </summary>
+        string COinS_OpenURL { get; }
 
         /// <summary> Flag indicates if this is dark, private, etc.. </summary>
         string AccessType { get; }

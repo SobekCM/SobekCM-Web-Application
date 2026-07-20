@@ -1,14 +1,12 @@
 #region Using directives
 
+using SobekCM.Core.Aggregations;
+using SobekCM.Core.Navigation;
+using SobekCM.Engine_Library.Configuration;
+using SobekCM.Tools;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using SobekCM.Core.Aggregations;
-using SobekCM.Core.Navigation;
-using SobekCM.Core.UI_Configuration;
-using SobekCM.Core.UI_Configuration.StaticResources;
-using SobekCM.Engine_Library.Configuration;
-using SobekCM.Tools;
 
 #endregion
 
@@ -23,7 +21,7 @@ namespace SobekCM.Library.HTML
 
         /// <summary> Constructor for a new instance of the Search_Results_HtmlSubwriter class </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
-        public Search_Results_HtmlSubwriter(RequestCache RequestSpecificValues) : base(RequestSpecificValues) 
+        public Search_Results_HtmlSubwriter(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
         {
             // Use the method in the base class to actually pull the entire hierarchy
             if (!Get_Collection(RequestSpecificValues.Current_Mode, RequestSpecificValues.Tracer, out hierarchyObject))
@@ -44,7 +42,7 @@ namespace SobekCM.Library.HTML
             // If this is the thumbnails results, add the QTIP script and css
             if ((RequestSpecificValues.Results_Statistics != null) &&
                 (RequestSpecificValues.Results_Statistics.Total_Items > 0) &&
-                ( String.Equals(RequestSpecificValues.Current_Mode.Result_Display_Type, "thumbs", StringComparison.OrdinalIgnoreCase)))
+                (String.Equals(RequestSpecificValues.Current_Mode.Result_Display_Type, "thumbs", StringComparison.OrdinalIgnoreCase)))
             {
                 Output.WriteLine("  <script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Jquery_Qtip_Js + "\"></script>");
                 Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + Static_Resources_Gateway.Jquery_Qtip_Css + "\" /> ");
@@ -173,11 +171,11 @@ namespace SobekCM.Library.HTML
             }
             else
             {
-				// Add the main aggrgeation menu here
-				MainMenus_Helper_HtmlSubWriter.Add_Aggregation_Search_Results_Menu(Output, RequestSpecificValues, hierarchyObject, false);
+                // Add the main aggrgeation menu here
+                MainMenus_Helper_HtmlSubWriter.Add_Aggregation_Search_Results_Menu(Output, RequestSpecificValues, hierarchyObject, false);
             }
-           
-            if ( RequestSpecificValues.Results_Statistics != null )
+
+            if (RequestSpecificValues.Results_Statistics != null)
             {
                 if (writeResult == null)
                 {
@@ -197,7 +195,7 @@ namespace SobekCM.Library.HTML
             HeaderFooter_Helper_HtmlSubWriter.Add_Footer(Output, RequestSpecificValues, Subwriter_Behaviors, hierarchyObject, null, Context);
         }
 
- 
+
 
         /// <summary> Gets the collection of special behaviors which this subwriter
         /// requests from the main HTML subwriter. </summary>
@@ -213,13 +211,13 @@ namespace SobekCM.Library.HTML
 
 
 
-		/// <summary> Gets the CSS class of the container that the page is wrapped within </summary>
-		public override string Container_CssClass
-		{
-			get
-			{
+        /// <summary> Gets the CSS class of the container that the page is wrapped within </summary>
+        public override string Container_CssClass
+        {
+            get
+            {
                 return RequestSpecificValues.Paged_Results != null ? "container-facets" : base.Container_CssClass;
-			}
-		}
+            }
+        }
     }
 }

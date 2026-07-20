@@ -1,9 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading;
-using SobekCM.Resource_Object;
+﻿using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Solr;
 using SolrNet;
+using System;
+using System.Collections.Generic;
+using System.Threading;
 
 namespace SobekCM.Engine_Library.Solr.v5
 {

@@ -2,16 +2,9 @@
 
 #region Using directives
 
-using System;
-using System.Collections.Specialized;
-using System.Data;
-using System.IO;
-using System.Linq;
 using Microsoft.AspNetCore.Http;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
-using SobekCM.Core.UI_Configuration;
-using SobekCM.Core.UI_Configuration.StaticResources;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Engine_Library.Skins;
 using SobekCM.Library.Database;
@@ -19,6 +12,10 @@ using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
+using System;
+using System.Data;
+using System.IO;
+using System.Linq;
 
 #endregion
 
@@ -45,7 +42,7 @@ namespace SobekCM.Library.AdminViewer
         /// <summary> Constructor for a new instance of the Skins_AdminViewer class </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
         /// <remarks> Postback from handling an edit or new html skin is handled here in the constructor </remarks>
-        public Skins_AdminViewer(RequestCache RequestSpecificValues, HttpContext Context)  : base(RequestSpecificValues, Context)
+        public Skins_AdminViewer(RequestCache RequestSpecificValues, HttpContext Context) : base(RequestSpecificValues, Context)
         {
             RequestSpecificValues.Tracer.Add_Trace("Skins_AdminViewer.Constructor", String.Empty);
 
@@ -53,7 +50,7 @@ namespace SobekCM.Library.AdminViewer
             actionMessage = String.Empty;
 
             // If the RequestSpecificValues.Current_User cannot edit this, go back
-            if ((!RequestSpecificValues.Current_User.Is_System_Admin) && ( !RequestSpecificValues.Current_User.Is_Portal_Admin ))
+            if ((!RequestSpecificValues.Current_User.Is_System_Admin) && (!RequestSpecificValues.Current_User.Is_Portal_Admin))
             {
                 RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.My_Sobek;
                 RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
@@ -71,7 +68,7 @@ namespace SobekCM.Library.AdminViewer
 
                     string reset_value = form["admin_interface_reset"].TrimFirst().ToLower();
                     string save_value = form["admin_interface_tosave"].TrimFirst().ToUpper();
-					string delete_value = form["admin_interface_delete"].TrimFirst().ToUpper();
+                    string delete_value = form["admin_interface_delete"].TrimFirst().ToUpper();
                     string new_interface_code = form["admin_interface_code"].TrimFirst().ToUpper();
 
                     // Was this a reset request?
@@ -327,7 +324,7 @@ namespace SobekCM.Library.AdminViewer
 
                                             }
                                         }
-                                        catch 
+                                        catch
                                         {
                                             actionMessage = "Error creating some of the files for the new web skin";
                                         }
@@ -376,7 +373,7 @@ namespace SobekCM.Library.AdminViewer
                                             }
                                         }
                                     }
-                                    catch 
+                                    catch
                                     {
                                         actionMessage = "Error creating all the necessary folders";
                                     }
@@ -433,7 +430,7 @@ namespace SobekCM.Library.AdminViewer
             }
         }
 
-        private void  copy_entire_folder( string SourceFolder, string DestinationFolder )
+        private void copy_entire_folder(string SourceFolder, string DestinationFolder)
         {
             if (!Directory.Exists(SourceFolder))
                 return;
@@ -494,43 +491,43 @@ namespace SobekCM.Library.AdminViewer
 		public override void Write_ItemNavForm_Closing(TextWriter Output, Custom_Tracer Tracer)
         {
             Tracer.Add_Trace("Skins_AdminViewer.Write_ItemNavForm_Closing", "Add any popup divisions for form elements");
-			
-			Output.WriteLine("<!-- Skins_AdminViewer.Write_ItemNavForm_Closing -->");
-			Output.WriteLine("<script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Jquery_Ui_1_10_3_Custom_Js + "\"></script>");
+
+            Output.WriteLine("<!-- Skins_AdminViewer.Write_ItemNavForm_Closing -->");
+            Output.WriteLine("<script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Jquery_Ui_1_10_3_Custom_Js + "\"></script>");
 
             // Add the hidden field
             Output.WriteLine("<!-- Hidden field is used for postbacks to indicate what to save and reset -->");
             Output.WriteLine("<input type=\"hidden\" id=\"admin_interface_tosave\" name=\"admin_interface_tosave\" value=\"\" />");
             Output.WriteLine("<input type=\"hidden\" id=\"admin_interface_reset\" name=\"admin_interface_reset\" value=\"\" />");
-			Output.WriteLine("<input type=\"hidden\" id=\"admin_interface_delete\" name=\"admin_interface_delete\" value=\"\" />");
+            Output.WriteLine("<input type=\"hidden\" id=\"admin_interface_delete\" name=\"admin_interface_delete\" value=\"\" />");
             Output.WriteLine();
 
             Output.WriteLine("<script src=\"" + Static_Resources_Gateway.Sobekcm_Admin_Js + "\" type=\"text/javascript\"></script>");
-			Output.WriteLine("<div class=\"sbkAdm_HomeText\">");
+            Output.WriteLine("<div class=\"sbkAdm_HomeText\">");
 
-			if (!String.IsNullOrEmpty(actionMessage))
-			{
-				Output.WriteLine("  <br />");
-			    if (actionMessage.IndexOf("error", StringComparison.InvariantCultureIgnoreCase) >= 0)
-			    {
+            if (!String.IsNullOrEmpty(actionMessage))
+            {
+                Output.WriteLine("  <br />");
+                if (actionMessage.IndexOf("error", StringComparison.InvariantCultureIgnoreCase) >= 0)
+                {
                     Output.WriteLine("  <div id=\"sbkAdm_ActionMessageError\">" + actionMessage + "</div>");
-			    }
-			    else
-			    {
+                }
+                else
+                {
                     Output.WriteLine("  <div id=\"sbkAdm_ActionMessageSuccess\">" + actionMessage + "</div>");
-			    }
-			}
+                }
+            }
 
             Output.WriteLine("  <p>For clarification of any terms on this form, <a href=\"" + UI_ApplicationCache_Gateway.Settings.System.Help_URL(RequestSpecificValues.Current_Mode.Base_URL) + "adminhelp/webskins\" target=\"ADMIN_INTERFACE_HELP\" >click here to view the help page</a>.</p>");
 
             Output.WriteLine("  <h2>New Web Skin</h2>");
-			Output.WriteLine("  <div class=\"sbkSav_NewDiv\">");
-			Output.WriteLine("    <table class=\"sbkAdm_PopupTable\">");
+            Output.WriteLine("  <div class=\"sbkSav_NewDiv\">");
+            Output.WriteLine("    <table class=\"sbkAdm_PopupTable\">");
 
             // Add line for interface code and base interface code
-	        Output.WriteLine("      <tr style=\"height:25px;\">");
-			Output.WriteLine("        <td style=\"width:112px;\"><label for=\"admin_interface_code\">Web Skin Code:</label></td>");
-			Output.WriteLine("        <td style=\"width:220px;\"><input class=\"sbkSav_small_input sbkAdmin_Focusable\" name=\"admin_interface_code\" id=\"admin_interface_code\" type=\"text\" value=\"\" /></td>");
+            Output.WriteLine("      <tr style=\"height:25px;\">");
+            Output.WriteLine("        <td style=\"width:112px;\"><label for=\"admin_interface_code\">Web Skin Code:</label></td>");
+            Output.WriteLine("        <td style=\"width:220px;\"><input class=\"sbkSav_small_input sbkAdmin_Focusable\" name=\"admin_interface_code\" id=\"admin_interface_code\" type=\"text\" value=\"\" /></td>");
             Output.WriteLine("        <td style=\"text-align:right;\">");
             Output.WriteLine("          <label for=\"admin_interface_basecode\">Base Skin Code:</label> &nbsp; ");
             Output.WriteLine("          <select class=\"sbkSav_small_input2 sbkAdmin_Focusable\" name=\"admin_interface_basecode\" id=\"admin_interface_basecode\">");
@@ -543,35 +540,35 @@ namespace SobekCM.Library.AdminViewer
 
             Output.WriteLine("          </select>");
             Output.WriteLine("        </td>");
-			Output.WriteLine("      </tr>");
+            Output.WriteLine("      </tr>");
 
             // Add line for banner link
             Output.WriteLine("      <tr id=\"banner_link_row\" style=\"height:25px; display:none;\"><td><label for=\"admin_interface_link\">Banner Link:</label></td><td colspan=\"2\"><input class=\"sbkSav_large_input sbkAdmin_Focusable\" name=\"admin_interface_link\" id=\"admin_interface_link\" type=\"text\" value=\"\" /></td></tr>");
 
             // Add line for notes
-			Output.WriteLine("      <tr style=\"height:25px;\"><td><label for=\"admin_interface_notes\">Notes:</label></td><td colspan=\"2\"><input class=\"sbkSav_large_input sbkAdmin_Focusable\" name=\"admin_interface_notes\" id=\"admin_interface_notes\" type=\"text\" value=\"\" /></td></tr>");
+            Output.WriteLine("      <tr style=\"height:25px;\"><td><label for=\"admin_interface_notes\">Notes:</label></td><td colspan=\"2\"><input class=\"sbkSav_large_input sbkAdmin_Focusable\" name=\"admin_interface_notes\" id=\"admin_interface_notes\" type=\"text\" value=\"\" /></td></tr>");
 
             // Add checkboxes for overriding the header/footer and overriding banner
             Output.WriteLine("      <tr style=\"height:15px;\"><td>Flags:</td><td><input class=\"sbkSav_checkbox\" type=\"checkbox\" name=\"admin_interface_banner_override\" id=\"admin_interface_banner_override\" onchange=\"return skins_display_banner_link(this);\" /> <label for=\"admin_interface_banner_override\" >Override banner?</label></td><td></td></tr>");
-			Output.WriteLine("      <tr style=\"height:15px;\"><td>&nbsp;</td><td><input class=\"sbkSav_checkbox\" type=\"checkbox\" name=\"admin_interface_top_nav\" id=\"admin_interface_top_nav\" /> <label for=\"admin_interface_top_nav\">Suppress main menu?</label></td><td></td></tr>");
-			Output.WriteLine("      <tr style=\"height:15px;\"><td>&nbsp;</td><td colspan=\"2\"><input class=\"sbkSav_checkbox\" type=\"checkbox\" name=\"admin_interface_copycurrent\" id=\"admin_interface_copycurrent\" checked=\"checked\" /> <label for=\"admin_interface_copycurrent\">Copy current files for this new web skin if folder does not exist?</label></td></tr>");
+            Output.WriteLine("      <tr style=\"height:15px;\"><td>&nbsp;</td><td><input class=\"sbkSav_checkbox\" type=\"checkbox\" name=\"admin_interface_top_nav\" id=\"admin_interface_top_nav\" /> <label for=\"admin_interface_top_nav\">Suppress main menu?</label></td><td></td></tr>");
+            Output.WriteLine("      <tr style=\"height:15px;\"><td>&nbsp;</td><td colspan=\"2\"><input class=\"sbkSav_checkbox\" type=\"checkbox\" name=\"admin_interface_copycurrent\" id=\"admin_interface_copycurrent\" checked=\"checked\" /> <label for=\"admin_interface_copycurrent\">Copy current files for this new web skin if folder does not exist?</label></td></tr>");
 
-			// Add the SAVE button
-			Output.WriteLine("      <tr style=\"height:30px; text-align: center;\"><td colspan=\"3\"><button title=\"Save new web skin\" class=\"sbkAdm_RoundButton\" onclick=\"return save_new_interface();\">SAVE <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button></td></tr>");
-		    Output.WriteLine("    </table>");
-		    Output.WriteLine("  </div>");
-			Output.WriteLine();
+            // Add the SAVE button
+            Output.WriteLine("      <tr style=\"height:30px; text-align: center;\"><td colspan=\"3\"><button title=\"Save new web skin\" class=\"sbkAdm_RoundButton\" onclick=\"return save_new_interface();\">SAVE <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button></td></tr>");
+            Output.WriteLine("    </table>");
+            Output.WriteLine("  </div>");
+            Output.WriteLine();
             Output.WriteLine("  <h2>Existing Web Skins</h2>");
 
             // Get the list of all aggregationPermissions
-			Output.WriteLine("  <table class=\"sbkSav_Table sbkAdm_Table\">");
+            Output.WriteLine("  <table class=\"sbkSav_Table sbkAdm_Table\">");
             Output.WriteLine("    <tr>");
             Output.WriteLine("      <th class=\"sbkSav_TableHeader1\">ACTIONS</th>");
             Output.WriteLine("      <th class=\"sbkSav_TableHeader2\">CODE</th>");
             Output.WriteLine("      <th class=\"sbkSav_TableHeader3\">BASE</th>");
             Output.WriteLine("      <th class=\"sbkSav_TableHeader4\">NOTES</th>");
             Output.WriteLine("    </tr>");
-			Output.WriteLine("    <tr><td class=\"sbkAdm_TableRule\" colspan=\"4\"></td></tr>");
+            Output.WriteLine("    <tr><td class=\"sbkAdm_TableRule\" colspan=\"4\"></td></tr>");
 
             // Get the view URL
             string current_skin = RequestSpecificValues.Current_Mode.Skin;
@@ -601,23 +598,23 @@ namespace SobekCM.Library.AdminViewer
 
                 Output.Write("<a title=\"Click to edit\" href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" >edit</a> | ");
                 Output.Write("<a title=\"Click to view\" href=\"" + view_url.Replace("testskincode", code) + "\" >view</a> | ");
-				Output.Write("<a title=\"Click to reset\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"reset_interface('" + code + "');\">reset</a> | ");
+                Output.Write("<a title=\"Click to reset\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"reset_interface('" + code + "');\">reset</a> | ");
 
-				if ( RequestSpecificValues.Current_User.Is_System_Admin )	
-					Output.WriteLine("<a title=\"Click to delete this web skin\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\"  onclick=\"return delete_interface('" + code + "');\">delete</a> )</td>");
-				else
-					Output.WriteLine("<a title=\"Only SYSTEM administrators can delete web skins\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\"  onclick=\"alert('Only SYSTEM administrators can delete web skins'); return false;\">delete</a> )</td>");
+                if (RequestSpecificValues.Current_User.Is_System_Admin)
+                    Output.WriteLine("<a title=\"Click to delete this web skin\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\"  onclick=\"return delete_interface('" + code + "');\">delete</a> )</td>");
+                else
+                    Output.WriteLine("<a title=\"Only SYSTEM administrators can delete web skins\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\"  onclick=\"alert('Only SYSTEM administrators can delete web skins'); return false;\">delete</a> )</td>");
 
 
                 // Add the rest of the row with data
-                if ( String.Compare(code, current_skin, StringComparison.InvariantCultureIgnoreCase) == 0 )
+                if (String.Compare(code, current_skin, StringComparison.InvariantCultureIgnoreCase) == 0)
                     Output.WriteLine("      <td>" + code + "*</span></td>");
                 else
                     Output.WriteLine("      <td>" + code + "</span></td>");
                 Output.WriteLine("      <td>" + base_code + "</span></td>");
                 Output.WriteLine("      <td>" + notes + "</span></td>");
                 Output.WriteLine("    </tr>");
-				Output.WriteLine("    <tr><td class=\"sbkAdm_TableRule\" colspan=\"4\"></td></tr>");
+                Output.WriteLine("    <tr><td class=\"sbkAdm_TableRule\" colspan=\"4\"></td></tr>");
             }
             RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Skins_Mgmt;
 
@@ -629,6 +626,6 @@ namespace SobekCM.Library.AdminViewer
         }
     }
 }
-  
+
 
 

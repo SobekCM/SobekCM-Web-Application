@@ -14,40 +14,40 @@ namespace SobekCM.Resource_Object.Bib_Info
 	/// Congress MODS site ( http://www.loc.gov/standards/mods/userguide/typeofresource.html ) [2013] </remarks>
     public enum TypeOfResource_MODS_Enum : byte
     {
-		/// <summary> Unknown, default MODS type </summary>
+        /// <summary> Unknown, default MODS type </summary>
         UNKNOWN,
 
-		/// <summary> Resources that are basically textual in nature </summary>
+        /// <summary> Resources that are basically textual in nature </summary>
         Text,
 
-		/// <summary> Includes maps, atlases, globes, digital maps, and other cartographic items </summary>
+        /// <summary> Includes maps, atlases, globes, digital maps, and other cartographic items </summary>
         Cartographic,
 
-		/// <summary>  Graphic, non-realized representations of musical works, both in printed and digitized manifestations that represent the four components of musical sound: pitch, duration, timbre, and loudness </summary>
+        /// <summary>  Graphic, non-realized representations of musical works, both in printed and digitized manifestations that represent the four components of musical sound: pitch, duration, timbre, and loudness </summary>
         Notated_Music,
 
-		/// <summary> Used when a mixture of musical and nonmusical sound recordings occurs in a resource or when a user does not want to or cannot make a distinction between musical and nonmusical </summary>
+        /// <summary> Used when a mixture of musical and nonmusical sound recordings occurs in a resource or when a user does not want to or cannot make a distinction between musical and nonmusical </summary>
         Sound_Recording,
 
-		/// <summary> Used when a resource is predominately a musical sound recording </summary>
+        /// <summary> Used when a resource is predominately a musical sound recording </summary>
         Sound_Recording_Musical,
 
-		/// <summary> Used when the sound recording is nonmusical in nature </summary>
+        /// <summary> Used when the sound recording is nonmusical in nature </summary>
         Sound_Recording_Nonmusical,
 
-		/// <summary> Includes two-dimensional images and slides and transparencies </summary>
+        /// <summary> Includes two-dimensional images and slides and transparencies </summary>
         Still_Image,
 
-		/// <summary> Includes motion pictures and videorecordings, as well as television programs, digital video, and animated computer graphics—but not slides and transparencies. It does not include moving images that are primarily computer programs, such as computer games or computer-oriented multimedia; these are included in "software, multimedia" </summary>
+        /// <summary> Includes motion pictures and videorecordings, as well as television programs, digital video, and animated computer graphics—but not slides and transparencies. It does not include moving images that are primarily computer programs, such as computer games or computer-oriented multimedia; these are included in "software, multimedia" </summary>
         Moving_Image,
 
-		/// <summary>  Includes man-made objects such as models, sculptures, clothing, and toys, as well as naturally occurring objects such as specimens mounted for viewing </summary>
+        /// <summary>  Includes man-made objects such as models, sculptures, clothing, and toys, as well as naturally occurring objects such as specimens mounted for viewing </summary>
         Three_Dimensional_Object,
 
-		/// <summary> Appropriate for any electronic resource without a significant aspect that indicates one of the other typeOfResource categories. It includes: software, numeric data, computer-oriented multimedia, and online systems and services </summary>
+        /// <summary> Appropriate for any electronic resource without a significant aspect that indicates one of the other typeOfResource categories. It includes: software, numeric data, computer-oriented multimedia, and online systems and services </summary>
         Sofware_Multimedia,
 
-		/// <summary> Indicates that there are significant materials in two or more forms that are usually related by virtue of their having been accumulated by or about a person or body. Mixed material includes archival fonds and manuscript collections of mixed forms of materials, such as text, photographs, and sound recordings </summary>
+        /// <summary> Indicates that there are significant materials in two or more forms that are usually related by virtue of their having been accumulated by or about a person or body. Mixed material includes archival fonds and manuscript collections of mixed forms of materials, such as text, photographs, and sound recordings </summary>
         Mixed_Material
     }
 
@@ -202,8 +202,9 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// with this resource </summary>
         public int Uncontrolled_Types_Count
         {
-            get {
-	            return uncontrolledTypes == null ? 0 : uncontrolledTypes.Count;
+            get
+            {
+                return uncontrolledTypes == null ? 0 : uncontrolledTypes.Count;
             }
         }
 
@@ -211,8 +212,9 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// with this resource </summary>
         public ReadOnlyCollection<string> Uncontrolled_Types
         {
-            get {
-	            return uncontrolledTypes != null ? new ReadOnlyCollection<string>(uncontrolledTypes) : new ReadOnlyCollection<string>(new List<string>());
+            get
+            {
+                return uncontrolledTypes != null ? new ReadOnlyCollection<string>(uncontrolledTypes) : new ReadOnlyCollection<string>(new List<string>());
             }
         }
 
@@ -231,9 +233,9 @@ namespace SobekCM.Resource_Object.Bib_Info
                 uncontrolledTypes.Clear();
         }
 
-		/// <summary> Adds an uncontrolled type to this resource </summary>
-		/// <param name="Uncontrolled_Type"> New uncontrolled type </param>
-		/// <remarks> This type is still analyzed to see if it is actually controlled </remarks>
+        /// <summary> Adds an uncontrolled type to this resource </summary>
+        /// <param name="Uncontrolled_Type"> New uncontrolled type </param>
+        /// <remarks> This type is still analyzed to see if it is actually controlled </remarks>
         public TypeOfResource_MODS_Enum Add_Uncontrolled_Type(string Uncontrolled_Type)
         {
             switch (Uncontrolled_Type.ToUpper().Replace(" ", "").Replace(",", "").Replace("-", ""))
@@ -263,7 +265,7 @@ namespace SobekCM.Resource_Object.Bib_Info
                     break;
 
                 case "STILLIMAGE":
-				case "IMAGE":
+                case "IMAGE":
                     modsType = TypeOfResource_MODS_Enum.Still_Image;
                     break;
 
@@ -276,7 +278,7 @@ namespace SobekCM.Resource_Object.Bib_Info
                     break;
 
                 case "SOFTWAREMULTIMEDIA":
-				case "DATASET":
+                case "DATASET":
                     modsType = TypeOfResource_MODS_Enum.Sofware_Multimedia;
                     break;
 

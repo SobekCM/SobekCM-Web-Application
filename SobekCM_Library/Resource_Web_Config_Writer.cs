@@ -1,8 +1,8 @@
 ﻿#region Using directives
 
+using SobekCM.Library.UI;
 using System;
 using System.IO;
-using SobekCM.Library.UI;
 
 #endregion
 
@@ -19,14 +19,14 @@ namespace SobekCM.Library
         /// <param name="IP_Restriction_Membership"> IP restriction membership is used if the resource is IP restricted </param>
         /// <param name="Main_Thumbnail"> Filename for the main thumbnail (which will NOT be restricted) </param>
         /// <returns> TRUE if successful, otherwise FALSE </returns>
-        public static bool Update_Web_Config( string Resource_Folder, bool Dark_Flag, short IP_Restriction_Membership, string Main_Thumbnail )
+        public static bool Update_Web_Config(string Resource_Folder, bool Dark_Flag, short IP_Restriction_Membership, string Main_Thumbnail)
         {
             try
             {
                 string web_config = Resource_Folder + "\\web.config";
                 if (File.Exists(web_config))
                     File.Delete(web_config);
-                if (( Dark_Flag) || (IP_Restriction_Membership > 0))
+                if ((Dark_Flag) || (IP_Restriction_Membership > 0))
                 {
                     StreamWriter writer = new StreamWriter(web_config, false);
                     writer.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
@@ -36,7 +36,7 @@ namespace SobekCM.Library
                     writer.WriteLine("            <ipSecurity allowUnlisted=\"false\">");
                     writer.WriteLine("                 <clear />");
                     writer.WriteLine("                 <add ipAddress=\"127.0.0.1\" allowed=\"true\" />");
-                    if ( !String.IsNullOrEmpty(UI_ApplicationCache_Gateway.Settings.Servers.SobekCM_Web_Server_IP))
+                    if (!String.IsNullOrEmpty(UI_ApplicationCache_Gateway.Settings.Servers.SobekCM_Web_Server_IP))
                         writer.WriteLine("                 <add ipAddress=\"" + UI_ApplicationCache_Gateway.Settings.Servers.SobekCM_Web_Server_IP.Trim() + "\" allowed=\"true\" />");
                     writer.WriteLine("            </ipSecurity>");
                     writer.WriteLine("        </security>");
@@ -44,7 +44,7 @@ namespace SobekCM.Library
                     writer.WriteLine("    </system.webServer>");
 
                     // Is there now a main thumbnail?
-                    if (( Main_Thumbnail.Length > 0) && ( Main_Thumbnail.IndexOf("http:") < 0))
+                    if ((Main_Thumbnail.Length > 0) && (Main_Thumbnail.IndexOf("http:") < 0))
                     {
                         writer.WriteLine("    <location path=\"" + Main_Thumbnail + "\">");
                         writer.WriteLine("        <system.webServer>");

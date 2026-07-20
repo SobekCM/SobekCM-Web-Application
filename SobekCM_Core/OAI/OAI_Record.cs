@@ -17,11 +17,11 @@ namespace SobekCM.Core.OAI
 
         /// <summary> Full record to be provided via OAI-PMH </summary>
         [DataMember(EmitDefaultValue = false)]
-        public string Record { get; set;  }
+        public string Record { get; set; }
 
         /// <summary> Bibliographic identifier of this item within this instance  </summary>
         [DataMember]
-        public string BibID { get; set;  }
+        public string BibID { get; set; }
 
         /// <summary> Volume identifier of this item within this instance  </summary>
         [DataMember]
@@ -32,7 +32,7 @@ namespace SobekCM.Core.OAI
         /// <param name="VID"> Volume identifier of this item within this instance </param>
         /// <param name="Record"> Full record to be provided via OAI-PMH </param>
         /// <param name="Last_Modified_Date"></param>
-        public OAI_Record( string BibID, string VID, string Record, DateTime Last_Modified_Date )
+        public OAI_Record(string BibID, string VID, string Record, DateTime Last_Modified_Date)
         {
             this.BibID = BibID;
             this.VID = VID;

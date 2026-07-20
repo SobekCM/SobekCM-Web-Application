@@ -1,13 +1,7 @@
 ﻿#region Using directives
 
-using System;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.IO;
-using System.Linq;
-using System.Text;
-
 using SobekCM.Core.Aggregations;
+using SobekCM.Core.Configuration.Engine;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Results;
@@ -17,11 +11,15 @@ using SobekCM.Core.Settings;
 using SobekCM.Engine_Library.Aggregations;
 using SobekCM.Engine_Library.ApplicationState;
 using SobekCM.Engine_Library.Database;
-using SobekCM.Core.Configuration.Engine;
-using SobekCM.Engine_Library.Solr;
 using SobekCM.Engine_Library.Solr.Legacy;
 using SobekCM.Engine_Library.Solr.v5;
 using SobekCM.Tools;
+using System;
+using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.IO;
+using System.Linq;
+using System.Text;
 
 #endregion
 
@@ -58,7 +56,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="QueryString"></param>
         /// <param name="Protocol"></param>
         /// <param name="IsDebug"></param>
-        public void Get_Search_Statistics(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug )
+        public void Get_Search_Statistics(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
         {
             Custom_Tracer tracer = new Custom_Tracer();
             tracer.Add_Trace("ResultsServices.Get_Search_Statistics", "Parse request to determine search requested");
@@ -79,7 +77,7 @@ namespace SobekCM.Engine_Library.Endpoints
             {
                 tracer.Add_Trace("ResultsServices.Get_Search_Statistics", "Returned aggregation was NULL... aggregation code may not be valid");
 
-                if ( IsDebug )
+                if (IsDebug)
                 {
                     Response.ContentType = "text/plain";
                     Response.Output.WriteLine("DEBUG MODE DETECTED");
@@ -102,7 +100,7 @@ namespace SobekCM.Engine_Library.Endpoints
 
             // Was this in debug mode?
             // If this was debug mode, then just write the tracer
-            if ( IsDebug )
+            if (IsDebug)
             {
                 Response.ContentType = "text/plain";
                 Response.Output.WriteLine("DEBUG MODE DETECTED");
@@ -156,7 +154,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="QueryString"></param>
         /// <param name="Protocol"></param>
         /// <param name="IsDebug"></param>
-        public void Get_Search_Results_Page(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug )
+        public void Get_Search_Results_Page(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
         {
             Custom_Tracer tracer = new Custom_Tracer();
             tracer.Add_Trace("ResultsServices.Get_Search_Results_Set", "Parse request to determine search requested");
@@ -177,7 +175,7 @@ namespace SobekCM.Engine_Library.Endpoints
             {
                 tracer.Add_Trace("ResultsServices.Get_Search_Results_Set", "Returned aggregation was NULL... aggregation code may not be valid");
 
-                if ( IsDebug )
+                if (IsDebug)
                 {
                     Response.ContentType = "text/plain";
                     Response.Output.WriteLine("DEBUG MODE DETECTED");
@@ -206,8 +204,8 @@ namespace SobekCM.Engine_Library.Endpoints
                 // Create the new rest title object
                 ResultTitleInfo restTitle = new ResultTitleInfo
                 {
-                    BibID = thisResult.BibID, 
-                    MainThumbnail = thisResult.GroupThumbnail, 
+                    BibID = thisResult.BibID,
+                    MainThumbnail = thisResult.GroupThumbnail,
                     Title = thisResult.GroupTitle
                 };
 
@@ -215,7 +213,7 @@ namespace SobekCM.Engine_Library.Endpoints
                 int field_index = 0;
                 foreach (string metadataTerm in resultsStats.Metadata_Labels)
                 {
-                    if ( !String.IsNullOrWhiteSpace(thisResult.Metadata_Display_Values[field_index]))
+                    if (!String.IsNullOrWhiteSpace(thisResult.Metadata_Display_Values[field_index]))
                     {
                         string termString = thisResult.Metadata_Display_Values[field_index];
                         ResultTitle_DescriptiveTerm termObj = new ResultTitle_DescriptiveTerm(metadataTerm);
@@ -224,7 +222,7 @@ namespace SobekCM.Engine_Library.Endpoints
                             string[] splitter = termString.Split("|".ToCharArray());
                             foreach (string thisSplit in splitter)
                             {
-                                if ( !String.IsNullOrWhiteSpace(thisSplit))
+                                if (!String.IsNullOrWhiteSpace(thisSplit))
                                     termObj.Add_Value(thisSplit.Trim());
                             }
                         }
@@ -244,9 +242,9 @@ namespace SobekCM.Engine_Library.Endpoints
 
                     ResultItemInfo newItem = new ResultItemInfo
                     {
-                        VID = itemResults.VID, 
-                        Title = itemResults.Title, 
-                        Link = itemResults.Link, 
+                        VID = itemResults.VID,
+                        Title = itemResults.Title,
+                        Link = itemResults.Link,
                         MainThumbnail = itemResults.MainThumbnail
                     };
 
@@ -260,7 +258,7 @@ namespace SobekCM.Engine_Library.Endpoints
 
             // Was this in debug mode?
             // If this was debug mode, then just write the tracer
-            if ( IsDebug )
+            if (IsDebug)
             {
                 Response.ContentType = "text/plain";
                 Response.Output.WriteLine("DEBUG MODE DETECTED");
@@ -321,7 +319,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="QueryString"></param>
         /// <param name="Protocol"></param>
         /// <param name="IsDebug"></param>
-        public void Get_Search_Results_Legacy(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug )
+        public void Get_Search_Results_Legacy(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
         {
             Custom_Tracer tracer = new Custom_Tracer();
             tracer.Add_Trace("ResultsServices.Get_Search_Results_Legacy", "Parse request to determine search requested");
@@ -342,7 +340,7 @@ namespace SobekCM.Engine_Library.Endpoints
             {
                 tracer.Add_Trace("ResultsServices.Get_Search_Results_Legacy", "Returned aggregation was NULL... aggregation code may not be valid");
 
-                if ( IsDebug )
+                if (IsDebug)
                 {
                     Response.ContentType = "text/plain";
                     Response.Output.WriteLine("DEBUG MODE DETECTED");
@@ -365,7 +363,7 @@ namespace SobekCM.Engine_Library.Endpoints
 
             // Was this in debug mode?
             // If this was debug mode, then just write the tracer
-            if ( IsDebug )
+            if (IsDebug)
             {
                 Response.ContentType = "text/plain";
                 Response.Output.WriteLine("DEBUG MODE DETECTED");
@@ -406,7 +404,7 @@ namespace SobekCM.Engine_Library.Endpoints
             switch (Protocol)
             {
                 case Microservice_Endpoint_Protocol_Enum.XML:
-                    legacy_xml_display_search_results(Response.Output, args, resultsStats, resultsPage );
+                    legacy_xml_display_search_results(Response.Output, args, resultsStats, resultsPage);
                     break;
 
                 case Microservice_Endpoint_Protocol_Enum.JSON:
@@ -505,7 +503,7 @@ namespace SobekCM.Engine_Library.Endpoints
                     Output.Write("\t\t<Title>");
                     Write_XML(Output, itemResult.Title);
                     Output.WriteLine("</Title>");
-                    if ( !String.IsNullOrEmpty(itemResult.PubDate))
+                    if (!String.IsNullOrEmpty(itemResult.PubDate))
                     {
                         Output.Write("\t\t<Date>");
                         Write_XML(Output, itemResult.PubDate);
@@ -572,7 +570,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="Complete_Result_Set_Info"> [OUT] Information about the entire set of results </param>
         /// <param name="Paged_Results"> [OUT] List of search results for the requested page of results </param>
         public ResultsEndpointErrorEnum Get_Search_Results(Results_Arguments Current_Mode,
-                                       Complete_Item_Aggregation Aggregation_Object, 
+                                       Complete_Item_Aggregation Aggregation_Object,
                                         bool Include_Private_Items,
                                        Custom_Tracer Tracer,
                                        out Search_Results_Statistics Complete_Result_Set_Info,
@@ -631,19 +629,19 @@ namespace SobekCM.Engine_Library.Endpoints
                     List<List<iSearch_Title_Result>> pagesOfResults;
 
                     // Get from the hierarchy object
-                        Multiple_Paged_Results_Args returnArgs = Item_Aggregation_Utilities.Gat_All_Browse(Aggregation_Object, current_page_index, sort, (int) Current_Mode.ResultsPerPage, Current_Mode.Use_Cache, need_browse_statistics, null, Tracer);
-                        if (need_browse_statistics)
+                    Multiple_Paged_Results_Args returnArgs = Item_Aggregation_Utilities.Gat_All_Browse(Aggregation_Object, current_page_index, sort, (int)Current_Mode.ResultsPerPage, Current_Mode.Use_Cache, need_browse_statistics, null, Tracer);
+                    if (need_browse_statistics)
+                    {
+                        Complete_Result_Set_Info = returnArgs.Statistics;
+                        foreach (Search_Facet_Collection thisFacet in Complete_Result_Set_Info.Facet_Collections)
                         {
-                            Complete_Result_Set_Info = returnArgs.Statistics;
-                            foreach (Search_Facet_Collection thisFacet in Complete_Result_Set_Info.Facet_Collections)
-                            {
-                                Metadata_Search_Field field = Engine_ApplicationCache_Gateway.Settings.Metadata_Search_Field_By_ID(thisFacet.MetadataTypeID);
-                                thisFacet.MetadataTerm = field.Facet_Term;
-                            }
+                            Metadata_Search_Field field = Engine_ApplicationCache_Gateway.Settings.Metadata_Search_Field_By_ID(thisFacet.MetadataTypeID);
+                            thisFacet.MetadataTerm = field.Facet_Term;
                         }
-                        pagesOfResults = returnArgs.Paged_Results;
-                        if ((pagesOfResults != null) && (pagesOfResults.Count > 0))
-                            Paged_Results = pagesOfResults[0];
+                    }
+                    pagesOfResults = returnArgs.Paged_Results;
+                    if ((pagesOfResults != null) && (pagesOfResults.Count > 0))
+                        Paged_Results = pagesOfResults[0];
 
                     // Save the overall result set statistics to the cache if something was pulled
                     if (Current_Mode.Use_Cache)
@@ -732,7 +730,7 @@ namespace SobekCM.Engine_Library.Endpoints
                         return ee.Message.ToUpper().IndexOf("TIMEOUT") >= 0 ? ResultsEndpointErrorEnum.Database_Timeout_Exception : ResultsEndpointErrorEnum.Database_Exception;
                     }
                 }
-                catch (Exception ee )
+                catch (Exception ee)
                 {
                     // Next, show the message to the user
                     Tracer.Add_Trace("ResultServices.Get_Search_Results", "Exception: " + ee.Message);
@@ -760,7 +758,7 @@ namespace SobekCM.Engine_Library.Endpoints
 
                 // Determine if this is a special search type which returns more rows and is not cached.
                 // This is used to return the results as XML and DATASET
-                int results_per_page = (int) Current_Mode.ResultsPerPage;
+                int results_per_page = (int)Current_Mode.ResultsPerPage;
 
                 // Get any included date range
                 Nullable<DateTime> date_start = null;
@@ -1132,7 +1130,7 @@ namespace SobekCM.Engine_Library.Endpoints
             }
 
             // Get the page count in the results
-            int current_page_index =Current_Mode.Page;
+            int current_page_index = Current_Mode.Page;
 
             // If this is an exact match, just do the search
             if (Current_Mode.Search_Precision == Search_Precision_Type_Enum.Exact_Match)
@@ -1235,7 +1233,7 @@ namespace SobekCM.Engine_Library.Endpoints
                 searchOptions.AggregationCode = Aggregation_Object.Code;
                 searchOptions.Facets = Aggregation_Object.Facets;
                 searchOptions.Fields = Aggregation_Object.Results_Fields;
-                searchOptions.Sort = (ushort) Current_Sort;
+                searchOptions.Sort = (ushort)Current_Sort;
 
                 // Should results be grouped?  Aggregation must be set and for the moment, full text
                 // must have been NOT searched

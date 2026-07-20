@@ -1,9 +1,9 @@
 ﻿#region Using directives
 
+using SobekCM.Resource_Object.MARC;
 using System;
 using System.Collections.Generic;
 using System.Text;
-using SobekCM.Resource_Object.MARC;
 
 #endregion
 
@@ -27,7 +27,7 @@ namespace SobekCM.Resource_Object.OAI.Writer
             string SystemName = null;
             string SystemAbbreviation = null;
             string ThumbnailBase = null;
- 
+
 
             if (Options != null)
             {

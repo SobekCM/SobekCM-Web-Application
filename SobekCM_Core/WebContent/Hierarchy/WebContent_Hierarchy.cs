@@ -1,9 +1,8 @@
-﻿using System;
+﻿using ProtoBuf;
+using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
-using ProtoBuf;
 
 namespace SobekCM.Core.WebContent.Hierarchy
 {
@@ -22,7 +21,7 @@ namespace SobekCM.Core.WebContent.Hierarchy
         [IgnoreDataMember]
         [XmlArray("children")]
         [XmlArrayItem("webHierarchyNode", typeof(WebContent_Hierarchy_Node))]
-        public List<WebContent_Hierarchy_Node> Children_XML { get; set;}
+        public List<WebContent_Hierarchy_Node> Children_XML { get; set; }
 
         /// <summary> Number of child root nodes in this hierarchy </summary>
         [IgnoreDataMember]
@@ -72,7 +71,7 @@ namespace SobekCM.Core.WebContent.Hierarchy
         /// <summary> Clear this hierarchy object, by clearing the collection of root nodes </summary>
         public void Clear()
         {
-            if ( Children != null )
+            if (Children != null)
                 Children.Clear();
         }
 
@@ -101,12 +100,12 @@ namespace SobekCM.Core.WebContent.Hierarchy
             }
             else
             {
-                node = new WebContent_Hierarchy_Node {Segment = Level1};
+                node = new WebContent_Hierarchy_Node { Segment = Level1 };
                 Children[Level1] = node;
             }
 
             // If no second level, assign the values and return
-            if (( node == null ) || (String.IsNullOrEmpty(Level2)))
+            if ((node == null) || (String.IsNullOrEmpty(Level2)))
             {
                 if (node != null)
                 {
@@ -117,7 +116,7 @@ namespace SobekCM.Core.WebContent.Hierarchy
             }
 
             // Handle the SECOND level of the hierarchy
-            if (( node.Children != null ) && ( node.Children.ContainsKey(Level2)))
+            if ((node.Children != null) && (node.Children.ContainsKey(Level2)))
             {
                 node = node.Children[Level2];
             }

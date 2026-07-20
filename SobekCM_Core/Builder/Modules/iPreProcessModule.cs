@@ -1,7 +1,7 @@
 ﻿#region Using directives
 
-using System.Collections.Generic;
 using SobekCM.Core.Settings;
+using System.Collections.Generic;
 
 #endregion
 
@@ -15,7 +15,7 @@ namespace SobekCM.Builder_Library.Modules.PreProcess
 
         /// <summary> Method performs the work of the pre-process builder module </summary>
         /// <param name="Settings"> Instance-wide settings which may be required for this process </param>
-        void DoWork( InstanceWide_Settings Settings );
+        void DoWork(InstanceWide_Settings Settings);
 
         /// <summary> Event is fired when an error occurs during processing </summary>
         event ModuleErrorLoggingDelegate Error;

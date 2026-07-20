@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Tools;
+using System.IO;
 
 namespace SobekCM.Library.AdminViewer
 {
@@ -23,7 +18,7 @@ namespace SobekCM.Library.AdminViewer
 
         public override void Write_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
-            
+
         }
     }
 }

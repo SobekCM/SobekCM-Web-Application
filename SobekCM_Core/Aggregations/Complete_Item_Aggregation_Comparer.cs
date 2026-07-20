@@ -1,13 +1,11 @@
 ﻿#region Using directives
 
+using SobekCM.Core.Configuration.Localization;
+using SobekCM.Core.Navigation;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using SobekCM.Core.Configuration;
-using SobekCM.Core.Configuration.Localization;
-using SobekCM.Core.Navigation;
-using SobekCM.Core.Search;
 
 #endregion
 
@@ -22,7 +20,7 @@ namespace SobekCM.Core.Aggregations
         /// <param name="Base"> Base item aggregation </param>
         /// <param name="Compared"> New item aggregation object to compare to the base </param>
         /// <returns> List of changes between the two aggregation objects </returns>
-        public static List<string> Compare(Complete_Item_Aggregation Base, Complete_Item_Aggregation Compared )
+        public static List<string> Compare(Complete_Item_Aggregation Base, Complete_Item_Aggregation Compared)
         {
 
             // TODO: Facet comparison below needs to look up the name of the facet,
@@ -48,7 +46,7 @@ namespace SobekCM.Core.Aggregations
                     {
                         base_parents.Add(parentAggr.Code);
                     }
-                        
+
                 }
             }
             if (Compared.Parents != null)
@@ -66,7 +64,7 @@ namespace SobekCM.Core.Aggregations
             {
                 if (base_parents.Count == 1)
                 {
-                    changes.Add("Removed parent " + base_parents[0] );
+                    changes.Add("Removed parent " + base_parents[0]);
                 }
                 else
                 {
@@ -122,9 +120,9 @@ namespace SobekCM.Core.Aggregations
             compare_nullable_strings(Base.External_Link, Compared.External_Link, "external link", changes);
 
             // Hidden flag
-            if ( Base.Hidden != Compared.Hidden )
+            if (Base.Hidden != Compared.Hidden)
             {
-                if ( Compared.Hidden )
+                if (Compared.Hidden)
                     changes.Add("Removed from parent home page");
                 else
                     changes.Add("Added to parent home page");
@@ -140,16 +138,16 @@ namespace SobekCM.Core.Aggregations
             }
 
             // thematic headings
-            if ( Base.Thematic_Heading == null )
+            if (Base.Thematic_Heading == null)
             {
-                if ( Compared.Thematic_Heading != null )
+                if (Compared.Thematic_Heading != null)
                 {
                     changes.Add("Added to thematic heading '" + Compared.Thematic_Heading.Text + "'");
                 }
             }
             else
             {
-                if ( Compared.Thematic_Heading == null )
+                if (Compared.Thematic_Heading == null)
                 {
                     changes.Add("Removed from thematic heading '" + Base.Thematic_Heading.Text + "'");
                 }
@@ -167,23 +165,23 @@ namespace SobekCM.Core.Aggregations
             List<string> compared_skins = new List<string>();
             if (Base.Web_Skins != null)
             {
-                foreach( string thisSkin in Base.Web_Skins)
+                foreach (string thisSkin in Base.Web_Skins)
                 {
                     // Look in compared for a match
                     if ((Compared.Web_Skins == null) || (Compared.Web_Skins.All(CompareSkin => String.Compare(thisSkin, CompareSkin, StringComparison.InvariantCultureIgnoreCase) != 0)))
                     {
                         base_skins.Add(thisSkin);
-                    }                       
+                    }
                 }
             }
             if (Compared.Web_Skins != null)
             {
-                foreach ( string thisSkin in Compared.Web_Skins)
+                foreach (string thisSkin in Compared.Web_Skins)
                 {
                     // Look in base for a match
                     if ((Base.Web_Skins == null) || (Base.Web_Skins.All(CompareSkin => String.Compare(thisSkin, CompareSkin, StringComparison.InvariantCultureIgnoreCase) != 0)))
                     {
-                        compared_skins.Add(thisSkin); 
+                        compared_skins.Add(thisSkin);
                     }
                 }
             }
@@ -240,13 +238,13 @@ namespace SobekCM.Core.Aggregations
             List<Web_Language_Enum> addedLanguages = new List<Web_Language_Enum>();
             if (Base.Home_Page_File_Dictionary != null)
             {
-                foreach ( KeyValuePair<Web_Language_Enum, Complete_Item_Aggregation_Home_Page> thisHomePage in Base.Home_Page_File_Dictionary)
+                foreach (KeyValuePair<Web_Language_Enum, Complete_Item_Aggregation_Home_Page> thisHomePage in Base.Home_Page_File_Dictionary)
                 {
                     // Look in compared for a match
                     if ((Compared.Home_Page_File_Dictionary == null) || (Compared.Home_Page_File_Dictionary.All(CompareHomePage => thisHomePage.Key != CompareHomePage.Key)))
                     {
                         removedLanguages.Add(thisHomePage.Key);
-                    }                       
+                    }
                 }
             }
             if (Compared.Home_Page_File_Dictionary != null)
@@ -257,7 +255,7 @@ namespace SobekCM.Core.Aggregations
                     if ((Base.Home_Page_File_Dictionary == null) || (Base.Home_Page_File_Dictionary.All(CompareHomePage => thisHomePage.Key != CompareHomePage.Key)))
                     {
                         addedLanguages.Add(thisHomePage.Key);
-                    }                       
+                    }
                 }
             }
             if (removedLanguages.Count > 0)
@@ -418,7 +416,7 @@ namespace SobekCM.Core.Aggregations
             // other display types? ( all/new item browse, map browse )
 
             // map search default area
-            if ((Base.Map_Search_Display != null ) || ( Compared.Map_Search_Display != null ))
+            if ((Base.Map_Search_Display != null) || (Compared.Map_Search_Display != null))
             {
                 if (Base.Map_Search_Display == null)
                 {
@@ -439,8 +437,8 @@ namespace SobekCM.Core.Aggregations
                     }
                     else
                     {
-                        if ((Base.Map_Search_Display.ZoomLevel.HasValue != Compared.Map_Search_Display.ZoomLevel.HasValue) || 
-                            ((Base.Map_Search_Display.ZoomLevel.HasValue) && (Base.Map_Search_Display.ZoomLevel.Value != Compared.Map_Search_Display.ZoomLevel.Value))) 
+                        if ((Base.Map_Search_Display.ZoomLevel.HasValue != Compared.Map_Search_Display.ZoomLevel.HasValue) ||
+                            ((Base.Map_Search_Display.ZoomLevel.HasValue) && (Base.Map_Search_Display.ZoomLevel.Value != Compared.Map_Search_Display.ZoomLevel.Value)))
                             different = true;
                         if ((Base.Map_Search_Display.Latitude.HasValue != Compared.Map_Search_Display.Latitude.HasValue) ||
                             ((Base.Map_Search_Display.Latitude.HasValue) && (Base.Map_Search_Display.Latitude.Value != Compared.Map_Search_Display.Latitude.Value)))
@@ -450,7 +448,7 @@ namespace SobekCM.Core.Aggregations
                             different = true;
                     }
 
-                    if ( different )
+                    if (different)
                         changes.Add("Changed default area for map search display");
                 }
             }

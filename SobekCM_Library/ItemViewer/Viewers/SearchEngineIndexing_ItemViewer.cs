@@ -1,8 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Net.Mime;
+using Microsoft.AspNetCore.Http;
 using SobekCM.Core.BriefItem;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.FileSystems;
@@ -10,9 +6,11 @@ using SobekCM.Core.Navigation;
 using SobekCM.Core.Users;
 using SobekCM.Library.HTML;
 using SobekCM.Library.ItemViewer.Menu;
-using SobekCM.Library.UI;
 using SobekCM.Tools;
-using Microsoft.AspNetCore.Http;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 
 namespace SobekCM.Library.ItemViewer.Viewers
 {
@@ -184,7 +182,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             // BUild the flags object
             RequestCache_RequestFlags currentFlags = new RequestCache_RequestFlags();
-            if ( BriefItem.Behaviors.HasRestrictions )
+            if (BriefItem.Behaviors.HasRestrictions)
             {
                 currentFlags.ItemRestrictedFromUser = true;
                 currentFlags.RestrictionMessage = BriefItem.Behaviors.RestrictionMessage;
@@ -217,7 +215,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
                 string textLocation = SobekFileSystem.Resource_Network_Uri(BriefItem);
                 Add_Full_Text(Output, textLocation);
-            }        
+            }
         }
 
         private void Add_Full_Text(TextWriter Output, string TextFileLocation)
@@ -240,7 +238,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     // If this has page images, check for related text files 
                     List<string> text_files_included = new List<string>();
                     bool started = false;
-                    if ((BriefItem.Images != null ) && ( BriefItem.Images.Count > 0 ))
+                    if ((BriefItem.Images != null) && (BriefItem.Images.Count > 0))
                     {
                         // Go through the first 100 text pages
                         int page_count = 0;

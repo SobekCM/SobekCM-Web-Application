@@ -1,15 +1,15 @@
 ﻿#region Using directives
 
+using ProtoBuf;
 using System;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
-using ProtoBuf;
 
 #endregion
 
 namespace SobekCM.Core.Aggregations
 {
-    
+
     /// <summary> Single image highlight from an aggregation, with the information for only a single language </summary>
     /// <remarks> This is related to the <see cref="Complete_Item_Aggregation_Highlights" /> class, except this does not have dictionaries
     /// for some of the values, since it is for a single language </remarks>

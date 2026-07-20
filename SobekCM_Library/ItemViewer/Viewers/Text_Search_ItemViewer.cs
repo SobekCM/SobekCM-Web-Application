@@ -1,15 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using SobekCM.Core.BriefItem;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Settings;
-using SobekCM.Core.UI_Configuration;
-using SobekCM.Core.UI_Configuration.StaticResources;
 using SobekCM.Core.Users;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Engine_Library.Solr.Legacy;
@@ -17,7 +10,11 @@ using SobekCM.Engine_Library.Solr.v5;
 using SobekCM.Library.ItemViewer.Menu;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
-using Microsoft.AspNetCore.Http;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
 
 namespace SobekCM.Library.ItemViewer.Viewers
 {
@@ -78,7 +75,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <param name="CurrentRequest"> Information about the current request </param>
         /// <param name="MenuItems"> List of menu items, to which this method may add one or more menu items </param>
         /// <param name="IsRestricted"> Flag indicates if this item is restricted AND the current user is outside the ranges or not in the proper groups</param>
-        public virtual void Add_Menu_Items(BriefItemInfo CurrentItem, User_Object CurrentUser, Navigation_Object CurrentRequest, List<Item_MenuItem> MenuItems, bool IsRestricted )
+        public virtual void Add_Menu_Items(BriefItemInfo CurrentItem, User_Object CurrentUser, Navigation_Object CurrentRequest, List<Item_MenuItem> MenuItems, bool IsRestricted)
         {
             // Get the URL for this
             string previous_code = CurrentRequest.ViewerCode;
@@ -103,7 +100,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// the digital resource requested.  The created viewer is then destroyed at the end of the request </remarks>
         public virtual iItemViewer Create_Viewer(BriefItemInfo CurrentItem, User_Object CurrentUser, Navigation_Object CurrentRequest, Custom_Tracer Tracer, RequestCache_RequestFlags CurrentFlags, HttpContext Context)
         {
-            return new Text_Search_ItemViewer(CurrentItem, CurrentUser, CurrentRequest, Tracer );
+            return new Text_Search_ItemViewer(CurrentItem, CurrentUser, CurrentRequest, Tracer);
         }
     }
 
@@ -121,7 +118,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <param name="CurrentUser"> Current user, who may or may not be logged on </param>
         /// <param name="CurrentRequest"> Information about the current request </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        public Text_Search_ItemViewer(BriefItemInfo BriefItem, User_Object CurrentUser, Navigation_Object CurrentRequest, Custom_Tracer Tracer )
+        public Text_Search_ItemViewer(BriefItemInfo BriefItem, User_Object CurrentUser, Navigation_Object CurrentRequest, Custom_Tracer Tracer)
         {
             Tracer.Add_Trace("Text_Search_ItemViewer.Constructor");
 
@@ -146,7 +143,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 int page = CurrentRequest.SubPage.HasValue ? Math.Max(CurrentRequest.SubPage.Value, ((ushort)1)) : 1;
 
                 // Search differently, depending on the search type
-                if ( UI_ApplicationCache_Gateway.Settings.System.Search_System == Search_System_Enum.Beta)
+                if (UI_ApplicationCache_Gateway.Settings.System.Search_System == Search_System_Enum.Beta)
                     results = v5_Solr_Searcher.Search_Within_Document(BriefItem.BibID, BriefItem.VID, terms, 20, page, false);
                 else
                     results = Legacy_Solr_Searcher.Search_Within_Document(BriefItem.BibID, BriefItem.VID, terms, 20, page, false);

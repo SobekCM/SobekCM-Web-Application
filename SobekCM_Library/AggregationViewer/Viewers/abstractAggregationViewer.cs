@@ -1,16 +1,15 @@
 ﻿#region Using directives
 
-using System;
-using System.Collections.Generic;
-using System.IO;
+using Microsoft.AspNetCore.Http;
 using SobekCM.Core.Aggregations;
-using SobekCM.Core.Configuration;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Navigation;
-using Microsoft.AspNetCore.Http;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
 using SobekCM.Tools;
+using System;
+using System.Collections.Generic;
+using System.IO;
 
 #endregion
 
@@ -97,14 +96,14 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         /// <remarks> This returns NULL by default, but can be override by individual viewer implementations </remarks>
         public virtual string Viewer_Title
         {
-            get { return null;  }
+            get { return null; }
         }
 
         /// <summary> Gets the URL for the icon related to this aggregational viewer task </summary>
         /// <remarks> This returns NULL by default, but can be override by individual viewer implementations </remarks>
         public virtual string Viewer_Icon
         {
-            get { return null;  }
+            get { return null; }
         }
 
 
@@ -112,7 +111,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         /// <param name="Output"> Textwriter to write the HTML for this viewer</param>
         /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
         public abstract void Add_Search_Box_HTML(TextWriter Output, Custom_Tracer Tracer);
-        
+
         /// <summary> Add the HTML to be displayed below the search box </summary>
         /// <param name="Output"> Textwriter to write the HTML for this viewer </param>
         /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
@@ -156,10 +155,10 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             // Write the quick tips
             Output.WriteLine("<!-- Add quick tips ( abstractAggregationViewer ) -->");
 
-            switch ( RequestSpecificValues.Current_Mode.Language )
+            switch (RequestSpecificValues.Current_Mode.Language)
             {
                 case Web_Language_Enum.French:
-					Output.WriteLine("<div id=\"sbk_QuickTips\">");
+                    Output.WriteLine("<div id=\"sbk_QuickTips\">");
                     Output.WriteLine("  <h1>Conseils rapides</h1>");
                     Output.WriteLine("  <ul>");
                     Output.WriteLine("    <li>La Recherche Booléenne");
@@ -189,7 +188,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                     break;
 
                 case Web_Language_Enum.Spanish:
-					Output.WriteLine("<div id=\"sbk_QuickTips\">");
+                    Output.WriteLine("<div id=\"sbk_QuickTips\">");
                     Output.WriteLine("  <h1>Consejos Rápidos:</h1>");
                     Output.WriteLine("  <ul>");
                     Output.WriteLine("    <li>Búsqueda Binaria");
@@ -219,7 +218,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                     break;
 
                 default:
-					Output.WriteLine("<div id=\"sbk_QuickTips\">");
+                    Output.WriteLine("<div id=\"sbk_QuickTips\">");
                     Output.WriteLine("  <h1>Quick Tips</h1>");
                     Output.WriteLine("  <ul>");
                     Output.WriteLine("    <li>Boolean Searching");

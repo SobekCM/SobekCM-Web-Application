@@ -1,132 +1,131 @@
 #region Using directives
 
+using ProtoBuf;
+using SobekCM.Core.Configuration.Localization;
 using System;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
-using ProtoBuf;
-using SobekCM.Core.Configuration;
-using SobekCM.Core.Configuration.Localization;
 
 #endregion
 
 namespace SobekCM.Core.Navigation
 {
-	/// <summary> This object stores the current and next mode information for a single HTTP request. <br /> <br /> </summary>
-	/// <remarks>  Object written by Mark V Sullivan for the University of Florida. </remarks>
+    /// <summary> This object stores the current and next mode information for a single HTTP request. <br /> <br /> </summary>
+    /// <remarks>  Object written by Mark V Sullivan for the University of Florida. </remarks>
     [Serializable, DataContract, ProtoContract]
     [XmlRoot("navigationObject")]
-	public class Navigation_Object 
-	{
-		#region Private members of this object
+    public class Navigation_Object
+    {
+        #region Private members of this object
 
-		private string searchFields;
-		private string searchString;
+        private string searchFields;
+        private string searchString;
 
-		#endregion
+        #endregion
 
-		#region Constructors
+        #region Constructors
 
-		/// <summary> Constructor for a new instance of the SobekCM_Navigation_Object which stores 
-		/// all of the information about an individual request. </summary>
-		public Navigation_Object()
-		{
-			// Do general item construction
-			Constructor_Helper();
-		}
+        /// <summary> Constructor for a new instance of the SobekCM_Navigation_Object which stores 
+        /// all of the information about an individual request. </summary>
+        public Navigation_Object()
+        {
+            // Do general item construction
+            Constructor_Helper();
+        }
 
-		private void Constructor_Helper()
-		{
-			// Declare some defaults
-		    Admin_Type = Admin_Type_Enum.NONE;
-			Mode = Display_Mode_Enum.Error;
+        private void Constructor_Helper()
+        {
+            // Declare some defaults
+            Admin_Type = Admin_Type_Enum.NONE;
+            Mode = Display_Mode_Enum.Error;
             Search_Type = Search_Type_Enum.NONE;
             Statistics_Type = Statistics_Type_Enum.NONE;
             Internal_Type = Internal_Type_Enum.NONE;
             My_Sobek_Type = My_Sobek_Type_Enum.NONE;
-			Language = Web_Language_Enum.English;
-			Default_Language = Web_Language_Enum.English;
-			Writer_Type = Writer_Type_Enum.HTML;
-			TOC_Display = TOC_Display_Type_Enum.Undetermined;
-			Trace_Flag = Trace_Flag_Type_Enum.Unspecified;
-			Search_Precision = Search_Precision_Type_Enum.Contains;
+            Language = Web_Language_Enum.English;
+            Default_Language = Web_Language_Enum.English;
+            Writer_Type = Writer_Type_Enum.HTML;
+            TOC_Display = TOC_Display_Type_Enum.Undetermined;
+            Trace_Flag = Trace_Flag_Type_Enum.Unspecified;
+            Search_Precision = Search_Precision_Type_Enum.Contains;
             WebContent_Type = WebContent_Type_Enum.NONE;
 
 
-			Skin = "sobek";
-			Default_Skin = "sobek";
-		    Instance_Abbreviation = "SOBEK";
+            Skin = "sobek";
+            Default_Skin = "sobek";
+            Instance_Abbreviation = "SOBEK";
             Instance_Name = "Default SobekCM Library";
 
-			Skin_In_URL = false;
-			isPostBack = false;
-			Is_Robot = false;
-			Logon_Required = false;
-		    Request_Completed = false;
-		}
-
-		#endregion
-
-		#region Code to set the robot flag from request variables
-
-		/// <summary> Algorithm tests the user agent and IP address against known robots 
-		/// to determine if this request is from a search engine indexer or web site crawler bot. </summary>
-		/// <param name="UserAgent">User Agent string from the HTTP request</param>
-		/// <param name="IP">IP address from the HTTP request</param>
-		/// <returns>TRUE if the request appears to be a robot, otherwise FALSE</returns>
-		public static bool Is_UserAgent_IP_Robot(string UserAgent, string IP)
-		{
-			if (UserAgent != null)
-			{
-				string useragent_upper = UserAgent.ToUpper();
-
-				if (useragent_upper.IndexOf("BOT") >= 0)
-				{
-					if ((useragent_upper.IndexOf("MSNBOT") >= 0) || (useragent_upper.IndexOf("GIGABOT") >= 0) || (useragent_upper.IndexOf("GOOGLEBOT") >= 0) || (useragent_upper.IndexOf("AISEARCHBOT") >= 0) || (useragent_upper.IndexOf("CCBOT") >= 0) || (useragent_upper.IndexOf("PLONEBOT") >= 0) || (useragent_upper.IndexOf("CAZOODLEBOT") >= 0) || (useragent_upper.IndexOf("DISCOBOT") >= 0) || (useragent_upper.IndexOf("BINGBOT") >= 0) || (useragent_upper.IndexOf("YANDEXBOT") >= 0) || (useragent_upper.IndexOf("ATRAXBOT") >= 0) || (useragent_upper.IndexOf("MJ12BOT") >= 0) || (useragent_upper.IndexOf("SITEBOT") >= 0) || (useragent_upper.IndexOf("LINGUEE+BOT") >= 0) || (useragent_upper.IndexOf("MLBOT") >= 0) || (useragent_upper.IndexOf("NEXTGENSEARCHBOT") >= 0) || (useragent_upper.IndexOf("BENDERTHEWEBROBOT") >= 0) || (useragent_upper.IndexOf("EZOOMS.BOT") >= 0) || (useragent_upper.IndexOf("LSSBOT") == 0) || (useragent_upper.IndexOf("DISCOVERYBOT") >= 0))
-					{
-						return true;
-					}
-				}
-
-				if ((useragent_upper.IndexOf("CRAWLER") >= 0) || (useragent_upper.IndexOf("SLURP") >= 0) || (useragent_upper.IndexOf("WEBVAC") >= 0) || (useragent_upper.IndexOf("ABOUT.ASK.COM") >= 0) || (useragent_upper.IndexOf("SCOUTJET") >= 0) || (useragent_upper.IndexOf("SITESUCKER") >= 0) || (useragent_upper.IndexOf("SEARCHME.COM") >= 0) || (useragent_upper.IndexOf("PICSEARCH.COM") >= 0) || (useragent_upper.IndexOf("XENU+LINK+SLEUTH") >= 0) || (useragent_upper.IndexOf("YANDEX") >= 0) || (useragent_upper.IndexOf("JAVA/") == 0) || (useragent_upper.IndexOf("SOGOU+WEB+SPIDER") >= 0) || (useragent_upper.IndexOf("CAMONTSPIDER") >= 0))
-				{
-					return true;
-				}
-
-				if ((useragent_upper.IndexOf("BAIDUSPIDER") >= 0) || (useragent_upper.IndexOf("ICOPYRIGHT+CONDUCTOR") >= 0) || (useragent_upper.IndexOf("HTTP://AHREFS.COM/ROBOT") >= 0) || (useragent_upper.IndexOf("BENDERTHEROBOT.TUMBLR.COM") >= 0) || (useragent_upper.IndexOf("SHOULU.JIKE.COM/SPIDER") >= 0))
-				{
-					return true;
-				}
-
-				if ((useragent_upper.IndexOf("WWW.PROFOUND.NET") >= 0) || (useragent_upper.IndexOf("URLAPPENDBOT") >= 0) || (useragent_upper.IndexOf("SEARCHMETRICBOT") >= 0) || (useragent_upper.IndexOf("HAVIJ") >= 0) || (useragent_upper.IndexOf("SYNAPSE") >= 0) || (useragent_upper.IndexOf("BEWSLEBOT") >= 0) || (useragent_upper.IndexOf("SOSOSPIDER") >= 0) || (useragent_upper.IndexOf("YYSPIDER") >= 0) || (useragent_upper.IndexOf("WBSEARCHBOT") >= 0))
-				{
-					return true;
-				}
-			}
-
-			// First IP address is for test purposes only
-			if ((IP == "128.227.223.160") || (IP == "216.118.117.45") || (IP.IndexOf("65.55.230.") == 0) || (IP == "92.82.225.56") || (IP.IndexOf("220.181.51.") == 0) || (IP == "193.105.210.170") || (IP == "192.162.19.21"))
-			{
-				return true;
-			}
-
-			return false;
-		}
-
-		/// <summary> Algorithm tests the user agent and IP address against known robots 
-		/// to determine if this request is from a search engine indexer or web site crawler bot.  
-		/// This returns the value and also sets an internal robot flag. </summary>
-		/// <param name="UserAgent">User Agent string from the HTTP request</param>
-		/// <param name="IP">IP address from the HTTP request</param>
-		/// <returns>TRUE if the request appears to be a robot, otherwise FALSE</returns>
-		public bool Set_Robot_Flag(string UserAgent, string IP)
-		{
-			Is_Robot = Is_Robot || Is_UserAgent_IP_Robot(UserAgent, IP);
-			return Is_Robot;
+            Skin_In_URL = false;
+            isPostBack = false;
+            Is_Robot = false;
+            Logon_Required = false;
+            Request_Completed = false;
         }
 
-		#endregion
+        #endregion
 
-		#region Public Properties
+        #region Code to set the robot flag from request variables
+
+        /// <summary> Algorithm tests the user agent and IP address against known robots 
+        /// to determine if this request is from a search engine indexer or web site crawler bot. </summary>
+        /// <param name="UserAgent">User Agent string from the HTTP request</param>
+        /// <param name="IP">IP address from the HTTP request</param>
+        /// <returns>TRUE if the request appears to be a robot, otherwise FALSE</returns>
+        public static bool Is_UserAgent_IP_Robot(string UserAgent, string IP)
+        {
+            if (UserAgent != null)
+            {
+                string useragent_upper = UserAgent.ToUpper();
+
+                if (useragent_upper.IndexOf("BOT") >= 0)
+                {
+                    if ((useragent_upper.IndexOf("MSNBOT") >= 0) || (useragent_upper.IndexOf("GIGABOT") >= 0) || (useragent_upper.IndexOf("GOOGLEBOT") >= 0) || (useragent_upper.IndexOf("AISEARCHBOT") >= 0) || (useragent_upper.IndexOf("CCBOT") >= 0) || (useragent_upper.IndexOf("PLONEBOT") >= 0) || (useragent_upper.IndexOf("CAZOODLEBOT") >= 0) || (useragent_upper.IndexOf("DISCOBOT") >= 0) || (useragent_upper.IndexOf("BINGBOT") >= 0) || (useragent_upper.IndexOf("YANDEXBOT") >= 0) || (useragent_upper.IndexOf("ATRAXBOT") >= 0) || (useragent_upper.IndexOf("MJ12BOT") >= 0) || (useragent_upper.IndexOf("SITEBOT") >= 0) || (useragent_upper.IndexOf("LINGUEE+BOT") >= 0) || (useragent_upper.IndexOf("MLBOT") >= 0) || (useragent_upper.IndexOf("NEXTGENSEARCHBOT") >= 0) || (useragent_upper.IndexOf("BENDERTHEWEBROBOT") >= 0) || (useragent_upper.IndexOf("EZOOMS.BOT") >= 0) || (useragent_upper.IndexOf("LSSBOT") == 0) || (useragent_upper.IndexOf("DISCOVERYBOT") >= 0))
+                    {
+                        return true;
+                    }
+                }
+
+                if ((useragent_upper.IndexOf("CRAWLER") >= 0) || (useragent_upper.IndexOf("SLURP") >= 0) || (useragent_upper.IndexOf("WEBVAC") >= 0) || (useragent_upper.IndexOf("ABOUT.ASK.COM") >= 0) || (useragent_upper.IndexOf("SCOUTJET") >= 0) || (useragent_upper.IndexOf("SITESUCKER") >= 0) || (useragent_upper.IndexOf("SEARCHME.COM") >= 0) || (useragent_upper.IndexOf("PICSEARCH.COM") >= 0) || (useragent_upper.IndexOf("XENU+LINK+SLEUTH") >= 0) || (useragent_upper.IndexOf("YANDEX") >= 0) || (useragent_upper.IndexOf("JAVA/") == 0) || (useragent_upper.IndexOf("SOGOU+WEB+SPIDER") >= 0) || (useragent_upper.IndexOf("CAMONTSPIDER") >= 0))
+                {
+                    return true;
+                }
+
+                if ((useragent_upper.IndexOf("BAIDUSPIDER") >= 0) || (useragent_upper.IndexOf("ICOPYRIGHT+CONDUCTOR") >= 0) || (useragent_upper.IndexOf("HTTP://AHREFS.COM/ROBOT") >= 0) || (useragent_upper.IndexOf("BENDERTHEROBOT.TUMBLR.COM") >= 0) || (useragent_upper.IndexOf("SHOULU.JIKE.COM/SPIDER") >= 0))
+                {
+                    return true;
+                }
+
+                if ((useragent_upper.IndexOf("WWW.PROFOUND.NET") >= 0) || (useragent_upper.IndexOf("URLAPPENDBOT") >= 0) || (useragent_upper.IndexOf("SEARCHMETRICBOT") >= 0) || (useragent_upper.IndexOf("HAVIJ") >= 0) || (useragent_upper.IndexOf("SYNAPSE") >= 0) || (useragent_upper.IndexOf("BEWSLEBOT") >= 0) || (useragent_upper.IndexOf("SOSOSPIDER") >= 0) || (useragent_upper.IndexOf("YYSPIDER") >= 0) || (useragent_upper.IndexOf("WBSEARCHBOT") >= 0))
+                {
+                    return true;
+                }
+            }
+
+            // First IP address is for test purposes only
+            if ((IP == "128.227.223.160") || (IP == "216.118.117.45") || (IP.IndexOf("65.55.230.") == 0) || (IP == "92.82.225.56") || (IP.IndexOf("220.181.51.") == 0) || (IP == "193.105.210.170") || (IP == "192.162.19.21"))
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary> Algorithm tests the user agent and IP address against known robots 
+        /// to determine if this request is from a search engine indexer or web site crawler bot.  
+        /// This returns the value and also sets an internal robot flag. </summary>
+        /// <param name="UserAgent">User Agent string from the HTTP request</param>
+        /// <param name="IP">IP address from the HTTP request</param>
+        /// <returns>TRUE if the request appears to be a robot, otherwise FALSE</returns>
+        public bool Set_Robot_Flag(string UserAgent, string IP)
+        {
+            Is_Robot = Is_Robot || Is_UserAgent_IP_Robot(UserAgent, IP);
+            return Is_Robot;
+        }
+
+        #endregion
+
+        #region Public Properties
 
 
         /// <summary> Admin type of display for the current request.</summary>
@@ -255,7 +254,7 @@ namespace SobekCM.Core.Navigation
         [XmlElement("defaultSkin")]
         [ProtoMember(17)]
         public string Default_Skin { get; set; }
-        
+
         /// <summary> Simple error message generated during execution </summary>
         [DataMember(EmitDefaultValue = false, Name = "error")]
         [XmlElement("error")]
@@ -279,7 +278,7 @@ namespace SobekCM.Core.Navigation
         [XmlElement("homeType")]
         [ProtoMember(21)]
         public Home_Type_Enum Home_Type { get; set; }
-        
+
         /// <summary> Browse or info mode to display </summary>
         /// <remarks>The value returned is always lower case</remarks>
         [DataMember(EmitDefaultValue = false, Name = "infoBrowseMode")]
@@ -361,7 +360,7 @@ namespace SobekCM.Core.Navigation
         /// <returns> TRUE if the property should be serialized, otherwise FALSE </returns>
         public bool ShouldSerializeMissing()
         {
-            return  Missing.HasValue;
+            return Missing.HasValue;
         }
 
         /// <summary> Mode determined by parsing the query string </summary>
@@ -407,11 +406,11 @@ namespace SobekCM.Core.Navigation
         [ProtoMember(63)]
         public string Redirect { get; set; }
 
-		/// <summary> Name of the report requested from the reporting module </summary>
+        /// <summary> Name of the report requested from the reporting module </summary>
         [DataMember(EmitDefaultValue = false, Name = "reportName")]
         [XmlElement("reportName")]
         [ProtoMember(39)]
-		public string Report_Name { get; set; }
+        public string Report_Name { get; set; }
 
         /// <summary> Submode for the results display </summary>
         [DataMember(EmitDefaultValue = false, Name = "resultType")]
@@ -552,13 +551,13 @@ namespace SobekCM.Core.Navigation
             }
         }
 
-	    /// <summary> Volume id to display </summary>
+        /// <summary> Volume id to display </summary>
         [DataMember(EmitDefaultValue = false, Name = "vid")]
         [XmlElement("vid")]
         [ProtoMember(59)]
-	    public string VID { get; set; }
+        public string VID { get; set; }
 
-	    /// <summary> Viewer code which indicates which viewer to use when displaying 
+        /// <summary> Viewer code which indicates which viewer to use when displaying 
         /// a single item in the item writer.  </summary>
         /// <remarks>The value returned is always lower case</remarks>
         [DataMember(EmitDefaultValue = false, Name = "viewerCode")]
@@ -597,7 +596,7 @@ namespace SobekCM.Core.Navigation
         [ProtoMember(63)]
         public string[] Remaining_Url_Segments { get; set; }
 
-		#endregion
+        #endregion
 
         #region Methods for XML serialization
 
@@ -710,23 +709,23 @@ namespace SobekCM.Core.Navigation
         //    get { return baseUrl + "default/images/"; }
         //}
 
-		/// <summary> URL to this application's design folder </summary>
-		/// <value> [Base_URL] + 'design/' </value>
-		[IgnoreDataMember]
-		public string Base_Design_URL
-		{
-			get { return Base_URL + "design/"; }
-		}
-
-		/// <summary> URL for the watermarks/icons under the design folder </summary>
-		/// <value> [Base_URL] + 'design/wordmarks/' </value>
+        /// <summary> URL to this application's design folder </summary>
+        /// <value> [Base_URL] + 'design/' </value>
         [IgnoreDataMember]
-		public string Watermarks_URL
-		{
+        public string Base_Design_URL
+        {
+            get { return Base_URL + "design/"; }
+        }
+
+        /// <summary> URL for the watermarks/icons under the design folder </summary>
+        /// <value> [Base_URL] + 'design/wordmarks/' </value>
+        [IgnoreDataMember]
+        public string Watermarks_URL
+        {
             get { return Base_URL + "design/wordmarks/"; }
-		}
+        }
 
-		#endregion
+        #endregion
 
-	}
+    }
 }

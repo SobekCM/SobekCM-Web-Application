@@ -1,12 +1,11 @@
 ﻿#region Using directives
 
+using SobekCM.Tools;
 using System;
 using System.IO;
 using System.Net;
 using System.Text;
 using System.Xml;
-using Microsoft.SqlServer.Server;
-using SobekCM.Tools;
 
 #endregion
 
@@ -24,7 +23,7 @@ namespace SobekCM.Core.WebContent
         /// <param name="Retain_Entire_Display_Text"> Flag indicates whether the entire display text should be retained (as it is about to be displayed) or just the basic information from the HEAD of the file </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         /// <returns> Fully built browse info object with all the bibliographic information</returns>
-        public static HTML_Based_Content Read_Web_Document(string Source_URL,  bool Retain_Entire_Display_Text, Custom_Tracer Tracer)
+        public static HTML_Based_Content Read_Web_Document(string Source_URL, bool Retain_Entire_Display_Text, Custom_Tracer Tracer)
         {
             try
             {
@@ -52,9 +51,9 @@ namespace SobekCM.Core.WebContent
                 }
 
                 // Convert this to the object
-                return Text_To_HTML_Based_Content(displayText, Retain_Entire_Display_Text, String.Empty, Tracer );
+                return Text_To_HTML_Based_Content(displayText, Retain_Entire_Display_Text, String.Empty, Tracer);
             }
-            catch ( Exception ee )
+            catch (Exception ee)
             {
                 if (Tracer != null)
                 {
@@ -72,7 +71,7 @@ namespace SobekCM.Core.WebContent
         /// <param name="Retain_Entire_Display_Text"> Flag indicates whether the entire display text should be retained (as it is about to be displayed) or just the basic information from the HEAD of the file </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         /// <returns> Fully built browse info object with all the bibliographic information</returns>
-        public static HTML_Based_Content Read_HTML_File(string Source_File,  bool Retain_Entire_Display_Text, Custom_Tracer Tracer)
+        public static HTML_Based_Content Read_HTML_File(string Source_File, bool Retain_Entire_Display_Text, Custom_Tracer Tracer)
         {
             try
             {
@@ -94,18 +93,18 @@ namespace SobekCM.Core.WebContent
                 // Convert this to the object
                 return Text_To_HTML_Based_Content(displayText, Retain_Entire_Display_Text, Source_File, Tracer);
             }
-            catch ( Exception ee )
+            catch (Exception ee)
             {
                 if (Tracer != null)
                 {
-                    Tracer.Add_Trace("HTML_Based_Content_Reader.Read_HTML_File", "EXCEPTION caught reading source file " + ee.Message );
+                    Tracer.Add_Trace("HTML_Based_Content_Reader.Read_HTML_File", "EXCEPTION caught reading source file " + ee.Message);
                 }
 
                 return null;
             }
         }
 
-        private static HTML_Based_Content Text_To_HTML_Based_Content(string Display_Text, bool Retain_Entire_Display_Text, string Source, Custom_Tracer Tracer )
+        private static HTML_Based_Content Text_To_HTML_Based_Content(string Display_Text, bool Retain_Entire_Display_Text, string Source, Custom_Tracer Tracer)
         {
             // Create the values to hold the information
             string code = String.Empty;
@@ -129,7 +128,7 @@ namespace SobekCM.Core.WebContent
 
             if (Tracer != null)
             {
-                Tracer.Add_Trace("HTML_Based_Content_Reader.Text_To_HTML_Based_Content", "Converting source file content into object" );
+                Tracer.Add_Trace("HTML_Based_Content_Reader.Text_To_HTML_Based_Content", "Converting source file content into object");
             }
 
             // Try to read the head using XML

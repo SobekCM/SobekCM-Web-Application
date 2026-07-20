@@ -1,19 +1,17 @@
 #region Using directives
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using Microsoft.AspNetCore.Http;
-using System.Xml;
 using SobekCM.Core.ApplicationState;
-using SobekCM.Core.Configuration;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Users;
 using SobekCM.Library.UI;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Behaviors;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Xml;
 
 #endregion
 
@@ -44,7 +42,7 @@ namespace SobekCM.Library.Citation.Elements
         /// <param name="Translator"> Language support object which handles simple translational duties </param>
         /// <param name="Base_URL"> Base URL for the current request </param>
         /// <remarks> This simple element does not append any popup form to the popup_form_builder</remarks>
-        public override void Render_Template_HTML(TextWriter Output, SobekCM_Item Bib, string Skin_Code, bool IsMozilla, StringBuilder PopupFormBuilder, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL )
+        public override void Render_Template_HTML(TextWriter Output, SobekCM_Item Bib, string Skin_Code, bool IsMozilla, StringBuilder PopupFormBuilder, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL)
         {
             // Check that an acronym exists
             if (Acronym.Length == 0)
@@ -102,12 +100,12 @@ namespace SobekCM.Library.Citation.Elements
             // Options = NONE, HTML, HTML_MAP, JPEG, JPEG2000, RELATED_IMAGES, TEXT, PAGE TURNER, GOOGLE MAP, EMPTY STRING
             // Get collection of all items
             List<View_Object> views = new List<View_Object>();
-            if (( Bib.Behaviors.Views != null ) && ( Bib.Behaviors.Views_Count > 0))
+            if ((Bib.Behaviors.Views != null) && (Bib.Behaviors.Views_Count > 0))
             {
                 views.AddRange(Bib.Behaviors.Views.Where(ThisView => !ThisView.Exclude));
             }
 
-            if (views.Count == 0 )
+            if (views.Count == 0)
             {
                 const int i = 1;
 
@@ -120,7 +118,7 @@ namespace SobekCM.Library.Citation.Elements
                     Output.Write("<option value=\"" + systemViewer + "\">" + systemViewer.Replace("_", " ") + "</option>");
                 }
 
-                Output.Write("</select>"); 
+                Output.Write("</select>");
 
                 //// Add the file sublabel
                 //Output.Write("<span id=\"" + id_name + "_details" + i + "\" style=\"display:none\">");
@@ -134,7 +132,7 @@ namespace SobekCM.Library.Citation.Elements
 
                 //// Add the label sublabel
                 //Output.Write("<span class=\"metadata_sublabel\">Label:</span>");
-                
+
                 //// Add the label input
                 //Output.WriteLine("<input name=\"" + id_name + "_label" + i + "\" id=\"" + id_name + "_label" + i + "\" class=\"" + html_element_name + "_label_input sbk_Focusable\" type=\"text\" value=\"\" /></span>");
 
@@ -206,7 +204,7 @@ namespace SobekCM.Library.Citation.Elements
                 //Output.Write("<select name=\"" + id_name + "_file" + viewCount + "\" id=\"" + id_name + "_file" + viewCount + "\" class=\"" + html_element_name + "_file\">");
 
                 //Output.Write("<option value=\"\" selected=\"selected\">&nbsp;</option>");
-                
+
                 //Output.Write("</select>");
 
                 //// Add the label sublabel
@@ -250,7 +248,7 @@ namespace SobekCM.Library.Citation.Elements
         public override void Save_To_Bib(SobekCM_Item Bib)
         {
             // Build a dictionary of the current views
-            Dictionary<string, View_Object> typeToViewObjectDictionary = new Dictionary<string,View_Object>(StringComparer.OrdinalIgnoreCase);
+            Dictionary<string, View_Object> typeToViewObjectDictionary = new Dictionary<string, View_Object>(StringComparer.OrdinalIgnoreCase);
             foreach (View_Object thisView in Bib.Behaviors.Views)
             {
                 typeToViewObjectDictionary[thisView.View_Type] = thisView;
@@ -261,7 +259,7 @@ namespace SobekCM.Library.Citation.Elements
 
             // Save each view
             var getKeys = Context.Request.Form.Keys;
-            Dictionary<string, string> addedViewTypes = new Dictionary<string,string>(StringComparer.OrdinalIgnoreCase);
+            Dictionary<string, string> addedViewTypes = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
             foreach (string thisKey in getKeys)
             {
                 if (thisKey.IndexOf("viewer_type") == 0)
@@ -324,7 +322,7 @@ namespace SobekCM.Library.Citation.Elements
         /// <summary> Reads the inner data from the CompleteTemplate XML format </summary>
         /// <param name="XMLReader"> Current template xml configuration reader </param>
         /// <remarks> This procedure does not currently read any inner xml (not yet necessary) </remarks>
-        protected override void Inner_Read_Data( XmlReader XMLReader )
+        protected override void Inner_Read_Data(XmlReader XMLReader)
         {
             // Do nothing
         }

@@ -17,7 +17,7 @@
         /// <param name="Code"> Code for this template, which must match the filename for the template XML file </param>
         /// <param name="Name"> Name for this template </param>
         /// <param name="Description"> Description for this template </param>
-        public Template(string Code, string Name, string Description )
+        public Template(string Code, string Name, string Description)
         {
             this.Code = Code;
             this.Name = Name;

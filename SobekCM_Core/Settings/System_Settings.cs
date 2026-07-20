@@ -1,10 +1,9 @@
-﻿using System;
+﻿using ProtoBuf;
+using SobekCM.Core.Configuration.Localization;
+using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
-using ProtoBuf;
-using SobekCM.Core.Configuration;
-using SobekCM.Core.Configuration.Localization;
 
 namespace SobekCM.Core.Settings
 {
@@ -112,7 +111,8 @@ namespace SobekCM.Core.Settings
         [XmlIgnore]
         public string Search_System_String
         {
-            set {
+            set
+            {
                 Search_System = String.Equals(value, "beta", StringComparison.OrdinalIgnoreCase) ? Search_System_Enum.Beta : Search_System_Enum.Legacy;
             }
             get
@@ -142,7 +142,7 @@ namespace SobekCM.Core.Settings
         /// <returns> Base URL to use for the main help page links </returns>
         public string Help_URL(string Current_Base_URL)
         {
-            return String.IsNullOrEmpty(Help_URL_Base) ? Current_Base_URL : Help_URL_Base; 
+            return String.IsNullOrEmpty(Help_URL_Base) ? Current_Base_URL : Help_URL_Base;
         }
 
         /// <summary> API Key for the Google Map display features within SobekCM </summary>
@@ -167,7 +167,7 @@ namespace SobekCM.Core.Settings
             }
             get { return Web_Language_Enum_Converter.Enum_To_Name(Default_UI_Language); }
         }
-        
+
         #region Methods that controls XML serialization
 
         /// <summary> Method suppresses XML Serialization of the Disable_Standard_User_Logon_Message property if it is empty </summary>

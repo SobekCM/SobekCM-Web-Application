@@ -1,10 +1,10 @@
 ﻿#region Using directives
 
+using SobekCM.Resource_Object.Divisions;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Xml;
-using SobekCM.Resource_Object.Divisions;
 
 #endregion
 
@@ -86,7 +86,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
             if ((Options == null) || (!Options.ContainsKey("SobekCM_FileInfo_METS_amdSec_ReaderWriter:Files_By_FileID")))
                 return false;
 
-            files_by_fileid = (Dictionary<string, SobekCM_File_Info>) Options["SobekCM_FileInfo_METS_amdSec_ReaderWriter:Files_By_FileID"];
+            files_by_fileid = (Dictionary<string, SobekCM_File_Info>)Options["SobekCM_FileInfo_METS_amdSec_ReaderWriter:Files_By_FileID"];
 
 
             string fileid = String.Empty;
@@ -157,7 +157,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
         /// <returns> Formatted schema namespace info for the METS header</returns>
         public string[] Schema_Namespace(SobekCM_Item METS_Item)
         {
-            return new string[] {};
+            return new string[] { };
         }
 
         /// <summary> Returns the schema location information to be written in the XML/METS Header</summary>
@@ -165,7 +165,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
         /// <returns> Formatted schema location for the METS header</returns>
         public string[] Schema_Location(SobekCM_Item METS_Item)
         {
-            return new string[] {};
+            return new string[] { };
         }
 
         #endregion

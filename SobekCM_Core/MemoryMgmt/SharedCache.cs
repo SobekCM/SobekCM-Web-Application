@@ -1,8 +1,8 @@
 #region Using directives
 
+using Microsoft.Extensions.Caching.Memory;
 using System.Collections;
 using System.Collections.Generic;
-using Microsoft.Extensions.Caching.Memory;
 
 #endregion
 
@@ -40,7 +40,7 @@ namespace SobekCM.Core.MemoryMgmt
         {
             foreach (object keyObj in _cache.Keys)
             {
-                _cache.Remove((string) keyObj);
+                _cache.Remove((string)keyObj);
             }
         }
 
@@ -49,7 +49,7 @@ namespace SobekCM.Core.MemoryMgmt
         {
             foreach (object keyObj in _cache.Keys)
             {
-                string key = (string) keyObj;
+                string key = (string)keyObj;
                 if (_cache.TryGetValue(key, out object value))
                     yield return new KeyValuePair<string, object>(key, value);
             }

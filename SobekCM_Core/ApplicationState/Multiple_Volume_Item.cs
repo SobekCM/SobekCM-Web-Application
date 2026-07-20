@@ -1,7 +1,6 @@
 #region Using directives
 
 using System;
-using System.Collections.Generic;
 using System.Runtime.Serialization;
 
 #endregion
@@ -27,10 +26,10 @@ namespace SobekCM.Core.ApplicationState
         Custom_Thumbnail
     }
 
-	/// <summary> Stores information about a title which has multiple volumes or is always represented as multiple volumes ( i.e. Newspapers and Serials) </summary>
+    /// <summary> Stores information about a title which has multiple volumes or is always represented as multiple volumes ( i.e. Newspapers and Serials) </summary>
     [DataContract]
-	public class Multiple_Volume_Item
-	{
+    public class Multiple_Volume_Item
+    {
         /// <summary> Actual byte which contains the title-level flags, mostly used internally </summary>
         public byte FlagByte { get; set; }
 
@@ -58,7 +57,7 @@ namespace SobekCM.Core.ApplicationState
             get
             {
                 int result = FlagByte & 0xE;
-                switch( result )
+                switch (result)
                 {
                     case 0:
                         return Group_Thumbnail_Enum.No_Group_Thumbnail;
@@ -84,10 +83,10 @@ namespace SobekCM.Core.ApplicationState
             }
         }
 
-	    /// <summary> Constructor for a new instance of the Multiple_Volume_Item class </summary>
+        /// <summary> Constructor for a new instance of the Multiple_Volume_Item class </summary>
         public Multiple_Volume_Item()
-		{
-            
+        {
+
         }
     }
 }

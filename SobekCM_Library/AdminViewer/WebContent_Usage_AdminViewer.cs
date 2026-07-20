@@ -1,16 +1,14 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
 using Microsoft.AspNetCore.Http;
 using SobekCM.Core.Client;
 using SobekCM.Core.Navigation;
-using SobekCM.Core.UI_Configuration;
-using SobekCM.Core.UI_Configuration.StaticResources;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Library.HTML;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Text;
 
 namespace SobekCM.Library.AdminViewer
 {
@@ -130,7 +128,7 @@ namespace SobekCM.Library.AdminViewer
             }
 
             // If the end year is filled out, but not the month, set to the end of that year
-            if ((year2 > 1900) && ( month2 < 1 ) || ( month2 > 12 ))
+            if ((year2 > 1900) && (month2 < 1) || (month2 > 12))
             {
                 month2 = (year2 == DateTime.Now.Year) ? DateTime.Now.Month : 12;
             }
@@ -143,7 +141,7 @@ namespace SobekCM.Library.AdminViewer
             }
 
             // If no initial year/month, use the first stats date
-            if ((year1 < 1900) || ( year1 < UI_ApplicationCache_Gateway.Stats_Date_Range.Earliest_Year ))
+            if ((year1 < 1900) || (year1 < UI_ApplicationCache_Gateway.Stats_Date_Range.Earliest_Year))
             {
                 year1 = UI_ApplicationCache_Gateway.Stats_Date_Range.Earliest_Year;
                 month1 = UI_ApplicationCache_Gateway.Stats_Date_Range.Earliest_Month;
@@ -200,8 +198,8 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("<script src=\"" + Static_Resources_Gateway.Sobekcm_Admin_Js + "\" type=\"text/javascript\"></script>");
 
             string last_mode = RequestSpecificValues.Current_Mode.My_Sobek_SubMode;
-            
-            
+
+
 
             if (actionMessage.Length > 0)
             {
@@ -221,7 +219,7 @@ namespace SobekCM.Library.AdminViewer
                 Output.WriteLine("  </div>");
             }
 
-            
+
 
             // Start the outer tab containe
             Output.WriteLine("  <div id=\"tabContainer\" class=\"fulltabs sbkAdm_HomeTabs\">");
@@ -230,7 +228,7 @@ namespace SobekCM.Library.AdminViewer
 
             string tab1_title = "USAGE";
             Output.WriteLine("      <li class=\"tabActiveHeader\"> " + tab1_title + " </li>");
-           
+
             Output.WriteLine("    </ul>");
             Output.WriteLine("  </div>");
 

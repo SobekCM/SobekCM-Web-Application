@@ -1,9 +1,9 @@
 ﻿#region Using directives
 
+using ProtoBuf;
 using System;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
-using ProtoBuf;
 
 #endregion
 
@@ -14,7 +14,7 @@ namespace SobekCM.Core.BriefItem
     [XmlRoot("coordinateCircle")]
     public class BriefItem_Coordinate_Circle
     {
-        
+
         #region Constructors
 
         /// <summary> Constructor for a new instance of the BriefItem_Coordinate_Circle class </summary>

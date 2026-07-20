@@ -1,10 +1,10 @@
 ﻿#region Using directives
 
-using System;
 using SobekCM.Core.BriefItem;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Metadata_Modules;
 using SobekCM.Resource_Object.Metadata_Modules.LearningObjects;
+using System;
 
 #endregion
 
@@ -59,7 +59,7 @@ namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
                 {
                     foreach (LOM_VocabularyState thisState in lomInfo.LearningResourceTypes)
                     {
-                        New.Add_Description("Learning Resource Type", thisState.Value );
+                        New.Add_Description("Learning Resource Type", thisState.Value);
                     }
                 }
 
@@ -108,7 +108,7 @@ namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
                             break;
                     }
 
-                    New.Add_Description("Interactivity Type", lom_temp );
+                    New.Add_Description("Interactivity Type", lom_temp);
                 }
 
                 // Add the LOM Interactivity Level
@@ -205,9 +205,9 @@ namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
                     foreach (LOM_VocabularyState thisContext in lomInfo.Contexts)
                     {
                         if (thisContext.Source.Length > 0)
-                            New.Add_Description("Context",thisContext.Source + " " + thisContext.Value);
+                            New.Add_Description("Context", thisContext.Source + " " + thisContext.Value);
                         else
-                            New.Add_Description("Context",thisContext.Value);
+                            New.Add_Description("Context", thisContext.Value);
                     }
                 }
 

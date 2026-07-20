@@ -31,7 +31,7 @@ namespace SobekCM.Resource_Object.Utilities
         {
             string error_message;
 
-            return MOve_Or_Copy(SobekCM_Item_Move_Type_Enum.MOVE, Source_Folder, Destination_Parent, OverWrite, Include_TIFFs, out error_message );
+            return MOve_Or_Copy(SobekCM_Item_Move_Type_Enum.MOVE, Source_Folder, Destination_Parent, OverWrite, Include_TIFFs, out error_message);
         }
 
         /// <summary> Moves all the applicable resource files from the current location to under the destination parent provided </summary>
@@ -43,7 +43,7 @@ namespace SobekCM.Resource_Object.Utilities
         /// <param name="ErrorMessage"> Error message for errors that occur </param>
         /// <returns> TRUE if successful, otherwise FALSE </returns>
         /// <remarks> This does not read the MET to decide which files to move, it is just slightly smarter than a normal move </remarks>
-        public static bool MOve_Or_Copy(SobekCM_Item_Move_Type_Enum MoveOrCopy, string Source_Folder, string Destination_Parent, bool OverWrite, bool Include_TIFFs, out string ErrorMessage )
+        public static bool MOve_Or_Copy(SobekCM_Item_Move_Type_Enum MoveOrCopy, string Source_Folder, string Destination_Parent, bool OverWrite, bool Include_TIFFs, out string ErrorMessage)
         {
             ErrorMessage = String.Empty;
             bool returnValue = true;
@@ -72,7 +72,7 @@ namespace SobekCM.Resource_Object.Utilities
                 if (!Directory.Exists(destination_name))
                     Directory.CreateDirectory(destination_name);
             }
-            catch ( Exception ee )
+            catch (Exception ee)
             {
                 ErrorMessage = "Unable to create destination folder ( " + ee.Message + " )";
                 return false;

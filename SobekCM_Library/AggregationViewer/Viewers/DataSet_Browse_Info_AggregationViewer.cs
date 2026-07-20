@@ -1,14 +1,13 @@
 #region Using directives
 
 using Microsoft.AspNetCore.Http;
-using System.Collections.Generic;
-using System.IO;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.Navigation;
-using SobekCM.Core.Results;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
 using SobekCM.Tools;
+using System.Collections.Generic;
+using System.IO;
 
 #endregion
 
@@ -113,14 +112,14 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             writeResult.Add_Controls(Output, Tracer);
 
 
-			//if ( resultsStatistics.Total_Items > 0)
-			//{
-			//	Literal literal = new Literal
-			//						  {
-			//							  Text = "<div class=\"sbkPrsw_ResultsNavBar\">" + Environment.NewLine + "  " + writeResult.Buttons + "" + Environment.NewLine + "  " + writeResult.Showing_Text + Environment.NewLine + "</div>" + Environment.NewLine + "<br />" + Environment.NewLine 
-			//						  };
-			//	MainPlaceHolder.Controls.Add(literal);
-			//}
+            //if ( resultsStatistics.Total_Items > 0)
+            //{
+            //	Literal literal = new Literal
+            //						  {
+            //							  Text = "<div class=\"sbkPrsw_ResultsNavBar\">" + Environment.NewLine + "  " + writeResult.Buttons + "" + Environment.NewLine + "  " + writeResult.Showing_Text + Environment.NewLine + "</div>" + Environment.NewLine + "<br />" + Environment.NewLine 
+            //						  };
+            //	MainPlaceHolder.Controls.Add(literal);
+            //}
         }
 
     }

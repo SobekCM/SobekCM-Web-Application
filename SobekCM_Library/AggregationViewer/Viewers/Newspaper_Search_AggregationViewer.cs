@@ -1,14 +1,14 @@
 #region Using directives
 
 using Microsoft.AspNetCore.Http;
-using System;
-using System.IO;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Navigation;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
 using SobekCM.Tools;
+using System;
+using System.IO;
 
 #endregion
 
@@ -50,7 +50,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             // Compute the redirect stem to use
             string fields = RequestSpecificValues.Current_Mode.Search_Fields;
             string search_string = RequestSpecificValues.Current_Mode.Search_String;
-			Aggregation_Type_Enum aggrType = RequestSpecificValues.Current_Mode.Aggregation_Type;
+            Aggregation_Type_Enum aggrType = RequestSpecificValues.Current_Mode.Aggregation_Type;
             RequestSpecificValues.Current_Mode.Search_String = String.Empty;
             RequestSpecificValues.Current_Mode.Search_Fields = String.Empty;
             RequestSpecificValues.Current_Mode.Home_Type = Home_Type_Enum.List;
@@ -70,14 +70,14 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 
             RequestSpecificValues.Current_Mode.Search_String = search_string;
             RequestSpecificValues.Current_Mode.Search_Fields = fields;
-	        RequestSpecificValues.Current_Mode.Aggregation_Type = aggrType;
+            RequestSpecificValues.Current_Mode.Aggregation_Type = aggrType;
             RequestSpecificValues.Current_Mode.Info_Browse_Mode = String.Empty;
 
             // Write the advanced search box
             arg2 = String.Empty;
             arg1 = redirect_stem;
 
-            if ((ViewBag.Hierarchy_Object.Children_Count > 0) && ((RequestSpecificValues.Current_Mode.Show_Selection_Panel.HasValue) && (RequestSpecificValues.Current_Mode.Show_Selection_Panel.Value )))
+            if ((ViewBag.Hierarchy_Object.Children_Count > 0) && ((RequestSpecificValues.Current_Mode.Show_Selection_Panel.HasValue) && (RequestSpecificValues.Current_Mode.Show_Selection_Panel.Value)))
             {
                 Search_Script_Action = "newspaper_select_search_sobekcm('" + arg1 + "', '" + SUB_CODE + "', '" + browse_url + "');";
                 arg2 = SUB_CODE;
@@ -129,22 +129,22 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 in_language = "en";
             }
 
-			Output.WriteLine("  <table id=\"sbkNsav_SearchPanel\" >");
+            Output.WriteLine("  <table id=\"sbkNsav_SearchPanel\" >");
             Output.WriteLine("    <tr>");
-			Output.WriteLine("      <td style=\"text-align:right;width:18%;\" id=\"sbkBsav_SearchPrompt\"><label for=\"Textbox1\">" + search_language + "</label></td>");
+            Output.WriteLine("      <td style=\"text-align:right;width:18%;\" id=\"sbkBsav_SearchPrompt\"><label for=\"Textbox1\">" + search_language + "</label></td>");
             Output.WriteLine("      <td style=\"width:3%;\">&nbsp;</td>");
-			Output.WriteLine("      <td style=\"width:46%;\"><input name=\"Textbox1\" type=\"text\" id=\"Textbox1\" class=\"sbkNsav_SearchBox sbk_Focusable\" value=\"" + textBoxValue + "\" onkeydown=\"fnTrapKD(event, 'newspaper', '" + arg1 + "', '" + arg2 +"','" + browse_url + "');\" /></td>");
+            Output.WriteLine("      <td style=\"width:46%;\"><input name=\"Textbox1\" type=\"text\" id=\"Textbox1\" class=\"sbkNsav_SearchBox sbk_Focusable\" value=\"" + textBoxValue + "\" onkeydown=\"fnTrapKD(event, 'newspaper', '" + arg1 + "', '" + arg2 + "','" + browse_url + "');\" /></td>");
             Output.WriteLine("      <td style=\"width:5%;text-align:center;\">" + in_language + "</td>");
             Output.WriteLine("      <td style=\"width:8%;\">");
-			Output.WriteLine("        <select name=\"Dropdownlist1\" id=\"Dropdownlist1\" class=\"sbkNsav_DropDownList\" >");
+            Output.WriteLine("        <select name=\"Dropdownlist1\" id=\"Dropdownlist1\" class=\"sbkNsav_DropDownList\" >");
             Output.WriteLine("          <option value=\"ZZ\" selected=\"selected\">Full Citation</option>");
             Output.WriteLine("          <option value=\"TX\">Full Text</option>");
             Output.WriteLine("          <option value=\"TI\">Newspaper Title</option>");
             Output.WriteLine("          <option value=\"PP\">Location</option>");
             Output.WriteLine("        </select>");
             Output.WriteLine("      </td>");
-			Output.WriteLine("      <td> &nbsp; <button class=\"sbk_GoButton\" onclick=\"" + Search_Script_Action + ";return false;\">Go</button></td>");
-            Output.WriteLine("      <td><div id=\"circular_progress\" name=\"circular_progress\" class=\"hidden_progress\">&nbsp;</div></td>");     
+            Output.WriteLine("      <td> &nbsp; <button class=\"sbk_GoButton\" onclick=\"" + Search_Script_Action + ";return false;\">Go</button></td>");
+            Output.WriteLine("      <td><div id=\"circular_progress\" name=\"circular_progress\" class=\"hidden_progress\">&nbsp;</div></td>");
             Output.WriteLine("    </tr>");
             Output.WriteLine("  </table>");
 

@@ -1,17 +1,15 @@
 #region Using directives
 
+using SobekCM.Core.ApplicationState;
+using SobekCM.Core.Configuration.Localization;
+using SobekCM.Core.Users;
+using SobekCM.Resource_Object;
+using SobekCM.Resource_Object.Bib_Info;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using Microsoft.AspNetCore.Http;
-using SobekCM.Core.ApplicationState;
-using SobekCM.Core.Configuration;
-using SobekCM.Core.Configuration.Localization;
-using SobekCM.Core.Users;
-using SobekCM.Resource_Object;
-using SobekCM.Resource_Object.Bib_Info;
 
 #endregion
 
@@ -22,16 +20,16 @@ namespace SobekCM.Library.Citation.Elements
     public class Other_Title_Element : TextBox_ComboBox_Element
     {
         /// <summary> Constructor for a new instance of the Other_Title_Element class </summary>
-        public Other_Title_Element() : base( "Other Titles", "othertitle")
+        public Other_Title_Element() : base("Other Titles", "othertitle")
         {
-            Add_Select_Item("Abbreviated Title", "abbreviated" );
+            Add_Select_Item("Abbreviated Title", "abbreviated");
             Add_Select_Item("Alternative Title", "alternate");
             Add_Select_Item("Course Title", "course");
             Add_Select_Item("Series Title", "series");
             Add_Select_Item("Subtitle", "subtitle");
             Add_Select_Item("Translated Title", "translated");
             Add_Select_Item("Uniform Title", "uniform");
-            
+
 
             Repeatable = true;
         }
@@ -48,7 +46,7 @@ namespace SobekCM.Library.Citation.Elements
         /// <param name="Translator"> Language support object which handles simple translational duties </param>
         /// <param name="Base_URL"> Base URL for the current request </param>
         /// <remarks> This simple element does not append any popup form to the popup_form_builder</remarks>
-        public override void Render_Template_HTML(TextWriter Output, SobekCM_Item Bib, string Skin_Code, bool IsMozilla, StringBuilder PopupFormBuilder, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL )
+        public override void Render_Template_HTML(TextWriter Output, SobekCM_Item Bib, string Skin_Code, bool IsMozilla, StringBuilder PopupFormBuilder, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL)
         {
             // Check that an acronym exists
             if (Acronym.Length == 0)
@@ -81,10 +79,10 @@ namespace SobekCM.Library.Citation.Elements
             {
                 titles.Add(Bib.Bib_Info.Main_Title.Subtitle);
                 types.Add("Subtitle");
-                   
+
             }
 
-            if (( Bib.Bib_Info.hasSeriesTitle ) && ( Bib.Bib_Info.SeriesTitle.Title.Length > 0))
+            if ((Bib.Bib_Info.hasSeriesTitle) && (Bib.Bib_Info.SeriesTitle.Title.Length > 0))
             {
                 titles.Add(Bib.Bib_Info.SeriesTitle.ToString());
                 types.Add("Series Title");
@@ -134,7 +132,7 @@ namespace SobekCM.Library.Citation.Elements
         public override void Prepare_For_Save(SobekCM_Item Bib, User_Object Current_User)
         {
             // Clear the other titles
-            if ( Bib.Bib_Info.hasSeriesTitle ) 
+            if (Bib.Bib_Info.hasSeriesTitle)
                 Bib.Bib_Info.SeriesTitle.Clear();
             Bib.Bib_Info.Clear_Other_Titles();
         }

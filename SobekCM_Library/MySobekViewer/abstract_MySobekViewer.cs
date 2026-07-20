@@ -1,17 +1,17 @@
 ﻿#region Using directives
 
-using System;
-using System.Collections.Generic;
-using System.IO;
+using Microsoft.AspNetCore.Http;
 using SobekCM.Core.BriefItem;
 using SobekCM.Core.Navigation;
 using SobekCM.Library.AdminViewer;
-using Microsoft.AspNetCore.Http;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
 using SobekCM.Library.UI;
 using SobekCM.Resource_Object;
 using SobekCM.Tools;
+using System;
+using System.Collections.Generic;
+using System.IO;
 
 #endregion
 
@@ -54,8 +54,8 @@ namespace SobekCM.Library.MySobekViewer
 
         /// <summary> Gets the URL for the icon related to this mySobek task </summary>
         /// <remarks> Abstract property must be implemented by all extending classes </remarks>
-        public virtual string Viewer_Icon { get { return String.Empty; }}
-    
+        public virtual string Viewer_Icon { get { return String.Empty; } }
+
         /// <summary> Property indicates if this mySobek viewer can contain pop-up forms</summary>
         /// <remarks> If the mySobek viewer contains pop-up forms the overall page renders differently, 
         /// allowing for the blanket division and the popup forms near the top of the rendered HTML </remarks>
@@ -94,17 +94,17 @@ namespace SobekCM.Library.MySobekViewer
             // No html to be added here
         }
 
-		/// <summary> This is an opportunity to write HTML directly into the main form before any controls are placed in the main place holder </summary>
-		/// <param name="Output"> Textwriter to write the pop-up form HTML for this viewer </param>
-		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-		/// <remarks> This text will appear within the ItemNavForm form tags </remarks>
-		public virtual void Write_ItemNavForm_Opening(TextWriter Output, Custom_Tracer Tracer)
-		{
-			if (Tracer != null)
-			{
-				Tracer.Add_Trace("abstract_MySobekViewer.Write_ItemNavForm_Opening", "No HTML Added");
-			}
-		}
+        /// <summary> This is an opportunity to write HTML directly into the main form before any controls are placed in the main place holder </summary>
+        /// <param name="Output"> Textwriter to write the pop-up form HTML for this viewer </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <remarks> This text will appear within the ItemNavForm form tags </remarks>
+        public virtual void Write_ItemNavForm_Opening(TextWriter Output, Custom_Tracer Tracer)
+        {
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("abstract_MySobekViewer.Write_ItemNavForm_Opening", "No HTML Added");
+            }
+        }
 
         /// <summary> This is an opportunity to write HTML directly into the main form, without
         /// using the pop-up html form architecture </summary>
@@ -119,7 +119,7 @@ namespace SobekCM.Library.MySobekViewer
             }
         }
 
-		/// <summary> Add controls directly to the form in the main control area placeholder </summary>
+        /// <summary> Add controls directly to the form in the main control area placeholder </summary>
         /// <param name="Output"> TextWriter to write HTML output </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
         ///  <remarks> No controls are added here, although some children class override this virtual method to add controls </remarks>
@@ -133,52 +133,52 @@ namespace SobekCM.Library.MySobekViewer
             // No controls to be added here
         }
 
-		/// <summary> Writes the top part of the page, mimicing the item viewer </summary>
-		/// <param name="Output"> Stream to write the item-level top to </param>
-		/// <param name="Item"> Item with all the information necessary to write the top </param>
-		protected void Write_Item_Type_Top(TextWriter Output, BriefItemInfo Item )
-		{
-			Output.WriteLine("<div id=\"sbkIsw_Titlebar\">");
+        /// <summary> Writes the top part of the page, mimicing the item viewer </summary>
+        /// <param name="Output"> Stream to write the item-level top to </param>
+        /// <param name="Item"> Item with all the information necessary to write the top </param>
+        protected void Write_Item_Type_Top(TextWriter Output, BriefItemInfo Item)
+        {
+            Output.WriteLine("<div id=\"sbkIsw_Titlebar\">");
 
-			string final_title = Item.Title;
+            string final_title = Item.Title;
 
-			// Add the Title if there is one
-			if (final_title.Length > 0)
-			{
-				// Is this a newspaper?
-				bool newspaper = Item.Behaviors.GroupType.ToUpper() == "NEWSPAPER";
+            // Add the Title if there is one
+            if (final_title.Length > 0)
+            {
+                // Is this a newspaper?
+                bool newspaper = Item.Behaviors.GroupType.ToUpper() == "NEWSPAPER";
 
-				// Does a custom setting override the default behavior to add a date?
+                // Does a custom setting override the default behavior to add a date?
                 if ((newspaper) && (UI_ApplicationCache_Gateway.Settings.Contains_Additional_Setting("Item Viewer.Include Date In Title")) && (UI_ApplicationCache_Gateway.Settings.Get_Additional_Setting("Item Viewer.Include Date In Title").ToUpper() == "NEVER"))
-					newspaper = false;
+                    newspaper = false;
 
-				// Add the date if it should be added
-				if ((newspaper) && ( !String.IsNullOrEmpty(Item.Web.Date)))
-				{
-					if (final_title.Length > 125)
-					{
+                // Add the date if it should be added
+                if ((newspaper) && (!String.IsNullOrEmpty(Item.Web.Date)))
+                {
+                    if (final_title.Length > 125)
+                    {
                         Output.WriteLine("\t<h1 itemprop=\"name\"><abbr title=\"" + final_title + "\">" + final_title.Substring(0, 120) + "...</abbr> ( " + Item.Web.Date + " )</h1>");
-					}
-					else
-					{
+                    }
+                    else
+                    {
                         Output.WriteLine("\t<h1 itemprop=\"name\">" + final_title + " ( " + Item.Web.Date + " )</h1>");
-					}
-				}
-				else
-				{
-					if (final_title.Length > 125)
-					{
-						Output.WriteLine("\t<h1 itemprop=\"name\"><abbr title=\"" + final_title + "\">" + final_title.Substring(0, 120) + "...</abbr></h1>");
-					}
-					else
-					{
-						Output.WriteLine("\t<h1 itemprop=\"name\">" + final_title + "</h1>");
-					}
-				}
-			}
-			Output.WriteLine("</div>");
-			Output.WriteLine("<div class=\"sbkMenu_Bar\" id=\"sbkIsw_MenuBar\" style=\"height:20px\">&nbsp;</div>");
-		}
+                    }
+                }
+                else
+                {
+                    if (final_title.Length > 125)
+                    {
+                        Output.WriteLine("\t<h1 itemprop=\"name\"><abbr title=\"" + final_title + "\">" + final_title.Substring(0, 120) + "...</abbr></h1>");
+                    }
+                    else
+                    {
+                        Output.WriteLine("\t<h1 itemprop=\"name\">" + final_title + "</h1>");
+                    }
+                }
+            }
+            Output.WriteLine("</div>");
+            Output.WriteLine("<div class=\"sbkMenu_Bar\" id=\"sbkIsw_MenuBar\" style=\"height:20px\">&nbsp;</div>");
+        }
 
         /// <summary> Writes the top part of the page, mimicing the item viewer </summary>
         /// <param name="Output"> Stream to write the item-level top to </param>

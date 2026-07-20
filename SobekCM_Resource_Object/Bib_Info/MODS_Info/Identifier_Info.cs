@@ -20,7 +20,7 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// <summary> Constructor for an empty instance of the Identifier_Info class </summary>
         public Identifier_Info()
         {
-           
+
         }
 
         /// <summary> Constructor for a new instance of the Identifier_Info class </summary>

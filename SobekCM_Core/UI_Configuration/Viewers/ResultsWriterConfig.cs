@@ -1,8 +1,8 @@
-﻿using System;
+﻿using ProtoBuf;
+using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
-using ProtoBuf;
 
 namespace SobekCM.Core.UI_Configuration.Viewers
 {
@@ -43,14 +43,14 @@ namespace SobekCM.Core.UI_Configuration.Viewers
         [XmlAttribute("noResultsViewer")]
         [ProtoMember(4)]
         public ResultsSubViewerConfig NoResultsViewer { get; set; }
-        
+
 
         /// <summary> Constructor for a new instance of the <see cref="ResultsWriterConfig"/> class </summary>
         public ResultsWriterConfig()
         {
             Class = "SobekCM.Library.HTML.Search_Results_HtmlSubwriter";
             Viewers = new List<ResultsSubViewerConfig>();
-            
+
             set_default();
         }
 
@@ -172,7 +172,7 @@ namespace SobekCM.Core.UI_Configuration.Viewers
             Class = "SobekCM.Library.HTML.Search_Results_HtmlSubwriter";
             Viewers.Clear();
 
-           
+
             // Add all the standard viewers here!!
         }
     }

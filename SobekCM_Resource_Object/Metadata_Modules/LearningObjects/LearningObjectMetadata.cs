@@ -1,7 +1,6 @@
 ﻿#region Using directives
 
 using System;
-using System.CodeDom;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Text;
@@ -178,7 +177,7 @@ namespace SobekCM.Resource_Object.Metadata_Modules.LearningObjects
 
         /// <summary> Degree of interactivity characterizing this learning object.  Refers to degree to which 
         /// the learner can influence the aspect or behavior of the learning object. ( IEEE-LOM 5.3 )  </summary>
-        public InteractivityLevelEnum InteractivityLevel { get; set;  }
+        public InteractivityLevelEnum InteractivityLevel { get; set; }
 
         /// <summary> How hard it is to work with or through this learning object for the typical intended target audience ( IEEE-LOM 5.8 ) </summary>
         public DifficultyLevelEnum DifficultyLevel { get; set; }
@@ -265,7 +264,7 @@ namespace SobekCM.Resource_Object.Metadata_Modules.LearningObjects
 
         /// <summary> Add a new learning resource type ( IEEE-LOM 5.2 ) </summary>
         /// <param name="Value"> Learning resource type string </param>
-        public void Add_LearningResourceType( string Value )
+        public void Add_LearningResourceType(string Value)
         {
             learningResourceTypes.Add(new LOM_VocabularyState(Value, String.Empty));
         }
@@ -273,16 +272,16 @@ namespace SobekCM.Resource_Object.Metadata_Modules.LearningObjects
         /// <summary> Add a new learning resource type ( IEEE-LOM 5.2 )  </summary>
         /// <param name="Value"> Learning resource type string </param>
         /// <param name="Source"> Source or vocabulary from which the learning resource string is derived </param>
-        public void Add_LearningResourceType( string Value, string Source )
+        public void Add_LearningResourceType(string Value, string Source)
         {
-            learningResourceTypes.Add( new LOM_VocabularyState(Value, Source));
+            learningResourceTypes.Add(new LOM_VocabularyState(Value, Source));
         }
 
         /// <summary> Add a new learning resource type ( IEEE-LOM 5.2 )  </summary>
         /// <param name="Value"> Learning resource type with possible source value </param>
-        public void Add_LearningResourceType(LOM_VocabularyState Value )
+        public void Add_LearningResourceType(LOM_VocabularyState Value)
         {
-            learningResourceTypes.Add( Value );
+            learningResourceTypes.Add(Value);
         }
 
         /// <summary> Clears the list of all the learning resource types ( IEEE-LOM 5.2 ) </summary>
@@ -347,7 +346,7 @@ namespace SobekCM.Resource_Object.Metadata_Modules.LearningObjects
 
         /// <summary> Add a new educational context ( IEEE-LOM 5.6 )  </summary>
         /// <param name="Value"> Educational context </param>
-        public void Add_Context(LOM_VocabularyState Value )
+        public void Add_Context(LOM_VocabularyState Value)
         {
             context.Add(Value);
         }
@@ -390,7 +389,7 @@ namespace SobekCM.Resource_Object.Metadata_Modules.LearningObjects
         /// <param name="Value"></param>
         public void Add_TypicalAgeRange(LOM_LanguageString Value)
         {
-            typicalAgeRange.Add( Value );
+            typicalAgeRange.Add(Value);
         }
 
         /// <summary> Clears the list of all the typical age ranges ( IEEE-LOM 5.7 ) </summary>
@@ -479,7 +478,7 @@ namespace SobekCM.Resource_Object.Metadata_Modules.LearningObjects
                         metadataTerms.Add(new KeyValuePair<string, string>("LOM Context", thisContext.Value));
 
                         // For display, include the source, if there is one
-                        if ( String.IsNullOrEmpty(thisContext.Source))
+                        if (String.IsNullOrEmpty(thisContext.Source))
                             metadataTerms.Add(new KeyValuePair<string, string>("LOM Context Display", thisContext.Value));
                         else
                             metadataTerms.Add(new KeyValuePair<string, string>("LOM Context Display", thisContext.Value + " (" + thisContext.Source + ")"));
@@ -633,7 +632,7 @@ namespace SobekCM.Resource_Object.Metadata_Modules.LearningObjects
                     foreach (LOM_System_Requirements requirements in SystemRequirements)
                     {
                         // If there is no name, skip it
-                        if (( requirements.Name == null ) || ( String.IsNullOrEmpty(requirements.Name.Value))) continue;
+                        if ((requirements.Name == null) || (String.IsNullOrEmpty(requirements.Name.Value))) continue;
 
                         // Start to build this requirements
                         StringBuilder reqBuilder = new StringBuilder();
@@ -712,7 +711,7 @@ namespace SobekCM.Resource_Object.Metadata_Modules.LearningObjects
                 }
 
                 // Add the learning time
-                if ( !String.IsNullOrEmpty(TypicalLearningTime))
+                if (!String.IsNullOrEmpty(TypicalLearningTime))
                     metadataTerms.Add(new KeyValuePair<string, string>("LOM Requirement Display", TypicalLearningTime));
 
                 return metadataTerms;
@@ -754,4 +753,3 @@ namespace SobekCM.Resource_Object.Metadata_Modules.LearningObjects
         #endregion
     }
 }
- 

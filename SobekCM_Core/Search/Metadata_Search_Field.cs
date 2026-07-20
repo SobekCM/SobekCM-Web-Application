@@ -1,10 +1,9 @@
 ﻿#region Using directives
 
+using ProtoBuf;
 using System;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
-using Microsoft.SqlServer.Server;
-using ProtoBuf;
 
 #endregion
 

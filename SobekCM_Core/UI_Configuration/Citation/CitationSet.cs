@@ -1,8 +1,8 @@
-﻿using System;
+﻿using ProtoBuf;
+using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
-using ProtoBuf;
 
 namespace SobekCM.Core.UI_Configuration.Citation
 {
@@ -45,7 +45,7 @@ namespace SobekCM.Core.UI_Configuration.Citation
         public CitationFieldSet AddFieldSet(string FieldSetId, string DefaultHeading, string Order, string AfterID)
         {
             // Ensure the field set dictionary is built
-            if (fieldSetDictionary == null) fieldSetDictionary = new Dictionary<string, CitationFieldSet>( StringComparer.OrdinalIgnoreCase);
+            if (fieldSetDictionary == null) fieldSetDictionary = new Dictionary<string, CitationFieldSet>(StringComparer.OrdinalIgnoreCase);
 
             // Is the field set dictionary built?  If not, build it
             if (fieldSetDictionary.Count != FieldSets.Count)

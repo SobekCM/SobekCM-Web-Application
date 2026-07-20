@@ -1,13 +1,12 @@
-using System;
-using System.IO;
-using System.Text;
-using Microsoft.AspNetCore.Http;
 using SobekCM.Core.ApplicationState;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.UI_Configuration.Citation;
 using SobekCM.Core.Users;
 using SobekCM.Library.UI;
 using SobekCM.Resource_Object;
+using System;
+using System.IO;
+using System.Text;
 
 namespace SobekCM.Library.Citation.Elements
 {
@@ -28,7 +27,7 @@ namespace SobekCM.Library.Citation.Elements
 
             foreach (CitationSet citationSet in UI_ApplicationCache_Gateway.Configuration.UI.CitationViewer.CitationSets)
             {
-                if (( String.IsNullOrEmpty(defaultSet)) || ( String.Compare(defaultSet, citationSet.Name, StringComparison.OrdinalIgnoreCase ) != 0 ))
+                if ((String.IsNullOrEmpty(defaultSet)) || (String.Compare(defaultSet, citationSet.Name, StringComparison.OrdinalIgnoreCase) != 0))
                     Items.Add(citationSet.Name);
             }
         }

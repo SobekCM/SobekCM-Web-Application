@@ -1,9 +1,9 @@
-﻿using System;
+﻿using ProtoBuf;
+using SobekCM.Tools;
+using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
-using ProtoBuf;
-using SobekCM.Tools;
 
 namespace SobekCM.Core.Builder
 {
@@ -14,7 +14,7 @@ namespace SobekCM.Core.Builder
     {
         private Dictionary<string, StringKeyValuePair> settingLookupTable;
 
-            /// <summary> List of the latest builder status values from the settings table, where
+        /// <summary> List of the latest builder status values from the settings table, where
         /// it is updated as each run of the builder completes </summary>
         [DataMember(Name = "settings")]
         [XmlArray("settings")]
@@ -44,7 +44,7 @@ namespace SobekCM.Core.Builder
         {
             // Is the dictionary built?
             if (settingLookupTable == null)
-                settingLookupTable = new Dictionary<string, StringKeyValuePair>( StringComparer.OrdinalIgnoreCase);
+                settingLookupTable = new Dictionary<string, StringKeyValuePair>(StringComparer.OrdinalIgnoreCase);
 
             // Is the dictionary apparently current?
             if (settingLookupTable.Count != Settings.Count)

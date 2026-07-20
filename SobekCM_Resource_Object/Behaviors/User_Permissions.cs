@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace SobekCM.Resource_Object.Behaviors
+﻿namespace SobekCM.Resource_Object.Behaviors
 {
     /// <summary> Class holds information about a single user and what access
     /// rights the user has </summary>

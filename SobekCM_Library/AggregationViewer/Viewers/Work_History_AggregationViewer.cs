@@ -1,17 +1,15 @@
 #region Using directives
 
 using Microsoft.AspNetCore.Http;
-using System;
-using System.Data;
-using System.IO;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.Navigation;
-using SobekCM.Core.UI_Configuration;
-using SobekCM.Core.UI_Configuration.StaticResources;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Library.AggregationViewer.Viewers;
 using SobekCM.Library.Database;
 using SobekCM.Tools;
+using System;
+using System.Data;
+using System.IO;
 
 #endregion
 
@@ -93,7 +91,7 @@ namespace SobekCM.Library.AggregationViewer
 
             DataTable historyTbl = SobekCM_Database.Get_Aggregation_Change_Log(ViewBag.Hierarchy_Object.Code, RequestSpecificValues.Tracer);
 
-            if ((historyTbl == null) || ( historyTbl.Rows.Count == 0 ))
+            if ((historyTbl == null) || (historyTbl.Rows.Count == 0))
             {
                 Output.WriteLine("<p>No history found for this collection!</p>");
 
@@ -116,7 +114,7 @@ namespace SobekCM.Library.AggregationViewer
                 Output.WriteLine("    <tr>");
                 Output.WriteLine("      <td>" + Convert.ToDateTime(thisChange[1]).ToShortDateString() + "</td>");
                 Output.WriteLine("      <td>" + thisChange[2] + "</td>");
-                Output.WriteLine("      <td>" + thisChange[0].ToString().Replace("\n","<br />") + "</td>");
+                Output.WriteLine("      <td>" + thisChange[0].ToString().Replace("\n", "<br />") + "</td>");
                 Output.WriteLine("    </tr>");
                 Output.WriteLine("    <tr class=\"sbkWhav_TableRule\"><td colspan=\"3\"></td></tr>");
             }

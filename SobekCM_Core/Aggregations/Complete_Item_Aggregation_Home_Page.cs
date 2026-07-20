@@ -1,10 +1,9 @@
 ﻿#region Using directives
 
+using ProtoBuf;
+using SobekCM.Core.Configuration.Localization;
 using System;
 using System.Runtime.Serialization;
-using ProtoBuf;
-using SobekCM.Core.Configuration;
-using SobekCM.Core.Configuration.Localization;
 
 #endregion
 

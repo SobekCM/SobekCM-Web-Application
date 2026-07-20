@@ -62,7 +62,7 @@ namespace SobekCM.Core.Users
         /// <param name="Email"> Email address for the owner of this folder</param>
         /// <param name="IsPublic"> Flag indicates if this folder is actually public</param>
         /// <remarks> This constructor is used when a folder is reqeuested publicly which then turns out to be private</remarks>
-        public Public_User_Folder(int UserFolderID, string FolderName, string FolderDescription, int UserID, string FirstName, string LastName, string Nickname, string Email, bool IsPublic )
+        public Public_User_Folder(int UserFolderID, string FolderName, string FolderDescription, int UserID, string FirstName, string LastName, string Nickname, string Email, bool IsPublic)
         {
             this.UserFolderID = UserFolderID;
             this.FolderName = FolderName;
@@ -74,7 +74,7 @@ namespace SobekCM.Core.Users
             this.Email = Email;
             this.IsPublic = IsPublic;
 
-            if ( Nickname.Length > 0 )
+            if (Nickname.Length > 0)
             {
                 Name = Nickname + " " + LastName;
             }

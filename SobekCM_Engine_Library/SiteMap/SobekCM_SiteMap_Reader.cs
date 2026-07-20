@@ -1,10 +1,10 @@
 ﻿#region Using directives
 
+using SobekCM.Core.SiteMap;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Xml;
-using SobekCM.Core.SiteMap;
 
 #endregion
 
@@ -109,14 +109,14 @@ namespace SobekCM.Engine_Library.SiteMap
                             {
                                 nodesStack.Peek().Add_Child_Node(newNode);
                             }
-                            
+
                             // Add this to the stack, at least until the end of this node is found 
                             // if this is not an empty element
                             if (!empty)
                                 nodesStack.Push(newNode);
                         }
                     }
-                    else if ((nodeReader.NodeType == XmlNodeType.EndElement) && ( nodeReader.Name == "siteMapNode" ))
+                    else if ((nodeReader.NodeType == XmlNodeType.EndElement) && (nodeReader.Name == "siteMapNode"))
                     {
                         nodesStack.Pop();
                     }

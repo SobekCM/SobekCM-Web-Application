@@ -1,10 +1,10 @@
 ﻿#region Using directives
 
+using ProtoBuf;
 using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
-using ProtoBuf;
 
 #endregion
 
@@ -18,7 +18,7 @@ namespace SobekCM.Core.BriefItem
         [DataMember(Name = "value")]
         [XmlAttribute("value")]
         [ProtoMember(1)]
-        public string Value { get;  set; }
+        public string Value { get; set; }
 
         /// <summary> URI references related to this single value </summary>
         [DataMember(EmitDefaultValue = false, Name = "uris")]
@@ -61,7 +61,7 @@ namespace SobekCM.Core.BriefItem
 
         /// <summary> Constructor for a new instance of the BriefItem_DescTermValue class </summary>
         /// <param name="Value"> String version of this single value for a metadata term/typeString version of this single value for a metadata term/type </param>
-        public BriefItem_DescTermValue( string Value )
+        public BriefItem_DescTermValue(string Value)
         {
             this.Value = Value;
         }

@@ -1,7 +1,7 @@
-﻿using System;
+﻿using SobekCM.Engine_Library.ApplicationState;
+using System;
 using System.Collections.Generic;
 using System.Reflection;
-using SobekCM.Engine_Library.ApplicationState;
 
 namespace SobekCM.Library.ItemViewer.HtmlSectionWriters
 {
@@ -44,7 +44,7 @@ namespace SobekCM.Library.ItemViewer.HtmlSectionWriters
 
                 // Try to create this then
                 iItemSectionWriter returnObj = createWriter(Assembly, Class);
-                
+
                 // Save in the dictionary
                 sectionWriters[key] = returnObj;
 

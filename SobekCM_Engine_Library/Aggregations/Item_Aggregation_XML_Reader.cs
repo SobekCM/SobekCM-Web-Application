@@ -1,13 +1,11 @@
 #region Using directives
 
+using SobekCM.Core.Aggregations;
+using SobekCM.Core.Configuration.Localization;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Xml;
-using Microsoft.SqlServer.Server;
-using SobekCM.Core.Aggregations;
-using SobekCM.Core.Configuration.Localization;
-using SobekCM.Core.Search;
 
 #endregion
 
@@ -22,7 +20,7 @@ namespace SobekCM.Engine_Library.Aggregations
         /// item aggregation object </summary>
         /// <param name="HierarchyObject"> Item aggregation object to populate</param>
         /// <param name="FileLocation"> Full name of the item aggregation configuration XML file </param>
-        public void Add_Info_From_XML_File(Complete_Item_Aggregation HierarchyObject, string FileLocation )
+        public void Add_Info_From_XML_File(Complete_Item_Aggregation HierarchyObject, string FileLocation)
         {
             // Get the directory from the file location
             string directory = (new FileInfo(FileLocation)).DirectoryName;
@@ -107,17 +105,17 @@ namespace SobekCM.Engine_Library.Aggregations
                             }
                             break;
 
-						case "HI:CSS":
-							NodeReader.Read();
-                            if ( !String.IsNullOrEmpty(NodeReader.Value ))
-    							HierarchyObject.CSS_File = NodeReader.Value.Trim();
-							break;
+                        case "HI:CSS":
+                            NodeReader.Read();
+                            if (!String.IsNullOrEmpty(NodeReader.Value))
+                                HierarchyObject.CSS_File = NodeReader.Value.Trim();
+                            break;
 
-						case "HI:CUSTOMHOME":
-							NodeReader.Read();
+                        case "HI:CUSTOMHOME":
+                            NodeReader.Read();
                             // No longer do anything with this tag
-							// HierarchyObject.Custom_Home_Page_Source_File = NodeReader.Value.Trim();
-							break;
+                            // HierarchyObject.Custom_Home_Page_Source_File = NodeReader.Value.Trim();
+                            break;
 
                         case "HI:FACETS":
                             NodeReader.Read();
@@ -167,7 +165,7 @@ namespace SobekCM.Engine_Library.Aggregations
 
                                         if ((latitude != 999) && (longitude != 999))
                                         {
-                                            HierarchyObject.Map_Search_Display = new Item_Aggregation_Map_Coverage_Info(Item_Aggregation_Map_Coverage_Type_Enum.FIXED, zoom, longitude, latitude );
+                                            HierarchyObject.Map_Search_Display = new Item_Aggregation_Map_Coverage_Info(Item_Aggregation_Map_Coverage_Type_Enum.FIXED, zoom, longitude, latitude);
                                         }
                                         break;
                                 }
@@ -257,7 +255,7 @@ namespace SobekCM.Engine_Library.Aggregations
                             }
 
                             NodeReader.Read();
-                            HierarchyObject.Add_Home_Page_File(NodeReader.Value, langEnum, isCustom );
+                            HierarchyObject.Add_Home_Page_File(NodeReader.Value, langEnum, isCustom);
                             break;
 
                         case "HI:BROWSE":
@@ -292,8 +290,8 @@ namespace SobekCM.Engine_Library.Aggregations
                             string lang = String.Empty;
                             bool special = false;
                             Item_Aggregation_Front_Banner_Type_Enum type = Item_Aggregation_Front_Banner_Type_Enum.Left;
-		                    ushort width = 550;
-		                    ushort height = 230;
+                            ushort width = 550;
+                            ushort height = 230;
 
                             if (NodeReader.HasAttributes)
                             {
@@ -304,45 +302,45 @@ namespace SobekCM.Engine_Library.Aggregations
                                 }
                                 if (NodeReader.MoveToAttribute("type"))
                                 {
-                                    if ((NodeReader.Value.Trim().ToUpper() == "HIGHLIGHT") || ( NodeReader.Value.Trim().ToUpper() == "FRONT"))
+                                    if ((NodeReader.Value.Trim().ToUpper() == "HIGHLIGHT") || (NodeReader.Value.Trim().ToUpper() == "FRONT"))
                                         special = true;
                                 }
-								if (NodeReader.MoveToAttribute("side"))
-								{
-									switch (NodeReader.Value.Trim().ToUpper())
-									{
-										case "RIGHT":
+                                if (NodeReader.MoveToAttribute("side"))
+                                {
+                                    switch (NodeReader.Value.Trim().ToUpper())
+                                    {
+                                        case "RIGHT":
                                             type = Item_Aggregation_Front_Banner_Type_Enum.Right;
-											break;
+                                            break;
 
-										case "LEFT":
+                                        case "LEFT":
                                             type = Item_Aggregation_Front_Banner_Type_Enum.Left;
-											break;
+                                            break;
 
-										case "FULL":
+                                        case "FULL":
                                             type = Item_Aggregation_Front_Banner_Type_Enum.Full;
-											break;
-									}
-								}
-								if (NodeReader.MoveToAttribute("width"))
-								{
-									ushort.TryParse(NodeReader.Value, out width);
+                                            break;
+                                    }
+                                }
+                                if (NodeReader.MoveToAttribute("width"))
+                                {
+                                    ushort.TryParse(NodeReader.Value, out width);
 
-								}
-								if (NodeReader.MoveToAttribute("height"))
-								{
-									ushort.TryParse(NodeReader.Value, out height);
-								}
+                                }
+                                if (NodeReader.MoveToAttribute("height"))
+                                {
+                                    ushort.TryParse(NodeReader.Value, out height);
+                                }
                             }
 
                             // Now read the banner information and add to the aggregation object
                             NodeReader.Read();
                             if (special)
                             {
-                                Item_Aggregation_Front_Banner bannerObj = HierarchyObject.Add_Front_Banner_Image(NodeReader.Value, Web_Language_Enum_Converter.Code_To_Enum( lang));
-	                            bannerObj.Width = width;
-	                            bannerObj.Height = height;
-	                            bannerObj.Type = type;
+                                Item_Aggregation_Front_Banner bannerObj = HierarchyObject.Add_Front_Banner_Image(NodeReader.Value, Web_Language_Enum_Converter.Code_To_Enum(lang));
+                                bannerObj.Width = width;
+                                bannerObj.Height = height;
+                                bannerObj.Type = type;
                             }
                             else
                             {
@@ -378,7 +376,7 @@ namespace SobekCM.Engine_Library.Aggregations
                     {
                         case "HI:CODE":
                             NodeReader.Read();
-                            directiveCode = NodeReader.Value.Replace("<%","").Replace("%>","");
+                            directiveCode = NodeReader.Value.Replace("<%", "").Replace("%>", "");
                             break;
 
                         case "HI:SOURCE":
@@ -390,7 +388,7 @@ namespace SobekCM.Engine_Library.Aggregations
 
                 if (NodeReader.NodeType == XmlNodeType.EndElement)
                 {
-                    if (NodeReader.Name.Trim().ToUpper() == "HI:DIRECTIVE" )
+                    if (NodeReader.Name.Trim().ToUpper() == "HI:DIRECTIVE")
                     {
                         if ((directiveCode.Length > 0) && (directiveFile.Length > 0))
                         {
@@ -417,7 +415,7 @@ namespace SobekCM.Engine_Library.Aggregations
 
                             // Create the custom derivative object
                             Item_Aggregation_Custom_Directive newDirective = new Item_Aggregation_Custom_Directive(directiveCode, directiveFile, contents);
-                            if ( HierarchyObject.Custom_Directives == null )
+                            if (HierarchyObject.Custom_Directives == null)
                                 HierarchyObject.Custom_Directives = new Dictionary<string, Item_Aggregation_Custom_Directive>()
                             ;
                             HierarchyObject.Custom_Directives["<%" + directiveCode.ToUpper() + "%>"] = newDirective;
@@ -442,7 +440,7 @@ namespace SobekCM.Engine_Library.Aggregations
 
 
             // Determine if this is a rotating type of highlight or not
-            if (NodeReader.HasAttributes) 
+            if (NodeReader.HasAttributes)
             {
                 if (NodeReader.MoveToAttribute("type"))
                 {
@@ -508,7 +506,7 @@ namespace SobekCM.Engine_Library.Aggregations
                             if ((NodeReader.HasAttributes) && (NodeReader.MoveToAttribute("lang")))
                                 languageText = NodeReader.Value.ToUpper();
                             NodeReader.Read();
-                            highlight.Add_Tooltip( Web_Language_Enum_Converter.Code_To_Enum(languageText), NodeReader.Value );
+                            highlight.Add_Tooltip(Web_Language_Enum_Converter.Code_To_Enum(languageText), NodeReader.Value);
                             break;
 
                         case "HI:TEXT":
@@ -523,7 +521,7 @@ namespace SobekCM.Engine_Library.Aggregations
 
                 if (NodeReader.NodeType == XmlNodeType.EndElement)
                 {
-                    if (NodeReader.Name.Trim().ToUpper() == "HI:HIGHLIGHT" )
+                    if (NodeReader.Name.Trim().ToUpper() == "HI:HIGHLIGHT")
                     {
                         if (HierarchyObject.Highlights == null)
                             HierarchyObject.Highlights = new List<Complete_Item_Aggregation_Highlights>();
@@ -544,14 +542,14 @@ namespace SobekCM.Engine_Library.Aggregations
         {
             // Create a new browse/info object
             Complete_Item_Aggregation_Child_Page newBrowse = new Complete_Item_Aggregation_Child_Page
-                                {
-                                    Browse_Type = Item_Aggregation_Child_Visibility_Enum.Main_Menu,
-                                    Source_Data_Type = Item_Aggregation_Child_Source_Data_Enum.Static_HTML
-                                };
+            {
+                Browse_Type = Item_Aggregation_Child_Visibility_Enum.Main_Menu,
+                Source_Data_Type = Item_Aggregation_Child_Source_Data_Enum.Static_HTML
+            };
 
             bool isDefault = false;
 
-	        // Determine which XML node name to look for and set browse v. info
+            // Determine which XML node name to look for and set browse v. info
             string lastName = "HI:BROWSE";
             if (!Browse)
             {
@@ -572,27 +570,27 @@ namespace SobekCM.Engine_Library.Aggregations
                     if (NodeReader.Value == "DEFAULT")
                         isDefault = true;
                 }
-				if (NodeReader.MoveToAttribute("visibility"))
-				{
-					switch (NodeReader.Value)
-					{
-						case "NONE":
+                if (NodeReader.MoveToAttribute("visibility"))
+                {
+                    switch (NodeReader.Value)
+                    {
+                        case "NONE":
                             newBrowse.Browse_Type = Item_Aggregation_Child_Visibility_Enum.None;
-							break;
+                            break;
 
-						case "MAIN_MENU":
+                        case "MAIN_MENU":
                             newBrowse.Browse_Type = Item_Aggregation_Child_Visibility_Enum.Main_Menu;
-							break;
+                            break;
 
-						case "BROWSEBY":
+                        case "BROWSEBY":
                             newBrowse.Browse_Type = Item_Aggregation_Child_Visibility_Enum.Metadata_Browse_By;
-							break;
-					}
-				}
-				if (NodeReader.MoveToAttribute("parent"))
-				{
-					newBrowse.Parent_Code = NodeReader.Value;
-				}
+                            break;
+                    }
+                }
+                if (NodeReader.MoveToAttribute("parent"))
+                {
+                    newBrowse.Parent_Code = NodeReader.Value;
+                }
             }
 
             // Step through the XML and build this browse/info object
@@ -621,14 +619,14 @@ namespace SobekCM.Engine_Library.Aggregations
                         case "HI:TITLE":
                             // Look for a language attached to this title
                             string titleLanguage = String.Empty;
-                            if ((NodeReader.HasAttributes) && ( NodeReader.MoveToAttribute("lang")))
+                            if ((NodeReader.HasAttributes) && (NodeReader.MoveToAttribute("lang")))
                             {
                                 titleLanguage = NodeReader.GetAttribute("lang");
                             }
-                            
+
                             // read and save the title
                             NodeReader.Read();
-                            newBrowse.Add_Label( NodeReader.Value, Web_Language_Enum_Converter.Code_To_Enum(titleLanguage));
+                            newBrowse.Add_Label(NodeReader.Value, Web_Language_Enum_Converter.Code_To_Enum(titleLanguage));
                             break;
 
                         case "HI:BODY":
@@ -649,22 +647,22 @@ namespace SobekCM.Engine_Library.Aggregations
 
                 if (NodeReader.NodeType == XmlNodeType.EndElement)
                 {
-                    if (NodeReader.Name.Trim().ToUpper() == lastName )
+                    if (NodeReader.Name.Trim().ToUpper() == lastName)
                     {
-						// Don't add ALL or NEW here
-	                    if ((String.Compare(newBrowse.Code, "all", StringComparison.InvariantCultureIgnoreCase) != 0) && (String.Compare(newBrowse.Code, "new", StringComparison.InvariantCultureIgnoreCase) != 0))
-	                    {
-		                    HierarchyObject.Add_Child_Page(newBrowse);
-		                    //HierarchyObject.Add
+                        // Don't add ALL or NEW here
+                        if ((String.Compare(newBrowse.Code, "all", StringComparison.InvariantCultureIgnoreCase) != 0) && (String.Compare(newBrowse.Code, "new", StringComparison.InvariantCultureIgnoreCase) != 0))
+                        {
+                            HierarchyObject.Add_Child_Page(newBrowse);
+                            //HierarchyObject.Add
 
-		                    // If this set the default browse by save that information
+                            // If this set the default browse by save that information
                             if ((newBrowse.Browse_Type == Item_Aggregation_Child_Visibility_Enum.Metadata_Browse_By) && (isDefault))
-		                    {
-			                    HierarchyObject.Default_BrowseBy = newBrowse.Code;
-		                    }
-	                    }
+                            {
+                                HierarchyObject.Default_BrowseBy = newBrowse.Code;
+                            }
+                        }
 
-	                    return;
+                        return;
                     }
                 }
             }

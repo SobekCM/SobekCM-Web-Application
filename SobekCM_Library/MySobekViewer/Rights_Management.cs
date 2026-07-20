@@ -1,12 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using SobekCM.Core.Navigation;
 using SobekCM.Tools;
-using Microsoft.AspNetCore.Http;
+using System.IO;
 
 namespace SobekCM.Library.MySobekViewer
 {

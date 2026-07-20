@@ -1,5 +1,6 @@
 #region Using directives
 
+using SobekCM.Resource_Object.Divisions;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
@@ -7,8 +8,6 @@ using System.Drawing;
 using System.IO;
 using System.Net;
 using System.Text;
-using SobekCM.Resource_Object.Database;
-using SobekCM.Resource_Object.Divisions;
 
 #endregion
 
@@ -123,7 +122,7 @@ namespace SobekCM.Resource_Object.Utilities
             {
                 dirName = dirInfo.Parent.Name + "_" + dirName;
             }
-            if ( !String.Equals(dirName, thisBibPackage.METS_Header.ObjectID, StringComparison.InvariantCultureIgnoreCase))
+            if (!String.Equals(dirName, thisBibPackage.METS_Header.ObjectID, StringComparison.InvariantCultureIgnoreCase))
             {
                 validationErrors.Append("The folder name and the METS OBJID do not match" + "\n");
                 returnVal = false;

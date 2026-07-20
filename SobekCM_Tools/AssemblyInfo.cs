@@ -16,7 +16,7 @@ using System.Reflection;
 [assembly: AssemblyProduct("SobekCM.Tools")]
 [assembly: AssemblyCopyright("")]
 [assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]		
+[assembly: AssemblyCulture("")]
 
 //
 // Version information for an assembly consists of the following four values:

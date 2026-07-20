@@ -25,7 +25,7 @@ namespace SobekCM.Tools.IpRangeUtilities
 
         /// <summary> Add a single IP restriction range to this set </summary>
         /// <param name="IpRange"> Single IP range </param>
-        public void AddIpRange(SingleIpRangeV4 IpRange )
+        public void AddIpRange(SingleIpRangeV4 IpRange)
         {
             ranges.Add(IpRange);
             prefixDictionary = null;
@@ -103,11 +103,11 @@ namespace SobekCM.Tools.IpRangeUtilities
                     {
                         individualPrefixDictionary.Add(ipRange.StartIpAddress, ipRange);
                     }
-                    
+
                 }
                 else
                 {
-                    SortedList<ulong, SingleIpRangeV4> newSorted = new SortedList<ulong, SingleIpRangeV4> {{ipRange.StartIpAddress, ipRange}};
+                    SortedList<ulong, SingleIpRangeV4> newSorted = new SortedList<ulong, SingleIpRangeV4> { { ipRange.StartIpAddress, ipRange } };
                     tempDictionary[ipRange.Prefix] = newSorted;
                 }
             }
@@ -137,7 +137,7 @@ namespace SobekCM.Tools.IpRangeUtilities
             // If not defined, or no IP ranges included, just return FALSE
             if ((ranges == null) || (ranges.Count == 0))
                 return false;
-            
+
             // Ensure the ranges have been pulled out
             if (prefixDictionary == null)
                 Ready();
@@ -164,7 +164,7 @@ namespace SobekCM.Tools.IpRangeUtilities
             while (end_index - start_index >= 2)
             {
                 // Find the new middle point
-                int middle_point = (start_index + end_index)/2;
+                int middle_point = (start_index + end_index) / 2;
 
                 // Perform the comparison to the middle range
                 int comparison = values[middle_point].CompareTo(Address);

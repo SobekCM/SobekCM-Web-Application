@@ -2,19 +2,12 @@
 
 #region Using directives
 
-using System;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.IO;
-using System.Linq;
 using Microsoft.AspNetCore.Http;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.Client;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Message;
 using SobekCM.Core.Navigation;
-using SobekCM.Core.UI_Configuration;
-using SobekCM.Core.UI_Configuration.StaticResources;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Engine_Library.Database;
 using SobekCM.Library.Database;
@@ -22,6 +15,10 @@ using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 
 #endregion
 
@@ -176,7 +173,7 @@ namespace SobekCM.Library.AdminViewer
 
                             // Convert to the integer id for the parent and begin to do checking
                             List<string> errors = new List<string>();
-                            if ( String.IsNullOrEmpty(new_parent))
+                            if (String.IsNullOrEmpty(new_parent))
                             {
                                 errors.Add("You must select a PARENT for this new aggregation");
                             }
@@ -306,14 +303,14 @@ namespace SobekCM.Library.AdminViewer
                                 {
                                     Active = is_active,
                                     Code = new_aggregation_code,
-                                    Description = new_description, 
+                                    Description = new_description,
                                     External_Link = enteredLink,
                                     Hidden = is_hidden,
-                                    Name = new_name, 
+                                    Name = new_name,
                                     ParentCode = new_parent,
                                     ShortName = new_shortname,
-                                    Thematic_Heading = thematicHeading, 
-                                    Type = correct_type, 
+                                    Thematic_Heading = thematicHeading,
+                                    Type = correct_type,
                                     User = RequestSpecificValues.Current_User.Full_Name
                                 };
 
@@ -362,7 +359,7 @@ namespace SobekCM.Library.AdminViewer
         /// requests from the main HTML subwriter. </summary>
         public override List<HtmlSubwriter_Behaviors_Enum> Viewer_Behaviors
         {
-            get { return new List<HtmlSubwriter_Behaviors_Enum> {HtmlSubwriter_Behaviors_Enum.Suppress_Banner, HtmlSubwriter_Behaviors_Enum.Use_Jquery_DataTables}; }
+            get { return new List<HtmlSubwriter_Behaviors_Enum> { HtmlSubwriter_Behaviors_Enum.Suppress_Banner, HtmlSubwriter_Behaviors_Enum.Use_Jquery_DataTables }; }
         }
 
         /// <summary> Title for the page that displays this viewer, this is shown in the search box at the top of the page, just below the banner </summary>
@@ -410,7 +407,7 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("<div class=\"sbkAdm_HomeText\">");
 
             // Add the action message, if there is one
-            if ( !String.IsNullOrEmpty(actionMessage))
+            if (!String.IsNullOrEmpty(actionMessage))
             {
                 // If this is an error, show it differently
                 if (actionMessage.IndexOf("Error", StringComparison.InvariantCultureIgnoreCase) >= 0)
@@ -438,7 +435,7 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("    <tr>");
             Output.WriteLine("      <td>");
             Output.WriteLine("        <p>Use the new <a href=\"" + wizard_url + "\">Add New Collection Wizard</a> to add a single new collection.</p>");
-            if (!addedNewCollection )
+            if (!addedNewCollection)
                 Output.WriteLine("        <span id=\"oldnewdivprompt\" style=\"display:block;\"><p>Alternatively, you can use the reduced interface below by <a href=\"\" onclick=\"$('#oldnewdiv').css('display', 'block');$('#oldnewdivprompt').css('display', 'none');return false;\">clicking here</a>.</p></span>");
 
             Output.WriteLine("      </td>");
@@ -449,9 +446,9 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("  </table>");
 
             if (addedNewCollection)
-                Output.WriteLine("  <div class=\"sbkAsav_NewDiv\" id=\"oldnewdiv\" style=\"display:block;\">");  
+                Output.WriteLine("  <div class=\"sbkAsav_NewDiv\" id=\"oldnewdiv\" style=\"display:block;\">");
             else
-                Output.WriteLine("  <div class=\"sbkAsav_NewDiv\" id=\"oldnewdiv\" style=\"display:none;\">");  
+                Output.WriteLine("  <div class=\"sbkAsav_NewDiv\" id=\"oldnewdiv\" style=\"display:none;\">");
 
             Output.WriteLine("    <br /><br />");
             Output.WriteLine("    <table class=\"sbkAdm_PopupTable\">");
@@ -540,7 +537,7 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("            <option value=\"-1\" selected=\"selected\" ></option>");
             foreach (Thematic_Heading thisHeading in UI_ApplicationCache_Gateway.Thematic_Headings)
             {
-                if ( thisHeading.Text == enteredThematicHeading )
+                if (thisHeading.Text == enteredThematicHeading)
                     Output.Write("            <option value=\"" + thisHeading.ID + "\" selected=\"selected\">" + System.Net.WebUtility.HtmlEncode(thisHeading.Text) + "</option>");
                 else
                     Output.Write("            <option value=\"" + thisHeading.ID + "\">" + System.Net.WebUtility.HtmlEncode(thisHeading.Text) + "</option>");
@@ -627,7 +624,7 @@ namespace SobekCM.Library.AdminViewer
 
                     // Special code to start istitutions with a small letter 'i'
                     string code = thisAggr.Code;
-                    if ((thisAggr.Type.IndexOf("Institution", StringComparison.InvariantCultureIgnoreCase) >= 0 ) && ( code[0] == 'I') && ( code.Length > 1 ))
+                    if ((thisAggr.Type.IndexOf("Institution", StringComparison.InvariantCultureIgnoreCase) >= 0) && (code[0] == 'I') && (code.Length > 1))
                     {
                         code = "i" + code.Substring(1);
                     }

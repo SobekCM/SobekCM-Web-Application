@@ -1,10 +1,10 @@
 ﻿#region Using directives
 
+using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data;
-using Microsoft.Data.SqlClient;
 using System.Text;
 
 #endregion
@@ -69,7 +69,7 @@ namespace SobekCM.Resource_Object.Metadata_Modules.VRACore
                 if (Material_Count > 0)
                 {
                     // Add the simple material type
-                    foreach (VRACore_Materials_Info materialInfo in  Materials)
+                    foreach (VRACore_Materials_Info materialInfo in Materials)
                     {
                         metadataTerms.Add(new KeyValuePair<string, string>("Material", materialInfo.Materials));
                     }
@@ -77,7 +77,7 @@ namespace SobekCM.Resource_Object.Metadata_Modules.VRACore
                     // Add the display version, which can include more information 
                     foreach (VRACore_Materials_Info materialInfo in Materials)
                     {
-                        if ( !String.IsNullOrEmpty(materialInfo.Type))
+                        if (!String.IsNullOrEmpty(materialInfo.Type))
                             metadataTerms.Add(new KeyValuePair<string, string>("Material Display", materialInfo.Materials + " (" + materialInfo.Type + ")"));
                         else
                             metadataTerms.Add(new KeyValuePair<string, string>("Material Display", materialInfo.Materials));
@@ -95,8 +95,8 @@ namespace SobekCM.Resource_Object.Metadata_Modules.VRACore
                     // Add the display version, which can include more information 
                     foreach (VRACore_Measurement_Info measurement in Measurements)
                     {
-                        if ( !String.IsNullOrEmpty(measurement.Units))
-                            metadataTerms.Add(new KeyValuePair<string, string>("Measurements Display", measurement.Measurements + " " + measurement.Units ));
+                        if (!String.IsNullOrEmpty(measurement.Units))
+                            metadataTerms.Add(new KeyValuePair<string, string>("Measurements Display", measurement.Measurements + " " + measurement.Units));
                         else
                             metadataTerms.Add(new KeyValuePair<string, string>("Measurements Display", measurement.Measurements));
                     }
@@ -105,7 +105,7 @@ namespace SobekCM.Resource_Object.Metadata_Modules.VRACore
                 // Add all the style/period information
                 if (Style_Period_Count > 0)
                 {
-                    foreach (string stylePeriod in  Style_Periods)
+                    foreach (string stylePeriod in Style_Periods)
                     {
                         metadataTerms.Add(new KeyValuePair<string, string>("Style Period", stylePeriod));
                     }
@@ -142,7 +142,7 @@ namespace SobekCM.Resource_Object.Metadata_Modules.VRACore
             StringBuilder materialDisplayBuilder = new StringBuilder();
             if (Material_Count > 0)
             {
-                foreach (VRACore_Materials_Info materials in  Materials)
+                foreach (VRACore_Materials_Info materials in Materials)
                 {
                     if (materialDisplayBuilder.Length > 0)
                         materialDisplayBuilder.Append(", ");

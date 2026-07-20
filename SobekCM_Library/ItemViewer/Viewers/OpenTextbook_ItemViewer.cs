@@ -1,19 +1,18 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
+using Microsoft.AspNetCore.Http;
 using SobekCM.Core.BriefItem;
+using SobekCM.Core.Client;
 using SobekCM.Core.FileSystems;
+using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Users;
 using SobekCM.Engine_Library.Configuration;
+using SobekCM.Library.Helpers.CKEditor;
 using SobekCM.Library.ItemViewer.Menu;
 using SobekCM.Tools;
-using SobekCM.Library.Helpers.CKEditor;
-using SobekCM.Core.MemoryMgmt;
-using SobekCM.Core.Client;
-using Microsoft.AspNetCore.Http;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Text;
 
 namespace SobekCM.Library.ItemViewer.Viewers
 {
@@ -145,10 +144,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     page = tempPageParse;
             }
 
-            
+
 
             // Just a quick range check
-            if (( BriefItem.OpenTextbook_Pages != null ) && (page > BriefItem.OpenTextbook_Pages.Count))
+            if ((BriefItem.OpenTextbook_Pages != null) && (page > BriefItem.OpenTextbook_Pages.Count))
                 page = 1;
 
             // Since this is a paging viewer, set the viewer code
@@ -160,7 +159,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             // Is this in edit mode?
             isEditMode = false;
-            if ((!String.IsNullOrEmpty(CurrentRequest.ViewerSubCode)) && ( CurrentRequest.ViewerSubCode == "edit"))
+            if ((!String.IsNullOrEmpty(CurrentRequest.ViewerSubCode)) && (CurrentRequest.ViewerSubCode == "edit"))
             {
                 isEditMode = true;
             }
@@ -257,7 +256,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
         private bool set_file_information(string[] FileExtensions)
         {
-            if ( BriefItem.OpenTextbook_Pages == null )
+            if (BriefItem.OpenTextbook_Pages == null)
             {
                 filename = "oer\\" + Guid.NewGuid().ToString() + ".html";
                 return true;
@@ -347,7 +346,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <remarks> By default this does nothing, but can be overwritten by all the individual item viewers </remarks>
         public override void Write_Top_Additional_Navigation_Row(TextWriter Output, Custom_Tracer Tracer)
         {
-            if ( !isEditMode )
+            if (!isEditMode)
             {
                 Output.WriteLine("\t<tr>");
                 Output.WriteLine("\t\t<td>");
@@ -440,7 +439,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     builder.AppendLine("<h2>" + chapterLabel + "</h2>");
                     builder.AppendLine();
                     builder.AppendLine("<p> You may edit this chapter here, by selecting <i>Edit Content</i> in the upper right corner of this page.</p>");
-                 }
+                }
 
                 html = builder.ToString();
             }
@@ -460,7 +459,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 Output.WriteLine("\t\t\t\t\t<a href=\"" + edit_url + "\" title=\"Edit this section\"><img src=\"" + Static_Resources_Gateway.Edit_Gif + "\" alt=\"\"> edit content</a>");
                 Output.WriteLine("\t\t\t\t</div>");
                 Output.WriteLine("\t\t\t</div>");
-                
+
             }
 
             // Is this in edit mode?
@@ -561,7 +560,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
 
             // Add the bar to go to the previous page
-            if ((page <= 1) || ( isEditMode))
+            if ((page <= 1) || (isEditMode))
             {
                 Output.WriteLine("\t\t\t<div id=\"sbkOeriv_PrevBarInactive\"></div>");
             }
@@ -577,7 +576,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
 
             // Add the bar to go to the next page
-            if ((page >= PageCount) || ( isEditMode ))
+            if ((page >= PageCount) || (isEditMode))
             {
                 Output.WriteLine("\t\t\t<div id=\"sbkOeriv_NextBarInactive\"></div>");
             }

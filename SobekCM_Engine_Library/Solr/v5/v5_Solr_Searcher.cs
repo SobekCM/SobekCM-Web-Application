@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using SobekCM.Core.Aggregations;
+﻿using SobekCM.Core.Aggregations;
 using SobekCM.Core.Results;
 using SobekCM.Core.Search;
 using SobekCM.Engine_Library.ApplicationState;
@@ -10,6 +6,10 @@ using SobekCM.Engine_Library.Solr.Legacy;
 using SobekCM.Tools;
 using SolrNet;
 using SolrNet.Commands.Parameters;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 
 namespace SobekCM.Engine_Library.Solr.v5
 {
@@ -40,7 +40,7 @@ namespace SobekCM.Engine_Library.Solr.v5
             string queryString = Create_Query_String(Terms, Web_Fields, StartDate, EndDate, Tracer);
 
             // Exclude hidden, if not an admin (later we will deal with user/groups and IP restrictions)
-            if (( UserMembership == null ) || (!UserMembership.LoggedIn ) || (!UserMembership.Admin))
+            if ((UserMembership == null) || (!UserMembership.LoggedIn) || (!UserMembership.Admin))
                 queryString = "(hidden:0) AND (discover_ips:0) AND (" + queryString + ")";
 
             // If there was an aggregation code included, put that at the beginning of the search
@@ -80,7 +80,7 @@ namespace SobekCM.Engine_Library.Solr.v5
             // If there was an aggregation code included, put that at the beginning of the search
             if ((!String.IsNullOrEmpty(SearchOptions.AggregationCode)) && (SearchOptions.AggregationCode.ToUpper() != "ALL"))
             {
-                if ( !String.IsNullOrEmpty(queryString))
+                if (!String.IsNullOrEmpty(queryString))
                     queryString = "(aggregations:" + SearchOptions.AggregationCode + ") AND " + queryString;
                 else
                     queryString = "(aggregations:" + SearchOptions.AggregationCode + ")";
@@ -159,7 +159,7 @@ namespace SobekCM.Engine_Library.Solr.v5
                 var solrWorker = Solr_Operations_Cache<v5_SolrDocument>.GetSolrOperations(solrDocumentUrl);
 
                 // Get the list of fields
-                List<string> fields = new List<string> {"did", "mainthumb", "title", "discover_ips", "hidden", "restricted_msg", "group_restrictions"};                   
+                List<string> fields = new List<string> { "did", "mainthumb", "title", "discover_ips", "hidden", "restricted_msg", "group_restrictions" };
                 fields.AddRange(SearchOptions.Fields.Select(MetadataField => MetadataField.SolrCode));
 
                 // Create the query options
@@ -171,10 +171,10 @@ namespace SobekCM.Engine_Library.Solr.v5
                 };
 
                 // Was there full text search in that?
-                if ((QueryString.Contains("(fulltext:")) && ( SearchOptions.IncludeFullTextSnippets ))
+                if ((QueryString.Contains("(fulltext:")) && (SearchOptions.IncludeFullTextSnippets))
                 {
                     options.Highlight = new HighlightingParameters { Fields = new[] { "fulltext" }, Fragsize = 255 };
-                    options.ExtraParams = new Dictionary<string, string> {{"hl.useFastVectorHighlighter", "true"}, {"wt", "xml"}};
+                    options.ExtraParams = new Dictionary<string, string> { { "hl.useFastVectorHighlighter", "true" }, { "wt", "xml" } };
                 }
                 else
                 {
@@ -183,7 +183,7 @@ namespace SobekCM.Engine_Library.Solr.v5
                 }
 
                 // If the search stats are needed, let's get the facets
-                if (( SearchOptions.Facets != null ) && ( SearchOptions.Facets.Count > 0 ))
+                if ((SearchOptions.Facets != null) && (SearchOptions.Facets.Count > 0))
                 {
                     // Create the query facters
                     options.Facet = new FacetParameters();
@@ -191,7 +191,7 @@ namespace SobekCM.Engine_Library.Solr.v5
                     {
                         if (String.IsNullOrWhiteSpace(facet.SolrCode)) continue;
 
-                        options.Facet.Queries.Add(new SolrFacetFieldQuery(facet.SolrCode) {MinCount=1, Limit=100});
+                        options.Facet.Queries.Add(new SolrFacetFieldQuery(facet.SolrCode) { MinCount = 1, Limit = 100 });
                     }
                 }
 
@@ -233,7 +233,7 @@ namespace SobekCM.Engine_Library.Solr.v5
 
                 // Should this be grouped?
                 bool grouped_results = false;
-                if (( SearchOptions.GroupItemsByTitle ) && ( SearchOptions.Sort < 10 ) && ( QueryString.IndexOf("fulltext") < 0 ))
+                if ((SearchOptions.GroupItemsByTitle) && (SearchOptions.Sort < 10) && (QueryString.IndexOf("fulltext") < 0))
                 {
                     if (Tracer != null)
                     {
@@ -360,7 +360,7 @@ namespace SobekCM.Engine_Library.Solr.v5
 
                 return true;
             }
-            catch ( Exception )
+            catch (Exception)
             {
                 return false;
             }
@@ -526,12 +526,12 @@ namespace SobekCM.Engine_Library.Solr.v5
 
         #region Method to split the complex search term string into a collection of search terms and fields
 
-            /// <summary> Method splits the search string and field string into seperate collections of strings </summary>
-            /// <param name="TermString"> String containing all of the search terms</param>
-            /// <param name="Field"> String containing all of the search field codes</param>
-            /// <param name="TermsBuilder"> Collection of seperate search terms</param>
-            /// <param name="FieldsBuilder"> Collection of seperate saerch field codes</param>
-            /// <remarks> This code is here to handle quotation marks, so quoted terms are not erroneously split </remarks>
+        /// <summary> Method splits the search string and field string into seperate collections of strings </summary>
+        /// <param name="TermString"> String containing all of the search terms</param>
+        /// <param name="Field"> String containing all of the search field codes</param>
+        /// <param name="TermsBuilder"> Collection of seperate search terms</param>
+        /// <param name="FieldsBuilder"> Collection of seperate saerch field codes</param>
+        /// <remarks> This code is here to handle quotation marks, so quoted terms are not erroneously split </remarks>
         public static void Split_Multi_Terms(string TermString, string Field, List<string> TermsBuilder, List<string> FieldsBuilder)
         {
             string termsStr = TermString + " ";
@@ -684,8 +684,8 @@ namespace SobekCM.Engine_Library.Solr.v5
                 Rows = ResultsPerPage,
                 Start = (ResultsPage - 1) * ResultsPerPage,
                 Fields = new[] { "pageid", "pagename", "pageorder", "score", "thumbnail" },
-                Highlight = new HighlightingParameters { Fields = new[] { "pagetext" }, Fragsize = 1000},
-                ExtraParams = new Dictionary<string, string> { { "hl.useFastVectorHighlighter", "true" }, {"wt", "xml"} }
+                Highlight = new HighlightingParameters { Fields = new[] { "pagetext" }, Fragsize = 1000 },
+                ExtraParams = new Dictionary<string, string> { { "hl.useFastVectorHighlighter", "true" }, { "wt", "xml" } }
             };
 
             // If this is not the default Solr sort (by score) request sort by the page order

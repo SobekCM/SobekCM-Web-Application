@@ -1,17 +1,15 @@
 #region Using directives
 
+using SobekCM.Core.ApplicationState;
+using SobekCM.Core.Configuration.Localization;
+using SobekCM.Core.Users;
+using SobekCM.Library.UI;
+using SobekCM.Resource_Object;
+using SobekCM.Resource_Object.Bib_Info;
 using System;
 using System.IO;
 using System.Text;
-using Microsoft.AspNetCore.Http;
 using System.Xml;
-using SobekCM.Core.ApplicationState;
-using SobekCM.Core.Configuration;
-using SobekCM.Core.Configuration.Localization;
-using SobekCM.Core.Users;
-using SobekCM.Resource_Object;
-using SobekCM.Resource_Object.Bib_Info;
-using SobekCM.Library.UI;
 
 #endregion
 
@@ -27,7 +25,7 @@ namespace SobekCM.Library.Citation.Elements
             Repeatable = true;
             Title = "Related Item";
             html_element_name = "form_related_item";
-	        help_page = "relateditem";
+            help_page = "relateditem";
         }
 
         #region iElement Members
@@ -43,7 +41,7 @@ namespace SobekCM.Library.Citation.Elements
         /// <param name="Translator"> Language support object which handles simple translational duties </param>
         /// <param name="Base_URL"> Base URL for the current request </param>
         /// <remarks> This element appends a popup form to the popup_form_builder</remarks>
-        public override void Render_Template_HTML(TextWriter Output, SobekCM_Item Bib, string Skin_Code, bool IsMozilla, StringBuilder PopupFormBuilder, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL )
+        public override void Render_Template_HTML(TextWriter Output, SobekCM_Item Bib, string Skin_Code, bool IsMozilla, StringBuilder PopupFormBuilder, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL)
         {
             // Check that an acronym exists
             if (Acronym.Length == 0)
@@ -84,7 +82,7 @@ namespace SobekCM.Library.Citation.Elements
             // Make sure there is at least one related item
             if (Bib.Bib_Info.RelatedItems_Count == 0)
                 Bib.Bib_Info.Add_Related_Item(new Related_Item_Info());
- 
+
             Output.WriteLine("    <td>");
             Output.WriteLine("      <table>");
             Output.WriteLine("        <tr>");
@@ -143,10 +141,10 @@ namespace SobekCM.Library.Citation.Elements
 
                     // Add the popup form
                     PopupFormBuilder.AppendLine("<!-- Related Item Form " + item_index + " -->");
-					PopupFormBuilder.AppendLine("<div class=\"related_item_popup_div sbkMetadata_PopupDiv\" id=\"form_related_item_" + item_index + "\" style=\"display:none;\">");
-					PopupFormBuilder.AppendLine("  <div class=\"sbkMetadata_PopupTitle\"><table style=\"width:100%\"><tr><td style=\"text-align:left\">Edit Related Items</td><td style=\"text-align:right\"><a href=\"" + Help_URL(Skin_Code, Base_URL) + "\" alt=\"HELP\" target=\"_" + html_element_name.ToUpper() + "\" >?</a> &nbsp; <a href=\"#template\" alt=\"CLOSE\" onclick=\"close_related_item_form('form_related_item_" + item_index + "')\">X</a> &nbsp; </td></tr></table></div>");
+                    PopupFormBuilder.AppendLine("<div class=\"related_item_popup_div sbkMetadata_PopupDiv\" id=\"form_related_item_" + item_index + "\" style=\"display:none;\">");
+                    PopupFormBuilder.AppendLine("  <div class=\"sbkMetadata_PopupTitle\"><table style=\"width:100%\"><tr><td style=\"text-align:left\">Edit Related Items</td><td style=\"text-align:right\"><a href=\"" + Help_URL(Skin_Code, Base_URL) + "\" alt=\"HELP\" target=\"_" + html_element_name.ToUpper() + "\" >?</a> &nbsp; <a href=\"#template\" alt=\"CLOSE\" onclick=\"close_related_item_form('form_related_item_" + item_index + "')\">X</a> &nbsp; </td></tr></table></div>");
                     PopupFormBuilder.AppendLine("  <br />");
-					PopupFormBuilder.AppendLine("  <table class=\"sbkMetadata_PopupTable\">");
+                    PopupFormBuilder.AppendLine("  <table class=\"sbkMetadata_PopupTable\">");
 
                     // Add the relation and display label
                     PopupFormBuilder.Append("    <tr><td style=\"width:90px\">Relation:</td><td><select class=\"form_relateditem_select\" name=\"form_relateditem_relation_" + item_index + "\" id=\"form_relateditem_relation_" + item_index + "\" >");
@@ -207,24 +205,24 @@ namespace SobekCM.Library.Citation.Elements
                     if (thisItem.hasMainTitle)
                         related_title = thisItem.Main_Title.Title;
 
-					PopupFormBuilder.AppendLine("    <tr><td>Title:</td><td colspan=\"2\"><input class=\"form_relateditem_large_input sbk_Focusable\" name=\"form_relateditem_title_" + item_index + "\" id=\"form_relateditem_title_" + item_index + "\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(related_title) + "\" /></td></tr>");
-					PopupFormBuilder.AppendLine("    <tr><td>URL:</td><td colspan=\"2\"><input class=\"form_relateditem_large_input sbk_Focusable\" name=\"form_relateditem_url_" + item_index + "\" id=\"form_relateditem_url_" + item_index + "\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(thisItem.URL) + "\" /></td></tr>");
+                    PopupFormBuilder.AppendLine("    <tr><td>Title:</td><td colspan=\"2\"><input class=\"form_relateditem_large_input sbk_Focusable\" name=\"form_relateditem_title_" + item_index + "\" id=\"form_relateditem_title_" + item_index + "\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(related_title) + "\" /></td></tr>");
+                    PopupFormBuilder.AppendLine("    <tr><td>URL:</td><td colspan=\"2\"><input class=\"form_relateditem_large_input sbk_Focusable\" name=\"form_relateditem_url_" + item_index + "\" id=\"form_relateditem_url_" + item_index + "\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(thisItem.URL) + "\" /></td></tr>");
 
                     // Add the system ID and ISSN row
-					PopupFormBuilder.AppendLine("    <tr><td>System ID:</td><td><input class=\"form_relateditem_medium_input sbk_Focusable\" name=\"form_relateditem_sobekid_" + item_index + "\" id=\"form_relateditem_sobekid_" + item_index + "\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(thisItem.SobekCM_ID) + "\" /></td>");
-					PopupFormBuilder.AppendLine("        <td>ISSN: &nbsp; <input class=\"form_relateditem_medium_input sbk_Focusable\" name=\"form_relateditem_issn_" + item_index + "\" id=\"form_relateditem_issn_" + item_index + "\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(issn) + "\" /></td></tr>");
+                    PopupFormBuilder.AppendLine("    <tr><td>System ID:</td><td><input class=\"form_relateditem_medium_input sbk_Focusable\" name=\"form_relateditem_sobekid_" + item_index + "\" id=\"form_relateditem_sobekid_" + item_index + "\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(thisItem.SobekCM_ID) + "\" /></td>");
+                    PopupFormBuilder.AppendLine("        <td>ISSN: &nbsp; <input class=\"form_relateditem_medium_input sbk_Focusable\" name=\"form_relateditem_issn_" + item_index + "\" id=\"form_relateditem_issn_" + item_index + "\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(issn) + "\" /></td></tr>");
 
                     // Add the OCLC and LCCN row
                     PopupFormBuilder.AppendLine("    <tr><td>OCLC:</td><td><input class=\"form_relateditem_medium_input sbk_Focusable\" name=\"form_relateditem_oclc_" + item_index + "\" id=\"form_relateditem_oclc_" + item_index + "\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(oclc) + "\" /></td>");
-					PopupFormBuilder.AppendLine("        <td>LCCN: &nbsp; <input class=\"form_relateditem_medium_input sbk_Focusable\" name=\"form_relateditem_lccn_" + item_index + "\" id=\"form_relateditem_lccn_" + item_index + "\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(lccn) + "\" /></td></tr>");
+                    PopupFormBuilder.AppendLine("        <td>LCCN: &nbsp; <input class=\"form_relateditem_medium_input sbk_Focusable\" name=\"form_relateditem_lccn_" + item_index + "\" id=\"form_relateditem_lccn_" + item_index + "\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(lccn) + "\" /></td></tr>");
 
-					// Finish the popup form and add the CLOSE button
-					PopupFormBuilder.AppendLine("    <tr style=\"height:35px; text-align: center; vertical-align: bottom;\">");
-					PopupFormBuilder.AppendLine("      <td colspan=\"3\"><button title=\"Close\" class=\"sbkMetadata_RoundButton\" onclick=\"return close_related_item_form('form_related_item_" + item_index + "');\">CLOSE</button></td>");
-					PopupFormBuilder.AppendLine("    </tr>");
-					PopupFormBuilder.AppendLine("  </table>");
-					PopupFormBuilder.AppendLine("</div>");
-					PopupFormBuilder.AppendLine();
+                    // Finish the popup form and add the CLOSE button
+                    PopupFormBuilder.AppendLine("    <tr style=\"height:35px; text-align: center; vertical-align: bottom;\">");
+                    PopupFormBuilder.AppendLine("      <td colspan=\"3\"><button title=\"Close\" class=\"sbkMetadata_RoundButton\" onclick=\"return close_related_item_form('form_related_item_" + item_index + "');\">CLOSE</button></td>");
+                    PopupFormBuilder.AppendLine("    </tr>");
+                    PopupFormBuilder.AppendLine("  </table>");
+                    PopupFormBuilder.AppendLine("</div>");
+                    PopupFormBuilder.AppendLine();
 
                     item_index++;
                 }
@@ -330,7 +328,7 @@ namespace SobekCM.Library.Citation.Elements
         /// <summary> Reads the inner data from the CompleteTemplate XML format </summary>
         /// <param name="XMLReader"> Current template xml configuration reader </param>
         /// <remarks> This procedure does not currently read any inner xml (not yet necessary) </remarks>
-        protected override void Inner_Read_Data( XmlReader XMLReader )
+        protected override void Inner_Read_Data(XmlReader XMLReader)
         {
             // Do nothing
         }

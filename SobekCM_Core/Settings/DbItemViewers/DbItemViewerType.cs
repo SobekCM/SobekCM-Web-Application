@@ -1,8 +1,7 @@
-﻿using System;
+﻿using ProtoBuf;
+using System;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
-using Microsoft.SqlServer.Server;
-using ProtoBuf;
 
 namespace SobekCM.Core.Settings.DbItemViewers
 {
@@ -63,7 +62,7 @@ namespace SobekCM.Core.Settings.DbItemViewers
         /// <param name="DefaultView"> Flag indicates if this view should be automatically added to all new items
         /// that are added to the database </param>
         /// <param name="MenuOrder"> Default order this viewer should be displayed on the item viewer menu </param>
-        public DbItemViewerType(int ID, string ViewType, int Order, bool DefaultView, decimal MenuOrder )
+        public DbItemViewerType(int ID, string ViewType, int Order, bool DefaultView, decimal MenuOrder)
         {
             this.ID = ID;
             this.ViewType = ViewType;

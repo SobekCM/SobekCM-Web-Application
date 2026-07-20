@@ -1,17 +1,15 @@
 #region Using directives
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
-using Microsoft.AspNetCore.Http;
 using SobekCM.Core.ApplicationState;
-using SobekCM.Core.Configuration;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Users;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Metadata_Modules;
 using SobekCM.Resource_Object.Metadata_Modules.VRACore;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Text;
 
 #endregion
 
@@ -28,7 +26,7 @@ namespace SobekCM.Library.Citation.Elements
             Repeatable = true;
         }
 
-                /// <summary> Renders the HTML for this element </summary>
+        /// <summary> Renders the HTML for this element </summary>
         /// <param name="Output"> Textwriter to write the HTML for this element </param>
         /// <param name="Bib"> Object to populate this element from </param>
         /// <param name="Skin_Code"> Code for the current skin </param>
@@ -54,7 +52,7 @@ namespace SobekCM.Library.Citation.Elements
             VRACore_Info vraInfo = Bib.Get_Metadata_Module(GlobalVar.VRACORE_METADATA_MODULE_KEY) as VRACore_Info;
             if (vraInfo != null)
             {
-                foreach ( VRACore_Materials_Info thisMaterial in vraInfo.Materials )
+                foreach (VRACore_Materials_Info thisMaterial in vraInfo.Materials)
                 {
                     terms.Add(thisMaterial.Materials);
                     schemes.Add(thisMaterial.Type);
@@ -117,8 +115,8 @@ namespace SobekCM.Library.Citation.Elements
                 // Add each value
                 foreach (string index in terms.Keys)
                 {
-                    if ( !String.IsNullOrEmpty(terms[index]))
-                        vraInfo.Add_Material( terms[index], schemes.ContainsKey(index) ? schemes[index] : String.Empty);
+                    if (!String.IsNullOrEmpty(terms[index]))
+                        vraInfo.Add_Material(terms[index], schemes.ContainsKey(index) ? schemes[index] : String.Empty);
                 }
             }
         }

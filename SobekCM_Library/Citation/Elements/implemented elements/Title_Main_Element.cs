@@ -1,15 +1,13 @@
 #region Using directives
 
+using SobekCM.Core.ApplicationState;
+using SobekCM.Core.Configuration.Localization;
+using SobekCM.Core.Users;
+using SobekCM.Library.UI;
+using SobekCM.Resource_Object;
 using System.IO;
 using System.Linq;
 using System.Text;
-using Microsoft.AspNetCore.Http;
-using SobekCM.Core.ApplicationState;
-using SobekCM.Core.Configuration;
-using SobekCM.Core.Configuration.Localization;
-using SobekCM.Core.Users;
-using SobekCM.Resource_Object;
-using SobekCM.Library.UI;
 
 #endregion
 
@@ -20,10 +18,10 @@ namespace SobekCM.Library.Citation.Elements
     public class Title_Main_Element : SimpleTextBox_Element
     {
         /// <summary> Constructor for a new instance of the Title_Main_Element class </summary>
-        public Title_Main_Element() : base("Main Title", "title_main" )
+        public Title_Main_Element() : base("Main Title", "title_main")
         {
             Repeatable = false;
-	        help_page = "titlesimple";
+            help_page = "titlesimple";
         }
 
 
@@ -38,7 +36,7 @@ namespace SobekCM.Library.Citation.Elements
         /// <param name="Translator"> Language support object which handles simple translational duties </param>
         /// <param name="Base_URL"> Base URL for the current request </param>
         /// <remarks> This simple element does not append any popup form to the popup_form_builder</remarks>
-        public override void Render_Template_HTML(TextWriter Output, SobekCM_Item Bib, string Skin_Code, bool IsMozilla, StringBuilder PopupFormBuilder, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL )
+        public override void Render_Template_HTML(TextWriter Output, SobekCM_Item Bib, string Skin_Code, bool IsMozilla, StringBuilder PopupFormBuilder, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL)
         {
             // Check that an acronym exists
             if (Acronym.Length == 0)
@@ -84,9 +82,9 @@ namespace SobekCM.Library.Citation.Elements
         public override void Save_To_Bib(SobekCM_Item Bib)
         {
             var getKeys = Context.Request.Form.Keys;
-            foreach (string new_value in from thisKey in getKeys where thisKey.IndexOf(html_element_name.Replace("_","")) == 0 select Context.Request.Form[thisKey].TrimFirst())
+            foreach (string new_value in from thisKey in getKeys where thisKey.IndexOf(html_element_name.Replace("_", "")) == 0 select Context.Request.Form[thisKey].TrimFirst())
             {
-                if ( new_value.Length > 0 )
+                if (new_value.Length > 0)
                 {
                     Bib.Bib_Info.Main_Title.Clear();
                     Bib.Bib_Info.Main_Title.Title = new_value;

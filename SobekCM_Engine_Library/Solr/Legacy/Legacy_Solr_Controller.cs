@@ -1,14 +1,11 @@
 ﻿#region Using directives
 
-using System;
-using System.Collections.Generic;
-using System.Data;
-using System.IO;
-using System.Threading;
-using SobekCM.Engine_Library.Database;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Solr;
 using SolrNet;
+using System;
+using System.Collections.Generic;
+using System.Threading;
 
 #endregion
 
@@ -22,11 +19,11 @@ namespace SobekCM.Engine_Library.Solr.Legacy
         /// <param name="SolrPageUrl"> URL for the solr/lucene core used for searching within a single document for matching pages </param>
         /// <param name="Resource"> Digital resource to index</param>
         /// <param name="Include_Text"> Flag indicates whether to look for and include full text </param>
-        public void Update_Index(string SolrDocumentUrl, string SolrPageUrl, SobekCM_Item Resource, bool Include_Text )
+        public void Update_Index(string SolrDocumentUrl, string SolrPageUrl, SobekCM_Item Resource, bool Include_Text)
         {
             // Create the solr workers
             var solrDocumentWorker = Solr_Operations_Cache<Legacy_SolrDocument>.GetSolrOperations(SolrDocumentUrl);
-            var solrPageWorker = Solr_Operations_Cache<Legacy_SolrPage>.GetSolrOperations(SolrPageUrl);            
+            var solrPageWorker = Solr_Operations_Cache<Legacy_SolrPage>.GetSolrOperations(SolrPageUrl);
 
             // Get the list of all items in this collection
             List<Legacy_SolrDocument> index_files = new List<Legacy_SolrDocument>();
@@ -121,7 +118,7 @@ namespace SobekCM.Engine_Library.Solr.Legacy
                 solrDocumentWorker.Delete(BibID + ":" + VID);
 
                 // For the pages, we need to search by id
-                solrPageWorker.Delete( new SolrQuery("did:\"" + BibID + ":" + VID + "\""));
+                solrPageWorker.Delete(new SolrQuery("did:\"" + BibID + ":" + VID + "\""));
 
                 // Comit the changes to the solr/lucene index
                 try

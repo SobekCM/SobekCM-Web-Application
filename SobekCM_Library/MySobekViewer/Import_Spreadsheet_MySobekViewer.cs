@@ -1,15 +1,14 @@
+using ClosedXML.Excel;
+using Microsoft.AspNetCore.Http;
+using SobekCM.Core.Navigation;
+using SobekCM.Engine_Library.Configuration;
+// using SobekCM.Library.Helpers.UploadiFive;
+using SobekCM.Library.UI;
+using SobekCM.Tools;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using ClosedXML.Excel;
-using SobekCM.Core.Navigation;
-using SobekCM.Engine_Library.Configuration;
-using Microsoft.AspNetCore.Http;
-// using SobekCM.Library.Helpers.UploadiFive;
-using SobekCM.Library.HTML;
-using SobekCM.Library.UI;
-using SobekCM.Tools;
 
 namespace SobekCM.Library.MySobekViewer
 {
@@ -24,7 +23,7 @@ namespace SobekCM.Library.MySobekViewer
         private enum Import_File_Type_Enum : byte
         {
             None,
-            
+
             Excel,
 
             CSV,
@@ -91,7 +90,7 @@ namespace SobekCM.Library.MySobekViewer
             }
 
             // Determine file type
-            if ((!String.IsNullOrEmpty(file_name)) && ( !String.IsNullOrEmpty(extension)))
+            if ((!String.IsNullOrEmpty(file_name)) && (!String.IsNullOrEmpty(extension)))
             {
                 switch (extension.ToUpper())
                 {
@@ -123,12 +122,12 @@ namespace SobekCM.Library.MySobekViewer
             if ((RequestSpecificValues.Current_Mode.isPostBack) && (Context.Request.HasFormContentType))
             {
                 string action1 = Context.Request.Form["action"].TrimFirst();
-                if (action1 == "cancel") 
+                if (action1 == "cancel")
                 {
                     if (Directory.Exists(taskDirectory))
                     {
                         string[] allFiles = Directory.GetFiles(taskDirectory);
-                        foreach( string thisFile in allFiles )
+                        foreach (string thisFile in allFiles)
                             File.Delete(thisFile);
                         Directory.Delete(taskDirectory);
                     }
@@ -144,7 +143,7 @@ namespace SobekCM.Library.MySobekViewer
                     if (Directory.Exists(taskDirectory))
                     {
                         string file = Path.Combine(taskDirectory, file_name);
-                        if ( File.Exists(file))
+                        if (File.Exists(file))
                             File.Delete(file);
                     }
 
@@ -197,7 +196,7 @@ namespace SobekCM.Library.MySobekViewer
 
         private void write_upload_page(TextWriter Output)
         {
-            if ( file_type == Import_File_Type_Enum.Excel )
+            if (file_type == Import_File_Type_Enum.Excel)
                 Output.WriteLine("<h3>Step 1a: Upload a valid data file</h3>");
             else
                 Output.WriteLine("<h3>Step 1: Upload a valid data file</h3>");
@@ -219,7 +218,7 @@ namespace SobekCM.Library.MySobekViewer
 
                     Output.WriteLine("<h3>Step 1b: Select the worksheet</h3>");
 
-                    
+
 
                     List<string> worksheets = excel_get_worksheet_names(Path.Combine(taskDirectory, file_name));
 
@@ -258,7 +257,7 @@ namespace SobekCM.Library.MySobekViewer
 
         public override void Add_Controls(TextWriter Output, Custom_Tracer Tracer)
         {
-            if ((page == 1) && ( String.IsNullOrEmpty(file_name)))
+            if ((page == 1) && (String.IsNullOrEmpty(file_name)))
             {
                 Tracer.Add_Trace("Import_Spreadsheet_MySobekViewer.Add_Controls", "Add upload controls for the spreadsheet upload");
 

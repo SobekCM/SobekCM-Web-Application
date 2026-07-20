@@ -62,7 +62,7 @@ namespace SobekCM.Tools
         {
             get
             {
-                return traceBuilder.ToString().Replace("<table class=\"Traceroute\"><tr><th>MILLISECOND &nbsp; </th><th align=\"left\">CLASS.METHOD</th><th align=\"left\">MESSAGE</th></tr>", "").Replace("<tr><td>", "").Replace("</td><td>", "      ").Replace("<font color=\"red\">", "").Replace("</font>", "").Replace("</td></tr>", "" + Environment.NewLine );
+                return traceBuilder.ToString().Replace("<table class=\"Traceroute\"><tr><th>MILLISECOND &nbsp; </th><th align=\"left\">CLASS.METHOD</th><th align=\"left\">MESSAGE</th></tr>", "").Replace("<tr><td>", "").Replace("</td><td>", "      ").Replace("<font color=\"red\">", "").Replace("</font>", "").Replace("</td></tr>", "" + Environment.NewLine);
             }
         }
 
@@ -85,16 +85,16 @@ namespace SobekCM.Tools
         /// <param name="Method">Method from which this trace call was executed</param>
         /// <param name="Message">Message to add to trace</param>
         /// <param name="Message_Type">Type of message</param>
-        public void Add_Trace(string Method, string Message, Custom_Trace_Type_Enum Message_Type )
+        public void Add_Trace(string Method, string Message, Custom_Trace_Type_Enum Message_Type)
         {
-                if (Message_Type == Custom_Trace_Type_Enum.Normal)
-                {
-                    traceBuilder.Append("<tr><td>" + Milliseconds + "</td><td>" + Method.ToLower() + "</td><td>" + Message.Replace("<", "&lt;").Replace(">","&gt;") + "</td></tr>\n");
-                }
-                else
-                {
-                    traceBuilder.Append("<tr><td>" + Milliseconds + "</td><td>" + Method.ToLower() + "</td><td><font color=\"red\">" + Message.Replace("<", "&lt;").Replace(">", "&gt;") + "</font></td></tr>\n");
-                }
+            if (Message_Type == Custom_Trace_Type_Enum.Normal)
+            {
+                traceBuilder.Append("<tr><td>" + Milliseconds + "</td><td>" + Method.ToLower() + "</td><td>" + Message.Replace("<", "&lt;").Replace(">", "&gt;") + "</td></tr>\n");
+            }
+            else
+            {
+                traceBuilder.Append("<tr><td>" + Milliseconds + "</td><td>" + Method.ToLower() + "</td><td><font color=\"red\">" + Message.Replace("<", "&lt;").Replace(">", "&gt;") + "</font></td></tr>\n");
+            }
         }
 
         /// <summary> Clears this trace route and resets the elapsed timer </summary>

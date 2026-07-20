@@ -1,11 +1,11 @@
 ﻿#region Using directives
 
+using ProtoBuf;
+using SobekCM.Resource_Object.Metadata_Modules;
 using System;
 using System.Reflection;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
-using ProtoBuf;
-using SobekCM.Resource_Object.Metadata_Modules;
 
 #endregion
 
@@ -29,7 +29,7 @@ namespace SobekCM.Resource_Object.Configuration
         [DataMember(Name = "namespace")]
         [XmlAttribute("namespace")]
         [ProtoMember(2)]
-        public string Code_Namespace { get;  set; }
+        public string Code_Namespace { get; set; }
 
         /// <summary> Class name for the metadata extension module </summary>
         /// <remarks> This is used for instantiating the metadata extension module. </remarks>
@@ -60,7 +60,7 @@ namespace SobekCM.Resource_Object.Configuration
         /// <param name="Code_Namespace">  Namespace within which this metadata extension module appears </param>
         /// <param name="Code_Class">  Class name for the metadata extension module </param>
         /// <param name="Code_Assembly"> Assembly name of the DLL which holds this metadata extension module </param>
-        public Additional_Metadata_Module_Config( string Key, string Code_Namespace, string Code_Class, string Code_Assembly )
+        public Additional_Metadata_Module_Config(string Key, string Code_Namespace, string Code_Class, string Code_Assembly)
         {
             this.Key = Key;
             this.Code_Assembly = Code_Assembly;
@@ -92,9 +92,9 @@ namespace SobekCM.Resource_Object.Configuration
                 iMetadata_Module module = possibleModule as iMetadata_Module;
                 return module;
             }
-            catch 
+            catch
             {
-                 return null;
+                return null;
             }
         }
     }

@@ -1,18 +1,8 @@
 #region Using directives
 
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Collections.Specialized;
-using System.Data;
-using System.IO;
-using System.Linq;
-using System.Text;
 using Microsoft.AspNetCore.Http;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.Navigation;
-using SobekCM.Core.UI_Configuration;
-using SobekCM.Core.UI_Configuration.StaticResources;
 using SobekCM.Core.Users;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Engine_Library.Database;
@@ -22,6 +12,13 @@ using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Data;
+using System.IO;
+using System.Linq;
+using System.Text;
 
 #endregion
 
@@ -50,7 +47,7 @@ namespace SobekCM.Library.AdminViewer
         /// <summary> Constructor for a new instance of the User_Group_AdminViewer class </summary>
         /// <param name="RequestSpecificValues"> Mode / navigation information for the current request</param>
         /// <remarks> Postback from a user group edit is handled here in the constructor </remarks>
-        public User_Group_AdminViewer(RequestCache RequestSpecificValues, HttpContext Context)  : base(RequestSpecificValues, Context)
+        public User_Group_AdminViewer(RequestCache RequestSpecificValues, HttpContext Context) : base(RequestSpecificValues, Context)
         {
             RequestSpecificValues.Tracer.Add_Trace("User_Group_AdminViewer.Constructor", String.Empty);
 
@@ -78,7 +75,7 @@ namespace SobekCM.Library.AdminViewer
             // Get the user to edit, if there was a user id in the submode
             int edit_usergroupid = -100;
             editGroup = null;
-            if ( !String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.My_Sobek_SubMode))
+            if (!String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.My_Sobek_SubMode))
             {
                 if (RequestSpecificValues.Current_Mode.My_Sobek_SubMode == "new")
                 {
@@ -98,7 +95,7 @@ namespace SobekCM.Library.AdminViewer
                     {
                         Object sessionEditUser = Context.SessionObject()["Edit_UserGroup_" + edit_usergroupid];
                         if (sessionEditUser != null)
-                            editGroup = (User_Group) sessionEditUser;
+                            editGroup = (User_Group)sessionEditUser;
                         else
                         {
                             editGroup = SobekCM_Database.Get_User_Group(edit_usergroupid, RequestSpecificValues.Tracer);
@@ -166,8 +163,8 @@ namespace SobekCM.Library.AdminViewer
                     switch (page)
                     {
                         case 1:
-                            if ( editGroup.Templates_Count > 0 ) editGroup.Templates.Clear();
-                            if ( editGroup.Default_Metadata_Sets_Count > 0 ) editGroup.Default_Metadata_Sets.Clear();
+                            if (editGroup.Templates_Count > 0) editGroup.Templates.Clear();
+                            if (editGroup.Default_Metadata_Sets_Count > 0) editGroup.Default_Metadata_Sets.Clear();
 
                             // First, set some flags to FALSE
                             editGroup.CanSubmit = false;
@@ -198,7 +195,7 @@ namespace SobekCM.Library.AdminViewer
                                         break;
 
                                     case "admin_user_editall":
-                                        editGroup.Should_Be_Able_To_Edit_All_Items = true; 
+                                        editGroup.Should_Be_Able_To_Edit_All_Items = true;
                                         break;
 
                                     case "admin_user_admin":
@@ -389,7 +386,7 @@ namespace SobekCM.Library.AdminViewer
                             }
 
                             // Copy to the object now
-                            if ( editGroup.Aggregations != null ) editGroup.Aggregations.Clear();
+                            if (editGroup.Aggregations != null) editGroup.Aggregations.Clear();
                             foreach (User_Permissioned_Aggregation thisPermissionsAggregation in aggregations.Values)
                                 editGroup.Add_Aggregation(thisPermissionsAggregation);
                             break;
@@ -564,10 +561,10 @@ namespace SobekCM.Library.AdminViewer
             RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.User_Groups;
             RequestSpecificValues.Current_Mode.My_Sobek_SubMode = editGroup.UserGroupID.ToString();
             Output.WriteLine("    <a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">Edit this user group</a>");
-            RequestSpecificValues.Current_Mode.My_Sobek_SubMode = editGroup.UserGroupID.ToString() +"v";
+            RequestSpecificValues.Current_Mode.My_Sobek_SubMode = editGroup.UserGroupID.ToString() + "v";
             Output.WriteLine("  </blockquote>");
 
-            if ( !String.IsNullOrEmpty(actionMessage) )
+            if (!String.IsNullOrEmpty(actionMessage))
                 Output.WriteLine("<strong>" + actionMessage + "</strong>");
 
             Output.WriteLine("  <span class=\"SobekAdminTitle\">Basic Information</span>");
@@ -582,8 +579,8 @@ namespace SobekCM.Library.AdminViewer
             if (editGroup.CanSubmit)
                 text_builder.Append("Can submit items<br />");
             if (editGroup.IsInternalUser)
-                text_builder.Append("Is internal user<br />");     
-            if (( editGroup.Editable_Regular_Expressions != null ) && ( editGroup.Editable_Regular_Expressions.Any(ThisRegularExpression => ThisRegularExpression == "[A-Z]{2}[A-Z|0-9]{4}[0-9]{4}")))
+                text_builder.Append("Is internal user<br />");
+            if ((editGroup.Editable_Regular_Expressions != null) && (editGroup.Editable_Regular_Expressions.Any(ThisRegularExpression => ThisRegularExpression == "[A-Z]{2}[A-Z|0-9]{4}[0-9]{4}")))
             {
                 text_builder.Append("Can edit all items<br />");
             }
@@ -660,7 +657,7 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("  <span class=\"SobekAdminTitle\">Aggregations</span>");
             Output.WriteLine("  <br />");
             Output.WriteLine("  <blockquote>");
-            if (editGroup.Aggregations_Count == 0)            
+            if (editGroup.Aggregations_Count == 0)
             {
                 Output.WriteLine("<i> &nbsp;No special aggregation rights are assigned to this user group</i>");
             }
@@ -763,7 +760,7 @@ namespace SobekCM.Library.AdminViewer
                             Output.WriteLine(matchingAggr.CanChangeVisibility
                                 ? "    <td><input type=\"checkbox\" disabled=\"disabled\" checked=\"checked\" /></td>"
                                 : "    <td><input type=\"checkbox\" disabled=\"disabled\" /></td>");
-                            
+
                             Output.WriteLine(matchingAggr.CanDelete
                                 ? "    <td><input type=\"checkbox\" disabled=\"disabled\" checked=\"checked\" /></td>"
                                 : "    <td><input type=\"checkbox\" disabled=\"disabled\" /></td>");
@@ -813,7 +810,7 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("      <li>For clarification of any terms on this form, <a href=\"" + UI_ApplicationCache_Gateway.Settings.System.Help_URL(RequestSpecificValues.Current_Mode.Base_URL) + "adminhelp/users\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</li>");
             Output.WriteLine("     </ul>");
             Output.WriteLine("  </div>");
-			Output.WriteLine();
+            Output.WriteLine();
 
             // Start the outer tab containe
             Output.WriteLine("  <div id=\"tabContainer\" class=\"fulltabs\">");
@@ -845,11 +842,11 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("    	<div class=\"sbkUgav_TabPage\" id=\"tabpage_1\">");
 
             // Add the buttons
-			Output.WriteLine("  <div class=\"sbkSeav_ButtonsDiv\">");
+            Output.WriteLine("  <div class=\"sbkSeav_ButtonsDiv\">");
             Output.WriteLine("    <button title=\"Do not apply changes\" class=\"sbkAdm_RoundButton\" onclick=\"return cancel_user_group_edits();return false;\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"sbkAdm_RoundButton_LeftImg\" alt=\"\" /> CANCEL</button> &nbsp; &nbsp; ");
             Output.WriteLine("    <button title=\"Save changes to this user group\" class=\"sbkAdm_RoundButton\" onclick=\"return save_user_group_edits();return false;\">SAVE <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button>");
-			Output.WriteLine("  </div>");
-			Output.WriteLine();
+            Output.WriteLine("  </div>");
+            Output.WriteLine();
 
             Output.WriteLine("  <br /><br />");
             Output.WriteLine();
@@ -1111,11 +1108,11 @@ namespace SobekCM.Library.AdminViewer
             }
 
             // Add the buttons
-			Output.WriteLine("  <div class=\"sbkSeav_ButtonsDiv\">");
+            Output.WriteLine("  <div class=\"sbkSeav_ButtonsDiv\">");
             Output.WriteLine("    <button title=\"Do not apply changes\" class=\"sbkAdm_RoundButton\" onclick=\"return cancel_user_group_edits();return false;\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"sbkAdm_RoundButton_LeftImg\" alt=\"\" /> CANCEL</button> &nbsp; &nbsp; ");
             Output.WriteLine("    <button title=\"Save changes to this user group\" class=\"sbkAdm_RoundButton\" onclick=\"return save_user_group_edits();return false;\">SAVE <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button>");
-			Output.WriteLine("  </div>");
-			Output.WriteLine();
+            Output.WriteLine("  </div>");
+            Output.WriteLine();
 
             Output.WriteLine("</div>");
             Output.WriteLine("</div>");

@@ -1,18 +1,16 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+using Microsoft.AspNetCore.Http;
 using SobekCM.Core.BriefItem;
 using SobekCM.Core.FileSystems;
 using SobekCM.Core.Navigation;
-using SobekCM.Core.UI_Configuration;
-using SobekCM.Core.UI_Configuration.StaticResources;
 using SobekCM.Core.Users;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Library.HTML;
 using SobekCM.Library.ItemViewer.Menu;
 using SobekCM.Tools;
-using Microsoft.AspNetCore.Http;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 
 namespace SobekCM.Library.ItemViewer.Viewers
 {
@@ -25,7 +23,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         {
             ViewerType = "PDF";
             ViewerCode = "pdf";
-            FileExtensions = new string[] {"PDF"};
+            FileExtensions = new string[] { "PDF" };
         }
 
         /// <summary> Name of this viewer, which matches the viewer name from the database and 
@@ -63,7 +61,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         {
             return true;
         }
-        
+
         /// <summary> Flag indicates if the current user has access to this viewer for the item </summary>
         /// <param name="CurrentItem"> Digital resource to see if the current user has correct permissions to use this viewer </param>
         /// <param name="CurrentUser"> Current user, who may or may not be logged on </param>
@@ -81,7 +79,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <param name="CurrentRequest"> Information about the current request </param>
         /// <param name="MenuItems"> List of menu items, to which this method may add one or more menu items </param>
         /// <param name="IsRestricted"> Flag indicates if this item is restricted AND the current user is outside the ranges or not in the proper groups</param>
-        public virtual void Add_Menu_Items(BriefItemInfo CurrentItem, User_Object CurrentUser, Navigation_Object CurrentRequest, List<Item_MenuItem> MenuItems, bool IsRestricted )
+        public virtual void Add_Menu_Items(BriefItemInfo CurrentItem, User_Object CurrentUser, Navigation_Object CurrentRequest, List<Item_MenuItem> MenuItems, bool IsRestricted)
         {
             // Get the URL for this
             string previous_code = CurrentRequest.ViewerCode;
@@ -149,7 +147,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             writeAsIframe = ((!String.IsNullOrEmpty(CurrentRequest.Browser_Type)) && (CurrentRequest.Browser_Type.IndexOf("CHROME") == 0));
 
             // Set the behavior properties
-            Behaviors = new List<HtmlSubwriter_Behaviors_Enum> {HtmlSubwriter_Behaviors_Enum.Suppress_Footer};
+            Behaviors = new List<HtmlSubwriter_Behaviors_Enum> { HtmlSubwriter_Behaviors_Enum.Suppress_Footer };
 
             // Determine if a particular video was selected
             pdf = 1;
@@ -196,11 +194,11 @@ namespace SobekCM.Library.ItemViewer.Viewers
         public override void Write_Main_Viewer_Section(TextWriter Output, Custom_Tracer Tracer)
         {
             if (Tracer != null)
-			{
-				Tracer.Add_Trace("PDF_ItemViewer.Write_Main_Viewer_Section", "");
-			}
+            {
+                Tracer.Add_Trace("PDF_ItemViewer.Write_Main_Viewer_Section", "");
+            }
 
-			// Save the current viewer code
+            // Save the current viewer code
             string current_view_code = CurrentRequest.ViewerCode;
             string pdf_url = SobekFileSystem.Resource_Web_Uri(BriefItem, pdfFileNames[pdf - 1]);
 
@@ -228,14 +226,14 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
 
             // If the display name is NOT a web, than add the source URL onto it now
-			if (displayFileName.IndexOf("http") < 0)
-			{
+            if (displayFileName.IndexOf("http") < 0)
+            {
                 // MAKE THIS USE THE FILES.ASPX WEB PAGE if this is restricted (or dark)
                 if ((BriefItem.Behaviors.Dark_Flag) || (BriefItem.Behaviors.IP_Restriction_Membership > 0))
                     displayFileName = CurrentRequest.Base_URL + "files/" + BriefItem.BibID + "/" + BriefItem.VID + "/" + displayFileName;
                 else
                     displayFileName = SobekFileSystem.Resource_Web_Uri(BriefItem) + displayFileName;
-			}
+            }
 
             // Ensure all the slashes are going the right way (had issues with this in the past)
             displayFileName = displayFileName.Replace("\\", "/").Replace("//", "/").Replace("http:/", "http://").Replace("https:/", "https://");
@@ -247,14 +245,14 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 displayFileName = displayFileName.Replace("\"", "&#34;");
             }
 
-			// Start the PDF display table
-			Output.WriteLine("\t\t<!-- PDF ITEM VIEWER OUTPUT -->" );
-            Output.WriteLine("\t\t<td id=\"sbkPdf_MainArea\">" );
-            Output.WriteLine("<table style=\"width:95%;\"><tr>" );
+            // Start the PDF display table
+            Output.WriteLine("\t\t<!-- PDF ITEM VIEWER OUTPUT -->");
+            Output.WriteLine("\t\t<td id=\"sbkPdf_MainArea\">");
+            Output.WriteLine("<table style=\"width:95%;\"><tr>");
             Output.WriteLine("<td style=\"text-align:left\"><a id=\"sbkPdf_DownloadFileLink\" href=\"" + displayFileName + "\">Download this PDF</a></td>");
             Output.WriteLine("<td style=\"text-align:right\"><a id=\"sbkPdf_DownloadAdobeReaderLink\" href=\"http://get.adobe.com/reader/\"><img src=\"" + Static_Resources_Gateway.Get_Adobe_Reader_Png + "\" alt=\"Download Adobe Reader\" /></a></td>");
             Output.WriteLine("</tr></table><br />");
-           
+
 
             // Write as an iFrame, or as embed
             if (writeAsIframe)
@@ -273,11 +271,11 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             // Finish the table
             Output.WriteLine("\t\t</td>");
-            Output.WriteLine("\t\t<!-- END PDF VIEWER OUTPUT -->" );
+            Output.WriteLine("\t\t<!-- END PDF VIEWER OUTPUT -->");
 
-			// Restore the mode
+            // Restore the mode
             CurrentRequest.ViewerCode = current_view_code;
-		}
+        }
 
         /// <summary> Gets the collection of body attributes to be included 
         /// within the HTML body tag (usually to add events to the body) </summary>

@@ -1,9 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Data;
-using System.IO;
-using System.Linq;
-using System.Text;
+using Microsoft.AspNetCore.Http;
 using SobekCM.Core.BriefItem;
 using SobekCM.Core.Client;
 using SobekCM.Core.Configuration.Localization;
@@ -15,7 +10,12 @@ using SobekCM.Library.HTML;
 using SobekCM.Library.ItemViewer.Menu;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
-using Microsoft.AspNetCore.Http;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.IO;
+using System.Linq;
+using System.Text;
 
 namespace SobekCM.Library.ItemViewer.Viewers
 {
@@ -76,7 +76,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <param name="CurrentRequest"> Information about the current request </param>
         /// <param name="MenuItems"> List of menu items, to which this method may add one or more menu items </param>
         /// <param name="IsRestricted"> Flag indicates if this item is restricted AND the current user is outside the ranges or not in the proper groups</param>
-        public virtual void Add_Menu_Items(BriefItemInfo CurrentItem, User_Object CurrentUser, Navigation_Object CurrentRequest, List<Item_MenuItem> MenuItems, bool IsRestricted )
+        public virtual void Add_Menu_Items(BriefItemInfo CurrentItem, User_Object CurrentUser, Navigation_Object CurrentRequest, List<Item_MenuItem> MenuItems, bool IsRestricted)
         {
             // Determine the label to show
             string resource_type_upper = CurrentItem.Type.ToUpper();
@@ -162,17 +162,17 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             // Determine the citation type
             viewType = View_Type.Tree;
-            if (( currentRequest.Remaining_Url_Segments != null ) && ( currentRequest.Remaining_Url_Segments.Length > 0 ))
+            if ((currentRequest.Remaining_Url_Segments != null) && (currentRequest.Remaining_Url_Segments.Length > 0))
                 switch (currentRequest.Remaining_Url_Segments[0])
-            {
-                case "2":
-                    viewType = View_Type.Thumbnail;
-                    break;
+                {
+                    case "2":
+                        viewType = View_Type.Thumbnail;
+                        break;
 
-                case "3":
-                    viewType = View_Type.List;
-                    break;
-            }
+                    case "3":
+                        viewType = View_Type.List;
+                        break;
+                }
 
             string volumes_text = "All Volumes";
             string issues_text = "All Issues";
@@ -343,7 +343,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
 
             // Add the final HTML (related titles and closing divs)
-            if ((briefItem.Web.Related_Titles != null ) && ( briefItem.Web.Related_Titles.Count > 0 ))
+            if ((briefItem.Web.Related_Titles != null) && (briefItem.Web.Related_Titles.Count > 0))
             {
                 if (Tracer != null)
                 {
@@ -527,7 +527,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             int depth = 1;
             foreach (Item_Hierarchy_Details thisItem in allVolumes)
             {
-                if (( !String.IsNullOrEmpty(thisItem.Level2_Text)) && (depth < 2))
+                if ((!String.IsNullOrEmpty(thisItem.Level2_Text)) && (depth < 2))
                 {
                     depth = 2;
                 }
@@ -571,7 +571,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
                 Output.WriteLine("  <tr>");
                 Output.WriteLine("    <td><a href=\"" + redirect_url.Replace("<%VID%>", thisItem.VID) + "\">" + thisItem.VID + "</a></td>");
-                if ( String.IsNullOrEmpty(thisItem.Level1_Text))
+                if (String.IsNullOrEmpty(thisItem.Level1_Text))
                 {
                     Output.WriteLine("    <td>" + System.Net.WebUtility.HtmlEncode(thisItem.Title) + "</td>");
                 }
@@ -581,7 +581,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 }
                 if (depth > 1)
                 {
-                    if ( !String.IsNullOrEmpty(thisItem.Level2_Text))
+                    if (!String.IsNullOrEmpty(thisItem.Level2_Text))
                         Output.WriteLine("    <td>" + System.Net.WebUtility.HtmlEncode(thisItem.Level2_Text) + "</td>");
                     else
                         Output.WriteLine("    <td>&nbsp;</td>");

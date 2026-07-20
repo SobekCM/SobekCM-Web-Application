@@ -1,7 +1,4 @@
-﻿using System;
-using System.Runtime.Serialization;
-using System.Xml.Serialization;
-using ProtoBuf;
+﻿using ProtoBuf;
 using SobekCM.Core.Configuration.Authentication;
 using SobekCM.Core.Configuration.Engine;
 using SobekCM.Core.Configuration.Extensions;
@@ -9,6 +6,9 @@ using SobekCM.Core.Configuration.OAIPMH;
 using SobekCM.Core.UI_Configuration;
 using SobekCM.Core.UI_Configuration.MaterializeClasses;
 using SobekCM.Resource_Object.Configuration;
+using System;
+using System.Runtime.Serialization;
+using System.Xml.Serialization;
 
 namespace SobekCM.Core.Configuration
 {

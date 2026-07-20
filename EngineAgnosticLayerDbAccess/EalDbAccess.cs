@@ -1,9 +1,9 @@
 ﻿#region Using directives
 
+using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using Microsoft.Data.SqlClient;
 
 #endregion
 
@@ -33,7 +33,7 @@ namespace EngineAgnosticLayerDbAccess
                         return false;
                     }
 
-                    
+
                     // Close the connection (not technical necessary since we put the connection in the
                     // scope of the using brackets.. it would dispose itself anyway)
                     try
@@ -203,13 +203,13 @@ namespace EngineAgnosticLayerDbAccess
 
             throw new ApplicationException("Unknown database type not supported");
         }
-        
+
         /// <summary> Execute a SQL statement or stored procedure and return a DataSet </summary>
         /// <param name="DbType"> Type of database ( i.e., MSSQL, PostgreSQL ) </param>
         /// <param name="DbConnectionString"> Database connection string </param>
         /// <param name="DbCommandType"> Database command type </param>
         /// <param name="DbCommandText"> Text of the database command, or name of the stored procedure to run </param>
-        public static DataSet ExecuteDataset(EalDbTypeEnum DbType, string DbConnectionString, CommandType DbCommandType, string DbCommandText )
+        public static DataSet ExecuteDataset(EalDbTypeEnum DbType, string DbConnectionString, CommandType DbCommandType, string DbCommandText)
         {
             return ExecuteDataset(DbType, DbConnectionString, DbCommandType, DbCommandText, new EalDbParameter[0]);
         }
@@ -220,7 +220,7 @@ namespace EngineAgnosticLayerDbAccess
         /// <param name="DbCommandType"> Database command type </param>
         /// <param name="DbCommandText"> Text of the database command, or name of the stored procedure to run </param>
         /// <param name="DbParameters"> Parameters for the SQL statement </param>
-        public static DataSet ExecuteDataset( EalDbTypeEnum DbType, string DbConnectionString, CommandType DbCommandType, string DbCommandText, EalDbParameter[] DbParameters)
+        public static DataSet ExecuteDataset(EalDbTypeEnum DbType, string DbConnectionString, CommandType DbCommandType, string DbCommandText, EalDbParameter[] DbParameters)
         {
             if (DbType == EalDbTypeEnum.MSSQL)
             {
@@ -246,7 +246,7 @@ namespace EngineAgnosticLayerDbAccess
 
                     // Copy all the parameters to this adapter
                     sql_add_params_to_command(sqlAdapter.SelectCommand, DbParameters);
-                    
+
                     // Fill the dataset to return 
                     sqlAdapter.Fill(returnedSet);
 
@@ -433,7 +433,7 @@ namespace EngineAgnosticLayerDbAccess
                 {
                     reader = sqlCommand.ExecuteReader();
                 }
-                catch 
+                catch
                 {
                     sqlConnect.Close();
                     throw;
@@ -697,7 +697,7 @@ namespace EngineAgnosticLayerDbAccess
             }
         }
 
-       // Copy any output values back to the parameters
+        // Copy any output values back to the parameters
         private static void sql_copy_returned_values_back_to_params(SqlParameterCollection SqlParams, List<EalDbParameter> EalParams)
         {
             // Copy over any values as necessary

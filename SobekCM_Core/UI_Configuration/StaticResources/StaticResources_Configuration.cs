@@ -1,8 +1,8 @@
-﻿using System;
+﻿using ProtoBuf;
+using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
-using ProtoBuf;
 
 namespace SobekCM.Core.UI_Configuration.StaticResources
 {
@@ -400,8 +400,8 @@ namespace SobekCM.Core.UI_Configuration.StaticResources
         }
 
         /// <summary> The list of all static resource codes found while reading the configuration files </summary>
-        
-        public List<string> Static_Resource_Codes { get; set; } 
+
+        public List<string> Static_Resource_Codes { get; set; }
 
         /// <summary> URL for the default resource '16px-feed-icon.svg.png' file ( https://cdn.sobekrepository.org/images/misc/16px-Feed-icon.svg.png by default)</summary>
         [DataMember]

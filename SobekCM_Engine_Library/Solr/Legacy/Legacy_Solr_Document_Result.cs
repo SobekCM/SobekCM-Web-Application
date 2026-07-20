@@ -1,8 +1,8 @@
 ﻿#region Using directives
 
-using System;
 using SobekCM.Core.Results;
 using SolrNet.Attributes;
+using System;
 
 #endregion
 
@@ -188,7 +188,7 @@ namespace SobekCM.Engine_Library.Solr.Legacy
         /// <summary> Gets the number of items contained within this title result </summary>
         /// <remarks> This always returns one in this implementation, since each Solr/Lucene result
         /// contains the flattened title and item information and is not displayed hierarchically </remarks>
-        public int Item_Count { get { return 1; }}
+        public int Item_Count { get { return 1; } }
 
         /// <summary> Gets the item indicated by the provided index </summary>
         /// <param name="Index"> Index of the item requested </param>
@@ -203,7 +203,7 @@ namespace SobekCM.Engine_Library.Solr.Legacy
 
         /// <summary> Gets the item tree view used for showing all the items under this title in a tree type html display </summary>
         /// <remarks> Since Solr/Lucene results only ever contain one item per title, this always returns NULL </remarks>
-        public Search_Result_Item_Tree Item_Tree 
+        public Search_Result_Item_Tree Item_Tree
         {
             get { return null; }
         }
@@ -228,154 +228,154 @@ namespace SobekCM.Engine_Library.Solr.Legacy
             }
         }
 
-	    /// <summary> Metadata values to display for this item title result </summary>
-	    public string[] Metadata_Display_Values
-	    {
-		    get
-		    {
-		        if (metadataValues != null)
-		            return metadataValues;
+        /// <summary> Metadata values to display for this item title result </summary>
+        public string[] Metadata_Display_Values
+        {
+            get
+            {
+                if (metadataValues != null)
+                    return metadataValues;
 
-				string[] returnVal = new string[6];
-			    returnVal[0] = Author;
-			    returnVal[1] = Publisher;
-			    returnVal[2] = Format;
-			    returnVal[3] = Edition;
-			    returnVal[4] = Institution;
-			    returnVal[5] = Donor;
-			    return returnVal;
-		    }
-	        set { metadataValues = value; }
+                string[] returnVal = new string[6];
+                returnVal[0] = Author;
+                returnVal[1] = Publisher;
+                returnVal[2] = Format;
+                returnVal[3] = Edition;
+                returnVal[4] = Institution;
+                returnVal[5] = Donor;
+                return returnVal;
+            }
+            set { metadataValues = value; }
 
-	    }
+        }
 
         #endregion
 
-		#region Old iSearch_Title_Result_Members, eventually to be deprecated?
+        #region Old iSearch_Title_Result_Members, eventually to be deprecated?
 
-		/// <summary> Donor's name associated with this single result from a search within this library </summary>
-		[SolrField("donor")]
-		public string Donor
-		{
-			get
-			{
-				return donor ?? String.Empty;
-			}
-			internal set
-			{
-				donor = value;
-			}
-		}
+        /// <summary> Donor's name associated with this single result from a search within this library </summary>
+        [SolrField("donor")]
+        public string Donor
+        {
+            get
+            {
+                return donor ?? String.Empty;
+            }
+            internal set
+            {
+                donor = value;
+            }
+        }
 
-		/// <summary> Edition associated with this single result from a search within this library </summary>
-		[SolrField("edition")]
-		public string Edition
-		{
-			get
-			{
-				return edition ?? String.Empty;
-			}
-			internal set
-			{
-				edition = value;
-			}
-		}
+        /// <summary> Edition associated with this single result from a search within this library </summary>
+        [SolrField("edition")]
+        public string Edition
+        {
+            get
+            {
+                return edition ?? String.Empty;
+            }
+            internal set
+            {
+                edition = value;
+            }
+        }
 
-		/// <summary> Format/Physical Description associated with this single result from a search within this library </summary>
-		[SolrField("format")]
-		public string Format
-		{
-			get
-			{
-				return format ?? String.Empty;
-			}
-			internal set
-			{
-				format = value;
-			}
-		}
+        /// <summary> Format/Physical Description associated with this single result from a search within this library </summary>
+        [SolrField("format")]
+        public string Format
+        {
+            get
+            {
+                return format ?? String.Empty;
+            }
+            internal set
+            {
+                format = value;
+            }
+        }
 
-		/// <summary> Author (display version) associated with this single result from a search within this library </summary>
-		[SolrField("author_display")]
-		public string Author
-		{
-			get
-			{
-				return author ?? String.Empty;
-			}
-			internal set
-			{
-				author = value;
-			}
-		}
+        /// <summary> Author (display version) associated with this single result from a search within this library </summary>
+        [SolrField("author_display")]
+        public string Author
+        {
+            get
+            {
+                return author ?? String.Empty;
+            }
+            internal set
+            {
+                author = value;
+            }
+        }
 
-		/// <summary> Publisher (display version) associated with this single result from a search within this library </summary>
-		[SolrField("publisher_display")]
-		public string Publisher
-		{
-			get
-			{
-				return publisher ?? String.Empty;
-			}
-			internal set
-			{
-				publisher = value;
-			}
-		}
+        /// <summary> Publisher (display version) associated with this single result from a search within this library </summary>
+        [SolrField("publisher_display")]
+        public string Publisher
+        {
+            get
+            {
+                return publisher ?? String.Empty;
+            }
+            internal set
+            {
+                publisher = value;
+            }
+        }
 
-		/// <summary> Spatial coverage associated with this single result from a search within this library </summary>
-		public string Spatial_Coverage
-		{
-			get { return String.Empty; }
-		}
+        /// <summary> Spatial coverage associated with this single result from a search within this library </summary>
+        public string Spatial_Coverage
+        {
+            get { return String.Empty; }
+        }
 
-		/// <summary> Spatial coverage for this title result in terms of coordinates for map display </summary>
-		public string Spatial_Coordinates
-		{
-			get { return String.Empty; }
-		}
+        /// <summary> Spatial coverage for this title result in terms of coordinates for map display </summary>
+        public string Spatial_Coordinates
+        {
+            get { return String.Empty; }
+        }
 
-		/// <summary> Institution associated with this single result from a search within this library </summary>
-		public string Institution
-		{
-			get { return String.Empty; }
-		}
+        /// <summary> Institution associated with this single result from a search within this library </summary>
+        public string Institution
+        {
+            get { return String.Empty; }
+        }
 
-		/// <summary> Materials used in creation of a search result from a search within this library </summary>
-		public string Material
-		{
-			get { return String.Empty; }
-		}
+        /// <summary> Materials used in creation of a search result from a search within this library </summary>
+        public string Material
+        {
+            get { return String.Empty; }
+        }
 
-		/// <summary> Measurements for this  single result from a search within this library </summary>
-		public string Measurement
-		{
-			get { return String.Empty; }
-		}
+        /// <summary> Measurements for this  single result from a search within this library </summary>
+        public string Measurement
+        {
+            get { return String.Empty; }
+        }
 
-		/// <summary> Style/period associated with this single result from a search within this library </summary>
-		public string Style_Period
-		{
-			get { return String.Empty; }
-		}
+        /// <summary> Style/period associated with this single result from a search within this library </summary>
+        public string Style_Period
+        {
+            get { return String.Empty; }
+        }
 
-		/// <summary> Technique associated with this single result from a search within this library </summary>
-		public string Technique
-		{
-			get { return String.Empty; }
-		}
+        /// <summary> Technique associated with this single result from a search within this library </summary>
+        public string Technique
+        {
+            get { return String.Empty; }
+        }
 
-		/// <summary> Subjects associated with this title result </summary>
-		public string Subjects
-		{
-			get { return String.Empty; }
-		}
+        /// <summary> Subjects associated with this title result </summary>
+        public string Subjects
+        {
+            get { return String.Empty; }
+        }
 
-		#endregion
+        #endregion
 
-		#region Unimplemented portions of the iSearch_Title_Result interface
+        #region Unimplemented portions of the iSearch_Title_Result interface
 
-		/// <summary> Group title for this title result </summary>
+        /// <summary> Group title for this title result </summary>
         /// <remarks> This is required by the <see cref="iSearch_Title_Result" /> interface, but is not really implement in this instance.  The empty string is always returned. </remarks>
         public string GroupTitle
         {
@@ -476,24 +476,24 @@ namespace SobekCM.Engine_Library.Solr.Legacy
             get { return String.Empty; }
         }
 
-		/// <summary> Spatial coverage as KML for this item within a title result for map display </summary>
-		/// <remarks> This is required by the <see cref="iSearch_Item_Result" /> interface, but is not really implement in this instance.  The empty string is always returned. </remarks>
-		public string Spatial_KML
-		{
-			get { return String.Empty; }
-		}
+        /// <summary> Spatial coverage as KML for this item within a title result for map display </summary>
+        /// <remarks> This is required by the <see cref="iSearch_Item_Result" /> interface, but is not really implement in this instance.  The empty string is always returned. </remarks>
+        public string Spatial_KML
+        {
+            get { return String.Empty; }
+        }
 
-		/// <summary> COinS OpenURL format of citation for citation sharing </summary>
-		/// <remarks> This is required by the <see cref="iSearch_Item_Result" /> interface, but is not really implement in this instance.  The empty string is always returned. </remarks>
-		public string COinS_OpenURL
-		{
-			get { return String.Empty; }
-		}
+        /// <summary> COinS OpenURL format of citation for citation sharing </summary>
+        /// <remarks> This is required by the <see cref="iSearch_Item_Result" /> interface, but is not really implement in this instance.  The empty string is always returned. </remarks>
+        public string COinS_OpenURL
+        {
+            get { return String.Empty; }
+        }
 
         /// <summary> Flag indicates if this is dark, private, etc.. </summary>
         public string AccessType
         {
-            get { return String.Empty;  }
+            get { return String.Empty; }
         }
 
         /// <summary> List of groups (by id) that have access to this item </summary>

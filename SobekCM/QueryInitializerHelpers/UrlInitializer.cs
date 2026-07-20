@@ -1,17 +1,14 @@
 using Microsoft.AspNetCore.Http;
-using SobekCM.Core;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Library;
 using SobekCM.Tools;
 using System;
 using System.Collections.Generic;
-using System.Net;
-using System.Net.Sockets;
 
 namespace SobekCM.QueryInitializerHelpers
 {
-    public class UrlInitializer  : IQueryInitializerHelper
-	{
+    public class UrlInitializer : IQueryInitializerHelper
+    {
         public QueryInitializerHelperResponse Initialize(HttpContext context, RequestCache request, Custom_Tracer tracer)
         {
             // Pull out the http request
@@ -33,13 +30,13 @@ namespace SobekCM.QueryInitializerHelpers
             context.Items[RequestCache_Keys.OriginalUrl] = request_url;
 
             // Check that something is saved for the original requested URL (may not exist if not forwarded)
-            if ( String.IsNullOrEmpty(context.Session.GetString(SessionCache_Keys.OriginalUrl)))
-				context.Session.SetString(SessionCache_Keys.OriginalUrl, request_url);
+            if (String.IsNullOrEmpty(context.Session.GetString(SessionCache_Keys.OriginalUrl)))
+                context.Session.SetString(SessionCache_Keys.OriginalUrl, request_url);
 
             request.QueryString = get_query_string_dict(httpRequest.QueryString);
 
-			return QueryInitializerHelperResponse.Successful;
-		}
+            return QueryInitializerHelperResponse.Successful;
+        }
 
         private static Dictionary<string, string> get_query_string_dict(QueryString QueryString)
         {
@@ -62,5 +59,5 @@ namespace SobekCM.QueryInitializerHelpers
             }
             return queryParams;
         }
-	}
+    }
 }

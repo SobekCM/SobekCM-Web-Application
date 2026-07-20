@@ -34,24 +34,24 @@ namespace SobekCM.Resource_Object.Metadata_Modules.LearningObjects
 
         /// <summary> Add a new source name of the classification system ( IEEE-LOM 9.2.1 ) </summary>
         /// <param name="SourceName"> Name of the source classification system </param>
-        public void Add_SourceName( string SourceName )
+        public void Add_SourceName(string SourceName)
         {
-            sourceNames.Add( new LOM_LanguageString(SourceName, String.Empty ));
+            sourceNames.Add(new LOM_LanguageString(SourceName, String.Empty));
         }
 
         /// <summary> Add a new source name of the classification system ( IEEE-LOM 9.2.1 ) </summary>
         /// <param name="SourceName"> Name of the source classification system </param>
         /// <param name="Language"> Language of this new source name to add </param>
-        public void Add_SourceName(string SourceName, string Language )
+        public void Add_SourceName(string SourceName, string Language)
         {
             sourceNames.Add(new LOM_LanguageString(SourceName, Language));
         }
 
         /// <summary> Add a new source name of the classification system ( IEEE-LOM 9.2.1 ) </summary>
         /// <param name="Value"> Name and language of the source classification system </param>
-        public void Add_SourceName( LOM_LanguageString Value)
+        public void Add_SourceName(LOM_LanguageString Value)
         {
-            sourceNames.Add( Value );
+            sourceNames.Add(Value);
         }
 
         /// <summary> Clears the list of all the names of the classification system, in multiple languages ( IEEE-LOM 9.2.1 ) </summary>

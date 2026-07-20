@@ -1,15 +1,13 @@
 #region Using directives
 
-using System.IO;
-using System.Text;
-using Microsoft.AspNetCore.Http;
 using SobekCM.Core.ApplicationState;
-using SobekCM.Core.Configuration;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Users;
-using SobekCM.Resource_Object;
 using SobekCM.Library.UI;
+using SobekCM.Resource_Object;
 using System;
+using System.IO;
+using System.Text;
 
 #endregion
 
@@ -20,7 +18,7 @@ namespace SobekCM.Library.Citation.Elements
     public class Dark_Flag_Element : CheckBox_Element
     {
         /// <summary> Constructor for a new instance of the Dark_Flag_Element class  </summary>
-        public Dark_Flag_Element():base("Dark Flag", "darkFlag", "Item should be permanently dark")
+        public Dark_Flag_Element() : base("Dark Flag", "darkFlag", "Item should be permanently dark")
         {
             DefaultValue = false;
         }

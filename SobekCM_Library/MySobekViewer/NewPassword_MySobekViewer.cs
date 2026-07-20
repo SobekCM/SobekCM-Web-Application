@@ -1,19 +1,18 @@
 ﻿#region Using directives
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using SobekCM.Core.Navigation;
+using Microsoft.AspNetCore.Http;
 using SobekCM.Core.MemoryMgmt;
-using SobekCM.Core.UI_Configuration.StaticResources;
+using SobekCM.Core.Navigation;
 using SobekCM.Core.Users;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Library.Database;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
-using SobekCM.Tools;
-using Microsoft.AspNetCore.Http;
 using SobekCM.Library.UI;
+using SobekCM.Tools;
+using System;
+using System.Collections.Generic;
+using System.IO;
 
 #endregion
 

@@ -1,10 +1,5 @@
 #region Using directives
 
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.IO;
-using System.Linq;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Navigation;
@@ -13,6 +8,11 @@ using SobekCM.Core.UI_Configuration.Viewers;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Library.AggregationViewer;
 using SobekCM.Library.UI;
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.IO;
+using System.Linq;
 
 #endregion
 
@@ -28,7 +28,7 @@ namespace SobekCM.Library.HTML
         /// <param name="Output"> Stream to which to write the HTML for this menu </param>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
         /// <param name="Hierarchy_Object"> Aggregation object for which to show this aggregation main menu </param>
-        public static void Add_Aggregation_Main_Menu(TextWriter Output, RequestCache RequestSpecificValues, Item_Aggregation Hierarchy_Object )
+        public static void Add_Aggregation_Main_Menu(TextWriter Output, RequestCache RequestSpecificValues, Item_Aggregation Hierarchy_Object)
         {
             Output.WriteLine("<!-- Add the main aggregation menu -->");
             Output.WriteLine("<nav id=\"sbkAgm_MenuBar\" class=\"sbkMenu_Bar\" role=\"navigation\" aria-label=\"Aggregation menu\">");
@@ -37,7 +37,7 @@ namespace SobekCM.Library.HTML
 
             // Get ready to draw the tabs
             string home = "Home";
-            string collection_home = UI_ApplicationCache_Gateway.Translation.Get_Translation(Hierarchy_Object.ShortName, RequestSpecificValues.Current_Mode.Language ) + " Home";
+            string collection_home = UI_ApplicationCache_Gateway.Translation.Get_Translation(Hierarchy_Object.ShortName, RequestSpecificValues.Current_Mode.Language) + " Home";
             string sobek_home_text = RequestSpecificValues.Current_Mode.Instance_Abbreviation + " Home";
             string viewItems = "View Items";
             string allItems = "View All Items";
@@ -133,7 +133,7 @@ namespace SobekCM.Library.HTML
                   (Aggregation_Nav_Bar_HTML_Factory.Do_Search_Types_Match(homeView, RequestSpecificValues.Current_Mode.Search_Type))));
 
             // Add the HOME tab
-            if ((Hierarchy_Object.Code == "all") || ( Hierarchy_Object.Code == RequestSpecificValues.Current_Mode.Default_Aggregation))
+            if ((Hierarchy_Object.Code == "all") || (Hierarchy_Object.Code == RequestSpecificValues.Current_Mode.Default_Aggregation))
             {
                 // Add the 'SOBEK HOME' first menu option and suboptions
                 RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Aggregation;
@@ -156,13 +156,13 @@ namespace SobekCM.Library.HTML
                     }
                     else
                     {
-                        if ( isOnHome )
+                        if (isOnHome)
                             Output.Write("    <li id=\"sbkAgm_Home\" class=\"sbkMenu_Home selected-sf-menu-item-link\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" class=\"sbkMenu_NoPadding\"><img src=\"" + Static_Resources_Gateway.Home_Png + "\" alt=\"Home\" /> <div class=\"sbkMenu_HomeText\">" + sobek_home_text + "</div></a>");
                         else
                             Output.Write("    <li id=\"sbkAgm_Home\" class=\"sbkMenu_Home\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" class=\"sbkMenu_NoPadding\"><img src=\"" + Static_Resources_Gateway.Home_Png + "\" alt=\"Home\" /> <div class=\"sbkMenu_HomeText\">" + sobek_home_text + "</div></a>");
                     }
 
-                    if (( UI_ApplicationCache_Gateway.Thematic_Headings != null ) && ( UI_ApplicationCache_Gateway.Thematic_Headings.Count > 0 ))
+                    if ((UI_ApplicationCache_Gateway.Thematic_Headings != null) && (UI_ApplicationCache_Gateway.Thematic_Headings.Count > 0))
                     {
                         Output.WriteLine("<ul id=\"sbkAgm_HomeSubMenu\">");
                         Output.WriteLine("      <li id=\"sbkAgm_HomeListView\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + list_view_text + "</a></li>");
@@ -336,7 +336,7 @@ namespace SobekCM.Library.HTML
             RequestSpecificValues.Current_Mode.Info_Browse_Mode = "XYXYXYXYXY";
             string redirect_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
             RequestSpecificValues.Current_Mode.Page = 1;
-           // RequestSpecificValues.Current_Mode.Mode = thisMode;
+            // RequestSpecificValues.Current_Mode.Mode = thisMode;
 
             // Only show ALL and NEW if they are in the collection list of searches and views
             int included_browses = 0;
@@ -348,7 +348,7 @@ namespace SobekCM.Library.HTML
                     bool includeNew = ((Hierarchy_Object.Contains_Browse_Info("new")) && (!RequestSpecificValues.Current_Mode.Is_Robot));
                     if (includeNew)
                     {
-                        if (( thisMode == Display_Mode_Enum.Aggregation ) && ((browse_code == "all") || (browse_code == "new" )))
+                        if ((thisMode == Display_Mode_Enum.Aggregation) && ((browse_code == "all") || (browse_code == "new")))
                         {
                             Output.WriteLine("    <li id=\"sbkAgm_ViewItems\" class=\"selected-sf-menu-item-link\"><a href=\"" + redirect_url.Replace("XYXYXYXYXY", "all").Replace("/info/", "/") + "\">" + viewItems + "</a><ul id=\"sbkAgm_ViewItemsSubMenu\">");
                         }
@@ -364,7 +364,7 @@ namespace SobekCM.Library.HTML
                     }
                     else
                     {
-                        if (( thisMode == Display_Mode_Enum.Aggregation ) && (browse_code == "all"))
+                        if ((thisMode == Display_Mode_Enum.Aggregation) && (browse_code == "all"))
                         {
                             Output.WriteLine("    <li id=\"sbkAgm_ViewItems\" class=\"selected-sf-menu-item-link\"><a href=\"" + redirect_url.Replace("XYXYXYXYXY", "all").Replace("/info/", "/") + "\">" + viewItems + "</a></li>");
                         }
@@ -447,12 +447,12 @@ namespace SobekCM.Library.HTML
                         Output.Write("    <li id=\"sbkAgm_" + topPage.Code.Replace(" ", "") + "Browse\" class=\"selected-sf-menu-item-link\"><a href=\"" + redirect_url.Replace("XYXYXYXYXY", topPage.Code) + "\">" + topPage.Label + "</a>");
                     }
                     else
-                    { 
+                    {
 
                         Output.Write("    <li id=\"sbkAgm_" + topPage.Code.Replace(" ", "") + "Browse\"><a href=\"" + redirect_url.Replace("XYXYXYXYXY", topPage.Code) + "\">" + topPage.Label + "</a>");
                     }
 
-                    if ((parentToChild.ContainsKey(topPage)) && ( parentToChild[topPage].Count > 0 ))
+                    if ((parentToChild.ContainsKey(topPage)) && (parentToChild[topPage].Count > 0))
                     {
                         Output.WriteLine("<ul id=\"sbkAgm_" + topPage.Code.Replace(" ", "") + " + SubMenu\">");
                         foreach (Item_Aggregation_Child_Page middlePages in parentToChild[topPage])
@@ -600,7 +600,7 @@ namespace SobekCM.Library.HTML
             RequestSpecificValues.Current_Mode.Page = page;
 
             Output.WriteLine("  </ul>");
-			Output.WriteLine("</nav>");
+            Output.WriteLine("</nav>");
             Output.WriteLine();
 
             Output.WriteLine("<!-- Initialize the main user menu -->");
@@ -621,7 +621,7 @@ namespace SobekCM.Library.HTML
             Output.WriteLine("                 }");
             Output.WriteLine("               }");
             Output.WriteLine("          }");
-            
+
             Output.WriteLine("    });");
             Output.WriteLine("  });");
             Output.WriteLine("</script>");
@@ -634,7 +634,7 @@ namespace SobekCM.Library.HTML
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
         /// <param name="Hierarchy_Object"> Aggregation object for which to show this aggregation search results menu </param>
         /// <param name="Include_Bookshelf_View"> Flag indicates if the bookshelf view should be included in the list of possible views </param>
-        public static void Add_Aggregation_Search_Results_Menu(TextWriter Output, RequestCache RequestSpecificValues, Item_Aggregation Hierarchy_Object, bool Include_Bookshelf_View )
+        public static void Add_Aggregation_Search_Results_Menu(TextWriter Output, RequestCache RequestSpecificValues, Item_Aggregation Hierarchy_Object, bool Include_Bookshelf_View)
         {
             Output.WriteLine("<!-- Add the main search results menu -->");
             Output.WriteLine("<nav id=\"sbkAgm_MenuBar\" class=\"sbkMenu_Bar\" role=\"navigation\" aria-label=\"Search results menu\">");
@@ -906,14 +906,14 @@ namespace SobekCM.Library.HTML
             RequestSpecificValues.Current_Mode.Page = page;
 
             string resultView = RequestSpecificValues.Current_Mode.Result_Display_Type;
-            if ((Include_Bookshelf_View) && ( UI_ApplicationCache_Gateway.Configuration.UI.WriterViewers.Results.GetViewerByCode("bookshelf") != null ))
+            if ((Include_Bookshelf_View) && (UI_ApplicationCache_Gateway.Configuration.UI.WriterViewers.Results.GetViewerByCode("bookshelf") != null))
             {
                 ResultsSubViewerConfig bookshelfConfig = UI_ApplicationCache_Gateway.Configuration.UI.WriterViewers.Results.GetViewerByCode("bookshelf");
                 string bookshelf_label = UI_ApplicationCache_Gateway.Translation.Get_Translation(bookshelfConfig.Label, RequestSpecificValues.Current_Mode.Language);
                 string bookshelf_hover = UI_ApplicationCache_Gateway.Translation.Get_Translation(bookshelfConfig.Description, RequestSpecificValues.Current_Mode.Language);
 
 
-                if ( String.Equals(resultView, "bookshelf", StringComparison.OrdinalIgnoreCase))
+                if (String.Equals(resultView, "bookshelf", StringComparison.OrdinalIgnoreCase))
                 {
                     Output.WriteLine("    <li class=\"selected-sf-menu-item-link\"><a href=\"\">" + bookshelf_label + "</a></li>");
                 }
@@ -945,7 +945,7 @@ namespace SobekCM.Library.HTML
                         continue;
 
                     // is this the current view?
-                    if ( String.Equals(resultView, resultConfig.ViewerCode, StringComparison.OrdinalIgnoreCase))
+                    if (String.Equals(resultView, resultConfig.ViewerCode, StringComparison.OrdinalIgnoreCase))
                     {
                         Output.WriteLine("    <li class=\"selected-sf-menu-item-link\"><a href=\"\">" + view_label + "</a></li>");
                     }
@@ -1017,7 +1017,7 @@ namespace SobekCM.Library.HTML
         /// pages, and the system administration pages </summary>
         /// <param name="Output"> Stream to which to write the HTML for this menu </param>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
-        public static void Add_UserSpecific_Main_Menu(TextWriter Output, RequestCache RequestSpecificValues )
+        public static void Add_UserSpecific_Main_Menu(TextWriter Output, RequestCache RequestSpecificValues)
         {
             // Add the item views
             Output.WriteLine("<!-- Add the main user-specific menu -->");
@@ -1312,7 +1312,7 @@ namespace SobekCM.Library.HTML
                     Output.WriteLine("        <li id=\"sbkUsm_AdminStatus\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.Gears_Img_Small + "\" /> <div class=\"sbkUsm_TextWithImage\">Builder Status</div></a></li>");
 
                     Output.WriteLine("      </ul></li>");
-                    
+
                     // Settings submenu
                     Output.WriteLine("      <li id=\"sbkUsm_AdminSettings\"><a href=\"" + current_url + "#settings\"> <div class=\"sbkUsm_TextWithImage\">Settings</div></a><ul>");
 
@@ -1326,7 +1326,7 @@ namespace SobekCM.Library.HTML
                     RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Settings;
                     Output.WriteLine("        <li id=\"sbkUsm_AdminSettings\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.Settings_Img_Small + "\" /> <div class=\"sbkUsm_TextWithImage\">System-Wide Settings</div></a></li>");
 
-                    
+
                     // Reset cache
                     RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Reset;
                     Output.WriteLine("        <li id=\"sbkUsm_AdminReset\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.Refresh_Img_Small + "\" /> <div class=\"sbkUsm_TextWithImage\">Reset Cache</div></a></li>");
@@ -1392,7 +1392,7 @@ namespace SobekCM.Library.HTML
 
                     Output.WriteLine("    </ul></li>");
                 }
-                else if (RequestSpecificValues.Current_User.Is_User_Admin) 
+                else if (RequestSpecificValues.Current_User.Is_User_Admin)
                 {
                     RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Administrative;
                     RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Home;
@@ -1428,7 +1428,7 @@ namespace SobekCM.Library.HTML
 
                     Output.WriteLine("    </ul></li>");
                 }
-           
+
             }
 
 
@@ -1445,7 +1445,7 @@ namespace SobekCM.Library.HTML
 
 
             Output.WriteLine("  </ul>");
-			Output.WriteLine("</nav>");
+            Output.WriteLine("</nav>");
             Output.WriteLine();
 
             Output.WriteLine("<!-- Initialize the main user menu -->");

@@ -23,15 +23,15 @@
 
 #region Using directives
 
+using SobekCM.Resource_Object.MARC.ErrorHandling;
+using SobekCM.Resource_Object.MARC.Parsers;
+using SobekCM.Resource_Object.Metadata_File_ReaderWriters.MARC.Writers;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Text;
 using System.Xml;
-using SobekCM.Resource_Object.MARC.ErrorHandling;
-using SobekCM.Resource_Object.MARC.Parsers;
-using SobekCM.Resource_Object.Metadata_File_ReaderWriters.MARC.Writers;
 
 #endregion
 
@@ -160,7 +160,7 @@ namespace SobekCM.Resource_Object.MARC
                 fields[Tag].Add(newField);
             else
             {
-                List<MARC_Field> newTagCollection = new List<MARC_Field> {newField};
+                List<MARC_Field> newTagCollection = new List<MARC_Field> { newField };
                 fields[Tag] = newTagCollection;
             }
 
@@ -183,7 +183,7 @@ namespace SobekCM.Resource_Object.MARC
                 fields[Tag].Add(newField);
             else
             {
-                List<MARC_Field> newTagCollection = new List<MARC_Field> {newField};
+                List<MARC_Field> newTagCollection = new List<MARC_Field> { newField };
                 fields[Tag] = newTagCollection;
             }
 
@@ -199,14 +199,14 @@ namespace SobekCM.Resource_Object.MARC
         public MARC_Field Add_Field(int Tag, string Indicators, string Control_Field_Value)
         {
             // Create the new datafield
-            MARC_Field newField = new MARC_Field(Tag, Control_Field_Value) {Indicators = Indicators};
+            MARC_Field newField = new MARC_Field(Tag, Control_Field_Value) { Indicators = Indicators };
 
             // Either add this to the existing list, or create a new one
             if (fields.ContainsKey(Tag))
                 fields[Tag].Add(newField);
             else
             {
-                List<MARC_Field> newTagCollection = new List<MARC_Field> {newField};
+                List<MARC_Field> newTagCollection = new List<MARC_Field> { newField };
                 fields[Tag] = newTagCollection;
             }
 
@@ -226,7 +226,7 @@ namespace SobekCM.Resource_Object.MARC
                 fields[New_Field.Tag].Add(New_Field);
             else
             {
-                List<MARC_Field> newTagCollection = new List<MARC_Field> {New_Field};
+                List<MARC_Field> newTagCollection = new List<MARC_Field> { New_Field };
                 fields[New_Field.Tag] = newTagCollection;
             }
         }
@@ -292,7 +292,7 @@ namespace SobekCM.Resource_Object.MARC
                 writer.Close();
                 returnValue = true;
             }
-            catch 
+            catch
             {
                 returnValue = false;
             }
@@ -336,7 +336,7 @@ namespace SobekCM.Resource_Object.MARC
                 ms.Seek(0, SeekOrigin.Begin);
 
                 FileStream fs = File.Create(Filename);
-                fs.Write(ms.GetBuffer(), 3, (int) (ms.Length - 3));
+                fs.Write(ms.GetBuffer(), 3, (int)(ms.Length - 3));
                 fs.Flush();
                 fs.Close();
                 writer.Close();

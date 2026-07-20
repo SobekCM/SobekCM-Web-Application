@@ -1,11 +1,11 @@
 #region Using directives
 
-using System;
-using System.Reflection;
 using SobekCM.Core.UI_Configuration.TemplateElements;
 using SobekCM.Engine_Library.ApplicationState;
 using SobekCM.Library.Citation.Elements.implemented_elements;
 using SobekCM.Library.UI;
+using System;
+using System.Reflection;
 
 #endregion
 
@@ -17,9 +17,9 @@ namespace SobekCM.Library.Citation.Elements
         /// <summary> Gets the element object associated with the provided type </summary>
         /// <param name="Type"> Type for the element to retrieve </param>
         /// <returns> Correct element object which implements the <see cref="abstract_Element"/> class. </returns>
-        public static abstract_Element getElement( string Type )
+        public static abstract_Element getElement(string Type)
         {
-           return getElement( Type, String.Empty );
+            return getElement(Type, String.Empty);
         }
 
         /// <summary> Gets the element object associated with the provided type and subtype </summary>
@@ -294,7 +294,7 @@ namespace SobekCM.Library.Citation.Elements
 
                     Assembly dllAssembly = Assembly.GetCallingAssembly();
                     Type elementType = dllAssembly.GetType(className2);
-                    abstract_Element returnObj = (abstract_Element) Activator.CreateInstance(elementType);
+                    abstract_Element returnObj = (abstract_Element)Activator.CreateInstance(elementType);
                     return returnObj;
                 }
                 catch (Exception)
@@ -316,7 +316,7 @@ namespace SobekCM.Library.Citation.Elements
                     dllAssembly = Assembly.LoadFrom(assemblyFilePath);
                 }
                 Type elementType = dllAssembly.GetType(config.Class);
-                abstract_Element returnObj = (abstract_Element) Activator.CreateInstance(elementType);
+                abstract_Element returnObj = (abstract_Element)Activator.CreateInstance(elementType);
                 return returnObj;
             }
             catch (Exception ee)

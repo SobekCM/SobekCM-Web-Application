@@ -1,12 +1,8 @@
-﻿using System;
+﻿using ProtoBuf;
+using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.Serialization;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml.Serialization;
-using ProtoBuf;
-using SobekCM.Core.Results;
 
 namespace SobekCM.Engine_Library.Database
 {

@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using SobekCM.Resource_Object.Bib_Info;
+﻿using SobekCM.Resource_Object.Bib_Info;
 using SobekCM.Resource_Object.Metadata_Modules.VRACore;
+using System;
+using System.Collections.Generic;
 
 namespace SobekCM.Resource_Object.Mapping
 {
@@ -145,7 +142,7 @@ namespace SobekCM.Resource_Object.Mapping
                     if ((fsd_start > 0) && (fsd_end > fsd_start))
                     {
                         string duration_string = Data.Substring(fsd_start + 1, fsd_end - fsd_start - 1);
-                        if (( duration_string.IndexOf("second", StringComparison.OrdinalIgnoreCase) > 0 ) || (duration_string.IndexOf("minute", StringComparison.OrdinalIgnoreCase) > 0 ))
+                        if ((duration_string.IndexOf("second", StringComparison.OrdinalIgnoreCase) > 0) || (duration_string.IndexOf("minute", StringComparison.OrdinalIgnoreCase) > 0))
                             Package.Bib_Info.Original_Description.Extent = duration_string;
                     }
                     return true;
@@ -400,7 +397,7 @@ namespace SobekCM.Resource_Object.Mapping
                             string[] splitter = dns.Split("-".ToCharArray());
                             if (splitter.Length == 2)
                             {
-                                if (( Int32.TryParse(splitter[0], out start_year)) && ( Int32.TryParse(splitter[1], out end_year )))
+                                if ((Int32.TryParse(splitter[0], out start_year)) && (Int32.TryParse(splitter[1], out end_year)))
                                     Package.Bib_Info.Add_Temporal_Subject(start_year, end_year, Data);
                                 else
                                     Package.Bib_Info.Add_Temporal_Subject(-1, -1, Data);
@@ -408,7 +405,7 @@ namespace SobekCM.Resource_Object.Mapping
                         }
                         else
                         {
-                            if ( Int32.TryParse(Data, out start_year))
+                            if (Int32.TryParse(Data, out start_year))
                                 Package.Bib_Info.Add_Temporal_Subject(start_year, -1, Data);
                             else
                                 Package.Bib_Info.Add_Temporal_Subject(-1, -1, Data);
@@ -467,11 +464,11 @@ namespace SobekCM.Resource_Object.Mapping
 
 
                 case "wars":
-                    if ( Data.IndexOf("World War") >= 0 )
+                    if (Data.IndexOf("World War") >= 0)
                         Package.Bib_Info.Add_Temporal_Subject(1939, 1945, "World War");
-                    else if ( Data.IndexOf("Vietnam") >= 0 )
+                    else if (Data.IndexOf("Vietnam") >= 0)
                         Package.Bib_Info.Add_Temporal_Subject(1961, 1975, "Vietnam War");
-                    else if ( Data.IndexOf("Korean") >= 0 )
+                    else if (Data.IndexOf("Korean") >= 0)
                         Package.Bib_Info.Add_Temporal_Subject(1950, 1953, "Korean War");
                     return true;
 
@@ -493,7 +490,7 @@ namespace SobekCM.Resource_Object.Mapping
             }
         }
 
-        private void split_add_subjects(SobekCM_Item Package, string Data )
+        private void split_add_subjects(SobekCM_Item Package, string Data)
         {
             if (Data.IndexOf("--") < 0)
                 Package.Bib_Info.Add_Subject(new Subject_Info_Standard(Data, null));
@@ -507,14 +504,14 @@ namespace SobekCM.Resource_Object.Mapping
                         continue;
 
                     string tsl = thisSplit.ToLower().Trim();
-                    
+
                     // Was this geographic?
                     if ((tsl.IndexOf("county") >= 0) || (tsl.IndexOf("(nev.)") > 0) || (tsl.IndexOf("henderson") >= 0) || (tsl.IndexOf("nevada") >= 0) || (tsl.IndexOf("las vegas") >= 0) || (tsl.IndexOf("(ariz.)") >= 0)
                         || (tsl.IndexOf("california") >= 0) || (tsl.IndexOf("los angeles") >= 0) || (tsl.IndexOf("(calif.)") >= 0) || (tsl.IndexOf("russia") >= 0) || (tsl.IndexOf("lake mead") >= 0) || (tsl.IndexOf("(ariz.)") >= 0)
                         || (tsl.IndexOf("united states") >= 0) || (tsl.IndexOf("(ariz.)") >= 0) || (tsl.IndexOf("el paso") >= 0) || (tsl.IndexOf("texas") >= 0) || (tsl.IndexOf("(ariz.)") >= 0) || (tsl.IndexOf("boulder city") >= 0)
                         || (tsl.IndexOf("pittman") >= 0) || (tsl.IndexOf("gabbs") >= 0) || (tsl.IndexOf("california") >= 0) || (tsl.IndexOf("colorado") >= 0)
-                        || (tsl.IndexOf("reno") >= 0) || (tsl.IndexOf("(ariz.)") >= 0) || ( tsl == "japan"))
-                        subject.Add_Geographic(thisSplit.Trim().Replace("\"",""));
+                        || (tsl.IndexOf("reno") >= 0) || (tsl.IndexOf("(ariz.)") >= 0) || (tsl == "japan"))
+                        subject.Add_Geographic(thisSplit.Trim().Replace("\"", ""));
                     // Was this temporal?
                     else if ((tsl.IndexOf("20th century") >= 0) || (tsl.IndexOf("war, 19") >= 0))
                         subject.Add_Temporal(thisSplit.Trim());

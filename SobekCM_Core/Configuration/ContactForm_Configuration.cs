@@ -1,5 +1,8 @@
 ﻿#region Using directives
 
+using ProtoBuf;
+using SobekCM.Core.Configuration.Localization;
+using SobekCM.Core.Users;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -7,9 +10,6 @@ using System.Linq;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Xml.Serialization;
-using ProtoBuf;
-using SobekCM.Core.Configuration.Localization;
-using SobekCM.Core.Users;
 
 #endregion
 
@@ -99,7 +99,7 @@ namespace SobekCM.Core.Configuration
     {
         /// <summary> Constructor for a new instance of the ContactForm_Configuration_Element class </summary>
         /// <param name="Element_Type"> Type of element </param>
-        public ContactForm_Configuration_Element(ContactForm_Configuration_Element_Type_Enum Element_Type )
+        public ContactForm_Configuration_Element(ContactForm_Configuration_Element_Type_Enum Element_Type)
         {
             this.Element_Type = Element_Type;
             UserAttribute = User_Object_Attribute_Mapping_Enum.NONE;
@@ -124,7 +124,7 @@ namespace SobekCM.Core.Configuration
         [DataMember(Name = "cssClass", EmitDefaultValue = false)]
         [XmlAttribute("cssClass")]
         [ProtoMember(2)]
-        public string CssClass { get; set;  }
+        public string CssClass { get; set; }
 
         /// <summary> Name of the element, which is also the name that appears in the output email </summary>
         [DataMember(Name = "name", EmitDefaultValue = false)]
@@ -179,7 +179,7 @@ namespace SobekCM.Core.Configuration
         }
 
         /// <summary> Error message in case there was an issue pulling this configuration from the configuration files </summary>
-        [DataMember(Name = "error", EmitDefaultValue=false)]
+        [DataMember(Name = "error", EmitDefaultValue = false)]
         [XmlElement("error")]
         [ProtoMember(1)]
         public string Error { get; set; }
@@ -199,7 +199,7 @@ namespace SobekCM.Core.Configuration
 
         /// <summary> Add a new element to this contact form configuration file </summary>
         /// <param name="NewElement"> Element to add </param>
-        public void Add_Element( ContactForm_Configuration_Element NewElement )
+        public void Add_Element(ContactForm_Configuration_Element NewElement)
         {
             FormElements.Add(NewElement);
         }
@@ -233,7 +233,7 @@ namespace SobekCM.Core.Configuration
                 writer.WriteLine("\txmlns=\"http://sobekrepository.org/schemas/sobekcm_config\" ");
                 writer.WriteLine("\txsi:schemaLocation=\"http://sobekrepository.org/schemas/sobekcm_config ");
                 writer.WriteLine("\t\thttp://sobekrepository.org/schemas/sobekcm_config.xsd\">");
-                if ( String.IsNullOrEmpty(Name))
+                if (String.IsNullOrEmpty(Name))
                     writer.WriteLine("\t<ContactForm>");
                 else
                     writer.WriteLine("\t<ContactForm Name=\"" + Convert_String_To_XML_Safe(Name) + "\">");
@@ -243,10 +243,10 @@ namespace SobekCM.Core.Configuration
                     writer.WriteLine("\t\t<Elements>");
 
                     // Add the elements
-                    foreach( ContactForm_Configuration_Element thisElement in FormElements )
+                    foreach (ContactForm_Configuration_Element thisElement in FormElements)
                     {
                         string elementName = String.Empty;
-                        switch( thisElement.Element_Type )
+                        switch (thisElement.Element_Type)
                         {
                             case ContactForm_Configuration_Element_Type_Enum.CheckBoxSet:
                                 elementName = "CheckBoxSet";
@@ -284,13 +284,13 @@ namespace SobekCM.Core.Configuration
                                 elementName = "TextBox";
                                 break;
                         }
-                        writer.Write("\t\t\t<" + elementName );
+                        writer.Write("\t\t\t<" + elementName);
                         if (!String.IsNullOrEmpty(thisElement.Name))
                             writer.Write(" Name=\"" + thisElement.Name + "\"");
 
                         if (!String.IsNullOrEmpty(thisElement.QueryText.DefaultValue))
                         {
-                            if ( thisElement.Element_Type != ContactForm_Configuration_Element_Type_Enum.ExplanationText )
+                            if (thisElement.Element_Type != ContactForm_Configuration_Element_Type_Enum.ExplanationText)
                                 writer.Write(" Query=\"" + Convert_String_To_XML_Safe(thisElement.QueryText.DefaultValue) + "\"");
                             else
                                 writer.Write(" Text=\"" + Convert_String_To_XML_Safe(thisElement.QueryText.DefaultValue) + "\"");
@@ -300,12 +300,12 @@ namespace SobekCM.Core.Configuration
                         if (thisElement.UserAttribute != User_Object_Attribute_Mapping_Enum.NONE)
                         {
                             writer.Write(" UserAttribute=\"" + User_Object_Attribute_Mapping_Enum_Converter.ToString(thisElement.UserAttribute) + "\"");
-                            if (( thisElement.Element_Type != ContactForm_Configuration_Element_Type_Enum.ExplanationText ) && ( thisElement.Element_Type != ContactForm_Configuration_Element_Type_Enum.HiddenValue ))
+                            if ((thisElement.Element_Type != ContactForm_Configuration_Element_Type_Enum.ExplanationText) && (thisElement.Element_Type != ContactForm_Configuration_Element_Type_Enum.HiddenValue))
                                 writer.Write(" AlwaysShow=\"" + thisElement.AlwaysShow.ToString().ToLower() + "\"");
                         }
                         if ((thisElement.Element_Type != ContactForm_Configuration_Element_Type_Enum.ExplanationText) && (thisElement.Element_Type != ContactForm_Configuration_Element_Type_Enum.HiddenValue))
                         {
-                            if ( thisElement.Required )
+                            if (thisElement.Required)
                                 writer.Write(" Required=\"true\"");
                         }
 
@@ -324,13 +324,13 @@ namespace SobekCM.Core.Configuration
                                 writer.WriteLine("\t\t\t\t<Translations>");
                                 foreach (Web_Language_Translation_Value thisTranslation in translations)
                                 {
-                                    writer.WriteLine("\t\t\t\t\t<Language Code=\"" + Web_Language_Enum_Converter.Enum_To_Code( thisTranslation.Language ) + "\">" + Convert_String_To_XML_Safe(thisTranslation.Value) + "</Language>");
+                                    writer.WriteLine("\t\t\t\t\t<Language Code=\"" + Web_Language_Enum_Converter.Enum_To_Code(thisTranslation.Language) + "\">" + Convert_String_To_XML_Safe(thisTranslation.Value) + "</Language>");
                                 }
                                 writer.WriteLine("\t\t\t\t</Translations>");
                             }
 
                             // Add the possible options
-                            if (( thisElement.Options != null ) && ( thisElement.Options.Count > 0))
+                            if ((thisElement.Options != null) && (thisElement.Options.Count > 0))
                             {
                                 writer.WriteLine("\t\t\t\t<Options>");
                                 foreach (string thisOption in thisElement.Options)
@@ -352,7 +352,7 @@ namespace SobekCM.Core.Configuration
                 writer.Flush();
                 writer.Close();
             }
-            catch 
+            catch
             {
                 returnValue = false;
             }

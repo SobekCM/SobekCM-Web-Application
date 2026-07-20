@@ -1,14 +1,12 @@
 #region Using directives
 
-using System;
-using System.IO;
-using System.Text;
-using Microsoft.AspNetCore.Http;
 using SobekCM.Core.ApplicationState;
-using SobekCM.Core.Configuration;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Users;
 using SobekCM.Resource_Object;
+using System;
+using System.IO;
+using System.Text;
 
 #endregion
 
@@ -90,17 +88,17 @@ namespace SobekCM.Library.Citation.Elements
             string notes = String.Empty;
             foreach (string thisKey in getKeys)
             {
-                if (thisKey.IndexOf( "materialrecd_first") == 0)
+                if (thisKey.IndexOf("materialrecd_first") == 0)
                 {
                     dateString = Context.Request.Form[thisKey];
                 }
 
-                if (thisKey.IndexOf( "materialrecd_second") == 0)
+                if (thisKey.IndexOf("materialrecd_second") == 0)
                 {
                     notes = Context.Request.Form[thisKey];
                 }
             }
-            
+
             if (dateString.Length > 0)
             {
                 Bib.Tracking.Material_Received_Notes = notes;

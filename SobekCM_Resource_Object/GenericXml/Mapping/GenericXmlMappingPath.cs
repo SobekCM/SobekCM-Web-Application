@@ -1,8 +1,8 @@
-﻿using System;
+﻿using ProtoBuf;
+using SobekCM.Resource_Object.GenericXml.Reader;
+using System;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
-using ProtoBuf;
-using SobekCM.Resource_Object.GenericXml.Reader;
 
 namespace SobekCM.Resource_Object.GenericXml.Mapping
 {

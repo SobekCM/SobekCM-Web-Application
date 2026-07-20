@@ -1,10 +1,10 @@
 ﻿#region Using directives
 
-using System;
-using System.Text;
 using SobekCM.Core;
 using SobekCM.Engine_Library.Email;
 using SobekCM.Library.UI;
+using System;
+using System.Text;
 
 #endregion
 
@@ -25,7 +25,7 @@ namespace SobekCM.Library.Email
         /// <param name="URL_Short_Type"> Short term which explains the type of URL being emailed (i.e., 'browse', 'search', etc..)</param>
         /// <param name="UserID"> Primary key for the user that is sending the email </param>
         /// <returns> Any caught error message </returns>
-        public static string Send_Email(string Recepient_List, string CcList, string Comments, string User_Name, string SobekCM_Instance_Name, bool HTML_Format, string URL, string URL_Title, string URL_Short_Type, int UserID )
+        public static string Send_Email(string Recepient_List, string CcList, string Comments, string User_Name, string SobekCM_Instance_Name, bool HTML_Format, string URL, string URL_Title, string URL_Short_Type, int UserID)
         {
             if (HTML_Format)
             {
@@ -36,14 +36,14 @@ namespace SobekCM.Library.Email
         }
 
 
-        private static string HTML_Send_Email(string Recepient_List, string CcList, string Comments, string User_Name, string SobekCM_Instance_Name, string URL, string URL_Title, string URL_Short_Type,  int UserID )
+        private static string HTML_Send_Email(string Recepient_List, string CcList, string Comments, string User_Name, string SobekCM_Instance_Name, string URL, string URL_Title, string URL_Short_Type, int UserID)
         {
             try
             {
                 StringBuilder messageBuilder = new StringBuilder();
 
                 messageBuilder.Append("<span style=\"font-family:Arial, Helvetica, sans-serif;\">");
-                if ((Comments.Length > 0) && ( Comments != URL_Title ))
+                if ((Comments.Length > 0) && (Comments != URL_Title))
                 {
                     messageBuilder.AppendLine(User_Name + " wanted you to see this " + URL_Short_Type + " on " + SobekCM_Instance_Name + " and included the following comments.<br /><br />\n");
                     messageBuilder.AppendLine(Comments.Replace("<", "(").Replace(">", ")").Replace("\"", "&quot;") + ".<br /><br />\n");
@@ -61,9 +61,10 @@ namespace SobekCM.Library.Email
                 {
                     EmailInfo newEmail = new EmailInfo
                     {
-                        Body = messageBuilder.ToString(), 
-                        isContactUs = false, isHTML = true, 
-                        Subject = URL_Short_Type + " from " + SobekCM_Instance_Name, 
+                        Body = messageBuilder.ToString(),
+                        isContactUs = false,
+                        isHTML = true,
+                        Subject = URL_Short_Type + " from " + SobekCM_Instance_Name,
                         RecipientsList = thisEmailRecepient,
                         FromAddress = SobekCM_Instance_Name + " <" + UI_ApplicationCache_Gateway.Settings.Email.Setup.DefaultFromAddress + ">",
                         UserID = UserID
@@ -72,7 +73,7 @@ namespace SobekCM.Library.Email
                     if (!String.IsNullOrEmpty(UI_ApplicationCache_Gateway.Settings.Email.Setup.DefaultFromDisplay))
                         newEmail.FromAddress = UI_ApplicationCache_Gateway.Settings.Email.Setup.DefaultFromDisplay + " <" + UI_ApplicationCache_Gateway.Settings.Email.Setup.DefaultFromAddress + ">";
 
-                    
+
                     if (CcList.Length > 0)
                         newEmail.RecipientsList = thisEmailRecepient.Trim() + "," + CcList;
 
@@ -104,8 +105,8 @@ namespace SobekCM.Library.Email
                     messageBuilder.AppendLine(User_Name + " wanted you to see this " + URL_Short_Type.ToLower() + " on " + SobekCM_Instance_Name + ".\n");
                 }
 
-                messageBuilder.AppendLine("\tURL:\t" + URL );
-                messageBuilder.AppendLine("\tTitle:\t" + URL_Title );
+                messageBuilder.AppendLine("\tURL:\t" + URL);
+                messageBuilder.AppendLine("\tTitle:\t" + URL_Title);
 
                 string[] email_recepients = Recepient_List.Split(";,".ToCharArray());
                 foreach (string thisEmailRecepient in email_recepients)

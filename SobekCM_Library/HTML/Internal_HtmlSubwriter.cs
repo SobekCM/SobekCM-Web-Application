@@ -1,26 +1,22 @@
 #region Using directives
 
+using Microsoft.AspNetCore.Http;
+using SobekCM.Core.Aggregations;
+using SobekCM.Core.ApplicationState;
+using SobekCM.Core.Client;
+using SobekCM.Core.Configuration.Localization;
+using SobekCM.Core.MemoryMgmt;
+using SobekCM.Core.Navigation;
+using SobekCM.Engine_Library.Configuration;
+using SobekCM.Engine_Library.Database;
+using SobekCM.Library.UI;
+using SobekCM.Tools;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data;
 using System.IO;
 using System.Linq;
-using Microsoft.AspNetCore.Http;
-using SobekCM.Core.Aggregations;
-using SobekCM.Core.ApplicationState;
-using SobekCM.Core.Client;
-using SobekCM.Core.Configuration;
-using SobekCM.Core.Configuration.Localization;
-using SobekCM.Core.MemoryMgmt;
-using SobekCM.Core.Navigation;
-using SobekCM.Core.UI_Configuration;
-using SobekCM.Core.UI_Configuration.StaticResources;
-using SobekCM.Engine_Library.Configuration;
-using SobekCM.Engine_Library.Database;
-using SobekCM.Library.Database;
-using SobekCM.Library.UI;
-using SobekCM.Tools;
 
 #endregion
 
@@ -69,7 +65,7 @@ namespace SobekCM.Library.HTML
             }
 
             // Ensure there is a valid RequestSpecificValues.Current_User, and the RequestSpecificValues.Current_User is internal
-            bool isAuthorized = (RequestSpecificValues.Current_User != null) && ((RequestSpecificValues.Current_User.Is_Internal_User) || ( RequestSpecificValues.Current_User.Is_Portal_Admin ) || ( RequestSpecificValues.Current_User.Is_System_Admin ));
+            bool isAuthorized = (RequestSpecificValues.Current_User != null) && ((RequestSpecificValues.Current_User.Is_Internal_User) || (RequestSpecificValues.Current_User.Is_Portal_Admin) || (RequestSpecificValues.Current_User.Is_System_Admin));
 
             // Save the current type
             Internal_Type_Enum type = RequestSpecificValues.Current_Mode.Internal_Type;
@@ -105,7 +101,7 @@ namespace SobekCM.Library.HTML
 
                 // Determine the title
                 string stat_title = String.Empty;
-                switch( type )
+                switch (type)
                 {
                     case Internal_Type_Enum.Aggregations_List:
                     case Internal_Type_Enum.Aggregations_Tree:
@@ -318,7 +314,7 @@ namespace SobekCM.Library.HTML
             Output.WriteLine("");
 
             Output.WriteLine("<div class=\"SobekText\">");
-            Output.WriteLine("<p>The data below shows errors which occurred while loading new items through the builder.  These can be displayed by month and year below by selecting the start and end month.  These failures will continue to display until they are manually cleared by a DLC technician or until the item successfully loads after the failure or warning.</p>" );
+            Output.WriteLine("<p>The data below shows errors which occurred while loading new items through the builder.  These can be displayed by month and year below by selecting the start and end month.  These failures will continue to display until they are manually cleared by a DLC technician or until the item successfully loads after the failure or warning.</p>");
             Output.WriteLine();
             Output.WriteLine("<h2>Selected Date Range</h2>");
             Output.WriteLine();
@@ -330,7 +326,7 @@ namespace SobekCM.Library.HTML
 
             int select_month = DateTime.Now.Month;
             int select_year = DateTime.Now.Year - 1;
-            while ((select_month != DateTime.Now.Month) || (select_year != DateTime.Now.Year )) 
+            while ((select_month != DateTime.Now.Month) || (select_year != DateTime.Now.Year))
             {
                 if ((FirstMonth == select_month) && (FirstYear == select_year))
                 {
@@ -362,7 +358,7 @@ namespace SobekCM.Library.HTML
 
             select_month = DateTime.Now.Month;
             select_year = DateTime.Now.Year - 1;
-            while ((select_month != DateTime.Now.Month) || (select_year != DateTime.Now.Year)) 
+            while ((select_month != DateTime.Now.Month) || (select_year != DateTime.Now.Year))
             {
                 if ((SecondMonth == select_month) && (SecondYear == select_year))
                 {
@@ -401,7 +397,7 @@ namespace SobekCM.Library.HTML
             Output.WriteLine("</div>");
 
             // Pull this date from the database
-            DataTable values = Engine_Database.Builder_Get_Error_Logs(Tracer, new DateTime( FirstYear, FirstMonth, 1 ), new DateTime( SecondYear, SecondMonth, 1).AddMonths(1));
+            DataTable values = Engine_Database.Builder_Get_Error_Logs(Tracer, new DateTime(FirstYear, FirstMonth, 1), new DateTime(SecondYear, SecondMonth, 1).AddMonths(1));
 
             if ((values == null) || (values.Rows.Count == 0))
             {
@@ -476,236 +472,236 @@ namespace SobekCM.Library.HTML
             string objectTitle = "OBJECT";
 
             if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.French)
-                {
-                    global_values = "VALEURS MONIDAL";
-                    application_state = "APPLICATAION LES VALEURS DE L'�TAT";
-                    local_cache_state = "MIS EN CACHE LOCALEMENT DES VALEURS";
-                    session_state = "SESSION LES VALEURS DE L'�TAT";
-                    variable_name = "Nom Instance";
-                    key = "Clef";
-                    objectTitle = "Objet";
-                }
+            {
+                global_values = "VALEURS MONIDAL";
+                application_state = "APPLICATAION LES VALEURS DE L'�TAT";
+                local_cache_state = "MIS EN CACHE LOCALEMENT DES VALEURS";
+                session_state = "SESSION LES VALEURS DE L'�TAT";
+                variable_name = "Nom Instance";
+                key = "Clef";
+                objectTitle = "Objet";
+            }
 
             if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.Spanish)
+            {
+                global_values = "GLOBAL VALORES";
+                application_state = "APLICACI�N ESTADO VALORES";
+                local_cache_state = "LOCALMENTE EN CACHE LOS VALORES";
+                session_state = "SESI�N ESTADO VALORES";
+                variable_name = "Instancia Nombre";
+                key = "Clave";
+                objectTitle = "Objeto";
+            }
+
+            // Start the application data
+            Output.WriteLine("<br />");
+            Output.WriteLine("");
+            Output.WriteLine("<br /><br />");
+
+            // Add the header information
+            Output.WriteLine("<table width=\"720px\" cellspacing=\"0px\">");
+            Output.WriteLine("  <tr align=\"center\" bgcolor=\"#0022a7\"><td colspan=\"2\"><span style=\"color: White\"><b>" + global_values + "</b></span></td></tr>");
+            Output.WriteLine("  <tr align=\"left\" bgcolor=\"#7d90d5\">");
+            Output.WriteLine("    <th align=\"left\"><span style=\"color: White\">" + variable_name + "</span></th>");
+            Output.WriteLine("    <th align=\"left\"><span style=\"color: White\">" + objectTitle + "</span></th>");
+            Output.WriteLine("  </tr>");
+
+            // Add each global value
+            Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\" colspan=\"2\"></td></tr>");
+            Output.WriteLine("  <tr align=\"left\">" + Environment.NewLine + "    <td>Checked_List</td>" + Environment.NewLine + "    <td>SobekCM.Library.Application_State.Checked_Out_Items_List</td>" + Environment.NewLine + "  </tr>");
+
+            Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\" colspan=\"2\"></td></tr>");
+            Output.WriteLine("  <tr align=\"left\">" + Environment.NewLine + "    <td>Codes</td>" + Environment.NewLine + "    <td>SobekCM.Library.Application_State.Aggregation_Code_Manager</td>" + Environment.NewLine + "  </tr>");
+
+            Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\" colspan=\"2\"></td></tr>");
+            Output.WriteLine("  <tr align=\"left\">" + Environment.NewLine + "    <td>Collection_Aliases</td>" + Environment.NewLine + "    <td>Dictionary&lt;string,string&gt;</td>" + Environment.NewLine + "  </tr>");
+
+            Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\" colspan=\"2\"></td></tr>");
+            Output.WriteLine("  <tr align=\"left\">" + Environment.NewLine + "    <td>Icon_List</td>" + Environment.NewLine + "    <td>Dictionary&lt;string,SobekCM.Library.Application_State.Wordmark_Icon&gt;</td>" + Environment.NewLine + "  </tr>");
+
+            Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\" colspan=\"2\"></td></tr>");
+            Output.WriteLine("  <tr align=\"left\">" + Environment.NewLine + "    <td>IP_Restrictions</td>" + Environment.NewLine + "    <td>SobekCM.Library.Application_State.IP_Restriction_Ranges</td>" + Environment.NewLine + "  </tr>");
+
+            Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\" colspan=\"2\"></td></tr>");
+            Output.WriteLine("  <tr align=\"left\">" + Environment.NewLine + "    <td>Item_List</td>" + Environment.NewLine + "    <td>SobekCM.Library.Application_State.Item_Lookup_Object</td>" + Environment.NewLine + "  </tr>");
+
+            Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\" colspan=\"2\"></td></tr>");
+            Output.WriteLine("  <tr align=\"left\">" + Environment.NewLine + "    <td>Last_Refresh</td>" + Environment.NewLine + "    <td>DateTime</td>" + Environment.NewLine + "  </tr>");
+
+            Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\" colspan=\"2\"></td></tr>");
+            Output.WriteLine("  <tr align=\"left\">" + Environment.NewLine + "    <td>Search_History</td>" + Environment.NewLine + "    <td>SobekCM.Library.Application_State.Recent_Searches</td>" + Environment.NewLine + "  </tr>");
+
+            Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\" colspan=\"2\"></td></tr>");
+            Output.WriteLine("  <tr align=\"left\">" + Environment.NewLine + "    <td>StopWords</td>" + Environment.NewLine + "    <td>List&lt;string&gt;</td>" + Environment.NewLine + "  </tr>");
+
+            Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\" colspan=\"2\"></td></tr>");
+            Output.WriteLine("  <tr align=\"left\">" + Environment.NewLine + "    <td>Skins</td>" + Environment.NewLine + "    <td>SobekCM.Library.Skins.Web_Skin_Collection</td>" + Environment.NewLine + "  </tr>");
+
+            Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\" colspan=\"2\"></td></tr>");
+            Output.WriteLine("  <tr align=\"left\">" + Environment.NewLine + "    <td>Stats_Date_Range</td>" + Environment.NewLine + "    <td>SobekCM.Library.Application_State.Statistics_Dates</td>" + Environment.NewLine + "  </tr>");
+
+            Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\" colspan=\"2\"></td></tr>");
+            Output.WriteLine("  <tr align=\"left\">" + Environment.NewLine + "    <td>Thematic_Headings</td>" + Environment.NewLine + "    <td>List&lt;SobekCM.Library.Aggregations.Thematic_Heading&gt;</td>" + Environment.NewLine + "  </tr>");
+
+            Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\" colspan=\"2\"></td></tr>");
+            Output.WriteLine("  <tr align=\"left\">" + Environment.NewLine + "    <td>Translation</td>" + Environment.NewLine + "    <td>SobekCM.Library.Application_State.Language_Support_Info</td>" + Environment.NewLine + "  </tr>");
+
+            Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\" colspan=\"2\"></td></tr>");
+            Output.WriteLine("  <tr align=\"left\">" + Environment.NewLine + "    <td>URL_Portals</td>" + Environment.NewLine + "    <td>SobekCM.Library.Application_State.Portal_List</td>" + Environment.NewLine + "  </tr>");
+
+            Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\" colspan=\"2\"></td></tr>");
+            Output.WriteLine("  <tr align=\"left\">" + Environment.NewLine + "    <td>Version</td>" + Environment.NewLine + "    <td>string</td>" + Environment.NewLine + "  </tr>");
+
+            // Close out this table
+            Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\" colspan=\"2\"></td></tr>");
+            Output.WriteLine("</table>");
+
+            // Start the application data
+            Output.WriteLine("<br /><br />");
+
+            // Add the header information
+            Output.WriteLine("<table width=\"720px\" cellspacing=\"0px\">");
+            Output.WriteLine("  <tr align=\"center\" bgcolor=\"#0022a7\"><td colspan=\"2\"><span style=\"color: White\"><b>" + application_state + "</b></span></td></tr>");
+            Output.WriteLine("  <tr align=\"left\" bgcolor=\"#7d90d5\">");
+            Output.WriteLine("    <th align=\"left\"><span style=\"color: White\">" + key + "</span></th>");
+            Output.WriteLine("    <th align=\"left\"><span style=\"color: White\">" + objectTitle + "</span></th>");
+            Output.WriteLine("  </tr>");
+
+            try
+            {
+                // Step through all the keys
+                string[] allkeys = applicationState.AllKeys;
+                if (allkeys.Length == 0)
                 {
-                    global_values = "GLOBAL VALORES";
-                    application_state = "APLICACI�N ESTADO VALORES";
-                    local_cache_state = "LOCALMENTE EN CACHE LOS VALORES";
-                    session_state = "SESI�N ESTADO VALORES";
-                    variable_name = "Instancia Nombre";
-                    key = "Clave";
-                    objectTitle = "Objeto";
+                    Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\" colspan=\"2\"></td></tr>");
+                    Output.WriteLine("  <tr align=\"left\">");
+                    Output.WriteLine("    <td><i>( none )</i></td>");
+                    Output.WriteLine("    <td><i>( none )</td>");
+                    Output.WriteLine("  </tr>");
                 }
-
-                // Start the application data
-                Output.WriteLine("<br />");
-                Output.WriteLine("");
-                Output.WriteLine("<br /><br />");
-
-                // Add the header information
-                Output.WriteLine("<table width=\"720px\" cellspacing=\"0px\">");
-                Output.WriteLine("  <tr align=\"center\" bgcolor=\"#0022a7\"><td colspan=\"2\"><span style=\"color: White\"><b>" + global_values + "</b></span></td></tr>");
-                Output.WriteLine("  <tr align=\"left\" bgcolor=\"#7d90d5\">");
-                Output.WriteLine("    <th align=\"left\"><span style=\"color: White\">" + variable_name + "</span></th>");
-                Output.WriteLine("    <th align=\"left\"><span style=\"color: White\">" + objectTitle + "</span></th>");
-                Output.WriteLine("  </tr>");
-
-                // Add each global value
-                Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\" colspan=\"2\"></td></tr>");
-                Output.WriteLine("  <tr align=\"left\">" + Environment.NewLine + "    <td>Checked_List</td>" + Environment.NewLine + "    <td>SobekCM.Library.Application_State.Checked_Out_Items_List</td>" + Environment.NewLine + "  </tr>");
-
-                Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\" colspan=\"2\"></td></tr>");
-                Output.WriteLine("  <tr align=\"left\">" + Environment.NewLine + "    <td>Codes</td>" + Environment.NewLine + "    <td>SobekCM.Library.Application_State.Aggregation_Code_Manager</td>" + Environment.NewLine + "  </tr>");
-
-                Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\" colspan=\"2\"></td></tr>");
-                Output.WriteLine("  <tr align=\"left\">" + Environment.NewLine + "    <td>Collection_Aliases</td>" + Environment.NewLine + "    <td>Dictionary&lt;string,string&gt;</td>" + Environment.NewLine + "  </tr>");
-
-                Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\" colspan=\"2\"></td></tr>");
-                Output.WriteLine("  <tr align=\"left\">" + Environment.NewLine + "    <td>Icon_List</td>" + Environment.NewLine + "    <td>Dictionary&lt;string,SobekCM.Library.Application_State.Wordmark_Icon&gt;</td>" + Environment.NewLine + "  </tr>");
-
-                Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\" colspan=\"2\"></td></tr>");
-                Output.WriteLine("  <tr align=\"left\">" + Environment.NewLine + "    <td>IP_Restrictions</td>" + Environment.NewLine + "    <td>SobekCM.Library.Application_State.IP_Restriction_Ranges</td>" + Environment.NewLine + "  </tr>");
-
-                Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\" colspan=\"2\"></td></tr>");
-                Output.WriteLine("  <tr align=\"left\">" + Environment.NewLine + "    <td>Item_List</td>" + Environment.NewLine + "    <td>SobekCM.Library.Application_State.Item_Lookup_Object</td>" + Environment.NewLine + "  </tr>");
-
-                Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\" colspan=\"2\"></td></tr>");
-                Output.WriteLine("  <tr align=\"left\">" + Environment.NewLine + "    <td>Last_Refresh</td>" + Environment.NewLine + "    <td>DateTime</td>" + Environment.NewLine + "  </tr>");
-
-                Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\" colspan=\"2\"></td></tr>");
-                Output.WriteLine("  <tr align=\"left\">" + Environment.NewLine + "    <td>Search_History</td>" + Environment.NewLine + "    <td>SobekCM.Library.Application_State.Recent_Searches</td>" + Environment.NewLine + "  </tr>");
-
-                Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\" colspan=\"2\"></td></tr>");
-                Output.WriteLine("  <tr align=\"left\">" + Environment.NewLine + "    <td>StopWords</td>" + Environment.NewLine + "    <td>List&lt;string&gt;</td>" + Environment.NewLine + "  </tr>");               
-
-                Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\" colspan=\"2\"></td></tr>");
-                Output.WriteLine("  <tr align=\"left\">" + Environment.NewLine + "    <td>Skins</td>" + Environment.NewLine + "    <td>SobekCM.Library.Skins.Web_Skin_Collection</td>" + Environment.NewLine + "  </tr>");
-
-                Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\" colspan=\"2\"></td></tr>");
-                Output.WriteLine("  <tr align=\"left\">" + Environment.NewLine + "    <td>Stats_Date_Range</td>" + Environment.NewLine + "    <td>SobekCM.Library.Application_State.Statistics_Dates</td>" + Environment.NewLine + "  </tr>");
-
-                Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\" colspan=\"2\"></td></tr>");
-                Output.WriteLine("  <tr align=\"left\">" + Environment.NewLine + "    <td>Thematic_Headings</td>" + Environment.NewLine + "    <td>List&lt;SobekCM.Library.Aggregations.Thematic_Heading&gt;</td>" + Environment.NewLine + "  </tr>");
-
-                Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\" colspan=\"2\"></td></tr>");
-                Output.WriteLine("  <tr align=\"left\">" + Environment.NewLine + "    <td>Translation</td>" + Environment.NewLine + "    <td>SobekCM.Library.Application_State.Language_Support_Info</td>" + Environment.NewLine + "  </tr>");
-
-                Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\" colspan=\"2\"></td></tr>");
-                Output.WriteLine("  <tr align=\"left\">" + Environment.NewLine + "    <td>URL_Portals</td>" + Environment.NewLine + "    <td>SobekCM.Library.Application_State.Portal_List</td>" + Environment.NewLine + "  </tr>");
-
-                Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\" colspan=\"2\"></td></tr>");
-                Output.WriteLine("  <tr align=\"left\">" + Environment.NewLine + "    <td>Version</td>" + Environment.NewLine + "    <td>string</td>" + Environment.NewLine + "  </tr>");
-
-                // Close out this table
-                Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\" colspan=\"2\"></td></tr>");
-                Output.WriteLine("</table>");
-
-                // Start the application data
-                Output.WriteLine("<br /><br />");
-
-                // Add the header information
-                Output.WriteLine("<table width=\"720px\" cellspacing=\"0px\">");
-                Output.WriteLine("  <tr align=\"center\" bgcolor=\"#0022a7\"><td colspan=\"2\"><span style=\"color: White\"><b>" + application_state + "</b></span></td></tr>");
-                Output.WriteLine("  <tr align=\"left\" bgcolor=\"#7d90d5\">");
-                Output.WriteLine("    <th align=\"left\"><span style=\"color: White\">" + key + "</span></th>");
-                Output.WriteLine("    <th align=\"left\"><span style=\"color: White\">" + objectTitle + "</span></th>");
-                Output.WriteLine("  </tr>");
-
-                try
+                else
                 {
-                    // Step through all the keys
-                    string[] allkeys = applicationState.AllKeys;
-                    if (allkeys.Length == 0)
+                    foreach (string thisKey in allkeys)
                     {
+                        // Add this row
                         Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\" colspan=\"2\"></td></tr>");
                         Output.WriteLine("  <tr align=\"left\">");
-                        Output.WriteLine("    <td><i>( none )</i></td>");
-                        Output.WriteLine("    <td><i>( none )</td>");
+                        Output.WriteLine("    <td>" + thisKey + "</td>");
+                        if (applicationState[thisKey] != null)
+                        {
+                            Output.WriteLine("    <td>" + applicationState[thisKey].GetType().FullName + "</td>");
+                        }
+                        else
+                        {
+                            Output.WriteLine("    <td><i>NULL</i></td>");
+                        }
                         Output.WriteLine("  </tr>");
                     }
-                    else
-                    {
-                        foreach (string thisKey in allkeys)
-                        {
-                            // Add this row
-                            Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\" colspan=\"2\"></td></tr>");
-                            Output.WriteLine("  <tr align=\"left\">");
-                            Output.WriteLine("    <td>" + thisKey + "</td>");
-                            if (applicationState[thisKey] != null)
-                            {
-                                Output.WriteLine("    <td>" + applicationState[thisKey].GetType().FullName + "</td>");
-                            }
-                            else
-                            {
-                                Output.WriteLine("    <td><i>NULL</i></td>");
-                            }
-                            Output.WriteLine("  </tr>");
-                        }
-                    }
                 }
-                catch(Exception)
+            }
+            catch (Exception)
+            {
+                Output.WriteLine("<strong>Error caught while pulling Application State memory management information</strong>");
+            }
+
+            // Close out this table
+            Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\" colspan=\"2\"></td></tr>");
+            Output.WriteLine("</table>");
+
+            // Start the locally cached data
+            Output.WriteLine("<br /><br />");
+
+            // Add the header information
+            Output.WriteLine("<table width=\"720px\" cellspacing=\"0px\">");
+            Output.WriteLine("  <tr align=\"center\" bgcolor=\"#0022a7\"><td colspan=\"2\"><span style=\"color: White\"><b>" + local_cache_state + "</b></span></td></tr>");
+            Output.WriteLine("  <tr align=\"left\" bgcolor=\"#7d90d5\">");
+            Output.WriteLine("    <th align=\"left\"><span style=\"color: White\">" + key + "</span></th>");
+            Output.WriteLine("    <th align=\"left\"><span style=\"color: White\">" + objectTitle + "</span></th>");
+            Output.WriteLine("  </tr>");
+
+            try
+            {
+                // Now, get the information from the cache
+                ReadOnlyCollection<Cached_Object_Info> locally_cached_objects = CachedDataManager.Locally_Cached_Objects;
+                if (locally_cached_objects.Count == 0)
                 {
-                    Output.WriteLine("<strong>Error caught while pulling Application State memory management information</strong>");
+                    Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\" colspan=\"2\"></td></tr>");
+                    Output.WriteLine("  <tr align=\"left\">");
+                    Output.WriteLine("    <td><i>( none )</i></td>");
+                    Output.WriteLine("    <td><i>( none )</td>");
+                    Output.WriteLine("  </tr>");
                 }
-
-                // Close out this table
-                Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\" colspan=\"2\"></td></tr>");
-                Output.WriteLine("</table>");
-
-                // Start the locally cached data
-                Output.WriteLine("<br /><br />");
-
-                // Add the header information
-                Output.WriteLine("<table width=\"720px\" cellspacing=\"0px\">");
-                Output.WriteLine("  <tr align=\"center\" bgcolor=\"#0022a7\"><td colspan=\"2\"><span style=\"color: White\"><b>" + local_cache_state + "</b></span></td></tr>");
-                Output.WriteLine("  <tr align=\"left\" bgcolor=\"#7d90d5\">");
-                Output.WriteLine("    <th align=\"left\"><span style=\"color: White\">" + key + "</span></th>");
-                Output.WriteLine("    <th align=\"left\"><span style=\"color: White\">" + objectTitle + "</span></th>");
-                Output.WriteLine("  </tr>");
-
-                try
+                else
                 {
-                    // Now, get the information from the cache
-                    ReadOnlyCollection<Cached_Object_Info> locally_cached_objects = CachedDataManager.Locally_Cached_Objects;
-                    if (locally_cached_objects.Count == 0)
+                    foreach (Cached_Object_Info thisItem in locally_cached_objects)
                     {
+                        // Add this row
                         Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\" colspan=\"2\"></td></tr>");
                         Output.WriteLine("  <tr align=\"left\">");
-                        Output.WriteLine("    <td><i>( none )</i></td>");
-                        Output.WriteLine("    <td><i>( none )</td>");
+                        Output.WriteLine("    <td>" + thisItem.Object_Key + "</td>");
+                        string type = thisItem.Object_Type.FullName;
+                        if (type == "System.Collections.Generic.List`1[[System.String, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]]")
+                            type = "generic List&lt;System.String&gt;";
+                        Output.WriteLine("    <td>" + type + "</td>");
                         Output.WriteLine("  </tr>");
                     }
-                    else
-                    {
-                        foreach (Cached_Object_Info thisItem in locally_cached_objects)
-                        {
-                            // Add this row
-                            Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\" colspan=\"2\"></td></tr>");
-                            Output.WriteLine("  <tr align=\"left\">");
-                            Output.WriteLine("    <td>" + thisItem.Object_Key + "</td>");
-                            string type = thisItem.Object_Type.FullName;
-                            if (type == "System.Collections.Generic.List`1[[System.String, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]]")
-                                type = "generic List&lt;System.String&gt;";
-                            Output.WriteLine("    <td>" + type + "</td>");
-                            Output.WriteLine("  </tr>");
-                        }
-                    }
                 }
-                catch (Exception)
+            }
+            catch (Exception)
+            {
+                Output.WriteLine("<strong>Error caught while pulling local cache memory management information</strong>");
+            }
+
+            // Close out this table
+            Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\" colspan=\"2\"></td></tr>");
+            Output.WriteLine("</table>");
+
+            // Start the session data
+            Output.WriteLine("<br /><br />");
+
+            // Add the header information
+            Output.WriteLine("<table width=\"720px\" cellspacing=\"0px\">");
+            Output.WriteLine("  <tr align=\"center\" bgcolor=\"#0022a7\"><td colspan=\"2\"><span style=\"color: White\"><b>" + session_state + "</b></span></td></tr>");
+            Output.WriteLine("  <tr align=\"left\" bgcolor=\"#7d90d5\">");
+            Output.WriteLine("    <th align=\"left\"><span style=\"color: White\">" + key + "</span></th>");
+            Output.WriteLine("    <th align=\"left\"><span style=\"color: White\">" + objectTitle + "</span></th>");
+            Output.WriteLine("  </tr>");
+
+            try
+            {
+                // Now, get the information from the Session
+                if (sessionKeys.Count == 0)
                 {
-                    Output.WriteLine("<strong>Error caught while pulling local cache memory management information</strong>");
+                    Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\" colspan=\"2\"></td></tr>");
+                    Output.WriteLine("  <tr align=\"left\">");
+                    Output.WriteLine("    <td><i>( none )</i></td>");
+                    Output.WriteLine("    <td><i>( none )</td>");
+                    Output.WriteLine("  </tr>");
                 }
-
-                // Close out this table
-                Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\" colspan=\"2\"></td></tr>");
-                Output.WriteLine("</table>");
-
-                // Start the session data
-                Output.WriteLine("<br /><br />");
-
-                // Add the header information
-                Output.WriteLine("<table width=\"720px\" cellspacing=\"0px\">");
-                Output.WriteLine("  <tr align=\"center\" bgcolor=\"#0022a7\"><td colspan=\"2\"><span style=\"color: White\"><b>" + session_state + "</b></span></td></tr>");
-                Output.WriteLine("  <tr align=\"left\" bgcolor=\"#7d90d5\">");
-                Output.WriteLine("    <th align=\"left\"><span style=\"color: White\">" + key + "</span></th>");
-                Output.WriteLine("    <th align=\"left\"><span style=\"color: White\">" + objectTitle + "</span></th>");
-                Output.WriteLine("  </tr>");
-
-                try
+                else
                 {
-                    // Now, get the information from the Session
-                    if (sessionKeys.Count == 0)
+                    foreach (string thisKey in sessionKeys)
                     {
+                        // Add this row
+                        session.TryGetValue(thisKey, out byte[] sessionValue);
                         Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\" colspan=\"2\"></td></tr>");
                         Output.WriteLine("  <tr align=\"left\">");
-                        Output.WriteLine("    <td><i>( none )</i></td>");
-                        Output.WriteLine("    <td><i>( none )</td>");
+                        Output.WriteLine("    <td>" + thisKey + "</td>");
+                        Output.WriteLine("    <td>" + (sessionValue != null ? "byte[" + sessionValue.Length + "]" : "NULL") + "</td>");
                         Output.WriteLine("  </tr>");
                     }
-                    else
-                    {
-                        foreach (string thisKey in sessionKeys)
-                        {
-                            // Add this row
-                            session.TryGetValue(thisKey, out byte[] sessionValue);
-                            Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\" colspan=\"2\"></td></tr>");
-                            Output.WriteLine("  <tr align=\"left\">");
-                            Output.WriteLine("    <td>" + thisKey + "</td>");
-                            Output.WriteLine("    <td>" + (sessionValue != null ? "byte[" + sessionValue.Length + "]" : "NULL") + "</td>");
-                            Output.WriteLine("  </tr>");
-                        }
-                    }
                 }
-                catch (Exception)
-                {
-                    Output.WriteLine("<strong>Error caught while pulling Session State memory management information</strong>");
-                }
+            }
+            catch (Exception)
+            {
+                Output.WriteLine("<strong>Error caught while pulling Session State memory management information</strong>");
+            }
 
-                // Close out this table
-                Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\" colspan=\"2\"></td></tr>");
-                Output.WriteLine("</table>");
-                Output.WriteLine("<br /><br />");
-                Output.WriteLine();
+            // Close out this table
+            Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\" colspan=\"2\"></td></tr>");
+            Output.WriteLine("</table>");
+            Output.WriteLine("<br /><br />");
+            Output.WriteLine();
         }
 
         #endregion
@@ -744,7 +740,7 @@ namespace SobekCM.Library.HTML
                 Output.WriteLine("    <a onclick=\"$('#aggregationTree').jstree('close_all');return false;\">Collapse All</a> | ");
                 Output.WriteLine("    <a onclick=\"$('#aggregationTree').jstree('open_all');return false;\">Expand All</a>");
                 Output.WriteLine("  </div>");
-                
+
 
                 Output.WriteLine("  <div id=\"aggregationTree\">");
                 Output.WriteLine("    <ul>");
@@ -758,15 +754,15 @@ namespace SobekCM.Library.HTML
                     Output.WriteLine("        <ul>");
                     foreach (Item_Aggregation_Related_Aggregations childAggr in hierarchy.Collections)
                     {
-                            // Set the aggregation value, for the redirect URL
-                            RequestSpecificValues.Current_Mode.Aggregation = childAggr.Code.ToLower();
+                        // Set the aggregation value, for the redirect URL
+                        RequestSpecificValues.Current_Mode.Aggregation = childAggr.Code.ToLower();
 
-                            Output.WriteLine("          <li><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><abbr title=\"" + childAggr.Description + "\">" + childAggr.Name + "</abbr></a>");
+                        Output.WriteLine("          <li><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><abbr title=\"" + childAggr.Description + "\">" + childAggr.Name + "</abbr></a>");
 
-                            // Check the children nodes recursively
-                            add_children_to_tree("            ", Output, childAggr);
+                        // Check the children nodes recursively
+                        add_children_to_tree("            ", Output, childAggr);
 
-                            Output.WriteLine("          </li>");
+                        Output.WriteLine("          </li>");
                     }
                     Output.WriteLine("        </ul>");
                 }
@@ -902,7 +898,7 @@ namespace SobekCM.Library.HTML
                     // Build the action links
                     if (thisAggr.Active)
                         Output.WriteLine("      <tr>");
-  //                      Output.WriteLine("        <td class=\"sbkAsav_ActionLink\" >( <a title=\"Click to view this item aggregation\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/" + thisAggr.Code + "\">view</a> )");
+                    //                      Output.WriteLine("        <td class=\"sbkAsav_ActionLink\" >( <a title=\"Click to view this item aggregation\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/" + thisAggr.Code + "\">view</a> )");
                     else
                         Output.WriteLine("      <tr>");
 
@@ -1047,7 +1043,7 @@ namespace SobekCM.Library.HTML
                 type = String.Empty;
 
             // set to ALL as default if there aren't an extraordinary number of rows
-            if ((New_Items.Rows.Count < 5000) && ( type.Length == 0 ))
+            if ((New_Items.Rows.Count < 5000) && (type.Length == 0))
             {
                 type = "all";
             }
@@ -1060,8 +1056,8 @@ namespace SobekCM.Library.HTML
             post_processed = post_processed + " ( " + New_Items.Select("WorkFlowName = 'Post-Processed'").Length + " )";
 
 
-			Output.WriteLine("<div id=\"sbkInternalHsw_ViewSelectDiv\">");
-			Output.WriteLine("  <ul class=\"sbk_FauxDownwardTabsList\">");
+            Output.WriteLine("<div id=\"sbkInternalHsw_ViewSelectDiv\">");
+            Output.WriteLine("  <ul class=\"sbk_FauxDownwardTabsList\">");
 
             string baseLocationUrl = String.IsNullOrEmpty(UI_ApplicationCache_Gateway.Settings.Servers.Base_SobekCM_Location_Relative) ? String.Empty : UI_ApplicationCache_Gateway.Settings.Servers.Base_SobekCM_Location_Relative;
 
@@ -1078,7 +1074,7 @@ namespace SobekCM.Library.HTML
 
             if (type == "edit")
             {
-				Output.WriteLine("    <li class=\"current\">" + online_edits + "</li>");
+                Output.WriteLine("    <li class=\"current\">" + online_edits + "</li>");
             }
             else
             {
@@ -1088,7 +1084,7 @@ namespace SobekCM.Library.HTML
 
             if (type == "submit")
             {
-				Output.WriteLine("    <li class=\"current\">" + online_submits + "</li>");
+                Output.WriteLine("    <li class=\"current\">" + online_submits + "</li>");
             }
             else
             {
@@ -1098,7 +1094,7 @@ namespace SobekCM.Library.HTML
 
             if (type == "visibility")
             {
-				Output.WriteLine("    <li class=\"current\">" + visibility + "</li>");
+                Output.WriteLine("    <li class=\"current\">" + visibility + "</li>");
             }
             else
             {
@@ -1108,7 +1104,7 @@ namespace SobekCM.Library.HTML
 
             if (type == "bulkloaded")
             {
-				Output.WriteLine("    <li class=\"current\">" + bulk_loaded + "</li>");
+                Output.WriteLine("    <li class=\"current\">" + bulk_loaded + "</li>");
             }
             else
             {
@@ -1118,14 +1114,14 @@ namespace SobekCM.Library.HTML
 
             if (type == "postprocessed")
             {
-				Output.WriteLine("    <li class=\"current\">" + post_processed + "</li>");
+                Output.WriteLine("    <li class=\"current\">" + post_processed + "</li>");
             }
             else
             {
                 RequestSpecificValues.Current_Mode.Info_Browse_Mode = "postprocessed";
                 Output.WriteLine("    <li><a href=\"" + baseLocationUrl + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + post_processed + "</a></li>");
             }
-			Output.WriteLine("</ul>");
+            Output.WriteLine("</ul>");
             Output.WriteLine("</div>");
             RequestSpecificValues.Current_Mode.Info_Browse_Mode = type;
 
@@ -1240,7 +1236,7 @@ namespace SobekCM.Library.HTML
                         break;
                 }
 
-                if ((matches != null) && ( matches.Length > 0 ))
+                if ((matches != null) && (matches.Length > 0))
                 {
                     // Add the header information
                     Output.WriteLine("<table width=\"" + width + "px\" border=\"0px\" cellspacing=\"0px\">");
@@ -1400,19 +1396,19 @@ namespace SobekCM.Library.HTML
             Output.WriteLine();
         }
 
-		/// <summary> Gets the CSS class of the container that the page is wrapped within </summary>
-		public override string Container_CssClass
-		{
-			get
-			{
+        /// <summary> Gets the CSS class of the container that the page is wrapped within </summary>
+        public override string Container_CssClass
+        {
+            get
+            {
                 if (RequestSpecificValues.Current_Mode.Internal_Type == Internal_Type_Enum.Wordmarks)
-					return "container-inner1000";
+                    return "container-inner1000";
 
                 if (RequestSpecificValues.Current_Mode.Internal_Type == Internal_Type_Enum.Aggregations_List)
-					return "container-inner1215";
+                    return "container-inner1215";
 
-				return base.Container_CssClass;
-			}
-		}
+                return base.Container_CssClass;
+            }
+        }
     }
 }

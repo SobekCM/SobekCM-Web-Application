@@ -1,12 +1,12 @@
 ﻿#region Using directives
 
-using System.Collections.Generic;
-using System.IO;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.Navigation;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
 using SobekCM.Tools;
+using System.Collections.Generic;
+using System.IO;
 
 #endregion
 
@@ -51,7 +51,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 
         /// <summary> Gets flag which indicates whether this is an internal view, which may have a 
         /// slightly different design feel </summary>
-        bool Is_Internal_View { get;  }
+        bool Is_Internal_View { get; }
 
         /// <summary> Title for the page that displays this viewer, this is shown in the search box at the top of the page, just below the banner </summary>
         string Viewer_Title { get; }

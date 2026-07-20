@@ -222,9 +222,9 @@ namespace SobekCM.Tools.FDA
             // Write the basic data
             writer.Append("------------------------------------------\r\n");
             writer.Append("REPORT:\t\t" + filename + "\r\n");
-            writer.Append("TYPE:\t\t" + Report_Type_String + "\r\n" );
+            writer.Append("TYPE:\t\t" + Report_Type_String + "\r\n");
 
-            if ( IEID.Length > 0)
+            if (IEID.Length > 0)
             {
                 writer.Append("IEID:\t\t" + IEID + "\r\n");
             }
@@ -234,7 +234,7 @@ namespace SobekCM.Tools.FDA
                 writer.Append("PACKAGE:\t" + Package + "\r\n");
             }
 
-           writer.Append("DATE:\t\t" + Date + "\r\n");
+            writer.Append("DATE:\t\t" + Date + "\r\n");
 
             if (Account.Length > 0)
             {

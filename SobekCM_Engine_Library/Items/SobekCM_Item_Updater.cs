@@ -1,17 +1,16 @@
 ﻿#region Using directives
 
-using System;
-using System.Collections.Generic;
-using System.IO;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Users;
 using SobekCM.Engine_Library.ApplicationState;
 using SobekCM.Engine_Library.Database;
 using SobekCM.Engine_Library.Solr;
 using SobekCM.Resource_Object;
-using SobekCM.Resource_Object.Database;
 using SobekCM.Resource_Object.Metadata_File_ReaderWriters;
 using SobekCM_Resource_Database;
+using System;
+using System.Collections.Generic;
+using System.IO;
 
 #endregion
 
@@ -45,7 +44,7 @@ namespace SobekCM.Engine_Library.Items
         /// <param name="User"> User who performed the update, for the item milestones </param>
         /// <param name="Error_Message"> [OUT] Return an error message if an exception is encountered </param>
         /// <returns> TRUE if successful, otherwise FALSE </returns>
-        public static bool Update_Item(SobekCM_Item Item, User_Object User, out string Error_Message )
+        public static bool Update_Item(SobekCM_Item Item, User_Object User, out string Error_Message)
         {
             Error_Message = String.Empty;
 
@@ -92,7 +91,7 @@ namespace SobekCM.Engine_Library.Items
             options["MarcXML_File_ReaderWriter:System Name"] = Engine_ApplicationCache_Gateway.Settings.System.System_Name;
             options["MarcXML_File_ReaderWriter:System Abbreviation"] = Engine_ApplicationCache_Gateway.Settings.System.System_Abbreviation;
             //  options["MarcXML_File_ReaderWriter:Additional_Tags"] = Item.MARC_Sobek_Standard_Tags(true, Engine_ApplicationCache_Gateway.Settings.System.System_Name, Engine_ApplicationCache_Gateway.Settings.System.System_Abbreviation);
- 
+
 
             // Save the METS file and related Items
             bool db_successful_save = true;

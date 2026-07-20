@@ -1,8 +1,8 @@
-﻿using System;
+﻿using ProtoBuf;
+using System;
+using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
-using ProtoBuf;
-using System.Collections.Generic;
 
 namespace SobekCM.Core.UI_Configuration.MaterializeClasses
 {
@@ -16,6 +16,6 @@ namespace SobekCM.Core.UI_Configuration.MaterializeClasses
             Materialize_Classes = new Dictionary<string, string>();
         }
 
-        public Dictionary<string,string> Materialize_Classes { get; set; }
+        public Dictionary<string, string> Materialize_Classes { get; set; }
     }
 }

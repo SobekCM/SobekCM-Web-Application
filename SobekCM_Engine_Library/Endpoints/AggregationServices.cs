@@ -1,20 +1,9 @@
 ﻿#region Using directives
 
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Collections.Specialized;
-using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.Drawing.Imaging;
-using System.IO;
-using System.Linq;
-using System.Text;
-
 using Jil;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.Client;
-using SobekCM.Core.Configuration;
+using SobekCM.Core.Configuration.Engine;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Message;
@@ -24,9 +13,18 @@ using SobekCM.Engine_Library.ApplicationState;
 using SobekCM.Engine_Library.Database;
 using SobekCM.Engine_Library.Email;
 using SobekCM.Engine_Library.JSON_Client_Helpers;
-using SobekCM.Core.Configuration.Engine;
 using SobekCM.Tools;
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Data;
+using System.Drawing;
+using System.Drawing.Drawing2D;
+using System.Drawing.Imaging;
+using System.IO;
+using System.Linq;
+using System.Text;
 
 #endregion
 
@@ -41,7 +39,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="QueryString"></param>
         /// <param name="Protocol"></param>
         /// <param name="IsDebug"></param>
-        public void GetCompleteAggregationByCode(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug )
+        public void GetCompleteAggregationByCode(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
         {
             if (UrlSegments.Count > 0)
             {
@@ -57,7 +55,7 @@ namespace SobekCM.Engine_Library.Endpoints
                     Complete_Item_Aggregation returnValue = get_complete_aggregation(aggrCode, true, tracer);
 
                     // If this was debug mode, then just write the tracer
-                    if ( IsDebug )
+                    if (IsDebug)
                     {
                         Response.ContentType = "text/plain";
                         Response.Output.WriteLine("DEBUG MODE DETECTED");
@@ -79,7 +77,7 @@ namespace SobekCM.Engine_Library.Endpoints
                 }
                 catch (Exception ee)
                 {
-                    if ( IsDebug )
+                    if (IsDebug)
                     {
                         Response.ContentType = "text/plain";
                         Response.Output.WriteLine("EXCEPTION CAUGHT!");
@@ -105,7 +103,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="QueryString"></param>
         /// <param name="Protocol"></param>
         /// <param name="IsDebug"></param>
-        public void GetAggregationByCode(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug )
+        public void GetAggregationByCode(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
         {
             if (UrlSegments.Count > 1)
             {
@@ -128,7 +126,7 @@ namespace SobekCM.Engine_Library.Endpoints
                     Item_Aggregation returnValue = get_item_aggregation(aggrCode, languageEnum, Engine_ApplicationCache_Gateway.Settings.System.Default_UI_Language, tracer);
 
                     // If this was debug mode, then just write the tracer
-                    if ( IsDebug )
+                    if (IsDebug)
                     {
                         Response.ContentType = "text/plain";
                         Response.Output.WriteLine("DEBUG MODE DETECTED");
@@ -150,7 +148,7 @@ namespace SobekCM.Engine_Library.Endpoints
                 }
                 catch (Exception ee)
                 {
-                    if ( IsDebug )
+                    if (IsDebug)
                     {
                         Response.ContentType = "text/plain";
                         Response.Output.WriteLine("EXCEPTION CAUGHT!");
@@ -176,7 +174,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="QueryString"></param>
         /// <param name="Protocol"></param>
         /// <param name="IsDebug"></param>
-        public void GetAllAggregations(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug )
+        public void GetAllAggregations(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
         {
             Custom_Tracer tracer = new Custom_Tracer();
             tracer.Add_Trace("AggregationServices.GetAllAggregations", "Return the list of all aggregations (including inactive and hidden)");
@@ -193,7 +191,7 @@ namespace SobekCM.Engine_Library.Endpoints
                 }
 
                 // If this was debug mode, then just write the tracer
-                if ( IsDebug )
+                if (IsDebug)
                 {
                     Response.ContentType = "text/plain";
                     Response.Output.WriteLine("DEBUG MODE DETECTED");
@@ -215,7 +213,7 @@ namespace SobekCM.Engine_Library.Endpoints
             }
             catch (Exception ee)
             {
-                if ( IsDebug )
+                if (IsDebug)
                 {
                     Response.ContentType = "text/plain";
                     Response.Output.WriteLine("EXCEPTION CAUGHT!");
@@ -241,7 +239,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="Protocol"></param>
         /// <param name="IsDebug"></param>
         /// <remarks> This REST API should be publicly available for users that are performing administrative work </remarks>
-        public void GetAggregationUploadedImages(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug )
+        public void GetAggregationUploadedImages(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
         {
             if (UrlSegments.Count > 0)
             {
@@ -257,7 +255,7 @@ namespace SobekCM.Engine_Library.Endpoints
                     if (Directory.Exists(design_folder))
                     {
                         string foldername = aggrInfo.ShortName;
-                        if ( String.IsNullOrEmpty(foldername))
+                        if (String.IsNullOrEmpty(foldername))
                             foldername = aggregation;
 
                         string[] files = SobekCM_File_Utilities.GetFiles(design_folder, "*.jpg|*.bmp|*.gif|*.png");
@@ -265,7 +263,7 @@ namespace SobekCM.Engine_Library.Endpoints
                         {
                             string filename = Path.GetFileName(thisFile);
                             string extension = Path.GetExtension(thisFile);
-                            
+
                             // Exclude some files
                             if ((!String.IsNullOrEmpty(extension)) && (extension.ToLower().IndexOf(".db") < 0) && (extension.ToLower().IndexOf("bridge") < 0) && (extension.ToLower().IndexOf("cache") < 0))
                             {
@@ -286,7 +284,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="QueryString"></param>
         /// <param name="Protocol"></param>
         /// <param name="IsDebug"></param>
-        public void GetCollectionHierarchy(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug )
+        public void GetCollectionHierarchy(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
         {
             Custom_Tracer tracer = new Custom_Tracer();
             tracer.Add_Trace("AggregationServices.GetCollectionHierarchy", "Return the hierarchical list of all active and unhidden aggregations");
@@ -297,7 +295,7 @@ namespace SobekCM.Engine_Library.Endpoints
                 Aggregation_Hierarchy returnValue = get_aggregation_hierarchy(tracer);
 
                 // If this was debug mode, then just write the tracer
-                if ( IsDebug )
+                if (IsDebug)
                 {
                     Response.ContentType = "text/plain";
                     Response.Output.WriteLine("DEBUG MODE DETECTED");
@@ -319,7 +317,7 @@ namespace SobekCM.Engine_Library.Endpoints
             }
             catch (Exception ee)
             {
-                if ( IsDebug )
+                if (IsDebug)
                 {
                     Response.ContentType = "text/plain";
                     Response.Output.WriteLine("EXCEPTION CAUGHT!");
@@ -344,7 +342,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="QueryString"></param>
         /// <param name="Protocol"></param>
         /// <param name="IsDebug"></param>
-        public void GetCollectionStaticPage(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug )
+        public void GetCollectionStaticPage(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
         {
             if (UrlSegments.Count > 2)
             {
@@ -371,7 +369,7 @@ namespace SobekCM.Engine_Library.Endpoints
                     HTML_Based_Content returnValue = get_item_aggregation_html_child_page(aggrCode, langEnum, Engine_ApplicationCache_Gateway.Settings.System.Default_UI_Language, childCode, tracer);
 
                     // If this was debug mode, then just write the tracer
-                    if ( IsDebug )
+                    if (IsDebug)
                     {
                         Response.ContentType = "text/plain";
                         Response.Output.WriteLine("DEBUG MODE DETECTED");
@@ -393,7 +391,7 @@ namespace SobekCM.Engine_Library.Endpoints
                 }
                 catch (Exception ee)
                 {
-                    if ( IsDebug )
+                    if (IsDebug)
                     {
                         Response.ContentType = "text/plain";
                         Response.Output.WriteLine("EXCEPTION CAUGHT!");
@@ -436,7 +434,7 @@ namespace SobekCM.Engine_Library.Endpoints
                 // Convert to Item_Aggregation_Visibility_Statistics
                 tracer.Add_Trace("AggregationServices.GetItemCount", "Convert to list of Item_Aggregation_Visibility_Statistic");
                 var returnValue = new List<Item_Aggregation_Visibility_Statistic>();
-                foreach ( DataRow thisRow in results.Rows )
+                foreach (DataRow thisRow in results.Rows)
                 {
                     var stat = new Item_Aggregation_Visibility_Statistic
                     {
@@ -794,7 +792,7 @@ namespace SobekCM.Engine_Library.Endpoints
 
                 return itemAggr;
             }
-            
+
             // else..
             Tracer.Add_Trace("AggregationServices.get_complete_aggregation", "UseCache parameter is FALSE, will not use the cache for this request");
 
@@ -875,7 +873,7 @@ namespace SobekCM.Engine_Library.Endpoints
 
             // Check for the thematic heading
             int thematicHeadingId = -1;
-            if ( !String.IsNullOrEmpty(NewAggregation.Thematic_Heading))
+            if (!String.IsNullOrEmpty(NewAggregation.Thematic_Heading))
             {
                 // Look for the matching thematic heading
                 foreach (Thematic_Heading thisHeading in Engine_ApplicationCache_Gateway.Thematic_Headings)
@@ -890,7 +888,7 @@ namespace SobekCM.Engine_Library.Endpoints
                 // If there was no match, the thematic heading was invalid, unless it was new
                 if (thematicHeadingId < 0)
                 {
-                    if ((!NewAggregation.NewThematicHeading.HasValue) || ( !NewAggregation.NewThematicHeading.Value ))
+                    if ((!NewAggregation.NewThematicHeading.HasValue) || (!NewAggregation.NewThematicHeading.Value))
                     {
                         errors.Add("Invalid thematic heading indicated");
                     }
@@ -954,7 +952,7 @@ namespace SobekCM.Engine_Library.Endpoints
 
                     // Create a default home text file
                     StreamWriter writer = new StreamWriter(folder + "/html/home/text.html");
-                    writer.WriteLine(link_to_parent + "<h3>About " + NewAggregation.Name + "</h3>" + Environment.NewLine + "<p>" + NewAggregation.Description + "</p>" + Environment.NewLine + "<p>To edit this, log on as the aggregation admin and hover over this text to edit it.</p>" + Environment.NewLine );
+                    writer.WriteLine(link_to_parent + "<h3>About " + NewAggregation.Name + "</h3>" + Environment.NewLine + "<p>" + NewAggregation.Description + "</p>" + Environment.NewLine + "<p>To edit this, log on as the aggregation admin and hover over this text to edit it.</p>" + Environment.NewLine);
 
                     writer.Flush();
                     writer.Close();
@@ -997,7 +995,7 @@ namespace SobekCM.Engine_Library.Endpoints
                                 {
                                     Random randomizer = new Random();
                                     string banner_to_use = banners[randomizer.Next(0, banners.Length - 1)];
-                                    Bitmap bitmap = (Bitmap) (Image.FromFile(banner_to_use));
+                                    Bitmap bitmap = (Bitmap)(Image.FromFile(banner_to_use));
 
                                     RectangleF rectf = new RectangleF(30, bitmap.Height - 55, bitmap.Width - 40, 40);
                                     Graphics g = Graphics.FromImage(bitmap);
@@ -1054,7 +1052,7 @@ namespace SobekCM.Engine_Library.Endpoints
                     }
                 }
             }
-            catch 
+            catch
             {
                 // Reload the list of all codes, to include this new one and the new hierarchy
                 lock (Engine_ApplicationCache_Gateway.Codes)

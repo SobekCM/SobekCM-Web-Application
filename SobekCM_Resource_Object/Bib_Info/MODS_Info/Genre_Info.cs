@@ -1,8 +1,8 @@
 ﻿#region Using directives
 
+using SobekCM.Resource_Object.MARC;
 using System;
 using System.IO;
-using SobekCM.Resource_Object.MARC;
 
 #endregion
 
@@ -77,7 +77,7 @@ namespace SobekCM.Resource_Object.Bib_Info
             {
                 return genre_term + " ( <i>" + authority + "</i> )";
             }
-            
+
             return genre_term;
         }
 
@@ -103,7 +103,7 @@ namespace SobekCM.Resource_Object.Bib_Info
             if ((authority == "marcgt") || (genre_term.Trim().Length == 0))
                 return null;
 
-            MARC_Field returnValue = new MARC_Field {Tag = 655};
+            MARC_Field returnValue = new MARC_Field { Tag = 655 };
 
             string second_indicator;
             string authority_builder = String.Empty;

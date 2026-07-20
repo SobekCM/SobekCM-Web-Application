@@ -1,39 +1,32 @@
 #region Using directives
 
-using System;
-using System.Collections.Generic;
-using System.Data;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Text;
 using Microsoft.AspNetCore.Http;
-using SobekCM.Core.ApplicationState;
 using SobekCM.Core.BriefItem;
 using SobekCM.Core.Client;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Items;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
-using SobekCM.Core.UI_Configuration;
-using SobekCM.Core.UI_Configuration.StaticResources;
 using SobekCM.Core.UI_Configuration.Viewers;
 using SobekCM.Core.Users;
 using SobekCM.Engine_Library.ApplicationState;
 using SobekCM.Engine_Library.Configuration;
-using SobekCM.Engine_Library.Database;
 using SobekCM.Library.Database;
 using SobekCM.Library.Email;
 using SobekCM.Library.HtmlLayout;
 using SobekCM.Library.ItemViewer;
 using SobekCM.Library.ItemViewer.HtmlHeadWriters;
 using SobekCM.Library.ItemViewer.HtmlSectionWriters;
-using SobekCM.Library.ItemViewer.Menu;
 using SobekCM.Library.ItemViewer.Viewers;
 using SobekCM.Library.UI;
-using SobekCM.Resource_Object.Behaviors;
 using SobekCM.Tools;
 using SobekCM_Resource_Database;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.IO;
+using System.Linq;
+using System.Text;
 
 #endregion
 
@@ -44,7 +37,7 @@ namespace SobekCM.Library.HTML
     public class Item_HtmlSubwriter : abstractHtmlSubwriter
     {
         #region Private class members 
-        
+
         private readonly int searchResultsCount;
         private readonly bool showZoomable;
         private bool tocSelectedComplete;
@@ -75,7 +68,7 @@ namespace SobekCM.Library.HTML
 
         /// <summary> Constructor for a new instance of the Item_HtmlSubwriter class </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
-        public Item_HtmlSubwriter( RequestCache RequestSpecificValues) : base(RequestSpecificValues)
+        public Item_HtmlSubwriter(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
         {
             // Add the trace 
             if (RequestSpecificValues.Tracer != null)
@@ -215,7 +208,7 @@ namespace SobekCM.Library.HTML
             userCanEditItem = false;
             if (RequestSpecificValues.Current_User != null)
             {
-                userCanEditItem = RequestSpecificValues.Current_User.Can_Edit_This_Item(currentItem.BibID, currentItem.Type, currentItem.Behaviors.Source_Institution_Aggregation, currentItem.Behaviors.Holding_Location_Aggregation, currentItem.Behaviors.Aggregation_Code_List );
+                userCanEditItem = RequestSpecificValues.Current_User.Can_Edit_This_Item(currentItem.BibID, currentItem.Type, currentItem.Behaviors.Source_Institution_Aggregation, currentItem.Behaviors.Holding_Location_Aggregation, currentItem.Behaviors.Aggregation_Code_List);
             }
 
             if (userCanEditItem)
@@ -273,7 +266,7 @@ namespace SobekCM.Library.HTML
             }
 
             // Check for user group restriction next
-            if (( !isRestricted ) && ( currentItem.Behaviors.HasRestrictions ))
+            if ((!isRestricted) && (currentItem.Behaviors.HasRestrictions))
             {
                 RequestSpecificValues.Tracer.Add_Trace("item_HtmlSubwriter.Constructor", "Item has some user group restrictions.. checking for access");
 
@@ -281,19 +274,19 @@ namespace SobekCM.Library.HTML
                 var matches = currentItem.Behaviors.Restrictions.Where(p => p.CanView).Select(p => p.GroupID).ToList<int>();
 
                 // Are any groups for this user in the list of groups that have view access?
-                if (matches.Count > 0 )
+                if (matches.Count > 0)
                 {
                     RequestSpecificValues.Tracer.Add_Trace("item_HtmlSubwriter.Constructor", "At least one group has view only access... item is not publicly viewabls");
-                
+
                     isRestricted = true;
                     restriction_message = currentItem.Behaviors.RestrictionMessage ?? "This item can only be viewed by instructors.";
 
                     // Check user, if there is one
-                    if (( RequestSpecificValues.Current_User != null ) && ( RequestSpecificValues.Current_User.LoggedOn ) 
-                        && ( RequestSpecificValues.Current_User.User_Groups != null ))
+                    if ((RequestSpecificValues.Current_User != null) && (RequestSpecificValues.Current_User.LoggedOn)
+                        && (RequestSpecificValues.Current_User.User_Groups != null))
                     {
                         RequestSpecificValues.Tracer.Add_Trace("item_HtmlSubwriter.Constructor", "Checking to see if user has access via user group membership");
-                    
+
                         foreach (var group in RequestSpecificValues.Current_User.User_Groups)
                         {
                             if (matches.Contains(group.UserGroupID))
@@ -424,7 +417,7 @@ namespace SobekCM.Library.HTML
                         {
                             string usernotes = Context.Request.Form["add_notes"].TrimFirst();
                             string foldername = Context.Request.Form["add_bookshelf"].TrimFirst();
-                            bool open_bookshelf = (bool) String.IsNullOrEmpty(Context.Request.Form["open_bookshelf"].TrimFirst());
+                            bool open_bookshelf = (bool)String.IsNullOrEmpty(Context.Request.Form["open_bookshelf"].TrimFirst());
 
                             if (SobekCM_Database.Add_Item_To_User_Folder(RequestSpecificValues.Current_User.UserID, foldername, currentItem.BibID, currentItem.VID, 0, usernotes, RequestSpecificValues.Tracer))
                             {
@@ -543,7 +536,7 @@ namespace SobekCM.Library.HTML
             // Get the valid viewer code
             RequestSpecificValues.Tracer.Add_Trace("Item_HtmlSubwriter.Constructor", "Getting the appropriate item viewer");
             prototyper = ItemViewer_Factory.Get_Item_Viewer(currentItem, RequestSpecificValues.Current_Mode.ViewerCode);
-            if (( prototyper != null ) && ( prototyper.Has_Access(currentItem, RequestSpecificValues.Current_User, isRestricted)))
+            if ((prototyper != null) && (prototyper.Has_Access(currentItem, RequestSpecificValues.Current_User, isRestricted)))
                 pageViewer = prototyper.Create_Viewer(currentItem, RequestSpecificValues.Current_User, RequestSpecificValues.Current_Mode, RequestSpecificValues.Tracer, RequestSpecificValues.Flags, Context);
             else
             {
@@ -578,7 +571,7 @@ namespace SobekCM.Library.HTML
             {
                 // Get the list of any special behaviors
                 pageViewerBehaviors = pageViewer.ItemViewer_Behaviors;
-                if ( pageViewerBehaviors != null )
+                if (pageViewerBehaviors != null)
                     behaviors.AddRange(pageViewerBehaviors);
                 else
                     pageViewerBehaviors = new List<HtmlSubwriter_Behaviors_Enum>();
@@ -630,7 +623,7 @@ namespace SobekCM.Library.HTML
                 RequestSpecificValues.Tracer.Add_Trace("Item_HtmlSubwriter.Constructor", "The itemLayoutConfig was still null, getting from config files.");
                 itemLayoutConfig = UI_ApplicationCache_Gateway.Configuration.UI.WriterViewers.Items.DefaultLayout;
             }
-            
+
             // Get the item layout and set the index (from the HTMl template file)
             RequestSpecificValues.Tracer.Add_Trace("Item_HtmlSubwriter.Constructor", "Get the item layout from the HTML template (file=" + itemLayoutConfig.Source + ")");
             itemLayout = HtmlLayoutManager.GetItemLayout(itemLayoutConfig);
@@ -992,17 +985,17 @@ namespace SobekCM.Library.HTML
             HeaderFooter_Helper_HtmlSubWriter.Add_Header(Output, RequestSpecificValues, Container_CssClass, WebPage_Title, Subwriter_Behaviors, null, currentItem, Context);
         }
 
-	    /// <summary> Writes the HTML generated by this item html subwriter directly to the response stream </summary>
-	    /// <param name="Output"> Stream to which to write the HTML for this subwriter </param>
-	    /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-	    /// <returns> Value indicating if html writer should finish the page immediately after this, or if there are other controls or routines which need to be called first </returns>
-	    /// <remarks> This begins writing this page, up to the item-level main menu</remarks>
-	    public override bool Write_HTML(TextWriter Output, Custom_Tracer Tracer)
-	    {
-		    Tracer.Add_Trace("Item_HtmlSubwriter.Write_HTML", "Do Nothing");
+        /// <summary> Writes the HTML generated by this item html subwriter directly to the response stream </summary>
+        /// <param name="Output"> Stream to which to write the HTML for this subwriter </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        /// <returns> Value indicating if html writer should finish the page immediately after this, or if there are other controls or routines which need to be called first </returns>
+        /// <remarks> This begins writing this page, up to the item-level main menu</remarks>
+        public override bool Write_HTML(TextWriter Output, Custom_Tracer Tracer)
+        {
+            Tracer.Add_Trace("Item_HtmlSubwriter.Write_HTML", "Do Nothing");
 
             return true;
-	    }
+        }
 
         /// <summary> Writes the html to the output stream open for the itemNavForm, which appears just before the TocPlaceHolder </summary>
         /// <param name="Output">Stream to directly write to</param>
@@ -1099,7 +1092,7 @@ namespace SobekCM.Library.HTML
                     Output.WriteLine("\t<tr id=\"sbkIsw_RestrictedRow\">");
                     Output.WriteLine("\t\t<td>");
                     Output.WriteLine("\t\t\t<span style=\"font-size:larger; font-weight: bold;\">PRIVATE ITEM</span>");
-                    if ( !String.IsNullOrEmpty(currentItem.Web.Internal_Comments))
+                    if (!String.IsNullOrEmpty(currentItem.Web.Internal_Comments))
                     {
                         Output.WriteLine("\t\t\t" + currentItem.Web.Internal_Comments);
                     }
@@ -1464,9 +1457,9 @@ namespace SobekCM.Library.HTML
             {
                 List<Tuple<string, string>> returnValue = new List<Tuple<string, string>>
                     {
-                        new Tuple<string, string>("onload", "itemwriter_load();"), 
+                        new Tuple<string, string>("onload", "itemwriter_load();"),
                         new Tuple<string, string>("onresize", "itemwriter_load();"),
-						new Tuple<string, string>("id", "itembody")
+                        new Tuple<string, string>("id", "itembody")
                     };
 
                 // Add default script attachments
@@ -1496,7 +1489,7 @@ namespace SobekCM.Library.HTML
             Tracer.Add_Trace("item_HtmlSubwriter.Write_Within_HTML_Head");
 
             // ROBOTS SHOULD BE SENT TO THE CMS PAGE FOR THIS
-            if ( String.Compare(RequestSpecificValues.Current_Mode.ViewerCode, "robot", StringComparison.OrdinalIgnoreCase) != 0 )
+            if (String.Compare(RequestSpecificValues.Current_Mode.ViewerCode, "robot", StringComparison.OrdinalIgnoreCase) != 0)
                 Output.WriteLine("  <meta name=\"robots\" content=\"noindex, nofollow\" />");
 
             // Write the main SobekCM item style sheet to use 
@@ -1507,7 +1500,7 @@ namespace SobekCM.Library.HTML
                 pageViewer.Write_Within_HTML_Head(Output, Tracer);
 
             // Add a thumbnail to this item
-            if ((currentItem != null) && ( !String.IsNullOrEmpty(currentItem.Behaviors.Main_Thumbnail)))
+            if ((currentItem != null) && (!String.IsNullOrEmpty(currentItem.Behaviors.Main_Thumbnail)))
             {
                 string image_src = currentItem.Web.Source_URL + "/" + currentItem.Behaviors.Main_Thumbnail;
 
@@ -1537,7 +1530,7 @@ namespace SobekCM.Library.HTML
             }
 
             // Add any additional things into the head
-            if ((UI_ApplicationCache_Gateway.Configuration.UI.WriterViewers.Items.HtmlHeadWriters != null) && (UI_ApplicationCache_Gateway.Configuration.UI.WriterViewers.Items.HtmlHeadWriters.Count > 0 ))
+            if ((UI_ApplicationCache_Gateway.Configuration.UI.WriterViewers.Items.HtmlHeadWriters != null) && (UI_ApplicationCache_Gateway.Configuration.UI.WriterViewers.Items.HtmlHeadWriters.Count > 0))
             {
                 Output.WriteLine();
 
@@ -1561,11 +1554,11 @@ namespace SobekCM.Library.HTML
             }
         }
 
-		/// <summary> Gets the CSS class of the container that the page is wrapped within </summary>
-		/// <value> Always returns an empty string </value>
-		public override string Container_CssClass
-		{
-			get { return String.Empty; }
-		}
+        /// <summary> Gets the CSS class of the container that the page is wrapped within </summary>
+        /// <value> Always returns an empty string </value>
+        public override string Container_CssClass
+        {
+            get { return String.Empty; }
+        }
     }
 }

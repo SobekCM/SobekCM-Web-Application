@@ -1,11 +1,11 @@
 ﻿#region Using directives
 
+using SobekCM.Resource_Object.Metadata_Modules;
+using SobekCM.Resource_Object.Metadata_Modules.VRACore;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Xml;
-using SobekCM.Resource_Object.Metadata_Modules;
-using SobekCM.Resource_Object.Metadata_Modules.VRACore;
 
 #endregion
 
@@ -129,7 +129,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
             if (vraInfo == null)
             {
                 vraInfo = new VRACore_Info();
-                Return_Package.Add_Metadata_Module(GlobalVar.VRACORE_METADATA_MODULE_KEY, vraInfo);                   
+                Return_Package.Add_Metadata_Module(GlobalVar.VRACORE_METADATA_MODULE_KEY, vraInfo);
             }
 
             // Loop through reading each XML node
@@ -236,7 +236,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
         public bool Schema_Reference_Required_Package(SobekCM_Item METS_Item)
         {
             VRACore_Info vraInfo = METS_Item.Get_Metadata_Module(GlobalVar.VRACORE_METADATA_MODULE_KEY) as VRACore_Info;
-            if (vraInfo == null) 
+            if (vraInfo == null)
                 return false;
             return vraInfo.hasData;
         }
@@ -254,7 +254,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
         /// <returns> Formatted schema location for the METS header</returns>
         public string[] Schema_Location(SobekCM_Item METS_Item)
         {
-            return new string[] {  };
+            return new string[] { };
         }
 
         #endregion

@@ -1,10 +1,10 @@
 ﻿#region Using directives
 
+using ProtoBuf;
 using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
-using ProtoBuf;
 
 #endregion
 
@@ -14,20 +14,21 @@ namespace SobekCM.Core.BriefItem
     /// as map coverage and points or areas of interest </summary>
     [Serializable, DataContract, ProtoContract]
     [XmlRoot("geoSpatial")]
-    public class BriefItem_GeoSpatial 
+    public class BriefItem_GeoSpatial
     {
         /// <summary> Constructor for a new instance of the BriefItem_GeoSpatial class </summary>
         public BriefItem_GeoSpatial()
         {
             // do nothing
         }
-        
+
         /// <summary> Gets flag indicating if this object contains any coordinate information </summary>
         /// <value>TRUE if any data exists, otherwise FALSE </value>
         [XmlIgnore]
         public bool hasData
         {
-            get {
+            get
+            {
                 return ((Points != null) && (Points.Count != 0)) || ((Polygons != null) && (Polygons.Count != 0)) || ((Lines != null) && (Lines.Count != 0)) || (!String.IsNullOrEmpty(KML_Reference));
             }
         }

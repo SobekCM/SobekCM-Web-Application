@@ -8,7 +8,7 @@ namespace SobekCM.Engine_Library.IpRangeUtilities
 {
     /// <summary> Single IP address range used in the solution for quick IP range checks to
     /// support IP restrictions on the SobekCM engine </summary>
-    public class SingleIpRangeV4 
+    public class SingleIpRangeV4
     {
         /// <summary> Constructor for a new instance of the SingleIpRangeV4 class </summary>
         /// <param name="SingleIpAddress"> IP address, as an unsigned long </param>
@@ -38,8 +38,8 @@ namespace SobekCM.Engine_Library.IpRangeUtilities
                 StartIpAddress = ComparableIpAddress.ToUlong(parse[0]);
 
                 int cidr = Int32.Parse(parse[1]);
-                int add_number = (int) Math.Pow(2, (32 - cidr)) - 1;
-                EndIpAddress = StartIpAddress + (ulong) add_number;
+                int add_number = (int)Math.Pow(2, (32 - cidr)) - 1;
+                EndIpAddress = StartIpAddress + (ulong)add_number;
             }
             else
             {
@@ -47,7 +47,7 @@ namespace SobekCM.Engine_Library.IpRangeUtilities
             }
 
             Prefix = Convert.ToByte(StartIpAddress / 16777216);
-            
+
         }
 
         /// <summary> Constructor for a new instance of the SingleIpRangeV4 class </summary>

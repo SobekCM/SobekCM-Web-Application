@@ -1,13 +1,12 @@
 #region Using directives
 
-using System;
-using System.IO;
-using System.Text;
 using SobekCM.Core.ApplicationState;
-using SobekCM.Core.Configuration;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Users;
 using SobekCM.Resource_Object;
+using System;
+using System.IO;
+using System.Text;
 
 #endregion
 

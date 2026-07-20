@@ -34,7 +34,7 @@ namespace SobekCM.Core.Results
         public string Creator { get; set; }
 
         /// <summary>Internal comments for this private item </summary>
-        [DataMember(Name="comments",EmitDefaultValue = false)]
+        [DataMember(Name = "comments", EmitDefaultValue = false)]
         [XmlAttribute("comments")]
         [ProtoMember(4)]
         public string Internal_Comments { get; set; }
@@ -116,7 +116,7 @@ namespace SobekCM.Core.Results
                         return "online completed";
 
                     default:
-                        return "unknown milestone";                
+                        return "unknown milestone";
                 }
             }
         }

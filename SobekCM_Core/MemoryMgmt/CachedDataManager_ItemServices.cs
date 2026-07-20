@@ -1,13 +1,13 @@
 using Microsoft.Extensions.Caching.Memory;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using SobekCM.Core.BriefItem;
 using SobekCM.Core.EAD;
 using SobekCM.Core.Items;
 using SobekCM.Core.MARC;
 using SobekCM.Resource_Object;
 using SobekCM.Tools;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace SobekCM.Core.MemoryMgmt
 {
@@ -406,7 +406,7 @@ namespace SobekCM.Core.MemoryMgmt
         #endregion
 
         #region Methods related to storing and retrieving EAD information for a single digital resource
-        
+
         /// <summary> Retrieves the EAD information related to a digital resource  </summary>
         /// <param name="BibID"> Bibliographic Identifier for the digital resource to retrieve </param>
         /// <param name="VID"> Volume Identifier for the digital resource to retrieve </param>

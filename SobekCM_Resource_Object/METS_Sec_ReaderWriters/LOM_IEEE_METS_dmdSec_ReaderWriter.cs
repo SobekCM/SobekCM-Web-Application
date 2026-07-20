@@ -1,11 +1,11 @@
 ﻿#region Using directives
 
+using SobekCM.Resource_Object.Metadata_Modules;
+using SobekCM.Resource_Object.Metadata_Modules.LearningObjects;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Xml;
-using SobekCM.Resource_Object.Metadata_Modules;
-using SobekCM.Resource_Object.Metadata_Modules.LearningObjects;
 
 #endregion
 
@@ -75,14 +75,14 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                 return true;
 
             // Start the LOM node
-            Output_Stream.WriteLine( "<" + lom_namespace + "lom>");
+            Output_Stream.WriteLine("<" + lom_namespace + "lom>");
 
             // Add any aggregation level
             if (lomInfo.AggregationLevel != AggregationLevelEnum.UNDEFINED)
             {
                 Output_Stream.WriteLine(indent + "<" + lom_namespace + "general>");
                 Output_Stream.Write(indent + indent + "<" + lom_namespace + "aggregationLevel>");
-                switch ( lomInfo.AggregationLevel )
+                switch (lomInfo.AggregationLevel)
                 {
                     case AggregationLevelEnum.level1:
                         Output_Stream.Write("1");
@@ -139,7 +139,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                 foreach (LOM_System_Requirements thisRequirement in lomInfo.SystemRequirements)
                 {
                     // Must have a type and name
-                    if (( thisRequirement.RequirementType == RequirementTypeEnum.UNDEFINED ) || ( String.IsNullOrWhiteSpace( thisRequirement.Name.Value)))
+                    if ((thisRequirement.RequirementType == RequirementTypeEnum.UNDEFINED) || (String.IsNullOrWhiteSpace(thisRequirement.Name.Value)))
                         continue;
 
                     // Start to write this requirement
@@ -147,10 +147,10 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                     Output_Stream.WriteLine(indent + indent + indent + "<" + lom_namespace + "orcomposite>");
 
                     // Add the requirement type
-                    switch ( thisRequirement.RequirementType )
+                    switch (thisRequirement.RequirementType)
                     {
                         case RequirementTypeEnum.browser:
-                            Output_Stream.WriteLine( indent + indent + indent + indent + "<" + lom_namespace + "type>browser</" + lom_namespace + "type>");
+                            Output_Stream.WriteLine(indent + indent + indent + indent + "<" + lom_namespace + "type>browser</" + lom_namespace + "type>");
                             break;
 
                         case RequirementTypeEnum.hardware:
@@ -167,7 +167,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                     }
 
                     // Add the name
-                    if ( !String.IsNullOrWhiteSpace( thisRequirement.Name.Source ))
+                    if (!String.IsNullOrWhiteSpace(thisRequirement.Name.Source))
                         Output_Stream.WriteLine(indent + indent + indent + indent + "<" + lom_namespace + "name source=\"" + Convert_String_To_XML_Safe(thisRequirement.Name.Source) + "\">" + Convert_String_To_XML_Safe(thisRequirement.Name.Value) + "</" + lom_namespace + "name>");
                     else
                         Output_Stream.WriteLine(indent + indent + indent + indent + "<" + lom_namespace + "name>" + Convert_String_To_XML_Safe(thisRequirement.Name.Value) + "</" + lom_namespace + "name>");
@@ -201,7 +201,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                 // Add interactivity type
                 if (lomInfo.InteractivityType != InteractivityTypeEnum.UNDEFINED)
                 {
-                    switch ( lomInfo.InteractivityType )
+                    switch (lomInfo.InteractivityType)
                     {
                         case InteractivityTypeEnum.active:
                             Output_Stream.WriteLine(indent + indent + "<" + lom_namespace + "interactivitytype>active</" + lom_namespace + "interactivitytype>");
@@ -220,11 +220,11 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                 // Add the learning resource types
                 foreach (LOM_VocabularyState thisType in lomInfo.LearningResourceTypes)
                 {
-                    if ( String.IsNullOrWhiteSpace( thisType.Source ))
-                        Output_Stream.WriteLine(indent + indent + "<" + lom_namespace + "learningresourcetype>" + Convert_String_To_XML_Safe( thisType.Value ) + "</" + lom_namespace + "learningresourcetype>");
+                    if (String.IsNullOrWhiteSpace(thisType.Source))
+                        Output_Stream.WriteLine(indent + indent + "<" + lom_namespace + "learningresourcetype>" + Convert_String_To_XML_Safe(thisType.Value) + "</" + lom_namespace + "learningresourcetype>");
                     else
-                        Output_Stream.WriteLine(indent + indent + "<" + lom_namespace + "learningresourcetype source=\"" + Convert_String_To_XML_Safe( thisType.Source ) + "\">" + Convert_String_To_XML_Safe(thisType.Value) + "</" + lom_namespace + "learningresourcetype>");
-                 }
+                        Output_Stream.WriteLine(indent + indent + "<" + lom_namespace + "learningresourcetype source=\"" + Convert_String_To_XML_Safe(thisType.Source) + "\">" + Convert_String_To_XML_Safe(thisType.Value) + "</" + lom_namespace + "learningresourcetype>");
+                }
 
                 // Add the interactivity level
                 if (lomInfo.InteractivityLevel != InteractivityLevelEnum.UNDEFINED)
@@ -286,19 +286,19 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                 }
 
                 // Add the typical age range information(s)
-                if ( lomInfo.TypicalAgeRanges.Count > 0 )
+                if (lomInfo.TypicalAgeRanges.Count > 0)
                 {
-                    Output_Stream.WriteLine( indent + indent + "<" + lom_namespace + "typicalagerange>");
+                    Output_Stream.WriteLine(indent + indent + "<" + lom_namespace + "typicalagerange>");
 
-                    foreach( LOM_LanguageString thisRange in lomInfo.TypicalAgeRanges )
+                    foreach (LOM_LanguageString thisRange in lomInfo.TypicalAgeRanges)
                     {
                         if (String.IsNullOrWhiteSpace(thisRange.Language))
-                            Output_Stream.WriteLine(indent + indent + indent +"<" + lom_namespace + "langstring>" + Convert_String_To_XML_Safe(thisRange.Value) + "</" + lom_namespace +  "langstring>");
+                            Output_Stream.WriteLine(indent + indent + indent + "<" + lom_namespace + "langstring>" + Convert_String_To_XML_Safe(thisRange.Value) + "</" + lom_namespace + "langstring>");
                         else
                             Output_Stream.WriteLine(indent + indent + indent + "<" + lom_namespace + "langstring lang=\"" + Convert_String_To_XML_Safe(thisRange.Language) + "\">" + Convert_String_To_XML_Safe(thisRange.Value) + "</" + lom_namespace + "langstring>");
                     }
 
-                    Output_Stream.WriteLine( indent + indent + "</" + lom_namespace + "typicalagerange>");
+                    Output_Stream.WriteLine(indent + indent + "</" + lom_namespace + "typicalagerange>");
                 }
 
                 // Add the difficulty inforamtion
@@ -329,7 +329,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                 }
 
                 // Add the typical learning time
-                if ( !String.IsNullOrWhiteSpace( lomInfo.TypicalLearningTime ))
+                if (!String.IsNullOrWhiteSpace(lomInfo.TypicalLearningTime))
                 {
                     Output_Stream.WriteLine(indent + indent + "<" + lom_namespace + "typicallearningtime>");
                     Output_Stream.WriteLine(indent + indent + indent + "<" + lom_namespace + "duration>" + Convert_String_To_XML_Safe(lomInfo.TypicalLearningTime) + "</" + lom_namespace + "duration>");
@@ -340,31 +340,31 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
             }
 
             // Add the classification information (repeatable)
-            foreach( LOM_Classification thisClassification in lomInfo.Classifications )
+            foreach (LOM_Classification thisClassification in lomInfo.Classifications)
             {
                 Output_Stream.WriteLine(indent + "<" + lom_namespace + "classification>");
 
                 // Add the optional purpose field
-                if ( !String.IsNullOrWhiteSpace( thisClassification.Purpose.Value ))
+                if (!String.IsNullOrWhiteSpace(thisClassification.Purpose.Value))
                 {
-                    if ( !String.IsNullOrWhiteSpace( thisClassification.Purpose.Source ))
-                        Output_Stream.WriteLine(indent + indent + "<" + lom_namespace + "purpose source=\"" + Convert_String_To_XML_Safe(thisClassification.Purpose.Source) + "\">" + Convert_String_To_XML_Safe( thisClassification.Purpose.Value ) + "</" + lom_namespace + "purpose>");
+                    if (!String.IsNullOrWhiteSpace(thisClassification.Purpose.Source))
+                        Output_Stream.WriteLine(indent + indent + "<" + lom_namespace + "purpose source=\"" + Convert_String_To_XML_Safe(thisClassification.Purpose.Source) + "\">" + Convert_String_To_XML_Safe(thisClassification.Purpose.Value) + "</" + lom_namespace + "purpose>");
                     else
                         Output_Stream.WriteLine(indent + indent + "<" + lom_namespace + "purpose>" + Convert_String_To_XML_Safe(thisClassification.Purpose.Value) + "</" + lom_namespace + "purpose>");
                 }
 
                 // Add the taxon path(s)
-                foreach( LOM_TaxonPath thisPath in thisClassification.TaxonPaths )
+                foreach (LOM_TaxonPath thisPath in thisClassification.TaxonPaths)
                 {
-                    Output_Stream.WriteLine(indent + indent + "<" + lom_namespace + "taxonpath>" );
+                    Output_Stream.WriteLine(indent + indent + "<" + lom_namespace + "taxonpath>");
 
                     // Add the source?
-                    if ( thisPath.SourceNames.Count > 0 )
+                    if (thisPath.SourceNames.Count > 0)
                     {
-                        Output_Stream.WriteLine( indent + indent + indent + "<" + lom_namespace + "source>");
+                        Output_Stream.WriteLine(indent + indent + indent + "<" + lom_namespace + "source>");
 
                         // Add the sources
-                        foreach( LOM_LanguageString thisSource in thisPath.SourceNames )
+                        foreach (LOM_LanguageString thisSource in thisPath.SourceNames)
                         {
                             if (String.IsNullOrWhiteSpace(thisSource.Language))
                                 Output_Stream.WriteLine(indent + indent + indent + indent + "<" + lom_namespace + "langstring>" + Convert_String_To_XML_Safe(thisSource.Value) + "</" + lom_namespace + "langstring>");
@@ -372,27 +372,27 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                                 Output_Stream.WriteLine(indent + indent + indent + indent + "<" + lom_namespace + "langstring lang=\"" + Convert_String_To_XML_Safe(thisSource.Language) + "\">" + Convert_String_To_XML_Safe(thisSource.Value) + "</" + lom_namespace + "langstring>");
                         }
 
-                        Output_Stream.WriteLine( indent + indent + indent + "</" + lom_namespace + "source>");
+                        Output_Stream.WriteLine(indent + indent + indent + "</" + lom_namespace + "source>");
                     }
 
                     // Add all the taxons
-                    foreach( LOM_Taxon thisTaxon in thisPath.Taxons )
+                    foreach (LOM_Taxon thisTaxon in thisPath.Taxons)
                     {
-                        Output_Stream.WriteLine(indent + indent + indent + "<" + lom_namespace + "taxon>" );
+                        Output_Stream.WriteLine(indent + indent + indent + "<" + lom_namespace + "taxon>");
 
                         // Add the ID
-                        if ( !String.IsNullOrWhiteSpace( thisTaxon.ID ))
+                        if (!String.IsNullOrWhiteSpace(thisTaxon.ID))
                         {
-                            Output_Stream.WriteLine( indent + indent + indent + indent + "<" + lom_namespace + "id>" + Convert_String_To_XML_Safe( thisTaxon.ID) + "</" + lom_namespace + "id>");
+                            Output_Stream.WriteLine(indent + indent + indent + indent + "<" + lom_namespace + "id>" + Convert_String_To_XML_Safe(thisTaxon.ID) + "</" + lom_namespace + "id>");
                         }
 
                         // Add the entries
-                        if ( thisTaxon.Entries.Count > 0 )
+                        if (thisTaxon.Entries.Count > 0)
                         {
-                            Output_Stream.WriteLine( indent + indent + indent + indent + "<" + lom_namespace + "entry>");
+                            Output_Stream.WriteLine(indent + indent + indent + indent + "<" + lom_namespace + "entry>");
 
                             // Add the sources
-                            foreach( LOM_LanguageString thisSource in thisTaxon.Entries )
+                            foreach (LOM_LanguageString thisSource in thisTaxon.Entries)
                             {
                                 if (String.IsNullOrWhiteSpace(thisSource.Language))
                                     Output_Stream.WriteLine(indent + indent + indent + indent + indent + indent + "<" + lom_namespace + "langstring>" + Convert_String_To_XML_Safe(thisSource.Value) + "</" + lom_namespace + "langstring>");
@@ -400,21 +400,21 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                                     Output_Stream.WriteLine(indent + indent + indent + indent + indent + indent + "<" + lom_namespace + "langstring lang=\"" + Convert_String_To_XML_Safe(thisSource.Language) + "\">" + Convert_String_To_XML_Safe(thisSource.Value) + "</" + lom_namespace + "langstring>");
                             }
 
-                            Output_Stream.WriteLine( indent + indent + indent + indent + "</" + lom_namespace + "entry>");
+                            Output_Stream.WriteLine(indent + indent + indent + indent + "</" + lom_namespace + "entry>");
                         }
 
-                        Output_Stream.WriteLine(indent + indent + indent + "</" + lom_namespace + "taxon>" );
+                        Output_Stream.WriteLine(indent + indent + indent + "</" + lom_namespace + "taxon>");
                     }
 
-                    Output_Stream.WriteLine(indent + indent + "</" + lom_namespace + "taxonpath>" );
+                    Output_Stream.WriteLine(indent + indent + "</" + lom_namespace + "taxonpath>");
                 }
 
                 Output_Stream.WriteLine(indent + "</" + lom_namespace + "classification>");
             }
 
             // Finish the main lom node
-            Output_Stream.WriteLine( "</" + lom_namespace + "lom>");
-        
+            Output_Stream.WriteLine("</" + lom_namespace + "lom>");
+
             return true;
         }
 
@@ -449,7 +449,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                 if (Input_XmlReader.NodeType == XmlNodeType.Element)
                 {
                     string name = Input_XmlReader.Name.ToLower();
-                    if (( lom_namespace.Length > 0 ) && ( name.IndexOf( lom_namespace ) == 0))
+                    if ((lom_namespace.Length > 0) && (name.IndexOf(lom_namespace) == 0))
                         name = name.Substring(lom_namespace.Length);
 
                     switch (name)
@@ -457,7 +457,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                         case "general":
                             read_general(Input_XmlReader.ReadSubtree(), lomInfo);
                             break;
-                            
+
                         case "lifecycle":
                             read_lifecycle(Input_XmlReader.ReadSubtree(), lomInfo);
                             break;
@@ -473,7 +473,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                         case "classification":
                             read_classification(Input_XmlReader.ReadSubtree(), lomInfo);
                             break;
-                       
+
 
                     }
                 }
@@ -484,7 +484,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
             return true;
         }
 
-        private void read_general( XmlReader Input_XmlReader, LearningObjectMetadata lomInfo )
+        private void read_general(XmlReader Input_XmlReader, LearningObjectMetadata lomInfo)
         {
             // Loop through reading each XML node
             do
@@ -618,7 +618,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                             if ((Input_XmlReader.NodeType == XmlNodeType.Text) && (Input_XmlReader.Value.Trim().Length > 0))
                             {
                                 string typeTemp = Input_XmlReader.Value.ToLower().Trim();
-                                switch( typeTemp )
+                                switch (typeTemp)
                                 {
                                     case "operating system":
                                         requirement.RequirementType = RequirementTypeEnum.operating_system;
@@ -662,7 +662,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                                 requirement.MaximumVersion = Input_XmlReader.Value.Trim();
                             }
                             break;
-                    }                   
+                    }
                 }
             } while (Input_XmlReader.Read());
 
@@ -681,7 +681,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                 if (Input_XmlReader.NodeType == XmlNodeType.Element)
                 {
                     string name = Input_XmlReader.Name.ToLower();
-                    if (( lom_namespace.Length > 0 ) && ( name.IndexOf( lom_namespace ) == 0))
+                    if ((lom_namespace.Length > 0) && (name.IndexOf(lom_namespace) == 0))
                         name = name.Substring(lom_namespace.Length);
 
                     switch (name)
@@ -692,7 +692,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                             if ((Input_XmlReader.NodeType == XmlNodeType.Text) && (Input_XmlReader.Value.Trim().Length > 0))
                             {
                                 string interactivityTemp = Input_XmlReader.Value.Trim();
-                                switch( interactivityTemp )
+                                switch (interactivityTemp)
                                 {
                                     case "active":
                                         lomInfo.InteractivityType = InteractivityTypeEnum.active;
@@ -726,7 +726,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                             if ((Input_XmlReader.NodeType == XmlNodeType.Text) && (Input_XmlReader.Value.Trim().Length > 0))
                             {
                                 string interactivityLevelTemp = Input_XmlReader.Value.ToLower().Trim();
-                                switch( interactivityLevelTemp )
+                                switch (interactivityLevelTemp)
                                 {
                                     case "very low":
                                         lomInfo.InteractivityLevel = InteractivityLevelEnum.very_low;
@@ -759,19 +759,19 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                                 switch (endUserRoleTemp)
                                 {
                                     case "teacher":
-                                        lomInfo.Add_IntendedEndUserRole( IntendedEndUserRoleEnum.teacher);
+                                        lomInfo.Add_IntendedEndUserRole(IntendedEndUserRoleEnum.teacher);
                                         break;
 
                                     case "author":
-                                        lomInfo.Add_IntendedEndUserRole( IntendedEndUserRoleEnum.author);
+                                        lomInfo.Add_IntendedEndUserRole(IntendedEndUserRoleEnum.author);
                                         break;
 
                                     case "learner":
-                                        lomInfo.Add_IntendedEndUserRole( IntendedEndUserRoleEnum.learner);
+                                        lomInfo.Add_IntendedEndUserRole(IntendedEndUserRoleEnum.learner);
                                         break;
 
                                     case "manager":
-                                        lomInfo.Add_IntendedEndUserRole( IntendedEndUserRoleEnum.manager);
+                                        lomInfo.Add_IntendedEndUserRole(IntendedEndUserRoleEnum.manager);
                                         break;
                                 }
                             }
@@ -794,23 +794,23 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                             do
                             {
                                 string subname = Input_XmlReader.Name.ToLower();
-                                if (( lom_namespace.Length > 0 ) && ( subname.IndexOf( lom_namespace ) == 0))
+                                if ((lom_namespace.Length > 0) && (subname.IndexOf(lom_namespace) == 0))
                                     subname = subname.Substring(lom_namespace.Length);
-                                
+
                                 // Stop when done looping through the language strings
                                 if ((Input_XmlReader.NodeType == XmlNodeType.EndElement) && (subname == "typicalagerange"))
                                     break;
 
                                 // Start of a new language string?
-                                if (( Input_XmlReader.NodeType == XmlNodeType.Element ) && ( subname == "langstring" ))
+                                if ((Input_XmlReader.NodeType == XmlNodeType.Element) && (subname == "langstring"))
                                 {
                                     LOM_LanguageString agerange = new LOM_LanguageString();
                                     if (Input_XmlReader.MoveToAttribute("lang"))
-                                        agerange.Language = Input_XmlReader.Value.Trim(); 
+                                        agerange.Language = Input_XmlReader.Value.Trim();
                                     Input_XmlReader.Read();
                                     if ((Input_XmlReader.NodeType == XmlNodeType.Text) && (Input_XmlReader.Value.Trim().Length > 0))
                                     {
-                                        agerange.Value = Input_XmlReader.Value.Trim(); 
+                                        agerange.Value = Input_XmlReader.Value.Trim();
                                         lomInfo.Add_TypicalAgeRange(agerange);
                                     }
                                 }
@@ -981,7 +981,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
             } while (Input_XmlReader.Read());
 
             // Do a little checking here before adding it
-            if ( taxonPath.Taxons.Count > 0 )
+            if (taxonPath.Taxons.Count > 0)
                 classification.Add_TaxonPath(taxonPath);
         }
 
@@ -1042,7 +1042,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
             } while (Input_XmlReader.Read());
 
             // Do a little checking here before adding it
-            if ((taxon.ID.Length > 0 ) || ( taxon.Entries.Count > 0 ))
+            if ((taxon.ID.Length > 0) || (taxon.Entries.Count > 0))
                 taxonPath.Add_Taxon(taxon);
         }
 

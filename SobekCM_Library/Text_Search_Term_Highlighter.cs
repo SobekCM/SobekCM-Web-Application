@@ -20,7 +20,7 @@ namespace SobekCM.Library
         /// <returns> Source text including highlights </returns>
         public static string Hightlight_Term_In_HTML(string Source_Text, string Search_Term)
         {
-            List<string> terms = new List<string> {Search_Term};
+            List<string> terms = new List<string> { Search_Term };
             return Hightlight_Term_In_HTML(Source_Text, terms);
         }
 
@@ -40,7 +40,7 @@ namespace SobekCM.Library
         /// <param name="Highlight_Start">HTML to use at the beginning of a span to highlight</param>
         /// <param name="Highlight_End">HTML to use at the end of a span to highlight</param>
         /// <returns> Source text including highlights </returns>
-        public static string Hightlight_Term_In_HTML(string Source_Text, List<string> Search_Terms, string Highlight_Start, string Highlight_End )
+        public static string Hightlight_Term_In_HTML(string Source_Text, List<string> Search_Terms, string Highlight_Start, string Highlight_End)
         {
             // Place the entire text into lower case
             string sourceLower = Source_Text.ToLower();
@@ -110,7 +110,7 @@ namespace SobekCM.Library
                             last_match_in_tag = tag_last_known_tag;
                             break;
                         }
-                        
+
                         if (sourceLower[tag_check_index] == '>')
                         {
                             tag_last_known_location = last_match_location;

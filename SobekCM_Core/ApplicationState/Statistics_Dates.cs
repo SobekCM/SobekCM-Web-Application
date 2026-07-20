@@ -47,7 +47,7 @@ namespace SobekCM.Core.ApplicationState
 
         /// <summary> Sets the date range from the table of statistical months available </summary>
         /// <param name="dateRangeTable"> Table which lists every date statistical information exists</param>
-        public void Set_Statistics_Dates( DataTable dateRangeTable )
+        public void Set_Statistics_Dates(DataTable dateRangeTable)
         {
             if ((dateRangeTable != null) && (dateRangeTable.Rows.Count > 0))
             {

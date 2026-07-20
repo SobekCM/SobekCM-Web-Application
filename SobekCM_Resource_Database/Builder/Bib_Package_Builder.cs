@@ -1,16 +1,15 @@
 #region Using directives
 
+using SobekCM.Resource_Object;
+using SobekCM.Resource_Object.Behaviors;
+using SobekCM.Resource_Object.Bib_Info;
+using SobekCM.Resource_Object.Database.DataSets;
+using SobekCM.Resource_Object.Divisions;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
-using SobekCM.Resource_Object;
-using SobekCM.Resource_Object.Behaviors;
-using SobekCM.Resource_Object.Bib_Info;
-using SobekCM.Resource_Object.Database;
-using SobekCM.Resource_Object.Database.DataSets;
-using SobekCM.Resource_Object.Divisions;
 
 #endregion
 
@@ -285,7 +284,7 @@ namespace SobekCM_Resource_Database.Builder
                 // Create the new bib package
                 if (bibPackage == null)
                 {
-                    bibPackage = new SobekCM_Item {BibID = BIBID, VID = Volumeid};
+                    bibPackage = new SobekCM_Item { BibID = BIBID, VID = Volumeid };
                 }
                 bibPackage.METS_Header.Creator_Software = AppName;
                 bibPackage.METS_Header.ObjectID = bibPackage.BibID + "_" + bibPackage.VID;
@@ -759,7 +758,7 @@ namespace SobekCM_Resource_Database.Builder
                         deleteIndex = index;
                         break;
                     }
-                    
+
                     index++;
                 }
                 if (deleteIndex >= 0)
@@ -840,7 +839,7 @@ namespace SobekCM_Resource_Database.Builder
                     try
                     {
                         // Get the first division
-                        Division_TreeNode firstDiv = (Division_TreeNode) BIBPackage.Divisions.Physical_Tree.Roots[0];
+                        Division_TreeNode firstDiv = (Division_TreeNode)BIBPackage.Divisions.Physical_Tree.Roots[0];
 
                         // Add each file
                         foreach (Builder_Page_File thisFile in addFiles)
@@ -939,10 +938,10 @@ namespace SobekCM_Resource_Database.Builder
                             if (previous_file == null)
                             {
                                 abstract_TreeNode abstractNode = BIBPackage.Divisions.Physical_Tree.Roots[0];
-                                Division_TreeNode lastDivNode = (Division_TreeNode) abstractNode;
+                                Division_TreeNode lastDivNode = (Division_TreeNode)abstractNode;
                                 while (!abstractNode.Page)
                                 {
-                                    lastDivNode = (Division_TreeNode) abstractNode;
+                                    lastDivNode = (Division_TreeNode)abstractNode;
                                     if (lastDivNode.Nodes.Count > 0)
                                     {
                                         abstractNode = lastDivNode.Nodes[0];
@@ -1041,7 +1040,7 @@ namespace SobekCM_Resource_Database.Builder
         {
             if (RootNode.Page)
             {
-                Page_TreeNode pageNode = (Page_TreeNode) RootNode;
+                Page_TreeNode pageNode = (Page_TreeNode)RootNode;
                 foreach (SobekCM_File_Info thisFile in pageNode.Files)
                 {
                     bool add_file = false;
@@ -1074,16 +1073,16 @@ namespace SobekCM_Resource_Database.Builder
             }
             else
             {
-                Division_TreeNode divNode = (Division_TreeNode) RootNode;
+                Division_TreeNode divNode = (Division_TreeNode)RootNode;
                 foreach (abstract_TreeNode thisNode in divNode.Nodes)
                 {
                     if (thisNode.Page)
                     {
                         try
                         {
-                            if (!PageToDiv.ContainsKey((Page_TreeNode) thisNode))
+                            if (!PageToDiv.ContainsKey((Page_TreeNode)thisNode))
                             {
-                                PageToDiv.Add((Page_TreeNode) thisNode, divNode);
+                                PageToDiv.Add((Page_TreeNode)thisNode, divNode);
                             }
                         }
                         catch
@@ -1105,7 +1104,7 @@ namespace SobekCM_Resource_Database.Builder
             // should not be removed
             if (!ChildNode.Page)
             {
-                Division_TreeNode divNode = (Division_TreeNode) ChildNode;
+                Division_TreeNode divNode = (Division_TreeNode)ChildNode;
                 if (divNode.Nodes.Count > 0)
                 {
                     int nodeCounter = 0;
@@ -1123,11 +1122,11 @@ namespace SobekCM_Resource_Database.Builder
                     }
                     return divNode.Nodes.Count <= 0;
                 }
-                
+
                 return true;
             }
-            
-            Page_TreeNode pageNode = (Page_TreeNode) ChildNode;
+
+            Page_TreeNode pageNode = (Page_TreeNode)ChildNode;
             return pageNode.Files.Count == 0;
         }
 

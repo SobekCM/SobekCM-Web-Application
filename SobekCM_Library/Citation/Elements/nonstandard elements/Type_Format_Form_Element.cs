@@ -1,20 +1,17 @@
 #region Using directives
 
+using SobekCM.Core.ApplicationState;
+using SobekCM.Core.Configuration.Localization;
+using SobekCM.Core.Users;
+using SobekCM.Library.UI;
+using SobekCM.Resource_Object;
+using SobekCM.Resource_Object.Bib_Info;
 using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
 using System.Text;
-using Microsoft.AspNetCore.Http;
 using System.Xml;
-using SobekCM.Core.ApplicationState;
-using SobekCM.Core.Configuration;
-using SobekCM.Core.Configuration.Localization;
-using SobekCM.Core.Users;
-using SobekCM.Resource_Object;
-using SobekCM.Resource_Object.Bib_Info;
-using SobekCM.Library.UI;
 
 #endregion
 
@@ -39,7 +36,7 @@ namespace SobekCM.Library.Citation.Elements
 
             Repeatable = false;
 
-	        help_page = "type";
+            help_page = "type";
         }
 
         /// <summary> Renders the HTML for this element </summary>
@@ -53,7 +50,7 @@ namespace SobekCM.Library.Citation.Elements
         /// <param name="Translator"> Language support object which handles simple translational duties </param>
         /// <param name="Base_URL"> Base URL for the current request </param>
         /// <remarks> This element appends a popup form to the popup_form_builder</remarks>
-        public override void Render_Template_HTML(TextWriter Output, SobekCM_Item Bib, string Skin_Code, bool IsMozilla, StringBuilder PopupFormBuilder, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL )
+        public override void Render_Template_HTML(TextWriter Output, SobekCM_Item Bib, string Skin_Code, bool IsMozilla, StringBuilder PopupFormBuilder, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL)
         {
             string onChange = "javascript:__doPostBack('newpagebutton1','')";
 
@@ -81,7 +78,7 @@ namespace SobekCM.Library.Citation.Elements
                 }
             }
 
-             // Determine the material type
+            // Determine the material type
             string instance_value = "Select Material Type";
             bool initial_value = true;
             string thisType = Bib.Bib_Info.SobekCM_Type_String;
@@ -157,9 +154,9 @@ namespace SobekCM.Library.Citation.Elements
                 }
             }
 
-			// Correction for aerials
-	        if (instance_value == "Aerial Photography")
-		        instance_value = "Aerial";
+            // Correction for aerials
+            if (instance_value == "Aerial Photography")
+                instance_value = "Aerial";
 
             bool found_option = false;
             foreach (string thisOption in items)
@@ -187,7 +184,7 @@ namespace SobekCM.Library.Citation.Elements
             bool indexPresent = false;
             bool conferencePublication = false;
             string targetAudience1 = String.Empty;
-			string frequency1 = String.Empty;
+            string frequency1 = String.Empty;
             string frequency2 = String.Empty;
             string regularity1 = String.Empty;
             string regularity2 = String.Empty;
@@ -205,7 +202,7 @@ namespace SobekCM.Library.Citation.Elements
             string scale = String.Empty;
             string place_code = String.Empty;
             string language_code = String.Empty;
-			string computerfileform = String.Empty;
+            string computerfileform = String.Empty;
 
             // Determine which form will be used and set several values
             Type_Format_Type_Enum formType = Type_Format_Type_Enum.None;
@@ -246,12 +243,12 @@ namespace SobekCM.Library.Citation.Elements
                     windowheight = 430;
                     break;
 
-				case "DATASET":
-					formType = Type_Format_Type_Enum.Computer_Files;
-					class_name = "typeformat_computer_popup_div";
-					form_title = "Edit Computer File Details";
-					windowheight = 430;
-					break;
+                case "DATASET":
+                    formType = Type_Format_Type_Enum.Computer_Files;
+                    class_name = "typeformat_computer_popup_div";
+                    form_title = "Edit Computer File Details";
+                    windowheight = 430;
+                    break;
 
             }
 
@@ -328,8 +325,8 @@ namespace SobekCM.Library.Citation.Elements
                                                       "speech"
                                                   };
 
-			// Get list of literary forms
-			List<string> computer_file_form_list = new List<string>(12)
+            // Get list of literary forms
+            List<string> computer_file_form_list = new List<string>(12)
                                                   {
                                                       "numeric data",
                                                       "computer program",
@@ -342,7 +339,7 @@ namespace SobekCM.Library.Citation.Elements
                                                       "interactive multimedia",
                                                       "online system or service",
                                                       "combination",
-													  "other computer file"
+                                                      "other computer file"
                                                   };
 
             // Get list of biography type information
@@ -350,7 +347,7 @@ namespace SobekCM.Library.Citation.Elements
                                               {"autobiography", "individual biography", "collective biography"};
 
             // Get list of map subtypes
-            List<string> map_subtypes = new List<string>(5) {"atlas", "globe", "map serial", "map series", "single map"};
+            List<string> map_subtypes = new List<string>(5) { "atlas", "globe", "map serial", "map series", "single map" };
 
             // Get the list of visual materials subtypes
             List<string> visual_subtypes = new List<string>(17)
@@ -529,11 +526,11 @@ namespace SobekCM.Library.Citation.Elements
                                 subtype = genre_term_lower;
                         }
 
-						if (formType == Type_Format_Type_Enum.Computer_Files)
-						{
-							if (computer_file_form_list.Contains(genre_term_lower))
-								computerfileform = genre_term_lower;
-						}
+                        if (formType == Type_Format_Type_Enum.Computer_Files)
+                        {
+                            if (computer_file_form_list.Contains(genre_term_lower))
+                                computerfileform = genre_term_lower;
+                        }
 
                         if (nature_contents_list.Contains(genre_term_lower))
                         {
@@ -584,7 +581,7 @@ namespace SobekCM.Library.Citation.Elements
                 // Step through each cartographic
                 string scale_034 = String.Empty;
                 string scale_255 = String.Empty;
-                if ( Bib.Bib_Info.Subjects_Count > 0 )
+                if (Bib.Bib_Info.Subjects_Count > 0)
                 {
                     foreach (Subject_Info thisSubject in Bib.Bib_Info.Subjects)
                     {
@@ -652,10 +649,10 @@ namespace SobekCM.Library.Citation.Elements
 
             // Add the popup form
             PopupFormBuilder.AppendLine("<!-- Type Format Form -->");
-			PopupFormBuilder.AppendLine("<div class=\"" + class_name + " sbkMetadata_PopupDiv\" id=\"form_typeformat\" style=\"display:none;\">");
-			PopupFormBuilder.AppendLine("  <div class=\"sbkMetadata_PopupTitle\"><table style=\"width:100%\"><tr><td style=\"text-align:left\">" + form_title + "</td><td style=\"text-align:right\"><a href=\"" + Help_URL(Skin_Code, Base_URL) + "\" alt=\"HELP\" target=\"_" + html_element_name.ToUpper() + "\" >?</a> &nbsp; <a href=\"#template\" alt=\"CLOSE\" onclick=\"close_typeformat_form()\">X</a> &nbsp; </td></tr></table></div>");
+            PopupFormBuilder.AppendLine("<div class=\"" + class_name + " sbkMetadata_PopupDiv\" id=\"form_typeformat\" style=\"display:none;\">");
+            PopupFormBuilder.AppendLine("  <div class=\"sbkMetadata_PopupTitle\"><table style=\"width:100%\"><tr><td style=\"text-align:left\">" + form_title + "</td><td style=\"text-align:right\"><a href=\"" + Help_URL(Skin_Code, Base_URL) + "\" alt=\"HELP\" target=\"_" + html_element_name.ToUpper() + "\" >?</a> &nbsp; <a href=\"#template\" alt=\"CLOSE\" onclick=\"close_typeformat_form()\">X</a> &nbsp; </td></tr></table></div>");
             PopupFormBuilder.AppendLine("  <br />");
-			PopupFormBuilder.AppendLine("  <table class=\"sbkMetadata_PopupTable\">");
+            PopupFormBuilder.AppendLine("  <table class=\"sbkMetadata_PopupTable\">");
 
             // Add the all materials title
             PopupFormBuilder.AppendLine("    <tr><td colspan=\"3\" class=\"SobekEditItemSectionTitle_first\" >All Materials</td></tr>");
@@ -667,25 +664,25 @@ namespace SobekCM.Library.Citation.Elements
 
             // Add the date range info
             PopupFormBuilder.Append("    <tr><td> &nbsp; &nbsp; Year Range:</td><td colspan=\"2\">");
-			PopupFormBuilder.Append("<span class=\"metadata_sublabel2\">Start Year:</span><input class=\"formtype_small_input sbk_Focusable\" name=\"form_typeformat_datestart\" id=\"form_typeformat_datestart\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(Bib.Bib_Info.Origin_Info.MARC_DateIssued_Start) + "\" />");
-			PopupFormBuilder.Append("<span class=\"metadata_sublabel\">End Year:</span><input class=\"formtype_small_input sbk_Focusable\" name=\"form_typeformat_dateend\" id=\"form_typeformat_dateend\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(Bib.Bib_Info.Origin_Info.MARC_DateIssued_End) + "\" />");
+            PopupFormBuilder.Append("<span class=\"metadata_sublabel2\">Start Year:</span><input class=\"formtype_small_input sbk_Focusable\" name=\"form_typeformat_datestart\" id=\"form_typeformat_datestart\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(Bib.Bib_Info.Origin_Info.MARC_DateIssued_Start) + "\" />");
+            PopupFormBuilder.Append("<span class=\"metadata_sublabel\">End Year:</span><input class=\"formtype_small_input sbk_Focusable\" name=\"form_typeformat_dateend\" id=\"form_typeformat_dateend\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(Bib.Bib_Info.Origin_Info.MARC_DateIssued_End) + "\" />");
             PopupFormBuilder.AppendLine("</td></tr>");
 
             // Add the place code info
             PopupFormBuilder.Append("    <tr><td> &nbsp; &nbsp; Place Code:</td><td colspan=\"2\">");
-			PopupFormBuilder.Append("<input class=\"formtype_small_input sbk_Focusable\" name=\"form_typeformat_placecode\" id=\"form_typeformat_placecode\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(place_code) + "\" />");
+            PopupFormBuilder.Append("<input class=\"formtype_small_input sbk_Focusable\" name=\"form_typeformat_placecode\" id=\"form_typeformat_placecode\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(place_code) + "\" />");
             PopupFormBuilder.AppendLine("</td></tr>");
 
             // Add the language code info
             PopupFormBuilder.Append("    <tr><td> &nbsp; &nbsp; Language Code:</td><td colspan=\"2\">");
-			PopupFormBuilder.Append("<input class=\"formtype_small_input sbk_Focusable\" name=\"form_typeformat_langcode\" id=\"form_typeformat_langcode\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(language_code) + "\" />");
+            PopupFormBuilder.Append("<input class=\"formtype_small_input sbk_Focusable\" name=\"form_typeformat_langcode\" id=\"form_typeformat_langcode\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(language_code) + "\" />");
             PopupFormBuilder.AppendLine("</td></tr>");
 
             #endregion
 
             #region Render the 'Book Details' section if this is a book
 
-            if (formType ==  Type_Format_Type_Enum.Book)
+            if (formType == Type_Format_Type_Enum.Book)
             {
                 // Add the book details title
                 PopupFormBuilder.AppendLine("    <tr><td colspan=\"3\" class=\"SobekEditItemSectionTitle\" >Book Details</td></tr>");
@@ -698,9 +695,9 @@ namespace SobekCM.Library.Citation.Elements
                                               : "<option value=\"\"></option>");
                 foreach (string thisAudience in audiences_list)
                 {
-                    if ( targetAudience1 == thisAudience )
+                    if (targetAudience1 == thisAudience)
                     {
-                        PopupFormBuilder.Append("<option value=\"" + thisAudience + "\" selected=\"selected\">" + thisAudience +"</option>");
+                        PopupFormBuilder.Append("<option value=\"" + thisAudience + "\" selected=\"selected\">" + thisAudience + "</option>");
                     }
                     else
                     {
@@ -783,7 +780,7 @@ namespace SobekCM.Library.Citation.Elements
                 }
                 PopupFormBuilder.Append("</select>");
 
-              
+
                 PopupFormBuilder.AppendLine("</td></tr>");
 
                 // Add the government publication 
@@ -858,7 +855,7 @@ namespace SobekCM.Library.Citation.Elements
                     }
                 }
                 PopupFormBuilder.Append("</select>");
-                PopupFormBuilder.AppendLine("</td></tr>");                
+                PopupFormBuilder.AppendLine("</td></tr>");
 
                 // Add the bibliography info
                 PopupFormBuilder.Append("    <tr><td> &nbsp; &nbsp; Biography:</td><td colspan=\"2\">");
@@ -930,7 +927,7 @@ namespace SobekCM.Library.Citation.Elements
                 PopupFormBuilder.Append("</select>");
                 PopupFormBuilder.AppendLine("</td></tr>");
 
-                
+
                 // Add the government publication 
                 PopupFormBuilder.Append("    <tr><td> &nbsp; &nbsp; Government:</td><td colspan=\"2\">");
                 PopupFormBuilder.Append("<select class=\"formtype_large_select\" name=\"form_typeformat_govt\" id=\"form_typeformat_govt\" >");
@@ -964,8 +961,8 @@ namespace SobekCM.Library.Citation.Elements
 
                 // Add the projection code and scale
                 PopupFormBuilder.Append("    <tr><td> &nbsp; &nbsp; Projection Code:</td><td>");
-				PopupFormBuilder.Append("<input class=\"formtype_small_input sbk_Focusable\" name=\"form_typeformat_projcode\" id=\"form_typeformat_projcode\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(projection) + "\" /></td>");
-				PopupFormBuilder.AppendLine("<td width=\"250px\">Scale: &nbsp; &nbsp; <input class=\"formtype_small_input sbk_Focusable\" name=\"form_typeformat_scale\" id=\"form_typeformat_scale\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(scale) + "\" /></td></tr>");
+                PopupFormBuilder.Append("<input class=\"formtype_small_input sbk_Focusable\" name=\"form_typeformat_projcode\" id=\"form_typeformat_projcode\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(projection) + "\" /></td>");
+                PopupFormBuilder.AppendLine("<td width=\"250px\">Scale: &nbsp; &nbsp; <input class=\"formtype_small_input sbk_Focusable\" name=\"form_typeformat_scale\" id=\"form_typeformat_scale\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(scale) + "\" /></td></tr>");
 
                 // Add the subtype
                 PopupFormBuilder.Append("    <tr><td> &nbsp; &nbsp; Sub-type:</td><td colspan=\"2\">");
@@ -1227,86 +1224,86 @@ namespace SobekCM.Library.Citation.Elements
 
             #endregion
 
-			#region Render the 'Computer Files' section if necessary 
+            #region Render the 'Computer Files' section if necessary 
 
-			if (formType == Type_Format_Type_Enum.Computer_Files)
-			{
-				// Add the book details title
-				PopupFormBuilder.AppendLine("    <tr><td colspan=\"3\" class=\"SobekEditItemSectionTitle\" >Computer Files Details</td></tr>");
+            if (formType == Type_Format_Type_Enum.Computer_Files)
+            {
+                // Add the book details title
+                PopupFormBuilder.AppendLine("    <tr><td colspan=\"3\" class=\"SobekEditItemSectionTitle\" >Computer Files Details</td></tr>");
 
-				// Add the target audience
-				PopupFormBuilder.Append("    <tr><td> &nbsp; &nbsp; Target Audience:</td><td colspan=\"2\">");
-				PopupFormBuilder.Append("<select class=\"formtype_small_select\" name=\"form_typeformat_audience\" id=\"form_typeformat_audience\" >");
-				PopupFormBuilder.Append(targetAudience1.Length == 0
-											  ? "<option value=\"\" selected=\"selected\" ></option>"
-											  : "<option value=\"\"></option>");
-				foreach (string thisAudience in audiences_list)
-				{
-					if (targetAudience1 == thisAudience)
-					{
-						PopupFormBuilder.Append("<option value=\"" + thisAudience + "\" selected=\"selected\">" + thisAudience + "</option>");
-					}
-					else
-					{
-						PopupFormBuilder.Append("<option value=\"" + thisAudience + "\">" + thisAudience + "</option>");
-					}
-				}
-				PopupFormBuilder.Append("</select>");
-				PopupFormBuilder.AppendLine("</td></tr>");
+                // Add the target audience
+                PopupFormBuilder.Append("    <tr><td> &nbsp; &nbsp; Target Audience:</td><td colspan=\"2\">");
+                PopupFormBuilder.Append("<select class=\"formtype_small_select\" name=\"form_typeformat_audience\" id=\"form_typeformat_audience\" >");
+                PopupFormBuilder.Append(targetAudience1.Length == 0
+                                              ? "<option value=\"\" selected=\"selected\" ></option>"
+                                              : "<option value=\"\"></option>");
+                foreach (string thisAudience in audiences_list)
+                {
+                    if (targetAudience1 == thisAudience)
+                    {
+                        PopupFormBuilder.Append("<option value=\"" + thisAudience + "\" selected=\"selected\">" + thisAudience + "</option>");
+                    }
+                    else
+                    {
+                        PopupFormBuilder.Append("<option value=\"" + thisAudience + "\">" + thisAudience + "</option>");
+                    }
+                }
+                PopupFormBuilder.Append("</select>");
+                PopupFormBuilder.AppendLine("</td></tr>");
 
-				// Add the form
-				PopupFormBuilder.Append("    <tr><td> &nbsp; &nbsp; File Type:</td><td colspan=\"2\">");
-				PopupFormBuilder.Append("<select class=\"formtype_medium_select\" name=\"form_typeformat_subtype\" id=\"form_typeformat_subtype\" >");
-				PopupFormBuilder.Append(subtype.Length == 0
-											  ? "<option value=\"\" selected=\"selected\" ></option>"
-											  : "<option value=\"\"></option>");
-				foreach (string thisString in computer_file_form_list)
-				{
-					if (computerfileform == thisString)
-					{
-						PopupFormBuilder.Append("<option value=\"" + thisString + "\" selected=\"selected\">" + thisString + "</option>");
-					}
-					else
-					{
-						PopupFormBuilder.Append("<option value=\"" + thisString + "\">" + thisString + "</option>");
-					}
-				}
-				PopupFormBuilder.Append("</select>");
-				PopupFormBuilder.AppendLine("</td></tr>");
+                // Add the form
+                PopupFormBuilder.Append("    <tr><td> &nbsp; &nbsp; File Type:</td><td colspan=\"2\">");
+                PopupFormBuilder.Append("<select class=\"formtype_medium_select\" name=\"form_typeformat_subtype\" id=\"form_typeformat_subtype\" >");
+                PopupFormBuilder.Append(subtype.Length == 0
+                                              ? "<option value=\"\" selected=\"selected\" ></option>"
+                                              : "<option value=\"\"></option>");
+                foreach (string thisString in computer_file_form_list)
+                {
+                    if (computerfileform == thisString)
+                    {
+                        PopupFormBuilder.Append("<option value=\"" + thisString + "\" selected=\"selected\">" + thisString + "</option>");
+                    }
+                    else
+                    {
+                        PopupFormBuilder.Append("<option value=\"" + thisString + "\">" + thisString + "</option>");
+                    }
+                }
+                PopupFormBuilder.Append("</select>");
+                PopupFormBuilder.AppendLine("</td></tr>");
 
-	
-				// Add the government publication 
-				PopupFormBuilder.Append("    <tr><td> &nbsp; &nbsp; Government:</td><td colspan=\"2\">");
-				PopupFormBuilder.Append("<select class=\"formtype_large_select\" name=\"form_typeformat_govt\" id=\"form_typeformat_govt\" >");
-				PopupFormBuilder.Append(govt.Length == 0
-											  ? "<option value=\"\" selected=\"selected\" ></option>"
-											  : "<option value=\"\"></option>");
-				foreach (string thisString in government_list)
-				{
+
+                // Add the government publication 
+                PopupFormBuilder.Append("    <tr><td> &nbsp; &nbsp; Government:</td><td colspan=\"2\">");
+                PopupFormBuilder.Append("<select class=\"formtype_large_select\" name=\"form_typeformat_govt\" id=\"form_typeformat_govt\" >");
+                PopupFormBuilder.Append(govt.Length == 0
+                                              ? "<option value=\"\" selected=\"selected\" ></option>"
+                                              : "<option value=\"\"></option>");
+                foreach (string thisString in government_list)
+                {
                     if (govt.Replace("terriorial", "territorial") == thisString)
-					{
-						PopupFormBuilder.Append("<option value=\"" + thisString + "\" selected=\"selected\">" + thisString + "</option>");
-					}
-					else
-					{
-						PopupFormBuilder.Append("<option value=\"" + thisString + "\">" + thisString + "</option>");
-					}
-				}
-				PopupFormBuilder.Append("</select>");
+                    {
+                        PopupFormBuilder.Append("<option value=\"" + thisString + "\" selected=\"selected\">" + thisString + "</option>");
+                    }
+                    else
+                    {
+                        PopupFormBuilder.Append("<option value=\"" + thisString + "\">" + thisString + "</option>");
+                    }
+                }
+                PopupFormBuilder.Append("</select>");
 
-				PopupFormBuilder.AppendLine("</td></tr>");
-			}
+                PopupFormBuilder.AppendLine("</td></tr>");
+            }
 
-			#endregion
+            #endregion
 
-			#region Finish the pop-up form
+            #region Finish the pop-up form
 
-			PopupFormBuilder.AppendLine("    <tr style=\"height:35px; text-align: center; vertical-align: bottom;\">");
-			PopupFormBuilder.AppendLine("      <td colspan=\"3\"><button title=\"Close\" class=\"sbkMetadata_RoundButton\" onclick=\"return close_typeformat_form();\">CLOSE</button></td>");
-			PopupFormBuilder.AppendLine("    </tr>");
-			PopupFormBuilder.AppendLine("  </table>");
-			PopupFormBuilder.AppendLine("</div>");
-			PopupFormBuilder.AppendLine();
+            PopupFormBuilder.AppendLine("    <tr style=\"height:35px; text-align: center; vertical-align: bottom;\">");
+            PopupFormBuilder.AppendLine("      <td colspan=\"3\"><button title=\"Close\" class=\"sbkMetadata_RoundButton\" onclick=\"return close_typeformat_form();\">CLOSE</button></td>");
+            PopupFormBuilder.AppendLine("    </tr>");
+            PopupFormBuilder.AppendLine("  </table>");
+            PopupFormBuilder.AppendLine("</div>");
+            PopupFormBuilder.AppendLine();
 
             #endregion
 
@@ -1352,7 +1349,7 @@ namespace SobekCM.Library.Citation.Elements
             }
 
             // If this is a PROJECT, clear teh default type
-            if (Bib.Bib_Info.SobekCM_Type == TypeOfResource_SobekCM_Enum.Project )
+            if (Bib.Bib_Info.SobekCM_Type == TypeOfResource_SobekCM_Enum.Project)
             {
                 if (Bib.Bib_Info.Notes_Count > 0)
                 {
@@ -1385,7 +1382,7 @@ namespace SobekCM.Library.Citation.Elements
             string langcode = form["form_typeformat_langcode"].TrimFirst();
 
             // Apply the type
-            if (Bib.Bib_Info.SobekCM_Type == TypeOfResource_SobekCM_Enum.Project )
+            if (Bib.Bib_Info.SobekCM_Type == TypeOfResource_SobekCM_Enum.Project)
             {
                 if (type.Length > 0)
                 {
@@ -1418,7 +1415,7 @@ namespace SobekCM.Library.Citation.Elements
                 }
                 if (!found)
                 {
-                    Bib.Bib_Info.Insert_Target_Audience(0, audience, "marctarget" );
+                    Bib.Bib_Info.Insert_Target_Audience(0, audience, "marctarget");
                 }
             }
 
@@ -1466,15 +1463,15 @@ namespace SobekCM.Library.Citation.Elements
             if (temp_object != null)
             {
                 string literary1 = temp_object.ToString();
-                if  (literary1.Length > 0)
+                if (literary1.Length > 0)
                     Bib.Bib_Info.Add_Genre(literary1, "marcgt");
             }
-            
+
             temp_object = form["form_typeformat_literary2"];
             if (temp_object != null)
             {
                 string literary2 = temp_object.ToString();
-                if  (literary2.Length > 0)
+                if (literary2.Length > 0)
                     Bib.Bib_Info.Add_Genre(literary2, "marcgt");
             }
 
@@ -1490,8 +1487,8 @@ namespace SobekCM.Library.Citation.Elements
             if (temp_object != null)
             {
                 string frequency1 = temp_object.ToString();
-                if  (frequency1.Length > 0)
-                    Bib.Bib_Info.Origin_Info.Add_Frequency( frequency1, "marcfrequency");
+                if (frequency1.Length > 0)
+                    Bib.Bib_Info.Origin_Info.Add_Frequency(frequency1, "marcfrequency");
             }
 
             temp_object = form["form_typeformat_frequency2"];
@@ -1499,7 +1496,7 @@ namespace SobekCM.Library.Citation.Elements
             {
                 string frequency2 = temp_object.ToString();
                 if (frequency2.Length > 0)
-                    Bib.Bib_Info.Origin_Info.Add_Frequency( frequency2, "marcfrequency");
+                    Bib.Bib_Info.Origin_Info.Add_Frequency(frequency2, "marcfrequency");
             }
 
             temp_object = form["form_typeformat_regularity1"];
@@ -1507,15 +1504,15 @@ namespace SobekCM.Library.Citation.Elements
             {
                 string regularity1 = temp_object.ToString();
                 if (regularity1.Length > 0)
-                    Bib.Bib_Info.Origin_Info.Add_Frequency( regularity1, "marcfrequency");
+                    Bib.Bib_Info.Origin_Info.Add_Frequency(regularity1, "marcfrequency");
             }
 
             temp_object = form["form_typeformat_regularity2"];
             if (temp_object != null)
             {
                 string regularity2 = temp_object.ToString();
-                if  (regularity2.Length > 0)
-                    Bib.Bib_Info.Origin_Info.Add_Frequency( regularity2, "marcfrequency");
+                if (regularity2.Length > 0)
+                    Bib.Bib_Info.Origin_Info.Add_Frequency(regularity2, "marcfrequency");
             }
 
             temp_object = form["form_typeformat_subtype"];
@@ -1547,7 +1544,7 @@ namespace SobekCM.Library.Citation.Elements
 
         #region Method to create the link text
 
-        private string show_material_type_details( SobekCM_Item Bib )
+        private string show_material_type_details(SobekCM_Item Bib)
         {
             string place_code = String.Empty;
             string language_code = String.Empty;
@@ -1573,7 +1570,7 @@ namespace SobekCM.Library.Citation.Elements
                     }
                 }
             }
-            
+
             StringBuilder builder = new StringBuilder();
             if (Bib.Bib_Info.Original_Description.Extent.Length > 0)
                 builder.Append(Bib.Bib_Info.Original_Description.Extent + " -- ");
@@ -1638,7 +1635,7 @@ namespace SobekCM.Library.Citation.Elements
         /// <summary> Reads the inner data from the CompleteTemplate XML format </summary>
         /// <param name="XMLReader"> Current template xml configuration reader </param>
         /// <remarks> This reads the possible values for the type combo box from a <i>options</i> subelement and the default value from a <i>value</i> subelement </remarks>
-        protected override void Inner_Read_Data( XmlReader XMLReader )
+        protected override void Inner_Read_Data(XmlReader XMLReader)
         {
             DefaultValues.Clear();
             while (XMLReader.Read())
@@ -1691,8 +1688,8 @@ namespace SobekCM.Library.Citation.Elements
             /// <summary> Continuing resource type material ( i.e. Newspapers, Serial, etc..) </summary>
             Continuing_Resource,
 
-			/// <summary> Computer files, in particular software or datasets </summary>
-			Computer_Files,
+            /// <summary> Computer files, in particular software or datasets </summary>
+            Computer_Files,
 
             /// <summary> Cartographic type material ( maps, globes, etc.. ) </summary>
             Map

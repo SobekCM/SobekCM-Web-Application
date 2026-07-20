@@ -1,11 +1,11 @@
 ﻿#region Using directives
 
+using SobekCM.Resource_Object.Behaviors;
+using SobekCM.Resource_Object.Divisions;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
-using SobekCM.Resource_Object.Behaviors;
-using SobekCM.Resource_Object.Divisions;
 
 #endregion
 
@@ -25,19 +25,19 @@ namespace SobekCM.Resource_Object
         private List<Related_Titles> related_titles_collection;
 
         private string assocFilePath;
-        private string bibid;      
+        private string bibid;
         private int divCount;
         private List<string> download_eligible_files;
 
-        
+
         private string fileLocation;
         private int groupID;
         private string guid;
-        private string imageRoot;        
+        private string imageRoot;
 
         private int itemID;
         private int pageCount;
-        private List<Page_TreeNode> pages_by_seq;       
+        private List<Page_TreeNode> pages_by_seq;
         private string service_url;
         private bool show_validation_errors;
         private Nullable<int> siblings;
@@ -46,9 +46,9 @@ namespace SobekCM.Resource_Object
 
         /// <summary> Flag indicates additional work is needed </summary>
         public bool Additional_Work_Needed { get; set; }
-        
+
         /// <summary> Constructor for a new instance of the Behaviors_Info class </summary>
-        public Web_Info( Behaviors_Info Behaviors )
+        public Web_Info(Behaviors_Info Behaviors)
         {
             show_validation_errors = false;
             itemID = -1;
@@ -86,10 +86,10 @@ namespace SobekCM.Resource_Object
                 {
                     if (imageRoot.IndexOf(assocFilePathUrLstyle) >= 0)
                         return imageRoot;
-                    
+
                     return imageRoot + assocFilePathUrLstyle;
                 }
-                
+
                 return assocFilePathUrLstyle;
             }
         }
@@ -97,7 +97,8 @@ namespace SobekCM.Resource_Object
         /// <summary> Gets the collection of pages by sequence </summary>
         public ReadOnlyCollection<Page_TreeNode> Pages_By_Sequence
         {
-            get {
+            get
+            {
                 return pages_by_seq == null ? new ReadOnlyCollection<Page_TreeNode>(new List<Page_TreeNode>()) : new ReadOnlyCollection<Page_TreeNode>(pages_by_seq);
             }
         }
@@ -105,7 +106,7 @@ namespace SobekCM.Resource_Object
         /// <summary> Clears the complete list of pages by sequence </summary>
         public void Clear_Pages_By_Sequence()
         {
-            if ( pages_by_seq != null )
+            if (pages_by_seq != null)
                 pages_by_seq.Clear();
         }
 
@@ -126,7 +127,8 @@ namespace SobekCM.Resource_Object
         /// <summary> Gets the number of related titles from the SobekCM database </summary>
         public int Related_Titles_Count
         {
-            get {
+            get
+            {
                 return related_titles_collection == null ? 0 : related_titles_collection.Count;
             }
         }

@@ -1,57 +1,54 @@
 ﻿#region Using directives
 
-using System;
-using System.Collections.Generic;
-using System.Data;
-using System.IO;
-using System.Linq;
 using Microsoft.AspNetCore.Http;
 using SobekCM.Core.Navigation;
 using SobekCM.Tools;
+using System;
+using System.IO;
 
 #endregion
 
 namespace SobekCM.Library.MainWriters
 {
-	/// <summary> Main writer provides datatables as JSON to drive anything which requires
-	/// server-side paging or sorting of a large amount of data. </summary>
-	/// <remarks> This class extends the abstract class <see cref="abstractMainWriter"/>. </remarks>
-	public class DataProvider_MainWriter : abstractMainWriter 
-	{
+    /// <summary> Main writer provides datatables as JSON to drive anything which requires
+    /// server-side paging or sorting of a large amount of data. </summary>
+    /// <remarks> This class extends the abstract class <see cref="abstractMainWriter"/>. </remarks>
+    public class DataProvider_MainWriter : abstractMainWriter
+    {
         /// <summary> Constructor for a new instance of the DataProvider_MainWriter class </summary>
         /// <param name="Context"> Context for this individual HTTP request </param>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
         public DataProvider_MainWriter(HttpContext Context, RequestCache RequestSpecificValues) : base(Context, RequestSpecificValues)
-		{
-			// All work done in base class
-		}
+        {
+            // All work done in base class
+        }
 
-		/// <summary> Gets the enumeration of the type of main writer </summary>
-		/// <value> This property always returns the enumerational value <see cref="Writer_Type_Enum.DataSet"/>. </value>
-		public override Writer_Type_Enum Writer_Type { get { return Writer_Type_Enum.DataSet; } }
+        /// <summary> Gets the enumeration of the type of main writer </summary>
+        /// <value> This property always returns the enumerational value <see cref="Writer_Type_Enum.DataSet"/>. </value>
+        public override Writer_Type_Enum Writer_Type { get { return Writer_Type_Enum.DataSet; } }
 
-		/// <summary> Perform all the work of adding text directly to the response stream back to the web user </summary>
-		/// <param name="Output"> Stream to which to write the text for this main writer </param>
-		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-		public override void Write_Html(TextWriter Output, Custom_Tracer Tracer)
-		{
-			switch (RequestSpecificValues.Current_Mode.Mode)
-			{
-				case Display_Mode_Enum.Item_Display:
-					if (RequestSpecificValues.Current_Mode.ViewerCode.IndexOf("dsview", StringComparison.OrdinalIgnoreCase) == 0)
-					{
-						provide_dataset_items_view_data(Output);
-					}
-					break;
-					
-				default:
-					Output.Write("DataSet Writer - Unknown Mode");
-					break;
-			}
-		}
+        /// <summary> Perform all the work of adding text directly to the response stream back to the web user </summary>
+        /// <param name="Output"> Stream to which to write the text for this main writer </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        public override void Write_Html(TextWriter Output, Custom_Tracer Tracer)
+        {
+            switch (RequestSpecificValues.Current_Mode.Mode)
+            {
+                case Display_Mode_Enum.Item_Display:
+                    if (RequestSpecificValues.Current_Mode.ViewerCode.IndexOf("dsview", StringComparison.OrdinalIgnoreCase) == 0)
+                    {
+                        provide_dataset_items_view_data(Output);
+                    }
+                    break;
 
-		private void provide_dataset_items_view_data(TextWriter Output)
-		{
+                default:
+                    Output.Write("DataSet Writer - Unknown Mode");
+                    break;
+            }
+        }
+
+        private void provide_dataset_items_view_data(TextWriter Output)
+        {
             //string error_message = String.Empty;
             //string key = RequestSpecificValues.Current_Item.BibID + "_" + RequestSpecificValues.Current_Item.VID + "_Dataset";
             //DataSet itemDataset = HttpContext.Current.Cache[key] as DataSet;
@@ -248,6 +245,6 @@ namespace SobekCM.Library.MainWriters
             //Output.WriteLine("}");
 
 
-		}
-	}
+        }
+    }
 }

@@ -1,60 +1,53 @@
 ﻿#region Using directives
 
+using SobekCM.Core.Navigation;
+using SobekCM.Engine_Library.Configuration;
+using SobekCM.Library.AdminViewer;
+using SobekCM.Library.MainWriters;
+using SobekCM.Library.MySobekViewer;
+using SobekCM.Tools;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using SobekCM.Core.MemoryMgmt;
-using SobekCM.Core.Navigation;
-using SobekCM.Core.UI_Configuration;
-using SobekCM.Core.UI_Configuration.StaticResources;
-using SobekCM.Engine_Library.Configuration;
-using SobekCM.Engine_Library.Database;
-using SobekCM.Library.AdminViewer;
-using SobekCM.Library.MainWriters;
-using SobekCM.Library.MySobekViewer;
-using SobekCM.Library.UI;
-using SobekCM.Resource_Object;
-using SobekCM.Resource_Object.Bib_Info;
-using SobekCM.Tools;
 
 #endregion
 
 namespace SobekCM.Library.HTML
 {
-	/// <summary> Adminl subwriter is used for administrative tasks, either collection admin, portal admin, or system admin </summary>
-	/// <remarks> This class extends the <see cref="abstractHtmlSubwriter"/> abstract class. <br /><br />
-	/// During a valid html request, the following steps occur:
-	/// <ul>
-	/// <li>Application state is built/verified by the Application_State_Builder </li>
-	/// <li>Request is analyzed by the QueryString_Analyzer and output as a <see cref="Navigation_Object"/>  </li>
-	/// <li>Main writer is created for rendering the output, in his case the <see cref="Html_MainWriter"/> </li>
-	/// <li>The HTML writer will create this necessary subwriter since this action requires administrative rights. </li>
-	/// <li>This class will create a admin subwriter (extending <see cref="AdminViewer.abstract_AdminViewer"/> ) for the specified task.The admin subwriter creates an instance of this viewer to view and edit existing item aggregationPermissions in this digital library</li>
-	/// </ul></remarks>
-    public class Admin_HtmlSubwriter: abstractHtmlSubwriter
+    /// <summary> Adminl subwriter is used for administrative tasks, either collection admin, portal admin, or system admin </summary>
+    /// <remarks> This class extends the <see cref="abstractHtmlSubwriter"/> abstract class. <br /><br />
+    /// During a valid html request, the following steps occur:
+    /// <ul>
+    /// <li>Application state is built/verified by the Application_State_Builder </li>
+    /// <li>Request is analyzed by the QueryString_Analyzer and output as a <see cref="Navigation_Object"/>  </li>
+    /// <li>Main writer is created for rendering the output, in his case the <see cref="Html_MainWriter"/> </li>
+    /// <li>The HTML writer will create this necessary subwriter since this action requires administrative rights. </li>
+    /// <li>This class will create a admin subwriter (extending <see cref="AdminViewer.abstract_AdminViewer"/> ) for the specified task.The admin subwriter creates an instance of this viewer to view and edit existing item aggregationPermissions in this digital library</li>
+    /// </ul></remarks>
+    public class Admin_HtmlSubwriter : abstractHtmlSubwriter
     {
         private readonly iMySobek_Admin_Viewer adminViewer;
 
- 
+
         #region Constructor, which also creates the applicable MySobekViewer object
 
         /// <summary> Constructor for a new instance of the Admin_HtmlSubwriter class </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
-        public Admin_HtmlSubwriter( RequestCache RequestSpecificValues ) : base ( RequestSpecificValues )
+        public Admin_HtmlSubwriter(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
         {
 
             RequestSpecificValues.Tracer.Add_Trace("Admin_HtmlSubwriter.Constructor", "Saving values and geting RequestSpecificValues.Current_User object back from the session");
 
             // All Admin pages require a RequestSpecificValues.Current_User being logged on
             if (RequestSpecificValues.Current_User == null)
-			{
+            {
                 RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.My_Sobek;
                 RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Logon;
                 RequestSpecificValues.Current_Mode.My_Sobek_SubMode = String.Empty;
                 UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
-				return;
-			}
+                return;
+            }
 
             // If the user is not an admin, and admin was selected, reroute this
             if ((!RequestSpecificValues.Current_User.Is_System_Admin) && (!RequestSpecificValues.Current_User.Is_Portal_Admin) && (!RequestSpecificValues.Current_User.Is_User_Admin) && (RequestSpecificValues.Current_Mode.Admin_Type != Admin_Type_Enum.Aggregation_Single))
@@ -98,41 +91,41 @@ namespace SobekCM.Library.HTML
             }
         }
 
-		/// <summary> Returns a flag indicating whether the file upload specific holder in the itemNavForm form will be utilized 
-		/// for the current request, or if it can be hidden. </summary>
-		public override bool Upload_File_Possible
-		{
-			get
-			{
+        /// <summary> Returns a flag indicating whether the file upload specific holder in the itemNavForm form will be utilized 
+        /// for the current request, or if it can be hidden. </summary>
+        public override bool Upload_File_Possible
+        {
+            get
+            {
                 // If no user, always return false (should not really get here)
-				if ((RequestSpecificValues.Current_User == null) || ( !RequestSpecificValues.Current_User.LoggedOn ))
-					return false;
+                if ((RequestSpecificValues.Current_User == null) || (!RequestSpecificValues.Current_User.LoggedOn))
+                    return false;
 
                 // If no admin viewer was found, also return false
-			    if (adminViewer == null)
-			        return false;
+                if (adminViewer == null)
+                    return false;
 
                 // Return the value from the admin viewer
-			    return adminViewer.Upload_File_Possible;
-			}
-		}
+                return adminViewer.Upload_File_Possible;
+            }
+        }
 
-		/// <summary> Writes the html to the output stream within the main form, before the ASP.net placeholder for controls </summary>
-		/// <param name="Output">Stream to directly write to</param>
-		/// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
-		public override void Write_ItemNavForm_Opening(TextWriter Output, Custom_Tracer Tracer)
-		{
+        /// <summary> Writes the html to the output stream within the main form, before the ASP.net placeholder for controls </summary>
+        /// <param name="Output">Stream to directly write to</param>
+        /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
+        public override void Write_ItemNavForm_Opening(TextWriter Output, Custom_Tracer Tracer)
+        {
             Tracer.Add_Trace("Admin_HtmlSubwriter.Write_ItemNavForm_Opening", "Rendering the starting HTML for the admin HTML subwriter");
 
-			// Add any intro html text here
-			adminViewer.Write_ItemNavForm_Opening(Output, Tracer);
+            // Add any intro html text here
+            adminViewer.Write_ItemNavForm_Opening(Output, Tracer);
 
             Tracer.Add_Trace("Admin_HtmlSubwriter.Write_ItemNavForm_Opening", "Adding any form elements popup divs");
             if ((RequestSpecificValues.Current_Mode.Logon_Required) || (adminViewer.Contains_Popup_Forms))
             {
                 adminViewer.Add_Popup_HTML(Output, Tracer);
             }
-		}
+        }
 
         /// <summary> Writes the HTML generated by this my sobek html subwriter directly to the response stream </summary>
         /// <param name="Output"> Stream to which to write the HTML for this subwriter </param>
@@ -142,8 +135,8 @@ namespace SobekCM.Library.HTML
         {
             Tracer.Add_Trace("Admin_HtmlSubwriter.Write_HTML", "Rendering HTML");
 
-	       // if (CurrentMode.Admin_Type == Admin_Type_Enum.Wordmarks)
-		   //     return false;
+            // if (CurrentMode.Admin_Type == Admin_Type_Enum.Wordmarks)
+            //     return false;
 
             if ((!adminViewer.Contains_Popup_Forms) && (!RequestSpecificValues.Current_Mode.Logon_Required))
             {
@@ -156,14 +149,14 @@ namespace SobekCM.Library.HTML
                     }
 
                     // Add the RequestSpecificValues.Current_User-specific main menu
-                    MainMenus_Helper_HtmlSubWriter.Add_UserSpecific_Main_Menu(Output, RequestSpecificValues );
+                    MainMenus_Helper_HtmlSubWriter.Add_UserSpecific_Main_Menu(Output, RequestSpecificValues);
 
                     // Start the page container
                     Output.WriteLine("<div id=\"pagecontainer\">");
                     Output.WriteLine("<br />");
 
                     // Add the box with the title
-                    if (((RequestSpecificValues.Current_Mode.My_Sobek_Type != My_Sobek_Type_Enum.Folder_Management) || (RequestSpecificValues.Current_Mode.My_Sobek_SubMode != "submitted items")) && ( RequestSpecificValues.Current_Mode.Admin_Type != Admin_Type_Enum.WebContent_Single ))
+                    if (((RequestSpecificValues.Current_Mode.My_Sobek_Type != My_Sobek_Type_Enum.Folder_Management) || (RequestSpecificValues.Current_Mode.My_Sobek_SubMode != "submitted items")) && (RequestSpecificValues.Current_Mode.Admin_Type != Admin_Type_Enum.WebContent_Single))
                     {
                         // Add the title
                         Output.WriteLine("<div class=\"sbkAdm_TitleDiv sbkAdm_TitleDivBorder\">");
@@ -184,7 +177,7 @@ namespace SobekCM.Library.HTML
                         {
                             // Keep the current values
                             Admin_Type_Enum adminType = RequestSpecificValues.Current_Mode.Admin_Type;
-                            ushort page = RequestSpecificValues.Current_Mode.Page.HasValue ? RequestSpecificValues.Current_Mode.Page.Value : ((ushort) 1);
+                            ushort page = RequestSpecificValues.Current_Mode.Page.HasValue ? RequestSpecificValues.Current_Mode.Page.Value : ((ushort)1);
                             string browse_code = RequestSpecificValues.Current_Mode.Info_Browse_Mode;
                             //string aggregation = RequestSpecificValues.Current_Mode.Aggregation;
                             //string mySobekMode = RequestSpecificValues.Current_Mode.My_Sobek_SubMode;
@@ -201,7 +194,7 @@ namespace SobekCM.Library.HTML
                                 Output.WriteLine("<div class=\"sbkAdm_Breadcrumbs\">");
                                 Output.WriteLine("  <a href=\"" + home_url + "\">" + RequestSpecificValues.Current_Mode.Instance_Abbreviation + " Home</a> > ");
                                 Output.WriteLine("  System Administrative Tasks");
-                                Output.WriteLine("</div>"); 
+                                Output.WriteLine("</div>");
                             }
                             else
                             {
@@ -218,12 +211,12 @@ namespace SobekCM.Library.HTML
                                 Output.WriteLine("  <a href=\"" + home_url + "\">" + RequestSpecificValues.Current_Mode.Instance_Abbreviation + " Home</a> > ");
                                 Output.WriteLine("  <a href=\"" + menu_url + "\">System Administrative Tasks</a> > ");
                                 Output.WriteLine("  " + adminViewer.Web_Title);
-                                Output.WriteLine("</div>"); 
+                                Output.WriteLine("</div>");
                             }
 
                             RequestSpecificValues.Current_Mode.Page = page;
                             RequestSpecificValues.Current_Mode.Info_Browse_Mode = browse_code;
-                            
+
                         }
                     }
                 }
@@ -235,26 +228,26 @@ namespace SobekCM.Library.HTML
         }
 
 
-		/// <summary> Writes final HTML to the output stream after all the placeholders and just before the itemNavForm is closed.  </summary>
-		/// <param name="Output"> Stream to which to write the text for this main writer </param>
-		/// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
-		public override void Write_ItemNavForm_Closing(TextWriter Output, Custom_Tracer Tracer)
-		{
-			Tracer.Add_Trace("Admin_HtmlSubwriter.Write_ItemNavForm_Closing", "");
+        /// <summary> Writes final HTML to the output stream after all the placeholders and just before the itemNavForm is closed.  </summary>
+        /// <param name="Output"> Stream to which to write the text for this main writer </param>
+        /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
+        public override void Write_ItemNavForm_Closing(TextWriter Output, Custom_Tracer Tracer)
+        {
+            Tracer.Add_Trace("Admin_HtmlSubwriter.Write_ItemNavForm_Closing", "");
 
-			// Also, add any additional stuff here
-			adminViewer.Write_ItemNavForm_Closing(Output, Tracer);
-		}
+            // Also, add any additional stuff here
+            adminViewer.Write_ItemNavForm_Closing(Output, Tracer);
+        }
 
-		/// <summary> Add controls directly to the form in the main control area placeholder</summary>
-		/// <param name="MainPlaceHolder"> Main place holder ( &quot;mainPlaceHolder&quot; ) in the itemNavForm form, widely used throughout the application</param>
+        /// <summary> Add controls directly to the form in the main control area placeholder</summary>
+        /// <param name="MainPlaceHolder"> Main place holder ( &quot;mainPlaceHolder&quot; ) in the itemNavForm form, widely used throughout the application</param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         public void Add_Controls(TextWriter Output, Custom_Tracer Tracer)
         {
             Tracer.Add_Trace("Admin_HtmlSubwriter.Add_Controls", "Build admin viewer and add controls");
 
             // Add the banner now
-            if (((RequestSpecificValues.Current_Mode.Logon_Required) || (adminViewer.Contains_Popup_Forms)) && ( !(adminViewer is Edit_Item_Metadata_MySobekViewer)))
+            if (((RequestSpecificValues.Current_Mode.Logon_Required) || (adminViewer.Contains_Popup_Forms)) && (!(adminViewer is Edit_Item_Metadata_MySobekViewer)))
             {
                 if (!adminViewer.Viewer_Behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Suppress_Banner))
                 {
@@ -263,10 +256,10 @@ namespace SobekCM.Library.HTML
             }
 
             // Add any controls needed
-			adminViewer.Add_Controls(Output, Tracer);
-         }
+            adminViewer.Add_Controls(Output, Tracer);
+        }
 
- 
+
         /// <summary> Title for this web page </summary>
         public override string WebPage_Title
         {
@@ -342,20 +335,20 @@ namespace SobekCM.Library.HTML
             Output.WriteLine();
         }
 
-		/// <summary> Gets the CSS class of the container that the page is wrapped within </summary>
-		public override string Container_CssClass
-		{
-			get
-			{
-			    if (adminViewer != null)
-			    {
-			        string cssStyle = adminViewer.Container_CssClass;
-                    if ( !String.IsNullOrEmpty(cssStyle))
+        /// <summary> Gets the CSS class of the container that the page is wrapped within </summary>
+        public override string Container_CssClass
+        {
+            get
+            {
+                if (adminViewer != null)
+                {
+                    string cssStyle = adminViewer.Container_CssClass;
+                    if (!String.IsNullOrEmpty(cssStyle))
                         return cssStyle;
-			    }
-				
-				return base.Container_CssClass;
-			}
-		}
+                }
+
+                return base.Container_CssClass;
+            }
+        }
     }
 }

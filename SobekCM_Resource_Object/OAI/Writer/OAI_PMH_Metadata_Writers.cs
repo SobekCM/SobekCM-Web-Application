@@ -47,7 +47,7 @@ namespace SobekCM.Resource_Object.OAI.Writer
         /// <param name="Namespace"> Namspace in which the class used to create the metadata for this format is stored </param>
         /// <param name="Class"> Class which does the actual metadata format writing </param>
         /// <returns> TRUE if this writer is added succesfully, otherwise FALSE </returns>
-        public static bool Add_Writer( string Prefix, string Assembly, string Namespace, string Class )
+        public static bool Add_Writer(string Prefix, string Assembly, string Namespace, string Class)
         {
             try
             {
@@ -89,7 +89,7 @@ namespace SobekCM.Resource_Object.OAI.Writer
                     string record = thisWriter.Item2.Create_OAI_PMH_Metadata(ThisItem, Options, out error_message);
                     returnValue.Add(new Tuple<string, string>(thisWriter.Item1, record));
                 }
-                catch {  }
+                catch { }
             }
 
 

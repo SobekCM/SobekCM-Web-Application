@@ -1,8 +1,8 @@
-﻿using System;
+﻿using ProtoBuf;
+using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
-using ProtoBuf;
 
 namespace SobekCM.Core.Settings.DbItemViewers
 {
@@ -10,7 +10,7 @@ namespace SobekCM.Core.Settings.DbItemViewers
     /// which includes which viewers are added by default, default orders, and the primary key 
     /// to which each individual digital resource is attached </summary>
     [Serializable, DataContract, ProtoContract]
-    [XmlRoot("ItemViewerTypes")] 
+    [XmlRoot("ItemViewerTypes")]
     public class DbItemViewerTypes
     {
         private Dictionary<string, DbItemViewerType> lookupDictionary;
@@ -67,7 +67,7 @@ namespace SobekCM.Core.Settings.DbItemViewers
         /// <param name="MenuOrder"> Default order this viewer should be displayed on the item viewer menu </param>
         public void Add_ViewerType(int ID, string ViewType, int Order, bool DefaultView, decimal MenuOrder)
         {
-            ViewerTypes.Add(new DbItemViewerType(ID, ViewType, Order, DefaultView, MenuOrder ));
+            ViewerTypes.Add(new DbItemViewerType(ID, ViewType, Order, DefaultView, MenuOrder));
         }
     }
 }

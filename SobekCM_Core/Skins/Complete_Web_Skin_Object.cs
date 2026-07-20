@@ -1,11 +1,10 @@
 ﻿#region Using directives
 
+using ProtoBuf;
+using SobekCM.Core.Configuration.Localization;
 using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
-using ProtoBuf;
-using SobekCM.Core.Configuration;
-using SobekCM.Core.Configuration.Localization;
 
 #endregion
 
@@ -14,7 +13,7 @@ namespace SobekCM.Core.Skins
     /// <summary> Complete source information for a web skin object, which determines the header, footer, stylesheet, and other design elements for the rendered HTML </summary>
     /// <remarks> This contains links to all the source files used for every language, but does not contain any of the actual HTML to include in the 
     /// output stream.  During normal use, a language-specific <see cref="Web_Skin_Object" /> instance is used.</remarks>
-    [Serializable,DataContract,ProtoContract]
+    [Serializable, DataContract, ProtoContract]
     public class Complete_Web_Skin_Object
     {
         /// <summary> Code for this skin </summary>

@@ -567,14 +567,14 @@ namespace SobekCM.Resource_Object.Divisions
                         foreach (SobekCM_File_Info thisFile in pageNode.Files)
                         {
                             // If no file name or ID, skip this
-                            if ((String.IsNullOrEmpty(thisFile.System_Name)) || (String.IsNullOrEmpty(thisFile.ID)))                               
+                            if ((String.IsNullOrEmpty(thisFile.System_Name)) || (String.IsNullOrEmpty(thisFile.ID)))
                                 continue;
 
                             // Get this file extension and MIME type
                             string fileExtension = thisFile.File_Extension;
                             string mimetype = thisFile.MIME_Type(thisFile.File_Extension);
 
-                            if (thisFile.ID.IndexOf("THUMB") == 0 )
+                            if (thisFile.ID.IndexOf("THUMB") == 0)
                                 mimetype = mimetype + "-thumbnails";
 
                             // Also add to the list of files
@@ -611,7 +611,7 @@ namespace SobekCM.Resource_Object.Divisions
             Output_Stream.WriteLine("<METS:structMap ID=\"" + ID + "\" TYPE=\"" + Type + "\">");
 
             // Add any outer divisions here
-            if ((OuterDivisions != null ) && (OuterDivisions.Count > 0 ))
+            if ((OuterDivisions != null) && (OuterDivisions.Count > 0))
             {
                 foreach (Outer_Division_Info outerDiv in OuterDivisions)
                 {
@@ -670,7 +670,7 @@ namespace SobekCM.Resource_Object.Divisions
             }
 
             // Close any outer divisions here
-            if (( OuterDivisions != null ) && ( OuterDivisions.Count > 0))
+            if ((OuterDivisions != null) && (OuterDivisions.Count > 0))
             {
                 for (int index = 0; index < OuterDivisions.Count; index++)
                 {

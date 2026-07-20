@@ -1,17 +1,16 @@
 #region Using directives
 
+using Microsoft.AspNetCore.Http;
 using SobekCM.Core.MemoryMgmt;
+using SobekCM.Library.Database;
+using SobekCM.Library.UI;
+using SobekCM.Tools;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Text;
 using System.Text.Json;
-using Microsoft.AspNetCore.Http;
-using SobekCM.Core.Results;
-using SobekCM.Library.UI;
-using SobekCM.Library.Database;
-using SobekCM.Tools;
 
 #endregion
 
@@ -22,10 +21,10 @@ namespace SobekCM.Library.ResultsViewer
         /// <summary> Constructor for a new instance of the Google_Map_ResultsViewer class </summary>
         public Google_Map_ResultsViewer_Beta() : base()
         {
- 
+
             //holds actions from page
             string payload = Context.Request.Form["payload"].TrimFirst();
-            
+
             // See if there were hidden requests
             if (!String.IsNullOrEmpty(payload))
             {
@@ -59,7 +58,7 @@ namespace SobekCM.Library.ResultsViewer
             //MSRKeyHashSpecial = Convert.ToInt32(MSRKeyHashSpecial * aggregationIds.Length);
             //Context.SessionObject()["MapSearchResultsKey"] = "MapSearchResults_" + MSRKeyHashSpecial.ToString();
         }
-        
+
         /// <summary> Adds the controls for this result viewer to the place holder on the main form </summary>
         /// <param name="MainPlaceHolder"> Main place holder ( &quot;mainPlaceHolder&quot; ) in the itemNavForm form into which the the bulk of the result viewer's output is displayed</param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
@@ -68,10 +67,10 @@ namespace SobekCM.Library.ResultsViewer
             //tracer
             if (Tracer != null)
                 Tracer.Add_Trace("Map_ResultsWriter.Add_HTML", "Rendering results in map view");
-            
+
             // Start to build the response
             StringBuilder mapSearchBuilder = new StringBuilder();
-            
+
             //HEADER CONTENT
             //hidden input (for callback)
             mapSearchBuilder.AppendLine("     <input type=\"hidden\" id=\"payload\" name=\"payload\" value=\"\" /> ");
@@ -95,7 +94,7 @@ namespace SobekCM.Library.ResultsViewer
             mapSearchBuilder.AppendLine("  ");
             //ADD EXISTING POINTS WITH JSON
             mapSearchBuilder.AppendLine("       function initJSON(){ ");
-            if (Context.Items[RequestCache_Keys.DisplaySearchResults]!=null)
+            if (Context.Items[RequestCache_Keys.DisplaySearchResults] != null)
                 mapSearchBuilder.AppendLine("       DSR = JSON.stringify(" + Context.Items[RequestCache_Keys.DisplaySearchResults].ToString() + "); ");
             mapSearchBuilder.AppendLine("       } ");
             mapSearchBuilder.AppendLine("     </script> ");
@@ -103,7 +102,7 @@ namespace SobekCM.Library.ResultsViewer
 
             //BETA BLANKET
             //mapSearchBuilder.AppendLine(" <div id=\"container-betaBlanket\">WARNING: This page is currently in beta testing and so some features may not work.</div> ");
-            
+
             // PAGE LITERAL
             mapSearchBuilder.AppendLine(" <div id=\"container_SearchMap\"></div> ");
 
@@ -111,7 +110,7 @@ namespace SobekCM.Library.ResultsViewer
             Output.Write(mapSearchBuilder.ToString());
 
         }
-        
+
         /// <summary> parse and process incoming message  </summary>
         /// <param name="sendData"> message from page </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
@@ -119,22 +118,22 @@ namespace SobekCM.Library.ResultsViewer
         {
             //currently in the live class, move to here eventually.
         }
-        
+
         //performs an aggregation search based on a single aggregation (can be used to remove aggregation as well
         public static void Perform_Aggregation_Search(string[] aggregationIds, Custom_Tracer Tracer, HttpContext Context)
         {
             //hooks (eventual expansion) 
-            int HOOK_maxFIDCount = 8; 
+            int HOOK_maxFIDCount = 8;
 
             #region FIDs Support
 
             //get fids
-            
+
             //old
             if (Context.SessionObject()["FIDKey"] == null)
                 Context.SessionObject()["FIDKey"] = ""; //init
             string FIDKey = Context.SessionObject()["FIDKey"].ToString();
-            List<string> FIDs = (List<string>) Context.SessionObject()[FIDKey];
+            List<string> FIDs = (List<string>)Context.SessionObject()[FIDKey];
             List<string> temp_FIDs = new List<string>();
             foreach (string FID in FIDs)
             {
@@ -150,7 +149,7 @@ namespace SobekCM.Library.ResultsViewer
                     temp_FIDs.Add("");
                 }
             }
-            
+
 
             #endregion
 
@@ -168,7 +167,7 @@ namespace SobekCM.Library.ResultsViewer
             //finish processing msrkeyhash and store
             MSRKeyHashSpecial = Convert.ToInt32(MSRKeyHashSpecial * aggregationIds.Length);
             Context.SessionObject()["MapSearchResultsKey"] = "MapSearchResults_" + MSRKeyHashSpecial.ToString();
-            
+
             #endregion
 
             #region search the database for all items in all of the provided aggregationPermissions and merge them into one datatable
@@ -176,7 +175,7 @@ namespace SobekCM.Library.ResultsViewer
             //define MSR support objects
             DataTable searchResults = new DataTable();
             DataTable displaySearchResults = new DataTable();
-            
+
             //create MSR columns
             searchResults.Columns.Add("ItemID", typeof(string));
             searchResults.Columns.Add("Point_Latitude", typeof(string));
@@ -203,13 +202,13 @@ namespace SobekCM.Library.ResultsViewer
             displaySearchResults.Columns.Add("ItemID", typeof(string));
             displaySearchResults.Columns.Add("Point_Latitude", typeof(string));
             displaySearchResults.Columns.Add("Point_Longitude", typeof(string));
-            
+
             //check to see if we already have msr in cache, else get a new msr
             string MSRKey = Context.SessionObject()["MapSearchResultsKey"].ToString();
             if (Context.SessionObject()[MSRKey] == null)
             {
                 #region Create New MSR
-                
+
                 //temp objects
                 List<DataTable> temp_Tables = new List<DataTable>(); //change to dataset?
                 DataTable temp_searchResults = new DataTable();
@@ -243,7 +242,7 @@ namespace SobekCM.Library.ResultsViewer
                     string e = String.Empty;
 
                     //get itemID
-                    if(searchResult["ItemID"]!=null)
+                    if (searchResult["ItemID"] != null)
                         a = searchResult["ItemID"].ToString();
 
                     //get lat/long
@@ -461,7 +460,7 @@ namespace SobekCM.Library.ResultsViewer
                     }
                 }
             }
-            
+
             //call json writer with these results
             object displaySearchResultsJson = Create_JSON_Search_Results_Object(displaySearchResults);
 
@@ -475,10 +474,10 @@ namespace SobekCM.Library.ResultsViewer
         //performs a bounds search
         public static void Perform_Coordinate_Bounds_Search(double swx, double swy, double nex, double ney, HttpContext Context)
         {
-            
+
             //create them display search results object
             DataTable displaySearchResults = new DataTable();
-            displaySearchResults.Columns.Add("ItemID", typeof (string));
+            displaySearchResults.Columns.Add("ItemID", typeof(string));
             displaySearchResults.Columns.Add("Point_Latitude", typeof(string));
             displaySearchResults.Columns.Add("Point_Longitude", typeof(string));
             //get original SR
@@ -505,7 +504,7 @@ namespace SobekCM.Library.ResultsViewer
                 double cLng = Convert.ToDouble(c);
 
                 //if there is a valid lat/lng, determine if point is within bounds and add it to the display search results if so
-                if (cLat!=-360)
+                if (cLat != -360)
                     if (((cLat > swx) & (cLat < nex)) & ((cLng > swy) & (cLng < ney)))
                         displaySearchResults.Rows.Add(a, cLat.ToString(), cLng.ToString());
 
@@ -523,9 +522,9 @@ namespace SobekCM.Library.ResultsViewer
         public static void Perform_Filter_Search(string[] filters)
         {
             //call db to search
-            
+
             //call json writer with results
-            
+
             //send json obj to page and tell page to read it (via callback results
         }
 
@@ -536,7 +535,7 @@ namespace SobekCM.Library.ResultsViewer
             //call json writer with results
             //send json obj to page and tell page to read it (via callback results
         }
-        
+
         //performs a complete search (aggregation, all fliters, time range, and coords) generally uses as an initializer
         public static void Perform_Complete_Search(string[] aggregationIds, string[] filters, DateTime startDateTime, DateTime endDateTime, double lat1, double long1, double lat2, double long2, Custom_Tracer Tracer)
         {

@@ -1,10 +1,10 @@
 ﻿#region Using directives
 
+using SobekCM.Resource_Object.Bib_Info;
+using SobekCM.Resource_Object.Metadata_Modules;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Runtime.Serialization;
-using SobekCM.Resource_Object.Bib_Info;
-using SobekCM.Resource_Object.Metadata_Modules;
 
 #endregion
 
@@ -29,7 +29,7 @@ namespace SobekCM.Resource_Object
 
         /// <summary> ID's of any descriptive metadata sections included while writing a METS file </summary>
         /// <remarks> This is not READ or used except during the METS writing process </remarks>
-        internal string DMDID { get; set;  }
+        internal string DMDID { get; set; }
 
         /// <summary> ID's of any administrative metadata sections included while writing a METS file </summary>
         /// <remarks> This is not READ or used except during the METS writing process </remarks>
@@ -45,7 +45,7 @@ namespace SobekCM.Resource_Object
         {
             get
             {
-                if ((MetadataModules == null) || ( MetadataModules.Count == 0 ))
+                if ((MetadataModules == null) || (MetadataModules.Count == 0))
                     return null;
 
                 List<iMetadata_Module> returnList = new List<iMetadata_Module>();

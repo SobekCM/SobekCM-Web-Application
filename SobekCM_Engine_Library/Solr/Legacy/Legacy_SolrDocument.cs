@@ -1,15 +1,15 @@
 ﻿#region Using directives
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Behaviors;
 using SobekCM.Resource_Object.Bib_Info;
 using SobekCM.Resource_Object.Divisions;
 using SobekCM.Resource_Object.Solr;
 using SolrNet.Attributes;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Text;
 
 #endregion
 
@@ -76,7 +76,7 @@ namespace SobekCM.Engine_Library.Solr.Legacy
                     if ((thisSubject.Class_Type == Subject_Info_Type.Standard) && (thisSubject.ID.IndexOf("690") < 0) && (thisSubject.ID.IndexOf("691") < 0))
                     {
                         // Cast to the hierarchical subject type
-                        Subject_Info_Standard standSubj = (Subject_Info_Standard) thisSubject;
+                        Subject_Info_Standard standSubj = (Subject_Info_Standard)thisSubject;
 
                         if (standSubj.Genres_Count > 0)
                         {
@@ -105,7 +105,7 @@ namespace SobekCM.Engine_Library.Solr.Legacy
                     if (thisSubject.Class_Type == Subject_Info_Type.Hierarchical_Spatial)
                     {
                         // Cast to the hierarchical subject type
-                        Subject_Info_HierarchicalGeographic hiero = (Subject_Info_HierarchicalGeographic) thisSubject;
+                        Subject_Info_HierarchicalGeographic hiero = (Subject_Info_HierarchicalGeographic)thisSubject;
 
                         // Check for existing subfacets and add if not there
                         if ((hiero.Continent.Length > 0) && (!spatialcoverage.Contains(hiero.Continent)))
@@ -189,7 +189,7 @@ namespace SobekCM.Engine_Library.Solr.Legacy
                 if (thisNode.Page)
                 {
                     // Cast to a page to continnue
-                    Page_TreeNode pageNode = (Page_TreeNode) thisNode;
+                    Page_TreeNode pageNode = (Page_TreeNode)thisNode;
 
                     // If this is a unique page label, add it
                     if (pageNode.Label.Length > 0)
@@ -1232,7 +1232,7 @@ namespace SobekCM.Engine_Library.Solr.Legacy
                         builder.Append(reader.ReadToEnd() + " ");
                         reader.Close();
                     }
-                    catch 
+                    catch
                     {
                         // do nothing
                     }

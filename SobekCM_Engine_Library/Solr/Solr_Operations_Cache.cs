@@ -26,7 +26,7 @@ namespace SobekCM.Engine_Library.Solr
                 }
                 return solrOperations;
             }
-            catch ( Exception )
+            catch (Exception)
             {
                 return null;
             }

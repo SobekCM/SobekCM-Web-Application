@@ -1,6 +1,5 @@
 ﻿#region Using directives
 
-using SobekCM.Core.BriefItem;
 using SobekCM.Resource_Object;
 
 #endregion

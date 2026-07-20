@@ -1,14 +1,14 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+using Microsoft.AspNetCore.Http;
 using SobekCM.Core.BriefItem;
 using SobekCM.Core.FileSystems;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Users;
 using SobekCM.Library.ItemViewer.Menu;
 using SobekCM.Tools;
-using Microsoft.AspNetCore.Http;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 
 namespace SobekCM.Library.ItemViewer.Viewers
 {
@@ -66,7 +66,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <param name="CurrentRequest"> Information about the current request </param>
         /// <param name="MenuItems"> List of menu items, to which this method may add one or more menu items </param>
         /// <param name="IsRestricted"> Flag indicates if this item is restricted AND the current user is outside the ranges or not in the proper groups</param>
-        public override void Add_Menu_Items(BriefItemInfo CurrentItem, User_Object CurrentUser, Navigation_Object CurrentRequest, List<Item_MenuItem> MenuItems, bool IsRestricted )
+        public override void Add_Menu_Items(BriefItemInfo CurrentItem, User_Object CurrentUser, Navigation_Object CurrentRequest, List<Item_MenuItem> MenuItems, bool IsRestricted)
         {
             int current_page = 1;
             string previous_code = "1";
@@ -130,7 +130,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         public JPEG_ItemViewer(BriefItemInfo BriefItem, User_Object CurrentUser, Navigation_Object CurrentRequest, Custom_Tracer Tracer, string JPEG_ViewerCode, string[] FileExtensions)
         {
             // Add the trace
-            if ( Tracer != null )
+            if (Tracer != null)
                 Tracer.Add_Trace("JPEG_ItemViewer.Constructor");
 
             // Save the arguments for use later
@@ -166,7 +166,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             if (!String.IsNullOrEmpty(CurrentRequest.ViewerCode))
             {
                 int tempPageParse;
-                if (Int32.TryParse(CurrentRequest.ViewerCode.Replace(JPEG_ViewerCode.Replace("#",""), ""), out tempPageParse))
+                if (Int32.TryParse(CurrentRequest.ViewerCode.Replace(JPEG_ViewerCode.Replace("#", ""), ""), out tempPageParse))
                     page = tempPageParse;
             }
 
@@ -188,7 +188,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
         }
 
-        private bool set_file_information(string[] FileExtensions, bool zoomableViewerIncluded, string[] zoomableFileExtensions )
+        private bool set_file_information(string[] FileExtensions, bool zoomableViewerIncluded, string[] zoomableFileExtensions)
         {
             bool returnValue = false;
             includeLinkToZoomable = false;
@@ -202,10 +202,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 foreach (BriefItem_File thisFile in imagePage.Files)
                 {
                     // Get this file extension
-                    string extension = thisFile.File_Extension.Replace(".","");
+                    string extension = thisFile.File_Extension.Replace(".", "");
 
                     // Step through all permissable file extensions
-                    foreach( string thisPossibleFileExtension in FileExtensions )
+                    foreach (string thisPossibleFileExtension in FileExtensions)
                     {
                         if (String.Compare(extension, thisPossibleFileExtension, StringComparison.OrdinalIgnoreCase) == 0)
                         {

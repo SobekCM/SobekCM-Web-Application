@@ -1,12 +1,12 @@
 #region Using directives
 
-using System;
-using System.IO;
 using Microsoft.AspNetCore.Http;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Results;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
+using System;
+using System.IO;
 
 #endregion
 
@@ -39,12 +39,12 @@ namespace SobekCM.Library.MainWriters
                     if (RequestSpecificValues.Paged_Results != null)
                         display_search_results(Output);
                     break;
-				case Display_Mode_Enum.Reports:
-					if (!String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.Report_Name))
-					{
-						Output.WriteLine("REPORT REQUESTED: " + RequestSpecificValues.Current_Mode.Report_Name);
-					}
-		            break;
+                case Display_Mode_Enum.Reports:
+                    if (!String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.Report_Name))
+                    {
+                        Output.WriteLine("REPORT REQUESTED: " + RequestSpecificValues.Current_Mode.Report_Name);
+                    }
+                    break;
                 default:
                     Output.Write("XML Writer - Unknown Mode");
                     break;
@@ -53,7 +53,7 @@ namespace SobekCM.Library.MainWriters
 
         /// <summary> Display search results in simple XML format </summary>
         /// <param name="Output"> Stream to which to write the text for this main writer </param>
-        protected internal void display_search_results(TextWriter Output )
+        protected internal void display_search_results(TextWriter Output)
         {
             // Get the URL and network roots
             string url = UI_ApplicationCache_Gateway.Settings.Servers.Image_URL;
@@ -70,21 +70,21 @@ namespace SobekCM.Library.MainWriters
             {
                 if (thisResult.BibID != lastBibID)
                 {
-                    if ( lastBibID.Length > 0 )
+                    if (lastBibID.Length > 0)
                         Output.WriteLine("</TitleResult>");
                     Output.WriteLine("<TitleResult ID=\"" + thisResult.BibID + "\">");
                     lastBibID = thisResult.BibID;
                 }
 
                 // Determine folder from BibID
-                string folder = thisResult.BibID.Substring(0,2) + "/" + thisResult.BibID.Substring(2,2) + "/" + thisResult.BibID.Substring(4,2) + "/" + thisResult.BibID.Substring(6,2) + "/" + thisResult.BibID.Substring(8);
-                                
+                string folder = thisResult.BibID.Substring(0, 2) + "/" + thisResult.BibID.Substring(2, 2) + "/" + thisResult.BibID.Substring(4, 2) + "/" + thisResult.BibID.Substring(6, 2) + "/" + thisResult.BibID.Substring(8);
+
                 // Now, add XML for each item
-                for( int i = 0 ; i < thisResult.Item_Count ; i++ )
+                for (int i = 0; i < thisResult.Item_Count; i++)
                 {
                     iSearch_Item_Result itemResult = thisResult.Get_Item(i);
                     Output.WriteLine("\t<ItemResult ID=\"" + thisResult.BibID + "_" + itemResult.VID + "\">");
-                    Output.Write("\t\t<Title>" );
+                    Output.Write("\t\t<Title>");
                     Write_XML(Output, itemResult.Title);
                     Output.WriteLine("</Title>");
                     if (itemResult.PubDate.Length > 0)
@@ -96,22 +96,22 @@ namespace SobekCM.Library.MainWriters
                     Output.WriteLine("\t\t<Location>");
                     Output.WriteLine("\t\t\t<URL>" + base_url + thisResult.BibID + "/" + itemResult.VID + "</URL>");
                     Output.WriteLine("\t\t\t<Folder type=\"web\">" + url + folder + "/" + itemResult.VID + "</Folder>");
-                    Output.WriteLine("\t\t\t<Folder type=\"network\">" + network + folder.Replace("/","\\") + "\\" + itemResult.VID + "</Folder>");
+                    Output.WriteLine("\t\t\t<Folder type=\"network\">" + network + folder.Replace("/", "\\") + "\\" + itemResult.VID + "</Folder>");
                     Output.WriteLine("\t\t</Location>");
                     Output.WriteLine("\t</ItemResult>");
-                }                          
+                }
             }
 
-            if ( RequestSpecificValues.Paged_Results.Count > 0 )
-                Output.WriteLine("</TitleResult>");          
+            if (RequestSpecificValues.Paged_Results.Count > 0)
+                Output.WriteLine("</TitleResult>");
             Output.WriteLine("</ResultSet>");
         }
 
-        private static void Write_XML( TextWriter Output, string Value )
+        private static void Write_XML(TextWriter Output, string Value)
         {
-            foreach( char thisChar in Value )
+            foreach (char thisChar in Value)
             {
-                switch ( thisChar )
+                switch (thisChar)
                 {
                     case '>':
                         Output.Write("&gt;");

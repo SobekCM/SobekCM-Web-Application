@@ -1,9 +1,9 @@
 ﻿#region Using directives
 
+using ProtoBuf;
 using System;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
-using ProtoBuf;
 
 #endregion
 
@@ -25,7 +25,7 @@ namespace SobekCM.Core.WebContent
         [XmlAttribute("id")]
         public int WebContentID_XML
         {
-            get { return  ( WebContentID.HasValue ) ? WebContentID.Value : -1; }
+            get { return (WebContentID.HasValue) ? WebContentID.Value : -1; }
             set { WebContentID = value; }
         }
 
@@ -160,7 +160,7 @@ namespace SobekCM.Core.WebContent
         /// <param name="Summary"> Summary for this web content page, from the database </param>
         /// <param name="Deleted"> Flag indicates if this web content page is currently deleted within the database </param>
         /// <param name="Redirect"> URL to which a request for this page should be redirected </param>
-        public WebContent_Basic_Info(int WebContentID, string Title, string Summary, bool Deleted, string Redirect )
+        public WebContent_Basic_Info(int WebContentID, string Title, string Summary, bool Deleted, string Redirect)
         {
             this.WebContentID = WebContentID;
             this.Title = Title;

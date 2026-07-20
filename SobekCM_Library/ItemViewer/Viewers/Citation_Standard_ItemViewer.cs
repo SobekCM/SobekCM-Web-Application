@@ -1,8 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
+using Microsoft.AspNetCore.Http;
 using SobekCM.Core.BriefItem;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Navigation;
@@ -12,7 +8,11 @@ using SobekCM.Library.Citation.SectionWriter;
 using SobekCM.Library.ItemViewer.Menu;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
-using Microsoft.AspNetCore.Http;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
 
 namespace SobekCM.Library.ItemViewer.Viewers
 {
@@ -215,11 +215,11 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 Add_Citation_View_Tabs(Output, BriefItem, CurrentRequest, "CITATION");
 
             // Is this item restricted?
-            if (( currentFlags != null ) && ( currentFlags.ItemRestrictedFromUser ))
+            if ((currentFlags != null) && (currentFlags.ItemRestrictedFromUser))
             {
-                if (( CurrentUser == null )  || ( !CurrentUser.LoggedOn))
+                if ((CurrentUser == null) || (!CurrentUser.LoggedOn))
                 {
-                    Output.WriteLine("          <div id=\"darkItemSuppressCitationMsg\" style=\"color:red;\">" + currentFlags.RestrictionMessage + "  Please log on to access.</div>" + Environment.NewLine );
+                    Output.WriteLine("          <div id=\"darkItemSuppressCitationMsg\" style=\"color:red;\">" + currentFlags.RestrictionMessage + "  Please log on to access.</div>" + Environment.NewLine);
                 }
                 else
                 {
@@ -290,7 +290,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             {
                 string name_for_image = System.Net.WebUtility.HtmlEncode(BriefItem.Title);
 
-                if (( currentFlags != null ) && (currentFlags.ItemRestrictedFromUser))
+                if ((currentFlags != null) && (currentFlags.ItemRestrictedFromUser))
                 {
                     result.AppendLine();
                     result.AppendLine(INDENT + "<div id=\"Sbk_CivThumbnailDiv\"><img src=\"" + CurrentRequest.Base_Design_URL + "restricted-thumb.png\" alt=\"Restricted Item\" id=\"Sbk_CivThumbnailImg\" itemprop=\"primaryImageOfPage\" /></div>");
@@ -298,12 +298,12 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 }
                 else if (!String.IsNullOrEmpty(BriefItem.Behaviors.Main_Thumbnail))
                 {
-                    
+
                     result.AppendLine();
                     result.AppendLine(INDENT + "<div id=\"Sbk_CivThumbnailDiv\"><a href=\"" + CurrentRequest.Base_URL + BriefItem.BibID + "/" + BriefItem.VID + "\" ><img src=\"" + BriefItem.Web.Source_URL + "/" + BriefItem.Behaviors.Main_Thumbnail + "\" alt=\"" + name_for_image + "\" id=\"Sbk_CivThumbnailImg\" itemprop=\"primaryImageOfPage\" /></a></div>");
                     result.AppendLine();
                 }
-                else if ((BriefItem.Images != null ) && ( BriefItem.Images.Count > 0 ))
+                else if ((BriefItem.Images != null) && (BriefItem.Images.Count > 0))
                 {
                     if (BriefItem.Images[0].Files.Count > 0)
                     {
@@ -555,7 +555,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                             }
 
                             // Now, add this to the citation HTML
-                            Add_Citation_HTML_Rows(thisField.DisplayTerm, valueArray, INDENT, result, width, CurrentRequest );
+                            Add_Citation_HTML_Rows(thisField.DisplayTerm, valueArray, INDENT, result, width, CurrentRequest);
                         }
                         else
                         {
@@ -798,7 +798,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             return "<a href=\"" + URIs[0] + "\">" + System.Net.WebUtility.HtmlEncode(Value).Replace("&lt;i&gt;", "<i>").Replace("&lt;/i&gt;", "</i>") + "</a>";
         }
 
-        private static string display_text_from_value(string Value, List<string> URIs )
+        private static string display_text_from_value(string Value, List<string> URIs)
         {
             if ((URIs == null) || (URIs.Count == 0))
                 return display_text_from_value(Value);
@@ -842,7 +842,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             Results.AppendLine();
         }
 
-        private static string Single_Citation_HTML_Row(string Row_Name, string Value, string Indent, int width, Navigation_Object CurrentRequest )
+        private static string Single_Citation_HTML_Row(string Row_Name, string Value, string Indent, int width, Navigation_Object CurrentRequest)
         {
             // Only add if there is a value
             if (Value.Length > 0)
@@ -862,7 +862,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <param name="CurrentType"> Type of the current view, so one tab can be marked as current </param>
         /// <remarks> This static method is called from the other viewers that were split off from the old citation viewer 
         /// ( Citation_MARC_ItemViewer, Metadata_Links_ItemViewer, and Usage_Stats_ItemViewer ) </remarks>
-        public static void Add_Citation_View_Tabs(TextWriter Output, BriefItemInfo BriefItem, Navigation_Object CurrentRequest, string CurrentType )
+        public static void Add_Citation_View_Tabs(TextWriter Output, BriefItemInfo BriefItem, Navigation_Object CurrentRequest, string CurrentType)
         {
             // Set the text
             const string STANDARD_VIEW = "STANDARD VIEW";
@@ -902,7 +902,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
 
             // If this item is an external link item (i.e. has related URL, but no pages or downloads) skip the next parts
-            if (BriefItem.Type != "BIBLEVEL") 
+            if (BriefItem.Type != "BIBLEVEL")
             {
                 // Add the METADATA links tab
                 if (CurrentType == "METADATA")

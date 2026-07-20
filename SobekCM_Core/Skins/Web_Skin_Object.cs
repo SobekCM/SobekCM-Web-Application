@@ -1,10 +1,10 @@
 #region Using directives
 
+using ProtoBuf;
 using System;
 using System.IO;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
-using ProtoBuf;
 
 #endregion
 
@@ -59,7 +59,7 @@ namespace SobekCM.Core.Skins
             Language_Code = String.Empty;
         }
 
-		/// <summary> Constructor for a new instance of the Web_Skin_Object class </summary>
+        /// <summary> Constructor for a new instance of the Web_Skin_Object class </summary>
         /// <param name="Skin_Code"> Code for this HTML skin</param>
         /// <param name="Base_Skin_Code"> Code for the base HTML skin which this skin derives from</param>
         public Web_Skin_Object(string Skin_Code, string Base_Skin_Code)
@@ -145,21 +145,21 @@ namespace SobekCM.Core.Skins
         [ProtoMember(11)]
         public string Footer_Item_HTML { get; set; }
 
-		/// <summary> Flag indicates if the main header has a %CONTAINER% directive indicating
-		/// where the container tag should be placed.  This is useful if either the whole header, or
-		/// a portion of the header, should extend past the main container. </summary>
+        /// <summary> Flag indicates if the main header has a %CONTAINER% directive indicating
+        /// where the container tag should be placed.  This is useful if either the whole header, or
+        /// a portion of the header, should extend past the main container. </summary>
         [DataMember(Name = "headerHasContainerDirective")]
         [XmlElement("headerHasContainerDirective")]
         [ProtoMember(12)]
-		public bool? Header_Has_Container_Directive { get; set; }
+        public bool? Header_Has_Container_Directive { get; set; }
 
-		/// <summary> Flag indicates if the main footer has a %CONTAINER% directive indicating
-		/// where the container tag should be placed.  This is useful if either the whole footer, or
-		/// a portion of the footer, should extend past the main container. </summary>
+        /// <summary> Flag indicates if the main footer has a %CONTAINER% directive indicating
+        /// where the container tag should be placed.  This is useful if either the whole footer, or
+        /// a portion of the footer, should extend past the main container. </summary>
         [DataMember(Name = "footerHasContainerDirective")]
         [XmlElement("footerHasContainerDirective")]
         [ProtoMember(13)]
-		public bool? Footer_Has_Container_Directive { get; set; }
+        public bool? Footer_Has_Container_Directive { get; set; }
 
         /// <summary> Exception message, if an exception occurred whie this was built </summary>
         [DataMember(EmitDefaultValue = false, Name = "exception")]
@@ -237,14 +237,14 @@ namespace SobekCM.Core.Skins
                 Header_HTML = reader.ReadToEnd();
                 reader.Close();
             }
-            catch (Exception ee )
+            catch (Exception ee)
             {
                 Header_HTML = "Error reading header source ( " + Header_Source + "): " + ee.Message;
             }
 
             try
             {
-                StreamReader reader = new StreamReader( Footer_Source );
+                StreamReader reader = new StreamReader(Footer_Source);
                 Footer_HTML = reader.ReadToEnd();
                 reader.Close();
             }
@@ -268,7 +268,7 @@ namespace SobekCM.Core.Skins
             }
             else
             {
-	            Header_Item_HTML = Header_HTML.Replace("<%CONTAINER%>", "");
+                Header_Item_HTML = Header_HTML.Replace("<%CONTAINER%>", "");
             }
 
             if (Footer_Item_Source.Length > 0)
@@ -286,11 +286,11 @@ namespace SobekCM.Core.Skins
             }
             else
             {
-				Footer_Item_HTML = Footer_HTML.Replace("<%CONTAINER%>", "");
+                Footer_Item_HTML = Footer_HTML.Replace("<%CONTAINER%>", "");
             }
 
-			// Check here if the <%CONTAINER%> directive exists... useful to only 
-			// do this once
+            // Check here if the <%CONTAINER%> directive exists... useful to only 
+            // do this once
             if (Header_HTML.IndexOf("<%CONTAINER%>") >= 0)
                 Header_Has_Container_Directive = true;
             if (Footer_HTML.IndexOf("<%CONTAINER%>") >= 0)

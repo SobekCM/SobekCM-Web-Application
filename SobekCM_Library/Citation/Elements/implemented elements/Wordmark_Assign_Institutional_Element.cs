@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using SobekCM.Core.Users;
+﻿using SobekCM.Core.Users;
 using SobekCM.Library.UI;
 using SobekCM.Resource_Object;
+using System;
 
 namespace SobekCM.Library.Citation.Elements
 {
@@ -30,7 +26,7 @@ namespace SobekCM.Library.Citation.Elements
 
             // Same for holding
             string holding = Bib.Bib_Info.HoldingCode;
-            add_wordmark(holding, Bib);            
+            add_wordmark(holding, Bib);
         }
 
         private void add_wordmark(string code, SobekCM_Item Bib)

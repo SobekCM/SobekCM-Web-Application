@@ -1,7 +1,7 @@
-﻿using System;
+﻿using SobekCM.Engine_Library.ApplicationState;
+using System;
 using System.Collections.Generic;
 using System.Reflection;
-using SobekCM.Engine_Library.ApplicationState;
 
 
 namespace SobekCM.Library.Citation.SectionWriter
@@ -10,7 +10,7 @@ namespace SobekCM.Library.Citation.SectionWriter
     public class SectionWriter_Factory
     {
         private static Dictionary<string, iCitationSectionWriter> writers;
- 
+
         /// <summary> Return a build section writer, used for displaying a portion of the citation </summary>
         /// <param name="AssemblyName"> Assembly from which to load the section writer, or null/empty</param>
         /// <param name="Class"> Fully qualified class name </param>

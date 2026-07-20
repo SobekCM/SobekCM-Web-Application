@@ -1,12 +1,10 @@
 #region Using directives
 
+using SobekCM.Library.HTML;
+using SobekCM.Tools;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using SobekCM.Core.Navigation;
-using SobekCM.Library.HTML;
-using SobekCM.Resource_Object;
-using SobekCM.Tools;
 
 #endregion
 
@@ -25,9 +23,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
         PageLinks
     }
 
-	/// <summary> Interface which all item viewer objects must implement </summary>
-	public interface iItemViewer
-	{
+    /// <summary> Interface which all item viewer objects must implement </summary>
+    public interface iItemViewer
+    {
         /// <summary> CSS ID for the viewer viewport for this particular viewer </summary>
         string ViewerBox_CssId { get; }
 
@@ -76,23 +74,23 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <summary> Gets the flag that indicates if the page selector should be shown, and which page selector </summary>
         ItemViewer_PageSelector_Type_Enum Page_Selector { get; }
 
-	    /// <summary> Gets the number of pages for this viewer </summary>
-		int PageCount { get; }
+        /// <summary> Gets the number of pages for this viewer </summary>
+        int PageCount { get; }
 
         /// <summary> Gets the current page for paging purposes </summary>
         int Current_Page { get; }
 
-		/// <summary> Gets the url to go to the first page </summary>
-		string First_Page_URL { get; }
+        /// <summary> Gets the url to go to the first page </summary>
+        string First_Page_URL { get; }
 
-		/// <summary> Gets the url to go to the previous page </summary>
-		string Previous_Page_URL { get; }
+        /// <summary> Gets the url to go to the previous page </summary>
+        string Previous_Page_URL { get; }
 
-		/// <summary> Gets the url to go to the next page </summary>
-		string Next_Page_URL { get; }
+        /// <summary> Gets the url to go to the next page </summary>
+        string Next_Page_URL { get; }
 
-		/// <summary> Gets the url to go to the last page </summary>
-		string Last_Page_URL { get; }
+        /// <summary> Gets the url to go to the last page </summary>
+        string Last_Page_URL { get; }
 
         /// <summary> Gets the names to show in the Go To combo box </summary>
 		string[] Go_To_Names { get; }

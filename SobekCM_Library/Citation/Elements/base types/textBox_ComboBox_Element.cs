@@ -1,12 +1,12 @@
 #region Using directives
 
+using SobekCM.Core.ApplicationState;
+using SobekCM.Core.Configuration.Localization;
+using SobekCM.Core.Users;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Xml;
-using SobekCM.Core.ApplicationState;
-using SobekCM.Core.Configuration.Localization;
-using SobekCM.Core.Users;
 
 #endregion
 
@@ -48,7 +48,7 @@ namespace SobekCM.Library.Citation.Elements
         /// <summary> Adds a new possible string for the combo/select box, along with associated value </summary>
         /// <param name="Text"> Text to display in the combo/select box</param>
         /// <param name="Value"> Associated value for this option </param>
-        public void Add_Select_Item(string Text, string Value )
+        public void Add_Select_Item(string Text, string Value)
         {
             PossibleSelectItemsText.Add(Text);
             PossibleSelectItemsValue.Add(Value);
@@ -64,7 +64,7 @@ namespace SobekCM.Library.Citation.Elements
         /// <param name="CurrentLanguage"> Current user-interface language </param>
         /// <param name="Translator"> Language support object which handles simple translational duties </param>
         /// <param name="Base_URL"> Base URL for the current request </param>
-        protected void render_helper(TextWriter Output, List<string> TextValues, List<string> SelectValues, string Skin_Code, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL )
+        protected void render_helper(TextWriter Output, List<string> TextValues, List<string> SelectValues, string Skin_Code, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL)
         {
             if (TextValues.Count == 0)
             {
@@ -114,10 +114,10 @@ namespace SobekCM.Library.Citation.Elements
                     comboBoxEvents.Add_Events_HTML(Output);
                 Output.WriteLine(" >");
 
-            
+
 
                 bool found_option = false;
-                for ( int j = 0 ; j < PossibleSelectItemsText.Count ; j++ )
+                for (int j = 0; j < PossibleSelectItemsText.Count; j++)
                 {
                     if ((i < PossibleSelectItemsText.Count) && (PossibleSelectItemsText[j] == SelectValues[i - 1]))
                     {
@@ -144,13 +144,13 @@ namespace SobekCM.Library.Citation.Elements
                     }
                 }
 
-                if (( i <= SelectValues.Count ) && ( SelectValues[i-1].Length > 0  ) && ( !Restrict_Values ) && ( !found_option ))
+                if ((i <= SelectValues.Count) && (SelectValues[i - 1].Length > 0) && (!Restrict_Values) && (!found_option))
                 {
-                    Output.WriteLine("          <option value=\"" + SelectValues[i-1] + "\" selected=\"selected=\">" + SelectValues[i-1] + "</option>");
+                    Output.WriteLine("          <option value=\"" + SelectValues[i - 1] + "\" selected=\"selected=\">" + SelectValues[i - 1] + "</option>");
                 }
                 Output.Write("        </select>");
 
-                if (i == TextValues.Count )
+                if (i == TextValues.Count)
                 {
                     Output.WriteLine();
                     Output.WriteLine("      </div>");
@@ -180,7 +180,7 @@ namespace SobekCM.Library.Citation.Elements
         /// <summary> Reads the inner data from the CompleteTemplate XML format </summary>
         /// <param name="XMLReader"> Current template xml configuration reader </param>
         /// <remarks> This reads the possible values for the combo box from a <i>options</i> subelement </remarks>
-        protected override void Inner_Read_Data( XmlReader XMLReader )
+        protected override void Inner_Read_Data(XmlReader XMLReader)
         {
             while (XMLReader.Read())
             {

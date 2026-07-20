@@ -59,7 +59,7 @@ namespace SobekCM.Tools.FDA
             report_xml.Load(FileName);
 
             // Create the data repository
-            FDA_Report_Data report_data = new FDA_Report_Data {FileName = FileName};
+            FDA_Report_Data report_data = new FDA_Report_Data { FileName = FileName };
 
             // Step through
             try
@@ -73,7 +73,7 @@ namespace SobekCM.Tools.FDA
                         foreach (XmlNode ingestNode in reportNode.ChildNodes)
                         {
                             // Is this the INGEST or DISSEMINATION information?
-                            if ((ingestNode.Name == "INGEST") || ( ingestNode.Name == "DISSEMINATION" ))
+                            if ((ingestNode.Name == "INGEST") || (ingestNode.Name == "DISSEMINATION"))
                             {
                                 // Set the report type
                                 report_data.Report_Type = ingestNode.Name == "INGEST" ? FDA_Report_Type.INGEST : FDA_Report_Type.WITHDRAWAL;
@@ -95,7 +95,7 @@ namespace SobekCM.Tools.FDA
                                                 string[] split = date_string_value.Split(" ".ToCharArray());
                                                 if (split.Length == 5)
                                                 {
-                                                    string new_date_string = split[1] + " " + split[2] + " " + split[4] +" " + split[3];
+                                                    string new_date_string = split[1] + " " + split[2] + " " + split[4] + " " + split[3];
                                                     DateTime report_date;
                                                     if (DateTime.TryParse(new_date_string, out report_date))
                                                         report_data.Date = report_date;
@@ -169,9 +169,9 @@ namespace SobekCM.Tools.FDA
                                                 break;
 
                                             case "WITHDRAWAL_TIME":
-                                                    DateTime report_date;
-                                                    if (DateTime.TryParse(thisAttribute.Value, out report_date))
-                                                        report_data.Date = report_date;
+                                                DateTime report_date;
+                                                if (DateTime.TryParse(thisAttribute.Value, out report_date))
+                                                    report_data.Date = report_date;
                                                 break;
 
                                             case "PACKAGE_NAME":
@@ -226,7 +226,7 @@ namespace SobekCM.Tools.FDA
                                         }
 
                                         // Save the cleaned up message
-                                        report_data.Message_Note = message;                                        
+                                        report_data.Message_Note = message;
                                     }
 
                                     // Is this the PACKAGE name?
@@ -314,7 +314,7 @@ namespace SobekCM.Tools.FDA
                 {
                     // This is a valid file to save
                     FDA_File file = new FDA_File
-                                        {ID = dfid, Name = path, Preservation = preservation, XML_Node = fileNode};
+                    { ID = dfid, Name = path, Preservation = preservation, XML_Node = fileNode };
                     ReportData.Files.Add(file);
 
                     // Get the size
@@ -342,9 +342,9 @@ namespace SobekCM.Tools.FDA
                         }
 
                         // Collect the STORAGE subnodes to remove later
-                        if ( subNode.Name == "STORAGE" )
+                        if (subNode.Name == "STORAGE")
                         {
-                            storage_nodes.Add( subNode );
+                            storage_nodes.Add(subNode);
                         }
 
                         // Count the number of warnings, and save them at the file level
@@ -354,7 +354,7 @@ namespace SobekCM.Tools.FDA
                             ReportData.Warnings++;
 
                             // Get the information about this warning
-                            if (( subNode.Attributes != null ) && (subNode.Attributes.Count > 0) && (subNode.Attributes[0].Name == "CODE"))
+                            if ((subNode.Attributes != null) && (subNode.Attributes.Count > 0) && (subNode.Attributes[0].Name == "CODE"))
                             {
                                 // Add this warning to the file
                                 file.Add_Warning(subNode.Attributes[0].Value, subNode.InnerText);

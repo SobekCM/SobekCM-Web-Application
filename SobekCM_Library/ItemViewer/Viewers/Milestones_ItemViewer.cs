@@ -1,23 +1,13 @@
-using System;
-using System.Collections.Generic;
-using System.Data;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using SobekCM.Core.BriefItem;
 using SobekCM.Core.Client;
 using SobekCM.Core.Items;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Users;
-using SobekCM.Library.Database;
 using SobekCM.Library.ItemViewer.Menu;
-using SobekCM.Library.UI;
-using SobekCM.Resource_Object;
-using SobekCM.Resource_Object.Divisions;
-using SobekCM.Resource_Object.Tracking;
 using SobekCM.Tools;
-using Microsoft.AspNetCore.Http;
+using System.Collections.Generic;
+using System.IO;
 
 namespace SobekCM.Library.ItemViewer.Viewers
 {
@@ -97,7 +87,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <param name="CurrentRequest"> Information about the current request </param>
         /// <param name="MenuItems"> List of menu items, to which this method may add one or more menu items </param>
         /// <param name="IsRestricted"> Flag indicates if this item is restricted AND the current user is outside the ranges or not in the proper groups</param>
-        public virtual void Add_Menu_Items(BriefItemInfo CurrentItem, User_Object CurrentUser, Navigation_Object CurrentRequest, List<Item_MenuItem> MenuItems, bool IsRestricted )
+        public virtual void Add_Menu_Items(BriefItemInfo CurrentItem, User_Object CurrentUser, Navigation_Object CurrentRequest, List<Item_MenuItem> MenuItems, bool IsRestricted)
         {
             // Do nothing since this is already handed and added to the menu by the MANAGE MENU item viewer and INTERNAL header
         }

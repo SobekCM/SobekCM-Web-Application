@@ -1,22 +1,18 @@
-using SobekCM.Core.MemoryMgmt;
-using Microsoft.Extensions.Caching.Memory;
-using System;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Data;
-using System.IO;
-using System.Linq;
-using System.Text;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Caching.Memory;
+using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Engine_Library.Database;
-using SobekCM.Library.Database;
 // using SobekCM.Library.Helpers.UploadiFive;
 using SobekCM.Library.HTML;
 using SobekCM.Library.TEI;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.IO;
 
 namespace SobekCM.Library.AdminViewer
 {
@@ -47,9 +43,9 @@ namespace SobekCM.Library.AdminViewer
             }
 
             // Ensure the plug-in list exists and contains the TEI plug-in
-            if ((UI_ApplicationCache_Gateway.Configuration.Extensions == null) || 
-                ( UI_ApplicationCache_Gateway.Configuration.Extensions.Get_Extension("TEI") == null ) || 
-                ( !UI_ApplicationCache_Gateway.Configuration.Extensions.Get_Extension("TEI").Enabled ))
+            if ((UI_ApplicationCache_Gateway.Configuration.Extensions == null) ||
+                (UI_ApplicationCache_Gateway.Configuration.Extensions.Get_Extension("TEI") == null) ||
+                (!UI_ApplicationCache_Gateway.Configuration.Extensions.Get_Extension("TEI").Enabled))
             {
                 RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.My_Sobek;
                 RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
@@ -94,8 +90,8 @@ namespace SobekCM.Library.AdminViewer
                 nameSorter[name] = new Tuple<string, int>(name, id);
             }
             teiUsers = new List<Tuple<string, int>>();
-            teiUsers.AddRange(nameSorter.Values);           
-            
+            teiUsers.AddRange(nameSorter.Values);
+
             // Determine the page
             page = 1;
             if (!String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.My_Sobek_SubMode))
@@ -439,7 +435,7 @@ namespace SobekCM.Library.AdminViewer
             string view = RequestSpecificValues.QueryString["view"];
 
             // Get the URl for the other view type
-            string url = UrlWriterHelper.Redirect_URL( RequestSpecificValues.Current_Mode );
+            string url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
             if (view != "users")
             {
                 url = (url.IndexOf("?") > 0) ? (url + "&view=users") : (url + "?view=users");
@@ -849,7 +845,7 @@ namespace SobekCM.Library.AdminViewer
             // Check to see if the directory exists
             try
             {
-                if ( !Directory.Exists(directory))
+                if (!Directory.Exists(directory))
                     Directory.CreateDirectory(directory);
             }
             catch (Exception)

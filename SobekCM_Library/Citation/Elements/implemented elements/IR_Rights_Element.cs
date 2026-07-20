@@ -1,18 +1,14 @@
 #region Using directives
 
+using SobekCM.Core.ApplicationState;
+using SobekCM.Core.Configuration.Localization;
+using SobekCM.Core.Users;
+using SobekCM.Engine_Library.Configuration;
+using SobekCM.Resource_Object;
 using System;
 using System.IO;
 using System.Linq;
 using System.Text;
-using Microsoft.AspNetCore.Http;
-using SobekCM.Core.ApplicationState;
-using SobekCM.Core.Configuration;
-using SobekCM.Core.Configuration.Localization;
-using SobekCM.Core.UI_Configuration;
-using SobekCM.Core.UI_Configuration.StaticResources;
-using SobekCM.Core.Users;
-using SobekCM.Engine_Library.Configuration;
-using SobekCM.Resource_Object;
 
 #endregion
 
@@ -33,7 +29,7 @@ namespace SobekCM.Library.Citation.Elements
             Repeatable = false;
             Rows = 5;
             baseURL = String.Empty;
-	        help_page = "typeir";
+            help_page = "typeir";
         }
 
         /// <summary> Sets the base url for the current request </summary>
@@ -54,7 +50,7 @@ namespace SobekCM.Library.Citation.Elements
         /// <param name="Translator"> Language support object which handles simple translational duties </param>
         /// <param name="Base_URL"> Base URL for the current request </param>
         /// <remarks> This simple element does not append any popup form to the popup_form_builder</remarks>
-        public override void Render_Template_HTML(TextWriter Output, SobekCM_Item Bib, string Skin_Code, bool IsMozilla, StringBuilder PopupFormBuilder, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL )
+        public override void Render_Template_HTML(TextWriter Output, SobekCM_Item Bib, string Skin_Code, bool IsMozilla, StringBuilder PopupFormBuilder, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL)
         {
             // Check that an acronym exists
             if (Acronym.Length == 0)
@@ -113,9 +109,9 @@ namespace SobekCM.Library.Citation.Elements
             Output.WriteLine("      <div id=\"" + html_element_name + "_div\">");
             Output.WriteLine("        <textarea rows=\"" + Rows + "\" cols=\"" + actual_cols + "\" name=\"" + id_name + "1\" id=\"" + id_name + "1\" class=\"" + html_element_name + "_input\" onfocus=\"javascript:textbox_enter('" + id_name + "1','" + html_element_name + "_input_focused')\" onblur=\"javascript:textbox_leave('" + id_name + "1','" + html_element_name + "_input')\">" + System.Net.WebUtility.HtmlEncode(accessCondition) + "</textarea>");
             Output.WriteLine("        <div class=\"ShowOptionsRow\">");
-			Output.WriteLine("                <ul class=\"sbk_FauxDownwardTabsList\">");
-			Output.WriteLine("                  <li><a href=\"\" onclick=\"return open_cc_rights();\">CREATIVE COMMONS</a></li>");
-			Output.WriteLine("                </ul>");
+            Output.WriteLine("                <ul class=\"sbk_FauxDownwardTabsList\">");
+            Output.WriteLine("                  <li><a href=\"\" onclick=\"return open_cc_rights();\">CREATIVE COMMONS</a></li>");
+            Output.WriteLine("                </ul>");
             Output.WriteLine("        </div>");
             Output.WriteLine("      </div>");
 

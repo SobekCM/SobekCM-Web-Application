@@ -1,15 +1,15 @@
 #region Using directives
 
 using Microsoft.AspNetCore.Http;
-using System;
-using System.Collections.Generic;
-using System.IO;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Navigation;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
 using SobekCM.Tools;
+using System;
+using System.Collections.Generic;
+using System.IO;
 
 #endregion
 
@@ -51,7 +51,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             // Determine the complete script action name
             Display_Mode_Enum displayMode = RequestSpecificValues.Current_Mode.Mode;
             Search_Type_Enum searchType = RequestSpecificValues.Current_Mode.Search_Type;
-			Aggregation_Type_Enum aggrType = RequestSpecificValues.Current_Mode.Aggregation_Type;
+            Aggregation_Type_Enum aggrType = RequestSpecificValues.Current_Mode.Aggregation_Type;
             RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Results;
             RequestSpecificValues.Current_Mode.Search_Type = Search_Type_Enum.Full_Text;
             string search_string = RequestSpecificValues.Current_Mode.Search_String;
@@ -82,7 +82,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 arg2 = SUB_CODE;
             }
             RequestSpecificValues.Current_Mode.Mode = displayMode;
-	        RequestSpecificValues.Current_Mode.Aggregation_Type = aggrType;
+            RequestSpecificValues.Current_Mode.Aggregation_Type = aggrType;
             RequestSpecificValues.Current_Mode.Search_Type = searchType;
             RequestSpecificValues.Current_Mode.Search_String = search_string;
             RequestSpecificValues.Current_Mode.Info_Browse_Mode = String.Empty;

@@ -1,11 +1,5 @@
 ﻿#region Using directives
 
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
-using System.Xml;
 using SobekCM.Resource_Object.Behaviors;
 using SobekCM.Resource_Object.Bib_Info;
 using SobekCM.Resource_Object.Configuration;
@@ -13,6 +7,12 @@ using SobekCM.Resource_Object.Divisions;
 using SobekCM.Resource_Object.Metadata_Modules;
 using SobekCM.Resource_Object.Metadata_Modules.GeoSpatial;
 using SobekCM.Resource_Object.METS_Sec_ReaderWriters;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.IO;
+using System.Text;
+using System.Xml;
 
 #endregion
 
@@ -69,7 +69,7 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
             {
                 results = new StreamWriter(MetadataFilePathName, false, Encoding.UTF8);
                 returnValue = Write_Metadata(results, Item_To_Save, Options, out Error_Message);
-                
+
             }
             catch (Exception ee)
             {
@@ -149,7 +149,7 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
 
             // First, assign group numbers for all the files on each page (physical or other)
             // Group numbers in the METS file correspond to files on the same page (physical or other)
-            Item_To_Save.Divisions.Physical_Tree.Ensure_Ids_Assigned("PAGE", "PDIV", out bool hasPageFiles, mimes_to_exclude );
+            Item_To_Save.Divisions.Physical_Tree.Ensure_Ids_Assigned("PAGE", "PDIV", out bool hasPageFiles, mimes_to_exclude);
             Item_To_Save.Divisions.Download_Tree.Ensure_Ids_Assigned("FILES", "DDIV", out bool hasDownloadFiles, mimes_to_exclude);
             Item_To_Save.Divisions.OpenTextbook_Tree.Ensure_Ids_Assigned("OER", "ODIV", out bool hasOerFiles, mimes_to_exclude);
 
@@ -209,7 +209,7 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
             List<string> schemaLocList = new List<string>();
             foreach (METS_Section_ReaderWriter_Config thisRWconfig in profile.Package_Level_AmdSec_Writer_Configs)
             {
-                iPackage_amdSec_ReaderWriter thisRw = (iPackage_amdSec_ReaderWriter) thisRWconfig.ReaderWriterObject;
+                iPackage_amdSec_ReaderWriter thisRw = (iPackage_amdSec_ReaderWriter)thisRWconfig.ReaderWriterObject;
                 if (thisRw.Schema_Reference_Required_Package(Item_To_Save))
                 {
                     string[] rwXmlns = thisRw.Schema_Namespace(Item_To_Save);
@@ -228,7 +228,7 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
             }
             foreach (METS_Section_ReaderWriter_Config thisRWconfig in profile.Package_Level_DmdSec_Writer_Configs)
             {
-                iPackage_dmdSec_ReaderWriter thisRw = (iPackage_dmdSec_ReaderWriter) thisRWconfig.ReaderWriterObject;
+                iPackage_dmdSec_ReaderWriter thisRw = (iPackage_dmdSec_ReaderWriter)thisRWconfig.ReaderWriterObject;
                 if (thisRw.Schema_Reference_Required_Package(Item_To_Save))
                 {
                     string[] rwXmlns = thisRw.Schema_Namespace(Item_To_Save);
@@ -336,7 +336,7 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
             // Step through all the package level dmdSecs to be added
             foreach (METS_Section_ReaderWriter_Config thisConfig in profile.Package_Level_DmdSec_Writer_Configs)
             {
-                iPackage_dmdSec_ReaderWriter thisWriter = (iPackage_dmdSec_ReaderWriter) thisConfig.ReaderWriterObject;
+                iPackage_dmdSec_ReaderWriter thisWriter = (iPackage_dmdSec_ReaderWriter)thisConfig.ReaderWriterObject;
                 if (thisWriter.Include_dmdSec(Item_To_Save, options))
                 {
                     // Save this DMD ID
@@ -364,7 +364,7 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
             }
 
             // Now, add any unanalyzed DMD sections
-            if (( Item_To_Save.Unanalyzed_DMDSECs != null ) && ( Item_To_Save.Unanalyzed_DMDSECs.Count > 0 ))
+            if ((Item_To_Save.Unanalyzed_DMDSECs != null) && (Item_To_Save.Unanalyzed_DMDSECs.Count > 0))
             {
                 foreach (Unanalyzed_METS_Section thisSection in Item_To_Save.Unanalyzed_DMDSECs)
                 {
@@ -398,7 +398,7 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
                 // Step through each division
                 foreach (abstract_TreeNode thisDivision in allDivisions)
                 {
-                    iDivision_dmdSec_ReaderWriter thisWriter = (iDivision_dmdSec_ReaderWriter) thisConfig.ReaderWriterObject;
+                    iDivision_dmdSec_ReaderWriter thisWriter = (iDivision_dmdSec_ReaderWriter)thisConfig.ReaderWriterObject;
 
                     // Include the DMD Sec for this division?
                     if (thisWriter.Include_dmdSec(thisDivision, options))
@@ -591,7 +591,7 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
                 foreach (abstract_TreeNode thisDivision in allDivisions)
                 {
 
-                    iDivision_amdSec_ReaderWriter thisWriter = (iDivision_amdSec_ReaderWriter) thisConfig.ReaderWriterObject;
+                    iDivision_amdSec_ReaderWriter thisWriter = (iDivision_amdSec_ReaderWriter)thisConfig.ReaderWriterObject;
 
                     // Include the DMD Sec for this division?
                     if (thisWriter.Include_amdSec(thisDivision, options))
@@ -782,7 +782,7 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
             #endregion
 
             // Add file and structure map sections
-            if (( allFiles.Count > 0 ) || (allDivisions.Count > 0 ))
+            if ((allFiles.Count > 0) || (allDivisions.Count > 0))
             {
                 #region Add the files section
 
@@ -801,7 +801,7 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
                     foreach (SobekCM_File_Info thisFile in mimeCollection)
                     {
                         // Is the size and checksum information here?
-                        if ((!MINIMIZE_FILE_SIZE) && ( !Item_To_Save.Divisions.Suppress_Checksum )) 
+                        if ((!MINIMIZE_FILE_SIZE) && (!Item_To_Save.Divisions.Suppress_Checksum))
                         {
                             if ((((String.IsNullOrEmpty(thisFile.Checksum)) || (thisFile.Size <= 0))) && (thisFile.METS_LocType == SobekCM_File_Info_Type_Enum.SYSTEM))
                             {
@@ -811,7 +811,7 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
                                     if (File.Exists(Item_To_Save.Source_Directory + "/" + thisFile.System_Name))
                                     {
                                         // Get the size first
-                                        if ( thisFile.Size < 0 )
+                                        if (thisFile.Size < 0)
                                         {
                                             FileInfo thisFileInfo = new FileInfo(Item_To_Save.Source_Directory + "/" + thisFile.System_Name);
                                             thisFile.Size = thisFileInfo.Length;
@@ -911,11 +911,11 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
                     Item_To_Save.Divisions.Write_Download_Tree_METS(Output_Stream, main_title, dmdSecIdString, amdSecIdString);
                 }
 
-                if ((hasOerFiles) || ((Item_To_Save.Divisions.OpenTextbook_Tree != null ) && (Item_To_Save.Divisions.OpenTextbook_Tree.Divisions_PreOrder.Count > 0 )))
+                if ((hasOerFiles) || ((Item_To_Save.Divisions.OpenTextbook_Tree != null) && (Item_To_Save.Divisions.OpenTextbook_Tree.Divisions_PreOrder.Count > 0)))
                 {
                     Item_To_Save.Divisions.Write_OpenTextbook_Tree_METS(Output_Stream, main_title, dmdSecIdString, amdSecIdString);
                 }
- 
+
                 #endregion
             }
             else
@@ -1090,7 +1090,7 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
                             case "dmdSec":
                             case "dmdSecFedora":
                                 Unanalyzed_METS_Section thisDmdSec = store_dmd_sec(r.ReadSubtree());
-                                if ( dmdSec.ContainsKey(thisDmdSec.ID))
+                                if (dmdSec.ContainsKey(thisDmdSec.ID))
                                     dmdSec[thisDmdSec.ID].Add(thisDmdSec);
                                 else
                                 {
@@ -1098,7 +1098,7 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
                                     newDmdSecList.Add(thisDmdSec);
                                     dmdSec[thisDmdSec.ID] = newDmdSecList;
                                 }
-                                
+
                                 break;
 
                             case "amdSec":
@@ -1107,7 +1107,7 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
                                     amdSec[thisAmdSec.ID].Add(thisAmdSec);
                                 else
                                 {
-                                    List<Unanalyzed_METS_Section> newAmdSecList = new List<Unanalyzed_METS_Section> {thisAmdSec};
+                                    List<Unanalyzed_METS_Section> newAmdSecList = new List<Unanalyzed_METS_Section> { thisAmdSec };
                                     amdSec[thisAmdSec.ID] = newAmdSecList;
                                 }
                                 break;
@@ -1134,7 +1134,7 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
                 r.Close();
 
             }
-            catch 
+            catch
             {
                 // Do nothinh
             }
@@ -1319,7 +1319,7 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
                                 }
                                 else
                                 {
-                                    newRoot = (Division_TreeNode) Return_Package.Divisions.Download_Tree.Roots[0];
+                                    newRoot = (Division_TreeNode)Return_Package.Divisions.Download_Tree.Roots[0];
                                 }
 
                                 // Add a page for this, with the provided label if there was one
@@ -1369,7 +1369,7 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
                             }
                             else
                             {
-                                newRoot = (Division_TreeNode) Return_Package.Divisions.Download_Tree.Roots[0];
+                                newRoot = (Division_TreeNode)Return_Package.Divisions.Download_Tree.Roots[0];
                             }
 
                             // Add a page for this, with the provided label if there was one
@@ -1393,7 +1393,7 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
 
             // Get the geospatial data
             GeoSpatial_Information geoSpatial = Return_Package.Get_Metadata_Module(GlobalVar.GEOSPATIAL_METADATA_MODULE_KEY) as GeoSpatial_Information;
-            if ((geoSpatial != null) && ( geoSpatial.Polygon_Count > 0 ))
+            if ((geoSpatial != null) && (geoSpatial.Polygon_Count > 0))
             {
                 // See if any has the page sequence filled out, which means it came from the old metadata system
                 bool redistribute = false;
@@ -1416,15 +1416,15 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
                     // Step through each polygon
                     foreach (Coordinate_Polygon thisPolygon in geoSpatial.Polygons)
                     {
-                        if ((thisPolygon.Page_Sequence > 0) && ( thisPolygon.Page_Sequence <= pagesBySequence.Count ))
+                        if ((thisPolygon.Page_Sequence > 0) && (thisPolygon.Page_Sequence <= pagesBySequence.Count))
                         {
                             // Get the page
                             abstract_TreeNode thisPageFromSequence = pagesBySequence[thisPolygon.Page_Sequence - 1];
 
                             // We can assume this page does not already have the coordiantes
                             GeoSpatial_Information thisPageCoord = new GeoSpatial_Information();
-                            thisPageFromSequence.Add_Metadata_Module( GlobalVar.GEOSPATIAL_METADATA_MODULE_KEY, thisPageCoord );
-                            thisPageCoord.Add_Polygon( thisPolygon);
+                            thisPageFromSequence.Add_Metadata_Module(GlobalVar.GEOSPATIAL_METADATA_MODULE_KEY, thisPageCoord);
+                            thisPageCoord.Add_Polygon(thisPolygon);
 
                             // Remove this from the package-level coordinates
                             polygonsToRemove.Add(thisPolygon);
@@ -1727,7 +1727,7 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
             do
             {
                 R.Read();
-            } while (R.Name.ToLower().Replace("mets:","") != "mdwrap");
+            } while (R.Name.ToLower().Replace("mets:", "") != "mdwrap");
 
             // Now, should be at the mdWrap element
             string outerXML = R.ReadOuterXml();
@@ -1738,7 +1738,7 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
 
         #region Collect and store the AMD sections 
 
-        private Unanalyzed_METS_Section store_amd_sec( XmlReader R )
+        private Unanalyzed_METS_Section store_amd_sec(XmlReader R)
         {
             // Save all the inner XML and attributed for later analysis
             string amdSecId = String.Empty;
@@ -1776,8 +1776,8 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
             string fileID = String.Empty;
             string size = String.Empty;
 
-			// Only allow ONE instance of each file in the METS
-	        Dictionary<string, SobekCM_File_Info> filename_to_object = new Dictionary<string, SobekCM_File_Info>();
+            // Only allow ONE instance of each file in the METS
+            Dictionary<string, SobekCM_File_Info> filename_to_object = new Dictionary<string, SobekCM_File_Info>();
 
             // begin to loop through the XML DOM tree
 
@@ -1819,7 +1819,7 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
                             SobekCM_File_Info_Type_Enum locType = SobekCM_File_Info_Type_Enum.SYSTEM;
                             if (R.MoveToAttribute("LOCTYPE"))
                             {
-                                if ( R.Value == "URL")
+                                if (R.Value == "URL")
                                     locType = SobekCM_File_Info_Type_Enum.URL;
                             }
 
@@ -1827,53 +1827,53 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
                             {
                                 // Get and clean up the system name
                                 string systemName;
-                                if ((locType == SobekCM_File_Info_Type_Enum.SYSTEM) && ( R.Value.IndexOf("http:") < 0 ))
+                                if ((locType == SobekCM_File_Info_Type_Enum.SYSTEM) && (R.Value.IndexOf("http:") < 0))
                                     systemName = R.Value.Replace("%20", " ").Replace("/", "\\");
                                 else
                                     systemName = R.Value.Replace("%20", " ");
 
-	                            if (systemName.ToLower() != "web.config")
-	                            {
-	                                // Is this a new FILEID?
-	                                SobekCM_File_Info newFile;
-	                                if (!FilesByFileid.ContainsKey(fileID))
-		                            {
-										// In addition, is this a new FILENAME?
-										if (filename_to_object.ContainsKey(systemName.ToUpper()))
-										{
-											newFile = filename_to_object[systemName.ToUpper()];
-											FilesByFileid[fileID] = newFile;
-										}
-										else
-										{
-											newFile = new SobekCM_File_Info(systemName);
-											FilesByFileid[fileID] = newFile;
-											filename_to_object[systemName.ToUpper()] = newFile;
-										}
-		                            }
-		                            else
-		                            {
-			                            newFile = FilesByFileid[fileID];
-			                            // newFile.System_Name = systemName;  (SHOULD BE REDUNDANT - removed 5/2014)
-		                            }
+                                if (systemName.ToLower() != "web.config")
+                                {
+                                    // Is this a new FILEID?
+                                    SobekCM_File_Info newFile;
+                                    if (!FilesByFileid.ContainsKey(fileID))
+                                    {
+                                        // In addition, is this a new FILENAME?
+                                        if (filename_to_object.ContainsKey(systemName.ToUpper()))
+                                        {
+                                            newFile = filename_to_object[systemName.ToUpper()];
+                                            FilesByFileid[fileID] = newFile;
+                                        }
+                                        else
+                                        {
+                                            newFile = new SobekCM_File_Info(systemName);
+                                            FilesByFileid[fileID] = newFile;
+                                            filename_to_object[systemName.ToUpper()] = newFile;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        newFile = FilesByFileid[fileID];
+                                        // newFile.System_Name = systemName;  (SHOULD BE REDUNDANT - removed 5/2014)
+                                    }
 
-		                            if ((!Minimize_File_Info) && (!String.IsNullOrEmpty(checkSum)) && (!String.IsNullOrEmpty(checkSumType)))
-		                            {
-			                            newFile.Checksum = checkSum;
-			                            newFile.Checksum_Type = checkSumType;
-		                            }
+                                    if ((!Minimize_File_Info) && (!String.IsNullOrEmpty(checkSum)) && (!String.IsNullOrEmpty(checkSumType)))
+                                    {
+                                        newFile.Checksum = checkSum;
+                                        newFile.Checksum_Type = checkSumType;
+                                    }
 
-		                            if (size.Length > 0)
-		                            {
-			                            try
-			                            {
-				                            newFile.Size = Convert.ToInt64(size);
-			                            }
-			                            catch
-			                            {
-			                            }
-		                            }
-	                            }
+                                    if (size.Length > 0)
+                                    {
+                                        try
+                                        {
+                                            newFile.Size = Convert.ToInt64(size);
+                                        }
+                                        catch
+                                        {
+                                        }
+                                    }
+                                }
                             }
                         }
                         break;
@@ -1885,7 +1885,7 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
 
         #region Read the Structure Map
 
-        private static void read_struct_map(XmlReader R, SobekCM_Item Package, Dictionary<string, SobekCM_File_Info> FilesByFileid, Dictionary<string, abstract_TreeNode> DivisionDmdids, Dictionary<string, abstract_TreeNode> DivisionAmdids )
+        private static void read_struct_map(XmlReader R, SobekCM_Item Package, Dictionary<string, SobekCM_File_Info> FilesByFileid, Dictionary<string, abstract_TreeNode> DivisionDmdids, Dictionary<string, abstract_TreeNode> DivisionAmdids)
         {
             Stack<abstract_TreeNode> parentNodes = new Stack<abstract_TreeNode>();
             Dictionary<string, abstract_TreeNode> divisions_by_id = new Dictionary<string, abstract_TreeNode>();
@@ -1899,9 +1899,9 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
                 // get the right division information based on node type
                 switch (R.NodeType)
                 {
-                        // if EndElement, move up tree
+                    // if EndElement, move up tree
                     case XmlNodeType.EndElement:
-                        if ((R.Name == "METS:structMap") || ( R.Name == "structMap" ))
+                        if ((R.Name == "METS:structMap") || (R.Name == "structMap"))
                         {
                             return;
                         }
@@ -1914,7 +1914,7 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
                         }
                         break;
 
-                        // if new element, add name and traverse tree
+                    // if new element, add name and traverse tree
                     case XmlNodeType.Element:
 
                         // Is this the beginning of a structure map
@@ -1931,7 +1931,7 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
                         }
 
                         // Is this a new division?
-                        if (((R.Name == "METS:div") || ( R.Name == "div" )) && (R.HasAttributes))
+                        if (((R.Name == "METS:div") || (R.Name == "div")) && (R.HasAttributes))
                         {
                             // Since this is a new division, get all the possible attribute values or set to empty string
                             string dmdid = (R.MoveToAttribute("DMDID") ? R.Value : String.Empty);
@@ -1956,7 +1956,7 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
                             }
 
                             // Was this an outer division, or the main division?
-                            if (!mainDivisionFound) 
+                            if (!mainDivisionFound)
                             {
                                 // This is an outer wrapper and NOT the MAIN division, so save this as an
                                 // outer division (division greater than current digital resources), such as 
@@ -1994,15 +1994,15 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
                                         bibNode = divisions_by_id[divID];
                                     }
                                 }
-                                
+
                                 // Get the DMD sec or AMD sec's 
                                 if (dmdid.Length > 0)
                                 {
                                     string[] divDmdSecIds = dmdid.Split(" ".ToCharArray());
-                                    foreach( string thisId in divDmdSecIds )
+                                    foreach (string thisId in divDmdSecIds)
                                     {
                                         DivisionDmdids[thisId] = bibNode;
-                                    }                                        
+                                    }
                                 }
                                 if (amdid.Length > 0)
                                 {
@@ -2016,7 +2016,7 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
                                 // If there is a parent, add to it
                                 if (parentNode != null)
                                 {
-                                    ((Division_TreeNode) parentNode).Nodes.Add(bibNode);
+                                    ((Division_TreeNode)parentNode).Nodes.Add(bibNode);
                                 }
                                 else
                                 {
@@ -2052,7 +2052,7 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
 
                                 if ((pageParentNode != null) && (pageParentNode.Page))
                                 {
-                                    Page_TreeNode asPageNode = (Page_TreeNode) pageParentNode;
+                                    Page_TreeNode asPageNode = (Page_TreeNode)pageParentNode;
                                     if (!asPageNode.Files.Contains(thisFile))
                                         asPageNode.Files.Add(thisFile);
                                 }
@@ -2064,7 +2064,7 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
                                     }
                                     else
                                     {
-                                        Division_TreeNode asDivNode = (Division_TreeNode) pageParentNode;
+                                        Division_TreeNode asDivNode = (Division_TreeNode)pageParentNode;
 
                                         Page_TreeNode newPage = new Page_TreeNode();
                                         asDivNode.Add_Child(newPage);
@@ -2078,7 +2078,7 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
                         }
 
                         // Is this a new METS pointer, often seen when importing from DSpace
-                        if ((R.Name == "METS:mptr") || (R.Name == "mptr")) 
+                        if ((R.Name == "METS:mptr") || (R.Name == "mptr"))
                         {
                             // Get the parent label
                             string parentLabel = String.Empty;
@@ -2229,7 +2229,7 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
                     Package.Behaviors.Clear_Views();
                     for (int i = 0; i < views_sorted.Count; i++)
                     {
-                        View_Object tempViewObject = (View_Object) views_sorted.GetByIndex(i);
+                        View_Object tempViewObject = (View_Object)views_sorted.GetByIndex(i);
                         Package.Behaviors.Add_View(tempViewObject);
                     }
                 }

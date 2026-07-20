@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using SobekCM.Core.Users;
+﻿using SobekCM.Core.Users;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Bib_Info;
+using System;
 
 namespace SobekCM.Library.Citation.Elements
 {
@@ -40,7 +36,7 @@ namespace SobekCM.Library.Citation.Elements
 
             string creator = Bib.Bib_Info.Main_Entity_Name.ToString();
 
-            if ( String.IsNullOrWhiteSpace(creator) || ( creator.Equals("unknown", StringComparison.OrdinalIgnoreCase)))
+            if (String.IsNullOrWhiteSpace(creator) || (creator.Equals("unknown", StringComparison.OrdinalIgnoreCase)))
             {
                 if ((Bib.Bib_Info.Names_Count > 0) && (!Bib.Bib_Info.Names[0].ToString().Equals("unknown", StringComparison.OrdinalIgnoreCase)))
                 {
@@ -48,11 +44,11 @@ namespace SobekCM.Library.Citation.Elements
                 }
             }
 
-            if ( !String.IsNullOrWhiteSpace(title))
+            if (!String.IsNullOrWhiteSpace(title))
             {
-                if ( !String.IsNullOrWhiteSpace(creator))
+                if (!String.IsNullOrWhiteSpace(creator))
                 {
-                    if ( creator.IndexOf(",") > 0 )
+                    if (creator.IndexOf(",") > 0)
                     {
                         creator = creator.Substring(0, creator.IndexOf(",")).Trim();
                     }

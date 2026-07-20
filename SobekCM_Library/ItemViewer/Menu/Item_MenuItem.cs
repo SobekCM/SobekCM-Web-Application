@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace SobekCM.Library.ItemViewer.Menu
+﻿namespace SobekCM.Library.ItemViewer.Menu
 {
     public class Item_MenuItem
     {

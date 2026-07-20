@@ -1,7 +1,7 @@
-﻿using System;
+﻿using ProtoBuf;
+using System;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
-using ProtoBuf;
 
 namespace SobekCM.Core.Aggregations
 {
@@ -103,9 +103,9 @@ namespace SobekCM.Core.Aggregations
         {
             return new Item_Aggregation_Map_Coverage_Info
             {
-                Type = Type, 
-                Latitude = Latitude, 
-                Longitude = Longitude, 
+                Type = Type,
+                Latitude = Latitude,
+                Longitude = Longitude,
                 ZoomLevel = ZoomLevel
             };
         }

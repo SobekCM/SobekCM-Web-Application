@@ -1,9 +1,9 @@
 ﻿#region Using directives
 
+using ProtoBuf;
 using System;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
-using ProtoBuf;
 
 #endregion
 
@@ -61,7 +61,7 @@ namespace SobekCM.Core
         /// <param name="User"> User associated with this milestone </param>
         /// <param name="Notes"> Notes (and milestone type) for this miletsone entry </param>
         /// <param name="Workflow">Constructor for a new instance of the Milestone_Entry class </param>
-        public Milestone_Entry(DateTime MilestoneDate, string User, string Notes, string Workflow )
+        public Milestone_Entry(DateTime MilestoneDate, string User, string Notes, string Workflow)
         {
             this.MilestoneDate = MilestoneDate;
             this.User = User;

@@ -1,10 +1,10 @@
 ﻿#region Using directives
 
+using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data;
-using Microsoft.Data.SqlClient;
 using System.Text;
 
 #endregion
@@ -35,7 +35,7 @@ namespace SobekCM.Resource_Object.Metadata_Modules.GeoSpatial
             sobekcm_main_spatial_distance = -1;
             sobekcm_main_spatial_string = String.Empty;
         }
-        
+
         #region Methods/Properties to implement the iMetadata_Module interface
 
         /// <summary> Name for this metadata module </summary>
@@ -67,7 +67,7 @@ namespace SobekCM.Resource_Object.Metadata_Modules.GeoSpatial
             Error_Message = String.Empty;
 
             // Clear all item footprint info
- 
+
 
             // Save each and every coordinate point
             foreach (Coordinate_Point thisPoint in Points)
@@ -94,7 +94,7 @@ namespace SobekCM.Resource_Object.Metadata_Modules.GeoSpatial
 
                     // Step through each point
                     bool first_point = true;
-                    foreach ( Coordinate_Point thisPoint in polygon.Edge_Points)
+                    foreach (Coordinate_Point thisPoint in polygon.Edge_Points)
                     {
                         try
                         {
@@ -142,7 +142,7 @@ namespace SobekCM.Resource_Object.Metadata_Modules.GeoSpatial
                         string rect_KML_String = "<Placemark><name>" + polygon.Label + "</name><Polygon><outerBoundaryIs><LinearRing><coordinates>" + rect_longitude_a + "," + rect_latitude_a + " " + rect_longitude_b + "," + rect_latitude_b + "</coordinates></LinearRing></outerBoundaryIs></Polygon></Placemark>";
                         //for an overlay kml (not finished, requires url and perhaps folder support
                         //string rect_KML_String = "<GroundOverlay><name>" + polygon.Label + "</name><icon>url</icon><LatLonBox>" + rect_latitude_a + "," + rect_longitude_a + " " + rect_latitude_b + "," + rect_longitude_b + "</LatLonBox></GroundOverlay>";
-                        Save_Item_Footprint(ItemID, -1.0, -1.0, rect_latitude_a, rect_longitude_a, rect_latitude_b, rect_longitude_b, rect_KML_String, DB_ConnectionString, out Error_Message );
+                        Save_Item_Footprint(ItemID, -1.0, -1.0, rect_latitude_a, rect_longitude_a, rect_latitude_b, rect_longitude_b, rect_KML_String, DB_ConnectionString, out Error_Message);
                     }
                 }
                 catch
@@ -176,11 +176,11 @@ namespace SobekCM.Resource_Object.Metadata_Modules.GeoSpatial
         /// <param name="Error_Message"></param>
         /// <returns> TRUE if successful, otherwise FALSE </returns>
         public static bool Save_Item_Footprint(int ItemID, double Point_Latitude, double Point_Longitude, double Rect_Latitude_A,
-            double Rect_Longitude_A, double Rect_Latitude_B, double Rect_Longitude_B, string Segment_KML, string DB_ConnectionString, out string Error_Message )
+            double Rect_Longitude_A, double Rect_Latitude_B, double Rect_Longitude_B, string Segment_KML, string DB_ConnectionString, out string Error_Message)
         {
             Error_Message = String.Empty;
 
-             // Open the SQL connection
+            // Open the SQL connection
             using (SqlConnection sqlConnect = new SqlConnection(DB_ConnectionString))
             {
                 try
@@ -196,14 +196,14 @@ namespace SobekCM.Resource_Object.Metadata_Modules.GeoSpatial
                 // Create the sql command / stored procedure
                 SqlCommand cmd = new SqlCommand("SobekCM_Save_Item_Footprint")
                 {
-                    CommandType = CommandType.StoredProcedure, 
+                    CommandType = CommandType.StoredProcedure,
                     Connection = sqlConnect
                 };
 
                 // Add the parameters
                 cmd.Parameters.AddWithValue("@itemid", ItemID);
-                if ( Point_Latitude == -1.0 )
-                    cmd.Parameters.AddWithValue("@Point_Latitude", DBNull.Value );
+                if (Point_Latitude == -1.0)
+                    cmd.Parameters.AddWithValue("@Point_Latitude", DBNull.Value);
                 else
                     cmd.Parameters.AddWithValue("@Point_Latitude", Point_Latitude);
                 if (Point_Longitude == -1.0)
@@ -226,7 +226,7 @@ namespace SobekCM.Resource_Object.Metadata_Modules.GeoSpatial
                     cmd.Parameters.AddWithValue("@Rect_Longitude_B", DBNull.Value);
                 else
                     cmd.Parameters.AddWithValue("@Rect_Longitude_B", Rect_Longitude_B);
-                if (Segment_KML=="")
+                if (Segment_KML == "")
                     cmd.Parameters.AddWithValue("@Segment_KML", DBNull.Value);
                 else
                     cmd.Parameters.AddWithValue("@Segment_KML", Segment_KML);
@@ -242,7 +242,7 @@ namespace SobekCM.Resource_Object.Metadata_Modules.GeoSpatial
                     Error_Message = "Error saving values from GeoSpatial metadata module : " + ex.Message;
                     return false;
                 }
-                                
+
                 // Close the connection (not technical necessary since we put the connection in the
                 // scope of the using brackets.. it would dispose itself anyway)
                 try
@@ -282,7 +282,8 @@ namespace SobekCM.Resource_Object.Metadata_Modules.GeoSpatial
         /// <value>TRUE if any data exists, otherwise FALSE </value>
         public bool hasData
         {
-            get {
+            get
+            {
                 return ((points != null) && (points.Count != 0)) || ((polygons != null) && (polygons.Count != 0)) || ((lines != null) && (lines.Count != 0)) || (!String.IsNullOrEmpty(kml_reference));
             }
         }

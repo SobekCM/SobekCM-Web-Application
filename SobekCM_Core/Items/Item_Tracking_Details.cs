@@ -1,8 +1,8 @@
-﻿using System;
+﻿using ProtoBuf;
+using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
-using ProtoBuf;
 
 namespace SobekCM.Core.Items
 {
@@ -12,7 +12,7 @@ namespace SobekCM.Core.Items
     public class Item_Tracking_Details
     {
         /// <summary> List of all the workflow events that occurred against this digital resource </summary>
-        [DataMember(Name="events")]
+        [DataMember(Name = "events")]
         [XmlArray("events")]
         [XmlArrayItem("event", typeof(Item_Tracking_Event))]
         [ProtoMember(1)]
@@ -36,14 +36,14 @@ namespace SobekCM.Core.Items
         [XmlAttribute("digitalAcquisition")]
         public DateTime Milestone_DigitalAcquisition_XML
         {
-            get { return Milestone_DigitalAcquisition.HasValue ? Milestone_DigitalAcquisition.Value : DateTime.MinValue; } 
+            get { return Milestone_DigitalAcquisition.HasValue ? Milestone_DigitalAcquisition.Value : DateTime.MinValue; }
             set { if (value != DateTime.MinValue) Milestone_DigitalAcquisition = value; }
         }
 
         /// <summary> Property controls if the associated property is serialized during XML serialization </summary>
         public bool ShouldSerializeMilestone_DigitalAcquisition_XML
         {
-            get { return Milestone_DigitalAcquisition.HasValue;  }
+            get { return Milestone_DigitalAcquisition.HasValue; }
         }
 
         /// <summary> Date this item reached the second milestone - image processing </summary>

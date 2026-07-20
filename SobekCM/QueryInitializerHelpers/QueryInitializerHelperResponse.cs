@@ -32,7 +32,7 @@ namespace SobekCM.QueryInitializerHelpers
 
         public static QueryInitializerHelperResponse Successful
         {
-            get { return new QueryInitializerHelperResponse(true);  }
+            get { return new QueryInitializerHelperResponse(true); }
         }
     }
 }

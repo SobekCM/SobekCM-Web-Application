@@ -1,13 +1,11 @@
 #region Using directives
 
 using Microsoft.AspNetCore.Http;
-using System.IO;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.Navigation;
-using SobekCM.Core.UI_Configuration;
-using SobekCM.Core.UI_Configuration.StaticResources;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Tools;
+using System.IO;
 
 #endregion
 
@@ -79,7 +77,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         /// <remarks> This writes the HTML from the static browse or info page here  </remarks>
         public override void Add_Secondary_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
-          
+
             bool isAll = (RequestSpecificValues.Current_Mode.Aggregation.Length == 0) || (RequestSpecificValues.Current_Mode.Aggregation.ToUpper() == "ALL");
 
 
@@ -125,10 +123,10 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             }
 
             // Add admin view is system administrator
-                RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Administrative;
-                RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Aggregation_Single;
-                string admin_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
-                RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Aggregation;
+            RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Administrative;
+            RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Aggregation_Single;
+            string admin_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+            RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Aggregation;
 
             // Add the link for the private and dark items
             Output.WriteLine("    <tr>");

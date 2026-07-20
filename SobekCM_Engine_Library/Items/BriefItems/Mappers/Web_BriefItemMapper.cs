@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using SobekCM.Core.BriefItem;
+﻿using SobekCM.Core.BriefItem;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Divisions;
+using System;
+using System.Collections.Generic;
 
 namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
 {
@@ -67,7 +64,7 @@ namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
                 {
                     // Determine the type of link
                     New.Web.Title_Box_Additional_Link_Type = "Related Link";
-                    if ( !String.IsNullOrEmpty(Original.Bib_Info.Location.Other_URL_Display_Label))
+                    if (!String.IsNullOrEmpty(Original.Bib_Info.Location.Other_URL_Display_Label))
                     {
                         New.Web.Title_Box_Additional_Link_Type = Original.Bib_Info.Location.Other_URL_Display_Label;
                     }

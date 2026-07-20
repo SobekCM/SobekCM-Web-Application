@@ -1,12 +1,10 @@
 ﻿#region Using directives
 
-using System.IO;
 using Microsoft.AspNetCore.Http;
 using SobekCM.Core.Navigation;
-using SobekCM.Core.UI_Configuration;
-using SobekCM.Core.UI_Configuration.StaticResources;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Tools;
+using System.IO;
 
 #endregion
 
@@ -42,21 +40,21 @@ namespace SobekCM.Library.MainWriters
 
             Output.WriteLine("  <meta name=\"robots\" content=\"index, follow\">");
 
-			// Write the style sheet to use 
+            // Write the style sheet to use 
             Output.WriteLine("  <link href=\"" + Static_Resources_Gateway.Sobekcm_Css + "\" rel=\"stylesheet\" type=\"text/css\" />");
 
-			// Write the main SobekCM item style sheet to use 
-			Output.WriteLine("  <link href=\"" + Static_Resources_Gateway.Sobekcm_Item_Css + "\" rel=\"stylesheet\" type=\"text/css\" />");
+            // Write the main SobekCM item style sheet to use 
+            Output.WriteLine("  <link href=\"" + Static_Resources_Gateway.Sobekcm_Item_Css + "\" rel=\"stylesheet\" type=\"text/css\" />");
 
-			// Always add jQuery library (changed as of 7/8/2013)
-			if ((RequestSpecificValues.Current_Mode.Mode != Display_Mode_Enum.Item_Display) || (RequestSpecificValues.Current_Mode.ViewerCode != "pageturner"))
-			{
+            // Always add jQuery library (changed as of 7/8/2013)
+            if ((RequestSpecificValues.Current_Mode.Mode != Display_Mode_Enum.Item_Display) || (RequestSpecificValues.Current_Mode.ViewerCode != "pageturner"))
+            {
                 Output.WriteLine("  <script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Jquery_1_10_2_Js + "\"></script>");
-				Output.WriteLine("  <script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Sobekcm_Full_Js + "\"></script>");
-			}
+                Output.WriteLine("  <script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Sobekcm_Full_Js + "\"></script>");
+            }
 
-			// Include the interface's style sheet if it has one
-			Output.WriteLine("  <link href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "design/skins/" + RequestSpecificValues.Current_Mode.Base_Skin_Or_Skin + "/" + RequestSpecificValues.Current_Mode.Base_Skin_Or_Skin + ".css\" rel=\"stylesheet\" type=\"text/css\" />");
+            // Include the interface's style sheet if it has one
+            Output.WriteLine("  <link href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "design/skins/" + RequestSpecificValues.Current_Mode.Base_Skin_Or_Skin + "/" + RequestSpecificValues.Current_Mode.Base_Skin_Or_Skin + ".css\" rel=\"stylesheet\" type=\"text/css\" />");
         }
 
         /// <summary> Perform all the work of adding text directly to the response stream back to the web user </summary>
@@ -71,7 +69,7 @@ namespace SobekCM.Library.MainWriters
                 FileStream fileStream = new FileStream(fileToEcho, FileMode.Open, FileAccess.Read);
                 StreamReader reader = new StreamReader(fileStream);
                 string line = reader.ReadLine();
-                while ( line != null )
+                while (line != null)
                 {
                     Output.WriteLine(line);
                     line = reader.ReadLine();

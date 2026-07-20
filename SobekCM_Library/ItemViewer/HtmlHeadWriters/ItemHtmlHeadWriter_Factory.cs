@@ -1,7 +1,7 @@
-﻿using System;
+﻿using SobekCM.Engine_Library.ApplicationState;
+using System;
 using System.Collections.Generic;
 using System.Reflection;
-using SobekCM.Engine_Library.ApplicationState;
 
 namespace SobekCM.Library.ItemViewer.HtmlHeadWriters
 {
@@ -45,7 +45,7 @@ namespace SobekCM.Library.ItemViewer.HtmlHeadWriters
 
                 // Try to create this then
                 iItemHtmlHeadWriter returnObj = createWriter(Assembly, Class);
-                
+
                 // Save in the dictionary
                 headWriters[key] = returnObj;
 

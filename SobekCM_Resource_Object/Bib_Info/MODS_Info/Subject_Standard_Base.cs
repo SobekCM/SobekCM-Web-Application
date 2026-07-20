@@ -49,7 +49,8 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// there are no topical subjects, the Topics property creates a readonly collection to pass back out.</remarks>
         public int Topics_Count
         {
-            get {
+            get
+            {
                 return topics == null ? 0 : topics.Count;
             }
         }
@@ -59,7 +60,8 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// Even if there are no topical subjects, this property creates a readonly collection to pass back out.</remarks>
         public ReadOnlyCollection<string> Topics
         {
-            get {
+            get
+            {
                 return topics == null ? new ReadOnlyCollection<string>(new List<string>()) : new ReadOnlyCollection<string>(topics);
             }
         }
@@ -69,7 +71,8 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// there are no geographic subjects, the Geographics property creates a readonly collection to pass back out.</remarks>
         public int Geographics_Count
         {
-            get {
+            get
+            {
                 return geographics == null ? 0 : geographics.Count;
             }
         }
@@ -79,7 +82,8 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// Even if there are no geographic subjects, this property creates a readonly collection to pass back out.</remarks>
         public ReadOnlyCollection<string> Geographics
         {
-            get {
+            get
+            {
                 return geographics == null ? new ReadOnlyCollection<string>(new List<string>()) : new ReadOnlyCollection<string>(geographics);
             }
         }
@@ -89,7 +93,8 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// there are no temporal subjects, the Temporals property creates a readonly collection to pass back out.</remarks>
         public int Temporals_Count
         {
-            get {
+            get
+            {
                 return temporals == null ? 0 : temporals.Count;
             }
         }
@@ -99,7 +104,8 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// Even if there are no temporal subjects, this property creates a readonly collection to pass back out.</remarks>
         public ReadOnlyCollection<string> Temporals
         {
-            get {
+            get
+            {
                 return temporals == null ? new ReadOnlyCollection<string>(new List<string>()) : new ReadOnlyCollection<string>(temporals);
             }
         }
@@ -109,7 +115,8 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// there are no genre subjects, the Genres property creates a readonly collection to pass back out.</remarks>
         public int Genres_Count
         {
-            get {
+            get
+            {
                 return genres == null ? 0 : genres.Count;
             }
         }
@@ -119,7 +126,8 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// Even if there are no genre subjects, this property creates a readonly collection to pass back out.</remarks>
         public ReadOnlyCollection<string> Genres
         {
-            get {
+            get
+            {
                 return genres == null ? new ReadOnlyCollection<string>(new List<string>()) : new ReadOnlyCollection<string>(genres);
             }
         }

@@ -1,16 +1,7 @@
 #region Using directives
 
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Data;
-using System.Data.Common;
-using Microsoft.Data.SqlClient;
-using System.IO;
-using System.Linq;
-using System.Net;
-using System.Text;
 using EngineAgnosticLayerDbAccess;
+using Microsoft.Data.SqlClient;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Behaviors;
 using SobekCM.Resource_Object.Bib_Info;
@@ -18,6 +9,15 @@ using SobekCM.Resource_Object.Database.DataSets;
 using SobekCM.Resource_Object.Divisions;
 using SobekCM.Resource_Object.Metadata_Modules;
 using SobekCM.Resource_Object.OAI.Writer;
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Data;
+using System.Data.Common;
+using System.IO;
+using System.Linq;
+using System.Net;
+using System.Text;
 
 #endregion
 
@@ -112,7 +112,7 @@ namespace SobekCM_Resource_Database
                         }
                     }
 
-                    Wordmark_Info newIcon = new Wordmark_Info {HTML = html, Link = link, Title = name, Code = code};
+                    Wordmark_Info newIcon = new Wordmark_Info { HTML = html, Link = link, Title = name, Code = code };
                     Resource.Behaviors.Add_Wordmark(newIcon);
                 }
 
@@ -181,7 +181,7 @@ namespace SobekCM_Resource_Database
 
                 if (subject.Class_Type == Subject_Info_Type.Standard)
                 {
-                    Subject_Info_Standard standardSubject = (Subject_Info_Standard) subject;
+                    Subject_Info_Standard standardSubject = (Subject_Info_Standard)subject;
                     string subjectText = standardSubject.ToString(false);
                     if (subjectsDisplayBuilder.Length > 0)
                         subjectsDisplayBuilder.Append("|");
@@ -520,13 +520,13 @@ namespace SobekCM_Resource_Database
 
                 param_list[i] = new EalDbParameter("@ItemID", -1);
                 param_list[i++].Direction = ParameterDirection.InputOutput;
-                param_list[i] = new EalDbParameter("@New_VID", "00000") {Direction = ParameterDirection.InputOutput};
+                param_list[i] = new EalDbParameter("@New_VID", "00000") { Direction = ParameterDirection.InputOutput };
 
                 // Execute this non-query stored procedure
                 EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Save_New_Item", param_list);
 
                 // Save the item id and VID into the package
-                ThisPackage.Web.ItemID = (int) param_list[70].Value;
+                ThisPackage.Web.ItemID = (int)param_list[70].Value;
                 ThisPackage.VID = param_list[71].Value.ToString();
             }
             catch (Exception ee)
@@ -656,7 +656,7 @@ namespace SobekCM_Resource_Database
 
             if (behaviors.User_Access_Count == 0) return;
 
-            foreach(User_Permissions permissions in behaviors.User_Access)
+            foreach (User_Permissions permissions in behaviors.User_Access)
             {
                 Save_Item_User_Permissions(itemid, permissions);
             }
@@ -1105,7 +1105,7 @@ namespace SobekCM_Resource_Database
             {
                 if (subject.Class_Type == Subject_Info_Type.Standard)
                 {
-                    Subject_Info_Standard standardSubject = (Subject_Info_Standard) subject;
+                    Subject_Info_Standard standardSubject = (Subject_Info_Standard)subject;
                     string subjectText = standardSubject.ToString(false);
                     if (subjectsDisplayBuilder.Length > 0)
                         subjectsDisplayBuilder.Append("|");
@@ -1588,7 +1588,7 @@ namespace SobekCM_Resource_Database
             List<KeyValuePair<string, string>> metadataTerms = ThisPackage.Search_Terms;
 
             // Just add blanks in at the end to get this to an increment of ten
-            while ((metadataTerms.Count%10) != 0)
+            while ((metadataTerms.Count % 10) != 0)
             {
                 metadataTerms.Add(new KeyValuePair<string, string>(String.Empty, String.Empty));
             }
@@ -1692,15 +1692,15 @@ namespace SobekCM_Resource_Database
                 param_list[11] = new EalDbParameter("@Update_Existing", Update_Existing);
                 param_list[12] = new EalDbParameter("@PrimaryIdentifierType", Primary_Identifier_Type);
                 param_list[13] = new EalDbParameter("@PrimaryIdentifier", Primary_Identifier);
-                param_list[14] = new EalDbParameter("@GroupID", -1) {Direction = ParameterDirection.InputOutput};
-                param_list[15] = new EalDbParameter("@New_BibID", "0000000000") {Direction = ParameterDirection.InputOutput};
-                param_list[16] = new EalDbParameter("@New_Group", false) {Direction = ParameterDirection.InputOutput};
+                param_list[14] = new EalDbParameter("@GroupID", -1) { Direction = ParameterDirection.InputOutput };
+                param_list[15] = new EalDbParameter("@New_BibID", "0000000000") { Direction = ParameterDirection.InputOutput };
+                param_list[16] = new EalDbParameter("@New_Group", false) { Direction = ParameterDirection.InputOutput };
 
                 // Execute this non-query stored procedure
                 EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Save_Item_Group", param_list);
 
                 // Get the values to return
-                int groupid = (int) param_list[14].Value;
+                int groupid = (int)param_list[14].Value;
                 string bibid = param_list[15].Value.ToString();
                 bool is_new = Convert.ToBoolean(param_list[16].Value);
 
@@ -1911,16 +1911,16 @@ namespace SobekCM_Resource_Database
                 param_list[25] = new EalDbParameter("@Donor", Donor);
                 param_list[26] = new EalDbParameter("@Publisher", Publisher);
                 param_list[27] = new EalDbParameter("@RestrictionMessage", RestrictionMessage);
-                param_list[28] = new EalDbParameter("@ItemID", -1) {Direction = ParameterDirection.InputOutput};
-                param_list[29] = new EalDbParameter("@Existing", false) {Direction = ParameterDirection.InputOutput};
-                param_list[30] = new EalDbParameter("@New_VID", "00000") {Direction = ParameterDirection.InputOutput};
+                param_list[28] = new EalDbParameter("@ItemID", -1) { Direction = ParameterDirection.InputOutput };
+                param_list[29] = new EalDbParameter("@Existing", false) { Direction = ParameterDirection.InputOutput };
+                param_list[30] = new EalDbParameter("@New_VID", "00000") { Direction = ParameterDirection.InputOutput };
 
                 // Execute this non-query stored procedure
                 EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Save_Item", param_list);
 
                 // Return the value
-                int itemID = (int) param_list[28].Value;
-                bool existing = (bool) param_list[29].Value;
+                int itemID = (int)param_list[28].Value;
+                bool existing = (bool)param_list[29].Value;
                 string new_vid = param_list[30].Value.ToString();
                 return new Save_Item_Args(itemID, existing, new_vid);
             }
@@ -2080,14 +2080,14 @@ namespace SobekCM_Resource_Database
             }
         }
 
-        private static List<View_Object> Get_Current_Item_Viewers(string BibID, string VID )
+        private static List<View_Object> Get_Current_Item_Viewers(string BibID, string VID)
         {
             // Build the parameters list
             List<EalDbParameter> parameters = new List<EalDbParameter>
-	        {
-	            new EalDbParameter("@bibid", BibID), 
+            {
+                new EalDbParameter("@bibid", BibID),
                 new EalDbParameter("@vid", VID)
-	        };
+            };
 
             // Create the database agnostic reader
             EalDbReaderWrapper readerWrapper = EalDbAccess.ExecuteDataReader(DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_Get_Item_Viewers", parameters);
@@ -2113,7 +2113,7 @@ namespace SobekCM_Resource_Database
                     View_Type = viewType,
                     Attributes = attributes,
                     Label = label,
-                    MenuOrder = (float) menuOrder,
+                    MenuOrder = (float)menuOrder,
                     Exclude = exclude
                 };
 
@@ -2166,8 +2166,8 @@ namespace SobekCM_Resource_Database
             string Tracking_Box, string AggregationCode1, string AggregationCode2,
             string AggregationCode3, string AggregationCode4, string AggregationCode5, string AggregationCode6,
             string AggregationCode7, string AggregationCode8, string HoldingCode, string SourceCode,
-            string Icon1_Name, string Icon2_Name, string Icon3_Name, string Icon4_Name, string Icon5_Name, 
-            bool Left_To_Right, string CitationSet )
+            string Icon1_Name, string Icon2_Name, string Icon3_Name, string Icon4_Name, string Icon5_Name,
+            bool Left_To_Right, string CitationSet)
         {
             try
             {
@@ -2232,7 +2232,7 @@ namespace SobekCM_Resource_Database
         /// <remarks> This method calls the stored procedure 'SobekCM_Save_Item_Behaviors_Minimal'. </remarks>
         /// <exception cref="SobekCM_Database_Exception"> Exception is thrown if an error is caught during 
         /// the database work and the THROW_EXCEPTIONS internal flag is set to true. </exception>
-        protected static bool Save_Item_Behaviors_Minimal(int ItemID, bool TextSearchable )
+        protected static bool Save_Item_Behaviors_Minimal(int ItemID, bool TextSearchable)
         {
             try
             {
@@ -2292,7 +2292,7 @@ namespace SobekCM_Resource_Database
         /// <remarks> This method calls the stored procedure 'SobekCM_Add_Item_Viewers'. </remarks>
         /// <exception cref="SobekCM_Database_Exception"> Exception is thrown if an error is caught during 
         /// the database work and the THROW_EXCEPTIONS internal flag is set to true. </exception>
-        public static bool Save_Item_Add_Viewer(int ItemID, string Viewer_Type, string Viewer_Label, string Viewer_Attributes )
+        public static bool Save_Item_Add_Viewer(int ItemID, string Viewer_Type, string Viewer_Label, string Viewer_Attributes)
         {
             return Save_Item_Add_Viewers(ItemID, Viewer_Type, Viewer_Label, Viewer_Attributes, String.Empty, String.Empty, String.Empty,
                 String.Empty, String.Empty, String.Empty, String.Empty, String.Empty, String.Empty,

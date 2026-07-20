@@ -65,7 +65,7 @@ namespace SobekCM.Resource_Object.Behaviors
         /// <returns> Shallow copy of this view object </returns>
         public View_Object Copy()
         {
-            return new View_Object {Label = Label, View_Type = View_Type, Exclude = Exclude, MenuOrder = MenuOrder, Attributes = Attributes};
+            return new View_Object { Label = Label, View_Type = View_Type, Exclude = Exclude, MenuOrder = MenuOrder, Attributes = Attributes };
         }
 
         #region IEquatable<View_Object> Members
@@ -86,7 +86,7 @@ namespace SobekCM.Resource_Object.Behaviors
         /// <param name="ViewCount"> Number of this view, as they are added </param>
         internal void Add_METS(TextWriter Results, int ViewCount)
         {
-            if ( String.IsNullOrEmpty(View_Type))
+            if (String.IsNullOrEmpty(View_Type))
             {
                 return;
             }

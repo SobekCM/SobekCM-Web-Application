@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace SobekCM.Core.Users
+﻿namespace SobekCM.Core.Users
 {
     /// <summary> Class holds constant string values used for the keys and some
     /// controlled values in the user settings </summary>

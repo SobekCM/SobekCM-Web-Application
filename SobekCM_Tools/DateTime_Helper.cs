@@ -19,7 +19,7 @@ namespace SobekCM.Tools
 
             if (offset < 0)
             {
-                int i = offset*-1;
+                int i = offset * -1;
                 timeZone = "-" + i.ToString().PadLeft(2, '0');
             }
 

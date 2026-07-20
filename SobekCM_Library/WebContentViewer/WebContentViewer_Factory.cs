@@ -14,7 +14,7 @@ namespace SobekCM.Library.WebContentViewer
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
         /// <param name="StaticPage"> Static page info for this request </param>
         /// <returns> Web content viewer that extends the <see cref="abstractWebContentViewer"/> class. </returns>
-        public static abstractWebContentViewer Get_Viewer(WebContent_Type_Enum ViewType, RequestCache RequestSpecificValues, HTML_Based_Content StaticPage )
+        public static abstractWebContentViewer Get_Viewer(WebContent_Type_Enum ViewType, RequestCache RequestSpecificValues, HTML_Based_Content StaticPage)
         {
             switch (ViewType)
             {

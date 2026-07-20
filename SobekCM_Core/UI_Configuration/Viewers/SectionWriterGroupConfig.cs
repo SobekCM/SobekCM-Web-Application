@@ -1,8 +1,8 @@
-﻿using System;
+﻿using ProtoBuf;
+using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
-using ProtoBuf;
 
 namespace SobekCM.Core.UI_Configuration.Viewers
 {
@@ -36,7 +36,7 @@ namespace SobekCM.Core.UI_Configuration.Viewers
         /// <summary> Constructor for a new instance of the <see cref="SectionWriterGroupConfig"/> class </summary>
         /// <param name="Name"> Name of this section, which can include section writers and should 
         /// match a section directive in the item writer source HTML file </param>
-        public SectionWriterGroupConfig( string Name )
+        public SectionWriterGroupConfig(string Name)
         {
             this.Name = Name;
             Writers = new List<SectionWriterConfig>();
@@ -56,7 +56,7 @@ namespace SobekCM.Core.UI_Configuration.Viewers
             }
 
             // Didn't return anything, so must be a new ID
-            SectionWriterConfig newSection = new SectionWriterConfig {ID = ID, Enabled = true};
+            SectionWriterConfig newSection = new SectionWriterConfig { ID = ID, Enabled = true };
             Writers.Add(newSection);
             return newSection;
         }

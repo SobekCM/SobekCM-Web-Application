@@ -1,13 +1,13 @@
 #region Using directives
 
+using ProtoBuf;
+using SobekCM.Core.Aggregations;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
-using ProtoBuf;
-using SobekCM.Core.Aggregations;
 
 #endregion
 
@@ -55,35 +55,35 @@ namespace SobekCM.Core.ApplicationState
 
         /// <summary> Read-only collection of all the aggregation information sorted by full name </summary>
         [XmlIgnore]
-		public ReadOnlyCollection<Item_Aggregation_Related_Aggregations> All_Aggregations_Name_Sorted
-		{
-			get 
-			{ 
-				SortedDictionary<string, Item_Aggregation_Related_Aggregations> sorter = new SortedDictionary<string, Item_Aggregation_Related_Aggregations>();
-				foreach (Item_Aggregation_Related_Aggregations thisAggr in All_Aggregations)
-				{
-					sorter[thisAggr.Name.ToUpper()] = thisAggr;
-				}
-				List<Item_Aggregation_Related_Aggregations> returnVal = sorter.Select(DictEntry => DictEntry.Value).ToList();
-			    return new ReadOnlyCollection<Item_Aggregation_Related_Aggregations>(returnVal);
-			}
-		}
+        public ReadOnlyCollection<Item_Aggregation_Related_Aggregations> All_Aggregations_Name_Sorted
+        {
+            get
+            {
+                SortedDictionary<string, Item_Aggregation_Related_Aggregations> sorter = new SortedDictionary<string, Item_Aggregation_Related_Aggregations>();
+                foreach (Item_Aggregation_Related_Aggregations thisAggr in All_Aggregations)
+                {
+                    sorter[thisAggr.Name.ToUpper()] = thisAggr;
+                }
+                List<Item_Aggregation_Related_Aggregations> returnVal = sorter.Select(DictEntry => DictEntry.Value).ToList();
+                return new ReadOnlyCollection<Item_Aggregation_Related_Aggregations>(returnVal);
+            }
+        }
 
-		/// <summary> Read-only collection of all the aggregation information sorted by short name  </summary>
+        /// <summary> Read-only collection of all the aggregation information sorted by short name  </summary>
         [XmlIgnore]
-		public ReadOnlyCollection<Item_Aggregation_Related_Aggregations> All_Aggregations_ShortName_Sorted
-		{
-			get
-			{
-				SortedDictionary<string, Item_Aggregation_Related_Aggregations> sorter = new SortedDictionary<string, Item_Aggregation_Related_Aggregations>();
-				foreach (Item_Aggregation_Related_Aggregations thisAggr in All_Aggregations)
-				{
-					sorter[thisAggr.ShortName.ToUpper()] = thisAggr;
-				}
-				List<Item_Aggregation_Related_Aggregations> returnVal = sorter.Select(DictEntry => DictEntry.Value).ToList();
-			    return new ReadOnlyCollection<Item_Aggregation_Related_Aggregations>(returnVal);
-			}
-		}
+        public ReadOnlyCollection<Item_Aggregation_Related_Aggregations> All_Aggregations_ShortName_Sorted
+        {
+            get
+            {
+                SortedDictionary<string, Item_Aggregation_Related_Aggregations> sorter = new SortedDictionary<string, Item_Aggregation_Related_Aggregations>();
+                foreach (Item_Aggregation_Related_Aggregations thisAggr in All_Aggregations)
+                {
+                    sorter[thisAggr.ShortName.ToUpper()] = thisAggr;
+                }
+                List<Item_Aggregation_Related_Aggregations> returnVal = sorter.Select(DictEntry => DictEntry.Value).ToList();
+                return new ReadOnlyCollection<Item_Aggregation_Related_Aggregations>(returnVal);
+            }
+        }
 
         /// <summary> Gets the aggregation by primary key  </summary>
         /// <param name="AggregationID"> Aggregation ID for the aggregation to get </param>
@@ -116,7 +116,8 @@ namespace SobekCM.Core.ApplicationState
         /// <returns> Aggregation information, or NULL if not present </returns>
         public Item_Aggregation_Related_Aggregations this[string Aggregation_Code]
         {
-            get {
+            get
+            {
                 return aggregationsByCode.ContainsKey(Aggregation_Code.ToUpper()) ? aggregationsByCode[Aggregation_Code.ToUpper()] : null;
             }
         }
@@ -135,13 +136,13 @@ namespace SobekCM.Core.ApplicationState
         /// <param name="New_Aggregation"> New aggregation to add information about </param>
         public void Add_Collection(Item_Aggregation_Related_Aggregations New_Aggregation)
         {
-			// Insert this into the proper spot in the item aggregation list
-	        int index = 0;
-			while ((index < All_Aggregations.Count) && ( string.CompareOrdinal(New_Aggregation.Code, All_Aggregations[index].Code) > 0 ))
-			{
-				index++;
-			}
-			All_Aggregations.Insert(index, New_Aggregation);
+            // Insert this into the proper spot in the item aggregation list
+            int index = 0;
+            while ((index < All_Aggregations.Count) && (string.CompareOrdinal(New_Aggregation.Code, All_Aggregations[index].Code) > 0))
+            {
+                index++;
+            }
+            All_Aggregations.Insert(index, New_Aggregation);
 
             // Add this to the various dictionaries
             aggregationsByCode[New_Aggregation.Code] = New_Aggregation;
@@ -155,9 +156,9 @@ namespace SobekCM.Core.ApplicationState
             }
             else
             {
-                aggregationsByType[New_Aggregation.Type] = new List<Item_Aggregation_Related_Aggregations> {New_Aggregation};
+                aggregationsByType[New_Aggregation.Type] = new List<Item_Aggregation_Related_Aggregations> { New_Aggregation };
             }
-            if (( New_Aggregation.Thematic_Heading != null ) && ( New_Aggregation.Thematic_Heading.ID > 0 ))
+            if ((New_Aggregation.Thematic_Heading != null) && (New_Aggregation.Thematic_Heading.ID > 0))
             {
                 if (Aggregations_By_Thematic_Heading.ContainsKey(New_Aggregation.Thematic_Heading.ID))
                 {
@@ -181,8 +182,8 @@ namespace SobekCM.Core.ApplicationState
             {
                 return new ReadOnlyCollection<Item_Aggregation_Related_Aggregations>(aggregationsByType[AggregationType]);
             }
-            
-            return new ReadOnlyCollection<Item_Aggregation_Related_Aggregations>( new List<Item_Aggregation_Related_Aggregations>());
+
+            return new ReadOnlyCollection<Item_Aggregation_Related_Aggregations>(new List<Item_Aggregation_Related_Aggregations>());
         }
 
         /// <summary>
@@ -196,7 +197,7 @@ namespace SobekCM.Core.ApplicationState
             {
                 return new ReadOnlyCollection<Item_Aggregation_Related_Aggregations>(Aggregations_By_Thematic_Heading[ThemeID]);
             }
-            
+
             return new ReadOnlyCollection<Item_Aggregation_Related_Aggregations>(new List<Item_Aggregation_Related_Aggregations>());
         }
 
@@ -209,7 +210,7 @@ namespace SobekCM.Core.ApplicationState
         {
             if (aggregationsByCode.ContainsKey(Aggregation_Code.ToUpper()))
                 return aggregationsByCode[Aggregation_Code.ToUpper()].ShortName;
-            
+
             return Aggregation_Code;
         }
 
@@ -221,66 +222,66 @@ namespace SobekCM.Core.ApplicationState
             return aggregationsByCode.ContainsKey(Aggregation_Code.ToUpper());
         }
 
-		/// <summary> Set an aggregation to be a part of an existing thematic heading id </summary>
-		/// <param name="Code"></param>
-		/// <param name="ThematicHeadingID"></param>
-	    public void Set_Aggregation_Thematic_Heading(string Code, int? ThematicHeadingID)
-		{
+        /// <summary> Set an aggregation to be a part of an existing thematic heading id </summary>
+        /// <param name="Code"></param>
+        /// <param name="ThematicHeadingID"></param>
+        public void Set_Aggregation_Thematic_Heading(string Code, int? ThematicHeadingID)
+        {
             Item_Aggregation_Related_Aggregations thisAggr = aggregationsByCode[Code.ToUpper()];
 
             // If this is NULL, just return
-		    if ((!ThematicHeadingID.HasValue) || ( ThematicHeadingID.Value < 0 ))
-		    {
+            if ((!ThematicHeadingID.HasValue) || (ThematicHeadingID.Value < 0))
+            {
                 foreach (KeyValuePair<int, List<Item_Aggregation_Related_Aggregations>> theme in Aggregations_By_Thematic_Heading)
                 {
                     if (theme.Value.Contains(thisAggr))
                         theme.Value.Remove(thisAggr);
                 }
                 return;
-		    }
+            }
 
-			// If the thematic heading ID does not exit, just return
-			if (!Aggregations_By_Thematic_Heading.ContainsKey(ThematicHeadingID.Value))
-				return;
+            // If the thematic heading ID does not exit, just return
+            if (!Aggregations_By_Thematic_Heading.ContainsKey(ThematicHeadingID.Value))
+                return;
 
-			// If this aggregation does not exist, just return
-			if (!aggregationsByCode.ContainsKey(Code.ToUpper()))
-				return;
+            // If this aggregation does not exist, just return
+            if (!aggregationsByCode.ContainsKey(Code.ToUpper()))
+                return;
 
-			// Get this aggregation and list for this thematic heading
+            // Get this aggregation and list for this thematic heading
             List<Item_Aggregation_Related_Aggregations> thematicHeadingList = Aggregations_By_Thematic_Heading[ThematicHeadingID.Value];
 
-			// If this is already a part of the thematic heading, just return
-			if (thematicHeadingList.Contains(thisAggr))
-				return;
+            // If this is already a part of the thematic heading, just return
+            if (thematicHeadingList.Contains(thisAggr))
+                return;
 
-			// Ensure this aggregation is not a part of any other thematic headings
-			foreach (KeyValuePair<int, List<Item_Aggregation_Related_Aggregations>> theme in Aggregations_By_Thematic_Heading)
-			{
-				if (theme.Value.Contains(thisAggr))
-					theme.Value.Remove(thisAggr);
-			}
+            // Ensure this aggregation is not a part of any other thematic headings
+            foreach (KeyValuePair<int, List<Item_Aggregation_Related_Aggregations>> theme in Aggregations_By_Thematic_Heading)
+            {
+                if (theme.Value.Contains(thisAggr))
+                    theme.Value.Remove(thisAggr);
+            }
 
-			// Now, add this to the list for this thematic heading
-			int index = 0;
-			while ((index < thematicHeadingList.Count) && (string.CompareOrdinal(thisAggr.Code, thematicHeadingList[index].Code) > 0))
-			{
-				index++;
-			}
-			thematicHeadingList.Insert(index, thisAggr);
+            // Now, add this to the list for this thematic heading
+            int index = 0;
+            while ((index < thematicHeadingList.Count) && (string.CompareOrdinal(thisAggr.Code, thematicHeadingList[index].Code) > 0))
+            {
+                index++;
+            }
+            thematicHeadingList.Insert(index, thisAggr);
 
-		}
+        }
 
-		/// <summary> Adds a new blank thematic heading when a user adds one through
-		/// the administrative tools </summary>
-		/// <param name="NewThematicHeadingID">ID for the new thematic heading</param>
-		public void Add_Blank_Thematic_Heading(int NewThematicHeadingID)
-	    {
-			if (!Aggregations_By_Thematic_Heading.ContainsKey(NewThematicHeadingID))
-			{
-				Aggregations_By_Thematic_Heading[NewThematicHeadingID] = new List<Item_Aggregation_Related_Aggregations>();
-			}
-	    }
+        /// <summary> Adds a new blank thematic heading when a user adds one through
+        /// the administrative tools </summary>
+        /// <param name="NewThematicHeadingID">ID for the new thematic heading</param>
+        public void Add_Blank_Thematic_Heading(int NewThematicHeadingID)
+        {
+            if (!Aggregations_By_Thematic_Heading.ContainsKey(NewThematicHeadingID))
+            {
+                Aggregations_By_Thematic_Heading[NewThematicHeadingID] = new List<Item_Aggregation_Related_Aggregations>();
+            }
+        }
 
         /// <summary> Method is called by the serializer after this item is unserialized </summary>
         public void PostUnSerialization()

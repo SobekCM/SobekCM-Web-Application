@@ -1,13 +1,13 @@
 ﻿#region Using directives
 
+using SobekCM.Resource_Object.Divisions;
+using SobekCM.Resource_Object.Metadata_Modules;
+using SobekCM.Resource_Object.Metadata_Modules.GeoSpatial;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Xml;
-using SobekCM.Resource_Object.Divisions;
-using SobekCM.Resource_Object.Metadata_Modules;
-using SobekCM.Resource_Object.Metadata_Modules.GeoSpatial;
 
 #endregion
 
@@ -188,16 +188,16 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                             do
                             {
                                 //check to see if end of element
-                                if (Input_XmlReader.NodeType == XmlNodeType.EndElement && Input_XmlReader.Name == "gml:Point") 
+                                if (Input_XmlReader.NodeType == XmlNodeType.EndElement && Input_XmlReader.Name == "gml:Point")
                                     break;
                                 //if it is an element
-                                if (Input_XmlReader.NodeType == XmlNodeType.Element) 
+                                if (Input_XmlReader.NodeType == XmlNodeType.Element)
                                 {
                                     //determine the name of that element
-                                    switch (Input_XmlReader.Name) 
+                                    switch (Input_XmlReader.Name)
                                     {
                                         //if it is the coordinates
-                                        case "gml:Coordinates": 
+                                        case "gml:Coordinates":
                                             Input_XmlReader.Read();
                                             if ((Input_XmlReader.NodeType == XmlNodeType.Text) && (Input_XmlReader.Value.Trim().Length > 0))
                                             {
@@ -227,17 +227,17 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                             do
                             {
                                 //check to see if end of element
-                                if (Input_XmlReader.NodeType == XmlNodeType.EndElement && Input_XmlReader.Name == "gml:Line") 
+                                if (Input_XmlReader.NodeType == XmlNodeType.EndElement && Input_XmlReader.Name == "gml:Line")
                                     break;
                                 //if it is an element
-                                if (Input_XmlReader.NodeType == XmlNodeType.Element) 
+                                if (Input_XmlReader.NodeType == XmlNodeType.Element)
                                 {
                                     //determine the name of that element
-                                    switch (Input_XmlReader.Name) 
+                                    switch (Input_XmlReader.Name)
                                     {
                                         //if it is the coordinates
                                         case "gml:Coordinates":
-                                            Input_XmlReader.Read(); 
+                                            Input_XmlReader.Read();
                                             if ((Input_XmlReader.NodeType == XmlNodeType.Text) && (Input_XmlReader.Value.Trim().Length > 0))
                                             {
                                                 // Parse the string into a collection of doubles, which represents lats AND longs
@@ -305,16 +305,16 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                             do
                             {
                                 //check to see if end of element
-                                if (Input_XmlReader.NodeType == XmlNodeType.EndElement && Input_XmlReader.Name == "gml:Polygon") 
+                                if (Input_XmlReader.NodeType == XmlNodeType.EndElement && Input_XmlReader.Name == "gml:Polygon")
                                     break;
                                 //if it is an element
-                                if (Input_XmlReader.NodeType == XmlNodeType.Element) 
+                                if (Input_XmlReader.NodeType == XmlNodeType.Element)
                                 {
                                     //determine the name of that element
-                                    switch (Input_XmlReader.Name) 
+                                    switch (Input_XmlReader.Name)
                                     {
                                         //if it is the coordinates
-                                        case "gml:Coordinates": 
+                                        case "gml:Coordinates":
                                             Input_XmlReader.Read();
                                             if ((Input_XmlReader.NodeType == XmlNodeType.Text) && (Input_XmlReader.Value.Trim().Length > 0))
                                             {
@@ -381,16 +381,16 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                             do
                             {
                                 //check to see if end of element
-                                if (Input_XmlReader.NodeType == XmlNodeType.EndElement && Input_XmlReader.Name == "gml:Circle") 
+                                if (Input_XmlReader.NodeType == XmlNodeType.EndElement && Input_XmlReader.Name == "gml:Circle")
                                     break;
                                 //if it is an element
-                                if (Input_XmlReader.NodeType == XmlNodeType.Element) 
+                                if (Input_XmlReader.NodeType == XmlNodeType.Element)
                                 {
                                     //determine the name of that element
-                                    switch (Input_XmlReader.Name) 
+                                    switch (Input_XmlReader.Name)
                                     {
                                         //if it is the coordinates
-                                        case "gml:Coordinates": 
+                                        case "gml:Coordinates":
                                             Input_XmlReader.Read();
                                             if ((Input_XmlReader.NodeType == XmlNodeType.Text) && (Input_XmlReader.Value.Trim().Length > 0))
                                             {
@@ -399,7 +399,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                                                 double latitude = double.Parse(items[0]);
                                                 double longitude = double.Parse(items[1]);
                                                 //create the circle
-                                                Coordinate_Circle newCircle = new Coordinate_Circle(latitude, longitude, circleRadius, circleLabel, circleFeatureType); 
+                                                Coordinate_Circle newCircle = new Coordinate_Circle(latitude, longitude, circleRadius, circleLabel, circleFeatureType);
                                                 //add to object
                                                 geoInfo.Add_Circle(newCircle);
                                             }

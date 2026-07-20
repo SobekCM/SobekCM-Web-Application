@@ -1,15 +1,15 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
+using Microsoft.AspNetCore.Http;
 using SobekCM.Core.BriefItem;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Users;
 using SobekCM.Library.ItemViewer.Menu;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
-using Microsoft.AspNetCore.Http;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
 
 namespace SobekCM.Library.ItemViewer.Viewers
 {
@@ -172,7 +172,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             // Add the main wrapper division
             Output.WriteLine("<div id=\"sbkCiv_Citation\">");
-            
+
             if (!CurrentRequest.Is_Robot)
                 Citation_Standard_ItemViewer.Add_Citation_View_Tabs(Output, BriefItem, CurrentRequest, "METADATA");
 
@@ -210,7 +210,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             builder.AppendLine("<p>The data (or metadata) about this digital resource is available in a variety of metadata formats. For more information about these formats, see the <a href=\"http://ufdc.ufl.edu/sobekcm/metadata\">Metadata Section</a> of the <a href=\"http://ufdc.ufl.edu/sobekcm/\">Technical Aspects</a> information.</p>");
             builder.AppendLine("<br />");
 
-            if ( BriefItem.Type == "EAD" )
+            if (BriefItem.Type == "EAD")
             {
                 string ead_file = String.Empty;
                 foreach (BriefItem_FileGrouping downloadPage in BriefItem.Downloads)
@@ -249,7 +249,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             // Should the TEI be added here?
 
-            if (BriefItem.Behaviors.Get_Viewer("TEI") != null )
+            if (BriefItem.Behaviors.Get_Viewer("TEI") != null)
             {
                 // Does a TEI file exist?
                 //string tei_filename = BriefItem.BibID + "_" + BriefItem.VID + ".tei.xml";

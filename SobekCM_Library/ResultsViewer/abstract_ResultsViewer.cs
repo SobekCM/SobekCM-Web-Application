@@ -1,9 +1,5 @@
 ﻿#region Using directives
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
 using Microsoft.AspNetCore.Http;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
@@ -11,6 +7,10 @@ using SobekCM.Core.Results;
 using SobekCM.Library.HTML;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Text;
 
 #endregion
 
@@ -89,7 +89,7 @@ namespace SobekCM.Library.ResultsViewer
                 // Determine which rows to display
                 if (RequestSpecificValues.Current_Mode.Page.HasValue)
                     return (RequestSpecificValues.Current_Mode.Page.Value * Results_Per_Page);
-                
+
                 return Results_Per_Page;
             }
         }
@@ -135,7 +135,8 @@ namespace SobekCM.Library.ResultsViewer
         /// <value> This value can be override by child classes, but by default this returns the number of titles in the result set, unless this is a date sort, in which case the number of issues is returned </value>
         public virtual int Total_Results
         {
-            get {
+            get
+            {
                 return RequestSpecificValues.Current_Mode.Sort >= 10 ? ResultsStats.Total_Items : ResultsStats.Total_Titles;
             }
         }
@@ -172,7 +173,7 @@ namespace SobekCM.Library.ResultsViewer
         /// against the calculated last row to ensure correctness</summary>
         /// <param name="CalculatedLastRow"> Calculated last row to be displayed, to be used for validation purposes</param>
         /// <returns> Index of the first result to display on the current page</returns>
-        public int StartRow ( int CalculatedLastRow )
+        public int StartRow(int CalculatedLastRow)
         {
             return CalculatedLastRow - Results_Per_Page - 1;
         }
@@ -180,11 +181,11 @@ namespace SobekCM.Library.ResultsViewer
         private string compute_image_redirect_stem()
         {
             string url_options = UrlWriterHelper.URL_Options(RequestSpecificValues.Current_Mode);
-            if ( !String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.Coordinates))
+            if (!String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.Coordinates))
             {
                 return (url_options.Length > 0) ? "?coord=" + RequestSpecificValues.Current_Mode.Coordinates + "&" + url_options : "?coord=" + RequestSpecificValues.Current_Mode.Coordinates;
             }
-            
+
             return (url_options.Length > 0) ? "?" + url_options : String.Empty;
         }
 
@@ -231,15 +232,15 @@ namespace SobekCM.Library.ResultsViewer
             {
                 if ((RequestSpecificValues.Current_Mode.Search_Type == Search_Type_Enum.Full_Text) || (text_included_in_search))
                 {
-                    return (url_options.Length > 0) ? "/search?search=" + textSearcher + "&" + url_options :  "/search?search=" + textSearcher;
+                    return (url_options.Length > 0) ? "/search?search=" + textSearcher + "&" + url_options : "/search?search=" + textSearcher;
                 }
-                    
+
                 return (url_options.Length > 0) ? "?search=" + textSearcher + "&" + url_options : "?search=" + textSearcher;
             }
-            return (url_options.Length > 0) ?  "?" + url_options :  String.Empty;
+            return (url_options.Length > 0) ? "?" + url_options : String.Empty;
         }
 
- 
+
         /// <summary> Builds the HTML tree for all the issues related to a single result title and
         /// writes it to the output stream, eagerly loading all child nodes </summary>
         /// <param name="Output"> TextWriter to write HTML output </param>

@@ -1,15 +1,11 @@
 #region Using directives
 
-using System;
-using System.Collections.Generic;
-using System.IO;
+using Microsoft.AspNetCore.Http;
 using SobekCM.Core.ApplicationState;
 using SobekCM.Core.Client;
 using SobekCM.Core.Items;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
-using SobekCM.Core.UI_Configuration;
-using SobekCM.Core.UI_Configuration.StaticResources;
 using SobekCM.Core.Users;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Engine_Library.Email;
@@ -17,11 +13,12 @@ using SobekCM.Library.AdminViewer;
 using SobekCM.Library.HTML;
 using SobekCM.Library.UI;
 using SobekCM.Resource_Object;
-using SobekCM.Resource_Object.Database;
 using SobekCM.Resource_Object.Metadata_Modules;
 using SobekCM.Tools;
 using SobekCM_Resource_Database;
-using Microsoft.AspNetCore.Http;
+using System;
+using System.Collections.Generic;
+using System.IO;
 
 #endregion
 
@@ -79,7 +76,7 @@ namespace SobekCM.Library.MySobekViewer
 
             // See if this user is explicitly denied access to permission changes
             bool hasAccess = RequestSpecificValues.Current_User.Get_Setting(User_Setting_Constants.ItemViewer_AllowPermissionChanges, true);
-            if (!hasAccess )
+            if (!hasAccess)
             {
                 RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Item_Display;
                 UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
@@ -94,11 +91,11 @@ namespace SobekCM.Library.MySobekViewer
             // Is there already a RightsMD module in the item?
             // Ensure this metadata module extension exists
             RightsMD_Info rightsInfo = currentItem.Get_Metadata_Module(GlobalVar.PALMM_RIGHTSMD_METADATA_MODULE_KEY) as RightsMD_Info;
-            if (( rightsInfo != null) && ( rightsInfo.Has_Embargo_End ))
+            if ((rightsInfo != null) && (rightsInfo.Has_Embargo_End))
             {
                 embargoDate = rightsInfo.Embargo_End;
             }
-            
+
 
             // Is this a postback?
             if ((RequestSpecificValues.Current_Mode.isPostBack) && (Context.Request.HasFormContentType))
@@ -133,7 +130,7 @@ namespace SobekCM.Library.MySobekViewer
                         checked_mask += ((short)Math.Pow(2, (thisRange.RangeID - 1)));
                     }
                 }
-                
+
 
                 // Handle any request from the internal header for the item
                 if (!String.IsNullOrEmpty(Context.Request.Form["permissions_action"].TrimFirst()))
@@ -142,7 +139,7 @@ namespace SobekCM.Library.MySobekViewer
                     string action = Context.Request.Form["permissions_action"].TrimFirst();
 
                     // Is this to change accessibility?
-                    if ((action == "public") || (action == "private") || (action == "restricted") || ( action == "dark" ))
+                    if ((action == "public") || (action == "private") || (action == "restricted") || (action == "dark"))
                     {
                         switch (action)
                         {
@@ -181,7 +178,7 @@ namespace SobekCM.Library.MySobekViewer
                         currentItem.Behaviors.IP_Restriction_Membership = ipRestrictionMask;
                         currentItem.Behaviors.Dark_Flag = isDark;
 
-                        if ( checked_mask > 0 )
+                        if (checked_mask > 0)
                             ipRestrictionMask = checked_mask;
 
                         // Save this to the database
@@ -204,13 +201,13 @@ namespace SobekCM.Library.MySobekViewer
                             CachedDataManager.Clear_Search_Results_Browses();
 
                             // If this is making it public, check for the email address
-                            if (ipRestrictionMask == 0 )
+                            if (ipRestrictionMask == 0)
                             {
                                 string emailRequest = Context.Request.Form["email_submittor"].TrimFirst();
-                                if ( emailRequest == "yes_email")
+                                if (emailRequest == "yes_email")
                                 {
                                     string emailContent = Context.Request.Form["email_content"].TrimFirst();
-                                    if ( !String.IsNullOrWhiteSpace(emailContent))
+                                    if (!String.IsNullOrWhiteSpace(emailContent))
                                     {
                                         Item_Submittor_Info submittor = SobekEngineClient.Items.Get_Submittor_Info(currentItem.BibID, currentItem.VID, RequestSpecificValues.Tracer);
                                         if ((submittor.UserId > 0) && (!String.IsNullOrEmpty(submittor.Email)))
@@ -316,7 +313,7 @@ namespace SobekCM.Library.MySobekViewer
 
             Output.WriteLine("        <div class=\"sbkMyEip_SetAccessText\">SET ACCESS RESTRICTIONS:</div>");
 
-            if (( ipRestrictionMask == 0) && ( !isDark ) && ( !restrictedSelected ))
+            if ((ipRestrictionMask == 0) && (!isDark) && (!restrictedSelected))
                 Output.WriteLine("              <button title=\"Make item public\" class=\"sbkMyEip_VisButton sbkMyEip_VisButtonPublic sbkMyEip_VisButtonCurrent\" onclick=\"set_item_access('public'); return false;\">PUBLIC ITEM</button>");
             else
                 Output.WriteLine("              <button title=\"Make item public\" class=\"sbkMyEip_VisButton sbkMyEip_VisButtonPublic\" onclick=\"set_item_access('public'); return false;\">PUBLIC ITEM</button>");
@@ -325,7 +322,7 @@ namespace SobekCM.Library.MySobekViewer
                 Output.WriteLine("              <button title=\"Limit who can view this item\" class=\"sbkMyEip_VisButton sbkMyEip_VisButtonRestricted sbkMyEip_VisButtonCurrent\" onclick=\"set_item_access('restricted'); return false;\">RESTRICT ITEM</button>");
             else
             {
-                if ((UI_ApplicationCache_Gateway.IP_Restrictions.Count > 0) || ( UI_ApplicationCache_Gateway.User_Groups.Count > 0 ))
+                if ((UI_ApplicationCache_Gateway.IP_Restrictions.Count > 0) || (UI_ApplicationCache_Gateway.User_Groups.Count > 0))
                     Output.WriteLine("              <button title=\"Limit who can view this item\" class=\"sbkMyEip_VisButton sbkMyEip_VisButtonRestricted\" onclick=\"set_item_access('restricted'); return false;\">RESTRICT ITEM</button>");
                 else
                     Output.WriteLine("              <button title=\"Limit who can view this item\" class=\"sbkMyEip_VisButton sbkMyEip_VisButtonRestricted\" onclick=\"alert('You must have at least one IP range or user group in the system to use this option.\\n\\nCreate a user group or an administrative IP range before assigning RESTRICTED to items'); return false;\">RESTRICT ITEM</button>");
@@ -353,11 +350,11 @@ namespace SobekCM.Library.MySobekViewer
                 RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Edit_Item_Permissions;
                 Output.WriteLine("              <button title=\"Delete this item\" class=\"sbkMyEip_VisButton sbkMyEip_VisButtonDelete\" onclick=\"if(confirm('Delete this item completely?')) window.location.href = '" + delete_url + "'; return false;\">DELETE ITEM</button>");
             }
-           
+
             Output.WriteLine("      <br /><br />");
             Output.WriteLine("      <table class=\"sbkMyEip_EntryTable\">");
 
-            if ((isDark) || (ipRestrictionMask != 0) || ( restrictedSelected ))
+            if ((isDark) || (ipRestrictionMask != 0) || (restrictedSelected))
             {
                 Output.WriteLine("         <tr>");
                 Output.WriteLine("           <th>Embargo Date:</th>");
@@ -403,7 +400,7 @@ namespace SobekCM.Library.MySobekViewer
             if ((ipRestrictionMask == 0) && (!isDark) && (!restrictedSelected))
             {
                 // Only if originally PRIVATE
-                if ( currentItem.Behaviors.IP_Restriction_Membership == -1 )
+                if (currentItem.Behaviors.IP_Restriction_Membership == -1)
                 {
                     Item_Submittor_Info submittor = SobekEngineClient.Items.Get_Submittor_Info(currentItem.BibID, currentItem.VID, Tracer);
                     if ((submittor.UserId > 0) && (!String.IsNullOrEmpty(submittor.Email)))
@@ -468,7 +465,7 @@ namespace SobekCM.Library.MySobekViewer
                         Output.WriteLine("             <br />");
                         Output.WriteLine("           <td>");
                         Output.WriteLine("         <tr>");
-                        
+
 
                     }
                 }
@@ -514,10 +511,10 @@ namespace SobekCM.Library.MySobekViewer
             get
             {
                 return new List<HtmlSubwriter_Behaviors_Enum>
-				{
-					HtmlSubwriter_Behaviors_Enum.MySobek_Subwriter_Mimic_Item_Subwriter,
-					HtmlSubwriter_Behaviors_Enum.Suppress_Banner
-				};
+                {
+                    HtmlSubwriter_Behaviors_Enum.MySobek_Subwriter_Mimic_Item_Subwriter,
+                    HtmlSubwriter_Behaviors_Enum.Suppress_Banner
+                };
             }
         }
     }

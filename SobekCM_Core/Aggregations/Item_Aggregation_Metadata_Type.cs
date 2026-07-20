@@ -1,9 +1,9 @@
 ﻿#region Using directives
 
+using ProtoBuf;
 using System;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
-using ProtoBuf;
 
 #endregion
 
@@ -19,7 +19,7 @@ namespace SobekCM.Core.Aggregations
         /// <summary> Constructor for a new instance of the Item_Aggregation_Metadata_Type class </summary>
         /// <param name="DisplayTerm"> Display term for this metadata type </param>
         /// <param name="SobekCode"> Code related to this metadata type, used for searching for example </param>
-        public Item_Aggregation_Metadata_Type( string DisplayTerm, string SobekCode)
+        public Item_Aggregation_Metadata_Type(string DisplayTerm, string SobekCode)
         {
             this.DisplayTerm = DisplayTerm;
             this.SobekCode = SobekCode;

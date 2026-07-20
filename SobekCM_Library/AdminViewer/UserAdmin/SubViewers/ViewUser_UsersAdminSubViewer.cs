@@ -13,7 +13,7 @@ using System.Text;
 
 namespace SobekCM.Library.AdminViewer.UserAdmin.SubViewers
 {
-    public class ViewUser_UsersAdminSubViewer :  abstractUsersAdminSubViewer
+    public class ViewUser_UsersAdminSubViewer : abstractUsersAdminSubViewer
     {
         public override string Title => "View User Information";
 

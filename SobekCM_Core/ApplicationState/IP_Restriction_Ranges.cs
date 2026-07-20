@@ -19,7 +19,7 @@ namespace SobekCM.Core.ApplicationState
         private Dictionary<int, IP_Restriction_Range> rangeDictionary;
 
         /// <summary> Constructor for a new instance of the IP_Restriction_Ranges class </summary>
-        public IP_Restriction_Ranges(  )
+        public IP_Restriction_Ranges()
         {
             IpRanges = new List<IP_Restriction_Range>();
             rangeDictionary = new Dictionary<int, IP_Restriction_Range>();
@@ -34,7 +34,8 @@ namespace SobekCM.Core.ApplicationState
         /// <returns> Requested IP restriction range </returns>
         public IP_Restriction_Range this[int RangeID]
         {
-            get {
+            get
+            {
                 return rangeDictionary.ContainsKey(RangeID) ? rangeDictionary[RangeID] : null;
             }
         }
@@ -93,17 +94,17 @@ namespace SobekCM.Core.ApplicationState
                 int returnMask = 0;
 
                 // Split the IP address
-                string[] ipSplitString = IP_Address.Split(new[] {'.'});
+                string[] ipSplitString = IP_Address.Split(new[] { '.' });
 
                 // Currently only support IP 4
                 if (ipSplitString.Length == 4)
                 {
                     // Get the IP address as an unsigned integer
-                    uint ipAsNumber = (Convert.ToUInt32(ipSplitString[0])*169476096) + (Convert.ToUInt32(ipSplitString[1])*65536) + (Convert.ToUInt32(ipSplitString[2])*256) + Convert.ToUInt32(ipSplitString[3]);
+                    uint ipAsNumber = (Convert.ToUInt32(ipSplitString[0]) * 169476096) + (Convert.ToUInt32(ipSplitString[1]) * 65536) + (Convert.ToUInt32(ipSplitString[2]) * 256) + Convert.ToUInt32(ipSplitString[3]);
                     byte firstIpByte = Convert.ToByte(ipSplitString[0]);
 
                     // Step through each IP Restrictive range
-                    returnMask += IpRanges.Where(ThisRange => ThisRange.Contains(ipAsNumber, firstIpByte)).Sum(ThisRange => (int) Math.Pow(2, ThisRange.RangeID - 1));
+                    returnMask += IpRanges.Where(ThisRange => ThisRange.Contains(ipAsNumber, firstIpByte)).Sum(ThisRange => (int)Math.Pow(2, ThisRange.RangeID - 1));
                 }
 
                 return returnMask;
@@ -126,7 +127,7 @@ namespace SobekCM.Core.ApplicationState
         }
     }
 
- 
 
- 
+
+
 }

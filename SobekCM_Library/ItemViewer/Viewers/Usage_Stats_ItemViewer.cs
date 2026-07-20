@@ -1,21 +1,18 @@
+using Microsoft.AspNetCore.Http;
+using SobekCM.Core.BriefItem;
+using SobekCM.Core.Client;
+using SobekCM.Core.Items;
+using SobekCM.Core.Navigation;
+using SobekCM.Core.Users;
+using SobekCM.Library.ItemViewer.Menu;
+using SobekCM.Library.UI;
+using SobekCM.Tools;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using SobekCM.Core.BriefItem;
-using SobekCM.Core.Client;
-using SobekCM.Core.Items;
-using SobekCM.Core.Navigation;
-using SobekCM.Core.Users;
-using SobekCM.Engine_Library.Database;
-using SobekCM.Library.Database;
-using SobekCM.Library.ItemViewer.Menu;
-using SobekCM.Library.UI;
-using SobekCM.Tools;
-using Microsoft.AspNetCore.Http;
 
 namespace SobekCM.Library.ItemViewer.Viewers
 {
@@ -80,7 +77,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <param name="CurrentRequest"> Information about the current request </param>
         /// <param name="MenuItems"> List of menu items, to which this method may add one or more menu items </param>
         /// <param name="IsRestricted"> Flag indicates if this item is restricted AND the current user is outside the ranges or not in the proper groups</param>
-        public virtual void Add_Menu_Items(BriefItemInfo CurrentItem, User_Object CurrentUser, Navigation_Object CurrentRequest, List<Item_MenuItem> MenuItems, bool IsRestricted )
+        public virtual void Add_Menu_Items(BriefItemInfo CurrentItem, User_Object CurrentUser, Navigation_Object CurrentRequest, List<Item_MenuItem> MenuItems, bool IsRestricted)
         {
             // Get the URL for this
             string previous_code = CurrentRequest.ViewerCode;
@@ -224,7 +221,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             {
                 foreach (Item_Monthly_Usage thisRow in stats)
                 {
-                    if ( thisRow.Year != last_year)
+                    if (thisRow.Year != last_year)
                     {
                         builder.AppendLine("    <tr><td class=\"sbkCiv_StatsTableYearRow\" colspan=\"" + COLUMNS + "\">" + thisRow.Year + " STATISTICS</td></tr>");
                         last_year = thisRow.Year;
@@ -236,7 +233,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     builder.AppendLine("    <tr>");
                     builder.AppendLine("      <td style=\"text-align: left\">" + Month_From_Int(thisRow.Month) + " " + thisRow.Year + "</td>");
 
-                    if (( !BriefItem.Web.Siblings.HasValue ) || ( BriefItem.Web.Siblings.Value <= 1))
+                    if ((!BriefItem.Web.Siblings.HasValue) || (BriefItem.Web.Siblings.Value <= 1))
                     {
                         // Show the views
                         int total_hits = thisRow.Views + thisRow.Title_Views;
@@ -273,7 +270,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             builder.AppendLine("</div>");
 
-            if ( hits == 0 )
+            if (hits == 0)
             {
                 return "<br /><br /><p>Usage statistics are accumulated monthly and have not yet been recorded for this item.</p><br /><br />";
             }

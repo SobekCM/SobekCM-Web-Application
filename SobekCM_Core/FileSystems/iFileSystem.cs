@@ -1,15 +1,11 @@
-﻿using System;
+﻿using SobekCM.Core.BriefItem;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using SobekCM.Core.BriefItem;
 
 namespace SobekCM.Core.FileSystems
 {
     public interface iFileSystem
     {
-        
+
 
 
         /// <summary> Read to the end of a (text-based) file and return the contents </summary>

@@ -1,16 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Data;
-using System.Text;
-
-using SobekCM.Core.Builder;
+﻿using SobekCM.Core.Builder;
+using SobekCM.Core.Configuration.Engine;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Settings;
 using SobekCM.Engine_Library.Database;
-using SobekCM.Core.Configuration.Engine;
 using SobekCM.Engine_Library.Settings;
 using SobekCM.Tools;
+using System;
+using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.Data;
 
 namespace SobekCM.Engine_Library.Endpoints
 {
@@ -37,7 +35,7 @@ namespace SobekCM.Engine_Library.Endpoints
                 DataSet builderSet = Engine_Database.Get_Builder_Settings(false, tracer);
 
                 // If the returned value from the database was NULL, there was an error
-                if ((builderSet == null) || ( builderSet.Tables.Count == 0 ))
+                if ((builderSet == null) || (builderSet.Tables.Count == 0))
                 {
                     Response.ContentType = "text/plain";
                     Response.Output.WriteLine("Error completing request");
@@ -140,7 +138,7 @@ namespace SobekCM.Engine_Library.Endpoints
                 Builder_Status builderStatus = Engine_Database.Builder_Get_Recent_Updates(tracer);
 
                 // If the returned value from the database was NULL, there was an error
-                if (builderStatus == null) 
+                if (builderStatus == null)
                 {
                     Response.ContentType = "text/plain";
                     Response.Output.WriteLine("Error completing request");
@@ -440,8 +438,8 @@ namespace SobekCM.Engine_Library.Endpoints
 
                 Response.Output.Write("[\"" + thisRow[dateColumn].ToString().Replace("\"", "'") + "\", ");
                 Response.Output.Write("\"" + thisRow[bibVidColumn].ToString().Replace("\"", "'") + "\", ");
-                Response.Output.Write("\"" + thisRow[typeColumn].ToString().Replace("\"","'") + "\", ");
-                Response.Output.Write("\"" + thisRow[messageColumn].ToString().Replace("\"", "'").Replace(@"\", @"\\").Replace("\n", "\\n").Replace("\r", "") + "\" "); 
+                Response.Output.Write("\"" + thisRow[typeColumn].ToString().Replace("\"", "'") + "\", ");
+                Response.Output.Write("\"" + thisRow[messageColumn].ToString().Replace("\"", "'").Replace(@"\", @"\\").Replace("\n", "\\n").Replace("\r", "") + "\" ");
 
                 // Finish this row
                 if ((i < displayStart + displayLength - 1) && (i < total_results - 1))

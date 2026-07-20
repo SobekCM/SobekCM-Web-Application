@@ -1,6 +1,6 @@
-﻿using System;
-using SobekCM.Core.BriefItem;
+﻿using SobekCM.Core.BriefItem;
 using SobekCM.Resource_Object;
+using System;
 
 namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
 {

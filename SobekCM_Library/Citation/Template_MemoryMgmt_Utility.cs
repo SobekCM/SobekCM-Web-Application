@@ -1,11 +1,10 @@
 #region Using directives
 
-using SobekCM.Core.MemoryMgmt;
 using Microsoft.Extensions.Caching.Memory;
-
-using System;
+using SobekCM.Core.MemoryMgmt;
 using SobekCM.Library.Citation.Template;
 using SobekCM.Tools;
+using System;
 
 #endregion
 

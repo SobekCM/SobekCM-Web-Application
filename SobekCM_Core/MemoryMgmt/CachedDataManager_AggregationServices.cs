@@ -1,15 +1,13 @@
 #region Using directives
 
 using Microsoft.Extensions.Caching.Memory;
-
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using SobekCM.Core.Aggregations;
-using SobekCM.Core.Configuration;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.WebContent;
 using SobekCM.Tools;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 #endregion
 
@@ -83,7 +81,7 @@ namespace SobekCM.Core.MemoryMgmt
             // If the cache is disabled, just return before even tracing
             if (settings.Disabled)
             {
-                if ( Tracer != null ) Tracer.Add_Trace("CachedDataManager.Store_Item_Aggregation", "Caching is disabled");
+                if (Tracer != null) Tracer.Add_Trace("CachedDataManager.Store_Item_Aggregation", "Caching is disabled");
                 return;
             }
 
@@ -278,10 +276,11 @@ namespace SobekCM.Core.MemoryMgmt
         public void Clear()
         {
             // Get collection of keys in the Cache
-			List<string> keys = (from KeyValuePair<string, object> thisItem in SharedCache.Instance select thisItem.Key).ToList();
+            List<string> keys = (from KeyValuePair<string, object> thisItem in SharedCache.Instance select thisItem.Key).ToList();
 
-			// Delete all items from the Cache
-            foreach (string key in keys.Where(Key => Key.StartsWith("AGGR|"))) {
+            // Delete all items from the Cache
+            foreach (string key in keys.Where(Key => Key.StartsWith("AGGR|")))
+            {
                 SharedCache.Instance.Remove(key);
             }
 

@@ -1,12 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
-using SobekCM.Core.BriefItem;
+﻿using SobekCM.Core.BriefItem;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Library.HTML;
 using SobekCM.Library.ItemViewer.Viewers;
 using SobekCM.Library.UI;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Text;
 
 namespace SobekCM.Library.ItemViewer.HtmlSectionWriters
 {
@@ -23,7 +23,7 @@ namespace SobekCM.Library.ItemViewer.HtmlSectionWriters
         public void Write_HTML(TextWriter Output, iItemViewerPrototyper Prototyper, iItemViewer CurrentViewer, BriefItemInfo CurrentItem, RequestCache RequestSpecificValues, List<HtmlSubwriter_Behaviors_Enum> Behaviors)
         {
             // If there is no TOC, just return
-            if (CurrentItem == null) 
+            if (CurrentItem == null)
                 return;
 
             if (((CurrentItem.Images_TOC == null) || (CurrentItem.Images_TOC.Count <= 1)) &&
@@ -31,7 +31,7 @@ namespace SobekCM.Library.ItemViewer.HtmlSectionWriters
                 return;
 
             // If there are certain thing set in the behavior, return
-            if (( Behaviors != null ) && ( Behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Item_Subwriter_Suppress_Left_Navigation_Bar)))
+            if ((Behaviors != null) && (Behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Item_Subwriter_Suppress_Left_Navigation_Bar)))
                 return;
 
             string table_of_contents = "TABLE OF CONTENTS";
@@ -72,7 +72,7 @@ namespace SobekCM.Library.ItemViewer.HtmlSectionWriters
             if ((CurrentItem.Images_TOC == null) || (CurrentItem.Images_TOC.Count <= 1))
                 tocElements = CurrentItem.OpenTextbook_TOC;
 
-            if ( CurrentItem.BibID == "AA00016193")
+            if (CurrentItem.BibID == "AA00016193")
             {
                 tocElements = CurrentItem.OpenTextbook_TOC;
             }
@@ -84,7 +84,7 @@ namespace SobekCM.Library.ItemViewer.HtmlSectionWriters
             int selectSequence = Convert.ToInt32(RequestSpecificValues.Current_Mode.Page);
 
             //int sequence = 0;
-            for (int i = 0; i < tocElements.Count ; i++ )
+            for (int i = 0; i < tocElements.Count; i++)
             {
                 // Get this level and sequence
                 currentLevel = tocElements[i].Level.HasValue ? tocElements[i].Level.Value : 1;
@@ -129,7 +129,7 @@ namespace SobekCM.Library.ItemViewer.HtmlSectionWriters
                 // Write this one
                 if (Behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Item_Subwriter_Suppress_TOC_Links))
                 {
-                    Output.Write(indent(currentLevel) + "<li><abbr title=\"" + tocElements[i].Name.Replace("\"","'") + "\">" + tocElements[i].Shortened_Name);
+                    Output.Write(indent(currentLevel) + "<li><abbr title=\"" + tocElements[i].Name.Replace("\"", "'") + "\">" + tocElements[i].Shortened_Name);
                 }
                 else
                 {
@@ -148,7 +148,7 @@ namespace SobekCM.Library.ItemViewer.HtmlSectionWriters
                     }
                     Output.Write("</a>");
                 }
-                
+
 
                 lastLevel = currentLevel;
             }

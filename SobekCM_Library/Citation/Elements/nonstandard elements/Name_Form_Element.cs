@@ -1,18 +1,16 @@
 #region Using directives
 
+using SobekCM.Core.ApplicationState;
+using SobekCM.Core.Configuration.Localization;
+using SobekCM.Core.Users;
+using SobekCM.Library.UI;
+using SobekCM.Resource_Object;
+using SobekCM.Resource_Object.Bib_Info;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using Microsoft.AspNetCore.Http;
 using System.Xml;
-using SobekCM.Core.ApplicationState;
-using SobekCM.Core.Configuration;
-using SobekCM.Core.Configuration.Localization;
-using SobekCM.Core.Users;
-using SobekCM.Resource_Object;
-using SobekCM.Resource_Object.Bib_Info;
-using SobekCM.Library.UI;
 
 #endregion
 
@@ -28,7 +26,7 @@ namespace SobekCM.Library.Citation.Elements
             Repeatable = true;
             Title = "Creator";
             html_element_name = "form_creator";
-	        help_page = "creator";
+            help_page = "creator";
         }
 
         #region iElement Members
@@ -44,7 +42,7 @@ namespace SobekCM.Library.Citation.Elements
         /// <param name="Translator"> Language support object which handles simple translational duties </param>
         /// <param name="Base_URL"> Base URL for the current request </param>
         /// <remarks> This element appends a popup form to the popup_form_builder</remarks>
-        public override void Render_Template_HTML(TextWriter Output, SobekCM_Item Bib, string Skin_Code, bool IsMozilla, StringBuilder PopupFormBuilder, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL )
+        public override void Render_Template_HTML(TextWriter Output, SobekCM_Item Bib, string Skin_Code, bool IsMozilla, StringBuilder PopupFormBuilder, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL)
         {
             // Check that an acronym exists
             if (Acronym.Length == 0)
@@ -93,7 +91,7 @@ namespace SobekCM.Library.Citation.Elements
             int name_count = 1;
             bool first_is_main = false;
             List<Name_Info> names = new List<Name_Info>();
-            if (( Bib.Bib_Info.hasMainEntityName ) && ( Bib.Bib_Info.Main_Entity_Name.hasData))
+            if ((Bib.Bib_Info.hasMainEntityName) && (Bib.Bib_Info.Main_Entity_Name.hasData))
             {
                 names.Add(Bib.Bib_Info.Main_Entity_Name);
                 first_is_main = true;
@@ -127,7 +125,7 @@ namespace SobekCM.Library.Citation.Elements
                 string personal_values_display = "none";
                 string description_location_display = "Location";
                 string form_class = "name_popup_div";
-                if ((thisName.Name_Type == Name_Info_Type_Enum.Personal) || ( thisName.Name_Type == Name_Info_Type_Enum.UNKNOWN ))
+                if ((thisName.Name_Type == Name_Info_Type_Enum.Personal) || (thisName.Name_Type == Name_Info_Type_Enum.UNKNOWN))
                 {
                     personal_values_display = "inline";
                     description_location_display = "Description";
@@ -136,10 +134,10 @@ namespace SobekCM.Library.Citation.Elements
 
                 // Add the popup form
                 PopupFormBuilder.AppendLine("<!-- Name Form " + name_count + " -->");
-				PopupFormBuilder.AppendLine("<div class=\"" + form_class + " sbkMetadata_PopupDiv\" id=\"form_name_" + name_count + "\" style=\"display:none;\">");
-				PopupFormBuilder.AppendLine("  <div class=\"sbkMetadata_PopupTitle\"><table style=\"width:100%\"><tr><td style=\"text-align:left\">Edit Named Entity</td><td style=\"text-align:right\"><a href=\"" + Help_URL(Skin_Code, Base_URL) + "\" alt=\"HELP\" target=\"_" + html_element_name.ToUpper() + "\" >?</a> &nbsp; <a href=\"#template\" alt=\"CLOSE\" onclick=\"close_name_form('form_name_" + name_count + "')\">X</a> &nbsp; </td></tr></table></div>");
+                PopupFormBuilder.AppendLine("<div class=\"" + form_class + " sbkMetadata_PopupDiv\" id=\"form_name_" + name_count + "\" style=\"display:none;\">");
+                PopupFormBuilder.AppendLine("  <div class=\"sbkMetadata_PopupTitle\"><table style=\"width:100%\"><tr><td style=\"text-align:left\">Edit Named Entity</td><td style=\"text-align:right\"><a href=\"" + Help_URL(Skin_Code, Base_URL) + "\" alt=\"HELP\" target=\"_" + html_element_name.ToUpper() + "\" >?</a> &nbsp; <a href=\"#template\" alt=\"CLOSE\" onclick=\"close_name_form('form_name_" + name_count + "')\">X</a> &nbsp; </td></tr></table></div>");
                 PopupFormBuilder.AppendLine("  <br />");
-				PopupFormBuilder.AppendLine("  <table class=\"sbkMetadata_PopupTable\">");
+                PopupFormBuilder.AppendLine("  <table class=\"sbkMetadata_PopupTable\">");
 
                 // Add the name type combo box and radio buttons
                 PopupFormBuilder.AppendLine("    <tr>");
@@ -154,14 +152,14 @@ namespace SobekCM.Library.Citation.Elements
                                                   ? "          <option value=\"corporate\" selected=\"selected\" >Corporate</option>"
                                                   : "          <option value=\"corporate\">Corporate</option>");
 
-                if (( thisName.Name_Type == Name_Info_Type_Enum.Personal ) || ( thisName.Name_Type == Name_Info_Type_Enum.UNKNOWN ))
+                if ((thisName.Name_Type == Name_Info_Type_Enum.Personal) || (thisName.Name_Type == Name_Info_Type_Enum.UNKNOWN))
                     PopupFormBuilder.AppendLine("          <option value=\"personal\" selected=\"selected\" >Personal</option>");
                 else
                     PopupFormBuilder.AppendLine("          <option value=\"personal\">Personal</option>");
 
                 PopupFormBuilder.AppendLine("        </select>");
                 PopupFormBuilder.AppendLine("      </td>");
-                if (( name_count == 1 ) && ( first_is_main ))
+                if ((name_count == 1) && (first_is_main))
                 {
 
                     PopupFormBuilder.Append("      <td><input type=\"radio\" name=\"form_name_main_" + name_count + "\" id=\"form_name_main_main_" + name_count + "\" value=\"main\" checked=\"checked\" onclick=\"focus_element( 'form_name_full_" + name_count + "');\" /><label for=\"form_name_main_main_" + name_count + "\">Principal Author</label> &nbsp; &nbsp; &nbsp; &nbsp; ");
@@ -178,21 +176,21 @@ namespace SobekCM.Library.Citation.Elements
                 PopupFormBuilder.AppendLine("    <tr><td>Full Name:</td><td colspan=\"2\"><input type=\"text\" class=\"form_name_large_input sbk_Focusable\" id=\"form_name_full_" + name_count + "\" name=\"form_name_full_" + name_count + "\" value=\"" + System.Net.WebUtility.HtmlEncode(thisName.Full_Name) + "\" /></td></tr>");
 
                 // Add the given name and family name(s)
-				PopupFormBuilder.Append("    <tr><td><span  id=\"name_personallabel1_" + name_count + "\" style=\"display:" + personal_values_display + ";\" >Given Names:</span></td><td><input type=\"text\" class=\"form_name_medium_input sbk_Focusable\" id=\"form_name_given_" + name_count + "\" name=\"form_name_given_" + name_count + "\" value=\"" + System.Net.WebUtility.HtmlEncode(thisName.Given_Name) + "\" style=\"display:" + personal_values_display + ";\" /></td>");
-				PopupFormBuilder.AppendLine("<td><span  id=\"name_personallabel2_" + name_count + "\" style=\"display:" + personal_values_display + ";\" >Family Name:</span><input type=\"text\" class=\"form_name_medium_input sbk_Focusable\" id=\"form_name_family_" + name_count + "\" name=\"form_name_family_" + name_count + "\" value=\"" + System.Net.WebUtility.HtmlEncode(thisName.Family_Name) + "\" style=\"display:" + personal_values_display + ";\" /></td></tr>");
+                PopupFormBuilder.Append("    <tr><td><span  id=\"name_personallabel1_" + name_count + "\" style=\"display:" + personal_values_display + ";\" >Given Names:</span></td><td><input type=\"text\" class=\"form_name_medium_input sbk_Focusable\" id=\"form_name_given_" + name_count + "\" name=\"form_name_given_" + name_count + "\" value=\"" + System.Net.WebUtility.HtmlEncode(thisName.Given_Name) + "\" style=\"display:" + personal_values_display + ";\" /></td>");
+                PopupFormBuilder.AppendLine("<td><span  id=\"name_personallabel2_" + name_count + "\" style=\"display:" + personal_values_display + ";\" >Family Name:</span><input type=\"text\" class=\"form_name_medium_input sbk_Focusable\" id=\"form_name_family_" + name_count + "\" name=\"form_name_family_" + name_count + "\" value=\"" + System.Net.WebUtility.HtmlEncode(thisName.Family_Name) + "\" style=\"display:" + personal_values_display + ";\" /></td></tr>");
 
                 // Add the display form and terms of address
-				PopupFormBuilder.Append("    <tr><td><span  id=\"name_personallabel3_" + name_count + "\" style=\"display:" + personal_values_display + ";\" >Display Form:</span></td><td><input type=\"text\" class=\"form_name_medium_input sbk_Focusable\" id=\"form_name_display_" + name_count + "\" name=\"form_name_display_" + name_count + "\" value=\"" + System.Net.WebUtility.HtmlEncode(thisName.Display_Form) + "\" style=\"display:" + personal_values_display + ";\" /></td>");
-				PopupFormBuilder.AppendLine("<td><span  id=\"name_personallabel4_" + name_count + "\" style=\"display:" + personal_values_display + ";\" >Terms of Address:</span><input type=\"text\" class=\"form_name_small_input sbk_Focusable\" id=\"form_name_terms_" + name_count + "\" name=\"form_name_terms_" + name_count + "\" value=\"" + System.Net.WebUtility.HtmlEncode(thisName.Terms_Of_Address) + "\" style=\"display:" + personal_values_display + ";\" /></td></tr>");
+                PopupFormBuilder.Append("    <tr><td><span  id=\"name_personallabel3_" + name_count + "\" style=\"display:" + personal_values_display + ";\" >Display Form:</span></td><td><input type=\"text\" class=\"form_name_medium_input sbk_Focusable\" id=\"form_name_display_" + name_count + "\" name=\"form_name_display_" + name_count + "\" value=\"" + System.Net.WebUtility.HtmlEncode(thisName.Display_Form) + "\" style=\"display:" + personal_values_display + ";\" /></td>");
+                PopupFormBuilder.AppendLine("<td><span  id=\"name_personallabel4_" + name_count + "\" style=\"display:" + personal_values_display + ";\" >Terms of Address:</span><input type=\"text\" class=\"form_name_small_input sbk_Focusable\" id=\"form_name_terms_" + name_count + "\" name=\"form_name_terms_" + name_count + "\" value=\"" + System.Net.WebUtility.HtmlEncode(thisName.Terms_Of_Address) + "\" style=\"display:" + personal_values_display + ";\" /></td></tr>");
 
                 // Add the dates
-				PopupFormBuilder.AppendLine("    <tr><td>Dates:</td><td colspan=\"2\"><input type=\"text\" class=\"form_name_medium_input sbk_Focusable\" id=\"form_name_dates_" + name_count + "\" name=\"form_name_dates_" + name_count + "\" value=\"" + System.Net.WebUtility.HtmlEncode(thisName.Dates) + "\" /></td></tr>");
+                PopupFormBuilder.AppendLine("    <tr><td>Dates:</td><td colspan=\"2\"><input type=\"text\" class=\"form_name_medium_input sbk_Focusable\" id=\"form_name_dates_" + name_count + "\" name=\"form_name_dates_" + name_count + "\" value=\"" + System.Net.WebUtility.HtmlEncode(thisName.Dates) + "\" /></td></tr>");
 
                 // Add the description
-				PopupFormBuilder.AppendLine("    <tr><td><span id=\"name_desc_location_span_" + name_count + "\">" + description_location_display + ":</span></td><td colspan=\"2\"><input type=\"text\" class=\"form_name_large_input sbk_Focusable\" id=\"form_name_desc_" + name_count + "\" name=\"form_name_desc_" + name_count + "\" value=\"" + System.Net.WebUtility.HtmlEncode(thisName.Description) + "\" /></td></tr>");
+                PopupFormBuilder.AppendLine("    <tr><td><span id=\"name_desc_location_span_" + name_count + "\">" + description_location_display + ":</span></td><td colspan=\"2\"><input type=\"text\" class=\"form_name_large_input sbk_Focusable\" id=\"form_name_desc_" + name_count + "\" name=\"form_name_desc_" + name_count + "\" value=\"" + System.Net.WebUtility.HtmlEncode(thisName.Description) + "\" /></td></tr>");
 
                 // Add the affiliation
-				PopupFormBuilder.AppendLine("    <tr><td>Affiliation:</td><td colspan=\"2\"><input type=\"text\" class=\"form_name_large_input sbk_Focusable\" id=\"form_name_affiliation_" + name_count + "\" name=\"form_name_affiliation_" + name_count + "\" value=\"" + System.Net.WebUtility.HtmlEncode(thisName.Affiliation) + "\" /></td></tr>");
+                PopupFormBuilder.AppendLine("    <tr><td>Affiliation:</td><td colspan=\"2\"><input type=\"text\" class=\"form_name_large_input sbk_Focusable\" id=\"form_name_affiliation_" + name_count + "\" name=\"form_name_affiliation_" + name_count + "\" value=\"" + System.Net.WebUtility.HtmlEncode(thisName.Affiliation) + "\" /></td></tr>");
 
                 // Determine the roles to display
                 string role1 = String.Empty;
@@ -224,14 +222,14 @@ namespace SobekCM.Library.Citation.Elements
                 // Add the roles
                 PopupFormBuilder.Append("    <tr><td>Roles:</td><td colspan=\"2\">");
                 PopupFormBuilder.Append("<input type=\"text\" class=\"form_name_small_input sbk_Focusable\" id=\"form_name_role1_" + name_count + "\" name=\"form_name_role1_" + name_count + "\" value=\"" + System.Net.WebUtility.HtmlEncode(role1) + "\" />");
-				PopupFormBuilder.Append("<input type=\"text\" class=\"form_name_small_input sbk_Focusable\" id=\"form_name_role2_" + name_count + "\" name=\"form_name_role2_" + name_count + "\" value=\"" + System.Net.WebUtility.HtmlEncode(role2) + "\" />");
-				PopupFormBuilder.Append("<input type=\"text\" class=\"form_name_small_input sbk_Focusable\" id=\"form_name_role3_" + name_count + "\" name=\"form_name_role3_" + name_count + "\" value=\"" + System.Net.WebUtility.HtmlEncode(role3) + "\" />");
+                PopupFormBuilder.Append("<input type=\"text\" class=\"form_name_small_input sbk_Focusable\" id=\"form_name_role2_" + name_count + "\" name=\"form_name_role2_" + name_count + "\" value=\"" + System.Net.WebUtility.HtmlEncode(role2) + "\" />");
+                PopupFormBuilder.Append("<input type=\"text\" class=\"form_name_small_input sbk_Focusable\" id=\"form_name_role3_" + name_count + "\" name=\"form_name_role3_" + name_count + "\" value=\"" + System.Net.WebUtility.HtmlEncode(role3) + "\" />");
                 PopupFormBuilder.AppendLine("</td></tr>");
 
-				// Close the form and add the button
-				PopupFormBuilder.AppendLine("    <tr style=\"height:35px; text-align: center; vertical-align: bottom;\">");
-				PopupFormBuilder.AppendLine("      <td colspan=\"3\"><button title=\"Close\" class=\"sbkMetadata_RoundButton\" onclick=\"return close_name_form('form_name_" + name_count + "');\">CLOSE</button></td>");
-				PopupFormBuilder.AppendLine("    </tr>");
+                // Close the form and add the button
+                PopupFormBuilder.AppendLine("    <tr style=\"height:35px; text-align: center; vertical-align: bottom;\">");
+                PopupFormBuilder.AppendLine("      <td colspan=\"3\"><button title=\"Close\" class=\"sbkMetadata_RoundButton\" onclick=\"return close_name_form('form_name_" + name_count + "');\">CLOSE</button></td>");
+                PopupFormBuilder.AppendLine("    </tr>");
                 PopupFormBuilder.AppendLine("  </table>");
                 PopupFormBuilder.AppendLine("</div>");
                 PopupFormBuilder.AppendLine();
@@ -266,7 +264,7 @@ namespace SobekCM.Library.Citation.Elements
         ///<remarks> This clears the main entity name and any other names associated with the digital resource </remarks>
         public override void Prepare_For_Save(SobekCM_Item Bib, User_Object Current_User)
         {
-            if ( Bib.Bib_Info.hasMainEntityName )
+            if (Bib.Bib_Info.hasMainEntityName)
                 Bib.Bib_Info.Main_Entity_Name.Clear();
             Bib.Bib_Info.Clear_Names();
         }
@@ -284,7 +282,7 @@ namespace SobekCM.Library.Citation.Elements
                     string type = Context.Request.Form[thisKey].TrimFirst();
                     string diff = thisKey.Replace("form_name_type_", "");
                     string main = Context.Request.Form["form_name_main_" + diff].TrimFirst();
-                    string full = Context.Request.Form["form_name_full_" + diff ].TrimFirst();
+                    string full = Context.Request.Form["form_name_full_" + diff].TrimFirst();
                     string given = Context.Request.Form["form_name_given_" + diff].TrimFirst();
                     string family = Context.Request.Form["form_name_family_" + diff].TrimFirst();
                     string display = Context.Request.Form["form_name_display_" + diff].TrimFirst();
@@ -299,7 +297,7 @@ namespace SobekCM.Library.Citation.Elements
                     if ((full.Length > 0) || (given.Length > 0) || (family.Length > 0))
                     {
                         Name_Info newName;
-                        if ((main == "main") && ( !main_is_found ))
+                        if ((main == "main") && (!main_is_found))
                         {
                             newName = Bib.Bib_Info.Main_Entity_Name;
                             main_is_found = true;
@@ -330,7 +328,7 @@ namespace SobekCM.Library.Citation.Elements
                             newName.Given_Name = given;
                             newName.Family_Name = family;
                             newName.Display_Form = display;
-                            newName.Terms_Of_Address = terms;  
+                            newName.Terms_Of_Address = terms;
                         }
 
                         newName.Dates = dates;
@@ -346,7 +344,7 @@ namespace SobekCM.Library.Citation.Elements
 
                     }
                 }
-            }          
+            }
 
         }
 
@@ -357,7 +355,7 @@ namespace SobekCM.Library.Citation.Elements
         /// <summary> Reads the inner data from the CompleteTemplate XML format </summary>
         /// <param name="XMLReader"> Current template xml configuration reader </param>
         /// <remarks> This procedure does not currently read any inner xml (not yet necessary) </remarks>
-        protected override void Inner_Read_Data( XmlReader XMLReader )
+        protected override void Inner_Read_Data(XmlReader XMLReader)
         {
             // Do nothing
         }

@@ -1,11 +1,10 @@
 ﻿#region Using directives
 
+using ProtoBuf;
 using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
-using System.Text.RegularExpressions;
 using System.Xml.Serialization;
-using ProtoBuf;
 
 #endregion
 
@@ -211,7 +210,7 @@ namespace SobekCM.Core.Configuration.Engine
 
         private void ensure_dictionary_built()
         {
-            
+
         }
 
         public bool ContainsChildKey(string ChildSegment)

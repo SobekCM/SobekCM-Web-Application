@@ -1,16 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using SobekCM.Core.Settings;
-using SobekCM.Engine_Library.ApplicationState;
+﻿using SobekCM.Engine_Library.ApplicationState;
 using SobekCM.Resource_Object;
-using SobekCM.Resource_Object.Behaviors;
 using SobekCM.Resource_Object.Divisions;
 using SobekCM.Resource_Object.Metadata_Modules;
 using SobekCM.Resource_Object.Metadata_Modules.GeoSpatial;
 using SobekCM.Resource_Object.Solr;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
 
 namespace SobekCM.Engine_Library.Solr.v5
 {
@@ -42,7 +40,7 @@ namespace SobekCM.Engine_Library.Solr.v5
             returnValue.Instances.Add(Engine_ApplicationCache_Gateway.Settings.Servers.Instance_Code);
 
             returnValue.Group_Restrictions = String.Empty;
-            if ( Digital_Object.Behaviors.User_Group_Access_Count > 0 )
+            if (Digital_Object.Behaviors.User_Group_Access_Count > 0)
             {
                 // If any group has CanView access, it is assumed that noone else can
                 List<int> matches = Digital_Object.Behaviors.User_Group_Access.Where(p => p.CanView).Select(p => p.UserGroupId).ToList<int>();
@@ -52,13 +50,13 @@ namespace SobekCM.Engine_Library.Solr.v5
                 else
                 {
                     StringBuilder groupBuilder = new StringBuilder("|");
-                    foreach(int groupid in matches)
+                    foreach (int groupid in matches)
                     {
                         groupBuilder.Append(groupid + "|");
                     }
                     returnValue.Group_Restrictions = groupBuilder.ToString();
                 }
-            }           
+            }
 
             // Add the made public field
             if (Digital_Object.Web.MadePublicDate.HasValue)
@@ -141,12 +139,12 @@ namespace SobekCM.Engine_Library.Solr.v5
 
                 // Check for specific restrictions
                 bool is_restricted = false;
-                if ( Digital_Object.Behaviors.HasUserRestriction)
+                if (Digital_Object.Behaviors.HasUserRestriction)
                 {
                     is_restricted = true;
                     returnValue.Restricted = true;
                 }
-                
+
                 // Set the IP restrictions based on PRIVATE or NOT
                 if (Digital_Object.Behaviors.IP_Restriction_Membership == -1)
                     returnValue.Discover_IPs = new List<int> { -1 };
@@ -157,7 +155,7 @@ namespace SobekCM.Engine_Library.Solr.v5
                 }
 
                 // Provide a blanket restriction statement
-                if (( is_restricted ) && ( String.IsNullOrEmpty(returnValue.RestrictedMsg)))
+                if ((is_restricted) && (String.IsNullOrEmpty(returnValue.RestrictedMsg)))
                 {
                     returnValue.RestrictedMsg = "Access Restrictions Apply";
                 }
@@ -310,12 +308,12 @@ namespace SobekCM.Engine_Library.Solr.v5
                         break;
 
                     case "publisher":
-                        if ( returnValue.Publisher == null) returnValue.Publisher = new List<string>();
+                        if (returnValue.Publisher == null) returnValue.Publisher = new List<string>();
                         returnValue.Publisher.Add(searchTerm.Value);
                         break;
 
                     case "publisher.display":
-                        if ( returnValue.Publisher_Display == null) returnValue.Publisher_Display = new List<string>();
+                        if (returnValue.Publisher_Display == null) returnValue.Publisher_Display = new List<string>();
                         returnValue.Publisher_Display.Add(searchTerm.Value);
                         break;
 
@@ -324,12 +322,12 @@ namespace SobekCM.Engine_Library.Solr.v5
                         break;
 
                     case "notes":
-                        if ( returnValue.Notes == null) returnValue.Notes = new List<string>();
+                        if (returnValue.Notes == null) returnValue.Notes = new List<string>();
                         returnValue.Notes.Add(searchTerm.Value);
                         break;
 
                     case "frequency":
-                        if ( returnValue.Frequency == null) returnValue.Frequency = new List<string>();
+                        if (returnValue.Frequency == null) returnValue.Frequency = new List<string>();
                         returnValue.Frequency.Add(searchTerm.Value);
                         break;
 
@@ -338,7 +336,7 @@ namespace SobekCM.Engine_Library.Solr.v5
                         break;
 
                     case "publication place":
-                        if ( returnValue.PubPlace == null) returnValue.PubPlace = new List<string>();
+                        if (returnValue.PubPlace == null) returnValue.PubPlace = new List<string>();
                         returnValue.PubPlace.Add(searchTerm.Value);
                         break;
 
@@ -351,7 +349,7 @@ namespace SobekCM.Engine_Library.Solr.v5
                         break;
 
                     case "target audience":
-                        if ( returnValue.Audience == null) returnValue.Audience = new List<string>();
+                        if (returnValue.Audience == null) returnValue.Audience = new List<string>();
                         returnValue.Audience.Add(searchTerm.Value);
                         break;
 
@@ -360,62 +358,62 @@ namespace SobekCM.Engine_Library.Solr.v5
                         break;
 
                     case "name as subject":
-                        if ( returnValue.NameAsSubject == null) returnValue.NameAsSubject = new List<string>();
+                        if (returnValue.NameAsSubject == null) returnValue.NameAsSubject = new List<string>();
                         returnValue.NameAsSubject.Add(searchTerm.Value);
                         break;
 
                     case "name as subject dispay":
-                        if ( returnValue.NameAsSubjectDisplay == null) returnValue.NameAsSubjectDisplay = new List<string>();
+                        if (returnValue.NameAsSubjectDisplay == null) returnValue.NameAsSubjectDisplay = new List<string>();
                         returnValue.NameAsSubjectDisplay.Add(searchTerm.Value);
                         break;
 
                     case "title as subject":
-                        if ( returnValue.TitleAsSubject == null) returnValue.TitleAsSubject = new List<string>();
+                        if (returnValue.TitleAsSubject == null) returnValue.TitleAsSubject = new List<string>();
                         returnValue.TitleAsSubject.Add(searchTerm.Value);
                         break;
 
                     case "title as subject display":
-                        if ( returnValue.TitleAsSubjectDisplay == null) returnValue.TitleAsSubjectDisplay = new List<string>();
+                        if (returnValue.TitleAsSubjectDisplay == null) returnValue.TitleAsSubjectDisplay = new List<string>();
                         returnValue.TitleAsSubjectDisplay.Add(searchTerm.Value);
                         break;
 
                     case "spatial coverage":
-                        if ( returnValue.Spatial == null) returnValue.Spatial = new List<string>();
+                        if (returnValue.Spatial == null) returnValue.Spatial = new List<string>();
                         returnValue.Spatial.Add(searchTerm.Value);
                         break;
 
                     case "spatial coverage.display":
-                        if ( returnValue.SpatialDisplay == null) returnValue.SpatialDisplay = new List<string>();
+                        if (returnValue.SpatialDisplay == null) returnValue.SpatialDisplay = new List<string>();
                         returnValue.SpatialDisplay.Add(searchTerm.Value);
                         break;
 
                     case "country":
-                        if ( returnValue.Country == null) returnValue.Country = new List<string>();
+                        if (returnValue.Country == null) returnValue.Country = new List<string>();
                         returnValue.Country.Add(searchTerm.Value);
                         break;
 
                     case "state":
-                        if ( returnValue.State == null) returnValue.State = new List<string>();
+                        if (returnValue.State == null) returnValue.State = new List<string>();
                         returnValue.State.Add(searchTerm.Value);
                         break;
 
                     case "county":
-                        if ( returnValue.County == null) returnValue.County = new List<string>();
+                        if (returnValue.County == null) returnValue.County = new List<string>();
                         returnValue.County.Add(searchTerm.Value);
                         break;
 
                     case "city":
-                        if ( returnValue.City == null) returnValue.City = new List<string>();
+                        if (returnValue.City == null) returnValue.City = new List<string>();
                         returnValue.City.Add(searchTerm.Value);
                         break;
 
                     case "subject keyword":
-                        if ( returnValue.Subject == null) returnValue.Subject = new List<string>();
+                        if (returnValue.Subject == null) returnValue.Subject = new List<string>();
                         returnValue.Subject.Add(searchTerm.Value.Trim());
                         break;
 
                     case "subjects.display":
-                        if ( returnValue.SubjectDisplay == null) returnValue.SubjectDisplay = new List<string>();
+                        if (returnValue.SubjectDisplay == null) returnValue.SubjectDisplay = new List<string>();
                         returnValue.SubjectDisplay.Add(searchTerm.Value.Trim());
                         break;
 
@@ -429,28 +427,28 @@ namespace SobekCM.Engine_Library.Solr.v5
                         break;
 
                     case "toc":
-                        if ( returnValue.TableOfContents == null) returnValue.TableOfContents = new List<string>();
+                        if (returnValue.TableOfContents == null) returnValue.TableOfContents = new List<string>();
                         returnValue.TableOfContents.Add(searchTerm.Value.Trim());
                         break;
 
                     case "mime type":
-                        if ( returnValue.MimeType == null) returnValue.MimeType = new List<string>();
+                        if (returnValue.MimeType == null) returnValue.MimeType = new List<string>();
                         returnValue.MimeType.Add(searchTerm.Value.Trim());
                         break;
 
                     case "cultural context":
-                        if ( returnValue.CulturalContext == null) returnValue.CulturalContext = new List<string>();
+                        if (returnValue.CulturalContext == null) returnValue.CulturalContext = new List<string>();
                         returnValue.CulturalContext.Add(searchTerm.Value.Trim());
                         break;
 
                     case "inscription":
-                        if ( returnValue.Inscription == null) returnValue.Inscription = new List<string>();
+                        if (returnValue.Inscription == null) returnValue.Inscription = new List<string>();
                         returnValue.Inscription.Add(searchTerm.Value.Trim());
                         break;
 
                     case "materials":
                     case "material":
-                        if ( returnValue.Material == null) returnValue.Material = new List<string>();
+                        if (returnValue.Material == null) returnValue.Material = new List<string>();
                         returnValue.Material.Add(searchTerm.Value.Trim());
                         break;
 
@@ -461,7 +459,7 @@ namespace SobekCM.Engine_Library.Solr.v5
                         break;
 
                     case "measurements":
-                        if ( returnValue.Measurements == null) returnValue.Measurements = new List<string>();
+                        if (returnValue.Measurements == null) returnValue.Measurements = new List<string>();
                         returnValue.Measurements.Add(searchTerm.Value.Trim());
                         break;
 
@@ -471,22 +469,22 @@ namespace SobekCM.Engine_Library.Solr.v5
                         break;
 
                     case "style period":
-                        if ( returnValue.StylePeriod == null) returnValue.StylePeriod = new List<string>();
+                        if (returnValue.StylePeriod == null) returnValue.StylePeriod = new List<string>();
                         returnValue.StylePeriod.Add(searchTerm.Value.Trim());
                         break;
 
                     case "technique":
-                        if ( returnValue.Technique == null) returnValue.Technique = new List<string>();
+                        if (returnValue.Technique == null) returnValue.Technique = new List<string>();
                         returnValue.Technique.Add(searchTerm.Value.Trim());
                         break;
 
                     case "interviewee":
-                        if ( returnValue.Interviewee == null) returnValue.Interviewee = new List<string>();
+                        if (returnValue.Interviewee == null) returnValue.Interviewee = new List<string>();
                         returnValue.Interviewee.Add(searchTerm.Value.Trim());
                         break;
 
                     case "interviewer":
-                        if ( returnValue.Interviewer == null) returnValue.Interviewer = new List<string>();
+                        if (returnValue.Interviewer == null) returnValue.Interviewer = new List<string>();
                         returnValue.Interviewer.Add(searchTerm.Value.Trim());
                         break;
 
@@ -502,7 +500,7 @@ namespace SobekCM.Engine_Library.Solr.v5
                         break;
 
                     case "performer":
-                        if ( returnValue.Performer == null) returnValue.Performer = new List<string>();
+                        if (returnValue.Performer == null) returnValue.Performer = new List<string>();
                         returnValue.Performer.Add(searchTerm.Value.Trim());
 
                         // For now, we aren't setting the performer display any differently than performer
@@ -511,7 +509,7 @@ namespace SobekCM.Engine_Library.Solr.v5
                         break;
 
                     case "etd committee":
-                        if ( returnValue.EtdCommittee == null) returnValue.EtdCommittee = new List<string>();
+                        if (returnValue.EtdCommittee == null) returnValue.EtdCommittee = new List<string>();
                         returnValue.EtdCommittee.Add(searchTerm.Value.Trim());
                         break;
 
@@ -536,52 +534,52 @@ namespace SobekCM.Engine_Library.Solr.v5
                         break;
 
                     case "zt kingdom":
-                        if ( returnValue.ZoologicalKingdom == null) returnValue.ZoologicalKingdom = new List<string>();
+                        if (returnValue.ZoologicalKingdom == null) returnValue.ZoologicalKingdom = new List<string>();
                         returnValue.ZoologicalKingdom.Add(searchTerm.Value.Trim());
                         break;
 
                     case "zt phylum":
-                        if ( returnValue.ZoologicalPhylum == null) returnValue.ZoologicalPhylum = new List<string>();
+                        if (returnValue.ZoologicalPhylum == null) returnValue.ZoologicalPhylum = new List<string>();
                         returnValue.ZoologicalPhylum.Add(searchTerm.Value.Trim());
                         break;
 
                     case "zt class":
-                        if ( returnValue.ZoologicalClass == null) returnValue.ZoologicalClass = new List<string>();
+                        if (returnValue.ZoologicalClass == null) returnValue.ZoologicalClass = new List<string>();
                         returnValue.ZoologicalClass.Add(searchTerm.Value.Trim());
                         break;
 
                     case "zt order":
-                        if ( returnValue.ZoologicalOrder == null) returnValue.ZoologicalOrder = new List<string>();
+                        if (returnValue.ZoologicalOrder == null) returnValue.ZoologicalOrder = new List<string>();
                         returnValue.ZoologicalOrder.Add(searchTerm.Value.Trim());
                         break;
 
                     case "zt family":
-                        if ( returnValue.ZoologicalFamily == null) returnValue.ZoologicalFamily = new List<string>();
+                        if (returnValue.ZoologicalFamily == null) returnValue.ZoologicalFamily = new List<string>();
                         returnValue.ZoologicalFamily.Add(searchTerm.Value.Trim());
                         break;
 
                     case "zt genus":
-                        if ( returnValue.ZoologicalGenus == null) returnValue.ZoologicalGenus = new List<string>();
+                        if (returnValue.ZoologicalGenus == null) returnValue.ZoologicalGenus = new List<string>();
                         returnValue.ZoologicalGenus.Add(searchTerm.Value.Trim());
                         break;
 
                     case "zt species":
-                        if ( returnValue.ZoologicalSpecies == null) returnValue.ZoologicalSpecies = new List<string>();
+                        if (returnValue.ZoologicalSpecies == null) returnValue.ZoologicalSpecies = new List<string>();
                         returnValue.ZoologicalSpecies.Add(searchTerm.Value.Trim());
                         break;
 
                     case "zt common name":
-                        if ( returnValue.ZoologicalCommonName == null) returnValue.ZoologicalCommonName = new List<string>();
+                        if (returnValue.ZoologicalCommonName == null) returnValue.ZoologicalCommonName = new List<string>();
                         returnValue.ZoologicalCommonName.Add(searchTerm.Value.Trim());
                         break;
 
                     case "zt scientific name":
-                        if ( returnValue.ZoologicalScientificName == null) returnValue.ZoologicalScientificName = new List<string>();
+                        if (returnValue.ZoologicalScientificName == null) returnValue.ZoologicalScientificName = new List<string>();
                         returnValue.ZoologicalScientificName.Add(searchTerm.Value.Trim());
                         break;
 
                     case "zt hierarchical":
-                        if ( returnValue.ZoologicalHierarchical == null) returnValue.ZoologicalHierarchical = new List<string>();
+                        if (returnValue.ZoologicalHierarchical == null) returnValue.ZoologicalHierarchical = new List<string>();
                         returnValue.ZoologicalHierarchical.Add(searchTerm.Value.Trim());
                         break;
 
@@ -594,12 +592,12 @@ namespace SobekCM.Engine_Library.Solr.v5
                         break;
 
                     case "lom context":
-                        if ( returnValue.LomContext == null) returnValue.LomContext = new List<string>();
+                        if (returnValue.LomContext == null) returnValue.LomContext = new List<string>();
                         returnValue.LomContext.Add(searchTerm.Value.Trim());
                         break;
 
                     case "lom context display":
-                        if ( returnValue.LomContextDisplay == null) returnValue.LomContextDisplay = new List<string>();
+                        if (returnValue.LomContextDisplay == null) returnValue.LomContextDisplay = new List<string>();
                         returnValue.LomContextDisplay.Add(searchTerm.Value.Trim());
                         break;
 
@@ -608,7 +606,7 @@ namespace SobekCM.Engine_Library.Solr.v5
                         break;
 
                     case "lom intended end user":
-                        if ( returnValue.LomIntendedEndUser == null) returnValue.LomIntendedEndUser = new List<string>();
+                        if (returnValue.LomIntendedEndUser == null) returnValue.LomIntendedEndUser = new List<string>();
                         returnValue.LomIntendedEndUser.Add(searchTerm.Value.Trim());
                         break;
 
@@ -629,27 +627,27 @@ namespace SobekCM.Engine_Library.Solr.v5
                         break;
 
                     case "lom requirement":
-                        if ( returnValue.LomRequirement == null) returnValue.LomRequirement = new List<string>();
+                        if (returnValue.LomRequirement == null) returnValue.LomRequirement = new List<string>();
                         returnValue.LomRequirement.Add(searchTerm.Value.Trim());
                         break;
 
                     case "lom requirement display":
-                        if ( returnValue.LomRequirementDisplay == null) returnValue.LomRequirementDisplay = new List<string>();
+                        if (returnValue.LomRequirementDisplay == null) returnValue.LomRequirementDisplay = new List<string>();
                         returnValue.LomRequirementDisplay.Add(searchTerm.Value.Trim());
                         break;
 
                     case "lom age range":
-                        if ( returnValue.LomAgeRange == null) returnValue.LomAgeRange = new List<string>();
+                        if (returnValue.LomAgeRange == null) returnValue.LomAgeRange = new List<string>();
                         returnValue.LomAgeRange.Add(searchTerm.Value.Trim());
                         break;
 
                     case "lom resource type":
-                        if ( returnValue.LomResourceType == null) returnValue.LomResourceType = new List<string>();
+                        if (returnValue.LomResourceType == null) returnValue.LomResourceType = new List<string>();
                         returnValue.LomResourceType.Add(searchTerm.Value.Trim());
                         break;
 
                     case "lom resource type display":
-                        if ( returnValue.LomResourceTypeDisplay == null) returnValue.LomResourceTypeDisplay = new List<string>();
+                        if (returnValue.LomResourceTypeDisplay == null) returnValue.LomResourceTypeDisplay = new List<string>();
                         returnValue.LomResourceTypeDisplay.Add(searchTerm.Value.Trim());
                         break;
 

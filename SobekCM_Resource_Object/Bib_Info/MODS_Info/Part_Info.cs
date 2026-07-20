@@ -67,19 +67,19 @@ namespace SobekCM.Resource_Object.Bib_Info
         {
             Part_Info copy = new Part_Info
             {
-                Day = day, 
-                Day_Index = Day_Index, 
-                Enum1 = Enum1, 
-                Enum1_Index = Enum1_Index, 
-                Enum2 = Enum2, 
-                Enum2_Index = Enum2_Index, 
-                Enum3 = Enum3, 
-                Enum3_Index = Enum3_Index, 
-                Enum4 = Enum4, 
-                Enum4_Index = Enum4_Index, 
-                Month = Month, 
-                Month_Index = Month_Index, 
-                Year = Year, 
+                Day = day,
+                Day_Index = Day_Index,
+                Enum1 = Enum1,
+                Enum1_Index = Enum1_Index,
+                Enum2 = Enum2,
+                Enum2_Index = Enum2_Index,
+                Enum3 = Enum3,
+                Enum3_Index = Enum3_Index,
+                Enum4 = Enum4,
+                Enum4_Index = Enum4_Index,
+                Month = Month,
+                Month_Index = Month_Index,
+                Year = Year,
                 Year_Index = Year_Index
             };
             return copy;

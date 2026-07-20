@@ -1,6 +1,6 @@
-﻿using System;
+﻿using SobekCM.Core.Configuration;
 using SobekCM.Core.MicroservicesClient;
-using SobekCM.Core.Configuration;
+using System;
 
 namespace SobekCM.Builder_Library.Settings
 {

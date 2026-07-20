@@ -4,7 +4,6 @@ using SobekCM.Engine_Library.Database;
 using SobekCM.Tools;
 using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.IO;
 
 namespace SobekCM.Library.AdminViewer.UserAdmin.UserAdminTabs
@@ -66,7 +65,7 @@ namespace SobekCM.Library.AdminViewer.UserAdmin.UserAdminTabs
                     }
                 }
             }
-            
+
             // No immediate save necesary, since the button wasn't pushed
             return false;
         }

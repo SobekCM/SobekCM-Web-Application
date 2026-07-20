@@ -1,15 +1,14 @@
 ﻿#region Using directives
 
+using Microsoft.Data.SqlClient;
+using SobekCM.Core.Configuration.Engine;
+using SobekCM.Tools;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Data;
-using Microsoft.Data.SqlClient;
 using System.Text;
 using System.Text.RegularExpressions;
-
-using SobekCM.Core.Configuration.Engine;
-using SobekCM.Tools;
 
 #endregion
 
@@ -93,7 +92,7 @@ namespace SobekCM.Engine_Library.Endpoints
             // Ensure the email address appears to be valid
             const string VALID_EMAIL_PATTERN = @"^\s*[\w\-\+_']+(\.[\w\-\+_']+)*\@[A-Za-z0-9]([\w\.-]*[A-Za-z0-9])?\.[A-Za-z][A-Za-z\.]*[A-Za-z]$";
             Regex emailCheck = new Regex(VALID_EMAIL_PATTERN, RegexOptions.IgnoreCase);
-            if (( email != null ) && (!emailCheck.IsMatch(email)))
+            if ((email != null) && (!emailCheck.IsMatch(email)))
             {
                 Response.Output.Write("Provided email address is not in the correct format.\n\nPlease correct the email address and select REGISTER again.");
                 Response.StatusCode = 400;
@@ -158,7 +157,7 @@ namespace SobekCM.Engine_Library.Endpoints
                     return;
                 }
             }
-            
+
             Response.Output.Write("{\"message\":\"You have been registered\",\"success\":true}");
             Response.StatusCode = 200;
         }

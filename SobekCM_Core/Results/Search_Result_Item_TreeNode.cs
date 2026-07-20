@@ -16,7 +16,7 @@ namespace SobekCM.Core.Results
         private readonly SortedList<int, List<Search_Result_Item_TreeNode>> childNodes;
 
         /// <summary> Constructor for a new instance of the Sorted_TreeNode class </summary>
-        public Search_Result_Item_TreeNode( )
+        public Search_Result_Item_TreeNode()
         {
             Link = String.Empty;
             Name = String.Empty;
@@ -62,7 +62,7 @@ namespace SobekCM.Core.Results
         /// <summary> Gets the list of child nodes </summary>
         public List<Search_Result_Item_TreeNode> ChildNodes
         {
-            get 
+            get
             {
                 List<Search_Result_Item_TreeNode> returnValue = new List<Search_Result_Item_TreeNode>();
                 foreach (List<Search_Result_Item_TreeNode> nodeList in childNodes.Values)
@@ -103,7 +103,7 @@ namespace SobekCM.Core.Results
             }
             else
             {
-                List<Search_Result_Item_TreeNode> listValue = new List<Search_Result_Item_TreeNode> {returnNode};
+                List<Search_Result_Item_TreeNode> listValue = new List<Search_Result_Item_TreeNode> { returnNode };
                 childNodes[Sort_Value] = listValue;
             }
 
@@ -116,7 +116,7 @@ namespace SobekCM.Core.Results
         /// <remarks> Two tree nodes are considered equal if they name and link are the same </remarks>
         public bool Equals(Search_Result_Item_TreeNode other)
         {
-            return (other.Name == Name) && ( other.Link == Link );
+            return (other.Name == Name) && (other.Link == Link);
         }
     }
 }

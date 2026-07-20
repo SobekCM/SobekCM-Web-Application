@@ -1,12 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using SobekCM.Core.BriefItem;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Users;
 using SobekCM.Library.HTML;
 using SobekCM.Tools;
+using System;
+using System.Collections.Generic;
+using System.IO;
 
 namespace SobekCM.Library.ItemViewer.Viewers
 {
@@ -153,7 +153,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
                     // Add the button for the first page
                     CurrentRequest.ViewerCode = currView.Replace(currSeq.ToString(), "1");
-                    string returnVal = UrlWriterHelper.Redirect_URL(CurrentRequest); 
+                    string returnVal = UrlWriterHelper.Redirect_URL(CurrentRequest);
 
                     // Restore the original sequence
                     CurrentRequest.ViewerCode = currView;
@@ -178,7 +178,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
                     // Add the button for the previous page
                     CurrentRequest.ViewerCode = currView.Replace(currSeq.ToString(), (currSeq - 1).ToString());
-                    string returnVal = UrlWriterHelper.Redirect_URL(CurrentRequest); 
+                    string returnVal = UrlWriterHelper.Redirect_URL(CurrentRequest);
 
                     // Restore the original sequence
                     CurrentRequest.ViewerCode = currView;
@@ -203,7 +203,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
                     // Add the button for the previous page
                     CurrentRequest.ViewerCode = currView.Replace(currSeq.ToString(), (currSeq + 1).ToString());
-                    string returnVal = UrlWriterHelper.Redirect_URL(CurrentRequest); 
+                    string returnVal = UrlWriterHelper.Redirect_URL(CurrentRequest);
 
                     // Restore the original sequence
                     CurrentRequest.ViewerCode = currView;
@@ -228,7 +228,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
                     // Add the button for the previous page
                     CurrentRequest.ViewerCode = currView.Replace(currSeq.ToString(), PageCount.ToString());
-                    string returnVal = UrlWriterHelper.Redirect_URL(CurrentRequest); 
+                    string returnVal = UrlWriterHelper.Redirect_URL(CurrentRequest);
 
                     // Restore the original sequence
                     CurrentRequest.ViewerCode = currView;
@@ -247,7 +247,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             get
             {
                 // If somehow no images (shouldn't be here) safely return empty string
-                if ( BriefItem.Images == null )
+                if (BriefItem.Images == null)
                     return new string[0];
 
                 // Start to build the return array and keep track of it some pages are numbered
@@ -255,7 +255,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 string[] page_names = new string[BriefItem.Images.Count];
                 for (int i = 0; i < page_names.Length; i++)
                 {
-                    if ( !String.IsNullOrEmpty(BriefItem.Images[i].Label))
+                    if (!String.IsNullOrEmpty(BriefItem.Images[i].Label))
                     {
                         page_names[i] = BriefItem.Images[i].Label;
                         some_pages_named = true;

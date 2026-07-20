@@ -1,14 +1,12 @@
 #region Using directives
 
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
-using Microsoft.AspNetCore.Http;
 using SobekCM.Core.ApplicationState;
-using SobekCM.Core.Configuration;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Users;
 using SobekCM.Resource_Object;
+using System.Collections.Generic;
+using System.IO;
+using System.Text;
 
 #endregion
 
@@ -67,7 +65,7 @@ namespace SobekCM.Library.Citation.Elements
             // standard identifier class as possible to support any later changes.
             List<string> terms = new List<string>();
             List<string> schemes = new List<string>();
-            terms.Add( Bib.Behaviors.Primary_Identifier.Identifier);
+            terms.Add(Bib.Behaviors.Primary_Identifier.Identifier);
             schemes.Add(Bib.Behaviors.Primary_Identifier.Type);
 
             render_helper(Output, terms, schemes, Skin_Code, Current_User, CurrentLanguage, Translator, Base_URL);
@@ -112,7 +110,7 @@ namespace SobekCM.Library.Citation.Elements
 
             foreach (string index in terms.Keys)
             {
-                Bib.Behaviors.Set_Primary_Identifier( schemes.ContainsKey(index) ? schemes[index] : "Primary Identifier", terms[index]);
+                Bib.Behaviors.Set_Primary_Identifier(schemes.ContainsKey(index) ? schemes[index] : "Primary Identifier", terms[index]);
             }
         }
     }

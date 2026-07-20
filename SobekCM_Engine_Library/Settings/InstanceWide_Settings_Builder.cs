@@ -1,5 +1,12 @@
 ﻿#region Using directives
 
+using EngineAgnosticLayerDbAccess;
+using SobekCM.Core.Configuration;
+using SobekCM.Core.Navigation;
+using SobekCM.Core.Search;
+using SobekCM.Core.Settings;
+using SobekCM.Engine_Library.Database;
+using SobekCM_Resource_Database;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -7,17 +14,6 @@ using System.IO;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Xml;
-using EngineAgnosticLayerDbAccess;
-using SobekCM.Core.Configuration;
-using SobekCM.Core.Navigation;
-using SobekCM.Core.Search;
-using SobekCM.Core.Settings;
-using SobekCM.Engine_Library.Configuration;
-using SobekCM.Engine_Library.Database;
-using SobekCM.Engine_Library.Items.BriefItems;
-using SobekCM.Resource_Object.Database;
-using SobekCM.Resource_Object.OAI.Writer;
-using SobekCM_Resource_Database;
 
 #endregion
 
@@ -25,7 +21,7 @@ namespace SobekCM.Engine_Library.Settings
 {
     /// <summary> Build the instance wide settings, from configuration files and from data 
     /// returned from the database </summary>
-    public static  class InstanceWide_Settings_Builder
+    public static class InstanceWide_Settings_Builder
     {
 
         #region Constant values 
@@ -38,7 +34,7 @@ namespace SobekCM.Engine_Library.Settings
         private const string CURRENT_WEB_VERSION = "4.12.0";
 
         /// <summary> Current version number associated with this SobekCM builder application </summary>
-        private const string CURRENT_BUILDER_VERSION = "4.12.0"; 
+        private const string CURRENT_BUILDER_VERSION = "4.12.0";
 
         /// <summary> Number of ticks that a complete package must age before being processed </summary>
         /// <value> This is currently set to 15 minutes (in ticks) </value>
@@ -64,12 +60,12 @@ namespace SobekCM.Engine_Library.Settings
 
         /// <summary> Refreshes the values from the database settings </summary>
         /// <returns> A fully builder instance-wide setting object </returns>
-        public static InstanceWide_Settings Build_Settings( string ConfigFileLocation )
+        public static InstanceWide_Settings Build_Settings(string ConfigFileLocation)
         {
             InstanceWide_Settings returnValue = new InstanceWide_Settings();
 
             // Read the main configuration file, with database and error information
-           // returnValue.Servers.Base_Directory = AppDomain.CurrentDomain.BaseDirectory;
+            // returnValue.Servers.Base_Directory = AppDomain.CurrentDomain.BaseDirectory;
             Read_Configuration_File(returnValue, ConfigFileLocation);
 
             // Set the error URL
@@ -88,7 +84,7 @@ namespace SobekCM.Engine_Library.Settings
 
         /// <summary> Refreshes the values from the database settings </summary>
         /// <returns> A fully builder instance-wide setting object </returns>
-        public static InstanceWide_Settings Build_Settings( Database_Instance_Configuration DbInstance )
+        public static InstanceWide_Settings Build_Settings(Database_Instance_Configuration DbInstance)
         {
             InstanceWide_Settings returnValue = new InstanceWide_Settings();
 
@@ -108,7 +104,7 @@ namespace SobekCM.Engine_Library.Settings
         /// <param name="SettingsObject"> Instance-wide settings object to refresh </param>
         /// <param name="SobekCM_Settings"> Setting information, from the database, to read into the settings object </param>
         /// <returns> TRUE if successful, FALSE otherwise </returns>
-        public static bool Refresh( InstanceWide_Settings SettingsObject, DataSet SobekCM_Settings )
+        public static bool Refresh(InstanceWide_Settings SettingsObject, DataSet SobekCM_Settings)
         {
 
             // Set some values that used to be constants in the original settings object.  
@@ -118,7 +114,7 @@ namespace SobekCM.Engine_Library.Settings
                     "dataset", "dataprovider", "xml", "textonly", "shibboleth", "internal",
                     "contact", "folder", "admin", "preferences", "stats", "statistics", "adminhelp",
                     "partners", "tree", "brief", "personalized", "all", "new", "map", "advanced",
-                    "text", "results", "contains", "exact", "resultslike", "browseby", "info",  
+                    "text", "results", "contains", "exact", "resultslike", "browseby", "info",
                     "inprocess", "engine", "register", "xyzzyxyzzy", "aggrmanage", "aggrpermissions", "aggrhistory"  };
 
             SettingsObject.System.Page_Image_Extensions = new List<string> { "JPG", "JP2", "JPX", "GIF", "PNG", "BMP", "JPEG" };
@@ -206,7 +202,7 @@ namespace SobekCM.Engine_Library.Settings
                 Get_String_Value(settingsDictionary, "SobekCM Image Server", SettingsObject.Servers, X => X.SobekCM_ImageServer, String.Empty);
                 Get_String_Value(settingsDictionary, "SobekCM Web Server IP", SettingsObject.Servers, X => X.SobekCM_Web_Server_IP, String.Empty);
                 Get_String_Value(settingsDictionary, "Static Pages Location", SettingsObject.Servers, X => X.Static_Pages_Location, ref error);
-                Get_String_Value(settingsDictionary, "Static Resources Source", SettingsObject.Servers, X => X.Static_Resources_Config_File, "CDN");          
+                Get_String_Value(settingsDictionary, "Static Resources Source", SettingsObject.Servers, X => X.Static_Resources_Config_File, "CDN");
                 Get_Boolean_Value(settingsDictionary, "Statistics Caching Enabled", SettingsObject.Servers, X => X.Statistics_Caching_Enabled, ref error, false);
                 Get_String_Value(settingsDictionary, "System Base Abbreviation", SettingsObject.System, X => X.System_Abbreviation, String.Empty);
                 Get_String_Value(settingsDictionary, "System Base Name", SettingsObject.System, X => X.System_Name, SettingsObject.System.System_Abbreviation);
@@ -235,7 +231,7 @@ namespace SobekCM.Engine_Library.Settings
 
                 // Pull the language last, since it must be converted into a Language_Enum
                 Get_String_Value(settingsDictionary, "System Default Language", SettingsObject.System, X => X.Default_UI_Language_String, "English");
-                
+
 
                 // Pull out some values, which are stored in this portion of the database, 
                 // but are not really setting values
@@ -250,7 +246,7 @@ namespace SobekCM.Engine_Library.Settings
                 {
                     SettingsObject.Add_Additional_Setting(thisSetting.Key, thisSetting.Value);
                 }
-                
+
                 // Save the metadata types
                 Set_Metadata_Types(SettingsObject, SobekCM_Settings.Tables[1]);
 
@@ -282,7 +278,7 @@ namespace SobekCM.Engine_Library.Settings
                         decimal viewerMenuOrder = decimal.Parse(thisRow[4].ToString());
 
                         // Add the viewer
-                        SettingsObject.DbItemViewers.Add_ViewerType(viewerId, viewerType, viewerOrder, viewerDefault, viewerMenuOrder );
+                        SettingsObject.DbItemViewers.Add_ViewerType(viewerId, viewerType, viewerOrder, viewerDefault, viewerMenuOrder);
                     }
 
                     // Add all the extension information to the settings object
@@ -291,11 +287,11 @@ namespace SobekCM.Engine_Library.Settings
 
 
                 // If this is running in debug, set base directory to this one
-//#if DEBUG
-//                    string baseDir = System.Web.HttpContext.Current.Server.MapPath("~");
-//                    SettingsObject.Servers.Base_Directory = baseDir;
-//                    SettingsObject.Servers.In_Process_Submission_Location = Path.Combine(baseDir, "mySobek", "InProcess");
-//#endif
+                //#if DEBUG
+                //                    string baseDir = System.Web.HttpContext.Current.Server.MapPath("~");
+                //                    SettingsObject.Servers.Base_Directory = baseDir;
+                //                    SettingsObject.Servers.In_Process_Submission_Location = Path.Combine(baseDir, "mySobek", "InProcess");
+                //#endif
 
                 return true;
             }
@@ -353,8 +349,8 @@ namespace SobekCM.Engine_Library.Settings
                 bool value_as_bool;
                 if (bool.TryParse(value_as_string, out value_as_bool))
                 {
-                    MemberExpression expr = (MemberExpression) OutExpr.Body;
-                    PropertyInfo prop = (PropertyInfo) expr.Member;
+                    MemberExpression expr = (MemberExpression)OutExpr.Body;
+                    PropertyInfo prop = (PropertyInfo)expr.Member;
                     prop.SetValue(OutObj, value_as_bool, null);
 
                     Settings_Dictionary.Remove(Key);
@@ -365,8 +361,8 @@ namespace SobekCM.Engine_Library.Settings
 
             if (Default_Value.HasValue)
             {
-                MemberExpression expr = (MemberExpression) OutExpr.Body;
-                PropertyInfo prop = (PropertyInfo) expr.Member;
+                MemberExpression expr = (MemberExpression)OutExpr.Body;
+                PropertyInfo prop = (PropertyInfo)expr.Member;
                 prop.SetValue(OutObj, Default_Value.Value, null);
             }
             else
@@ -383,8 +379,8 @@ namespace SobekCM.Engine_Library.Settings
                 int value_as_int;
                 if (int.TryParse(value_as_string, out value_as_int))
                 {
-                    MemberExpression expr = (MemberExpression) OutExpr.Body;
-                    PropertyInfo prop = (PropertyInfo) expr.Member;
+                    MemberExpression expr = (MemberExpression)OutExpr.Body;
+                    PropertyInfo prop = (PropertyInfo)expr.Member;
                     prop.SetValue(OutObj, value_as_int, null);
 
                     Settings_Dictionary.Remove(Key);
@@ -457,7 +453,7 @@ namespace SobekCM.Engine_Library.Settings
                 string solr_facet = thisRow[solrFacetColumn].ToString();
                 string solr_display = thisRow[solrDisplayColumn].ToString();
 
-                
+
 
                 // Also, only continue if the name is NOT user defined
                 if (name.IndexOf("UserDefined", StringComparison.OrdinalIgnoreCase) == 0)
@@ -533,7 +529,7 @@ namespace SobekCM.Engine_Library.Settings
                                 if (xmlReader.Value.ToLower() == "true")
                                     SettingsObject.Servers.isHosted = true;
                             }
-  
+
                             xmlReader.Read();
                             newDb.Connection_String = xmlReader.Value;
                             SettingsObject.Database_Connection = newDb;

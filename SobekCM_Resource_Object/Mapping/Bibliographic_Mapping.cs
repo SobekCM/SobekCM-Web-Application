@@ -1,6 +1,6 @@
-﻿using System;
+﻿using SobekCM.Resource_Object.Configuration;
+using System;
 using System.Collections.Generic;
-using SobekCM.Resource_Object.Configuration;
 
 
 namespace SobekCM.Resource_Object.Mapping
@@ -32,7 +32,7 @@ namespace SobekCM.Resource_Object.Mapping
         /// objects to handle the incoming field/value pairs </summary>
         /// <param name="MapperConfigs"> Mapper configuration values, used to determine which mappers to
         /// create, and in what order </param>
-        public static void Set_Mappings( List<Metadata_Mapping_Config> MapperConfigs )
+        public static void Set_Mappings(List<Metadata_Mapping_Config> MapperConfigs)
         {
             lock (mappersLock)
             {
@@ -95,7 +95,7 @@ namespace SobekCM.Resource_Object.Mapping
         /// <param name="Field">Mapped field</param>
         /// <param name="Message"> [OUT] Message also indicates if the field was mapped, and which mapper found the match </param>
         /// <returns> TRUE if the field was mapped, FALSE if there was data and no mapping was found </returns>
-        public static bool Add_Data(SobekCM_Item Package, string Data, string Field, out string Message )
+        public static bool Add_Data(SobekCM_Item Package, string Data, string Field, out string Message)
         {
             // Try to map using the mappers in order
             foreach (iBibliographicMapper mapper in mappers)
@@ -118,7 +118,7 @@ namespace SobekCM.Resource_Object.Mapping
         /// <param name="Data">Text of the data</param>
         /// <param name="Field">Mapped field</param>
         /// <returns> TRUE if the field was mapped, FALSE if there was data and no mapping was found </returns>
-        public static bool Add_Data(SobekCM_Item Package, string Data, string Field )
+        public static bool Add_Data(SobekCM_Item Package, string Data, string Field)
         {
             // Try to map using the mappers in order
             foreach (iBibliographicMapper mapper in mappers)

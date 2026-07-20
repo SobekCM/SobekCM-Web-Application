@@ -1,19 +1,18 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
+using Microsoft.AspNetCore.Http;
 using SobekCM.Core.BriefItem;
+using SobekCM.Core.Client;
 using SobekCM.Core.FileSystems;
+using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Users;
 using SobekCM.Engine_Library.Configuration;
+using SobekCM.Library.Helpers.CKEditor;
 using SobekCM.Library.ItemViewer.Menu;
 using SobekCM.Tools;
-using SobekCM.Library.Helpers.CKEditor;
-using SobekCM.Core.MemoryMgmt;
-using SobekCM.Core.Client;
-using Microsoft.AspNetCore.Http;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Text;
 
 namespace SobekCM.Library.ItemViewer.Viewers
 {

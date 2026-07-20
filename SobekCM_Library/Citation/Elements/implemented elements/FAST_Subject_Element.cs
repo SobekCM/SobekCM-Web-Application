@@ -1,16 +1,14 @@
 #region Using directives
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
-using Microsoft.AspNetCore.Http;
 using SobekCM.Core.ApplicationState;
-using SobekCM.Core.Configuration;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Users;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Bib_Info;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Text;
 
 #endregion
 
@@ -18,14 +16,14 @@ namespace SobekCM.Library.Citation.Elements
 {
     /// <summary> Element allows simple entry of the FAST term subject keywords </summary>
     /// <remarks> This class extends the <see cref="TextBox_ComboBox_Element"/> class. </remarks>
-    public class FAST_Subject_Element: TextBox_ComboBox_Element
+    public class FAST_Subject_Element : TextBox_ComboBox_Element
     {
         /// <summary> Constructor for a new instance of the FAST_Subject_Element class </summary>
         public FAST_Subject_Element()
             : base("FAST Subject", "fastsubject")
         {
             Add_Select_Item("Genre", "genre");
-            Add_Select_Item("Geographic", "geographic" );
+            Add_Select_Item("Geographic", "geographic");
             Add_Select_Item("Occupational", "occupational");
             Add_Select_Item("Temporal", "temporal");
             Add_Select_Item("Topical", "topic");
@@ -45,7 +43,7 @@ namespace SobekCM.Library.Citation.Elements
         /// <param name="Translator"> Language support object which handles simple translational duties </param>
         /// <param name="Base_URL"> Base URL for the current request </param>
         /// <remarks> This simple element does not append any popup form to the popup_form_builder</remarks>
-        public override void Render_Template_HTML(TextWriter Output, SobekCM_Item Bib, string Skin_Code, bool IsMozilla, StringBuilder PopupFormBuilder, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL )
+        public override void Render_Template_HTML(TextWriter Output, SobekCM_Item Bib, string Skin_Code, bool IsMozilla, StringBuilder PopupFormBuilder, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL)
         {
             // Check that an acronym exists
             if (Acronym.Length == 0)
@@ -101,30 +99,30 @@ namespace SobekCM.Library.Citation.Elements
                 if (thisKey.IndexOf(html_element_name.Replace("_", "") + "_select") == 0)
                 {
                     string subject_type = Context.Request.Form[thisKey];
-                    Subject_Info_Standard standardSubject = new Subject_Info_Standard {Authority = "fast"};
+                    Subject_Info_Standard standardSubject = new Subject_Info_Standard { Authority = "fast" };
 
                     if (subject_text.Trim().Length > 0)
                     {
                         switch (subject_type)
                         {
                             case "genre":
-                                standardSubject.Add_Genre( subject_type );
+                                standardSubject.Add_Genre(subject_type);
                                 break;
 
                             case "geographic":
-                                standardSubject.Add_Geographic( subject_type );
+                                standardSubject.Add_Geographic(subject_type);
                                 break;
 
                             case "occupational":
-                                standardSubject.Add_Occupation( subject_type );
+                                standardSubject.Add_Occupation(subject_type);
                                 break;
 
                             case "temporal":
-                                standardSubject.Add_Temporal( subject_type );
+                                standardSubject.Add_Temporal(subject_type);
                                 break;
 
                             case "topic":
-                                standardSubject.Add_Topic( subject_type );
+                                standardSubject.Add_Topic(subject_type);
                                 break;
                         }
 

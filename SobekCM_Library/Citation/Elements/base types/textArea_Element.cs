@@ -1,12 +1,12 @@
 #region Using directives
 
+using SobekCM.Core.ApplicationState;
+using SobekCM.Core.Configuration.Localization;
+using SobekCM.Core.Users;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Xml;
-using SobekCM.Core.ApplicationState;
-using SobekCM.Core.Configuration.Localization;
-using SobekCM.Core.Users;
 
 #endregion
 
@@ -185,10 +185,10 @@ namespace SobekCM.Library.Citation.Elements
             Output.WriteLine("          <td>");
             Output.WriteLine("            <div id=\"" + html_element_name + "_div\">");
 
-			Output.Write("              <textarea rows=\"" + Rows + "\" cols=\"" + actual_cols + "\" name=\"" + id_name + i + "\" id=\"" + id_name + i + "\" class=\"" + html_element_name + "_input sbk_Focusable\" ");
+            Output.Write("              <textarea rows=\"" + Rows + "\" cols=\"" + actual_cols + "\" name=\"" + id_name + i + "\" id=\"" + id_name + i + "\" class=\"" + html_element_name + "_input sbk_Focusable\" ");
             if (!String.IsNullOrWhiteSpace(Placeholder))
                 Output.Write(" placeholder=\"" + System.Net.WebUtility.HtmlEncode(Placeholder) + "\"");
-            if ( textAreaEvents != null )
+            if (textAreaEvents != null)
                 textAreaEvents.Add_Events_HTML(Output);
             Output.WriteLine(" >" + System.Net.WebUtility.HtmlEncode(InstanceValue) + "</textarea></div>");
 
@@ -215,11 +215,11 @@ namespace SobekCM.Library.Citation.Elements
         /// <summary> Reads the inner data from the CompleteTemplate XML format </summary>
         /// <param name="XMLReader"> Current template xml configuration reader </param>
         /// <remarks> This reads the default value from a <i>value</i> subelement </remarks>
-        protected override void Inner_Read_Data( XmlReader XMLReader )
+        protected override void Inner_Read_Data(XmlReader XMLReader)
         {
-            while ( XMLReader.Read() )
+            while (XMLReader.Read())
             {
-                if (( XMLReader.NodeType == XmlNodeType.Element ) && ( XMLReader.Name.ToLower() == "value" ))
+                if ((XMLReader.NodeType == XmlNodeType.Element) && (XMLReader.Name.ToLower() == "value"))
                 {
                     XMLReader.Read();
                     DefaultValues.Add(XMLReader.Value.Trim());

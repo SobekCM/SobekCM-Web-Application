@@ -1,10 +1,10 @@
-using System.Text;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.BriefItem;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.UI_Configuration.Citation;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
+using System.Text;
 
 namespace SobekCM.Library.Citation.SectionWriter
 {

@@ -1,10 +1,10 @@
 ﻿#region Using directives
 
+using SobekCM.Resource_Object.Behaviors;
+using SobekCM.Resource_Object.Bib_Info;
 using System.Collections.Generic;
 using System.Data;
 using System.Text.RegularExpressions;
-using SobekCM.Resource_Object.Behaviors;
-using SobekCM.Resource_Object.Bib_Info;
 
 #endregion
 
@@ -85,20 +85,20 @@ namespace SobekCM.Resource_Object.Utilities
                     // look for specific identifiers to validate
                     switch (thisIdentifier.Type.ToUpper())
                     {
-                            // ALEPH
+                        // ALEPH
                         case "ALEPHBIBNUM":
                         case "ALEPH":
                             if ((thisIdentifier.Identifier.Length > 0) && (thisIdentifier.Identifier.Length > 10))
                                 Validation_Errors.Add("Aleph value cannot exceed 10 characters");
                             break;
 
-                            // OCLC
+                        // OCLC
                         case "OCLC":
                             if ((thisIdentifier.Identifier.Length > 0) && (thisIdentifier.Identifier.Length > 9))
                                 Validation_Errors.Add("OCLC value cannot exceed 9 characters");
                             break;
 
-                            // ISBN
+                        // ISBN
                         case "ISBN":
 
                             // ISBN field
@@ -107,7 +107,7 @@ namespace SobekCM.Resource_Object.Utilities
 
                             break;
 
-                            // ISSN
+                        // ISSN
                         case "ISSN":
 
                             // ISSN field
@@ -116,7 +116,7 @@ namespace SobekCM.Resource_Object.Utilities
 
                             break;
 
-                            // LCCN
+                        // LCCN
                         case "LCCN":
 
                             // LCCN field

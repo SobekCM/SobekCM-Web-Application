@@ -114,7 +114,7 @@ namespace SobekCM.Resource_Object.Metadata_Modules.Maps
         {
             if ((index >= 0) && (index < indexCollection.Count))
             {
-                return (Map_Index) indexCollection[index];
+                return (Map_Index)indexCollection[index];
             }
             else
             {
@@ -141,7 +141,7 @@ namespace SobekCM.Resource_Object.Metadata_Modules.Maps
                 int i = 0;
                 foreach (DictionaryEntry thisItem in corpHash)
                 {
-                    allCorps[i++] = (Map_Corporation) thisItem.Value;
+                    allCorps[i++] = (Map_Corporation)thisItem.Value;
                 }
                 return allCorps;
             }
@@ -154,7 +154,7 @@ namespace SobekCM.Resource_Object.Metadata_Modules.Maps
         {
             if (corpHash.Contains(CorpID))
             {
-                return (Map_Corporation) corpHash[CorpID];
+                return (Map_Corporation)corpHash[CorpID];
             }
             else
             {
@@ -214,7 +214,7 @@ namespace SobekCM.Resource_Object.Metadata_Modules.Maps
                 int i = 0;
                 foreach (DictionaryEntry thisItem in personHash)
                 {
-                    allPeople[i++] = (Map_Person) thisItem.Value;
+                    allPeople[i++] = (Map_Person)thisItem.Value;
                 }
                 return allPeople;
             }
@@ -227,7 +227,7 @@ namespace SobekCM.Resource_Object.Metadata_Modules.Maps
         {
             if (personHash.Contains(PersonID))
             {
-                return (Map_Person) personHash[PersonID];
+                return (Map_Person)personHash[PersonID];
             }
             else
             {
@@ -288,7 +288,7 @@ namespace SobekCM.Resource_Object.Metadata_Modules.Maps
                 int i = 0;
                 foreach (DictionaryEntry thisItem in sheetHash)
                 {
-                    allSheets[i++] = (Map_Sheet) thisItem.Value;
+                    allSheets[i++] = (Map_Sheet)thisItem.Value;
                 }
                 return allSheets;
             }
@@ -301,7 +301,7 @@ namespace SobekCM.Resource_Object.Metadata_Modules.Maps
         {
             if (sheetHash.Contains(SheetID))
             {
-                return (Map_Sheet) sheetHash[SheetID];
+                return (Map_Sheet)sheetHash[SheetID];
             }
             else
             {
@@ -576,7 +576,7 @@ namespace SobekCM.Resource_Object.Metadata_Modules.Maps
                 foreach (DataRowView thisFeatureView in featureView)
                 {
                     // Get the feature row from the data view row
-                    Map_Info_Tables.FeatureRow thisFeature = (Map_Info_Tables.FeatureRow) thisFeatureView.Row;
+                    Map_Info_Tables.FeatureRow thisFeature = (Map_Info_Tables.FeatureRow)thisFeatureView.Row;
 
                     // Start the information on this feature
                     results.Append("<" + prefix + "feature id=\"FEAT" + thisFeature.FeatureID + "\"");
@@ -661,7 +661,7 @@ namespace SobekCM.Resource_Object.Metadata_Modules.Maps
                     foreach (DataRowView thisStreetView in streetView)
                     {
                         // Get the feature row from the data view row
-                        Map_Info_Tables.StreetRow thisStreet = (Map_Info_Tables.StreetRow) thisStreetView.Row;
+                        Map_Info_Tables.StreetRow thisStreet = (Map_Info_Tables.StreetRow)thisStreetView.Row;
                         if (!start)
                         {
                             results.Append("<" + prefix + "street id=\"STR" + thisStreetID + "\" name=\"" + XML_Safe_Element(thisStreet.Name) + "\">\r\n");

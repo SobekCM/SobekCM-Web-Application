@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using ProtoBuf;
+using System;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
-using ProtoBuf;
 
 namespace SobekCM.Core.Items
 {
@@ -41,7 +37,7 @@ namespace SobekCM.Core.Items
         /// <param name="BibID"> Bibliographic identifier for this item group / title </param>
         /// <param name="GroupTitle"> Title for the entire group of items under this title </param>
         /// <param name="GroupThumbnail"> Group thumbnail to override the individual item thumbnails in grouped results </param>
-        public Minimal_Item_Group_Info(string BibID, string GroupTitle, string GroupThumbnail )
+        public Minimal_Item_Group_Info(string BibID, string GroupTitle, string GroupThumbnail)
         {
             this.BibID = BibID;
             this.GroupTitle = GroupTitle;

@@ -1,14 +1,14 @@
 ﻿#region Using directives
 
+using Jil;
+using ProtoBuf;
+using SobekCM.Tools;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
-using Jil;
-using ProtoBuf;
-using SobekCM.Tools;
 
 #endregion
 
@@ -23,9 +23,9 @@ namespace SobekCM.Core.MicroservicesClient
         /// <summary> Constructor for a new instance of the MicroservicesClientBase class </summary>
         /// <param name="ConfigFile"> Location for the configuration file to read </param>
         /// <param name="SystemBaseUrl"> System base URL </param>
-        protected MicroservicesClientBase(string ConfigFile, string SystemBaseUrl )
+        protected MicroservicesClientBase(string ConfigFile, string SystemBaseUrl)
         {
-            if ( Config == null )
+            if (Config == null)
                 Config = MicroservicesClient_Config_Reader.Read_Config(ConfigFile, SystemBaseUrl);
         }
 
@@ -51,13 +51,13 @@ namespace SobekCM.Core.MicroservicesClient
         /// <returns> Requested endpoint client configuration, or throws an ApplicationException </returns>
         /// <exception cref="ApplicationException"> If the key is not present in the configuration, an exception is thrown with the message
         /// 'No microservice endpoint defined in the client application for key'. </exception>
-        protected MicroservicesClient_Endpoint GetEndpointConfig(string Key, Custom_Tracer Tracer )
+        protected MicroservicesClient_Endpoint GetEndpointConfig(string Key, Custom_Tracer Tracer)
         {
             MicroservicesClient_Endpoint endpoint = Config[Key];
             if (endpoint == null)
             {
-                if ( Tracer != null )
-                    Tracer.Add_Trace("MicroservicesClientBase.GetEndpointConfig", "No microservice endpoint defined in the client application for key '" + Key + "'", Custom_Trace_Type_Enum.Error); 
+                if (Tracer != null)
+                    Tracer.Add_Trace("MicroservicesClientBase.GetEndpointConfig", "No microservice endpoint defined in the client application for key '" + Key + "'", Custom_Trace_Type_Enum.Error);
                 throw new ApplicationException("No microservice endpoint defined in the client application for key '" + Key + "'");
             }
 
@@ -71,13 +71,13 @@ namespace SobekCM.Core.MicroservicesClient
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         /// <returns> An object of the type requested, from the serializing effort </returns>
         /// <remarks> This only works for simple GET requests at the moment, as no object is POSTed to the remote microservice URL </remarks>
-        protected T Deserialize<T>(string MicroserviceUri, Microservice_Endpoint_Protocol_Enum MicroserviceProtocol, Custom_Tracer Tracer )
+        protected T Deserialize<T>(string MicroserviceUri, Microservice_Endpoint_Protocol_Enum MicroserviceProtocol, Custom_Tracer Tracer)
         {
             try
             {
                 // Add a trace
-                if ( Tracer != null )
-                    Tracer.Add_Trace("MicroservicesClientBase.Deserialize", "Microservice endpoint call: [GET] " + MicroserviceUri );
+                if (Tracer != null)
+                    Tracer.Add_Trace("MicroservicesClientBase.Deserialize", "Microservice endpoint call: [GET] " + MicroserviceUri);
 
                 // Create the request for the remote microservice, by URI
                 WebRequest request = WebRequest.Create(MicroserviceUri);
@@ -125,7 +125,7 @@ namespace SobekCM.Core.MicroservicesClient
                 if (ee.Message == "The URI prefix is not recognized.")
                 {
                     if (Tracer != null)
-                        Tracer.Add_Trace("MicroservicesClientBase.Deserialize", "Microservice URL is not a supported format due to invalid URI prefix", Custom_Trace_Type_Enum.Error );
+                        Tracer.Add_Trace("MicroservicesClientBase.Deserialize", "Microservice URL is not a supported format due to invalid URI prefix", Custom_Trace_Type_Enum.Error);
                     throw new ApplicationException("Microservice URL ( '" + MicroserviceUri + "' ) is not a supported format due to invalid URI prefix.", ee);
                 }
 
@@ -228,7 +228,7 @@ namespace SobekCM.Core.MicroservicesClient
         /// <param name="Tracer">  Trace object keeps a list of each method executed and important milestones in rendering </param>
         /// <returns> An object of the type requested, from the serializing effort </returns>
         /// <remarks> This only works for simple GET requests at the moment, as no object is POSTed to the remote microservice URL </remarks>
-        protected T Deserialize<T>(string MicroserviceUri, Microservice_Endpoint_Protocol_Enum MicroserviceProtocol, List<KeyValuePair<string, string>> PostData, string VerbMethod, Custom_Tracer Tracer )
+        protected T Deserialize<T>(string MicroserviceUri, Microservice_Endpoint_Protocol_Enum MicroserviceProtocol, List<KeyValuePair<string, string>> PostData, string VerbMethod, Custom_Tracer Tracer)
         {
             try
             {
@@ -368,7 +368,7 @@ namespace SobekCM.Core.MicroservicesClient
                 Tracer.Add_Trace("MicroservicesClientBase.Deserialize", "Error deserializing the Protocol Buffer response from microservice URL into " + typeof(T) + ".  (" + ee.Message + ")", Custom_Trace_Type_Enum.Error);
                 throw new ApplicationException("Error deserializing the Protocol Buffer response from microservice URL ( '" + MicroserviceUri + "' ) into " + typeof(T) + ".  (" + ee.Message + ")", ee);
             }
-            
+
             // Other exceptions are thrown
         }
 
@@ -376,7 +376,7 @@ namespace SobekCM.Core.MicroservicesClient
 
         // ReSharper disable UnusedMember.Local
 
-        private object ExampleGetMethod(int PrimaryKey, Custom_Tracer Tracer )
+        private object ExampleGetMethod(int PrimaryKey, Custom_Tracer Tracer)
         {
             // Get the endpoint
             MicroservicesClient_Endpoint endpoint = GetEndpointConfig("ConfigUrl1", Tracer);
@@ -395,11 +395,11 @@ namespace SobekCM.Core.MicroservicesClient
             // Create the post data
             List<KeyValuePair<string, string>> postData = new List<KeyValuePair<string, string>>
             {
-                new KeyValuePair<string, string>("UserId", UserId), 
+                new KeyValuePair<string, string>("UserId", UserId),
                 new KeyValuePair<string, string>("RemoveObject", JSON.Serialize(RemoveObject))
             };
 
-            Tracer.Add_Trace("ExamplePostMethod", "Calling microservice endpoint at: " + endpoint.URL );
+            Tracer.Add_Trace("ExamplePostMethod", "Calling microservice endpoint at: " + endpoint.URL);
 
             // Call out to the endpoint and return the deserialized object
             return Deserialize<string>(endpoint.URL, endpoint.Protocol, postData, "POST", Tracer);

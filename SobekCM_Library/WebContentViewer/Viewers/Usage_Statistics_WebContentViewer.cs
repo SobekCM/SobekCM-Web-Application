@@ -1,13 +1,11 @@
-﻿using System;
-using System.IO;
-using SobekCM.Core.Client;
+﻿using SobekCM.Core.Client;
 using SobekCM.Core.Navigation;
-using SobekCM.Core.UI_Configuration;
-using SobekCM.Core.UI_Configuration.StaticResources;
 using SobekCM.Core.WebContent;
 using SobekCM.Core.WebContent.Single;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Tools;
+using System;
+using System.IO;
 
 namespace SobekCM.Library.WebContentViewer.Viewers
 {
@@ -19,14 +17,14 @@ namespace SobekCM.Library.WebContentViewer.Viewers
         /// <param name="RequestSpecificValues">  All the necessary, non-global data specific to the current request  </param>
         /// <param name="StaticPage"> Static page info for this request </param>
         public Usage_Statistics_WebContentViewer(RequestCache RequestSpecificValues, HTML_Based_Content StaticPage)
-            : base(RequestSpecificValues, StaticPage )
+            : base(RequestSpecificValues, StaticPage)
         {
-            
+
         }
 
 
         /// <summary> Gets the type of specialized web content viewer </summary>
-        public override WebContent_Type_Enum Type { get { return WebContent_Type_Enum.Usage; }}
+        public override WebContent_Type_Enum Type { get { return WebContent_Type_Enum.Usage; } }
 
         /// <summary> Title for the page that displays this viewer, this is shown in the search box at the top of the page, just below the banner </summary>
         public override string Viewer_Title
@@ -106,7 +104,7 @@ namespace SobekCM.Library.WebContentViewer.Viewers
                 // Add the data row
                 Output.WriteLine("    <tr>");
                 Output.WriteLine("      <td style=\"text-align:left;\">" + Month_From_Int(usage.Month) + " " + usage.Year + "</td>");
-                 
+
                 Output.WriteLine("      <td>" + usage.Hits + "</td>");
                 totalHits += usage.Hits;
 

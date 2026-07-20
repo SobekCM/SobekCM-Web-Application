@@ -1,14 +1,14 @@
 #region Using directives
 
 using Microsoft.AspNetCore.Http;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.Navigation;
 using SobekCM.Library.HTML;
 using SobekCM.Tools;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Text;
 
 #endregion
 
@@ -35,7 +35,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             get { return Item_Aggregation_Views_Searches_Enum.Custom_Home_Page; }
         }
 
-     
+
 
         /// <summary>Flag indicates whether the subaggregation selection panel is displayed for this collection viewer</summary>
         /// <value> This property always returns the <see cref="Selection_Panel_Display_Enum.Always"/> enumerational value </value>
@@ -86,7 +86,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             // Do all the replacements
             string text = ViewBag.Hierarchy_Object.HomePageHtml.Content; //.Content;
             StringBuilder textToDisplay = new StringBuilder(text);
-           
+
             // Determine if certain (more costly) replacements are even needed
             bool header_replacement_needed = text.IndexOf("%HEADER%") > 0;
             bool footer_replacement_needed = text.IndexOf("%FOOTER%") > 0;

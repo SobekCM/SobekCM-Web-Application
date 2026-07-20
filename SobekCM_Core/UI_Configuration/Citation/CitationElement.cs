@@ -1,10 +1,10 @@
-﻿using System;
+﻿using ProtoBuf;
+using SobekCM.Core.Configuration.Localization;
+using SobekCM.Tools;
+using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
-using ProtoBuf;
-using SobekCM.Core.Configuration.Localization;
-using SobekCM.Tools;
 
 namespace SobekCM.Core.UI_Configuration.Citation
 {
@@ -118,7 +118,7 @@ namespace SobekCM.Core.UI_Configuration.Citation
         /// <param name="ItemProp"> Schema.org microdata tag to include for this element </param>
         /// <param name="OverrideDisplayTerm"> Flag indicatse if the basic citation  section writer should override 
         /// the display term and use some other value from within the individual item metadata </param>
-        public CitationElement(string MetadataTerm, string DisplayTerm, string SearchCode, string ItemProp, CitationElement_OverrideDispayTerm_Enum OverrideDisplayTerm )
+        public CitationElement(string MetadataTerm, string DisplayTerm, string SearchCode, string ItemProp, CitationElement_OverrideDispayTerm_Enum OverrideDisplayTerm)
         {
             this.MetadataTerm = MetadataTerm;
             this.DisplayTerm = DisplayTerm;

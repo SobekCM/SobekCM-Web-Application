@@ -62,7 +62,7 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// <returns>TRUE if the two objects are sufficiently similar</returns>
         public bool Equals(Temporal_Info Other)
         {
-            if ((!String.IsNullOrEmpty(timeperiod)) && ( String.Compare(timeperiod, Other.TimePeriod, StringComparison.Ordinal) == 0))
+            if ((!String.IsNullOrEmpty(timeperiod)) && (String.Compare(timeperiod, Other.TimePeriod, StringComparison.Ordinal) == 0))
                 return true;
 
             return (String.IsNullOrEmpty(timeperiod)) && (Other.Start_Year == start_year) && (Other.end_year == end_year);

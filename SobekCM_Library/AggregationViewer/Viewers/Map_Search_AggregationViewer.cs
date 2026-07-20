@@ -1,20 +1,18 @@
 #region Using directives
 
 using Microsoft.AspNetCore.Http;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Navigation;
-using SobekCM.Core.UI_Configuration;
-using SobekCM.Core.UI_Configuration.StaticResources;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Text;
 
 #endregion
 
@@ -70,7 +68,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 bool isNumber = true;
                 foreach (char thisChar in splitter[0])
                 {
-                    if ((!Char.IsDigit(thisChar)) && ( thisChar != '.' ) && (thisChar != '-' ))
+                    if ((!Char.IsDigit(thisChar)) && (thisChar != '.') && (thisChar != '-'))
                         isNumber = false;
                 }
                 if (isNumber)
@@ -249,7 +247,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             Output.WriteLine("  <table id=\"sbkMsav_SearchPanel\" >");
             Output.WriteLine("  <tr>");
             Output.WriteLine("    <td colspan=\"2\">");
-            switch( RequestSpecificValues.Current_Mode.Language )
+            switch (RequestSpecificValues.Current_Mode.Language)
             {
 
                 case Web_Language_Enum.Spanish:
@@ -257,15 +255,15 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                     {
                         Output.WriteLine("          <table>");
                         Output.WriteLine("            <tr><td><span style=\"line-height:160%\"> &nbsp; &nbsp; 1. Use the <i>Select Area</i> button and click to select opposite corners to draw a search box on the map &nbsp; &nbsp; <br /> &nbsp; &nbsp; 2. Press the <i>Search</i> button to see results &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; ( <a href=\"#FAQ\">more help</a> )</span> </td>");
-						Output.WriteLine("                <td><button name=\"searchButton\" id=\"searchButton\" class=\"SobekSearchButton\" onclick=\"" + Search_Script_Action + "\">" + search_button_text + "<img id=\"sbkMsav_ButtonArrow\" src=\"" + Static_Resources_Gateway.Button_Next_Arrow2_Png + "\" alt=\"\" /></button></td></tr>");
+                        Output.WriteLine("                <td><button name=\"searchButton\" id=\"searchButton\" class=\"SobekSearchButton\" onclick=\"" + Search_Script_Action + "\">" + search_button_text + "<img id=\"sbkMsav_ButtonArrow\" src=\"" + Static_Resources_Gateway.Button_Next_Arrow2_Png + "\" alt=\"\" /></button></td></tr>");
                         Output.WriteLine("          </table>");
                     }
                     else
                     {
-						Output.WriteLine("        <div class=\"sbkMsav_InstructionsLink\" id=\"MapInstructionsLink\" style=\"display:block\" >");
+                        Output.WriteLine("        <div class=\"sbkMsav_InstructionsLink\" id=\"MapInstructionsLink\" style=\"display:block\" >");
                         Output.WriteLine("          <a href=\"\" onclick=\"return show_map_instructions();\">Haga click aquí para ver las instrucciones para la interfase de esta búsqueda.</a>");
                         Output.WriteLine("        </div>");
-						Output.WriteLine("        <div class=\"sbkMsav_Instructions\" id=\"MapInstructions\" style=\"display:none\" >");
+                        Output.WriteLine("        <div class=\"sbkMsav_Instructions\" id=\"MapInstructions\" style=\"display:none\" >");
                         Output.WriteLine("          <table>");
                         Output.WriteLine("            <tr><td colspan=\"2\">1. Utilice uno de los siguientes métodos para definir su búsqueda geográfica:</td></tr>");
                         Output.WriteLine("            <tr><td style=\"width:50px;\">&nbsp;</td><td>a. Escriba una dirección y haga click en el botón <i>Localizar</a> para localizarla, <i>o</i></td></tr>");
@@ -282,15 +280,15 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                     {
                         Output.WriteLine("          <table>");
                         Output.WriteLine("            <tr><td><span style=\"line-height:160%\"> &nbsp; &nbsp; 1. Use the <i>Select Area</i> button and click to select opposite corners to draw a search box on the map &nbsp; &nbsp; <br /> &nbsp; &nbsp; 2. Press the <i>Search</i> button to see results &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; ( <a href=\"#FAQ\">more help</a> )</span> </td>");
-						Output.WriteLine("                <td><button name=\"searchButton\" id=\"searchButton\" class=\"SobekSearchButton\" onclick=\"" + Search_Script_Action + "\">" + search_button_text + "<img id=\"sbkMsav_ButtonArrow\" src=\"" + Static_Resources_Gateway.Button_Next_Arrow2_Png + "\" alt=\"\" /></button></td></tr>");
+                        Output.WriteLine("                <td><button name=\"searchButton\" id=\"searchButton\" class=\"SobekSearchButton\" onclick=\"" + Search_Script_Action + "\">" + search_button_text + "<img id=\"sbkMsav_ButtonArrow\" src=\"" + Static_Resources_Gateway.Button_Next_Arrow2_Png + "\" alt=\"\" /></button></td></tr>");
                         Output.WriteLine("          </table>");
                     }
                     else
                     {
-						Output.WriteLine("        <div class=\"sbkMsav_InstructionsLink\" id=\"MapInstructionsLink\" style=\"display:block\" >");
+                        Output.WriteLine("        <div class=\"sbkMsav_InstructionsLink\" id=\"MapInstructionsLink\" style=\"display:block\" >");
                         Output.WriteLine("          <a href=\"\" onclick=\"return show_map_instructions();\">Click here to view instructions for this search interface</a>");
                         Output.WriteLine("        </div>");
-						Output.WriteLine("        <div class=\"sbkMsav_Instructions\" id=\"MapInstructions\" style=\"display:none\" >");
+                        Output.WriteLine("        <div class=\"sbkMsav_Instructions\" id=\"MapInstructions\" style=\"display:none\" >");
                         Output.WriteLine("          <table>");
                         Output.WriteLine("            <tr><td colspan=\"2\">1. Use one of the methods below to define your geographic search:</td></tr>");
                         Output.WriteLine("            <tr><td style=\"width:50px;\">&nbsp;</td><td>a. Enter an address and press <i>Find Address</i> to locate, <i>or</i></td></tr>");
@@ -307,9 +305,9 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             {
                 Output.WriteLine("        <div id=\"sbkMsav_AddressDiv\">");
                 Output.WriteLine("          <label for=\"AddressTextBox\">" + address_text + ":</label> &nbsp; ");
-				Output.WriteLine("          <input name=\"AddressTextBox\" type=\"text\" id=\"AddressTextBox\" class=\"sbkMsav_AddressBox sbk_Focusable\" value=\"\" placeholder=\"Enter address ( i.e., 12 Main Street, Gainesville Florida )\" data-placeholder-text=\"Enter address ( i.e., 12 Main Street, Gainesville Florida )\" onleave=\"address_box_changed(this);\" onchange=\"address_box_changed(this);\" onkeydown=\"address_keydown(event, this);\" /> &nbsp; ");
-				Output.WriteLine("          <button name=\"findButton\" id=\"findButton\" class=\"sbk_SearchButton\" onclick=\"map_address_geocode();return false;\" >" + find_button_text + "</button> &nbsp; ");
-				Output.WriteLine("          <button name=\"searchButton\" id=\"searchButton\" class=\"sbk_SearchButton\" onclick=\"" + Search_Script_Action + ";return false;\" >" + search_button_text + "<img id=\"sbkMsav_ButtonArrow\" src=\"" + Static_Resources_Gateway.Button_Next_Arrow2_Png + "\" alt=\"\" /></button>");
+                Output.WriteLine("          <input name=\"AddressTextBox\" type=\"text\" id=\"AddressTextBox\" class=\"sbkMsav_AddressBox sbk_Focusable\" value=\"\" placeholder=\"Enter address ( i.e., 12 Main Street, Gainesville Florida )\" data-placeholder-text=\"Enter address ( i.e., 12 Main Street, Gainesville Florida )\" onleave=\"address_box_changed(this);\" onchange=\"address_box_changed(this);\" onkeydown=\"address_keydown(event, this);\" /> &nbsp; ");
+                Output.WriteLine("          <button name=\"findButton\" id=\"findButton\" class=\"sbk_SearchButton\" onclick=\"map_address_geocode();return false;\" >" + find_button_text + "</button> &nbsp; ");
+                Output.WriteLine("          <button name=\"searchButton\" id=\"searchButton\" class=\"sbk_SearchButton\" onclick=\"" + Search_Script_Action + ";return false;\" >" + search_button_text + "<img id=\"sbkMsav_ButtonArrow\" src=\"" + Static_Resources_Gateway.Button_Next_Arrow2_Png + "\" alt=\"\" /></button>");
                 Output.WriteLine("        </div>");
             }
             Output.WriteLine("    </td>");
@@ -319,7 +317,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             Output.WriteLine("    <td>");
             if (!show_coordinates)
             {
-	            Output.WriteLine("      <div id=\"sbkMsav_ShowCoordinateTab\">");
+                Output.WriteLine("      <div id=\"sbkMsav_ShowCoordinateTab\">");
                 RequestSpecificValues.Current_Mode.Info_Browse_Mode = "1";
                 Output.WriteLine("        <span class=\"sbk_FauxUpwardTab\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">SHOW COORDINATES</a></span>");
                 RequestSpecificValues.Current_Mode.Info_Browse_Mode = "0";
@@ -327,9 +325,9 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             }
             else
             {
-				Output.WriteLine("      <div id=\"sbkMsav_HideCoordinateTab\">");
+                Output.WriteLine("      <div id=\"sbkMsav_HideCoordinateTab\">");
                 RequestSpecificValues.Current_Mode.Info_Browse_Mode = "0";
-				Output.WriteLine("        <span class=\"sbk_FauxUpwardTab\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">HIDE COORDINATES</a></span>");
+                Output.WriteLine("        <span class=\"sbk_FauxUpwardTab\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">HIDE COORDINATES</a></span>");
                 RequestSpecificValues.Current_Mode.Info_Browse_Mode = "1";
                 Output.WriteLine("      </div>");
             }
@@ -355,13 +353,13 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             Output.WriteLine("        <table>");
             Output.WriteLine("          <tr><td colspan=\"2\"><br /><br /><br /><b>Search Coordinates</b><br /><br /></td></tr>");
             Output.WriteLine("          <tr><td colspan=\"2\">Point 1</td></tr>");
-			Output.WriteLine("          <tr><td><label for=\"Textbox1\">Latitude:</label> </td><td><input name=\"Textbox1\" type=\"text\" id=\"Textbox1\" class=\"sbkMsav_SearchBox sbk_Focusable\" value=\"" + text1 + "\" /></td></tr>");
-			Output.WriteLine("          <tr><td><label for=\"Textbox2\">Longitude:</label> </td><td><input name=\"Textbox2\" type=\"text\" id=\"Textbox2\" class=\"sbkMsav_SearchBox sbk_Focusable\" value=\"" + text2 + "\" /><br /><br /></td></tr>");
+            Output.WriteLine("          <tr><td><label for=\"Textbox1\">Latitude:</label> </td><td><input name=\"Textbox1\" type=\"text\" id=\"Textbox1\" class=\"sbkMsav_SearchBox sbk_Focusable\" value=\"" + text1 + "\" /></td></tr>");
+            Output.WriteLine("          <tr><td><label for=\"Textbox2\">Longitude:</label> </td><td><input name=\"Textbox2\" type=\"text\" id=\"Textbox2\" class=\"sbkMsav_SearchBox sbk_Focusable\" value=\"" + text2 + "\" /><br /><br /></td></tr>");
             Output.WriteLine("          <tr><td colspan=\"2\"><br />Point 2</td></tr>");
-			Output.WriteLine("          <tr><td><label for=\"Textbox3\">Latitude:</label> </td><td><input name=\"Textbox3\" type=\"text\" id=\"Textbox3\" class=\"sbkMsav_SearchBox sbk_Focusable\" value=\"" + text3 + "\" /></td></tr>");
-			Output.WriteLine("          <tr><td><label for=\"Textbox4\">Longitude:</label> </td><td><input name=\"Textbox4\" type=\"text\" id=\"Textbox4\" class=\"sbkMsav_SearchBox sbk_Focusable\" value=\"" + text4 + "\" ></td></tr>");
+            Output.WriteLine("          <tr><td><label for=\"Textbox3\">Latitude:</label> </td><td><input name=\"Textbox3\" type=\"text\" id=\"Textbox3\" class=\"sbkMsav_SearchBox sbk_Focusable\" value=\"" + text3 + "\" /></td></tr>");
+            Output.WriteLine("          <tr><td><label for=\"Textbox4\">Longitude:</label> </td><td><input name=\"Textbox4\" type=\"text\" id=\"Textbox4\" class=\"sbkMsav_SearchBox sbk_Focusable\" value=\"" + text4 + "\" ></td></tr>");
             Output.WriteLine("          <tr><td colspan=\"2\" align=\"right\"><br /></td></tr>");
-			Output.WriteLine("          <tr><td colspan=\"2\" align=\"right\"><button name=\"locateButton\" id=\"locateButton\" class=\"sbk_SearchButton\" onclick=\"locate_by_coordinates();\">" + LOCATE_TEXT + "</button></td></tr>");
+            Output.WriteLine("          <tr><td colspan=\"2\" align=\"right\"><button name=\"locateButton\" id=\"locateButton\" class=\"sbk_SearchButton\" onclick=\"locate_by_coordinates();\">" + LOCATE_TEXT + "</button></td></tr>");
             Output.WriteLine("         </table>");
             Output.WriteLine("       </div>");
             Output.WriteLine("      </td>");
@@ -380,11 +378,11 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             if (Tracer != null)
             {
                 Tracer.Add_Trace("Map_Search_AggregationViewer.Add_Secondary_HTML", "Adds map search-specific search tips");
-            }     
+            }
 
             // Write the quick tips
             Output.WriteLine("<a name=\"FAQ\" ></a>");
-			Output.WriteLine("<div id=\"sbk_QuickTips\">");
+            Output.WriteLine("<div id=\"sbk_QuickTips\">");
 
             // See if the FAQ is present for this collection
             string language_code = RequestSpecificValues.Current_Mode.Language_Code;
@@ -392,7 +390,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 language_code = "_" + language_code;
             string directory = UI_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location + "\\aggregations\\" + RequestSpecificValues.Current_Mode.Aggregation + "\\extra";
             string aggregation_specific_faq = String.Empty;
-            if ( Directory.Exists( directory ))
+            if (Directory.Exists(directory))
             {
                 if (File.Exists(directory + "\\map_faq" + language_code + ".txt"))
                 {
@@ -442,9 +440,9 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             }
 
             // Now, render the faq
-            if ( aggregation_specific_faq.Length > 0 )
+            if (aggregation_specific_faq.Length > 0)
             {
-                Output.WriteLine( aggregation_specific_faq );
+                Output.WriteLine(aggregation_specific_faq);
             }
             else
             {

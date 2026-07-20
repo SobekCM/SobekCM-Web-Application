@@ -73,7 +73,7 @@ namespace SobekCM.Core.Users
 
         /// <summary> Flag indicates if this is a special user group (reserved by the system), such as 'Everyone' </summary>
         [DataMember]
-        public bool IsSpecialGroup { get; set;  }
+        public bool IsSpecialGroup { get; set; }
 
         /// <summary> Flag indicates if this user group should be assigned, by default, to new users
         /// that register via Sobek authentication  </summary>
@@ -118,7 +118,7 @@ namespace SobekCM.Core.Users
         {
             get
             {
-                if ( aggregations != null ) return aggregations.Aggregations;
+                if (aggregations != null) return aggregations.Aggregations;
                 return null;
             }
         }
@@ -202,12 +202,12 @@ namespace SobekCM.Core.Users
         {
             if (aggregations == null) aggregations = new User_Aggregation_Permissions();
 
-            aggregations.Add(Code, Aggregation_Name, CanSelect, CanEditMetadata, CanEditBehaviors, CanPerformQc, CanUploadFiles, CanChangeVisibility, CanDelete, IsCurator, false, IsAdmin, true );
+            aggregations.Add(Code, Aggregation_Name, CanSelect, CanEditMetadata, CanEditBehaviors, CanPerformQc, CanUploadFiles, CanChangeVisibility, CanDelete, IsCurator, false, IsAdmin, true);
         }
 
         /// <summary> Add a new item aggregation to this user group's collection of item aggregationPermissions </summary>
         /// <param name="PermissionedAggregation">Fully permissioned aggregation </param>
-        public void Add_Aggregation(User_Permissioned_Aggregation PermissionedAggregation )
+        public void Add_Aggregation(User_Permissioned_Aggregation PermissionedAggregation)
         {
             if (aggregations == null) aggregations = new User_Aggregation_Permissions();
 

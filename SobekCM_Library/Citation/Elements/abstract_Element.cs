@@ -1,20 +1,17 @@
 #region Using directives
 
+using Microsoft.AspNetCore.Http;
+using SobekCM.Core.ApplicationState;
+using SobekCM.Core.Configuration.Localization;
+using SobekCM.Core.Users;
+using SobekCM.Engine_Library.Configuration;
+using SobekCM.Library.UI;
+using SobekCM.Resource_Object;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Xml;
-using Microsoft.AspNetCore.Http;
-using SobekCM.Core.ApplicationState;
-using SobekCM.Core.Configuration;
-using SobekCM.Core.Configuration.Localization;
-using SobekCM.Core.UI_Configuration;
-using SobekCM.Core.UI_Configuration.StaticResources;
-using SobekCM.Core.Users;
-using SobekCM.Engine_Library.Configuration;
-using SobekCM.Library.UI;
-using SobekCM.Resource_Object;
 
 #endregion
 
@@ -43,8 +40,8 @@ namespace SobekCM.Library.Citation.Elements
         /// <summary> Name used for style sheet references and html id's for this subtype of this element </summary>
         protected string html_element_name;
 
-		/// <summary> Name of the help page, if different than default </summary>
-	    protected string help_page;
+        /// <summary> Name of the help page, if different than default </summary>
+        protected string help_page;
 
         /// <summary> Constructor for a new abstract element object </summary>
         protected abstract_Element()
@@ -62,7 +59,7 @@ namespace SobekCM.Library.Citation.Elements
         /// <summary> Sets the base url for the current request </summary>
         /// <param name="Base_URL"> Current Base URL for this request </param>
         /// <remarks> This does nothing, although it can be override by extending classes </remarks>
-        public virtual void  Set_Base_URL( string Base_URL )
+        public virtual void Set_Base_URL(string Base_URL)
         {
             // Do nothing 
         }
@@ -99,9 +96,9 @@ namespace SobekCM.Library.Citation.Elements
 
         /// <summary> Reads from the template XML format </summary>
         /// <param name="xmlReader"> Current template xml configuration reader </param>
-        public void Read_XML( XmlReader xmlReader )
+        public void Read_XML(XmlReader xmlReader)
         {
-            Inner_Read_Data( xmlReader );
+            Inner_Read_Data(xmlReader);
         }
 
         /// <summary> Saves the constants to the bib id </summary>
@@ -122,7 +119,7 @@ namespace SobekCM.Library.Citation.Elements
 
         /// <summary> Saves the data rendered by this element to the provided bibliographic object during postback </summary>
         /// <param name="Bib"> Object into which to save the user's data, entered into the html rendered by this element </param>
-        public abstract void Save_To_Bib( SobekCM_Item Bib );
+        public abstract void Save_To_Bib(SobekCM_Item Bib);
 
         /// <summary> Renders the HTML for this element </summary>
         /// <param name="Output"> Textwriter to write the HTML for this element </param>
@@ -134,7 +131,7 @@ namespace SobekCM.Library.Citation.Elements
         /// <param name="CurrentLanguage"> Current user-interface language </param>
         /// <param name="Translator"> Language support object which handles simple translational duties </param>
         /// <param name="Base_URL"> Base URL for the current request </param>
-        public abstract void Render_Template_HTML(TextWriter Output, SobekCM_Item Bib, string Skin_Code, bool IsMozilla, StringBuilder PopupFormBuilder, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL );
+        public abstract void Render_Template_HTML(TextWriter Output, SobekCM_Item Bib, string Skin_Code, bool IsMozilla, StringBuilder PopupFormBuilder, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL);
 
         #endregion
 
@@ -142,7 +139,7 @@ namespace SobekCM.Library.Citation.Elements
         /// <param name="Skin_Code"> Code for the current html skin </param>
         /// <param name="Button_Base_URL"> Base URL for the current request </param>
         /// <returns> HTML for the close button image to display </returns>
-        protected string Close_Button_URL(string Skin_Code, string Button_Base_URL )
+        protected string Close_Button_URL(string Skin_Code, string Button_Base_URL)
         {
             return Button_Base_URL + "design/skins/" + Skin_Code + "/buttons/close_button_g.gif";
         }
@@ -153,20 +150,20 @@ namespace SobekCM.Library.Citation.Elements
         /// <returns> HTML for the URL for the element help </returns>
         protected string Help_URL(string Skin_Code, string Current_Base_URL)
         {
-	        if ( String.IsNullOrEmpty(help_page))
-	            return UI_ApplicationCache_Gateway.Settings.System.Metadata_Help_URL(Current_Base_URL) + "help/" + html_element_name.Replace("_", "");
-	        return UI_ApplicationCache_Gateway.Settings.System.Metadata_Help_URL(Current_Base_URL) + "help/" + help_page;
+            if (String.IsNullOrEmpty(help_page))
+                return UI_ApplicationCache_Gateway.Settings.System.Metadata_Help_URL(Current_Base_URL) + "help/" + html_element_name.Replace("_", "");
+            return UI_ApplicationCache_Gateway.Settings.System.Metadata_Help_URL(Current_Base_URL) + "help/" + help_page;
         }
 
-		/// <summary> Returns TRUE if this element has some data </summary>
-		/// <value> By default, this returns TRUE to be on the same side </value>
-		public bool HasData { get { return true; } }
+        /// <summary> Returns TRUE if this element has some data </summary>
+        /// <value> By default, this returns TRUE to be on the same side </value>
+        public bool HasData { get { return true; } }
 
-	    #region Abstract Methods to be implemented by abstract_Element classes
+        #region Abstract Methods to be implemented by abstract_Element classes
 
         /// <summary> Reads the inner data from the CompleteTemplate XML format </summary>
         /// <param name="XMLReader"> Current template xml configuration reader </param>
-        protected abstract void Inner_Read_Data( XmlReader XMLReader );
+        protected abstract void Inner_Read_Data(XmlReader XMLReader);
 
         #endregion
     }

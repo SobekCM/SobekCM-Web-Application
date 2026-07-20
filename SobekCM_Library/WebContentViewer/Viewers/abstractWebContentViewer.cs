@@ -1,8 +1,8 @@
-﻿using System.IO;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.WebContent;
 using SobekCM.Tools;
+using System.IO;
 
 namespace SobekCM.Library.WebContentViewer.Viewers
 {
@@ -25,7 +25,7 @@ namespace SobekCM.Library.WebContentViewer.Viewers
         /// <summary> Constructor for objects which implement this abstract class  </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
         /// <param name="StaticPage"> Static page info for this request </param>
-        protected abstractWebContentViewer(RequestCache RequestSpecificValues, HTML_Based_Content StaticPage )
+        protected abstractWebContentViewer(RequestCache RequestSpecificValues, HTML_Based_Content StaticPage)
         {
             this.RequestSpecificValues = RequestSpecificValues;
             this.StaticPage = StaticPage;

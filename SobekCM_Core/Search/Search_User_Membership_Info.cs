@@ -59,7 +59,7 @@ namespace SobekCM.Core.Search
 
         /// <summary> Add a new user group id to this membership object </summary>
         /// <param name="NewUserGroupID"> New user group id </param>
-        public void Add_User_Group( int NewUserGroupID )
+        public void Add_User_Group(int NewUserGroupID)
         {
             // Ensure the collection was created now
             if (UserGroupID == null)

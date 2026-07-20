@@ -1,7 +1,7 @@
 ﻿#region Using directives
 
-using System;
 using SolrNet.Attributes;
+using System;
 
 #endregion
 

@@ -1,8 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
+using Microsoft.AspNetCore.Http;
 using SobekCM.Core.BriefItem;
 using SobekCM.Core.Client;
 using SobekCM.Core.MARC;
@@ -11,7 +7,11 @@ using SobekCM.Core.Users;
 using SobekCM.Library.ItemViewer.Menu;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
-using Microsoft.AspNetCore.Http;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
 
 namespace SobekCM.Library.ItemViewer.Viewers
 {
@@ -76,7 +76,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <param name="CurrentRequest">  Information about the current request </param>
         /// <param name="MenuItems"> List of menu items, to which this method may add one or more menu items </param>
         /// <param name="IsRestricted"> Flag indicates if this item is restricted AND the current user is outside the ranges or not in the proper groups</param>
-        public virtual void Add_Menu_Items(BriefItemInfo CurrentItem, User_Object CurrentUser, Navigation_Object CurrentRequest, List<Item_MenuItem> MenuItems, bool IsRestricted )
+        public virtual void Add_Menu_Items(BriefItemInfo CurrentItem, User_Object CurrentUser, Navigation_Object CurrentRequest, List<Item_MenuItem> MenuItems, bool IsRestricted)
         {
             // Get the URL for this
             string previous_code = CurrentRequest.ViewerCode;
@@ -129,7 +129,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             // Check to see if the user can edit this
             userCanEdit = false;
-            if ( CurrentUser != null )
+            if (CurrentUser != null)
                 userCanEdit = CurrentUser.Can_Edit_This_Item(BriefItem.BibID, BriefItem.Type, BriefItem.Behaviors.Source_Institution_Aggregation, BriefItem.Behaviors.Holding_Location_Aggregation, BriefItem.Behaviors.Aggregation_Code_List);
         }
 
@@ -234,7 +234,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             // Get the MARC record
             MARC_Transfer_Record record = SobekEngineClient.Items.Get_Item_MARC_Record(BriefItem.BibID, BriefItem.VID, true, Tracer);
 
-            builder.AppendLine(record.ToHTML( Width));
+            builder.AppendLine(record.ToHTML(Width));
 
             builder.AppendLine("<br />");
             builder.AppendLine("<br />");

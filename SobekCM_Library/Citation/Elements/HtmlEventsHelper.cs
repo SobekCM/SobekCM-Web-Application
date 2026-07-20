@@ -209,56 +209,56 @@ namespace SobekCM.Library.Citation.Elements
         /// <param name="Output"> Output to write directly to </param>
         public void Add_Events_HTML(TextWriter Output)
         {
-            if ( !String.IsNullOrWhiteSpace(OnClick))
-                Output.Write("onclick=\"" + OnClick.Replace("\"","'") + "\" ");
+            if (!String.IsNullOrWhiteSpace(OnClick))
+                Output.Write("onclick=\"" + OnClick.Replace("\"", "'") + "\" ");
 
-            if ( !String.IsNullOrWhiteSpace(OnContextMenu))
-                Output.Write("oncontextmenu=\"" + OnContextMenu.Replace("\"","'") + "\" ");
+            if (!String.IsNullOrWhiteSpace(OnContextMenu))
+                Output.Write("oncontextmenu=\"" + OnContextMenu.Replace("\"", "'") + "\" ");
 
-            if ( !String.IsNullOrWhiteSpace(OnDblClick))
-                Output.Write("ondblclick=\"" + OnDblClick.Replace("\"","'") + "\" ");
+            if (!String.IsNullOrWhiteSpace(OnDblClick))
+                Output.Write("ondblclick=\"" + OnDblClick.Replace("\"", "'") + "\" ");
 
-            if ( !String.IsNullOrWhiteSpace(OnMouseDown))
-                Output.Write("onmousedown=\"" + OnMouseDown.Replace("\"","'") + "\" ");
+            if (!String.IsNullOrWhiteSpace(OnMouseDown))
+                Output.Write("onmousedown=\"" + OnMouseDown.Replace("\"", "'") + "\" ");
 
-            if ( !String.IsNullOrWhiteSpace(OnMouseEnter))
-                Output.Write("onmouseenter=\"" + OnMouseEnter.Replace("\"","'") + "\" ");
+            if (!String.IsNullOrWhiteSpace(OnMouseEnter))
+                Output.Write("onmouseenter=\"" + OnMouseEnter.Replace("\"", "'") + "\" ");
 
-            if ( !String.IsNullOrWhiteSpace(OnMouseLeave))
-                Output.Write("onmouseleave=\"" + OnMouseLeave.Replace("\"","'") + "\" ");
+            if (!String.IsNullOrWhiteSpace(OnMouseLeave))
+                Output.Write("onmouseleave=\"" + OnMouseLeave.Replace("\"", "'") + "\" ");
 
-            if ( !String.IsNullOrWhiteSpace(OnMouseMove))
-                Output.Write("onmousemove=\"" + OnMouseMove.Replace("\"","'") + "\" ");
+            if (!String.IsNullOrWhiteSpace(OnMouseMove))
+                Output.Write("onmousemove=\"" + OnMouseMove.Replace("\"", "'") + "\" ");
 
-            if ( !String.IsNullOrWhiteSpace(OnMouseOver))
-                Output.Write("onmouseover=\"" + OnMouseOver.Replace("\"","'") + "\" ");
+            if (!String.IsNullOrWhiteSpace(OnMouseOver))
+                Output.Write("onmouseover=\"" + OnMouseOver.Replace("\"", "'") + "\" ");
 
-            if ( !String.IsNullOrWhiteSpace(OnMouseOut))
-                Output.Write("onmouseout=\"" + OnMouseOut.Replace("\"","'") + "\" ");
+            if (!String.IsNullOrWhiteSpace(OnMouseOut))
+                Output.Write("onmouseout=\"" + OnMouseOut.Replace("\"", "'") + "\" ");
 
-            if ( !String.IsNullOrWhiteSpace(OnMouseUp))
-                Output.Write("onmouseup=\"" + OnMouseUp.Replace("\"","'") + "\" ");
+            if (!String.IsNullOrWhiteSpace(OnMouseUp))
+                Output.Write("onmouseup=\"" + OnMouseUp.Replace("\"", "'") + "\" ");
 
-            if ( !String.IsNullOrWhiteSpace(OnKeyDown))
-                Output.Write("onkeydown=\"" + OnKeyDown.Replace("\"","'") + "\" ");
+            if (!String.IsNullOrWhiteSpace(OnKeyDown))
+                Output.Write("onkeydown=\"" + OnKeyDown.Replace("\"", "'") + "\" ");
 
-            if ( !String.IsNullOrWhiteSpace(OnKeyPress))
-                Output.Write("onkeypress=\"" + OnKeyPress.Replace("\"","'") + "\" ");
+            if (!String.IsNullOrWhiteSpace(OnKeyPress))
+                Output.Write("onkeypress=\"" + OnKeyPress.Replace("\"", "'") + "\" ");
 
-            if ( !String.IsNullOrWhiteSpace(OnKeyUp))
-                Output.Write("onkeyup=\"" + OnKeyUp.Replace("\"","'") + "\" ");
+            if (!String.IsNullOrWhiteSpace(OnKeyUp))
+                Output.Write("onkeyup=\"" + OnKeyUp.Replace("\"", "'") + "\" ");
 
-            if ( !String.IsNullOrWhiteSpace(OnLoad))
-                Output.Write("onload=\"" + OnLoad.Replace("\"","'") + "\" ");
+            if (!String.IsNullOrWhiteSpace(OnLoad))
+                Output.Write("onload=\"" + OnLoad.Replace("\"", "'") + "\" ");
 
-            if ( !String.IsNullOrWhiteSpace(OnSelect))
-                Output.Write("onselect=\"" + OnSelect.Replace("\"","'") + "\" ");
+            if (!String.IsNullOrWhiteSpace(OnSelect))
+                Output.Write("onselect=\"" + OnSelect.Replace("\"", "'") + "\" ");
 
-            if ( !String.IsNullOrWhiteSpace(OnChange))
-                Output.Write("onchange=\"" + OnChange.Replace("\"","'") + "\" ");
+            if (!String.IsNullOrWhiteSpace(OnChange))
+                Output.Write("onchange=\"" + OnChange.Replace("\"", "'") + "\" ");
 
-            if ( !String.IsNullOrWhiteSpace(OnWheel))
-                Output.Write("onwheel=\"" + OnWheel.Replace("\"","'") + "\" ");
+            if (!String.IsNullOrWhiteSpace(OnWheel))
+                Output.Write("onwheel=\"" + OnWheel.Replace("\"", "'") + "\" ");
         }
     }
 }

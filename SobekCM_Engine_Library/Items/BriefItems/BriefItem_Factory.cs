@@ -1,18 +1,15 @@
 ﻿#region Using directives
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Xml;
 using SobekCM.Core.BriefItem;
 using SobekCM.Core.Configuration;
 using SobekCM.Engine_Library.ApplicationState;
 using SobekCM.Engine_Library.Items.BriefItems.Mappers;
 using SobekCM.Resource_Object;
 using SobekCM.Tools;
+using System;
+using System.Collections.Generic;
+using System.Reflection;
+using System.Text;
 
 #endregion
 
@@ -43,7 +40,7 @@ namespace SobekCM.Engine_Library.Items.BriefItems
         /// <param name="MappingSetId"> Name of the mapping set to use (if there are more than one)</param>
         /// <param name="Tracer"> Custom tracer to record general process flow </param>
         /// <returns> Completely built BriefItemInfo object from the METS-based SobekCM_Item object </returns>
-        public static BriefItemInfo Create(SobekCM_Item Original, string MappingSetId, Custom_Tracer Tracer )
+        public static BriefItemInfo Create(SobekCM_Item Original, string MappingSetId, Custom_Tracer Tracer)
         {
             // Try to get the brief mapping set
             List<IBriefItemMapper> mappingSet = get_mapping_set(MappingSetId);
@@ -61,7 +58,7 @@ namespace SobekCM.Engine_Library.Items.BriefItems
             Tracer.Add_Trace("BriefItem_Factory.Create", "Use the set of mappers to map data to the brief item");
             foreach (IBriefItemMapper thisMapper in mappingSet)
             {
-                Tracer.Add_Trace("BriefItem_Factory.Create", "...." + thisMapper.GetType().ToString().Replace("SobekCM.Engine_Library.Items.BriefItems.Mappers.",""));
+                Tracer.Add_Trace("BriefItem_Factory.Create", "...." + thisMapper.GetType().ToString().Replace("SobekCM.Engine_Library.Items.BriefItems.Mappers.", ""));
                 thisMapper.MapToBriefItem(Original, newItem);
             }
             Tracer.Add_Trace("BriefItem_Factory.Create", "Finished using all instatiated and configued mappers");
@@ -327,7 +324,7 @@ namespace SobekCM.Engine_Library.Items.BriefItems
                 // Build the mapper
                 string errorMessage;
                 IBriefItemMapper mapper = get_or_create_mapper(mappingConfig.Assembly, mappingConfig.Class, out errorMessage);
-                if ( mapper != null )
+                if (mapper != null)
                     returnValue.Add(mapper);
             }
 
@@ -336,7 +333,7 @@ namespace SobekCM.Engine_Library.Items.BriefItems
 
             // Return
             return returnValue;
-        } 
+        }
 
         private static object Get_Mapper(string MapperAssembly, string MapperClass, out string ErrorMessage)
         {

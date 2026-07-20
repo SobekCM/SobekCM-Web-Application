@@ -1,20 +1,18 @@
 #region Using directives
 
 using Microsoft.AspNetCore.Http;
-using System;
-using System.Collections.Generic;
-using System.Data;
-using System.IO;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.Navigation;
-using SobekCM.Core.UI_Configuration;
-using SobekCM.Core.UI_Configuration.StaticResources;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Library.Database;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.IO;
 
 #endregion
 
@@ -152,7 +150,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             const string DEFINITIONS = "DEFINITIONS";
 
             Output.WriteLine("<div class=\"ShowSelectRow\">");
-			Output.WriteLine("  <ul class=\"sbk_FauxDownwardTabsList\">");
+            Output.WriteLine("  <ul class=\"sbk_FauxDownwardTabsList\">");
 
             // Save and normalize the submode
             string submode = "views";
@@ -214,7 +212,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 Output.WriteLine("    <li><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + DEFINITIONS + "</a></li>");
             }
             RequestSpecificValues.Current_Mode.Info_Browse_Mode = submode;
-			Output.WriteLine("  </ul>");
+            Output.WriteLine("  </ul>");
             Output.WriteLine("</div>");
             Output.WriteLine("<br />");
 
@@ -608,7 +606,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 
                 string sysName = RequestSpecificValues.Current_Mode.Instance_Name;
 
-                if ( Tracer != null )
+                if (Tracer != null)
                     Tracer.Add_Trace("Usage_Statistics_AggregationViewer.add_usage_definitions", "Rendering HTML read from source file");
                 Output.WriteLine("<div class=\"SobekText\">");
                 Output.WriteLine(usageDefinitions.Replace("<%BASEURL%>", RequestSpecificValues.Current_Mode.Base_URL).Replace("<%?URLOPTS%>", urloptions).Replace("<%SYSNAME%>", sysName));
@@ -617,7 +615,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             }
             else
             {
-                if ( Tracer != null )
+                if (Tracer != null)
                     Tracer.Add_Trace("Usage_Statistics_AggregationViewer.add_usage_definitions", "Rendering Default HTML");
                 Output.WriteLine("<div class=\"SobekText\">");
                 Output.WriteLine("<p>The following terms are defined below:</p>");

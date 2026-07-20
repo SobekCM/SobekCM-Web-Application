@@ -1,11 +1,11 @@
 ﻿#region Using directives
 
+using ProtoBuf;
+using SobekCM.Core.Settings;
 using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
-using ProtoBuf;
-using SobekCM.Core.Settings;
 
 #endregion
 
@@ -40,10 +40,10 @@ namespace SobekCM.Core.UI_Configuration
             //determine if custom has settings
             if (HasCustomSettings(IdsFromPage))
             {
-                List<Simple_Setting> newSettings =  GetCustomSettings(IdsFromPage);
+                List<Simple_Setting> newSettings = GetCustomSettings(IdsFromPage);
                 settings.AddRange(newSettings);
             }
-            
+
             return settings;
         }
 
@@ -64,7 +64,7 @@ namespace SobekCM.Core.UI_Configuration
                     }
                 }
             }
-            
+
             return false;
         }
 
@@ -79,7 +79,7 @@ namespace SobekCM.Core.UI_Configuration
                     return thisCollection.Settings;
                 }
             }
-            
+
             //return settings
             return null;
         }

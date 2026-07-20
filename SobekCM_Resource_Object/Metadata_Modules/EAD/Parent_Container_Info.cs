@@ -1,9 +1,6 @@
 ﻿#region Using directives
 
 using System;
-using System.Runtime.Serialization;
-using System.Xml.Serialization;
-using ProtoBuf;
 
 #endregion
 

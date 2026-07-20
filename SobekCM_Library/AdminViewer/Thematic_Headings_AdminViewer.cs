@@ -2,15 +2,9 @@
 
 #region Using directives
 
-using System;
-using System.Collections.Specialized;
-using System.IO;
-using System.Linq;
 using Microsoft.AspNetCore.Http;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.Navigation;
-using SobekCM.Core.UI_Configuration;
-using SobekCM.Core.UI_Configuration.StaticResources;
 using SobekCM.Engine_Library.ApplicationState;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Engine_Library.Database;
@@ -18,6 +12,9 @@ using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
+using System;
+using System.IO;
+using System.Linq;
 
 #endregion
 
@@ -50,7 +47,7 @@ namespace SobekCM.Library.AdminViewer
             actionMessage = String.Empty;
 
             // If the RequestSpecificValues.Current_User cannot edit this, go back
-            if ((!RequestSpecificValues.Current_User.Is_System_Admin) && ( !RequestSpecificValues.Current_User.Is_Portal_Admin ))
+            if ((!RequestSpecificValues.Current_User.Is_System_Admin) && (!RequestSpecificValues.Current_User.Is_Portal_Admin))
             {
                 RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.My_Sobek;
                 RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
@@ -125,7 +122,7 @@ namespace SobekCM.Library.AdminViewer
                             case "new":
                                 int new_order = UI_ApplicationCache_Gateway.Thematic_Headings.Count + 1;
                                 int newid = Engine_Database.Edit_Thematic_Heading(-1, new_order, save_value, RequestSpecificValues.Tracer);
-								if ( newid  < 1)
+                                if (newid < 1)
                                     actionMessage = "Unable to save new thematic heading";
                                 else
                                 {
@@ -136,8 +133,8 @@ namespace SobekCM.Library.AdminViewer
                                         Engine_Database.Populate_Thematic_Headings(UI_ApplicationCache_Gateway.Thematic_Headings, RequestSpecificValues.Tracer);
                                     }
 
-									// Add this blank thematic heading to the code manager
-	                                UI_ApplicationCache_Gateway.Aggregations.Add_Blank_Thematic_Heading(newid);
+                                    // Add this blank thematic heading to the code manager
+                                    UI_ApplicationCache_Gateway.Aggregations.Add_Blank_Thematic_Heading(newid);
 
                                     actionMessage = "New thematic heading saved";
                                 }
@@ -243,8 +240,8 @@ namespace SobekCM.Library.AdminViewer
         {
             Tracer.Add_Trace("Thematic_Headings_AdminViewer.Write_ItemNavForm_Closing", "Add any popup divisions for form elements");
 
-			Output.WriteLine("<!-- Thematic_Headings_AdminViewer.Write_ItemNavForm_Closing -->");
-			Output.WriteLine("<script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Jquery_Ui_1_10_3_Custom_Js + "\"></script>");
+            Output.WriteLine("<!-- Thematic_Headings_AdminViewer.Write_ItemNavForm_Closing -->");
+            Output.WriteLine("<script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Jquery_Ui_1_10_3_Custom_Js + "\"></script>");
 
             // Add the hidden field
             Output.WriteLine("<!-- Hidden field is used for postbacks to indicate what to save and reset -->");
@@ -253,61 +250,61 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine();
 
             Output.WriteLine("<!-- Thematic Heading Edit Form -->");
-			Output.WriteLine("<div class=\"sbkThav_PopupDiv\" id=\"form_heading\" style=\"display:none;\">");
-			Output.WriteLine("  <div class=\"sbkAdm_PopupTitle\"><table style=\"width:100%;\"><tr><td style=\"text-align: left;\">EDIT THEMATIC HEADING</td><td style=\"text-align:right;\"> <a href=\"#template\" alt=\"CLOSE\" onclick=\"heading_form_close()\">X</a> &nbsp; </td></tr></table></div>");
+            Output.WriteLine("<div class=\"sbkThav_PopupDiv\" id=\"form_heading\" style=\"display:none;\">");
+            Output.WriteLine("  <div class=\"sbkAdm_PopupTitle\"><table style=\"width:100%;\"><tr><td style=\"text-align: left;\">EDIT THEMATIC HEADING</td><td style=\"text-align:right;\"> <a href=\"#template\" alt=\"CLOSE\" onclick=\"heading_form_close()\">X</a> &nbsp; </td></tr></table></div>");
             Output.WriteLine("  <br />");
-			Output.WriteLine("  <table class=\"sbkAdm_PopupTable\">");
+            Output.WriteLine("  <table class=\"sbkAdm_PopupTable\">");
 
             // Add line for heading
-			Output.WriteLine("    <tr><td style=\"width: 80px;\"><label for=\"form_heading_name\">Heading:</label></td><td colspan=\"2\"><input class=\"sbkThav_input sbkAdmin_Focusable\" name=\"form_heading_name\" id=\"form_heading_name\" type=\"text\" value=\"\" /></td></tr>");
+            Output.WriteLine("    <tr><td style=\"width: 80px;\"><label for=\"form_heading_name\">Heading:</label></td><td colspan=\"2\"><input class=\"sbkThav_input sbkAdmin_Focusable\" name=\"form_heading_name\" id=\"form_heading_name\" type=\"text\" value=\"\" /></td></tr>");
 
-			// Add the buttons
-			Output.WriteLine("    <tr style=\"height:35px; text-align: center; vertical-align: bottom;\">");
-			Output.WriteLine("      <td colspan=\"2\">");
-			Output.WriteLine("        <button title=\"Do not apply changes\" class=\"sbkAdm_RoundButton\" onclick=\"return heading_form_close();\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"sbkAdm_RoundButton_LeftImg\" alt=\"\" /> CANCEL</button> &nbsp; &nbsp; ");
-			Output.WriteLine("        <button title=\"Save changes to this existing thematic heading\" class=\"sbkAdm_RoundButton\" type=\"submit\">SAVE <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button> &nbsp; &nbsp; ");
-			Output.WriteLine("      </td>");
-			Output.WriteLine("    </tr>");
-			Output.WriteLine("  </table>");
-			Output.WriteLine("</div>");
-			Output.WriteLine();
+            // Add the buttons
+            Output.WriteLine("    <tr style=\"height:35px; text-align: center; vertical-align: bottom;\">");
+            Output.WriteLine("      <td colspan=\"2\">");
+            Output.WriteLine("        <button title=\"Do not apply changes\" class=\"sbkAdm_RoundButton\" onclick=\"return heading_form_close();\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"sbkAdm_RoundButton_LeftImg\" alt=\"\" /> CANCEL</button> &nbsp; &nbsp; ");
+            Output.WriteLine("        <button title=\"Save changes to this existing thematic heading\" class=\"sbkAdm_RoundButton\" type=\"submit\">SAVE <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button> &nbsp; &nbsp; ");
+            Output.WriteLine("      </td>");
+            Output.WriteLine("    </tr>");
+            Output.WriteLine("  </table>");
+            Output.WriteLine("</div>");
+            Output.WriteLine();
 
 
             Tracer.Add_Trace("Thematic_Headings_AdminViewer.Write_ItemNavForm_Closing", "Write the rest of the form ");
 
             Output.WriteLine("<script src=\"" + Static_Resources_Gateway.Sobekcm_Admin_Js + "\" type=\"text/javascript\"></script>");
-			Output.WriteLine("<div class=\"sbkAdm_HomeText\">");
+            Output.WriteLine("<div class=\"sbkAdm_HomeText\">");
 
-			if (actionMessage.Length > 0)
-			{
-				Output.WriteLine("  <br />");
-				Output.WriteLine("  <div id=\"sbkAdm_ActionMessage\">" + actionMessage + "</div>");
-			}
+            if (actionMessage.Length > 0)
+            {
+                Output.WriteLine("  <br />");
+                Output.WriteLine("  <div id=\"sbkAdm_ActionMessage\">" + actionMessage + "</div>");
+            }
 
             Output.WriteLine("  <p>Thematic headings are the headings on the main library home page, under which all the item aggregation icons appear.</p>");
             Output.WriteLine("  <p>For more information about thematic headings, <a href=\"" + UI_ApplicationCache_Gateway.Settings.System.Help_URL(RequestSpecificValues.Current_Mode.Base_URL) + "adminhelp/headings\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</p>");
             Output.WriteLine();
 
             Output.WriteLine("  <h2>New Thematic Heading</h2>");
-			Output.WriteLine("  <div class=\"sbkThav_NewDiv\">");
-			Output.WriteLine("    <table class=\"sbkAdm_PopupTable\">");
-	        Output.WriteLine("      <tr>");
-	        Output.WriteLine("        <td><label for=\"admin_heading_name\">Heading:</label></td>");
-			Output.WriteLine("        <td><input class=\"sbkThav_input sbkAdmin_Focusable\" name=\"admin_heading_name\" id=\"admin_heading_name\" type=\"text\" value=\"\" /></td>");
-			Output.WriteLine("        <td><button title=\"Save new thematic heading\" class=\"sbkAdm_RoundButton\" onclick=\"return save_new_heading();\">SAVE <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button></td>");
-			Output.WriteLine("      </tr>");
+            Output.WriteLine("  <div class=\"sbkThav_NewDiv\">");
+            Output.WriteLine("    <table class=\"sbkAdm_PopupTable\">");
+            Output.WriteLine("      <tr>");
+            Output.WriteLine("        <td><label for=\"admin_heading_name\">Heading:</label></td>");
+            Output.WriteLine("        <td><input class=\"sbkThav_input sbkAdmin_Focusable\" name=\"admin_heading_name\" id=\"admin_heading_name\" type=\"text\" value=\"\" /></td>");
+            Output.WriteLine("        <td><button title=\"Save new thematic heading\" class=\"sbkAdm_RoundButton\" onclick=\"return save_new_heading();\">SAVE <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button></td>");
+            Output.WriteLine("      </tr>");
             Output.WriteLine("    </table>");
             Output.WriteLine("  </div>");
             Output.WriteLine("  <br />");
 
             Output.WriteLine("  <h2>Existing Thematic Headings</h2>");
-			Output.WriteLine("  <table class=\"sbkThav_Table sbkAdm_Table\">");
+            Output.WriteLine("  <table class=\"sbkThav_Table sbkAdm_Table\">");
             Output.WriteLine("    <tr>");
             Output.WriteLine("      <th class=\"sbkThav_TableHeader1\">ACTIONS</th>");
-			Output.WriteLine("      <th class=\"sbkThav_TableHeader2\">REORDER</th>");
-			Output.WriteLine("      <th class=\"sbkThav_TableHeader3\">THEMATIC HEADING</th>");
+            Output.WriteLine("      <th class=\"sbkThav_TableHeader2\">REORDER</th>");
+            Output.WriteLine("      <th class=\"sbkThav_TableHeader3\">THEMATIC HEADING</th>");
             Output.WriteLine("     </tr>");
-			Output.WriteLine("     <tr><td class=\"sbkAdm_TableRule\" colspan=\"3\"></td></tr>");
+            Output.WriteLine("     <tr><td class=\"sbkAdm_TableRule\" colspan=\"3\"></td></tr>");
 
             // Write the data for each interface
             int current_order = 1;
@@ -315,18 +312,18 @@ namespace SobekCM.Library.AdminViewer
             {
                 // Build the action links
                 Output.WriteLine("    <tr style=\"text-align:left;\" >");
-				Output.Write("      <td class=\"sbkAdm_ActionLink\" >( ");
+                Output.Write("      <td class=\"sbkAdm_ActionLink\" >( ");
                 Output.Write("<a title=\"Click to edit\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return heading_form_popup('" + thisTheme.Text + "','" + thisTheme.ID + "');\">edit</a> | ");
                 Output.WriteLine("<a title=\"Delete this thematic heading\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return delete_heading('" + thisTheme.ID + "', '" + thisTheme.Text.Replace("\'", "") + "');\">delete</a> )</td>");
 
-				Output.Write("      <td class=\"sbkAdm_ActionLink\">( ");
+                Output.Write("      <td class=\"sbkAdm_ActionLink\">( ");
                 Output.Write("<a title=\"Move this heading up in the order\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return move_heading_up('" + thisTheme.ID + "', '" + current_order + "');\">up</a> | ");
                 Output.WriteLine("<a title=\"Move this heading down in the order\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return move_heading_down('" + thisTheme.ID + "', '" + current_order + "');\">down</a> )</td>");
 
                 // Add the rest of the row with data
                 Output.WriteLine("      <td>" + thisTheme.Text + "</td>");
                 Output.WriteLine("    </tr>");
-				Output.WriteLine("    <tr><td class=\"sbkAdm_TableRule\" colspan=\"3\"></td></tr>");
+                Output.WriteLine("    <tr><td class=\"sbkAdm_TableRule\" colspan=\"3\"></td></tr>");
 
                 current_order++;
             }

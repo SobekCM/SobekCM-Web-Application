@@ -1,7 +1,7 @@
 ﻿#region Using directives
 
-using System;
 using SobekCM.Core.MicroservicesClient;
+using System;
 
 #endregion
 
@@ -56,7 +56,7 @@ namespace SobekCM.Core.Client
 
         /// <summary> Directly set the microservice configuration </summary>
         /// <param name="EndpointConfig"> Configuration of all the endpoint information </param>
-        public static void Set_Endpoints(MicroservicesClient_Configuration EndpointConfig )
+        public static void Set_Endpoints(MicroservicesClient_Configuration EndpointConfig)
         {
             ConfigObj = EndpointConfig;
             Config_Read_Attempted = true;

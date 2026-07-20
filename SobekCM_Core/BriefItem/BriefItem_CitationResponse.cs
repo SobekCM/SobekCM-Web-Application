@@ -1,10 +1,10 @@
 ﻿#region Using directives
 
+using ProtoBuf;
 using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
-using ProtoBuf;
 
 #endregion
 
@@ -36,7 +36,7 @@ namespace SobekCM.Core.BriefItem
         [XmlIgnore]
         public BriefItemInfo BriefItem
         {
-            get { return briefItem;  }
+            get { return briefItem; }
         }
 
         /// <summary> Bibliographic identifier for this item </summary>
@@ -45,7 +45,7 @@ namespace SobekCM.Core.BriefItem
         [ProtoMember(1)]
         public string BibID
         {
-            get { return briefItem.BibID;  }
+            get { return briefItem.BibID; }
             set { briefItem.BibID = value; }
         }
 
@@ -53,9 +53,9 @@ namespace SobekCM.Core.BriefItem
         [DataMember(EmitDefaultValue = false, Name = "vid")]
         [XmlAttribute("vid")]
         [ProtoMember(2)]
-        public string VID 
+        public string VID
         {
-            get { return briefItem.VID;  }
+            get { return briefItem.VID; }
             set { briefItem.VID = value; }
         }
 
@@ -65,7 +65,7 @@ namespace SobekCM.Core.BriefItem
         [ProtoMember(3)]
         public string Title
         {
-            get { return briefItem.Title;  }
+            get { return briefItem.Title; }
             set { briefItem.Title = value; }
         }
 

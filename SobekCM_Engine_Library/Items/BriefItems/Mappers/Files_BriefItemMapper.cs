@@ -1,10 +1,10 @@
 ﻿#region Using directives
 
-using System.Collections.Generic;
-using System.Linq;
 using SobekCM.Core.BriefItem;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Divisions;
+using System.Collections.Generic;
+using System.Linq;
 
 #endregion
 
@@ -67,7 +67,7 @@ namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
         private void collect_nodes(Division_Tree Tree, List<BriefItem_FileGrouping> Groupings, List<BriefItem_TocElement> Toc, bool AlwaysIncludeDivs)
         {
             // If not roots, do nothing!
-            if (( Tree == null ) || ( Tree.Roots == null ) || ( Tree.Roots.Count == 0 ))
+            if ((Tree == null) || (Tree.Roots == null) || (Tree.Roots.Count == 0))
                 return;
 
             // Create the stack used for determining the TOC
@@ -78,7 +78,7 @@ namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
             if ((rootNodes.Count == 1) && (!rootNodes[0].Page))
             {
                 // This was a division node
-                Division_TreeNode divNode = (Division_TreeNode) Tree.Roots[0];
+                Division_TreeNode divNode = (Division_TreeNode)Tree.Roots[0];
 
                 if ((divNode.Nodes != null) && (divNode.Nodes.Count > 0))
                 {
@@ -99,7 +99,7 @@ namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
             if (Node.Page)
             {
                 // Cast back to the PAGE node
-                Page_TreeNode pageNode = (Page_TreeNode) Node;
+                Page_TreeNode pageNode = (Page_TreeNode)Node;
 
                 // If no files, do not add this back
                 if (pageNode.Files.Count == 0)
@@ -131,12 +131,12 @@ namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
                 int sequence = Groupings.Count + 1;
 
                 // This was a division node
-                Division_TreeNode divNode = (Division_TreeNode) Node;
+                Division_TreeNode divNode = (Division_TreeNode)Node;
 
                 // Create the brief item TOC element
                 BriefItem_TocElement divToc = new BriefItem_TocElement
                 {
-                    Level = Level, 
+                    Level = Level,
                     Name = divNode.Label
                 };
                 if (string.IsNullOrEmpty(divToc.Name))
@@ -173,7 +173,7 @@ namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
                 {
                     // If this division (with NO pages under it apparently) is on the stack, 
                     // just pop it off
-                    if (( CurrDivStack.Count > 0 ) && (CurrDivStack.Peek() == divToc))
+                    if ((CurrDivStack.Count > 0) && (CurrDivStack.Peek() == divToc))
                     {
                         CurrDivStack.Pop();
                     }

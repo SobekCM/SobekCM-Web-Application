@@ -1,44 +1,44 @@
 #region Using directives
 
+using SobekCM.Core.ApplicationState;
+using SobekCM.Core.Configuration.Localization;
+using SobekCM.Core.Users;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Xml;
-using SobekCM.Core.ApplicationState;
-using SobekCM.Core.Configuration.Localization;
-using SobekCM.Core.Users;
 
 #endregion
 
 namespace SobekCM.Library.Citation.Elements
 {
-	/// <summary> Abstract base class for all elements which are made up of a single combo/select box </summary>
+    /// <summary> Abstract base class for all elements which are made up of a single combo/select box </summary>
     /// <remarks> This class implements the <see cref="iElement"/> interface and extends the <see cref="abstract_Element"/> class. </remarks>
-	public abstract class ComboBox_Element : abstract_Element
-	{
-	    /// <summary> Protected field holds the default value(s) </summary>
+    public abstract class ComboBox_Element : abstract_Element
+    {
+        /// <summary> Protected field holds the default value(s) </summary>
         protected List<string> DefaultValues;
 
         /// <summary> Protected field holds all the possible, selectable values </summary>
         protected List<string> Items;
 
-	    /// <summary> Protected field holds the flag that tells if a value from the package which is not in the
-	    /// provided options should be discarded or permitted </summary>
-	    protected bool RestrictValues;
+        /// <summary> Protected field holds the flag that tells if a value from the package which is not in the
+        /// provided options should be discarded or permitted </summary>
+        protected bool RestrictValues;
 
         /// <summary> Constructor for a new instance of the ComboBox_Element class </summary>
         /// <param name="Title"> Title for this element </param>
         /// <param name="Html_Element_Name"> Name for the html components and styles for this element </param>
 	    protected ComboBox_Element(string Title, string Html_Element_Name)
-		{
+        {
             // Set default title to blank           
             base.Title = Title;
             html_element_name = Html_Element_Name;
 
             Items = new List<string>();
             DefaultValues = new List<string>();
-		}
+        }
 
         /// <summary> Adds a default value for this combo box based element </summary>
         /// <param name="DefaultValue"> New default value </param>
@@ -55,15 +55,15 @@ namespace SobekCM.Library.Citation.Elements
             Items.AddRange(Values);
         }
 
-		/// <summary> Add a new possible, selectable value to this combo box </summary>
-		/// <param name="NewItem"> New possible, selectable value </param>
-		public void Add_Item( string NewItem )
-		{
-			if ( !Items.Contains( NewItem ))
-			{
-				Items.Add( NewItem );
-			}
-		}
+        /// <summary> Add a new possible, selectable value to this combo box </summary>
+        /// <param name="NewItem"> New possible, selectable value </param>
+        public void Add_Item(string NewItem)
+        {
+            if (!Items.Contains(NewItem))
+            {
+                Items.Add(NewItem);
+            }
+        }
 
         /// <summary> Method helps to render all single combo box based elements </summary>
         /// <param name="Output"> Output for the generated html for this element </param>
@@ -73,11 +73,11 @@ namespace SobekCM.Library.Citation.Elements
         /// <param name="CurrentLanguage"> Current user-interface language </param>
         /// <param name="Translator"> Language support object which handles simple translational duties </param>
         /// <param name="Base_URL"> Base URL for the current request </param>
-        protected void render_helper(TextWriter Output, string InstanceValue, string Skin_Code, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL )
+        protected void render_helper(TextWriter Output, string InstanceValue, string Skin_Code, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL)
         {
             render_helper(Output, InstanceValue, Skin_Code, Current_User, CurrentLanguage, Translator, Base_URL, false);
         }
-        
+
         /// <summary> Method helps to render all single combo box based elements </summary>
         /// <param name="Output"> Output for the generated html for this element </param>
         /// <param name="InstanceValue"> Value for the current digital resource to display </param>
@@ -91,7 +91,7 @@ namespace SobekCM.Library.Citation.Elements
         {
             string id_name = html_element_name.Replace("_", "");
 
-            if (( String.IsNullOrWhiteSpace(InstanceValue)) && (DefaultValues.Count > 0))
+            if ((String.IsNullOrWhiteSpace(InstanceValue)) && (DefaultValues.Count > 0))
             {
                 InstanceValue = DefaultValues[0];
             }
@@ -115,20 +115,20 @@ namespace SobekCM.Library.Citation.Elements
             Output.WriteLine("            <div id=\"" + html_element_name + "_div\">");
 
 
-                if (InitialValue)
-                {
-                    Output.Write("              <select class=\"" + html_element_name + "_select_init\" name=\"" + id_name + "1\" id=\"" + id_name + "1\" onblur=\"javascript:selectbox_leave('" + id_name + "1', '" + html_element_name + "_select', '" + html_element_name + "_select_init')\" ");
-                    if (comboBoxEvents != null)
-                        comboBoxEvents.Add_Events_HTML(Output);
-                    Output.WriteLine(" >");
-                }
-                else
-                {
-                    Output.Write("              <select class=\"" + html_element_name + "_select\" name=\"" + id_name + "1\" id=\"" + id_name + "1\" onblur=\"javascript:selectbox_leave('" + id_name + "1', '" + html_element_name + "_select', '" + html_element_name + "_select_init')\" ");
-                    if (comboBoxEvents != null)
-                        comboBoxEvents.Add_Events_HTML(Output);
-                    Output.WriteLine(" >");
-                }
+            if (InitialValue)
+            {
+                Output.Write("              <select class=\"" + html_element_name + "_select_init\" name=\"" + id_name + "1\" id=\"" + id_name + "1\" onblur=\"javascript:selectbox_leave('" + id_name + "1', '" + html_element_name + "_select', '" + html_element_name + "_select_init')\" ");
+                if (comboBoxEvents != null)
+                    comboBoxEvents.Add_Events_HTML(Output);
+                Output.WriteLine(" >");
+            }
+            else
+            {
+                Output.Write("              <select class=\"" + html_element_name + "_select\" name=\"" + id_name + "1\" id=\"" + id_name + "1\" onblur=\"javascript:selectbox_leave('" + id_name + "1', '" + html_element_name + "_select', '" + html_element_name + "_select_init')\" ");
+                if (comboBoxEvents != null)
+                    comboBoxEvents.Add_Events_HTML(Output);
+                Output.WriteLine(" >");
+            }
 
 
 
@@ -145,7 +145,7 @@ namespace SobekCM.Library.Citation.Elements
                     Output.WriteLine("                <option value=\"" + thisOption + "\">" + thisOption + "</option>");
                 }
             }
-            if (( !String.IsNullOrWhiteSpace(InstanceValue)) && (!RestrictValues) && (!found_option))
+            if ((!String.IsNullOrWhiteSpace(InstanceValue)) && (!RestrictValues) && (!found_option))
             {
                 Output.WriteLine("                <option selected=\"selected=\" value=\"" + InstanceValue + "\">" + InstanceValue + "</option>");
             }
@@ -170,42 +170,42 @@ namespace SobekCM.Library.Citation.Elements
             Output.WriteLine();
         }
 
-	    #region Methods Implementing the Abstract Methods from abstract_Element class
+        #region Methods Implementing the Abstract Methods from abstract_Element class
 
-	    /// <summary> Reads the inner data from the CompleteTemplate XML format </summary>
-	    /// <param name="XMLReader"> Current template xml configuration reader </param>
-	    /// <remarks> This reads the possible values for the combo box from a <i>options</i> subelement and the default value from a <i>value</i> subelement </remarks>
-	    protected override void Inner_Read_Data( XmlReader XMLReader )
-	    {
-	        DefaultValues.Clear();
-	        while ( XMLReader.Read() )
-	        {
-	            if (( XMLReader.NodeType == XmlNodeType.Element ) && (( XMLReader.Name.ToLower() == "value" ) || ( XMLReader.Name.ToLower() == "options" ))) 
-	            {
-	                if ( XMLReader.Name.ToLower() == "value" )
-	                {
-	                    XMLReader.Read();
-	                    DefaultValues.Add(XMLReader.Value.Trim());
-	                }
-	                else
-	                {
-	                    XMLReader.Read();
-	                    string options = XMLReader.Value.Trim();
-	                    Items.Clear();
-	                    if ( options.Length > 0 )
-	                    {
-	                        string[] options_parsed = options.Split(",".ToCharArray());
-	                        foreach (string thisOption in options_parsed.Where(ThisOption => !Items.Contains(ThisOption.Trim())))
-	                        {
-	                            Items.Add( thisOption.Trim() );
-	                        }
-	                    }
-	                }
-	            }
-	        }
-	    }
+        /// <summary> Reads the inner data from the CompleteTemplate XML format </summary>
+        /// <param name="XMLReader"> Current template xml configuration reader </param>
+        /// <remarks> This reads the possible values for the combo box from a <i>options</i> subelement and the default value from a <i>value</i> subelement </remarks>
+        protected override void Inner_Read_Data(XmlReader XMLReader)
+        {
+            DefaultValues.Clear();
+            while (XMLReader.Read())
+            {
+                if ((XMLReader.NodeType == XmlNodeType.Element) && ((XMLReader.Name.ToLower() == "value") || (XMLReader.Name.ToLower() == "options")))
+                {
+                    if (XMLReader.Name.ToLower() == "value")
+                    {
+                        XMLReader.Read();
+                        DefaultValues.Add(XMLReader.Value.Trim());
+                    }
+                    else
+                    {
+                        XMLReader.Read();
+                        string options = XMLReader.Value.Trim();
+                        Items.Clear();
+                        if (options.Length > 0)
+                        {
+                            string[] options_parsed = options.Split(",".ToCharArray());
+                            foreach (string thisOption in options_parsed.Where(ThisOption => !Items.Contains(ThisOption.Trim())))
+                            {
+                                Items.Add(thisOption.Trim());
+                            }
+                        }
+                    }
+                }
+            }
+        }
 
-	    #endregion
+        #endregion
 
         #region Methods and properties exposing events for the HTML elements in this base type
 
@@ -232,5 +232,5 @@ namespace SobekCM.Library.Citation.Elements
         }
 
         #endregion
-	}
+    }
 }

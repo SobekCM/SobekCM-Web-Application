@@ -1,17 +1,14 @@
 #region Using directives
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Results;
 using SobekCM.Core.Search;
-using SobekCM.Core.UI_Configuration;
-using SobekCM.Core.UI_Configuration.StaticResources;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
+using System;
+using System.IO;
+using System.Text;
 
 #endregion
 
@@ -65,17 +62,17 @@ namespace SobekCM.Library.ResultsViewer
             int current_row = 0;
             foreach (iSearch_Title_Result titleResult in PagedResults)
             {
-	            bool multiple_title = titleResult.Item_Count > 1;
+                bool multiple_title = titleResult.Item_Count > 1;
                 string access_type = String.Empty;
 
-	            // Always get the first item for things like the main link and thumbnail
+                // Always get the first item for things like the main link and thumbnail
                 iSearch_Item_Result firstItemResult = titleResult.Get_Item(0);
 
                 // Determine the internal link to the first (possibly only) item
                 string internal_link = base_url + titleResult.BibID + "/" + firstItemResult.VID + textRedirectStem;
 
                 // For browses, just point to the title
-				if (RequestSpecificValues.Current_Mode.Mode == Display_Mode_Enum.Aggregation) // browse info only
+                if (RequestSpecificValues.Current_Mode.Mode == Display_Mode_Enum.Aggregation) // browse info only
                     internal_link = base_url + titleResult.BibID + "/" + firstItemResult.VID + textRedirectStem;
 
                 // Start this row
@@ -116,10 +113,10 @@ namespace SobekCM.Library.ResultsViewer
                 //}
 
                 // Calculate the thumbnail
-                string thumb = titleResult.BibID.Substring(0, 2) + "/" + titleResult.BibID.Substring(2, 2) + "/" +titleResult.BibID.Substring(4, 2) + "/" + titleResult.BibID.Substring(6, 2) + "/" + titleResult.BibID.Substring(8) + "/" + firstItemResult.VID + "/" + (firstItemResult.MainThumbnail).Replace("\\", "/").Replace("//", "/");
+                string thumb = titleResult.BibID.Substring(0, 2) + "/" + titleResult.BibID.Substring(2, 2) + "/" + titleResult.BibID.Substring(4, 2) + "/" + titleResult.BibID.Substring(6, 2) + "/" + titleResult.BibID.Substring(8) + "/" + firstItemResult.VID + "/" + (firstItemResult.MainThumbnail).Replace("\\", "/").Replace("//", "/");
 
                 // Draw the thumbnail 
-                if ( !String.IsNullOrEmpty(firstItemResult.Group_Restrictions))
+                if (!String.IsNullOrEmpty(firstItemResult.Group_Restrictions))
                 {
                     resultsBldr.AppendLine("<a href=\"" + internal_link + "\"><img src=\"" + RequestSpecificValues.Current_Mode.Base_Design_URL + "restricted-thumb.png\" border=\"0px\" class=\"resultsThumbnail\" alt=\"RESTRICTED ITEM\" style=\"width:150px\" /></a></div>");
                 }
@@ -129,7 +126,7 @@ namespace SobekCM.Library.ResultsViewer
                 }
                 else
                 {
-                    resultsBldr.AppendLine("<a href=\"" + internal_link + "\"><img src=\"" +UI_ApplicationCache_Gateway.Settings.Servers.Image_URL + thumb + "\" class=\"resultsThumbnail\" alt=\"" + title.Replace("\"","") + "\" /></a></div>");
+                    resultsBldr.AppendLine("<a href=\"" + internal_link + "\"><img src=\"" + UI_ApplicationCache_Gateway.Settings.Servers.Image_URL + thumb + "\" class=\"resultsThumbnail\" alt=\"" + title.Replace("\"", "") + "\" /></a></div>");
                 }
 
                 resultsBldr.AppendLine("\t\t<div class=\"sbkBrv_SingleResultDesc\">");
@@ -176,13 +173,13 @@ namespace SobekCM.Library.ResultsViewer
                     resultsBldr.AppendLine("\t\t\t\t<dt>" + UI_ApplicationCache_Gateway.Translation.Get_Translation(titleResult.Primary_Identifier_Type, RequestSpecificValues.Current_Mode.Language) + ":</dt><dd>" + titleResult.Primary_Identifier + "</dd>");
                 }
 
-                if ((RequestSpecificValues.Current_User != null ) && ( RequestSpecificValues.Current_User.LoggedOn ) && ( RequestSpecificValues.Current_User.Is_Internal_User ))
+                if ((RequestSpecificValues.Current_User != null) && (RequestSpecificValues.Current_User.LoggedOn) && (RequestSpecificValues.Current_User.Is_Internal_User))
                 {
                     resultsBldr.AppendLine("\t\t\t\t<dt>BibID:</dt><dd>" + titleResult.BibID + "</dd>");
 
                     if (titleResult.OPAC_Number > 1)
                     {
-                        resultsBldr.AppendLine("\t\t\t\t<dt>OPAC:</dt><dd>" +titleResult.OPAC_Number + "</dd>");
+                        resultsBldr.AppendLine("\t\t\t\t<dt>OPAC:</dt><dd>" + titleResult.OPAC_Number + "</dd>");
                     }
 
                     if (titleResult.OCLC_Number > 1)
@@ -192,7 +189,7 @@ namespace SobekCM.Library.ResultsViewer
                 }
 
                 for (int i = 0; i < ResultsStats.Metadata_Labels.Count; i++)
-				{
+                {
                     string field = ResultsStats.Metadata_Labels[i];
 
                     // Somehow the metadata for this item did not fully save in the database.  Break out, rather than
@@ -200,57 +197,57 @@ namespace SobekCM.Library.ResultsViewer
                     if ((titleResult.Metadata_Display_Values == null) || (titleResult.Metadata_Display_Values.Length <= i))
                         break;
 
-					string value = titleResult.Metadata_Display_Values[i];
-					Metadata_Search_Field thisField = UI_ApplicationCache_Gateway.Settings.Metadata_Search_Field_By_Name(field);
-					string display_field = string.Empty;
-					if ( thisField != null )
-						display_field = thisField.Display_Term;
-					if (display_field.Length == 0)
-						display_field = field.Replace("_", " ");
+                    string value = titleResult.Metadata_Display_Values[i];
+                    Metadata_Search_Field thisField = UI_ApplicationCache_Gateway.Settings.Metadata_Search_Field_By_Name(field);
+                    string display_field = string.Empty;
+                    if (thisField != null)
+                        display_field = thisField.Display_Term;
+                    if (display_field.Length == 0)
+                        display_field = field.Replace("_", " ");
 
-					if (value == "*")
-					{
-						resultsBldr.AppendLine("\t\t\t\t<dt>" + UI_ApplicationCache_Gateway.Translation.Get_Translation(display_field, RequestSpecificValues.Current_Mode.Language) + ":</dt><dd>" + System.Net.WebUtility.HtmlDecode(VARIES_STRING) + "</dd>");
-					}
-					else if ( value.Trim().Length > 0 )
-					{
-						if (value.IndexOf("|") > 0)
-						{
-							bool value_found = false;
-							string[] value_split = value.Split("|".ToCharArray());
+                    if (value == "*")
+                    {
+                        resultsBldr.AppendLine("\t\t\t\t<dt>" + UI_ApplicationCache_Gateway.Translation.Get_Translation(display_field, RequestSpecificValues.Current_Mode.Language) + ":</dt><dd>" + System.Net.WebUtility.HtmlDecode(VARIES_STRING) + "</dd>");
+                    }
+                    else if (value.Trim().Length > 0)
+                    {
+                        if (value.IndexOf("|") > 0)
+                        {
+                            bool value_found = false;
+                            string[] value_split = value.Split("|".ToCharArray());
 
-							foreach (string thisValue in value_split)
-							{
-								if (thisValue.Trim().Trim().Length > 0)
-								{
-									if (!value_found)
-									{
-										resultsBldr.Append("\t\t\t\t<dt>" + UI_ApplicationCache_Gateway.Translation.Get_Translation(display_field, RequestSpecificValues.Current_Mode.Language) + ":</dt>");
-										value_found = true;
-									}
-									resultsBldr.Append("<dd>" + System.Net.WebUtility.HtmlDecode(thisValue) + "</dd>");
-								}
-							}
+                            foreach (string thisValue in value_split)
+                            {
+                                if (thisValue.Trim().Trim().Length > 0)
+                                {
+                                    if (!value_found)
+                                    {
+                                        resultsBldr.Append("\t\t\t\t<dt>" + UI_ApplicationCache_Gateway.Translation.Get_Translation(display_field, RequestSpecificValues.Current_Mode.Language) + ":</dt>");
+                                        value_found = true;
+                                    }
+                                    resultsBldr.Append("<dd>" + System.Net.WebUtility.HtmlDecode(thisValue) + "</dd>");
+                                }
+                            }
 
                             if (value_found)
                             {
                                 resultsBldr.AppendLine();
                             }
-						}
-						else
-						{
-							resultsBldr.AppendLine("\t\t\t\t<dt>" + UI_ApplicationCache_Gateway.Translation.Get_Translation(display_field, RequestSpecificValues.Current_Mode.Language) + ":</dt><dd>" + System.Net.WebUtility.HtmlDecode(value) + "</dd>");
-						}
-					}
-				}
+                        }
+                        else
+                        {
+                            resultsBldr.AppendLine("\t\t\t\t<dt>" + UI_ApplicationCache_Gateway.Translation.Get_Translation(display_field, RequestSpecificValues.Current_Mode.Language) + ":</dt><dd>" + System.Net.WebUtility.HtmlDecode(value) + "</dd>");
+                        }
+                    }
+                }
 
                 resultsBldr.AppendLine("\t\t\t</dl>");
 
                 if (!String.IsNullOrEmpty(titleResult.Snippet))
                 {
-                    resultsBldr.AppendLine("\t\t\t<div class=\"sbkBrv_SearchResultSnippet\">&ldquo;..." + titleResult.Snippet.Replace("<em>", "<span class=\"texthighlight\">").Replace ("</em>", "</span>") + "...&rdquo;</div>");
+                    resultsBldr.AppendLine("\t\t\t<div class=\"sbkBrv_SearchResultSnippet\">&ldquo;..." + titleResult.Snippet.Replace("<em>", "<span class=\"texthighlight\">").Replace("</em>", "</span>") + "...&rdquo;</div>");
                 }
-                
+
                 // Add children, if there are some
                 if (multiple_title)
                 {

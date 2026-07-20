@@ -1,11 +1,11 @@
 ﻿#region Using directives
 
+using ProtoBuf;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
-using ProtoBuf;
 
 #endregion
 
@@ -80,9 +80,9 @@ namespace SobekCM.Core.ApplicationState
         /// <param name="URL_Segment"> URL segment used to determine if a request comes from this portal </param>
         /// <param name="Base_PURL"> Base PURL to used when constructing a PURL for items within this portal, if it is different than the standard base URL </param>
         /// <returns> Built and added URL Portal for any additional work ( limiting by web skin or aggregationPermissions )</returns>
-        public Portal Add_Portal( int ID, string Name, string Abbreviation, string Default_Aggregation, string Default_Web_Skin, string URL_Segment, string Base_PURL )
+        public Portal Add_Portal(int ID, string Name, string Abbreviation, string Default_Aggregation, string Default_Web_Skin, string URL_Segment, string Base_PURL)
         {
-            Portal returnValue = new Portal(ID, Name, Abbreviation, Default_Aggregation, Default_Web_Skin, URL_Segment, Base_PURL );
+            Portal returnValue = new Portal(ID, Name, Abbreviation, Default_Aggregation, Default_Web_Skin, URL_Segment, Base_PURL);
             All_Portals.Add(returnValue);
             return returnValue;
         }

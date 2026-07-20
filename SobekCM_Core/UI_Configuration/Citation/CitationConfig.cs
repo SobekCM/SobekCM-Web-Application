@@ -1,8 +1,8 @@
-﻿using System;
+﻿using ProtoBuf;
+using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
-using ProtoBuf;
 
 namespace SobekCM.Core.UI_Configuration.Citation
 {
@@ -53,7 +53,7 @@ namespace SobekCM.Core.UI_Configuration.Citation
             }
 
             // Add a new one then
-            CitationSet newSet = new CitationSet {Name = SetName};
+            CitationSet newSet = new CitationSet { Name = SetName };
             CitationSets.Add(newSet);
             return newSet;
         }
@@ -73,7 +73,7 @@ namespace SobekCM.Core.UI_Configuration.Citation
         /// <summary> Return the citation set indicated by set name </summary>
         /// <param name="SetName"> Name of the set </param>
         /// <returns> Citation set, which details how the citation should be written </returns>
-        public CitationSet Get_CitationSet(string SetName )
+        public CitationSet Get_CitationSet(string SetName)
         {
             // If there are no sets, return NULL
             if ((CitationSets == null) || (CitationSets.Count == 0))
@@ -96,16 +96,16 @@ namespace SobekCM.Core.UI_Configuration.Citation
         private void set_defaults()
         {
             // Create the new set
-            CitationSet defaultSet = new CitationSet {Name = "DEFAULT"};
+            CitationSet defaultSet = new CitationSet { Name = "DEFAULT" };
             DefaultCitationSet = "DEFAULT";
 
             // Add the purl in its own field set
-            CitationFieldSet purlSet = new CitationFieldSet {ID = "PURL"};
-            purlSet.Elements.Add(new CitationElement("Permanent Link", "Permanent Link", null, null ));
+            CitationFieldSet purlSet = new CitationFieldSet { ID = "PURL" };
+            purlSet.Elements.Add(new CitationElement("Permanent Link", "Permanent Link", null, null));
             defaultSet.FieldSets.Add(purlSet);
 
             // Add the main material information field set
-            CitationFieldSet materialSet = new CitationFieldSet {ID = "MATERIAL", Heading = "Material Information"};
+            CitationFieldSet materialSet = new CitationFieldSet { ID = "MATERIAL", Heading = "Material Information" };
             materialSet.Elements.Add(new CitationElement("Title", "Title", null, "name"));
             materialSet.Elements.Add(new CitationElement("Series Title", "Series Title", "TI", null));
             materialSet.Elements.Add(new CitationElement("Uniform Title", "Uniform Title", null, null));

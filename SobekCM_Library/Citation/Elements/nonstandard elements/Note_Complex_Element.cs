@@ -1,18 +1,17 @@
 #region Using directives
 
+using SobekCM.Core.ApplicationState;
+using SobekCM.Core.Configuration.Localization;
+using SobekCM.Core.Users;
+using SobekCM.Library.UI;
+using SobekCM.Resource_Object;
+using SobekCM.Resource_Object.Bib_Info;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using Microsoft.AspNetCore.Http;
 using System.Xml;
-using SobekCM.Core.ApplicationState;
-using SobekCM.Core.Configuration.Localization;
-using SobekCM.Core.Users;
-using SobekCM.Resource_Object;
-using SobekCM.Resource_Object.Bib_Info;
-using SobekCM.Library.UI;
 
 #endregion
 
@@ -39,7 +38,7 @@ namespace SobekCM.Library.Citation.Elements
             //Include_Statement_Responsibility = true;
             //Include_Acquisition_Note = true;
 
-	        help_page = "note";
+            help_page = "note";
         }
 
         ///// <summary> Flag indicates whether to include the statement of responsibility in the list of notes </summary>
@@ -66,7 +65,7 @@ namespace SobekCM.Library.Citation.Elements
         /// <param name="Translator"> Language support object which handles simple translational duties </param>
         /// <param name="Base_URL"> Base URL for the current request </param>
         /// <remarks> This simple element does not append any popup form to the popup_form_builder</remarks>
-        public override void Render_Template_HTML(TextWriter Output, SobekCM_Item Bib, string Skin_Code, bool IsMozilla, StringBuilder PopupFormBuilder, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL )
+        public override void Render_Template_HTML(TextWriter Output, SobekCM_Item Bib, string Skin_Code, bool IsMozilla, StringBuilder PopupFormBuilder, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL)
         {
             // Check for the complex form title, which includes statement of responsibility
             bool include_statement_responsibility = ((Options.ContainsKey("title_form_included")) && (String.Compare(Options["title_form_included"], "true", StringComparison.OrdinalIgnoreCase) == 0));
@@ -100,7 +99,7 @@ namespace SobekCM.Library.Citation.Elements
             if (IsMozilla)
                 actual_cols = colsMozilla;
 
-            
+
             string id_name = html_element_name.Replace("_", "");
 
             Output.WriteLine("  <!-- " + Title + " Element -->");
@@ -174,7 +173,7 @@ namespace SobekCM.Library.Citation.Elements
                 foreach (Note_Info thisNote in Bib.Bib_Info.Notes)
                 {
                     if (((thisNote.Note_Type != Note_Type_Enum.StatementOfResponsibility) || (include_statement_responsibility)) &&
-                        ( thisNote.Note_Type != Note_Type_Enum.DefaultType ))
+                        (thisNote.Note_Type != Note_Type_Enum.DefaultType))
                     {
                         string note_display_label = String.Empty;
                         string display_label_prompt = "Materials Selected";
@@ -371,7 +370,7 @@ namespace SobekCM.Library.Citation.Elements
             }
 
             Output.WriteLine("          <td style=\"vertical-align:bottom\" >");
-			
+
             if (Repeatable)
             {
                 Output.WriteLine("            <a title=\"" + Translator.Get_Translation("Click to add a new note", CurrentLanguage) + ".\" href=\"" + Base_URL + "l/technical/javascriptrequired\" onmousedown=\"return add_complex_note('" + Rows + "','" + actual_cols + "');\"><img class=\"repeat_button\" src=\"" + REPEAT_BUTTON_URL + "\" /></a>");
@@ -397,7 +396,7 @@ namespace SobekCM.Library.Citation.Elements
 
             if (include_statement_responsibility)
             {
-                Bib.Bib_Info.Clear_Notes();    
+                Bib.Bib_Info.Clear_Notes();
             }
             else
             {
@@ -418,7 +417,7 @@ namespace SobekCM.Library.Citation.Elements
         public override void Save_To_Bib(SobekCM_Item Bib)
         {
             const string HTML_ELEMENT_NAME = "complex_note";
-            string id = HTML_ELEMENT_NAME.Replace("_","");
+            string id = HTML_ELEMENT_NAME.Replace("_", "");
             var getKeys = Context.Request.Form.Keys;
             foreach (string thisKey in getKeys)
             {
@@ -567,7 +566,7 @@ namespace SobekCM.Library.Citation.Elements
         /// <summary> Reads the inner data from the CompleteTemplate XML format </summary>
         /// <param name="XMLReader"> Current template xml configuration reader </param>
         /// <remarks> This procedure does not currently read any inner xml (not yet necessary) </remarks>
-        protected override void Inner_Read_Data( XmlReader XMLReader )
+        protected override void Inner_Read_Data(XmlReader XMLReader)
         {
             // Do nothing
         }

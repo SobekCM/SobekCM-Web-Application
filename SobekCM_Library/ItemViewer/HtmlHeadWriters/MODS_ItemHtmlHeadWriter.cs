@@ -1,7 +1,7 @@
-﻿using System;
-using System.IO;
-using SobekCM.Core.BriefItem;
+﻿using SobekCM.Core.BriefItem;
 using SobekCM.Library.ItemViewer.Viewers;
+using System;
+using System.IO;
 
 namespace SobekCM.Library.ItemViewer.HtmlHeadWriters
 {
@@ -20,7 +20,7 @@ namespace SobekCM.Library.ItemViewer.HtmlHeadWriters
                 return;
 
             Output.WriteLine("  <link title=\"MODS Metadata Schema\" rel=\"schema.mods\" href=\"http://www.loc.gov/standards/mods/mods.xsd\" />");
-            if ( !String.IsNullOrEmpty(CurrentItem.Title))
+            if (!String.IsNullOrEmpty(CurrentItem.Title))
                 Output.WriteLine("  <meta name=\"mods.title\" content=\"" + CurrentItem.Title.Replace("\"", "'") + "\" />");
             Output.WriteLine();
         }

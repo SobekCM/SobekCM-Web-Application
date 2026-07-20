@@ -1,19 +1,19 @@
-﻿using System;
+﻿using SobekCM.Resource_Object.Bib_Info;
+using SobekCM.Resource_Object.Metadata_Modules;
+using SobekCM.Resource_Object.Metadata_Modules.GeoSpatial;
+using SobekCM.Resource_Object.Metadata_Modules.VRACore;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Text.RegularExpressions;
-using SobekCM.Resource_Object.Bib_Info;
-using SobekCM.Resource_Object.Metadata_Modules;
-using SobekCM.Resource_Object.Metadata_Modules.GeoSpatial;
-using SobekCM.Resource_Object.Metadata_Modules.VRACore;
 
 namespace SobekCM.Resource_Object.Mapping
 {
     /// <summary> Standard bibliographic mapping which takes data and field name and maps that data into the SobekCM field
     /// within the main SobekCM Item package </summary>
     /// <remarks> This class implements the <see cref="iBibliographicMapper" /> interface </remarks>
-    public class Standard_Bibliographic_Mapper: iBibliographicMapper
+    public class Standard_Bibliographic_Mapper : iBibliographicMapper
     {
         /// <summary> Name of this bibliographic mapper, used for logging mapping </summary>
         public string Name { get { return "Standard Mapper"; } }
@@ -819,7 +819,7 @@ namespace SobekCM.Resource_Object.Mapping
                 case "COVERAGE":
                     // Was this a number.. likely, a year?
                     int possible_year;
-                    if (( Data.Length >= 4 ) && ( Int32.TryParse(Data.Substring(0,4), out possible_year)))
+                    if ((Data.Length >= 4) && (Int32.TryParse(Data.Substring(0, 4), out possible_year)))
                         Package.Bib_Info.Add_Temporal_Subject(-1, -1, Data);
                     else
                         Package.Bib_Info.Add_Spatial_Subject(Data);

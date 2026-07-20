@@ -1,10 +1,10 @@
 ﻿#region Using directives
 
+using ProtoBuf;
 using System;
 using System.IO;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
-using ProtoBuf;
 
 #endregion
 
@@ -79,7 +79,7 @@ namespace SobekCM.Core.BriefItem
         {
             get { return Path.GetExtension(Name) ?? String.Empty; }
         }
-        
+
         /// <summary> Constructor for a new instance of the BriefItem_File class </summary>
         public BriefItem_File()
         {
@@ -88,7 +88,7 @@ namespace SobekCM.Core.BriefItem
 
         /// <summary> Constructor for a new instance of the BriefItem_File class </summary>
         /// <param name="Name"> Name for this file </param>
-        public BriefItem_File( string Name )
+        public BriefItem_File(string Name)
         {
             this.Name = Name;
         }

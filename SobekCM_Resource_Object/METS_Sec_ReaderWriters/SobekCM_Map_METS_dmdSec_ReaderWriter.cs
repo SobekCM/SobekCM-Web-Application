@@ -1,11 +1,11 @@
 ﻿#region Using directives
 
+using SobekCM.Resource_Object.Metadata_Modules;
+using SobekCM.Resource_Object.Metadata_Modules.Maps;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Xml;
-using SobekCM.Resource_Object.Metadata_Modules;
-using SobekCM.Resource_Object.Metadata_Modules.Maps;
 
 #endregion
 
@@ -68,7 +68,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
         /// <returns> Formatted schema namespace info for the METS header</returns>
         public string[] Schema_Namespace(SobekCM_Item METS_Item)
         {
-			return new string[] { "map=\"http://sobekrepository.org/schemas/sobekcm_map/\"" };
+            return new string[] { "map=\"http://sobekrepository.org/schemas/sobekcm_map/\"" };
         }
 
         /// <summary> Returns the schema location information to be written in the XML/METS Header</summary>
@@ -76,7 +76,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
         /// <returns> Formatted schema location for the METS header</returns>
         public string[] Schema_Location(SobekCM_Item METS_Item)
         {
-			return new string[] { "    http://sobekrepository.org/schemas/sobekcm_map/\r\n    http://sobekrepository.org/schemas/sobekcm_map.xsd" };
+            return new string[] { "    http://sobekrepository.org/schemas/sobekcm_map/\r\n    http://sobekrepository.org/schemas/sobekcm_map.xsd" };
         }
 
         #endregion
@@ -151,7 +151,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
 
                         case "map:image":
                             long id;
-							Int64.TryParse(id_string.ToUpper().Replace("INDE", "").Replace("X", ""), out id);
+                            Int64.TryParse(id_string.ToUpper().Replace("INDE", "").Replace("X", ""), out id);
                             MapInfo.New_Index(id, title, file, html, type);
 
                             // Clear the variables
@@ -246,7 +246,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
 
             // Determine the street id
             long streetid;
-			Int64.TryParse(id_string.Replace("STR", "").Replace("E", "").Replace("T", ""), out streetid);
+            Int64.TryParse(id_string.Replace("STR", "").Replace("E", "").Replace("T", ""), out streetid);
 
             while (Input_XmlReader.Read())
             {
@@ -268,8 +268,8 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                         switch (Input_XmlReader.Name)
                         {
                             case "sheetid":
-								Int64.TryParse(Input_XmlReader.Value.Replace("MS", "").Replace("SHEET", "").Trim(), out sheetid);
-		                        break;
+                                Int64.TryParse(Input_XmlReader.Value.Replace("MS", "").Replace("SHEET", "").Trim(), out sheetid);
+                                break;
 
                             case "side":
                                 side = Input_XmlReader.Value;
@@ -280,11 +280,11 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                                 break;
 
                             case "start":
-								Int64.TryParse(Input_XmlReader.Value.Trim(), out start);
+                                Int64.TryParse(Input_XmlReader.Value.Trim(), out start);
                                 break;
 
                             case "end":
-								Int64.TryParse(Input_XmlReader.Value.Trim(), out end);
+                                Int64.TryParse(Input_XmlReader.Value.Trim(), out end);
                                 break;
                         }
                     }
@@ -316,7 +316,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
 
             // Determine the feature id
             long featid;
-			Int64.TryParse(Input_XmlReader.Value.Replace("FEAT", "").Replace("U", "").Replace("R", "").Replace("E", "").Trim(), out featid);
+            Int64.TryParse(Input_XmlReader.Value.Replace("FEAT", "").Replace("U", "").Replace("R", "").Replace("E", "").Trim(), out featid);
 
             // Add this feature
             Map_Info_Tables.FeatureRow thisFeature = MapInfo.Add_Feature(featid, name, type);
@@ -365,15 +365,15 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                                 switch (Input_XmlReader.Name)
                                 {
                                     case "x":
-										Int64.TryParse(Input_XmlReader.Value, out x);
+                                        Int64.TryParse(Input_XmlReader.Value, out x);
                                         break;
 
                                     case "y":
-										Int64.TryParse(Input_XmlReader.Value, out y);
+                                        Int64.TryParse(Input_XmlReader.Value, out y);
                                         break;
 
                                     case "sheetid":
-										Int64.TryParse(Input_XmlReader.Value.Replace("MS", "").Replace("SHEET", ""), out sheetid);
+                                        Int64.TryParse(Input_XmlReader.Value.Replace("MS", "").Replace("SHEET", ""), out sheetid);
                                         break;
                                 }
                             }
@@ -387,11 +387,11 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                         case "map:corpref":
                             if (Input_XmlReader.MoveToAttribute("corpid"))
                             {
-	                            long corpid;
-								if (Int64.TryParse(Input_XmlReader.Value.Replace("COR", "").Replace("P", ""), out corpid))
-								{
-									MapInfo.Add_Feature_Corp_Link(thisFeature.FeatureID, corpid);
-								}
+                                long corpid;
+                                if (Int64.TryParse(Input_XmlReader.Value.Replace("COR", "").Replace("P", ""), out corpid))
+                                {
+                                    MapInfo.Add_Feature_Corp_Link(thisFeature.FeatureID, corpid);
+                                }
                             }
                             break;
 
@@ -401,11 +401,11 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                                 reftype = Input_XmlReader.Value;
                             if (Input_XmlReader.MoveToAttribute("persid"))
                             {
-								long persid;
-								if (Int64.TryParse(Input_XmlReader.Value.Replace("PER", "").Replace("S", "").Replace("O", "").Replace("N", ""), out persid))
-								{
-									MapInfo.Add_Feature_Person_Link(thisFeature.FeatureID, persid, reftype);
-								}
+                                long persid;
+                                if (Int64.TryParse(Input_XmlReader.Value.Replace("PER", "").Replace("S", "").Replace("O", "").Replace("N", ""), out persid))
+                                {
+                                    MapInfo.Add_Feature_Person_Link(thisFeature.FeatureID, persid, reftype);
+                                }
                             }
                             break;
                     }
@@ -438,7 +438,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                 }
                 catch
                 {
-					// Do nothing in this case
+                    // Do nothing in this case
                 }
             }
         }
@@ -451,7 +451,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                 {
                     long corpid = Convert.ToInt64(Input_XmlReader.Value.Replace("COR", "").Replace("P", ""));
 
-	                string primary_name = String.Empty;
+                    string primary_name = String.Empty;
                     List<string> alternate_names = new List<string>();
 
                     while (Input_XmlReader.Read())
@@ -484,7 +484,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                 }
                 catch
                 {
-					// Do nothing in this case
+                    // Do nothing in this case
                 }
             }
         }
@@ -504,11 +504,11 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                             return;
 
                         case "map:sheet":
-		                    long id;
-							if (Int64.TryParse(id_string.ToUpper().Replace("MS", ""), out id))
-							{
-								MapInfo.New_Sheet(id, 0, file, String.Empty);
-							}
+                            long id;
+                            if (Int64.TryParse(id_string.ToUpper().Replace("MS", ""), out id))
+                            {
+                                MapInfo.New_Sheet(id, 0, file, String.Empty);
+                            }
 
                             // Clear the variables
                             id_string = String.Empty;

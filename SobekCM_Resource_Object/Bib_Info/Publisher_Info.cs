@@ -42,7 +42,8 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// there are no places, the SubCollections property creates a readonly collection to pass back out.</remarks>
         public int Places_Count
         {
-            get {
+            get
+            {
                 return places == null ? 0 : places.Count;
             }
         }
@@ -52,7 +53,8 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// Even if there are no places, this property creates a readonly collection to pass back out.</remarks>
         public ReadOnlyCollection<Origin_Info_Place> Places
         {
-            get {
+            get
+            {
                 return places == null ? new ReadOnlyCollection<Origin_Info_Place>(new List<Origin_Info_Place>()) : new ReadOnlyCollection<Origin_Info_Place>(places);
             }
         }

@@ -1,19 +1,16 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Results;
 using SobekCM.Core.Search;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
+using System;
+using System.IO;
+using System.Text;
 
 namespace SobekCM.Library.ResultsViewer
 {
-    public class Custom_Thumbnail_ResultsViewer: abstract_ResultsViewer
+    public class Custom_Thumbnail_ResultsViewer : abstract_ResultsViewer
     {
         /// <summary> Constructor for a new instance of the Custom_Thumbnail_ResultsViewer class </summary>
         public Custom_Thumbnail_ResultsViewer() : base()
@@ -86,7 +83,7 @@ namespace SobekCM.Library.ResultsViewer
                 string internal_link = base_url + titleResult.BibID + "/" + firstItemResult.VID + textRedirectStem;
 
                 // For browses, just point to the title
-                if ((RequestSpecificValues.Current_Mode.Mode == Display_Mode_Enum.Aggregation) && ( RequestSpecificValues.Current_Mode.Aggregation_Type == Aggregation_Type_Enum.Browse_Info ))
+                if ((RequestSpecificValues.Current_Mode.Mode == Display_Mode_Enum.Aggregation) && (RequestSpecificValues.Current_Mode.Aggregation_Type == Aggregation_Type_Enum.Browse_Info))
                     internal_link = base_url + titleResult.BibID + textRedirectStem;
 
                 resultsBldr.AppendLine("\t\t<td align=\"center\" onmouseover=\"this.className='tableRowHighlight'\" onmouseout=\"this.className='tableRowNormal'\" onclick=\"window.location.href='" + internal_link + "';\" >");
@@ -160,20 +157,20 @@ namespace SobekCM.Library.ResultsViewer
                 // Add the thumbnail
                 if ((firstItemResult.MainThumbnail.ToUpper().IndexOf(".JPG") < 0) && (firstItemResult.MainThumbnail.ToUpper().IndexOf(".GIF") < 0))
                 {
-                    resultsBldr.AppendLine("<tr><td><span id=\"sbkThumbnailSpan"+title_count+"\"><a href=\"" + internal_link + "\"><img id=\"sbkThumbnailImg" + title_count + "\" src=\"" + Static_Resources_Gateway.Nothumb_Jpg + "\" alt=\"MISSING THUMBNAIL\" /></a></span></td></tr>");
+                    resultsBldr.AppendLine("<tr><td><span id=\"sbkThumbnailSpan" + title_count + "\"><a href=\"" + internal_link + "\"><img id=\"sbkThumbnailImg" + title_count + "\" src=\"" + Static_Resources_Gateway.Nothumb_Jpg + "\" alt=\"MISSING THUMBNAIL\" /></a></span></td></tr>");
                 }
                 else
                 {
                     string thumb = UI_ApplicationCache_Gateway.Settings.Servers.Image_URL + titleResult.BibID.Substring(0, 2) + "/" + titleResult.BibID.Substring(2, 2) + "/" + titleResult.BibID.Substring(4, 2) + "/" + titleResult.BibID.Substring(6, 2) + "/" + titleResult.BibID.Substring(8) + "/" + firstItemResult.VID + "/" + (firstItemResult.MainThumbnail).Replace("\\", "/").Replace("//", "/");
-                    resultsBldr.AppendLine("<tr><td><span id=\"sbkThumbnailSpan" + title_count + "\"><a href=\"" + internal_link + "\"><img id=\"sbkThumbnailImg" + title_count + "\"src=\"" + thumb + "\" alt=\"" + title.Replace("\"","") + "\" /></a></span></td></tr>");
+                    resultsBldr.AppendLine("<tr><td><span id=\"sbkThumbnailSpan" + title_count + "\"><a href=\"" + internal_link + "\"><img id=\"sbkThumbnailImg" + title_count + "\"src=\"" + thumb + "\" alt=\"" + title.Replace("\"", "") + "\" /></a></span></td></tr>");
                 }
 
                 #region Add the div displayed as a tooltip for this thumbnail on hover
-             
+
                 const string VARIES_STRING = "<span style=\"color:Gray\">( varies )</span>";
                 //Add the hidden item values for display in the tooltip
                 resultsBldr.AppendLine("<tr style=\"display:none;\"><td colspan=\"100%\"><div  id=\"descThumbnail" + title_count + "\" >");
-                   // Add each element to this table
+                // Add each element to this table
                 resultsBldr.AppendLine("\t\t\t<table cellspacing=\"0px\">");
 
                 if (multiple_title)
@@ -190,7 +187,7 @@ namespace SobekCM.Library.ResultsViewer
                     resultsBldr.AppendLine("<tr><td colspan=\"100%\"><br/></td></tr>");
                 }
 
-                if (( !String.IsNullOrEmpty(titleResult.Primary_Identifier_Type)) && ( !String.IsNullOrEmpty(titleResult.Primary_Identifier)))
+                if ((!String.IsNullOrEmpty(titleResult.Primary_Identifier_Type)) && (!String.IsNullOrEmpty(titleResult.Primary_Identifier)))
                 {
                     resultsBldr.AppendLine("\t\t\t\t<tr><td>" + UI_ApplicationCache_Gateway.Translation.Get_Translation(titleResult.Primary_Identifier_Type, RequestSpecificValues.Current_Mode.Language) + ":</td><td>&nbsp;</td><td>" + System.Net.WebUtility.HtmlDecode(titleResult.Primary_Identifier) + "</td></tr>");
                 }
@@ -201,7 +198,7 @@ namespace SobekCM.Library.ResultsViewer
 
                     if (titleResult.OPAC_Number > 1)
                     {
-                        resultsBldr.AppendLine("\t\t\t\t<tr><td>OPAC:</td><td>&nbsp;</td><td>" +titleResult.OPAC_Number + "</td></tr>");
+                        resultsBldr.AppendLine("\t\t\t\t<tr><td>OPAC:</td><td>&nbsp;</td><td>" + titleResult.OPAC_Number + "</td></tr>");
                     }
 
                     if (titleResult.OCLC_Number > 1)
@@ -211,7 +208,7 @@ namespace SobekCM.Library.ResultsViewer
                 }
 
                 for (int i = 0; i < ResultsStats.Metadata_Labels.Count; i++)
-				{
+                {
                     string field = ResultsStats.Metadata_Labels[i];
 
                     // Somehow the metadata for this item did not fully save in the database.  Break out, rather than
@@ -219,59 +216,59 @@ namespace SobekCM.Library.ResultsViewer
                     if ((titleResult.Metadata_Display_Values == null) || (titleResult.Metadata_Display_Values.Length <= i))
                         break;
 
-					string value = titleResult.Metadata_Display_Values[i];
-					Metadata_Search_Field thisField = UI_ApplicationCache_Gateway.Settings.Metadata_Search_Field_By_Name(field);
-					string display_field = string.Empty;
-					if ( thisField != null )
-						display_field = thisField.Display_Term;
-					if (display_field.Length == 0)
-						display_field = field.Replace("_", " ");
+                    string value = titleResult.Metadata_Display_Values[i];
+                    Metadata_Search_Field thisField = UI_ApplicationCache_Gateway.Settings.Metadata_Search_Field_By_Name(field);
+                    string display_field = string.Empty;
+                    if (thisField != null)
+                        display_field = thisField.Display_Term;
+                    if (display_field.Length == 0)
+                        display_field = field.Replace("_", " ");
 
-					if (value == "*")
-					{
+                    if (value == "*")
+                    {
                         resultsBldr.AppendLine("\t\t\t\t<tr><td>" + UI_ApplicationCache_Gateway.Translation.Get_Translation(display_field, RequestSpecificValues.Current_Mode.Language) + ":</td><td>&nbsp;</td><td>" + System.Net.WebUtility.HtmlDecode(VARIES_STRING) + "</td></tr>");
-					}
-					else if ( value.Trim().Length > 0 )
-					{
-						if (value.IndexOf("|") > 0)
-						{
-							bool value_found = false;
-							string[] value_split = value.Split("|".ToCharArray());
+                    }
+                    else if (value.Trim().Length > 0)
+                    {
+                        if (value.IndexOf("|") > 0)
+                        {
+                            bool value_found = false;
+                            string[] value_split = value.Split("|".ToCharArray());
 
-							foreach (string thisValue in value_split)
-							{
-								if (thisValue.Trim().Trim().Length > 0)
-								{
-									if (!value_found)
-									{
-										resultsBldr.AppendLine("\t\t\t\t<tr valign=\"top\"><td>" + UI_ApplicationCache_Gateway.Translation.Get_Translation(display_field, RequestSpecificValues.Current_Mode.Language) + ":</td><td>&nbsp;</td><td>");
-										value_found = true;
-									}
-									resultsBldr.Append(System.Net.WebUtility.HtmlDecode(thisValue) + "<br />");
-								}
-							}
+                            foreach (string thisValue in value_split)
+                            {
+                                if (thisValue.Trim().Trim().Length > 0)
+                                {
+                                    if (!value_found)
+                                    {
+                                        resultsBldr.AppendLine("\t\t\t\t<tr valign=\"top\"><td>" + UI_ApplicationCache_Gateway.Translation.Get_Translation(display_field, RequestSpecificValues.Current_Mode.Language) + ":</td><td>&nbsp;</td><td>");
+                                        value_found = true;
+                                    }
+                                    resultsBldr.Append(System.Net.WebUtility.HtmlDecode(thisValue) + "<br />");
+                                }
+                            }
 
-							if (value_found)
-							{
-								resultsBldr.AppendLine("</td></tr>");
-							}
-						}
-						else
-						{
-							resultsBldr.AppendLine("\t\t\t\t<tr><td>" + UI_ApplicationCache_Gateway.Translation.Get_Translation(display_field, RequestSpecificValues.Current_Mode.Language) + ":</td><td>&nbsp;</td><td>" + System.Net.WebUtility.HtmlDecode(value) + "</td></tr>");
-						}
-					}
-				}
+                            if (value_found)
+                            {
+                                resultsBldr.AppendLine("</td></tr>");
+                            }
+                        }
+                        else
+                        {
+                            resultsBldr.AppendLine("\t\t\t\t<tr><td>" + UI_ApplicationCache_Gateway.Translation.Get_Translation(display_field, RequestSpecificValues.Current_Mode.Language) + ":</td><td>&nbsp;</td><td>" + System.Net.WebUtility.HtmlDecode(value) + "</td></tr>");
+                        }
+                    }
+                }
 
 
                 if (!String.IsNullOrEmpty(titleResult.Snippet))
                 {
-                    resultsBldr.AppendLine("\t\t\t\t<tr><td colspan=\"3\"><br />&ldquo;..." + titleResult.Snippet.Replace("<em>", "<span class=\"texthighlight\">").Replace ("</em>", "</span>") + "...&rdquo;</td></tr>");
+                    resultsBldr.AppendLine("\t\t\t\t<tr><td colspan=\"3\"><br />&ldquo;..." + titleResult.Snippet.Replace("<em>", "<span class=\"texthighlight\">").Replace("</em>", "</span>") + "...&rdquo;</td></tr>");
                 }
 
                 resultsBldr.AppendLine("\t\t\t</table>");
 
-            resultsBldr.AppendLine("</div></td></tr>");
+                resultsBldr.AppendLine("</div></td></tr>");
 
 
                 #endregion

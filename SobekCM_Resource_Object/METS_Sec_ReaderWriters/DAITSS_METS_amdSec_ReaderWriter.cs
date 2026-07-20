@@ -1,10 +1,10 @@
 ﻿#region Using directives
 
+using SobekCM.Resource_Object.Metadata_Modules;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Xml;
-using SobekCM.Resource_Object.Metadata_Modules;
 
 #endregion
 
@@ -119,7 +119,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
         /// <returns> Formatted schema namespace info for the METS header</returns>
         public string[] Schema_Namespace(SobekCM_Item METS_Item)
         {
-            return new string[] {"daitss=\"http://www.fcla.edu/dls/md/daitss/\""};
+            return new string[] { "daitss=\"http://www.fcla.edu/dls/md/daitss/\"" };
         }
 
         /// <summary> Returns the schema location information to be written in the XML/METS Header</summary>
@@ -127,7 +127,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
         /// <returns> Formatted schema location for the METS header</returns>
         public string[] Schema_Location(SobekCM_Item METS_Item)
         {
-            return new string[] {"    http://www.fcla.edu/dls/md/daitss/\r\n    http://www.fcla.edu/dls/md/daitss/daitss.xsd"};
+            return new string[] { "    http://www.fcla.edu/dls/md/daitss/\r\n    http://www.fcla.edu/dls/md/daitss/daitss.xsd" };
         }
 
         #endregion

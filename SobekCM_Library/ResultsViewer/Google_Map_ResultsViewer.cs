@@ -1,17 +1,16 @@
 #region Using directives
 
 using SobekCM.Core.MemoryMgmt;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using Microsoft.AspNetCore.Http;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Results;
 using SobekCM.Core.Search;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
 
 #endregion
 
@@ -111,9 +110,9 @@ namespace SobekCM.Library.ResultsViewer
                 // If this new spatial does not match the last spatial, need to close out the last coordiante
                 // and render all the HTML and map script information
                 // This happens for each area, although points are lumped together
-                if ((titles_for_current_map.Count > 0 ) && (titleResult.Spatial_Coordinates != coords))
+                if ((titles_for_current_map.Count > 0) && (titleResult.Spatial_Coordinates != coords))
                 {
-                    if (( titleResult.Spatial_Coordinates.Length == 0 ) || ( coords.Length == 0 ) || (titleResult.Spatial_Coordinates[0] == 'A') || (titleResult.Spatial_Coordinates[0] != coords[0]))
+                    if ((titleResult.Spatial_Coordinates.Length == 0) || (coords.Length == 0) || (titleResult.Spatial_Coordinates[0] == 'A') || (titleResult.Spatial_Coordinates[0] != coords[0]))
                     {
                         // Write the information
                         Add_Item_Info_And_Map(textRedirectStem, base_url, map_number, titles_for_current_map, Output, builder);
@@ -136,7 +135,7 @@ namespace SobekCM.Library.ResultsViewer
             if (titles_for_current_map.Count > 0)
             {
                 // Write the information
-                Add_Item_Info_And_Map( textRedirectStem, base_url, map_number, titles_for_current_map, Output, builder);
+                Add_Item_Info_And_Map(textRedirectStem, base_url, map_number, titles_for_current_map, Output, builder);
             }
 
             // Close out this map table
@@ -155,7 +154,7 @@ namespace SobekCM.Library.ResultsViewer
         private void Add_Item_Info_And_Map(string TextRedirectStem, string BaseURL, int MapNumber, List<iSearch_Title_Result> TitlesForCurrentMap, TextWriter Output, StringBuilder Builder)
         {
             // Set some values before iterating through the item rows
-			const string VARIES_STRING = "<span style=\"color:Gray\">( varies )</span>";
+            const string VARIES_STRING = "<span style=\"color:Gray\">( varies )</span>";
 
             // Step through each collection of items by bib id for this coordinate and see if this is a collection of points
             bool point_collection_map = false;
@@ -183,7 +182,7 @@ namespace SobekCM.Library.ResultsViewer
                 Builder.AppendLine("      <table width=\"380px\">");
             }
 
-            if( polygon_map )
+            if (polygon_map)
             {
                 Builder.AppendLine("    <td align=\"center\"><div id=\"map" + MapNumber + "\" style=\"width: 250px; height: 250px\"></div></td>");
                 Builder.AppendLine("    <td colspan=\"2\">");
@@ -390,7 +389,7 @@ namespace SobekCM.Library.ResultsViewer
                 }
 
                 // Add the bib id and vid
-                if ((RequestSpecificValues.Current_User != null ) && ( RequestSpecificValues.Current_User.LoggedOn ) && ( RequestSpecificValues.Current_User.Is_Internal_User ))
+                if ((RequestSpecificValues.Current_User != null) && (RequestSpecificValues.Current_User.LoggedOn) && (RequestSpecificValues.Current_User.Is_Internal_User))
                 {
                     Builder.AppendLine("            <tr height=\"10px\"><td>&nbsp;</td><td>BibID:</td><td>" + titleResult.BibID.ToUpper() + "</td></tr>");
                     if (!multiple)
@@ -400,51 +399,51 @@ namespace SobekCM.Library.ResultsViewer
                 }
 
                 for (int i = 0; i < ResultsStats.Metadata_Labels.Count; i++)
-				{
+                {
                     string field = ResultsStats.Metadata_Labels[i];
-					string value = titleResult.Metadata_Display_Values[i];
-					Metadata_Search_Field thisField = UI_ApplicationCache_Gateway.Settings.Metadata_Search_Field_By_Name(field);
-					string display_field = string.Empty;
-					if (thisField != null)
-						display_field = thisField.Display_Term;
-					if (display_field.Length == 0)
-						display_field = field.Replace("_", " ");
+                    string value = titleResult.Metadata_Display_Values[i];
+                    Metadata_Search_Field thisField = UI_ApplicationCache_Gateway.Settings.Metadata_Search_Field_By_Name(field);
+                    string display_field = string.Empty;
+                    if (thisField != null)
+                        display_field = thisField.Display_Term;
+                    if (display_field.Length == 0)
+                        display_field = field.Replace("_", " ");
 
-					if (value == "*")
-					{
-						Builder.AppendLine("\t\t\t\t<tr height=\"10px\"><td>&nbsp;</td><td>" + UI_ApplicationCache_Gateway.Translation.Get_Translation(display_field, RequestSpecificValues.Current_Mode.Language) + ":</td><td>" + VARIES_STRING + "</td></tr>");
-					}
-					else if (value.Trim().Length > 0)
-					{
-						if (value.IndexOf("|") > 0)
-						{
-							bool value_found = false;
-							string[] value_split = value.Split("|".ToCharArray());
+                    if (value == "*")
+                    {
+                        Builder.AppendLine("\t\t\t\t<tr height=\"10px\"><td>&nbsp;</td><td>" + UI_ApplicationCache_Gateway.Translation.Get_Translation(display_field, RequestSpecificValues.Current_Mode.Language) + ":</td><td>" + VARIES_STRING + "</td></tr>");
+                    }
+                    else if (value.Trim().Length > 0)
+                    {
+                        if (value.IndexOf("|") > 0)
+                        {
+                            bool value_found = false;
+                            string[] value_split = value.Split("|".ToCharArray());
 
-							foreach (string thisValue in value_split)
-							{
-								if (thisValue.Trim().Trim().Length > 0)
-								{
-									if (!value_found)
-									{
-										Builder.AppendLine("\t\t\t\t<tr valign=\"top\"><td>&nbsp;</td><td>" + UI_ApplicationCache_Gateway.Translation.Get_Translation(display_field, RequestSpecificValues.Current_Mode.Language) + ":</td><td>");
-										value_found = true;
-									}
-									Builder.Append(System.Net.WebUtility.HtmlEncode(thisValue) + "<br />");
-								}
-							}
+                            foreach (string thisValue in value_split)
+                            {
+                                if (thisValue.Trim().Trim().Length > 0)
+                                {
+                                    if (!value_found)
+                                    {
+                                        Builder.AppendLine("\t\t\t\t<tr valign=\"top\"><td>&nbsp;</td><td>" + UI_ApplicationCache_Gateway.Translation.Get_Translation(display_field, RequestSpecificValues.Current_Mode.Language) + ":</td><td>");
+                                        value_found = true;
+                                    }
+                                    Builder.Append(System.Net.WebUtility.HtmlEncode(thisValue) + "<br />");
+                                }
+                            }
 
-							if (value_found)
-							{
-								Builder.AppendLine("</td></tr>");
-							}
-						}
-						else
-						{
-							Builder.AppendLine("\t\t\t\t<tr height=\"10px\"><td>&nbsp;</td><td>" + UI_ApplicationCache_Gateway.Translation.Get_Translation(display_field, RequestSpecificValues.Current_Mode.Language) + ":</td><td>" + System.Net.WebUtility.HtmlEncode(value) + "</td></tr>");
-						}
-					}
-				}
+                            if (value_found)
+                            {
+                                Builder.AppendLine("</td></tr>");
+                            }
+                        }
+                        else
+                        {
+                            Builder.AppendLine("\t\t\t\t<tr height=\"10px\"><td>&nbsp;</td><td>" + UI_ApplicationCache_Gateway.Translation.Get_Translation(display_field, RequestSpecificValues.Current_Mode.Language) + ":</td><td>" + System.Net.WebUtility.HtmlEncode(value) + "</td></tr>");
+                        }
+                    }
+                }
 
                 // Increment the row counter
                 currentResultCount++;

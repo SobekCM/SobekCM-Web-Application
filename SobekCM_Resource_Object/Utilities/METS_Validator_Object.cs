@@ -80,7 +80,7 @@ namespace SobekCM.Resource_Object.Utilities
                 // Return the valid flag
                 return isValid;
             }
-            catch ( Exception ee )
+            catch (Exception ee)
             {
                 errors.Append("Error caught during validation of METS: " + ee.Message);
                 return false;

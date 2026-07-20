@@ -1,15 +1,13 @@
 #region Using directives
 
-using System.IO;
-using System.Text;
-using Microsoft.AspNetCore.Http;
-using System.Xml;
 using SobekCM.Core.ApplicationState;
-using SobekCM.Core.Configuration;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Users;
-using SobekCM.Resource_Object;
 using SobekCM.Library.UI;
+using SobekCM.Resource_Object;
+using System.IO;
+using System.Text;
+using System.Xml;
 
 #endregion
 
@@ -25,7 +23,7 @@ namespace SobekCM.Library.Citation.Elements
             Repeatable = false;
             Title = "Related EAD";
             html_element_name = "form_ead";
-	        help_page = "ead";
+            help_page = "ead";
         }
 
         #region iElement Members
@@ -41,7 +39,7 @@ namespace SobekCM.Library.Citation.Elements
         /// <param name="Translator"> Language support object which handles simple translational duties </param>
         /// <param name="Base_URL"> Base URL for the current request </param>
         /// <remarks> This element appends a popup form to the popup_form_builder</remarks>
-        public override void Render_Template_HTML(TextWriter Output, SobekCM_Item Bib, string Skin_Code, bool IsMozilla, StringBuilder PopupFormBuilder, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL )
+        public override void Render_Template_HTML(TextWriter Output, SobekCM_Item Bib, string Skin_Code, bool IsMozilla, StringBuilder PopupFormBuilder, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL)
         {
             // Check that an acronym exists
             if (Acronym.Length == 0)
@@ -76,7 +74,7 @@ namespace SobekCM.Library.Citation.Elements
             }
             else
             {
-				Output.WriteLine("    <td class=\"metadata_label\"><a href=\"" + Help_URL(Skin_Code, Base_URL) + "\" target=\"_" + html_element_name.ToUpper() + "\">" + Translator.Get_Translation(Title, CurrentLanguage) + ":</a></td>");
+                Output.WriteLine("    <td class=\"metadata_label\"><a href=\"" + Help_URL(Skin_Code, Base_URL) + "\" target=\"_" + html_element_name.ToUpper() + "\">" + Translator.Get_Translation(Title, CurrentLanguage) + ":</a></td>");
             }
 
             Output.WriteLine("    <td>");
@@ -86,7 +84,7 @@ namespace SobekCM.Library.Citation.Elements
             Output.WriteLine("            <div id=\"" + html_element_name + "_div\">");
 
             // Write the EAD popup link 
-            if (( !Bib.Bib_Info.hasLocationInformation ) || ((Bib.Bib_Info.Location.EAD_Name.Length == 0) && (Bib.Bib_Info.Location.EAD_URL.Length == 0 )))
+            if ((!Bib.Bib_Info.hasLocationInformation) || ((Bib.Bib_Info.Location.EAD_Name.Length == 0) && (Bib.Bib_Info.Location.EAD_URL.Length == 0)))
             {
                 Output.Write("              <a title=\"Click to edit the related EAD information\" href=\"" + Base_URL + "l/technical/javascriptrequired\" onfocus=\"link_focused2('form_ead_term')\" onblur=\"link_blurred2('form_ead_term')\" onkeypress=\"return popup_keypress_focus('form_ead', 'formead_name', '" + IsMozilla.ToString() + "' );\" onclick=\"return popup_focus('form_ead', 'formead_name' );\"><div class=\"form_linkline_empty form_ead_line\" id=\"form_ead_term\">");
                 Output.Write("<i>Empty Related EAD</i>");
@@ -112,20 +110,20 @@ namespace SobekCM.Library.Citation.Elements
 
             // Add the popup form
             PopupFormBuilder.AppendLine("<!-- Related EAD Form -->");
-			PopupFormBuilder.AppendLine("<div class=\"ead_popup_div sbkMetadata_PopupDiv\" id=\"form_ead\" style=\"display:none;\">");
-			PopupFormBuilder.AppendLine("  <div class=\"sbkMetadata_PopupTitle\"><table style=\"width:100%\"><tr><td style=\"text-align:left\">Edit Related EAD / Finding Guide</td><td style=\"text-align:right\"><a href=\"" + Help_URL(Skin_Code, Base_URL) + "\" alt=\"HELP\" target=\"_" + html_element_name.ToUpper() + "\" >?</a> &nbsp; <a href=\"#template\" alt=\"CLOSE\" onclick=\"close_ead_form()\">X</a> &nbsp; </td></tr></table></div>");
+            PopupFormBuilder.AppendLine("<div class=\"ead_popup_div sbkMetadata_PopupDiv\" id=\"form_ead\" style=\"display:none;\">");
+            PopupFormBuilder.AppendLine("  <div class=\"sbkMetadata_PopupTitle\"><table style=\"width:100%\"><tr><td style=\"text-align:left\">Edit Related EAD / Finding Guide</td><td style=\"text-align:right\"><a href=\"" + Help_URL(Skin_Code, Base_URL) + "\" alt=\"HELP\" target=\"_" + html_element_name.ToUpper() + "\" >?</a> &nbsp; <a href=\"#template\" alt=\"CLOSE\" onclick=\"close_ead_form()\">X</a> &nbsp; </td></tr></table></div>");
             PopupFormBuilder.AppendLine("  <br />");
-			PopupFormBuilder.AppendLine("  <table class=\"sbkMetadata_PopupTable\">");
+            PopupFormBuilder.AppendLine("  <table class=\"sbkMetadata_PopupTable\">");
 
             // Add the rows of data
-			PopupFormBuilder.AppendLine("    <tr><td style=\"width:90px\">EAD Name:</td><td><input class=\"formead_input sbk_Focusable\" name=\"formead_name\" id=\"formead_name\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(Bib.Bib_Info.Location.EAD_Name) + "\" /></td></tr>");
-			PopupFormBuilder.AppendLine("    <tr><td>EAD URL:</td><td><input class=\"formead_input sbk_Focusable\" name=\"formead_url\" id=\"formead_url\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(Bib.Bib_Info.Location.EAD_URL) + "\" /></td></tr>");
+            PopupFormBuilder.AppendLine("    <tr><td style=\"width:90px\">EAD Name:</td><td><input class=\"formead_input sbk_Focusable\" name=\"formead_name\" id=\"formead_name\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(Bib.Bib_Info.Location.EAD_Name) + "\" /></td></tr>");
+            PopupFormBuilder.AppendLine("    <tr><td>EAD URL:</td><td><input class=\"formead_input sbk_Focusable\" name=\"formead_url\" id=\"formead_url\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(Bib.Bib_Info.Location.EAD_URL) + "\" /></td></tr>");
 
             // Finish the popup form and add the CLOSE button
             PopupFormBuilder.AppendLine("    <tr style=\"height:35px; text-align: center; vertical-align: bottom;\">");
-	        PopupFormBuilder.AppendLine("      <td colspan=\"2\"><button title=\"Close\" class=\"sbkMetadata_RoundButton\" onclick=\"return close_ead_form();\">CLOSE</button></td>");
-	        PopupFormBuilder.AppendLine("    </tr>");
-	        PopupFormBuilder.AppendLine("  </table>");
+            PopupFormBuilder.AppendLine("      <td colspan=\"2\"><button title=\"Close\" class=\"sbkMetadata_RoundButton\" onclick=\"return close_ead_form();\">CLOSE</button></td>");
+            PopupFormBuilder.AppendLine("    </tr>");
+            PopupFormBuilder.AppendLine("  </table>");
             PopupFormBuilder.AppendLine("</div>");
             PopupFormBuilder.AppendLine();
         }
@@ -154,7 +152,7 @@ namespace SobekCM.Library.Citation.Elements
         /// <summary> Reads the inner data from the CompleteTemplate XML format </summary>
         /// <param name="XMLReader"> Current template xml configuration reader </param>
         /// <remarks> This procedure does not currently read any inner xml (not yet necessary) </remarks>
-        protected override void Inner_Read_Data( XmlReader XMLReader )
+        protected override void Inner_Read_Data(XmlReader XMLReader)
         {
             // Do nothing
         }

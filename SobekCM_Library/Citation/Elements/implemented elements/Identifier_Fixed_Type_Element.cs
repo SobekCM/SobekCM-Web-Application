@@ -1,15 +1,13 @@
 #region Using directives
 
+using SobekCM.Core.ApplicationState;
+using SobekCM.Core.Configuration.Localization;
+using SobekCM.Core.Users;
+using SobekCM.Resource_Object;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using Microsoft.AspNetCore.Http;
-using SobekCM.Core.ApplicationState;
-using SobekCM.Core.Configuration;
-using SobekCM.Core.Configuration.Localization;
-using SobekCM.Core.Users;
-using SobekCM.Resource_Object;
 
 #endregion
 
@@ -38,7 +36,7 @@ namespace SobekCM.Library.Citation.Elements
         /// <param name="Translator"> Language support object which handles simple translational duties </param>
         /// <param name="Base_URL"> Base URL for the current request </param>
         /// <remarks> This simple element does not append any popup form to the popup_form_builder</remarks>
-        public override void Render_Template_HTML(TextWriter Output, SobekCM_Item Bib, string Skin_Code, bool IsMozilla, StringBuilder PopupFormBuilder, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL )
+        public override void Render_Template_HTML(TextWriter Output, SobekCM_Item Bib, string Skin_Code, bool IsMozilla, StringBuilder PopupFormBuilder, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL)
         {
             // Check that an acronym exists
             if (Acronym.Length == 0)
@@ -78,12 +76,12 @@ namespace SobekCM.Library.Citation.Elements
             {
                 terms.AddRange(Bib.Bib_Info.Identifiers.Select(thisIdentifier => thisIdentifier.Identifier));
             }
- 
+
             Title = LabelFromTemplateFile;
             if (LabelFromTemplateFile.Length == 0)
                 Title = "MISSING LABEL!";
 
-            render_helper(Output, terms, Skin_Code, Current_User, CurrentLanguage, Translator, Base_URL,  FixedTypeFromTemplateFile.Replace(" ", "_").ToLower() + "fixedidentifier");
+            render_helper(Output, terms, Skin_Code, Current_User, CurrentLanguage, Translator, Base_URL, FixedTypeFromTemplateFile.Replace(" ", "_").ToLower() + "fixedidentifier");
         }
 
         /// <summary> Prepares the bib object for the save, by clearing any existing data in this element's related field(s) </summary>

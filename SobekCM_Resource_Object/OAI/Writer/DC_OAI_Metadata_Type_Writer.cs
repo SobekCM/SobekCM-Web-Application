@@ -1,10 +1,10 @@
 ﻿#region Using directives
 
+using SobekCM.Resource_Object.METS_Sec_ReaderWriters;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using SobekCM.Resource_Object.METS_Sec_ReaderWriters;
 
 #endregion
 
@@ -18,7 +18,7 @@ namespace SobekCM.Resource_Object.OAI.Writer
         /// <param name="Options"> Dictionary of any options which this metadata reader/writer may utilize </param>
         /// <param name="Error_Message">[OUTPUT] Explanation of the error, if an error occurs during write </param>
         /// <returns> Metadata for a OAI-PMH record of a particular metadata format/type </returns>
-        public override string Create_OAI_PMH_Metadata( SobekCM_Item Item_To_Save, Dictionary<string, object> Options, out string Error_Message)
+        public override string Create_OAI_PMH_Metadata(SobekCM_Item Item_To_Save, Dictionary<string, object> Options, out string Error_Message)
         {
             // Set default error outpt message
             Error_Message = String.Empty;
@@ -44,7 +44,7 @@ namespace SobekCM.Resource_Object.OAI.Writer
             {
                 writer.WriteLine("<dc:identifier>" + Item_To_Save.Web.Service_URL + "</dc:identifier>");
             }
-            else if (( Options != null ) && ( Options.ContainsKey("System URL")))
+            else if ((Options != null) && (Options.ContainsKey("System URL")))
             {
                 string url = Options["System URL"].ToString();
                 string resource_url = url + Item_To_Save.BibID + "/" + Item_To_Save.VID;

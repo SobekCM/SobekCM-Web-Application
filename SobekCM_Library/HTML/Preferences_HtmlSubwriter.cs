@@ -1,14 +1,11 @@
 #region Using directives
 
-using System;
-using System.Collections.Specialized;
-using System.IO;
-using Microsoft.AspNetCore.Http;
-using SobekCM.Core.Configuration;
-using SobekCM.Library.UI;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Navigation;
+using SobekCM.Library.UI;
 using SobekCM.Tools;
+using System;
+using System.IO;
 
 
 #endregion
@@ -23,7 +20,7 @@ namespace SobekCM.Library.HTML
     {
         /// <summary> Constructor for a new instance of the Preferences_HtmlSubwriter class </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
-        public Preferences_HtmlSubwriter(RequestCache RequestSpecificValues) : base(RequestSpecificValues) 
+        public Preferences_HtmlSubwriter(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
         {
             // See if there was a hidden request
             string hidden_request = Context.Request.HasFormContentType ? Context.Request.Form["hidden_request"].TrimFirst() : String.Empty;
@@ -56,7 +53,7 @@ namespace SobekCM.Library.HTML
                 Context.SessionObject()["User_Default_Sort"] = user_sort;
 
                 RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Aggregation;
-				RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Home;
+                RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Home;
                 UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
 
             }

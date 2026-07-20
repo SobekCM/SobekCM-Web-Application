@@ -1,9 +1,9 @@
-﻿using System;
+﻿using ProtoBuf;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
-using ProtoBuf;
 
 namespace SobekCM.Core.UI_Configuration.Viewers
 {
@@ -18,7 +18,7 @@ namespace SobekCM.Core.UI_Configuration.Viewers
         private Dictionary<string, ItemWriterLayoutConfig> layoutsLookup;
         private ItemWriterLayoutConfig defaultLayout;
 
-            /// <summary> Fully qualified (including namespace) name of the main class used
+        /// <summary> Fully qualified (including namespace) name of the main class used
         /// as the item HTML writer </summary>
         /// <remarks> By default, this would be 'SobekCM.Library.HTML.Item_HtmlSubwriter' </remarks>
         [DataMember(Name = "class")]
@@ -101,9 +101,9 @@ namespace SobekCM.Core.UI_Configuration.Viewers
         public void ClearAll()
         {
             Viewers.Clear();
-            if ( viewersByCode != null ) viewersByCode.Clear();
-            if ( viewersByType != null ) viewersByType.Clear();
-            if ( layoutsLookup != null ) layoutsLookup.Clear();
+            if (viewersByCode != null) viewersByCode.Clear();
+            if (viewersByType != null) viewersByType.Clear();
+            if (layoutsLookup != null) layoutsLookup.Clear();
             Assembly = String.Empty;
             Class = "SobekCM.Library.HTML.Item_HtmlSubwriter";
             defaultLayout = null;
@@ -129,7 +129,7 @@ namespace SobekCM.Core.UI_Configuration.Viewers
                         defaultLayout = exstingConfig;
                 }
             }
-            
+
             // Try to find this, by code
             if (layoutsLookup.ContainsKey(Code))
                 return layoutsLookup[Code];
@@ -317,7 +317,7 @@ namespace SobekCM.Core.UI_Configuration.Viewers
                 ViewerCode = "swf",
                 Class = "SobekCM.Library.ItemViewer.Viewers.Flash_ItemViewer_Prototyper",
                 Enabled = true,
-                FileExtensions = new string[] { "SWF"}
+                FileExtensions = new string[] { "SWF" }
             });
 
             Viewers.Add(new ItemSubViewerConfig

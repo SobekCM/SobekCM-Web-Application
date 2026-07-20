@@ -1,16 +1,14 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using SobekCM.Core.BriefItem;
 using SobekCM.Core.FileSystems;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Users;
 using SobekCM.Library.ItemViewer.Menu;
 using SobekCM.Tools;
-using Microsoft.AspNetCore.Http;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 
 namespace SobekCM.Library.ItemViewer.Viewers
 {
@@ -72,7 +70,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <param name="CurrentRequest"> Information about the current request </param>
         /// <param name="MenuItems"> List of menu items, to which this method may add one or more menu items </param>
         /// <param name="IsRestricted"> Flag indicates if this item is restricted AND the current user is outside the ranges or not in the proper groups</param>
-        public virtual void Add_Menu_Items(BriefItemInfo CurrentItem, User_Object CurrentUser, Navigation_Object CurrentRequest, List<Item_MenuItem> MenuItems, bool IsRestricted )
+        public virtual void Add_Menu_Items(BriefItemInfo CurrentItem, User_Object CurrentUser, Navigation_Object CurrentRequest, List<Item_MenuItem> MenuItems, bool IsRestricted)
         {
             // Get the URL for this
             string previous_code = CurrentRequest.ViewerCode;
@@ -104,7 +102,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
     /// <summary> Text item viewer displays the text associated with the pages for a digital resource </summary>
     /// <remarks> This class extends the abstract class <see cref="abstractPageFilesItemViewer"/> and implements the 
     /// <see cref="iItemViewer" /> interface. </remarks>
-    public class Text_ItemViewer: abstractPageFilesItemViewer
+    public class Text_ItemViewer : abstractPageFilesItemViewer
     {
         // information about the page to display
         private readonly int page;
@@ -126,7 +124,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         public Text_ItemViewer(BriefItemInfo BriefItem, User_Object CurrentUser, Navigation_Object CurrentRequest, Custom_Tracer Tracer, string Text_ViewerCode, string[] FileExtensions)
         {
             // Add the trace
-            if ( Tracer != null )
+            if (Tracer != null)
                 Tracer.Add_Trace("Text_ItemViewer.Constructor");
 
             // Save the arguments for use later
@@ -208,7 +206,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 return "width:" + width + "px;";
             }
         }
-        
+
 
         private bool set_file_information(string[] FileExtensions)
         {

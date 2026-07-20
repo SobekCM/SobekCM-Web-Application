@@ -1,9 +1,9 @@
-﻿using System;
+﻿using ProtoBuf;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
-using ProtoBuf;
 
 namespace SobekCM.Core.WebContent.Hierarchy
 {
@@ -46,7 +46,7 @@ namespace SobekCM.Core.WebContent.Hierarchy
             get { return ((Children != null) && (Children.Count > 0)) ? Children.Values.ToList() : null; }
             set
             {
-                if ((value != null) && ( value.Count > 0 ))
+                if ((value != null) && (value.Count > 0))
                 {
                     // Ensure the dictionary is not null
                     if (Children == null)
@@ -72,7 +72,7 @@ namespace SobekCM.Core.WebContent.Hierarchy
         /// <param name="Segment"> Segment name for this element with the web content hierarchy </param>
         /// <param name="WebContentID"> Primary key for this web content page, from the database </param>
         /// <param name="Redirect"> URL to which a request for this page should be redirected </param>
-        public WebContent_Hierarchy_Node(string Segment, int WebContentID, string Redirect )
+        public WebContent_Hierarchy_Node(string Segment, int WebContentID, string Redirect)
         {
             this.Segment = Segment;
             this.WebContentID = WebContentID;

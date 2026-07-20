@@ -1,16 +1,14 @@
 #region Using directives
 
-using System.IO;
-using System.Text;
-using Microsoft.AspNetCore.Http;
-using System.Xml;
 using SobekCM.Core.ApplicationState;
-using SobekCM.Core.Configuration;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Users;
+using SobekCM.Library.UI;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Metadata_Modules;
-using SobekCM.Library.UI;
+using System.IO;
+using System.Text;
+using System.Xml;
 
 #endregion
 
@@ -194,7 +192,7 @@ namespace SobekCM.Library.Citation.Elements
         /// <summary> Reads the inner data from the CompleteTemplate XML format </summary>
         /// <param name="XMLReader"> Current template xml configuration reader </param>
         /// <remarks> This procedure does not currently read any inner xml (not yet necessary) </remarks>
-        protected override void Inner_Read_Data( XmlReader XMLReader )
+        protected override void Inner_Read_Data(XmlReader XMLReader)
         {
             // Do nothing
         }

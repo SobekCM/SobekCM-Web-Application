@@ -1,19 +1,17 @@
 #region Using directives
 
 using Microsoft.AspNetCore.Http;
-using System;
-using System.Collections.Generic;
-using System.IO;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Navigation;
-using SobekCM.Core.UI_Configuration;
-using SobekCM.Core.UI_Configuration.StaticResources;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
+using System;
+using System.Collections.Generic;
+using System.IO;
 
 #endregion
 
@@ -333,9 +331,9 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             Add_Simple_Search_Tips(Output, Tracer);
         }
 
-        private void add_drop_down_options(TextWriter Output, string DropValue )
+        private void add_drop_down_options(TextWriter Output, string DropValue)
         {
-            foreach (Item_Aggregation_Metadata_Type searchField in ViewBag.Hierarchy_Object.Search_Fields )
+            foreach (Item_Aggregation_Metadata_Type searchField in ViewBag.Hierarchy_Object.Search_Fields)
             {
                 if (searchField.SobekCode == DropValue)
                 {

@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SobekCM.Library.TEI
 {
@@ -12,13 +9,13 @@ namespace SobekCM.Library.TEI
     public class TEI_Configuration
     {
         /// <summary> Sorted list of the XSLT files, without the extension </summary>
-        public List<string> XSLT_Files { get; set; } 
+        public List<string> XSLT_Files { get; set; }
 
         /// <summary> Sorted list of the CSS files, without the extension </summary>
-        public List<string> CSS_Files { get; set; } 
+        public List<string> CSS_Files { get; set; }
 
         /// <summary> Sorted list of the mapping files, without the extension </summary>
-        public List<string> Mapping_Files { get; set; } 
+        public List<string> Mapping_Files { get; set; }
 
         /// <summary> Constructor for a new instance of the TEI_Configuration object </summary>
         /// <param name="PlugIn_Directory"> Directory for the TEI plugin-in </param>

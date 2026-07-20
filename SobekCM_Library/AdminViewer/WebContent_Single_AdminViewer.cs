@@ -1,11 +1,8 @@
 using Microsoft.AspNetCore.Http;
-using Microsoft.IdentityModel.Tokens;
 using SobekCM.Core.Client;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Message;
 using SobekCM.Core.Navigation;
-using SobekCM.Core.UI_Configuration;
-using SobekCM.Core.UI_Configuration.StaticResources;
 using SobekCM.Core.WebContent;
 using SobekCM.Engine_Library.Configuration;
 // using SobekCM.Library.Helpers.UploadiFive;
@@ -14,7 +11,6 @@ using SobekCM.Library.UI;
 using SobekCM.Tools;
 using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.IO;
 using System.Text;
 
@@ -22,17 +18,17 @@ namespace SobekCM.Library.AdminViewer
 {
     /// <summary> Class allows an administrator to manage all the information about a single web content page or redirect </summary>
     /// <remarks> This class extends the <see cref="abstract_AdminViewer"/> class. </remarks>
-    public class WebContent_Single_AdminViewer: abstract_AdminViewer
+    public class WebContent_Single_AdminViewer : abstract_AdminViewer
     {
-		private string actionMessage;
-      //  private readonly Complete_Item_Aggregation itemAggregation;
+        private string actionMessage;
+        //  private readonly Complete_Item_Aggregation itemAggregation;
 
 
         private readonly HTML_Based_Content webContent;
         private readonly string webContentDirectory;
         private readonly int webContentId;
 
-		private readonly int page;
+        private readonly int page;
 
         //private string childPageCode;
         //private string childPageLabel;
@@ -45,7 +41,7 @@ namespace SobekCM.Library.AdminViewer
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
 		/// <remarks> Postback from handling an edit or new aggregation is handled here in the constructor </remarks>
         public WebContent_Single_AdminViewer(RequestCache RequestSpecificValues, HttpContext Context) : base(RequestSpecificValues, Context)
-		{
+        {
             RequestSpecificValues.Tracer.Add_Trace("WebContent_Single_AdminViewer.Constructor", String.Empty);
 
 
@@ -58,7 +54,7 @@ namespace SobekCM.Library.AdminViewer
             }
 
             // If no web content id was provided, send back
-            if ( !RequestSpecificValues.Current_Mode.WebContentID.HasValue )
+            if (!RequestSpecificValues.Current_Mode.WebContentID.HasValue)
             {
                 RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.My_Sobek;
                 RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
@@ -66,8 +62,8 @@ namespace SobekCM.Library.AdminViewer
                 return;
             }
 
-			// Set some defaults and get the web content id
-			actionMessage = String.Empty;
+            // Set some defaults and get the web content id
+            actionMessage = String.Empty;
             webContentId = RequestSpecificValues.Current_Mode.WebContentID.Value;
 
             try
@@ -159,13 +155,13 @@ namespace SobekCM.Library.AdminViewer
                                 Save_Page_General_Postback(form);
                                 break;
 
-                                //case 2: RESERVED FOR LANGUAGE SUPPORT
-                                //    Save_Page_2_Postback(form);
-                                //    break;
+                            //case 2: RESERVED FOR LANGUAGE SUPPORT
+                            //    Save_Page_2_Postback(form);
+                            //    break;
 
-                                //case 3: RESERVED FOR SITEMAP SUPPORT
-                                //    Save_Page_3_Postback(form);
-                                //    break;
+                            //case 3: RESERVED FOR SITEMAP SUPPORT
+                            //    Save_Page_3_Postback(form);
+                            //    break;
 
                             case 4:
                                 Save_Child_Pages_Postback(form);
@@ -209,7 +205,7 @@ namespace SobekCM.Library.AdminViewer
                             RequestSpecificValues.Current_Mode.Request_Completed = true;
                         }
                     }
-                    catch ( Exception ee )
+                    catch (Exception ee)
                     {
                         actionMessage = "Unable to correctly parse postback data.  " + ee.Message;
                     }
@@ -219,7 +215,7 @@ namespace SobekCM.Library.AdminViewer
             {
                 storedException = ee;
             }
-		}
+        }
 
         /// <summary> Gets the collection of special behaviors which this admin or mySobek viewer
         /// requests from the main HTML subwriter. </summary>
@@ -228,12 +224,12 @@ namespace SobekCM.Library.AdminViewer
             get { return new List<HtmlSubwriter_Behaviors_Enum> { HtmlSubwriter_Behaviors_Enum.Suppress_Banner, HtmlSubwriter_Behaviors_Enum.Use_Jquery_DataTables }; }
         }
 
-		/// <summary> Title for the page that displays this viewer, this is shown in the search box at the top of the page, just below the banner </summary>
-		/// <value> This always returns the value 'HTML Skins' </value>
-		public override string Web_Title
-		{
-			get { return "Administer Web Content Page"; }
-		}
+        /// <summary> Title for the page that displays this viewer, this is shown in the search box at the top of the page, just below the banner </summary>
+        /// <value> This always returns the value 'HTML Skins' </value>
+        public override string Web_Title
+        {
+            get { return "Administer Web Content Page"; }
+        }
 
         /// <summary> Gets the URL for the icon related to this administrative task </summary>
         public override string Viewer_Icon
@@ -241,214 +237,214 @@ namespace SobekCM.Library.AdminViewer
             get { return String.Empty; }
         }
 
-		/// <summary> Add the HTML to be displayed in the main SobekCM viewer area (outside of the forms)</summary>
-		/// <param name="Output"> Textwriter to write the HTML for this viewer</param>
-		/// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
-		/// <remarks> This class does nothing, since the interface list is added as controls, not HTML </remarks>
-		public override void Write_HTML(TextWriter Output, Custom_Tracer Tracer)
-		{
-			Tracer.Add_Trace("WebContent_Single_AdminViewer.Write_HTML", "Do nothing");
-		}
+        /// <summary> Add the HTML to be displayed in the main SobekCM viewer area (outside of the forms)</summary>
+        /// <param name="Output"> Textwriter to write the HTML for this viewer</param>
+        /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <remarks> This class does nothing, since the interface list is added as controls, not HTML </remarks>
+        public override void Write_HTML(TextWriter Output, Custom_Tracer Tracer)
+        {
+            Tracer.Add_Trace("WebContent_Single_AdminViewer.Write_HTML", "Do nothing");
+        }
 
-		/// <summary> This is an opportunity to write HTML directly into the main form before any controls are placed in the main place holder </summary>
-		/// <param name="Output"> Textwriter to write the pop-up form HTML for this viewer </param>
-		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-		/// <remarks> This text will appear within the ItemNavForm form tags </remarks>
-		public override void Write_ItemNavForm_Opening(TextWriter Output, Custom_Tracer Tracer)
-		{
-			Tracer.Add_Trace("WebContent_Single_AdminViewer.Write_ItemNavForm_Opening", "Add the majority of the HTML before the placeholder");
+        /// <summary> This is an opportunity to write HTML directly into the main form before any controls are placed in the main place holder </summary>
+        /// <param name="Output"> Textwriter to write the pop-up form HTML for this viewer </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <remarks> This text will appear within the ItemNavForm form tags </remarks>
+        public override void Write_ItemNavForm_Opening(TextWriter Output, Custom_Tracer Tracer)
+        {
+            Tracer.Add_Trace("WebContent_Single_AdminViewer.Write_ItemNavForm_Opening", "Add the majority of the HTML before the placeholder");
 
-			// Add the hidden field
-			Output.WriteLine("<!-- Hidden field is used for postbacks to indicate what to save and reset -->");
-			Output.WriteLine("<input type=\"hidden\" id=\"admin_webcontent_reset\" name=\"admin_webcontent_reset\" value=\"\" />");
-			Output.WriteLine("<input type=\"hidden\" id=\"admin_webcontent_save\" name=\"admin_webcontent_save\" value=\"\" />");
-			Output.WriteLine("<input type=\"hidden\" id=\"admin_webcontent_action\" name=\"admin_webcontent_action\" value=\"\" />");
-			Output.WriteLine(); 
+            // Add the hidden field
+            Output.WriteLine("<!-- Hidden field is used for postbacks to indicate what to save and reset -->");
+            Output.WriteLine("<input type=\"hidden\" id=\"admin_webcontent_reset\" name=\"admin_webcontent_reset\" value=\"\" />");
+            Output.WriteLine("<input type=\"hidden\" id=\"admin_webcontent_save\" name=\"admin_webcontent_save\" value=\"\" />");
+            Output.WriteLine("<input type=\"hidden\" id=\"admin_webcontent_action\" name=\"admin_webcontent_action\" value=\"\" />");
+            Output.WriteLine();
 
-			Tracer.Add_Trace("WebContent_Single_AdminViewer.Write_ItemNavForm_Closing", "Add the rest of the form");
+            Tracer.Add_Trace("WebContent_Single_AdminViewer.Write_ItemNavForm_Closing", "Add the rest of the form");
 
-			Output.WriteLine("<!-- Users_AdminViewer.Write_ItemNavForm_Closing -->");
+            Output.WriteLine("<!-- Users_AdminViewer.Write_ItemNavForm_Closing -->");
 
-			Output.WriteLine("<script src=\"" + Static_Resources_Gateway.Sobekcm_Admin_Js + "\" type=\"text/javascript\"></script>");
-			Output.WriteLine();
+            Output.WriteLine("<script src=\"" + Static_Resources_Gateway.Sobekcm_Admin_Js + "\" type=\"text/javascript\"></script>");
+            Output.WriteLine();
 
-			Output.WriteLine("<div id=\"sbkWcav_PageContainer\">");
+            Output.WriteLine("<div id=\"sbkWcav_PageContainer\">");
 
-		    if (storedException != null)
-		    {
-		        Tracer.Add_Trace("Stored Exception found!");
-                Output.WriteLine(Tracer.Complete_Trace);
-		        Output.WriteLine();
-		        Output.WriteLine(storedException.Message);
-                Output.WriteLine();
-		        Output.WriteLine(storedException.StackTrace);
-                return;
-
-		    }
-
-		    try
-		    {
-
-		        // Add the buttons (unless this is a sub-page like editing the CSS file)
-		        if (page < 10)
-		        {
-		            string last_mode = RequestSpecificValues.Current_Mode.My_Sobek_SubMode;
-		            RequestSpecificValues.Current_Mode.My_Sobek_SubMode = String.Empty;
-		            Output.WriteLine("  <div class=\"sbkSaav_ButtonsDiv\">");
-		            Output.WriteLine("    <button title=\"Do not apply changes\" class=\"sbkAdm_RoundButton\" onclick=\"return new_webcontent_edit_page('z');\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"sbkAdm_RoundButton_LeftImg\" alt=\"\" /> CANCEL</button> &nbsp; &nbsp; ");
-		            Output.WriteLine("    <button title=\"Save changes to this web content page or redirect\" class=\"sbkAdm_RoundButton\" onclick=\"return save_webcontent_edits(false);\"> SAVE </button> &nbsp; &nbsp; ");
-		            Output.WriteLine("    <button title=\"Save changes to this web content page or redirect and exit the admin screens\" class=\"sbkAdm_RoundButton\" onclick=\"return save_webcontent_edits(true);\">SAVE & EXIT <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button>");
-		            Output.WriteLine("  </div>");
-		            Output.WriteLine();
-		            RequestSpecificValues.Current_Mode.My_Sobek_SubMode = last_mode;
-		        }
-
-
-		        Output.WriteLine("  <div class=\"sbkAdm_TitleDiv_Wchs\" style=\"padding-left:20px\">");
-		        Output.WriteLine("    <img id=\"sbkAdm_TitleDivImg_Wchs\" src=\"" + Static_Resources_Gateway.Admin_View_Img + "\" alt=\"\" />");
-		        Output.WriteLine("    <h1>Web Content Administration</h1>");
-		        Output.WriteLine("    <h2>" + webContent.Title + "</h2>");
-		        Output.WriteLine("  </div>");
-		        Output.WriteLine();
-
-		        // Start the outer tab containe
-		        Output.WriteLine("  <div id=\"tabContainer\" class=\"fulltabs\">");
-
-		        // Add all the possible tabs (unless this is a sub-page like editing the CSS file)
-		        if (page < 12)
-		        {
-		            Output.WriteLine("    <div class=\"tabs\">");
-		            Output.WriteLine("      <ul>");
-
-
-		            // Draw all the page tabs for this form
-		            const string GENERAL = "General";
-		            if (page == 1)
-		            {
-		                Output.WriteLine("    <li id=\"tabHeader_1\" class=\"tabActiveHeader\">" + GENERAL + "</li>");
-		            }
-		            else
-		            {
-		                Output.WriteLine("    <li id=\"tabHeader_1\" onclick=\"return new_webcontent_edit_page('a');\">" + GENERAL + "</li>");
-		            }
-
-
-		            //const string LOCALIZATION = "Localization";
-		            //if (page == 2)
-		            //{
-		            //    Output.WriteLine("    <li id=\"tabHeader_2\" class=\"tabActiveHeader\">" + LOCALIZATION + "</li>");
-		            //}
-		            //else
-		            //{
-		            //    Output.WriteLine("    <li id=\"tabHeader_2\" onclick=\"return new_webcontent_edit_page('b');\">" + LOCALIZATION + "</li>");
-		            //}
-
-		            //const string SITEMAP = "Sitemap";
-		            //if (page == 3)
-		            //{
-		            //    Output.WriteLine("    <li id=\"tabHeader_2\" class=\"tabActiveHeader\">" + SITEMAP + "</li>");
-		            //}
-		            //else
-		            //{
-		            //    Output.WriteLine("    <li id=\"tabHeader_2\" onclick=\"return new_webcontent_edit_page('c');\">" + SITEMAP + "</li>");
-		            //}
-
-		            const string RELATED_PAGES = "Related Pages";
-		            if (page == 4)
-		            {
-		                Output.WriteLine("    <li id=\"tabHeader_3\" class=\"tabActiveHeader\">" + RELATED_PAGES + "</li>");
-		            }
-		            else
-		            {
-		                Output.WriteLine("    <li id=\"tabHeader_3\" onclick=\"return new_webcontent_edit_page('d');\">" + RELATED_PAGES + "</li>");
-		            }
-
-		            const string UPLOADS = "Uploads";
-		            if (page == 5)
-		            {
-		                Output.WriteLine("    <li id=\"tabHeader_4\" class=\"tabActiveHeader\">" + UPLOADS + "</li>");
-		            }
-		            else
-		            {
-		                Output.WriteLine("    <li id=\"tabHeader_4\" onclick=\"return new_webcontent_edit_page('e');\">" + UPLOADS + "</li>");
-		            }
-
-
-		            Output.WriteLine("      </ul>");
-		            Output.WriteLine("    </div>");
-		        }
-
-		        // Add the single tab.  When users click on a tab, it goes back to the server (here)
-		        // to render the correct tab content
-		        Output.WriteLine("    <div class=\"tabscontent\">");
-		        Output.WriteLine("    	<div class=\"tabpage\" id=\"tabpage_1\">");
-
-
-		        switch (page)
-		        {
-		            case 1:
-		                Add_Page_General(Output);
-		                break;
-
-		                //case 2:
-		                //    Add_Page_Localization(Output);  RESERVED FOR LANGUAGE SUPPORT
-		                //    break;
-
-		                //case 3:
-		                //    Add_Page_SiteMap(Output);   RESERVED FOR SITEMAP SUPPORT
-		                //    break;
-
-		            case 4:
-		                Add_Page_Child_Pages(Output, Tracer);
-		                break;
-
-		            case 5:
-		                Add_Page_Uploads(Output);
-		                break;
-		        }
-		    }
-		    catch (Exception newException)
-		    {
-                Tracer.Add_Trace("New Exception caught!");
-		        storedException = newException;
+            if (storedException != null)
+            {
+                Tracer.Add_Trace("Stored Exception found!");
                 Output.WriteLine(Tracer.Complete_Trace);
                 Output.WriteLine();
                 Output.WriteLine(storedException.Message);
                 Output.WriteLine();
                 Output.WriteLine(storedException.StackTrace);
-		    }
-		}
+                return;
 
-		/// <summary> This is an opportunity to write HTML directly into the main form, without
-		/// using the pop-up html form architecture </summary>
-		/// <param name="Output"> Textwriter to write the pop-up form HTML for this viewer </param>
-		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-		/// <remarks> This text will appear within the ItemNavForm form tags </remarks>
-		public override void Write_ItemNavForm_Closing(TextWriter Output, Custom_Tracer Tracer)
-		{
-			Tracer.Add_Trace("WebContent_Single_AdminViewer.Write_ItemNavForm_Closing", "Add any html after the placeholder and close tabs");
+            }
+
+            try
+            {
+
+                // Add the buttons (unless this is a sub-page like editing the CSS file)
+                if (page < 10)
+                {
+                    string last_mode = RequestSpecificValues.Current_Mode.My_Sobek_SubMode;
+                    RequestSpecificValues.Current_Mode.My_Sobek_SubMode = String.Empty;
+                    Output.WriteLine("  <div class=\"sbkSaav_ButtonsDiv\">");
+                    Output.WriteLine("    <button title=\"Do not apply changes\" class=\"sbkAdm_RoundButton\" onclick=\"return new_webcontent_edit_page('z');\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"sbkAdm_RoundButton_LeftImg\" alt=\"\" /> CANCEL</button> &nbsp; &nbsp; ");
+                    Output.WriteLine("    <button title=\"Save changes to this web content page or redirect\" class=\"sbkAdm_RoundButton\" onclick=\"return save_webcontent_edits(false);\"> SAVE </button> &nbsp; &nbsp; ");
+                    Output.WriteLine("    <button title=\"Save changes to this web content page or redirect and exit the admin screens\" class=\"sbkAdm_RoundButton\" onclick=\"return save_webcontent_edits(true);\">SAVE & EXIT <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button>");
+                    Output.WriteLine("  </div>");
+                    Output.WriteLine();
+                    RequestSpecificValues.Current_Mode.My_Sobek_SubMode = last_mode;
+                }
+
+
+                Output.WriteLine("  <div class=\"sbkAdm_TitleDiv_Wchs\" style=\"padding-left:20px\">");
+                Output.WriteLine("    <img id=\"sbkAdm_TitleDivImg_Wchs\" src=\"" + Static_Resources_Gateway.Admin_View_Img + "\" alt=\"\" />");
+                Output.WriteLine("    <h1>Web Content Administration</h1>");
+                Output.WriteLine("    <h2>" + webContent.Title + "</h2>");
+                Output.WriteLine("  </div>");
+                Output.WriteLine();
+
+                // Start the outer tab containe
+                Output.WriteLine("  <div id=\"tabContainer\" class=\"fulltabs\">");
+
+                // Add all the possible tabs (unless this is a sub-page like editing the CSS file)
+                if (page < 12)
+                {
+                    Output.WriteLine("    <div class=\"tabs\">");
+                    Output.WriteLine("      <ul>");
+
+
+                    // Draw all the page tabs for this form
+                    const string GENERAL = "General";
+                    if (page == 1)
+                    {
+                        Output.WriteLine("    <li id=\"tabHeader_1\" class=\"tabActiveHeader\">" + GENERAL + "</li>");
+                    }
+                    else
+                    {
+                        Output.WriteLine("    <li id=\"tabHeader_1\" onclick=\"return new_webcontent_edit_page('a');\">" + GENERAL + "</li>");
+                    }
+
+
+                    //const string LOCALIZATION = "Localization";
+                    //if (page == 2)
+                    //{
+                    //    Output.WriteLine("    <li id=\"tabHeader_2\" class=\"tabActiveHeader\">" + LOCALIZATION + "</li>");
+                    //}
+                    //else
+                    //{
+                    //    Output.WriteLine("    <li id=\"tabHeader_2\" onclick=\"return new_webcontent_edit_page('b');\">" + LOCALIZATION + "</li>");
+                    //}
+
+                    //const string SITEMAP = "Sitemap";
+                    //if (page == 3)
+                    //{
+                    //    Output.WriteLine("    <li id=\"tabHeader_2\" class=\"tabActiveHeader\">" + SITEMAP + "</li>");
+                    //}
+                    //else
+                    //{
+                    //    Output.WriteLine("    <li id=\"tabHeader_2\" onclick=\"return new_webcontent_edit_page('c');\">" + SITEMAP + "</li>");
+                    //}
+
+                    const string RELATED_PAGES = "Related Pages";
+                    if (page == 4)
+                    {
+                        Output.WriteLine("    <li id=\"tabHeader_3\" class=\"tabActiveHeader\">" + RELATED_PAGES + "</li>");
+                    }
+                    else
+                    {
+                        Output.WriteLine("    <li id=\"tabHeader_3\" onclick=\"return new_webcontent_edit_page('d');\">" + RELATED_PAGES + "</li>");
+                    }
+
+                    const string UPLOADS = "Uploads";
+                    if (page == 5)
+                    {
+                        Output.WriteLine("    <li id=\"tabHeader_4\" class=\"tabActiveHeader\">" + UPLOADS + "</li>");
+                    }
+                    else
+                    {
+                        Output.WriteLine("    <li id=\"tabHeader_4\" onclick=\"return new_webcontent_edit_page('e');\">" + UPLOADS + "</li>");
+                    }
+
+
+                    Output.WriteLine("      </ul>");
+                    Output.WriteLine("    </div>");
+                }
+
+                // Add the single tab.  When users click on a tab, it goes back to the server (here)
+                // to render the correct tab content
+                Output.WriteLine("    <div class=\"tabscontent\">");
+                Output.WriteLine("    	<div class=\"tabpage\" id=\"tabpage_1\">");
+
+
+                switch (page)
+                {
+                    case 1:
+                        Add_Page_General(Output);
+                        break;
+
+                    //case 2:
+                    //    Add_Page_Localization(Output);  RESERVED FOR LANGUAGE SUPPORT
+                    //    break;
+
+                    //case 3:
+                    //    Add_Page_SiteMap(Output);   RESERVED FOR SITEMAP SUPPORT
+                    //    break;
+
+                    case 4:
+                        Add_Page_Child_Pages(Output, Tracer);
+                        break;
+
+                    case 5:
+                        Add_Page_Uploads(Output);
+                        break;
+                }
+            }
+            catch (Exception newException)
+            {
+                Tracer.Add_Trace("New Exception caught!");
+                storedException = newException;
+                Output.WriteLine(Tracer.Complete_Trace);
+                Output.WriteLine();
+                Output.WriteLine(storedException.Message);
+                Output.WriteLine();
+                Output.WriteLine(storedException.StackTrace);
+            }
+        }
+
+        /// <summary> This is an opportunity to write HTML directly into the main form, without
+        /// using the pop-up html form architecture </summary>
+        /// <param name="Output"> Textwriter to write the pop-up form HTML for this viewer </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <remarks> This text will appear within the ItemNavForm form tags </remarks>
+        public override void Write_ItemNavForm_Closing(TextWriter Output, Custom_Tracer Tracer)
+        {
+            Tracer.Add_Trace("WebContent_Single_AdminViewer.Write_ItemNavForm_Closing", "Add any html after the placeholder and close tabs");
 
             if (storedException != null)
                 return;
 
-			switch (page)
-			{
-				case 5:
+            switch (page)
+            {
+                case 5:
                     Finish_Page_Uploads(Output);
                     break;
-			}
+            }
 
-             Output.WriteLine("      </div>");
-			 Output.WriteLine("    </div>");
-			 Output.WriteLine("  </div>");
-			 Output.WriteLine("</div>");
-			 Output.WriteLine("<br />");
-		}
+            Output.WriteLine("      </div>");
+            Output.WriteLine("    </div>");
+            Output.WriteLine("  </div>");
+            Output.WriteLine("</div>");
+            Output.WriteLine("<br />");
+        }
 
-		#region Methods to render (and parse) page 1 - General Information
+        #region Methods to render (and parse) page 1 - General Information
 
-		private void Save_Page_General_Postback(IFormCollection Form)
-		{
+        private void Save_Page_General_Postback(IFormCollection Form)
+        {
             if (!String.IsNullOrEmpty(Form["admin_webcontent_title"].TrimFirst())) webContent.Title = Form["admin_webcontent_title"];
             if (!String.IsNullOrEmpty(Form["admin_webcontent_author"].TrimFirst())) webContent.Author = Form["admin_webcontent_author"];
             if (!String.IsNullOrEmpty(Form["admin_webcontent_desc"].TrimFirst())) webContent.Description = Form["admin_webcontent_desc"];
@@ -459,11 +455,11 @@ namespace SobekCM.Library.AdminViewer
             if (!String.IsNullOrEmpty(Form["admin_webcontent_banner"].TrimFirst())) webContent.Banner = Form["admin_webcontent_banner"];
             if (!String.IsNullOrEmpty(Form["admin_webcontent_sitemap"].TrimFirst())) webContent.SiteMap = Form["admin_webcontent_sitemap"];
             webContent.IncludeMenu = !String.IsNullOrEmpty(Form["admin_webcontent_menu"].TrimFirst());
-		}
+        }
 
-		private void Add_Page_General( TextWriter Output )
-		{
-			// Help constants (for now)
+        private void Add_Page_General(TextWriter Output)
+        {
+            // Help constants (for now)
             const string TITLE_HELP = "Help for title";
             const string AUTHOR_HELP = "Help for author";
             const string DESCRIPTION_HELP = "Help for description";
@@ -475,57 +471,57 @@ namespace SobekCM.Library.AdminViewer
             const string SITEMAP_HELP = "Help for sitemap";
             const string MAINMENU_HELP = "Help for main menu";
 
-			Output.WriteLine("<table class=\"sbkAdm_PopupTable\">");
+            Output.WriteLine("<table class=\"sbkAdm_PopupTable\">");
 
-			Output.WriteLine("  <tr class=\"sbkSaav_TitleRow\"><td colspan=\"3\">Basic Information</td></tr>");
-			Output.WriteLine("  <tr class=\"sbkSaav_TextRow\"><td colspan=\"3\"><p>The information in this section is the basic information about the web content page and includes much of the metadata that is provided to search engines to increase page rank on relevant searches.</p><p>For more information about the settings on this tab, <a href=\"" + UI_ApplicationCache_Gateway.Settings.System.Help_URL(RequestSpecificValues.Current_Mode.Base_URL) + "adminhelp/singlewebcontent\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</p></td></tr>");
+            Output.WriteLine("  <tr class=\"sbkSaav_TitleRow\"><td colspan=\"3\">Basic Information</td></tr>");
+            Output.WriteLine("  <tr class=\"sbkSaav_TextRow\"><td colspan=\"3\"><p>The information in this section is the basic information about the web content page and includes much of the metadata that is provided to search engines to increase page rank on relevant searches.</p><p>For more information about the settings on this tab, <a href=\"" + UI_ApplicationCache_Gateway.Settings.System.Help_URL(RequestSpecificValues.Current_Mode.Base_URL) + "adminhelp/singlewebcontent\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</p></td></tr>");
 
-			// Add the URL
-			Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\">");
-			Output.WriteLine("    <td style=\"width:50px\">&nbsp;</td>");
-			Output.WriteLine("    <td style=\"width: 145px\" class=\"sbkSaav_TableLabel\">URL:</td>");
-			Output.WriteLine("    <td> " + webContent.URL( UI_ApplicationCache_Gateway.Settings.Servers.Base_URL ) + "</td>");
-			Output.WriteLine("  </tr>");
+            // Add the URL
+            Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\">");
+            Output.WriteLine("    <td style=\"width:50px\">&nbsp;</td>");
+            Output.WriteLine("    <td style=\"width: 145px\" class=\"sbkSaav_TableLabel\">URL:</td>");
+            Output.WriteLine("    <td> " + webContent.URL(UI_ApplicationCache_Gateway.Settings.Servers.Base_URL) + "</td>");
+            Output.WriteLine("  </tr>");
 
-			// Add the Title
-			Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\">");
-			Output.WriteLine("    <td>&nbsp;</td>");
+            // Add the Title
+            Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\">");
+            Output.WriteLine("    <td>&nbsp;</td>");
             Output.WriteLine("    <td class=\"sbkSaav_TableLabel\"><label for=\"admin_webcontent_title\">Title:</label></td>");
-			Output.WriteLine("    <td>");
+            Output.WriteLine("    <td>");
             Output.WriteLine("      <table class=\"sbkSaav_InnerTable\"><tr><td><input class=\"sbkWcav_large_input sbkAdmin_Focusable\" name=\"admin_webcontent_title\" id=\"admin_webcontent_title\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(webContent.Title) + "\" /></td>");
             Output.WriteLine("        <td><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources_Gateway.Help_Button_Jpg + "\" onclick=\"alert('" + TITLE_HELP + "');\"  title=\"" + TITLE_HELP + "\" /></td></tr></table>");
-			Output.WriteLine("     </td>");
-			Output.WriteLine("  </tr>");
+            Output.WriteLine("     </td>");
+            Output.WriteLine("  </tr>");
 
-			// Add the Author
-			Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\">");
-			Output.WriteLine("    <td>&nbsp;</td>");
+            // Add the Author
+            Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\">");
+            Output.WriteLine("    <td>&nbsp;</td>");
             Output.WriteLine("    <td class=\"sbkSaav_TableLabel\"><label for=\"admin_webcontent_author\">Author(s):</label></td>");
-			Output.WriteLine("    <td>");
+            Output.WriteLine("    <td>");
             Output.WriteLine("      <table class=\"sbkSaav_InnerTable\"><tr><td><input class=\"sbkWcav_large_input sbkAdmin_Focusable\" name=\"admin_webcontent_author\" id=\"admin_webcontent_author\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(webContent.Author) + "\" /></td>");
             Output.WriteLine("        <td><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources_Gateway.Help_Button_Jpg + "\" onclick=\"alert('" + AUTHOR_HELP + "');\"  title=\"" + AUTHOR_HELP + "\" /></td></tr></table>");
-			Output.WriteLine("     </td>");
-			Output.WriteLine("  </tr>");
+            Output.WriteLine("     </td>");
+            Output.WriteLine("  </tr>");
 
-			// Add the Description/Summary box
-			Output.WriteLine("  <tr class=\"sbkSaav_TallRow\">");
-			Output.WriteLine("    <td>&nbsp;</td>");
-			Output.WriteLine("    <td class=\"sbkSaav_TableLabel2\"><label for=\"admin_webcontent_desc\">Description:</label></td>");
-			Output.WriteLine("    <td>");
+            // Add the Description/Summary box
+            Output.WriteLine("  <tr class=\"sbkSaav_TallRow\">");
+            Output.WriteLine("    <td>&nbsp;</td>");
+            Output.WriteLine("    <td class=\"sbkSaav_TableLabel2\"><label for=\"admin_webcontent_desc\">Description:</label></td>");
+            Output.WriteLine("    <td>");
             Output.WriteLine("      <table class=\"sbkSaav_InnerTable2\"><tr style=\"vertical-align:top\"><td><textarea class=\"sbkWcav_large_textbox sbkAdmin_Focusable\" rows=\"6\" name=\"admin_webcontent_desc\" id=\"admin_webcontent_desc\">" + System.Net.WebUtility.HtmlEncode(webContent.Description) + "</textarea></td>");
-			Output.WriteLine("        <td><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources_Gateway.Help_Button_Jpg + "\" onclick=\"alert('" + DESCRIPTION_HELP + "');\"  title=\"" + DESCRIPTION_HELP + "\" /></td></tr></table>");
-			Output.WriteLine("     </td>");
-			Output.WriteLine("  </tr>");
+            Output.WriteLine("        <td><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources_Gateway.Help_Button_Jpg + "\" onclick=\"alert('" + DESCRIPTION_HELP + "');\"  title=\"" + DESCRIPTION_HELP + "\" /></td></tr></table>");
+            Output.WriteLine("     </td>");
+            Output.WriteLine("  </tr>");
 
-			// Add the Keywords
-			Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\">");
-			Output.WriteLine("    <td>&nbsp;</td>");
+            // Add the Keywords
+            Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\">");
+            Output.WriteLine("    <td>&nbsp;</td>");
             Output.WriteLine("    <td class=\"sbkSaav_TableLabel\"><label for=\"admin_webcontent_keywords\">Keywords:</label></td>");
-			Output.WriteLine("    <td>");
+            Output.WriteLine("    <td>");
             Output.WriteLine("      <table class=\"sbkSaav_InnerTable\"><tr><td><input class=\"sbkWcav_large_input sbkAdmin_Focusable\" name=\"admin_webcontent_keywords\" id=\"admin_webcontent_keywords\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(webContent.Keywords) + "\" /></td>");
             Output.WriteLine("        <td><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources_Gateway.Help_Button_Jpg + "\" onclick=\"alert('" + KEYWORD_HELP + "');\"  title=\"" + KEYWORD_HELP + "\" /></td></tr></table>");
-			Output.WriteLine("     </td>");
-			Output.WriteLine("  </tr>");
+            Output.WriteLine("     </td>");
+            Output.WriteLine("  </tr>");
 
             // Add the place to just add extra lines into the header, as needed
             Output.WriteLine("  <tr class=\"sbkSaav_TallRow\">");
@@ -549,22 +545,22 @@ namespace SobekCM.Library.AdminViewer
 
 
 
-			Output.WriteLine("  <tr class=\"sbkSaav_TitleRow2\"><td colspan=\"3\">Appearance</td></tr>");
-			Output.WriteLine("  <tr class=\"sbkSaav_TextRow\"><td colspan=\"3\"><p>The values in this section determine how this web content page appears to users by allowing a banner to be selected and a web skin to be selected.</p></td></tr>");
+            Output.WriteLine("  <tr class=\"sbkSaav_TitleRow2\"><td colspan=\"3\">Appearance</td></tr>");
+            Output.WriteLine("  <tr class=\"sbkSaav_TextRow\"><td colspan=\"3\"><p>The values in this section determine how this web content page appears to users by allowing a banner to be selected and a web skin to be selected.</p></td></tr>");
 
 
-			// Add the web skin
-			Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\">");
-			Output.WriteLine("    <td>&nbsp;</td>");
-			Output.WriteLine("    <td class=\"sbkSaav_TableLabel\">Web Skin:</label></td>");
-			Output.WriteLine("    <td>");
-			Output.WriteLine("      <table class=\"sbkSaav_InnerTable\"><tr><td>");
+            // Add the web skin
+            Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\">");
+            Output.WriteLine("    <td>&nbsp;</td>");
+            Output.WriteLine("    <td class=\"sbkSaav_TableLabel\">Web Skin:</label></td>");
+            Output.WriteLine("    <td>");
+            Output.WriteLine("      <table class=\"sbkSaav_InnerTable\"><tr><td>");
 
             // Start the select box
             Output.Write("          <select class=\"sbkSaav_SelectSkin\" name=\"admin_webcontent_skin\" id=\"admin_webcontent_skin\">");
 
             // Add the NONE option first
-            Output.Write( String.IsNullOrEmpty(webContent.Web_Skin) ? "<option value=\"\" selected=\"selected\" ></option>" : "<option value=\"\"></option>");
+            Output.Write(String.IsNullOrEmpty(webContent.Web_Skin) ? "<option value=\"\" selected=\"selected\" ></option>" : "<option value=\"\"></option>");
 
             // Get the ordered list of all skin codes
             List<string> skinCodes = UI_ApplicationCache_Gateway.Web_Skin_Collection.Ordered_Skin_Codes;
@@ -583,10 +579,10 @@ namespace SobekCM.Library.AdminViewer
             }
             Output.WriteLine("</select>");
 
-			Output.WriteLine("        </td>");
+            Output.WriteLine("        </td>");
             Output.WriteLine("        <td><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources_Gateway.Help_Button_Jpg + "\" onclick=\"alert('" + WEBSKIN_HELP + "');\"  title=\"" + WEBSKIN_HELP + "\" /></td></tr></table>");
-			Output.WriteLine("     </td>");
-			Output.WriteLine("  </tr>");
+            Output.WriteLine("     </td>");
+            Output.WriteLine("  </tr>");
 
 
             // Add the banner
@@ -619,24 +615,24 @@ namespace SobekCM.Library.AdminViewer
             Output.Write(String.IsNullOrEmpty(webContent.SiteMap) ? "<option value=\"\" selected=\"selected\" ></option>" : "<option value=\"\"></option>");
 
             // Get the ordered list of all skin codes
-		    List<string> sitemaps = SobekEngineClient.WebContent.Get_All_Sitemaps(RequestSpecificValues.Tracer);
+            List<string> sitemaps = SobekEngineClient.WebContent.Get_All_Sitemaps(RequestSpecificValues.Tracer);
 
             // Add each web skin code to the select box
-		    if (sitemaps != null)
-		    {
-		        foreach (string siteCode in sitemaps)
-		        {
-		            if (String.Compare(webContent.SiteMap, siteCode, StringComparison.OrdinalIgnoreCase) == 0)
-		            {
-		                Output.Write("<option value=\"" + siteCode + "\" selected=\"selected\" >" + System.Net.WebUtility.HtmlEncode(siteCode) + "</option>");
-		            }
-		            else
-		            {
-		                Output.Write("<option value=\"" + siteCode + "\">" + System.Net.WebUtility.HtmlEncode(siteCode) + "</option>");
-		            }
-		        }
-		    }
-		    Output.WriteLine("</select>");
+            if (sitemaps != null)
+            {
+                foreach (string siteCode in sitemaps)
+                {
+                    if (String.Compare(webContent.SiteMap, siteCode, StringComparison.OrdinalIgnoreCase) == 0)
+                    {
+                        Output.Write("<option value=\"" + siteCode + "\" selected=\"selected\" >" + System.Net.WebUtility.HtmlEncode(siteCode) + "</option>");
+                    }
+                    else
+                    {
+                        Output.Write("<option value=\"" + siteCode + "\">" + System.Net.WebUtility.HtmlEncode(siteCode) + "</option>");
+                    }
+                }
+            }
+            Output.WriteLine("</select>");
 
             Output.WriteLine("        </td>");
             Output.WriteLine("        <td><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources_Gateway.Help_Button_Jpg + "\" onclick=\"alert('" + SITEMAP_HELP + "');\"  title=\"" + SITEMAP_HELP + "\" /></td></tr></table>");
@@ -649,27 +645,27 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("    <td>&nbsp;</td>");
             Output.WriteLine("    <td class=\"sbkSaav_TableLabel\"><label for=\"admin_webcontent_email\">Top Menu Bar:</label></td>");
             Output.WriteLine("    <td>");
-		    Output.WriteLine("      <table class=\"sbkSaav_InnerTable\"><tr><td>");
-            Output.WriteLine((webContent.IncludeMenu.HasValue && webContent.IncludeMenu.Value )
+            Output.WriteLine("      <table class=\"sbkSaav_InnerTable\"><tr><td>");
+            Output.WriteLine((webContent.IncludeMenu.HasValue && webContent.IncludeMenu.Value)
                     ? "        <input class=\"sbkSaav_checkbox\" type=\"checkbox\" name=\"admin_webcontent_menu\" id=\"admin_webcontent_menu\" checked=\"checked\" /> <label for=\"admin_webcontent_menu\">Include sitemap main menu bar</label> "
                     : "        <input class=\"sbkSaav_checkbox\" type=\"checkbox\" name=\"admin_webcontent_menu\" id=\"admin_webcontent_menu\" /> <label for=\"admin_webcontent_menu\">Include sitemap main menu bar</label> ");
             Output.WriteLine("        <td><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources_Gateway.Help_Button_Jpg + "\" onclick=\"alert('" + MAINMENU_HELP + "');\"  title=\"" + MAINMENU_HELP + "\" /></td></tr></table>");
             Output.WriteLine("     </td>");
             Output.WriteLine("  </tr>");
-            
 
 
 
-			Output.WriteLine("</table>");
-			Output.WriteLine("<br />");
-		}
 
-		#endregion
+            Output.WriteLine("</table>");
+            Output.WriteLine("<br />");
+        }
 
-		#region Methods to render (and parse) page 4 - Child pages
+        #endregion
+
+        #region Methods to render (and parse) page 4 - Child pages
 
         private void Save_Child_Pages_Postback(IFormCollection Form)
-		{
+        {
             //string action = Form["admin_webcontent_action"];
             //if (!String.IsNullOrEmpty(action))
             //{
@@ -761,7 +757,7 @@ namespace SobekCM.Library.AdminViewer
             //        }
             //    }
             //}
-		}
+        }
 
         private void Add_Page_Child_Pages(TextWriter Output, Custom_Tracer Tracer)
         {
@@ -807,26 +803,26 @@ namespace SobekCM.Library.AdminViewer
             }
 
 
-        
+
 
             //const string CODE_HELP = "Enter the code for the new child page.  This code should be less than 20 characters and be as descriptive of the content of your new page as possible.  This code will appear in the URL for the new child page.";
             //const string LABEL_HELP = "Enter the title for this new child page.  This title should be short, but can include spaces.  This will appear above the child page text.  If this child page appears in the main menu, this will also appear on the menu.  If this child page appears as a browse by, this will appear in the list of possible browse bys as well.";
             //const string VISIBILITY_HELP = "Choose how a link to this child page should appear for the web users.\\n\\nIf you select MAIN MENU, this will appear in the collection main menu system.\\n\\nIf you select BROWSE BY, this will appear with metadata browse bys on the main menu under the BROWSE BY menu item.\\n\\nIf you select NONE, then you will need to add a link to the new child page yourself by editing the text of the home page or an existing linked child page.";
             //const string PARENT_HELP = "If this child page will appear on the main menu, you can select a parent child page already on the main menu.  This will create a drop down menu under, or next to, the parent.";
 
-			if (actionMessage.Length > 0)
-			{
-				Output.WriteLine("  <br />");
-				Output.WriteLine("  <div id=\"sbkAdm_ActionMessage\" style=\"color:Maroon;\">" + actionMessage + "</div>");
-			}
+            if (actionMessage.Length > 0)
+            {
+                Output.WriteLine("  <br />");
+                Output.WriteLine("  <div id=\"sbkAdm_ActionMessage\" style=\"color:Maroon;\">" + actionMessage + "</div>");
+            }
 
 
-			Output.WriteLine("<table class=\"sbkAdm_PopupTable\">");
+            Output.WriteLine("<table class=\"sbkAdm_PopupTable\">");
 
-			Output.WriteLine("  <tr class=\"sbkSaav_TitleRow\"><td colspan=\"3\">Related Pages</td></tr>");
-			Output.WriteLine("  <tr class=\"sbkSaav_TextRow\"><td colspan=\"3\"><p>Related web content pages are pages that appear hierarhically under this web content page.   Generally, like content is found under similar URLs.</p><p>For more information about the settings on this tab, <a href=\"" + UI_ApplicationCache_Gateway.Settings.System.Help_URL(RequestSpecificValues.Current_Mode.Base_URL) + "adminhelp/singlewebcontent\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</p></td></tr>");
+            Output.WriteLine("  <tr class=\"sbkSaav_TitleRow\"><td colspan=\"3\">Related Pages</td></tr>");
+            Output.WriteLine("  <tr class=\"sbkSaav_TextRow\"><td colspan=\"3\"><p>Related web content pages are pages that appear hierarhically under this web content page.   Generally, like content is found under similar URLs.</p><p>For more information about the settings on this tab, <a href=\"" + UI_ApplicationCache_Gateway.Settings.System.Help_URL(RequestSpecificValues.Current_Mode.Base_URL) + "adminhelp/singlewebcontent\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</p></td></tr>");
 
-			// Ensure there are child pages
+            // Ensure there are child pages
             bool hasChildren = SobekEngineClient.WebContent.Get_All_NextLevel(Tracer, webContent.Level1, webContent.Level2, webContent.Level3, webContent.Level4, webContent.Level5, webContent.Level6, webContent.Level7, webContent.Level8).Count > 0;
             //SobekEngineClient.WebContent.(Tracer, level1, level2, level3, level4, level5, webContent.Level6, webContent.Level7, webContent.Level8 );
 
@@ -843,7 +839,7 @@ namespace SobekCM.Library.AdminViewer
             //}
 
 
-		    // Collect all the static-html based browse and info pages 
+            // Collect all the static-html based browse and info pages 
             if (!hasChildren)
             {
                 Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\">");
@@ -971,7 +967,7 @@ namespace SobekCM.Library.AdminViewer
                         Output.WriteLine("    </select>");
                     }
                 }
-                if ((fixed_depth == 3) || (( !String.IsNullOrEmpty(level3)) && (fixed_depth < 3)))
+                if ((fixed_depth == 3) || ((!String.IsNullOrEmpty(level3)) && (fixed_depth < 3)))
                 {
                     List<string> level4Options = SobekEngineClient.WebContent.Get_All_NextLevel(Tracer, level1, level2, level3);
                     if (level4Options.Count > 0)
@@ -1188,17 +1184,17 @@ namespace SobekCM.Library.AdminViewer
             //Output.WriteLine("          <td colspan=\"3\" style=\"text-align: left; padding-left: 50px;\"><button title=\"Save new child page\" class=\"sbkAdm_RoundButton\" onclick=\"return save_new_child_page();\">ADD</button></td>");
             //Output.WriteLine("        </tr>");
 
-			// Add the SAVE button
-			Output.WriteLine("      </table>");
-			Output.WriteLine("    </td>");
-			Output.WriteLine("  </tr>");
+            // Add the SAVE button
+            Output.WriteLine("      </table>");
+            Output.WriteLine("    </td>");
+            Output.WriteLine("  </tr>");
 
 
-			Output.WriteLine("</table>");
-			Output.WriteLine("<br />");
-		}
+            Output.WriteLine("</table>");
+            Output.WriteLine("<br />");
+        }
 
-		#endregion
+        #endregion
 
         #region Methods to render (and parse) page 5 -  Uploads
 
@@ -1212,7 +1208,7 @@ namespace SobekCM.Library.AdminViewer
             }
 
             string action = Form["admin_webcontent_action"];
-            if ((action.Length > 0) && ( action.IndexOf("delete_") == 0))
+            if ((action.Length > 0) && (action.IndexOf("delete_") == 0))
             {
                 string file = action.Substring(7);
                 string path_file = Path.Combine(webContentDirectory, file);
@@ -1293,8 +1289,8 @@ namespace SobekCM.Library.AdminViewer
                         Output.Write("<a href=\"" + thisImageFile_URL + "\" target=\"_" + thisImageFile + "\" title=\"" + display_name + "\">");
                         Output.Write("<img class=\"sbkSaav_UploadThumbnail\" src=\"" + thisImageFile_URL + "\" alt=\"Missing Thumbnail\" title=\"" + thisImageFile + "\" /></a>");
 
-                        
-                        if (( !String.IsNullOrEmpty(display_name)) && (display_name.Length > 25))
+
+                        if ((!String.IsNullOrEmpty(display_name)) && (display_name.Length > 25))
                         {
                             Output.Write("<br /><span class=\"sbkSaav_UploadTitle\"><abbr title=\"" + display_name + "\">" + thisImageFile.Substring(0, 20) + "..." + Path.GetExtension(thisImage) + "</abbr></span>");
                         }
@@ -1303,7 +1299,7 @@ namespace SobekCM.Library.AdminViewer
                             Output.Write("<br /><span class=\"sbkSaav_UploadTitle\">" + thisImageFile + "</span>");
                         }
 
-                        
+
 
                         // Build the action links
                         Output.Write("<br /><span class=\"sbkAdm_ActionLink\" >( ");
@@ -1421,8 +1417,8 @@ namespace SobekCM.Library.AdminViewer
 
 
                         string display_name = thisDocFile;
-                        
-                        if (( !String.IsNullOrEmpty(display_name)) && ( display_name.Length > 25))
+
+                        if ((!String.IsNullOrEmpty(display_name)) && (display_name.Length > 25))
                         {
                             Output.Write("<br /><span class=\"sbkSaav_UploadTitle\"><abbr title=\"" + display_name + "\">" + thisDocFile.Substring(0, 20) + "..." + extension + "</abbr></span>");
                         }
@@ -1472,33 +1468,33 @@ namespace SobekCM.Library.AdminViewer
 
         #endregion
 
-		#region Methods to add file upload controls to the page
+        #region Methods to add file upload controls to the page
 
-		/// <summary> Add controls directly to the form in the main control area placeholder </summary>
-		/// <param name="MainPlaceHolder"> Main place holder to which all main controls are added </param>
-		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-		public override void Add_Controls(TextWriter Output, Custom_Tracer Tracer)
-		{
-			Tracer.Add_Trace("File_Managament_MySobekViewer.Add_Controls", String.Empty);
+        /// <summary> Add controls directly to the form in the main control area placeholder </summary>
+        /// <param name="MainPlaceHolder"> Main place holder to which all main controls are added </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        public override void Add_Controls(TextWriter Output, Custom_Tracer Tracer)
+        {
+            Tracer.Add_Trace("File_Managament_MySobekViewer.Add_Controls", String.Empty);
 
-			switch (page)
-			{
+            switch (page)
+            {
                 case 5:
                     add_upload_controls(Output, ".gif,.bmp,.jpg,.png,.jpeg,.ai,.doc,.docx,.eps,.kml,.pdf,.psd,.pub,.txt,.vsd,.vsdx,.xls,.xlsx,.xml,.zip", webContentDirectory, String.Empty, true, "WebContent|" + webContent.WebContentID + "|Uploads", Tracer);
                     break;
-			}
-		}
+            }
+        }
 
-		private void add_upload_controls(TextWriter Output, string FileExtensions, string UploadDirectory, string ServerSideName, bool UploadMultiple, string ReturnToken, Custom_Tracer Tracer)
-		{
-			Tracer.Add_Trace("File_Managament_MySobekViewer.add_upload_controls", String.Empty);
+        private void add_upload_controls(TextWriter Output, string FileExtensions, string UploadDirectory, string ServerSideName, bool UploadMultiple, string ReturnToken, Custom_Tracer Tracer)
+        {
+            Tracer.Add_Trace("File_Managament_MySobekViewer.add_upload_controls", String.Empty);
 
-			// Ensure the directory exists
-			if (!File.Exists(UploadDirectory))
-				Directory.CreateDirectory(UploadDirectory);
-		}
+            // Ensure the directory exists
+            if (!File.Exists(UploadDirectory))
+                Directory.CreateDirectory(UploadDirectory);
+        }
 
-		#endregion
+        #endregion
 
         /// <summary> Returns a flag indicating whether the file upload specific holder in the itemNavForm form will be utilized 
         /// for the current request, or if it can be hidden/omitted. </summary>

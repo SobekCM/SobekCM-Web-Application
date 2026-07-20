@@ -1,9 +1,9 @@
-﻿using System;
+﻿using ProtoBuf;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
-using ProtoBuf;
 
 namespace SobekCM.Core.Configuration.Extensions
 {
@@ -24,7 +24,7 @@ namespace SobekCM.Core.Configuration.Extensions
         [XmlAttribute("directory")]
         [ProtoMember(2)]
         public string BaseDirectory { get; set; }
-         
+
         /// <summary> Code that uniquely identifiers this extension </summary>
         [DataMember(Name = "code")]
         [XmlAttribute("code")]
@@ -103,7 +103,7 @@ namespace SobekCM.Core.Configuration.Extensions
 
         /// <summary> Administrative information about an extension/plug-in, such as description,
         /// authors, permissions, etc..  </summary>
-        [DataMember(Name = "adminInfo",EmitDefaultValue = false)]
+        [DataMember(Name = "adminInfo", EmitDefaultValue = false)]
         [XmlElement("adminInfo")]
         [ProtoMember(12)]
         public ExtensionAdminInfo AdminInfo { get; set; }
@@ -127,7 +127,7 @@ namespace SobekCM.Core.Configuration.Extensions
         /// <returns> TRUE if the property should be serialized, otherwise FALSE </returns>
         public bool ShouldSerializeAssemblies()
         {
-            return ((Assemblies != null ) && ( Assemblies.Count > 0 ));
+            return ((Assemblies != null) && (Assemblies.Count > 0));
         }
 
         /// <summary> Method suppresses XML Serialization of the CssFiles property if it is empty </summary>
@@ -186,7 +186,7 @@ namespace SobekCM.Core.Configuration.Extensions
                 string filename = Path.GetFileNameWithoutExtension(AssemblyPathFile);
                 Assemblies.Add(new ExtensionAssembly(filename, AssemblyPathFile));
             }
-            catch 
+            catch
             {
                 Assemblies.Add(new ExtensionAssembly(String.Empty, AssemblyPathFile));
             }

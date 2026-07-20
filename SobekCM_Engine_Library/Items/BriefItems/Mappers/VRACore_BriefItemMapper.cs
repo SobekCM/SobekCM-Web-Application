@@ -1,10 +1,10 @@
 ﻿#region Using directives
 
-using System;
 using SobekCM.Core.BriefItem;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Metadata_Modules;
 using SobekCM.Resource_Object.Metadata_Modules.VRACore;
+using System;
 
 #endregion
 
@@ -60,7 +60,7 @@ namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
                 // Display all cultural context information
                 if (vraInfo.Cultural_Context_Count > 0)
                 {
-                    New.Add_Description("Cultural Context", vraInfo.Cultural_Contexts );
+                    New.Add_Description("Cultural Context", vraInfo.Cultural_Contexts);
                 }
 
                 // Display all style/period information

@@ -1,9 +1,9 @@
 ﻿#region Using directives
 
+using ProtoBuf;
 using System;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
-using ProtoBuf;
 
 #endregion
 
@@ -30,7 +30,7 @@ namespace SobekCM.Core.Results
         /// <param name="Facet"> Text of this facet </param>
         /// <param name="Frequency"> Frequency of this facet ( number of occurances )</param>
         /// <param name="Code"> Aggregation code associated with this facet </param>
-        public Search_Facet_Aggregation(string Facet, int Frequency, string Code ) : base ( Facet, Frequency )
+        public Search_Facet_Aggregation(string Facet, int Frequency, string Code) : base(Facet, Frequency)
         {
             this.Code = Code;
         }

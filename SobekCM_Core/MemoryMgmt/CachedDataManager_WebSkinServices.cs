@@ -1,12 +1,11 @@
 #region Using directives
 
 using Microsoft.Extensions.Caching.Memory;
-
+using SobekCM.Core.Skins;
+using SobekCM.Tools;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using SobekCM.Core.Skins;
-using SobekCM.Tools;
 
 #endregion
 

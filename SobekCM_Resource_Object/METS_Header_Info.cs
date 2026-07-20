@@ -284,9 +284,9 @@ namespace SobekCM.Resource_Object
                 creator_individual_notes.Add(New_Note);
         }
 
-        internal void Add_METS(SobekCM_Item thisBib, TextWriter results )
+        internal void Add_METS(SobekCM_Item thisBib, TextWriter results)
         {
-             // Start the METS Header
+            // Start the METS Header
             results.Write("<METS:metsHdr CREATEDATE=\"" + Date_to_METS(create_date) + "\" ID=\"" + ObjectID + "\" LASTMODDATE=\"" + Date_to_METS(modify_date) + "\" RECORDSTATUS=\"" + RecordStatus + "\">\r\n");
 
             // Add the organizational creator, if there is one

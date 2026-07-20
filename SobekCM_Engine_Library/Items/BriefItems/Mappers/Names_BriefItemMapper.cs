@@ -1,10 +1,10 @@
 ﻿#region Using directives
 
-using System;
-using System.Text;
 using SobekCM.Core.BriefItem;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Bib_Info;
+using System;
+using System.Text;
 
 #endregion
 
@@ -23,7 +23,7 @@ namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
         {
 
             // Add the main entity first
-            if (Original.Bib_Info.hasMainEntityName) 
+            if (Original.Bib_Info.hasMainEntityName)
             {
                 // Is this a conference?
                 if (Original.Bib_Info.Main_Entity_Name.Name_Type == Name_Info_Type_Enum.Conference)
@@ -36,13 +36,13 @@ namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
                     // Build the full name and info
                     Name_Info thisName = Original.Bib_Info.Main_Entity_Name;
                     StringBuilder nameBuilder = new StringBuilder();
-                    if ( !String.IsNullOrWhiteSpace(thisName.Full_Name))
+                    if (!String.IsNullOrWhiteSpace(thisName.Full_Name))
                     {
                         nameBuilder.Append(thisName.Full_Name.Replace("|", " -- "));
                     }
                     else
                     {
-                        if ( !String.IsNullOrWhiteSpace(thisName.Family_Name))
+                        if (!String.IsNullOrWhiteSpace(thisName.Family_Name))
                         {
                             if (!String.IsNullOrWhiteSpace(thisName.Given_Name))
                             {
@@ -69,7 +69,7 @@ namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
                         nameBuilder.Append(", " + thisName.Dates);
 
                     // Add affiliation
-                    if ( !String.IsNullOrEmpty(thisName.Affiliation))
+                    if (!String.IsNullOrEmpty(thisName.Affiliation))
                     {
                         nameBuilder.Append(" ( " + thisName.Affiliation + " )");
                     }

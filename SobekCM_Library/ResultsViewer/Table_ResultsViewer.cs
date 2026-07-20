@@ -1,13 +1,12 @@
 #region Using directives
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Results;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
+using System;
+using System.IO;
+using System.Text;
 
 #endregion
 
@@ -103,21 +102,21 @@ namespace SobekCM.Library.ResultsViewer
                 string internal_link = base_url + titleResult.BibID + "/" + firstItemResult.VID + textRedirectStem;
 
                 // For browses, just point to the title
-                if (( RequestSpecificValues.Current_Mode.Mode == Display_Mode_Enum.Aggregation ) && ( RequestSpecificValues.Current_Mode.Aggregation_Type == Aggregation_Type_Enum.Browse_Info ))
+                if ((RequestSpecificValues.Current_Mode.Mode == Display_Mode_Enum.Aggregation) && (RequestSpecificValues.Current_Mode.Aggregation_Type == Aggregation_Type_Enum.Browse_Info))
                     internal_link = base_url + titleResult.BibID + textRedirectStem;
 
                 // Start this row
-                if ( multiple_title )
+                if (multiple_title)
                     resultsBldr.AppendLine("\t<tr valign=\"top\" onmouseover=\"this.className='tableRowHighlight'\" onmouseout=\"this.className='tableRowNormal'\" >");
                 else
-                    resultsBldr.AppendLine("\t<tr valign=\"top\" onmouseover=\"this.className='tableRowHighlight'\" onmouseout=\"this.className='tableRowNormal'\" onclick=\"window.location.href='" + internal_link  + "';\" >");
+                    resultsBldr.AppendLine("\t<tr valign=\"top\" onmouseover=\"this.className='tableRowHighlight'\" onmouseout=\"this.className='tableRowNormal'\" onclick=\"window.location.href='" + internal_link + "';\" >");
 
 
                 // Add the counter as the first column
                 resultsBldr.AppendLine("\t\t<td>" + result_counter + "</td>");
 
                 // Add differently depending on the child row count
-                if ( !multiple_title )
+                if (!multiple_title)
                 {
                     if (!String.IsNullOrEmpty(firstItemResult.Link))
                     {
@@ -138,7 +137,7 @@ namespace SobekCM.Library.ResultsViewer
                     resultsBldr.Remove(0, resultsBldr.Length);
 
                     Add_Issue_Tree(Output, titleResult, current_row, textRedirectStem, base_url);
-                    resultsBldr.AppendLine("\t</td></tr>" );
+                    resultsBldr.AppendLine("\t</td></tr>");
                 }
 
                 // Add a horizontal line

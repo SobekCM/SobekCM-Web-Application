@@ -12,7 +12,7 @@ namespace SobekCM.Engine_Library.JSON_Client_Helpers
     public class UploadedFileFolderInfo
     {
         /// <summary> URL for the image to display for inclusion </summary>
-        public string image { get; private set;  }
+        public string image { get; private set; }
 
         /// <summary> Folder name under which this image should be included in the user interface </summary>
         public string folder { get; private set; }

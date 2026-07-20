@@ -1,10 +1,7 @@
 ﻿#region Using directives
 
-using System;
-using SobekCM.Engine_Library.Solr.Legacy;
 using SobekCM.Engine_Library.Solr.v5;
 using SobekCM.Resource_Object;
-using SobekCM.Resource_Object.Solr;
 
 #endregion
 
@@ -27,9 +24,9 @@ namespace SobekCM.Engine_Library.Solr
         /// <param name="SolrPageUrl"> URL for the solr/lucene core used for searching within a single document for matching pages </param>
         /// <param name="Resource"> Digital resource to index</param>
         /// <param name="Include_Text"> Flag indicates whether to look for and include full text </param>
-        public static void Update_Index(string SolrDocumentUrl, string SolrPageUrl, SobekCM_Item Resource, bool Include_Text )
+        public static void Update_Index(string SolrDocumentUrl, string SolrPageUrl, SobekCM_Item Resource, bool Include_Text)
         {
-            solrController.Update_Index(SolrDocumentUrl, SolrPageUrl, Resource, Include_Text );
+            solrController.Update_Index(SolrDocumentUrl, SolrPageUrl, Resource, Include_Text);
         }
 
         /// <summary> Deletes an existing resource from both solr/lucene core indexes </summary>
@@ -40,7 +37,7 @@ namespace SobekCM.Engine_Library.Solr
         /// <returns> TRUE if successful, otherwise FALSE </returns>
         public static bool Delete_Resource_From_Index(string SolrDocumentUrl, string SolrPageUrl, string BibID, string VID)
         {
-            return solrController.Delete_Resource_From_Index(SolrDocumentUrl, SolrPageUrl, BibID, VID );
+            return solrController.Delete_Resource_From_Index(SolrDocumentUrl, SolrPageUrl, BibID, VID);
         }
 
 

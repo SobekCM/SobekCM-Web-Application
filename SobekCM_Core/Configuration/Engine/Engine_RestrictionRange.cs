@@ -1,10 +1,10 @@
 ﻿#region Using directives
 
+using ProtoBuf;
 using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
-using ProtoBuf;
 
 #endregion
 
@@ -43,9 +43,9 @@ namespace SobekCM.Core.Configuration.Engine
         /// <summary> Add a new (single IP) ip value to this range </summary>
         /// <param name="Label"> Descriptive label for this particular IP address(es) </param>
         /// <param name="IpAddress"> IP address, or the beginning of a range of IP addresses </param>
-        public void Add_IP_Range(string Label, string IpAddress )
+        public void Add_IP_Range(string Label, string IpAddress)
         {
-            Engine_IpRange singleIpRange = new Engine_IpRange {Label = Label, StartIp = IpAddress};
+            Engine_IpRange singleIpRange = new Engine_IpRange { Label = Label, StartIp = IpAddress };
             IpRanges.Add(singleIpRange);
         }
     }

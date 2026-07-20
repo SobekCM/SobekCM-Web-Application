@@ -1,9 +1,5 @@
-﻿using System;
+﻿using SobekCM.Core.BriefItem;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using SobekCM.Core.BriefItem;
 
 namespace SobekCM.Core.FileSystems
 {
@@ -52,7 +48,7 @@ namespace SobekCM.Core.FileSystems
         /// <param name="DigitalResource"> The digital resource object </param>
         /// <param name="FileName"> Name of the resource file </param>
         /// <returns> URI for the web resource </returns>
-        public static string Resource_Web_Uri(BriefItemInfo DigitalResource, string FileName )
+        public static string Resource_Web_Uri(BriefItemInfo DigitalResource, string FileName)
         {
             return fileSystem.Resource_Web_Uri(DigitalResource, FileName);
         }

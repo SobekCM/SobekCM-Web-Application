@@ -1,12 +1,11 @@
-﻿using System;
+﻿using SobekCM.Resource_Object.GenericXml.Mapping;
+using SobekCM.Resource_Object.GenericXml.Results;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net.Mime;
 using System.Text;
 using System.Xml;
-using SobekCM.Resource_Object.GenericXml.Mapping;
-using SobekCM.Resource_Object.GenericXml.Results;
 
 namespace SobekCM.Resource_Object.GenericXml.Reader
 {
@@ -40,7 +39,7 @@ namespace SobekCM.Resource_Object.GenericXml.Reader
                     {
                         // Create the node for this top-level element
                         string nodeName = readerXml.Name;
-                        GenericXmlNode topNode = new GenericXmlNode {NodeName = nodeName};
+                        GenericXmlNode topNode = new GenericXmlNode { NodeName = nodeName };
 
                         // Add this to the stack
                         currentStack.Push(topNode);
@@ -55,15 +54,15 @@ namespace SobekCM.Resource_Object.GenericXml.Reader
                 }
 
             }
-            catch 
+            catch
             {
-               // MessageBox.Show(ee.Message);
+                // MessageBox.Show(ee.Message);
             }
 
             return returnValue;
         }
 
-        private void recursive_get_existing_paths(XmlReader readerXml, Stack<GenericXmlNode> currentStack, Dictionary<string, string> pathExistenceCheck, List<GenericXmlPath> returnValue )
+        private void recursive_get_existing_paths(XmlReader readerXml, Stack<GenericXmlNode> currentStack, Dictionary<string, string> pathExistenceCheck, List<GenericXmlPath> returnValue)
         {
             // Create the list of nodes to this point from the stack
             List<GenericXmlNode> currentReverseList = currentStack.ToList();
@@ -92,7 +91,7 @@ namespace SobekCM.Resource_Object.GenericXml.Reader
             if (readerXml.HasAttributes)
             {
                 // Create the list of nodes to this point
-                for( int i = 0 ; i < readerXml.AttributeCount ; i++ )
+                for (int i = 0; i < readerXml.AttributeCount; i++)
                 {
                     // Move to this attribute
                     readerXml.MoveToAttribute(i);
@@ -187,7 +186,7 @@ namespace SobekCM.Resource_Object.GenericXml.Reader
 
         #region Methods retrieve all path/value pairs that existing in the file
 
-        public List<GenericXmlPathValue> GetValues(string XmlFile, string MappingFile )
+        public List<GenericXmlPathValue> GetValues(string XmlFile, string MappingFile)
         {
             // Open the mapping file first
             GenericXmlMappingSet set = GenericXmlMappingSet.Read(MappingFile);
@@ -393,9 +392,9 @@ namespace SobekCM.Resource_Object.GenericXml.Reader
                 }
 
             }
-            catch 
+            catch
             {
-               // MessageBox.Show(ee.Message);
+                // MessageBox.Show(ee.Message);
             }
 
             return returnValue;
@@ -781,7 +780,7 @@ namespace SobekCM.Resource_Object.GenericXml.Reader
                 return fullText;
 
             // Open the content and read it into the StringBuilder
-            StringBuilder builder = new StringBuilder((int) (fullText.Length*1.1));
+            StringBuilder builder = new StringBuilder((int)(fullText.Length * 1.1));
 
             // The cleaning of the tags will not include the <text> portion of any metadata file
             int text_tag_index = -1;
@@ -806,7 +805,7 @@ namespace SobekCM.Resource_Object.GenericXml.Reader
                 {
                     // Look for the start tag first, including a space after for attributes or something
                     int this_index = fullText.IndexOf("<" + displayTag + " ", index, StringComparison.OrdinalIgnoreCase);
-                    if (( this_index > 0 ) && (this_index < next_index))
+                    if ((this_index > 0) && (this_index < next_index))
                     {
                         next_index = this_index;
                     }
@@ -839,7 +838,7 @@ namespace SobekCM.Resource_Object.GenericXml.Reader
                     builder.Append(fullText.Substring(index));
                     break;
                 }
-               
+
                 // If a match was found, start by copying over the GOOD data
                 builder.Append(fullText.Substring(index, next_index - index));
 

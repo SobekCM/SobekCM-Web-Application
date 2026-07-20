@@ -1,7 +1,7 @@
 ﻿#region Using directives
 
-using System.Collections.Generic;
 using SobekCM.Core.Settings;
+using System.Collections.Generic;
 
 #endregion
 
@@ -18,7 +18,7 @@ namespace SobekCM.Builder_Library.Modules.PostProcess
         /// <param name="ProcessedItems"> List of all items just processed (or reprocessed) </param>
         /// <param name="DeletedItems"> List of all delete requests just processed </param>
         /// <param name="Settings"> Instance-wide settings which may be required for this process </param>
-        void DoWork( List<string> AggregationsAffected, List<BibVidStruct> ProcessedItems, List<BibVidStruct> DeletedItems, InstanceWide_Settings Settings );
+        void DoWork(List<string> AggregationsAffected, List<BibVidStruct> ProcessedItems, List<BibVidStruct> DeletedItems, InstanceWide_Settings Settings);
 
         /// <summary> Event is fired when an error occurs during processing </summary>
         event ModuleErrorLoggingDelegate Error;

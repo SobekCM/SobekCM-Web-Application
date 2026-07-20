@@ -21,7 +21,7 @@ namespace Census_Metadata_Plugin.Models
         /// <summary> List of people linked to this census item </summary>
         public List<Census_Person_Info> People
         {
-            get { return people;  }
+            get { return people; }
         }
 
         public List<KeyValuePair<string, string>> Metadata_Search_Terms => throw new NotImplementedException();

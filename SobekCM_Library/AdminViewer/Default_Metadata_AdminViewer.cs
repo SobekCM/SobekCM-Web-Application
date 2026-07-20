@@ -2,15 +2,9 @@
 
 #region Using directives
 
-using System;
-using System.Collections.Specialized;
-using System.IO;
-using System.Linq;
 using Microsoft.AspNetCore.Http;
 using SobekCM.Core.ApplicationState;
 using SobekCM.Core.Navigation;
-using SobekCM.Core.UI_Configuration;
-using SobekCM.Core.UI_Configuration.StaticResources;
 using SobekCM.Engine_Library.ApplicationState;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Library.Database;
@@ -18,6 +12,9 @@ using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
+using System;
+using System.IO;
+using System.Linq;
 
 #endregion
 
@@ -138,7 +135,7 @@ namespace SobekCM.Library.AdminViewer
                             if (!result)
                             {
                                 actionMessage = "ERROR: Default metadata CODE must contain only letters and numbers";
-                                entered_code = entered_code.Replace("\"","");
+                                entered_code = entered_code.Replace("\"", "");
                             }
                             else if (entered_code.Length == 0)
                             {
@@ -147,7 +144,7 @@ namespace SobekCM.Library.AdminViewer
                             else if (entered_code.Length > 20)
                             {
                                 actionMessage = "ERROR: Default metadata CODE cannot be more than twenty characters long";
-                                entered_code = entered_code.Substring(0,20);
+                                entered_code = entered_code.Substring(0, 20);
                             }
                             else if (entered_name.Length > 50)
                             {
@@ -328,7 +325,7 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("        <td style=\"width:120px;\"><label for=\"admin_project_code\">Base Metadata:</label></td>");
             Output.WriteLine("        <td><select class=\"sbkPav_select\" name=\"admin_project_base\" id=\"admin_project_base\">");
             Output.WriteLine("            <option value=\"\" selected=\"selected\">(none)</option>");
-            foreach (Default_Metadata thisSet in UI_ApplicationCache_Gateway.Global_Default_Metadata )
+            foreach (Default_Metadata thisSet in UI_ApplicationCache_Gateway.Global_Default_Metadata)
             {
                 if (String.Compare(thisSet.Code, "NONE", true) != 0)
                 {
@@ -347,7 +344,7 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("        <td><label for=\"admin_project_name\">Name:</label></td>");
             Output.WriteLine("        <td><input class=\"sbkPav_large_input sbkAdmin_Focusable\" name=\"admin_project_name\" id=\"admin_project_name\" type=\"text\" value=\"" + entered_name + "\" /></td>");
             Output.WriteLine("      <tr>");
-            
+
             // Add line for description
             Output.WriteLine("      <tr class=\"sbkPav_descriptionRow\">");
             Output.WriteLine("        <td><label for=\"admin_project_desc\">Description:</label></td>");
@@ -379,7 +376,7 @@ namespace SobekCM.Library.AdminViewer
                 string redirect = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
 
                 // Write the data for each interface
-                foreach (Default_Metadata thisSet in UI_ApplicationCache_Gateway.Global_Default_Metadata )
+                foreach (Default_Metadata thisSet in UI_ApplicationCache_Gateway.Global_Default_Metadata)
                 {
 
                     // Build the action links

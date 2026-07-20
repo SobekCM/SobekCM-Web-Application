@@ -1,9 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.IO;
-using System.Linq;
-using System.Text;
+using Microsoft.AspNetCore.Http;
 using SobekCM.Core.BriefItem;
 using SobekCM.Core.Client;
 using SobekCM.Core.FileSystems;
@@ -18,9 +13,7 @@ using SobekCM.Library.AdminViewer;
 using SobekCM.Library.Citation;
 using SobekCM.Library.Citation.SectionWriter;
 using SobekCM.Library.Citation.Template;
-using SobekCM.Library.Database;
 using SobekCM.Library.Helpers.AceEditor;
-using Microsoft.AspNetCore.Http;
 // using SobekCM.Library.Helpers.UploadiFive;
 using SobekCM.Library.HTML;
 using SobekCM.Library.UI;
@@ -34,6 +27,12 @@ using SobekCM.Resource_Object.Metadata_File_ReaderWriters;
 using SobekCM.Resource_Object.Utilities;
 using SobekCM.Tools;
 using SobekCM_Resource_Database;
+using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.IO;
+using System.Linq;
+using System.Text;
 using Image = System.Drawing.Image;
 
 // STAGE 1: Upload new TEI or set mapping
@@ -126,7 +125,7 @@ namespace SobekCM.Library.MySobekViewer
                 foreach (string thisFile in files)
                 {
                     DateTime modifiedDate = ((new FileInfo(thisFile)).LastWriteTime);
-                    if (DateTime.Now.Subtract(modifiedDate).TotalHours > (24*7))
+                    if (DateTime.Now.Subtract(modifiedDate).TotalHours > (24 * 7))
                     {
                         try
                         {
@@ -194,7 +193,7 @@ namespace SobekCM.Library.MySobekViewer
             editingItem = null;
             if (Context.SessionObject()["Edit_TEI_mySobekViewer." + bibid + "_" + vid + ".New_Item"] != null)
                 editingItem = Context.SessionObject()["Edit_TEI_mySobekViewer." + bibid + "_" + vid + ".New_Item"] as SobekCM_Item;
-            
+
             // If any are null or blank, pull from the item
             if ((String.IsNullOrEmpty(mapping_file)) || (String.IsNullOrEmpty(xslt_file)) || (String.IsNullOrEmpty(original_tei_file)) || (editingItem == null))
             {
@@ -501,12 +500,12 @@ namespace SobekCM.Library.MySobekViewer
                 SobekCM_Item_Validator.Validate_SobekCM_Item(editingItem, validationErrors);
 
                 // Get the validation errors
-                if ((validationErrors == null ) || ( validationErrors.Count == 0))
+                if ((validationErrors == null) || (validationErrors.Count == 0))
                     editingItem.Save_METS();
                 else
                 {
                     editingItem.Web.Show_Validation_Errors = true;
-                    
+
                     RequestSpecificValues.Current_Mode.My_Sobek_SubMode = "4";
                     UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
                     return;
@@ -778,7 +777,7 @@ namespace SobekCM.Library.MySobekViewer
             // Write the top currentItem mimic html portion
             Write_Item_Type_Top(Output, editingItem);
 
-            if ( currentProcessStep == 2 )
+            if (currentProcessStep == 2)
                 Output.WriteLine("<div id=\"container-innerfull\">");
             else
                 Output.WriteLine("<div id=\"container-inner1000\">");
@@ -820,7 +819,7 @@ namespace SobekCM.Library.MySobekViewer
                 Output.WriteLine("    <td colspan=\"3\">");
             }
 
- 
+
 
         }
 
@@ -959,8 +958,8 @@ namespace SobekCM.Library.MySobekViewer
                             string file = thisSettingKey.Replace("TEI.XSLT.", "");
 
                             // Also verify this mapping file exists
-                            string filepath = Path.Combine(UI_ApplicationCache_Gateway.Settings.Servers.Application_Server_Network, "plugins", "tei", "xslt", file );
-                            if ((!File.Exists(filepath + ".xslt")) && ( !File.Exists(filepath + ".xsl")))
+                            string filepath = Path.Combine(UI_ApplicationCache_Gateway.Settings.Servers.Application_Server_Network, "plugins", "tei", "xslt", file);
+                            if ((!File.Exists(filepath + ".xslt")) && (!File.Exists(filepath + ".xsl")))
                                 continue;
 
                             // Since this exists, add to the xslt file list
@@ -1256,7 +1255,7 @@ namespace SobekCM.Library.MySobekViewer
                         // Ensure source and holding codes remain
                         if (String.IsNullOrEmpty(editingItem.Bib_Info.Location.Holding_Code)) editingItem.Bib_Info.Location.Holding_Code = holding_code;
                         if (String.IsNullOrEmpty(editingItem.Bib_Info.Source.Code)) editingItem.Bib_Info.Source.Code = source_code;
-                        if ( editingItem.Bib_Info.SobekCM_Type == TypeOfResource_SobekCM_Enum.UNKNOWN )
+                        if (editingItem.Bib_Info.SobekCM_Type == TypeOfResource_SobekCM_Enum.UNKNOWN)
                             editingItem.Bib_Info.SobekCM_Type = original_type;
                         if (String.IsNullOrEmpty(editingItem.Bib_Info.Main_Title.Title))
                             editingItem.Bib_Info.Main_Title.Title = original_title;

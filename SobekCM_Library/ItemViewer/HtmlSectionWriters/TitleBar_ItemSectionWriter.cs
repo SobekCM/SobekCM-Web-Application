@@ -1,10 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using SobekCM.Core.BriefItem;
+﻿using SobekCM.Core.BriefItem;
 using SobekCM.Library.HTML;
 using SobekCM.Library.ItemViewer.Viewers;
 using SobekCM.Library.UI;
+using System;
+using System.Collections.Generic;
+using System.IO;
 
 namespace SobekCM.Library.ItemViewer.HtmlSectionWriters
 {
@@ -79,7 +79,7 @@ namespace SobekCM.Library.ItemViewer.HtmlSectionWriters
                         }
                     }
 
-                    
+
 
                     // Add the link if there is one  
                     // Links_BriefItemMapper

@@ -1,10 +1,10 @@
 ﻿#region Using directives
 
-using System.IO;
-using System.Xml;
 using SobekCM.Core.ApplicationState;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Users;
+using System.IO;
+using System.Xml;
 
 #endregion
 
@@ -29,7 +29,7 @@ namespace SobekCM.Library.Citation.Elements
             html_element_name = Html_Element_Name;
             checkBoxText = Check_Box_Text;
             Repeatable = false;
-            DefaultValue = false;            
+            DefaultValue = false;
         }
 
         /// <summary> Method helps to render all simple text box based elements </summary>

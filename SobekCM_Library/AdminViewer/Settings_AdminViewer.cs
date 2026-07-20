@@ -1,13 +1,5 @@
 #region Using directives
 
-using System;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Data;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Http;
 using SobekCM.Core.Builder;
 using SobekCM.Core.Client;
@@ -22,16 +14,13 @@ using SobekCM.Core.Navigation;
 using SobekCM.Core.Search;
 using SobekCM.Core.Settings;
 using SobekCM.Core.Settings.DbItemViewers;
-using SobekCM.Core.UI_Configuration;
 using SobekCM.Core.UI_Configuration.Citation;
-using SobekCM.Core.UI_Configuration.StaticResources;
 using SobekCM.Core.UI_Configuration.TemplateElements;
 using SobekCM.Core.UI_Configuration.Viewers;
 using SobekCM.Core.Users;
 using SobekCM.Core.WebContent;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Engine_Library.Database;
-using SobekCM.Library.Database;
 using SobekCM.Library.Helpers.AceEditor;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
@@ -39,73 +28,80 @@ using SobekCM.Library.ResultsViewer;
 using SobekCM.Library.UI;
 using SobekCM.Resource_Object.Configuration;
 using SobekCM.Tools;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Text.RegularExpressions;
 using Microservice_Endpoint_Protocol_Enum = SobekCM.Core.Configuration.Engine.Microservice_Endpoint_Protocol_Enum;
 
 #endregion
 
 namespace SobekCM.Library.AdminViewer
 {
-	/// <summary> Class allows an authenticated system admin to view and edit the library-wide system settings in this library </summary>
-	/// <remarks> This class extends the <see cref="abstract_AdminViewer"/> class.<br /><br />
-	/// MySobek Viewers are used for registration and authentication with mySobek, as well as performing any task which requires
-	/// authentication, such as online submittal, metadata editing, and system administrative tasks.<br /><br />
-	/// During a valid html request, the following steps occur:
-	/// <ul>
-	/// <li>Application state is built/verified by the Application_State_Builder </li>
-	/// <li>Request is analyzed by the QueryString_Analyzer and output as a <see cref="Navigation_Object"/>  </li>
-	/// <li>Main writer is created for rendering the output, in his case the <see cref="Html_MainWriter"/> </li>
-	/// <li>The HTML writer will create the necessary subwriter.  Since this action requires authentication, an instance of the  <see cref="MySobek_HtmlSubwriter"/> class is created. </li>
-	/// <li>The mySobek subwriter creates an instance of this viewer to show the library-wide system settings in this digital library</li>
-	/// </ul></remarks>
-	public class Settings_AdminViewer : abstract_AdminViewer
-	{
-		private string actionMessage;
-		private StringBuilder errorBuilder;
+    /// <summary> Class allows an authenticated system admin to view and edit the library-wide system settings in this library </summary>
+    /// <remarks> This class extends the <see cref="abstract_AdminViewer"/> class.<br /><br />
+    /// MySobek Viewers are used for registration and authentication with mySobek, as well as performing any task which requires
+    /// authentication, such as online submittal, metadata editing, and system administrative tasks.<br /><br />
+    /// During a valid html request, the following steps occur:
+    /// <ul>
+    /// <li>Application state is built/verified by the Application_State_Builder </li>
+    /// <li>Request is analyzed by the QueryString_Analyzer and output as a <see cref="Navigation_Object"/>  </li>
+    /// <li>Main writer is created for rendering the output, in his case the <see cref="Html_MainWriter"/> </li>
+    /// <li>The HTML writer will create the necessary subwriter.  Since this action requires authentication, an instance of the  <see cref="MySobek_HtmlSubwriter"/> class is created. </li>
+    /// <li>The mySobek subwriter creates an instance of this viewer to show the library-wide system settings in this digital library</li>
+    /// </ul></remarks>
+    public class Settings_AdminViewer : abstract_AdminViewer
+    {
+        private string actionMessage;
+        private StringBuilder errorBuilder;
 
-		private bool isValid;
-	  
-		private readonly bool category_view;
-		private readonly bool limitedRightsMode;
-		private readonly bool readonlyMode;
-		private readonly Admin_Setting_Collection currSettings;
-		private SortedList<string, string> tabPageNames;
-		private Dictionary<string, List<Admin_Setting_Value>> settingsByPage;
-	    private List<Admin_Setting_Value> builderSettings;
-	    private List<string> extensionCodes;
+        private bool isValid;
+
+        private readonly bool category_view;
+        private readonly bool limitedRightsMode;
+        private readonly bool readonlyMode;
+        private readonly Admin_Setting_Collection currSettings;
+        private SortedList<string, string> tabPageNames;
+        private Dictionary<string, List<Admin_Setting_Value>> settingsByPage;
+        private List<Admin_Setting_Value> builderSettings;
+        private List<string> extensionCodes;
 
         private readonly Settings_Mode_Enum mainMode = Settings_Mode_Enum.NONE;
         private readonly Settings_Configuration_SubMode_Enum configSubMode = Settings_Configuration_SubMode_Enum.NONE;
         private readonly Settings_Builder_SubMode_Enum builderSubEnum = Settings_Builder_SubMode_Enum.NONE;
-	    private readonly Settings_Metadata_SubMode_Enum metadataSubEnum = Settings_Metadata_SubMode_Enum.NONE;
+        private readonly Settings_Metadata_SubMode_Enum metadataSubEnum = Settings_Metadata_SubMode_Enum.NONE;
         private readonly Settings_Engine_SubMode_Enum engineSubEnum = Settings_Engine_SubMode_Enum.NONE;
         private readonly Settings_UI_SubMode_Enum uiSubEnum = Settings_UI_SubMode_Enum.NONE;
         private readonly Settings_HTML_SubMode_Enum htmlSubEnum = Settings_HTML_SubMode_Enum.NONE;
-	    private readonly int extensionSubMode = -1;
+        private readonly int extensionSubMode = -1;
 
-	    private readonly string redirectUrl;
+        private readonly string redirectUrl;
 
         #region Enumeration of the main modes of the settings, as well as submodes
 
         private enum Settings_Mode_Enum : byte
-		{
-			NONE,
-	
-			Settings,
+        {
+            NONE,
+
+            Settings,
 
             Configuration,
 
-			Builder,
+            Builder,
 
             Metadata,
 
-			Engine,
+            Engine,
 
-			UI,
+            UI,
 
-			HTML,
+            HTML,
 
-			Extensions
-		}
+            Extensions
+        }
 
         private enum Settings_Configuration_SubMode_Enum : byte
         {
@@ -116,16 +112,16 @@ namespace SobekCM.Library.AdminViewer
             Reading_Log
         }
 
-	    private enum Settings_Builder_SubMode_Enum : byte
-	    {
-	        NONE,
+        private enum Settings_Builder_SubMode_Enum : byte
+        {
+            NONE,
 
             Builder_Settings,
 
             Builder_Folders,
 
             Builder_Modules
-	    }
+        }
 
         private enum Settings_Metadata_SubMode_Enum : byte
         {
@@ -153,7 +149,7 @@ namespace SobekCM.Library.AdminViewer
             Contact_Form,
 
             Engine_Server_Endpoints,
-            
+
             OAI_PMH,
 
             QcTool
@@ -185,61 +181,61 @@ namespace SobekCM.Library.AdminViewer
             Usage_Email
         }
 
-		#endregion
+        #endregion
 
 
-		/// <summary> Constructor for a new instance of the Thematic_Headings_AdminViewer class </summary>
-		/// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
-		/// <remarks> Postback from handling saving the new settings is handled here in the constructor </remarks>
-		public Settings_AdminViewer(RequestCache RequestSpecificValues, HttpContext Context) : base(RequestSpecificValues, Context)
-		{
+        /// <summary> Constructor for a new instance of the Thematic_Headings_AdminViewer class </summary>
+        /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
+        /// <remarks> Postback from handling saving the new settings is handled here in the constructor </remarks>
+        public Settings_AdminViewer(RequestCache RequestSpecificValues, HttpContext Context) : base(RequestSpecificValues, Context)
+        {
             // Determine the extension codes
             extensionCodes = new List<string>();
-		    if ((UI_ApplicationCache_Gateway.Configuration.Extensions != null) && (UI_ApplicationCache_Gateway.Configuration.Extensions.Extensions != null) && (UI_ApplicationCache_Gateway.Configuration.Extensions.Extensions.Count > 0))
-		    {
-		        SortedList<string, string> extensionSorter = new SortedList<string, string>();
-		        foreach (ExtensionInfo thisInfo in UI_ApplicationCache_Gateway.Configuration.Extensions.Extensions)
-		            extensionSorter[thisInfo.Code] = thisInfo.Code;
-		        extensionCodes = extensionSorter.Values.ToList();
-		    }
+            if ((UI_ApplicationCache_Gateway.Configuration.Extensions != null) && (UI_ApplicationCache_Gateway.Configuration.Extensions.Extensions != null) && (UI_ApplicationCache_Gateway.Configuration.Extensions.Extensions.Count > 0))
+            {
+                SortedList<string, string> extensionSorter = new SortedList<string, string>();
+                foreach (ExtensionInfo thisInfo in UI_ApplicationCache_Gateway.Configuration.Extensions.Extensions)
+                    extensionSorter[thisInfo.Code] = thisInfo.Code;
+                extensionCodes = extensionSorter.Values.ToList();
+            }
 
-			// If the RequestSpecificValues.Current_User cannot edit this, go back
-			if (( RequestSpecificValues.Current_User == null ) || ((!RequestSpecificValues.Current_User.Is_System_Admin) && (!RequestSpecificValues.Current_User.Is_Portal_Admin)))
-			{
-				RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.My_Sobek;
-				RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
-				UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
-				return;
-			}
+            // If the RequestSpecificValues.Current_User cannot edit this, go back
+            if ((RequestSpecificValues.Current_User == null) || ((!RequestSpecificValues.Current_User.Is_System_Admin) && (!RequestSpecificValues.Current_User.Is_Portal_Admin)))
+            {
+                RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.My_Sobek;
+                RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
+                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                return;
+            }
 
-			// Determine if this user has limited rights
-			if ((!RequestSpecificValues.Current_User.Is_System_Admin) && (!RequestSpecificValues.Current_User.Is_Host_Admin))
-			{
-				limitedRightsMode = true;
-				readonlyMode = true;
-			}
-			else
-			{
-				limitedRightsMode = ((!RequestSpecificValues.Current_User.Is_Host_Admin) && (UI_ApplicationCache_Gateway.Settings.Servers.isHosted)); 
-				readonlyMode = false;
-			}
+            // Determine if this user has limited rights
+            if ((!RequestSpecificValues.Current_User.Is_System_Admin) && (!RequestSpecificValues.Current_User.Is_Host_Admin))
+            {
+                limitedRightsMode = true;
+                readonlyMode = true;
+            }
+            else
+            {
+                limitedRightsMode = ((!RequestSpecificValues.Current_User.Is_Host_Admin) && (UI_ApplicationCache_Gateway.Settings.Servers.isHosted));
+                readonlyMode = false;
+            }
 
-			// Load the settings either from the local session, or from the engine
-			currSettings = Context.SessionObject()["Admin_Settings"] as Admin_Setting_Collection;
-			if (currSettings == null)
-			{
-				currSettings = SobekEngineClient.Admin.Get_Admin_Settings(RequestSpecificValues.Tracer);
-				if (currSettings != null)
-				{
-					Context.SessionObject()["Admin_Settigs"] = currSettings;
+            // Load the settings either from the local session, or from the engine
+            currSettings = Context.SessionObject()["Admin_Settings"] as Admin_Setting_Collection;
+            if (currSettings == null)
+            {
+                currSettings = SobekEngineClient.Admin.Get_Admin_Settings(RequestSpecificValues.Tracer);
+                if (currSettings != null)
+                {
+                    Context.SessionObject()["Admin_Settigs"] = currSettings;
 
-					// Build the setting values
-					build_setting_objects_for_display();
-				}
-				else
-				{
-					actionMessage = "Error pulling the settings from the engine";
-				}
+                    // Build the setting values
+                    build_setting_objects_for_display();
+                }
+                else
+                {
+                    actionMessage = "Error pulling the settings from the engine";
+                }
             }
 
             #region Determine the mode and submode
@@ -420,10 +416,10 @@ namespace SobekCM.Library.AdminViewer
             }
 
             #endregion
-            
+
             // Establish some default, starting values
-			actionMessage = String.Empty;
-			category_view = Convert.ToBoolean(RequestSpecificValues.Current_User.Get_Setting("Settings_AdminViewer:Category_View", "false"));
+            actionMessage = String.Empty;
+            category_view = Convert.ToBoolean(RequestSpecificValues.Current_User.Get_Setting("Settings_AdminViewer:Category_View", "false"));
 
             // Determine the redirect URL now
             string[] origUrlSegments = RequestSpecificValues.Current_Mode.Remaining_Url_Segments;
@@ -433,46 +429,46 @@ namespace SobekCM.Library.AdminViewer
 
             // Is this a post-back requesting to save all this data?
             if ((RequestSpecificValues.Current_Mode.isPostBack) && (Context.Request.HasFormContentType))
-			{
-				var form = Context.Request.Form;
+            {
+                var form = Context.Request.Form;
 
-				if (form["admin_settings_order"] == "category")
-				{
-					RequestSpecificValues.Current_User.Add_Setting("Settings_AdminViewer:Category_View", "true");
+                if (form["admin_settings_order"] == "category")
+                {
+                    RequestSpecificValues.Current_User.Add_Setting("Settings_AdminViewer:Category_View", "true");
                     Engine_Database.Set_User_Setting(RequestSpecificValues.Current_User.UserID, "Settings_AdminViewer:Category_View", "true");
-					category_view = true;
-				}
+                    category_view = true;
+                }
 
-				if (form["admin_settings_order"] == "alphabetical")
-				{
-					RequestSpecificValues.Current_User.Add_Setting("Settings_AdminViewer:Category_View", "false");
+                if (form["admin_settings_order"] == "alphabetical")
+                {
+                    RequestSpecificValues.Current_User.Add_Setting("Settings_AdminViewer:Category_View", "false");
                     Engine_Database.Set_User_Setting(RequestSpecificValues.Current_User.UserID, "Settings_AdminViewer:Category_View", "false");
-					category_view = false;
-				}
+                    category_view = false;
+                }
 
-				string action_value = form["admin_settings_action"];
-			    if ((action_value == "save") && (RequestSpecificValues.Current_User.Is_System_Admin))
-			    {
-    			    save_setting_values(RequestSpecificValues, mainMode );
-			    }
-			    if ((mainMode == Settings_Mode_Enum.Extensions) && (extensionSubMode > 0))
-			    {
+                string action_value = form["admin_settings_action"];
+                if ((action_value == "save") && (RequestSpecificValues.Current_User.Is_System_Admin))
+                {
+                    save_setting_values(RequestSpecificValues, mainMode);
+                }
+                if ((mainMode == Settings_Mode_Enum.Extensions) && (extensionSubMode > 0))
+                {
                     // Get the code
-			        string plugin_code = extensionCodes[extensionSubMode - 1];
-			        if (action_value == "enable_plugin")
-			        {
-			            EnableExtensionMessage response = SobekEngineClient.Admin.Plugin_Enable(plugin_code, RequestSpecificValues.Tracer);
-			            actionMessage = response.Message;
+                    string plugin_code = extensionCodes[extensionSubMode - 1];
+                    if (action_value == "enable_plugin")
+                    {
+                        EnableExtensionMessage response = SobekEngineClient.Admin.Plugin_Enable(plugin_code, RequestSpecificValues.Tracer);
+                        actionMessage = response.Message;
 
                         // If not successful, and there are errors, copy those over
-			            if ((!response.Success) && (response.Errors != null) && (response.Errors.Count > 0))
-			            {
-			                actionMessage = actionMessage + "<ul>";
-			                foreach (string thisError in response.Errors)
-			                    actionMessage = actionMessage + "<li>" + thisError + "</li>";
-			                actionMessage = actionMessage + "</ul>";
-			            }
-			        }
+                        if ((!response.Success) && (response.Errors != null) && (response.Errors.Count > 0))
+                        {
+                            actionMessage = actionMessage + "<ul>";
+                            foreach (string thisError in response.Errors)
+                                actionMessage = actionMessage + "<li>" + thisError + "</li>";
+                            actionMessage = actionMessage + "</ul>";
+                        }
+                    }
 
                     if (action_value == "disable_plugin")
                     {
@@ -488,31 +484,31 @@ namespace SobekCM.Library.AdminViewer
                             actionMessage = actionMessage + "</ul>";
                         }
                     }
-			    }
-			    if (mainMode == Settings_Mode_Enum.HTML) 
-			    {
+                }
+                if (mainMode == Settings_Mode_Enum.HTML)
+                {
                     if (htmlSubEnum == Settings_HTML_SubMode_Enum.Missing_Page)
-			        {
-			            try
-			            {
-			                string missing_contents = form["missing_page_content"].TrimFirst();
-			                string file_name = Path.Combine(UI_ApplicationCache_Gateway.Settings.Servers.Application_Server_Network, "design", "webcontent", "missing.html");
-			                StreamWriter writer = new StreamWriter(file_name, false);
-			                writer.Write(missing_contents);
-			                writer.Flush();
-			                writer.Close();
+                    {
+                        try
+                        {
+                            string missing_contents = form["missing_page_content"].TrimFirst();
+                            string file_name = Path.Combine(UI_ApplicationCache_Gateway.Settings.Servers.Application_Server_Network, "design", "webcontent", "missing.html");
+                            StreamWriter writer = new StreamWriter(file_name, false);
+                            writer.Write(missing_contents);
+                            writer.Flush();
+                            writer.Close();
 
                             SobekEngineClient.WebContent.Clear_Special_Missing_Page(RequestSpecificValues.Tracer);
-			            }
-			            catch
-			            {
-			                actionMessage = "ERROR: Unable to write the new missing page HTML to the file.";
-			            }
-			        }
+                        }
+                        catch
+                        {
+                            actionMessage = "ERROR: Unable to write the new missing page HTML to the file.";
+                        }
+                    }
 
 
-			        if (htmlSubEnum == Settings_HTML_SubMode_Enum.No_Results)
-			        {
+                    if (htmlSubEnum == Settings_HTML_SubMode_Enum.No_Results)
+                    {
                         try
                         {
                             string no_results_content = form["no_results_content"].TrimFirst();
@@ -528,7 +524,7 @@ namespace SobekCM.Library.AdminViewer
                         {
                             actionMessage = "ERROR: Unable to write the no results page HTML to the file.";
                         }
-			        }
+                    }
 
                     if (htmlSubEnum == Settings_HTML_SubMode_Enum.Usage_Email)
                     {
@@ -555,134 +551,134 @@ namespace SobekCM.Library.AdminViewer
                     }
 
 
-			    }
+                }
 
-			}
-		}
+            }
+        }
 
-	    private void save_setting_values(RequestCache RequestSpecificValues, Settings_Mode_Enum MainMode)
-	    {
-	        List<Admin_Setting_Value> pageSettings = null;
+        private void save_setting_values(RequestCache RequestSpecificValues, Settings_Mode_Enum MainMode)
+        {
+            List<Admin_Setting_Value> pageSettings = null;
 
-	        // Determine which page of settings to save
-	        if (MainMode == Settings_Mode_Enum.Settings)
-	        {
-	            // Get the tab page index
-	            int tabPage = -1;
-	            if ((RequestSpecificValues.Current_Mode.Remaining_Url_Segments != null) && (RequestSpecificValues.Current_Mode.Remaining_Url_Segments.Length > 1))
-	            {
-	                if (!Int32.TryParse(RequestSpecificValues.Current_Mode.Remaining_Url_Segments[1], out tabPage))
-	                    tabPage = -1;
-	            }
+            // Determine which page of settings to save
+            if (MainMode == Settings_Mode_Enum.Settings)
+            {
+                // Get the tab page index
+                int tabPage = -1;
+                if ((RequestSpecificValues.Current_Mode.Remaining_Url_Segments != null) && (RequestSpecificValues.Current_Mode.Remaining_Url_Segments.Length > 1))
+                {
+                    if (!Int32.TryParse(RequestSpecificValues.Current_Mode.Remaining_Url_Segments[1], out tabPage))
+                        tabPage = -1;
+                }
 
-	            // Only try to save if it is valid
-	            if ((tabPage >= 1) && (tabPage <= tabPageNames.Count))
-	            {
-	                // Get the tab page settings
-	                string tabPageNameKey = tabPageNames.Keys[tabPage - 1];
-	                string tabPageName = tabPageNames[tabPageNameKey];
-	                pageSettings = settingsByPage[tabPageName];
-	            }
-	        }
+                // Only try to save if it is valid
+                if ((tabPage >= 1) && (tabPage <= tabPageNames.Count))
+                {
+                    // Get the tab page settings
+                    string tabPageNameKey = tabPageNames.Keys[tabPage - 1];
+                    string tabPageName = tabPageNames[tabPageNameKey];
+                    pageSettings = settingsByPage[tabPageName];
+                }
+            }
 
-	        // Pretty simple if this is the builder setting page
-	        if (MainMode == Settings_Mode_Enum.Builder)
-	            pageSettings = builderSettings;
+            // Pretty simple if this is the builder setting page
+            if (MainMode == Settings_Mode_Enum.Builder)
+                pageSettings = builderSettings;
 
-	        // If no settings found for this .. just return
-	        if (pageSettings == null)
-	            return;
+            // If no settings found for this .. just return
+            if (pageSettings == null)
+                return;
 
-	        // Get the collection of values posted back from user
-	        var form = Context.Request.Form;
+            // Get the collection of values posted back from user
+            var form = Context.Request.Form;
 
-	        // First, create the setting lookup by ID, and the list of IDs to look for
-	        List<short> settingIds = new List<short>();
-	        Dictionary<short, Admin_Setting_Value> settingsObjsById = new Dictionary<short, Admin_Setting_Value>();
-	        foreach (Admin_Setting_Value value in pageSettings)
-	        {
-	            // If this is readonly, will not prepare to update
-	            if ((!Is_Value_ReadOnly(value, readonlyMode, limitedRightsMode)) && (!value.Hidden))
-	            {
-	                settingIds.Add(value.SettingID);
-	                settingsObjsById[value.SettingID] = value;
-	            }
-	        }
+            // First, create the setting lookup by ID, and the list of IDs to look for
+            List<short> settingIds = new List<short>();
+            Dictionary<short, Admin_Setting_Value> settingsObjsById = new Dictionary<short, Admin_Setting_Value>();
+            foreach (Admin_Setting_Value value in pageSettings)
+            {
+                // If this is readonly, will not prepare to update
+                if ((!Is_Value_ReadOnly(value, readonlyMode, limitedRightsMode)) && (!value.Hidden))
+                {
+                    settingIds.Add(value.SettingID);
+                    settingsObjsById[value.SettingID] = value;
+                }
+            }
 
-	        // Now, step through and get the values for each of these
-	        List<Simple_Setting> newValues = new List<Simple_Setting>();
-	        foreach (short id in settingIds)
-	        {
-	            // Get the setting information
-	            Admin_Setting_Value thisValue = settingsObjsById[id];
+            // Now, step through and get the values for each of these
+            List<Simple_Setting> newValues = new List<Simple_Setting>();
+            foreach (short id in settingIds)
+            {
+                // Get the setting information
+                Admin_Setting_Value thisValue = settingsObjsById[id];
 
-	            if (!String.IsNullOrEmpty(form["setting" + id].TrimFirst()))
-	            {
-	                newValues.Add(new Simple_Setting(thisValue.Key, form["setting" + id], thisValue.SettingID));
-	            }
-	            else
-	            {
-	                newValues.Add(new Simple_Setting(thisValue.Key, String.Empty, thisValue.SettingID));
-	            }
-	        }
+                if (!String.IsNullOrEmpty(form["setting" + id].TrimFirst()))
+                {
+                    newValues.Add(new Simple_Setting(thisValue.Key, form["setting" + id], thisValue.SettingID));
+                }
+                else
+                {
+                    newValues.Add(new Simple_Setting(thisValue.Key, String.Empty, thisValue.SettingID));
+                }
+            }
 
-	        // Now, validate all this
-	        errorBuilder = new StringBuilder();
-	        isValid = true;
-	        validate_update_entered_data(newValues);
+            // Now, validate all this
+            errorBuilder = new StringBuilder();
+            isValid = true;
+            validate_update_entered_data(newValues);
 
-	        // Now, assign the values from the simple settings back to the main settings
-	        // object.  This is to allow for the validation process to make small changes
-	        // to the values the user entered, like different starts or endings
-	        foreach (Simple_Setting thisSetting in newValues)
-	        {
+            // Now, assign the values from the simple settings back to the main settings
+            // object.  This is to allow for the validation process to make small changes
+            // to the values the user entered, like different starts or endings
+            foreach (Simple_Setting thisSetting in newValues)
+            {
 
-	            settingsObjsById[thisSetting.SettingID].Value = thisSetting.Value;
-	        }
+                settingsObjsById[thisSetting.SettingID].Value = thisSetting.Value;
+            }
 
-	        if (isValid)
-	        {
-	            // Try to save each setting
+            if (isValid)
+            {
+                // Try to save each setting
                 int errors = newValues.Count(NewSetting => !Engine_Database.Set_Setting(NewSetting.Key, NewSetting.Value));
 
-	            // Prepare the action message
-	            if (errors > 0)
-	                actionMessage = "Save completed, but with " + errors + " errors.";
-	            else
-	                actionMessage = "Settings saved";
+                // Prepare the action message
+                if (errors > 0)
+                    actionMessage = "Save completed, but with " + errors + " errors.";
+                else
+                    actionMessage = "Settings saved";
 
-	            // Assign this to be used by the system
-	            UI_ApplicationCache_Gateway.ResetSettings();
-
-
-	            // Get all the settings again 
-	            build_setting_objects_for_display();
-	        }
-	        else
-	        {
-	            actionMessage = errorBuilder.ToString().Replace("\n", "<br />");
-	        }
-	    }
-
-	    private static bool Is_Value_ReadOnly(Admin_Setting_Value Value, bool ReadOnlyMode, bool LimitedRightsMode )
-		{
-		   return ((ReadOnlyMode) || (Value.Reserved > 2) || ((LimitedRightsMode) && (Value.Reserved != 0)));
-		}
+                // Assign this to be used by the system
+                UI_ApplicationCache_Gateway.ResetSettings();
 
 
+                // Get all the settings again 
+                build_setting_objects_for_display();
+            }
+            else
+            {
+                actionMessage = errorBuilder.ToString().Replace("\n", "<br />");
+            }
+        }
 
-		/// <summary> Title for the page that displays this viewer, this is shown in the search box at the top of the page, just below the banner </summary>
-		/// <value> This always returns the value 'System-Wide Settings' </value>
-		public override string Web_Title
-		{
-			get { return "System-Wide Settings"; }
-		}
-		
-		/// <summary> Gets the URL for the icon related to this administrative task </summary>
-		public override string Viewer_Icon
-		{
-			get { return Static_Resources_Gateway.Settings_Img; }
-		}
+        private static bool Is_Value_ReadOnly(Admin_Setting_Value Value, bool ReadOnlyMode, bool LimitedRightsMode)
+        {
+            return ((ReadOnlyMode) || (Value.Reserved > 2) || ((LimitedRightsMode) && (Value.Reserved != 0)));
+        }
+
+
+
+        /// <summary> Title for the page that displays this viewer, this is shown in the search box at the top of the page, just below the banner </summary>
+        /// <value> This always returns the value 'System-Wide Settings' </value>
+        public override string Web_Title
+        {
+            get { return "System-Wide Settings"; }
+        }
+
+        /// <summary> Gets the URL for the icon related to this administrative task </summary>
+        public override string Viewer_Icon
+        {
+            get { return Static_Resources_Gateway.Settings_Img; }
+        }
 
 
         /// <summary> Gets the collection of special behaviors which this admin or mySobek viewer
@@ -694,74 +690,74 @@ namespace SobekCM.Library.AdminViewer
                 return new List<HtmlSubwriter_Behaviors_Enum> { HtmlSubwriter_Behaviors_Enum.Suppress_Banner };
             }
         }
-  
-		
-		/// <summary> Add the HTML to be displayed in the main SobekCM viewer area </summary>
-		/// <param name="Output"> Textwriter to write the HTML for this viewer</param>
-		/// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
-		/// <remarks> This class does nothing, since the themes list is added as controls, not HTML </remarks>
-		public override void Write_HTML(TextWriter Output, Custom_Tracer Tracer)
-		{
-			Tracer.Add_Trace("Settings_AdminViewer.Write_HTML", "Do nothing");
-		}
-
-		/// <summary> This is an opportunity to write HTML directly into the main form, without
-		/// using the pop-up html form architecture </summary>
-		/// <param name="Output"> Textwriter to write the pop-up form HTML for this viewer </param>
-		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-		/// <remarks> This text will appear within the ItemNavForm form tags </remarks>
-		public override void Write_ItemNavForm_Closing(TextWriter Output, Custom_Tracer Tracer)
-		{
-			Tracer.Add_Trace("Settings_AdminViewer.Write_ItemNavForm_Closing", "Write the rest of the form ");
 
 
-			// Add the hidden field
-			Output.WriteLine("<!-- Hidden field is used for postbacks to indicate what to save and reset -->");
-			Output.WriteLine("<input type=\"hidden\" id=\"admin_settings_action\" name=\"admin_settings_action\" value=\"\" />");
-			if ( category_view )	
-				Output.WriteLine("<input type=\"hidden\" id=\"admin_settings_order\" name=\"admin_settings_order\" value=\"category\" />");
-			else
-				Output.WriteLine("<input type=\"hidden\" id=\"admin_settings_order\" name=\"admin_settings_order\" value=\"alphabetical\" />");
+        /// <summary> Add the HTML to be displayed in the main SobekCM viewer area </summary>
+        /// <param name="Output"> Textwriter to write the HTML for this viewer</param>
+        /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <remarks> This class does nothing, since the themes list is added as controls, not HTML </remarks>
+        public override void Write_HTML(TextWriter Output, Custom_Tracer Tracer)
+        {
+            Tracer.Add_Trace("Settings_AdminViewer.Write_HTML", "Do nothing");
+        }
 
-			Output.WriteLine();
-
-			Output.WriteLine("<!-- Settings_AdminViewer.Write_ItemNavForm_Closing -->");
-			Output.WriteLine("<script src=\"" + Static_Resources_Gateway.Sobekcm_Admin_Js + "\" type=\"text/javascript\"></script>");
-			Output.WriteLine();
-
-
-		    Output.WriteLine("</div> <!-- ends PageContainer div momentarily for this extra wide table -->");
-
-			Output.WriteLine("<table id=\"sbkSeav_MainTable\">");
-			Output.WriteLine("  <tr>");
-			Output.WriteLine("    <td id=\"sbkSeav_TocArea\">");
+        /// <summary> This is an opportunity to write HTML directly into the main form, without
+        /// using the pop-up html form architecture </summary>
+        /// <param name="Output"> Textwriter to write the pop-up form HTML for this viewer </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <remarks> This text will appear within the ItemNavForm form tags </remarks>
+        public override void Write_ItemNavForm_Closing(TextWriter Output, Custom_Tracer Tracer)
+        {
+            Tracer.Add_Trace("Settings_AdminViewer.Write_ItemNavForm_Closing", "Write the rest of the form ");
 
 
-			// Determine the current viewer code
-			string currentViewerCode = String.Empty;
-			if ((RequestSpecificValues.Current_Mode.Remaining_Url_Segments != null) && (RequestSpecificValues.Current_Mode.Remaining_Url_Segments.Length > 0))
-			{
-				if (RequestSpecificValues.Current_Mode.Remaining_Url_Segments.Length == 1)
-					currentViewerCode = RequestSpecificValues.Current_Mode.Remaining_Url_Segments[0];
-				else if (RequestSpecificValues.Current_Mode.Remaining_Url_Segments.Length == 2)
-					currentViewerCode = RequestSpecificValues.Current_Mode.Remaining_Url_Segments[0] + "/" + RequestSpecificValues.Current_Mode.Remaining_Url_Segments[1];
-				else
-					currentViewerCode = RequestSpecificValues.Current_Mode.Remaining_Url_Segments[0] + "/" + RequestSpecificValues.Current_Mode.Remaining_Url_Segments[1] + "/" + RequestSpecificValues.Current_Mode.Remaining_Url_Segments[2];
-			}
+            // Add the hidden field
+            Output.WriteLine("<!-- Hidden field is used for postbacks to indicate what to save and reset -->");
+            Output.WriteLine("<input type=\"hidden\" id=\"admin_settings_action\" name=\"admin_settings_action\" value=\"\" />");
+            if (category_view)
+                Output.WriteLine("<input type=\"hidden\" id=\"admin_settings_order\" name=\"admin_settings_order\" value=\"category\" />");
+            else
+                Output.WriteLine("<input type=\"hidden\" id=\"admin_settings_order\" name=\"admin_settings_order\" value=\"alphabetical\" />");
 
-			// Write all the values in the left nav bar
-			Output.WriteLine(add_leftnav_h2_link("Settings", "settings", redirectUrl, currentViewerCode));
-			Output.WriteLine("        <ul>");
+            Output.WriteLine();
 
-			// Add all the different setting options (tabpages) in the left nav bar
-			int tab_count = 1;
-			foreach (string tabPageName in tabPageNames.Values)
-			{
-				Output.WriteLine(add_leftnav_li_link(tabPageName.Trim(), "settings/" + tab_count, redirectUrl, currentViewerCode));
-				//add_tab_page_info(Output, tabPageName, settingsByPage[tabPageName]);
-				tab_count++;
-			}
-			Output.WriteLine("        </ul>");
+            Output.WriteLine("<!-- Settings_AdminViewer.Write_ItemNavForm_Closing -->");
+            Output.WriteLine("<script src=\"" + Static_Resources_Gateway.Sobekcm_Admin_Js + "\" type=\"text/javascript\"></script>");
+            Output.WriteLine();
+
+
+            Output.WriteLine("</div> <!-- ends PageContainer div momentarily for this extra wide table -->");
+
+            Output.WriteLine("<table id=\"sbkSeav_MainTable\">");
+            Output.WriteLine("  <tr>");
+            Output.WriteLine("    <td id=\"sbkSeav_TocArea\">");
+
+
+            // Determine the current viewer code
+            string currentViewerCode = String.Empty;
+            if ((RequestSpecificValues.Current_Mode.Remaining_Url_Segments != null) && (RequestSpecificValues.Current_Mode.Remaining_Url_Segments.Length > 0))
+            {
+                if (RequestSpecificValues.Current_Mode.Remaining_Url_Segments.Length == 1)
+                    currentViewerCode = RequestSpecificValues.Current_Mode.Remaining_Url_Segments[0];
+                else if (RequestSpecificValues.Current_Mode.Remaining_Url_Segments.Length == 2)
+                    currentViewerCode = RequestSpecificValues.Current_Mode.Remaining_Url_Segments[0] + "/" + RequestSpecificValues.Current_Mode.Remaining_Url_Segments[1];
+                else
+                    currentViewerCode = RequestSpecificValues.Current_Mode.Remaining_Url_Segments[0] + "/" + RequestSpecificValues.Current_Mode.Remaining_Url_Segments[1] + "/" + RequestSpecificValues.Current_Mode.Remaining_Url_Segments[2];
+            }
+
+            // Write all the values in the left nav bar
+            Output.WriteLine(add_leftnav_h2_link("Settings", "settings", redirectUrl, currentViewerCode));
+            Output.WriteLine("        <ul>");
+
+            // Add all the different setting options (tabpages) in the left nav bar
+            int tab_count = 1;
+            foreach (string tabPageName in tabPageNames.Values)
+            {
+                Output.WriteLine(add_leftnav_li_link(tabPageName.Trim(), "settings/" + tab_count, redirectUrl, currentViewerCode));
+                //add_tab_page_info(Output, tabPageName, settingsByPage[tabPageName]);
+                tab_count++;
+            }
+            Output.WriteLine("        </ul>");
 
             Output.WriteLine(add_leftnav_h2_link("Configuration Files", "config", redirectUrl, currentViewerCode));
             Output.WriteLine("        <ul>");
@@ -769,12 +765,12 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine(add_leftnav_li_link("Reading Log", "config/log", redirectUrl, currentViewerCode));
             Output.WriteLine("        </ul>");
 
-			Output.WriteLine(add_leftnav_h2_link("Builder", "builder", redirectUrl, currentViewerCode));
-			Output.WriteLine("        <ul>");
-			Output.WriteLine(add_leftnav_li_link("Builder Settings", "builder/settings", redirectUrl, currentViewerCode));
-			Output.WriteLine(add_leftnav_li_link("Incoming Folders", "builder/folders", redirectUrl, currentViewerCode));
-			Output.WriteLine(add_leftnav_li_link("Builder Modules", "builder/modules", redirectUrl, currentViewerCode));
-			Output.WriteLine("        </ul>");
+            Output.WriteLine(add_leftnav_h2_link("Builder", "builder", redirectUrl, currentViewerCode));
+            Output.WriteLine("        <ul>");
+            Output.WriteLine(add_leftnav_li_link("Builder Settings", "builder/settings", redirectUrl, currentViewerCode));
+            Output.WriteLine(add_leftnav_li_link("Incoming Folders", "builder/folders", redirectUrl, currentViewerCode));
+            Output.WriteLine(add_leftnav_li_link("Builder Modules", "builder/modules", redirectUrl, currentViewerCode));
+            Output.WriteLine("        </ul>");
 
             Output.WriteLine(add_leftnav_h2_link("Metadata Configuration", "metadata", redirectUrl, currentViewerCode));
             Output.WriteLine("        <ul>");
@@ -782,53 +778,53 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine(add_leftnav_li_link("File Readers/Writers", "metadata/filereaders", redirectUrl, currentViewerCode));
             Output.WriteLine(add_leftnav_li_link("METS Section Readers/Writers", "metadata/metsreaders", redirectUrl, currentViewerCode));
             Output.WriteLine(add_leftnav_li_link("METS Writing Profiles", "metadata/metsprofiles", redirectUrl, currentViewerCode));
-        //    Output.WriteLine(add_leftnav_li_link("Standard Metadata Modules", "metadata/modules", redirectUrl, currentViewerCode));
+            //    Output.WriteLine(add_leftnav_li_link("Standard Metadata Modules", "metadata/modules", redirectUrl, currentViewerCode));
             Output.WriteLine("        </ul>");
 
-			Output.WriteLine(add_leftnav_h2_link("Engine Configuration", "engine", redirectUrl, currentViewerCode));
-			Output.WriteLine("        <ul>");
-			Output.WriteLine(add_leftnav_li_link("Authentication", "engine/authentication", redirectUrl, currentViewerCode));
-			Output.WriteLine(add_leftnav_li_link("Brief Item Mapping", "engine/briefitem", redirectUrl, currentViewerCode));
-			Output.WriteLine(add_leftnav_li_link("Contact Form", "engine/contact", redirectUrl, currentViewerCode));  // Move to UI? 
-			Output.WriteLine(add_leftnav_li_link("Engine Server Endpoints", "engine/endpoints", redirectUrl, currentViewerCode));
-			Output.WriteLine(add_leftnav_li_link("OAI-PMH Protocol", "engine/oaipmh", redirectUrl, currentViewerCode));
-			Output.WriteLine(add_leftnav_li_link("Quality Control Tool", "engine/qctool", redirectUrl, currentViewerCode));    // Move to UI?
-			Output.WriteLine("        </ul>");
+            Output.WriteLine(add_leftnav_h2_link("Engine Configuration", "engine", redirectUrl, currentViewerCode));
+            Output.WriteLine("        <ul>");
+            Output.WriteLine(add_leftnav_li_link("Authentication", "engine/authentication", redirectUrl, currentViewerCode));
+            Output.WriteLine(add_leftnav_li_link("Brief Item Mapping", "engine/briefitem", redirectUrl, currentViewerCode));
+            Output.WriteLine(add_leftnav_li_link("Contact Form", "engine/contact", redirectUrl, currentViewerCode));  // Move to UI? 
+            Output.WriteLine(add_leftnav_li_link("Engine Server Endpoints", "engine/endpoints", redirectUrl, currentViewerCode));
+            Output.WriteLine(add_leftnav_li_link("OAI-PMH Protocol", "engine/oaipmh", redirectUrl, currentViewerCode));
+            Output.WriteLine(add_leftnav_li_link("Quality Control Tool", "engine/qctool", redirectUrl, currentViewerCode));    // Move to UI?
+            Output.WriteLine("        </ul>");
 
-			Output.WriteLine(add_leftnav_h2_link("UI Configuration", "ui", redirectUrl, currentViewerCode));
-			Output.WriteLine("        <ul>");
-			Output.WriteLine(add_leftnav_li_link("Citation Viewer", "ui/citation", redirectUrl, currentViewerCode));
-		//	Output.WriteLine(add_leftnav_li_link("Map Editor", "ui/mapeditor", redirectUrl, currentViewerCode));
-			Output.WriteLine(add_leftnav_li_link("Microservice Client Endpoints", "ui/microservices", redirectUrl, currentViewerCode));
-			Output.WriteLine(add_leftnav_li_link("Template Elements", "ui/template", redirectUrl, currentViewerCode));
-			Output.WriteLine(add_leftnav_li_link("HTML Viewers/Subviewers", "ui/viewers", redirectUrl, currentViewerCode));
-			Output.WriteLine("        </ul>");
+            Output.WriteLine(add_leftnav_h2_link("UI Configuration", "ui", redirectUrl, currentViewerCode));
+            Output.WriteLine("        <ul>");
+            Output.WriteLine(add_leftnav_li_link("Citation Viewer", "ui/citation", redirectUrl, currentViewerCode));
+            //	Output.WriteLine(add_leftnav_li_link("Map Editor", "ui/mapeditor", redirectUrl, currentViewerCode));
+            Output.WriteLine(add_leftnav_li_link("Microservice Client Endpoints", "ui/microservices", redirectUrl, currentViewerCode));
+            Output.WriteLine(add_leftnav_li_link("Template Elements", "ui/template", redirectUrl, currentViewerCode));
+            Output.WriteLine(add_leftnav_li_link("HTML Viewers/Subviewers", "ui/viewers", redirectUrl, currentViewerCode));
+            Output.WriteLine("        </ul>");
 
-			Output.WriteLine(add_leftnav_h2_link("HTML Snippets", "html", redirectUrl, currentViewerCode));
-			Output.WriteLine("        <ul>");
-			Output.WriteLine(add_leftnav_li_link("Missing page", "html/missing", redirectUrl, currentViewerCode));
-			Output.WriteLine(add_leftnav_li_link("No results", "html/noresults", redirectUrl, currentViewerCode));
+            Output.WriteLine(add_leftnav_h2_link("HTML Snippets", "html", redirectUrl, currentViewerCode));
+            Output.WriteLine("        <ul>");
+            Output.WriteLine(add_leftnav_li_link("Missing page", "html/missing", redirectUrl, currentViewerCode));
+            Output.WriteLine(add_leftnav_li_link("No results", "html/noresults", redirectUrl, currentViewerCode));
             Output.WriteLine(add_leftnav_li_link("Usage Email", "html/usageemail", redirectUrl, currentViewerCode));
-			Output.WriteLine("        </ul>");
+            Output.WriteLine("        </ul>");
 
-			Output.WriteLine(add_leftnav_h2_link("Extensions", "extensions", redirectUrl, currentViewerCode));
-			if (extensionCodes.Count > 0 )
-			{
-				Output.WriteLine("        <ul>");
-				int extensionNumber = 1;
-				foreach (string thisCode in extensionCodes)
-				{
-					Output.WriteLine(add_leftnav_li_link(thisCode, "extensions/" + extensionNumber, redirectUrl, currentViewerCode));
-					extensionNumber++;
-				}
-				Output.WriteLine("        </ul>");
-			}
-			Output.WriteLine("    </td>");
+            Output.WriteLine(add_leftnav_h2_link("Extensions", "extensions", redirectUrl, currentViewerCode));
+            if (extensionCodes.Count > 0)
+            {
+                Output.WriteLine("        <ul>");
+                int extensionNumber = 1;
+                foreach (string thisCode in extensionCodes)
+                {
+                    Output.WriteLine(add_leftnav_li_link(thisCode, "extensions/" + extensionNumber, redirectUrl, currentViewerCode));
+                    extensionNumber++;
+                }
+                Output.WriteLine("        </ul>");
+            }
+            Output.WriteLine("    </td>");
 
-			// Start the main area
-			Output.WriteLine("    <td id=\"sbkSeav_MainArea\">");
+            // Start the main area
+            Output.WriteLine("    <td id=\"sbkSeav_MainArea\">");
 
-			Output.WriteLine("<div class=\"sbkAdm_HomeText\">");
+            Output.WriteLine("<div class=\"sbkAdm_HomeText\">");
 
 
             // Add the action message, if there is one
@@ -847,108 +843,109 @@ namespace SobekCM.Library.AdminViewer
                 }
             }
 
-			// Add the content, based on the main mode
-			switch (mainMode)
-			{
-				case Settings_Mode_Enum.NONE:
-					add_top_level_info(Output);
-					break;
+            // Add the content, based on the main mode
+            switch (mainMode)
+            {
+                case Settings_Mode_Enum.NONE:
+                    add_top_level_info(Output);
+                    break;
 
-				case Settings_Mode_Enum.Settings:
-					add_settings_info(Output);
-					break;
+                case Settings_Mode_Enum.Settings:
+                    add_settings_info(Output);
+                    break;
 
                 case Settings_Mode_Enum.Configuration:
                     add_configuration_info(Output);
                     break;
 
-				case Settings_Mode_Enum.Builder:
-					add_builder_info(Output);
-					break;
+                case Settings_Mode_Enum.Builder:
+                    add_builder_info(Output);
+                    break;
 
                 case Settings_Mode_Enum.Metadata:
                     add_metadata_info(Output);
                     break;
 
-				case Settings_Mode_Enum.Engine:
-					add_engine_info(Output);
-					break;
+                case Settings_Mode_Enum.Engine:
+                    add_engine_info(Output);
+                    break;
 
-				case Settings_Mode_Enum.UI:
-					add_ui_info(Output);
-					break;
+                case Settings_Mode_Enum.UI:
+                    add_ui_info(Output);
+                    break;
 
-				case Settings_Mode_Enum.HTML:
-					add_html_info(Output);
-					break;
+                case Settings_Mode_Enum.HTML:
+                    add_html_info(Output);
+                    break;
 
-				case Settings_Mode_Enum.Extensions:
-					add_extensions_info(Output);
-					break;
-			}
-
-
-			Output.WriteLine("<br />");
-			Output.WriteLine("<br />");
+                case Settings_Mode_Enum.Extensions:
+                    add_extensions_info(Output);
+                    break;
+            }
 
 
-			Output.WriteLine("  <br />");
-			Output.WriteLine("</div>");
+            Output.WriteLine("<br />");
+            Output.WriteLine("<br />");
 
 
-			Output.WriteLine("    </td>");
-			Output.WriteLine("  </tr>");
-			Output.WriteLine("</table>");
+            Output.WriteLine("  <br />");
+            Output.WriteLine("</div>");
+
+
+            Output.WriteLine("    </td>");
+            Output.WriteLine("  </tr>");
+            Output.WriteLine("</table>");
 
             Output.WriteLine("<div id=\"pagecontainer_resumed\">");
 
-			Output.WriteLine();
-		}
+            Output.WriteLine();
+        }
 
-		#region HTML helper methods for the left TOC portion 
+        #region HTML helper methods for the left TOC portion 
 
-		private static string add_leftnav_h2_link(string Text, string LinkCode, string RedirectUrl, string CurrentLinkCode )
-		{
-			if ( String.Compare(LinkCode, CurrentLinkCode, StringComparison.OrdinalIgnoreCase) == 0 )
-				return "      <h2 id=\"sbkSeav_TocArea_SelectedH2\">" + Text + "</h2>";
-			return "      <h2><a href=\"" + RedirectUrl.Replace("%SETTINGSCODE%", LinkCode) + "\">" + Text + " </a></h2>";
-		}
+        private static string add_leftnav_h2_link(string Text, string LinkCode, string RedirectUrl, string CurrentLinkCode)
+        {
+            if (String.Compare(LinkCode, CurrentLinkCode, StringComparison.OrdinalIgnoreCase) == 0)
+                return "      <h2 id=\"sbkSeav_TocArea_SelectedH2\">" + Text + "</h2>";
+            return "      <h2><a href=\"" + RedirectUrl.Replace("%SETTINGSCODE%", LinkCode) + "\">" + Text + " </a></h2>";
+        }
 
-		private static string add_leftnav_li_link(string Text, string LinkCode, string RedirectUrl, string CurrentLinkCode)
-		{
-			if (String.Compare(LinkCode, CurrentLinkCode, StringComparison.OrdinalIgnoreCase) == 0)
-				return "      <li id=\"sbkSeav_TocArea_SelectedLI\">" + Text + "</li>";
-			return "          <li><a href=\"" + RedirectUrl.Replace("%SETTINGSCODE%", LinkCode) + "\">" + Text + " </a></li>";
-		}
+        private static string add_leftnav_li_link(string Text, string LinkCode, string RedirectUrl, string CurrentLinkCode)
+        {
+            if (String.Compare(LinkCode, CurrentLinkCode, StringComparison.OrdinalIgnoreCase) == 0)
+                return "      <li id=\"sbkSeav_TocArea_SelectedLI\">" + Text + "</li>";
+            return "          <li><a href=\"" + RedirectUrl.Replace("%SETTINGSCODE%", LinkCode) + "\">" + Text + " </a></li>";
+        }
 
-		#endregion
+        #endregion
 
-		#region HTML helper methods for snippets used in multiple spots, like buttons
+        #region HTML helper methods for snippets used in multiple spots, like buttons
 
-		private void add_buttons(TextWriter Output)
-		{
-			Output.WriteLine("  <div class=\"sbkSeav_ButtonsDiv\">");
-			if (RequestSpecificValues.Current_User.Is_System_Admin)
-			{
+        private void add_buttons(TextWriter Output)
+        {
+            Output.WriteLine("  <div class=\"sbkSeav_ButtonsDiv\">");
+            if (RequestSpecificValues.Current_User.Is_System_Admin)
+            {
 
-				Output.WriteLine("    <button title=\"Do not apply changes\" class=\"sbkAdm_RoundButton\" onclick=\"window.location.href='" + RequestSpecificValues.Current_Mode.Base_URL + "my/admin'; return false;\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"sbkAdm_RoundButton_LeftImg\" alt=\"\" /> CANCEL</button> &nbsp; &nbsp; ");
-				Output.WriteLine("    <button title=\"Save changes\" class=\"sbkAdm_RoundButton\" onclick=\"admin_settings_save(); return false;\">SAVE <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button>");
-			}
-			else
-			{
-				Output.WriteLine("    <button class=\"sbkAdm_RoundButton\" onclick=\"window.location.href='" + RequestSpecificValues.Current_Mode.Base_URL + "my/admin'; return false;\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"sbkAdm_RoundButton_LeftImg\" alt=\"\" /> BACK</button> &nbsp; &nbsp; ");
-			}
-			Output.WriteLine("  </div>");
-			Output.WriteLine();
-		}
+                Output.WriteLine("    <button title=\"Do not apply changes\" class=\"sbkAdm_RoundButton\" onclick=\"window.location.href='" + RequestSpecificValues.Current_Mode.Base_URL + "my/admin'; return false;\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"sbkAdm_RoundButton_LeftImg\" alt=\"\" /> CANCEL</button> &nbsp; &nbsp; ");
+                Output.WriteLine("    <button title=\"Save changes\" class=\"sbkAdm_RoundButton\" onclick=\"admin_settings_save(); return false;\">SAVE <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button>");
+            }
+            else
+            {
+                Output.WriteLine("    <button class=\"sbkAdm_RoundButton\" onclick=\"window.location.href='" + RequestSpecificValues.Current_Mode.Base_URL + "my/admin'; return false;\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"sbkAdm_RoundButton_LeftImg\" alt=\"\" /> BACK</button> &nbsp; &nbsp; ");
+            }
+            Output.WriteLine("  </div>");
+            Output.WriteLine();
+        }
 
-		#endregion
+        #endregion
 
-		#region HTML helper method for the top-level information page
+        #region HTML helper method for the top-level information page
 
-		private void add_top_level_info(TextWriter Output)
-		{;
-		    Output.WriteLine("  <h2>System-Wide Settings</h2>");
+        private void add_top_level_info(TextWriter Output)
+        {
+            ;
+            Output.WriteLine("  <h2>System-Wide Settings</h2>");
             Output.WriteLine("  <p>This form allows a user to view all the main system-wide settings and configurations which allow the SobekCM web application and assorted related applications to function correctly within each custom architecture and each institution.  This page highlights the great degree of customizations that can be done within the SobekCM framework, through the settings in the database and the configuration files.</p>");
             Output.WriteLine("  <p>For more information about these settings, <a href=\"" + UI_ApplicationCache_Gateway.Settings.System.Help_URL(RequestSpecificValues.Current_Mode.Base_URL) + "adminhelp/settings\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</p>");
 
@@ -984,34 +981,34 @@ namespace SobekCM.Library.AdminViewer
 
             Output.WriteLine("  </div>");
 
-		}
+        }
 
-		#endregion
+        #endregion
 
-		#region HTML helper methods for the settings main page and subpages
+        #region HTML helper methods for the settings main page and subpages
 
-		private void add_settings_info(TextWriter Output)
-		{
-			int tabPage = -1;
-			if ((RequestSpecificValues.Current_Mode.Remaining_Url_Segments != null) && (RequestSpecificValues.Current_Mode.Remaining_Url_Segments.Length > 1))
-			{
-				if (!Int32.TryParse(RequestSpecificValues.Current_Mode.Remaining_Url_Segments[1], out tabPage))
-					tabPage = -1;
-			}
+        private void add_settings_info(TextWriter Output)
+        {
+            int tabPage = -1;
+            if ((RequestSpecificValues.Current_Mode.Remaining_Url_Segments != null) && (RequestSpecificValues.Current_Mode.Remaining_Url_Segments.Length > 1))
+            {
+                if (!Int32.TryParse(RequestSpecificValues.Current_Mode.Remaining_Url_Segments[1], out tabPage))
+                    tabPage = -1;
+            }
 
-			if ((tabPage < 1) || ( tabPage > tabPageNames.Count ))
-			{
-			    Output.WriteLine("  <span class=\"sbkSeav_BackUpLink\"><a href=\"" + redirectUrl.Replace("%SETTINGSCODE%", "") + "\">Back to top</a></span>");
+            if ((tabPage < 1) || (tabPage > tabPageNames.Count))
+            {
+                Output.WriteLine("  <span class=\"sbkSeav_BackUpLink\"><a href=\"" + redirectUrl.Replace("%SETTINGSCODE%", "") + "\">Back to top</a></span>");
 
-				Output.WriteLine("  <h2>Settings</h2>");
+                Output.WriteLine("  <h2>Settings</h2>");
                 Output.WriteLine("  <p>This section includes all the basic setting information which governs the very basic operation of this SobekCM instance.  These settings include information about the actual servers, email information, help settings, top-level search settings, and more.  These settings are retained in the database and can be changed directly from these forms.</p>");
                 Output.WriteLine("  <p>The (non-builder) settings are split between the following subpages:</p>");
 
                 int tab_count = 1;
-			    Output.WriteLine("  <ul>");
+                Output.WriteLine("  <ul>");
                 foreach (string tabPageName in tabPageNames.Values)
                 {
-                    Output.WriteLine("    <li><a href=\"" + redirectUrl.Replace("%SETTINGSCODE%", "settings/" + tab_count ) + "\">" + tabPageName.Trim() + "</a></li>");
+                    Output.WriteLine("    <li><a href=\"" + redirectUrl.Replace("%SETTINGSCODE%", "settings/" + tab_count) + "\">" + tabPageName.Trim() + "</a></li>");
                     tab_count++;
                 }
                 Output.WriteLine("  </ul>");
@@ -1020,347 +1017,347 @@ namespace SobekCM.Library.AdminViewer
 
             }
             else
-			{
+            {
                 Output.WriteLine("  <span class=\"sbkSeav_BackUpLink\"><a href=\"" + redirectUrl.Replace("%SETTINGSCODE%", "settings") + "\">Back to Settings</a></span>");
 
                 string tabPageNameKey = tabPageNames.Keys[tabPage - 1];
-				string tabPageName = tabPageNames[tabPageNameKey];
-				Output.WriteLine("  <h2>" + tabPageName.Trim() + "</h2>");
+                string tabPageName = tabPageNames[tabPageNameKey];
+                Output.WriteLine("  <h2>" + tabPageName.Trim() + "</h2>");
 
-			    Output.WriteLine("  <div id=\"sbkSeav_SmallerPageWrapper\">");
+                Output.WriteLine("  <div id=\"sbkSeav_SmallerPageWrapper\">");
 
-				// Add the buttons
-				add_buttons(Output);
+                // Add the buttons
+                add_buttons(Output);
 
-				Output.WriteLine();
+                Output.WriteLine();
                 Output.WriteLine("  <br /><br />");
                 Output.WriteLine();
 
-				add_tab_page_info(Output, tabPageName, settingsByPage[tabPageName]);
+                add_tab_page_info(Output, tabPageName, settingsByPage[tabPageName]);
 
-				Output.WriteLine("<br />");
-				Output.WriteLine();
+                Output.WriteLine("<br />");
+                Output.WriteLine();
 
-				// Add final buttons
-				add_buttons(Output);
+                // Add final buttons
+                add_buttons(Output);
 
-			    Output.WriteLine("  </div>");
-			}
-		}
+                Output.WriteLine("  </div>");
+            }
+        }
 
-		private void build_setting_objects_for_display()
-		{
-			// First step, get all the tab headings (excluding Deprecated and Builder)
-			// and also categorize the values by tab page to start with
-			tabPageNames = new SortedList<string, string>();
-			settingsByPage = new Dictionary<string, List<Admin_Setting_Value>>();
+        private void build_setting_objects_for_display()
+        {
+            // First step, get all the tab headings (excluding Deprecated and Builder)
+            // and also categorize the values by tab page to start with
+            tabPageNames = new SortedList<string, string>();
+            settingsByPage = new Dictionary<string, List<Admin_Setting_Value>>();
             builderSettings = new List<Admin_Setting_Value>();
-			foreach (Admin_Setting_Value thisValue in currSettings.Settings)
-			{
-				// If this is hidden, just do nothing
-				if (thisValue.Hidden) continue;
+            foreach (Admin_Setting_Value thisValue in currSettings.Settings)
+            {
+                // If this is hidden, just do nothing
+                if (thisValue.Hidden) continue;
 
                 // Check on if this is reserved and shouldn't be displayed
                 if ((limitedRightsMode) && (thisValue.Reserved == 2))
                     continue;
 
                 // Get the tab page name, and handle nulls or empty values gracefully
-			    string tabPage = String.IsNullOrWhiteSpace(thisValue.TabPage) ? "General Settings" : thisValue.TabPage;
+                string tabPage = String.IsNullOrWhiteSpace(thisValue.TabPage) ? "General Settings" : thisValue.TabPage;
 
-				// If deprecated skip here
+                // If deprecated skip here
                 if (String.Compare(tabPage, "Deprecated", StringComparison.OrdinalIgnoreCase) == 0) continue;
 
                 // Handle builder settings separately
                 if (String.Compare(tabPage, "Builder", StringComparison.OrdinalIgnoreCase) == 0)
-			    {
-			        builderSettings.Add(thisValue);
-			        continue;
-			    }
+                {
+                    builderSettings.Add(thisValue);
+                    continue;
+                }
 
-				// Was this tab page already added?
+                // Was this tab page already added?
                 if ((!settingsByPage.ContainsKey(tabPage)))
-				{
-					// We are going to move 'General.." up to the front, others are in alphabetical order
+                {
+                    // We are going to move 'General.." up to the front, others are in alphabetical order
                     if (tabPage.IndexOf("General", StringComparison.OrdinalIgnoreCase) == 0)
                         tabPageNames.Add("00", tabPage);
-					else
+                    else
                         tabPageNames.Add(tabPage, tabPage);
                     settingsByPage[tabPage] = new List<Admin_Setting_Value> { thisValue };
-				}
-				else
-				{
+                }
+                else
+                {
                     settingsByPage[tabPage].Add(thisValue);
-				}
-			}
+                }
+            }
 
-			// Add some readonly configuration information from the config file
-			// First, look for a server tab name
-		    if (!limitedRightsMode)
-		    {
-		        string tabNameForConfig = tabPageNames.Values.FirstOrDefault(ThisTabName => ThisTabName.IndexOf("Server", StringComparison.OrdinalIgnoreCase) >= 0);
-		        if (String.IsNullOrEmpty(tabNameForConfig))
-		        {
-		            foreach (string thisTabName in tabPageNames.Values.Where(ThisTabName => ThisTabName.IndexOf("System", StringComparison.OrdinalIgnoreCase) >= 0))
-		            {
-		                tabNameForConfig = thisTabName;
-		                break;
-		            }
-		        }
-		        if (String.IsNullOrEmpty(tabNameForConfig))
-		        {
-		            tabNameForConfig = tabPageNames.Values[0];
-		        }
+            // Add some readonly configuration information from the config file
+            // First, look for a server tab name
+            if (!limitedRightsMode)
+            {
+                string tabNameForConfig = tabPageNames.Values.FirstOrDefault(ThisTabName => ThisTabName.IndexOf("Server", StringComparison.OrdinalIgnoreCase) >= 0);
+                if (String.IsNullOrEmpty(tabNameForConfig))
+                {
+                    foreach (string thisTabName in tabPageNames.Values.Where(ThisTabName => ThisTabName.IndexOf("System", StringComparison.OrdinalIgnoreCase) >= 0))
+                    {
+                        tabNameForConfig = thisTabName;
+                        break;
+                    }
+                }
+                if (String.IsNullOrEmpty(tabNameForConfig))
+                {
+                    tabNameForConfig = tabPageNames.Values[0];
+                }
 
-		        // Build the values to add
-		        Admin_Setting_Value dbString = new Admin_Setting_Value
-		        {
-		            Heading = "Configuration Settings",
-		            Help = "Connection string used to connect to the SobekCM database\n\nThis value resides in the configuration file on the web server.  See your database and web server administrator to change this value.",
-		            Hidden = false,
-		            Key = "Database Connection String",
-		            Reserved = 3,
-		            SettingID = 9990,
-		            Value = UI_ApplicationCache_Gateway.Settings.Database_Connection.Connection_String
-		        };
+                // Build the values to add
+                Admin_Setting_Value dbString = new Admin_Setting_Value
+                {
+                    Heading = "Configuration Settings",
+                    Help = "Connection string used to connect to the SobekCM database\n\nThis value resides in the configuration file on the web server.  See your database and web server administrator to change this value.",
+                    Hidden = false,
+                    Key = "Database Connection String",
+                    Reserved = 3,
+                    SettingID = 9990,
+                    Value = UI_ApplicationCache_Gateway.Settings.Database_Connection.Connection_String
+                };
 
-		        Admin_Setting_Value dbType = new Admin_Setting_Value
-		        {
-		            Heading = "Configuration Settings",
-		            Help = "Type of database used to drive the SobekCM system.\n\nCurrently, only Microsoft SQL Server is allowed with plans to add PostgreSQL and MySQL to the supported database system.\n\nThis value resides in the configuration on the web server.  See your database and web server administrator to change this value.",
-		            Hidden = false,
-		            Key = "Database Type",
-		            Reserved = 3,
-		            SettingID = 9991,
-		            Value = UI_ApplicationCache_Gateway.Settings.Database_Connection.Database_Type_String
-		        };
+                Admin_Setting_Value dbType = new Admin_Setting_Value
+                {
+                    Heading = "Configuration Settings",
+                    Help = "Type of database used to drive the SobekCM system.\n\nCurrently, only Microsoft SQL Server is allowed with plans to add PostgreSQL and MySQL to the supported database system.\n\nThis value resides in the configuration on the web server.  See your database and web server administrator to change this value.",
+                    Hidden = false,
+                    Key = "Database Type",
+                    Reserved = 3,
+                    SettingID = 9991,
+                    Value = UI_ApplicationCache_Gateway.Settings.Database_Connection.Database_Type_String
+                };
 
-		        Admin_Setting_Value isHosted = new Admin_Setting_Value
-		        {
-		            Heading = "Configuration Settings",
-		            Help = "Flag indicates if this instance is set as 'hosted', in which case a new Host Administrator role is added and some rights are reserved to that role which are normally assigned to system administrators.\n\nThis value resides in the configuration on the web server.  See your database and web server administrator to change this value.",
-		            Hidden = false,
-		            Key = "Hosted Intance",
-		            Reserved = 3,
-		            SettingID = 9994,
-		            Value = UI_ApplicationCache_Gateway.Settings.Servers.isHosted.ToString().ToLower()
-		        };
+                Admin_Setting_Value isHosted = new Admin_Setting_Value
+                {
+                    Heading = "Configuration Settings",
+                    Help = "Flag indicates if this instance is set as 'hosted', in which case a new Host Administrator role is added and some rights are reserved to that role which are normally assigned to system administrators.\n\nThis value resides in the configuration on the web server.  See your database and web server administrator to change this value.",
+                    Hidden = false,
+                    Key = "Hosted Intance",
+                    Reserved = 3,
+                    SettingID = 9994,
+                    Value = UI_ApplicationCache_Gateway.Settings.Servers.isHosted.ToString().ToLower()
+                };
 
-		        Admin_Setting_Value errorEmails = new Admin_Setting_Value
-		        {
-		            Heading = "Configuration Settings",
-		            Help = "Email address for the web application to mail for any errors encountered while executing requests.\n\nThis account will be notified of inabilities to connect to servers, potential attacks, missing files, etc..\n\nIf the system is able to connect to the database, the 'System Error Email' address listed there, if there is one, will be used instead.\n\nUse a semi-colon betwen email addresses if multiple addresses are included.\n\nExample: 'person1@corp.edu;person2@corp2.edu'.\n\nThis value resides in the web.config file on the web server.  See your web server administrator to change this value.",
-		            Hidden = false,
-		            Key = "Error Emails",
-		            Reserved = 3,
-		            SettingID = 9992,
-		            Value = UI_ApplicationCache_Gateway.Settings.Email.System_Error_Email
-		        };
+                Admin_Setting_Value errorEmails = new Admin_Setting_Value
+                {
+                    Heading = "Configuration Settings",
+                    Help = "Email address for the web application to mail for any errors encountered while executing requests.\n\nThis account will be notified of inabilities to connect to servers, potential attacks, missing files, etc..\n\nIf the system is able to connect to the database, the 'System Error Email' address listed there, if there is one, will be used instead.\n\nUse a semi-colon betwen email addresses if multiple addresses are included.\n\nExample: 'person1@corp.edu;person2@corp2.edu'.\n\nThis value resides in the web.config file on the web server.  See your web server administrator to change this value.",
+                    Hidden = false,
+                    Key = "Error Emails",
+                    Reserved = 3,
+                    SettingID = 9992,
+                    Value = UI_ApplicationCache_Gateway.Settings.Email.System_Error_Email
+                };
 
-		        Admin_Setting_Value errorWebPage = new Admin_Setting_Value
-		        {
-		            Heading = "Configuration Settings",
-		            Help = "Static page the user should be redirected towards if an unexpected exception occurs which cannot be handled by the web application.\n\nExample: 'http://ufdc.ufl.edu/error.html'.\n\nThis value resides in the web.config file on the web server.  See your web server administrator to change this value.",
-		            Hidden = false,
-		            Key = "Error Web Page",
-		            Reserved = 3,
-		            SettingID = 9993,
-		            Value = UI_ApplicationCache_Gateway.Settings.Servers.System_Error_URL
-		        };
+                Admin_Setting_Value errorWebPage = new Admin_Setting_Value
+                {
+                    Heading = "Configuration Settings",
+                    Help = "Static page the user should be redirected towards if an unexpected exception occurs which cannot be handled by the web application.\n\nExample: 'http://ufdc.ufl.edu/error.html'.\n\nThis value resides in the web.config file on the web server.  See your web server administrator to change this value.",
+                    Hidden = false,
+                    Key = "Error Web Page",
+                    Reserved = 3,
+                    SettingID = 9993,
+                    Value = UI_ApplicationCache_Gateway.Settings.Servers.System_Error_URL
+                };
 
-		        // Add them all to the tab page
-		        List<Admin_Setting_Value> settings = settingsByPage[tabNameForConfig];
-		        settings.Add(dbType);
-		        settings.Add(dbString);
-		        settings.Add(isHosted);
-		        settings.Add(errorEmails);
-		        settings.Add(errorWebPage);
-		    }
+                // Add them all to the tab page
+                List<Admin_Setting_Value> settings = settingsByPage[tabNameForConfig];
+                settings.Add(dbType);
+                settings.Add(dbString);
+                settings.Add(isHosted);
+                settings.Add(errorEmails);
+                settings.Add(errorWebPage);
+            }
 
 
-		}
+        }
 
-	    private void add_tab_page_info(TextWriter Output, string TabPageName, List<Admin_Setting_Value> AdminSettingValues, string OmitHeading = null)
-		{
-			// Start this table
-			Output.WriteLine("        <table class=\"sbkSeav_SettingsTable\">");
+        private void add_tab_page_info(TextWriter Output, string TabPageName, List<Admin_Setting_Value> AdminSettingValues, string OmitHeading = null)
+        {
+            // Start this table
+            Output.WriteLine("        <table class=\"sbkSeav_SettingsTable\">");
 
-			// Is this set for categorized via subheadings?
-			if (category_view)
-			{
-				// Sort these admin settings within the headings
-				SortedList<string, string> headingSorted = new SortedList<string, string>();
-				Dictionary<string, SortedList<string, Admin_Setting_Value>> headingValuesSorted = new Dictionary<string, SortedList<string, Admin_Setting_Value>>();
+            // Is this set for categorized via subheadings?
+            if (category_view)
+            {
+                // Sort these admin settings within the headings
+                SortedList<string, string> headingSorted = new SortedList<string, string>();
+                Dictionary<string, SortedList<string, Admin_Setting_Value>> headingValuesSorted = new Dictionary<string, SortedList<string, Admin_Setting_Value>>();
 
                 // Step through each heading 
-				foreach (Admin_Setting_Value thisValue in AdminSettingValues)
-				{
+                foreach (Admin_Setting_Value thisValue in AdminSettingValues)
+                {
                     // Get the heading value, and handle an unexpected value gracefully
-				    string headingName = String.IsNullOrWhiteSpace(thisValue.Heading) ? "Other Settings" : thisValue.Heading;
+                    string headingName = String.IsNullOrWhiteSpace(thisValue.Heading) ? "Other Settings" : thisValue.Heading;
 
                     if (!headingSorted.ContainsKey(headingName))
-					{
+                    {
                         headingSorted.Add(headingName, headingName);
-						SortedList<string, Admin_Setting_Value> sortedList = new SortedList<string, Admin_Setting_Value> { { thisValue.Key, thisValue } };
+                        SortedList<string, Admin_Setting_Value> sortedList = new SortedList<string, Admin_Setting_Value> { { thisValue.Key, thisValue } };
                         headingValuesSorted[headingName] = sortedList;
-					}
-					else
-					{
+                    }
+                    else
+                    {
                         headingValuesSorted[headingName].Add(thisValue.Key, thisValue);
-					}
-				}
+                    }
+                }
 
-				// For now, just draw these
-				bool firstHeading = true;
-				bool oddRow = true;
-				foreach (string thisHeading in headingSorted.Values)
-				{
+                // For now, just draw these
+                bool firstHeading = true;
+                bool oddRow = true;
+                foreach (string thisHeading in headingSorted.Values)
+                {
                     // If there was a heading value to omit, skip it here
-				    if ((!String.IsNullOrEmpty(OmitHeading)) && (String.Compare(OmitHeading, thisHeading, StringComparison.OrdinalIgnoreCase) == 0))
-				        continue;
+                    if ((!String.IsNullOrEmpty(OmitHeading)) && (String.Compare(OmitHeading, thisHeading, StringComparison.OrdinalIgnoreCase) == 0))
+                        continue;
 
-					// Add a general heading
-					Add_Setting_Table_Heading(Output, thisHeading, firstHeading);
-					foreach (Admin_Setting_Value thisValueD in headingValuesSorted[thisHeading].Values)
-					{
-						// If this should be hidden, hide it
-						if ((limitedRightsMode) && (thisValueD.Reserved >= 2)) continue;
+                    // Add a general heading
+                    Add_Setting_Table_Heading(Output, thisHeading, firstHeading);
+                    foreach (Admin_Setting_Value thisValueD in headingValuesSorted[thisHeading].Values)
+                    {
+                        // If this should be hidden, hide it
+                        if ((limitedRightsMode) && (thisValueD.Reserved >= 2)) continue;
 
-						// Add this settings
-						Add_Setting_Table_Setting(Output, thisValueD, oddRow);
-						oddRow = !oddRow;
-					}
+                        // Add this settings
+                        Add_Setting_Table_Setting(Output, thisValueD, oddRow);
+                        oddRow = !oddRow;
+                    }
 
-					firstHeading = false;
-				}
-			}
-			else  // Just add all the values alphabetically witout headers
-			{
-				// Sort these admin settings
-				SortedList<string, Admin_Setting_Value> valuesSorted = new SortedList<string, Admin_Setting_Value>();
+                    firstHeading = false;
+                }
+            }
+            else  // Just add all the values alphabetically witout headers
+            {
+                // Sort these admin settings
+                SortedList<string, Admin_Setting_Value> valuesSorted = new SortedList<string, Admin_Setting_Value>();
 
                 // Add each value alphabetically
                 // If there was a heading value to omit, skip it here
-			    if (!String.IsNullOrEmpty(OmitHeading))
-			    {
-			        foreach (Admin_Setting_Value thisValue in AdminSettingValues)
-			        {
-			            if (String.Compare(OmitHeading, thisValue.Heading, StringComparison.OrdinalIgnoreCase) == 0)
-			                continue;
-			            valuesSorted[thisValue.Key] = thisValue;
-			        }
-			    }
-			    else
-			    {
-			        foreach (Admin_Setting_Value thisValue in AdminSettingValues)
-			        {
-			            valuesSorted[thisValue.Key] = thisValue;
-			        }
-			    }
+                if (!String.IsNullOrEmpty(OmitHeading))
+                {
+                    foreach (Admin_Setting_Value thisValue in AdminSettingValues)
+                    {
+                        if (String.Compare(OmitHeading, thisValue.Heading, StringComparison.OrdinalIgnoreCase) == 0)
+                            continue;
+                        valuesSorted[thisValue.Key] = thisValue;
+                    }
+                }
+                else
+                {
+                    foreach (Admin_Setting_Value thisValue in AdminSettingValues)
+                    {
+                        valuesSorted[thisValue.Key] = thisValue;
+                    }
+                }
 
-			    // Add a general heading
-				Add_Setting_Table_Heading(Output, TabPageName, true);
+                // Add a general heading
+                Add_Setting_Table_Heading(Output, TabPageName, true);
 
-				bool oddRow = true;
-				foreach (Admin_Setting_Value thisValueD in valuesSorted.Values)
-				{
-					// If this should be hidden, hide it
-					if ((limitedRightsMode) && (thisValueD.Reserved >= 2)) continue;
+                bool oddRow = true;
+                foreach (Admin_Setting_Value thisValueD in valuesSorted.Values)
+                {
+                    // If this should be hidden, hide it
+                    if ((limitedRightsMode) && (thisValueD.Reserved >= 2)) continue;
 
-					// Add this settings
-					Add_Setting_Table_Setting(Output, thisValueD, oddRow);
-					oddRow = !oddRow;
-				}
-			}
+                    // Add this settings
+                    Add_Setting_Table_Setting(Output, thisValueD, oddRow);
+                    oddRow = !oddRow;
+                }
+            }
 
-			// Close this tab
-			Output.WriteLine("        </table>");
-		}
+            // Close this tab
+            Output.WriteLine("        </table>");
+        }
 
-		private void Add_Setting_Table_Heading(TextWriter Output, string Heading, bool IsFirst)
-		{
-			Output.WriteLine("          <tr>");
+        private void Add_Setting_Table_Heading(TextWriter Output, string Heading, bool IsFirst)
+        {
+            Output.WriteLine("          <tr>");
 
-			if (IsFirst)
-			{
-				Output.WriteLine("            <th colspan=\"2\">");
-				Output.WriteLine("              " + Heading.ToUpper());
-			    Output.WriteLine("              <div style=\"float: right; text-align:right; padding-right: 40px;text-transform:none\">Order: ");
+            if (IsFirst)
+            {
+                Output.WriteLine("            <th colspan=\"2\">");
+                Output.WriteLine("              " + Heading.ToUpper());
+                Output.WriteLine("              <div style=\"float: right; text-align:right; padding-right: 40px;text-transform:none\">Order: ");
                 Output.WriteLine("                <select id=\"reorder_select\" name=\"reorder_select\" onchange=\"settings_reorder(this);\">");
 
-			    if (category_view)
-			    {
-			        Output.WriteLine("                  <option value=\"alphabetical\">Alphabetical</option>");
+                if (category_view)
+                {
+                    Output.WriteLine("                  <option value=\"alphabetical\">Alphabetical</option>");
                     Output.WriteLine("                  <option value=\"category\" selected=\"selected\">Categories</option>");
-			    }
-			    else
-			    {
+                }
+                else
+                {
                     Output.WriteLine("                  <option value=\"alphabetical\" selected=\"selected\">Alphabetical</option>");
                     Output.WriteLine("                  <option value=\"category\">Categories</option>");
-			    }
-			    Output.WriteLine("                </select>");
+                }
+                Output.WriteLine("                </select>");
                 Output.WriteLine("              </div>");
-				Output.WriteLine("            </th>");
-			}
-			else
-			{
-				Output.WriteLine("            <th colspan=\"2\">" + Heading.ToUpper() + "</th>");
-			}
+                Output.WriteLine("            </th>");
+            }
+            else
+            {
+                Output.WriteLine("            <th colspan=\"2\">" + Heading.ToUpper() + "</th>");
+            }
 
-			Output.WriteLine("          </tr>");
-		}
+            Output.WriteLine("          </tr>");
+        }
 
-		private void Add_Setting_Table_Setting(TextWriter Output, Admin_Setting_Value Value, bool OddRow)
-		{
-			// Determine how to show this
-			bool constant = Is_Value_ReadOnly(Value, readonlyMode, limitedRightsMode);
+        private void Add_Setting_Table_Setting(TextWriter Output, Admin_Setting_Value Value, bool OddRow)
+        {
+            // Determine how to show this
+            bool constant = Is_Value_ReadOnly(Value, readonlyMode, limitedRightsMode);
 
-			Output.WriteLine(OddRow
-					 ? "          <tr class=\"sbkSeav_TableEvenRow\">"
-					 : "          <tr class=\"sbkSeav_TableOddRow\">");
+            Output.WriteLine(OddRow
+                     ? "          <tr class=\"sbkSeav_TableEvenRow\">"
+                     : "          <tr class=\"sbkSeav_TableOddRow\">");
 
-			if (constant)
-				Output.WriteLine("            <td class=\"sbkSeav_TableKeyCell\">" + Value.Key + ":</td>");
-			else
-				Output.WriteLine("            <td class=\"sbkSeav_TableKeyCell\"><label for=\"setting" + Value.SettingID + "\">" + Value.Key + "</label>:</td>");
+            if (constant)
+                Output.WriteLine("            <td class=\"sbkSeav_TableKeyCell\">" + Value.Key + ":</td>");
+            else
+                Output.WriteLine("            <td class=\"sbkSeav_TableKeyCell\"><label for=\"setting" + Value.SettingID + "\">" + Value.Key + "</label>:</td>");
 
-			Output.WriteLine("            <td>");
-
-
-			if (constant)
-				Output.WriteLine("              <table class=\"sbkSeav_InnerTableConstant\">");
-			else
-				Output.WriteLine("              <table class=\"sbkSeav_InnerTable\">");
-			Output.WriteLine("                <tr style=\"vertical-align:middle;border:0;\">");
-			Output.WriteLine("                  <td style=\"max-width: 650px;\">");
-
-			// Determine how to show this
-			if (constant)
-			{
-				// Readonly for this value
-				if (String.IsNullOrWhiteSpace(Value.Value))
-				{
-					Output.WriteLine("                    <em>( no value )</em>");
-				}
-				else
-				{
-					Output.WriteLine("                    " + System.Net.WebUtility.HtmlEncode(Value.Value).Replace(",", ", "));
-				}
-			}
-			else
-			{
-				// Get the value, for easy of additional checks
-				string setting_value = String.IsNullOrEmpty(Value.Value) ? String.Empty : Value.Value;
+            Output.WriteLine("            <td>");
 
 
-				if ((Value.Options != null) && (Value.Options.Count > 0))
-				{
+            if (constant)
+                Output.WriteLine("              <table class=\"sbkSeav_InnerTableConstant\">");
+            else
+                Output.WriteLine("              <table class=\"sbkSeav_InnerTable\">");
+            Output.WriteLine("                <tr style=\"vertical-align:middle;border:0;\">");
+            Output.WriteLine("                  <td style=\"max-width: 650px;\">");
 
-					Output.WriteLine("                    <select id=\"setting" + Value.SettingID + "\" name=\"setting" + Value.SettingID + "\" class=\"sbkSeav_select\" >");
+            // Determine how to show this
+            if (constant)
+            {
+                // Readonly for this value
+                if (String.IsNullOrWhiteSpace(Value.Value))
+                {
+                    Output.WriteLine("                    <em>( no value )</em>");
+                }
+                else
+                {
+                    Output.WriteLine("                    " + System.Net.WebUtility.HtmlEncode(Value.Value).Replace(",", ", "));
+                }
+            }
+            else
+            {
+                // Get the value, for easy of additional checks
+                string setting_value = String.IsNullOrEmpty(Value.Value) ? String.Empty : Value.Value;
+
+
+                if ((Value.Options != null) && (Value.Options.Count > 0))
+                {
+
+                    Output.WriteLine("                    <select id=\"setting" + Value.SettingID + "\" name=\"setting" + Value.SettingID + "\" class=\"sbkSeav_select\" >");
 
                     // Some special options here
                     bool option_found = false;
-				    if (Value.Options[0] == "{ACE_THEMES}")
-				    {
+                    if (Value.Options[0] == "{ACE_THEMES}")
+                    {
                         string indent = "                      ";
                         string setting_value_no_space = setting_value.Replace(" ", "").Replace("_", "");
 
@@ -1403,10 +1400,10 @@ namespace SobekCM.Library.AdminViewer
                         Output.WriteLine(String.Compare(setting_value_no_space, "tomorrownightbright", StringComparison.InvariantCultureIgnoreCase) == 0 ? indent + "  <option value=\"tomorrow_night_bright\" selected=\"selected\">Tomorrow Night Bright</option>" : indent + "  <option value=\"tomorrow_night_bright\">Tomorrow Night Bright</option>");
                         Output.WriteLine(String.Compare(setting_value_no_space, "tomorrownighteighties", StringComparison.InvariantCultureIgnoreCase) == 0 ? indent + "  <option value=\"tomorrow_night_eighties\" selected=\"selected\">Tomorrow Night 80s</option>" : indent + "  <option value=\"tomorrow_night_eighties\">Tomorrow Night 80s</option>");
                         Output.WriteLine(String.Compare(setting_value_no_space, "twilight", StringComparison.InvariantCultureIgnoreCase) == 0 ? indent + "  <option value=\"twilight\" selected=\"selected\">Twilight</option>" : indent + "  <option value=\"twilight\">Twilight</option>");
-                        Output.WriteLine(String.Compare(setting_value_no_space, "vibrantink", StringComparison.InvariantCultureIgnoreCase) == 0 ? indent + "  <option value=\"vibrant_ink\" selected=\"selected\">Vibrant Ink</option>" : indent + "  <option value=\"vibrant_ink\">Vibrant Ink</option>");                      
+                        Output.WriteLine(String.Compare(setting_value_no_space, "vibrantink", StringComparison.InvariantCultureIgnoreCase) == 0 ? indent + "  <option value=\"vibrant_ink\" selected=\"selected\">Vibrant Ink</option>" : indent + "  <option value=\"vibrant_ink\">Vibrant Ink</option>");
                         Output.WriteLine(indent + "</optgroup>");
 
-				    }
+                    }
                     else if (Value.Options[0] == "{STATIC_SOURCE_CODES}")
                     {
                         foreach (string thisValue in UI_ApplicationCache_Gateway.Configuration.UI.StaticResources.Static_Resource_Codes)
@@ -1450,261 +1447,261 @@ namespace SobekCM.Library.AdminViewer
 
 
 
-				    Output.WriteLine("                    </select>");
-				}
-				else
-				{
-					if ((Value.Width.HasValue) && (Value.Width.Value > 0))
-						Output.WriteLine("                    <input id=\"setting" + Value.SettingID + "\" name=\"setting" + Value.SettingID + "\" class=\"sbkSeav_input sbkAdmin_Focusable\" type=\"text\"  style=\"width: " + Value.Width + "px;\" value=\"" + System.Net.WebUtility.HtmlEncode(setting_value) + "\" />");
-					else
-						Output.WriteLine("                    <input id=\"setting" + Value.SettingID + "\" name=\"setting" + Value.SettingID + "\" class=\"sbkSeav_input sbkAdmin_Focusable\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(setting_value) + "\" />");
-				}
-			}
+                    Output.WriteLine("                    </select>");
+                }
+                else
+                {
+                    if ((Value.Width.HasValue) && (Value.Width.Value > 0))
+                        Output.WriteLine("                    <input id=\"setting" + Value.SettingID + "\" name=\"setting" + Value.SettingID + "\" class=\"sbkSeav_input sbkAdmin_Focusable\" type=\"text\"  style=\"width: " + Value.Width + "px;\" value=\"" + System.Net.WebUtility.HtmlEncode(setting_value) + "\" />");
+                    else
+                        Output.WriteLine("                    <input id=\"setting" + Value.SettingID + "\" name=\"setting" + Value.SettingID + "\" class=\"sbkSeav_input sbkAdmin_Focusable\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(setting_value) + "\" />");
+                }
+            }
 
-			Output.WriteLine("                  </td>");
-			Output.WriteLine("                  <td>");
-			if (!String.IsNullOrEmpty(Value.Help))
-				Output.WriteLine("                    <img  class=\"sbkSeav_HelpButton\" src=\"" + Static_Resources_Gateway.Help_Button_Jpg + "\" onclick=\"alert('" + Value.Help.Replace("'", "").Replace("\"", "").Replace("\n", "\\n") + "');\"  title=\"" + Value.Help.Replace("'", "").Replace("\"", "").Replace("\n", "\\n") + "\" />");
-			Output.WriteLine("                  </td>");
-			Output.WriteLine("                </tr>");
-			Output.WriteLine("              </table>");
-			Output.WriteLine("            </td>");
-			Output.WriteLine("          </tr>");
-		}
+            Output.WriteLine("                  </td>");
+            Output.WriteLine("                  <td>");
+            if (!String.IsNullOrEmpty(Value.Help))
+                Output.WriteLine("                    <img  class=\"sbkSeav_HelpButton\" src=\"" + Static_Resources_Gateway.Help_Button_Jpg + "\" onclick=\"alert('" + Value.Help.Replace("'", "").Replace("\"", "").Replace("\n", "\\n") + "');\"  title=\"" + Value.Help.Replace("'", "").Replace("\"", "").Replace("\n", "\\n") + "\" />");
+            Output.WriteLine("                  </td>");
+            Output.WriteLine("                </tr>");
+            Output.WriteLine("              </table>");
+            Output.WriteLine("            </td>");
+            Output.WriteLine("          </tr>");
+        }
 
-		#region Methods related to special validations
+        #region Methods related to special validations
 
-		private bool validate_update_entered_data(List<Simple_Setting> NewValues)
-		{
-			isValid = true;
-			foreach (Simple_Setting thisSetting in NewValues)
-			{
-				string value = thisSetting.Value;
-				string key = thisSetting.Key;
+        private bool validate_update_entered_data(List<Simple_Setting> NewValues)
+        {
+            isValid = true;
+            foreach (Simple_Setting thisSetting in NewValues)
+            {
+                string value = thisSetting.Value;
+                string key = thisSetting.Key;
 
-				switch (key)
-				{
-					case "Application Server Network":
-						must_end_with(thisSetting, "\\");
-						break;
+                switch (key)
+                {
+                    case "Application Server Network":
+                        must_end_with(thisSetting, "\\");
+                        break;
 
-					case "Application Server URL":
-						must_start_end_with(thisSetting, new string[] { "http://", "https://" }, "/");
-						break;
+                    case "Application Server URL":
+                        must_start_end_with(thisSetting, new string[] { "http://", "https://" }, "/");
+                        break;
 
-					case "Document Solr Index URL":
-						must_start_end_with(thisSetting, new string[] { "http://", "https://" }, "/");
-						break;
+                    case "Document Solr Index URL":
+                        must_start_end_with(thisSetting, new string[] { "http://", "https://" }, "/");
+                        break;
 
-					case "Files To Exclude From Downloads":
-						must_be_valid_regular_expression(thisSetting);
-						break;
+                    case "Files To Exclude From Downloads":
+                        must_be_valid_regular_expression(thisSetting);
+                        break;
 
-					case "Image Server Network":
-						must_end_with(thisSetting, "\\");
-						break;
+                    case "Image Server Network":
+                        must_end_with(thisSetting, "\\");
+                        break;
 
-					case "Image Server URL":
-						must_start_end_with(thisSetting, new string[] { "http://", "https://" }, "/");
-						break;
+                    case "Image Server URL":
+                        must_start_end_with(thisSetting, new string[] { "http://", "https://" }, "/");
+                        break;
 
-					case "JPEG Height":
-						must_be_positive_number(thisSetting);
-						break;
+                    case "JPEG Height":
+                        must_be_positive_number(thisSetting);
+                        break;
 
-					case "JPEG Width":
-						must_be_positive_number(thisSetting);
-						break;
+                    case "JPEG Width":
+                        must_be_positive_number(thisSetting);
+                        break;
 
-					case "Log Files Directory":
-						must_end_with(thisSetting, "\\");
-						break;
+                    case "Log Files Directory":
+                        must_end_with(thisSetting, "\\");
+                        break;
 
-					case "Log Files URL":
-						must_start_end_with(thisSetting, new string[] { "http://", "https://" }, "/");
-						break;
+                    case "Log Files URL":
+                        must_start_end_with(thisSetting, new string[] { "http://", "https://" }, "/");
+                        break;
 
-					case "Mango Union Search Base URL":
-						must_start_with(thisSetting, new string[] { "http://", "https://" });
-						break;
+                    case "Mango Union Search Base URL":
+                        must_start_with(thisSetting, new string[] { "http://", "https://" });
+                        break;
 
-					case "Mango Union Search Text":
-						if (value.Trim().Length > 0)
-						{
-							if (value.IndexOf("%1") < 0)
-							{
-								isValid = false;
-								errorBuilder.AppendLine(key + ": Value must contain the '%1' string.  See help for more information.");
-							}
-						}
-						break;
+                    case "Mango Union Search Text":
+                        if (value.Trim().Length > 0)
+                        {
+                            if (value.IndexOf("%1") < 0)
+                            {
+                                isValid = false;
+                                errorBuilder.AppendLine(key + ": Value must contain the '%1' string.  See help for more information.");
+                            }
+                        }
+                        break;
 
-					case "MarcXML Feed Location":
-						must_end_with(thisSetting, "\\");
-						break;
+                    case "MarcXML Feed Location":
+                        must_end_with(thisSetting, "\\");
+                        break;
 
-					case "OAI Resource Identifier Base":
-						must_end_with(thisSetting, ":");
-						break;
+                    case "OAI Resource Identifier Base":
+                        must_end_with(thisSetting, ":");
+                        break;
 
-					case "Page Solr Index URL":
-						must_start_end_with(thisSetting, new string[] { "http://", "https://" }, "/");
-						break;
+                    case "Page Solr Index URL":
+                        must_start_end_with(thisSetting, new string[] { "http://", "https://" }, "/");
+                        break;
 
-					case "PostArchive Files To Delete":
-						must_be_valid_regular_expression(thisSetting);
-						break;
+                    case "PostArchive Files To Delete":
+                        must_be_valid_regular_expression(thisSetting);
+                        break;
 
-					case "PreArchive Files To Delete":
-						must_be_valid_regular_expression(thisSetting);
-						break;
+                    case "PreArchive Files To Delete":
+                        must_be_valid_regular_expression(thisSetting);
+                        break;
 
-					case "Static Pages Location":
-						must_end_with(thisSetting, "\\");
-						break;
+                    case "Static Pages Location":
+                        must_end_with(thisSetting, "\\");
+                        break;
 
-					case "System Base Abbreviation":
-						if (value.Trim().Length == 0)
-						{
-							isValid = false;
-							errorBuilder.AppendLine(key + ": Field is required.");
-						}
-						break;
+                    case "System Base Abbreviation":
+                        if (value.Trim().Length == 0)
+                        {
+                            isValid = false;
+                            errorBuilder.AppendLine(key + ": Field is required.");
+                        }
+                        break;
 
-					case "System Base URL":
-						if (value.Trim().Length == 0)
-						{
-							isValid = false;
-							errorBuilder.AppendLine(key + ": Field is required.");
-						}
-						else
-						{
-							must_start_end_with(thisSetting, new string[] { "http://", "https://" }, "/");
-						}
-						break;
+                    case "System Base URL":
+                        if (value.Trim().Length == 0)
+                        {
+                            isValid = false;
+                            errorBuilder.AppendLine(key + ": Field is required.");
+                        }
+                        else
+                        {
+                            must_start_end_with(thisSetting, new string[] { "http://", "https://" }, "/");
+                        }
+                        break;
 
-					case "Thumbnail Height":
-						must_be_positive_number(thisSetting);
-						break;
+                    case "Thumbnail Height":
+                        must_be_positive_number(thisSetting);
+                        break;
 
-					case "Thumbnail Width":
-						must_be_positive_number(thisSetting);
-						break;
+                    case "Thumbnail Width":
+                        must_be_positive_number(thisSetting);
+                        break;
 
-					case "Web In Process Submission Location":
-						must_end_with(thisSetting, "\\");
-						break;
-				}
-			}
+                    case "Web In Process Submission Location":
+                        must_end_with(thisSetting, "\\");
+                        break;
+                }
+            }
 
-			return isValid;
-		}
+            return isValid;
+        }
 
-		private void must_be_positive_number(Simple_Setting NewSetting)
-		{
-			bool appears_valid = false;
-			int number;
-			if ((Int32.TryParse(NewSetting.Value, out number)) && (number >= 0))
-			{
-				appears_valid = true;
-			}
+        private void must_be_positive_number(Simple_Setting NewSetting)
+        {
+            bool appears_valid = false;
+            int number;
+            if ((Int32.TryParse(NewSetting.Value, out number)) && (number >= 0))
+            {
+                appears_valid = true;
+            }
 
-			if (!appears_valid)
-			{
-				isValid = false;
-				errorBuilder.AppendLine(NewSetting.Key + ": Value must be a positive integer or zero.");
-			}
-		}
+            if (!appears_valid)
+            {
+                isValid = false;
+                errorBuilder.AppendLine(NewSetting.Key + ": Value must be a positive integer or zero.");
+            }
+        }
 
-		private void must_be_valid_regular_expression(Simple_Setting NewSetting)
-		{
-			if (NewSetting.Value.Length == 0)
-				return;
+        private void must_be_valid_regular_expression(Simple_Setting NewSetting)
+        {
+            if (NewSetting.Value.Length == 0)
+                return;
 
-			// This is really just a check that it is a valid regular expression by 
-			// attempting to perform a regular expression match.  The match itself 
-			// ( and the resulting value ) is not important.
-			try
-			{
-				Regex.Match("any_old_file.tif", NewSetting.Value);
-			}
-			catch (ArgumentException)
-			{
-				isValid = false;
-				errorBuilder.AppendLine(NewSetting.Key + ": Value must be empty or a valid regular expression.");
-			}
-		}
+            // This is really just a check that it is a valid regular expression by 
+            // attempting to perform a regular expression match.  The match itself 
+            // ( and the resulting value ) is not important.
+            try
+            {
+                Regex.Match("any_old_file.tif", NewSetting.Value);
+            }
+            catch (ArgumentException)
+            {
+                isValid = false;
+                errorBuilder.AppendLine(NewSetting.Key + ": Value must be empty or a valid regular expression.");
+            }
+        }
 
-		private static void must_start_with(Simple_Setting NewSetting, string StartsWith)
-		{
-			if (NewSetting.Value.Length == 0)
-				return;
+        private static void must_start_with(Simple_Setting NewSetting, string StartsWith)
+        {
+            if (NewSetting.Value.Length == 0)
+                return;
 
-			if (!NewSetting.Value.StartsWith(StartsWith, StringComparison.OrdinalIgnoreCase))
-			{
-				NewSetting.Value = StartsWith + NewSetting.Value;
-			}
-		}
+            if (!NewSetting.Value.StartsWith(StartsWith, StringComparison.OrdinalIgnoreCase))
+            {
+                NewSetting.Value = StartsWith + NewSetting.Value;
+            }
+        }
 
-		private static void must_start_with(Simple_Setting NewSetting, string[] StartsWith)
-		{
-			if (NewSetting.Value.Length == 0)
-				return;
+        private static void must_start_with(Simple_Setting NewSetting, string[] StartsWith)
+        {
+            if (NewSetting.Value.Length == 0)
+                return;
 
-			// Check for the start against all possible combinations
-			bool missing_start = StartsWith.All(possibleStart => !NewSetting.Value.StartsWith(possibleStart, StringComparison.OrdinalIgnoreCase));
+            // Check for the start against all possible combinations
+            bool missing_start = StartsWith.All(possibleStart => !NewSetting.Value.StartsWith(possibleStart, StringComparison.OrdinalIgnoreCase));
 
-		    if (missing_start)
-			{
-				NewSetting.Value = StartsWith[0] + NewSetting.Value;
-			}
-		}
+            if (missing_start)
+            {
+                NewSetting.Value = StartsWith[0] + NewSetting.Value;
+            }
+        }
 
-		private static void must_end_with(Simple_Setting NewSetting, string EndsWith)
-		{
-			if (NewSetting.Value.Length == 0)
-				return;
+        private static void must_end_with(Simple_Setting NewSetting, string EndsWith)
+        {
+            if (NewSetting.Value.Length == 0)
+                return;
 
-			if (!NewSetting.Value.EndsWith(EndsWith, StringComparison.OrdinalIgnoreCase))
-			{
-				NewSetting.Value = NewSetting.Value + EndsWith;
-			}
-		}
+            if (!NewSetting.Value.EndsWith(EndsWith, StringComparison.OrdinalIgnoreCase))
+            {
+                NewSetting.Value = NewSetting.Value + EndsWith;
+            }
+        }
 
-		private static void must_start_end_with(Simple_Setting NewSetting, string StartsWith, string EndsWith)
-		{
-			if (NewSetting.Value.Length == 0)
-				return;
+        private static void must_start_end_with(Simple_Setting NewSetting, string StartsWith, string EndsWith)
+        {
+            if (NewSetting.Value.Length == 0)
+                return;
 
-			if ((!NewSetting.Value.StartsWith(StartsWith, StringComparison.OrdinalIgnoreCase)) || (!NewSetting.Value.EndsWith(EndsWith, StringComparison.InvariantCultureIgnoreCase)))
-			{
-				if (!NewSetting.Value.StartsWith(StartsWith, StringComparison.OrdinalIgnoreCase))
-					NewSetting.Value = StartsWith + NewSetting.Value;
-				if (!NewSetting.Value.EndsWith(EndsWith, StringComparison.OrdinalIgnoreCase))
-					NewSetting.Value = NewSetting.Value + EndsWith;
-			}
-		}
+            if ((!NewSetting.Value.StartsWith(StartsWith, StringComparison.OrdinalIgnoreCase)) || (!NewSetting.Value.EndsWith(EndsWith, StringComparison.InvariantCultureIgnoreCase)))
+            {
+                if (!NewSetting.Value.StartsWith(StartsWith, StringComparison.OrdinalIgnoreCase))
+                    NewSetting.Value = StartsWith + NewSetting.Value;
+                if (!NewSetting.Value.EndsWith(EndsWith, StringComparison.OrdinalIgnoreCase))
+                    NewSetting.Value = NewSetting.Value + EndsWith;
+            }
+        }
 
-		private static void must_start_end_with(Simple_Setting NewSetting, string[] StartsWith, string EndsWith)
-		{
-			if (NewSetting.Value.Length == 0)
-				return;
+        private static void must_start_end_with(Simple_Setting NewSetting, string[] StartsWith, string EndsWith)
+        {
+            if (NewSetting.Value.Length == 0)
+                return;
 
-			// Check for the start against all possible combinations
-			bool missing_start = StartsWith.All(PossibleStart => !NewSetting.Value.StartsWith(PossibleStart, StringComparison.OrdinalIgnoreCase));
+            // Check for the start against all possible combinations
+            bool missing_start = StartsWith.All(PossibleStart => !NewSetting.Value.StartsWith(PossibleStart, StringComparison.OrdinalIgnoreCase));
 
-		    if ((missing_start) || (!NewSetting.Value.EndsWith(EndsWith, StringComparison.OrdinalIgnoreCase)))
-			{
-				if (missing_start)
-					NewSetting.Value = StartsWith[0] + NewSetting.Value;
-				if (!NewSetting.Value.EndsWith(EndsWith, StringComparison.OrdinalIgnoreCase))
-					NewSetting.Value = NewSetting.Value + EndsWith;
-			}
-		}
+            if ((missing_start) || (!NewSetting.Value.EndsWith(EndsWith, StringComparison.OrdinalIgnoreCase)))
+            {
+                if (missing_start)
+                    NewSetting.Value = StartsWith[0] + NewSetting.Value;
+                if (!NewSetting.Value.EndsWith(EndsWith, StringComparison.OrdinalIgnoreCase))
+                    NewSetting.Value = NewSetting.Value + EndsWith;
+            }
+        }
 
-		#endregion
+        #endregion
 
-		#endregion
+        #endregion
 
         #region HTML helper methods for the configuration main pages and subpages
 
@@ -1802,71 +1799,71 @@ namespace SobekCM.Library.AdminViewer
         #region HTML helper methods for the builder main page and subpages
 
         private void add_builder_info(TextWriter Output)
-		{
+        {
             // If a submode existed, call that method
-		    switch (builderSubEnum)
-		    {
-		        case Settings_Builder_SubMode_Enum.Builder_Settings:
-		            add_builder_settings_info(Output);
-		            break;
+            switch (builderSubEnum)
+            {
+                case Settings_Builder_SubMode_Enum.Builder_Settings:
+                    add_builder_settings_info(Output);
+                    break;
 
-		        case Settings_Builder_SubMode_Enum.Builder_Folders:
-		            add_builder_folders_info(Output);
-		            break;
+                case Settings_Builder_SubMode_Enum.Builder_Folders:
+                    add_builder_folders_info(Output);
+                    break;
 
-		        case Settings_Builder_SubMode_Enum.Builder_Modules:
-		            add_builder_modules_info(Output);
-		            break;
+                case Settings_Builder_SubMode_Enum.Builder_Modules:
+                    add_builder_modules_info(Output);
+                    break;
 
                 default:
-		            add_builder_toplevel_info(Output);
-		            break;
-		    }
-		}
+                    add_builder_toplevel_info(Output);
+                    break;
+            }
+        }
 
-	    private void add_builder_toplevel_info(TextWriter Output)
-	    {
+        private void add_builder_toplevel_info(TextWriter Output)
+        {
             // Look for some values
-	        string lastRun = String.Empty;
-	        string builderVersion = String.Empty;
-	        string lastResult = String.Empty;
-	        string currentBuilderMode = String.Empty;
-	        foreach (Admin_Setting_Value thisValue in builderSettings)
-	        {
-	            switch (thisValue.Key.ToLower())
-	            {
+            string lastRun = String.Empty;
+            string builderVersion = String.Empty;
+            string lastResult = String.Empty;
+            string currentBuilderMode = String.Empty;
+            foreach (Admin_Setting_Value thisValue in builderSettings)
+            {
+                switch (thisValue.Key.ToLower())
+                {
                     case "builder last run finished":
-	                    lastRun = thisValue.Value;
-	                    break;
+                        lastRun = thisValue.Value;
+                        break;
 
                     case "builder version":
-	                    builderVersion = thisValue.Value;
-	                    break;
+                        builderVersion = thisValue.Value;
+                        break;
 
                     case "builder last message":
-	                    lastResult = thisValue.Value;
-	                    break;
+                        lastResult = thisValue.Value;
+                        break;
 
                     case "builder operation flag":
-	                    currentBuilderMode = thisValue.Value;
-	                    break;
-	            }
-	        }
+                        currentBuilderMode = thisValue.Value;
+                        break;
+                }
+            }
 
             Output.WriteLine("  <span class=\"sbkSeav_BackUpLink\"><a href=\"" + redirectUrl.Replace("%SETTINGSCODE%", "") + "\">Back to top</a></span>");
 
             Output.WriteLine("  <h2>Builder Information</h2>");
 
             // Look to see if any builder folders exist
-	        if (String.IsNullOrEmpty(lastRun))
-	        {
+            if (String.IsNullOrEmpty(lastRun))
+            {
                 Output.WriteLine("  <div id=\"sbkAdm_ActionMessageWarning\">The builder has never run against this instance!<br /><br /><p>Make sure the builder is running and includes a reference to the database for this instance.</p></div>");
-	        }
+            }
             else if ((UI_ApplicationCache_Gateway.Settings.Builder.IncomingFolders == null) || (UI_ApplicationCache_Gateway.Settings.Builder.IncomingFolders.Count == 0))
             {
                 Output.WriteLine("  <div id=\"sbkAdm_ActionMessageWarning\">There are no incoming builder folders defined!<br /><br />You should probably add a builder folder by <a href=\"" + redirectUrl.Replace("%SETTINGSCODE%", "builder/folders") + "\">clicking here</a>.</div>");
             }
-            
+
             Output.WriteLine("  <p>The builder runs in the background and handles bulk loading, reprocessing of recently loaded materials, and other regular maintenance tasks.  Generally, the builder will look at incoming folders and look for newly loaded materials once every 60 seconds.</p>");
 
             Output.WriteLine("  <p>The table below reflects information obtained the last time the builder ran against this SobekCM instance.</p>");
@@ -1886,15 +1883,15 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("    <p>The builder settings subpage lists all settings that help to control the behavior while processing items.  These values are all from the database and generally reflect the capability of the system running the builder.</p>");
 
             Output.WriteLine("    <h4><a href=\"" + redirectUrl.Replace("%SETTINGSCODE%", "builder/folders") + "\">Incoming Folders</a></h4>");
-	        Output.WriteLine("    <p>This subpage lists all of the existing incoming folders.  In addition, it allows new incoming builder folders to be added and existing incoming builder folders to be modified.</p>");
-	        Output.WriteLine("    <p>One of the primary tasks of the builder is to handle bulk ingest of digital resources and digital resource files.  To facilitate this process, the builder can look in multiple different incoming folders and can process the files differently, depending on which folder they come in on.  Usually one incoming folder is set to a FTP location as well, to allow FTP of new materials directly into your SobekCM instance.</p>");
+            Output.WriteLine("    <p>This subpage lists all of the existing incoming folders.  In addition, it allows new incoming builder folders to be added and existing incoming builder folders to be modified.</p>");
+            Output.WriteLine("    <p>One of the primary tasks of the builder is to handle bulk ingest of digital resources and digital resource files.  To facilitate this process, the builder can look in multiple different incoming folders and can process the files differently, depending on which folder they come in on.  Usually one incoming folder is set to a FTP location as well, to allow FTP of new materials directly into your SobekCM instance.</p>");
 
             Output.WriteLine("    <h4><a href=\"" + redirectUrl.Replace("%SETTINGSCODE%", "builder/modules") + "\">Builder Modules</a></h4>");
-	        Output.WriteLine("    <p>The builder modules subpage shows the list of all the builder modules which will run during each phase of the builder's processing.</p>");
+            Output.WriteLine("    <p>The builder modules subpage shows the list of all the builder modules which will run during each phase of the builder's processing.</p>");
             Output.WriteLine("    <p>The builder operates as a framework of builder modules operating at different levels.  Several module types operate across the breadth of the entire repository, or for a single polling.  Other modules work at the level of each individual incoming folder.  And finally, other modules perform work against each individual incoming resource or resource flagged for additional work.</p>");
             Output.WriteLine("  </div>");
 
-	    }
+        }
 
         private void add_builder_settings_info(TextWriter Output)
         {
@@ -1937,7 +1934,7 @@ namespace SobekCM.Library.AdminViewer
 
             Output.WriteLine("  <p>One of the primary tasks of the builder is to handle bulk ingest of digital resources and digital resource files.  To facilitate this process, the builder can look in multiple different incoming folders and can process the files differently, depending on which folder they come in on.  Usually one incoming folder is set to a FTP location as well, to allow FTP of new materials directly into your SobekCM instance.</p>");
 
-            bool allowEdit = (((!UI_ApplicationCache_Gateway.Settings.Servers.isHosted) && ( RequestSpecificValues.Current_User.Is_System_Admin )) || (RequestSpecificValues.Current_User.Is_Host_Admin));
+            bool allowEdit = (((!UI_ApplicationCache_Gateway.Settings.Servers.isHosted) && (RequestSpecificValues.Current_User.Is_System_Admin)) || (RequestSpecificValues.Current_User.Is_Host_Admin));
             if (allowEdit)
             {
                 Output.WriteLine("  <p>You can edit or delete an existing builder folder from this form.  In addition, new builder folders can also be added from this form by selecting Add New Builder Folder button below.</p>");
@@ -2045,11 +2042,11 @@ namespace SobekCM.Library.AdminViewer
                 foreach (Builder_Module_Setting thisModule in UI_ApplicationCache_Gateway.Settings.Builder.PreProcessModulesSettings)
                 {
                     Output.WriteLine("    <tr>");
-                    if ( !String.IsNullOrEmpty(thisModule.Assembly))
-                        Output.WriteLine("      <td>" +  thisModule.Class + " ( " + thisModule.Assembly + " )</td>");
+                    if (!String.IsNullOrEmpty(thisModule.Assembly))
+                        Output.WriteLine("      <td>" + thisModule.Class + " ( " + thisModule.Assembly + " )</td>");
                     else
                         Output.WriteLine("      <td>" + thisModule.Class.Replace("SobekCM.Builder_Library.Modules.PreProcess.", "") + "</td>");
-                    Output.WriteLine("      <td>" +  thisModule.Description + "</td>");
+                    Output.WriteLine("      <td>" + thisModule.Description + "</td>");
 
                     if ((!String.IsNullOrEmpty(thisModule.Argument1)) || (!String.IsNullOrEmpty(thisModule.Argument2)) || (!String.IsNullOrEmpty(thisModule.Argument3)))
                     {
@@ -2152,7 +2149,7 @@ namespace SobekCM.Library.AdminViewer
                     if (!String.IsNullOrEmpty(thisModule.Assembly))
                         Output.WriteLine("      <td>" + thisModule.Class + " ( " + thisModule.Assembly + " )</td>");
                     else
-                        Output.WriteLine("      <td>" + thisModule.Class.Replace("SobekCM.Builder_Library.Modules.Items.","") + "</td>");
+                        Output.WriteLine("      <td>" + thisModule.Class.Replace("SobekCM.Builder_Library.Modules.Items.", "") + "</td>");
                     Output.WriteLine("      <td>" + thisModule.Description + "</td>");
 
                     if ((!String.IsNullOrEmpty(thisModule.Argument1)) || (!String.IsNullOrEmpty(thisModule.Argument2)) || (!String.IsNullOrEmpty(thisModule.Argument3)))
@@ -2242,12 +2239,12 @@ namespace SobekCM.Library.AdminViewer
             }
         }
 
-	    #endregion
+        #endregion
 
         #region HTML methods for the metadata main page and subpages
 
         private void add_metadata_info(TextWriter Output)
-		{
+        {
             // If a submode existed, call that method
             switch (metadataSubEnum)
             {
@@ -2275,7 +2272,7 @@ namespace SobekCM.Library.AdminViewer
                     add_metadata_toplevel_info(Output);
                     break;
             }
-		}
+        }
 
         private void add_metadata_fields_info(TextWriter Output)
         {
@@ -2336,11 +2333,11 @@ namespace SobekCM.Library.AdminViewer
             }
 
             // Create the data view
-            DataView sortMetadata = new DataView(tempTable) {Sort = columnSort + " ASC"};
+            DataView sortMetadata = new DataView(tempTable) { Sort = columnSort + " ASC" };
 
             Output.WriteLine("  <table class=\"sbkSeav_BaseTable\" id=\"sbkSeav_MetadataFieldsTable\">");
             Output.WriteLine("    <tr>");
-         //   Output.WriteLine("      <th id=\"sbkSeav_MetadataReadersTable_TypeCol\">ID</th>");
+            //   Output.WriteLine("      <th id=\"sbkSeav_MetadataReadersTable_TypeCol\">ID</th>");
             Output.WriteLine("      <th id=\"sbkSeav_MetadataFieldsTable_NameCol\">Name</th>");
             Output.WriteLine("      <th id=\"sbkSeav_MetadataFieldsTable_WebCodeCol\">Web Code</th>");
             Output.WriteLine("      <th id=\"sbkSeav_MetadataFieldsTable_DisplayTermCol\">Display Term</th>");
@@ -2349,10 +2346,10 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("    </tr>");
 
             // Step through all the basic metadata fields
-            foreach (DataRowView thisRow in sortMetadata )
+            foreach (DataRowView thisRow in sortMetadata)
             {
                 Output.WriteLine("    <tr>");
-            //    Output.WriteLine("      <td>" + metadata.ID + "</td>");
+                //    Output.WriteLine("      <td>" + metadata.ID + "</td>");
                 Output.WriteLine("      <td>" + thisRow[0] + "</td>");
                 Output.WriteLine("      <td class=\"sbkSeav_TableCenterCell\">" + thisRow[1] + "</td>");
                 Output.WriteLine("      <td>" + thisRow[2] + "</td>");
@@ -2481,12 +2478,12 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("  <table class=\"sbkSeav_BaseTable sbkSeav_MetsWritersTable\">");
             Output.WriteLine("    <tr>");
             Output.WriteLine("      <th class=\"sbkSeav_MetsWritersTable_ActiveCol\">Is Active?</th>");
-      //      Output.WriteLine("      <th class=\"sbkSeav_MetsWritersTable_TypeCol\">ID</th>");
+            //      Output.WriteLine("      <th class=\"sbkSeav_MetsWritersTable_TypeCol\">ID</th>");
             Output.WriteLine("      <th class=\"sbkSeav_MetsWritersTable_BaseTypeCol\">Label</th>");
             Output.WriteLine("      <th class=\"sbkSeav_MetsProfileTable_LabelCol\">MD Type</th>");
             Output.WriteLine("      <th class=\"sbkSeav_MetsProfileTable_SectionCol\">METS Section</th>");
             Output.WriteLine("      <th class=\"sbkSeav_MetsWritersTable_NameableCol\">Code Class</th>");
-     //       Output.WriteLine("      <th class=\"sbkSeav_MetsWritersTable_NameableCol\">Options</th>");
+            //       Output.WriteLine("      <th class=\"sbkSeav_MetsWritersTable_NameableCol\">Options</th>");
             Output.WriteLine("    </tr>");
 
             // Step through all the basic metadata reader/writers
@@ -2524,8 +2521,8 @@ namespace SobekCM.Library.AdminViewer
             }
         }
 
-        private void add_single_metadata_writing_profile(TextWriter Output, METS_Writing_Profile Profile )
-	    {
+        private void add_single_metadata_writing_profile(TextWriter Output, METS_Writing_Profile Profile)
+        {
             if (!String.IsNullOrEmpty(Profile.Profile_Description))
                 Output.WriteLine("  <p>" + Profile.Profile_Description + "</p>");
 
@@ -2536,7 +2533,7 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("      <th class=\"sbkSeav_MetsProfileTable_LabelCol\">MD Type</th>");
             Output.WriteLine("      <th class=\"sbkSeav_MetsProfileTable_SectionCol\">METS Section</th>");
             Output.WriteLine("      <th class=\"sbkSeav_MetsProfileTable_Codeol\">Code Class</th>");
-         //   Output.WriteLine("      <th class=\"sbkSeav_MetsProfileTable_OptionsCol\">Options</th>");
+            //   Output.WriteLine("      <th class=\"sbkSeav_MetsProfileTable_OptionsCol\">Options</th>");
             Output.WriteLine("    </tr>");
 
 
@@ -2595,10 +2592,10 @@ namespace SobekCM.Library.AdminViewer
                 }
             }
             Output.WriteLine("  </table>");
-	    }
+        }
 
-	    private void add_metadata_single_config(TextWriter Output, METS_Section_ReaderWriter_Config Config, bool onlyShowDefaultMd)
-	    {
+        private void add_metadata_single_config(TextWriter Output, METS_Section_ReaderWriter_Config Config, bool onlyShowDefaultMd)
+        {
             Output.WriteLine("    <tr>");
 
             if (Config.isActive)
@@ -2606,29 +2603,29 @@ namespace SobekCM.Library.AdminViewer
             else
                 Output.WriteLine("      <td class=\"sbkSeav_TableCenterCell\"><img src=\"" + Static_Resources_Gateway.Checkmark_Png + "\" alt=\"no\" /></td>");
 
-       //     Output.WriteLine("      <td>" + config.ID + "</td>");
+            //     Output.WriteLine("      <td>" + config.ID + "</td>");
             Output.WriteLine("      <td>" + Config.Label + "</td>");
 
             // Add all the mappings (or only the default)
-	        if (onlyShowDefaultMd)
-	        {
-	            if (Config.Default_Mapping != null)
-	            {
-                    if ( !String.IsNullOrEmpty(Config.Default_Mapping.Other_MD_Type))
+            if (onlyShowDefaultMd)
+            {
+                if (Config.Default_Mapping != null)
+                {
+                    if (!String.IsNullOrEmpty(Config.Default_Mapping.Other_MD_Type))
                         Output.WriteLine("      <td>" + Config.Default_Mapping.Other_MD_Type + "</td>");
                     else
                         Output.WriteLine("      <td>" + Config.Default_Mapping.MD_Type + "</td>");
-	            }
-	            else
-	            {
+                }
+                else
+                {
                     Output.WriteLine("      <td></td>");
-	            }
-	        }
-	        else
-	        {
-	            Output.WriteLine("      <td>");
+                }
+            }
+            else
+            {
+                Output.WriteLine("      <td>");
                 // Start with the default
-	            METS_Section_ReaderWriter_Mapping defaultMapping = Config.Default_Mapping;
+                METS_Section_ReaderWriter_Mapping defaultMapping = Config.Default_Mapping;
                 if (defaultMapping != null)
                 {
                     if (!String.IsNullOrEmpty(defaultMapping.Other_MD_Type))
@@ -2636,18 +2633,18 @@ namespace SobekCM.Library.AdminViewer
                     else
                         Output.WriteLine("        " + defaultMapping.MD_Type + "<br />");
                 }
-	            foreach (METS_Section_ReaderWriter_Mapping mapping in Config.Mappings)
-	            {
-	                if ((defaultMapping == null) || (defaultMapping != mapping))
-	                {
-	                    if (!String.IsNullOrEmpty(mapping.Other_MD_Type))
-	                        Output.WriteLine("        " + mapping.Other_MD_Type + "<br />");
-	                    else
-	                        Output.WriteLine("        " + mapping.MD_Type + "<br />");
-	                }
-	            }
-	            Output.WriteLine("      </td>");
-	        }
+                foreach (METS_Section_ReaderWriter_Mapping mapping in Config.Mappings)
+                {
+                    if ((defaultMapping == null) || (defaultMapping != mapping))
+                    {
+                        if (!String.IsNullOrEmpty(mapping.Other_MD_Type))
+                            Output.WriteLine("        " + mapping.Other_MD_Type + "<br />");
+                        else
+                            Output.WriteLine("        " + mapping.MD_Type + "<br />");
+                    }
+                }
+                Output.WriteLine("      </td>");
+            }
 
 
 
@@ -2687,7 +2684,7 @@ namespace SobekCM.Library.AdminViewer
             if (!String.IsNullOrEmpty(Config.Code_Assembly))
                 Output.WriteLine("      <td>" + Config.Code_Namespace + "." + Config.Code_Class + " ( " + Config.Code_Assembly + " )</td>");
             else
-                Output.WriteLine("      <td>" + (Config.Code_Namespace + "." + Config.Code_Class).Replace("SobekCM.Resource_Object.METS_Sec_ReaderWriters.","") + "</td>");
+                Output.WriteLine("      <td>" + (Config.Code_Namespace + "." + Config.Code_Class).Replace("SobekCM.Resource_Object.METS_Sec_ReaderWriters.", "") + "</td>");
 
 
 
@@ -2705,7 +2702,7 @@ namespace SobekCM.Library.AdminViewer
             //}
 
             Output.WriteLine("    </tr>");
-	    }
+        }
 
         private void add_metadata_modules_info(TextWriter Output)
         {
@@ -2747,7 +2744,7 @@ namespace SobekCM.Library.AdminViewer
         #region HTML helper methods for the engine main page and subpages
 
         private void add_engine_info(TextWriter Output)
-		{
+        {
             // If a submode existed, call that method
             switch (engineSubEnum)
             {
@@ -2779,14 +2776,14 @@ namespace SobekCM.Library.AdminViewer
                     add_engine_toplevel_info(Output);
                     break;
             }
-		}
+        }
 
 
-	    private void add_engine_authentication_info(TextWriter Output)
-	    {
+        private void add_engine_authentication_info(TextWriter Output)
+        {
             Output.WriteLine("  <h2>Authentication Configuration</h2>");
 
-	        Output.WriteLine("  <p>Information about different authentication systems allowed for signing up and logging into this system are detailed here.  This includes the highest level information, such as whether Shibboleth and the standard authentication system is enabled.</p>");
+            Output.WriteLine("  <p>Information about different authentication systems allowed for signing up and logging into this system are detailed here.  This includes the highest level information, such as whether Shibboleth and the standard authentication system is enabled.</p>");
             Output.WriteLine("  <p>If Shibboleth, or any other specialized authentication systems are enabled, additional details will display in this section as well.  In the case of Shibboleth, this includes the basic information (such as URL, name, etc..) for the Shibboleth authentication, as well as how certain data fields returned with the Shiboleth token should be handled.</p>");
 
             Output.WriteLine("  <h3>Authentication Modes</h3>");
@@ -2798,19 +2795,19 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("    <tr>");
             Output.WriteLine("      <th>Shibboleth Authentication:</th>");
 
-	        bool shib_enabled = ((UI_ApplicationCache_Gateway.Configuration.Authentication.Shibboleth != null) && (UI_ApplicationCache_Gateway.Configuration.Authentication.Shibboleth.Enabled));
-            if ( shib_enabled )
+            bool shib_enabled = ((UI_ApplicationCache_Gateway.Configuration.Authentication.Shibboleth != null) && (UI_ApplicationCache_Gateway.Configuration.Authentication.Shibboleth.Enabled));
+            if (shib_enabled)
                 Output.WriteLine("      <td>ENABLED</td>");
             else
                 Output.WriteLine("      <td>NOT ENABLED</td>");
             Output.WriteLine("    </tr>");
             Output.WriteLine("  </table>");
 
-	        if (shib_enabled)
-	        {
-	            Shibboleth_Configuration shibConfig = UI_ApplicationCache_Gateway.Configuration.Authentication.Shibboleth;
+            if (shib_enabled)
+            {
+                Shibboleth_Configuration shibConfig = UI_ApplicationCache_Gateway.Configuration.Authentication.Shibboleth;
                 Output.WriteLine("  <h3>Shibboleth Details</h3>");
-	            Output.WriteLine("  <p>Below are some of the top-level values related to the Shibboleth configuration, including the URL and display label.  The <i>User Identity Attribute</i> is the Shibboleth attribute passed back after the user is authenticated which uniquely identifies the user for the purposes of this system.</p>");
+                Output.WriteLine("  <p>Below are some of the top-level values related to the Shibboleth configuration, including the URL and display label.  The <i>User Identity Attribute</i> is the Shibboleth attribute passed back after the user is authenticated which uniquely identifies the user for the purposes of this system.</p>");
                 Output.WriteLine("  <table class=\"sbkSeav_BaseTableVert\" id=\"sbkSeav_ShibDetailsTable\">");
                 Output.WriteLine("    <tr>");
                 Output.WriteLine("      <th>Display Label</th>");
@@ -2831,8 +2828,8 @@ namespace SobekCM.Library.AdminViewer
                 Output.WriteLine("  </table>");
 
                 // Add any attribute mappings
-	            if ((shibConfig.AttributeMapping != null) && (shibConfig.AttributeMapping.Count > 0))
-	            {
+                if ((shibConfig.AttributeMapping != null) && (shibConfig.AttributeMapping.Count > 0))
+                {
                     Output.WriteLine("  <p>When a user first signs on via Shibboleth, the following attributes returned from Shibboleth are mapped to certain SobekCM user attributes.</p>");
                     Output.WriteLine("  <table class=\"sbkSeav_BaseTable\" id=\"sbkSeav_ShibDetails2Table\">");
                     Output.WriteLine("    <tr>");
@@ -2840,11 +2837,11 @@ namespace SobekCM.Library.AdminViewer
                     Output.WriteLine("      <th>SobekCM User Attribute</th>");
                     Output.WriteLine("    </tr>");
 
-                    foreach( Shibboleth_Configuration_Mapping thisMapping in shibConfig.AttributeMapping )
-	                {
+                    foreach (Shibboleth_Configuration_Mapping thisMapping in shibConfig.AttributeMapping)
+                    {
                         Output.WriteLine("    <tr>");
                         Output.WriteLine("      <td>" + thisMapping.Value + "</td>");
-                        Output.WriteLine("      <td>" + User_Object_Attribute_Mapping_Enum_Converter.ToString( thisMapping.Mapping ) + "</td>");
+                        Output.WriteLine("      <td>" + User_Object_Attribute_Mapping_Enum_Converter.ToString(thisMapping.Mapping) + "</td>");
                         Output.WriteLine("    </tr>");
                     }
 
@@ -2893,10 +2890,10 @@ namespace SobekCM.Library.AdminViewer
                     Output.WriteLine("  </table>");
                 }
             }
-	    }
+        }
 
         private void add_engine_brief_item_mapping_info(TextWriter Output)
-	    {
+        {
             Output.WriteLine("  <h2>Brief Item Mapping Sets Configuration</h2>");
 
             Output.WriteLine("  <p>When an item is requested, the METS file is read into a rich complete SobekCM item object.  In addition, data from the database is mapped into this object.  For display purposes, the data from this SobekCM item is mapped into a Brief Item which is what is generally transferred via the REST API from the engine to the user interface.  The Brief Item is what is used for displaying an item in the public interface.</p>");
@@ -2931,7 +2928,7 @@ namespace SobekCM.Library.AdminViewer
                         Output.WriteLine("      <td>" + thisModule.Class + " ( " + thisModule.Assembly + " )</td>");
                     else
                         Output.WriteLine("      <td>" + thisModule.Class.Replace("SobekCM.Engine_Library.Items.BriefItems.Mappers.", "") + "</td>");
-                    
+
                     Output.WriteLine("    </tr>");
                 }
                 Output.WriteLine("  </table>");
@@ -2967,28 +2964,28 @@ namespace SobekCM.Library.AdminViewer
                     Output.WriteLine("  </table>");
                 }
             }
-	    }
+        }
 
-	    private void add_engine_contact_info(TextWriter Output)
-	    {
-	        Output.WriteLine("  <h2>Contact Us Form Configuration</h2>");
+        private void add_engine_contact_info(TextWriter Output)
+        {
+            Output.WriteLine("  <h2>Contact Us Form Configuration</h2>");
 
             Output.WriteLine("  <p>This controls the behavior of the main, top-level, contact form within SobekCM.  If you wish to use this form, you can control which fields display, the order of display, and the options for a user to select.</p>");
             Output.WriteLine("  <p>This can also be customized at the collection level, but those custom contact us forms would not display here, since they are embedded within the aggregation folders.</p>");
 
 
             Output.WriteLine("  <table class=\"sbkSeav_BaseTable\" id=\"sbkSeav_ContactFormTable\">");
-	        Output.WriteLine("    <tr>");
-	        Output.WriteLine("      <th id=\"sbkSeav_ContactForm_NameCol\">Name</th>");
-	        Output.WriteLine("      <th id=\"sbkSeav_ContactForm_PromptCol\">Prompt</th>");
+            Output.WriteLine("    <tr>");
+            Output.WriteLine("      <th id=\"sbkSeav_ContactForm_NameCol\">Name</th>");
+            Output.WriteLine("      <th id=\"sbkSeav_ContactForm_PromptCol\">Prompt</th>");
             Output.WriteLine("      <th id=\"sbkSeav_ContactForm_TypeCol\">Type</th>");
             Output.WriteLine("      <th id=\"sbkSeav_ContactForm_ChoicesCol\">Choices</th>");
             Output.WriteLine("      <th id=\"sbkSeav_ContactForm_NotesCol\">Notes</th>");
             Output.WriteLine("    </tr>");
-	        foreach (ContactForm_Configuration_Element thisElement in UI_ApplicationCache_Gateway.Configuration.ContactForm.FormElements)
-	        {
-	            Output.WriteLine("    <tr>");
-                if ( !String.IsNullOrEmpty(thisElement.Name ))
+            foreach (ContactForm_Configuration_Element thisElement in UI_ApplicationCache_Gateway.Configuration.ContactForm.FormElements)
+            {
+                Output.WriteLine("    <tr>");
+                if (!String.IsNullOrEmpty(thisElement.Name))
                     Output.WriteLine("      <td>" + thisElement.Name + "</td>");
                 else
                     Output.WriteLine("      <td>" + ContactForm_Configuration_Element_Type_Enum_Converter.ToString(thisElement.Element_Type) + "</td>");
@@ -2997,7 +2994,7 @@ namespace SobekCM.Library.AdminViewer
                 Output.WriteLine("      <td>" + ContactForm_Configuration_Element_Type_Enum_Converter.ToString(thisElement.Element_Type) + "</td>");
 
                 // End the choices the user can pick, where applicable
-                if (( thisElement.Options == null ) || (thisElement.Options.Count == 0 ))
+                if ((thisElement.Options == null) || (thisElement.Options.Count == 0))
                     Output.WriteLine("      <td></td>");
                 else
                 {
@@ -3010,12 +3007,12 @@ namespace SobekCM.Library.AdminViewer
                 }
 
                 // Add additional notes about this element
-                if (( !thisElement.Required ) && ( thisElement.UserAttribute == User_Object_Attribute_Mapping_Enum.NONE))
+                if ((!thisElement.Required) && (thisElement.UserAttribute == User_Object_Attribute_Mapping_Enum.NONE))
                     Output.WriteLine("      <td></td>");
                 else
                 {
                     Output.WriteLine("      <td>");
-                    if ( thisElement.Required )
+                    if (thisElement.Required)
                         Output.WriteLine("        Required field<br />");
                     if (thisElement.UserAttribute != User_Object_Attribute_Mapping_Enum.NONE)
                     {
@@ -3030,9 +3027,9 @@ namespace SobekCM.Library.AdminViewer
                 }
 
                 Output.WriteLine("    </tr>");
-	        }
-	        Output.WriteLine("  </table>");
-	    }
+            }
+            Output.WriteLine("  </table>");
+        }
 
         private void add_engine_server_endpoints_info(TextWriter Output)
         {
@@ -3104,7 +3101,7 @@ namespace SobekCM.Library.AdminViewer
                 Output.WriteLine("      <td rowspan=\"" + Math.Max(1, ip_count) + "\">" + thisRestrictionRange.ID + "</td>");
                 Output.WriteLine("      <td rowspan=\"" + Math.Max(1, ip_count) + "\">" + thisRestrictionRange.Label + "</td>");
 
-                if ((ip_count == 0) || ( thisRestrictionRange.IpRanges == null ))
+                if ((ip_count == 0) || (thisRestrictionRange.IpRanges == null))
                 {
                     Output.WriteLine("      <td></td>");
                     Output.WriteLine("      <td></td>");
@@ -3133,20 +3130,20 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("  </table>");
         }
 
-	    private void recursively_write_all_endpoints( Engine_Path_Endpoint RootEndpoint , TextWriter Output , string Url )
-	    {
-	        if (RootEndpoint.IsEndpoint)
-	        {
+        private void recursively_write_all_endpoints(Engine_Path_Endpoint RootEndpoint, TextWriter Output, string Url)
+        {
+            if (RootEndpoint.IsEndpoint)
+            {
                 // How many verbs are defined for this endpoint?
-	            List<Engine_VerbMapping> mappings = RootEndpoint.AllVerbMappings;
+                List<Engine_VerbMapping> mappings = RootEndpoint.AllVerbMappings;
 
-	            if (mappings.Count == 1)
-	            {
-	                Output.WriteLine("    <tr>");
-	                Output.WriteLine("      <td>" + Url + "</td>");
+                if (mappings.Count == 1)
+                {
+                    Output.WriteLine("    <tr>");
+                    Output.WriteLine("      <td>" + Url + "</td>");
                     add_single_verb_mapping_in_table(mappings[0], Output);
-	                Output.WriteLine("    </tr>");
-	            }
+                    Output.WriteLine("    </tr>");
+                }
                 else if (mappings.Count > 1)
                 {
                     Output.WriteLine("    <tr>");
@@ -3161,18 +3158,18 @@ namespace SobekCM.Library.AdminViewer
                         Output.WriteLine("    </tr>");
                     }
                 }
-	        }
-	        else
-	        {
-	            foreach (Engine_Path_Endpoint childEndpoint in RootEndpoint.Children)
-	            {
-	                recursively_write_all_endpoints(childEndpoint, Output, Url + "/" + childEndpoint.Segment);
-	            }
-	        }
-	    }
+            }
+            else
+            {
+                foreach (Engine_Path_Endpoint childEndpoint in RootEndpoint.Children)
+                {
+                    recursively_write_all_endpoints(childEndpoint, Output, Url + "/" + childEndpoint.Segment);
+                }
+            }
+        }
 
-	    private void add_single_verb_mapping_in_table(Engine_VerbMapping Mapping, TextWriter Output)
-	    {
+        private void add_single_verb_mapping_in_table(Engine_VerbMapping Mapping, TextWriter Output)
+        {
             // Add the request type ( i.e., GET, POST, PUT, etc.. )
             switch (Mapping.RequestType)
             {
@@ -3280,11 +3277,11 @@ namespace SobekCM.Library.AdminViewer
                 Output.WriteLine("    <tr>");
                 Output.WriteLine("      <th>Additional Descriptions</th>");
                 if (config.Descriptions.Count == 1)
-                    Output.WriteLine("      <td>" + config.Descriptions[0].Replace("<","&lt;").Replace(">","&gt;") + "</td>");
+                    Output.WriteLine("      <td>" + config.Descriptions[0].Replace("<", "&lt;").Replace(">", "&gt;") + "</td>");
                 else
                 {
                     Output.WriteLine("      <td>");
-                    foreach( string thisDesc in config.Descriptions )
+                    foreach (string thisDesc in config.Descriptions)
                         Output.WriteLine("        " + thisDesc.Replace("<", "&lt;").Replace(">", "&gt;") + "<br />");
                     Output.WriteLine("      </td>");
                 }
@@ -3309,11 +3306,11 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("    <tr><th>Resource Identifier:</th><td>" + oai_resource_identifier_base + "</td></tr>");
             Output.WriteLine("  </table>");
 
-                Output.WriteLine("  <h3>Metadata Prefixes</h3>");
+            Output.WriteLine("  <h3>Metadata Prefixes</h3>");
             Output.WriteLine("  <p>This details the different metadata formats available in this repository for OAI-PMH sharing.  New formats can be supported by adding new metadata namespaces and classes to render the metadata.  In addition, the existing output could be modified by overriding the default metadata writer to use a class you include within a DLL on your site.</p>");
 
 
-                // Add any constants 
+            // Add any constants 
             if ((config.Metadata_Prefixes != null) && (config.Metadata_Prefixes.Count > 0))
             {
                 Output.WriteLine("  <table class=\"sbkSeav_BaseTable\" id=\"sbkSeav_OaiPmhPrefixesTable\">");
@@ -3359,10 +3356,10 @@ namespace SobekCM.Library.AdminViewer
                 Output.WriteLine("<p>NO METADATA FORMATS DEFINED!!</p>");
             }
 
-	    }
+        }
 
         private void add_engine_qc_tool_info(TextWriter Output)
-	    {
+        {
             Output.WriteLine("  <h2>Quality Control Configuration</h2>");
             Output.WriteLine("  <p>This configuration controls the divisions which are available for different users when creating the structural metadata online through the quality control tool.  This does not control which types the system supports, only the types that appear for a particular user in the division drop down in the quality control tool used to create structural metadata.  So, if you are working on a project where you know there may only be three types of divisions in the very uniform material, you could create your own profile to make it easier to use and more controlled.</p>");
             Output.WriteLine("  <p>The columns are defined below:</p>");
@@ -3371,7 +3368,7 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("    <li><span style=\"font-weight:bold\">Base Division Type</span> - If there is a base division type, this base division type will actually be used in the METS and the division type selected will become a division label.</li>");
             Output.WriteLine("    <li><span style=\"font-weight:bold\">Is Active?</span> - This flag indicates if this division type is available for a user to select.</li>");
             Output.WriteLine("    <li><span style=\"font-weight:bold\">Is Nameable?</span> - The flag determines if a user should be allowed to enter a custom name for this division.  For example, if the division is a chapter, then the user can enter the name of the chapter if this flag id set.</li>");
-             Output.WriteLine("  </ul>");
+            Output.WriteLine("  </ul>");
 
             string defaultSetName = UI_ApplicationCache_Gateway.Configuration.QualityControlTool.DefaultProfile;
 
@@ -3380,7 +3377,7 @@ namespace SobekCM.Library.AdminViewer
             {
                 Output.WriteLine("  <h3>" + defaultSetName + " ( <span class=\"sbkSeav_DefaultTextSpan\">default profile</span> )</h3>");
 
-                if ( !String.IsNullOrEmpty(defaultProfile.Profile_Description))
+                if (!String.IsNullOrEmpty(defaultProfile.Profile_Description))
                     Output.WriteLine("  <p>" + defaultProfile.Profile_Description + "</p>");
 
 
@@ -3397,7 +3394,7 @@ namespace SobekCM.Library.AdminViewer
 
                     Output.WriteLine("      <td>" + thisDivision.TypeName + "</td>");
 
-                    if ( !String.IsNullOrEmpty(thisDivision.BaseTypeName ))
+                    if (!String.IsNullOrEmpty(thisDivision.BaseTypeName))
                         Output.WriteLine("      <td>" + thisDivision.TypeName + "</td>");
                     else
                         Output.WriteLine("      <td></td>");
@@ -3420,7 +3417,7 @@ namespace SobekCM.Library.AdminViewer
             // Now, loop through the rest of the profiles and display them (if they exist)
             foreach (QualityControl_Profile thisProfile in UI_ApplicationCache_Gateway.Configuration.QualityControlTool.Profiles)
             {
-                if ( thisProfile != defaultProfile )
+                if (thisProfile != defaultProfile)
                 {
                     Output.WriteLine("  <h3>" + thisProfile.Profile_Name + "</h3>");
 
@@ -3461,7 +3458,7 @@ namespace SobekCM.Library.AdminViewer
                     Output.WriteLine("  </table>");
                 }
             }
-	    }
+        }
 
         private void add_engine_toplevel_info(TextWriter Output)
         {
@@ -3501,12 +3498,12 @@ namespace SobekCM.Library.AdminViewer
 
         }
 
-		#endregion
+        #endregion
 
-		#region HTML helper methods for the UI main page and subpages
+        #region HTML helper methods for the UI main page and subpages
 
-		private void add_ui_info(TextWriter Output)
-		{
+        private void add_ui_info(TextWriter Output)
+        {
             // If a submode existed, call that method
             switch (uiSubEnum)
             {
@@ -3560,8 +3557,8 @@ namespace SobekCM.Library.AdminViewer
             }
         }
 
-	    private void add_ui_citation_set_info(TextWriter Output, CitationSet SetInfo )
-	    {
+        private void add_ui_citation_set_info(TextWriter Output, CitationSet SetInfo)
+        {
             Output.WriteLine("  <table class=\"sbkSeav_BaseTable sbkSeav_UiCitationTable\">");
             Output.WriteLine("    <tr>");
             Output.WriteLine("      <th class=\"sbkSeav_UiCitationTable_TermCol\">Metadata Term</th>");
@@ -3571,8 +3568,8 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("    </tr>");
 
             // Add each field set
-	        foreach (CitationFieldSet fieldSet in SetInfo.FieldSets)
-	        {
+            foreach (CitationFieldSet fieldSet in SetInfo.FieldSets)
+            {
                 // Add a row for this
                 Output.WriteLine("    <tr class=\"sbkSeav_UiCitationTable_SetRow\">");
                 Output.WriteLine("      <td colspan=\"4\">" + fieldSet.Heading + " ( " + fieldSet.ID + " )</td>");
@@ -3580,31 +3577,31 @@ namespace SobekCM.Library.AdminViewer
 
                 // Now, add each individual citation element
                 foreach (CitationElement thisElement in fieldSet.Elements)
-	            {
+                {
                     Output.WriteLine("    <tr>");
-	                Output.WriteLine("      <td style=\"padding-left: 50px;\">" + thisElement.MetadataTerm + "</td>");
+                    Output.WriteLine("      <td style=\"padding-left: 50px;\">" + thisElement.MetadataTerm + "</td>");
                     Output.WriteLine("      <td>" + thisElement.DisplayTerm + "</td>");
                     Output.WriteLine("      <td class=\"sbkSeav_TableCenterCell\">" + thisElement.SearchCode + "</td>");
                     Output.WriteLine("      <td>");
-                    if ( !String.IsNullOrEmpty(thisElement.ItemProp ))
+                    if (!String.IsNullOrEmpty(thisElement.ItemProp))
                         Output.WriteLine("        microservice itemprop of '" + thisElement.ItemProp + "'.<br />");
-                    if ( thisElement.OverrideDisplayTerm == CitationElement_OverrideDispayTerm_Enum.subterm )
+                    if (thisElement.OverrideDisplayTerm == CitationElement_OverrideDispayTerm_Enum.subterm)
                         Output.WriteLine("        display label can be override by subterm (or display term).<br />");
-	                if ((thisElement.SectionWriter != null) && ( !String.IsNullOrEmpty(thisElement.SectionWriter.Class_Name)))
-	                {
-                        if ( !String.IsNullOrEmpty(thisElement.SectionWriter.Assembly))
+                    if ((thisElement.SectionWriter != null) && (!String.IsNullOrEmpty(thisElement.SectionWriter.Class_Name)))
+                    {
+                        if (!String.IsNullOrEmpty(thisElement.SectionWriter.Assembly))
                             Output.WriteLine("        custom display ( " + thisElement.SectionWriter.Assembly + "." + thisElement.SectionWriter.Class_Name + " ).<br />");
                         else
                             Output.WriteLine("        custom display ( " + thisElement.SectionWriter.Class_Name + " ).<br />");
-	                }
-	                Output.WriteLine("      </td>");
+                    }
+                    Output.WriteLine("      </td>");
                     Output.WriteLine("    </tr>");
-	            }
-	        }
+                }
+            }
             Output.WriteLine("  </table>");
-	    }
+        }
 
-	    private void add_ui_map_editor_info(TextWriter Output)
+        private void add_ui_map_editor_info(TextWriter Output)
         {
             Output.WriteLine("UI MAP EDITOR INFO HERE");
         }
@@ -3652,7 +3649,7 @@ namespace SobekCM.Library.AdminViewer
             }
 
             // Create the data view
-            DataView sortMetadata = new DataView(tempTable) {Sort = "Key ASC"};
+            DataView sortMetadata = new DataView(tempTable) { Sort = "Key ASC" };
 
             Output.WriteLine("  <h3>Microservice Endpoints</h3>");
             Output.WriteLine("  <table class=\"sbkSeav_BaseTable\" id=\"sbkSeav_UiMicroservicesEndpointsTable\">");
@@ -3708,7 +3705,7 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("    </tr>");
 
             // Create the data view
-            DataView sortMetadata = new DataView(tempTable) {Sort = "Type ASC, Subtype ASC"};
+            DataView sortMetadata = new DataView(tempTable) { Sort = "Type ASC, Subtype ASC" };
 
             // Step through all the roots
             foreach (DataRowView thisRow in sortMetadata)
@@ -3740,7 +3737,7 @@ namespace SobekCM.Library.AdminViewer
 
             // This is a little complicated since we are adding from TWO sources.. the database
             // settings list and the configuration which points to the classes in the UI
-            Dictionary<string, string> viewerAdded = new Dictionary<string, string>( StringComparer.OrdinalIgnoreCase );
+            Dictionary<string, string> viewerAdded = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
             // Create the data table
             DataTable tempTable = new DataTable();
@@ -3770,7 +3767,7 @@ namespace SobekCM.Library.AdminViewer
                     newRow[enabledCol] = "<img src=\"" + Static_Resources_Gateway.Checkmark_Png + "\" alt=\"no\" />";
                 newRow[typeCol] = viewer.ViewerType;
                 newRow[codeCol] = viewer.ViewerCode;
-                 if (!String.IsNullOrEmpty(viewer.Assembly))
+                if (!String.IsNullOrEmpty(viewer.Assembly))
                     newRow[classCol] = viewer.Class + " ( " + viewer.Assembly + " )";
                 else
                     newRow[classCol] = viewer.Class.Replace("SobekCM.Library.ItemViewer.Viewers.", "");
@@ -3779,7 +3776,7 @@ namespace SobekCM.Library.AdminViewer
                 else
                     newRow[alwaysAddCol] = "<img src=\"" + Static_Resources_Gateway.Checkmark_Png + "\" alt=\"no\" />";
                 StringBuilder extensionsBldr = new StringBuilder();
-                if ((viewer.FileExtensions != null) && ( viewer.FileExtensions.Length > 0 ))
+                if ((viewer.FileExtensions != null) && (viewer.FileExtensions.Length > 0))
                 {
                     foreach (string thisExtension in viewer.FileExtensions)
                     {
@@ -3789,7 +3786,7 @@ namespace SobekCM.Library.AdminViewer
                             extensionsBldr.Append(thisExtension);
                     }
                 }
-                else if ((viewer.PageExtensions != null) && ( viewer.PageExtensions.Length > 0 ))
+                else if ((viewer.PageExtensions != null) && (viewer.PageExtensions.Length > 0))
                 {
                     foreach (string thisExtension in viewer.PageExtensions)
                     {
@@ -3836,12 +3833,12 @@ namespace SobekCM.Library.AdminViewer
 
                 // Set some empty or default rows
                 newRow[codeCol] = String.Empty;
-                newRow[typeCol] = dbType.ViewType; 
+                newRow[typeCol] = dbType.ViewType;
                 newRow[enabledCol] = "-";
                 newRow[alwaysAddCol] = "-";
                 newRow[classCol] = "<span style=\"color:#999999;font-style:italic\">not implemented</span>";
                 newRow[extensionsCol] = String.Empty;
-                
+
                 // Set the default column
                 if (dbType.DefaultView)
                     newRow[defaultCol] = "<img src=\"" + Static_Resources_Gateway.Checkmark2_Png + "\" alt=\"yes\" />";
@@ -3857,7 +3854,7 @@ namespace SobekCM.Library.AdminViewer
             }
 
             // Create the data view
-            DataView sortMetadata = new DataView(tempTable) {Sort = "ViewerType ASC"};
+            DataView sortMetadata = new DataView(tempTable) { Sort = "ViewerType ASC" };
 
             Output.WriteLine("  <table class=\"sbkSeav_BaseTable\" id=\"sbkSeav_UiViewersTable\">");
             Output.WriteLine("    <tr>");
@@ -3919,12 +3916,12 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("  </div>");
         }
 
-		#endregion
+        #endregion
 
-		#region HTML helper methods for the HTML snippets main page and subpages
+        #region HTML helper methods for the HTML snippets main page and subpages
 
-		private void add_html_info(TextWriter Output)
-		{
+        private void add_html_info(TextWriter Output)
+        {
             // If a submode existed, call that method
             switch (htmlSubEnum)
             {
@@ -3964,7 +3961,7 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine();
 
             HTML_Based_Content missingContent = SobekEngineClient.WebContent.Get_Special_Missing_Page(RequestSpecificValues.Tracer);
-            if ((missingContent == null) || ( String.IsNullOrEmpty(missingContent.Content)))
+            if ((missingContent == null) || (String.IsNullOrEmpty(missingContent.Content)))
             {
                 Output.WriteLine("<h3>ERROR!  Missing web content object was returned from client as NULL or without content</h3>");
             }
@@ -4025,30 +4022,30 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("  </div>");
         }
 
-	    private void add_html_usage_email_info(TextWriter Output)
-	    {
-	        Output.WriteLine("  <h2>Usage Statistics Email Body</h2>");
-	        Output.WriteLine("  <p>The system can be configured to email submittors with their month usage statistics on a monthly basis.  This HTML snippet is the body of the usage email that is sent.</p>");
-	        Output.WriteLine("  <p>This email contains many very specific directives as well.</p>");
+        private void add_html_usage_email_info(TextWriter Output)
+        {
+            Output.WriteLine("  <h2>Usage Statistics Email Body</h2>");
+            Output.WriteLine("  <p>The system can be configured to email submittors with their month usage statistics on a monthly basis.  This HTML snippet is the body of the usage email that is sent.</p>");
+            Output.WriteLine("  <p>This email contains many very specific directives as well.</p>");
 
 
-	        Output.WriteLine("  <div id=\"sbkSeav_SmallerPageWrapper\">");
+            Output.WriteLine("  <div id=\"sbkSeav_SmallerPageWrapper\">");
 
-	        // Add the buttons
-	        add_buttons(Output);
+            // Add the buttons
+            add_buttons(Output);
 
-	        Output.WriteLine();
-	        Output.WriteLine("<br /><br />");
-	        Output.WriteLine();
+            Output.WriteLine();
+            Output.WriteLine("<br /><br />");
+            Output.WriteLine();
 
-	        string emailSnippet = String.Empty;
-	        string file_name = Path.Combine(UI_ApplicationCache_Gateway.Settings.Servers.Application_Server_Network, "design", "extra", "stats", "stats_email_body.txt");
-	        if (File.Exists(file_name))
-	        {
+            string emailSnippet = String.Empty;
+            string file_name = Path.Combine(UI_ApplicationCache_Gateway.Settings.Servers.Application_Server_Network, "design", "extra", "stats", "stats_email_body.txt");
+            if (File.Exists(file_name))
+            {
                 emailSnippet = File.ReadAllText(file_name);
-	        }
+            }
 
-	        // Add the ace editor for editing this HTML
+            // Add the ace editor for editing this HTML
             AceEditor aceEditor = new AceEditor(AceEditor_Mode.HTML)
             {
                 ContentsId = "usage_email_content",
@@ -4064,7 +4061,7 @@ namespace SobekCM.Library.AdminViewer
             add_buttons(Output);
 
             Output.WriteLine("  </div>");
-	    }
+        }
 
         private void add_html_toplevel_info(TextWriter Output)
         {
@@ -4085,78 +4082,78 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("    <p>This special HTML snippet is used to provide users's a customized message when no results are found for a search (or a browse).  This message is used in place of the generic 'Your search returned no results' message.</p>");
 
             Output.WriteLine("    <h4><a href=\"" + redirectUrl.Replace("%SETTINGSCODE%", "html/usageemail") + "\">Usage Email</a></h4>");
-            Output.WriteLine("    <p>The system can be configured to email submittors with their month usage statistics on a monthly basis.  This HTML snippet is the body of the usage email that is sent.</p>");            
+            Output.WriteLine("    <p>The system can be configured to email submittors with their month usage statistics on a monthly basis.  This HTML snippet is the body of the usage email that is sent.</p>");
 
             Output.WriteLine("  </div>");
         }
 
-		#endregion
+        #endregion
 
-		#region HTML helper methods for the extensions main page and subpages
+        #region HTML helper methods for the extensions main page and subpages
 
-		private void add_extensions_info(TextWriter Output)
-		{
-            if ((extensionSubMode < 1) || (extensionSubMode >  extensionCodes.Count ))
-		    {
+        private void add_extensions_info(TextWriter Output)
+        {
+            if ((extensionSubMode < 1) || (extensionSubMode > extensionCodes.Count))
+            {
                 Output.WriteLine("  <span class=\"sbkSeav_BackUpLink\"><a href=\"" + redirectUrl.Replace("%SETTINGSCODE%", "") + "\">Back to top</a></span>");
 
                 Output.WriteLine("  <h2>Extensions</h2>");
 
                 Output.WriteLine("  <p>The SobekCM digital repository system supports a rich extension, or plug-in, architecture allowing major configuration, functionality, and appearance changes to be implemented through the use of plug-ins.</p>");
 
-		        if (extensionCodes.Count > 0)
-		        {
+                if (extensionCodes.Count > 0)
+                {
                     Output.WriteLine("  <p>The table below includes the list of all plug-ins that are present in this system.  By clicking on a row below, you can view the details for that plug-in and enable or disable the functionality.</p>");
 
-		            Output.WriteLine("  <h3>Installed Extensions</h3>");
-		            Output.WriteLine("  <table class=\"sbkSeav_BaseTable sbkSeav_ExtensionsTable\">");
-		            Output.WriteLine("    <tr>");
-		            Output.WriteLine("      <th class=\"sbkSeav_ExtensionsTable_EnabledCol\">Enabled</th>");
-		            Output.WriteLine("      <th class=\"sbkSeav_ExtensionsTable_CodeCol\">Code</th>");
-		            Output.WriteLine("      <th class=\"sbkSeav_ExtensionsTable_NameCol\">Name</th>");
-		            Output.WriteLine("      <th class=\"sbkSeav_ExtensionsTable_NameCol\">Version</th>");
-		            Output.WriteLine("      <th class=\"sbkSeav_ExtensionsTable_DateEnabledCol\">Date Enabled</th>");
-		            Output.WriteLine("    </tr>");
-		            int extension_count = 1;
-		            foreach (string thisCode in extensionCodes)
-		            {
-		                // Get the extension information
-		                ExtensionInfo thisExtension = UI_ApplicationCache_Gateway.Configuration.Extensions.Get_Extension(thisCode);
-		                if (thisExtension == null) continue;
+                    Output.WriteLine("  <h3>Installed Extensions</h3>");
+                    Output.WriteLine("  <table class=\"sbkSeav_BaseTable sbkSeav_ExtensionsTable\">");
+                    Output.WriteLine("    <tr>");
+                    Output.WriteLine("      <th class=\"sbkSeav_ExtensionsTable_EnabledCol\">Enabled</th>");
+                    Output.WriteLine("      <th class=\"sbkSeav_ExtensionsTable_CodeCol\">Code</th>");
+                    Output.WriteLine("      <th class=\"sbkSeav_ExtensionsTable_NameCol\">Name</th>");
+                    Output.WriteLine("      <th class=\"sbkSeav_ExtensionsTable_NameCol\">Version</th>");
+                    Output.WriteLine("      <th class=\"sbkSeav_ExtensionsTable_DateEnabledCol\">Date Enabled</th>");
+                    Output.WriteLine("    </tr>");
+                    int extension_count = 1;
+                    foreach (string thisCode in extensionCodes)
+                    {
+                        // Get the extension information
+                        ExtensionInfo thisExtension = UI_ApplicationCache_Gateway.Configuration.Extensions.Get_Extension(thisCode);
+                        if (thisExtension == null) continue;
 
                         Output.WriteLine("    <tr class=\"sbkSeav_ExtensionsTable_Row\" onclick=\"window.location.href='" + RequestSpecificValues.Current_Mode.Base_URL + "l/admin/settings/extensions/" + extension_count + "'; return false;\">");
-		                if (thisExtension.Enabled)
-		                    Output.WriteLine("      <td class=\"sbkSeav_TableCenterCell\"><img src=\"" + Static_Resources_Gateway.Checkmark2_Png + "\" alt=\"yes\" /></td>");
-		                else
-		                    Output.WriteLine("      <td class=\"sbkSeav_TableCenterCell\"><img src=\"" + Static_Resources_Gateway.Checkmark_Png + "\" alt=\"no\" /></td>");
+                        if (thisExtension.Enabled)
+                            Output.WriteLine("      <td class=\"sbkSeav_TableCenterCell\"><img src=\"" + Static_Resources_Gateway.Checkmark2_Png + "\" alt=\"yes\" /></td>");
+                        else
+                            Output.WriteLine("      <td class=\"sbkSeav_TableCenterCell\"><img src=\"" + Static_Resources_Gateway.Checkmark_Png + "\" alt=\"no\" /></td>");
 
-		                Output.WriteLine("      <td>" + thisExtension.Code + "</td>");
-		                Output.WriteLine("      <td>" + thisExtension.Name + "</td>");
-		                Output.WriteLine("      <td>" + thisExtension.Version + "</td>");
+                        Output.WriteLine("      <td>" + thisExtension.Code + "</td>");
+                        Output.WriteLine("      <td>" + thisExtension.Name + "</td>");
+                        Output.WriteLine("      <td>" + thisExtension.Version + "</td>");
 
-		                if ((thisExtension.Enabled) && (thisExtension.EnabledDate.HasValue))
-		                    Output.WriteLine("      <td>" + thisExtension.EnabledDate.Value.ToShortDateString() + "</td>");
-		                else
-		                    Output.WriteLine("      <td></td>");
+                        if ((thisExtension.Enabled) && (thisExtension.EnabledDate.HasValue))
+                            Output.WriteLine("      <td>" + thisExtension.EnabledDate.Value.ToShortDateString() + "</td>");
+                        else
+                            Output.WriteLine("      <td></td>");
 
-		                Output.WriteLine("    </tr>");
+                        Output.WriteLine("    </tr>");
 
-		                extension_count++;
-		            }
-		            Output.WriteLine("  </table>");
-		        }
-		        else
-		        {
+                        extension_count++;
+                    }
+                    Output.WriteLine("  </table>");
+                }
+                else
+                {
                     Output.WriteLine("  <p>You do not currently have any installed plug-ins.</p>");
-		        }
-		    }
-		    else
-		    {
+                }
+            }
+            else
+            {
                 // Get the referenced code
-		        string code = extensionCodes[extensionSubMode - 1];
+                string code = extensionCodes[extensionSubMode - 1];
 
                 // Get the extension
-		        ExtensionInfo extension = UI_ApplicationCache_Gateway.Configuration.Extensions.Get_Extension(code);
+                ExtensionInfo extension = UI_ApplicationCache_Gateway.Configuration.Extensions.Get_Extension(code);
 
 
                 Output.WriteLine("  <h2>" + extension.Name + "</h2>");
@@ -4165,21 +4162,21 @@ namespace SobekCM.Library.AdminViewer
 
 
                 // Add the button
-		        Output.WriteLine("  <div id=\"sbkSeav_ExtensionEnableDiv\">");
+                Output.WriteLine("  <div id=\"sbkSeav_ExtensionEnableDiv\">");
 
-		        if (extension.Enabled)
-		        {
-		            if ((extension.HighestRightsRequired) && (UI.UI_ApplicationCache_Gateway.Settings.Servers.isHosted) && (!RequestSpecificValues.Current_User.Is_Host_Admin))
-		            {
-		                Output.WriteLine("    <span>Only the host admin can disable this plug-in</span>");
-		            }
-		            else
-		            {
-		                Output.WriteLine("    <button title=\"Disable this plug-in\" class=\"sbkAdm_RoundButton\" onclick=\"if ( confirm('Are you sure you want to disable this currently active plug-in?  This may result in loss of metadata or functionality.') == true ) { set_hidden_value_postback('admin_settings_action','disable_plugin'); } return false; \">DISABLE</button>");
-		            }
-		        }
-		        else
-		        {
+                if (extension.Enabled)
+                {
+                    if ((extension.HighestRightsRequired) && (UI.UI_ApplicationCache_Gateway.Settings.Servers.isHosted) && (!RequestSpecificValues.Current_User.Is_Host_Admin))
+                    {
+                        Output.WriteLine("    <span>Only the host admin can disable this plug-in</span>");
+                    }
+                    else
+                    {
+                        Output.WriteLine("    <button title=\"Disable this plug-in\" class=\"sbkAdm_RoundButton\" onclick=\"if ( confirm('Are you sure you want to disable this currently active plug-in?  This may result in loss of metadata or functionality.') == true ) { set_hidden_value_postback('admin_settings_action','disable_plugin'); } return false; \">DISABLE</button>");
+                    }
+                }
+                else
+                {
                     if ((extension.HighestRightsRequired) && (UI.UI_ApplicationCache_Gateway.Settings.Servers.isHosted) && (!RequestSpecificValues.Current_User.Is_Host_Admin))
                     {
                         Output.WriteLine("    <span>Only the host admin can enable this plug-in</span>");
@@ -4188,11 +4185,11 @@ namespace SobekCM.Library.AdminViewer
                     {
                         Output.WriteLine("    <button title=\"Enable this plug-in\" class=\"sbkAdm_RoundButton\" onclick=\"if ( confirm('Are you sure you want to enable this plug-in?') == true ) { set_hidden_value_postback('admin_settings_action','enable_plugin'); } return false;\">ENABLE</button>");
                     }
-		        }
+                }
 
-		        Output.WriteLine("  </div>");
+                Output.WriteLine("  </div>");
 
-                if ( extension.Enabled)
+                if (extension.Enabled)
                     Output.WriteLine("  <p>This plug-in is currently enabled and in use by this system.  Press the button to the right to disable this plug-in completely.</p>");
                 else
                     Output.WriteLine("  <p>This plug-in is installed but is NOT currently active.  Press the button to the right to enable this plug-in and reset system configuration.</p>");
@@ -4203,85 +4200,85 @@ namespace SobekCM.Library.AdminViewer
                 Output.WriteLine("    <tr><th>Code:</th><td>" + extension.Code + "</td></tr>");
                 Output.WriteLine("    <tr><th>Name:</th><td>" + extension.Name + "</td></tr>");
 
-		        if (extension.AdminInfo != null)
-		        {
-		            // Add description information
-		            if (!String.IsNullOrWhiteSpace(extension.AdminInfo.Description))
-		            {
-		                Output.WriteLine("    <tr><th>Description:</th><td>" + extension.AdminInfo.Description + "</td></tr>");
-		            }
+                if (extension.AdminInfo != null)
+                {
+                    // Add description information
+                    if (!String.IsNullOrWhiteSpace(extension.AdminInfo.Description))
+                    {
+                        Output.WriteLine("    <tr><th>Description:</th><td>" + extension.AdminInfo.Description + "</td></tr>");
+                    }
 
-		            // Add author information
-		            if ((extension.AdminInfo.Authors != null) && (extension.AdminInfo.Authors.Count > 0))
-		            {
-		                Output.Write("    <tr><th>Author(s):</th><td>");
-		                foreach (ExtensionAdminAuthorInfo thisAuthor in extension.AdminInfo.Authors)
-		                {
-		                    if (!String.IsNullOrWhiteSpace(thisAuthor.Email))
-		                        Output.Write(thisAuthor.Name + " ( " + thisAuthor.Email + " )<br/>");
-		                    else
-		                        Output.Write(thisAuthor.Name + "<br />");
-		                }
-		                Output.WriteLine("</td></tr>");
-		            }
+                    // Add author information
+                    if ((extension.AdminInfo.Authors != null) && (extension.AdminInfo.Authors.Count > 0))
+                    {
+                        Output.Write("    <tr><th>Author(s):</th><td>");
+                        foreach (ExtensionAdminAuthorInfo thisAuthor in extension.AdminInfo.Authors)
+                        {
+                            if (!String.IsNullOrWhiteSpace(thisAuthor.Email))
+                                Output.Write(thisAuthor.Name + " ( " + thisAuthor.Email + " )<br/>");
+                            else
+                                Output.Write(thisAuthor.Name + "<br />");
+                        }
+                        Output.WriteLine("</td></tr>");
+                    }
 
-		            // Add permissions information
-		            if (!String.IsNullOrWhiteSpace(extension.AdminInfo.Permissions))
-		            {
-		                Output.WriteLine("    <tr><th>Permissions:</th><td>" + extension.AdminInfo.Permissions + "</td></tr>");
-		            }
-		        }          
+                    // Add permissions information
+                    if (!String.IsNullOrWhiteSpace(extension.AdminInfo.Permissions))
+                    {
+                        Output.WriteLine("    <tr><th>Permissions:</th><td>" + extension.AdminInfo.Permissions + "</td></tr>");
+                    }
+                }
 
                 Output.WriteLine("  </table>");
 
                 // Any errors or warnings found?
-		        if ((extension.ConfigurationErrors != null) && (extension.ConfigurationErrors.Count > 0))
-		        {
-		            Output.WriteLine("  <h3>Configuration Errors</h3>");
+                if ((extension.ConfigurationErrors != null) && (extension.ConfigurationErrors.Count > 0))
+                {
+                    Output.WriteLine("  <h3>Configuration Errors</h3>");
                     Output.WriteLine("  <p>The following configuration errors occured while reading this plug-in information.  These must be corrected before this extension can be enabled.");
                     Output.WriteLine("  <ul id=\"sbkSeav_ExtensionErrors\">");
-		            foreach (string thisError in extension.ConfigurationErrors)
-		            {
-		                Output.WriteLine("    <li>" + thisError + "</li>");
-		            }
+                    foreach (string thisError in extension.ConfigurationErrors)
+                    {
+                        Output.WriteLine("    <li>" + thisError + "</li>");
+                    }
                     Output.WriteLine("  </ul>");
 
-		        }
-		    }
-		}
+                }
+            }
+        }
 
-		#endregion
+        #endregion
 
 
-	    /// <summary> Gets the CSS class of the container that the page is wrapped within </summary>
-	    /// <value> Returns .... </value>
-	    public override string Container_CssClass
-	    {
-	        get
-	        {
-	            switch (mainMode)
-	            {
-	                case Settings_Mode_Enum.Settings:
-                        return "sbkSeav_ContainerInner1300"; 
+        /// <summary> Gets the CSS class of the container that the page is wrapped within </summary>
+        /// <value> Returns .... </value>
+        public override string Container_CssClass
+        {
+            get
+            {
+                switch (mainMode)
+                {
+                    case Settings_Mode_Enum.Settings:
+                        return "sbkSeav_ContainerInner1300";
 
                     case Settings_Mode_Enum.Builder:
-                        if ( builderSubEnum == Settings_Builder_SubMode_Enum.Builder_Modules )
+                        if (builderSubEnum == Settings_Builder_SubMode_Enum.Builder_Modules)
                             return "sbkSeav_ContainerInner1500";
-                        return "sbkSeav_ContainerInner1300"; 
+                        return "sbkSeav_ContainerInner1300";
 
                     case Settings_Mode_Enum.Metadata:
-                        if (( metadataSubEnum == Settings_Metadata_SubMode_Enum.METS_Section_Reader_Writers ) || ( metadataSubEnum == Settings_Metadata_SubMode_Enum.Metdata_Reader_Writers ))
+                        if ((metadataSubEnum == Settings_Metadata_SubMode_Enum.METS_Section_Reader_Writers) || (metadataSubEnum == Settings_Metadata_SubMode_Enum.Metdata_Reader_Writers))
                             return "sbkSeav_ContainerInner1600";
-                        if ( metadataSubEnum == Settings_Metadata_SubMode_Enum.NONE )
+                        if (metadataSubEnum == Settings_Metadata_SubMode_Enum.NONE)
                             return "sbkSeav_ContainerInner1300";
-                        return "sbkSeav_ContainerInner1500"; 
+                        return "sbkSeav_ContainerInner1500";
 
 
-	            }
-	            return "sbkSeav_ContainerInner"; 
-	            
-	        }
-	    }
+                }
+                return "sbkSeav_ContainerInner";
 
-	}
+            }
+        }
+
+    }
 }

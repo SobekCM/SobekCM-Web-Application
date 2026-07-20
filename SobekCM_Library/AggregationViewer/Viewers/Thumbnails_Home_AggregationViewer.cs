@@ -1,41 +1,21 @@
-using System;
-using SobekCM.Core.MemoryMgmt;
-using System.Collections.Generic;
-using SobekCM.Core.MemoryMgmt;
-using System.IO;
-using SobekCM.Core.MemoryMgmt;
-using System.Linq;
-using SobekCM.Core.MemoryMgmt;
-using System.Text;
-using SobekCM.Core.MemoryMgmt;
-using System.Threading.Tasks;
-using SobekCM.Core.MemoryMgmt;
 using Microsoft.AspNetCore.Http;
-using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
-using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Results;
-using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Search;
-using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Users;
-using SobekCM.Core.MemoryMgmt;
 using SobekCM.Engine_Library.Configuration;
-using SobekCM.Core.MemoryMgmt;
-using SobekCM.Engine_Library.Database;
-using SobekCM.Core.MemoryMgmt;
 using SobekCM.Engine_Library.Solr.v5;
-using SobekCM.Core.MemoryMgmt;
 using SobekCM.Library.HTML;
-using SobekCM.Core.MemoryMgmt;
 using SobekCM.Library.ResultsViewer;
-using SobekCM.Core.MemoryMgmt;
 using SobekCM.Library.UI;
-using SobekCM.Core.MemoryMgmt;
 using SobekCM.Tools;
-using SobekCM.Core.MemoryMgmt;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
 
 namespace SobekCM.Library.AggregationViewer.Viewers
 {
@@ -82,7 +62,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             {
                 return new List<HtmlSubwriter_Behaviors_Enum>
                         {
-                            HtmlSubwriter_Behaviors_Enum.Aggregation_Suppress_Home_Text                            
+                            HtmlSubwriter_Behaviors_Enum.Aggregation_Suppress_Home_Text
                         };
             }
         }
@@ -229,7 +209,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 
         private void add_thumbnails(Custom_Tracer Tracer)
         {
-            
+
         }
 
         public override void Add_Secondary_Controls(TextWriter Output, Custom_Tracer Tracer)
@@ -295,7 +275,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 StringBuilder builder = new StringBuilder();
                 builder.AppendLine("<div id=\"Thp_ResultsDesc\" style=\"background-color:#eee; border: #ccc 1px solid;width: 100%\">");
                 builder.AppendLine("<div id=\"Thp_ResultsTitle\" style=\"width:30%;display:inline-block; font-size: 1.15em; padding: 12px; padding-left:30px\" >Collection Items</div>");
-                if ( stats.Total_Items > results.Count )
+                if (stats.Total_Items > results.Count)
                 {
                     builder.AppendLine("<div id=\"Thp_ResultsShowing\" style=\"width:30%;display:inline-block; padding: 12px; text-align:center;\" >Showing 20 items out of " + stats.Total_Items + "</div>");
 

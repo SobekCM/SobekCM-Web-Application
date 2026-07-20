@@ -1,11 +1,11 @@
 ﻿#region Using directives
 
+using SobekCM.Resource_Object.MARC;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Text;
-using SobekCM.Resource_Object.MARC;
 
 #endregion
 
@@ -46,7 +46,8 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// there are no occupational subjects, the Occupations property creates a readonly collection to pass back out.</remarks>
         public int Occupations_Count
         {
-            get {
+            get
+            {
                 return occupations == null ? 0 : occupations.Count;
             }
         }
@@ -56,7 +57,8 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// Even if there are no occupational subjects, this property creates a readonly collection to pass back out.</remarks>
         public ReadOnlyCollection<string> Occupations
         {
-            get {
+            get
+            {
                 return occupations == null ? new ReadOnlyCollection<string>(new List<string>()) : new ReadOnlyCollection<string>(occupations);
             }
         }
@@ -241,7 +243,7 @@ namespace SobekCM.Resource_Object.Bib_Info
                     first_field_assigned = assign_geographics(first_field_assigned, returnValue.Tag, fieldBuilder, fieldBuilder2);
                     first_field_assigned = assign_temporals(first_field_assigned, returnValue.Tag, fieldBuilder, fieldBuilder2);
                     first_field_assigned = assign_topics(first_field_assigned, returnValue.Tag, fieldBuilder, fieldBuilder2, ref scale);
-                   assign_genres(first_field_assigned, returnValue.Tag, fieldBuilder, fieldBuilder2);
+                    assign_genres(first_field_assigned, returnValue.Tag, fieldBuilder, fieldBuilder2);
                     break;
             }
 

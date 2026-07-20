@@ -1,15 +1,14 @@
 #region Using directives
 
-using System;
-using System.IO;
-using System.Linq;
-using System.Text;
-using Microsoft.AspNetCore.Http;
 using SobekCM.Core.ApplicationState;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Users;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Bib_Info;
+using System;
+using System.IO;
+using System.Linq;
+using System.Text;
 
 #endregion
 
@@ -23,7 +22,7 @@ namespace SobekCM.Library.Citation.Elements
         public Type_Element() : base("Resource Type", "type")
         {
             Repeatable = false;
-	        help_page = "typesimple";
+            help_page = "typesimple";
         }
 
         /// <summary> Sets the postback javascript, if the combo box requires a post back onChange </summary>
@@ -44,7 +43,7 @@ namespace SobekCM.Library.Citation.Elements
         /// <param name="Translator"> Language support object which handles simple translational duties </param>
         /// <param name="Base_URL"> Base URL for the current request </param>
         /// <remarks> This simple element does not append any popup form to the popup_form_builder</remarks>
-        public override void Render_Template_HTML(TextWriter Output, SobekCM_Item Bib, string Skin_Code, bool IsMozilla, StringBuilder PopupFormBuilder, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL )
+        public override void Render_Template_HTML(TextWriter Output, SobekCM_Item Bib, string Skin_Code, bool IsMozilla, StringBuilder PopupFormBuilder, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL)
         {
             // Check that an acronym exists
             if (Acronym.Length == 0)
@@ -109,7 +108,7 @@ namespace SobekCM.Library.Citation.Elements
         public override void Prepare_For_Save(SobekCM_Item Bib, User_Object Current_User)
         {
             // Do nothing since there is only one type
-            if (Bib.Bib_Info.SobekCM_Type == TypeOfResource_SobekCM_Enum.Project ) 
+            if (Bib.Bib_Info.SobekCM_Type == TypeOfResource_SobekCM_Enum.Project)
             {
                 if (Bib.Bib_Info.Notes_Count > 0)
                 {
@@ -139,7 +138,7 @@ namespace SobekCM.Library.Citation.Elements
                 {
                     thisType = type_value;
                 }
-                if (Bib.Bib_Info.SobekCM_Type == TypeOfResource_SobekCM_Enum.Project )
+                if (Bib.Bib_Info.SobekCM_Type == TypeOfResource_SobekCM_Enum.Project)
                 {
                     if (thisType.Length > 0)
                     {
@@ -151,7 +150,7 @@ namespace SobekCM.Library.Citation.Elements
                     Bib.Bib_Info.SobekCM_Type_String = thisType;
                 }
                 return;
-            }            
+            }
         }
 
         /// <summary> Saves the constants to the bib id </summary>

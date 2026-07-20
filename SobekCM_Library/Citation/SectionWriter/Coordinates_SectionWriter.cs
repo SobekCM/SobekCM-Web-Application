@@ -1,10 +1,9 @@
-using System;
-using System.IO;
-using System.Text;
 using SobekCM.Core.BriefItem;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.UI_Configuration.Citation;
 using SobekCM.Tools;
+using System;
+using System.Text;
 
 namespace SobekCM.Library.Citation.SectionWriter
 {
@@ -35,7 +34,7 @@ namespace SobekCM.Library.Citation.SectionWriter
         {
             bool first_coordinate = true;
 
-            string displayLabel = ( String.IsNullOrEmpty(ElementInfo.DisplayTerm )) ? "Coordinates" : ElementInfo.DisplayTerm;
+            string displayLabel = (String.IsNullOrEmpty(ElementInfo.DisplayTerm)) ? "Coordinates" : ElementInfo.DisplayTerm;
 
             Output.AppendLine("        <dt class=\"sbk_CivCOORDINATES_Element\" style=\"width:" + LeftColumnWidth + "px;\" >" + displayLabel + ": </dt>");
             Output.Append("        <dd class=\"sbk_CivCOORDINATES_Element\" style=\"margin-left:" + LeftColumnWidth + "px;\" >");
@@ -46,7 +45,7 @@ namespace SobekCM.Library.Citation.SectionWriter
                 for (int i = 0; i < Item.GeoSpatial.Point_Count; i++)
                 {
                     // Was this the first?
-                    if ( first_coordinate ) first_coordinate = false;
+                    if (first_coordinate) first_coordinate = false;
                     else Output.AppendLine("<br />");
 
                     // Add this coordiante

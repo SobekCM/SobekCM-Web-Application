@@ -1,9 +1,9 @@
-﻿using System;
+﻿using ProtoBuf;
+using SobekCM.Core.Configuration.Localization;
+using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
-using ProtoBuf;
-using SobekCM.Core.Configuration.Localization;
 
 namespace SobekCM.Core.UI_Configuration.Citation
 {
@@ -88,7 +88,7 @@ namespace SobekCM.Core.UI_Configuration.Citation
         public void Remove_Element(string MetadataTerm)
         {
             // Ensure the dictionary is built (i.e., not null)
-            if (elementsDictionary == null) elementsDictionary = new Dictionary<string, CitationElement>( StringComparer.OrdinalIgnoreCase );
+            if (elementsDictionary == null) elementsDictionary = new Dictionary<string, CitationElement>(StringComparer.OrdinalIgnoreCase);
 
             // Check that the count in the dictionary seems right
             if (elementsDictionary.Count != Elements.Count)
@@ -139,7 +139,7 @@ namespace SobekCM.Core.UI_Configuration.Citation
         /// <param name="RelativeElementID"> MetadataTerm for the element after which the new citation element should be inserted </param>
         /// <remarks> If an element exists with the same MetadataTerm, it is removed first. If the ID provided
         /// to add this element after does not exist, this is just appended to the very end. </remarks>
-        public void Insert_Element_After(CitationElement NewElement, string RelativeElementID )
+        public void Insert_Element_After(CitationElement NewElement, string RelativeElementID)
         {
             // Ensure the dictionary is built (i.e., not null)
             if (elementsDictionary == null) elementsDictionary = new Dictionary<string, CitationElement>(StringComparer.OrdinalIgnoreCase);
@@ -203,7 +203,7 @@ namespace SobekCM.Core.UI_Configuration.Citation
 
             // Find the index of the relative element
             int relativeIndex = Elements.IndexOf(elementsDictionary[RelativeElementID]);
-            if (relativeIndex < 0) 
+            if (relativeIndex < 0)
                 Append_Element(NewElement);
             else
             {

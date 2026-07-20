@@ -1,7 +1,7 @@
-﻿using System;
+﻿using ProtoBuf;
+using System;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
-using ProtoBuf;
 
 namespace SobekCM.Core.UI_Configuration.TemplateElements
 {
@@ -53,7 +53,7 @@ namespace SobekCM.Core.UI_Configuration.TemplateElements
         [XmlAttribute("adminUri")]
         [ProtoMember(6)]
         public string AdminUri { get; set; }
-         
+
 
         /// <summary> Url for any relevant help page online which were created for 
         /// the end users who request help  </summary> 

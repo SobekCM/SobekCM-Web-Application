@@ -1,10 +1,10 @@
 ﻿#region Using directives
 
+using ProtoBuf;
 using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
-using ProtoBuf;
 
 #endregion
 
@@ -21,7 +21,7 @@ namespace SobekCM.Core.BriefItem
         public string Term { get; set; }
 
         /// <summary> List of external references, which refers to the same metadata type as the normalized term </summary>
-        [DataMember(EmitDefaultValue = false,Name="references")]
+        [DataMember(EmitDefaultValue = false, Name = "references")]
         [XmlArray("references")]
         [XmlArrayItem("reference")]
         [ProtoMember(2)]
@@ -51,7 +51,7 @@ namespace SobekCM.Core.BriefItem
         /// <param name="Value"> Value as a simple string </param>
         public BriefItem_DescTermValue Add_Value(string Value)
         {
-            if ( Values == null )
+            if (Values == null)
                 Values = new List<BriefItem_DescTermValue>();
 
             BriefItem_DescTermValue newValue = new BriefItem_DescTermValue(Value);
@@ -67,7 +67,7 @@ namespace SobekCM.Core.BriefItem
             if (Values == null)
                 Values = new List<BriefItem_DescTermValue>();
 
-            BriefItem_DescTermValue newValue = new BriefItem_DescTermValue(Value) {SubTerm = SubTerm};
+            BriefItem_DescTermValue newValue = new BriefItem_DescTermValue(Value) { SubTerm = SubTerm };
             Values.Add(newValue);
             return newValue;
         }

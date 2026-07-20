@@ -1,10 +1,10 @@
 ﻿#region Using directives
 
+using ProtoBuf;
 using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
-using ProtoBuf;
 
 #endregion
 
@@ -22,7 +22,7 @@ namespace SobekCM.Core.BriefItem
         public string Label;
 
         /// <summary> Collection of one or more files related to this grouping </summary>
-        [DataMember(Name="files")]
+        [DataMember(Name = "files")]
         [XmlArray("files")]
         [XmlArrayItem("file", typeof(BriefItem_File))]
         [ProtoMember(2)]

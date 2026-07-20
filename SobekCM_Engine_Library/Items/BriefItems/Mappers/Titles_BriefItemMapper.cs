@@ -1,9 +1,9 @@
 ﻿#region Using directives
 
-using System;
 using SobekCM.Core.BriefItem;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Bib_Info;
+using System;
 
 #endregion
 
@@ -33,7 +33,7 @@ namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
                         case Title_Type_Enum.UNSPECIFIED:
                         case Title_Type_Enum.Alternative:
                             string titleType = thisTitle.Display_Label;
-                            if ((!String.IsNullOrWhiteSpace(titleType)) && ( String.Compare(titleType, "OTHER TITLE", StringComparison.InvariantCultureIgnoreCase ) != 0 ))
+                            if ((!String.IsNullOrWhiteSpace(titleType)) && (String.Compare(titleType, "OTHER TITLE", StringComparison.InvariantCultureIgnoreCase) != 0))
                                 New.Add_Description("Alternate Title", (thisTitle.NonSort + " " + thisTitle.Title + " " + thisTitle.Subtitle).Trim()).SubTerm = titleType;
                             else
                                 New.Add_Description("Alternate Title", (thisTitle.NonSort + " " + thisTitle.Title + " " + thisTitle.Subtitle).Trim());

@@ -226,12 +226,12 @@ namespace SobekCM.Library.AdminViewer.UserAdmin.SubViewers
                 Output.Write("<a title=\"Click to view\" href=\"" + redirect.Replace("XXXXXXX", userid) + "v\">view</a> ) </td>");
 
                 // Any pending requests?
-                if ( requests > 0 )
+                if (requests > 0)
                 {
                     string request_title = "1 pending user request!";
                     if (requests > 1)
                         request_title = requests + " pending user requests!";
-                    Output.WriteLine("    <td><img src=\"" + Static_Resources_Gateway.Warning_Img_Small +  "\" title=\"" + request_title + "\" /></td>");                                      
+                    Output.WriteLine("    <td><img src=\"" + Static_Resources_Gateway.Warning_Img_Small + "\" title=\"" + request_title + "\" /></td>");
                 }
                 else
                 {

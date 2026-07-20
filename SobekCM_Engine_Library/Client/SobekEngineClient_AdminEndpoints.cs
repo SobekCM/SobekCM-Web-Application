@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using SobekCM.Core.Configuration;
+﻿using SobekCM.Core.Configuration;
 using SobekCM.Core.Configuration.Authentication;
 using SobekCM.Core.Configuration.Engine;
 using SobekCM.Core.Configuration.Extensions;
@@ -15,6 +13,8 @@ using SobekCM.Core.UI_Configuration.TemplateElements;
 using SobekCM.Core.UI_Configuration.Viewers;
 using SobekCM.Resource_Object.Configuration;
 using SobekCM.Tools;
+using System;
+using System.Collections.Generic;
 
 namespace SobekCM.Core.Client
 {
@@ -33,7 +33,7 @@ namespace SobekCM.Core.Client
         /// along with the current value and key </summary>
         /// <param name="Tracer"></param>
         /// <returns> Fully built builder-specific settings, including incoming folders and builder module sets </returns>
-        public Admin_Setting_Collection Get_Admin_Settings( Custom_Tracer Tracer)
+        public Admin_Setting_Collection Get_Admin_Settings(Custom_Tracer Tracer)
         {
             // Add a beginning trace
             Tracer.Add_Trace("SobekEngineClient_AdminServices.Get_Admin_Settings");

@@ -5,11 +5,8 @@ using SobekCM.Library.UI;
 using SobekCM.Tools;
 using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SobekCM.Library.AdminViewer.UserAdmin.UserAdminTabs
 {

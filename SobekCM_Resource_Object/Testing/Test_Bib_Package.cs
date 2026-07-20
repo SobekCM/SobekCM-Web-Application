@@ -1,12 +1,11 @@
 ﻿#region Using directives
 
-using System;
-using SobekCM.Resource_Object.Behaviors;
 using SobekCM.Resource_Object.Bib_Info;
 using SobekCM.Resource_Object.Divisions;
 using SobekCM.Resource_Object.Metadata_Modules;
 using SobekCM.Resource_Object.Metadata_Modules.GeoSpatial;
 using SobekCM.Resource_Object.Metadata_Modules.LearningObjects;
+using System;
 
 #endregion
 
@@ -395,13 +394,13 @@ namespace SobekCM.Resource_Object.Testing
 
             // Add some oral history information
             Oral_Interview_Info oralInfo = new Oral_Interview_Info();
-            testPackage.Add_Metadata_Module(  "OralInterview", oralInfo);
+            testPackage.Add_Metadata_Module("OralInterview", oralInfo);
             oralInfo.Interviewee = "Edwards, Herm";
             oralInfo.Interviewer = "Proctor, Samual";
 
             // Add some learning object resource information
             LearningObjectMetadata lomInfo = new LearningObjectMetadata();
-            testPackage.Add_Metadata_Module( GlobalVar.IEEE_LOM_METADATA_MODULE_KEY, lomInfo );
+            testPackage.Add_Metadata_Module(GlobalVar.IEEE_LOM_METADATA_MODULE_KEY, lomInfo);
             lomInfo.AggregationLevel = AggregationLevelEnum.level3;
             lomInfo.Status = StatusEnum.draft;
             LOM_System_Requirements lomReq1 = new LOM_System_Requirements();

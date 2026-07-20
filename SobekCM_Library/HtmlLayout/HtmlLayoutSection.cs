@@ -1,14 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using SobekCM.Core.BriefItem;
-using SobekCM.Library.HTML;
-using SobekCM.Library.ItemViewer.Viewers;
-
-namespace SobekCM.Library.HtmlLayout
+﻿namespace SobekCM.Library.HtmlLayout
 {
     /// <summary> Enumerates the types of HTML layout sections used 
     /// within the layout objects created when the html template 

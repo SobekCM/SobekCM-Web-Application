@@ -1,16 +1,14 @@
 #region Using directives
 
+using SobekCM.Core.ApplicationState;
+using SobekCM.Core.Configuration.Localization;
+using SobekCM.Core.Users;
+using SobekCM.Library.UI;
+using SobekCM.Resource_Object;
 using System;
 using System.IO;
 using System.Text;
-using Microsoft.AspNetCore.Http;
 using System.Xml;
-using SobekCM.Core.ApplicationState;
-using SobekCM.Core.Configuration;
-using SobekCM.Core.Configuration.Localization;
-using SobekCM.Core.Users;
-using SobekCM.Resource_Object;
-using SobekCM.Library.UI;
 
 #endregion
 
@@ -26,7 +24,7 @@ namespace SobekCM.Library.Citation.Elements
             Repeatable = false;
             Title = "Related URL";
             html_element_name = "form_related_url";
-	        help_page = "relatedurl";
+            help_page = "relatedurl";
         }
 
         #region iElement Members
@@ -42,7 +40,7 @@ namespace SobekCM.Library.Citation.Elements
         /// <param name="Translator"> Language support object which handles simple translational duties </param>
         /// <param name="Base_URL"> Base URL for the current request </param>
         /// <remarks> This element appends a popup form to the popup_form_builder</remarks>
-        public override void Render_Template_HTML(TextWriter Output, SobekCM_Item Bib, string Skin_Code, bool IsMozilla, StringBuilder PopupFormBuilder, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL )
+        public override void Render_Template_HTML(TextWriter Output, SobekCM_Item Bib, string Skin_Code, bool IsMozilla, StringBuilder PopupFormBuilder, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL)
         {
             // Check that an acronym exists
             if (Acronym.Length == 0)
@@ -96,7 +94,7 @@ namespace SobekCM.Library.Citation.Elements
             {
                 Output.Write("              <a title=\"Click to edit the related URL information\" href=\"" + Base_URL + "l/technical/javascriptrequired\" onfocus=\"link_focused2('form_related_url_term')\" onblur=\"link_blurred2('form_related_url_term')\" onkeypress=\"return popup_keypress_focus('form_related_url', 'form_relatedurl_label', '" + IsMozilla.ToString() + "' );\" onclick=\"return popup_focus('form_related_url', 'form_relatedurl_label' );\"><div class=\"form_linkline form_related_url_line\" id=\"form_related_url_term\">");
                 Output.Write(System.Net.WebUtility.HtmlEncode(Bib.Bib_Info.Location.Other_URL));
-                if (Bib.Bib_Info.Location.Other_URL_Display_Label.Length > 0 )
+                if (Bib.Bib_Info.Location.Other_URL_Display_Label.Length > 0)
                 {
                     Output.Write(" ( <i>" + System.Net.WebUtility.HtmlEncode(Bib.Bib_Info.Location.Other_URL_Display_Label) + "</i> )");
                 }
@@ -115,24 +113,24 @@ namespace SobekCM.Library.Citation.Elements
 
             // Add the popup form
             PopupFormBuilder.AppendLine("<!-- Related URL Form -->");
-			PopupFormBuilder.AppendLine("<div class=\"related_url_popup_div sbkMetadata_PopupDiv\" id=\"form_related_url\" style=\"display:none;\">");
-			PopupFormBuilder.AppendLine("  <div class=\"sbkMetadata_PopupTitle\"><table style=\"width:100%\"><tr><td style=\"text-align:left\">Edit Related URL</td><td style=\"text-align:right\"><a href=\"" + Help_URL(Skin_Code, Base_URL) + "\" alt=\"HELP\" target=\"_" + html_element_name.ToUpper() + "\" >?</a> &nbsp; <a href=\"#template\" alt=\"CLOSE\" onclick=\"close_related_url_form()\">X</a> &nbsp; </td></tr></table></div>");
+            PopupFormBuilder.AppendLine("<div class=\"related_url_popup_div sbkMetadata_PopupDiv\" id=\"form_related_url\" style=\"display:none;\">");
+            PopupFormBuilder.AppendLine("  <div class=\"sbkMetadata_PopupTitle\"><table style=\"width:100%\"><tr><td style=\"text-align:left\">Edit Related URL</td><td style=\"text-align:right\"><a href=\"" + Help_URL(Skin_Code, Base_URL) + "\" alt=\"HELP\" target=\"_" + html_element_name.ToUpper() + "\" >?</a> &nbsp; <a href=\"#template\" alt=\"CLOSE\" onclick=\"close_related_url_form()\">X</a> &nbsp; </td></tr></table></div>");
             PopupFormBuilder.AppendLine("  <br />");
-			PopupFormBuilder.AppendLine("  <table class=\"sbkMetadata_PopupTable\">");
+            PopupFormBuilder.AppendLine("  <table class=\"sbkMetadata_PopupTable\">");
 
             // Add the rows of data
             PopupFormBuilder.AppendLine("    <tr><td style=\"width:70px\">Label:</td><td><input class=\"form_relatedurl_input sbk_Focusable\" name=\"form_relatedurl_label\" id=\"form_relatedurl_label\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(Bib.Bib_Info.Location.Other_URL_Display_Label) + "\" /></td></tr>");
-			PopupFormBuilder.AppendLine("    <tr><td>URL:</td><td><input class=\"form_relatedurl_input sbk_Focusable\" name=\"form_relatedurl_url\" id=\"form_relatedurl_url\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(Bib.Bib_Info.Location.Other_URL) + "\" /></td></tr>");
-			PopupFormBuilder.AppendLine("    <tr><td>Note:</td><td><input class=\"form_relatedurl_input sbk_Focusable\" name=\"form_relatedurl_note\" id=\"form_relatedurl_note\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(Bib.Bib_Info.Location.Other_URL_Note) + "\" /></td></tr>");
+            PopupFormBuilder.AppendLine("    <tr><td>URL:</td><td><input class=\"form_relatedurl_input sbk_Focusable\" name=\"form_relatedurl_url\" id=\"form_relatedurl_url\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(Bib.Bib_Info.Location.Other_URL) + "\" /></td></tr>");
+            PopupFormBuilder.AppendLine("    <tr><td>Note:</td><td><input class=\"form_relatedurl_input sbk_Focusable\" name=\"form_relatedurl_note\" id=\"form_relatedurl_note\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(Bib.Bib_Info.Location.Other_URL_Note) + "\" /></td></tr>");
 
 
-			// Finish the popup form and add the CLOSE button
-			PopupFormBuilder.AppendLine("    <tr style=\"height:35px; text-align: center; vertical-align: bottom;\">");
-			PopupFormBuilder.AppendLine("      <td colspan=\"2\"><button title=\"Close\" class=\"sbkMetadata_RoundButton\" onclick=\"return close_related_url_form();\">CLOSE</button></td>");
-			PopupFormBuilder.AppendLine("    </tr>");
-			PopupFormBuilder.AppendLine("  </table>");
-			PopupFormBuilder.AppendLine("</div>");
-			PopupFormBuilder.AppendLine();
+            // Finish the popup form and add the CLOSE button
+            PopupFormBuilder.AppendLine("    <tr style=\"height:35px; text-align: center; vertical-align: bottom;\">");
+            PopupFormBuilder.AppendLine("      <td colspan=\"2\"><button title=\"Close\" class=\"sbkMetadata_RoundButton\" onclick=\"return close_related_url_form();\">CLOSE</button></td>");
+            PopupFormBuilder.AppendLine("    </tr>");
+            PopupFormBuilder.AppendLine("  </table>");
+            PopupFormBuilder.AppendLine("</div>");
+            PopupFormBuilder.AppendLine();
         }
 
         /// <summary> Prepares the bib object for the save, by clearing any existing data in this element's related field(s) </summary>
@@ -150,7 +148,7 @@ namespace SobekCM.Library.Citation.Elements
         {
 
             Bib.Bib_Info.Location.Other_URL = Context.Request.Form["form_relatedurl_url"].TrimFirst();
-            if ( Bib.Bib_Info.Location.Other_URL.Length == 0 )
+            if (Bib.Bib_Info.Location.Other_URL.Length == 0)
             {
                 Bib.Bib_Info.Location.Other_URL_Display_Label = String.Empty;
                 Bib.Bib_Info.Location.Other_URL_Note = String.Empty;
@@ -169,7 +167,7 @@ namespace SobekCM.Library.Citation.Elements
         /// <summary> Reads the inner data from the CompleteTemplate XML format </summary>
         /// <param name="XMLReader"> Current template xml configuration reader </param>
         /// <remarks> This procedure does not currently read any inner xml (not yet necessary) </remarks>
-        protected override void Inner_Read_Data( XmlReader XMLReader )
+        protected override void Inner_Read_Data(XmlReader XMLReader)
         {
             // Do nothing
         }

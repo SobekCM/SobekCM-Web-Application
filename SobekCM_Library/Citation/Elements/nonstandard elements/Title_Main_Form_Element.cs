@@ -1,19 +1,17 @@
 #region Using directives
 
+using SobekCM.Core.ApplicationState;
+using SobekCM.Core.Configuration.Localization;
+using SobekCM.Core.Users;
+using SobekCM.Library.UI;
+using SobekCM.Resource_Object;
+using SobekCM.Resource_Object.Bib_Info;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using Microsoft.AspNetCore.Http;
 using System.Xml;
-using SobekCM.Core.ApplicationState;
-using SobekCM.Core.Configuration;
-using SobekCM.Core.Configuration.Localization;
-using SobekCM.Core.Users;
-using SobekCM.Resource_Object;
-using SobekCM.Resource_Object.Bib_Info;
-using SobekCM.Library.UI;
 
 #endregion
 
@@ -29,7 +27,7 @@ namespace SobekCM.Library.Citation.Elements
             Repeatable = false;
             Title = "Main Title";
             html_element_name = "form_title_main";
-	        help_page = "title";
+            help_page = "title";
         }
 
         #region iElement Members
@@ -59,7 +57,7 @@ namespace SobekCM.Library.Citation.Elements
         /// <param name="Translator"> Language support object which handles simple translational duties </param>
         /// <param name="Base_URL"> Base URL for the current request </param>
         /// <remarks> This element appends a popup form to the popup_form_builder</remarks>
-        public override void Render_Template_HTML(TextWriter Output, SobekCM_Item Bib, string Skin_Code, bool IsMozilla, StringBuilder PopupFormBuilder, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL )
+        public override void Render_Template_HTML(TextWriter Output, SobekCM_Item Bib, string Skin_Code, bool IsMozilla, StringBuilder PopupFormBuilder, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL)
         {
             // Check that an acronym exists
             if (Acronym.Length == 0)
@@ -129,7 +127,7 @@ namespace SobekCM.Library.Citation.Elements
                 if (Bib.Bib_Info.Main_Title.Subtitle.Length > 0)
                     Output.Write(" : " + Bib.Bib_Info.Main_Title.Subtitle);
             }
-            Output.WriteLine( "</div></a> ");
+            Output.WriteLine("</div></a> ");
 
             Output.WriteLine("            </div>");
             Output.WriteLine("          </td>");
@@ -144,10 +142,10 @@ namespace SobekCM.Library.Citation.Elements
 
             // Add the popup form
             PopupFormBuilder.AppendLine("<!-- Main Title Form -->");
-			PopupFormBuilder.AppendLine("<div class=\"title_main_popup_div sbkMetadata_PopupDiv\" id=\"form_maintitle\" style=\"display:none;\">");
-			PopupFormBuilder.AppendLine("  <div class=\"sbkMetadata_PopupTitle\"><table style=\"width:100%\"><tr><td style=\"text-align:left\">Edit Main Title</td><td style=\"text-align:right\"><a href=\"" + Help_URL(Skin_Code, Base_URL) + "\" alt=\"HELP\" target=\"_" + html_element_name.ToUpper() + "\" >?</a> &nbsp; <a href=\"#template\" alt=\"CLOSE\" onclick=\"close_maintitle_form('form_maintitle')\">X</a> &nbsp; </td></tr></table></div>");
+            PopupFormBuilder.AppendLine("<div class=\"title_main_popup_div sbkMetadata_PopupDiv\" id=\"form_maintitle\" style=\"display:none;\">");
+            PopupFormBuilder.AppendLine("  <div class=\"sbkMetadata_PopupTitle\"><table style=\"width:100%\"><tr><td style=\"text-align:left\">Edit Main Title</td><td style=\"text-align:right\"><a href=\"" + Help_URL(Skin_Code, Base_URL) + "\" alt=\"HELP\" target=\"_" + html_element_name.ToUpper() + "\" >?</a> &nbsp; <a href=\"#template\" alt=\"CLOSE\" onclick=\"close_maintitle_form('form_maintitle')\">X</a> &nbsp; </td></tr></table></div>");
             PopupFormBuilder.AppendLine("  <br />");
-			PopupFormBuilder.AppendLine("  <table class=\"sbkMetadata_PopupTable\">");
+            PopupFormBuilder.AppendLine("  <table class=\"sbkMetadata_PopupTable\">");
 
             // Add the title type (and optionally display label)
             PopupFormBuilder.AppendLine("    <tr><td style=\"width:90px\">Title Type:</td><td colspan=\"2\"><span style=\"color: Blue; padding-bottom: 7px;\" >Main Title</span></td></tr>");
@@ -156,31 +154,31 @@ namespace SobekCM.Library.Citation.Elements
             PopupFormBuilder.Append("    <tr><td>Non Sort:</td><td>");
             PopupFormBuilder.Append("<input class=\"formtitle_small_input sbk_Focusable\" name=\"formmaintitlenonsort\" id=\"formmainttitlenonsort\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(Bib.Bib_Info.Main_Title.NonSort) + "\" />");
             PopupFormBuilder.Append("</td><td style=\"width:255px\" >Language: &nbsp; ");
-			PopupFormBuilder.Append("<input class=\"formtitle_small_input sbk_Focusable\" name=\"formmaintitlelanguage\" id=\"formmainttitlelanguage\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(Bib.Bib_Info.Main_Title.Language) + "\" />");
+            PopupFormBuilder.Append("<input class=\"formtitle_small_input sbk_Focusable\" name=\"formmaintitlelanguage\" id=\"formmainttitlelanguage\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(Bib.Bib_Info.Main_Title.Language) + "\" />");
             PopupFormBuilder.AppendLine("</td></tr>");
 
             // Add the title, subtitle, and statement of responsibility
-			PopupFormBuilder.AppendLine("    <tr><td>Title:</td><td colspan=\"2\"><input class=\"formtitle_large_input sbk_Focusable\" name=\"formmaintitletitle\" id=\"formmaintitletitle\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(Bib.Bib_Info.Main_Title.Title) + "\" /></td></tr>");
-			PopupFormBuilder.AppendLine("    <tr><td>Sub Title:</td><td colspan=\"2\"><input class=\"formtitle_large_input sbk_Focusable\" name=\"formmaintitlesubtitle\" id=\"formmaintitlesubtitle\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(Bib.Bib_Info.Main_Title.Subtitle) + "\" /></td></tr>");
-			PopupFormBuilder.AppendLine("    <tr><td colspan=\"3\">Statement of Responsibility: &nbsp; &nbsp; <input class=\"formtitle_medium_input sbk_Focusable\" name=\"formmaintitlestatement\" id=\"formmaintitlestatement\" type=\"text\" value=\"" + statement_responsibility + "\" /></td></tr>");
+            PopupFormBuilder.AppendLine("    <tr><td>Title:</td><td colspan=\"2\"><input class=\"formtitle_large_input sbk_Focusable\" name=\"formmaintitletitle\" id=\"formmaintitletitle\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(Bib.Bib_Info.Main_Title.Title) + "\" /></td></tr>");
+            PopupFormBuilder.AppendLine("    <tr><td>Sub Title:</td><td colspan=\"2\"><input class=\"formtitle_large_input sbk_Focusable\" name=\"formmaintitlesubtitle\" id=\"formmaintitlesubtitle\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(Bib.Bib_Info.Main_Title.Subtitle) + "\" /></td></tr>");
+            PopupFormBuilder.AppendLine("    <tr><td colspan=\"3\">Statement of Responsibility: &nbsp; &nbsp; <input class=\"formtitle_medium_input sbk_Focusable\" name=\"formmaintitlestatement\" id=\"formmaintitlestatement\" type=\"text\" value=\"" + statement_responsibility + "\" /></td></tr>");
 
             // Add the part numbers
             PopupFormBuilder.Append("    <tr><td>Part Numbers:</td><td colspan=\"2\">");
-            if ( Bib.Bib_Info.Main_Title.Part_Numbers_Count > 0 )
+            if (Bib.Bib_Info.Main_Title.Part_Numbers_Count > 0)
             {
-				PopupFormBuilder.Append("<input class=\"formtitle_small_input sbk_Focusable\" name=\"formmaintitlepartnum1\" id=\"formmaintitlepartnum1\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(Bib.Bib_Info.Main_Title.Part_Numbers[0]) + "\" />");
+                PopupFormBuilder.Append("<input class=\"formtitle_small_input sbk_Focusable\" name=\"formmaintitlepartnum1\" id=\"formmaintitlepartnum1\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(Bib.Bib_Info.Main_Title.Part_Numbers[0]) + "\" />");
             }
             else
             {
-				PopupFormBuilder.Append("<input class=\"formtitle_small_input sbk_Focusable\" name=\"formmaintitlepartnum1\" id=\"formmaintitlepartnum1\" type=\"text\" value=\"\" />");
+                PopupFormBuilder.Append("<input class=\"formtitle_small_input sbk_Focusable\" name=\"formmaintitlepartnum1\" id=\"formmaintitlepartnum1\" type=\"text\" value=\"\" />");
             }
             if (Bib.Bib_Info.Main_Title.Part_Numbers_Count > 1)
             {
-				PopupFormBuilder.Append("<input class=\"formtitle_small_input sbk_Focusable\" name=\"formmaintitlepartnum2\" id=\"formmaintitlepartnum2\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(Bib.Bib_Info.Main_Title.Part_Numbers[1]) + "\" />");
+                PopupFormBuilder.Append("<input class=\"formtitle_small_input sbk_Focusable\" name=\"formmaintitlepartnum2\" id=\"formmaintitlepartnum2\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(Bib.Bib_Info.Main_Title.Part_Numbers[1]) + "\" />");
             }
             else
             {
-				PopupFormBuilder.Append("<input class=\"formtitle_small_input sbk_Focusable\" name=\"formmaintitlepartnum2\" id=\"formmaintitlepartnum2\" type=\"text\" value=\"\" />");
+                PopupFormBuilder.Append("<input class=\"formtitle_small_input sbk_Focusable\" name=\"formmaintitlepartnum2\" id=\"formmaintitlepartnum2\" type=\"text\" value=\"\" />");
             }
             PopupFormBuilder.AppendLine("</td></tr>");
 
@@ -188,30 +186,30 @@ namespace SobekCM.Library.Citation.Elements
             PopupFormBuilder.Append("    <tr><td>Part Names:</td><td>");
             if (Bib.Bib_Info.Main_Title.Part_Names_Count > 0)
             {
-				PopupFormBuilder.Append("<input class=\"formtitle_small_input sbk_Focusable\" name=\"formmaintitlepartname1\" id=\"formmaintitlepartname1\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(Bib.Bib_Info.Main_Title.Part_Names[0]) + "\" />");
+                PopupFormBuilder.Append("<input class=\"formtitle_small_input sbk_Focusable\" name=\"formmaintitlepartname1\" id=\"formmaintitlepartname1\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(Bib.Bib_Info.Main_Title.Part_Names[0]) + "\" />");
             }
             else
             {
-				PopupFormBuilder.Append("<input class=\"formtitle_small_input sbk_Focusable\" name=\"formmaintitlepartname1\" id=\"formmaintitlepartname1\" type=\"text\" value=\"\" />");
+                PopupFormBuilder.Append("<input class=\"formtitle_small_input sbk_Focusable\" name=\"formmaintitlepartname1\" id=\"formmaintitlepartname1\" type=\"text\" value=\"\" />");
             }
             if (Bib.Bib_Info.Main_Title.Part_Names_Count > 1)
             {
-				PopupFormBuilder.Append("<input class=\"formtitle_small_input sbk_Focusable\" name=\"formmaintitlepartname2\" id=\"formmaintitlepartname2\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(Bib.Bib_Info.Main_Title.Part_Names[1]) + "\" />");
+                PopupFormBuilder.Append("<input class=\"formtitle_small_input sbk_Focusable\" name=\"formmaintitlepartname2\" id=\"formmaintitlepartname2\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(Bib.Bib_Info.Main_Title.Part_Names[1]) + "\" />");
             }
             else
             {
-				PopupFormBuilder.Append("<input class=\"formtitle_small_input sbk_Focusable\" name=\"formmaintitlepartname2\" id=\"formmaintitlepartname2\" type=\"text\" value=\"\" />");
+                PopupFormBuilder.Append("<input class=\"formtitle_small_input sbk_Focusable\" name=\"formmaintitlepartname2\" id=\"formmaintitlepartname2\" type=\"text\" value=\"\" />");
             }
-			PopupFormBuilder.Append("<td>Authority: &nbsp; <input class=\"formtitle_small_input sbk_Focusable\" name=\"formmaintitleauthority\" id=\"formmaintitleauthority\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(Bib.Bib_Info.Main_Title.Authority) + "\" />");
+            PopupFormBuilder.Append("<td>Authority: &nbsp; <input class=\"formtitle_small_input sbk_Focusable\" name=\"formmaintitleauthority\" id=\"formmaintitleauthority\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(Bib.Bib_Info.Main_Title.Authority) + "\" />");
             PopupFormBuilder.AppendLine("</td></tr>");
 
-			// Finish the popup form and add the CLOSE button
-			PopupFormBuilder.AppendLine("    <tr style=\"height:35px; text-align: center; vertical-align: bottom;\">");
-			PopupFormBuilder.AppendLine("      <td colspan=\"3\"><button title=\"Close\" class=\"sbkMetadata_RoundButton\" onclick=\"return close_maintitle_form('form_maintitle');\">CLOSE</button></td>");
-			PopupFormBuilder.AppendLine("    </tr>");
-			PopupFormBuilder.AppendLine("  </table>");
-			PopupFormBuilder.AppendLine("</div>");
-			PopupFormBuilder.AppendLine();
+            // Finish the popup form and add the CLOSE button
+            PopupFormBuilder.AppendLine("    <tr style=\"height:35px; text-align: center; vertical-align: bottom;\">");
+            PopupFormBuilder.AppendLine("      <td colspan=\"3\"><button title=\"Close\" class=\"sbkMetadata_RoundButton\" onclick=\"return close_maintitle_form('form_maintitle');\">CLOSE</button></td>");
+            PopupFormBuilder.AppendLine("    </tr>");
+            PopupFormBuilder.AppendLine("  </table>");
+            PopupFormBuilder.AppendLine("</div>");
+            PopupFormBuilder.AppendLine();
 
         }
 
@@ -225,7 +223,7 @@ namespace SobekCM.Library.Citation.Elements
             Bib.Bib_Info.Main_Title.Clear_Part_Names();
             Bib.Bib_Info.Main_Title.Clear_Part_Numbers();
 
-            
+
             // Remove all statement of responsibilities
             if (Bib.Bib_Info.Notes_Count > 0)
             {
@@ -248,28 +246,28 @@ namespace SobekCM.Library.Citation.Elements
                 {
                     Bib.Bib_Info.Main_Title.NonSort = Context.Request.Form[thisKey];
                     string title = Context.Request.Form["formmaintitletitle"].TrimFirst();
-                    if ( title.Length > 0 )
+                    if (title.Length > 0)
                         Bib.Bib_Info.Main_Title.Title = title;
                     Bib.Bib_Info.Main_Title.Subtitle = Context.Request.Form["formmaintitlesubtitle"].TrimFirst();
 
                     string statement = Context.Request.Form["formmaintitlestatement"].TrimFirst();
-                    if ( statement.Length > 0 )
+                    if (statement.Length > 0)
                     {
-                        Bib.Bib_Info.Add_Note( statement, Note_Type_Enum.StatementOfResponsibility );
+                        Bib.Bib_Info.Add_Note(statement, Note_Type_Enum.StatementOfResponsibility);
                     }
 
                     string partnum1 = Context.Request.Form["formmaintitlepartnum1"].TrimFirst();
                     string partnum2 = Context.Request.Form["formmaintitlepartnum2"].TrimFirst();
-                    if ( partnum1.Length > 0 )
-                        Bib.Bib_Info.Main_Title.Add_Part_Number( partnum1 );
-                    if ( partnum2.Length > 0 )
+                    if (partnum1.Length > 0)
+                        Bib.Bib_Info.Main_Title.Add_Part_Number(partnum1);
+                    if (partnum2.Length > 0)
                         Bib.Bib_Info.Main_Title.Add_Part_Number(partnum2);
-                    
+
                     string partname1 = Context.Request.Form["formmaintitlepartname1"].TrimFirst();
                     string partname2 = Context.Request.Form["formmaintitlepartname2"].TrimFirst();
-                    if ( partname1.Length > 0 )
-                        Bib.Bib_Info.Main_Title.Add_Part_Name( partname1 );
-                    if ( partname2.Length > 0 )
+                    if (partname1.Length > 0)
+                        Bib.Bib_Info.Main_Title.Add_Part_Name(partname1);
+                    if (partname2.Length > 0)
                         Bib.Bib_Info.Main_Title.Add_Part_Name(partname2);
 
                     Bib.Bib_Info.Main_Title.Authority = Context.Request.Form["formmaintitleauthority"].TrimFirst();
@@ -285,7 +283,7 @@ namespace SobekCM.Library.Citation.Elements
         /// <summary> Reads the inner data from the CompleteTemplate XML format </summary>
         /// <param name="XMLReader"> Current template xml configuration reader </param>
         /// <remarks> This procedure does not currently read any inner xml (not yet necessary) </remarks>
-        protected override void Inner_Read_Data( XmlReader XMLReader )
+        protected override void Inner_Read_Data(XmlReader XMLReader)
         {
             // Do nothing
         }

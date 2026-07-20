@@ -1,12 +1,8 @@
-﻿using System;
+﻿using SobekCM.Resource_Object;
+using SobekCM.Resource_Object.METS_Sec_ReaderWriters;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.IO;
 using System.Xml;
-using SobekCM.Resource_Object;
-using SobekCM.Resource_Object.METS_Sec_ReaderWriters;
 
 namespace NSLA_Metadata_Plugin.ReaderWriter
 {

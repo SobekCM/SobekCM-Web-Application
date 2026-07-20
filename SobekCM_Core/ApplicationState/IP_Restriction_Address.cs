@@ -49,7 +49,7 @@ namespace SobekCM.Core.ApplicationState
 
         /// <summary> Gets the first byte of the end IP address </summary>
         public byte End_Byte { get; private set; }
-        
+
         /// <summary> Check to see if the provided IP address is a match for this IP Address or contiguous IP addresses  </summary>
         /// <param name="IP_Address_As_Number"> IP address as a single unsigned integer </param>
         /// <returns> TRUE if this IP address is part of this IP address </returns>

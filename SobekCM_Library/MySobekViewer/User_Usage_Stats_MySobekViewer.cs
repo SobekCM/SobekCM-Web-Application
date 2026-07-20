@@ -1,12 +1,12 @@
 #region Using directives
 
-using System;
-using System.Data;
-using System.IO;
+using Microsoft.AspNetCore.Http;
 using SobekCM.Engine_Library.Database;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
-using Microsoft.AspNetCore.Http;
+using System;
+using System.Data;
+using System.IO;
 
 #endregion
 
@@ -42,7 +42,7 @@ namespace SobekCM.Library.MySobekViewer
             // Determine the date (month,year) for the usage stats to display
             int month = UI_ApplicationCache_Gateway.Stats_Date_Range.Latest_Month;
             int year = UI_ApplicationCache_Gateway.Stats_Date_Range.Latest_Year;
-            if ( submode.Length >= 6)
+            if (submode.Length >= 6)
             {
                 Int32.TryParse(submode.Substring(0, 4), out year);
                 Int32.TryParse(submode.Substring(4, 2), out month);
@@ -72,12 +72,12 @@ namespace SobekCM.Library.MySobekViewer
                     case 'e':
                         sort_value = '3';
                         sort_term = "Month_Sessions DESC";
-                        break; 
+                        break;
                 }
             }
 
-			Output.WriteLine("<h1>" + Web_Title + "</h1>");
-			Output.WriteLine();
+            Output.WriteLine("<h1>" + Web_Title + "</h1>");
+            Output.WriteLine();
 
             Output.WriteLine("<div class=\"SobekText\">");
             Output.WriteLine("<br />");
@@ -126,14 +126,14 @@ namespace SobekCM.Library.MySobekViewer
             if (usageStats != null)
             {
                 // Use the data view
-                DataView sortedView = new DataView(usageStats) {Sort = sort_term};
+                DataView sortedView = new DataView(usageStats) { Sort = sort_term };
 
                 // Add the table header
                 Output.WriteLine("<center>");
                 Output.WriteLine("<table border=\"0px\" cellspacing=\"0px\" class=\"statsTable\">");
                 Output.WriteLine("  <tr align=\"left\" bgcolor=\"#0022a7\" >");
 
-                string redirect_value = RequestSpecificValues.Current_Mode.Base_URL + "my/stats/" + year + month.ToString().PadLeft(2,'0');
+                string redirect_value = RequestSpecificValues.Current_Mode.Base_URL + "my/stats/" + year + month.ToString().PadLeft(2, '0');
 
                 if (sort_value != 'a')
                 {
@@ -196,7 +196,7 @@ namespace SobekCM.Library.MySobekViewer
                     string vid = thisRow["VID"].ToString();
 
                     Output.WriteLine("  <tr align=\"left\" >");
-                    Output.WriteLine("    <td><a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + bibid + "/" + vid + "/usage\" target=\"" + bibid+"_"+vid + "\">" + thisRow["Title"] + "</a></td>");
+                    Output.WriteLine("    <td><a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + bibid + "/" + vid + "/usage\" target=\"" + bibid + "_" + vid + "\">" + thisRow["Title"] + "</a></td>");
                     Output.WriteLine("    <td align=\"center\">" + thisRow["Total_Hits"] + "</td>");
                     Output.WriteLine("    <td align=\"center\">" + thisRow["Total_Sessions"] + "</td>");
                     Output.WriteLine("    <td align=\"center\">" + thisRow["Month_Hits"] + "</td>");

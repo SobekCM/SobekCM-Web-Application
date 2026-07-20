@@ -37,7 +37,7 @@ namespace SobekCM.Core.SiteMap
         /// <param name="Description">Description for this single node within a hierarchical site map, used for 
         /// a tooltip when hovering over this node in the navigation tree</param>
         /// <param name="NodeValue"> Unique node value used to select this node from the site map during callbacks due to using the left navigational tree structure </param>
-        public SobekCM_SiteMap_Node(string URL, string Title, string Description, int NodeValue )
+        public SobekCM_SiteMap_Node(string URL, string Title, string Description, int NodeValue)
         {
             this.URL = URL;
             this.Description = Description;
@@ -76,7 +76,7 @@ namespace SobekCM.Core.SiteMap
         /// a tooltip when hovering over this node in the navigation tree</param>
         /// <param name="Child_NodeValue"> Unique node value used to select this node from the site map during callbacks due to using the left navigational tree structure </param>
         /// <returns> Fully built SobekCM_SiteMap_Node child object </returns>
-        public SobekCM_SiteMap_Node Add_Child_Node(string Child_URL, string Child_Title, string Child_Description, int Child_NodeValue )
+        public SobekCM_SiteMap_Node Add_Child_Node(string Child_URL, string Child_Title, string Child_Description, int Child_NodeValue)
         {
             SobekCM_SiteMap_Node newNode = new SobekCM_SiteMap_Node(Child_URL, Child_Title, Child_Description, Child_NodeValue);
             Add_Child_Node(newNode);

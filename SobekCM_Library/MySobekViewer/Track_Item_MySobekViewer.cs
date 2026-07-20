@@ -1,21 +1,19 @@
 #region Using directives
 
-using System;
-using System.Collections.Generic;
-using System.Data;
-using System.IO;
-using System.Text;
-using System.Text.RegularExpressions;
+using Microsoft.AspNetCore.Http;
 using SobekCM.Core.Navigation;
-using SobekCM.Core.UI_Configuration;
-using SobekCM.Core.UI_Configuration.StaticResources;
 using SobekCM.Core.Users;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Library.Database;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
 using SobekCM_Resource_Database;
-using Microsoft.AspNetCore.Http;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.IO;
+using System.Text;
+using System.Text.RegularExpressions;
 
 #endregion
 
@@ -129,7 +127,7 @@ namespace SobekCM.Library.MySobekViewer
             if (RequestSpecificValues.Current_User.Get_Setting("Track_Item_MySobekViewer:Equipment") != null && !String.IsNullOrEmpty(RequestSpecificValues.Current_User.Get_Setting("Track_Item_MySobekViewer:Equipment").ToString()))
                 equipment = RequestSpecificValues.Current_User.Get_Setting("Track_Item_MySobekViewer:Equipment").ToString();
 
-            else if ( scanners_list.Count > 0 )
+            else if (scanners_list.Count > 0)
             {
                 equipment = scanners_list[0];
                 RequestSpecificValues.Current_User.Add_Setting("Track_Item_MySobekViewer:Equipment", equipment);
@@ -381,7 +379,7 @@ namespace SobekCM.Library.MySobekViewer
                 }
             }
 
-                 //If this is from the second tab, set the appropriate start_end_event number
+            //If this is from the second tab, set the appropriate start_end_event number
             else
             {
                 new_start_time = new_date.ToString("hh:mm tt");
@@ -402,7 +400,7 @@ namespace SobekCM.Library.MySobekViewer
             Tracking_Workflow this_workflow = new Tracking_Workflow();
             DateTime? start_time_to_save = DateTime.Parse(new_date.ToShortDateString() + " " + new_start_time);
             DateTime? end_time_to_save = null;
-            if (  !String.IsNullOrEmpty(new_end_time))
+            if (!String.IsNullOrEmpty(new_end_time))
                 end_time_to_save = DateTime.Parse(new_date.ToShortDateString() + " " + new_end_time);
             if (page == 2)
                 end_time_to_save = start_time_to_save;
@@ -641,9 +639,9 @@ namespace SobekCM.Library.MySobekViewer
             DateTime? end_date_time = null;
 
             //Combine the times and dates to single SqlDateTime variables to save to the database
-            if ( !String.IsNullOrEmpty(start_Time))
+            if (!String.IsNullOrEmpty(start_Time))
                 start_date_time = DateTime.Parse(this_workflow.Date + " " + start_Time);
-            if ( !String.IsNullOrEmpty(end_Time) )
+            if (!String.IsNullOrEmpty(end_Time))
                 end_date_time = DateTime.Parse(this_workflow.Date + " " + end_Time);
 
             //Determine the start, end & single point event numbers

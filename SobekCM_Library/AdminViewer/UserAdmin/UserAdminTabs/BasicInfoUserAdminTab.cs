@@ -6,13 +6,9 @@ using SobekCM.Library.UI;
 using SobekCM.Tools;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Collections.Specialized;
 using System.Data;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SobekCM.Library.AdminViewer.UserAdmin.UserAdminTabs
 {
@@ -251,7 +247,7 @@ namespace SobekCM.Library.AdminViewer.UserAdmin.UserAdminTabs
                     Output.Write(" selected=\"selected\"");
                     found_match = true;
                 }
-                Output.WriteLine(">" + agg.Name + " (" + agg.Code.ToLower() + ")</option>");                
+                Output.WriteLine(">" + agg.Name + " (" + agg.Code.ToLower() + ")</option>");
             }
 
             // Add empty option
@@ -364,9 +360,9 @@ namespace SobekCM.Library.AdminViewer.UserAdmin.UserAdminTabs
                 {
                     Output.Write(" checked=\"checked\"");
                 }
-                
+
                 Output.WriteLine(" /> &nbsp; <acronym title=\"" + System.Net.WebUtility.HtmlEncode(template_desc.Replace("\"", "'")) + "\"><label for=\"admin_user_template_" + template_code + "\">" + template_name + "</label></acronym></td></tr>");
-                
+
                 Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\"></td></tr>");
             }
             Output.WriteLine("</table>");

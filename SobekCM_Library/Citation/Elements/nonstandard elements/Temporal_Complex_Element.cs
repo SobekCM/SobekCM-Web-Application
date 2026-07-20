@@ -1,18 +1,16 @@
 #region Using directives
 
+using SobekCM.Core.ApplicationState;
+using SobekCM.Core.Configuration.Localization;
+using SobekCM.Core.Users;
+using SobekCM.Library.UI;
+using SobekCM.Resource_Object;
+using SobekCM.Resource_Object.Bib_Info;
 using System;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Text;
-using Microsoft.AspNetCore.Http;
 using System.Xml;
-using SobekCM.Core.ApplicationState;
-using SobekCM.Core.Configuration;
-using SobekCM.Core.Configuration.Localization;
-using SobekCM.Core.Users;
-using SobekCM.Resource_Object;
-using SobekCM.Resource_Object.Bib_Info;
-using SobekCM.Library.UI;
 
 #endregion
 
@@ -28,7 +26,7 @@ namespace SobekCM.Library.Citation.Elements
             Repeatable = true;
             Title = "Temporal Coverage";
             html_element_name = "complex_temporal";
-	        help_page = "temporal";
+            help_page = "temporal";
         }
 
         #region iElement Members
@@ -44,7 +42,7 @@ namespace SobekCM.Library.Citation.Elements
         /// <param name="Translator"> Language support object which handles simple translational duties </param>
         /// <param name="Base_URL"> Base URL for the current request </param>
         /// <remarks> This simple element does not append any popup form to the popup_form_builder</remarks>
-        public override void Render_Template_HTML(TextWriter Output, SobekCM_Item Bib, string Skin_Code, bool IsMozilla, StringBuilder PopupFormBuilder, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL )
+        public override void Render_Template_HTML(TextWriter Output, SobekCM_Item Bib, string Skin_Code, bool IsMozilla, StringBuilder PopupFormBuilder, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL)
         {
             // Check that an acronym exists
             if (Acronym.Length == 0)
@@ -91,13 +89,13 @@ namespace SobekCM.Library.Citation.Elements
 
             if (Bib.Bib_Info.TemporalSubjects_Count == 0)
             {
-                const int  i = 1;
+                const int i = 1;
                 Output.Write("              <span class=\"metadata_sublabel2\">" + Translator.Get_Translation("Start Year", CurrentLanguage) + ":</span>");
                 Output.Write("<input name=\"" + id_name + "_start" + i + "\" id=\"" + id_name + "_start" + i + "\" class=\"" + html_element_name + "_year_input sbk_Focusable\" type=\"text\" value=\"\" />");
                 Output.Write("<span class=\"metadata_sublabel\">" + Translator.Get_Translation("End Year", CurrentLanguage) + ":</span>");
-				Output.Write("<input name=\"" + id_name + "_end" + i + "\" id=\"" + id_name + "_end" + i + "\" class=\"" + html_element_name + "_year_input sbk_Focusable\" type=\"text\" value=\"\" />");
+                Output.Write("<input name=\"" + id_name + "_end" + i + "\" id=\"" + id_name + "_end" + i + "\" class=\"" + html_element_name + "_year_input sbk_Focusable\" type=\"text\" value=\"\" />");
                 Output.Write("<span class=\"metadata_sublabel\">" + Translator.Get_Translation("Period", CurrentLanguage) + ":</span>");
-				Output.WriteLine("<input name=\"" + id_name + "_period" + i + "\" id=\"" + id_name + "_period" + i + "\" class=\"" + html_element_name + "_period_input sbk_Focusable\" type=\"text\" value=\"\" /></div>");
+                Output.WriteLine("<input name=\"" + id_name + "_period" + i + "\" id=\"" + id_name + "_period" + i + "\" class=\"" + html_element_name + "_period_input sbk_Focusable\" type=\"text\" value=\"\" /></div>");
                 Output.WriteLine("            </div>");
             }
             else
@@ -106,11 +104,11 @@ namespace SobekCM.Library.Citation.Elements
                 for (int i = 1; i <= temporalSubjects.Count; i++)
                 {
                     Output.Write("              <span class=\"metadata_sublabel2\">" + Translator.Get_Translation("Start Year", CurrentLanguage) + ":</span>");
-					Output.Write("<input name=\"" + id_name + "_start" + i + "\" id=\"" + id_name + "_start" + i + "\" class=\"" + html_element_name + "_year_input sbk_Focusable\" type=\"text\" value=\"" + temporalSubjects[i - 1].Start_Year.ToString().Replace("-1", "") + "\" />");
+                    Output.Write("<input name=\"" + id_name + "_start" + i + "\" id=\"" + id_name + "_start" + i + "\" class=\"" + html_element_name + "_year_input sbk_Focusable\" type=\"text\" value=\"" + temporalSubjects[i - 1].Start_Year.ToString().Replace("-1", "") + "\" />");
                     Output.Write("<span class=\"metadata_sublabel\">" + Translator.Get_Translation("End Year", CurrentLanguage) + ":</span>");
-					Output.Write("<input name=\"" + id_name + "_end" + i + "\" id=\"" + id_name + "_end" + i + "\" class=\"" + html_element_name + "_year_input sbk_Focusable\" type=\"text\" value=\"" + temporalSubjects[i - 1].End_Year.ToString().Replace("-1", "") + "\" />");
+                    Output.Write("<input name=\"" + id_name + "_end" + i + "\" id=\"" + id_name + "_end" + i + "\" class=\"" + html_element_name + "_year_input sbk_Focusable\" type=\"text\" value=\"" + temporalSubjects[i - 1].End_Year.ToString().Replace("-1", "") + "\" />");
                     Output.Write("<span class=\"metadata_sublabel\">" + Translator.Get_Translation("Period", CurrentLanguage) + ":</span>");
-					Output.Write("<input name=\"" + id_name + "_period" + i + "\" id=\"" + id_name + "_period" + i + "\" class=\"" + html_element_name + "_period_input sbk_Focusable\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(temporalSubjects[i - 1].TimePeriod) + "\" />");
+                    Output.Write("<input name=\"" + id_name + "_period" + i + "\" id=\"" + id_name + "_period" + i + "\" class=\"" + html_element_name + "_period_input sbk_Focusable\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(temporalSubjects[i - 1].TimePeriod) + "\" />");
 
                     Output.WriteLine(i < temporalSubjects.Count ? "<br />" : "\n            </div>");
                 }
@@ -182,7 +180,7 @@ namespace SobekCM.Library.Citation.Elements
         /// <summary> Reads the inner data from the CompleteTemplate XML format </summary>
         /// <param name="XMLReader"> Current template xml configuration reader </param>
         /// <remarks> This procedure does not currently read any inner xml (not yet necessary) </remarks>
-        protected override void Inner_Read_Data( XmlReader XMLReader )
+        protected override void Inner_Read_Data(XmlReader XMLReader)
         {
             // Do nothing
         }

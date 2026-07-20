@@ -1,11 +1,11 @@
 #region Using directives
 
-using System.IO;
+using Microsoft.AspNetCore.Http;
 using SobekCM.Core.Navigation;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
 using SobekCM.Tools;
-using Microsoft.AspNetCore.Http;
+using System.IO;
 
 #endregion
 
@@ -50,7 +50,7 @@ namespace SobekCM.Library.MySobekViewer
             Output.WriteLine("<br /><br />");
             Output.WriteLine("<strong>EDIT SERIAL HIERARCHY</strong><br /><br />");
             Output.WriteLine("Implementation for this feature is currently pending.<br /><br /><br />");
-            
+
         }
 
         /// <summary> Add the HTML to be displayed in the main SobekCM viewer area </summary>

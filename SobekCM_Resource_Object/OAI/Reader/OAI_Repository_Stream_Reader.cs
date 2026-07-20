@@ -30,10 +30,10 @@ namespace SobekCM.Resource_Object.OAI.Reader
                 string url = OAI_URL + "?verb=ListRecords&resumptionToken=" + Resumption_Token;
 
                 // prepare the web page we will be asking for
-                HttpWebRequest request = (HttpWebRequest) WebRequest.Create(url);
+                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
 
                 // execute the request
-                HttpWebResponse response = (HttpWebResponse) request.GetResponse();
+                HttpWebResponse response = (HttpWebResponse)request.GetResponse();
 
                 // we will read data via the response stream
                 Stream resStream = response.GetResponseStream();
@@ -68,10 +68,10 @@ namespace SobekCM.Resource_Object.OAI.Reader
                     url = OAI_URL + "?verb=ListRecords&metadataPrefix=" + MetadataPrefix;
 
                 // prepare the web page we will be asking for
-                HttpWebRequest request = (HttpWebRequest) WebRequest.Create(url);
+                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
 
                 // execute the request
-                HttpWebResponse response = (HttpWebResponse) request.GetResponse();
+                HttpWebResponse response = (HttpWebResponse)request.GetResponse();
 
                 // we will read data via the response stream
                 Stream resStream = response.GetResponseStream();
@@ -277,10 +277,10 @@ namespace SobekCM.Resource_Object.OAI.Reader
             try
             {
                 // prepare the web page we will be asking for
-                HttpWebRequest request = (HttpWebRequest) WebRequest.Create(OAI_URL + "?verb=Identify");
+                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(OAI_URL + "?verb=Identify");
 
                 // execute the request
-                HttpWebResponse response = (HttpWebResponse) request.GetResponse();
+                HttpWebResponse response = (HttpWebResponse)request.GetResponse();
 
                 // we will read data via the response stream
                 Stream resStream = response.GetResponseStream();
@@ -410,10 +410,10 @@ namespace SobekCM.Resource_Object.OAI.Reader
             try
             {
                 // prepare the web page we will be asking for
-                HttpWebRequest request = (HttpWebRequest) WebRequest.Create(Repository.Harvested_URL + "?verb=ListSets");
+                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(Repository.Harvested_URL + "?verb=ListSets");
 
                 // execute the request
-                HttpWebResponse response = (HttpWebResponse) request.GetResponse();
+                HttpWebResponse response = (HttpWebResponse)request.GetResponse();
 
                 // we will read data via the response stream
                 Stream resStream = response.GetResponseStream();
@@ -501,10 +501,10 @@ namespace SobekCM.Resource_Object.OAI.Reader
             try
             {
                 // prepare the web page we will be asking for
-                HttpWebRequest request = (HttpWebRequest) WebRequest.Create(Repository.Harvested_URL + "?verb=ListMetadataFormats");
+                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(Repository.Harvested_URL + "?verb=ListMetadataFormats");
 
                 // execute the request
-                HttpWebResponse response = (HttpWebResponse) request.GetResponse();
+                HttpWebResponse response = (HttpWebResponse)request.GetResponse();
 
                 // we will read data via the response stream
                 Stream resStream = response.GetResponseStream();

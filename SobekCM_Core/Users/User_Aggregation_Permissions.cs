@@ -67,14 +67,14 @@ namespace SobekCM.Core.Users
 		public void Add(string Code, string Name, bool CanSelect, bool CanEditMetadata, bool CanEditBehaviors, bool CanPerformQc, bool CanUploadFiles, bool CanChangeVisibility, bool CanDelete, bool IsCurator, bool OnHomePage, bool IsAdmin, bool GroupDefined)
         {
             // Create the aggregation object
-	        User_Permissioned_Aggregation aggrLink = new User_Permissioned_Aggregation(Code.ToUpper(), Name, CanSelect, false, IsCurator, OnHomePage, IsAdmin);
-	        aggrLink.CanEditMetadata = CanEditMetadata;
-			aggrLink.CanEditBehaviors = CanEditBehaviors;
-			aggrLink.CanPerformQc = CanPerformQc;
-			aggrLink.CanUploadFiles = CanUploadFiles;
-			aggrLink.CanChangeVisibility = CanChangeVisibility;
-			aggrLink.CanDelete = CanDelete;
-	        aggrLink.GroupDefined = GroupDefined;
+            User_Permissioned_Aggregation aggrLink = new User_Permissioned_Aggregation(Code.ToUpper(), Name, CanSelect, false, IsCurator, OnHomePage, IsAdmin);
+            aggrLink.CanEditMetadata = CanEditMetadata;
+            aggrLink.CanEditBehaviors = CanEditBehaviors;
+            aggrLink.CanPerformQc = CanPerformQc;
+            aggrLink.CanUploadFiles = CanUploadFiles;
+            aggrLink.CanChangeVisibility = CanChangeVisibility;
+            aggrLink.CanDelete = CanDelete;
+            aggrLink.GroupDefined = GroupDefined;
 
             // Add this
             Add(aggrLink);
@@ -82,10 +82,10 @@ namespace SobekCM.Core.Users
 
         /// <summary> Adds a new aggregation to the list of aggregationPermissions linked here, with detailed permissions </summary>
         /// <param name="AggregationInfo"> Information about the detailed permissions for this user over an aggregation </param>
-        public void Add(User_Permissioned_Aggregation AggregationInfo )
+        public void Add(User_Permissioned_Aggregation AggregationInfo)
         {
             // If this was pre-existing, remove the old one from the list 
-            if ( code_to_aggregation.ContainsKey(AggregationInfo.Code.ToUpper()) )
+            if (code_to_aggregation.ContainsKey(AggregationInfo.Code.ToUpper()))
             {
                 if (Aggregations.Contains(AggregationInfo))
                     Aggregations.Remove(AggregationInfo);

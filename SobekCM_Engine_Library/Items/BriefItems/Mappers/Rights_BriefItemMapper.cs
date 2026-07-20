@@ -1,8 +1,8 @@
 ﻿#region Using directives
 
-using System;
 using SobekCM.Core.BriefItem;
 using SobekCM.Resource_Object;
+using System;
 
 #endregion
 
@@ -71,7 +71,7 @@ namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
                     }
 
                     BriefItem_DescTermValue rightsVal = New.Add_Description("Rights Management", value);
-                    if ( !String.IsNullOrWhiteSpace(uri))
+                    if (!String.IsNullOrWhiteSpace(uri))
                         rightsVal.Add_URI(uri);
 
                 }

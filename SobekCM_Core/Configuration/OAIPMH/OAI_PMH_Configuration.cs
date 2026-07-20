@@ -1,12 +1,12 @@
 ﻿#region Using directives
 
+using ProtoBuf;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Xml.Serialization;
-using ProtoBuf;
 
 #endregion
 
@@ -41,13 +41,13 @@ namespace SobekCM.Core.Configuration.OAIPMH
         [DataMember(Name = "name", EmitDefaultValue = false)]
         [XmlAttribute("name")]
         [ProtoMember(3)]
-        public string Name { get; set;  }
+        public string Name { get; set; }
 
         /// <summary> Identifier for this repository for display within the Identify response of the OAI-PMH protocol </summary>
         [DataMember(Name = "identifier", EmitDefaultValue = false)]
         [XmlAttribute("identifier")]
         [ProtoMember(4)]
-        public string Identifier { get; set;  }
+        public string Identifier { get; set; }
 
         /// <summary> List of the administrative emails for display within the Identify response of the OAI-PMH protocol </summary>
         [DataMember(Name = "adminEmails")]
@@ -61,7 +61,7 @@ namespace SobekCM.Core.Configuration.OAIPMH
         [XmlArray("descriptions")]
         [XmlArrayItem("description", typeof(string))]
         [ProtoMember(6)]
-        public List<string> Descriptions { get; set;  }
+        public List<string> Descriptions { get; set; }
 
         /// <summary> List of all the metadata formats available for this repository with pointers
         /// to the classes that create the OAI-PMH metadata for harvesting  </summary>
@@ -182,7 +182,7 @@ namespace SobekCM.Core.Configuration.OAIPMH
                     foreach (OAI_PMH_Metadata_Format metadataFormat in Metadata_Prefixes)
                     {
                         writer.Write("\t\t\t<MetadataFormat Prefix=\"" + metadataFormat.Prefix + "\" Schema=\"" + metadataFormat.Schema + "\" MetadataNamespace=\"" + metadataFormat.MetadataNamespace + "\"");
-                        if ( !String.IsNullOrEmpty(metadataFormat.Assembly))
+                        if (!String.IsNullOrEmpty(metadataFormat.Assembly))
                             writer.Write(" Assembly=\"" + Convert_String_To_XML_Safe(metadataFormat.Assembly) + "\"");
                         writer.WriteLine(" Namespace=\"" + metadataFormat.Namespace + "\" Class=\"" + metadataFormat.Class + "\" Enabled=\"" + metadataFormat.Enabled.ToString().ToLower() + "\" />");
                     }
@@ -241,7 +241,7 @@ namespace SobekCM.Core.Configuration.OAIPMH
         {
             OAI_PMH_Metadata_Format dcFormat = new OAI_PMH_Metadata_Format
             {
-                Class = "DC_OAI_Metadata_Type_Writer", 
+                Class = "DC_OAI_Metadata_Type_Writer",
                 Enabled = true,
                 MetadataNamespace = "http://www.openarchives.org/OAI/2.0/oai_dc/",
                 Namespace = "SobekCM.Resource_Object.OAI.Writer",

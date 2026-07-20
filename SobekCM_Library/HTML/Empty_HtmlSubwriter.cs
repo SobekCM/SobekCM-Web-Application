@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using SobekCM.Tools;
+using System.Collections.Generic;
 using System.IO;
-using SobekCM.Tools;
 
 namespace SobekCM.Library.HTML
 {
@@ -32,7 +32,7 @@ namespace SobekCM.Library.HTML
         {
             get
             {
-                return new List<HtmlSubwriter_Behaviors_Enum> {HtmlSubwriter_Behaviors_Enum.Omit_Main_Navigation_Form, HtmlSubwriter_Behaviors_Enum.Omit_Main_PlaceHolder };
+                return new List<HtmlSubwriter_Behaviors_Enum> { HtmlSubwriter_Behaviors_Enum.Omit_Main_Navigation_Form, HtmlSubwriter_Behaviors_Enum.Omit_Main_PlaceHolder };
             }
         }
     }

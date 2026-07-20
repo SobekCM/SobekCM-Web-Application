@@ -1,12 +1,12 @@
 ﻿#region Using directives
 
+using ProtoBuf;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
-using ProtoBuf;
 
 #endregion
 
@@ -17,7 +17,7 @@ namespace SobekCM.Core.Results
     [XmlRoot("resultSetStatistics")]
     public class Search_Results_Statistics
     {
-	    private List<string> metadataLabels;
+        private List<string> metadataLabels;
 
         /// <summary> Constructor for a new instance of the Search_Results_Statistics class </summary>
         public Search_Results_Statistics()
@@ -30,10 +30,10 @@ namespace SobekCM.Core.Results
             Total_Titles = -1;
             QueryTime = 0;
         }
- 
+
         /// <summary> Constructor for a new instance of the Search_Results_Statistics class </summary>
         /// <param name="Metadata_Labels"> List of the metadata terms for each metadata value in the results </param>
-		public Search_Results_Statistics(List<string> Metadata_Labels)
+        public Search_Results_Statistics(List<string> Metadata_Labels)
         {
             // Create the facet lists
             Aggregation_Facets = new List<Search_Facet_Aggregation>();
@@ -43,7 +43,7 @@ namespace SobekCM.Core.Results
             Total_Titles = -1;
             QueryTime = 0;
 
-	        metadataLabels = Metadata_Labels;
+            metadataLabels = Metadata_Labels;
         }
 
         /// <summary> Constructor for a new instance of the Search_Results_Statistics class </summary>
@@ -53,7 +53,7 @@ namespace SobekCM.Core.Results
         /// <param name="Total_Titles"> Total number of titles within the greater set of matching items/titles</param>
 		/// <param name="Metadata_Labels"> List of the metadata terms for each metadata value in the results </param>
 		public Search_Results_Statistics(DataSet Facet_Data, List<short> Facet_Types, int Total_Items, int Total_Titles, List<string> Metadata_Labels)
-        {            
+        {
             // Create the facet lists
             Aggregation_Facets = new List<Search_Facet_Aggregation>();
             Facet_Collections = new List<Search_Facet_Collection>();
@@ -62,7 +62,7 @@ namespace SobekCM.Core.Results
             this.Total_Titles = Total_Titles;
             this.Total_Items = Total_Items;
 
-			metadataLabels = Metadata_Labels;
+            metadataLabels = Metadata_Labels;
 
             // Convert facet table to facet lists
             Convert_Facet_Tables_To_Facet_Lists(Facet_Data, Facet_Types);
@@ -82,7 +82,7 @@ namespace SobekCM.Core.Results
             Total_Titles = Total_Titles;
             Total_Items = Total_Items;
 
-			metadataLabels = Metadata_Labels;
+            metadataLabels = Metadata_Labels;
 
             if (Facet_Types != null)
             {
@@ -153,24 +153,24 @@ namespace SobekCM.Core.Results
             }
         }
 
-		/// <summary> List of the metadata labels associated with each of the values
-		/// found in the title results in the page of results </summary>
-		/// <remarks> This allows each aggregation to customize which values are returned
-		/// in searches and browses.  This is used to add the labels for each metadata value
-		/// in the table and brief views. </remarks>
+        /// <summary> List of the metadata labels associated with each of the values
+        /// found in the title results in the page of results </summary>
+        /// <remarks> This allows each aggregation to customize which values are returned
+        /// in searches and browses.  This is used to add the labels for each metadata value
+        /// in the table and brief views. </remarks>
         //[DataMember(Name = "metadataLabels")]
         //[XmlArray("metadataLabels")]
         //[XmlArrayItem("label", typeof(string))]
         //[ProtoMember(6)]
         [IgnoreDataMember]
         [XmlIgnore]
-	    public List<string> Metadata_Labels
-	    {
-		    get
-		    {
-			    return metadataLabels;
-		    }
-	    }
+        public List<string> Metadata_Labels
+        {
+            get
+            {
+                return metadataLabels;
+            }
+        }
 
         #endregion
 
@@ -195,7 +195,8 @@ namespace SobekCM.Core.Results
         [XmlIgnore]
         public int Aggregation_Facets_Count
         {
-            get {
+            get
+            {
                 return Aggregation_Facets == null ? 0 : Aggregation_Facets.Count;
             }
         }
@@ -260,7 +261,7 @@ namespace SobekCM.Core.Results
             } while (Reader.NextResult());
         }
 
-        private void Convert_Facet_Tables_To_Facet_Lists( DataSet Facet_Data, List<short> Facet_Types )
+        private void Convert_Facet_Tables_To_Facet_Lists(DataSet Facet_Data, List<short> Facet_Types)
         {
             // Incrementor going through tables (and skipping aggregation table maybe)
             int table_counter = 2;

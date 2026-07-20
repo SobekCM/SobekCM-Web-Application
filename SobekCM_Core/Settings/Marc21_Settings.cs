@@ -1,9 +1,9 @@
 ﻿#region Using directives
 
+using ProtoBuf;
 using System;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
-using ProtoBuf;
 
 #endregion
 
@@ -14,7 +14,7 @@ namespace SobekCM.Core.Settings
     public class Marc21_Settings
     {
         /// <summary> Cataloging source code for the 040 field, ( for example FUG for University of Florida ) </summary>
-        [DataMember(Name="catalogingSourceCode", EmitDefaultValue = false)]
+        [DataMember(Name = "catalogingSourceCode", EmitDefaultValue = false)]
         [XmlElement("catalogingSourceCode")]
         [ProtoMember(1)]
         public string Cataloging_Source_Code { get; set; }
@@ -44,8 +44,8 @@ namespace SobekCM.Core.Settings
         [DataMember(Name = "xsltFile", EmitDefaultValue = false)]
         [XmlElement("xsltFile")]
         [ProtoMember(5)]
-        public string XSLT_File{ get; set; }
-        
+        public string XSLT_File { get; set; }
+
         /// <summary> Location where the MarcXML feeds should be placed </summary>
         [DataMember(Name = "marcXmlFeedLocation", EmitDefaultValue = false)]
         [XmlAttribute("marcXmlFeedLocation")]

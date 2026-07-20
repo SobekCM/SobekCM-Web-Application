@@ -1,13 +1,12 @@
 ﻿#region Using directives
 
+using ProtoBuf;
 using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Xml;
 using System.Xml.Serialization;
-using ProtoBuf;
 
 #endregion
 
@@ -94,7 +93,7 @@ namespace SobekCM.Core.EAD
         {
             get { return Children == null ? 0 : Children.Count; }
         }
-        
+
         #endregion
 
         #region Methods used (retained) for convenience, that actually reference DID properties
@@ -169,7 +168,7 @@ namespace SobekCM.Core.EAD
         {
             // Write the information for this tage
             Builder.AppendLine(Did.Unit_Title + "<br />");
-            if (Children_Count > 0 )
+            if (Children_Count > 0)
             {
                 Builder.AppendLine("<blockquote>");
                 foreach (EAD_Transfer_Container_Info component in Children)

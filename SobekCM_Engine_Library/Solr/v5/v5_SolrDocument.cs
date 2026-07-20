@@ -1,9 +1,9 @@
-﻿using System;
+﻿using SobekCM.Resource_Object.Solr;
+using SolrNet.Attributes;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using SobekCM.Resource_Object.Solr;
-using SolrNet.Attributes;
 
 namespace SobekCM.Engine_Library.Solr.v5
 {
@@ -571,7 +571,7 @@ namespace SobekCM.Engine_Library.Solr.v5
         #endregion
 
         #region VRA Core(visual resource) metadata fields 
-        
+
         /// <summary> Measurements VRACore information for this resource </summary>
         [SolrField("measurements")]
         public List<string> Measurements { get; set; }
@@ -1168,13 +1168,13 @@ namespace SobekCM.Engine_Library.Solr.v5
 
         #region Fields which can be used for metadata export from the results, and retain internal hierarchy
 
-  //      <field name = "creator_export" type="text_facets" indexed="false" stored="true" multiValued="true" />
-  //<field name = "subjects_export" type="text_facets" indexed="false" stored="true" multiValued="true" />
-  //<field name = "" type="text_facets" indexed="false" stored="true" multiValued="true" />
-  //<field name = "" type="text_facets" indexed="false" stored="true" multiValued="true" />
-  //<field name = "" type="text_facets" indexed="false" stored="true" multiValued="true" />
-  //<field name = "" type="text_facets" indexed="false" stored="true" multiValued="true" />
-  //<field name = "title_export" type="text_facets" indexed="false" stored="true" multiValued="true" />
+        //      <field name = "creator_export" type="text_facets" indexed="false" stored="true" multiValued="true" />
+        //<field name = "subjects_export" type="text_facets" indexed="false" stored="true" multiValued="true" />
+        //<field name = "" type="text_facets" indexed="false" stored="true" multiValued="true" />
+        //<field name = "" type="text_facets" indexed="false" stored="true" multiValued="true" />
+        //<field name = "" type="text_facets" indexed="false" stored="true" multiValued="true" />
+        //<field name = "" type="text_facets" indexed="false" stored="true" multiValued="true" />
+        //<field name = "title_export" type="text_facets" indexed="false" stored="true" multiValued="true" />
 
         /// <summary> Allows export of the creator, while retaining internal hierarchy of data elements </summary>
         /// <remarks> This stores each individual creator, along with sub-elements, as a pipe-delimited string </remarks>

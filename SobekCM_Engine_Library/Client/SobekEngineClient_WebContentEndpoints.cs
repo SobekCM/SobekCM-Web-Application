@@ -1,10 +1,5 @@
 ﻿#region Using directives
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
-using System.Xml.Serialization;
 using Jil;
 using ProtoBuf;
 using SobekCM.Core.MemoryMgmt;
@@ -15,6 +10,11 @@ using SobekCM.Core.WebContent.Admin;
 using SobekCM.Core.WebContent.Hierarchy;
 using SobekCM.Core.WebContent.Single;
 using SobekCM.Tools;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Text;
+using System.Xml.Serialization;
 
 #endregion
 
@@ -84,7 +84,7 @@ namespace SobekCM.Core.Client
         /// <param name="InfoBrowseMode"> Path for the requested web content page ( i.e., software/download/.. ) </param>
         /// <param name="Tracer"></param>
         /// <returns> Object with all the information and source text for the top-level web content page </returns>
-        public HTML_Based_Content Get_HTML_Based_Content( string InfoBrowseMode, Custom_Tracer Tracer )
+        public HTML_Based_Content Get_HTML_Based_Content(string InfoBrowseMode, Custom_Tracer Tracer)
         {
             // Add a beginning trace
             Tracer.Add_Trace("SobekEngineClient_WebContentServices.Get_HTML_Based_Content", "Get by URL, or info/browse code");
@@ -98,7 +98,7 @@ namespace SobekCM.Core.Client
             // Call out to the endpoint and return the deserialized object
             return Deserialize<HTML_Based_Content>(url, endpoint.Protocol, Tracer);
         }
-        
+
         /// <summary> Delete a web content page </summary>
         /// <param name="WebContentID"> Primary key for the web content page or redirect to delete </param>
         /// <param name="User"> Name of the user that performed the work </param>
@@ -118,7 +118,7 @@ namespace SobekCM.Core.Client
             // Create the post data
             List<KeyValuePair<string, string>> postData = new List<KeyValuePair<string, string>>
             {
-                new KeyValuePair<string, string>("User", User), 
+                new KeyValuePair<string, string>("User", User),
                 new KeyValuePair<string, string>("Reason", Reason)
             };
 
@@ -171,13 +171,13 @@ namespace SobekCM.Core.Client
             // Create the post data
             List<KeyValuePair<string, string>> postData = new List<KeyValuePair<string, string>>
             {
-                new KeyValuePair<string, string>("User", User), 
-                new KeyValuePair<string, string>("Inherit", InheritFromAnyParent.ToString()), 
+                new KeyValuePair<string, string>("User", User),
+                new KeyValuePair<string, string>("Inherit", InheritFromAnyParent.ToString()),
                 new KeyValuePair<string, string>("Content", contentString)
             };
 
             // Format the URL
-            StringBuilder urlBuilder = new StringBuilder( Content.Level1 );
+            StringBuilder urlBuilder = new StringBuilder(Content.Level1);
             if (!String.IsNullOrEmpty(Content.Level2))
             {
                 urlBuilder.Append("/" + Content.Level2);
@@ -256,7 +256,7 @@ namespace SobekCM.Core.Client
             // Create the post data
             List<KeyValuePair<string, string>> postData = new List<KeyValuePair<string, string>>
             {
-                new KeyValuePair<string, string>("User", User), 
+                new KeyValuePair<string, string>("User", User),
                 new KeyValuePair<string, string>("Content", contentString)
             };
 
@@ -284,7 +284,7 @@ namespace SobekCM.Core.Client
             // Create the post data
             List<KeyValuePair<string, string>> postData = new List<KeyValuePair<string, string>>
             {
-                new KeyValuePair<string, string>("User", User), 
+                new KeyValuePair<string, string>("User", User),
                 new KeyValuePair<string, string>("Milestone", Milestone)
             };
 
@@ -345,7 +345,7 @@ namespace SobekCM.Core.Client
 
             // Clear the local cache
             CachedDataManager.WebContent.Clear_Special_Missing_Page(Tracer);
-            
+
             //// Get the endpoint
             //MicroservicesClient_Endpoint endpoint = GetEndpointConfig("WebContent.Clear_Special_Missing_Page", Tracer);
 
@@ -404,7 +404,7 @@ namespace SobekCM.Core.Client
         public WebContent_Hierarchy Get_Hierarchy(bool UseCache, Custom_Tracer Tracer)
         {
             // Add a beginning trace
-            if ( Tracer != null )
+            if (Tracer != null)
                 Tracer.Add_Trace("SobekEngineClient_WebContentServices.Get_Hierarchy");
 
             // Look in the cache if that is included here
@@ -422,7 +422,7 @@ namespace SobekCM.Core.Client
             WebContent_Hierarchy returnValue = Deserialize<WebContent_Hierarchy>(endpoint.URL, endpoint.Protocol, Tracer);
 
             // If there was a result and cache should be used, cache if 
-            if ((returnValue != null) && (UseCache) && ( Config.UseCache ))
+            if ((returnValue != null) && (UseCache) && (Config.UseCache))
             {
                 CachedDataManager.WebContent.Store_Hierarchy(returnValue, Tracer);
             }
@@ -472,17 +472,17 @@ namespace SobekCM.Core.Client
         /// <param name="RowsPerPage"> (Optional) Number of rows of updates to include in each page of results </param>
         /// <param name="UserFilter"> (Optional) Filter to only return items updated by one user </param>
         /// <returns> List of requested recent udpates </returns>
-        public WebContent_Recent_Changes Get_Global_Recent_Updates(Custom_Tracer Tracer, int Page, int? RowsPerPage = null, string UserFilter = null )
+        public WebContent_Recent_Changes Get_Global_Recent_Updates(Custom_Tracer Tracer, int Page, int? RowsPerPage = null, string UserFilter = null)
         {
             // Add a beginning trace
             Tracer.Add_Trace("SobekEngineClient_WebContentServices.Get_Global_Recent_Updates");
 
             // Get the endpoint
-            MicroservicesClient_Endpoint endpoint = GetEndpointConfig("WebContent.Get_Global_Recent_Updates", Tracer );
+            MicroservicesClient_Endpoint endpoint = GetEndpointConfig("WebContent.Get_Global_Recent_Updates", Tracer);
 
             // Format the URL
             string url = endpoint.URL + "?page=" + Page;
-            if ((RowsPerPage.HasValue) && ( RowsPerPage.Value > 0 ))
+            if ((RowsPerPage.HasValue) && (RowsPerPage.Value > 0))
                 url = url + "&rowsPerPage=" + RowsPerPage.Value;
             if (!String.IsNullOrEmpty(UserFilter))
                 url = url + "&user=" + UserFilter;
@@ -522,7 +522,7 @@ namespace SobekCM.Core.Client
             // Look in the the cache a recently stored value
             if (Config.UseCache)
             {
-                List<string> cacheValue = CachedDataManager.WebContent.Retrieve_Global_Recent_Updates_NextLevel(Tracer, Level1, Level2, Level3, Level4, Level5, Level6, Level7, Level8 );
+                List<string> cacheValue = CachedDataManager.WebContent.Retrieve_Global_Recent_Updates_NextLevel(Tracer, Level1, Level2, Level3, Level4, Level5, Level6, Level7, Level8);
                 if (cacheValue != null)
                     return cacheValue;
             }
@@ -588,7 +588,7 @@ namespace SobekCM.Core.Client
             // Look in the the cache a recently stored value
             if (Config.UseCache)
             {
-                List<string> cacheValue = CachedDataManager.WebContent.Retrieve_Global_Recent_Updates_Users( Tracer );
+                List<string> cacheValue = CachedDataManager.WebContent.Retrieve_Global_Recent_Updates_Users(Tracer);
                 if (cacheValue != null)
                     return cacheValue;
             }
@@ -604,7 +604,7 @@ namespace SobekCM.Core.Client
 
             // Store in the cache
             if ((Config.UseCache) && (returnValue != null))
-                CachedDataManager.WebContent.Store_Global_Recent_Updates_Users(returnValue, Tracer );
+                CachedDataManager.WebContent.Store_Global_Recent_Updates_Users(returnValue, Tracer);
 
             return returnValue;
         }
@@ -655,7 +655,7 @@ namespace SobekCM.Core.Client
         /// <param name="Page"> Page number of used pages ( starting with one and counting up ) </param>
         /// <param name="RowsPerPage"> (Optional) Number of rows of used pages to include in each page of results </param>
         /// <returns> Web content usage report </returns>
-        public WebContent_Usage_Report Get_Global_Usage_Report(Custom_Tracer Tracer, int Year1, int Month1, int Year2, int Month2, int Page, int? RowsPerPage = null )
+        public WebContent_Usage_Report Get_Global_Usage_Report(Custom_Tracer Tracer, int Year1, int Month1, int Year2, int Month2, int Page, int? RowsPerPage = null)
         {
             // Add a beginning trace
             Tracer.Add_Trace("SobekEngineClient_WebContentServices.Get_Global_Usage_Report");
@@ -788,7 +788,7 @@ namespace SobekCM.Core.Client
             MicroservicesClient_Endpoint endpoint = GetEndpointConfig("WebContent.Has_Redirects", Tracer);
 
             // Format the URL
-            string url = endpoint.URL; 
+            string url = endpoint.URL;
 
             // Call out to the endpoint and return the deserialized object
             bool returnValue = Deserialize<bool>(url, endpoint.Protocol, Tracer);
@@ -901,7 +901,7 @@ namespace SobekCM.Core.Client
 
             // Store in the cache
             if ((Config.UseCache) && (returnValue != null))
-                CachedDataManager.WebContent.Store_All_Redirects_NextLevel(returnValue, Tracer, Level1, Level2, Level3, Level4, Level5, Level6, Level7, Level8 );
+                CachedDataManager.WebContent.Store_All_Redirects_NextLevel(returnValue, Tracer, Level1, Level2, Level3, Level4, Level5, Level6, Level7, Level8);
 
             return returnValue;
         }
@@ -1191,7 +1191,7 @@ namespace SobekCM.Core.Client
             List<string> returnValue = Deserialize<List<string>>(url, endpoint.Protocol, Tracer);
 
             // Store in the cache
-            if ((Config.UseCache) && ( returnValue != null ))
+            if ((Config.UseCache) && (returnValue != null))
                 CachedDataManager.WebContent.Store_All_Content_NextLevel(returnValue, Tracer, Level1, Level2, Level3, Level4, Level5, Level6, Level7, Level8);
 
             return returnValue;

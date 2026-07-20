@@ -1,7 +1,7 @@
-﻿using System;
-using SobekCM.Core.BriefItem;
+﻿using SobekCM.Core.BriefItem;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Bib_Info;
+using System;
 
 namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
 {

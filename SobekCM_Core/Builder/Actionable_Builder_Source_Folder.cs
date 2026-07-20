@@ -1,14 +1,13 @@
 ﻿#region Using directives
 
+using SobekCM.Builder_Library.Modules.Folders;
+using SobekCM.Core.Builder;
+using SobekCM.Core.Settings;
+using SobekCM.Tools;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using SobekCM.Builder_Library.Modules.Folders;
-using SobekCM.Builder_Library.Settings;
-using SobekCM.Core.Builder;
-using SobekCM.Core.Settings;
-using SobekCM.Tools;
 
 #endregion
 
@@ -20,7 +19,7 @@ namespace SobekCM.Builder_Library
     {
         /// <summary> Constructor for a new instance of the Actionable_Builder_Source_Folder class </summary>
         /// <remarks> This extends the core class <see cref="Builder_Source_Folder"/> and adds some methods to perform work </remarks>
-        public Actionable_Builder_Source_Folder() 
+        public Actionable_Builder_Source_Folder()
         {
             // Do nothing
         }
@@ -58,7 +57,7 @@ namespace SobekCM.Builder_Library
         }
 
         /// <summary> Collection of the builder modules to be run against this folder </summary>
-        public List<iFolderModule> BuilderModules { get; private set;  }
+        public List<iFolderModule> BuilderModules { get; private set; }
 
         /// <summary> Gets flag indicating there are packages in the inbound folder </summary>
         public bool Items_Exist_In_Inbound

@@ -1,19 +1,17 @@
 #region Using directives
 
+using SobekCM.Core.ApplicationState;
+using SobekCM.Core.Configuration.Localization;
+using SobekCM.Core.Users;
+using SobekCM.Library.UI;
+using SobekCM.Resource_Object;
+using SobekCM.Resource_Object.Divisions;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Text;
-using Microsoft.AspNetCore.Http;
-using SobekCM.Core.ApplicationState;
-using SobekCM.Core.Configuration;
-using SobekCM.Core.Configuration.Localization;
-using SobekCM.Core.Users;
-using SobekCM.Library.UI;
-using SobekCM.Resource_Object;
-using SobekCM.Resource_Object.Divisions;
 
 #endregion
 
@@ -31,7 +29,7 @@ namespace SobekCM.Library.Citation.Elements
             PossibleSelectItems.Clear();
 
             SecondLabel = "Label";
-            
+
         }
 
 
@@ -46,7 +44,7 @@ namespace SobekCM.Library.Citation.Elements
         /// <param name="Translator"> Language support object which handles simple translational duties </param>
         /// <param name="Base_URL"> Base URL for the current request </param>
         /// <remarks> This simple element does not append any popup form to the popup_form_builder</remarks>
-        public override void Render_Template_HTML(TextWriter Output, SobekCM_Item Bib, string Skin_Code, bool IsMozilla, StringBuilder PopupFormBuilder, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL )
+        public override void Render_Template_HTML(TextWriter Output, SobekCM_Item Bib, string Skin_Code, bool IsMozilla, StringBuilder PopupFormBuilder, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL)
         {
 
             // Check that an acronym exists
@@ -115,7 +113,7 @@ namespace SobekCM.Library.Citation.Elements
             {
                 render_helper(Output, files, labels, Skin_Code, Current_User, CurrentLanguage, Translator, Base_URL);
             }
-            
+
         }
 
         /// <summary> Prepares the bib object for the save, by clearing any existing data in this element's related field(s) </summary>
@@ -148,11 +146,11 @@ namespace SobekCM.Library.Citation.Elements
                 }
 
                 if (thisKey.IndexOf(html_element_name.Replace("_", "") + "_text") == 0)
-                {                    
+                {
                     if (filename.Length > 0)
                     {
                         string label = Context.Request.Form[thisKey];
-                        download_files.Add(filename.Replace(".*",""));
+                        download_files.Add(filename.Replace(".*", ""));
                         download_labels.Add(label);
                     }
                     filename = String.Empty;
@@ -170,7 +168,7 @@ namespace SobekCM.Library.Citation.Elements
                     string base_file = thisDownload.Files[0].File_Name_Sans_Extension;
                     if (!existing_files.Contains(base_file))
                     {
-                        existing_files.Add(base_file );
+                        existing_files.Add(base_file);
                         existing_labels.Add(thisDownload.Label);
                     }
                 }

@@ -1,20 +1,13 @@
 ﻿#region Using directives
 
+using SobekCM.Core.BriefItem;
+using SobekCM.Core.UI_Configuration.Viewers;
+using SobekCM.Library.ItemViewer.Viewers;
+using SobekCM.Library.UI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using SobekCM.Core.BriefItem;
-using SobekCM.Core.Configuration;
-using SobekCM.Core.Navigation;
-using SobekCM.Core.Settings;
-using SobekCM.Core.UI_Configuration.Viewers;
-using SobekCM.Core.Users;
-using SobekCM.Engine_Library.ApplicationState;
-using SobekCM.Library.ItemViewer.Viewers;
-using SobekCM.Library.UI;
-using SobekCM.Resource_Object;
-using SobekCM.Resource_Object.Behaviors;
 
 #endregion
 
@@ -62,7 +55,7 @@ namespace SobekCM.Library.ItemViewer
                 iItemViewerPrototyper protoTyper = viewTypeToItemViewerPrototyper[viewer.ViewerType];
 
                 // Verify this prototyper is not NULL and believes it should be added
-                if (( protoTyper != null ) && ( protoTyper.Include_Viewer(BriefItem)))
+                if ((protoTyper != null) && (protoTyper.Include_Viewer(BriefItem)))
                 {
                     // Add this view to the ordained views
                     BriefItem.UI.Viewers_By_Priority.Add(viewer.ViewerType);
@@ -117,7 +110,7 @@ namespace SobekCM.Library.ItemViewer
             // Add the viewers back in menu order to the menu order portion
             foreach (float thisKey in menuOrderSort.Keys)
             {
-                BriefItem.UI.Viewers_Menu_Order.Add( menuOrderSort[thisKey]);
+                BriefItem.UI.Viewers_Menu_Order.Add(menuOrderSort[thisKey]);
             }
         }
 
@@ -130,7 +123,7 @@ namespace SobekCM.Library.ItemViewer
                 return;
 
             // Make sure the dictionaries are not null
-            if ( viewerCodeToItemViewerPrototyper == null ) viewerCodeToItemViewerPrototyper = new Dictionary<string, iItemViewerPrototyper>(StringComparer.OrdinalIgnoreCase);
+            if (viewerCodeToItemViewerPrototyper == null) viewerCodeToItemViewerPrototyper = new Dictionary<string, iItemViewerPrototyper>(StringComparer.OrdinalIgnoreCase);
             if (viewTypeToItemViewerPrototyper == null) viewTypeToItemViewerPrototyper = new Dictionary<string, iItemViewerPrototyper>(StringComparer.OrdinalIgnoreCase);
             if (mgmtViewerConfigs == null) mgmtViewerConfigs = new List<ItemSubViewerConfig>();
 
@@ -150,7 +143,7 @@ namespace SobekCM.Library.ItemViewer
 
                 // Build the prototyper
                 iItemViewerPrototyper prototyper = configurePrototyper(thisViewerConfig.Assembly, thisViewerConfig.Class);
-                
+
                 // If this failed to create a prototyper move on
                 if (prototyper == null)
                     continue;
@@ -158,7 +151,7 @@ namespace SobekCM.Library.ItemViewer
                 // Add any other configuration here
                 if (!String.IsNullOrEmpty(thisViewerConfig.ViewerCode))
                     prototyper.ViewerCode = thisViewerConfig.ViewerCode;
-                if (( thisViewerConfig.PageExtensions != null ) && ( thisViewerConfig.PageExtensions.Length > 0 ))
+                if ((thisViewerConfig.PageExtensions != null) && (thisViewerConfig.PageExtensions.Length > 0))
                     prototyper.FileExtensions = thisViewerConfig.PageExtensions;
                 else if ((thisViewerConfig.FileExtensions != null) && (thisViewerConfig.FileExtensions.Length > 0))
                     prototyper.FileExtensions = thisViewerConfig.FileExtensions;
@@ -179,12 +172,12 @@ namespace SobekCM.Library.ItemViewer
                     mgmtOrder[orderValue] = thisViewerConfig;
                 }
             }
-            
+
             // Add the sorted viewers to the sort list, in sorted order
             mgmtViewerConfigs = mgmtOrder.Values.ToList();
         }
 
-        private static iItemViewerPrototyper configurePrototyper( string assembly, string className )
+        private static iItemViewerPrototyper configurePrototyper(string assembly, string className)
         {
             // Was an assembly indicated
             if (String.IsNullOrEmpty(assembly))
@@ -193,8 +186,8 @@ namespace SobekCM.Library.ItemViewer
                 // Return a standard class
                 switch (className)
                 {
-                        //case "SobekCM.Library.ItemViewer.Viewers.GIF_ItemViewer_Prototyper":
-                        //    return new GIF_ItemViewer_Prototyper();
+                    //case "SobekCM.Library.ItemViewer.Viewers.GIF_ItemViewer_Prototyper":
+                    //    return new GIF_ItemViewer_Prototyper();
 
                     case "SobekCM.Library.ItemViewer.Viewers.Citation_MARC_ItemViewer_Prototyper":
                         return new Citation_MARC_ItemViewer_Prototyper();
@@ -296,7 +289,7 @@ namespace SobekCM.Library.ItemViewer
                 {
                     Assembly dllAssembly = Assembly.GetCallingAssembly();
                     Type prototyperType = dllAssembly.GetType(className);
-                    iItemViewerPrototyper returnObj = (iItemViewerPrototyper) Activator.CreateInstance(prototyperType);
+                    iItemViewerPrototyper returnObj = (iItemViewerPrototyper)Activator.CreateInstance(prototyperType);
                     return returnObj;
                 }
                 catch (Exception)
@@ -318,7 +311,7 @@ namespace SobekCM.Library.ItemViewer
                     dllAssembly = Assembly.LoadFrom(assemblyFilePath);
                 }
                 Type prototyperType = dllAssembly.GetType(className);
-                iItemViewerPrototyper returnObj = (iItemViewerPrototyper) Activator.CreateInstance(prototyperType);
+                iItemViewerPrototyper returnObj = (iItemViewerPrototyper)Activator.CreateInstance(prototyperType);
                 return returnObj;
             }
             catch (Exception ee)
@@ -335,8 +328,8 @@ namespace SobekCM.Library.ItemViewer
         /// <returns></returns>
         public static void Clear()
         {
-            if ( viewerCodeToItemViewerPrototyper != null ) viewerCodeToItemViewerPrototyper.Clear();
-            if ( viewTypeToItemViewerPrototyper != null ) viewTypeToItemViewerPrototyper.Clear();
+            if (viewerCodeToItemViewerPrototyper != null) viewerCodeToItemViewerPrototyper.Clear();
+            if (viewTypeToItemViewerPrototyper != null) viewTypeToItemViewerPrototyper.Clear();
         }
 
         /// <summary> Gets the viewer code (used in URLs and such) for a specific view type,
@@ -400,7 +393,7 @@ namespace SobekCM.Library.ItemViewer
         /// <param name="ViewType"> Viewer code to retrieve </param>
         /// <returns> Genereated item viewer class for rendering the particular view of a digital resource
         /// via HTML. </returns>
-        public static iItemViewerPrototyper Get_Viewer_By_ViewType( string ViewType )
+        public static iItemViewerPrototyper Get_Viewer_By_ViewType(string ViewType)
         {
             // Ensure the necessary dictionaries are built
             configureItemViewers();

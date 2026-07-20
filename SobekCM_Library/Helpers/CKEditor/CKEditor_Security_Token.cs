@@ -22,7 +22,7 @@ namespace SobekCM.Library.Helpers.CKEditor
         /// <summary> Constructor for a new instance of the CKEditor_Security_Token class </summary>
         /// <param name="UploadPath"> Path where the uploaded files should go </param>
         /// <param name="UploadURL"> URL where the uploaded files go, to return the uploaded file URL </param>
-        public CKEditor_Security_Token(string UploadPath, string UploadURL )
+        public CKEditor_Security_Token(string UploadPath, string UploadURL)
         {
             this.UploadPath = UploadPath;
             this.UploadURL = UploadURL;

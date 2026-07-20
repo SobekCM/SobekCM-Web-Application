@@ -1,11 +1,9 @@
-﻿using System.Collections.Generic;
-using System.Collections.Specialized;
-
-using System.Data;
-using System;
+﻿using SobekCM.Core.MicroservicesClient;
 using SobekCM.Tools;
-
-using SobekCM.Core.MicroservicesClient;
+using System;
+using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.Data;
 
 namespace SobekCM.Engine_Library.Endpoints
 {
@@ -19,16 +17,16 @@ namespace SobekCM.Engine_Library.Endpoints
 
             DateTime dt_start;
             DateTime dt_end;
-            String bibvidflt=null;
+            String bibvidflt = null;
             Boolean includeNoWorkFlag = false;
             DataSet ds;
             dt_end = DateTime.Now;
             dt_start = DateTime.Now.AddHours(-6);
-            
-            ds=Database.Engine_Database.Builder_Log_Search(dt_start, dt_end, bibvidflt, includeNoWorkFlag, tracer);
-            String myresults="<results>";
 
-            tracer.Add_Trace("BuilderLogSummaryServices.BLSS_Results_XML","Looping through dataset.");
+            ds = Database.Engine_Database.Builder_Log_Search(dt_start, dt_end, bibvidflt, includeNoWorkFlag, tracer);
+            String myresults = "<results>";
+
+            tracer.Add_Trace("BuilderLogSummaryServices.BLSS_Results_XML", "Looping through dataset.");
 
             foreach (DataTable table in ds.Tables)
             {
@@ -36,7 +34,7 @@ namespace SobekCM.Engine_Library.Endpoints
                 {
                     foreach (object item in row.ItemArray)
                     {
-                        myresults+="<result>" + item.ToString() + "</result>";
+                        myresults += "<result>" + item.ToString() + "</result>";
                     }
                 }
             }

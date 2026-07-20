@@ -1,9 +1,9 @@
-﻿using System;
+﻿using ProtoBuf;
+using SobekCM.Resource_Object.Mapping;
+using System;
 using System.Reflection;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
-using ProtoBuf;
-using SobekCM.Resource_Object.Mapping;
 
 namespace SobekCM.Resource_Object.Configuration
 {
@@ -42,7 +42,7 @@ namespace SobekCM.Resource_Object.Configuration
         [XmlAttribute("assembly")]
         [ProtoMember(4)]
         public string Code_Assembly { get; set; }
-        
+
         /// <summary> Constructor for a new instance of the Metadata_Mapping_Config class </summary>
         public Metadata_Mapping_Config()
         {
@@ -73,7 +73,7 @@ namespace SobekCM.Resource_Object.Configuration
             {
                 // Using reflection, create an object from the class namespace/name
                 Assembly dllAssembly = Assembly.GetExecutingAssembly();
-                if ( !String.IsNullOrWhiteSpace(Code_Assembly))
+                if (!String.IsNullOrWhiteSpace(Code_Assembly))
                 {
                     // Try to find the file/path for this assembly then
                     string assemblyFilePath = ResourceObjectSettings.Get_Assembly(Code_Assembly);
@@ -89,9 +89,9 @@ namespace SobekCM.Resource_Object.Configuration
                 iBibliographicMapper module = possibleModule as iBibliographicMapper;
                 return module;
             }
-            catch 
+            catch
             {
-                 return null;
+                return null;
             }
         }
 

@@ -1,8 +1,8 @@
-﻿using System;
+﻿using ProtoBuf;
+using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
-using ProtoBuf;
 
 namespace SobekCM.Core.Configuration.Extensions
 {
@@ -53,7 +53,7 @@ namespace SobekCM.Core.Configuration.Extensions
         /// <returns></returns>
         public string Get_Assembly(string ID)
         {
-           if ((Extensions == null) || (Extensions.Count == 0))
+            if ((Extensions == null) || (Extensions.Count == 0))
                 return null;
 
             // If the dictionary has not been built, build it
@@ -63,7 +63,7 @@ namespace SobekCM.Core.Configuration.Extensions
             }
 
             // Now look and return the assembly if the ID exists
-            if (( assemblyDictionary != null ) && ( assemblyDictionary.ContainsKey(ID)))
+            if ((assemblyDictionary != null) && (assemblyDictionary.ContainsKey(ID)))
                 return assemblyDictionary[ID];
 
             return null;

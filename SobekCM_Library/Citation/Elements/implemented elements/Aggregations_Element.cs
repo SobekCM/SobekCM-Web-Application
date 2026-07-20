@@ -1,16 +1,15 @@
 #region Using directives
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
-using Microsoft.AspNetCore.Http;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.ApplicationState;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Users;
 using SobekCM.Library.UI;
 using SobekCM.Resource_Object;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Text;
 
 #endregion
 
@@ -31,7 +30,7 @@ namespace SobekCM.Library.Citation.Elements
             MaxBoxes = 9;
 
             // Get the codes for the aggregation 
-            if ((Items.Count == 0) && ( UI_ApplicationCache_Gateway.Aggregations != null ))
+            if ((Items.Count == 0) && (UI_ApplicationCache_Gateway.Aggregations != null))
             {
                 SortedList<string, string> tempItemList = new SortedList<string, string>();
                 List<Item_Aggregation_Related_Aggregations> subcollections = UI_ApplicationCache_Gateway.Aggregations.All_Aggregations;
@@ -52,7 +51,7 @@ namespace SobekCM.Library.Citation.Elements
 
         /// <summary> Sets the base url for the current request </summary>
         /// <param name="Base_URL"> Current Base URL for this request </param>
-        public override void  Set_Base_URL(string Base_URL)
+        public override void Set_Base_URL(string Base_URL)
         {
             ViewChoicesString = "<a href=\"" + Base_URL + "l/internal/colls<%?URLOPTS%>\" title=\"View all collections\" target=\"_COLLECTIONLIST\"><img src=\"" + Base_URL + "design/skins/<%WEBSKIN%>/buttons/magnify.jpg\" /></a>";
         }
@@ -68,7 +67,7 @@ namespace SobekCM.Library.Citation.Elements
         /// <param name="Translator"> Language support object which handles simple translational duties </param>
         /// <param name="Base_URL"> Base URL for the current request </param>
         /// <remarks> This simple element does not append any popup form to the popup_form_builder</remarks>
-        public override void Render_Template_HTML(TextWriter Output, SobekCM_Item Bib, string Skin_Code, bool IsMozilla, StringBuilder PopupFormBuilder, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL )
+        public override void Render_Template_HTML(TextWriter Output, SobekCM_Item Bib, string Skin_Code, bool IsMozilla, StringBuilder PopupFormBuilder, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL)
         {
             // Check that an acronym exists
             if (Acronym.Length == 0)
@@ -163,7 +162,7 @@ namespace SobekCM.Library.Citation.Elements
             // if the aggregation isn't already added, add it
             if (Defaults.Count > 0)
             {
-                foreach( string thisAggr in Defaults )
+                foreach (string thisAggr in Defaults)
                     Bib.Behaviors.Add_Aggregation(thisAggr);
             }
 

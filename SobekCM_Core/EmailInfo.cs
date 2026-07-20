@@ -1,8 +1,8 @@
 ﻿#region Using directives
 
+using ProtoBuf;
 using System;
 using System.Runtime.Serialization;
-using ProtoBuf;
 
 #endregion
 
@@ -36,7 +36,7 @@ namespace SobekCM.Core
         /// <summary> Email address that responses should be sent to (or NULL) </summary>
         [DataMember(EmitDefaultValue = false, Name = "replyTo")]
         [ProtoMember(5)]
-        public string ReplyTo { get; set;  }
+        public string ReplyTo { get; set; }
 
         /// <summary> Flag indicates if this should be sent as HTML or not </summary>
         [DataMember(Name = "isHtml")]
@@ -56,7 +56,7 @@ namespace SobekCM.Core
         /// <summary> UserID (or NULL if system) that initiated this email request </summary>
         [DataMember(EmitDefaultValue = false, Name = "userId")]
         [ProtoMember(9)]
-        public int? UserID { get; set;  }
+        public int? UserID { get; set; }
 
     }
 }

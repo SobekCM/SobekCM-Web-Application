@@ -2,9 +2,6 @@
 using SobekCM.Resource_Object.Metadata_Modules;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace NSLA_Metadata_Plugin
 {

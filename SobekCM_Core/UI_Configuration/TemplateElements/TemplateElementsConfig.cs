@@ -1,8 +1,8 @@
-﻿using System;
+﻿using ProtoBuf;
+using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
-using ProtoBuf;
 
 namespace SobekCM.Core.UI_Configuration.TemplateElements
 {
@@ -15,7 +15,7 @@ namespace SobekCM.Core.UI_Configuration.TemplateElements
     {
         private Dictionary<string, TemplateElementConfig> elementDictionary;
 
-            /// <summary> Collection of all the template elements </summary>
+        /// <summary> Collection of all the template elements </summary>
         [DataMember(Name = "elements", EmitDefaultValue = false)]
         [XmlArray("elements")]
         [XmlArrayItem("element", typeof(TemplateElementConfig))]
@@ -231,7 +231,7 @@ namespace SobekCM.Core.UI_Configuration.TemplateElements
         }
 
         /// <summary> Add a new metadata template element configuration to this class </summary>
-        public void Add_Element(TemplateElementConfig NewElement )
+        public void Add_Element(TemplateElementConfig NewElement)
         {
             // Ensure the dictionary is built
             if (elementDictionary == null)
@@ -280,7 +280,7 @@ namespace SobekCM.Core.UI_Configuration.TemplateElements
                 key = key + "|" + SubType.Trim();
 
             // Return the value from the dictionary 
-            if ( elementDictionary.ContainsKey(key))
+            if (elementDictionary.ContainsKey(key))
                 return elementDictionary[key];
 
             // If no match, look for the default (i.e., no subtype)

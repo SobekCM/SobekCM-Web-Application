@@ -1,9 +1,9 @@
 ﻿#region Using directives
 
+using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using Microsoft.Data.SqlClient;
 
 #endregion
 
@@ -40,40 +40,40 @@ namespace SobekCM.Resource_Object.Metadata_Modules
         private Nullable<DateTime> embargoEnd;
         private string versionStatement;
 
-		/// <summary> Constructur for a new instance of the RightsMD_Info class </summary>
+        /// <summary> Constructur for a new instance of the RightsMD_Info class </summary>
         public RightsMD_Info()
         {
             accessCode = AccessCode_Enum.NOT_SPECIFIED;
         }
 
-		/// <summary> Flag indicates if this metadata module contains data </summary>
+        /// <summary> Flag indicates if this metadata module contains data </summary>
         public bool hasData
         {
             get { return ((!String.IsNullOrEmpty(versionStatement)) || (!String.IsNullOrEmpty(copyrightStatement)) || (embargoEnd.HasValue) || (accessCode != AccessCode_Enum.NOT_SPECIFIED)); }
         }
 
-		/// <summary> Version statement from the rightsMD metadata module </summary>
+        /// <summary> Version statement from the rightsMD metadata module </summary>
         public string Version_Statement
         {
             get { return versionStatement ?? String.Empty; }
             set { versionStatement = value; }
         }
 
-		/// <summary> Separate copyright statement from the rightsMD metadata module </summary>
+        /// <summary> Separate copyright statement from the rightsMD metadata module </summary>
         public string Copyright_Statement
         {
             get { return copyrightStatement ?? String.Empty; }
             set { copyrightStatement = value; }
         }
 
-		/// <summary> Type of access to grant to this item  </summary>
+        /// <summary> Type of access to grant to this item  </summary>
         public AccessCode_Enum Access_Code
         {
             get { return accessCode; }
             set { accessCode = value; }
         }
 
-		/// <summary> Type of access to grant this item, as a string </summary>
+        /// <summary> Type of access to grant this item, as a string </summary>
         public string Access_Code_String
         {
             get
@@ -90,13 +90,13 @@ namespace SobekCM.Resource_Object.Metadata_Modules
                         return String.Empty;
                 }
             }
-		    set
-		    {
-		        switch (value.ToLower())
-		        {
-		            case "public":
+            set
+            {
+                switch (value.ToLower())
+                {
+                    case "public":
                         accessCode = AccessCode_Enum.Public;
-		                break;
+                        break;
 
                     case "campus":
                         accessCode = AccessCode_Enum.Campus;
@@ -106,17 +106,17 @@ namespace SobekCM.Resource_Object.Metadata_Modules
                         accessCode = AccessCode_Enum.Private;
                         break;
 
-		        }
-		    }
+                }
+            }
         }
 
-		/// <summary> Flag indicates if this item has an end embargo date </summary>
+        /// <summary> Flag indicates if this item has an end embargo date </summary>
         public bool Has_Embargo_End
         {
             get { return embargoEnd.HasValue; }
         }
 
-		/// <summary> Date of the embargo end, or 1/1/1900 if no embargo </summary>
+        /// <summary> Date of the embargo end, or 1/1/1900 if no embargo </summary>
         public DateTime Embargo_End
         {
             get { return embargoEnd.HasValue ? embargoEnd.Value : new DateTime(1900, 1, 1); }
@@ -154,7 +154,7 @@ namespace SobekCM.Resource_Object.Metadata_Modules
 
             // Get the UMI flag from the organizational notes
             string umi = String.Empty; //BibObject.Tracking.UMI_Flag
-            if ( BibObject.METS_Header.Creator_Org_Notes_Count > 0 ) 
+            if (BibObject.METS_Header.Creator_Org_Notes_Count > 0)
             {
                 foreach (string thisNote in BibObject.METS_Header.Creator_Org_Notes)
                 {

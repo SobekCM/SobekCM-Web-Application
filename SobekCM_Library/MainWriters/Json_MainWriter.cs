@@ -1,21 +1,18 @@
 ﻿#region Using directives
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using Microsoft.AspNetCore.Http;
 using SobekCM.Core.Client;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Results;
-using SobekCM.Core.UI_Configuration;
-using SobekCM.Core.UI_Configuration.StaticResources;
-using SobekCM.Engine_Library.ApplicationState;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Library.UI;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Divisions;
 using SobekCM.Tools;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 
 #endregion
 
@@ -32,7 +29,7 @@ namespace SobekCM.Library.MainWriters
         /// <param name="Context"> Context for this individual HTTP request </param>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
         /// <param name="Current_Image_Root"> Current root directory to pull images and metadata for digital resources </param>
-        public Json_MainWriter(HttpContext Context,RequestCache RequestSpecificValues, string Current_Image_Root) : base(Context, RequestSpecificValues)        
+        public Json_MainWriter(HttpContext Context, RequestCache RequestSpecificValues, string Current_Image_Root) : base(Context, RequestSpecificValues)
         {
             currentGreenstoneImageRoot = Current_Image_Root;
         }
@@ -51,7 +48,7 @@ namespace SobekCM.Library.MainWriters
                 case Display_Mode_Enum.Results:
                 case Display_Mode_Enum.Aggregation:
                     if (RequestSpecificValues.Paged_Results != null)
-                        display_search_results(Output );
+                        display_search_results(Output);
                     break;
                 case Display_Mode_Enum.Item_Display:
                     display_item_info(Output);
@@ -153,7 +150,7 @@ namespace SobekCM.Library.MainWriters
 
         /// <summary> Writes the search or browse information in JSON format directly to the output stream  </summary>
         /// <param name="Output"> Stream to which to write the JSON search or browse information </param>
-        protected internal void display_search_results(TextWriter Output )
+        protected internal void display_search_results(TextWriter Output)
         {
             // If results are null, or no results, return empty string
             if ((RequestSpecificValues.Paged_Results == null) || (RequestSpecificValues.Results_Statistics == null) || (RequestSpecificValues.Results_Statistics.Total_Items <= 0))
@@ -169,7 +166,7 @@ namespace SobekCM.Library.MainWriters
                 iSearch_Item_Result firstItemResult = titleResult.Get_Item(0);
 
                 // Determine a thumbnail
-                string thumb = currentGreenstoneImageRoot + titleResult.BibID.Substring(0,2) + "/" + titleResult.BibID.Substring(2,2) + "/" + titleResult.BibID.Substring(4,2) + "/" + titleResult.BibID.Substring(6,2) + "/" + titleResult.BibID.Substring(8) + "/" + firstItemResult.VID + "/" + firstItemResult.MainThumbnail;
+                string thumb = currentGreenstoneImageRoot + titleResult.BibID.Substring(0, 2) + "/" + titleResult.BibID.Substring(2, 2) + "/" + titleResult.BibID.Substring(4, 2) + "/" + titleResult.BibID.Substring(6, 2) + "/" + titleResult.BibID.Substring(8) + "/" + firstItemResult.VID + "/" + firstItemResult.MainThumbnail;
                 if ((thumb.ToUpper().IndexOf(".JPG") < 0) && (thumb.ToUpper().IndexOf(".GIF") < 0))
                 {
                     thumb = Static_Resources_Gateway.Nothumb_Jpg;

@@ -1,12 +1,10 @@
 ﻿#region Using directives
 
+using ProtoBuf;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
-using ProtoBuf;
-using SobekCM.Resource_Object.METS_Sec_ReaderWriters;
 
 #endregion
 
@@ -34,7 +32,7 @@ namespace SobekCM.Resource_Object.Configuration
         [DataMember(Name = "default", EmitDefaultValue = false)]
         [XmlAttribute("default")]
         [ProtoMember(3)]
-        public bool Default_Profile { get; set;  }
+        public bool Default_Profile { get; set; }
 
         /// <summary> Collection of all the package-level amdSec reader/writer configurations </summary>
         [DataMember(Name = "packageAmdSecWriterConfigs")]
@@ -107,13 +105,13 @@ namespace SobekCM.Resource_Object.Configuration
 
         /// <summary> Add a new package-level amdSec reader/writer configuration </summary>
         /// <param name="NewConfig"> New METS section reader writer configuration </param>
-        public void Add_Package_Level_AmdSec_Writer_Config( METS_Section_ReaderWriter_Config NewConfig )
+        public void Add_Package_Level_AmdSec_Writer_Config(METS_Section_ReaderWriter_Config NewConfig)
         {
             if (NewConfig == null)
                 return;
 
-           // if ( NewConfig.ReaderWriterObject is iPackage_amdSec_ReaderWriter )
-                Package_Level_AmdSec_Writer_Configs.Add(NewConfig);
+            // if ( NewConfig.ReaderWriterObject is iPackage_amdSec_ReaderWriter )
+            Package_Level_AmdSec_Writer_Configs.Add(NewConfig);
         }
 
         /// <summary> Add a new package-level dmdSec reader/writer configuration </summary>
@@ -123,8 +121,8 @@ namespace SobekCM.Resource_Object.Configuration
             if (NewConfig == null)
                 return;
 
-           // if (NewConfig.ReaderWriterObject is iPackage_dmdSec_ReaderWriter)
-                Package_Level_DmdSec_Writer_Configs.Add(NewConfig);
+            // if (NewConfig.ReaderWriterObject is iPackage_dmdSec_ReaderWriter)
+            Package_Level_DmdSec_Writer_Configs.Add(NewConfig);
         }
 
         /// <summary> Add a new division-level amdSec reader/writer configuration </summary>
@@ -134,8 +132,8 @@ namespace SobekCM.Resource_Object.Configuration
             if (NewConfig == null)
                 return;
 
-          //  if (NewConfig.ReaderWriterObject is iDivision_amdSec_ReaderWriter)
-                Division_Level_AmdSec_Writer_Configs.Add(NewConfig);
+            //  if (NewConfig.ReaderWriterObject is iDivision_amdSec_ReaderWriter)
+            Division_Level_AmdSec_Writer_Configs.Add(NewConfig);
         }
 
         /// <summary> Add a new division-level dmdSec reader/writer configuration </summary>
@@ -145,8 +143,8 @@ namespace SobekCM.Resource_Object.Configuration
             if (NewConfig == null)
                 return;
 
-           // if (NewConfig.ReaderWriterObject is iDivision_dmdSec_ReaderWriter)
-                Division_Level_DmdSec_Writer_Configs.Add(NewConfig);
+            // if (NewConfig.ReaderWriterObject is iDivision_dmdSec_ReaderWriter)
+            Division_Level_DmdSec_Writer_Configs.Add(NewConfig);
         }
 
         /// <summary> Add a new file-level amdSec reader/writer configuration </summary>
@@ -156,8 +154,8 @@ namespace SobekCM.Resource_Object.Configuration
             if (NewConfig == null)
                 return;
 
-           // if (NewConfig.ReaderWriterObject is iFile_amdSec_ReaderWriter)
-                File_Level_AmdSec_Writer_Configs.Add(NewConfig);
+            // if (NewConfig.ReaderWriterObject is iFile_amdSec_ReaderWriter)
+            File_Level_AmdSec_Writer_Configs.Add(NewConfig);
         }
 
         /// <summary> Add a new file-level dmdSec reader/writer configuration </summary>
@@ -167,8 +165,8 @@ namespace SobekCM.Resource_Object.Configuration
             if (NewConfig == null)
                 return;
 
-          //  if (NewConfig.ReaderWriterObject is iFile_dmdSec_ReaderWriter)
-                File_Level_DmdSec_Writer_Configs.Add(NewConfig);
+            //  if (NewConfig.ReaderWriterObject is iFile_dmdSec_ReaderWriter)
+            File_Level_DmdSec_Writer_Configs.Add(NewConfig);
         }
     }
 }

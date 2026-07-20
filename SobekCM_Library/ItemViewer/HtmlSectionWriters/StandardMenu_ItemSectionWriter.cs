@@ -1,10 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using SobekCM.Core.BriefItem;
+﻿using SobekCM.Core.BriefItem;
 using SobekCM.Library.HTML;
 using SobekCM.Library.ItemViewer.Menu;
 using SobekCM.Library.ItemViewer.Viewers;
+using System;
+using System.Collections.Generic;
+using System.IO;
 
 namespace SobekCM.Library.ItemViewer.HtmlSectionWriters
 {
@@ -49,10 +49,10 @@ namespace SobekCM.Library.ItemViewer.HtmlSectionWriters
 
             //    // Finally, just set to the standard if there was a problem
             //    if (menuProvider == null)
-                   
+
             //}
 
-            if ( menuProvider == null )
+            if (menuProvider == null)
                 menuProvider = new StandardItemMenuProvider();
 
             // The item viewer can choose to override the standard item menu

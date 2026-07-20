@@ -1,6 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
+using Microsoft.AspNetCore.Http;
 using SobekCM.Core.BriefItem;
 using SobekCM.Core.Client;
 using SobekCM.Core.Items;
@@ -8,7 +6,9 @@ using SobekCM.Core.Navigation;
 using SobekCM.Core.Users;
 using SobekCM.Library.ItemViewer.Menu;
 using SobekCM.Tools;
-using Microsoft.AspNetCore.Http;
+using System;
+using System.Collections.Generic;
+using System.IO;
 
 namespace SobekCM.Library.ItemViewer.Viewers
 {
@@ -88,7 +88,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <param name="CurrentRequest"> Information about the current request </param>
         /// <param name="MenuItems"> List of menu items, to which this method may add one or more menu items </param>
         /// <param name="IsRestricted"> Flag indicates if this item is restricted AND the current user is outside the ranges or not in the proper groups</param>
-        public virtual void Add_Menu_Items(BriefItemInfo CurrentItem, User_Object CurrentUser, Navigation_Object CurrentRequest, List<Item_MenuItem> MenuItems, bool IsRestricted )
+        public virtual void Add_Menu_Items(BriefItemInfo CurrentItem, User_Object CurrentUser, Navigation_Object CurrentRequest, List<Item_MenuItem> MenuItems, bool IsRestricted)
         {
             // Do nothing since this is already handed and added to the menu by the MANAGE MENU item viewer and INTERNAL header
         }
@@ -122,7 +122,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <param name="CurrentUser"> Current user, who may or may not be logged on </param>
         /// <param name="CurrentRequest"> Information about the current request </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        public Tracking_ItemViewer(BriefItemInfo BriefItem, User_Object CurrentUser, Navigation_Object CurrentRequest, Custom_Tracer Tracer )
+        public Tracking_ItemViewer(BriefItemInfo BriefItem, User_Object CurrentUser, Navigation_Object CurrentRequest, Custom_Tracer Tracer)
         {
             // Save the arguments for use later
             this.BriefItem = BriefItem;
@@ -149,7 +149,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <param name="Output"> Response stream for the item viewer to write directly to </param>
         /// <param name="CurrentRequest"> Information about the current request </param>
         /// <param name="BriefItem"> Digital resource object </param>
-        public static void Write_Tracking_Tabs(TextWriter Output, Navigation_Object CurrentRequest, BriefItemInfo BriefItem )
+        public static void Write_Tracking_Tabs(TextWriter Output, Navigation_Object CurrentRequest, BriefItemInfo BriefItem)
         {
             // Set the text
             const string MILESTONES_VIEW = "MILESTONES";
@@ -174,14 +174,14 @@ namespace SobekCM.Library.ItemViewer.Viewers
             if (BriefItem.UI.Includes_Viewer_Type("MILESTONES"))
             {
                 string milestones_code = ItemViewer_Factory.ViewCode_From_ViewType("MILESTONES");
-                if ( String.Compare(viewerCode, milestones_code, StringComparison.OrdinalIgnoreCase) == 0 )
+                if (String.Compare(viewerCode, milestones_code, StringComparison.OrdinalIgnoreCase) == 0)
                 {
                     Output.WriteLine("        <li class=\"current\">" + MILESTONES_VIEW + "</li>");
                 }
                 else
                 {
                     Output.WriteLine("        <li><a href=\"" + UrlWriterHelper.Redirect_URL(CurrentRequest, milestones_code) + "\">" + MILESTONES_VIEW + "</a></li>");
-                } 
+                }
             }
 
             // Include tracking? (Okay, this is probably redundant since this is IN the tracking itemviewer)
@@ -276,7 +276,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             // Now, add the text
             Tracer.Add_Trace("Tracking_ItemViewer.History_String", "Displaying history/worklog tracking information");
 
-            if (( trackingDetails == null ) || ( trackingDetails.WorkEvents == null ) || ( trackingDetails.WorkEvents.Count == 0 ))
+            if ((trackingDetails == null) || (trackingDetails.WorkEvents == null) || (trackingDetails.WorkEvents.Count == 0))
             {
                 Output.WriteLine("<br /><br /><br /><center><strong>ITEM HAS NO HISTORY</strong></center><br /><br /><br />");
             }
@@ -298,16 +298,16 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     Output.WriteLine("    <td>" + worklog.WorkflowName + "</td>");
                     Output.WriteLine("    <td>" + worklog.CompletedDate + "</td>");
 
-                    if ( worklog.WorkPerformedById > 0 )
+                    if (worklog.WorkPerformedById > 0)
                     {
-                        Output.WriteLine($"    <td><a href=\"{CurrentRequest.Base_URL}admin/users/{worklog.WorkPerformedById}v\">{ worklog.WorkPerformedBy}</a></td>");
+                        Output.WriteLine($"    <td><a href=\"{CurrentRequest.Base_URL}admin/users/{worklog.WorkPerformedById}v\">{worklog.WorkPerformedBy}</a></td>");
                     }
                     else
                     {
                         Output.WriteLine($"    <td>{worklog.WorkPerformedBy}</td>");
-                    }                    
+                    }
 
-                    if ( String.IsNullOrEmpty(worklog.Notes))
+                    if (String.IsNullOrEmpty(worklog.Notes))
                     {
                         Output.WriteLine("    <td>&nbsp;</td>");
                     }

@@ -1,29 +1,22 @@
 ﻿#region Using directives
 
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Data;
-using System.Globalization;
-using System.IO;
-using System.Linq;
-using System.Text;
-using SobekCM.Core.Configuration;
+using Microsoft.AspNetCore.Http;
 using SobekCM.Core.MemoryMgmt;
-using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Navigation;
-using SobekCM.Core.UI_Configuration;
-using SobekCM.Core.UI_Configuration.StaticResources;
 using SobekCM.Core.Users;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Engine_Library.Database;
 using SobekCM.Engine_Library.Email;
 using SobekCM.Library.Database;
-using SobekCM.Library.HTML;
-using SobekCM.Library.MainWriters;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
-using Microsoft.AspNetCore.Http;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Globalization;
+using System.IO;
+using System.Linq;
+using System.Text;
 
 #endregion
 
@@ -220,9 +213,9 @@ namespace SobekCM.Library.MySobekViewer
                             if (submit_value_instructor == "isinstructor")
                             {
                                 is_instructor = true;
-                            
+
                             }
-                            else if ( submit_value_instructor == "isNOTinstructor" )
+                            else if (submit_value_instructor == "isNOTinstructor")
                             {
                                 is_instructor = false;
                             }
@@ -262,13 +255,13 @@ namespace SobekCM.Library.MySobekViewer
                         validationErrors.Add("Password must be at least eight digits");
 
                     // validate instructor indication
-                    if ( !is_instructor.HasValue )
+                    if (!is_instructor.HasValue)
                     {
                         validationErrors.Add("Select whether you are an instructor or not");
                     }
-                    else if ( is_instructor.Value )
+                    else if (is_instructor.Value)
                     {
-                        if ( organization.Length == 0 )
+                        if (organization.Length == 0)
                         {
                             validationErrors.Add("As an instructor, institution is a required field");
                         }
@@ -395,14 +388,14 @@ namespace SobekCM.Library.MySobekViewer
                         user.UserID = -1;
 
                         // See if we can match the institution.. if so, assign the org code
-                        if (( String.IsNullOrEmpty(user.Organization_Code)) || ( !String.IsNullOrEmpty(user.Organization)))
+                        if ((String.IsNullOrEmpty(user.Organization_Code)) || (!String.IsNullOrEmpty(user.Organization)))
                         {
-                            foreach( var inst in UI_ApplicationCache_Gateway.Aggregations.All_Aggregations)
+                            foreach (var inst in UI_ApplicationCache_Gateway.Aggregations.All_Aggregations)
                             {
-                                if ( inst.Type.IndexOf("institution", StringComparison.OrdinalIgnoreCase) >= 0 )
+                                if (inst.Type.IndexOf("institution", StringComparison.OrdinalIgnoreCase) >= 0)
                                 {
-                                    if (( inst.Name.Equals(user.Organization, StringComparison.OrdinalIgnoreCase)) ||
-                                        ( inst.ShortName.Equals(user.Organization, StringComparison.OrdinalIgnoreCase)))
+                                    if ((inst.Name.Equals(user.Organization, StringComparison.OrdinalIgnoreCase)) ||
+                                        (inst.ShortName.Equals(user.Organization, StringComparison.OrdinalIgnoreCase)))
                                     {
                                         user.Organization_Code = inst.Code;
                                         break;
@@ -620,7 +613,7 @@ namespace SobekCM.Library.MySobekViewer
             Output.WriteLine("  <tr><th colspan=\"3\">Account Type</th></tr>");
             Output.WriteLine("  <tr><td>&nbsp;</td><td colspan=\"2\">Are you an instructor?  Let us know below to get access to restricted course materials.</td></tr>");
 
-            if (is_instructor.HasValue )
+            if (is_instructor.HasValue)
             {
                 if (is_instructor.Value)
                 {
@@ -694,7 +687,7 @@ namespace SobekCM.Library.MySobekViewer
             Output.Write("  <tr><td>&nbsp;</td><td class=\"sbkPmsv_InputLabel\"><label for=\"prefEmail\">" + emailLabel + ":</label></td><td><input id=\"prefEmail\" name=\"prefEmail\" class=\"preferences_medium_input sbk_Focusable\" value=\"" + email + "\" type=\"text\" />");
             string instEmailDisplay = (is_instructor.HasValue && is_instructor.Value) ? "inline" : "none";
             Output.Write("<span id=\"instructEmailPrompt\" style=\"display:" + instEmailDisplay + "\">&nbsp; &nbsp; (please enter institutional email address)</span>");
-            Output.WriteLine("</td></tr>"); 
+            Output.WriteLine("</td></tr>");
 
             if (user.Has_Item_Stats)
             {

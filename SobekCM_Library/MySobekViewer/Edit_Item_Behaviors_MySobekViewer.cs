@@ -1,13 +1,9 @@
 #region Using directives
 
-using System;
-using System.Collections.Generic;
-using System.IO;
+using Microsoft.AspNetCore.Http;
 using SobekCM.Core.Client;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
-using SobekCM.Core.UI_Configuration;
-using SobekCM.Core.UI_Configuration.StaticResources;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Library.AdminViewer;
 using SobekCM.Library.Citation;
@@ -16,10 +12,11 @@ using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
 using SobekCM.Library.UI;
 using SobekCM.Resource_Object;
-using SobekCM.Resource_Object.Database;
 using SobekCM.Tools;
 using SobekCM_Resource_Database;
-using Microsoft.AspNetCore.Http;
+using System;
+using System.Collections.Generic;
+using System.IO;
 
 #endregion
 
@@ -206,23 +203,23 @@ namespace SobekCM.Library.MySobekViewer
         /// <summary> Add the HTML to be displayed in the main SobekCM viewer area </summary>
         /// <param name="Output"> Textwriter to write the HTML for this viewer</param>
         /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
-        public override void  Write_ItemNavForm_Closing(TextWriter Output, Custom_Tracer Tracer)
+        public override void Write_ItemNavForm_Closing(TextWriter Output, Custom_Tracer Tracer)
         {
-			const string BEHAVIORS = "BEHAVIORS";
+            const string BEHAVIORS = "BEHAVIORS";
 
             Tracer.Add_Trace("Edit_Item_Behaviors_MySobekViewer.Write_ItemNavForm_Closing", "");
 
             Output.WriteLine("<!-- Hidden field is used for postbacks to add new form elements (i.e., new name, new other titles, etc..) -->");
             Output.WriteLine("<input type=\"hidden\" id=\"behaviors_request\" name=\"behaviors_request\" value=\"\" />");
 
-			// Write the top currentItem mimic html portion
-			Write_Item_Type_Top(Output, currentItem);
+            // Write the top currentItem mimic html portion
+            Write_Item_Type_Top(Output, currentItem);
 
-			Output.WriteLine("<div id=\"container-inner1000\">");
-			Output.WriteLine("<div id=\"pagecontainer\">");
+            Output.WriteLine("<div id=\"container-inner1000\">");
+            Output.WriteLine("<div id=\"pagecontainer\">");
 
             Output.WriteLine("<!-- Edit_Item_Behaviors_MySobekViewer.Write_ItemNavForm_Closing -->");
-			Output.WriteLine("<div class=\"sbkMySobek_HomeText\">");
+            Output.WriteLine("<div class=\"sbkMySobek_HomeText\">");
             Output.WriteLine("  <br />");
             Output.WriteLine("  <h2>Edit this item's behaviors within this library</h2>");
             Output.WriteLine("  <ul>");
@@ -233,44 +230,44 @@ namespace SobekCM.Library.MySobekViewer
             Output.WriteLine("</div>");
             Output.WriteLine();
 
-			Output.WriteLine("<a name=\"CompleteTemplate\"> </a>");
-			Output.WriteLine("<div id=\"tabContainer\" class=\"fulltabs\">");
-			Output.WriteLine("  <div class=\"tabs\">");
-			Output.WriteLine("    <ul>");
-			Output.WriteLine("      <li id=\"tabHeader_1\" class=\"tabActiveHeader\">" + BEHAVIORS + "</li>");
-			Output.WriteLine("    </ul>");
-			Output.WriteLine("  </div>");
-			Output.WriteLine("  <div class=\"graytabscontent\">");
-			Output.WriteLine("    <div class=\"tabpage\" id=\"tabpage_1\">");
+            Output.WriteLine("<a name=\"CompleteTemplate\"> </a>");
+            Output.WriteLine("<div id=\"tabContainer\" class=\"fulltabs\">");
+            Output.WriteLine("  <div class=\"tabs\">");
+            Output.WriteLine("    <ul>");
+            Output.WriteLine("      <li id=\"tabHeader_1\" class=\"tabActiveHeader\">" + BEHAVIORS + "</li>");
+            Output.WriteLine("    </ul>");
+            Output.WriteLine("  </div>");
+            Output.WriteLine("  <div class=\"graytabscontent\">");
+            Output.WriteLine("    <div class=\"tabpage\" id=\"tabpage_1\">");
 
-			Output.WriteLine("      <!-- Add SAVE and CANCEL buttons to top of form -->");
-			Output.WriteLine("      <script src=\"" + Static_Resources_Gateway.Sobekcm_Metadata_Js + "\" type=\"text/javascript\"></script>");
-			Output.WriteLine();
+            Output.WriteLine("      <!-- Add SAVE and CANCEL buttons to top of form -->");
+            Output.WriteLine("      <script src=\"" + Static_Resources_Gateway.Sobekcm_Metadata_Js + "\" type=\"text/javascript\"></script>");
+            Output.WriteLine();
 
-			Output.WriteLine("      <div class=\"sbkMySobek_RightButtons\">");
-			Output.WriteLine("        <button onclick=\"behaviors_cancel_form(); return false;\" class=\"sbkMySobek_BigButton\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"sbkMySobek_RoundButton_LeftImg\" alt=\"\" /> CANCEL </button> &nbsp; &nbsp; ");
-			Output.WriteLine("        <button onclick=\"behaviors_save_form(); return false;\" class=\"sbkMySobek_BigButton\"> SAVE <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkMySobek_RoundButton_RightImg\" alt=\"\" /></button>");
-			Output.WriteLine("      </div>");
-			Output.WriteLine("      <br /><br />");
-			Output.WriteLine();
+            Output.WriteLine("      <div class=\"sbkMySobek_RightButtons\">");
+            Output.WriteLine("        <button onclick=\"behaviors_cancel_form(); return false;\" class=\"sbkMySobek_BigButton\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"sbkMySobek_RoundButton_LeftImg\" alt=\"\" /> CANCEL </button> &nbsp; &nbsp; ");
+            Output.WriteLine("        <button onclick=\"behaviors_save_form(); return false;\" class=\"sbkMySobek_BigButton\"> SAVE <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkMySobek_RoundButton_RightImg\" alt=\"\" /></button>");
+            Output.WriteLine("      </div>");
+            Output.WriteLine("      <br /><br />");
+            Output.WriteLine();
 
             bool isMozilla = ((!String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.Browser_Type)) && (RequestSpecificValues.Current_Mode.Browser_Type.ToUpper().IndexOf("FIREFOX") >= 0));
-	        completeTemplate.Render_Template_HTML(Output, currentItem, RequestSpecificValues.Current_Mode.Skin == RequestSpecificValues.Current_Mode.Default_Skin ? RequestSpecificValues.Current_Mode.Skin.ToUpper() : RequestSpecificValues.Current_Mode.Skin, isMozilla, RequestSpecificValues.Current_User, RequestSpecificValues.Current_Mode.Language, UI_ApplicationCache_Gateway.Translation, RequestSpecificValues.Current_Mode.Base_URL, 1);
+            completeTemplate.Render_Template_HTML(Output, currentItem, RequestSpecificValues.Current_Mode.Skin == RequestSpecificValues.Current_Mode.Default_Skin ? RequestSpecificValues.Current_Mode.Skin.ToUpper() : RequestSpecificValues.Current_Mode.Skin, isMozilla, RequestSpecificValues.Current_User, RequestSpecificValues.Current_Mode.Language, UI_ApplicationCache_Gateway.Translation, RequestSpecificValues.Current_Mode.Base_URL, 1);
 
-			// Add the second buttons at the bottom of the form
-			Output.WriteLine();
-			Output.WriteLine("      <!-- Add SAVE and CANCEL buttons to bottom of form -->");
-			Output.WriteLine("      <div class=\"sbkMySobek_RightButtons\">");
-			Output.WriteLine("        <button onclick=\"behaviors_cancel_form(); return false;\" class=\"sbkMySobek_BigButton\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"sbkMySobek_RoundButton_LeftImg\" alt=\"\" /> CANCEL </button> &nbsp; &nbsp; ");
-			Output.WriteLine("        <button onclick=\"behaviors_save_form(); return false;\" class=\"sbkMySobek_BigButton\"> SAVE <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkMySobek_RoundButton_RightImg\" alt=\"\" /></button>");
-			Output.WriteLine("      </div>");
-			Output.WriteLine("      <br />");
-			Output.WriteLine("    </div>");
-			Output.WriteLine("  </div>");
-			Output.WriteLine("</div>");
-			Output.WriteLine("</div>");
-			Output.WriteLine("</div>");
-			Output.WriteLine("<br />");
+            // Add the second buttons at the bottom of the form
+            Output.WriteLine();
+            Output.WriteLine("      <!-- Add SAVE and CANCEL buttons to bottom of form -->");
+            Output.WriteLine("      <div class=\"sbkMySobek_RightButtons\">");
+            Output.WriteLine("        <button onclick=\"behaviors_cancel_form(); return false;\" class=\"sbkMySobek_BigButton\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"sbkMySobek_RoundButton_LeftImg\" alt=\"\" /> CANCEL </button> &nbsp; &nbsp; ");
+            Output.WriteLine("        <button onclick=\"behaviors_save_form(); return false;\" class=\"sbkMySobek_BigButton\"> SAVE <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkMySobek_RoundButton_RightImg\" alt=\"\" /></button>");
+            Output.WriteLine("      </div>");
+            Output.WriteLine("      <br />");
+            Output.WriteLine("    </div>");
+            Output.WriteLine("  </div>");
+            Output.WriteLine("</div>");
+            Output.WriteLine("</div>");
+            Output.WriteLine("</div>");
+            Output.WriteLine("<br />");
         }
 
         /// <summary> Add the HTML to be added near the top of the page for those viewers that implement pop-up forms for data retrieval </summary>
@@ -285,20 +282,20 @@ namespace SobekCM.Library.MySobekViewer
             Output.WriteLine();
         }
 
-		/// <summary> Gets the collection of special behaviors which this admin or mySobek viewer
-		/// requests from the main HTML subwriter. </summary>
-		/// <value> This tells the HTML and mySobek writers to mimic the currentItem viewer </value>
-		public override List<HtmlSubwriter_Behaviors_Enum> Viewer_Behaviors
-		{
-			get
-			{
-				return new List<HtmlSubwriter_Behaviors_Enum>
-				{
-					HtmlSubwriter_Behaviors_Enum.MySobek_Subwriter_Mimic_Item_Subwriter,
-					HtmlSubwriter_Behaviors_Enum.Suppress_Banner
-				};
-			}
-		}
+        /// <summary> Gets the collection of special behaviors which this admin or mySobek viewer
+        /// requests from the main HTML subwriter. </summary>
+        /// <value> This tells the HTML and mySobek writers to mimic the currentItem viewer </value>
+        public override List<HtmlSubwriter_Behaviors_Enum> Viewer_Behaviors
+        {
+            get
+            {
+                return new List<HtmlSubwriter_Behaviors_Enum>
+                {
+                    HtmlSubwriter_Behaviors_Enum.MySobek_Subwriter_Mimic_Item_Subwriter,
+                    HtmlSubwriter_Behaviors_Enum.Suppress_Banner
+                };
+            }
+        }
 
         /// <summary> Write any additional values within the HTML Head of the final served page </summary>
         /// <param name="Output"> Output stream currently within the HTML head tags </param>

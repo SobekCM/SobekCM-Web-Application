@@ -33,7 +33,7 @@ namespace SobekCM.Core.Settings
         /// <param name="MIME_Type">MIME type for files of this extension</param>
         /// <param name="isBlocked">Flag indicates files of this extension are explicitly blocked</param>
         /// <param name="shouldForward">Flag indicates if there are special features within IIS for which files of this type should be handed to IIS to handle (for example, byte-enabled video)</param>
-        public Mime_Type_Info( string Extension, string MIME_Type, bool isBlocked, bool shouldForward )
+        public Mime_Type_Info(string Extension, string MIME_Type, bool isBlocked, bool shouldForward)
         {
             this.Extension = Extension;
             this.MIME_Type = MIME_Type;

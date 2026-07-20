@@ -1,8 +1,8 @@
 ﻿
+using ProtoBuf;
 using System;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
-using ProtoBuf;
 
 namespace SobekCM.Core.Builder
 {
@@ -53,6 +53,6 @@ namespace SobekCM.Core.Builder
         [DataMember(Name = "lastRun", EmitDefaultValue = false)]
         [XmlElement("lastRun")]
         [ProtoMember(7)]
-        public Builder_Scheduled_Task_Execution_History LastRun { get; set; } 
+        public Builder_Scheduled_Task_Execution_History LastRun { get; set; }
     }
 }

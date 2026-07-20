@@ -64,7 +64,7 @@ namespace SobekCM.Tools.FDA
         /// <param name="ReportData">FDA Report information</param>
         /// <param name="FileName">Name for the XML output file</param>
         /// <returns>Flag indicating if the report creation was successful</returns>
-        public static bool Write(FDA_Report_Data ReportData, string FileName )
+        public static bool Write(FDA_Report_Data ReportData, string FileName)
         {
             try
             {
@@ -100,7 +100,7 @@ namespace SobekCM.Tools.FDA
                 writer.Close();
                 return true;
             }
-            catch 
+            catch
             {
                 return false;
             }

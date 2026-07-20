@@ -16,72 +16,72 @@ using System.Xml.Serialization;
 
 namespace SobekCM.Core.Users
 {
-	#region User_Authenticaion_Type_Enum
+    #region User_Authenticaion_Type_Enum
 
-	/// <summary> Enumeration used to indicate the way the current user has authenticated </summary>
+    /// <summary> Enumeration used to indicate the way the current user has authenticated </summary>
     /// <remarks> This is primarily used the first time a user logs on and registers with the system </remarks>
     public enum User_Authentication_Type_Enum : byte
     {
         /// <summary> No authentication (or not indicated) </summary>
         NONE = 0,
 
-		/// <summary> Authentication occurred using LDAP, primarily using Active Directory and IIS challenge </summary>
-		LDAP,
+        /// <summary> Authentication occurred using LDAP, primarily using Active Directory and IIS challenge </summary>
+        LDAP,
 
         /// <summary> Authentication occurred using Shibboleth </summary>
         Shibboleth,
 
-		/// <summary> Authentication occurred using the internal SobekCM authentication system </summary>
-		Sobek,
+        /// <summary> Authentication occurred using the internal SobekCM authentication system </summary>
+        Sobek,
 
         /// <summary> Authentication occurred using the basic IIS windows authentication pop-up </summary>
         Windows
     }
 
-	#endregion
+    #endregion
 
-	#region User_Object_Attribute_Mapping and helper class
+    #region User_Object_Attribute_Mapping and helper class
 
-	/// <summary> Enumeration of the main public elements associated with a user </summary>
-	/// <remarks> This is used for mapping during authentication (usually the first time a user logs on) </remarks>
-	public enum User_Object_Attribute_Mapping_Enum : byte
-	{
-		/// <summary> No mapping defined </summary>
-		NONE = 0,
+    /// <summary> Enumeration of the main public elements associated with a user </summary>
+    /// <remarks> This is used for mapping during authentication (usually the first time a user logs on) </remarks>
+    public enum User_Object_Attribute_Mapping_Enum : byte
+    {
+        /// <summary> No mapping defined </summary>
+        NONE = 0,
 
-		/// <summary> Maps to the COLLEGE this user is associated with </summary>
-		College,
+        /// <summary> Maps to the COLLEGE this user is associated with </summary>
+        College,
 
-		/// <summary> Maps to the DEPARTMENT this user is associated with </summary>
-		Department,
+        /// <summary> Maps to the DEPARTMENT this user is associated with </summary>
+        Department,
 
-		/// <summary> Maps to the EMAIL address of this user </summary>
-		Email,
+        /// <summary> Maps to the EMAIL address of this user </summary>
+        Email,
 
-		/// <summary> Maps to the FIRSTNAME address of this user </summary>
-		Firstname,
+        /// <summary> Maps to the FIRSTNAME address of this user </summary>
+        Firstname,
 
         /// <summary> Full name of this user ( FIRSTNAME followed by LASTNAME ) </summary>
         Fullname,
 
-		/// <summary> Maps to the LASTNAME address of this user </summary>
-		Lastname,
+        /// <summary> Maps to the LASTNAME address of this user </summary>
+        Lastname,
 
-		/// <summary> Maps to the NICKNAME address of this user </summary>
-		Nickname,
+        /// <summary> Maps to the NICKNAME address of this user </summary>
+        Nickname,
 
-		/// <summary> Maps to the NOTES for this user, which are only visible to system and portal admins </summary>
-		Notes,
+        /// <summary> Maps to the NOTES for this user, which are only visible to system and portal admins </summary>
+        Notes,
 
-		/// <summary> Maps to the ORGANIZATION this user is associated with </summary>
-		Organization,
+        /// <summary> Maps to the ORGANIZATION this user is associated with </summary>
+        Organization,
 
-		/// <summary> Maps to the CODE for the ORGANIZATION this user is associated with </summary>
-		OrgCode,
+        /// <summary> Maps to the CODE for the ORGANIZATION this user is associated with </summary>
+        OrgCode,
 
-		/// <summary> Maps to the USERNAME address of this user </summary>
-		Username
-	}
+        /// <summary> Maps to the USERNAME address of this user </summary>
+        Username
+    }
 
     /// <summary> Static helper class is used to convert strings to the enumeration for
     /// the user object attribute mapping </summary>
@@ -753,7 +753,7 @@ namespace SobekCM.Core.Users
 
             if (Flag)
             {
-                aggregationPermissions.Add(Code, Name, false, false, false, false, false, false, false, false, true, false, false );
+                aggregationPermissions.Add(Code, Name, false, false, false, false, false, false, false, false, true, false, false);
             }
         }
 
@@ -763,7 +763,7 @@ namespace SobekCM.Core.Users
         public bool Is_On_Home_Page(string AggregationCode)
         {
             string aggrCodeUpper = AggregationCode.ToUpper();
-            if (aggregationPermissions != null && aggregationPermissions.Aggregations!=null)
+            if (aggregationPermissions != null && aggregationPermissions.Aggregations != null)
                 return (from thisAggregation in aggregationPermissions.Aggregations where thisAggregation.Code == aggrCodeUpper select thisAggregation.OnHomePage).FirstOrDefault();
             return false;
         }
@@ -773,7 +773,7 @@ namespace SobekCM.Core.Users
         /// <returns> TRUE if this user is curator on either this aggregation or all of this library, otherwise FALSE </returns>
         public bool Is_Aggregation_Curator(string AggregationCode)
         {
-			if ((Is_System_Admin) || (Is_Portal_Admin))
+            if ((Is_System_Admin) || (Is_Portal_Admin))
                 return true;
 
             string aggrCodeUpper = AggregationCode.ToUpper();
@@ -782,20 +782,20 @@ namespace SobekCM.Core.Users
             return false;
         }
 
-		/// <summary> Checks to see if this user can perform administrative tasks against an item aggregation </summary>
-		/// <param name="AggregationCode"> Code for this item aggregation </param>
-		/// <returns> TRUE if this user is admin on either this aggregation or all of this library, otherwise FALSE </returns>
-		public bool Is_Aggregation_Admin(string AggregationCode)
-		{
-			if ((Is_System_Admin) || ( Is_Portal_Admin ))
-				return true;
+        /// <summary> Checks to see if this user can perform administrative tasks against an item aggregation </summary>
+        /// <param name="AggregationCode"> Code for this item aggregation </param>
+        /// <returns> TRUE if this user is admin on either this aggregation or all of this library, otherwise FALSE </returns>
+        public bool Is_Aggregation_Admin(string AggregationCode)
+        {
+            if ((Is_System_Admin) || (Is_Portal_Admin))
+                return true;
 
-			string aggrCodeUpper = AggregationCode.ToUpper();
+            string aggrCodeUpper = AggregationCode.ToUpper();
 
-            if(aggregationPermissions !=null && aggregationPermissions.Aggregations!=null)
-			  return (from thisAggregation in aggregationPermissions.Aggregations where thisAggregation.Code == aggrCodeUpper select thisAggregation.IsAdmin).FirstOrDefault();
-		    return false;
-		}
+            if (aggregationPermissions != null && aggregationPermissions.Aggregations != null)
+                return (from thisAggregation in aggregationPermissions.Aggregations where thisAggregation.Code == aggrCodeUpper select thisAggregation.IsAdmin).FirstOrDefault();
+            return false;
+        }
 
         /// <summary> Checks to see if this user can edit all the items within this aggregation </summary>
         /// <param name="AggregationCode"> Code for this item aggregation </param>
@@ -823,12 +823,12 @@ namespace SobekCM.Core.Users
 
         private void recurse_through_children(User_Folder ParentFolder, SortedList<string, User_Folder> FolderBuilder)
         {
-            if(ParentFolder.Child_Count>0)
+            if (ParentFolder.Child_Count > 0)
             {
                 foreach (User_Folder thisFolder in ParentFolder.Children)
-               {
-                FolderBuilder.Add(thisFolder.Folder_Name, thisFolder);
-                recurse_through_children(thisFolder, FolderBuilder);
+                {
+                    FolderBuilder.Add(thisFolder.Folder_Name, thisFolder);
+                    recurse_through_children(thisFolder, FolderBuilder);
                 }
             }
         }
@@ -844,7 +844,7 @@ namespace SobekCM.Core.Users
 
         private User_Folder recurse_to_get_folder(User_Folder ParentFolder, string FolderName)
         {
-            if ( ParentFolder.Folder_Name.ToLower() == FolderName )
+            if (ParentFolder.Folder_Name.ToLower() == FolderName)
                 return ParentFolder;
             if (ParentFolder.Children != null)
                 return ParentFolder.Children.Select(ChildFolder => recurse_to_get_folder(ChildFolder, FolderName)).FirstOrDefault(ReturnValue => ReturnValue != null);
@@ -889,23 +889,23 @@ namespace SobekCM.Core.Users
             aggregationPermissions.Clear();
         }
 
-	    /// <summary> Add a new item aggregation to this user's collection of item aggregationPermissions </summary>
-	    /// <param name="Code">Code for this user editable item aggregation</param>
-	    /// <param name="Name">Name for this user editable item aggregation </param>
-	    /// <param name="CanSelect">Flag indicates if this user can add items to this item aggregation</param>
+        /// <summary> Add a new item aggregation to this user's collection of item aggregationPermissions </summary>
+        /// <param name="Code">Code for this user editable item aggregation</param>
+        /// <param name="Name">Name for this user editable item aggregation </param>
+        /// <param name="CanSelect">Flag indicates if this user can add items to this item aggregation</param>
         /// <param name="CanDelete"> Flag indicates if the user can delete items in this aggregation  </param>
-	    /// <param name="IsCurator"> Flag indicates if this user is listed as the curator or collection manager for this given digital aggregation </param>
-	    /// <param name="OnHomePage"> Flag indicates if this user has asked to have this aggregation appear on their personalized home page</param>
-	    /// <param name="IsAdmin"> Flag indicates if this user is listed athe admin for this aggregation </param>
-	    /// <param name="CanEditMetadata"> Flag indicates if the user can edit metadata for all items in this aggregation </param>
+        /// <param name="IsCurator"> Flag indicates if this user is listed as the curator or collection manager for this given digital aggregation </param>
+        /// <param name="OnHomePage"> Flag indicates if this user has asked to have this aggregation appear on their personalized home page</param>
+        /// <param name="IsAdmin"> Flag indicates if this user is listed athe admin for this aggregation </param>
+        /// <param name="CanEditMetadata"> Flag indicates if the user can edit metadata for all items in this aggregation </param>
         /// <param name="CanEditBehaviors"> Flag indicates if the user can edit behaviors for all items in this aggregation  </param>
         /// <param name="CanPerformQc"> Flag indicates if the user can edit perform quality control for all items in this aggregation  </param>
         /// <param name="CanUploadFiles"> Flag indicates if the user can edit upload files for all items in this aggregation  </param>
         /// <param name="CanChangeVisibility"> Flag indicates if the user can change the visibility for all items in this aggregation  </param>
-	    /// <param name="GroupDefined"> Flag indicates if these permissions are derived from the group </param>
-	    public void Add_Aggregation(string Code, string Name, bool CanSelect, bool CanEditMetadata, bool CanEditBehaviors, bool CanPerformQc, bool CanUploadFiles, bool CanChangeVisibility, bool CanDelete, bool IsCurator, bool OnHomePage, bool IsAdmin, bool GroupDefined )
+        /// <param name="GroupDefined"> Flag indicates if these permissions are derived from the group </param>
+        public void Add_Aggregation(string Code, string Name, bool CanSelect, bool CanEditMetadata, bool CanEditBehaviors, bool CanPerformQc, bool CanUploadFiles, bool CanChangeVisibility, bool CanDelete, bool IsCurator, bool OnHomePage, bool IsAdmin, bool GroupDefined)
         {
-            aggregationPermissions.Add(Code, Name, CanSelect, CanEditMetadata, CanEditBehaviors, CanPerformQc, CanUploadFiles, CanChangeVisibility, CanDelete, IsCurator, OnHomePage, IsAdmin, GroupDefined );
+            aggregationPermissions.Add(Code, Name, CanSelect, CanEditMetadata, CanEditBehaviors, CanPerformQc, CanUploadFiles, CanChangeVisibility, CanDelete, IsCurator, OnHomePage, IsAdmin, GroupDefined);
         }
 
         /// <summary> Adds a BibID to the list of bibid's this user can edit </summary>
@@ -986,7 +986,7 @@ namespace SobekCM.Core.Users
         /// <summary> Adds a folder name to the list of folders associated with this user </summary>
         /// <param name="Folder_Name"> Name of the folder to add </param>
         /// <param name="Folder_ID"> Primary key for this folder </param>
-        public void Add_Folder(string Folder_Name, int Folder_ID )
+        public void Add_Folder(string Folder_Name, int Folder_ID)
         {
             folders[Folder_Name] = new User_Folder(Folder_Name, Folder_ID);
         }
@@ -1017,7 +1017,7 @@ namespace SobekCM.Core.Users
         /// <param name="Mapping"> Field to set in this user object </param>
         /// <param name="Value"> Value to set that field to </param>
 	    public void Set_Value_By_Mapping(User_Object_Attribute_Mapping_Enum Mapping, string Value)
-	    {
+        {
             switch (Mapping)
             {
                 case User_Object_Attribute_Mapping_Enum.Username:
@@ -1060,7 +1060,7 @@ namespace SobekCM.Core.Users
                     Department = Value;
                     break;
             }
-	    }
+        }
 
         /// <summary> Gets a value from this user object, based on the user object attribute mapping enumeration </summary>
         /// <param name="Mapping"> Field to get from this user object </param>
@@ -1112,31 +1112,31 @@ namespace SobekCM.Core.Users
         /// <param name="HoldingCode"> Holding code for the item </param>
         /// <param name="Aggregations"> List  of all aggregations codes linked to the item </param>
         /// <returns>TRUE if the user can edit this item, otherwise FALSE</returns>
-        public bool Can_Edit_This_Item( string BibID, string ItemType, string SourceCode, string HoldingCode, ICollection<string> Aggregations )
+        public bool Can_Edit_This_Item(string BibID, string ItemType, string SourceCode, string HoldingCode, ICollection<string> Aggregations)
         {
             //if (!InstanceWide_Settings_Singleton.Settings.Online_Edit_Submit_Enabled)
             //    return false;
 
-            if ( String.Compare(ItemType, "PROJECT", StringComparison.OrdinalIgnoreCase ) == 0 )
-				return Is_Portal_Admin;
+            if (String.Compare(ItemType, "PROJECT", StringComparison.OrdinalIgnoreCase) == 0)
+                return Is_Portal_Admin;
 
-	        if ((Is_Portal_Admin) || (Is_System_Admin))
-		        return true;
+            if ((Is_Portal_Admin) || (Is_System_Admin))
+                return true;
 
             if (BibIDs.Contains(BibID.ToUpper()))
                 return true;
 
-            if ((aggregationPermissions[ "I" + SourceCode.ToUpper() ] != null ) && ( aggregationPermissions["I" + SourceCode.ToUpper()].CanEditMetadata ))
+            if ((aggregationPermissions["I" + SourceCode.ToUpper()] != null) && (aggregationPermissions["I" + SourceCode.ToUpper()].CanEditMetadata))
                 return true;
 
             if ((aggregationPermissions["I" + HoldingCode.ToUpper()] != null) && (aggregationPermissions["I" + HoldingCode.ToUpper()].CanEditMetadata))
                 return true;
 
-            if ((aggregationPermissions.Aggregations != null) && ( Aggregations != null ))
+            if ((aggregationPermissions.Aggregations != null) && (Aggregations != null))
             {
                 foreach (string thisAggr in Aggregations)
                 {
-                    if (( aggregationPermissions[thisAggr] != null ) && ( aggregationPermissions[thisAggr].CanEditMetadata ))
+                    if ((aggregationPermissions[thisAggr] != null) && (aggregationPermissions[thisAggr].CanEditMetadata))
                         return true;
                 }
             }
@@ -1152,9 +1152,9 @@ namespace SobekCM.Core.Users
         /// <param name="Aggregations"> List  of all aggregations codes linked to the item </param>
         /// <returns>TRUE if the user can edit this item, otherwise FALSE</returns>
         public bool Can_Delete_This_Item(string BibID, string SourceCode, string HoldingCode, ICollection<string> Aggregations)
-		{
-			if ((Can_Delete_All) || ( Is_System_Admin ))
-				return true;
+        {
+            if ((Can_Delete_All) || (Is_System_Admin))
+                return true;
 
             if ((aggregationPermissions["I" + SourceCode.ToUpper()] != null) && (aggregationPermissions["I" + SourceCode.ToUpper()].CanDelete))
                 return true;
@@ -1162,17 +1162,17 @@ namespace SobekCM.Core.Users
             if ((aggregationPermissions["I" + HoldingCode.ToUpper()] != null) && (aggregationPermissions["I" + HoldingCode.ToUpper()].CanDelete))
                 return true;
 
-            if ((aggregationPermissions.Aggregations != null) && ( Aggregations != null ))
+            if ((aggregationPermissions.Aggregations != null) && (Aggregations != null))
             {
                 foreach (string thisAggr in Aggregations)
                 {
-                    if (( aggregationPermissions[thisAggr] != null ) && ( aggregationPermissions[thisAggr].CanDelete ))
+                    if ((aggregationPermissions[thisAggr] != null) && (aggregationPermissions[thisAggr].CanDelete))
                         return true;
                 }
             }
 
-			return false;
-		}
+            return false;
+        }
 
         /// <summary> Returns the security hash based on IP for this user </summary>
         /// <param name="IP">IP Address for this user request</param>
@@ -1216,6 +1216,6 @@ namespace SobekCM.Core.Users
             // convert into Base64 so that the result can be used in xml
             return Convert.ToBase64String(bytOut, 0, bytOut.Length);
         }
-        
+
     }
 }

@@ -1,20 +1,19 @@
 ﻿#region Using directives
 
-using System;
-using System.Collections.Generic;
-using System.Data;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.ApplicationState;
 using SobekCM.Core.Configuration;
 using SobekCM.Core.Settings;
 using SobekCM.Core.Skins;
-using SobekCM.Core.UI_Configuration;
 using SobekCM.Core.Users;
 using SobekCM.Core.WebContent.Hierarchy;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Engine_Library.Database;
 using SobekCM.Engine_Library.Settings;
 using SobekCM.Engine_Library.Skins;
+using System;
+using System.Collections.Generic;
+using System.Data;
 
 #endregion
 
@@ -38,7 +37,7 @@ namespace SobekCM.Engine_Library.ApplicationState
         /// <summary> Refress all of the settings within this gateway </summary>
         /// <param name="DbInstance"> Database instance to use when pulling the new data  </param>
         /// <returns> TRUE if successful, FALSE if any errors occurred </returns>
-        public static bool RefreshAll( Database_Instance_Configuration DbInstance )
+        public static bool RefreshAll(Database_Instance_Configuration DbInstance)
         {
             bool error = !RefreshSettings(DbInstance);
             error = error | !RefreshConfiguration(DbInstance);
@@ -62,7 +61,7 @@ namespace SobekCM.Engine_Library.ApplicationState
 
             return !error;
         }
-        
+
         /// <summary> Refress all of the settings within this gateway </summary>
         /// <returns> TRUE if successful, FALSE if any errors occurred </returns>
         public static bool RefreshAll()
@@ -327,9 +326,9 @@ namespace SobekCM.Engine_Library.ApplicationState
 
                 return true;
             }
-            catch ( Exception ee )
+            catch (Exception ee)
             {
-                return ee.Message.Length > 0 ;
+                return ee.Message.Length > 0;
             }
         }
 
@@ -364,7 +363,7 @@ namespace SobekCM.Engine_Library.ApplicationState
 
         /// <summary> Refresh the settings object by pulling the data back from the database </summary>
         /// <returns> TRUE if successful, otherwise FALSE </returns>
-        public static bool RefreshSettings(Database_Instance_Configuration DbInstance )
+        public static bool RefreshSettings(Database_Instance_Configuration DbInstance)
         {
             try
             {
@@ -445,10 +444,10 @@ namespace SobekCM.Engine_Library.ApplicationState
                 lock (configurationLock)
                 {
                     if (configuration == null)
-                        configuration = Configuration_Files_Reader.Read_Config_Files( Settings);
+                        configuration = Configuration_Files_Reader.Read_Config_Files(Settings);
                     else
                     {
-                        InstanceWide_Configuration newConfig = Configuration_Files_Reader.Read_Config_Files( Settings);
+                        InstanceWide_Configuration newConfig = Configuration_Files_Reader.Read_Config_Files(Settings);
                         configuration = newConfig;
                     }
                 }
@@ -470,10 +469,10 @@ namespace SobekCM.Engine_Library.ApplicationState
                 lock (configurationLock)
                 {
                     if (configuration == null)
-                        configuration = Configuration_Files_Reader.Read_Config_Files( Settings);
+                        configuration = Configuration_Files_Reader.Read_Config_Files(Settings);
                     else
                     {
-                        InstanceWide_Configuration newConfig = Configuration_Files_Reader.Read_Config_Files( Settings);
+                        InstanceWide_Configuration newConfig = Configuration_Files_Reader.Read_Config_Files(Settings);
                         configuration = newConfig;
                     }
                 }
@@ -494,7 +493,7 @@ namespace SobekCM.Engine_Library.ApplicationState
             {
                 lock (configurationLock)
                 {
-                    return configuration ?? (configuration = Configuration_Files_Reader.Read_Config_Files( Settings));
+                    return configuration ?? (configuration = Configuration_Files_Reader.Read_Config_Files(Settings));
                 }
             }
             set
@@ -519,7 +518,7 @@ namespace SobekCM.Engine_Library.ApplicationState
             {
                 lock (searchStopWordsLock)
                 {
-                    if ( searchStopWords != null )
+                    if (searchStopWords != null)
                         searchStopWords.Clear();
                     searchStopWords = Engine_Database.Search_Stop_Words(null);
                 }
@@ -658,7 +657,7 @@ namespace SobekCM.Engine_Library.ApplicationState
             {
                 lock (thematicHeadingsLock)
                 {
-                    if ( thematicHeadings != null )
+                    if (thematicHeadings != null)
                         thematicHeadings.Clear();
                     if (!Engine_Database.Populate_Thematic_Headings(Thematic_Headings, null))
                     {
@@ -713,7 +712,7 @@ namespace SobekCM.Engine_Library.ApplicationState
             {
                 lock (userGroupsLock)
                 {
-                    if ( userGroups != null )
+                    if (userGroups != null)
                         userGroups.Clear();
                     userGroups = Engine_Database.Get_All_User_Groups(null);
                 }
@@ -930,7 +929,7 @@ namespace SobekCM.Engine_Library.ApplicationState
 
                     templateList.Add(new Template(code, name, description));
                 }
-            }  
+            }
         }
 
         /// <summary> List of all the globally defined default metadata sets for this instance </summary>
@@ -940,7 +939,7 @@ namespace SobekCM.Engine_Library.ApplicationState
             {
                 lock (templateMetadataLock)
                 {
-                    if ((templateList == null) || ( defaultMetadataList == null ))
+                    if ((templateList == null) || (defaultMetadataList == null))
                     {
                         load_metadata_template();
                     }
@@ -1080,7 +1079,7 @@ namespace SobekCM.Engine_Library.ApplicationState
                     if (titleList == null)
                     {
                         titleList = new Multiple_Volume_Collection();
-                        Engine_Database.Populate_Multiple_Volumes(titleList, null );
+                        Engine_Database.Populate_Multiple_Volumes(titleList, null);
                     }
 
                     return titleList;

@@ -1,9 +1,9 @@
 ﻿#region Using directives
 
-using System;
 using SobekCM.Core.BriefItem;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Metadata_Modules;
+using System;
 
 #endregion
 
@@ -27,7 +27,7 @@ namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
             if ((thesisInfo != null) && (thesisInfo.hasData))
             {
                 // Add the degree information
-                if ( !String.IsNullOrEmpty(thesisInfo.Degree))
+                if (!String.IsNullOrEmpty(thesisInfo.Degree))
                 {
                     if (thesisInfo.Degree_Level != Thesis_Dissertation_Info.Thesis_Degree_Level_Enum.Unknown)
                     {
@@ -78,7 +78,7 @@ namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
                 }
 
                 // Add the degree grantor
-                if ( !String.IsNullOrEmpty(thesisInfo.Degree_Grantor))
+                if (!String.IsNullOrEmpty(thesisInfo.Degree_Grantor))
                     New.Add_Description("Degree Grantor", thesisInfo.Degree_Grantor);
 
                 // Add the degree divisions
@@ -100,7 +100,7 @@ namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
                 }
 
                 // Add the committee chair
-                if ( !String.IsNullOrEmpty(thesisInfo.Committee_Chair))
+                if (!String.IsNullOrEmpty(thesisInfo.Committee_Chair))
                     New.Add_Description("Committee Chair", thesisInfo.Committee_Chair);
 
                 // Add the committee co-chair

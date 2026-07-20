@@ -1,8 +1,8 @@
-﻿using System;
+﻿using SobekCM.Core.BriefItem;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
-using SobekCM.Core.BriefItem;
 
 namespace SobekCM.Core.FileSystems
 {
@@ -18,7 +18,7 @@ namespace SobekCM.Core.FileSystems
         /// <summary> Constructor for a new instance of the <see cref="PairTreeStructure"/> class </summary>
         /// <param name="RootNetworkUri"> Root network location for the digital resource files </param>
         /// <param name="RootWebUri"> Root web URL for the digital resource files folder </param>
-        public PairTreeStructure(string RootNetworkUri, string RootWebUri )
+        public PairTreeStructure(string RootNetworkUri, string RootWebUri)
         {
             rootNetworkUri = RootNetworkUri;
             rootWebUri = RootWebUri;
@@ -63,7 +63,7 @@ namespace SobekCM.Core.FileSystems
         /// <returns> URI for the web resource </returns>
         public string Resource_Web_Uri(BriefItemInfo DigitalResource)
         {
-            if ( rootWebUri[rootWebUri.Length - 1 ] == '/' )
+            if (rootWebUri[rootWebUri.Length - 1] == '/')
                 return rootWebUri + DigitalResource.BibID.Substring(0, 2) + "/" + DigitalResource.BibID.Substring(2, 2) + "/" + DigitalResource.BibID.Substring(4, 2) + "/" + DigitalResource.BibID.Substring(6, 2) + "/" + DigitalResource.BibID.Substring(8, 2) + "/" + DigitalResource.VID + "/";
 
             return rootWebUri + "/" + DigitalResource.BibID.Substring(0, 2) + "/" + DigitalResource.BibID.Substring(2, 2) + "/" + DigitalResource.BibID.Substring(4, 2) + "/" + DigitalResource.BibID.Substring(6, 2) + "/" + DigitalResource.BibID.Substring(8, 2) + "/" + DigitalResource.VID + "/";
@@ -179,9 +179,9 @@ namespace SobekCM.Core.FileSystems
                     {
                         SobekFileSystem_FileInfo returnFile = new SobekFileSystem_FileInfo
                         {
-                            Name = thisFile.Name, 
-                            LastWriteTime = thisFile.LastWriteTime, 
-                            Extension = thisFile.Extension, 
+                            Name = thisFile.Name,
+                            LastWriteTime = thisFile.LastWriteTime,
+                            Extension = thisFile.Extension,
                             Length = thisFile.Length
                         };
 

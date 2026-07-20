@@ -1,9 +1,9 @@
 #region Using directives
 
+using SobekCM.Resource_Object.Divisions;
 using System;
 using System.Drawing;
 using System.IO;
-using SobekCM.Resource_Object.Divisions;
 
 #endregion
 
@@ -101,7 +101,7 @@ namespace SobekCM_Resource_Database.Builder
                 // Make sure there is a value to return
                 if (splitName != null)
                     return splitName;
-                
+
                 throw new ApplicationException("SplitFileName not configured!\n\nChange constructor");
             }
         }
@@ -135,7 +135,7 @@ namespace SobekCM_Resource_Database.Builder
             {
                 if (relative_directory.Length == 0)
                     return filename + "." + extension;
-                
+
                 return relative_directory + "\\" + filename + "." + extension;
             }
         }
@@ -181,7 +181,7 @@ namespace SobekCM_Resource_Database.Builder
             {
                 try
                 {
-                    thisImage = (Bitmap) System.Drawing.Image.FromFile(Directory + FileName + ".QC.jpg");
+                    thisImage = (Bitmap)System.Drawing.Image.FromFile(Directory + FileName + ".QC.jpg");
                     return true;
                 }
                 catch
@@ -189,7 +189,7 @@ namespace SobekCM_Resource_Database.Builder
                     return false;
                 }
             }
-            
+
             return false;
         }
 
@@ -211,8 +211,8 @@ namespace SobekCM_Resource_Database.Builder
         /// <param name="Scale"> Scale to draw the quality control thumbnail, used to control size</param>
         public void Draw(Graphics G, Pen BorderPen, int X, int Y, float Scale)
         {
-            int currWidth = (int) (Scale*thisImage.Width);
-            int currHeight = (int) (Scale*thisImage.Height);
+            int currWidth = (int)(Scale * thisImage.Width);
+            int currHeight = (int)(Scale * thisImage.Height);
 
             // Draw the image first
             G.DrawImage(thisImage, X, Y, currWidth, currHeight);
@@ -222,18 +222,18 @@ namespace SobekCM_Resource_Database.Builder
             {
                 // Create the necessary objects to draw this error
                 Brush errorBrush = new SolidBrush(Color.Tomato);
-                int fontsize = (int) (45*Scale);
+                int fontsize = (int)(45 * Scale);
                 Font errorFont = new Font("Tahoma", fontsize, FontStyle.Bold);
 
                 if ((fileerrortype == 4) || (fileerrortype == 6))
                 {
-                    fontsize = (int) (30*Scale);
+                    fontsize = (int)(30 * Scale);
                     errorFont = new Font("Tahoma", fontsize, FontStyle.Bold);
                 }
 
                 if (fileerrortype == 3)
                 {
-                    fontsize = (int) (40*Scale);
+                    fontsize = (int)(40 * Scale);
                     errorFont = new Font("Tahoma", fontsize, FontStyle.Bold);
                 }
 
@@ -241,30 +241,30 @@ namespace SobekCM_Resource_Database.Builder
                 switch (fileerrortype)
                 {
                     case 2:
-                        G.DrawString(" CROP", errorFont, errorBrush, new Rectangle(X + 10, (int) (Y + (currHeight/2) - (fontsize*1.5)), currWidth, fontsize*2));
-                        G.DrawString("ERROR", errorFont, errorBrush, new Rectangle(X + 10, (int) (Y + (currHeight/2) + (fontsize*0.5)), currWidth, fontsize*2));
+                        G.DrawString(" CROP", errorFont, errorBrush, new Rectangle(X + 10, (int)(Y + (currHeight / 2) - (fontsize * 1.5)), currWidth, fontsize * 2));
+                        G.DrawString("ERROR", errorFont, errorBrush, new Rectangle(X + 10, (int)(Y + (currHeight / 2) + (fontsize * 0.5)), currWidth, fontsize * 2));
                         break;
 
                     case 3:
-                        G.DrawString("  IMAGE", errorFont, errorBrush, new Rectangle(X + 10, (int) (Y + (currHeight/2) - (fontsize*2.5)), currWidth, fontsize*2));
-                        G.DrawString("QUALITY", errorFont, errorBrush, new Rectangle(X + 10, (int) (Y + (currHeight/2) - (fontsize*0.5)), currWidth, fontsize*2));
-                        G.DrawString("  ERROR", errorFont, errorBrush, new Rectangle(X + 10, (int) (Y + (currHeight/2) + (fontsize*1.5)), currWidth, fontsize*2));
+                        G.DrawString("  IMAGE", errorFont, errorBrush, new Rectangle(X + 10, (int)(Y + (currHeight / 2) - (fontsize * 2.5)), currWidth, fontsize * 2));
+                        G.DrawString("QUALITY", errorFont, errorBrush, new Rectangle(X + 10, (int)(Y + (currHeight / 2) - (fontsize * 0.5)), currWidth, fontsize * 2));
+                        G.DrawString("  ERROR", errorFont, errorBrush, new Rectangle(X + 10, (int)(Y + (currHeight / 2) + (fontsize * 1.5)), currWidth, fontsize * 2));
                         break;
 
                     case 4:
-                        G.DrawString("ORIENTATION", errorFont, errorBrush, new Rectangle(X + 10, (int) (Y + (currHeight/2) - (fontsize*1.5)), currWidth, fontsize*2));
-                        G.DrawString("  ERROR", errorFont, errorBrush, new Rectangle(X + 10, (int) (Y + (currHeight/2) + (fontsize*0.5)), currWidth, fontsize*2));
+                        G.DrawString("ORIENTATION", errorFont, errorBrush, new Rectangle(X + 10, (int)(Y + (currHeight / 2) - (fontsize * 1.5)), currWidth, fontsize * 2));
+                        G.DrawString("  ERROR", errorFont, errorBrush, new Rectangle(X + 10, (int)(Y + (currHeight / 2) + (fontsize * 0.5)), currWidth, fontsize * 2));
                         break;
 
                     case 5:
-                        G.DrawString(" SKEW", errorFont, errorBrush, new Rectangle(X + 10, (int) (Y + (currHeight/2) - (fontsize*1.5)), currWidth, fontsize*2));
-                        G.DrawString("ERROR", errorFont, errorBrush, new Rectangle(X + 10, (int) (Y + (currHeight/2) + (fontsize*0.5)), currWidth, fontsize*2));
+                        G.DrawString(" SKEW", errorFont, errorBrush, new Rectangle(X + 10, (int)(Y + (currHeight / 2) - (fontsize * 1.5)), currWidth, fontsize * 2));
+                        G.DrawString("ERROR", errorFont, errorBrush, new Rectangle(X + 10, (int)(Y + (currHeight / 2) + (fontsize * 0.5)), currWidth, fontsize * 2));
                         break;
 
                     case 6:
-                        G.DrawString("TECHNICAL", errorFont, errorBrush, new Rectangle(X + 10, (int) (Y + (currHeight/2) - (fontsize*2.5)), currWidth, fontsize*2));
-                        G.DrawString("  SPEC", errorFont, errorBrush, new Rectangle(X + 10, (int) (Y + (currHeight/2) - (fontsize*0.5)), currWidth, fontsize*2));
-                        G.DrawString("  ERROR", errorFont, errorBrush, new Rectangle(X + 10, (int) (Y + (currHeight/2) + (fontsize*1.5)), currWidth, fontsize*2));
+                        G.DrawString("TECHNICAL", errorFont, errorBrush, new Rectangle(X + 10, (int)(Y + (currHeight / 2) - (fontsize * 2.5)), currWidth, fontsize * 2));
+                        G.DrawString("  SPEC", errorFont, errorBrush, new Rectangle(X + 10, (int)(Y + (currHeight / 2) - (fontsize * 0.5)), currWidth, fontsize * 2));
+                        G.DrawString("  ERROR", errorFont, errorBrush, new Rectangle(X + 10, (int)(Y + (currHeight / 2) + (fontsize * 1.5)), currWidth, fontsize * 2));
                         break;
                 }
 
@@ -321,13 +321,13 @@ namespace SobekCM_Resource_Database.Builder
                     {
                         return 1;
                     }
-                    
+
                     return -1;
                 }
 
                 return result;
             }
-            
+
             return 0;
         }
 

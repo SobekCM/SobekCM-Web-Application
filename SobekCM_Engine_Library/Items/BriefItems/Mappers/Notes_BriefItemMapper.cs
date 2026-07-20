@@ -1,9 +1,9 @@
 ﻿#region Using directives
 
-using System;
 using SobekCM.Core.BriefItem;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Bib_Info;
+using System;
 
 #endregion
 
@@ -57,7 +57,7 @@ namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
                 }
 
                 // If there was a statement of responsibility, add it now
-                if (statementOfResponsibility != null )
+                if (statementOfResponsibility != null)
                 {
                     New.Add_Description("Note", statementOfResponsibility.Note).SubTerm = statementOfResponsibility.Note_Type_Display_String;
                 }

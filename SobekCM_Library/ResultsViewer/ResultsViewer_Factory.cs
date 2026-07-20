@@ -1,10 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Reflection;
-using SobekCM.Core.Navigation;
+﻿using SobekCM.Core.Navigation;
 using SobekCM.Core.Results;
 using SobekCM.Core.UI_Configuration.Viewers;
 using SobekCM.Library.UI;
+using System;
+using System.Collections.Generic;
+using System.Reflection;
 
 namespace SobekCM.Library.ResultsViewer
 {
@@ -90,7 +90,7 @@ namespace SobekCM.Library.ResultsViewer
                     {
                         Assembly dllAssembly = Assembly.GetCallingAssembly();
                         Type prototyperType = dllAssembly.GetType(config.Class);
-                        returnValue = (iResultsViewer) Activator.CreateInstance(prototyperType);
+                        returnValue = (iResultsViewer)Activator.CreateInstance(prototyperType);
                     }
                     catch (Exception ee)
                     {

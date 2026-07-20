@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.IO;
 using Microsoft.AspNetCore.Http;
 using SobekCM.Core.Builder;
 using SobekCM.Core.Client;
@@ -10,6 +6,9 @@ using SobekCM.Engine_Library.Configuration;
 using SobekCM.Library.Database;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
+using System;
+using System.Collections.Generic;
+using System.IO;
 
 namespace SobekCM.Library.AdminViewer
 {
@@ -93,7 +92,7 @@ namespace SobekCM.Library.AdminViewer
                         inboundFolder = inboundFolder + "\\";
                     if ((!String.IsNullOrWhiteSpace(processingFolder)) && (processingFolder.Length > 2) && (processingFolder[processingFolder.Length - 1] != '\\'))
                         processingFolder = processingFolder + "\\";
-                    
+
                     // Switch, depending on the request
                     if (!String.IsNullOrEmpty(action_value))
                     {
@@ -154,7 +153,7 @@ namespace SobekCM.Library.AdminViewer
                             else
                             {
                                 // Try to save this folder
-                                bool result = SobekCM_Database.Builder_Folder_Edit(folderId, folderName, inboundFolder, failuresFolder, processingFolder, performChecksum, archiveTiffs, archiveAllFiles, allowDeletes, allowFoldersNoMetadata, bibIdRestrictions, moduleSetId, RequestSpecificValues.Tracer );
+                                bool result = SobekCM_Database.Builder_Folder_Edit(folderId, folderName, inboundFolder, failuresFolder, processingFolder, performChecksum, archiveTiffs, archiveAllFiles, allowDeletes, allowFoldersNoMetadata, bibIdRestrictions, moduleSetId, RequestSpecificValues.Tracer);
                                 if (!result)
                                 {
                                     actionMessage = "Unknown error encountered while saving folder to the database";
@@ -191,7 +190,7 @@ namespace SobekCM.Library.AdminViewer
                                         // i.e., none of the folders could be verified
                                         actionMessage = actionMessage + "<br /><br />WARNING: Unable to verify existence of any of the folders.  This may be normal since the account under which the web runs does not necessarily need access to the builder folders.";
                                     }
-                                    else if ( warnings.Count > 0 )
+                                    else if (warnings.Count > 0)
                                     {
                                         actionMessage = actionMessage + "<br /><br />WARNING: Unable to verify existence of some of the folders:<br /><br />";
                                         foreach (string thisWarning in warnings)
@@ -321,7 +320,7 @@ namespace SobekCM.Library.AdminViewer
             const string ARCHIVE_ALL_HELP = "Flag indicates that ALL incoming digital resource files will be copied to the Archival Drop Box directory, if such a value has been set in the main system settings.";
             const string DELETE_HELP = "Flag indicates if incoming METS files with a record status of DELETE should be accepted and result in the deletion of the corresponding item from this system.";
             const string NO_METADATA_HELP = "Flag indicates that all incoming digital resources MUST be accompanied by a METS file, or they will be rejected.";
-            
+
             //const string METADATA_UPDATE_HELP = "Flag indicates if incoming METS files with METADATA_UPDATE or PARTIAL are allowed in this folder, which will update just the metadata portion of the METS and possibly add new files.";
             //const string BIB_RESTRICT_HELP = "Flag indicates that incoming packages are restricted by the BibID root.  Packages that begin with a different root are rejected.  Multiple roots are added with a &quot;pipe&quot; between them, such as &quot;UF01|CA|SMI&quot;.";
 
@@ -447,7 +446,7 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("    <td></td>");
             Output.WriteLine("    <td colspan=\"3\">");
             Output.WriteLine("      <button title=\"" + cancel_text + "\" class=\"sbkAdm_RoundButton\" onclick=\"set_hidden_value_postback('admin_builder_folder_action', 'cancel'); return false;\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"sbkAdm_RoundButton_LeftImg\" alt=\"\" /> " + cancel_button_text + "</button> &nbsp; &nbsp; ");
-            if ( folderId > 0 )
+            if (folderId > 0)
                 Output.WriteLine("      <button title=\"Delete this incoming folder completely\" class=\"sbkAdm_RoundButton\" onclick=\"set_hidden_value_postback('admin_builder_folder_action', 'delete'); return false;\"> DELETE </button> &nbsp; &nbsp; ");
 
             Output.WriteLine("      <button title=\"" + button_title + "\" class=\"sbkAdm_RoundButton\" onclick=\"set_hidden_value_postback('admin_builder_folder_action', 'save'); return false;\">SAVE <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button>");

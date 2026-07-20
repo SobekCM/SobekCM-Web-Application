@@ -1,7 +1,7 @@
-﻿using System;
+﻿using ProtoBuf;
+using System;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
-using ProtoBuf;
 
 namespace SobekCM.Core.UI_Configuration.Citation
 {
@@ -40,7 +40,7 @@ namespace SobekCM.Core.UI_Configuration.Citation
         /// viewer should be loaded </param>
         /// <param name="Class_Name"> Fully qualified name (including namespace) of the special citation 
         /// section writer class </param>
-        public SectionWriter( string Assembly, string Class_Name )
+        public SectionWriter(string Assembly, string Class_Name)
         {
             this.Assembly = Assembly;
             this.Class_Name = Class_Name;

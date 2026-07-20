@@ -1,33 +1,31 @@
-﻿using System;
-using System.IO;
-using SobekCM.Core;
+﻿using SobekCM.Core;
 using SobekCM.Core.Client;
 using SobekCM.Core.Navigation;
-using SobekCM.Core.UI_Configuration;
-using SobekCM.Core.UI_Configuration.StaticResources;
 using SobekCM.Core.WebContent;
 using SobekCM.Core.WebContent.Single;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Tools;
+using System;
+using System.IO;
 
 namespace SobekCM.Library.WebContentViewer.Viewers
 {
     /// <summary> Web content viewer shows the change log of all updates performed against a web content page or redirect </summary>
     /// <remarks> This viewer extends the <see cref="abstractWebContentViewer" /> abstract class and implements the <see cref="iWebContentViewer"/> interface. </remarks>
-    public class Work_History_WebContentViewer: abstractWebContentViewer
+    public class Work_History_WebContentViewer : abstractWebContentViewer
     {
         /// <summary>  Constructor for a new instance of the Work_History_WebContentViewer class  </summary>
         /// <param name="RequestSpecificValues">  All the necessary, non-global data specific to the current request  </param>
         /// <param name="StaticPage"> Static page info for this request </param>
         public Work_History_WebContentViewer(RequestCache RequestSpecificValues, HTML_Based_Content StaticPage)
-            : base(RequestSpecificValues, StaticPage )
+            : base(RequestSpecificValues, StaticPage)
         {
-            
+
         }
 
 
         /// <summary> Gets the type of specialized web content viewer </summary>
-        public override WebContent_Type_Enum Type { get { return WebContent_Type_Enum.Milestones; }}
+        public override WebContent_Type_Enum Type { get { return WebContent_Type_Enum.Milestones; } }
 
         /// <summary> Title for the page that displays this viewer, this is shown in the search box at the top of the page, just below the banner </summary>
         public override string Viewer_Title

@@ -1,17 +1,17 @@
 #region Using directives
 
-using SobekCM.Core.MemoryMgmt;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
 using Microsoft.AspNetCore.Http;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.BriefItem;
 using SobekCM.Core.Configuration.Localization;
+using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Users;
 using SobekCM.Library.UI;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Text;
 
 #endregion
 
@@ -28,7 +28,7 @@ namespace SobekCM.Library.HTML
         /// <param name="Behaviors"> List of behaviors from the html subwriters </param>
         /// <param name="Current_Aggregation"> Current aggregation object, if there is one </param>
         /// <param name="Current_Item"> Current item object, if there is one </param>
-        public static void Add_Header(TextWriter Output, RequestCache RequestSpecificValues, string Container_CssClass, string Web_Page_Title, List<HtmlSubwriter_Behaviors_Enum> Behaviors, Item_Aggregation Current_Aggregation, BriefItemInfo Current_Item, HttpContext Context )
+        public static void Add_Header(TextWriter Output, RequestCache RequestSpecificValues, string Container_CssClass, string Web_Page_Title, List<HtmlSubwriter_Behaviors_Enum> Behaviors, Item_Aggregation Current_Aggregation, BriefItemInfo Current_Item, HttpContext Context)
         {
             // Get the url options
             string url_options = UrlWriterHelper.URL_Options(RequestSpecificValues.Current_Mode);
@@ -56,7 +56,7 @@ namespace SobekCM.Library.HTML
             {
                 RequestSpecificValues.Tracer.Add_Trace("HeaderFooter_Helper_HtmlSubWriter.Add_Header", "Will NOT use item header.");
             }
-                
+
             // Create the breadcrumbs text
             string breadcrumbs = "&nbsp; &nbsp; ";
             if (useItemHeader)
@@ -72,15 +72,15 @@ namespace SobekCM.Library.HTML
 
                 if (Current_Item != null)
                 {
-                    if (( Current_Item.Behaviors.Aggregation_Code_List != null ) && ( Current_Item.Behaviors.Aggregation_Code_List.Count > 0))
+                    if ((Current_Item.Behaviors.Aggregation_Code_List != null) && (Current_Item.Behaviors.Aggregation_Code_List.Count > 0))
                     {
                         foreach (string aggrCode in Current_Item.Behaviors.Aggregation_Code_List)
                         {
                             if (aggrCode.ToLower() != RequestSpecificValues.Current_Mode.Aggregation)
                             {
-                                if (( String.Compare(aggrCode,Current_Item.Behaviors.Source_Institution_Aggregation, StringComparison.OrdinalIgnoreCase ) != 0 ) &&
-                                    ( String.Compare(aggrCode, "i" + Current_Item.Behaviors.Source_Institution_Aggregation, StringComparison.OrdinalIgnoreCase) != 0) &&
-                                    ( String.Compare(aggrCode, Current_Item.Behaviors.Holding_Location_Aggregation, StringComparison.OrdinalIgnoreCase) != 0) &&
+                                if ((String.Compare(aggrCode, Current_Item.Behaviors.Source_Institution_Aggregation, StringComparison.OrdinalIgnoreCase) != 0) &&
+                                    (String.Compare(aggrCode, "i" + Current_Item.Behaviors.Source_Institution_Aggregation, StringComparison.OrdinalIgnoreCase) != 0) &&
+                                    (String.Compare(aggrCode, Current_Item.Behaviors.Holding_Location_Aggregation, StringComparison.OrdinalIgnoreCase) != 0) &&
                                     (String.Compare(aggrCode, "i" + Current_Item.Behaviors.Holding_Location_Aggregation, StringComparison.OrdinalIgnoreCase) != 0))
                                 {
                                     Item_Aggregation_Related_Aggregations thisAggr = UI_ApplicationCache_Gateway.Aggregations[aggrCode];
@@ -102,7 +102,7 @@ namespace SobekCM.Library.HTML
 
                     if (codes_added < 5)
                     {
-                        if ( !String.IsNullOrEmpty(Current_Item.Behaviors.Source_Institution_Aggregation))
+                        if (!String.IsNullOrEmpty(Current_Item.Behaviors.Source_Institution_Aggregation))
                         {
                             // Add source code
                             string source_code = Current_Item.Behaviors.Source_Institution_Aggregation;
@@ -121,8 +121,8 @@ namespace SobekCM.Library.HTML
                             }
 
                             // Add the holding code
-                            if (( !String.IsNullOrEmpty(Current_Item.Behaviors.Holding_Location_Aggregation)) &&
-                                (String.Compare(Current_Item.Behaviors.Source_Institution_Aggregation, Current_Item.Behaviors.Source_Institution_Aggregation, StringComparison.OrdinalIgnoreCase) != 0 ))
+                            if ((!String.IsNullOrEmpty(Current_Item.Behaviors.Holding_Location_Aggregation)) &&
+                                (String.Compare(Current_Item.Behaviors.Source_Institution_Aggregation, Current_Item.Behaviors.Source_Institution_Aggregation, StringComparison.OrdinalIgnoreCase) != 0))
                             {
                                 // Add holding code
                                 string holding_code = Current_Item.Behaviors.Holding_Location_Aggregation;
@@ -259,7 +259,7 @@ namespace SobekCM.Library.HTML
 
             // Determine the possible banner to display
             string banner = String.Empty;
-            if (( Behaviors != null ) && ( !Behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Suppress_Banner)))
+            if ((Behaviors != null) && (!Behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Suppress_Banner)))
             {
                 if ((RequestSpecificValues.HTML_Skin != null) && (RequestSpecificValues.HTML_Skin.Override_Banner.HasValue) && (RequestSpecificValues.HTML_Skin.Override_Banner.Value))
                 {
@@ -267,11 +267,11 @@ namespace SobekCM.Library.HTML
                 }
                 else
                 {
-                    if (Current_Aggregation!= null)
+                    if (Current_Aggregation != null)
                     {
-                        string banner_image = Current_Aggregation.Get_Banner_Image( RequestSpecificValues.HTML_Skin);
+                        string banner_image = Current_Aggregation.Get_Banner_Image(RequestSpecificValues.HTML_Skin);
                         RequestSpecificValues.Tracer.Add_Trace("HeaderFooter_Helper_HtmlSubWriter.Add_Header", "banner_image=[" + banner_image + "].");
-                        RequestSpecificValues.Tracer.Add_Trace("HeaderFooter_Helper_HtmlSubWriter.Add_Header","Current_Aggregation_Shortname=[" + Current_Aggregation.ShortName + "].");
+                        RequestSpecificValues.Tracer.Add_Trace("HeaderFooter_Helper_HtmlSubWriter.Add_Header", "Current_Aggregation_Shortname=[" + Current_Aggregation.ShortName + "].");
 
                         if (Current_Aggregation.Code != "all")
                         {
@@ -320,7 +320,7 @@ namespace SobekCM.Library.HTML
                 headerBuilder.Replace("<%BIBID%>", bibid);
                 headerBuilder.Replace("<%VID%>", vid);
                 headerBuilder.Replace("<%MODE%>", mode);
-  //              headerBuilder.Replace("<%COLLNAME%>", collection_name);
+                //              headerBuilder.Replace("<%COLLNAME%>", collection_name);
                 headerBuilder.Replace("<%CONTACT%>", contact);
                 headerBuilder.Replace("<%URLOPTS%>", url_options);
                 headerBuilder.Replace("<%?URLOPTS%>", urlOptions1);
@@ -334,7 +334,7 @@ namespace SobekCM.Library.HTML
                 headerBuilder.Replace("\"container-inner\"", "\"" + container_inner + "\"");
                 headerBuilder.Replace("<%BANNER%>", banner);
                 headerBuilder.Replace("<%SKINURL%>", skin_url);
-                if (( !useItemHeader) && ( !String.IsNullOrEmpty(container_inner)) && (RequestSpecificValues.HTML_Skin.Header_Has_Container_Directive.HasValue) && (RequestSpecificValues.HTML_Skin.Header_Has_Container_Directive.Value))
+                if ((!useItemHeader) && (!String.IsNullOrEmpty(container_inner)) && (RequestSpecificValues.HTML_Skin.Header_Has_Container_Directive.HasValue) && (RequestSpecificValues.HTML_Skin.Header_Has_Container_Directive.Value))
                     headerBuilder.Replace("<%CONTAINER%>", "<div id=\"" + container_inner + "\">");
                 else
                     headerBuilder.Replace("<%CONTAINER%>", String.Empty);
@@ -443,7 +443,7 @@ namespace SobekCM.Library.HTML
             }
             else
             {
-                if (( RequestSpecificValues.HTML_Skin.Footer_Has_Container_Directive.HasValue) && (RequestSpecificValues.HTML_Skin.Footer_Has_Container_Directive.Value))
+                if ((RequestSpecificValues.HTML_Skin.Footer_Has_Container_Directive.HasValue) && (RequestSpecificValues.HTML_Skin.Footer_Has_Container_Directive.Value))
                 {
                     footerBuilder.Append(RequestSpecificValues.HTML_Skin.Footer_HTML);
                 }
@@ -469,14 +469,14 @@ namespace SobekCM.Library.HTML
             footerBuilder.Replace("<%INSTANCENAME%>", RequestSpecificValues.Current_Mode.Instance_Name);
             footerBuilder.Replace("<%SESSIONID%>", sessionId);
             footerBuilder.Replace("<%USERID%>", userid);
-            if ((!useItemFooter) && ( RequestSpecificValues.HTML_Skin.Footer_Has_Container_Directive.HasValue) && (RequestSpecificValues.HTML_Skin.Footer_Has_Container_Directive.Value))
+            if ((!useItemFooter) && (RequestSpecificValues.HTML_Skin.Footer_Has_Container_Directive.HasValue) && (RequestSpecificValues.HTML_Skin.Footer_Has_Container_Directive.Value))
                 footerBuilder.Replace("<%CONTAINER%>", "</div>");
 
             // Write this to the stream
             Output.WriteLine(footerBuilder.ToString().Trim());
         }
 
-        private static string create_mysobek_link( RequestCache RequestSpecificValues, string url_options, string login_text, HttpContext Context )
+        private static string create_mysobek_link(RequestCache RequestSpecificValues, string url_options, string login_text, HttpContext Context)
         {
             RequestSpecificValues.Tracer.Add_Trace("HeaderFooter_Helper_HtmlSubWriter.create_mysobek_link");
 

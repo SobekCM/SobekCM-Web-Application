@@ -46,7 +46,8 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// there are no catalog languages, the Catalog_Languages property creates a readonly collection to pass back out.</remarks>
         public int Catalog_Languages_Count
         {
-            get {
+            get
+            {
                 return catalog_languages == null ? 0 : catalog_languages.Count;
             }
         }
@@ -56,7 +57,8 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// Even if there are no catalog languages, this property creates a readonly collection to pass back out.</remarks>
         public ReadOnlyCollection<Language_Info> Catalog_Languages
         {
-            get {
+            get
+            {
                 return catalog_languages == null ? new ReadOnlyCollection<Language_Info>(new List<Language_Info>()) : new ReadOnlyCollection<Language_Info>(catalog_languages);
             }
         }
@@ -66,7 +68,8 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// there are no MARC record content sources, the MARC_Record_Content_Sources property creates a readonly collection to pass back out.</remarks>
         public int MARC_Record_Content_Sources_Count
         {
-            get {
+            get
+            {
                 return marc_record_content_sources == null ? 0 : marc_record_content_sources.Count;
             }
         }
@@ -76,7 +79,8 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// Even if there are no catalog sources, this property creates a readonly collection to pass back out.</remarks>
         public ReadOnlyCollection<string> MARC_Record_Content_Sources
         {
-            get {
+            get
+            {
                 return marc_record_content_sources == null ? new ReadOnlyCollection<string>(new List<string>()) : new ReadOnlyCollection<string>(marc_record_content_sources);
             }
         }

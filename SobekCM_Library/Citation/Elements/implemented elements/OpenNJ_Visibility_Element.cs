@@ -1,16 +1,14 @@
 #region Using directives
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
-using Microsoft.AspNetCore.Http;
 using SobekCM.Core.ApplicationState;
-using SobekCM.Core.Configuration;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Users;
 using SobekCM.Engine_Library.Database;
 using SobekCM.Resource_Object;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Text;
 
 #endregion
 
@@ -70,18 +68,18 @@ namespace SobekCM.Library.Citation.Elements
             }
 
             string value = EVERYONE;
-            if (Bib.Behaviors.User_Group_Access_Count > 0 )
+            if (Bib.Behaviors.User_Group_Access_Count > 0)
             {
-                foreach( var access in Bib.Behaviors.User_Group_Access)
+                foreach (var access in Bib.Behaviors.User_Group_Access)
                 {
-                    if ( access.GroupName.Equals("Instructors", StringComparison.OrdinalIgnoreCase))
+                    if (access.GroupName.Equals("Instructors", StringComparison.OrdinalIgnoreCase))
                     {
                         value = INSTRUCTORS;
                         break;
                     }
                 }
             }
-            
+
             render_helper(Output, value, Skin_Code, Current_User, CurrentLanguage, Translator, Base_URL, false);
         }
 
@@ -126,7 +124,7 @@ namespace SobekCM.Library.Citation.Elements
                                 break;
                             }
                         }
-                        if ( !already_linked)
+                        if (!already_linked)
                         {
                             List<User_Group> userGroup2 = Engine_Database.Get_All_User_Groups(null);
                             int instructor_id = -1;

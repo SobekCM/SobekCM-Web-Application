@@ -1,9 +1,9 @@
 #region Using directives
 
-using System.Collections.Generic;
-using System.IO;
 using SobekCM.Core.Results;
 using SobekCM.Tools;
+using System.Collections.Generic;
+using System.IO;
 
 #endregion
 
@@ -31,7 +31,7 @@ namespace SobekCM.Library.ResultsViewer
         /// <param name="Output"> TextWriter to write HTML output </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         void Add_HTML(TextWriter Output, Custom_Tracer Tracer);
-        
+
         /// <summary> Write any additional values within the HTML Head of the final served page </summary>
         /// <param name="Output"> Output stream currently within the HTML head tags </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>

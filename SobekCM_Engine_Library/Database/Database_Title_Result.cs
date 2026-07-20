@@ -1,8 +1,8 @@
 ﻿#region Using directives
 
+using SobekCM.Core.Results;
 using System;
 using System.Collections.Generic;
-using SobekCM.Core.Results;
 
 #endregion
 
@@ -38,50 +38,50 @@ namespace SobekCM.Engine_Library.Database
         /// <summary> Group title for this title result </summary>
         public string GroupTitle { get; set; }
 
-		/// <summary> Local OPAC cataloging number for this title result </summary>
-		public long OPAC_Number { get; set; }
+        /// <summary> Local OPAC cataloging number for this title result </summary>
+        public long OPAC_Number { get; set; }
 
-		/// <summary> OCLC cataloging number for this title result </summary>
-		public long OCLC_Number { get; set; }
+        /// <summary> OCLC cataloging number for this title result </summary>
+        public long OCLC_Number { get; set; }
 
-		/// <summary> Group-wide thumbnail for this title result </summary>
-		public string GroupThumbnail { get; set; }
+        /// <summary> Group-wide thumbnail for this title result </summary>
+        public string GroupThumbnail { get; set; }
 
-		/// <summary> Material type for this title result </summary>
+        /// <summary> Material type for this title result </summary>
         public string MaterialType { get; set; }
 
-		/// <summary> Type of the primary alternate identifier for this resource ( i.e. 'Accession Number', etc.. )</summary>
-		public string Primary_Identifier_Type { get; set; }
+        /// <summary> Type of the primary alternate identifier for this resource ( i.e. 'Accession Number', etc.. )</summary>
+        public string Primary_Identifier_Type { get; set; }
 
-		/// <summary> Primary alternate identifier for this resource</summary>
-		public string Primary_Identifier { get; set; }
+        /// <summary> Primary alternate identifier for this resource</summary>
+        public string Primary_Identifier { get; set; }
 
         /// <summary> Spatial coverage for this title result in terms of coordinates for map display </summary>
         public string Spatial_Coordinates { get; set; }
 
-		/// <summary> User notes for this title result, if it is in a bookshelf </summary>
-		public string UserNotes { get; set; }
+        /// <summary> User notes for this title result, if it is in a bookshelf </summary>
+        public string UserNotes { get; set; }
 
-		/// <summary> Highlighted snippet of text from this document </summary>
-		public string Snippet
-		{
-			get
-			{
-				return String.Empty;
-			}
-		}
+        /// <summary> Highlighted snippet of text from this document </summary>
+        public string Snippet
+        {
+            get
+            {
+                return String.Empty;
+            }
+        }
 
-		/// <summary> Metadata values to display for this item title result </summary>
-		public string[] Metadata_Display_Values { get; set; }
+        /// <summary> Metadata values to display for this item title result </summary>
+        public string[] Metadata_Display_Values { get; set; }
 
         #endregion
 
         #region iSearch_Title_Result Members
 
         /// <summary> Gets the number of items contained within this title result </summary>
-        public int Item_Count 
+        public int Item_Count
         {
-            get { return Items.Count; } 
+            get { return Items.Count; }
         }
 
         /// <summary> Gets the item indicated by the provided index </summary>
@@ -94,7 +94,7 @@ namespace SobekCM.Engine_Library.Database
 
         /// <summary> Gets the item tree view used for showing all the items under this title in a tree type html display </summary>
         /// <remarks> This includes intermediary nodes, while the item list only includes the actual items </remarks>
-        public Search_Result_Item_Tree Item_Tree 
+        public Search_Result_Item_Tree Item_Tree
         {
             get
             {
@@ -103,7 +103,7 @@ namespace SobekCM.Engine_Library.Database
         }
 
         /// <summary> Builds the tree of items under this title, for multiple item titles </summary>
-        public void Build_Item_Tree( string ResultsIndex )
+        public void Build_Item_Tree(string ResultsIndex)
         {
             // Create the tree
             itemTree = new Search_Result_Item_Tree();

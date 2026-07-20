@@ -1,14 +1,12 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
 using Microsoft.AspNetCore.Http;
 using SobekCM.Core.Client;
 using SobekCM.Core.Navigation;
-using SobekCM.Core.UI_Configuration;
-using SobekCM.Core.UI_Configuration.StaticResources;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Library.HTML;
 using SobekCM.Tools;
+using System;
+using System.Collections.Generic;
+using System.IO;
 
 namespace SobekCM.Library.AdminViewer
 {
@@ -175,7 +173,7 @@ namespace SobekCM.Library.AdminViewer
 
             const string TAB1_TITLE = "RECENT UPDATES";
             Output.WriteLine("      <li class=\"tabActiveHeader\"> " + TAB1_TITLE + " </li>");
-           
+
             Output.WriteLine("    </ul>");
             Output.WriteLine("  </div>");
 

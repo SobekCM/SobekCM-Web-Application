@@ -19,7 +19,7 @@
 //            // http://www.loc.gov/z3950/agency/defns/bib1.html
 //            // http://www.assembla.com/code/wasolic/subversion/nodes/ZOOM.NET 
 //            // http://lists.indexdata.dk/pipermail/yazlist/2007-June/002080.html
-            
+
 
 //            try
 //            {
@@ -42,7 +42,7 @@
 //                //Declare your query
 //                //string query = "@and \"Robinson\" \"Crusoe\"";
 
-                
+
 
 //                //Create the object for query. 
 //                string query = "@attr 1=12 01381152";

@@ -1,29 +1,23 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using SobekCM.Core.BriefItem;
 using SobekCM.Core.Client;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Settings;
-using SobekCM.Core.UI_Configuration;
-using SobekCM.Core.UI_Configuration.StaticResources;
 using SobekCM.Core.Users;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Library.HTML;
 using SobekCM.Library.ItemViewer.Menu;
 using SobekCM.Library.UI;
 using SobekCM.Resource_Object;
-using SobekCM.Resource_Object.Database;
 using SobekCM.Resource_Object.Divisions;
 using SobekCM.Resource_Object.Metadata_Modules;
 using SobekCM.Resource_Object.Metadata_Modules.GeoSpatial;
 using SobekCM.Tools;
 using SobekCM_Resource_Database;
-using Microsoft.AspNetCore.Http;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Reflection;
 
 namespace SobekCM.Library.ItemViewer.Viewers
 {
@@ -628,7 +622,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
                 Output.WriteLine(" <script src=\"https://maps.googleapis.com/maps/api/js?key=" + UI_ApplicationCache_Gateway.Settings.System.Google_Map_API_Key + "&libraries=drawing\" type=\"text/javascript\"></script>");
 
-          //      Output.WriteLine(" <script type=\"text/javascript\" src=\"https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&key=AIzaSyCzliz5FjUlEI9D2605b33-etBrENSSBZM&libraries=drawing\"></script> ");
+                //      Output.WriteLine(" <script type=\"text/javascript\" src=\"https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&key=AIzaSyCzliz5FjUlEI9D2605b33-etBrENSSBZM&libraries=drawing\"></script> ");
                 Output.WriteLine(" <script type=\"text/javascript\" src=\"" + CurrentRequest.Base_URL + "default/scripts/mapeditor/gmaps-infobox.js\"></script> ");
 
                 //custom js
@@ -648,40 +642,40 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 #region Get debug time (only while debugging)
 
 #if DEBUG
-            string filePath = Assembly.GetCallingAssembly().Location;
-            const int C_PE_HEADER_OFFSET = 60;
-            const int C_LINKER_TIMESTAMP_OFFSET = 8;
-            byte[] b = new byte[2048];
-            Stream s = null;
-            try
-            {
-                s = new FileStream(filePath, FileMode.Open, FileAccess.Read);
-                s.Read(b, 0, 2048);
-            }
-            catch (Exception)
-            {
-                Tracer.Add_Trace("Could Not Create Build Time");
-                throw;
-            }
-            finally
-            {
-                if (s != null)
+                string filePath = Assembly.GetCallingAssembly().Location;
+                const int C_PE_HEADER_OFFSET = 60;
+                const int C_LINKER_TIMESTAMP_OFFSET = 8;
+                byte[] b = new byte[2048];
+                Stream s = null;
+                try
                 {
-                    s.Close();
+                    s = new FileStream(filePath, FileMode.Open, FileAccess.Read);
+                    s.Read(b, 0, 2048);
                 }
-            }
-            int i2 = BitConverter.ToInt32(b, C_PE_HEADER_OFFSET);
-            int secondsSince1970 = BitConverter.ToInt32(b, i2 + C_LINKER_TIMESTAMP_OFFSET);
-            DateTime dt = new DateTime(1970, 1, 1, 0, 0, 0);
-            dt = dt.AddSeconds(secondsSince1970);
-            dt = dt.AddHours(TimeZone.CurrentTimeZone.GetUtcOffset(dt).Hours);
-            string debugTime_buildTimestamp = dt.ToString();
-            //get current timestamp
-            TimeSpan span = (dt - new DateTime(1970, 1, 1, 0, 0, 0, 0));
-            double debugTime_unixTimestamp = span.TotalSeconds;
+                catch (Exception)
+                {
+                    Tracer.Add_Trace("Could Not Create Build Time");
+                    throw;
+                }
+                finally
+                {
+                    if (s != null)
+                    {
+                        s.Close();
+                    }
+                }
+                int i2 = BitConverter.ToInt32(b, C_PE_HEADER_OFFSET);
+                int secondsSince1970 = BitConverter.ToInt32(b, i2 + C_LINKER_TIMESTAMP_OFFSET);
+                DateTime dt = new DateTime(1970, 1, 1, 0, 0, 0);
+                dt = dt.AddSeconds(secondsSince1970);
+                dt = dt.AddHours(TimeZone.CurrentTimeZone.GetUtcOffset(dt).Hours);
+                string debugTime_buildTimestamp = dt.ToString();
+                //get current timestamp
+                TimeSpan span = (dt - new DateTime(1970, 1, 1, 0, 0, 0, 0));
+                double debugTime_unixTimestamp = span.TotalSeconds;
 
-            Output.WriteLine("   MAPEDITOR.GLOBAL.DEFINES.debugUnixTimeStamp = " + debugTime_unixTimestamp + "; //add debugTime ");
-            Output.WriteLine("   MAPEDITOR.GLOBAL.DEFINES.debugBuildTimeStamp = \"" + debugTime_buildTimestamp + "\"; //add debugTimestamp ");
+                Output.WriteLine("   MAPEDITOR.GLOBAL.DEFINES.debugUnixTimeStamp = " + debugTime_unixTimestamp + "; //add debugTime ");
+                Output.WriteLine("   MAPEDITOR.GLOBAL.DEFINES.debugBuildTimeStamp = \"" + debugTime_buildTimestamp + "\"; //add debugTimestamp ");
 #endif
 
                 #endregion
@@ -1568,15 +1562,15 @@ namespace SobekCM.Library.ItemViewer.Viewers
         {
             get
             {
-                return new List<HtmlSubwriter_Behaviors_Enum> 
-					{
-						HtmlSubwriter_Behaviors_Enum.Item_Subwriter_NonWindowed_Mode,
-						HtmlSubwriter_Behaviors_Enum.Suppress_Footer,
-						HtmlSubwriter_Behaviors_Enum.Suppress_Internal_Header,
-						HtmlSubwriter_Behaviors_Enum.Item_Subwriter_Suppress_Item_Menu,
-						HtmlSubwriter_Behaviors_Enum.Item_Subwriter_Suppress_Left_Navigation_Bar,
-						HtmlSubwriter_Behaviors_Enum.Item_Subwriter_Full_JQuery_UI
-					};
+                return new List<HtmlSubwriter_Behaviors_Enum>
+                    {
+                        HtmlSubwriter_Behaviors_Enum.Item_Subwriter_NonWindowed_Mode,
+                        HtmlSubwriter_Behaviors_Enum.Suppress_Footer,
+                        HtmlSubwriter_Behaviors_Enum.Suppress_Internal_Header,
+                        HtmlSubwriter_Behaviors_Enum.Item_Subwriter_Suppress_Item_Menu,
+                        HtmlSubwriter_Behaviors_Enum.Item_Subwriter_Suppress_Left_Navigation_Bar,
+                        HtmlSubwriter_Behaviors_Enum.Item_Subwriter_Full_JQuery_UI
+                    };
             }
         }
 

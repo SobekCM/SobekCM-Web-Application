@@ -15,6 +15,6 @@ namespace SobekCM.Resource_Object.OAI
         /// <param name="Options"> Dictionary of any options which this metadata reader/writer may utilize </param>
         /// <param name="Error_Message">[OUTPUT] Explanation of the error, if an error occurs during write </param>
         /// <returns> Metadata for a OAI-PMH record of a particular metadata format/type </returns>
-        string Create_OAI_PMH_Metadata( SobekCM_Item Item_To_Save, Dictionary<string, object> Options, out string Error_Message);
+        string Create_OAI_PMH_Metadata(SobekCM_Item Item_To_Save, Dictionary<string, object> Options, out string Error_Message);
     }
 }

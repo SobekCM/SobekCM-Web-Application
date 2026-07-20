@@ -1,19 +1,11 @@
 #region Using directives
 
-using System;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.IO;
-using System.Text;
 using Microsoft.AspNetCore.Http;
 using SobekCM.Core.Client;
-using SobekCM.Core.Configuration;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Skins;
-using SobekCM.Core.UI_Configuration;
-using SobekCM.Core.UI_Configuration.StaticResources;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Engine_Library.Skins;
 using SobekCM.Library.Database;
@@ -24,6 +16,9 @@ using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
+using System;
+using System.Collections.Generic;
+using System.IO;
 
 #endregion
 
@@ -84,7 +79,7 @@ namespace SobekCM.Library.AdminViewer
                 page = 6;
 
             // If the user cannot edit this, go back
-            if ((!RequestSpecificValues.Current_User.Is_Portal_Admin ) && ( !RequestSpecificValues.Current_User.Is_System_Admin ))
+            if ((!RequestSpecificValues.Current_User.Is_Portal_Admin) && (!RequestSpecificValues.Current_User.Is_System_Admin))
             {
                 RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.My_Sobek;
                 RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
@@ -185,14 +180,14 @@ namespace SobekCM.Library.AdminViewer
                             Directory.CreateDirectory(css_backup_folder);
                         string javascript_backup_folder = skinDirectory + "\\backup\\js";
                         if (!Directory.Exists(javascript_backup_folder))
-                            Directory.CreateDirectory(javascript_backup_folder); 
+                            Directory.CreateDirectory(javascript_backup_folder);
 
                         // Also, save all the updated files
                         foreach (KeyValuePair<string, string> pairs in updatedSourceFiles)
                         {
                             try
                             {
-                                if ( pairs.Key == "CSS" )
+                                if (pairs.Key == "CSS")
                                 {
                                     string new_skin_file = Path.Combine(skinDirectory, webSkin.Skin_Code + ".css");
                                     if (File.Exists(new_skin_file))
@@ -223,7 +218,7 @@ namespace SobekCM.Library.AdminViewer
                                         writer.Close();
                                     }
                                 }
-                                else if ( pairs.Key == "Javascript" )
+                                else if (pairs.Key == "Javascript")
                                 {
                                     string new_javascript_file = Path.Combine(skinDirectory, webSkin.Skin_Code + ".js");
                                     if (File.Exists(new_javascript_file))
@@ -746,12 +741,12 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("    <td class=\"sbkSaav_TableLabel\"><label for=\"webskin_basecode\">Base Skin Code:</label></td>");
             Output.WriteLine("    <td>");
             Output.WriteLine("      <table class=\"sbkSaav_InnerTable\"><tr><td>");
-            
+
             Output.WriteLine("        <select class=\"sbkSav_small_input1 sbkAdmin_Focusable\" name=\"webskin_basecode\" id=\"webskin_basecode\">");
             Output.WriteLine("          <option value=\"\"></option>");
             foreach (string thisSkinCode in UI_ApplicationCache_Gateway.Web_Skin_Collection.Ordered_Skin_Codes)
             {
-                if (( !String.IsNullOrEmpty(webSkin.Base_Skin_Code)) && ( String.Compare(webSkin.Base_Skin_Code, thisSkinCode, StringComparison.OrdinalIgnoreCase) == 0 ))
+                if ((!String.IsNullOrEmpty(webSkin.Base_Skin_Code)) && (String.Compare(webSkin.Base_Skin_Code, thisSkinCode, StringComparison.OrdinalIgnoreCase) == 0))
                     Output.WriteLine("          <option value=\"" + thisSkinCode.ToUpper() + "\" selected=\"selected\">" + thisSkinCode + "</option>");
                 else
                     Output.WriteLine("          <option value=\"" + thisSkinCode.ToUpper() + "\">" + thisSkinCode + "</option>");
@@ -762,7 +757,7 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("  </tr>");
 
             // Add the banner link
-            if ( webSkin.Override_Banner )
+            if (webSkin.Override_Banner)
                 Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\" id=\"banner_link_row\" style=\"display:table-row;\">");
             else
                 Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\" id=\"banner_link_row\" style=\"display:none;\">");
@@ -870,12 +865,12 @@ namespace SobekCM.Library.AdminViewer
             // Add the ACE editor
             AceEditor editor = new AceEditor(AceEditor_Mode.CSS)
             {
-                ContentsId = "css_source_content", 
-                EditorId = "sbkSsav_CssEditor", 
+                ContentsId = "css_source_content",
+                EditorId = "sbkSsav_CssEditor",
                 BaseUrl = RequestSpecificValues.Current_Mode.Base_URL
             };
-            editor.Add_To_Stream(Output,css_contents);
-            
+            editor.Add_To_Stream(Output, css_contents);
+
             Output.WriteLine("     </td>");
             Output.WriteLine("  </tr>");
             Output.WriteLine("</table>");
@@ -915,14 +910,14 @@ namespace SobekCM.Library.AdminViewer
                 else
                 {
                     string language_code = "_" + Web_Language_Enum_Converter.Enum_To_Code(current_language);
-                    if ( current_language == Web_Language_Enum.DEFAULT )
+                    if (current_language == Web_Language_Enum.DEFAULT)
                         language_code = String.Empty;
 
                     Complete_Web_Skin_Source_Files sources = new Complete_Web_Skin_Source_Files
                     {
-                        Header_Source_File = "html\\header" + language_code + ".html", 
-                        Footer_Source_File = "html\\footer" + language_code + ".html", 
-                        Header_Item_Source_File = "html\\header_item" + language_code + ".html", 
+                        Header_Source_File = "html\\header" + language_code + ".html",
+                        Footer_Source_File = "html\\footer" + language_code + ".html",
+                        Header_Item_Source_File = "html\\header_item" + language_code + ".html",
                         Footer_Item_Source_File = "html\\footer_item" + language_code + ".html"
                     };
                     webSkin.SourceFiles[current_language] = sources;
@@ -1055,7 +1050,7 @@ namespace SobekCM.Library.AdminViewer
                 Output.WriteLine("      <table class=\"sbkSaav_InnerTable\"><tr><td>");
 
                 Output.WriteLine("        <select class=\"sbkSav_small_input1 sbkAdmin_Focusable\" name=\"webskin_existing_language\" id=\"webskin_existing_language\" onchange=\"return new_skin_language(this);\">");
-                
+
                 foreach (KeyValuePair<Web_Language_Enum, Complete_Web_Skin_Source_Files> languageSupport in webSkin.SourceFiles)
                 {
                     string thisLangCode = Web_Language_Enum_Converter.Enum_To_Code(languageSupport.Key);
@@ -1241,12 +1236,12 @@ namespace SobekCM.Library.AdminViewer
 
         private void Save_Page_4_Postback(IFormCollection Form)
         {
- 
+
         }
 
         private void Add_Page_4(TextWriter Output)
         {
- 
+
         }
 
         private void Finish_Page_4(TextWriter Output)

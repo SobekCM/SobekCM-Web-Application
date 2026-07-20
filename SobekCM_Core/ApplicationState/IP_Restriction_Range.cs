@@ -81,7 +81,7 @@ namespace SobekCM.Core.ApplicationState
                         ipAddresses[x].Add(thisAddress);
                     else
                     {
-                        List<IP_Restriction_Address> newList = new List<IP_Restriction_Address> {thisAddress};
+                        List<IP_Restriction_Address> newList = new List<IP_Restriction_Address> { thisAddress };
                         ipAddresses.Add(x, newList);
                     }
                 }

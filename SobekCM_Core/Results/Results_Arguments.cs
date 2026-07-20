@@ -1,9 +1,9 @@
 ﻿#region Using directives
 
+using SobekCM.Core.Navigation;
 using System;
 using System.Collections.Specialized;
 using System.Linq;
-using SobekCM.Core.Navigation;
 
 #endregion
 
@@ -122,7 +122,7 @@ namespace SobekCM.Core.Results
             }
 
             // Collect the coordinate information from the URL query string
-            if ( !String.IsNullOrEmpty(QueryString["coord"]))
+            if (!String.IsNullOrEmpty(QueryString["coord"]))
             {
                 string coordinates_test = QueryString["coord"].Trim();
                 string[] terms = coordinates_test.Split(",".ToCharArray());
@@ -189,19 +189,19 @@ namespace SobekCM.Core.Results
                     ushort page_result;
                     if (UInt16.TryParse(page_test, out page_result))
                     {
-                        Page = Math.Max(page_result, ((ushort) 1));
+                        Page = Math.Max(page_result, ((ushort)1));
                     }
                 }
             }
 
             // Check for any sort value
-            if (( !String.IsNullOrEmpty(QueryString["o"])) || ( !String.IsNullOrEmpty(QueryString["sort"])))
+            if ((!String.IsNullOrEmpty(QueryString["o"])) || (!String.IsNullOrEmpty(QueryString["sort"])))
             {
                 string sort_test = !String.IsNullOrEmpty(QueryString["o"]) ? QueryString["o"] : QueryString["sort"];
                 if (is_String_Number(sort_test))
                 {
                     short sort_result;
-                    if ( Int16.TryParse(sort_test, out sort_result))
+                    if (Int16.TryParse(sort_test, out sort_result))
                         Sort = sort_result;
                 }
             }
@@ -263,12 +263,12 @@ namespace SobekCM.Core.Results
             // If no search term, look foor the TEXT-specific term
             if (String.IsNullOrEmpty(Search_String))
             {
-                if ( !String.IsNullOrEmpty(QueryString["text"]))
+                if (!String.IsNullOrEmpty(QueryString["text"]))
                 {
                     Search_String = QueryString["text"].Trim();
                     Search_Type = Search_Type_Enum.Full_Text;
                 }
-            }     
+            }
 
         }
 

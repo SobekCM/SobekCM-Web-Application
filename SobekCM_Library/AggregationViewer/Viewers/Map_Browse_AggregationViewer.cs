@@ -1,21 +1,19 @@
 #region Using directives
 
 using Microsoft.AspNetCore.Http;
-using System;
-using System.Collections.Generic;
-using System.Data;
-using System.IO;
-using System.Text;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.Navigation;
-using SobekCM.Core.UI_Configuration;
-using SobekCM.Core.UI_Configuration.StaticResources;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Engine_Library.Database;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.IO;
+using System.Text;
 
 #endregion
 
@@ -48,7 +46,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             // Only continue if there actually IS a map key
             if (!String.IsNullOrWhiteSpace(UI_ApplicationCache_Gateway.Settings.System.Google_Map_API_Key))
             {
-                scriptBuilder.AppendLine("<script src=\"https://maps.googleapis.com/maps/api/js?key=" + UI_ApplicationCache_Gateway.Settings.System.Google_Map_API_Key  +"\" type=\"text/javascript\"></script>");
+                scriptBuilder.AppendLine("<script src=\"https://maps.googleapis.com/maps/api/js?key=" + UI_ApplicationCache_Gateway.Settings.System.Google_Map_API_Key + "\" type=\"text/javascript\"></script>");
                 scriptBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Keydragzoom_Packed_Js + "\"></script>");
                 scriptBuilder.AppendLine("<script type=\"text/javascript\">");
                 scriptBuilder.AppendLine("  //<![CDATA[");
@@ -216,14 +214,14 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         {
             // Build the info window
             StringBuilder contentBuilder = new StringBuilder(2000);
-			contentBuilder.Append(DatarowsInThisPoint.Count <= 2 ? "<div class=\"sbkMbav_InfoDivSmall\">" : "<div class=\"sbkMbav_InfoDiv\">");
+            contentBuilder.Append(DatarowsInThisPoint.Count <= 2 ? "<div class=\"sbkMbav_InfoDivSmall\">" : "<div class=\"sbkMbav_InfoDiv\">");
             contentBuilder.Append("<table><tr style=\"vertical-align:top;\">");
             string thisBibId = String.Empty;
             foreach (DataRow thisRow in DatarowsInThisPoint)
             {
                 thisBibId = thisRow[2].ToString();
                 string groupTitle = thisRow[3].ToString();
-                string groupThumbnail = thisBibId.Substring(0,2) + "/" + thisBibId.Substring(2,2) + "/" + thisBibId.Substring(4,2) + "/" + thisBibId.Substring(6,2) + "/" + thisBibId.Substring(8) + "/" + thisRow[4];
+                string groupThumbnail = thisBibId.Substring(0, 2) + "/" + thisBibId.Substring(2, 2) + "/" + thisBibId.Substring(4, 2) + "/" + thisBibId.Substring(6, 2) + "/" + thisBibId.Substring(8) + "/" + thisRow[4];
                 int itemCount = Convert.ToInt32(thisRow[5]);
                 string type = thisRow[6].ToString();
 
@@ -237,9 +235,9 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                     thumb = Static_Resources_Gateway.Nothumb_Jpg;
                 }
 
-				contentBuilder.Append("<td><table class=\"sbkMbav_Thumb\" >");
+                contentBuilder.Append("<td><table class=\"sbkMbav_Thumb\" >");
                 contentBuilder.Append("<tr><td><a href=\"" + link + "\" target=\"" + thisBibId + "\"><img src=\"" + thumb + "\" /></a></td></tr>");
-				contentBuilder.Append("<tr><td><span class=\"sbkMbav_ThumbText\">" + groupTitle.Replace("'", ""));
+                contentBuilder.Append("<tr><td><span class=\"sbkMbav_ThumbText\">" + groupTitle.Replace("'", ""));
                 if (itemCount > 1)
                 {
                     if (type.ToUpper() == "NEWSPAPER")
@@ -253,7 +251,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             contentBuilder.Append("</tr></table>");
             contentBuilder.Append("</div>");
 
-            if ((DatarowsInThisPoint.Count < 2) && ( !String.IsNullOrEmpty(thisBibId)))
+            if ((DatarowsInThisPoint.Count < 2) && (!String.IsNullOrEmpty(thisBibId)))
                 contentBuilder.Append("<center><a href=\"" + Current_Mode.Base_URL + thisBibId + "\">Click here for more information about this title</a></center><br/>");
             else
                 contentBuilder.Append("<center><a href=\"" + Current_Mode.Base_URL + Current_Mode.Aggregation + "/results?coord=" + Latitude + "," + Longitude + ",,\">Click here for more information about these " + DatarowsInThisPoint.Count + " titles</a></center><br/>");
@@ -274,7 +272,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 Tracer.Add_Trace("Map_Browse_AggregationViewer.Add_Search_Box_HTML", "Adding HTML");
             }
 
-			Output.WriteLine("<div class=\"sbkMbav_MainPanel\">");
+            Output.WriteLine("<div class=\"sbkMbav_MainPanel\">");
 
             if (!String.IsNullOrWhiteSpace(UI_ApplicationCache_Gateway.Settings.System.Google_Map_API_Key))
             {
@@ -283,7 +281,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 Output.WriteLine("      <td>");
                 Output.WriteLine("        <blockquote>Select a point below to view the items from or about that location.<br />Press the SHIFT button, and then drag a box on the map to zoom in.</blockquote>");
                 Output.WriteLine("      </td>");
-                Output.WriteLine("    </tr>"); 
+                Output.WriteLine("    </tr>");
                 Output.WriteLine("    <tr>");
                 Output.WriteLine("      <td>");
                 Output.WriteLine("        <div id=\"sbkMbav_MapDiv\"></div>");

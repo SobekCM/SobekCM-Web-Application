@@ -1,21 +1,18 @@
 #region Using directives
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
 using Microsoft.AspNetCore.Http;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Skins;
-using SobekCM.Core.UI_Configuration;
-using SobekCM.Core.UI_Configuration.StaticResources;
-using SobekCM.Engine_Library.ApplicationState;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Engine_Library.Email;
 using SobekCM.Library.HTML;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Text;
 
 #endregion
 
@@ -31,13 +28,13 @@ namespace SobekCM.Library.MainWriters
         /// <summary> Constructor for a new instance of the Html_MainWriter class </summary>
         /// <param name="Context"> Context for this individual HTTP request </param>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
-        public Html_MainWriter(HttpContext Context, RequestCache RequestSpecificValues ) : base( Context, RequestSpecificValues )
-	    {
+        public Html_MainWriter(HttpContext Context, RequestCache RequestSpecificValues) : base(Context, RequestSpecificValues)
+        {
             // Add a trace
-            RequestSpecificValues.Tracer.Add_Trace("Html_MainWriter.Constructor","");
+            RequestSpecificValues.Tracer.Add_Trace("Html_MainWriter.Constructor", "");
 
             // Check the IE hack CSS is loaded
-            if (SobekCM_Application.State["NonIE_Hack_CSS"] == null) 
+            if (SobekCM_Application.State["NonIE_Hack_CSS"] == null)
             {
                 RequestSpecificValues.Tracer.Add_Trace("Html_MainWriter.Constructor", "The NonIE_Hack_CSS was not loaded.");
 
@@ -66,7 +63,7 @@ namespace SobekCM.Library.MainWriters
                 RequestSpecificValues.Tracer.Add_Trace("Html_MainWriter.Constructor", "The NonIE_Hack_CSS IS loaded.");
             }
 
-		    // Handle basic events which may be fired by the internal header
+            // Handle basic events which may be fired by the internal header
             if ((Context.Request.HasFormContentType) && (!String.IsNullOrEmpty(Context.Request.Form["internal_header_action"].TrimFirst())))
             {
                 // Pull the action value
@@ -127,7 +124,7 @@ namespace SobekCM.Library.MainWriters
                         // Send the email now
                         if (RequestSpecificValues.Current_Mode.Caught_Exception != null)
                         {
-                            if ( String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.Error_Message))
+                            if (String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.Error_Message))
                                 RequestSpecificValues.Current_Mode.Error_Message = "Unknown exception caught";
                             Email_Information(RequestSpecificValues.Current_Mode.Error_Message, RequestSpecificValues.Current_Mode.Caught_Exception, RequestSpecificValues.Tracer, false, Context);
                         }
@@ -140,7 +137,7 @@ namespace SobekCM.Library.MainWriters
 
                     case Display_Mode_Enum.Item_Print:
                         RequestSpecificValues.Tracer.Add_Trace("Html_MainWriter.Consructor", "Item print html sub writer.");
-                        subwriter = new Print_Item_HtmlSubwriter( RequestSpecificValues );
+                        subwriter = new Print_Item_HtmlSubwriter(RequestSpecificValues);
                         break;
 
                     case Display_Mode_Enum.Contact:
@@ -233,10 +230,10 @@ namespace SobekCM.Library.MainWriters
 
                     case Display_Mode_Enum.Item_Display:
                         RequestSpecificValues.Tracer.Add_Trace("Html_MainWriter.Consructor", "Item display html sub writer.");
-                        if ((!RequestSpecificValues.Current_Mode.Invalid_Item.HasValue || !RequestSpecificValues.Current_Mode.Invalid_Item.Value ))
+                        if ((!RequestSpecificValues.Current_Mode.Invalid_Item.HasValue || !RequestSpecificValues.Current_Mode.Invalid_Item.Value))
                         {
                             // Create the item viewer writer
-                            subwriter = new Item_HtmlSubwriter( RequestSpecificValues );
+                            subwriter = new Item_HtmlSubwriter(RequestSpecificValues);
                         }
                         else
                         {
@@ -285,7 +282,7 @@ namespace SobekCM.Library.MainWriters
                     if (String.Compare(RequestSpecificValues.Current_Mode.Skin, defaultSkin, StringComparison.InvariantCultureIgnoreCase) != 0)
                     {
                         RequestSpecificValues.Current_Mode.Skin = defaultSkin;
-                        htmlSkin = assistant.Get_HTML_Skin(defaultSkin, RequestSpecificValues.Current_Mode, UI_ApplicationCache_Gateway.Web_Skin_Collection, true, RequestSpecificValues.Tracer );
+                        htmlSkin = assistant.Get_HTML_Skin(defaultSkin, RequestSpecificValues.Current_Mode, UI_ApplicationCache_Gateway.Web_Skin_Collection, true, RequestSpecificValues.Tracer);
                     }
                 }
 
@@ -363,13 +360,13 @@ namespace SobekCM.Library.MainWriters
                         if (subwriter is Aggregation_HtmlSubwriter)
                             return ((Aggregation_HtmlSubwriter)subwriter).Include_Navigation_Form;
 
-		                if ((RequestSpecificValues.Current_Mode.Aggregation_Type == Aggregation_Type_Enum.Home) || (RequestSpecificValues.Current_Mode.Aggregation_Type == Aggregation_Type_Enum.Home_Edit))
-		                {
+                        if ((RequestSpecificValues.Current_Mode.Aggregation_Type == Aggregation_Type_Enum.Home) || (RequestSpecificValues.Current_Mode.Aggregation_Type == Aggregation_Type_Enum.Home_Edit))
+                        {
                             return false;
-		                }
-		                return true;
+                        }
+                        return true;
 
-	                default: 
+                    default:
                         return true;
                 }
             }
@@ -388,16 +385,16 @@ namespace SobekCM.Library.MainWriters
             }
         }
 
-		/// <summary> Returns a flag indicating whether the file upload specific holder in the itemNavForm form will be utilized 
-		/// for the current request, or if it can be hidden. </summary>
-		/// <value> This value can be override by child classes, but by default this returns FALSE </value>
-		public override bool File_Upload_Possible
-		{
-			get
-			{
-				return subwriter != null && subwriter.Upload_File_Possible;
-			}
-		}
+        /// <summary> Returns a flag indicating whether the file upload specific holder in the itemNavForm form will be utilized 
+        /// for the current request, or if it can be hidden. </summary>
+        /// <value> This value can be override by child classes, but by default this returns FALSE </value>
+        public override bool File_Upload_Possible
+        {
+            get
+            {
+                return subwriter != null && subwriter.Upload_File_Possible;
+            }
+        }
 
         /// <summary> Gets the enumeration of the type of main writer </summary>
         /// <value> This property always returns the enumerational value <see cref="Writer_Type_Enum.HTML"/>. </value>
@@ -431,7 +428,7 @@ namespace SobekCM.Library.MainWriters
                     RequestSpecificValues.Tracer.Add_Trace("Html_MainWriter.Consructor", "Adding controls for my sobek.");
 
                     MySobek_HtmlSubwriter mySobekWriter = subwriter as MySobek_HtmlSubwriter;
-					if (mySobekWriter != null)
+                    if (mySobekWriter != null)
                     {
                         // Add any necessary controls
                         mySobekWriter.Add_Controls(Output, Tracer);
@@ -446,24 +443,24 @@ namespace SobekCM.Library.MainWriters
                     RequestSpecificValues.Tracer.Add_Trace("Html_MainWriter.Consructor", "Adding controls for administrative.");
 
                     Admin_HtmlSubwriter adminWriter = subwriter as Admin_HtmlSubwriter;
-					if (adminWriter != null )
+                    if (adminWriter != null)
                     {
                         bool add_footer = false;
-						// If the my sobek writer contains pop up forms, add the header here first
-						if ((adminWriter.Contains_Popup_Forms) && ( !adminWriter.Subwriter_Behaviors.Contains(HtmlSubwriter_Behaviors_Enum.MySobek_Subwriter_Mimic_Item_Subwriter)))
-						{
+                        // If the my sobek writer contains pop up forms, add the header here first
+                        if ((adminWriter.Contains_Popup_Forms) && (!adminWriter.Subwriter_Behaviors.Contains(HtmlSubwriter_Behaviors_Enum.MySobek_Subwriter_Mimic_Item_Subwriter)))
+                        {
                             add_footer = true;
-							Display_Header(Output, Tracer);
-						}
+                            Display_Header(Output, Tracer);
+                        }
 
                         // Add any necessary controls
                         adminWriter.Add_Controls(Output, Tracer);
 
-						// Finally, add the footer
+                        // Finally, add the footer
                         if (add_footer)
-						{
-							Display_Footer(Output, Tracer);
-						}
+                        {
+                            Display_Footer(Output, Tracer);
+                        }
                     }
 
                     break;
@@ -476,7 +473,7 @@ namespace SobekCM.Library.MainWriters
                     RequestSpecificValues.Tracer.Add_Trace("Html_MainWriter.Consructor", "Adding controls for results");
 
                     Search_Results_HtmlSubwriter searchResultsSub = subwriter as Search_Results_HtmlSubwriter;
-					if (searchResultsSub != null )
+                    if (searchResultsSub != null)
                     {
                         // Make sure the corresponding 'search' is the latest
                         RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Search;
@@ -484,7 +481,7 @@ namespace SobekCM.Library.MainWriters
                         RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Results;
 
                         // Add the controls
-						searchResultsSub.Add_Controls(Output, Tracer);
+                        searchResultsSub.Add_Controls(Output, Tracer);
                     }
 
                     break;
@@ -497,10 +494,10 @@ namespace SobekCM.Library.MainWriters
                     RequestSpecificValues.Tracer.Add_Trace("Html_MainWriter.Consructor", "Adding controls for public folder.");
 
                     Public_Folder_HtmlSubwriter publicFolderSub = subwriter as Public_Folder_HtmlSubwriter;
-					if (publicFolderSub != null )
+                    if (publicFolderSub != null)
                     {
                         // Also try to add any controls
-						publicFolderSub.Add_Controls(Output, Tracer);
+                        publicFolderSub.Add_Controls(Output, Tracer);
                     }
                     break;
 
@@ -527,7 +524,7 @@ namespace SobekCM.Library.MainWriters
                     RequestSpecificValues.Tracer.Add_Trace("Html_MainWriter.Consructor", "Adding controls for item display.");
 
                     Item_HtmlSubwriter itemWriter = subwriter as Item_HtmlSubwriter;
-					if (itemWriter != null )
+                    if (itemWriter != null)
                     {
                         // Add the TOC section
                         Tracer.Add_Trace("Html_MainWriter.Add_Controls", "Allowing item viewer to write main viewer section");
@@ -544,7 +541,7 @@ namespace SobekCM.Library.MainWriters
                     break;
             }
         }
-        
+
         /// <summary> Gets the title to use for this web page, based on the current request mode </summary>
         /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
         /// <returns> Title to use in the HTML result document </returns>
@@ -558,7 +555,7 @@ namespace SobekCM.Library.MainWriters
             string thisTitle = null;
             if (subwriter != null)
                 thisTitle = subwriter.WebPage_Title;
-            if ( String.IsNullOrEmpty(thisTitle))
+            if (String.IsNullOrEmpty(thisTitle))
                 thisTitle = "{0}";
 
             return String.Format(thisTitle, RequestSpecificValues.Current_Mode.Instance_Abbreviation);
@@ -576,7 +573,7 @@ namespace SobekCM.Library.MainWriters
             try
             {
                 string responsive_design_setting = UI_ApplicationCache_Gateway.Settings.Get_Additional_Setting("Use Responsive Design");
-                if (( !String.IsNullOrEmpty(responsive_design_setting)) && ( responsive_design_setting.Equals("true", StringComparison.OrdinalIgnoreCase)))
+                if ((!String.IsNullOrEmpty(responsive_design_setting)) && (responsive_design_setting.Equals("true", StringComparison.OrdinalIgnoreCase)))
                 {
                     Output.WriteLine("  <meta name=\"viewport\" content=\"width=" + UI_ApplicationCache_Gateway.Settings.Get_Additional_Setting("Viewport width") + ", initial-scale=" + UI_ApplicationCache_Gateway.Settings.Get_Additional_Setting("Viewport initial-scale") + "\" />\r\n");
                     Tracer.Add_Trace("Html_MainWriter.Write_Within_HTML_Head", "Adding responsive design meta viewport tag.");
@@ -597,10 +594,10 @@ namespace SobekCM.Library.MainWriters
             if (String.Equals(RequestSpecificValues.Current_Mode.Result_Display_Type, "timeline", StringComparison.OrdinalIgnoreCase))
             {
                 Tracer.Add_Trace("Html_MainWriter.Write_Within_HTML_Head", "Timeline support - RequestSpecificValues.Current_Mode.Base_URL=[" + RequestSpecificValues.Current_Mode.Base_URL + "].");
-             
+
                 String base_url;
                 base_url = RequestSpecificValues.Current_Mode.Base_URL;
-              
+
                 Output.WriteLine("<link rel=\"stylesheet\" href=\"" + base_url + "/plugins/Timeline/css/SimileTimeline.css\" type=\"text/css\"/>");
 
                 //Output.WriteLine("<link rel=\"stylesheet\" href=\"http://yui.yahooapis.com/2.7.0/build/reset-fonts-grids/reset-fonts-grids.css\" type = \"text/css\">");
@@ -631,7 +628,7 @@ namespace SobekCM.Library.MainWriters
                 }
 
                 Output.WriteLine("<script type=\"text/javascript\">");
-                
+
                 // libraries version
                 //Output.WriteLine("Timeline_ajax_url='" + base_url + "/plugins/Timeline/js/timeline_2.3.0/timeline_ajax/simile-ajax-api.js';");
                 //Output.WriteLine("Timeline_urlPrefix='" + base_url + "/plugins/Timeline/js/timeline_2.3.0/timeline_js/';");
@@ -639,13 +636,13 @@ namespace SobekCM.Library.MainWriters
                 if (use_timeline_bundle)
                 {
                     // libraries version
-                    Output.WriteLine("Timeline_ajax_url='" +  base_url + "plugins/Timeline/js/timeline_libraries_v2.3.0/timeline_2.3.0/timeline_ajax/simile-ajax-api.js?bundle=true';");
+                    Output.WriteLine("Timeline_ajax_url='" + base_url + "plugins/Timeline/js/timeline_libraries_v2.3.0/timeline_2.3.0/timeline_ajax/simile-ajax-api.js?bundle=true';");
                     Output.WriteLine("Timeline_urlPrefix='" + base_url + "plugins/Timeline/js/timeline_libraries_v2.3.0/timeline_2.3.0/timeline_js/';");
                 }
                 else
                 {
                     // source version
-                    Output.WriteLine("Timeline_ajax_url='" +  base_url + "plugins/Timeline/js/timeline_source_v2.3.0/timeline_2.3.0/src/ajax/api/simile-ajax-api.js?bundle=false';");
+                    Output.WriteLine("Timeline_ajax_url='" + base_url + "plugins/Timeline/js/timeline_source_v2.3.0/timeline_2.3.0/src/ajax/api/simile-ajax-api.js?bundle=false';");
                     Output.WriteLine("Timeline_urlPrefix='" + base_url + "plugins/Timeline/js/timeline_source_v2.3.0/timeline_2.3.0/src/webapp/api/';");
                 }
 
@@ -668,14 +665,14 @@ namespace SobekCM.Library.MainWriters
                 {
                     Output.WriteLine("<script src=\"" + base_url + "plugins/Timeline/js/timeline_source_v2.3.0/timeline_2.3.0/src/webapp/api/timeline-api.js?bundle=false\"></script>");
                 }
-               
+
                 // additional code
                 Output.WriteLine("<script src=\"" + base_url + "plugins/Timeline/js/simile-widgets-org_timeline_examples.js\" type=\"text/javascript\"></script>");
                 Output.WriteLine("<script src=\"" + base_url + "plugins/Timeline/js/simile-widgets-org_timeline_customization.js\" type=\"text/javascript\"></script>");
 
                 Tracer.Add_Trace("Html_Mainwriter.Write_Within_HTML_Head", "End of support for timeline");
             }
-            
+
             Tracer.Add_Trace("Html_MainWriter.Add_Style_References", "Adding style references and apple touch icon to HTML");
 
             // A couple extraordinary cases
@@ -691,12 +688,12 @@ namespace SobekCM.Library.MainWriters
             // Write the style sheet to use 
             Output.WriteLine("  <link href=\"" + Static_Resources_Gateway.Sobekcm_Css + "\" rel=\"stylesheet\" type=\"text/css\" />");
 
-			// Always add jQuery library (changed as of 7/8/2013)
+            // Always add jQuery library (changed as of 7/8/2013)
             if ((RequestSpecificValues.Current_Mode.Mode != Display_Mode_Enum.Item_Display) || (RequestSpecificValues.Current_Mode.ViewerCode != "pageturner"))
             {
                 Output.WriteLine("  <script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Jquery_1_10_2_Js + "\"></script>");
-				Output.WriteLine("  <script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Sobekcm_Full_Js + "\"></script>");
-			}
+                Output.WriteLine("  <script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Sobekcm_Full_Js + "\"></script>");
+            }
 
             // Materlize framework support
             // The import of the Materialize js must come after the import of jquery
@@ -717,7 +714,7 @@ namespace SobekCM.Library.MainWriters
                     // If using the materialize framework the additonal stylesheet is required to override some of the base materialize stylesheet which inteferes
                     if ((RequestSpecificValues.HTML_Skin != null) && (!String.IsNullOrEmpty(RequestSpecificValues.HTML_Skin.CSS_Style)) && (RequestSpecificValues.Current_Mode.Mode != Display_Mode_Enum.Simple_HTML_CMS))
                     {
-                        Output.WriteLine("  <link href=\"" + (RequestSpecificValues.Current_Mode.Base_URL + RequestSpecificValues.HTML_Skin.CSS_Style).Replace(".css","-corrections-materialize.css") + "\" rel=\"stylesheet\" type=\"text/css\" />");
+                        Output.WriteLine("  <link href=\"" + (RequestSpecificValues.Current_Mode.Base_URL + RequestSpecificValues.HTML_Skin.CSS_Style).Replace(".css", "-corrections-materialize.css") + "\" rel=\"stylesheet\" type=\"text/css\" />");
                     }
 
                     Output.WriteLine("<!-- End Materilize framework support -->");
@@ -738,28 +735,28 @@ namespace SobekCM.Library.MainWriters
             // Special code for the menus, if this is not IE
             string hmwUserAgent = Context.Request.Headers.UserAgent.ToString();
             if (!hmwUserAgent.Contains("MSIE", StringComparison.OrdinalIgnoreCase) && !hmwUserAgent.Contains("Trident/", StringComparison.OrdinalIgnoreCase))
-			{
-				string non_ie_hack = SobekCM_Application.State["NonIE_Hack_CSS"] as string;
-				if (!String.IsNullOrEmpty(non_ie_hack))
-				{
-					Output.WriteLine("  <style type=\"text/css\">");
-					Output.WriteLine("    " + non_ie_hack);
-					Output.WriteLine("  </style>");
-				}
-			}
-			else
-			{
-				Output.WriteLine("  <!--[if lt IE 9]>");
-				Output.WriteLine("    <script src=\"" + Static_Resources_Gateway.Html5shiv_Js + "\"></script>");
-				Output.WriteLine("  <![endif]-->");
-			}
+            {
+                string non_ie_hack = SobekCM_Application.State["NonIE_Hack_CSS"] as string;
+                if (!String.IsNullOrEmpty(non_ie_hack))
+                {
+                    Output.WriteLine("  <style type=\"text/css\">");
+                    Output.WriteLine("    " + non_ie_hack);
+                    Output.WriteLine("  </style>");
+                }
+            }
+            else
+            {
+                Output.WriteLine("  <!--[if lt IE 9]>");
+                Output.WriteLine("    <script src=\"" + Static_Resources_Gateway.Html5shiv_Js + "\"></script>");
+                Output.WriteLine("  <![endif]-->");
+            }
 
             // Add the special code for the html subwriter
             if (subwriter != null)
                 subwriter.Write_Within_HTML_Head(Output, RequestSpecificValues.Tracer);
 
             // Include the interface's style sheet if it has one
-            if ((RequestSpecificValues.HTML_Skin != null) && ( !String.IsNullOrEmpty(RequestSpecificValues.HTML_Skin.CSS_Style)) && ( RequestSpecificValues.Current_Mode.Mode != Display_Mode_Enum.Simple_HTML_CMS ))
+            if ((RequestSpecificValues.HTML_Skin != null) && (!String.IsNullOrEmpty(RequestSpecificValues.HTML_Skin.CSS_Style)) && (RequestSpecificValues.Current_Mode.Mode != Display_Mode_Enum.Simple_HTML_CMS))
             {
                 Output.WriteLine("  <link href=\"" + RequestSpecificValues.Current_Mode.Base_URL + RequestSpecificValues.HTML_Skin.CSS_Style + "\" rel=\"stylesheet\" type=\"text/css\" />");
             }
@@ -774,7 +771,7 @@ namespace SobekCM.Library.MainWriters
             if (subwriter != null)
             {
                 string finalCss = subwriter.Final_CSS;
-                if ( !String.IsNullOrEmpty(finalCss))
+                if (!String.IsNullOrEmpty(finalCss))
                     Output.WriteLine(finalCss);
             }
 
@@ -898,7 +895,7 @@ namespace SobekCM.Library.MainWriters
         /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
         public void Write_Final_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
-			if ((RequestSpecificValues.Current_Mode.isPostBack) && (RequestSpecificValues.Current_Mode.Mode != Display_Mode_Enum.My_Sobek) && (RequestSpecificValues.Current_Mode.Mode != Display_Mode_Enum.Administrative)) return;
+            if ((RequestSpecificValues.Current_Mode.isPostBack) && (RequestSpecificValues.Current_Mode.Mode != Display_Mode_Enum.My_Sobek) && (RequestSpecificValues.Current_Mode.Mode != Display_Mode_Enum.Administrative)) return;
             if (subwriter == null) return;
 
             Tracer.Add_Trace("Html_MainWriter.Write_Final_HTML", String.Empty);
@@ -924,12 +921,12 @@ namespace SobekCM.Library.MainWriters
 
             Output.WriteLine("<!-- Starting to add header (Html_MainWriter.Display_Header) -->");
 
-			// If the subwriter is NULL, do nothing (but sure seems like an error!)
-	        if (subwriter == null)
-		        return;
+            // If the subwriter is NULL, do nothing (but sure seems like an error!)
+            if (subwriter == null)
+                return;
 
-			// Get the list of behaviors here
-	        List<HtmlSubwriter_Behaviors_Enum> behaviors = subwriter.Subwriter_Behaviors;
+            // Get the list of behaviors here
+            List<HtmlSubwriter_Behaviors_Enum> behaviors = subwriter.Subwriter_Behaviors;
 
             // Include a skip to main content?
             if (behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Include_Skip_To_Main_Content_Link))
@@ -946,7 +943,7 @@ namespace SobekCM.Library.MainWriters
             // Should the internal header be added?
             if ((subwriter != null) && (RequestSpecificValues.Current_Mode.Mode != Display_Mode_Enum.My_Sobek) && (RequestSpecificValues.Current_Mode.Mode != Display_Mode_Enum.Administrative) && (RequestSpecificValues.Current_User != null))
             {
-                if (( subwriter.Include_Internal_Header ) && ( !behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Suppress_Internal_Header)))
+                if ((subwriter.Include_Internal_Header) && (!behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Suppress_Internal_Header)))
                 {
                     string return_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
                     if (Context.Session.GetString(SessionCache_Keys.OriginalUrl) != null)
@@ -968,7 +965,7 @@ namespace SobekCM.Library.MainWriters
                         Output.WriteLine("        <button title=\"Show Internal Header\" class=\"intheader_button_aggr show_intheader_button_aggr\" onclick=\"return show_internal_header();\"></button>");
                         Output.WriteLine("      </td>");
                         Output.WriteLine("    </tr>");
-                        Output.WriteLine("  </table>"); 
+                        Output.WriteLine("  </table>");
                     }
                     else
                     {
@@ -998,22 +995,22 @@ namespace SobekCM.Library.MainWriters
 
             Output.WriteLine("<!-- Adding footer to html (Html_MainWriter.Display_Footer) -->");
 
-			// If the subwriter is NULL, do nothing (but sure seems like an error!)
-			if (subwriter == null)
-				return;
+            // If the subwriter is NULL, do nothing (but sure seems like an error!)
+            if (subwriter == null)
+                return;
 
-			// Get the list of behaviors here
-			List<HtmlSubwriter_Behaviors_Enum> behaviors = subwriter.Subwriter_Behaviors;
+            // Get the list of behaviors here
+            List<HtmlSubwriter_Behaviors_Enum> behaviors = subwriter.Subwriter_Behaviors;
 
-			// If no header should be added, just return
-			if (behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Suppress_Footer))
-				return;
+            // If no header should be added, just return
+            if (behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Suppress_Footer))
+                return;
 
             // Let the subwriter add the footer
             subwriter.Add_Footer(Output);
 
             // Add the time and trace at the end
-			if (Context.Request.Path.ToString().Contains("shibboleth", StringComparison.OrdinalIgnoreCase) || (RequestSpecificValues.Current_Mode.Trace_Flag_Simple) || ((RequestSpecificValues.Current_User != null) && (RequestSpecificValues.Current_User.Is_System_Admin)))
+            if (Context.Request.Path.ToString().Contains("shibboleth", StringComparison.OrdinalIgnoreCase) || (RequestSpecificValues.Current_Mode.Trace_Flag_Simple) || ((RequestSpecificValues.Current_User != null) && (RequestSpecificValues.Current_User.Is_System_Admin)))
             {
                 Output.WriteLine("<style type=\"text/css\">");
                 Output.WriteLine("table.Traceroute { border-width: 2px; border-style: solid; border-color: gray; border-collapse: collapse; background-color: white; font-size: small; }");
@@ -1035,7 +1032,7 @@ namespace SobekCM.Library.MainWriters
                 Output.WriteLine("<br /><br /><b>TRACE ROUTE</b>");
                 Output.WriteLine("<br /><br />Total Execution Time: " + Tracer.Milliseconds + " Milliseconds<br /><br />");
                 Output.WriteLine(Tracer.Complete_Trace + "<br />");
-				Output.WriteLine("</div>");
+                Output.WriteLine("</div>");
             }
 
             Output.WriteLine("<!-- end of adding footer to html (Html_MainWriter.Display_Footer) -->");
@@ -1139,4 +1136,4 @@ namespace SobekCM.Library.MainWriters
         #endregion
     }
 }
- 
+

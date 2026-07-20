@@ -30,7 +30,7 @@ namespace SobekCM_Resource_Database.Builder
                     throw new Exception("Requested Page_File #" + Index + " and this Page_File does not exist.");
 
                 // Return the requested MXF Page_File
-                return ((Builder_Page_File) (List[Index]));
+                return ((Builder_Page_File)(List[Index]));
             }
             set { List[Index] = value; }
         }
@@ -84,7 +84,7 @@ namespace SobekCM_Resource_Database.Builder
         {
             int startIndex = Start;
             int endIndex = End;
-            int midIndex = (int) Math.Ceiling((double) (endIndex - startIndex)/2) + startIndex;
+            int midIndex = (int)Math.Ceiling((double)(endIndex - startIndex) / 2) + startIndex;
             if (endIndex - startIndex <= 1)
             {
                 if (NewPageFile.CompareTo(this[startIndex]) <= 0)
@@ -92,11 +92,11 @@ namespace SobekCM_Resource_Database.Builder
                     List.Insert(startIndex, NewPageFile);
                     return startIndex;
                 }
-                
+
                 List.Insert(endIndex, NewPageFile);
                 return endIndex;
             }
-            
+
             if (NewPageFile.CompareTo(this[midIndex]) < 0)
                 endIndex = midIndex;
             else
@@ -179,7 +179,7 @@ namespace SobekCM_Resource_Database.Builder
                     position++;
                     return true;
                 }
-                
+
                 return false;
             }
 

@@ -1,7 +1,7 @@
-﻿using System;
+﻿using ProtoBuf;
+using System;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
-using ProtoBuf;
 
 namespace SobekCM.Core.Configuration.OAIPMH
 {
@@ -35,7 +35,7 @@ namespace SobekCM.Core.Configuration.OAIPMH
         [DataMember(Name = "metadataNamespace", EmitDefaultValue = false)]
         [XmlAttribute("metadataNamespace")]
         [ProtoMember(3)]
-        public string MetadataNamespace { get; set;  }
+        public string MetadataNamespace { get; set; }
 
         /// <summary> Assembly in which this class resdes, if not a standard, included metadata format </summary>
         /// <remarks> If this is empty or null, an object of this type will be instantiated via reflection
@@ -43,13 +43,13 @@ namespace SobekCM.Core.Configuration.OAIPMH
         [DataMember(Name = "assembly", EmitDefaultValue = false)]
         [XmlAttribute("assembly")]
         [ProtoMember(4)]
-        public string Assembly { get; set;  }
+        public string Assembly { get; set; }
 
         /// <summary> Namspace in which the class used to create the metadata for this format is stored </summary>
         [DataMember(Name = "namespace", EmitDefaultValue = false)]
         [XmlAttribute("namespace")]
         [ProtoMember(5)]
-        public string Namespace { get; set;  }
+        public string Namespace { get; set; }
 
         /// <summary> Class which does the actual metadata format writing </summary>
         [DataMember(Name = "class", EmitDefaultValue = false)]

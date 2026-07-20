@@ -1,10 +1,9 @@
-﻿using System;
+﻿using SobekCM.Core.Configuration.Engine;
+using SobekCM.Engine_Library.Database;
+using SobekCM.Tools;
+using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-
-using SobekCM.Engine_Library.Database;
-using SobekCM.Core.Configuration.Engine;
-using SobekCM.Tools;
 
 namespace SobekCM.Engine_Library.Endpoints
 {
@@ -26,12 +25,12 @@ namespace SobekCM.Engine_Library.Endpoints
             Custom_Tracer tracer = new Custom_Tracer();
 
             // Get the theme id
-            if ( !Int32.TryParse(UrlSegments[0], out int id))
+            if (!Int32.TryParse(UrlSegments[0], out int id))
             {
                 tracer.Add_Trace("OpenPublishingServices.GetTheme", "Error converting url segment to integer to get theme by id");
                 id = -1;
             }
-            
+
             try
             {
                 tracer.Add_Trace("OpenPublishingServices.GetTheme", "Pulling theme from the database");

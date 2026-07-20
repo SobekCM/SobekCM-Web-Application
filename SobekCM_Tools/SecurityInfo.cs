@@ -1,31 +1,31 @@
 #region Using directives
 
+using Microsoft.Win32;
 using System;
 using System.IO;
 using System.Security.Cryptography;
 using System.Security.Principal;
 using System.Text;
 using System.Threading;
-using Microsoft.Win32;
 
 #endregion
 
 namespace SobekCM.Tools
 {
-	/// <summary> Object used to determine and ensure security.    It allows
-	/// for reading from the registry, checking local users and computer information, 
-	/// and writing and reading to encrypted files. <br /><br />
-	/// </summary>
-	/// <remarks> This class allows for the following actions: <ul>
-	/// <li type="circle" /> Encrypting and Decrypting strings. [ <see cref="SecurityInfo.EncryptString"/> and <see cref="SecurityInfo.DecryptString"/> ] 
-	/// <li type="circle" /> Reading and Writing to encrypted files. [ <see cref="SecurityInfo.ReadFromEncryptedFile"/> and <see cref="SecurityInfo.WriteToEncryptedFile"/> ] 
-	/// <li type="circle" /> Getting the current username. [ <see cref="SecurityInfo.UserName"/> ]
-	/// <li type="circle" /> Getting username and security level information from a security database.
-	/// </ul> <br /> <br />
-	/// Object created by Mark V Sullivan (2003) for University of Florida's Digital Library Center. </remarks>
-	public class SecurityInfo
-	{
-	    ///// <summary> Gets the MAC    address of the network adapter for the current computer </summary>
+    /// <summary> Object used to determine and ensure security.    It allows
+    /// for reading from the registry, checking local users and computer information, 
+    /// and writing and reading to encrypted files. <br /><br />
+    /// </summary>
+    /// <remarks> This class allows for the following actions: <ul>
+    /// <li type="circle" /> Encrypting and Decrypting strings. [ <see cref="SecurityInfo.EncryptString"/> and <see cref="SecurityInfo.DecryptString"/> ] 
+    /// <li type="circle" /> Reading and Writing to encrypted files. [ <see cref="SecurityInfo.ReadFromEncryptedFile"/> and <see cref="SecurityInfo.WriteToEncryptedFile"/> ] 
+    /// <li type="circle" /> Getting the current username. [ <see cref="SecurityInfo.UserName"/> ]
+    /// <li type="circle" /> Getting username and security level information from a security database.
+    /// </ul> <br /> <br />
+    /// Object created by Mark V Sullivan (2003) for University of Florida's Digital Library Center. </remarks>
+    public class SecurityInfo
+    {
+        ///// <summary> Gets the MAC    address of the network adapter for the current computer </summary>
         ///// <remarks> The MAC address is returned as a string in the form 00:##:##:##:##:##. </remarks>
         //public string MAC_Address
         //{
@@ -61,18 +61,18 @@ namespace SobekCM.Tools
         //    return SerialNumber;
         //}
 
-		/// <summary> Gets the complete current users name as a string. </summary>
-		/// <remarks> This name is returned in the form 'DOMAIN\username'. </remarks>
-		public string UserName
-		{
-			get
-			{
-				AppDomain.CurrentDomain.SetPrincipalPolicy(PrincipalPolicy.WindowsPrincipal);
-				WindowsPrincipal principal = (WindowsPrincipal)Thread.CurrentPrincipal;
-				WindowsIdentity identity = (WindowsIdentity)principal.Identity;
-				return identity.Name;
-			}
-		}
+        /// <summary> Gets the complete current users name as a string. </summary>
+        /// <remarks> This name is returned in the form 'DOMAIN\username'. </remarks>
+        public string UserName
+        {
+            get
+            {
+                AppDomain.CurrentDomain.SetPrincipalPolicy(PrincipalPolicy.WindowsPrincipal);
+                WindowsPrincipal principal = (WindowsPrincipal)Thread.CurrentPrincipal;
+                WindowsIdentity identity = (WindowsIdentity)principal.Identity;
+                return identity.Name;
+            }
+        }
 
         /// <summary> Gets the complete current users name as a string. </summary>
         /// <remarks> This name is returned in the form 'DOMAIN\username'. </remarks>
@@ -88,134 +88,134 @@ namespace SobekCM.Tools
         }
 
 
-		/// <summary> Returns a string value from the registry under HKEY_LOCAL_MACHINE. </summary>
-		/// <param name="KeyLocation"> Location of the key (i.e. "Control Panel\Desktop") </param>
-		/// <param name="ValueName"> Name of the value to retrieve </param>
-		/// <returns> String value from the registry, or "-1" if an error occurs </returns>
-		public string LocalMachineKey( string KeyLocation, string ValueName )
-		{
-			try
-			{
-				RegistryKey fetcher = Registry.LocalMachine;
-				fetcher = fetcher.OpenSubKey( KeyLocation );
-			    if (fetcher != null)
-			    {
-			        string fetchedValue = (string) fetcher.GetValue(ValueName);
-			        fetcher.Close();
-			        return fetchedValue ?? "-1";
-			    }
-			}
-			catch
-			{
-				return "-1";
-			}
+        /// <summary> Returns a string value from the registry under HKEY_LOCAL_MACHINE. </summary>
+        /// <param name="KeyLocation"> Location of the key (i.e. "Control Panel\Desktop") </param>
+        /// <param name="ValueName"> Name of the value to retrieve </param>
+        /// <returns> String value from the registry, or "-1" if an error occurs </returns>
+        public string LocalMachineKey(string KeyLocation, string ValueName)
+        {
+            try
+            {
+                RegistryKey fetcher = Registry.LocalMachine;
+                fetcher = fetcher.OpenSubKey(KeyLocation);
+                if (fetcher != null)
+                {
+                    string fetchedValue = (string)fetcher.GetValue(ValueName);
+                    fetcher.Close();
+                    return fetchedValue ?? "-1";
+                }
+            }
+            catch
+            {
+                return "-1";
+            }
             return "-1";
-		}
+        }
 
         /// <summary> Returns a string value from the registry under HKEY_CURRENT_USER. </summary>
         /// <param name="KeyLocation"> Location of the key (i.e. "Control Panel\Desktop") </param>
         /// <param name="ValueName"> Name of the value to retrieve </param>
         /// <returns> String value from the registry, or "-1" if an error occurs </returns>
-		public string CurrentUserKey( string KeyLocation, string ValueName )
-		{
-			try
-			{
+		public string CurrentUserKey(string KeyLocation, string ValueName)
+        {
+            try
+            {
 
-				RegistryKey fetcher = Registry.CurrentUser;
-				fetcher = fetcher.OpenSubKey( KeyLocation );
-			    if (fetcher != null)
-			    {
-			        string fetchedValue = (string) fetcher.GetValue(ValueName);
-			        fetcher.Close();
-			        return fetchedValue ?? "-1";
-			    }
-			}
-			catch
-			{
-				return "-1";
-			}
+                RegistryKey fetcher = Registry.CurrentUser;
+                fetcher = fetcher.OpenSubKey(KeyLocation);
+                if (fetcher != null)
+                {
+                    string fetchedValue = (string)fetcher.GetValue(ValueName);
+                    fetcher.Close();
+                    return fetchedValue ?? "-1";
+                }
+            }
+            catch
+            {
+                return "-1";
+            }
             return "-1";
-		}
+        }
 
-		/// <summary> Reads text from a file encrypted in DES encryption. (128 bit symmetric encryption) </summary>
-		/// <param name="Filename"> Path and name of file to be read from</param>
-		/// <param name="Key"> 8 character (64bit) key for decryption</param>
-		/// <param name="Iv"> 8 character (64bit) initialization vector for decryption</param>
-		/// <param name="Position"> Character position to start reading from</param>
-		/// <param name="Length"> Number of characters to read from the file</param>
-		/// <returns> Character array of data read and decrypted from file or a NULL if there was an error</returns>
-		public char[] ReadFromEncryptedFile ( string Filename, string Key, string Iv, int Position, int Length )
-		{
-			char[] temp = new char[Length];
+        /// <summary> Reads text from a file encrypted in DES encryption. (128 bit symmetric encryption) </summary>
+        /// <param name="Filename"> Path and name of file to be read from</param>
+        /// <param name="Key"> 8 character (64bit) key for decryption</param>
+        /// <param name="Iv"> 8 character (64bit) initialization vector for decryption</param>
+        /// <param name="Position"> Character position to start reading from</param>
+        /// <param name="Length"> Number of characters to read from the file</param>
+        /// <returns> Character array of data read and decrypted from file or a NULL if there was an error</returns>
+        public char[] ReadFromEncryptedFile(string Filename, string Key, string Iv, int Position, int Length)
+        {
+            char[] temp = new char[Length];
 
-			try
-			{
-				// Open the necessary file streams
-				FileStream projectDataFile = new FileStream(Filename, FileMode.Open, FileAccess.Read);
-			    DES desProvider = DES.Create();
-			    desProvider.Key = Encoding.ASCII.GetBytes(Key);
-			    desProvider.IV = Encoding.ASCII.GetBytes(Iv);
-			    CryptoStream cryptoStreamDecrypt = new CryptoStream(projectDataFile, desProvider.CreateDecryptor(), CryptoStreamMode.Read );
-				StreamReader streamInput = new StreamReader(cryptoStreamDecrypt);
+            try
+            {
+                // Open the necessary file streams
+                FileStream projectDataFile = new FileStream(Filename, FileMode.Open, FileAccess.Read);
+                DES desProvider = DES.Create();
+                desProvider.Key = Encoding.ASCII.GetBytes(Key);
+                desProvider.IV = Encoding.ASCII.GetBytes(Iv);
+                CryptoStream cryptoStreamDecrypt = new CryptoStream(projectDataFile, desProvider.CreateDecryptor(), CryptoStreamMode.Read);
+                StreamReader streamInput = new StreamReader(cryptoStreamDecrypt);
 
-				// Jump to position provided and read the data requested
-				projectDataFile.Position = Position;
-				streamInput.Read(temp, 0, Length );
+                // Jump to position provided and read the data requested
+                projectDataFile.Position = Position;
+                streamInput.Read(temp, 0, Length);
 
-				// Close the file stream
-				projectDataFile.Close();
-				return temp;
-			}
-			catch
-			{
-				// if there was any error, return NULL
-				return null;
-			}
-		}
+                // Close the file stream
+                projectDataFile.Close();
+                return temp;
+            }
+            catch
+            {
+                // if there was any error, return NULL
+                return null;
+            }
+        }
 
-		/// <summary> Writes text to a file encrypted in DES encryption. (128 bit symmetric encryption) </summary>
-		/// <param name="TextToWrite"> Text which will be written to the file</param>
-		/// <param name="Filename"> Path and name of file to be written to</param>
-		/// <param name="Key"> 8 character (64bit) key for encryption</param>
-		/// <param name="Iv"> 8 character (64bit) initialization vector for encryption</param>
-		/// <param name="Position"> Character position in file to write the text</param>
-		/// <returns> TRUE if written successfully, otherwise FALSE </returns>
-		public bool WriteToEncryptedFile ( string TextToWrite, string Filename, string Key, string Iv, int Position )
-		{
-			try
-			{
-				// Open file streams necessary
-				FileStream projectDataFile = new FileStream(Filename, FileMode.OpenOrCreate, FileAccess.Write);
-			    DES desProvider = DES.Create();
-			    desProvider.Key = Encoding.ASCII.GetBytes(Key);
-			    desProvider.IV = Encoding.ASCII.GetBytes(Iv);
-			    CryptoStream cryptoStreamEncrypt = new CryptoStream(projectDataFile, desProvider.CreateEncryptor(), CryptoStreamMode.Write );
+        /// <summary> Writes text to a file encrypted in DES encryption. (128 bit symmetric encryption) </summary>
+        /// <param name="TextToWrite"> Text which will be written to the file</param>
+        /// <param name="Filename"> Path and name of file to be written to</param>
+        /// <param name="Key"> 8 character (64bit) key for encryption</param>
+        /// <param name="Iv"> 8 character (64bit) initialization vector for encryption</param>
+        /// <param name="Position"> Character position in file to write the text</param>
+        /// <returns> TRUE if written successfully, otherwise FALSE </returns>
+        public bool WriteToEncryptedFile(string TextToWrite, string Filename, string Key, string Iv, int Position)
+        {
+            try
+            {
+                // Open file streams necessary
+                FileStream projectDataFile = new FileStream(Filename, FileMode.OpenOrCreate, FileAccess.Write);
+                DES desProvider = DES.Create();
+                desProvider.Key = Encoding.ASCII.GetBytes(Key);
+                desProvider.IV = Encoding.ASCII.GetBytes(Iv);
+                CryptoStream cryptoStreamEncrypt = new CryptoStream(projectDataFile, desProvider.CreateEncryptor(), CryptoStreamMode.Write);
 
-				// Get to the correct position in the file to write
-				projectDataFile.Position = Position;
+                // Get to the correct position in the file to write
+                projectDataFile.Position = Position;
 
-				// Break string into a byte array and write to file
-				byte[] temp = new byte[TextToWrite.Length];
-				for ( int i = 0 ; i < TextToWrite.Length ; ++i )
-					temp[i] = Convert.ToByte(Convert.ToChar(TextToWrite.Substring(i, 1)));
-				cryptoStreamEncrypt.Write(temp, 0, TextToWrite.Length);
+                // Break string into a byte array and write to file
+                byte[] temp = new byte[TextToWrite.Length];
+                for (int i = 0; i < TextToWrite.Length; ++i)
+                    temp[i] = Convert.ToByte(Convert.ToChar(TextToWrite.Substring(i, 1)));
+                cryptoStreamEncrypt.Write(temp, 0, TextToWrite.Length);
 
-				// Close the file stream
-				cryptoStreamEncrypt.Close( );
-				projectDataFile.Close( );
-				return true;
-			}
-			catch
-			{
-				// if there was any error, return false
-				return false;
-			}
-		}
+                // Close the file stream
+                cryptoStreamEncrypt.Close();
+                projectDataFile.Close();
+                return true;
+            }
+            catch
+            {
+                // if there was any error, return false
+                return false;
+            }
+        }
 
         /// <summary> Encrypt a string, given the string.  </summary>
         /// <param name="Source"> String to encrypt </param>
         /// <returns> The encrypted string </returns>
-        public static string SHA1_EncryptString(string Source )
+        public static string SHA1_EncryptString(string Source)
         {
             byte[] bytIn = Encoding.ASCII.GetBytes(Source);
 
@@ -233,7 +233,7 @@ namespace SobekCM.Tools
         /// <param name="Key"> Key for the encryption </param>
         /// <param name="Iv"> Initialization Vector for the encryption </param>
         /// <returns> The encrypted string </returns>
-        public static string DES_EncryptString(string Source, string Key, string Iv )
+        public static string DES_EncryptString(string Source, string Key, string Iv)
         {
             byte[] bytIn = Encoding.ASCII.GetBytes(Source);
             // create a MemoryStream so that the process can be done without I/O files
@@ -263,66 +263,66 @@ namespace SobekCM.Tools
             return Convert.ToBase64String(bytOut, 0, bytOut.Length);
         }
 
-		/// <summary> Encrypt a string, given the string, the key, and the IV values.  </summary>
-		/// <param name="Source"> String to encrypt </param>
-		/// <param name="Key"> Key for the encryption </param>
-		/// <param name="Iv"> Initialization Vector for the encryption </param>
-		/// <returns> The encrypted string </returns>
-		public string EncryptString(string Source, string Key, string Iv )
-		{
-			byte[] bytIn = Encoding.ASCII.GetBytes(Source);
-			// create a MemoryStream so that the process can be done without I/O files
-			MemoryStream ms = new MemoryStream();
+        /// <summary> Encrypt a string, given the string, the key, and the IV values.  </summary>
+        /// <param name="Source"> String to encrypt </param>
+        /// <param name="Key"> Key for the encryption </param>
+        /// <param name="Iv"> Initialization Vector for the encryption </param>
+        /// <returns> The encrypted string </returns>
+        public string EncryptString(string Source, string Key, string Iv)
+        {
+            byte[] bytIn = Encoding.ASCII.GetBytes(Source);
+            // create a MemoryStream so that the process can be done without I/O files
+            MemoryStream ms = new MemoryStream();
 
-			// set the private key
-		    DES desProvider = DES.Create();
-		    desProvider.Key = Encoding.ASCII.GetBytes(Key);
-		    desProvider.IV = Encoding.ASCII.GetBytes(Iv);
+            // set the private key
+            DES desProvider = DES.Create();
+            desProvider.Key = Encoding.ASCII.GetBytes(Key);
+            desProvider.IV = Encoding.ASCII.GetBytes(Iv);
 
-		    // create an Encryptor from the Provider Service instance
-			ICryptoTransform encrypto = desProvider.CreateEncryptor();
+            // create an Encryptor from the Provider Service instance
+            ICryptoTransform encrypto = desProvider.CreateEncryptor();
 
-			// create Crypto Stream that transforms a stream using the encryption
-			CryptoStream cs = new CryptoStream(ms, encrypto, CryptoStreamMode.Write);
+            // create Crypto Stream that transforms a stream using the encryption
+            CryptoStream cs = new CryptoStream(ms, encrypto, CryptoStreamMode.Write);
 
-			// write out encrypted content into MemoryStream
-			cs.Write(bytIn, 0, bytIn.Length);
-			cs.Close();
+            // write out encrypted content into MemoryStream
+            cs.Write(bytIn, 0, bytIn.Length);
+            cs.Close();
 
-			// Write out from the Memory stream to an array of bytes
-			byte[] bytOut = ms.ToArray();
-			ms.Close();
-                    
-			// convert into Base64 so that the result can be used in xml
-			return Convert.ToBase64String(bytOut, 0, bytOut.Length);
-		}
+            // Write out from the Memory stream to an array of bytes
+            byte[] bytOut = ms.ToArray();
+            ms.Close();
 
-		/// <summary> Decrypt a string, given the string, the key, and the IV values.  </summary>
-		/// <param name="Source"> String to decrypt </param>
-		/// <param name="Key"> Key for the encryption </param>
-		/// <param name="Iv"> Initialization Vector for the encryption </param>
-		/// <returns> The decrypted string </returns>
-		public string DecryptString(string Source, string Key, string Iv )
-		{
-			// convert from Base64 to binary
-			byte[] bytIn = Convert.FromBase64String(Source);
-			// create a MemoryStream with the input
-			MemoryStream ms = new MemoryStream(bytIn, 0, bytIn.Length);
+            // convert into Base64 so that the result can be used in xml
+            return Convert.ToBase64String(bytOut, 0, bytOut.Length);
+        }
 
-			// set the private key
-		    DES desProvider = DES.Create();
-		    desProvider.Key = Encoding.ASCII.GetBytes(Key);
-		    desProvider.IV = Encoding.ASCII.GetBytes(Iv);
+        /// <summary> Decrypt a string, given the string, the key, and the IV values.  </summary>
+        /// <param name="Source"> String to decrypt </param>
+        /// <param name="Key"> Key for the encryption </param>
+        /// <param name="Iv"> Initialization Vector for the encryption </param>
+        /// <returns> The decrypted string </returns>
+        public string DecryptString(string Source, string Key, string Iv)
+        {
+            // convert from Base64 to binary
+            byte[] bytIn = Convert.FromBase64String(Source);
+            // create a MemoryStream with the input
+            MemoryStream ms = new MemoryStream(bytIn, 0, bytIn.Length);
 
-		    // create a Decryptor from the Provider Service instance
-			ICryptoTransform encrypto = desProvider.CreateDecryptor();
- 
-			// create Crypto Stream that transforms a stream using the decryption
-			CryptoStream cs = new CryptoStream(ms, encrypto, CryptoStreamMode.Read);
+            // set the private key
+            DES desProvider = DES.Create();
+            desProvider.Key = Encoding.ASCII.GetBytes(Key);
+            desProvider.IV = Encoding.ASCII.GetBytes(Iv);
 
-			// read out the result from the Crypto Stream
-			StreamReader sr = new StreamReader( cs );
-			return sr.ReadToEnd();
-		}
-	}
+            // create a Decryptor from the Provider Service instance
+            ICryptoTransform encrypto = desProvider.CreateDecryptor();
+
+            // create Crypto Stream that transforms a stream using the decryption
+            CryptoStream cs = new CryptoStream(ms, encrypto, CryptoStreamMode.Read);
+
+            // read out the result from the Crypto Stream
+            StreamReader sr = new StreamReader(cs);
+            return sr.ReadToEnd();
+        }
+    }
 }

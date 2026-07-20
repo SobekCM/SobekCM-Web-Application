@@ -1,17 +1,15 @@
 #region Using directives
 
+using SobekCM.Core.ApplicationState;
+using SobekCM.Core.Configuration.Localization;
+using SobekCM.Core.Users;
+using SobekCM.Library.UI;
+using SobekCM.Resource_Object;
+using SobekCM.Resource_Object.Bib_Info;
 using System;
 using System.IO;
 using System.Text;
-using Microsoft.AspNetCore.Http;
 using System.Xml;
-using SobekCM.Core.ApplicationState;
-using SobekCM.Core.Configuration;
-using SobekCM.Core.Configuration.Localization;
-using SobekCM.Core.Users;
-using SobekCM.Resource_Object;
-using SobekCM.Resource_Object.Bib_Info;
-using SobekCM.Library.UI;
 
 #endregion
 
@@ -27,7 +25,7 @@ namespace SobekCM.Library.Citation.Elements
             Repeatable = true;
             Title = "Other Titles";
             html_element_name = "form_title_other";
-	        help_page = "othertitle";
+            help_page = "othertitle";
         }
 
         #region iElement Members
@@ -43,7 +41,7 @@ namespace SobekCM.Library.Citation.Elements
         /// <param name="Translator"> Language support object which handles simple translational duties </param>
         /// <param name="Base_URL"> Base URL for the current request </param>
         /// <remarks> This element appends a popup form to the popup_form_builder</remarks>
-        public override void Render_Template_HTML(TextWriter Output, SobekCM_Item Bib, string Skin_Code, bool IsMozilla, StringBuilder PopupFormBuilder, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL )
+        public override void Render_Template_HTML(TextWriter Output, SobekCM_Item Bib, string Skin_Code, bool IsMozilla, StringBuilder PopupFormBuilder, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL)
         {
             // Check that an acronym exists
             if (Acronym.Length == 0)
@@ -89,7 +87,7 @@ namespace SobekCM.Library.Citation.Elements
             Output.WriteLine("      <div class=\"form_title_div\">");
 
             int title_count = 1;
-            if (( Bib.Bib_Info.hasSeriesTitle ) && ( Bib.Bib_Info.SeriesTitle.Title.Length > 0))
+            if ((Bib.Bib_Info.hasSeriesTitle) && (Bib.Bib_Info.SeriesTitle.Title.Length > 0))
             {
                 Title_Info thisTitle = Bib.Bib_Info.SeriesTitle;
 
@@ -102,10 +100,10 @@ namespace SobekCM.Library.Citation.Elements
 
                 // Add the popup form
                 PopupFormBuilder.AppendLine("<!-- Other Title Form " + title_count + " -->");
-				PopupFormBuilder.AppendLine("<div class=\"title_other_popup_div sbkMetadata_PopupDiv\" id=\"form_othertitle_" + title_count + "\" style=\"display:none;\">");
-				PopupFormBuilder.AppendLine("  <div class=\"sbkMetadata_PopupTitle\"><table style=\"width:100%\"><tr><td style=\"text-align:left\">Edit Other Title</td><td style=\"text-align:right\"><a href=\"" + Help_URL(Skin_Code, Base_URL) + "\" alt=\"HELP\" target=\"_" + html_element_name.ToUpper() + "\" >?</a> &nbsp; <a href=\"#template\" alt=\"CLOSE\" onclick=\"close_othertitle_form('form_othertitle_" + title_count + "')\">X</a> &nbsp; </td></tr></table></div>");
+                PopupFormBuilder.AppendLine("<div class=\"title_other_popup_div sbkMetadata_PopupDiv\" id=\"form_othertitle_" + title_count + "\" style=\"display:none;\">");
+                PopupFormBuilder.AppendLine("  <div class=\"sbkMetadata_PopupTitle\"><table style=\"width:100%\"><tr><td style=\"text-align:left\">Edit Other Title</td><td style=\"text-align:right\"><a href=\"" + Help_URL(Skin_Code, Base_URL) + "\" alt=\"HELP\" target=\"_" + html_element_name.ToUpper() + "\" >?</a> &nbsp; <a href=\"#template\" alt=\"CLOSE\" onclick=\"close_othertitle_form('form_othertitle_" + title_count + "')\">X</a> &nbsp; </td></tr></table></div>");
                 PopupFormBuilder.AppendLine("  <br />");
-				PopupFormBuilder.AppendLine("  <table class=\"sbkMetadata_PopupTable\">");
+                PopupFormBuilder.AppendLine("  <table class=\"sbkMetadata_PopupTable\">");
 
                 // Add the title type (and optionally display label)
                 PopupFormBuilder.Append("    <tr><td style=\"width:90px\">Title Type:</td><td colspan=\"2\"><select class=\"formtitle_type_select\" name=\"formothertitletype_" + title_count + "\" id=\"formothertitletype_" + title_count + "\" onchange=\"other_title_type_change(" + title_count + ")\" >");
@@ -137,30 +135,30 @@ namespace SobekCM.Library.Citation.Elements
                 PopupFormBuilder.Append("    <tr><td>Non Sort:</td><td>");
                 PopupFormBuilder.Append("<input class=\"formtitle_small_input sbk_Focusable\" name=\"formothertitlenonsort_" + title_count + "\" id=\"formothertitlenonsort_" + title_count + "\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(thisTitle.NonSort) + "\" />");
                 PopupFormBuilder.Append("</td><td width=\"255px\" >Language: &nbsp; ");
-				PopupFormBuilder.Append("<input class=\"formtitle_small_input sbk_Focusable\" name=\"formothertitlelanguage_" + title_count + "\" id=\"formothertitlelanguage_" + title_count + "\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(thisTitle.Language) + "\" />");
+                PopupFormBuilder.Append("<input class=\"formtitle_small_input sbk_Focusable\" name=\"formothertitlelanguage_" + title_count + "\" id=\"formothertitlelanguage_" + title_count + "\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(thisTitle.Language) + "\" />");
                 PopupFormBuilder.AppendLine("</td></tr>");
 
                 // Add the title and subtitle
-				PopupFormBuilder.AppendLine("    <tr><td>Title:</td><td colspan=\"2\"><input class=\"formtitle_large_input sbk_Focusable\" name=\"formothertitletitle_" + title_count + "\" id=\"formothertitletitle_" + title_count + "\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(thisTitle.Title) + "\" /></td></tr>");
-				PopupFormBuilder.AppendLine("    <tr><td>Sub Title:</td><td colspan=\"2\"><input class=\"formtitle_large_input sbk_Focusable\" name=\"formothertitlesubtitle_" + title_count + "\" id=\"formothertitlesubtitle_" + title_count + "\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(thisTitle.Subtitle) + "\" /></td></tr>");
+                PopupFormBuilder.AppendLine("    <tr><td>Title:</td><td colspan=\"2\"><input class=\"formtitle_large_input sbk_Focusable\" name=\"formothertitletitle_" + title_count + "\" id=\"formothertitletitle_" + title_count + "\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(thisTitle.Title) + "\" /></td></tr>");
+                PopupFormBuilder.AppendLine("    <tr><td>Sub Title:</td><td colspan=\"2\"><input class=\"formtitle_large_input sbk_Focusable\" name=\"formothertitlesubtitle_" + title_count + "\" id=\"formothertitlesubtitle_" + title_count + "\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(thisTitle.Subtitle) + "\" /></td></tr>");
 
                 // Add the part numbers
                 PopupFormBuilder.Append("    <tr><td>Part Numbers:</td><td colspan=\"2\">");
                 if (thisTitle.Part_Numbers_Count > 0)
                 {
-					PopupFormBuilder.Append("<input class=\"formtitle_small_input sbk_Focusable\" name=\"formothertitlepartnum1_" + title_count + "\" id=\"formothertitlepartnum1_" + title_count + "\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(thisTitle.Part_Numbers[0]) + "\" />");
+                    PopupFormBuilder.Append("<input class=\"formtitle_small_input sbk_Focusable\" name=\"formothertitlepartnum1_" + title_count + "\" id=\"formothertitlepartnum1_" + title_count + "\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(thisTitle.Part_Numbers[0]) + "\" />");
                 }
                 else
                 {
-					PopupFormBuilder.Append("<input class=\"formtitle_small_input sbk_Focusable\" name=\"formothertitlepartnum1_" + title_count + "\" id=\"formothertitlepartnum1_" + title_count + "\" type=\"text\" value=\"\" />");
+                    PopupFormBuilder.Append("<input class=\"formtitle_small_input sbk_Focusable\" name=\"formothertitlepartnum1_" + title_count + "\" id=\"formothertitlepartnum1_" + title_count + "\" type=\"text\" value=\"\" />");
                 }
                 if (thisTitle.Part_Numbers_Count > 1)
                 {
-					PopupFormBuilder.Append("<input class=\"formtitle_small_input sbk_Focusable\" name=\"formothertitlepartnum2_" + title_count + "\" id=\"formothertitlepartnum2_" + title_count + "\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(thisTitle.Part_Numbers[1]) + "\" />");
+                    PopupFormBuilder.Append("<input class=\"formtitle_small_input sbk_Focusable\" name=\"formothertitlepartnum2_" + title_count + "\" id=\"formothertitlepartnum2_" + title_count + "\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(thisTitle.Part_Numbers[1]) + "\" />");
                 }
                 else
                 {
-					PopupFormBuilder.Append("<input class=\"formtitle_small_input sbk_Focusable\" name=\"formothertitlepartnum2_" + title_count + "\" id=\"formothertitlepartnum2_" + title_count + "\" type=\"text\" value=\"\" />");
+                    PopupFormBuilder.Append("<input class=\"formtitle_small_input sbk_Focusable\" name=\"formothertitlepartnum2_" + title_count + "\" id=\"formothertitlepartnum2_" + title_count + "\" type=\"text\" value=\"\" />");
                 }
                 PopupFormBuilder.AppendLine("</td></tr>");
 
@@ -168,30 +166,30 @@ namespace SobekCM.Library.Citation.Elements
                 PopupFormBuilder.Append("    <tr><td>Part Names:</td><td>");
                 if (thisTitle.Part_Names_Count > 0)
                 {
-					PopupFormBuilder.Append("<input class=\"formtitle_small_input sbk_Focusable\" name=\"formothertitlepartname1_" + title_count + "\" id=\"formothertitlepartname1_" + title_count + "\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(thisTitle.Part_Names[0]) + "\" />");
+                    PopupFormBuilder.Append("<input class=\"formtitle_small_input sbk_Focusable\" name=\"formothertitlepartname1_" + title_count + "\" id=\"formothertitlepartname1_" + title_count + "\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(thisTitle.Part_Names[0]) + "\" />");
                 }
                 else
                 {
-					PopupFormBuilder.Append("<input class=\"formtitle_small_input sbk_Focusable\" name=\"formothertitlepartname1_" + title_count + "\" id=\"formothertitlepartname1_" + title_count + "\" type=\"text\" value=\"\" />");
+                    PopupFormBuilder.Append("<input class=\"formtitle_small_input sbk_Focusable\" name=\"formothertitlepartname1_" + title_count + "\" id=\"formothertitlepartname1_" + title_count + "\" type=\"text\" value=\"\" />");
                 }
                 if (thisTitle.Part_Names_Count > 1)
                 {
-					PopupFormBuilder.Append("<input class=\"formtitle_small_input sbk_Focusable\" name=\"formothertitlepartname2_" + title_count + "\" id=\"formothertitlepartname2_" + title_count + "\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(thisTitle.Part_Names[1]) + "\" />");
+                    PopupFormBuilder.Append("<input class=\"formtitle_small_input sbk_Focusable\" name=\"formothertitlepartname2_" + title_count + "\" id=\"formothertitlepartname2_" + title_count + "\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(thisTitle.Part_Names[1]) + "\" />");
                 }
                 else
                 {
-					PopupFormBuilder.Append("<input class=\"formtitle_small_input sbk_Focusable\" name=\"formothertitlepartname2_" + title_count + "\" id=\"formothertitlepartname2_" + title_count + "\" type=\"text\" value=\"\" />");
+                    PopupFormBuilder.Append("<input class=\"formtitle_small_input sbk_Focusable\" name=\"formothertitlepartname2_" + title_count + "\" id=\"formothertitlepartname2_" + title_count + "\" type=\"text\" value=\"\" />");
                 }
-				PopupFormBuilder.Append("<td>Authority: &nbsp; <input class=\"formtitle_small_input sbk_Focusable\" name=\"formothertitleauthority_" + title_count + "\" id=\"formothertitleauthority_" + title_count + "\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(thisTitle.Authority) + "\" />");
+                PopupFormBuilder.Append("<td>Authority: &nbsp; <input class=\"formtitle_small_input sbk_Focusable\" name=\"formothertitleauthority_" + title_count + "\" id=\"formothertitleauthority_" + title_count + "\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(thisTitle.Authority) + "\" />");
                 PopupFormBuilder.AppendLine("</td></tr>");
 
-				// Finish the popup form and add the close button
-				PopupFormBuilder.AppendLine("    <tr style=\"height:35px; text-align: center; vertical-align: bottom;\">");
-				PopupFormBuilder.AppendLine("      <td colspan=\"3\"><button title=\"Close\" class=\"sbkMetadata_RoundButton\" onclick=\"close_othertitle_form('form_othertitle_" + title_count + "');\">CLOSE</button></td>");
-				PopupFormBuilder.AppendLine("    </tr>");
-				PopupFormBuilder.AppendLine("  </table>");
-				PopupFormBuilder.AppendLine("</div>");
-				PopupFormBuilder.AppendLine();
+                // Finish the popup form and add the close button
+                PopupFormBuilder.AppendLine("    <tr style=\"height:35px; text-align: center; vertical-align: bottom;\">");
+                PopupFormBuilder.AppendLine("      <td colspan=\"3\"><button title=\"Close\" class=\"sbkMetadata_RoundButton\" onclick=\"close_othertitle_form('form_othertitle_" + title_count + "');\">CLOSE</button></td>");
+                PopupFormBuilder.AppendLine("    </tr>");
+                PopupFormBuilder.AppendLine("  </table>");
+                PopupFormBuilder.AppendLine("</div>");
+                PopupFormBuilder.AppendLine();
 
                 title_count++;
             }
@@ -205,7 +203,7 @@ namespace SobekCM.Library.Citation.Elements
             foreach (Title_Info thisTitle in Bib.Bib_Info.Other_Titles)
             {
                 // Add the link for the other title
-                if ((thisTitle.Title.Trim().Length > 0) || ( thisTitle.NonSort.Trim().Length > 0 ))
+                if ((thisTitle.Title.Trim().Length > 0) || (thisTitle.NonSort.Trim().Length > 0))
                 {
                     Output.Write("        <a title=\"Click to edit this other title\" href=\"" + Base_URL + "l/technical/javascriptrequired\" onfocus=\"link_focused2('form_othertitle_line_" + title_count + "')\" onblur=\"link_blurred2('form_othertitle_line_" + title_count + "')\" onkeypress=\"return popup_keypress_focus('form_othertitle_" + title_count + "', 'formothertitletitle_" + title_count + "', '" + IsMozilla.ToString() + "' );\" onclick=\"return popup_focus('form_othertitle_" + title_count + "', 'formothertitletitle_" + title_count + "' );\"><div class=\"form_linkline form_title_main_line\" id=\"form_othertitle_line_" + title_count + "\">" + thisTitle.NonSort + thisTitle.Title);
                     if (thisTitle.Subtitle.Length > 0)
@@ -239,10 +237,10 @@ namespace SobekCM.Library.Citation.Elements
                 // Add the popup form
                 PopupFormBuilder.AppendLine("<!-- Other Title Form " + title_count + " -->");
 
-				PopupFormBuilder.AppendLine("<div class=\"title_other_popup_div sbkMetadata_PopupDiv\" id=\"form_othertitle_" + title_count + "\" style=\"display:none;\">");
-				PopupFormBuilder.AppendLine("  <div class=\"sbkMetadata_PopupTitle\"><table style=\"width:100%\"><tr><td style=\"text-align:left\">Edit Other Title</td><td style=\"text-align:right\"><a href=\"" + Help_URL(Skin_Code, Base_URL) + "\" alt=\"HELP\" target=\"_" + html_element_name.ToUpper() + "\" >?</a> &nbsp; <a href=\"#template\" alt=\"CLOSE\" onclick=\"close_othertitle_form('form_othertitle_" + title_count + "')\">X</a> &nbsp; </td></tr></table></div>");
-				PopupFormBuilder.AppendLine("  <br />");
-				PopupFormBuilder.AppendLine("  <table class=\"sbkMetadata_PopupTable\">");
+                PopupFormBuilder.AppendLine("<div class=\"title_other_popup_div sbkMetadata_PopupDiv\" id=\"form_othertitle_" + title_count + "\" style=\"display:none;\">");
+                PopupFormBuilder.AppendLine("  <div class=\"sbkMetadata_PopupTitle\"><table style=\"width:100%\"><tr><td style=\"text-align:left\">Edit Other Title</td><td style=\"text-align:right\"><a href=\"" + Help_URL(Skin_Code, Base_URL) + "\" alt=\"HELP\" target=\"_" + html_element_name.ToUpper() + "\" >?</a> &nbsp; <a href=\"#template\" alt=\"CLOSE\" onclick=\"close_othertitle_form('form_othertitle_" + title_count + "')\">X</a> &nbsp; </td></tr></table></div>");
+                PopupFormBuilder.AppendLine("  <br />");
+                PopupFormBuilder.AppendLine("  <table class=\"sbkMetadata_PopupTable\">");
 
                 // Add the title type (and optionally display label)
                 PopupFormBuilder.Append("    <tr><td style=\"width:90px\">Title Type:</td><td colspan=\"2\"><select class=\"formtitle_type_select\" name=\"formothertitletype_" + title_count + "\" id=\"formothertitletype_" + title_count + "\" onchange=\"other_title_type_change(" + title_count + ")\" >");
@@ -250,7 +248,7 @@ namespace SobekCM.Library.Citation.Elements
                                               ? "<option value=\"abbreviated\" selected=\"selected\" >Abbreviated Title</option>"
                                               : "<option value=\"abbreviated\">Abbreviated Title</option>");
 
-                if ((thisTitle.Title_Type == Title_Type_Enum.Alternative) || ( thisTitle.Title_Type == Title_Type_Enum.UNSPECIFIED ))
+                if ((thisTitle.Title_Type == Title_Type_Enum.Alternative) || (thisTitle.Title_Type == Title_Type_Enum.UNSPECIFIED))
                 {
                     PopupFormBuilder.Append("<option value=\"alternate\" selected=\"selected\" >Alternative Title</option>");
                 }
@@ -273,7 +271,7 @@ namespace SobekCM.Library.Citation.Elements
                 // Should the SELECT options be pre-established?
                 if ((thisTitle.Title_Type == Title_Type_Enum.Alternative) || (thisTitle.Title_Type == Title_Type_Enum.Uniform))
                 {
- 
+
                     PopupFormBuilder.AppendLine("        &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;");
                     PopupFormBuilder.AppendLine("        <span id=\"formothertitlesubtype_" + title_count + "\">Display Label: ");
                     PopupFormBuilder.Append(" <select class=\"formtitle_display_select\" name=\"formothertitledisplay_" + title_count + "\" id=\"formothertitledisplay_" + title_count + "\" >");
@@ -356,35 +354,35 @@ namespace SobekCM.Library.Citation.Elements
                     //popup_form_builder.Append("<option value=\"spine\">Spine title</option>");
                     PopupFormBuilder.AppendLine("</select></span></td></tr>");
                 }
-                    
+
                 // Add the nonsort and language text boxes
                 PopupFormBuilder.Append("    <tr><td>Non Sort:</td><td>");
-				PopupFormBuilder.Append("<input class=\"formtitle_small_input sbk_Focusable\" name=\"formothertitlenonsort_" + title_count + "\" id=\"formothertitlenonsort_" + title_count + "\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(thisTitle.NonSort) + "\" />");
+                PopupFormBuilder.Append("<input class=\"formtitle_small_input sbk_Focusable\" name=\"formothertitlenonsort_" + title_count + "\" id=\"formothertitlenonsort_" + title_count + "\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(thisTitle.NonSort) + "\" />");
                 PopupFormBuilder.Append("</td><td width=\"255px\" >Language: &nbsp; ");
-				PopupFormBuilder.Append("<input class=\"formtitle_small_input sbk_Focusable\" name=\"formothertitlelanguage_" + title_count + "\" id=\"formothertitlelanguage_" + title_count + "\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(thisTitle.Language) + "\" />");
+                PopupFormBuilder.Append("<input class=\"formtitle_small_input sbk_Focusable\" name=\"formothertitlelanguage_" + title_count + "\" id=\"formothertitlelanguage_" + title_count + "\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(thisTitle.Language) + "\" />");
                 PopupFormBuilder.AppendLine("</td></tr>");
 
                 // Add the title and subtitle
-				PopupFormBuilder.AppendLine("    <tr><td>Title:</td><td colspan=\"2\"><input class=\"formtitle_large_input sbk_Focusable\" name=\"formothertitletitle_" + title_count + "\" id=\"formothertitletitle_" + title_count + "\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(thisTitle.Title) + "\"  /></td></tr>");
-				PopupFormBuilder.AppendLine("    <tr><td>Sub Title:</td><td colspan=\"2\"><input class=\"formtitle_large_input sbk_Focusable\" name=\"formothertitlesubtitle_" + title_count + "\" id=\"formothertitlesubtitle_" + title_count + "\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(thisTitle.Subtitle) + "\" /></td></tr>");
+                PopupFormBuilder.AppendLine("    <tr><td>Title:</td><td colspan=\"2\"><input class=\"formtitle_large_input sbk_Focusable\" name=\"formothertitletitle_" + title_count + "\" id=\"formothertitletitle_" + title_count + "\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(thisTitle.Title) + "\"  /></td></tr>");
+                PopupFormBuilder.AppendLine("    <tr><td>Sub Title:</td><td colspan=\"2\"><input class=\"formtitle_large_input sbk_Focusable\" name=\"formothertitlesubtitle_" + title_count + "\" id=\"formothertitlesubtitle_" + title_count + "\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(thisTitle.Subtitle) + "\" /></td></tr>");
 
                 // Add the part numbers
                 PopupFormBuilder.Append("    <tr><td>Part Numbers:</td><td colspan=\"2\">");
                 if (thisTitle.Part_Numbers_Count > 0)
                 {
-					PopupFormBuilder.Append("<input class=\"formtitle_small_input sbk_Focusable\" name=\"formothertitlepartnum1_" + title_count + "\" id=\"formothertitlepartnum1_" + title_count + "\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(thisTitle.Part_Numbers[0]) + "\" />");
+                    PopupFormBuilder.Append("<input class=\"formtitle_small_input sbk_Focusable\" name=\"formothertitlepartnum1_" + title_count + "\" id=\"formothertitlepartnum1_" + title_count + "\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(thisTitle.Part_Numbers[0]) + "\" />");
                 }
                 else
                 {
-					PopupFormBuilder.Append("<input class=\"formtitle_small_input sbk_Focusable\" name=\"formothertitlepartnum1_" + title_count + "\" id=\"formothertitlepartnum1_" + title_count + "\" type=\"text\" value=\"\" />");
+                    PopupFormBuilder.Append("<input class=\"formtitle_small_input sbk_Focusable\" name=\"formothertitlepartnum1_" + title_count + "\" id=\"formothertitlepartnum1_" + title_count + "\" type=\"text\" value=\"\" />");
                 }
                 if (thisTitle.Part_Numbers_Count > 1)
                 {
-					PopupFormBuilder.Append("<input class=\"formtitle_small_input sbk_Focusable\" name=\"formothertitlepartnum2_" + title_count + "\" id=\"formothertitlepartnum2_" + title_count + "\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(thisTitle.Part_Numbers[1]) + "\" />");
+                    PopupFormBuilder.Append("<input class=\"formtitle_small_input sbk_Focusable\" name=\"formothertitlepartnum2_" + title_count + "\" id=\"formothertitlepartnum2_" + title_count + "\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(thisTitle.Part_Numbers[1]) + "\" />");
                 }
                 else
                 {
-					PopupFormBuilder.Append("<input class=\"formtitle_small_input sbk_Focusable\" name=\"formothertitlepartnum2_" + title_count + "\" id=\"formothertitlepartnum2_" + title_count + "\" type=\"text\" value=\"\" />");
+                    PopupFormBuilder.Append("<input class=\"formtitle_small_input sbk_Focusable\" name=\"formothertitlepartnum2_" + title_count + "\" id=\"formothertitlepartnum2_" + title_count + "\" type=\"text\" value=\"\" />");
                 }
                 PopupFormBuilder.AppendLine("</td></tr>");
 
@@ -392,35 +390,35 @@ namespace SobekCM.Library.Citation.Elements
                 PopupFormBuilder.Append("    <tr><td>Part Names:</td><td>");
                 if (thisTitle.Part_Names_Count > 0)
                 {
-					PopupFormBuilder.Append("<input class=\"formtitle_small_input sbk_Focusable\" name=\"formothertitlepartname1_" + title_count + "\" id=\"formothertitlepartname1_" + title_count + "\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(thisTitle.Part_Names[0]) + "\" />");
+                    PopupFormBuilder.Append("<input class=\"formtitle_small_input sbk_Focusable\" name=\"formothertitlepartname1_" + title_count + "\" id=\"formothertitlepartname1_" + title_count + "\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(thisTitle.Part_Names[0]) + "\" />");
                 }
                 else
                 {
-					PopupFormBuilder.Append("<input class=\"formtitle_small_input sbk_Focusable\" name=\"formothertitlepartname1_" + title_count + "\" id=\"formothertitlepartname1_" + title_count + "\" type=\"text\" value=\"\" />");
+                    PopupFormBuilder.Append("<input class=\"formtitle_small_input sbk_Focusable\" name=\"formothertitlepartname1_" + title_count + "\" id=\"formothertitlepartname1_" + title_count + "\" type=\"text\" value=\"\" />");
                 }
                 if (thisTitle.Part_Names_Count > 1)
                 {
-					PopupFormBuilder.Append("<input class=\"formtitle_small_input sbk_Focusable\" name=\"formothertitlepartname2_" + title_count + "\" id=\"formothertitlepartname2_" + title_count + "\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(thisTitle.Part_Names[1]) + "\" />");
+                    PopupFormBuilder.Append("<input class=\"formtitle_small_input sbk_Focusable\" name=\"formothertitlepartname2_" + title_count + "\" id=\"formothertitlepartname2_" + title_count + "\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(thisTitle.Part_Names[1]) + "\" />");
                 }
                 else
                 {
-					PopupFormBuilder.Append("<input class=\"formtitle_small_input sbk_Focusable\" name=\"formothertitlepartname2_" + title_count + "\" id=\"formothertitlepartname2_" + title_count + "\" type=\"text\" value=\"\" />");
+                    PopupFormBuilder.Append("<input class=\"formtitle_small_input sbk_Focusable\" name=\"formothertitlepartname2_" + title_count + "\" id=\"formothertitlepartname2_" + title_count + "\" type=\"text\" value=\"\" />");
                 }
-				PopupFormBuilder.Append("<td>Authority: &nbsp; <input class=\"formtitle_small_input sbk_Focusable\" name=\"formothertitleauthority_" + title_count + "\" id=\"formothertitleauthority_" + title_count + "\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(thisTitle.Authority) + "\" />");
+                PopupFormBuilder.Append("<td>Authority: &nbsp; <input class=\"formtitle_small_input sbk_Focusable\" name=\"formothertitleauthority_" + title_count + "\" id=\"formothertitleauthority_" + title_count + "\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(thisTitle.Authority) + "\" />");
                 PopupFormBuilder.AppendLine("</td></tr>");
 
-				// Finish the popup form and add the close button
-				PopupFormBuilder.AppendLine("    <tr style=\"height:35px; text-align: center; vertical-align: bottom;\">");
-				PopupFormBuilder.AppendLine("      <td colspan=\"3\"><button title=\"Close\" class=\"sbkMetadata_RoundButton\" onclick=\"close_othertitle_form('form_othertitle_" + title_count + "');\">CLOSE</button></td>");
-				PopupFormBuilder.AppendLine("    </tr>");
-				PopupFormBuilder.AppendLine("  </table>");
+                // Finish the popup form and add the close button
+                PopupFormBuilder.AppendLine("    <tr style=\"height:35px; text-align: center; vertical-align: bottom;\">");
+                PopupFormBuilder.AppendLine("      <td colspan=\"3\"><button title=\"Close\" class=\"sbkMetadata_RoundButton\" onclick=\"close_othertitle_form('form_othertitle_" + title_count + "');\">CLOSE</button></td>");
+                PopupFormBuilder.AppendLine("    </tr>");
+                PopupFormBuilder.AppendLine("  </table>");
                 PopupFormBuilder.AppendLine("</div>");
                 PopupFormBuilder.AppendLine();
 
                 title_count++;
             }
 
-            
+
             // Add the link to add a new other title
             Output.WriteLine("      </div>");
             Output.WriteLine("          </td>");
@@ -445,7 +443,7 @@ namespace SobekCM.Library.Citation.Elements
         public override void Prepare_For_Save(SobekCM_Item Bib, User_Object Current_User)
         {
             // Clear part numbers and part names ( collections ) from the series title
-            if ( Bib.Bib_Info.hasSeriesTitle )
+            if (Bib.Bib_Info.hasSeriesTitle)
                 Bib.Bib_Info.SeriesTitle.Clear();
             Bib.Bib_Info.Clear_Other_Titles();
         }
@@ -462,7 +460,7 @@ namespace SobekCM.Library.Citation.Elements
                     string type = Context.Request.Form[thisKey].TrimFirst();
                     string diff = thisKey.Replace("formothertitletype_", "");
                     string display = String.Empty;
-                    if ( !String.IsNullOrEmpty(Context.Request.Form["formothertitledisplay_" + diff].TrimFirst()) )
+                    if (!String.IsNullOrEmpty(Context.Request.Form["formothertitledisplay_" + diff].TrimFirst()))
                         display = Context.Request.Form["formothertitledisplay_" + diff].TrimFirst();
                     string nonsort = Context.Request.Form["formothertitlenonsort_" + diff].TrimFirst();
                     string title = Context.Request.Form["formothertitletitle_" + diff].TrimFirst();
@@ -495,13 +493,13 @@ namespace SobekCM.Library.Citation.Elements
                         else
                         {
                             Title_Info thisTitle = new Title_Info
-                                                       {
-                                                           Title = title,
-                                                           NonSort = nonsort,
-                                                           Subtitle = subtitle,
-                                                           Authority = authority,
-                                                           Language = language
-                                                       };
+                            {
+                                Title = title,
+                                NonSort = nonsort,
+                                Subtitle = subtitle,
+                                Authority = authority,
+                                Language = language
+                            };
                             if (partnum1.Length > 0)
                                 thisTitle.Add_Part_Number(partnum1);
                             if (partnum2.Length > 0)
@@ -587,7 +585,7 @@ namespace SobekCM.Library.Citation.Elements
                                     case "main":
                                         thisTitle.Display_Label = "Main Entry";
                                         break;
-                                    
+
                                     default:
                                         thisTitle.Display_Label = "Uniform Title";
                                         break;
@@ -609,7 +607,7 @@ namespace SobekCM.Library.Citation.Elements
         /// <summary> Reads the inner data from the CompleteTemplate XML format </summary>
         /// <param name="XMLReader"> Current template xml configuration reader </param>
         /// <remarks> This procedure does not currently read any inner xml (not yet necessary) </remarks>
-        protected override void Inner_Read_Data( XmlReader XMLReader )
+        protected override void Inner_Read_Data(XmlReader XMLReader)
         {
             // Do nothing
         }

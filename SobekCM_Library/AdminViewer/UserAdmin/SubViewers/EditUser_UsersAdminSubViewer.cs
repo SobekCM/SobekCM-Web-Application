@@ -9,11 +9,7 @@ using SobekCM.Library.UI;
 using SobekCM.Tools;
 using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SobekCM.Library.AdminViewer.UserAdmin.SubViewers
 {
@@ -26,7 +22,7 @@ namespace SobekCM.Library.AdminViewer.UserAdmin.SubViewers
         public EditUser_UsersAdminSubViewer()
         {
             // Build the tabs
-            build_tabs();       
+            build_tabs();
         }
 
         private void build_tabs()
@@ -35,7 +31,7 @@ namespace SobekCM.Library.AdminViewer.UserAdmin.SubViewers
             // WHICH CAN BE UPDATED WITH PLUG-INS.. For now...
 
             tabs = new List<iUserAdminTab>();
-            
+
             // Add basic first
             tabs.Add(new BasicInfoUserAdminTab());
 
@@ -149,7 +145,7 @@ namespace SobekCM.Library.AdminViewer.UserAdmin.SubViewers
                     Context.SessionObject()["Edit_User_" + editUser.UserID] = null;
 
                     // If this was due to an immediate save, redirect back to editing that user
-                    if ( saveImmediately )
+                    if (saveImmediately)
                     {
                         RequestSpecificValues.Current_Mode.My_Sobek_SubMode = editUser.UserID.ToString();
                     }
@@ -170,7 +166,7 @@ namespace SobekCM.Library.AdminViewer.UserAdmin.SubViewers
             }
         }
 
-        
+
         public override void Write_SubView(TextWriter Output, RequestCache RequestSpecificValues, Custom_Tracer Tracer)
         {
             // Determine which page you are on
@@ -196,9 +192,9 @@ namespace SobekCM.Library.AdminViewer.UserAdmin.SubViewers
 
             // Write the tabs 
             char tab_letter = 'a';
-            foreach( iUserAdminTab tab in tabs )
+            foreach (iUserAdminTab tab in tabs)
             {
-                if ( tab == currentTab )
+                if (tab == currentTab)
                 {
                     Output.WriteLine($"      <li class=\"tabActiveHeader\"> {tab.TabName.ToUpper()} </li>");
                 }

@@ -1,8 +1,8 @@
-﻿using System;
+﻿using Saxon.Api;
+using System;
 using System.IO;
 using System.Xml;
 using System.Xml.Xsl;
-using Saxon.Api;
 
 
 namespace SobekCM.Core.XSLT
@@ -128,7 +128,7 @@ namespace SobekCM.Core.XSLT
                                 {
                                     float version_float;
                                     if (float.TryParse(readerXml.Value, out version_float))
-                                        version = (int) Math.Round(version_float);
+                                        version = (int)Math.Round(version_float);
                                 }
                             }
 
@@ -391,7 +391,7 @@ namespace SobekCM.Core.XSLT
                 // Create the transform and load the XSL indicated
                 XslCompiledTransform transform = new XslCompiledTransform();
                 transform.Load(XSLT_File, xslt_settings, new XmlUrlResolver());
-                
+
                 // Apply the transform to convert the XML into HTML
                 StringWriter results = new StringWriter();
                 XmlReaderSettings settings = new XmlReaderSettings

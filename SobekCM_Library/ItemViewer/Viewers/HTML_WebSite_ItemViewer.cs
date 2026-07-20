@@ -1,8 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
+using Microsoft.AspNetCore.Http;
 using SobekCM.Core.BriefItem;
 using SobekCM.Core.FileSystems;
 using SobekCM.Core.Navigation;
@@ -10,7 +6,9 @@ using SobekCM.Core.Users;
 using SobekCM.Library.HTML;
 using SobekCM.Library.ItemViewer.Menu;
 using SobekCM.Tools;
-using Microsoft.AspNetCore.Http;
+using System;
+using System.Collections.Generic;
+using System.IO;
 
 namespace SobekCM.Library.ItemViewer.Viewers
 {
@@ -21,7 +19,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         private string fileFromViewerAttribute;
 
         /// <summary> Constructor for a new instance of the HTML_WebSite_ItemViewer_Prototyper class </summary>
-        public HTML_WebSite_ItemViewer_Prototyper() 
+        public HTML_WebSite_ItemViewer_Prototyper()
         {
             ViewerType = "WEBSITE";
             ViewerCode = "WEBSITE";

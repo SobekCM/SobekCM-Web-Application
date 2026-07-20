@@ -1,18 +1,16 @@
 #region Using directives
 
 using Microsoft.AspNetCore.Http;
-using System;
-using System.Collections.Generic;
-using System.IO;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Navigation;
-using SobekCM.Core.UI_Configuration;
-using SobekCM.Core.UI_Configuration.StaticResources;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
 using SobekCM.Tools;
+using System;
+using System.Collections.Generic;
+using System.IO;
 
 #endregion
 
@@ -147,7 +145,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 search_collection = "Recherche dans la collection";
             }
 
-            if ((ViewBag.Hierarchy_Object.Highlights != null) && ( ViewBag.Hierarchy_Object.Highlights.Count > 1))
+            if ((ViewBag.Hierarchy_Object.Highlights != null) && (ViewBag.Hierarchy_Object.Highlights.Count > 1))
             {
                 Output.WriteLine("<script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Contentslider_Js + "\" > </script>");
                 Output.WriteLine("<!-- *****************************************");
@@ -163,7 +161,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 
 
 
-            if (frontBannerInfo.Type == Item_Aggregation_Front_Banner_Type_Enum.Left )
+            if (frontBannerInfo.Type == Item_Aggregation_Front_Banner_Type_Enum.Left)
             {
                 string banner_image = RequestSpecificValues.Current_Mode.Base_URL + "design/" + ViewBag.Hierarchy_Object.ObjDirectory + frontBannerInfo.File.Replace("\\", "/");
                 Output.Write("      <td class=\"sbkRhav_RotatingBannerLeft\" style=\"background-image: url( " + banner_image + "); width: " + frontBannerInfo.Width + "px; height: " + frontBannerInfo.Height + "px;\">");
@@ -198,7 +196,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 base_design_location = RequestSpecificValues.Current_Mode.Base_URL + "design/aggregations/all/";
 
             // Either draw all the highlights to flip through, or just the one highlight
-            if ((ViewBag.Hierarchy_Object.Highlights != null) && ( ViewBag.Hierarchy_Object.Highlights.Count > 1))
+            if ((ViewBag.Hierarchy_Object.Highlights != null) && (ViewBag.Hierarchy_Object.Highlights.Count > 1))
             {
                 int width = 754 - frontBannerInfo.Width;
 
@@ -208,11 +206,11 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 {
                     Output.WriteLine("          <div class=\"contentdiv\" style=\"width:" + width + "px\">");
                     string highlight_text = String.Empty;
-                    if ( !String.IsNullOrEmpty(highlight.Text))
+                    if (!String.IsNullOrEmpty(highlight.Text))
                         highlight_text = System.Net.WebUtility.HtmlEncode(highlight.Text);
-                    else if ( !String.IsNullOrEmpty(highlight.Tooltip))
+                    else if (!String.IsNullOrEmpty(highlight.Tooltip))
                         highlight_text = System.Net.WebUtility.HtmlEncode(highlight.Tooltip);
-                    if ( !String.IsNullOrEmpty(highlight.Link))
+                    if (!String.IsNullOrEmpty(highlight.Link))
                     {
                         Output.WriteLine("            <a href=\"" + highlight.Link + "\" title=\"" + highlight_text + "\" >");
                     }
@@ -220,7 +218,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                         Output.WriteLine("              <img src=\"" + highlight.Image + "\" border=\"0px\" title=\"" + highlight_text + "\" alt=\"" + highlight_text + "\" />");
                     else
                         Output.WriteLine("              <img src=\"" + base_design_location + highlight.Image + "\" border=\"0px\" title=\"" + highlight_text + "\" alt=\"" + highlight_text + "\" />");
-                    if ( !String.IsNullOrEmpty(highlight.Link) )
+                    if (!String.IsNullOrEmpty(highlight.Link))
                     {
                         Output.WriteLine("            </a>");
                     }
@@ -250,7 +248,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             }
             else
             {
-                if ((ViewBag.Hierarchy_Object.Highlights != null) && ( ViewBag.Hierarchy_Object.Highlights.Count > 0))
+                if ((ViewBag.Hierarchy_Object.Highlights != null) && (ViewBag.Hierarchy_Object.Highlights.Count > 0))
                 {
                     Output.WriteLine("            <a href=\"" + ViewBag.Hierarchy_Object.Highlights[0].Link + "\" title=\"" + System.Net.WebUtility.HtmlEncode(ViewBag.Hierarchy_Object.Highlights[0].Text) + "\" >");
                     if (ViewBag.Hierarchy_Object.Highlights[0].Image.IndexOf("http:") >= 0)
@@ -265,7 +263,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             Output.WriteLine("      </td>");
 
 
-            if (frontBannerInfo.Type == Item_Aggregation_Front_Banner_Type_Enum.Right )
+            if (frontBannerInfo.Type == Item_Aggregation_Front_Banner_Type_Enum.Right)
             {
                 string banner_image = RequestSpecificValues.Current_Mode.Base_URL + "design/" + ViewBag.Hierarchy_Object.ObjDirectory + frontBannerInfo.File.Replace("\\", "/");
                 Output.WriteLine("      <td class=\"sbkRhav_RotatingBannerRight\" style=\"background-image: url( " + banner_image + "); width: " + frontBannerInfo.Width + "px; height: " + frontBannerInfo.Height + "px;\">");

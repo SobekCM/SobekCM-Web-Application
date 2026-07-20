@@ -1,14 +1,14 @@
 ﻿#region Using directives
 
+using SobekCM.Resource_Object.Bib_Info;
+using SobekCM.Resource_Object.MARC;
+using SobekCM.Resource_Object.Metadata_Modules;
+using SobekCM.Resource_Object.Metadata_Modules.GeoSpatial;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Xml;
-using SobekCM.Resource_Object.Bib_Info;
-using SobekCM.Resource_Object.MARC;
-using SobekCM.Resource_Object.Metadata_Modules;
-using SobekCM.Resource_Object.Metadata_Modules.GeoSpatial;
 
 #endregion
 
@@ -136,23 +136,23 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
 
         #region Static methods to read the MarcXML information
 
-	    /// <summary> Reads the MARC Core-compliant section of XML and stores the data in the provided digital resource </summary>
-	    /// <param name="r"> XmlTextReader from which to read the marc data </param>
-	    /// <param name="thisBibInfo">Bibliographic object into which most the values are read</param>
-	    /// <param name="package"> Digital resource object to save the data to if this is reading the top-level bibDesc (OPTIONAL)</param>
-	    /// <param name="Importing_Record"> Importing record flag is used to determine if special treatment should be applied to the 001 identifier.  If this is reading MarcXML from a dmdSec, this is set to false </param>
-	    public static void Read_MarcXML_Info(XmlReader r, Bibliographic_Info thisBibInfo, SobekCM_Item package, bool Importing_Record )
-	    {
-			Read_MarcXML_Info(r, thisBibInfo, package, Importing_Record, null );
-	    }
-
-	    /// <summary> Reads the MARC Core-compliant section of XML and stores the data in the provided digital resource </summary>
+        /// <summary> Reads the MARC Core-compliant section of XML and stores the data in the provided digital resource </summary>
         /// <param name="r"> XmlTextReader from which to read the marc data </param>
         /// <param name="thisBibInfo">Bibliographic object into which most the values are read</param>
         /// <param name="package"> Digital resource object to save the data to if this is reading the top-level bibDesc (OPTIONAL)</param>
         /// <param name="Importing_Record"> Importing record flag is used to determine if special treatment should be applied to the 001 identifier.  If this is reading MarcXML from a dmdSec, this is set to false </param>
-		/// <param name="Options"> Dictionary of any options which this metadata reader/writer may utilize </param>
-		public static void Read_MarcXML_Info(XmlReader r, Bibliographic_Info thisBibInfo, SobekCM_Item package, bool Importing_Record, Dictionary<string, object> Options )
+        public static void Read_MarcXML_Info(XmlReader r, Bibliographic_Info thisBibInfo, SobekCM_Item package, bool Importing_Record)
+        {
+            Read_MarcXML_Info(r, thisBibInfo, package, Importing_Record, null);
+        }
+
+        /// <summary> Reads the MARC Core-compliant section of XML and stores the data in the provided digital resource </summary>
+        /// <param name="r"> XmlTextReader from which to read the marc data </param>
+        /// <param name="thisBibInfo">Bibliographic object into which most the values are read</param>
+        /// <param name="package"> Digital resource object to save the data to if this is reading the top-level bibDesc (OPTIONAL)</param>
+        /// <param name="Importing_Record"> Importing record flag is used to determine if special treatment should be applied to the 001 identifier.  If this is reading MarcXML from a dmdSec, this is set to false </param>
+        /// <param name="Options"> Dictionary of any options which this metadata reader/writer may utilize </param>
+        public static void Read_MarcXML_Info(XmlReader r, Bibliographic_Info thisBibInfo, SobekCM_Item package, bool Importing_Record, Dictionary<string, object> Options)
         {
             // Create the MARC_XML_Reader to load everything into first
             MARC_Record record = new MARC_Record();
@@ -160,23 +160,23 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
             // Read from the file
             record.Read_MARC_Info(r);
 
-			// Handle optional mapping first for retaining the 856 as a related link
-		    if ((Options != null) && (Options.ContainsKey("MarcXML_File_ReaderWriter.Retain_856_As_Related_Link")))
-		    {
-			    if (Options["MarcXML_File_ReaderWriter.Retain_856_As_Related_Link"].ToString().ToUpper() == "TRUE")
-			    {
-				    if ((record.Get_Data_Subfield(856, 'u').Length > 0) && (record.Get_Data_Subfield(856, 'y').Length > 0))
-				    {
-					    string url856 = record.Get_Data_Subfield(856, 'u');
-					    string label856 = record.Get_Data_Subfield(856, 'y');
+            // Handle optional mapping first for retaining the 856 as a related link
+            if ((Options != null) && (Options.ContainsKey("MarcXML_File_ReaderWriter.Retain_856_As_Related_Link")))
+            {
+                if (Options["MarcXML_File_ReaderWriter.Retain_856_As_Related_Link"].ToString().ToUpper() == "TRUE")
+                {
+                    if ((record.Get_Data_Subfield(856, 'u').Length > 0) && (record.Get_Data_Subfield(856, 'y').Length > 0))
+                    {
+                        string url856 = record.Get_Data_Subfield(856, 'u');
+                        string label856 = record.Get_Data_Subfield(856, 'y');
 
-					    thisBibInfo.Location.Other_URL = url856;
-					    thisBibInfo.Location.Other_URL_Note = label856;
-				    }
-			    }
-		    }
+                        thisBibInfo.Location.Other_URL = url856;
+                        thisBibInfo.Location.Other_URL_Note = label856;
+                    }
+                }
+            }
 
-		    // Now, load values into the bib package 
+            // Now, load values into the bib package 
             // Load the date ( 260 |c )
             thisBibInfo.Origin_Info.MARC_DateIssued = Remove_Trailing_Punctuation(record.Get_Data_Subfield(260, 'c'));
 
@@ -220,120 +220,120 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                     package.Add_Metadata_Module(GlobalVar.GEOSPATIAL_METADATA_MODULE_KEY, geoInfo);
                 }
 
-	            if (geoInfo.Polygon_Count == 0)
-	            {
-		            try
-		            {
+                if (geoInfo.Polygon_Count == 0)
+                {
+                    try
+                    {
 
-			            string d_field = record.Get_Data_Subfield(034, 'd').Replace("O", "0");
-			            string e_field = record.Get_Data_Subfield(034, 'e').Replace("O", "0");
-			            string f_field = record.Get_Data_Subfield(034, 'f').Replace("O", "0");
-			            string g_field = record.Get_Data_Subfield(034, 'g').Replace("O", "0");
+                        string d_field = record.Get_Data_Subfield(034, 'd').Replace("O", "0");
+                        string e_field = record.Get_Data_Subfield(034, 'e').Replace("O", "0");
+                        string f_field = record.Get_Data_Subfield(034, 'f').Replace("O", "0");
+                        string g_field = record.Get_Data_Subfield(034, 'g').Replace("O", "0");
 
-			            double d_value = 1;
-			            double e_value = 1;
-			            double f_value = 1;
-			            double g_value = 1;
+                        double d_value = 1;
+                        double e_value = 1;
+                        double f_value = 1;
+                        double g_value = 1;
 
-			            if (d_field.Contains("."))
-			            {
-				            if (d_field.Contains("W"))
-				            {
-					            d_value = -1*Convert.ToDouble(d_field.Replace("W", ""));
-				            }
-				            else
-				            {
-					            d_value = Convert.ToDouble(d_field.Replace("E", ""));
-				            }
-			            }
-			            else
-			            {
-				            d_value = Convert.ToDouble(d_field.Substring(1, 3)) + (Convert.ToDouble(d_field.Substring(4, 2))/60);
+                        if (d_field.Contains("."))
+                        {
+                            if (d_field.Contains("W"))
+                            {
+                                d_value = -1 * Convert.ToDouble(d_field.Replace("W", ""));
+                            }
+                            else
+                            {
+                                d_value = Convert.ToDouble(d_field.Replace("E", ""));
+                            }
+                        }
+                        else
+                        {
+                            d_value = Convert.ToDouble(d_field.Substring(1, 3)) + (Convert.ToDouble(d_field.Substring(4, 2)) / 60);
 
-				            if ((d_field[0] == '-') || (d_field[0] == 'W'))
-				            {
-					            d_value = -1*d_value;
-				            }
-			            }
+                            if ((d_field[0] == '-') || (d_field[0] == 'W'))
+                            {
+                                d_value = -1 * d_value;
+                            }
+                        }
 
-			            if (d_value < -180)
-				            d_value = d_value + 360;
+                        if (d_value < -180)
+                            d_value = d_value + 360;
 
-			            if (e_field.Contains("."))
-			            {
-				            if (e_field.Contains("W"))
-				            {
-					            e_value = -1*Convert.ToDouble(e_field.Replace("W", ""));
-				            }
-				            else
-				            {
-					            e_value = Convert.ToDouble(e_field.Replace("E", ""));
-				            }
-			            }
-			            else
-			            {
-				            e_value = Convert.ToDouble(e_field.Substring(1, 3)) + (Convert.ToDouble(e_field.Substring(4, 2))/60);
+                        if (e_field.Contains("."))
+                        {
+                            if (e_field.Contains("W"))
+                            {
+                                e_value = -1 * Convert.ToDouble(e_field.Replace("W", ""));
+                            }
+                            else
+                            {
+                                e_value = Convert.ToDouble(e_field.Replace("E", ""));
+                            }
+                        }
+                        else
+                        {
+                            e_value = Convert.ToDouble(e_field.Substring(1, 3)) + (Convert.ToDouble(e_field.Substring(4, 2)) / 60);
 
-				            if ((e_field[0] == '-') || (e_field[0] == 'W'))
-				            {
-					            e_value = -1*e_value;
-				            }
-			            }
+                            if ((e_field[0] == '-') || (e_field[0] == 'W'))
+                            {
+                                e_value = -1 * e_value;
+                            }
+                        }
 
-			            if (e_value < -180)
-				            e_value = e_value + 360;
+                        if (e_value < -180)
+                            e_value = e_value + 360;
 
-			            if (f_field.Contains("."))
-			            {
-				            if (f_field.Contains("S"))
-				            {
-					            f_value = -1*Convert.ToDouble(f_field.Replace("S", ""));
-				            }
-				            else
-				            {
-					            f_value = Convert.ToDouble(f_field.Replace("N", ""));
-				            }
-			            }
-			            else
-			            {
-				            f_value = Convert.ToDouble(f_field.Substring(1, 3)) + (Convert.ToDouble(f_field.Substring(4, 2))/60);
+                        if (f_field.Contains("."))
+                        {
+                            if (f_field.Contains("S"))
+                            {
+                                f_value = -1 * Convert.ToDouble(f_field.Replace("S", ""));
+                            }
+                            else
+                            {
+                                f_value = Convert.ToDouble(f_field.Replace("N", ""));
+                            }
+                        }
+                        else
+                        {
+                            f_value = Convert.ToDouble(f_field.Substring(1, 3)) + (Convert.ToDouble(f_field.Substring(4, 2)) / 60);
 
-				            if ((f_field[0] == '-') || (f_field[0] == 'S'))
-				            {
-					            f_value = -1*f_value;
-				            }
-			            }
+                            if ((f_field[0] == '-') || (f_field[0] == 'S'))
+                            {
+                                f_value = -1 * f_value;
+                            }
+                        }
 
-			            if (g_field.Contains("."))
-			            {
-				            if (g_field.Contains("S"))
-				            {
-					            g_value = -1*Convert.ToDouble(g_field.Replace("S", ""));
-				            }
-				            else
-				            {
-					            g_value = Convert.ToDouble(g_field.Replace("N", ""));
-				            }
-			            }
-			            else
-			            {
-				            g_value = Convert.ToDouble(g_field.Substring(1, 3)) + (Convert.ToDouble(g_field.Substring(4, 2))/60);
+                        if (g_field.Contains("."))
+                        {
+                            if (g_field.Contains("S"))
+                            {
+                                g_value = -1 * Convert.ToDouble(g_field.Replace("S", ""));
+                            }
+                            else
+                            {
+                                g_value = Convert.ToDouble(g_field.Replace("N", ""));
+                            }
+                        }
+                        else
+                        {
+                            g_value = Convert.ToDouble(g_field.Substring(1, 3)) + (Convert.ToDouble(g_field.Substring(4, 2)) / 60);
 
-				            if ((g_field[0] == '-') || (g_field[0] == 'S'))
-				            {
-					            g_value = -1*g_value;
-				            }
-			            }
-			            Coordinate_Polygon polygon = new Coordinate_Polygon();
-			            polygon.Add_Edge_Point(f_value, d_value);
-			            polygon.Add_Edge_Point(g_value, d_value);
-			            polygon.Add_Edge_Point(g_value, e_value);
-			            polygon.Add_Edge_Point(f_value, e_value);
-			            polygon.Label = "Map Coverage";
-			            geoInfo.Add_Polygon(polygon);
-		            }
-		            catch {   }
-	            }
+                            if ((g_field[0] == '-') || (g_field[0] == 'S'))
+                            {
+                                g_value = -1 * g_value;
+                            }
+                        }
+                        Coordinate_Polygon polygon = new Coordinate_Polygon();
+                        polygon.Add_Edge_Point(f_value, d_value);
+                        polygon.Add_Edge_Point(g_value, d_value);
+                        polygon.Add_Edge_Point(g_value, e_value);
+                        polygon.Add_Edge_Point(f_value, e_value);
+                        polygon.Label = "Map Coverage";
+                        geoInfo.Add_Polygon(polygon);
+                    }
+                    catch { }
+                }
             }
 
             // Add the abstract ( 520 |a )
@@ -2556,15 +2556,15 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
             {
                 if (thisRecord.has_Subfield('a'))
                 {
-					if (thisRecord.has_Subfield('b'))
-					{
-						thisBibInfo.Add_Note(thisRecord['a'] + " " + thisRecord['b'], Note_Type_Enum.Biographical);
-					}
-					else
-					{
-						thisBibInfo.Add_Note(thisRecord['a'], Note_Type_Enum.Biographical);
-					}
-                    
+                    if (thisRecord.has_Subfield('b'))
+                    {
+                        thisBibInfo.Add_Note(thisRecord['a'] + " " + thisRecord['b'], Note_Type_Enum.Biographical);
+                    }
+                    else
+                    {
+                        thisBibInfo.Add_Note(thisRecord['a'], Note_Type_Enum.Biographical);
+                    }
+
                 }
             }
 
@@ -2707,7 +2707,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
             }
 
             // Look for any other NOTES fields ( 500, 501, 513, 522, 525, 563, 567, 586 )
-            int[] other_notes = new int[] {500, 501, 513, 522, 525, 563, 567, 586};
+            int[] other_notes = new int[] { 500, 501, 513, 522, 525, 563, 567, 586 };
             foreach (int tagNumber in other_notes)
             {
                 foreach (MARC_Field thisRecord in record[tagNumber])

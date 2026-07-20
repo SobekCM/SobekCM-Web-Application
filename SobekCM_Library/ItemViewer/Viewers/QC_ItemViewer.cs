@@ -1,3 +1,23 @@
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Primitives;
+using SobekCM.Core.BriefItem;
+using SobekCM.Core.Configuration;
+using SobekCM.Core.Configuration.Localization;
+using SobekCM.Core.FileSystems;
+using SobekCM.Core.MemoryMgmt;
+using SobekCM.Core.Navigation;
+using SobekCM.Core.Users;
+using SobekCM.Engine_Library.Configuration;
+using SobekCM.Engine_Library.Database;
+using SobekCM.Engine_Library.Email;
+using SobekCM.Engine_Library.Items;
+using SobekCM.Library.HTML;
+using SobekCM.Library.ItemViewer.Menu;
+using SobekCM.Library.UI;
+using SobekCM.Resource_Object;
+using SobekCM.Resource_Object.Divisions;
+using SobekCM.Tools;
+using SobekCM_Resource_Database;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -5,32 +25,6 @@ using System.Data;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using SobekCM.Core.BriefItem;
-using SobekCM.Core.Client;
-using SobekCM.Core.Configuration;
-using SobekCM.Core.Configuration.Localization;
-using SobekCM.Core.FileSystems;
-using SobekCM.Core.MemoryMgmt;
-using SobekCM.Core.Navigation;
-using SobekCM.Core.UI_Configuration;
-using SobekCM.Core.UI_Configuration.StaticResources;
-using SobekCM.Core.Users;
-using SobekCM.Engine_Library.Configuration;
-using SobekCM.Engine_Library.Database;
-using SobekCM.Engine_Library.Email;
-using SobekCM.Engine_Library.Items;
-using SobekCM.Library.Database;
-using SobekCM.Library.HTML;
-using SobekCM.Library.ItemViewer.Menu;
-using SobekCM.Library.UI;
-using SobekCM.Resource_Object;
-using SobekCM.Resource_Object.Divisions;
-using SobekCM.Resource_Object.Utilities;
-using SobekCM.Tools;
-using SobekCM_Resource_Database;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Primitives;
 
 namespace SobekCM.Library.ItemViewer.Viewers
 {
@@ -106,7 +100,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <param name="CurrentRequest"> Information about the current request </param>
         /// <param name="MenuItems"> List of menu items, to which this method may add one or more menu items </param>
         /// <param name="IsRestricted"> Flag indicates if this item is restricted AND the current user is outside the ranges or not in the proper groups</param>
-        public virtual void Add_Menu_Items(BriefItemInfo CurrentItem, User_Object CurrentUser, Navigation_Object CurrentRequest, List<Item_MenuItem> MenuItems, bool IsRestricted )
+        public virtual void Add_Menu_Items(BriefItemInfo CurrentItem, User_Object CurrentUser, Navigation_Object CurrentRequest, List<Item_MenuItem> MenuItems, bool IsRestricted)
         {
             // Do nothing since this is already handed and added to the menu by the MANAGE MENU item viewer
         }
@@ -218,7 +212,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
 
             //If there are no pages for this item, redirect to the image upload screen
-            if ((BriefItem.Images == null ) || ( BriefItem.Images.Count == 0 ))
+            if ((BriefItem.Images == null) || (BriefItem.Images.Count == 0))
             {
                 CurrentRequest.Mode = Display_Mode_Enum.My_Sobek;
                 CurrentRequest.My_Sobek_Type = My_Sobek_Type_Enum.Page_Images_Management;
@@ -526,7 +520,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     {
                         foreach (QC_Viewer_Page_Division_Info thisPage in selected_page_div_from_form)
                         {
-                            if (( thisPage.METS_StructMap_Page_Node.Files != null ) && ( thisPage.METS_StructMap_Page_Node.Files.Count > 0 ))
+                            if ((thisPage.METS_StructMap_Page_Node.Files != null) && (thisPage.METS_StructMap_Page_Node.Files.Count > 0))
                                 Delete_Resource_File(thisPage.METS_StructMap_Page_Node.Files[0].File_Name_Sans_Extension);
                         }
                     }
@@ -932,7 +926,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             {
                 thisNode.Label = String.Empty;
                 string file_sans = "missing" + newPageCount;
-                if (( thisNode.Files != null ) && ( thisNode.Files.Count > 0 ))
+                if ((thisNode.Files != null) && (thisNode.Files.Count > 0))
                     file_sans = thisNode.Files[0].File_Name_Sans_Extension;
                 if (!nodeToFilename.ContainsKey(file_sans))
                 {
@@ -2194,7 +2188,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             {
                 foreach (Page_TreeNode thisFile in static_pages)
                 {
-                    if (( thisFile.Files != null ) && ( thisFile.Files.Count > 0 ))
+                    if ((thisFile.Files != null) && (thisFile.Files.Count > 0))
                         Output.WriteLine("<option value=\"" + thisFile.Files[0].File_Name_Sans_Extension + "\">" + thisFile.Files[0].File_Name_Sans_Extension + "</option>");
                 }
             }
@@ -2624,7 +2618,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
 
             //iterate through the page items
-            if (static_pages.Count > 0 )
+            if (static_pages.Count > 0)
             {
                 // Add the option to GO TO a certain thumbnail next
                 Output.WriteLine("<div id=\"sbkQc_GoToThumbnailDiv\"><span id=\"GoToThumbnailTextSpan\">" + Go_To_Thumbnail + ":</span><select id=\"selectGoToThumbnail\" onchange=\"location=this.options[this.selectedIndex].value; AddAnchorDivEffect_QC(this.options[this.selectedIndex].value);\" /></div>");
@@ -2636,7 +2630,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     thumbnail_count++;
                     string currentPageURL1 = UrlWriterHelper.Redirect_URL(CurrentRequest, (thumbnail_count / thumbnails_per_page + (thumbnail_count % thumbnails_per_page == 0 ? 0 : 1)).ToString() + "qc");
                     string filename = "Empty Page";
-                    if (( thisFile.Files != null ) && ( thisFile.Files.Count > 0 ))
+                    if ((thisFile.Files != null) && (thisFile.Files.Count > 0))
                         filename = thisFile.Files[0].File_Name_Sans_Extension;
                     string tooltipText = String.Empty;
 
@@ -2845,15 +2839,15 @@ namespace SobekCM.Library.ItemViewer.Viewers
             get
             {
                 return new List<HtmlSubwriter_Behaviors_Enum>
-					{
-						HtmlSubwriter_Behaviors_Enum.Item_Subwriter_NonWindowed_Mode,
-						HtmlSubwriter_Behaviors_Enum.Suppress_Footer,
-						HtmlSubwriter_Behaviors_Enum.Suppress_Internal_Header,
-						HtmlSubwriter_Behaviors_Enum.Item_Subwriter_Suppress_Bottom_Pagination,
-						HtmlSubwriter_Behaviors_Enum.Item_Subwriter_Suppress_Item_Menu,
-						HtmlSubwriter_Behaviors_Enum.Item_Subwriter_Suppress_Left_Navigation_Bar,
-						HtmlSubwriter_Behaviors_Enum.Item_Subwriter_Full_JQuery_UI
-					};
+                    {
+                        HtmlSubwriter_Behaviors_Enum.Item_Subwriter_NonWindowed_Mode,
+                        HtmlSubwriter_Behaviors_Enum.Suppress_Footer,
+                        HtmlSubwriter_Behaviors_Enum.Suppress_Internal_Header,
+                        HtmlSubwriter_Behaviors_Enum.Item_Subwriter_Suppress_Bottom_Pagination,
+                        HtmlSubwriter_Behaviors_Enum.Item_Subwriter_Suppress_Item_Menu,
+                        HtmlSubwriter_Behaviors_Enum.Item_Subwriter_Suppress_Left_Navigation_Bar,
+                        HtmlSubwriter_Behaviors_Enum.Item_Subwriter_Full_JQuery_UI
+                    };
             }
         }
 

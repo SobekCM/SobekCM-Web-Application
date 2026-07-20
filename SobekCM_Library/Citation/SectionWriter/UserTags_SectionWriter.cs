@@ -1,10 +1,9 @@
-﻿using System;
-using System.IO;
-using System.Text;
-using SobekCM.Core.BriefItem;
+﻿using SobekCM.Core.BriefItem;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.UI_Configuration.Citation;
 using SobekCM.Tools;
+using System;
+using System.Text;
 
 namespace SobekCM.Library.Citation.SectionWriter
 {

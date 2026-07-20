@@ -18,12 +18,12 @@ namespace SobekCM.Resource_Object.Divisions
     public class Division_Info : XML_Writing_Base_Type
     {
         private string source_directory;
-        
+
         private readonly Division_Tree downloadDivisionTree;
         private readonly Division_Tree physicalDivisionTree;
         private readonly Division_Tree oerDivisionTree;
 
-        private List<Outer_Division_Info> outerDivisions;  
+        private List<Outer_Division_Info> outerDivisions;
 
         private int directly_set_page_count;
         private bool suppress_checksum;
@@ -45,7 +45,7 @@ namespace SobekCM.Resource_Object.Divisions
         /// <summary> Get the number of outer divisions </summary>
         public int Outer_Division_Count
         {
-            get 
+            get
             {
                 return outerDivisions == null ? 0 : outerDivisions.Count;
             }
@@ -183,7 +183,7 @@ namespace SobekCM.Resource_Object.Divisions
             {
                 if (thisNode.Page)
                 {
-                    Page_TreeNode pageNode = (Page_TreeNode) thisNode;
+                    Page_TreeNode pageNode = (Page_TreeNode)thisNode;
                     foreach (SobekCM_File_Info thisFile in pageNode.Files)
                     {
                         thisFile.Checksum_Type = null;
@@ -198,7 +198,7 @@ namespace SobekCM.Resource_Object.Divisions
             {
                 if (thisNode.Page)
                 {
-                    Page_TreeNode pageNode = (Page_TreeNode) thisNode;
+                    Page_TreeNode pageNode = (Page_TreeNode)thisNode;
                     foreach (SobekCM_File_Info thisFile in pageNode.Files)
                     {
                         thisFile.Checksum_Type = null;
@@ -565,7 +565,7 @@ namespace SobekCM.Resource_Object.Divisions
                                 thisFile.Checksum_Type = "MD5";
                             }
                         }
-                        catch {}
+                        catch { }
 
                         file_count++;
 
@@ -599,7 +599,7 @@ namespace SobekCM.Resource_Object.Divisions
                                 thisFile.Checksum_Type = "MD5";
                             }
                         }
-                        catch{}
+                        catch { }
 
                         file_count++;
 
@@ -638,7 +638,7 @@ namespace SobekCM.Resource_Object.Divisions
             OpenTextbook_Tree.Write_METS(Output_Stream, MainTitle, "STRUCT3", "oer", DmdSecIds, AmdSecIds, outerDivisions);
         }
 
-        
+
 
         #endregion
 

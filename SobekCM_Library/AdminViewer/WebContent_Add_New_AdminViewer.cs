@@ -1,27 +1,24 @@
-using System;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.IO;
-using System.Text;
 using Microsoft.AspNetCore.Http;
 using SobekCM.Core.Client;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Message;
 using SobekCM.Core.Navigation;
-using SobekCM.Core.UI_Configuration;
-using SobekCM.Core.UI_Configuration.StaticResources;
 using SobekCM.Core.WebContent;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Library.HTML;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Text;
 
 namespace SobekCM.Library.AdminViewer
 {
     /// <summary> Viewer is used to add new web content pages to the system </summary>
     public class WebContent_Add_New_AdminViewer : abstract_AdminViewer
     {
-        
+
         private readonly string actionMessage;
 
         private readonly string level1;
@@ -125,17 +122,17 @@ namespace SobekCM.Library.AdminViewer
                         // Build this web content page
                         HTML_Based_Content newContent = new HTML_Based_Content
                         {
-                            WebContentID = -1, 
-                            Level1 = level1, 
-                            Level2 = level2, 
-                            Level3 = level3, 
-                            Level4 = level4, 
-                            Level5 = level5, 
-                            Level6 = level6, 
-                            Level7 = level7, 
-                            Level8 = level8, 
-                            Title = title, 
-                            Description = description, 
+                            WebContentID = -1,
+                            Level1 = level1,
+                            Level2 = level2,
+                            Level3 = level3,
+                            Level4 = level4,
+                            Level5 = level5,
+                            Level6 = level6,
+                            Level7 = level7,
+                            Level8 = level8,
+                            Title = title,
+                            Description = description,
                             Web_Skin = webSkin,
                             Author = RequestSpecificValues.Current_User.Full_Name,
                             Date = DateTime.Now.ToShortDateString()
@@ -183,7 +180,7 @@ namespace SobekCM.Library.AdminViewer
                         {
                             actionMessage = "ERROR: Exception deserializing the REST response message.";
                         }
-                        
+
                     }
                 }
             }
@@ -228,7 +225,7 @@ namespace SobekCM.Library.AdminViewer
                 }
             }
 
-    
+
         }
 
         /// <summary> Gets the collection of special behaviors which this admin or mySobek viewer
@@ -306,7 +303,7 @@ namespace SobekCM.Library.AdminViewer
             RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Home;
             string cancel_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
             RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.WebContent_Add_New;
-        
+
             // Add the buttons
             Output.WriteLine("  <div class=\"sbkSeav_ButtonsDiv\">");
             Output.WriteLine("    <button title=\"Do not apply changes\" class=\"sbkAdm_RoundButton\" onclick=\"window.location.href='" + cancel_url + "';return false;\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"sbkAdm_RoundButton_LeftImg\" alt=\"\" /> CANCEL</button> &nbsp; &nbsp; ");
@@ -516,7 +513,7 @@ namespace SobekCM.Library.AdminViewer
 
 
 
-  
+
 
             Output.WriteLine("</div>");
             Output.WriteLine("</div>");
@@ -528,7 +525,7 @@ namespace SobekCM.Library.AdminViewer
 
         /// <summary> Gets the CSS class of the container that the page is wrapped within </summary>
         /// <value> Returns 'sbkWcav_ContainerInner' </value>
-        public override string Container_CssClass { get { return "sbkWcav_ContainerInner"; } }        
+        public override string Container_CssClass { get { return "sbkWcav_ContainerInner"; } }
 
     }
 }

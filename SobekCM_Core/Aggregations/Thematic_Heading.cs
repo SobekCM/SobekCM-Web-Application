@@ -1,8 +1,8 @@
 ﻿#region Using directives
 
+using ProtoBuf;
 using System;
 using System.Runtime.Serialization;
-using ProtoBuf;
 
 #endregion
 

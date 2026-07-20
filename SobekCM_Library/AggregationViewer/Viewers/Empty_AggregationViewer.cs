@@ -1,16 +1,12 @@
 using Microsoft.AspNetCore.Http;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.Navigation;
 using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
 using SobekCM.Tools;
+using System.Collections.Generic;
+using System.IO;
 
 namespace SobekCM.Library.AggregationViewer.Viewers
 {
@@ -37,7 +33,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 
         /// <summary> Gets the type of collection view or search supported by this collection viewer </summary>
         /// <value> This returns the <see cref="Item_Aggregation_Views_Searches_Enum.Empty"/> enumerational value </value>
-        public override Item_Aggregation_Views_Searches_Enum Type { get { return Item_Aggregation_Views_Searches_Enum.Empty; }  }
+        public override Item_Aggregation_Views_Searches_Enum Type { get { return Item_Aggregation_Views_Searches_Enum.Empty; } }
 
         /// <summary>Flag indicates whether the subaggregation selection panel is displayed for this collection viewer</summary>
         /// <value> This property always returns the <see cref="Selection_Panel_Display_Enum.Never"/> enumerational value </value>

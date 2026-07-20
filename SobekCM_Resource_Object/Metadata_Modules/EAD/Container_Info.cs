@@ -69,7 +69,7 @@ namespace SobekCM.Resource_Object.Metadata_Modules.EAD
         {
             get { return Children == null ? 0 : Children.Count; }
         }
-        
+
         #endregion
 
         #region Methods used (retained) for convenience, that actually reference DID properties
@@ -136,7 +136,7 @@ namespace SobekCM.Resource_Object.Metadata_Modules.EAD
         {
             // Write the information for this tage
             Builder.AppendLine(Did.Unit_Title + "<br />");
-            if (Children_Count > 0 )
+            if (Children_Count > 0)
             {
                 Builder.AppendLine("<blockquote>");
                 foreach (Container_Info component in Children)

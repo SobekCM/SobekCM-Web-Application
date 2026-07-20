@@ -1,9 +1,9 @@
-﻿using System;
+﻿using ProtoBuf;
+using SobekCM.Tools;
+using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
-using ProtoBuf;
-using SobekCM.Tools;
 
 namespace SobekCM.Core.BriefItem
 {
@@ -68,7 +68,7 @@ namespace SobekCM.Core.BriefItem
         /// <summary> Type for the overall item group (title) </summary>
         [DataMember(EmitDefaultValue = false, Name = "groupType")]
         [XmlAttribute("groupType")]
-        [ProtoMember(9)] 
+        [ProtoMember(9)]
         public string GroupType { get; set; }
 
         /// <summary> Title associated with the overall item group </summary>
@@ -80,13 +80,13 @@ namespace SobekCM.Core.BriefItem
         /// <summary> Gets and sets the name of the main thumbnail file </summary>
         [DataMember(EmitDefaultValue = false, Name = "thumbnail")]
         [XmlAttribute("thumbnail")]
-        [ProtoMember(11)] 
+        [ProtoMember(11)]
         public string Main_Thumbnail { get; set; }
 
         /// <summary> Flag indicates if checkout is required for this item, in which case this is a single use digital item </summary>
         [DataMember(EmitDefaultValue = false, Name = "singleUse")]
         [XmlAttribute("singleUse")]
-        [ProtoMember(12)] 
+        [ProtoMember(12)]
         public bool Single_Use { get; set; }
 
         /// <summary> List of wordmark codes attached to this item </summary>
@@ -168,7 +168,7 @@ namespace SobekCM.Core.BriefItem
         /// <param name="GroupID"> Primary key to this user group </param>
         /// <param name="GroupName"> Name of this user group </param>
         /// <param name="CanView"> Flag indicates this user group can view the item </param>
-        public void Add_Restriction(int GroupID, string GroupName, bool CanView )
+        public void Add_Restriction(int GroupID, string GroupName, bool CanView)
         {
             if (Restrictions == null) Restrictions = new List<BriefItem_UserGroupRestrictions>();
 
@@ -246,7 +246,7 @@ namespace SobekCM.Core.BriefItem
             {
                 // Ensure the dictionary is defined
                 if (viewerTypeToConfig == null)
-                    viewerTypeToConfig = new Dictionary<string, BriefItem_BehaviorViewer>( StringComparer.OrdinalIgnoreCase);
+                    viewerTypeToConfig = new Dictionary<string, BriefItem_BehaviorViewer>(StringComparer.OrdinalIgnoreCase);
 
                 // If there are no viewers, just clear the current config
                 if ((Viewers == null) || (Viewers.Count == 0))

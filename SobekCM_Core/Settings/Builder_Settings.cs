@@ -1,11 +1,11 @@
 ﻿#region Using directives
 
+using ProtoBuf;
+using SobekCM.Core.Builder;
 using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
-using ProtoBuf;
-using SobekCM.Core.Builder;
 
 #endregion
 
@@ -33,7 +33,7 @@ namespace SobekCM.Core.Settings
             ItemDeleteModulesSettings = new List<Builder_Module_Setting>();
             ScheduledModulesSettings = new List<Builder_Schedulable_Module_Setting>();
         }
-        
+
         /// <summary> [DataMember] List of all the incoming folders which should be checked for new resources </summary>
         [DataMember(Name = "folders")]
         [XmlArray("folders")]
@@ -89,7 +89,7 @@ namespace SobekCM.Core.Settings
 
 
         /// <summary> Flag indicates if the page turner should be added automatically </summary>
-        [DataMember(Name="addPageTurner")]
+        [DataMember(Name = "addPageTurner")]
         [XmlElement("addPageTurner")]
         [ProtoMember(6)]
         public bool Add_PageTurner_ItemViewer { get; set; }

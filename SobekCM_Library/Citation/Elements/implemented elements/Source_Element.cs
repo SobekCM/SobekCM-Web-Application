@@ -1,19 +1,17 @@
 #region Using directives
 
+using SobekCM.Core.Aggregations;
+using SobekCM.Core.ApplicationState;
+using SobekCM.Core.Configuration.Localization;
+using SobekCM.Core.Users;
+using SobekCM.Library.UI;
+using SobekCM.Resource_Object;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Text;
-using Microsoft.AspNetCore.Http;
-using SobekCM.Core.Aggregations;
-using SobekCM.Core.ApplicationState;
-using SobekCM.Core.Configuration;
-using SobekCM.Core.Configuration.Localization;
-using SobekCM.Core.Users;
-using SobekCM.Library.UI;
-using SobekCM.Resource_Object;
 
 #endregion
 
@@ -35,7 +33,7 @@ namespace SobekCM.Library.Citation.Elements
 
             // Get the codes to display in the source
             codeToNameDictionary = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-            if (UI_ApplicationCache_Gateway.Aggregations != null )
+            if (UI_ApplicationCache_Gateway.Aggregations != null)
             {
                 SortedList<string, string> tempItemList = new SortedList<string, string>(StringComparer.OrdinalIgnoreCase);
                 foreach (string thisType in UI_ApplicationCache_Gateway.Aggregations.All_Types)
@@ -91,7 +89,7 @@ namespace SobekCM.Library.Citation.Elements
         /// <param name="Translator"> Language support object which handles simple translational duties </param>
         /// <param name="Base_URL"> Base URL for the current request </param>
         /// <remarks> This simple element does not append any popup form to the popup_form_builder</remarks>
-        public override void Render_Template_HTML(TextWriter Output, SobekCM_Item Bib, string Skin_Code, bool IsMozilla, StringBuilder PopupFormBuilder, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL )
+        public override void Render_Template_HTML(TextWriter Output, SobekCM_Item Bib, string Skin_Code, bool IsMozilla, StringBuilder PopupFormBuilder, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL)
         {
             // Check that an acronym exists
             if (Acronym.Length == 0)
@@ -119,8 +117,8 @@ namespace SobekCM.Library.Citation.Elements
 
             // Check the user to see if this should be limited
             bool some_set_as_selectable = false;
-            List<string> possibles = new List<string> {Bib.Bib_Info.Source.Code.ToUpper()};
-            if ((!Current_User.Is_Internal_User) && (Current_User.PermissionedAggregations != null ))
+            List<string> possibles = new List<string> { Bib.Bib_Info.Source.Code.ToUpper() };
+            if ((!Current_User.Is_Internal_User) && (Current_User.PermissionedAggregations != null))
             {
                 // Are there aggregationPermissions set aside for the user?
                 List<User_Permissioned_Aggregation> allAggrs = Current_User.PermissionedAggregations;
@@ -199,7 +197,7 @@ namespace SobekCM.Library.Citation.Elements
         /// <param name="Bib"> Object into which to save this element's constant data </param>
         public override void Save_Constant_To_Bib(SobekCM_Item Bib)
         {
-            if ((DefaultCodes.Count > 0 ) || ( DefaultValues.Count > 0 ))
+            if ((DefaultCodes.Count > 0) || (DefaultValues.Count > 0))
             {
                 if ((DefaultCodes.Count > 0) && (DefaultCodes[0].Length > 0))
                     Bib.Bib_Info.Source.Code = DefaultCodes[0];

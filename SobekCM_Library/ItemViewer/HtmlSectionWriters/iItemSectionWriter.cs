@@ -1,8 +1,8 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using SobekCM.Core.BriefItem;
+﻿using SobekCM.Core.BriefItem;
 using SobekCM.Library.HTML;
 using SobekCM.Library.ItemViewer.Viewers;
+using System.Collections.Generic;
+using System.IO;
 
 namespace SobekCM.Library.ItemViewer.HtmlSectionWriters
 {

@@ -1,17 +1,15 @@
 #region Using directives
 
+using SobekCM.Core.ApplicationState;
+using SobekCM.Core.Configuration.Localization;
+using SobekCM.Core.Users;
+using SobekCM.Resource_Object;
+using SobekCM.Resource_Object.Bib_Info;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using Microsoft.AspNetCore.Http;
-using SobekCM.Core.ApplicationState;
-using SobekCM.Core.Configuration;
-using SobekCM.Core.Configuration.Localization;
-using SobekCM.Core.Users;
-using SobekCM.Resource_Object;
-using SobekCM.Resource_Object.Bib_Info;
 
 #endregion
 
@@ -26,7 +24,7 @@ namespace SobekCM.Library.Citation.Elements
             : base("Creator", "creator")
         {
             Repeatable = true;
-	        help_page = "creatorsimple";
+            help_page = "creatorsimple";
         }
 
         /// <summary> Renders the HTML for this element </summary>
@@ -40,7 +38,7 @@ namespace SobekCM.Library.Citation.Elements
         /// <param name="Translator"> Language support object which handles simple translational duties </param>
         /// <param name="Base_URL"> Base URL for the current request </param>
         /// <remarks> This simple element does not append any popup form to the popup_form_builder</remarks>
-        public override void Render_Template_HTML(TextWriter Output, SobekCM_Item Bib, string Skin_Code, bool IsMozilla, StringBuilder PopupFormBuilder, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL )
+        public override void Render_Template_HTML(TextWriter Output, SobekCM_Item Bib, string Skin_Code, bool IsMozilla, StringBuilder PopupFormBuilder, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL)
         {
             // Check that an acronym exists
             if (Acronym.Length == 0)
@@ -67,7 +65,7 @@ namespace SobekCM.Library.Citation.Elements
             }
 
             List<string> instanceValues = new List<string>();
-            if (( Bib.Bib_Info.hasMainEntityName ) && ( Bib.Bib_Info.Main_Entity_Name.ToString().Length > 0))
+            if ((Bib.Bib_Info.hasMainEntityName) && (Bib.Bib_Info.Main_Entity_Name.ToString().Length > 0))
             {
                 string main_name_as_string = Bib.Bib_Info.Main_Entity_Name.ToString();
                 if ((main_name_as_string != "unknown") && (main_name_as_string.Length > 0))
@@ -76,7 +74,7 @@ namespace SobekCM.Library.Citation.Elements
             foreach (Name_Info thisName in Bib.Bib_Info.Names)
             {
                 bool include = true;
-                if (( Options != null) && (Options.ContainsKey("contributor_included")) && (String.Compare(Options["contributor_included"], "true", StringComparison.OrdinalIgnoreCase) == 0))
+                if ((Options != null) && (Options.ContainsKey("contributor_included")) && (String.Compare(Options["contributor_included"], "true", StringComparison.OrdinalIgnoreCase) == 0))
                 {
                     if (thisName.Roles.Any(ThisRole => ThisRole.Role.ToLower() == "contributor"))
                     {
@@ -100,8 +98,8 @@ namespace SobekCM.Library.Citation.Elements
         /// <remarks> This clears the main entity name and any other names associated with the digital resource </remarks>
         public override void Prepare_For_Save(SobekCM_Item Bib, User_Object Current_User)
         {
-            if ( Bib.Bib_Info.hasMainEntityName )
-               Bib.Bib_Info.Main_Entity_Name.Clear();
+            if (Bib.Bib_Info.hasMainEntityName)
+                Bib.Bib_Info.Main_Entity_Name.Clear();
             Bib.Bib_Info.Clear_Names();
         }
 
@@ -112,13 +110,13 @@ namespace SobekCM.Library.Citation.Elements
             var getKeys = Context.Request.Form.Keys;
             foreach (string thisKey in getKeys)
             {
-                if (thisKey.IndexOf( html_element_name ) == 0)
+                if (thisKey.IndexOf(html_element_name) == 0)
                 {
                     string name = Context.Request.Form[thisKey];
-                    if ( !String.IsNullOrWhiteSpace(name))
+                    if (!String.IsNullOrWhiteSpace(name))
                         Bib.Bib_Info.Add_Named_Entity(new Name_Info(name, ""));
                 }
-            }  
+            }
         }
     }
 }

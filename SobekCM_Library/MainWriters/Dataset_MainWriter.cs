@@ -1,9 +1,9 @@
 #region Using directives
 
-using System.IO;
 using Microsoft.AspNetCore.Http;
 using SobekCM.Core.Navigation;
 using SobekCM.Tools;
+using System.IO;
 
 #endregion
 
@@ -19,7 +19,7 @@ namespace SobekCM.Library.MainWriters
         /// <param name="Context"> Context for this individual HTTP request </param>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
         public Dataset_MainWriter(HttpContext Context, RequestCache RequestSpecificValues) : base(Context, RequestSpecificValues)
-   
+
         {
             // All work done in base class
         }
@@ -39,7 +39,7 @@ namespace SobekCM.Library.MainWriters
                 case Display_Mode_Enum.Aggregation:
                     if (RequestSpecificValues.Paged_Results != null)
                         display_search_results();
-                     break;
+                    break;
 
                 default:
                     Output.Write("DataSet Writer - Unknown Mode");

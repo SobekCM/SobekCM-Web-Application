@@ -1,15 +1,14 @@
 ﻿#region Using directives
 
+using SobekCM.Core.ApplicationState;
+using SobekCM.Core.Configuration.Localization;
+using SobekCM.Core.Users;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Xml;
-using SobekCM.Core.ApplicationState;
-using SobekCM.Core.Configuration.Localization;
-using SobekCM.Core.Users;
-using SobekCM.Resource_Object;
 
 #endregion
 
@@ -18,7 +17,7 @@ namespace SobekCM.Library.Citation.Elements
     /// <summary> Abstract base class for all elements which are made up of multiple small combo/select boxes </summary>
     /// <remarks> This class implements the <see cref="iElement"/> interface and extends the <see cref="abstract_Element"/> class. </remarks>
     public abstract class MultipleComboBox_Element : abstract_Element
-	{
+    {
         /// <summary> Protected field holds how many boxes are allowed per line, or -1 if there is no limit </summary>
         protected int BoxesPerLine = -1;
 
@@ -40,14 +39,14 @@ namespace SobekCM.Library.Citation.Elements
         /// <param name="Title"> Title for this element </param>
         /// <param name="Html_Element_Name"> Name for the html components and styles for this element </param>
         protected MultipleComboBox_Element(string Title, string Html_Element_Name)
-		{
-			base.Title = Title;
+        {
+            base.Title = Title;
             html_element_name = Html_Element_Name;
             ViewChoicesString = String.Empty;
 
             Items = new List<string>();
             Defaults = new List<string>();
-		}
+        }
 
         /// <summary> Adds a possible, selectable value to the combo/select box </summary>
         /// <param name="NewItem"> New possible, selectable value </param>
@@ -79,7 +78,7 @@ namespace SobekCM.Library.Citation.Elements
         /// <param name="Base_URL"> Base URL for the current request </param>
         protected void render_helper(TextWriter Output, List<string> InstanceValues, string Skin_Code, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL)
         {
-            render_helper(Output, new ReadOnlyCollection<string>(InstanceValues), Items, Skin_Code, Current_User, CurrentLanguage, Translator, Base_URL );
+            render_helper(Output, new ReadOnlyCollection<string>(InstanceValues), Items, Skin_Code, Current_User, CurrentLanguage, Translator, Base_URL);
         }
 
         /// <summary> Method helps to render all multiple combo box based elements </summary>
@@ -131,7 +130,7 @@ namespace SobekCM.Library.Citation.Elements
         /// <param name="CurrentLanguage"> Current user-interface language </param>
         /// <param name="Translator"> Language support object which handles simple translational duties </param>
         /// <param name="Base_URL"> Base URL for the current request </param>
-        protected void render_helper(TextWriter Output, ReadOnlyCollection<string> InstanceValues, List<string> PossibleValues, string Skin_Code, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL )
+        protected void render_helper(TextWriter Output, ReadOnlyCollection<string> InstanceValues, List<string> PossibleValues, string Skin_Code, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL)
         {
             List<string> allValues = new List<string>();
             allValues.AddRange(InstanceValues);
@@ -227,7 +226,7 @@ namespace SobekCM.Library.Citation.Elements
                 Output.WriteLine("          </td>");
                 Output.WriteLine("          <td style=\"vertical-align:bottom\" >");
 
-                if ( !String.IsNullOrEmpty(ViewChoicesString))
+                if (!String.IsNullOrEmpty(ViewChoicesString))
                 {
                     Output.WriteLine("            " + ViewChoicesString.Replace("<%WEBSKIN%>", Skin_Code).Replace("<%?URLOPTS%>", "") + "&nbsp; ");
                 }
@@ -259,7 +258,7 @@ namespace SobekCM.Library.Citation.Elements
         /// <param name="CurrentLanguage"> Current user-interface language </param>
         /// <param name="Translator"> Language support object which handles simple translational duties </param>
         /// <param name="Base_URL"> Base URL for the current request </param>
-        protected void render_helper(TextWriter Output, string InstanceValue, List<string> PossibleValues, string Skin_Code, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL )
+        protected void render_helper(TextWriter Output, string InstanceValue, List<string> PossibleValues, string Skin_Code, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL)
         {
             string id_name = html_element_name.Replace("_", "");
 
@@ -289,67 +288,67 @@ namespace SobekCM.Library.Citation.Elements
                 Output.WriteLine("        <tr>");
                 Output.WriteLine("          <td>");
                 Output.WriteLine("            <div id=\"" + html_element_name + "_div\">");
-                
+
                 const int i = 1;
 
                 string value = InstanceValue;
-                    Output.Write("             <select name=\"" + id_name + i + "\" id=\"" + id_name + i + "\" class=\"" + html_element_name + "_input\" type=\"text\" ");
-                    if (comboBoxEvents != null)
-                        comboBoxEvents.Add_Events_HTML(Output);
-                    Output.WriteLine(" >");
+                Output.Write("             <select name=\"" + id_name + i + "\" id=\"" + id_name + i + "\" class=\"" + html_element_name + "_input\" type=\"text\" ");
+                if (comboBoxEvents != null)
+                    comboBoxEvents.Add_Events_HTML(Output);
+                Output.WriteLine(" >");
 
-                    bool found = false;
-                    if (value.Length == 0)
+                bool found = false;
+                if (value.Length == 0)
+                {
+                    found = true;
+                    Output.WriteLine("                <option value=\"\" selected=\"selected\" >&nbsp;</option>");
+                }
+                else
+                {
+                    Output.WriteLine("                <option value=\"\">&nbsp;</option>");
+                }
+                foreach (string item in PossibleValues)
+                {
+                    if (item.ToUpper() == value.ToUpper())
                     {
                         found = true;
-                        Output.WriteLine("                <option value=\"\" selected=\"selected\" >&nbsp;</option>");
+                        Output.WriteLine("                <option value=\"" + item + "\" selected=\"selected\" >" + item + "</option>");
                     }
                     else
                     {
-                        Output.WriteLine("                <option value=\"\">&nbsp;</option>");
+                        Output.WriteLine("                <option value=\"" + item + "\">" + item + "</option>");
                     }
-                    foreach (string item in PossibleValues)
-                    {
-                        if (item.ToUpper() == value.ToUpper())
-                        {
-                            found = true;
-                            Output.WriteLine("                <option value=\"" + item + "\" selected=\"selected\" >" + item + "</option>");
-                        }
-                        else
-                        {
-                            Output.WriteLine("                <option value=\"" + item + "\">" + item + "</option>");
-                        }
-                    }
-                    if (!found)
-                    {
-                        Output.WriteLine("                <option value=\"" + value + "\" selected=\"selected\" >" + value + "</option>");
-                    }
-                    Output.WriteLine("              </select>");
-
-                    Output.WriteLine("</div>");
                 }
-
-                Output.WriteLine("          </td>");
-                Output.WriteLine("          <td style=\"vertical-align:bottom\" >");
-
-                if (!String.IsNullOrEmpty(ViewChoicesString))
+                if (!found)
                 {
-                    Output.WriteLine("            " + ViewChoicesString.Replace("<%WEBSKIN%>", Skin_Code).Replace("<%?URLOPTS%>","") + "&nbsp; ");
+                    Output.WriteLine("                <option value=\"" + value + "\" selected=\"selected\" >" + value + "</option>");
                 }
+                Output.WriteLine("              </select>");
 
-                if (Repeatable)
-                {
-                    Output.WriteLine("          <span id=\"" + html_element_name + "_repeaticon\" name=\"" + html_element_name + "_repeaticon\"><img title=\"" + Translator.Get_Translation("Click to add another " + Title.ToLower(), CurrentLanguage) + ".\" alt=\"+\" class=\"repeat_button\" src=\"" + REPEAT_BUTTON_URL + "\" onmousedown=\"add_new_multi_combo_element('" + html_element_name + "', 1," + MaxBoxes + "," + BoxesPerLine + "); return false;\" /></span>");
-                }
+                Output.WriteLine("</div>");
+            }
 
-                Output.WriteLine("            <a target=\"_" + html_element_name.ToUpper() + "\"  title=\"" + Translator.Get_Translation("Get help.", CurrentLanguage) + "\" href=\"" + Help_URL(Skin_Code, Base_URL) + "\" ><img class=\"help_button\" src=\"" + HELP_BUTTON_URL + "\" /></a>");
+            Output.WriteLine("          </td>");
+            Output.WriteLine("          <td style=\"vertical-align:bottom\" >");
+
+            if (!String.IsNullOrEmpty(ViewChoicesString))
+            {
+                Output.WriteLine("            " + ViewChoicesString.Replace("<%WEBSKIN%>", Skin_Code).Replace("<%?URLOPTS%>", "") + "&nbsp; ");
+            }
+
+            if (Repeatable)
+            {
+                Output.WriteLine("          <span id=\"" + html_element_name + "_repeaticon\" name=\"" + html_element_name + "_repeaticon\"><img title=\"" + Translator.Get_Translation("Click to add another " + Title.ToLower(), CurrentLanguage) + ".\" alt=\"+\" class=\"repeat_button\" src=\"" + REPEAT_BUTTON_URL + "\" onmousedown=\"add_new_multi_combo_element('" + html_element_name + "', 1," + MaxBoxes + "," + BoxesPerLine + "); return false;\" /></span>");
+            }
+
+            Output.WriteLine("            <a target=\"_" + html_element_name.ToUpper() + "\"  title=\"" + Translator.Get_Translation("Get help.", CurrentLanguage) + "\" href=\"" + Help_URL(Skin_Code, Base_URL) + "\" ><img class=\"help_button\" src=\"" + HELP_BUTTON_URL + "\" /></a>");
 
 
-                Output.WriteLine("          </td>");
-                Output.WriteLine("        </tr>");
-                Output.WriteLine("      </table>");
-                Output.WriteLine("    </td>");
-            
+            Output.WriteLine("          </td>");
+            Output.WriteLine("        </tr>");
+            Output.WriteLine("      </table>");
+            Output.WriteLine("    </td>");
+
 
             Output.WriteLine("  </tr>");
             Output.WriteLine();
@@ -362,9 +361,9 @@ namespace SobekCM.Library.Citation.Elements
         /// <remarks> This reads the default value from a <i>value</i> subelement </remarks>
         protected override void Inner_Read_Data(XmlReader XMLReader)
         {
-            while ( XMLReader.Read() )
+            while (XMLReader.Read())
             {
-                if ( XMLReader.NodeType == XmlNodeType.Element ) 
+                if (XMLReader.NodeType == XmlNodeType.Element)
                 {
                     if (XMLReader.Name.ToLower() == "value")
                     {
@@ -373,7 +372,7 @@ namespace SobekCM.Library.Citation.Elements
                         Add_Item(inner_data);
 
                         // If this not set as a default already, add it
-                        if ( !Defaults.Contains(inner_data))
+                        if (!Defaults.Contains(inner_data))
                             Defaults.Add(inner_data);
 
                     }
@@ -422,7 +421,7 @@ namespace SobekCM.Library.Citation.Elements
         }
 
         #endregion
-	}
+    }
 }
 
 

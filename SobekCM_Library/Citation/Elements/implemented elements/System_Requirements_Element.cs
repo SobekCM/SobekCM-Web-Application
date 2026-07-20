@@ -1,15 +1,13 @@
 #region Using directives
 
+using SobekCM.Core.ApplicationState;
+using SobekCM.Core.Configuration.Localization;
+using SobekCM.Core.Users;
+using SobekCM.Library.UI;
+using SobekCM.Resource_Object;
 using System.IO;
 using System.Linq;
 using System.Text;
-using Microsoft.AspNetCore.Http;
-using SobekCM.Core.ApplicationState;
-using SobekCM.Core.Configuration;
-using SobekCM.Core.Configuration.Localization;
-using SobekCM.Core.Users;
-using SobekCM.Resource_Object;
-using SobekCM.Library.UI;
 
 #endregion
 
@@ -65,14 +63,14 @@ namespace SobekCM.Library.Citation.Elements
             }
 
             string sysreqs = string.Empty;
-            if ( Bib.Bib_Info.SystemRequirementsCount == 1 )
+            if (Bib.Bib_Info.SystemRequirementsCount == 1)
             {
                 sysreqs = Bib.Bib_Info.SystemRequirements[0];
             }
-            else if ( Bib.Bib_Info.SystemRequirementsCount > 1)
+            else if (Bib.Bib_Info.SystemRequirementsCount > 1)
             {
                 StringBuilder builder = new StringBuilder();
-                foreach( string sysReqs in Bib.Bib_Info.SystemRequirements)
+                foreach (string sysReqs in Bib.Bib_Info.SystemRequirements)
                 {
                     if (string.IsNullOrEmpty(sysReqs)) continue;
 

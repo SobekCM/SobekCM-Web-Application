@@ -1,8 +1,8 @@
 #region Using directives
 
+using SobekCM.Resource_Object.Metadata_File_ReaderWriters;
 using System;
 using System.IO;
-using SobekCM.Resource_Object.Metadata_File_ReaderWriters;
 
 #endregion
 

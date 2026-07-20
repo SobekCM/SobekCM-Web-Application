@@ -1,17 +1,15 @@
 #region Using directives
 
+using SobekCM.Core.ApplicationState;
+using SobekCM.Core.Configuration.Localization;
+using SobekCM.Core.Users;
+using SobekCM.Library.UI;
+using SobekCM.Resource_Object;
+using SobekCM.Resource_Object.Bib_Info;
 using System;
 using System.IO;
 using System.Text;
-using Microsoft.AspNetCore.Http;
 using System.Xml;
-using SobekCM.Core.ApplicationState;
-using SobekCM.Core.Configuration;
-using SobekCM.Core.Configuration.Localization;
-using SobekCM.Core.Users;
-using SobekCM.Resource_Object;
-using SobekCM.Resource_Object.Bib_Info;
-using SobekCM.Library.UI;
 
 #endregion
 
@@ -33,7 +31,7 @@ namespace SobekCM.Library.Citation.Elements
             cols = TEXT_AREA_COLUMNS;
             colsMozilla = MOZILLA_TEXT_AREA_COLUMNS;
             html_element_name = "complex_abstract";
-	        help_page = "abstract";
+            help_page = "abstract";
         }
 
         /// <summary> Gets and sets the number of lines for this text box </summary>
@@ -52,7 +50,7 @@ namespace SobekCM.Library.Citation.Elements
         /// <param name="Translator"> Language support object which handles simple translational duties </param>
         /// <param name="Base_URL"> Base URL for the current request </param>
         /// <remarks> This simple element does not append any popup form to the popup_form_builder</remarks>
-        public override void Render_Template_HTML(TextWriter Output, SobekCM_Item Bib, string Skin_Code, bool IsMozilla, StringBuilder PopupFormBuilder, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL )
+        public override void Render_Template_HTML(TextWriter Output, SobekCM_Item Bib, string Skin_Code, bool IsMozilla, StringBuilder PopupFormBuilder, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL)
         {
             // Check that an acronym exists
             if (Acronym.Length == 0)
@@ -83,7 +81,7 @@ namespace SobekCM.Library.Citation.Elements
             if (IsMozilla)
                 actual_cols = colsMozilla;
 
-            
+
             string id_name = html_element_name.Replace("_", "");
 
             Output.WriteLine("  <!-- " + Title + " Element -->");
@@ -106,7 +104,7 @@ namespace SobekCM.Library.Citation.Elements
             if (Bib.Bib_Info.Abstracts_Count == 0)
             {
                 Output.WriteLine("              <div id=\"" + html_element_name + "_topdiv1\">");
-                Output.WriteLine("                <span class=\"metadata_sublabel2\">" + Translator.Get_Translation("Type", CurrentLanguage) +":</span>");
+                Output.WriteLine("                <span class=\"metadata_sublabel2\">" + Translator.Get_Translation("Type", CurrentLanguage) + ":</span>");
                 Output.WriteLine("                <select class=\"" + html_element_name + "_type\" name=\"" + id_name + "_type1\" id=\"" + id_name + "_type1\" >");
                 Output.WriteLine("                  <option selected=\"selected=\" value=\"\"></option>");
                 Output.WriteLine("                  <option value=\"abstract\">Abstract</option>");
@@ -118,9 +116,9 @@ namespace SobekCM.Library.Citation.Elements
                 Output.WriteLine("                </select>");
 
                 Output.WriteLine("                <span class=\"metadata_sublabel\">" + Translator.Get_Translation("Language", CurrentLanguage) + ":</span>");
-				Output.WriteLine("                <input name=\"" + id_name + "_language1\" id=\"" + id_name + "_language1\" class=\"" + html_element_name + "_language sbk_Focusable\" type=\"text\" value=\"\" />");
+                Output.WriteLine("                <input name=\"" + id_name + "_language1\" id=\"" + id_name + "_language1\" class=\"" + html_element_name + "_language sbk_Focusable\" type=\"text\" value=\"\" />");
                 Output.WriteLine("              </div>");
-				Output.WriteLine("              <textarea rows=\"" + Rows + "\" cols=\"" + actual_cols + "\" name=\"" + id_name + "_textarea1\" id=\"" + id_name + "_textarea1\" class=\"" + html_element_name + "_input sbk_Focusable\" ></textarea>");
+                Output.WriteLine("              <textarea rows=\"" + Rows + "\" cols=\"" + actual_cols + "\" name=\"" + id_name + "_textarea1\" id=\"" + id_name + "_textarea1\" class=\"" + html_element_name + "_input sbk_Focusable\" ></textarea>");
             }
             else
             {
@@ -157,14 +155,14 @@ namespace SobekCM.Library.Citation.Elements
                                          : "                  <option value=\"summary\" selected=\"selected\">Summary</option>");
 
                     Output.WriteLine("                </select>");
-                    
+
                     Output.WriteLine("                <span class=\"metadata_sublabel\">Language:</span>");
-					Output.WriteLine("                <input name=\"" + id_name + "_language1\" id=\"" + id_name + "_language1\" class=\"" + html_element_name + "_language sbk_Focusable\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(thisAbstract.Language) + "\" />");
+                    Output.WriteLine("                <input name=\"" + id_name + "_language1\" id=\"" + id_name + "_language1\" class=\"" + html_element_name + "_language sbk_Focusable\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(thisAbstract.Language) + "\" />");
                     Output.WriteLine("              </div>");
-					Output.Write("              <textarea rows=\"" + Rows + "\" cols=\"" + actual_cols + "\" name=\"" + id_name + "_textarea" + i + "\" id=\"" + id_name + "_textarea" + i + "\" class=\"" + html_element_name + "_input sbk_Focusable\" >" + System.Net.WebUtility.HtmlEncode(thisAbstract.Abstract_Text) + "</textarea>");
+                    Output.Write("              <textarea rows=\"" + Rows + "\" cols=\"" + actual_cols + "\" name=\"" + id_name + "_textarea" + i + "\" id=\"" + id_name + "_textarea" + i + "\" class=\"" + html_element_name + "_input sbk_Focusable\" >" + System.Net.WebUtility.HtmlEncode(thisAbstract.Abstract_Text) + "</textarea>");
 
 
-                    if ( i < Bib.Bib_Info.Notes_Count )
+                    if (i < Bib.Bib_Info.Notes_Count)
                     {
                         Output.WriteLine("<br />");
                     }
@@ -189,7 +187,7 @@ namespace SobekCM.Library.Citation.Elements
             Output.WriteLine("            <a target=\"_" + html_element_name.ToUpper() + "\"  title=\"" + Translator.Get_Translation("Get help.", CurrentLanguage) + "\" href=\"" + Help_URL(Skin_Code, Base_URL) + "\" ><img class=\"help_button\" src=\"" + HELP_BUTTON_URL + "\" /></a>");
 
             Output.WriteLine("          </td>");
-       
+
 
             Output.WriteLine("        </tr>");
             Output.WriteLine("      </table>");
@@ -223,7 +221,7 @@ namespace SobekCM.Library.Citation.Elements
                 string display = Context.Request.Form[thisKey].TrimFirst();
                 string displayLabel = "Abstract";
                 string type = String.Empty;
-                switch( display )
+                switch (display)
                 {
                     case "content":
                         type = "content advice";

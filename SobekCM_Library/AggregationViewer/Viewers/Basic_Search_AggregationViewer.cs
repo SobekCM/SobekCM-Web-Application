@@ -1,14 +1,12 @@
 #region Using directives
 
 using Microsoft.AspNetCore.Http;
-using System;
-using System.IO;
 using SobekCM.Core.Aggregations;
-using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Navigation;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
 using SobekCM.Tools;
+using System.IO;
 
 #endregion
 
@@ -33,7 +31,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         public Basic_Search_AggregationViewer(RequestCache RequestSpecificValues, AggregationViewBag ViewBag, HttpContext Context)
             : base(RequestSpecificValues, ViewBag, Context)
         {
- 
+
         }
 
         /// <summary> Gets the type of collection view or search supported by this collection viewer </summary>

@@ -1,11 +1,11 @@
 ﻿#region Using directives
 
+using ProtoBuf;
+using SobekCM.Core.ApplicationState;
 using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
-using ProtoBuf;
-using SobekCM.Core.ApplicationState;
 
 #endregion
 
@@ -24,7 +24,7 @@ namespace SobekCM.Core.Aggregations
         public string Code { get; set; }
 
         /// <summary> Description for this aggregation </summary>
-        [DataMember(Name = "description", EmitDefaultValue=false)]
+        [DataMember(Name = "description", EmitDefaultValue = false)]
         [XmlElement("description")]
         [ProtoMember(2)]
         public string Description { get; set; }
@@ -36,7 +36,7 @@ namespace SobekCM.Core.Aggregations
         public ushort ID { get; set; }
 
         /// <summary> Type of this related aggregation </summary>
-        [DataMember(Name = "type", EmitDefaultValue=false)]
+        [DataMember(Name = "type", EmitDefaultValue = false)]
         [XmlAttribute("type")]
         [ProtoMember(4)]
         public string Type { get; set; }
@@ -53,7 +53,7 @@ namespace SobekCM.Core.Aggregations
         /// <param name="Type"> Type of this related aggregation</param>
         /// <param name="Hidden"> Flag indicates if this aggregation is hidden</param>
         /// <param name="Active"> Flag indicates if this aggregation is active</param>
-        public Item_Aggregation_Related_Aggregations( string Code, string Name, string Type, bool Active, bool Hidden )
+        public Item_Aggregation_Related_Aggregations(string Code, string Name, string Type, bool Active, bool Hidden)
         {
             // Save the parameters to the readonly variables
             this.Code = Code;
@@ -74,7 +74,7 @@ namespace SobekCM.Core.Aggregations
         /// <param name="Active"> Flag indicates if this aggregation is active</param>
         /// <param name="Description">Description for this aggregation</param>
         /// <param name="ID">Primary key for this aggregation from the database </param>
-        public Item_Aggregation_Related_Aggregations(string Code, string Name, string ShortName, string Type, bool Active, bool Hidden, string Description, ushort ID )
+        public Item_Aggregation_Related_Aggregations(string Code, string Name, string ShortName, string Type, bool Active, bool Hidden, string Description, ushort ID)
         {
             // Save the parameters to the readonly variables
             this.Code = Code;
@@ -83,7 +83,7 @@ namespace SobekCM.Core.Aggregations
             this.Type = Type;
             this.Hidden = Hidden;
             this.Active = Active;
-            if ( !String.IsNullOrEmpty(Description))
+            if (!String.IsNullOrEmpty(Description))
                 this.Description = Description;
             this.ID = ID;
         }
@@ -175,12 +175,12 @@ namespace SobekCM.Core.Aggregations
 
         /// <summary> Method adds another aggregation as a child of this </summary>
         /// <param name="Child_Aggregation">New child aggregation</param>
-        public void Add_Child_Aggregation( Item_Aggregation_Related_Aggregations Child_Aggregation )
+        public void Add_Child_Aggregation(Item_Aggregation_Related_Aggregations Child_Aggregation)
         {
             // If the list is currently null, create it
             if (Children == null)
             {
-                Children = new List<Item_Aggregation_Related_Aggregations> {Child_Aggregation};
+                Children = new List<Item_Aggregation_Related_Aggregations> { Child_Aggregation };
             }
             else
             {
@@ -287,7 +287,7 @@ namespace SobekCM.Core.Aggregations
         /// <returns> A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. </returns>
         public override int GetHashCode()
         {
-            return ("ItemAggregationMinimal|" + Code ).GetHashCode();
+            return ("ItemAggregationMinimal|" + Code).GetHashCode();
         }
     }
 }

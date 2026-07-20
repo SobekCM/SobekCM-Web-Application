@@ -1,8 +1,8 @@
 ﻿#region Using directives
 
+using ProtoBuf;
 using System;
 using System.Runtime.Serialization;
-using ProtoBuf;
 
 #endregion
 
@@ -21,7 +21,7 @@ namespace SobekCM.Core.Aggregations
 
         /// <summary> Constructor for a new instance of the New_Aggregation_Arguments class </summary>
         /// <param name="ParentCode"> Code for the aggregation selected as the parent</param>
-        public New_Aggregation_Arguments(string ParentCode )
+        public New_Aggregation_Arguments(string ParentCode)
         {
             this.ParentCode = ParentCode;
             Active = true;

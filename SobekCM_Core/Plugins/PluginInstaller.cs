@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace SobekCM.Core.Plugins
+﻿namespace SobekCM.Core.Plugins
 {
     /// <summary> Abstract class  that can be used to run custom code during enabling and disabling of the plug-in  </summary>
     public abstract class PluginInstaller

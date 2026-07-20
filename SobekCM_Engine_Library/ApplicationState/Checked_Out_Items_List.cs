@@ -80,7 +80,7 @@ namespace SobekCM.Engine_Library.ApplicationState
                 foreach (KeyValuePair<DateTime, Checked_Out_Item> checkedInItem in itemsByCheckoutTime)
                 {
                     TimeSpan sinceCheckOut = DateTime.Now.Subtract(checkedInItem.Key);
-                    if (sinceCheckOut.TotalSeconds > (60*15))
+                    if (sinceCheckOut.TotalSeconds > (60 * 15))
                     {
                         if (deleteItems == null)
                             deleteItems = new List<Checked_Out_Item>();

@@ -25,7 +25,7 @@ namespace SobekCM.Core.Results
         [DataMember(Name = "totalItems")]
         [XmlAttribute("totalItems")]
         [ProtoMember(1)]
-        public int TotalItems {  get; set; }
+        public int TotalItems { get; set; }
 
         /// <summary> Total number of titles matching the search parameters </summary>
         [DataMember(Name = "totalTitles")]

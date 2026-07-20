@@ -1,14 +1,14 @@
 #region Using directives
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using SobekCM.Core;
 using SobekCM.Core.BriefItem;
 using SobekCM.Core.UI_Configuration.Citation;
 using SobekCM.Engine_Library.Email;
 using SobekCM.Library.UI;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 
 #endregion
 
@@ -28,13 +28,13 @@ namespace SobekCM.Library.Email
         /// <param name="URL"> Direct URL for this item </param>
         /// <param name="UserID"> Primary key for the user that is sendig the email </param>
         /// <returns> TRUE if successful, otherwise FALSE </returns>
-        public static bool Send_Email( string Recepient_List, string CcList, string Comments, string User_Name, string SobekCM_Instance_Name, BriefItemInfo Item, bool HTML_Format, string URL, int UserID )
+        public static bool Send_Email(string Recepient_List, string CcList, string Comments, string User_Name, string SobekCM_Instance_Name, BriefItemInfo Item, bool HTML_Format, string URL, int UserID)
         {
             if (HTML_Format)
             {
                 return HTML_Send_Email(Recepient_List, CcList, Comments, User_Name, SobekCM_Instance_Name, Item, URL, UserID) || Text_Send_Email(Recepient_List, CcList, Comments, User_Name, SobekCM_Instance_Name, Item, URL, UserID);
             }
-            
+
             return Text_Send_Email(Recepient_List, CcList, Comments, User_Name, SobekCM_Instance_Name, Item, URL, UserID);
         }
 
@@ -205,7 +205,7 @@ namespace SobekCM.Library.Email
                         UserID = UserID
                     };
 
-                    if (! String.IsNullOrEmpty(UI_ApplicationCache_Gateway.Settings.Email.Setup.DefaultFromDisplay))
+                    if (!String.IsNullOrEmpty(UI_ApplicationCache_Gateway.Settings.Email.Setup.DefaultFromDisplay))
                         newEmail.FromAddress = UI_ApplicationCache_Gateway.Settings.Email.Setup.DefaultFromDisplay + " <" + UI_ApplicationCache_Gateway.Settings.Email.Setup.DefaultFromAddress + ">";
 
                     if (CcList.Length > 0)
@@ -251,16 +251,16 @@ namespace SobekCM.Library.Email
             // Only add if there is a value
             if (Value.Length > 0)
             {
-                return "<tr><td>" + Row_Name + ":</td><td>" + System.Net.WebUtility.HtmlEncode( Value ) + "</td></tr>" + Environment.NewLine;
+                return "<tr><td>" + Row_Name + ":</td><td>" + System.Net.WebUtility.HtmlEncode(Value) + "</td></tr>" + Environment.NewLine;
             }
             return String.Empty;
         }
 
-        private static bool Text_Send_Email(string Recepient_List, string CcList, string Comments, string User_Name, string SobekCM_Instance_Name, BriefItemInfo Item, string URL, int UserID )
+        private static bool Text_Send_Email(string Recepient_List, string CcList, string Comments, string User_Name, string SobekCM_Instance_Name, BriefItemInfo Item, string URL, int UserID)
         {
             try
             {
-  
+
                 StringBuilder messageBuilder = new StringBuilder();
 
                 if (Comments.Length > 0)
@@ -420,7 +420,7 @@ namespace SobekCM.Library.Email
                 }
                 return error_count <= 0;
             }
-            catch 
+            catch
             {
                 return false;
             }

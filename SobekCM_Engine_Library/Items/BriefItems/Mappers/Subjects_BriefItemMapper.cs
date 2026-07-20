@@ -1,9 +1,9 @@
 #region Using directives
 
-using System;
 using SobekCM.Core.BriefItem;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Bib_Info;
+using System;
 
 #endregion
 
@@ -88,7 +88,7 @@ namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
                         //    break;
 
                         case Subject_Info_Type.Cartographics:
-                            New.Add_Description("Scale", ((Subject_Info_Cartographics) thisSubject).Scale);
+                            New.Add_Description("Scale", ((Subject_Info_Cartographics)thisSubject).Scale);
                             break;
 
                         case Subject_Info_Type.Standard:
@@ -99,7 +99,7 @@ namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
                             {
                                 foreach (string thisGenre in baseSubject.Genres)
                                 {
-                                    if ( !String.IsNullOrWhiteSpace( baseSubject.Authority ))
+                                    if (!String.IsNullOrWhiteSpace(baseSubject.Authority))
                                     {
                                         New.Add_Description("Genre", thisGenre).Authority = baseSubject.Authority;
                                     }
@@ -111,7 +111,7 @@ namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
                             }
                             else
                             {
-                                if (( !String.IsNullOrWhiteSpace(thisSubject.Authority)) && ( String.Compare(thisSubject.Authority, "NONE", StringComparison.InvariantCultureIgnoreCase) != 0 ))
+                                if ((!String.IsNullOrWhiteSpace(thisSubject.Authority)) && (String.Compare(thisSubject.Authority, "NONE", StringComparison.InvariantCultureIgnoreCase) != 0))
                                 {
                                     New.Add_Description("Subjects / Keywords", thisSubject.ToString(false)).Authority = thisSubject.Authority;
                                 }

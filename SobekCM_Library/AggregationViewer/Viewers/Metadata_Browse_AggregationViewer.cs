@@ -1,16 +1,10 @@
 #region Using directives
 
 using Microsoft.AspNetCore.Http;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.IO;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Search;
-using SobekCM.Core.UI_Configuration;
-using SobekCM.Core.UI_Configuration.StaticResources;
 using SobekCM.Core.WebContent;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Engine_Library.Database;
@@ -19,6 +13,10 @@ using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.IO;
 
 #endregion
 
@@ -46,10 +44,10 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         public Metadata_Browse_AggregationViewer(RequestCache RequestSpecificValues, AggregationViewBag ViewBag, HttpContext Context)
             : base(RequestSpecificValues, ViewBag, Context)
         {
-            
+
 
             // If there is not info browse mode listed, use the default
-            if ( String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.Info_Browse_Mode))
+            if (String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.Info_Browse_Mode))
             {
                 string defaultBrowseBy = ViewBag.Hierarchy_Object.Default_BrowseBy ?? String.Empty;
                 RequestSpecificValues.Current_Mode.Info_Browse_Mode = defaultBrowseBy;
@@ -77,7 +75,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             browseObject = ViewBag.Hierarchy_Object.Child_Page_By_Code(RequestSpecificValues.Current_Mode.Info_Browse_Mode);
 
             // Was this a metadata browseby, or just a static html?
-            if (( browseObject == null ) || ( browseObject.Source_Data_Type != Item_Aggregation_Child_Source_Data_Enum.Static_HTML))
+            if ((browseObject == null) || (browseObject.Source_Data_Type != Item_Aggregation_Child_Source_Data_Enum.Static_HTML))
             {
                 // Determine the correct metadata code
                 string metadata_code = RequestSpecificValues.Current_Mode.Info_Browse_Mode.Trim().Replace("_", " ");
@@ -142,7 +140,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 Tracer.Add_Trace("Metadata_Browse_AggregationViewer.Add_Search_Box_HTML", "Adding HTML");
             }
 
-            if (( browseObject != null ) && ( browseObject.Source_Data_Type == Item_Aggregation_Child_Source_Data_Enum.Static_HTML))
+            if ((browseObject != null) && (browseObject.Source_Data_Type == Item_Aggregation_Child_Source_Data_Enum.Static_HTML))
             {
                 Output.WriteLine("  <h1>" + browseObject.Label + "</h1>");
 
@@ -151,7 +149,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             {
                 if ((results != null) && (RequestSpecificValues.Current_Mode.Info_Browse_Mode.Length > 0))
                 {
-                    Output.WriteLine("  <h1>Browse by " + UI_ApplicationCache_Gateway.Translation.Get_Translation( RequestSpecificValues.Current_Mode.Info_Browse_Mode, RequestSpecificValues.Current_Mode.Language) + "</h1>");
+                    Output.WriteLine("  <h1>Browse by " + UI_ApplicationCache_Gateway.Translation.Get_Translation(RequestSpecificValues.Current_Mode.Info_Browse_Mode, RequestSpecificValues.Current_Mode.Language) + "</h1>");
                 }
                 else
                 {
@@ -179,7 +177,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             if ((RequestSpecificValues.Current_User != null) && ((RequestSpecificValues.Current_User.Is_Internal_User) || (RequestSpecificValues.Current_User.Is_Aggregation_Curator(RequestSpecificValues.Current_Mode.Aggregation))))
             {
                 // Just add every metadata field here
-                foreach (Item_Aggregation_Metadata_Type field in ViewBag.Hierarchy_Object.Browseable_Fields  )
+                foreach (Item_Aggregation_Metadata_Type field in ViewBag.Hierarchy_Object.Browseable_Fields)
                 {
                     internal_browses.Add(field.DisplayTerm);
                 }
@@ -196,13 +194,13 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             if (url_options.Length > 0)
                 url_options = "?" + url_options.Replace("&", "&amp");
 
-            if ((public_browses.Count > 1) || (internal_browses.Count > 0 ))
+            if ((public_browses.Count > 1) || (internal_browses.Count > 0))
             {
                 Output.WriteLine("<table>");
                 Output.WriteLine("<tr style=\"vertical-align:top;\">");
-				Output.WriteLine("<td id=\"sbkMebv_FacetOuterColumn\">");
-				Output.WriteLine("<div class=\"sbkMebv_FacetColumn\">");
-				Output.WriteLine("<div class=\"sbkMebv_FacetColumnTitle\">BROWSE BY:</div>");
+                Output.WriteLine("<td id=\"sbkMebv_FacetOuterColumn\">");
+                Output.WriteLine("<div class=\"sbkMebv_FacetColumn\">");
+                Output.WriteLine("<div class=\"sbkMebv_FacetColumnTitle\">BROWSE BY:</div>");
                 Output.WriteLine("<br />");
 
                 if (public_browses.Count > 0)
@@ -220,7 +218,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                             Metadata_Search_Field facetField = UI_ApplicationCache_Gateway.Settings.Metadata_Search_Field_By_Name(thisBrowse.Code);
                             if (facetField != null)
                             {
-								string facetName = facetField.Display_Term;
+                                string facetName = facetField.Display_Term;
 
                                 if (internal_browses.Contains(facetName))
                                     internal_browses.Remove(facetName);
@@ -230,9 +228,9 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                         }
                     }
 
-	                Output.WriteLine(internal_browses.Count > 0 ? "<b> &nbsp;Public Browses</b><br />" : "<b> &nbsp;Browses</b><br />");
+                    Output.WriteLine(internal_browses.Count > 0 ? "<b> &nbsp;Public Browses</b><br />" : "<b> &nbsp;Browses</b><br />");
 
-	                Output.WriteLine("<div class=\"sbkMebv_FacetBox\">");
+                    Output.WriteLine("<div class=\"sbkMebv_FacetBox\">");
                     foreach (Item_Aggregation_Child_Page thisBrowse in sortedBrowses.Values)
                     {
                         // Static HTML or metadata browse by?
@@ -251,14 +249,14 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                         else
                         {
                             Metadata_Search_Field facetField = UI_ApplicationCache_Gateway.Settings.Metadata_Search_Field_By_Display_Name(thisBrowse.Code);
-							if (thisBrowse.Code.ToLower().Replace("_", " ") != original_browse_mode.Replace("_", " "))
+                            if (thisBrowse.Code.ToLower().Replace("_", " ") != original_browse_mode.Replace("_", " "))
                             {
                                 RequestSpecificValues.Current_Mode.Info_Browse_Mode = thisBrowse.Code.ToLower().Replace(" ", "_");
-								Output.WriteLine("<a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode).Replace("&", "&amp") + "\">" + facetField.Display_Term + "</a><br />");
+                                Output.WriteLine("<a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode).Replace("&", "&amp") + "\">" + facetField.Display_Term + "</a><br />");
                             }
                             else
                             {
-								Output.WriteLine(facetField.Display_Term + "<br />");
+                                Output.WriteLine(facetField.Display_Term + "<br />");
                             }
                         }
                     }
@@ -275,18 +273,18 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                     foreach (string thisShort in internal_browses)
                     {
                         Metadata_Search_Field facetField = UI_ApplicationCache_Gateway.Settings.Metadata_Search_Field_By_Facet_Name(thisShort);
-	                    if (facetField != null)
-	                    {
-		                    if (thisShort.ToLower() != original_browse_mode)
-		                    {
-			                    RequestSpecificValues.Current_Mode.Info_Browse_Mode = thisShort.ToLower().Replace(" ", "_");
-								Output.WriteLine("<a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode).Replace("&", "&amp") + "\">" + facetField.Display_Term + "</a><br />");
-		                    }
-		                    else
-		                    {
-								Output.WriteLine(facetField.Display_Term + "<br />");
-		                    }
-	                    }
+                        if (facetField != null)
+                        {
+                            if (thisShort.ToLower() != original_browse_mode)
+                            {
+                                RequestSpecificValues.Current_Mode.Info_Browse_Mode = thisShort.ToLower().Replace(" ", "_");
+                                Output.WriteLine("<a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode).Replace("&", "&amp") + "\">" + facetField.Display_Term + "</a><br />");
+                            }
+                            else
+                            {
+                                Output.WriteLine(facetField.Display_Term + "<br />");
+                            }
+                        }
                     }
 
                     Output.WriteLine("</div>");
@@ -301,7 +299,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 Output.WriteLine("</td>");
                 Output.WriteLine("<td>");
             }
-			Output.WriteLine("<div class=\"sbkMebv_ResultsPanel\" id=\"main-content\" role=\"main\">");
+            Output.WriteLine("<div class=\"sbkMebv_ResultsPanel\" id=\"main-content\" role=\"main\">");
 
             RequestSpecificValues.Current_Mode.Info_Browse_Mode = original_browse_mode;
 
@@ -310,10 +308,10 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             {
                 // Read the content file for this browse
                 string source_file = UI_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location + ViewBag.Hierarchy_Object.ObjDirectory.Replace("/", "\\") + browseObject.Source;
-                HTML_Based_Content staticBrowseContent = HTML_Based_Content_Reader.Read_HTML_File( source_file, true, Tracer );
+                HTML_Based_Content staticBrowseContent = HTML_Based_Content_Reader.Read_HTML_File(source_file, true, Tracer);
                 if (staticBrowseContent == null)
                 {
-                    staticBrowseContent = new HTML_Based_Content("Unable to find source file!\n\n" + ViewBag.Hierarchy_Object.ObjDirectory.Replace("/", "\\") + browseObject.Source, browseObject.Code );
+                    staticBrowseContent = new HTML_Based_Content("Unable to find source file!\n\n" + ViewBag.Hierarchy_Object.ObjDirectory.Replace("/", "\\") + browseObject.Source, browseObject.Code);
                 }
 
                 // Apply current user settings for this
@@ -352,7 +350,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             {
 
                 //Output the results
-                if (( results != null ) && (results.Count > 0))
+                if ((results != null) && (results.Count > 0))
                 {
                     // Determine which letters appear
                     List<char> letters_appearing = new List<char>();
@@ -464,12 +462,12 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 
 
                         // Add the links for paging through results
-						Output.WriteLine("<div class=\"sbkMebv_NavRow\">");
+                        Output.WriteLine("<div class=\"sbkMebv_NavRow\">");
                         if ((letters_appearing.Contains('a')) || (letters_appearing.Contains('b')))
                         {
                             if (current_page == 1)
                             {
-								Output.WriteLine("<span class=\"sbkMebv_NavRowCurrent\">AB</span> &nbsp; ");
+                                Output.WriteLine("<span class=\"sbkMebv_NavRowCurrent\">AB</span> &nbsp; ");
                             }
                             else
                             {
@@ -478,14 +476,14 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                         }
                         else
                         {
-							Output.WriteLine("<span class=\"sbkMebv_NavRowDisabled\">AB</span> &nbsp; ");
+                            Output.WriteLine("<span class=\"sbkMebv_NavRowDisabled\">AB</span> &nbsp; ");
                         }
 
                         if ((letters_appearing.Contains('c')) || (letters_appearing.Contains('d')) || (letters_appearing.Contains('e')))
                         {
                             if (current_page == 2)
                             {
-								Output.WriteLine("<span class=\"sbkMebv_NavRowCurrent\">CDE</span> &nbsp; ");
+                                Output.WriteLine("<span class=\"sbkMebv_NavRowCurrent\">CDE</span> &nbsp; ");
                             }
                             else
                             {
@@ -494,14 +492,14 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                         }
                         else
                         {
-							Output.WriteLine("<span class=\"sbkMebv_NavRowDisabled\">CDE</span> &nbsp; ");
+                            Output.WriteLine("<span class=\"sbkMebv_NavRowDisabled\">CDE</span> &nbsp; ");
                         }
 
                         if ((letters_appearing.Contains('f')) || (letters_appearing.Contains('g')) || (letters_appearing.Contains('h')))
                         {
                             if (current_page == 3)
                             {
-								Output.WriteLine("<span class=\"sbkMebv_NavRowCurrent\">FGH</span> &nbsp; ");
+                                Output.WriteLine("<span class=\"sbkMebv_NavRowCurrent\">FGH</span> &nbsp; ");
                             }
                             else
                             {
@@ -510,14 +508,14 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                         }
                         else
                         {
-							Output.WriteLine("<span class=\"sbkMebv_NavRowDisabled\">FGH</span> &nbsp; ");
+                            Output.WriteLine("<span class=\"sbkMebv_NavRowDisabled\">FGH</span> &nbsp; ");
                         }
 
                         if ((letters_appearing.Contains('i')) || (letters_appearing.Contains('j')) || (letters_appearing.Contains('k')))
                         {
                             if (current_page == 4)
                             {
-								Output.WriteLine("<span class=\"sbkMebv_NavRowCurrent\">IJK</span> &nbsp; ");
+                                Output.WriteLine("<span class=\"sbkMebv_NavRowCurrent\">IJK</span> &nbsp; ");
                             }
                             else
                             {
@@ -526,14 +524,14 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                         }
                         else
                         {
-							Output.WriteLine("<span class=\"sbkMebv_NavRowDisabled\">IJK</span> &nbsp; ");
+                            Output.WriteLine("<span class=\"sbkMebv_NavRowDisabled\">IJK</span> &nbsp; ");
                         }
 
                         if ((letters_appearing.Contains('l')) || (letters_appearing.Contains('m')) || (letters_appearing.Contains('n')))
                         {
                             if (current_page == 5)
                             {
-								Output.WriteLine("<span class=\"sbkMebv_NavRowCurrent\">LMN</span> &nbsp; ");
+                                Output.WriteLine("<span class=\"sbkMebv_NavRowCurrent\">LMN</span> &nbsp; ");
                             }
                             else
                             {
@@ -542,14 +540,14 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                         }
                         else
                         {
-							Output.WriteLine("<span class=\"sbkMebv_NavRowDisabled\">LMN</span> &nbsp; ");
+                            Output.WriteLine("<span class=\"sbkMebv_NavRowDisabled\">LMN</span> &nbsp; ");
                         }
 
                         if ((letters_appearing.Contains('o')) || (letters_appearing.Contains('p')) || (letters_appearing.Contains('q')))
                         {
                             if (current_page == 6)
                             {
-								Output.WriteLine("<span class=\"sbkMebv_NavRowCurrent\">OPQ</span> &nbsp; ");
+                                Output.WriteLine("<span class=\"sbkMebv_NavRowCurrent\">OPQ</span> &nbsp; ");
                             }
                             else
                             {
@@ -558,14 +556,14 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                         }
                         else
                         {
-							Output.WriteLine("<span class=\"sbkMebv_NavRowDisabled\">OPQ</span> &nbsp; ");
+                            Output.WriteLine("<span class=\"sbkMebv_NavRowDisabled\">OPQ</span> &nbsp; ");
                         }
 
                         if ((letters_appearing.Contains('r')) || (letters_appearing.Contains('s')) || (letters_appearing.Contains('t')))
                         {
                             if (current_page == 7)
                             {
-								Output.WriteLine("<span class=\"sbkMebv_NavRowCurrent\">RST</span> &nbsp; ");
+                                Output.WriteLine("<span class=\"sbkMebv_NavRowCurrent\">RST</span> &nbsp; ");
                             }
                             else
                             {
@@ -574,14 +572,14 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                         }
                         else
                         {
-							Output.WriteLine("<span class=\"sbkMebv_NavRowDisabled\">RST</span> &nbsp; ");
+                            Output.WriteLine("<span class=\"sbkMebv_NavRowDisabled\">RST</span> &nbsp; ");
                         }
 
                         if ((letters_appearing.Contains('u')) || (letters_appearing.Contains('v')) || (letters_appearing.Contains('w')))
                         {
                             if (current_page == 8)
                             {
-								Output.WriteLine("<span class=\"sbkMebv_NavRowCurrent\">UVW</span> &nbsp; ");
+                                Output.WriteLine("<span class=\"sbkMebv_NavRowCurrent\">UVW</span> &nbsp; ");
                             }
                             else
                             {
@@ -590,14 +588,14 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                         }
                         else
                         {
-							Output.WriteLine("<span class=\"sbkMebv_NavRowDisabled\">UVW</span> &nbsp; ");
+                            Output.WriteLine("<span class=\"sbkMebv_NavRowDisabled\">UVW</span> &nbsp; ");
                         }
 
                         if ((letters_appearing.Contains('x')) || (letters_appearing.Contains('y')) || (letters_appearing.Contains('z')))
                         {
                             if (current_page == 9)
                             {
-								Output.WriteLine("<span class=\"sbkMebv_NavRowCurrent\">XYZ</span> &nbsp; ");
+                                Output.WriteLine("<span class=\"sbkMebv_NavRowCurrent\">XYZ</span> &nbsp; ");
                             }
                             else
                             {
@@ -606,7 +604,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                         }
                         else
                         {
-							Output.WriteLine("<span class=\"sbkMebv_NavRowDisabled\" >XYZ</span> &nbsp; ");
+                            Output.WriteLine("<span class=\"sbkMebv_NavRowDisabled\" >XYZ</span> &nbsp; ");
                         }
 
                         Output.WriteLine("</div>");
@@ -670,7 +668,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                                 char this_first_char = Char.ToLower(thisValue[0]);
                                 if ((this_first_char >= first_char) && (this_first_char < stop_char))
                                 {
-                                    Output.WriteLine("<a href=\"" + search_url.Replace("%3c%25TERM%25%3e", thisValue.Trim().Replace(",", "%2C").Replace("&", "%26").Replace("\"", "%22")).Replace("&","&amp;") + "\">" + thisValue.Replace("\"", "&quot;").Replace("&","&amp;") + "</a><br />");
+                                    Output.WriteLine("<a href=\"" + search_url.Replace("%3c%25TERM%25%3e", thisValue.Trim().Replace(",", "%2C").Replace("&", "%26").Replace("\"", "%22")).Replace("&", "&amp;") + "\">" + thisValue.Replace("\"", "&quot;").Replace("&", "&amp;") + "</a><br />");
                                 }
                             }
                         }
@@ -702,14 +700,14 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                         // Add the links for paging through results
                         label_char = 'a';
                         counter = 1;
-						Output.WriteLine("<div class=\"sbkMebv_NavRow\">");
+                        Output.WriteLine("<div class=\"sbkMebv_NavRow\">");
                         while (label_char <= 'z')
                         {
                             if (letters_appearing.Contains(label_char))
                             {
                                 if (current_page == counter)
                                 {
-									Output.WriteLine("<span class=\"sbkMebv_NavRowCurrent\">" + Char.ToUpper(label_char) + "</span>&nbsp;");
+                                    Output.WriteLine("<span class=\"sbkMebv_NavRowCurrent\">" + Char.ToUpper(label_char) + "</span>&nbsp;");
                                 }
                                 else
                                 {
@@ -720,7 +718,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                             }
                             else
                             {
-								Output.WriteLine("<span class=\"sbkMebv_NavRowDisabled\" >" + Char.ToUpper(label_char) + "</span>&nbsp;");
+                                Output.WriteLine("<span class=\"sbkMebv_NavRowDisabled\" >" + Char.ToUpper(label_char) + "</span>&nbsp;");
                             }
 
                             counter++;
@@ -765,7 +763,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             }
 
             // Set the current mode back
-			RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Aggregation;
+            RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Aggregation;
             RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Browse_By;
 
             Output.WriteLine("</div>");

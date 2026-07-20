@@ -1,11 +1,11 @@
 ﻿#region Using directives
 
-using System;
 using Microsoft.AspNetCore.Http;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.Navigation;
 using SobekCM.Library.AggregationViewer.Viewers;
 using SobekCM.Library.HTML;
+using System;
 
 #endregion
 
@@ -31,7 +31,7 @@ namespace SobekCM.Library.AggregationViewer
                 case Item_Aggregation_Views_Searches_Enum.Advanced_Search_MimeType:
                     return new Advanced_Search_MimeType_AggregationViewer(RequestSpecificValues, ViewBag, Context);
 
-				case Item_Aggregation_Views_Searches_Enum.Advanced_Search_YearRange:
+                case Item_Aggregation_Views_Searches_Enum.Advanced_Search_YearRange:
                     return new Advanced_Search_YearRange_AggregationViewer(RequestSpecificValues, ViewBag, Context);
 
                 case Item_Aggregation_Views_Searches_Enum.Banner_Search:
@@ -40,15 +40,15 @@ namespace SobekCM.Library.AggregationViewer
 
                 case Item_Aggregation_Views_Searches_Enum.Basic_Search:
                     Item_Aggregation_Front_Banner frontBannerImage = ViewBag.Hierarchy_Object.FrontBannerObj;
-                    if ((frontBannerImage != null) && (ViewBag.Hierarchy_Object.Highlights != null ) && (ViewBag.Hierarchy_Object.Highlights.Count > 0))
+                    if ((frontBannerImage != null) && (ViewBag.Hierarchy_Object.Highlights != null) && (ViewBag.Hierarchy_Object.Highlights.Count > 0))
                     {
                         return new Rotating_Highlight_Search_AggregationViewer(RequestSpecificValues, ViewBag, Context);
                     }
-                    if ( String.IsNullOrEmpty(ViewBag.Hierarchy_Object.BrowseOnHomePage))
+                    if (String.IsNullOrEmpty(ViewBag.Hierarchy_Object.BrowseOnHomePage))
                         return new Basic_Search_AggregationViewer(RequestSpecificValues, ViewBag, Context);
                     else
                     {
-                        switch(ViewBag.Hierarchy_Object.BrowseOnHomePage.ToUpper())
+                        switch (ViewBag.Hierarchy_Object.BrowseOnHomePage.ToUpper())
                         {
                             case "SUPPLEMENTARY":
                                 return new Thumbnails_Home_AggregationViewer(RequestSpecificValues, ViewBag, Context);
@@ -58,7 +58,7 @@ namespace SobekCM.Library.AggregationViewer
                         }
                     }
 
-				case Item_Aggregation_Views_Searches_Enum.Basic_Search_YearRange:
+                case Item_Aggregation_Views_Searches_Enum.Basic_Search_YearRange:
                     return new Basic_Search_YearRange_AggregationViewer(RequestSpecificValues, ViewBag, Context);
 
                 case Item_Aggregation_Views_Searches_Enum.Basic_Search_FullTextOption:

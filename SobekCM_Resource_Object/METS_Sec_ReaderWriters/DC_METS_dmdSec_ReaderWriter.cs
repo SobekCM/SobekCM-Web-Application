@@ -1,20 +1,20 @@
 ﻿#region Using directives
 
+using SobekCM.Resource_Object.Bib_Info;
+using SobekCM.Resource_Object.Metadata_Modules;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Xml;
-using SobekCM.Resource_Object.Bib_Info;
-using SobekCM.Resource_Object.Metadata_Modules;
 
 #endregion
 
 namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
 {
-	/// <summary> Class reads and writes simple dublin core within a METS file </summary>
-	/// <remarks> This also looks for the ETD-MS fields used for Electronic Theses and Dissertations.
-	/// However, this will not be WRITTEN unless the <see cref="ETD_MS_DC_METS_dmdSec_ReaderWriter"/> class
-	/// is utilized in the METS writing profile </remarks>
+    /// <summary> Class reads and writes simple dublin core within a METS file </summary>
+    /// <remarks> This also looks for the ETD-MS fields used for Electronic Theses and Dissertations.
+    /// However, this will not be WRITTEN unless the <see cref="ETD_MS_DC_METS_dmdSec_ReaderWriter"/> class
+    /// is utilized in the METS writing profile </remarks>
     public class DC_METS_dmdSec_ReaderWriter : XML_Writing_Base_Type, iPackage_dmdSec_ReaderWriter
     {
         #region iPackage_dmdSec_ReaderWriter Members
@@ -68,7 +68,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
         public string[] Schema_Namespace(SobekCM_Item METS_Item)
         {
             // If this reader/writer is being utilized, it will almost certainly have data to write.
-            return new string[] {"dc=\"http://purl.org/dc/elements/1.1/\""};
+            return new string[] { "dc=\"http://purl.org/dc/elements/1.1/\"" };
         }
 
         /// <summary> Returns the schema location information to be written in the XML/METS Header</summary>
@@ -77,7 +77,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
         public string[] Schema_Location(SobekCM_Item METS_Item)
         {
             // If this reader/writer is being utilized, it will almost certainly have data to write.
-            return new string[] {"    http://purl.org/dc/elements/1.1/\r\n    http://dublincore.org/schemas/xmls/simpledc20021212.xsd"};
+            return new string[] { "    http://purl.org/dc/elements/1.1/\r\n    http://dublincore.org/schemas/xmls/simpledc20021212.xsd" };
         }
 
         #endregion
@@ -91,8 +91,8 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
         {
             // Add all the titles
             Output.WriteLine("<dc:title>" + BibInfo.Main_Title + "</dc:title>");
-            List<string> titles = new List<string> {BibInfo.Main_Title.ToString().Trim()};
-	        if (BibInfo.Other_Titles_Count > 0)
+            List<string> titles = new List<string> { BibInfo.Main_Title.ToString().Trim() };
+            if (BibInfo.Other_Titles_Count > 0)
             {
                 foreach (Title_Info thisTitle in BibInfo.Other_Titles)
                 {
@@ -229,7 +229,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                     {
                         if (thisSubject.Class_Type == Subject_Info_Type.Standard)
                         {
-                            Subject_Info_Standard standSubj = (Subject_Info_Standard) thisSubject;
+                            Subject_Info_Standard standSubj = (Subject_Info_Standard)thisSubject;
                             if (standSubj.Geographics_Count > 0)
                             {
                                 string[] geographics = new string[standSubj.Geographics_Count];
@@ -347,7 +347,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
         /// <param name="R"> XmlTextReader from which to read the dublin core data </param>
         /// <param name="BibInfo"> Digital resource object to save the data to </param>
         /// <param name="Return_Package"> The return package, if this is reading a top-level section of dublin core </param>
-        public static void Read_Simple_Dublin_Core_Info(XmlReader R, Bibliographic_Info BibInfo, SobekCM_Item Return_Package )
+        public static void Read_Simple_Dublin_Core_Info(XmlReader R, Bibliographic_Info BibInfo, SobekCM_Item Return_Package)
         {
             while (R.Read())
             {
@@ -547,85 +547,85 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                             }
                             break;
 
-						case "thesis.degree.name":
-							R.Read();
-							if ((R.NodeType == XmlNodeType.Text) && (R.Value.Trim().Length > 0) && ( Return_Package != null ))
-							{
-								// Ensure the thesis object exists and is added
-								Thesis_Dissertation_Info thesisInfo = Return_Package.Get_Metadata_Module(GlobalVar.THESIS_METADATA_MODULE_KEY) as Thesis_Dissertation_Info;
-								if (thesisInfo == null)
-								{
-									thesisInfo = new Thesis_Dissertation_Info();
-									Return_Package.Add_Metadata_Module(GlobalVar.THESIS_METADATA_MODULE_KEY, thesisInfo);
-								}
+                        case "thesis.degree.name":
+                            R.Read();
+                            if ((R.NodeType == XmlNodeType.Text) && (R.Value.Trim().Length > 0) && (Return_Package != null))
+                            {
+                                // Ensure the thesis object exists and is added
+                                Thesis_Dissertation_Info thesisInfo = Return_Package.Get_Metadata_Module(GlobalVar.THESIS_METADATA_MODULE_KEY) as Thesis_Dissertation_Info;
+                                if (thesisInfo == null)
+                                {
+                                    thesisInfo = new Thesis_Dissertation_Info();
+                                    Return_Package.Add_Metadata_Module(GlobalVar.THESIS_METADATA_MODULE_KEY, thesisInfo);
+                                }
 
-								thesisInfo.Degree = R.Value.Trim();
-							}
-							break;
+                                thesisInfo.Degree = R.Value.Trim();
+                            }
+                            break;
 
-						case "thesis.degree.level":
-							R.Read();
-							if ((R.NodeType == XmlNodeType.Text) && (R.Value.Trim().Length > 0) && (Return_Package != null))
-							{
-								// Ensure the thesis object exists and is added
-								Thesis_Dissertation_Info thesisInfo = Return_Package.Get_Metadata_Module(GlobalVar.THESIS_METADATA_MODULE_KEY) as Thesis_Dissertation_Info;
-								if (thesisInfo == null)
-								{
-									thesisInfo = new Thesis_Dissertation_Info();
-									Return_Package.Add_Metadata_Module(GlobalVar.THESIS_METADATA_MODULE_KEY, thesisInfo);
-								}
+                        case "thesis.degree.level":
+                            R.Read();
+                            if ((R.NodeType == XmlNodeType.Text) && (R.Value.Trim().Length > 0) && (Return_Package != null))
+                            {
+                                // Ensure the thesis object exists and is added
+                                Thesis_Dissertation_Info thesisInfo = Return_Package.Get_Metadata_Module(GlobalVar.THESIS_METADATA_MODULE_KEY) as Thesis_Dissertation_Info;
+                                if (thesisInfo == null)
+                                {
+                                    thesisInfo = new Thesis_Dissertation_Info();
+                                    Return_Package.Add_Metadata_Module(GlobalVar.THESIS_METADATA_MODULE_KEY, thesisInfo);
+                                }
 
-								string temp = R.Value.Trim().ToLower();
-								if ((temp == "doctorate") || (temp == "doctoral"))
-									thesisInfo.Degree_Level = Thesis_Dissertation_Info.Thesis_Degree_Level_Enum.Doctorate;
-								if ((temp == "masters") || (temp == "master's"))
-									thesisInfo.Degree_Level = Thesis_Dissertation_Info.Thesis_Degree_Level_Enum.Masters;
-								if ((temp == "bachelors") || (temp == "bachelor's"))
-									thesisInfo.Degree_Level = Thesis_Dissertation_Info.Thesis_Degree_Level_Enum.Bachelors;
-								if ((temp == "post-doctorate") || (temp == "post-doctoral"))
-									thesisInfo.Degree_Level = Thesis_Dissertation_Info.Thesis_Degree_Level_Enum.Bachelors;
-							}
-							break;
+                                string temp = R.Value.Trim().ToLower();
+                                if ((temp == "doctorate") || (temp == "doctoral"))
+                                    thesisInfo.Degree_Level = Thesis_Dissertation_Info.Thesis_Degree_Level_Enum.Doctorate;
+                                if ((temp == "masters") || (temp == "master's"))
+                                    thesisInfo.Degree_Level = Thesis_Dissertation_Info.Thesis_Degree_Level_Enum.Masters;
+                                if ((temp == "bachelors") || (temp == "bachelor's"))
+                                    thesisInfo.Degree_Level = Thesis_Dissertation_Info.Thesis_Degree_Level_Enum.Bachelors;
+                                if ((temp == "post-doctorate") || (temp == "post-doctoral"))
+                                    thesisInfo.Degree_Level = Thesis_Dissertation_Info.Thesis_Degree_Level_Enum.Bachelors;
+                            }
+                            break;
 
-						case "thesis.degree.discipline":
-							R.Read();
-							if ((R.NodeType == XmlNodeType.Text) && (R.Value.Trim().Length > 0) && (Return_Package != null))
-							{
-								// Ensure the thesis object exists and is added
-								Thesis_Dissertation_Info thesisInfo = Return_Package.Get_Metadata_Module(GlobalVar.THESIS_METADATA_MODULE_KEY) as Thesis_Dissertation_Info;
-								if (thesisInfo == null)
-								{
-									thesisInfo = new Thesis_Dissertation_Info();
-									Return_Package.Add_Metadata_Module(GlobalVar.THESIS_METADATA_MODULE_KEY, thesisInfo);
-								}
+                        case "thesis.degree.discipline":
+                            R.Read();
+                            if ((R.NodeType == XmlNodeType.Text) && (R.Value.Trim().Length > 0) && (Return_Package != null))
+                            {
+                                // Ensure the thesis object exists and is added
+                                Thesis_Dissertation_Info thesisInfo = Return_Package.Get_Metadata_Module(GlobalVar.THESIS_METADATA_MODULE_KEY) as Thesis_Dissertation_Info;
+                                if (thesisInfo == null)
+                                {
+                                    thesisInfo = new Thesis_Dissertation_Info();
+                                    Return_Package.Add_Metadata_Module(GlobalVar.THESIS_METADATA_MODULE_KEY, thesisInfo);
+                                }
 
-								thesisInfo.Add_Degree_Discipline(R.Value.Trim());
-							}
-							break;
+                                thesisInfo.Add_Degree_Discipline(R.Value.Trim());
+                            }
+                            break;
 
-						case "thesis.degree.grantor":
-							R.Read();
-							if ((R.NodeType == XmlNodeType.Text) && (R.Value.Trim().Length > 0) && (Return_Package != null))
-							{
-								// Ensure the thesis object exists and is added
-								Thesis_Dissertation_Info thesisInfo = Return_Package.Get_Metadata_Module(GlobalVar.THESIS_METADATA_MODULE_KEY) as Thesis_Dissertation_Info;
-								if (thesisInfo == null)
-								{
-									thesisInfo = new Thesis_Dissertation_Info();
-									Return_Package.Add_Metadata_Module(GlobalVar.THESIS_METADATA_MODULE_KEY, thesisInfo);
-								}
+                        case "thesis.degree.grantor":
+                            R.Read();
+                            if ((R.NodeType == XmlNodeType.Text) && (R.Value.Trim().Length > 0) && (Return_Package != null))
+                            {
+                                // Ensure the thesis object exists and is added
+                                Thesis_Dissertation_Info thesisInfo = Return_Package.Get_Metadata_Module(GlobalVar.THESIS_METADATA_MODULE_KEY) as Thesis_Dissertation_Info;
+                                if (thesisInfo == null)
+                                {
+                                    thesisInfo = new Thesis_Dissertation_Info();
+                                    Return_Package.Add_Metadata_Module(GlobalVar.THESIS_METADATA_MODULE_KEY, thesisInfo);
+                                }
 
-								thesisInfo.Degree_Grantor = R.Value.Trim();
-							}
-							break;
+                                thesisInfo.Degree_Grantor = R.Value.Trim();
+                            }
+                            break;
 
                         case "duke:source_collection":
                             R.Read();
-							if ((R.NodeType == XmlNodeType.Text) && (R.Value.Trim().Length > 0) && (Return_Package != null))
-							{
-								Return_Package.Bib_Info.Location.Holding_Name = R.Value.Trim();
-							}
-							break;
+                            if ((R.NodeType == XmlNodeType.Text) && (R.Value.Trim().Length > 0) && (Return_Package != null))
+                            {
+                                Return_Package.Bib_Info.Location.Holding_Name = R.Value.Trim();
+                            }
+                            break;
 
                         case "duke:print_number":
                             R.Read();

@@ -1,7 +1,7 @@
-﻿using System;
-using System.IO;
-using SobekCM.Core.BriefItem;
+﻿using SobekCM.Core.BriefItem;
 using SobekCM.Library.ItemViewer.Viewers;
+using System;
+using System.IO;
 
 namespace SobekCM.Library.ItemViewer.HtmlHeadWriters
 {
@@ -20,7 +20,7 @@ namespace SobekCM.Library.ItemViewer.HtmlHeadWriters
                 return;
 
             Output.WriteLine("  <link title=\"Dublin Core Metadata Schema\" rel=\"schema.DC\" href=\"http://purl.org/DC/elements/1.1/\" />");
-            if ( !String.IsNullOrEmpty(CurrentItem.Title))
+            if (!String.IsNullOrEmpty(CurrentItem.Title))
                 Output.WriteLine("  <meta name=\"DC.title\" content=\"" + CurrentItem.Title.Replace("\"", "'") + "\" />");
             Output.WriteLine();
         }

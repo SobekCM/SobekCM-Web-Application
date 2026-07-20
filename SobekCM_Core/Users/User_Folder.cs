@@ -22,7 +22,7 @@ namespace SobekCM.Core.Users
         /// <summary> Constructor for a new instance of the User_Folder class </summary>
         /// <param name="Folder_Name"> Name of this folder </param>
         /// <param name="Folder_ID"> Primary key to this folder </param>
-        public User_Folder( string Folder_Name, int Folder_ID )
+        public User_Folder(string Folder_Name, int Folder_ID)
         {
             this.Folder_Name = Folder_Name;
             this.Folder_ID = Folder_ID;
@@ -50,7 +50,7 @@ namespace SobekCM.Core.Users
         /// <summary> Gets the number of children folders under this folder </summary>
         public int Child_Count
         {
-            get 
+            get
             {
                 if (Children == null)
                     return 0;

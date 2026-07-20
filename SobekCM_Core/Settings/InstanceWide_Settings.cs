@@ -1,16 +1,16 @@
 #region Using directives
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.Serialization;
-using System.Xml.Serialization;
 using ProtoBuf;
 using SobekCM.Core.Configuration;
 using SobekCM.Core.Configuration.Extensions;
 using SobekCM.Core.Search;
 using SobekCM.Core.Settings.DbItemViewers;
 using SobekCM.Core.Users;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.Serialization;
+using System.Xml.Serialization;
 
 #endregion
 
@@ -273,7 +273,7 @@ namespace SobekCM.Core.Settings
         /// <returns> Metadata search field, or else NULL </returns>
         public Metadata_Search_Field Metadata_Search_Field_By_Code(string SobekCM_Code)
         {
-             return metadataFieldsByCode.ContainsKey(SobekCM_Code) ? metadataFieldsByCode[SobekCM_Code] : null;
+            return metadataFieldsByCode.ContainsKey(SobekCM_Code) ? metadataFieldsByCode[SobekCM_Code] : null;
         }
 
         /// <summary> Gets a single metadata search field, by the metadata column name </summary>
@@ -299,7 +299,7 @@ namespace SobekCM.Core.Settings
         {
             return metadataFieldsByFacetName.ContainsKey(Facet_Name.Replace("_", " ").ToLower()) ? metadataFieldsByFacetName[Facet_Name.Replace("_", " ").ToLower()] : null;
         }
-        
+
         /// <summary> Gets a single metadata search field, by primary identifiere </summary>
         /// <param name="MetadataTypeID"> Primary identifier for the metadata search field </param>
         /// <returns> Metadata search field, or else NULL </returns>
@@ -321,12 +321,12 @@ namespace SobekCM.Core.Settings
             if (CurrentUser.ShibbID.Trim().Length > 0)
                 userInProcessDirectory = Servers.In_Process_Submission_Location + "\\" + CurrentUser.ShibbID + "\\" + DirectoryName;
 
-            return userInProcessDirectory; 
+            return userInProcessDirectory;
         }
 
 
         #region Properties and methods related to additional custom settings 
-       
+
 
         /// <summary> Additional custom settings associated with this SobekCM system at
         /// the highest level </summary>
@@ -471,7 +471,7 @@ namespace SobekCM.Core.Settings
         {
             if (MarcGeneration == null)
                 return false;
-            
+
             return ((!String.IsNullOrEmpty(MarcGeneration.Cataloging_Source_Code)) || (!String.IsNullOrEmpty(MarcGeneration.Reproduction_Place)) ||
                     (!String.IsNullOrEmpty(MarcGeneration.Reproduction_Agency)) || (!String.IsNullOrEmpty(MarcGeneration.Location_Code)) ||
                     (!String.IsNullOrEmpty(MarcGeneration.XSLT_File)) || (!String.IsNullOrEmpty(MarcGeneration.MarcXML_Feed_Location)));

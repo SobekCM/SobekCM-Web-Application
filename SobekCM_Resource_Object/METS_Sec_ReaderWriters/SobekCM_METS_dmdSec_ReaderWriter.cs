@@ -1,12 +1,12 @@
 ﻿#region Using directives
 
+using SobekCM.Resource_Object.Bib_Info;
+using SobekCM.Resource_Object.Metadata_Modules;
+using SobekCM.Resource_Object.Metadata_Modules.GeoSpatial;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Xml;
-using SobekCM.Resource_Object.Bib_Info;
-using SobekCM.Resource_Object.Metadata_Modules;
-using SobekCM.Resource_Object.Metadata_Modules.GeoSpatial;
 
 #endregion
 
@@ -159,7 +159,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
             {
                 if (Options.ContainsKey("SobekCM_METS_dmdSec_ReaderWriter:Deprecated_Downloads"))
                 {
-                    deprecatedDownloads = (List<Download_Info_DEPRECATED>) Options["SobekCM_METS_dmdSec_ReaderWriter:Deprecated_Downloads"];
+                    deprecatedDownloads = (List<Download_Info_DEPRECATED>)Options["SobekCM_METS_dmdSec_ReaderWriter:Deprecated_Downloads"];
                 }
             }
 
@@ -307,7 +307,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                                     {
                                         try
                                         {
-                                            newDownload.Size_MB = (float) Convert.ToDouble(Input_XmlReader.Value);
+                                            newDownload.Size_MB = (float)Convert.ToDouble(Input_XmlReader.Value);
                                         }
                                         catch
                                         {
@@ -353,18 +353,18 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                             }
                             break;
 
-						case "VisibilityRestrictions":
-		                    Input_XmlReader.Read();
-							if (Input_XmlReader.NodeType == XmlNodeType.Text)
-							{
-								string restriction_text = Input_XmlReader.Value;
-								short restriction;
-								if (Int16.TryParse(restriction_text, out restriction))
-								{
-									Return_Package.Behaviors.IP_Restriction_Membership = restriction;
-								}
-							}
-		                    break;
+                        case "VisibilityRestrictions":
+                            Input_XmlReader.Read();
+                            if (Input_XmlReader.NodeType == XmlNodeType.Text)
+                            {
+                                string restriction_text = Input_XmlReader.Value;
+                                short restriction;
+                                if (Int16.TryParse(restriction_text, out restriction))
+                                {
+                                    Return_Package.Behaviors.IP_Restriction_Membership = restriction;
+                                }
+                            }
+                            break;
 
                         case "Tickler":
                             Input_XmlReader.Read();
@@ -516,26 +516,26 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                         case "Temporal":
                             while (Input_XmlReader.Read())
                             {
-								if ((Input_XmlReader.NodeType == XmlNodeType.EndElement) && (Input_XmlReader.Name == sobekcm_namespace + ":Temporal"))
+                                if ((Input_XmlReader.NodeType == XmlNodeType.EndElement) && (Input_XmlReader.Name == sobekcm_namespace + ":Temporal"))
                                 {
-									break;
+                                    break;
                                 }
 
                                 if ((Input_XmlReader.NodeType == XmlNodeType.Element) && (Input_XmlReader.Name == sobekcm_namespace + ":period"))
                                 {
-									Temporal_Info newTemporal = new Temporal_Info();
-									if (Input_XmlReader.MoveToAttribute("start"))
+                                    Temporal_Info newTemporal = new Temporal_Info();
+                                    if (Input_XmlReader.MoveToAttribute("start"))
                                     {
-	                                    int temp_start_year;
-	                                    if (Int32.TryParse(Input_XmlReader.Value, out temp_start_year))
-		                                    newTemporal.Start_Year = temp_start_year;
+                                        int temp_start_year;
+                                        if (Int32.TryParse(Input_XmlReader.Value, out temp_start_year))
+                                            newTemporal.Start_Year = temp_start_year;
                                     }
 
                                     if (Input_XmlReader.MoveToAttribute("end"))
                                     {
-										int temp_end_year;
-										if (Int32.TryParse(Input_XmlReader.Value, out temp_end_year))
-											newTemporal.End_Year = temp_end_year;
+                                        int temp_end_year;
+                                        if (Int32.TryParse(Input_XmlReader.Value, out temp_end_year))
+                                            newTemporal.End_Year = temp_end_year;
                                     }
 
                                     Input_XmlReader.Read();
@@ -544,8 +544,8 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                                         newTemporal.TimePeriod = Input_XmlReader.Value;
                                     }
 
-									if (( newTemporal.Start_Year > 0 ) || ( newTemporal.End_Year > 0 ) || ( newTemporal.TimePeriod.Length > 0 ))
-										Return_Package.Bib_Info.Add_Temporal_Subject(newTemporal);
+                                    if ((newTemporal.Start_Year > 0) || (newTemporal.End_Year > 0) || (newTemporal.TimePeriod.Length > 0))
+                                        Return_Package.Bib_Info.Add_Temporal_Subject(newTemporal);
                                 }
                             }
                             break;
@@ -1009,7 +1009,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                 {
                     try
                     {
-                        newPoint.Altitude = (long) Convert.ToDouble(Input_XmlReader.Value);
+                        newPoint.Altitude = (long)Convert.ToDouble(Input_XmlReader.Value);
                     }
                     catch
                     {
@@ -1065,29 +1065,29 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
         public string[] Schema_Namespace(SobekCM_Item METS_Item)
         {
             string sobekcm_ref = "sobekcm=\"http://sobekrepository.org/schemas/sobekcm/\"";
-			string oral_ref = "oral=\"http://sobekrepository.org/schemas/sobekcm_oral/\"";
-			string part_ref = "part=\"http://sobekrepository.org/schemas/sobekcm_part/\"";
+            string oral_ref = "oral=\"http://sobekrepository.org/schemas/sobekcm_oral/\"";
+            string part_ref = "part=\"http://sobekrepository.org/schemas/sobekcm_part/\"";
 
             Performing_Arts_Info partInfo = METS_Item.Get_Metadata_Module("PerformingArts") as Performing_Arts_Info;
             Oral_Interview_Info oralInfo = METS_Item.Get_Metadata_Module("OralInterview") as Oral_Interview_Info;
 
             if (((oralInfo == null) || (!oralInfo.hasData)) && ((partInfo == null) || (!partInfo.hasData)))
-                return new string[] {sobekcm_ref};
+                return new string[] { sobekcm_ref };
 
             if (((oralInfo != null) && (oralInfo.hasData)) && ((partInfo != null) && (partInfo.hasData)))
-                return new string[] {sobekcm_ref, oral_ref, part_ref};
+                return new string[] { sobekcm_ref, oral_ref, part_ref };
 
             if ((oralInfo != null) && (oralInfo.hasData))
             {
-                return new string[] {sobekcm_ref, oral_ref};
+                return new string[] { sobekcm_ref, oral_ref };
             }
 
             if ((partInfo != null) && (partInfo.hasData))
             {
-                return new string[] {sobekcm_ref, part_ref};
+                return new string[] { sobekcm_ref, part_ref };
             }
 
-            return new string[] {};
+            return new string[] { };
         }
 
         /// <summary> Returns the schema location information to be written in the XML/METS Header</summary>
@@ -1095,30 +1095,30 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
         /// <returns> Formatted schema location for the METS header</returns>
         public string[] Schema_Location(SobekCM_Item METS_Item)
         {
-			string sobekcm_ref = "    http://sobekrepository.org/schemas/sobekcm/\r\n    http://sobekrepository.org/schemas/sobekcm.xsd";
-			string oral_ref = "    http://sobekrepository.org/schemas/sobekcm_oral/\r\n    http://sobekrepository.org/schemas/sobekcm_oral.xsd";
-			string part_ref = "    http://sobekrepository.org/schemas/sobekcm_part/\r\n    http://sobekrepository.org/schemas/sobekcm_part.xsd";
+            string sobekcm_ref = "    http://sobekrepository.org/schemas/sobekcm/\r\n    http://sobekrepository.org/schemas/sobekcm.xsd";
+            string oral_ref = "    http://sobekrepository.org/schemas/sobekcm_oral/\r\n    http://sobekrepository.org/schemas/sobekcm_oral.xsd";
+            string part_ref = "    http://sobekrepository.org/schemas/sobekcm_part/\r\n    http://sobekrepository.org/schemas/sobekcm_part.xsd";
 
             Performing_Arts_Info partInfo = METS_Item.Get_Metadata_Module("PerformingArts") as Performing_Arts_Info;
             Oral_Interview_Info oralInfo = METS_Item.Get_Metadata_Module("OralInterview") as Oral_Interview_Info;
 
             if (((oralInfo == null) || (!oralInfo.hasData)) && ((partInfo == null) || (!partInfo.hasData)))
-                return new string[] {sobekcm_ref};
+                return new string[] { sobekcm_ref };
 
             if (((oralInfo != null) && (oralInfo.hasData)) && ((partInfo != null) && (partInfo.hasData)))
-                return new string[] {sobekcm_ref, oral_ref, part_ref};
+                return new string[] { sobekcm_ref, oral_ref, part_ref };
 
             if ((oralInfo != null) && (oralInfo.hasData))
             {
-                return new string[] {sobekcm_ref, oral_ref};
+                return new string[] { sobekcm_ref, oral_ref };
             }
 
             if ((partInfo != null) && (partInfo.hasData))
             {
-                return new string[] {sobekcm_ref, part_ref};
+                return new string[] { sobekcm_ref, part_ref };
             }
 
-            return new string[] {};
+            return new string[] { };
         }
 
         #endregion

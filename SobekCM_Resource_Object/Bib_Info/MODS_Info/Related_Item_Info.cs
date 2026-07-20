@@ -1,11 +1,11 @@
 ﻿#region Using directives
 
+using SobekCM.Resource_Object.MARC;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Text;
-using SobekCM.Resource_Object.MARC;
 
 #endregion
 
@@ -60,7 +60,8 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// there are no identifiers, the Identifiers property creates a readonly collection to pass back out.</remarks>
         public int Identifiers_Count
         {
-            get {
+            get
+            {
                 return identifiers == null ? 0 : identifiers.Count;
             }
         }
@@ -70,7 +71,8 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// Even if there are no identifiers, this property creates a readonly collection to pass back out.</remarks>
         public ReadOnlyCollection<Identifier_Info> Identifiers
         {
-            get {
+            get
+            {
                 return identifiers == null ? new ReadOnlyCollection<Identifier_Info>(new List<Identifier_Info>()) : new ReadOnlyCollection<Identifier_Info>(identifiers);
             }
         }
@@ -81,7 +83,8 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// there are no notes, the Notes property creates a readonly collection to pass back out.</remarks>
         public int Notes_Count
         {
-            get {
+            get
+            {
                 return notes == null ? 0 : notes.Count;
             }
         }
@@ -91,7 +94,8 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// Even if there are no notes, this property creates a readonly collection to pass back out.</remarks>
         public ReadOnlyCollection<Note_Info> Notes
         {
-            get {
+            get
+            {
                 return notes == null ? new ReadOnlyCollection<Note_Info>(new List<Note_Info>()) : new ReadOnlyCollection<Note_Info>(notes);
             }
         }
@@ -101,7 +105,8 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// there are no names, the Names property creates a readonly collection to pass back out.</remarks>
         public int Names_Count
         {
-            get {
+            get
+            {
                 return names == null ? 0 : names.Count;
             }
         }
@@ -111,7 +116,8 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// Even if there are no names, this property creates a readonly collection to pass back out.</remarks>
         public ReadOnlyCollection<Name_Info> Names
         {
-            get {
+            get
+            {
                 return names == null ? new ReadOnlyCollection<Name_Info>(new List<Name_Info>()) : new ReadOnlyCollection<Name_Info>(names);
             }
         }
@@ -119,7 +125,8 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// <summary> Flag indicates if this related item has a main title included </summary>
         public bool hasMainTitle
         {
-            get {
+            get
+            {
                 return (title != null) && (title.Title.Length > 0);
             }
         }
@@ -349,7 +356,7 @@ namespace SobekCM.Resource_Object.Bib_Info
         {
             MARC_Field related_item_tag = new MARC_Field
             {
-                Indicators = "00", 
+                Indicators = "00",
                 Tag = 787
             };
             switch (Relationship)

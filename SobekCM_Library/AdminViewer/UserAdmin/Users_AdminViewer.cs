@@ -1,7 +1,5 @@
 ﻿#region Using directives
 
-using System;
-using System.IO;
 using Microsoft.AspNetCore.Http;
 using SobekCM.Core.Navigation;
 using SobekCM.Engine_Library.Configuration;
@@ -9,6 +7,8 @@ using SobekCM.Library.AdminViewer.UserAdmin.SubViewers;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
 using SobekCM.Tools;
+using System;
+using System.IO;
 
 #endregion
 
@@ -30,21 +30,21 @@ namespace SobekCM.Library.AdminViewer
     {
         private iUsersAdminSubViewer subviewer;
 
-		/// <summary> Constructor for a new instance of the Users_AdminViewer class </summary>
+        /// <summary> Constructor for a new instance of the Users_AdminViewer class </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
-		/// <remarks> Postback from a RequestSpecificValues.Current_User edit or from reseting a RequestSpecificValues.Current_User's password is handled here in the constructor </remarks>
+        /// <remarks> Postback from a RequestSpecificValues.Current_User edit or from reseting a RequestSpecificValues.Current_User's password is handled here in the constructor </remarks>
         public Users_AdminViewer(RequestCache RequestSpecificValues, HttpContext Context) : base(RequestSpecificValues, Context)
-		{
+        {
             RequestSpecificValues.Tracer.Add_Trace("Users_AdminViewer.Constructor", String.Empty);
 
-			// Ensure there is a user
-			if (RequestSpecificValues.Current_User == null)
-			{
-				RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.My_Sobek;
-				RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
-				UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
-				return;
-			}
+            // Ensure there is a user
+            if (RequestSpecificValues.Current_User == null)
+            {
+                RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.My_Sobek;
+                RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
+                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                return;
+            }
 
             // Ensure the user is the system admin, or user admin
             if ((!RequestSpecificValues.Current_User.Is_System_Admin) && (!RequestSpecificValues.Current_User.Is_User_Admin))
@@ -58,12 +58,12 @@ namespace SobekCM.Library.AdminViewer
             // Create the subviewer
             subviewer = UsersAdminSubViewerBuilder.GetSubViewer(RequestSpecificValues, Context);
 
-		    // Perform post back work in the subviewer
-			if (RequestSpecificValues.Current_Mode.isPostBack)
-			{
+            // Perform post back work in the subviewer
+            if (RequestSpecificValues.Current_Mode.isPostBack)
+            {
                 subviewer.HandlePostback(RequestSpecificValues, Context);
-			}
-		}
+            }
+        }
 
         /// <summary> Title for the page that displays this viewer, this is shown in the search box at the top of the page, just below the banner </summary>
         /// <value> This always returns various values depending on the current submode </value>

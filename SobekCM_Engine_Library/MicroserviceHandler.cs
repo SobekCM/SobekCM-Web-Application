@@ -1,17 +1,14 @@
 #region Using directives
 
+using Microsoft.AspNetCore.Http;
+using SobekCM.Core.Configuration.Engine;
+using SobekCM.Engine_Library.ApplicationState;
+using SobekCM.Engine_Library.Database;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using Microsoft.AspNetCore.Http;
-using SobekCM.Core.Configuration;
-using SobekCM.Engine_Library.ApplicationState;
-using SobekCM.Engine_Library.Database;
-using SobekCM.Core.Configuration.Engine;
 
 #endregion
 

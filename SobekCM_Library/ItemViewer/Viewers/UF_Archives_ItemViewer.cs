@@ -1,14 +1,13 @@
-using System.Collections.Generic;
-using System.Data;
-using System.IO;
+using Microsoft.AspNetCore.Http;
 using SobekCM.Core.BriefItem;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Users;
 using SobekCM.Engine_Library.Database;
-using SobekCM.Library.Database;
 using SobekCM.Library.ItemViewer.Menu;
 using SobekCM.Tools;
-using Microsoft.AspNetCore.Http;
+using System.Collections.Generic;
+using System.Data;
+using System.IO;
 
 namespace SobekCM.Library.ItemViewer.Viewers
 {
@@ -88,7 +87,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <param name="CurrentRequest"> Information about the current request </param>
         /// <param name="MenuItems"> List of menu items, to which this method may add one or more menu items </param>
         /// <param name="IsRestricted"> Flag indicates if this item is restricted AND the current user is outside the ranges or not in the proper groups</param>
-        public virtual void Add_Menu_Items(BriefItemInfo CurrentItem, User_Object CurrentUser, Navigation_Object CurrentRequest, List<Item_MenuItem> MenuItems, bool IsRestricted )
+        public virtual void Add_Menu_Items(BriefItemInfo CurrentItem, User_Object CurrentUser, Navigation_Object CurrentRequest, List<Item_MenuItem> MenuItems, bool IsRestricted)
         {
             // Do nothing since this is already handed and added to the menu by the MANAGE MENU item viewer and INTERNAL header
         }
@@ -135,7 +134,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             // Get the archives information
             Tracer.Add_Trace("UF_Archives_ItemViewer.Constructor", "Try to pull the archives details for this item");
             DataSet data = Engine_Database.Tracking_Get_History_Archives(BriefItem.Web.ItemID, Tracer);
-            if ((data == null) || ( data.Tables.Count < 3 ))
+            if ((data == null) || (data.Tables.Count < 3))
             {
                 Tracer.Add_Trace("Constructor.Constructor", "Unable to pull tracking details");
                 CurrentRequest.Mode = Display_Mode_Enum.Error;

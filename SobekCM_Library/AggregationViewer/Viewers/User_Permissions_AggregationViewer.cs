@@ -1,19 +1,17 @@
 #region Using directives
 
 using Microsoft.AspNetCore.Http;
-using System;
-using System.Collections.Generic;
-using System.Data;
-using System.IO;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.Navigation;
-using SobekCM.Core.UI_Configuration;
-using SobekCM.Core.UI_Configuration.StaticResources;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Library.Database;
 using SobekCM.Library.HTML;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.IO;
 
 #endregion
 
@@ -48,7 +46,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         /// requests from the main HTML subwriter. </summary>
         public override List<HtmlSubwriter_Behaviors_Enum> AggregationViewer_Behaviors
         {
-            get { return new List<HtmlSubwriter_Behaviors_Enum> {HtmlSubwriter_Behaviors_Enum.Use_Jquery_DataTables}; }
+            get { return new List<HtmlSubwriter_Behaviors_Enum> { HtmlSubwriter_Behaviors_Enum.Use_Jquery_DataTables }; }
         }
 
         /// <summary> Gets the type of collection view or search supported by this collection viewer </summary>
@@ -423,7 +421,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 
         private string flag_to_display(object ToDisplay)
         {
-            if ((ToDisplay != DBNull.Value ) && ( Convert.ToBoolean(ToDisplay)))
+            if ((ToDisplay != DBNull.Value) && (Convert.ToBoolean(ToDisplay)))
                 return "Y";
             return "";
         }

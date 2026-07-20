@@ -1,8 +1,8 @@
-﻿using System;
+﻿using ProtoBuf;
+using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
-using ProtoBuf;
 
 namespace SobekCM.Core.WebContent.Admin
 {
@@ -19,7 +19,7 @@ namespace SobekCM.Core.WebContent.Admin
         public int Total { get; set; }
 
         /// <summary> If there was a user filter applied for this result set, included here </summary>
-        [DataMember(Name = "userFilter",EmitDefaultValue=false, IsRequired=false)]
+        [DataMember(Name = "userFilter", EmitDefaultValue = false, IsRequired = false)]
         [XmlAttribute("userFilter")]
         [ProtoMember(2)]
         public string UserFilter { get; set; }

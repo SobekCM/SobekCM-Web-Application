@@ -1,12 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using SobekCM.Core.Users;
 using SobekCM.Tools;
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 
 namespace SobekCM.Library.AdminViewer.UserAdmin.SubViewers
@@ -17,7 +12,7 @@ namespace SobekCM.Library.AdminViewer.UserAdmin.SubViewers
 
         public User_Object EditUser
         {
-            set { editUser = value;  }
+            set { editUser = value; }
         }
 
         public abstract string Title { get; }
@@ -25,6 +20,6 @@ namespace SobekCM.Library.AdminViewer.UserAdmin.SubViewers
         public abstract void HandlePostback(RequestCache RequestSpecificValues, HttpContext Context);
 
         public abstract void Write_SubView(TextWriter Output, RequestCache RequestSpecificValues, Custom_Tracer Tracer);
-        
+
     }
 }

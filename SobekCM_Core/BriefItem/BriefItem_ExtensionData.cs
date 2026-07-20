@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.Serialization;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Serialization;
-using ProtoBuf;
+﻿using ProtoBuf;
 using SobekCM.Tools;
+using System;
+using System.Collections.Generic;
+using System.Runtime.Serialization;
+using System.Xml.Serialization;
 
 namespace SobekCM.Core.BriefItem
 {
@@ -30,7 +27,7 @@ namespace SobekCM.Core.BriefItem
 
         /// <summary> Constructor for a new instance of the BriefItem_ExtensionData class </summary>
         /// <param name="Extension_Name"> Name of this extension, used as a key for retrieval  </param>
-        public BriefItem_ExtensionData( string Extension_Name )
+        public BriefItem_ExtensionData(string Extension_Name)
         {
             this.Extension_Name = Extension_Name;
             Data = new List<StringKeyValuePair>();

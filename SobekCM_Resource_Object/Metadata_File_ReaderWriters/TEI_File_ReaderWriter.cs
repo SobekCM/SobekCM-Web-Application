@@ -1,11 +1,11 @@
 ﻿#region Using directives
 
+using SobekCM.Resource_Object.Bib_Info;
+using SobekCM.Resource_Object.Divisions;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using SobekCM.Resource_Object.Bib_Info;
-using SobekCM.Resource_Object.Divisions;
 
 #endregion
 
@@ -131,11 +131,11 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
             Output_Stream.WriteLine("\t<teiHeader>");
             Output_Stream.WriteLine("\t\t<fileDesc>");
             Output_Stream.WriteLine("\t\t\t<titleStmt>");
-            Output_Stream.WriteLine("\t\t\t\t<title>" + Convert_String_To_XML_Safe( Item_To_Save.Bib_Info.Main_Title.ToString()) + "</title>");
+            Output_Stream.WriteLine("\t\t\t\t<title>" + Convert_String_To_XML_Safe(Item_To_Save.Bib_Info.Main_Title.ToString()) + "</title>");
 
-            if ( Item_To_Save.Bib_Info.Main_Entity_Name.hasData )
+            if (Item_To_Save.Bib_Info.Main_Entity_Name.hasData)
             {
-                Output_Stream.WriteLine("\t\t\t\t<author>" + Convert_String_To_XML_Safe( Item_To_Save.Bib_Info.Main_Title.ToString()) + "</author>");
+                Output_Stream.WriteLine("\t\t\t\t<author>" + Convert_String_To_XML_Safe(Item_To_Save.Bib_Info.Main_Title.ToString()) + "</author>");
             }
 
             Output_Stream.WriteLine("\t\t\t</titleStmt>");
@@ -147,13 +147,13 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
             // Add the repository as the distributor
             Output_Stream.WriteLine("\t\t\t\t<distributor>" + Convert_String_To_XML_Safe(distributor) + "</distributor>");
             Output_Stream.WriteLine("\t\t\t\t<email>" + distributor_email + "</email>");
-            
+
 
             // Add all the identifiers
             Output_Stream.WriteLine("\t\t\t\t<idno>" + purl + "</idno>");
 
             // Add the availability statement
-            if ( Item_To_Save.Bib_Info.AccessConditions_Count > 0 )
+            if (Item_To_Save.Bib_Info.AccessConditions_Count > 0)
             {
                 foreach (var rights in Item_To_Save.Bib_Info.AccessConditions)
                 {
@@ -168,21 +168,21 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
             Output_Stream.WriteLine("\t\t\t\t<biblFull>");
 
             Output_Stream.WriteLine("\t\t\t\t\t<titleStmt>");
-            Output_Stream.WriteLine("\t\t\t\t\t\t<title>" + Convert_String_To_XML_Safe( Item_To_Save.Bib_Info.Main_Title.ToString()) + "</title>");
+            Output_Stream.WriteLine("\t\t\t\t\t\t<title>" + Convert_String_To_XML_Safe(Item_To_Save.Bib_Info.Main_Title.ToString()) + "</title>");
 
-            if ( Item_To_Save.Bib_Info.Main_Entity_Name.hasData )
+            if (Item_To_Save.Bib_Info.Main_Entity_Name.hasData)
             {
-                Output_Stream.WriteLine("\t\t\t\t\t\t<author>" + Convert_String_To_XML_Safe( Item_To_Save.Bib_Info.Main_Entity_Name.ToString(false)) + "</author>");
+                Output_Stream.WriteLine("\t\t\t\t\t\t<author>" + Convert_String_To_XML_Safe(Item_To_Save.Bib_Info.Main_Entity_Name.ToString(false)) + "</author>");
             }
-            foreach( Name_Info thisName in Item_To_Save.Bib_Info.Names )
+            foreach (Name_Info thisName in Item_To_Save.Bib_Info.Names)
             {
                 string role = String.Empty;
-                if ( thisName.Roles.Count > 0 )
+                if (thisName.Roles.Count > 0)
                 {
                     role = thisName.Roles[0].Role;
-                    foreach( Name_Info_Role thisRole in thisName.Roles )
+                    foreach (Name_Info_Role thisRole in thisName.Roles)
                     {
-                        if ( thisRole.Role_Type == Name_Info_Role_Type_Enum.Text )
+                        if (thisRole.Role_Type == Name_Info_Role_Type_Enum.Text)
                         {
                             role = thisRole.Role;
                             break;
@@ -202,39 +202,39 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
 
             Output_Stream.WriteLine("\t\t\t\t\t</titleStmt>");
 
-            if ( Item_To_Save.Bib_Info.Original_Description.Extent.Length > 0 )
+            if (Item_To_Save.Bib_Info.Original_Description.Extent.Length > 0)
             {
-                Output_Stream.WriteLine("\t\t\t\t\t<extent>" + Convert_String_To_XML_Safe(Item_To_Save.Bib_Info.Original_Description.Extent)  + "</extent>");
+                Output_Stream.WriteLine("\t\t\t\t\t<extent>" + Convert_String_To_XML_Safe(Item_To_Save.Bib_Info.Original_Description.Extent) + "</extent>");
             }
 
             Output_Stream.WriteLine("\t\t\t\t\t<publicationStmt>");
 
             // Add the publishers
-            foreach( Publisher_Info pubInfo in Item_To_Save.Bib_Info.Publishers )
+            foreach (Publisher_Info pubInfo in Item_To_Save.Bib_Info.Publishers)
             {
-                if ( pubInfo.Name.Length > 0 )
+                if (pubInfo.Name.Length > 0)
                     Output_Stream.WriteLine("\t\t\t\t\t\t<publisher>" + Convert_String_To_XML_Safe(pubInfo.Name) + "</publisher>");
-                foreach( Origin_Info_Place place in pubInfo.Places )
+                foreach (Origin_Info_Place place in pubInfo.Places)
                 {
-                    if ( place.Place_Text.Length > 0 )
+                    if (place.Place_Text.Length > 0)
                         Output_Stream.WriteLine("\t\t\t\t\t\t<pubPlace>" + Convert_String_To_XML_Safe(place.Place_Text) + "</pubPlace>");
                 }
             }
 
             // Add the date
-            if ( Item_To_Save.Bib_Info.Origin_Info.Date_Issued.Length > 0 )
+            if (Item_To_Save.Bib_Info.Origin_Info.Date_Issued.Length > 0)
             {
                 Output_Stream.WriteLine("\t\t\t\t\t\t<date>" + Convert_String_To_XML_Safe(Item_To_Save.Bib_Info.Origin_Info.Date_Issued) + "</date>");
             }
-            else if ( Item_To_Save.Bib_Info.Origin_Info.Date_Created.Length > 0 )
+            else if (Item_To_Save.Bib_Info.Origin_Info.Date_Created.Length > 0)
             {
                 Output_Stream.WriteLine("\t\t\t\t\t\t<date>" + Convert_String_To_XML_Safe(Item_To_Save.Bib_Info.Origin_Info.Date_Created) + "</date>");
-            }           
+            }
 
             // Add all the identifiers
-            foreach( Identifier_Info thisIdentifier in Item_To_Save.Bib_Info.Identifiers )
+            foreach (Identifier_Info thisIdentifier in Item_To_Save.Bib_Info.Identifiers)
             {
-                Output_Stream.WriteLine("\t\t\t\t\t\t<idno type=\"" + thisIdentifier.Type + "\">" + thisIdentifier.Identifier  + "</idno>");
+                Output_Stream.WriteLine("\t\t\t\t\t\t<idno type=\"" + thisIdentifier.Type + "\">" + thisIdentifier.Identifier + "</idno>");
             }
 
             // Add the availability statement
@@ -252,7 +252,7 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
 
             Output_Stream.WriteLine("\t\t\t\t\t<notesStmt>");
 
-            foreach( Note_Info thisNote in Item_To_Save.Bib_Info.Notes )
+            foreach (Note_Info thisNote in Item_To_Save.Bib_Info.Notes)
             {
                 Output_Stream.WriteLine("\t\t\t\t\t\t<note anchored=\"true\">" + Convert_String_To_XML_Safe(thisNote.Note) + "</note>");
             }
@@ -271,19 +271,19 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
             Output_Stream.WriteLine("\t\t<profileDesc>");
 
             // Add the languages
-            if ( Item_To_Save.Bib_Info.Languages_Count > 0 )
+            if (Item_To_Save.Bib_Info.Languages_Count > 0)
             {
                 Output_Stream.WriteLine("\t\t\t<langUsage>");
-                foreach( Language_Info thisLanguage in Item_To_Save.Bib_Info.Languages )
+                foreach (Language_Info thisLanguage in Item_To_Save.Bib_Info.Languages)
                 {
-                    if ( thisLanguage.Language_Text.Length > 0 )
+                    if (thisLanguage.Language_Text.Length > 0)
                     {
                         Output_Stream.Write("\t\t\t\t<language");
-                        if ( thisLanguage.Language_ISO_Code.Length > 0 )
+                        if (thisLanguage.Language_ISO_Code.Length > 0)
                             Output_Stream.Write(" ident=\"" + thisLanguage.Language_ISO_Code + "\"");
-                        else if ( thisLanguage.Language_RFC_Code.Length > 0 )
+                        else if (thisLanguage.Language_RFC_Code.Length > 0)
                             Output_Stream.Write(" ident=\"" + thisLanguage.Language_RFC_Code + "\"");
-                        
+
                         Output_Stream.WriteLine(">" + Convert_String_To_XML_Safe(thisLanguage.Language_Text) + "</language>");
                     }
                 }
@@ -291,14 +291,14 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
             }
 
             // Add all the subject keywords
-            if ( Item_To_Save.Bib_Info.Subjects_Count > 0 )
+            if (Item_To_Save.Bib_Info.Subjects_Count > 0)
             {
                 // Categorize the terms
                 List<string> lcsh = new List<string>();
                 List<string> non = new List<string>();
-                foreach( Subject_Info thisSubj in Item_To_Save.Bib_Info.Subjects )
+                foreach (Subject_Info thisSubj in Item_To_Save.Bib_Info.Subjects)
                 {
-                    if ( String.Equals( thisSubj.Authority, "lcsh", StringComparison.OrdinalIgnoreCase) )
+                    if (String.Equals(thisSubj.Authority, "lcsh", StringComparison.OrdinalIgnoreCase))
                         lcsh.Add(thisSubj.ToString(false));
                     else
                         non.Add(thisSubj.ToString(false));
@@ -308,11 +308,11 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
                 Output_Stream.WriteLine("\t\t\t<textClass>");
 
                 // Add all the lcsh first
-                if ( lcsh.Count > 0 )
+                if (lcsh.Count > 0)
                 {
                     Output_Stream.WriteLine("\t\t\t\t<keywords scheme=\"#LCSH\">");
                     Output_Stream.WriteLine("\t\t\t\t\t<list>");
-                    foreach( string thisLcsh in lcsh )
+                    foreach (string thisLcsh in lcsh)
                     {
                         Output_Stream.WriteLine("\t\t\t\t\t\t<item>" + Convert_String_To_XML_Safe(thisLcsh) + "</item>");
                     }
@@ -321,11 +321,11 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
                 }
 
                 // Add all the non-lcsh next
-                if ( non.Count > 0 )
+                if (non.Count > 0)
                 {
                     Output_Stream.WriteLine("\t\t\t\t<keywords>");
                     Output_Stream.WriteLine("\t\t\t\t\t<list>");
-                    foreach( string thisNon in non )
+                    foreach (string thisNon in non)
                     {
                         Output_Stream.WriteLine("\t\t\t\t\t\t<item>" + Convert_String_To_XML_Safe(thisNon) + "</item>");
                     }
@@ -339,7 +339,7 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
 
             Output_Stream.WriteLine("\t\t</profileDesc>");
             Output_Stream.WriteLine("\t\t<revisionDesc>");
-            Output_Stream.WriteLine("\t\t\t<change when=\"" + DateTime.Now.Year + "-" + DateTime.Now.Month.ToString().PadLeft(2, '0') + "-" + DateTime.Now.Day.ToString().PadLeft(2,'0') + "\">TEI auto-generated from digital resource</change>");
+            Output_Stream.WriteLine("\t\t\t<change when=\"" + DateTime.Now.Year + "-" + DateTime.Now.Month.ToString().PadLeft(2, '0') + "-" + DateTime.Now.Day.ToString().PadLeft(2, '0') + "\">TEI auto-generated from digital resource</change>");
             Output_Stream.WriteLine("\t\t</revisionDesc>");
             Output_Stream.WriteLine("\t</teiHeader>");
 
@@ -363,11 +363,11 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
 
         }
 
-        private void recursively_add_div_page_text( string SourceDirectory, abstract_TreeNode ThisNode, TextWriter Output_Stream, ref int PageCount )
+        private void recursively_add_div_page_text(string SourceDirectory, abstract_TreeNode ThisNode, TextWriter Output_Stream, ref int PageCount)
         {
             if (ThisNode.Page)
             {
-                Page_TreeNode pageNode = (Page_TreeNode) ThisNode;
+                Page_TreeNode pageNode = (Page_TreeNode)ThisNode;
 
                 if (pageNode.Files.Count > 0)
                 {
@@ -380,10 +380,10 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
                         if ((thisFile.File_Extension.ToLower() == "jpg") && (thisFile.System_Name.ToLower().IndexOf("thm.jpg") < 0))
                             pageimage = thisFile.System_Name;
                     }
-                    
+
                     // Add the page break first
                     Output_Stream.Write("<pb n=\"" + PageCount + "\"");
-                    if ( pageimage.Length > 0 )
+                    if (pageimage.Length > 0)
                         Output_Stream.Write(" facs=\"" + Convert_String_To_XML_Safe(pageimage) + "\"");
                     Output_Stream.WriteLine(" />");
 
@@ -403,7 +403,7 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
             }
             else
             {
-                Division_TreeNode divNode = (Division_TreeNode) ThisNode;
+                Division_TreeNode divNode = (Division_TreeNode)ThisNode;
                 if (ThisNode.Type != "main")
                 {
                     Output_Stream.WriteLine("<div type=\"" + ThisNode.Type + "\">");

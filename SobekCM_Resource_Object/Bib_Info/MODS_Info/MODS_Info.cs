@@ -1,11 +1,11 @@
 #region Using directives
 
+using SobekCM.Resource_Object.Metadata_Modules.VRACore;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Text;
-using SobekCM.Resource_Object.Metadata_Modules.VRACore;
 
 #endregion
 
@@ -205,7 +205,7 @@ namespace SobekCM.Resource_Object.Bib_Info
                 return tableOfContents == null ? 0 : tableOfContents.Count;
             }
         }
-        
+
         /// <summary> Collection of all the table of contents associated with this item </summary>
         /// <remarks> You should check the count of table of contents first using the <see cref="TableOfContents_Count"/> property before using this property.
         /// Even if there are no abstracts, this property creates a readonly collection to pass back out.</remarks>
@@ -265,7 +265,7 @@ namespace SobekCM.Resource_Object.Bib_Info
             foreach (TableOfContents_Info thisToc in tableOfContents)
             {
                 // If the provided display label is empty, and so is this TOC, then return the TOC
-                if (( String.IsNullOrEmpty(thisToc.DisplayLabel)) && ( String.IsNullOrEmpty(DisplayLabel)))
+                if ((String.IsNullOrEmpty(thisToc.DisplayLabel)) && (String.IsNullOrEmpty(DisplayLabel)))
                     return thisToc;
 
                 // If the display label matches, return it
@@ -282,7 +282,8 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// there are no abstracts, the Abstracts property creates a readonly collection to pass back out.</remarks>
         public int Abstracts_Count
         {
-            get {
+            get
+            {
                 return abstracts == null ? 0 : abstracts.Count;
             }
         }
@@ -292,7 +293,8 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// Even if there are no abstracts, this property creates a readonly collection to pass back out.</remarks>
         public ReadOnlyCollection<Abstract_Info> Abstracts
         {
-            get {
+            get
+            {
                 return abstracts == null ? new ReadOnlyCollection<Abstract_Info>(new List<Abstract_Info>()) : new ReadOnlyCollection<Abstract_Info>(abstracts);
             }
         }
@@ -302,7 +304,8 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// there are no related items, the RelatedItems property creates a readonly collection to pass back out.</remarks>
         public int RelatedItems_Count
         {
-            get {
+            get
+            {
                 return relatedItems == null ? 0 : relatedItems.Count;
             }
         }
@@ -312,7 +315,8 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// Even if there are no related items, this property creates a readonly collection to pass back out.</remarks>
         public ReadOnlyCollection<Related_Item_Info> RelatedItems
         {
-            get {
+            get
+            {
                 return relatedItems == null ? new ReadOnlyCollection<Related_Item_Info>(new List<Related_Item_Info>()) : new ReadOnlyCollection<Related_Item_Info>(relatedItems);
             }
         }
@@ -322,7 +326,8 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// there are no genres, the Genres property creates a readonly collection to pass back out.</remarks>
         public int Genres_Count
         {
-            get {
+            get
+            {
                 return genres == null ? 0 : genres.Count;
             }
         }
@@ -332,7 +337,8 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// Even if there are no genres, this property creates a readonly collection to pass back out.</remarks>
         public ReadOnlyCollection<Genre_Info> Genres
         {
-            get {
+            get
+            {
                 return genres == null ? new ReadOnlyCollection<Genre_Info>(new List<Genre_Info>()) : new ReadOnlyCollection<Genre_Info>(genres);
             }
         }
@@ -342,7 +348,8 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// there are no other titles, the Other_Titles property creates a readonly collection to pass back out.</remarks>
         public int Other_Titles_Count
         {
-            get {
+            get
+            {
                 return otherTitles == null ? 0 : otherTitles.Count;
             }
         }
@@ -352,7 +359,8 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// Even if there are no other titles, this property creates a readonly collection to pass back out.</remarks>
         public ReadOnlyCollection<Title_Info> Other_Titles
         {
-            get {
+            get
+            {
                 return otherTitles == null ? new ReadOnlyCollection<Title_Info>(new List<Title_Info>()) : new ReadOnlyCollection<Title_Info>(otherTitles);
             }
         }
@@ -363,7 +371,8 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// there are no languages, the Languages property creates a readonly collection to pass back out.</remarks>
         public int Languages_Count
         {
-            get {
+            get
+            {
                 return languages == null ? 0 : languages.Count;
             }
         }
@@ -373,7 +382,8 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// Even if there are no languages, this property creates a readonly collection to pass back out.</remarks>
         public ReadOnlyCollection<Language_Info> Languages
         {
-            get {
+            get
+            {
                 return languages == null ? new ReadOnlyCollection<Language_Info>(new List<Language_Info>()) : new ReadOnlyCollection<Language_Info>(languages);
             }
         }
@@ -383,7 +393,8 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// there are no classifications, the Classifications property creates a readonly collection to pass back out.</remarks>
         public int Classifications_Count
         {
-            get {
+            get
+            {
                 return classifications == null ? 0 : classifications.Count;
             }
         }
@@ -393,7 +404,8 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// Even if there are no classifications, this property creates a readonly collection to pass back out.</remarks>
         public ReadOnlyCollection<Classification_Info> Classifications
         {
-            get {
+            get
+            {
                 return classifications == null ? new ReadOnlyCollection<Classification_Info>(new List<Classification_Info>()) : new ReadOnlyCollection<Classification_Info>(classifications);
             }
         }
@@ -403,7 +415,8 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// there are no identifiers, the Identifiers property creates a readonly collection to pass back out.</remarks>
         public int Identifiers_Count
         {
-            get {
+            get
+            {
                 return identifiers == null ? 0 : identifiers.Count;
             }
         }
@@ -413,7 +426,8 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// Even if there are no identifiers, this property creates a readonly collection to pass back out.</remarks>
         public ReadOnlyCollection<Identifier_Info> Identifiers
         {
-            get {
+            get
+            {
                 return identifiers == null ? new ReadOnlyCollection<Identifier_Info>(new List<Identifier_Info>()) : new ReadOnlyCollection<Identifier_Info>(identifiers);
             }
         }
@@ -423,7 +437,8 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// there are no subject keywords, the Subjects property creates a readonly collection to pass back out.</remarks>
         public int Subjects_Count
         {
-            get {
+            get
+            {
                 return subjects == null ? 0 : subjects.Count;
             }
         }
@@ -433,7 +448,8 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// Even if there are no subject keywords, this property creates a readonly collection to pass back out.</remarks>
         public ReadOnlyCollection<Subject_Info> Subjects
         {
-            get {
+            get
+            {
                 return subjects == null ? new ReadOnlyCollection<Subject_Info>(new List<Subject_Info>()) : new ReadOnlyCollection<Subject_Info>(subjects);
             }
         }
@@ -443,7 +459,8 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// there are no notes, the Notes property creates a readonly collection to pass back out.</remarks>
         public int Notes_Count
         {
-            get {
+            get
+            {
                 return notes == null ? 0 : notes.Count;
             }
         }
@@ -453,7 +470,8 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// Even if there are no notes, this property creates a readonly collection to pass back out.</remarks>
         public ReadOnlyCollection<Note_Info> Notes
         {
-            get {
+            get
+            {
                 return notes == null ? new ReadOnlyCollection<Note_Info>(new List<Note_Info>()) : new ReadOnlyCollection<Note_Info>(notes);
             }
         }
@@ -463,7 +481,8 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// there are no names, the Names property creates a readonly collection to pass back out.</remarks>
         public int Names_Count
         {
-            get {
+            get
+            {
                 return names == null ? 0 : names.Count;
             }
         }
@@ -473,7 +492,8 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// Even if there are no names, this property creates a readonly collection to pass back out.</remarks>
         public ReadOnlyCollection<Name_Info> Names
         {
-            get {
+            get
+            {
                 return names == null ? new ReadOnlyCollection<Name_Info>(new List<Name_Info>()) : new ReadOnlyCollection<Name_Info>(names);
             }
         }
@@ -483,7 +503,8 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// there are no target audiences, the Target_Audiences property creates a readonly collection to pass back out.</remarks>
         public int Target_Audiences_Count
         {
-            get {
+            get
+            {
                 return targetAudiences == null ? 0 : targetAudiences.Count;
             }
         }
@@ -493,7 +514,8 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// Even if there are no target audiences, this property creates a readonly collection to pass back out.</remarks>
         public ReadOnlyCollection<TargetAudience_Info> Target_Audiences
         {
-            get {
+            get
+            {
                 return targetAudiences == null ? new ReadOnlyCollection<TargetAudience_Info>(new List<TargetAudience_Info>()) : new ReadOnlyCollection<TargetAudience_Info>(targetAudiences);
             }
         }
@@ -502,7 +524,8 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// being present for this digital resource </summary>
         public bool hasLocationInformation
         {
-            get {
+            get
+            {
                 return locationInfo != null;
             }
         }
@@ -518,7 +541,8 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// being present for this digital resource </summary>
         public bool hasDonor
         {
-            get {
+            get
+            {
                 return donor != null;
             }
         }
@@ -533,7 +557,8 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// <summary> Flag indicates if there is the main entity information (main author, etc..) for this digital resource </summary>
         public bool hasMainEntityName
         {
-            get {
+            get
+            {
                 return main_entity_name != null && main_entity_name.hasData;
             }
         }
@@ -548,7 +573,8 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// <summary> Flag indicates if there is a series title associated with this digital resource </summary>
         public bool hasSeriesTitle
         {
-            get {
+            get
+            {
                 return (seriesTitle != null) && (seriesTitle.Title.Length > 0);
             }
         }
@@ -563,7 +589,8 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// <summary> Flag indicates if there is series part information for this resource  </summary>
         public bool hasSeriesPartInfo
         {
-            get {
+            get
+            {
                 return (seriesPartInfo != null) && (seriesPartInfo.hasData);
             }
         }
@@ -1305,7 +1332,7 @@ namespace SobekCM.Resource_Object.Bib_Info
             {
                 if (thisSubject.Class_Type == Subject_Info_Type.Cartographics)
                 {
-                    Subject_Info_Cartographics cartoSubj = (Subject_Info_Cartographics) thisSubject;
+                    Subject_Info_Cartographics cartoSubj = (Subject_Info_Cartographics)thisSubject;
                     if (cartoSubj.Scale == Scale)
                     {
                         if ((ID.Length > 0) && (cartoSubj.ID.Length == 0))
@@ -1340,7 +1367,7 @@ namespace SobekCM.Resource_Object.Bib_Info
             {
                 if (thisSubject.Class_Type == Subject_Info_Type.Cartographics)
                 {
-                    Subject_Info_Cartographics cartoSubj = (Subject_Info_Cartographics) thisSubject;
+                    Subject_Info_Cartographics cartoSubj = (Subject_Info_Cartographics)thisSubject;
                     if (cartoSubj.Scale == Scale)
                     {
                         if ((ID.Length > 0) && (cartoSubj.ID.Length == 0))
@@ -1626,7 +1653,7 @@ namespace SobekCM.Resource_Object.Bib_Info
                     }
                 }
 
-                if (( originalPhysicalDesc != null ) && ( !String.IsNullOrEmpty(originalPhysicalDesc.Extent)))
+                if ((originalPhysicalDesc != null) && (!String.IsNullOrEmpty(originalPhysicalDesc.Extent)))
                     full_citation.Append(originalPhysicalDesc.Extent + " | ");
                 full_citation.Append(type.MODS_Type_String + " | ");
 
@@ -1911,7 +1938,7 @@ namespace SobekCM.Resource_Object.Bib_Info
                 }
             }
 
-            if ( TableOfContents_Count > 0 )
+            if (TableOfContents_Count > 0)
             {
                 foreach (TableOfContents_Info thisToc in TableOfContents)
                 {
@@ -1956,7 +1983,7 @@ namespace SobekCM.Resource_Object.Bib_Info
 
             // Write the resource type
             type.Add_MODS_MODS(Results);
-            
+
             // End the MODS section
             Results.Write("</mods:mods>\r\n");
         }
@@ -1971,7 +1998,7 @@ namespace SobekCM.Resource_Object.Bib_Info
             {
                 return "<" + METSTag + ">" + METSValue + "</" + METSTag + ">\r\n";
             }
-            
+
             return String.Empty;
         }
 

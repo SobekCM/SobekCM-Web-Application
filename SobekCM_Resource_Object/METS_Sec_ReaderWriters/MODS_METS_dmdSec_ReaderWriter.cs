@@ -1,12 +1,12 @@
 ﻿#region Using directives
 
+using SobekCM.Resource_Object.Bib_Info;
+using SobekCM.Resource_Object.Metadata_Modules;
+using SobekCM.Resource_Object.Metadata_Modules.VRACore;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Xml;
-using SobekCM.Resource_Object.Bib_Info;
-using SobekCM.Resource_Object.Metadata_Modules;
-using SobekCM.Resource_Object.Metadata_Modules.VRACore;
 
 #endregion
 
@@ -66,7 +66,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
         public string[] Schema_Namespace(SobekCM_Item METS_Item)
         {
             // If this reader/writer is being utilized, it will almost certainly have data to write.
-            return new string[] {"mods=\"http://www.loc.gov/mods/v3\""};
+            return new string[] { "mods=\"http://www.loc.gov/mods/v3\"" };
         }
 
         /// <summary> Returns the schema location information to be written in the XML/METS Header</summary>
@@ -75,7 +75,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
         public string[] Schema_Location(SobekCM_Item METS_Item)
         {
             // If this reader/writer is being utilized, it will almost certainly have data to write.
-            return new string[] {"    http://www.loc.gov/mods/v3\r\n    http://www.loc.gov/mods/v3/mods-3-4.xsd"};
+            return new string[] { "    http://www.loc.gov/mods/v3\r\n    http://www.loc.gov/mods/v3/mods-3-4.xsd" };
         }
 
         #endregion
@@ -1192,7 +1192,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                 return;
             }
 
-            VRACore_Info vraCoreInfo = Package.Get_Metadata_Module( GlobalVar.VRACORE_METADATA_MODULE_KEY ) as VRACore_Info;
+            VRACore_Info vraCoreInfo = Package.Get_Metadata_Module(GlobalVar.VRACORE_METADATA_MODULE_KEY) as VRACore_Info;
             if (vraCoreInfo == null)
             {
                 vraCoreInfo = new VRACore_Info();

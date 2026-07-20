@@ -1,9 +1,8 @@
-﻿using System;
+﻿using ProtoBuf;
+using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
-using ProtoBuf;
-using SobekCM.Core.Settings;
 
 namespace SobekCM.Core.Builder
 {
@@ -47,7 +46,7 @@ namespace SobekCM.Core.Builder
                 if (Used_Count.HasValue) return Used_Count.Value;
                 return -1;
             }
-            set { if ( value >= 0 ) Used_Count = value; }
+            set { if (value >= 0) Used_Count = value; }
         }
 
         /// <summary> Constructor for a new instance of the Builder_Module_Set_Info class </summary>
@@ -55,7 +54,7 @@ namespace SobekCM.Core.Builder
         {
             // Actually DON'T set the collection.. we don't always need it
             // Builder_Modules = new List<Builder_Module_Setting>();
-            
+
         }
 
         /// <summary> Method suppresses XML Serialization of the Used_Count flag property if it is NULL </summary>

@@ -1,22 +1,19 @@
 #region Using directives
 
+using Microsoft.AspNetCore.Http;
+using SobekCM.Core.ApplicationState;
+using SobekCM.Core.Configuration.Localization;
+using SobekCM.Core.Navigation;
+using SobekCM.Core.Users;
+using SobekCM.Engine_Library.Configuration;
+using SobekCM.Library.Citation.Elements;
+using SobekCM.Resource_Object;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Text;
-using Microsoft.AspNetCore.Http;
-using SobekCM.Core.ApplicationState;
-using SobekCM.Core.Configuration;
-using SobekCM.Core.Configuration.Localization;
-using SobekCM.Core.Navigation;
-using SobekCM.Core.UI_Configuration;
-using SobekCM.Core.UI_Configuration.StaticResources;
-using SobekCM.Core.Users;
-using SobekCM.Engine_Library.Configuration;
-using SobekCM.Library.Citation.Elements;
-using SobekCM.Resource_Object;
 
 #endregion
 
@@ -30,7 +27,7 @@ namespace SobekCM.Library.Citation.Template
         #region Template_Upload_Types enum
 
         /// <summary> Enumeration tells the types of uploads this template allows </summary>
-        public enum Template_Upload_Types : byte 
+        public enum Template_Upload_Types : byte
         {
             /// <summary> A file must be included with this template </summary>
             File = 1,
@@ -68,7 +65,7 @@ namespace SobekCM.Library.Citation.Template
             Banner = String.Empty;
             BibID_Root = String.Empty;
             DateCreated = DateTime.Now;
-            LastModified = new DateTime( 1, 1, 1);
+            LastModified = new DateTime(1, 1, 1);
             templatePages = new List<Template_Page>();
             constants = new List<abstract_Element>();
             Upload_Types = Template_Upload_Types.File;
@@ -84,7 +81,7 @@ namespace SobekCM.Library.Citation.Template
 
         /// <summary> Constructor for a new instance of the CompleteTemplate class </summary>
         /// <param name="Name">Name of this template</param>
-        public CompleteTemplate( string Name )
+        public CompleteTemplate(string Name)
         {
             // Set some defaults
             Title = Name;
@@ -95,7 +92,7 @@ namespace SobekCM.Library.Citation.Template
             Banner = String.Empty;
             BibID_Root = String.Empty;
             DateCreated = DateTime.Now;
-            LastModified = new DateTime( 1, 1, 1);
+            LastModified = new DateTime(1, 1, 1);
             templatePages = new List<Template_Page>();
             constants = new List<abstract_Element>();
             Upload_Types = Template_Upload_Types.File;
@@ -177,13 +174,13 @@ namespace SobekCM.Library.Citation.Template
         /// <summary> Read-only collection of <see cref="Template_Page"/> objects for this template </summary>
         public ReadOnlyCollection<Template_Page> InputPages
         {
-            get	{	return new ReadOnlyCollection<Template_Page>( templatePages );		}
+            get { return new ReadOnlyCollection<Template_Page>(templatePages); }
         }
 
         /// <summary> Read-only collection of constant elements for this template </summary>
         public ReadOnlyCollection<abstract_Element> Constants
         {
-            get { return new ReadOnlyCollection<abstract_Element>( constants ); }
+            get { return new ReadOnlyCollection<abstract_Element>(constants); }
         }
 
         #endregion
@@ -204,11 +201,11 @@ namespace SobekCM.Library.Citation.Template
         /// <param name="ExcludeDivisions"> Flag indicates whether to include the structure map, if included in the template file </param>
         /// <returns> Fully built template object </returns>
         /// <remarks> This utilizes the <see cref="Template_XML_Reader"/> class to do the actual reading</remarks>
-        public static CompleteTemplate Read_XML_Template( string XmlFile, bool ExcludeDivisions )
+        public static CompleteTemplate Read_XML_Template(string XmlFile, bool ExcludeDivisions)
         {
             CompleteTemplate returnValue = new CompleteTemplate();
             Template_XML_Reader reader = new Template_XML_Reader();
-            reader.Read_XML( XmlFile, returnValue, ExcludeDivisions );
+            reader.Read_XML(XmlFile, returnValue, ExcludeDivisions);
             returnValue.Build_Final_Adjustment_And_Checks();
             return returnValue;
         }
@@ -233,7 +230,7 @@ namespace SobekCM.Library.Citation.Template
         /// <param name="Bib"> Object into which to save the user-entered data </param>
         /// <param name="Current_User"> Current user, who's rights may impact the way an element is rendered </param>
         /// <param name="context"> HTTP context for the current request, passed to each element for form data access </param>
-        public void Save_To_Bib( SobekCM_Item Bib, User_Object Current_User, HttpContext context )
+        public void Save_To_Bib(SobekCM_Item Bib, User_Object Current_User, HttpContext context)
         {
             // Go through each of the elements and prepare to save
             foreach (abstract_Element thisElement in templatePages.SelectMany(ThisPage => ThisPage.Panels.SelectMany(ThisPanel => ThisPanel.Elements)))
@@ -242,7 +239,7 @@ namespace SobekCM.Library.Citation.Template
             }
 
             // Now, step through and save the constants
-            foreach (abstract_Element thisElement in constants )
+            foreach (abstract_Element thisElement in constants)
             {
                 thisElement.Save_Constant_To_Bib(Bib);
             }
@@ -303,7 +300,7 @@ namespace SobekCM.Library.Citation.Template
         /// <param name="Translator"> Language support object which handles simple translational duties </param>
         /// <param name="Current_Mode"> Mode / navigation information for the current request</param>
         /// <returns>HTML code for any pop-up forms, which must be placed in a different DIV on the web page</returns>
-        public string Render_Template_HTML(TextWriter Output, SobekCM_Item Bib, string Skin_Code, bool isMozilla, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, Navigation_Object Current_Mode )
+        public string Render_Template_HTML(TextWriter Output, SobekCM_Item Bib, string Skin_Code, bool isMozilla, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, Navigation_Object Current_Mode)
         {
             Output.WriteLine("<script src=\"" + Static_Resources_Gateway.Sobekcm_Metadata_Js + "\" type=\"text/javascript\"></script>");
             Output.WriteLine("<a name=\"template\"> </a>");
@@ -311,9 +308,9 @@ namespace SobekCM.Library.Citation.Template
             StringBuilder returnValue = new StringBuilder();
 
             // TEMPORARY CODE TO SUPPORT MULTI-PAGE TEMPLATES IN ONE PAGE (WILL CHANGE)
-	        bool multiple_page = templatePages.Count > 1;
+            bool multiple_page = templatePages.Count > 1;
 
-	        // Set the current base url on all the elements
+            // Set the current base url on all the elements
             foreach (abstract_Element thisElement in templatePages.SelectMany(ThisPage => ThisPage.Panels.SelectMany(ThisPanel => ThisPanel.Elements)))
             {
                 thisElement.Set_Base_URL(Current_Mode.Base_URL);
@@ -321,7 +318,7 @@ namespace SobekCM.Library.Citation.Template
 
             // Now, render these pages
             bool first_title = true;
-            foreach (Template_Page thisPage in templatePages )
+            foreach (Template_Page thisPage in templatePages)
             {
                 if (multiple_page)
                 {
@@ -386,7 +383,7 @@ namespace SobekCM.Library.Citation.Template
 
             // Now, render these pages
             Output.WriteLine("<!-- Begin to render '" + Title + "' template -->");
-			Output.WriteLine("<table class=\"sbkMySobek_TemplateTbl\" cellpadding=\"4px\" >");
+            Output.WriteLine("<table class=\"sbkMySobek_TemplateTbl\" cellpadding=\"4px\" >");
             Output.WriteLine();
 
             bool first_title = true;
@@ -401,7 +398,7 @@ namespace SobekCM.Library.Citation.Template
                 }
                 else
                 {
-					Output.WriteLine("    <td colspan=\"3\" class=\"sbkMySobek_TemplateTblTitle\">" + thisPanel.Title + "</td>");
+                    Output.WriteLine("    <td colspan=\"3\" class=\"sbkMySobek_TemplateTblTitle\">" + thisPanel.Title + "</td>");
                 }
                 Output.WriteLine("  </tr>");
                 Output.WriteLine();

@@ -1,5 +1,6 @@
 #region Using directives
 
+using ProtoBuf;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -7,7 +8,6 @@ using System.Linq;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Xml.Serialization;
-using ProtoBuf;
 
 #endregion
 
@@ -164,7 +164,7 @@ namespace SobekCM.Core.MARC
         {
             get { return Subfields.Count; }
         }
-        
+
         /// <summary> Gets the data from a particular subfield in this data field </summary>
         /// <param name="Subfield_Code"> Code for the subfield in question </param>
         /// <returns>The value of the subfield, or an empty string </returns>

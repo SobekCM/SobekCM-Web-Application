@@ -1,21 +1,15 @@
 #region Using directives
 
 using Microsoft.AspNetCore.Http;
-using System;
-using System.Collections.Generic;
-using System.Data;
-using System.IO;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.Client;
 using SobekCM.Core.Navigation;
-using SobekCM.Core.UI_Configuration;
-using SobekCM.Core.UI_Configuration.StaticResources;
 using SobekCM.Engine_Library.Configuration;
-using SobekCM.Engine_Library.Database;
-using SobekCM.Library.Database;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
 using SobekCM.Tools;
+using System.Collections.Generic;
+using System.IO;
 
 #endregion
 
@@ -131,7 +125,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             Output.WriteLine("    <th align=\"left\"><span style=\"color: White\"><b>FILE COUNT</b></span></th>");
             Output.WriteLine("  </tr>");
 
-            foreach( Item_Aggregation_Visibility_Statistic stat in stats )
+            foreach (Item_Aggregation_Visibility_Statistic stat in stats)
             {
                 Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\" colspan=\"5\"></td></tr>");
 

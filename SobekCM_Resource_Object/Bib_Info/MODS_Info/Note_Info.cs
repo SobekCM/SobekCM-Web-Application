@@ -1,8 +1,8 @@
 ﻿#region Using directives
 
+using SobekCM.Resource_Object.MARC;
 using System;
 using System.IO;
-using SobekCM.Resource_Object.MARC;
 
 #endregion
 
@@ -114,8 +114,8 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// <summary> Statement of responsibility note ( from the 245 field ) </summary>
         StatementOfResponsibility,
 
-		/// <summary> Supplementary notes </summary>
-		Supplements,
+        /// <summary> Supplementary notes </summary>
+        Supplements,
 
         /// <summary> System details note </summary>
         SystemDetails,
@@ -231,7 +231,7 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// <returns>TRUE if the two objects are sufficiently similar</returns>
         public bool Equals(Note_Info Other)
         {
-            return ( String.Compare(Note, Other.Note, StringComparison.Ordinal) == 0) && (Note_Type == Other.Note_Type);
+            return (String.Compare(Note, Other.Note, StringComparison.Ordinal) == 0) && (Note_Type == Other.Note_Type);
         }
 
         #endregion
@@ -248,7 +248,7 @@ namespace SobekCM.Resource_Object.Bib_Info
             {
                 return "<b>" + type + "</b> " + Convert_String_To_XML_Safe(note);
             }
-            
+
             return Convert_String_To_XML_Safe(note);
         }
 
@@ -259,7 +259,7 @@ namespace SobekCM.Resource_Object.Bib_Info
 
             MARC_Field returnValue = new MARC_Field
             {
-                Indicators = "  ", 
+                Indicators = "  ",
                 Control_Field_Value = "|a " + note
             };
 
@@ -297,7 +297,7 @@ namespace SobekCM.Resource_Object.Bib_Info
 
                 case Note_Type_Enum.DateVenue:
                     returnValue.Tag = 518;
-					if (!String.IsNullOrEmpty(displayLabel))
+                    if (!String.IsNullOrEmpty(displayLabel))
                         returnValue.Control_Field_Value = returnValue.Control_Field_Value + " |3 " + displayLabel;
                     break;
 
@@ -307,11 +307,11 @@ namespace SobekCM.Resource_Object.Bib_Info
                         returnValue.Control_Field_Value = returnValue.Control_Field_Value + " |3 " + displayLabel;
                     break;
 
-				case Note_Type_Enum.Supplements:
-					returnValue.Tag = 525;
-					if (!String.IsNullOrEmpty(displayLabel))
-						returnValue.Control_Field_Value = returnValue.Control_Field_Value + " |3 " + displayLabel;
-					break;
+                case Note_Type_Enum.Supplements:
+                    returnValue.Tag = 525;
+                    if (!String.IsNullOrEmpty(displayLabel))
+                        returnValue.Control_Field_Value = returnValue.Control_Field_Value + " |3 " + displayLabel;
+                    break;
 
                 case Note_Type_Enum.AdditionalPhysicalForm:
                     returnValue.Tag = 530;
@@ -460,15 +460,15 @@ namespace SobekCM.Resource_Object.Bib_Info
                 {
                     return "<mods:note" + id_string + " displayLabel=\"" + Convert_String_To_XML_Safe(displayLabel) + "\">" + Convert_String_To_XML_Safe(note) + "</mods:note>\r\n";
                 }
-                
+
                 return "<mods:note" + id_string + ">" + Convert_String_To_XML_Safe(note) + "</mods:note>\r\n";
             }
-            
+
             if (!String.IsNullOrEmpty(displayLabel))
             {
                 return "<mods:note" + id_string + " type=\"" + Note_Type_String + "\" displayLabel=\"" + Convert_String_To_XML_Safe(displayLabel) + "\">" + Convert_String_To_XML_Safe(note) + "</mods:note>\r\n";
             }
-            
+
             return "<mods:note" + id_string + " type=\"" + Note_Type_String + "\">" + Convert_String_To_XML_Safe(note) + "</mods:note>\r\n";
         }
 
@@ -593,8 +593,8 @@ namespace SobekCM.Resource_Object.Bib_Info
                     case Note_Type_Enum.ElectronicAccess:
                         return "Electronic Access";
 
-					case Note_Type_Enum.Supplements:
-						return "Supplements";
+                    case Note_Type_Enum.Supplements:
+                        return "Supplements";
 
                     case Note_Type_Enum.Action:
                         return "Action";
@@ -717,8 +717,8 @@ namespace SobekCM.Resource_Object.Bib_Info
                     case Note_Type_Enum.ElectronicAccess:
                         return "electronic access";
 
-					case Note_Type_Enum.Supplements:
-		                return "supplements";
+                    case Note_Type_Enum.Supplements:
+                        return "supplements";
 
                     case Note_Type_Enum.Action:
                         return "action";
@@ -872,9 +872,9 @@ namespace SobekCM.Resource_Object.Bib_Info
                         Note_Type = Note_Type_Enum.ElectronicAccess;
                         return;
 
-					case "supplements":
-						Note_Type = Note_Type_Enum.Supplements;
-		                break;
+                    case "supplements":
+                        Note_Type = Note_Type_Enum.Supplements;
+                        break;
 
                     case "action":
                         Note_Type = Note_Type_Enum.Action;

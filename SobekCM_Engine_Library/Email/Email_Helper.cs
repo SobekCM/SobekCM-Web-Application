@@ -1,11 +1,11 @@
 ﻿#region Using directives
 
-using System;
-using System.Net.Mail;
 using SobekCM.Core;
 using SobekCM.Core.Settings;
 using SobekCM.Engine_Library.ApplicationState;
 using SobekCM.Engine_Library.Database;
+using System;
+using System.Net.Mail;
 
 #endregion
 
@@ -23,7 +23,7 @@ namespace SobekCM.Engine_Library.Email
         /// <returns> TRUE if successful, otherwise FALSE </returns>
         public static bool SendEmail(string ToAddress, string Subject, string Body, bool isHtml, string InstanceName)
         {
-            EmailInfo newEmail = new EmailInfo {RecipientsList = ToAddress, Subject = Subject, Body = Body, isHTML = isHtml};
+            EmailInfo newEmail = new EmailInfo { RecipientsList = ToAddress, Subject = Subject, Body = Body, isHTML = isHtml };
 
             if (String.IsNullOrEmpty(Engine_ApplicationCache_Gateway.Settings.Email.Setup.DefaultFromDisplay))
             {
@@ -32,7 +32,7 @@ namespace SobekCM.Engine_Library.Email
             else
             {
                 newEmail.FromAddress = Engine_ApplicationCache_Gateway.Settings.Email.Setup.DefaultFromDisplay + " <" + Engine_ApplicationCache_Gateway.Settings.Email.Setup.DefaultFromAddress + ">";
- 
+
             }
 
             string ignore_error_msg;
@@ -44,7 +44,7 @@ namespace SobekCM.Engine_Library.Email
         /// <param name="Email"> Complete information for this email </param>
         /// <param name="Error"> [OUT] Any error message encountered </param>
         /// <returns> TRUE if successfully queued, otherwise FALSE </returns>
-        public static bool SendEmail(EmailInfo Email, out string Error )
+        public static bool SendEmail(EmailInfo Email, out string Error)
         {
             Error = String.Empty;
             int replyId = -1;

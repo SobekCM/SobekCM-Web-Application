@@ -25,7 +25,7 @@ namespace SobekCM.Resource_Object.Bib_Info
         {
             // Do nothing by default
         }
-       
+
         /// <summary> Constructor creates an empty instance of the Language_Info class </summary>
         /// <param name="Language_Text">Language term for this language</param>
         /// <param name="Language_ISO_Code">Iso639-2b code for this language</param>
@@ -238,8 +238,11 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// <summary> Flag indicates if this language object has data, or is an empty language </summary>
         internal bool hasData
         {
-            get { return (!String.IsNullOrEmpty(language_text)) || (!String.IsNullOrEmpty(language_iso_code)) || (!String.IsNullOrEmpty(language_rfc_code))
-                    || (!String.IsNullOrEmpty(script_text)) || (!String.IsNullOrEmpty(script_iso_code)); }
+            get
+            {
+                return (!String.IsNullOrEmpty(language_text)) || (!String.IsNullOrEmpty(language_iso_code)) || (!String.IsNullOrEmpty(language_rfc_code))
+                    || (!String.IsNullOrEmpty(script_text)) || (!String.IsNullOrEmpty(script_iso_code));
+            }
         }
 
         #region IEquatable<Language_Info> Members
@@ -4019,10 +4022,10 @@ namespace SobekCM.Resource_Object.Bib_Info
                 case "shaw": return "Shaw";
                 case "charada": return "Shrd";
                 case "shard": return "Shrd";
-                case "sharada" : return "Shrd";
+                case "sharada": return "Shrd";
                 case "shuishu": return "Shui";
                 case "siddham": return "Sidd";
-                case "siddha" : return "Sidd";
+                case "siddha": return "Sidd";
                 case "sindhî": return "Sind";
                 case "sindhi": return "Sind";
                 case "khoudawadî": return "Sind";
@@ -4052,7 +4055,7 @@ namespace SobekCM.Resource_Object.Bib_Info
                 case "tagbanoua": return "Tagb";
                 case "tagbanwa": return "Tagb";
                 case "tâkrî": return "Takr";
-                case "takri" : return "Takr";
+                case "takri": return "Takr";
                 case "tai le": return "Tale";
                 case "taï-le": return "Tale";
                 case "new tai lue": return "Talu";

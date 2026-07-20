@@ -2,16 +2,10 @@
 
 #region Using directives
 
-using System;
-using System.Collections.Specialized;
-using System.IO;
-using System.Linq;
 using Microsoft.AspNetCore.Http;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.ApplicationState;
 using SobekCM.Core.Navigation;
-using SobekCM.Core.UI_Configuration;
-using SobekCM.Core.UI_Configuration.StaticResources;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Engine_Library.Database;
 using SobekCM.Library.Database;
@@ -19,6 +13,9 @@ using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
+using System;
+using System.IO;
+using System.Linq;
 
 #endregion
 
@@ -77,7 +74,7 @@ namespace SobekCM.Library.AdminViewer
             if (((RequestSpecificValues.Current_User.Is_System_Admin) && (!UI_ApplicationCache_Gateway.Settings.Servers.isHosted)) ||
                 (RequestSpecificValues.Current_User.Is_Host_Admin))
             {
-                readOnlyMode = false;            
+                readOnlyMode = false;
             }
 
             // Handle any post backs
@@ -267,7 +264,7 @@ namespace SobekCM.Library.AdminViewer
                             }
                         }
                     }
-                    catch 
+                    catch
                     {
                         actionMessage = "Exception caught while handling request";
                     }

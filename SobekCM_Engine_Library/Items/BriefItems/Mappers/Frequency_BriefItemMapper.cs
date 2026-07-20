@@ -1,10 +1,10 @@
 ﻿#region Using directives
 
-using System;
-using System.Collections.Generic;
 using SobekCM.Core.BriefItem;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Bib_Info;
+using System;
+using System.Collections.Generic;
 
 #endregion
 

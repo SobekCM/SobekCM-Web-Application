@@ -15,7 +15,7 @@ namespace SobekCM.Core.MicroservicesClient
         /// <param name="ConfigFile"> Path and name of the configuration XML file to read </param>
         /// <param name="SystemBaseUrl"> System base URL </param>
         /// <returns> Fully configured microservices configuration object </returns>
-        public static MicroservicesClient_Configuration Read_Config(string ConfigFile, string SystemBaseUrl )
+        public static MicroservicesClient_Configuration Read_Config(string ConfigFile, string SystemBaseUrl)
         {
             MicroservicesClient_Configuration returnValue = new MicroservicesClient_Configuration();
 
@@ -87,7 +87,7 @@ namespace SobekCM.Core.MicroservicesClient
                             if (readerXml.MoveToAttribute("Protocol"))
                                 protocol = readerXml.Value;
 
-                            if (( !String.IsNullOrEmpty(key)) && ( !String.IsNullOrEmpty(url)))
+                            if ((!String.IsNullOrEmpty(key)) && (!String.IsNullOrEmpty(url)))
                                 config.Add_Endpoint(key, url, protocol);
                             break;
                     }

@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using SobekCM.Core.Aggregations;
+﻿using SobekCM.Core.Aggregations;
 using SobekCM.Core.ApplicationState;
 using SobekCM.Core.Results;
 using SobekCM.Engine_Library.ApplicationState;
-using SobekCM.Engine_Library.Solr.Legacy;
+using System;
+using System.Collections.Generic;
 
 namespace SobekCM.Engine_Library.Solr.v5
 {
@@ -40,7 +39,7 @@ namespace SobekCM.Engine_Library.Solr.v5
             // Check for access
             if (solrDocument.Hidden)
                 itemResult.AccessType = "dark";
-            else if ((solrDocument.Discover_IPs != null ) && (solrDocument.Discover_IPs.Count > 0 ))
+            else if ((solrDocument.Discover_IPs != null) && (solrDocument.Discover_IPs.Count > 0))
             {
                 if (solrDocument.Discover_IPs[0] == -1)
                     itemResult.AccessType = "private";
@@ -58,7 +57,7 @@ namespace SobekCM.Engine_Library.Solr.v5
             return resultConverted;
         }
 
-        public v5_Solr_Title_Result Map_To_Result(SolrNet.Group<v5_SolrDocument> Grouping, List<Complete_Item_Aggregation_Metadata_Type> DisplayFields )
+        public v5_Solr_Title_Result Map_To_Result(SolrNet.Group<v5_SolrDocument> Grouping, List<Complete_Item_Aggregation_Metadata_Type> DisplayFields)
         {
             // Create the results
             v5_Solr_Title_Result resultConverted = new v5_Solr_Title_Result();
@@ -70,9 +69,9 @@ namespace SobekCM.Engine_Library.Solr.v5
 
             // Now add all the item info
             bool first_item = true;
-            foreach(v5_SolrDocument solrDocument in Grouping.Documents)
+            foreach (v5_SolrDocument solrDocument in Grouping.Documents)
             {
-                if ( first_item)
+                if (first_item)
                 {
                     resultConverted.MaterialType = solrDocument.Type;
 
@@ -123,7 +122,7 @@ namespace SobekCM.Engine_Library.Solr.v5
                 }
 
                 resultConverted.Items.Add(itemResult);
-            }          
+            }
 
             return resultConverted;
         }

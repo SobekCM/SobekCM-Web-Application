@@ -8,7 +8,7 @@ namespace SobekCM.Core.Configuration.Localization
 {
     /// <summary> Enumeration of all the most commonly supported languages by 
     /// major browsers  </summary>
-    public enum Web_Language_Enum : byte 
+    public enum Web_Language_Enum : byte
     {
         /// <summary> No matching language was detected or no detection completed yet </summary>
         UNDEFINED,
@@ -142,8 +142,8 @@ namespace SobekCM.Core.Configuration.Localization
         /// <summary> Greek web language ( el )</summary>
         Greek,
 
-		/// <summary> Gujarati web language ( gu )</summary>
-		Gujarati,
+        /// <summary> Gujarati web language ( gu )</summary>
+        Gujarati,
 
         /// <summary> Haitian web language ( ht )</summary>
         Haitian,
@@ -188,7 +188,7 @@ namespace SobekCM.Core.Configuration.Localization
         Khmer,
 
         /// <summary> Kinyarwanda language (rw) </summary>
-        Kinyarwanda, 
+        Kinyarwanda,
 
         /// <summary> Kirghiz web language ( ky )</summary>
         Kirghiz,
@@ -408,7 +408,7 @@ namespace SobekCM.Core.Configuration.Localization
         {
             get
             {
-				return new[] { "Afrikaans", "Albanian", "Arabic", "Aragonese", "Armenian", "Assamese", "Asturian", "Azerbaijani", "Basque", "Bulgarian", "Belarusian", "Bengali", "Bosnian", "Breton", "Bulgarian", "Burmese", "Catalan", "Chamorro", "Chechen", "Chinese", "Chuvash", "Corsican", "Cree", "Croatian", "Czech", "Danish", "Dutch", "English", "Esperanto", "Estonian", "Faeroese", "Farsi", "Fijian", "Finnish", "French", "Frisian", "Friulian", "Gaelic", "Galacian", "Georgian", "German", "Greek", "Gujarati", "Haitian", "Hebrew", "Hindi", "Hungarian", "Icelandic", "Indonesian", "Inuktitut", "Irish", "Italian", "Japanese", "Kannada", "Kashmiri", "Kazakh", "Khmer", "Kinyarwanda", "Kirghiz", "Klingon", "Korean", "Latin", "Latvian", "Lithuanian", "Luxembourgish", "FYRO Macedonian", "Malay", "Malayalam", "Maltese", "Maori", "Marathi", "Moldavian", "Navajo", "Ndonga", "Nepali", "Norwegian", "Norwegian (Bokmal)", "Norwegian (Nynorsk)", "Occitan", "Oriya", "Oromo", "Papiamento", "Papiamentu", "Persian", "Polish", "Portuguese", "Punjabi", "Quechua", "Rhaeto-Romanic", "Romanian", "Russian", "Sami (Lappish)", "Sango", "Sanskrit", "Sardinian", "Scots Gaelic", "Sindhi", "Singhalese", "Serbian", "Slovak", "Slovenian", "Somani", "Sorbian", "Spanish", "Sutu", "Swahili", "Swedish", "Tamil", "Tatar", "Telugu", "Thai", "Tigre", "Tsonga", "Tswana", "Turkish", "Turkmen", "Ukrainian", "Upper Sorbian", "Urdu", "Venda", "Vietnamese", "Volapuk", "Walloon", "Welsh", "Xhosa", "Yiddish", "Zulu" };
+                return new[] { "Afrikaans", "Albanian", "Arabic", "Aragonese", "Armenian", "Assamese", "Asturian", "Azerbaijani", "Basque", "Bulgarian", "Belarusian", "Bengali", "Bosnian", "Breton", "Bulgarian", "Burmese", "Catalan", "Chamorro", "Chechen", "Chinese", "Chuvash", "Corsican", "Cree", "Croatian", "Czech", "Danish", "Dutch", "English", "Esperanto", "Estonian", "Faeroese", "Farsi", "Fijian", "Finnish", "French", "Frisian", "Friulian", "Gaelic", "Galacian", "Georgian", "German", "Greek", "Gujarati", "Haitian", "Hebrew", "Hindi", "Hungarian", "Icelandic", "Indonesian", "Inuktitut", "Irish", "Italian", "Japanese", "Kannada", "Kashmiri", "Kazakh", "Khmer", "Kinyarwanda", "Kirghiz", "Klingon", "Korean", "Latin", "Latvian", "Lithuanian", "Luxembourgish", "FYRO Macedonian", "Malay", "Malayalam", "Maltese", "Maori", "Marathi", "Moldavian", "Navajo", "Ndonga", "Nepali", "Norwegian", "Norwegian (Bokmal)", "Norwegian (Nynorsk)", "Occitan", "Oriya", "Oromo", "Papiamento", "Papiamentu", "Persian", "Polish", "Portuguese", "Punjabi", "Quechua", "Rhaeto-Romanic", "Romanian", "Russian", "Sami (Lappish)", "Sango", "Sanskrit", "Sardinian", "Scots Gaelic", "Sindhi", "Singhalese", "Serbian", "Slovak", "Slovenian", "Somani", "Sorbian", "Spanish", "Sutu", "Swahili", "Swedish", "Tamil", "Tatar", "Telugu", "Thai", "Tigre", "Tsonga", "Tswana", "Turkish", "Turkmen", "Ukrainian", "Upper Sorbian", "Urdu", "Venda", "Vietnamese", "Volapuk", "Walloon", "Welsh", "Xhosa", "Yiddish", "Zulu" };
             }
         }
 
@@ -418,255 +418,255 @@ namespace SobekCM.Core.Configuration.Localization
         /// <remarks> If this is a sub-language, or refinement code, like 'en-us', and there is no match
         /// this will call itself recursively to see if the base language ('en' for example) is
         /// recognized.  </remarks>
-        public static Web_Language_Enum Code_To_Enum( string Code )
+        public static Web_Language_Enum Code_To_Enum(string Code)
         {
-            switch( Code.ToLower() )
+            switch (Code.ToLower())
             {
                 case "af":
-	                return Web_Language_Enum.Afrikaans;
+                    return Web_Language_Enum.Afrikaans;
 
                 case "sq":
-	                return Web_Language_Enum.Albanian;
+                    return Web_Language_Enum.Albanian;
 
                 case "ar":
-	                return Web_Language_Enum.Arabic;
+                    return Web_Language_Enum.Arabic;
 
                 case "hy":
-	                return Web_Language_Enum.Armenian;
+                    return Web_Language_Enum.Armenian;
 
                 case "as":
-	                return Web_Language_Enum.Assamese;
+                    return Web_Language_Enum.Assamese;
 
                 case "ast":
-	                return Web_Language_Enum.Asturian;
+                    return Web_Language_Enum.Asturian;
 
                 case "az":
-	                return Web_Language_Enum.Azerbaijani;
+                    return Web_Language_Enum.Azerbaijani;
 
                 case "eu":
-	                return Web_Language_Enum.Basque;
+                    return Web_Language_Enum.Basque;
 
                 case "bg":
-	                return Web_Language_Enum.Bulgarian;
+                    return Web_Language_Enum.Bulgarian;
 
                 case "be":
-	                return Web_Language_Enum.Belarusian;
+                    return Web_Language_Enum.Belarusian;
 
                 case "bn":
-	                return Web_Language_Enum.Bengali;
+                    return Web_Language_Enum.Bengali;
 
                 case "bs":
-	                return Web_Language_Enum.Bosnian;
+                    return Web_Language_Enum.Bosnian;
 
                 case "br":
-	                return Web_Language_Enum.Breton;
+                    return Web_Language_Enum.Breton;
 
                 case "my":
-	                return Web_Language_Enum.Burmese;
+                    return Web_Language_Enum.Burmese;
 
                 case "ca":
-	                return Web_Language_Enum.Catalan;
+                    return Web_Language_Enum.Catalan;
 
                 case "ch":
-	                return Web_Language_Enum.Chamorro;
+                    return Web_Language_Enum.Chamorro;
 
                 case "ce":
-	                return Web_Language_Enum.Chechen;
+                    return Web_Language_Enum.Chechen;
 
                 case "zh":
-	                return Web_Language_Enum.Chinese;
+                    return Web_Language_Enum.Chinese;
 
                 case "cv":
-	                return Web_Language_Enum.Chuvash;
+                    return Web_Language_Enum.Chuvash;
 
                 case "co":
-	                return Web_Language_Enum.Corsican;
+                    return Web_Language_Enum.Corsican;
 
                 case "cr":
-	                return Web_Language_Enum.Cree;
+                    return Web_Language_Enum.Cree;
 
                 case "hr":
-	                return Web_Language_Enum.Croatian;
+                    return Web_Language_Enum.Croatian;
 
                 case "cs":
-	                return Web_Language_Enum.Czech;
+                    return Web_Language_Enum.Czech;
 
                 case "da":
-	                return Web_Language_Enum.Danish;
+                    return Web_Language_Enum.Danish;
 
                 case "nl":
-	                return Web_Language_Enum.Dutch;
+                    return Web_Language_Enum.Dutch;
 
                 case "en":
-	                return Web_Language_Enum.English;
+                    return Web_Language_Enum.English;
 
                 case "eo":
-	                return Web_Language_Enum.Esperanto;
+                    return Web_Language_Enum.Esperanto;
 
                 case "et":
-	                return Web_Language_Enum.Estonian;
+                    return Web_Language_Enum.Estonian;
 
                 case "fo":
-	                return Web_Language_Enum.Faeroese;
+                    return Web_Language_Enum.Faeroese;
 
                 case "fa":
-	                return Web_Language_Enum.Farsi;
+                    return Web_Language_Enum.Farsi;
 
                 case "fj":
-	                return Web_Language_Enum.Fijian;
+                    return Web_Language_Enum.Fijian;
 
                 case "fi":
-	                return Web_Language_Enum.Finnish;
+                    return Web_Language_Enum.Finnish;
 
                 case "fr":
-	                return Web_Language_Enum.French;
+                    return Web_Language_Enum.French;
 
                 case "fy":
-	                return Web_Language_Enum.Frisian;
+                    return Web_Language_Enum.Frisian;
 
                 case "fur":
-	                return Web_Language_Enum.Friulian;
+                    return Web_Language_Enum.Friulian;
 
                 case "gd":
-	                return Web_Language_Enum.Gaelic;
+                    return Web_Language_Enum.Gaelic;
 
                 case "gl":
-	                return Web_Language_Enum.Galacian;
+                    return Web_Language_Enum.Galacian;
 
                 case "ka":
-	                return Web_Language_Enum.Georgian;
+                    return Web_Language_Enum.Georgian;
 
                 case "de":
-	                return Web_Language_Enum.German;
+                    return Web_Language_Enum.German;
 
                 case "el":
-	                return Web_Language_Enum.Greek;
+                    return Web_Language_Enum.Greek;
 
                 case "gu":
-					return Web_Language_Enum.Gujarati;
+                    return Web_Language_Enum.Gujarati;
 
                 case "ht":
-	                return Web_Language_Enum.Haitian;
+                    return Web_Language_Enum.Haitian;
 
                 case "he":
-	                return Web_Language_Enum.Hebrew;
+                    return Web_Language_Enum.Hebrew;
 
                 case "hi":
-	                return Web_Language_Enum.Hindi;
+                    return Web_Language_Enum.Hindi;
 
                 case "hu":
-	                return Web_Language_Enum.Hungarian;
+                    return Web_Language_Enum.Hungarian;
 
                 case "is":
-	                return Web_Language_Enum.Icelandic;
+                    return Web_Language_Enum.Icelandic;
 
                 case "id":
-	                return Web_Language_Enum.Indonesian;
+                    return Web_Language_Enum.Indonesian;
 
                 case "iu":
-	                return Web_Language_Enum.Inuktitut;
+                    return Web_Language_Enum.Inuktitut;
 
                 case "ga":
-	                return Web_Language_Enum.Irish;
+                    return Web_Language_Enum.Irish;
 
                 case "it":
-	                return Web_Language_Enum.Italian;
+                    return Web_Language_Enum.Italian;
 
                 case "ja":
-	                return Web_Language_Enum.Japanese;
+                    return Web_Language_Enum.Japanese;
 
                 case "kn":
-	                return Web_Language_Enum.Kannada;
+                    return Web_Language_Enum.Kannada;
 
                 case "ks":
-	                return Web_Language_Enum.Kashmiri;
+                    return Web_Language_Enum.Kashmiri;
 
                 case "kk":
-	                return Web_Language_Enum.Kazakh;
+                    return Web_Language_Enum.Kazakh;
 
                 case "km":
-	                return Web_Language_Enum.Khmer;
+                    return Web_Language_Enum.Khmer;
 
                 case "rw":
                     return Web_Language_Enum.Kinyarwanda;
 
                 case "ky":
-	                return Web_Language_Enum.Kirghiz;
+                    return Web_Language_Enum.Kirghiz;
 
                 case "tlh":
-	                return Web_Language_Enum.Klingon;
+                    return Web_Language_Enum.Klingon;
 
                 case "ko":
-	                return Web_Language_Enum.Korean;
+                    return Web_Language_Enum.Korean;
 
                 case "la":
-	                return Web_Language_Enum.Latin;
+                    return Web_Language_Enum.Latin;
 
                 case "lv":
-	                return Web_Language_Enum.Latvian;
+                    return Web_Language_Enum.Latvian;
 
                 case "lt":
-	                return Web_Language_Enum.Lithuanian;
+                    return Web_Language_Enum.Lithuanian;
 
                 case "lb":
-	                return Web_Language_Enum.Luxembourgish;
+                    return Web_Language_Enum.Luxembourgish;
 
                 case "mk":
-	                return Web_Language_Enum.FyroMacedonian;
+                    return Web_Language_Enum.FyroMacedonian;
 
                 case "ms":
-	                return Web_Language_Enum.Malay;
+                    return Web_Language_Enum.Malay;
 
                 case "ml":
-	                return Web_Language_Enum.Malayalam;
+                    return Web_Language_Enum.Malayalam;
 
                 case "mt":
-	                return Web_Language_Enum.Maltese;
+                    return Web_Language_Enum.Maltese;
 
                 case "mi":
-	                return Web_Language_Enum.Maori;
+                    return Web_Language_Enum.Maori;
 
                 case "mr":
-	                return Web_Language_Enum.Marathi;
+                    return Web_Language_Enum.Marathi;
 
                 case "mo":
-	                return Web_Language_Enum.Moldavian;
+                    return Web_Language_Enum.Moldavian;
 
                 case "nv":
-	                return Web_Language_Enum.Navajo;
+                    return Web_Language_Enum.Navajo;
 
                 case "ng":
-	                return Web_Language_Enum.Ndonga;
+                    return Web_Language_Enum.Ndonga;
 
                 case "ne":
-	                return Web_Language_Enum.Nepali;
+                    return Web_Language_Enum.Nepali;
 
                 case "no":
-	                return Web_Language_Enum.Norwegian;
+                    return Web_Language_Enum.Norwegian;
 
                 case "nb":
-	                return Web_Language_Enum.Norwegian_Bokmal;
+                    return Web_Language_Enum.Norwegian_Bokmal;
 
                 case "nn":
-	                return Web_Language_Enum.Norwegian_Nynorsk;
+                    return Web_Language_Enum.Norwegian_Nynorsk;
 
                 case "oc":
-	                return Web_Language_Enum.Occitan;
+                    return Web_Language_Enum.Occitan;
 
                 case "or":
-	                return Web_Language_Enum.Oriya;
+                    return Web_Language_Enum.Oriya;
 
                 case "om":
-	                return Web_Language_Enum.Oromo;
+                    return Web_Language_Enum.Oromo;
 
                 case "pl":
-	                return Web_Language_Enum.Polish;
+                    return Web_Language_Enum.Polish;
 
                 case "pt":
-	                return Web_Language_Enum.Portuguese;
+                    return Web_Language_Enum.Portuguese;
 
                 case "pa":
-	                return Web_Language_Enum.Punjabi;
+                    return Web_Language_Enum.Punjabi;
 
                 case "papo":
                     return Web_Language_Enum.Papiamento;
@@ -675,122 +675,122 @@ namespace SobekCM.Core.Configuration.Localization
                     return Web_Language_Enum.Papiamentu;
 
                 case "qu":
-	                return Web_Language_Enum.Quechua;
+                    return Web_Language_Enum.Quechua;
 
                 case "rm":
-	                return Web_Language_Enum.Rhaeto_Romanic;
+                    return Web_Language_Enum.Rhaeto_Romanic;
 
                 case "ro":
-	                return Web_Language_Enum.Romanian;
+                    return Web_Language_Enum.Romanian;
 
                 case "ru":
-	                return Web_Language_Enum.Russian;
+                    return Web_Language_Enum.Russian;
 
                 case "sz":
-	                return Web_Language_Enum.Sami_Lappish;
+                    return Web_Language_Enum.Sami_Lappish;
 
                 case "sg":
-	                return Web_Language_Enum.Sango;
+                    return Web_Language_Enum.Sango;
 
                 case "sa":
-	                return Web_Language_Enum.Sanskrit;
+                    return Web_Language_Enum.Sanskrit;
 
                 case "sc":
-	                return Web_Language_Enum.Sardinian;
+                    return Web_Language_Enum.Sardinian;
 
                 case "sd":
-	                return Web_Language_Enum.Sindhi;
+                    return Web_Language_Enum.Sindhi;
 
                 case "si":
-	                return Web_Language_Enum.Singhalese;
+                    return Web_Language_Enum.Singhalese;
 
                 case "sr":
-	                return Web_Language_Enum.Serbian;
+                    return Web_Language_Enum.Serbian;
 
                 case "sk":
-	                return Web_Language_Enum.Slovak;
+                    return Web_Language_Enum.Slovak;
 
                 case "sl":
-	                return Web_Language_Enum.Slovenian;
+                    return Web_Language_Enum.Slovenian;
 
                 case "so":
-	                return Web_Language_Enum.Somani;
+                    return Web_Language_Enum.Somani;
 
                 case "sb":
-	                return Web_Language_Enum.Sorbian;
+                    return Web_Language_Enum.Sorbian;
 
                 case "es":
                 case "sp":
-	                return Web_Language_Enum.Spanish;
+                    return Web_Language_Enum.Spanish;
 
                 case "sx":
-	                return Web_Language_Enum.Sutu;
+                    return Web_Language_Enum.Sutu;
 
                 case "sw":
-	                return Web_Language_Enum.Swahili;
+                    return Web_Language_Enum.Swahili;
 
                 case "sv":
-	                return Web_Language_Enum.Swedish;
+                    return Web_Language_Enum.Swedish;
 
                 case "ta":
-	                return Web_Language_Enum.Tamil;
+                    return Web_Language_Enum.Tamil;
 
                 case "tt":
-	                return Web_Language_Enum.Tatar;
+                    return Web_Language_Enum.Tatar;
 
                 case "te":
-	                return Web_Language_Enum.Telugu;
+                    return Web_Language_Enum.Telugu;
 
                 case "th":
-	                return Web_Language_Enum.Thai;
+                    return Web_Language_Enum.Thai;
 
                 case "tig":
-	                return Web_Language_Enum.Tigre;
+                    return Web_Language_Enum.Tigre;
 
                 case "ts":
-	                return Web_Language_Enum.Tsonga;
+                    return Web_Language_Enum.Tsonga;
 
                 case "tn":
-	                return Web_Language_Enum.Tswana;
+                    return Web_Language_Enum.Tswana;
 
                 case "tr":
-	                return Web_Language_Enum.Turkish;
+                    return Web_Language_Enum.Turkish;
 
                 case "tk":
-	                return Web_Language_Enum.Turkmen;
+                    return Web_Language_Enum.Turkmen;
 
                 case "uk":
-	                return Web_Language_Enum.Ukrainian;
+                    return Web_Language_Enum.Ukrainian;
 
                 case "hsb":
-	                return Web_Language_Enum.Upper_Sorbian;
+                    return Web_Language_Enum.Upper_Sorbian;
 
                 case "ur":
-	                return Web_Language_Enum.Urdu;
+                    return Web_Language_Enum.Urdu;
 
                 case "ve":
-	                return Web_Language_Enum.Venda;
+                    return Web_Language_Enum.Venda;
 
                 case "vi":
-	                return Web_Language_Enum.Vietnamese;
+                    return Web_Language_Enum.Vietnamese;
 
                 case "vo":
-	                return Web_Language_Enum.Volapuk;
+                    return Web_Language_Enum.Volapuk;
 
                 case "wa":
-	                return Web_Language_Enum.Walloon;
+                    return Web_Language_Enum.Walloon;
 
                 case "cy":
-	                return Web_Language_Enum.Welsh;
+                    return Web_Language_Enum.Welsh;
 
                 case "xh":
-	                return Web_Language_Enum.Xhosa;
+                    return Web_Language_Enum.Xhosa;
 
                 case "ji":
-	                return Web_Language_Enum.Yiddish;
+                    return Web_Language_Enum.Yiddish;
 
                 case "zu":
-	                return Web_Language_Enum.Zulu;
+                    return Web_Language_Enum.Zulu;
 
                 default:
                     // Is this perhaps a sub-language?
@@ -808,7 +808,7 @@ namespace SobekCM.Core.Configuration.Localization
         /// <returns> Code " the language </returns>
         public static string Name_To_Code(string Language_Name)
         {
-            switch ( Language_Name.ToLower() )
+            switch (Language_Name.ToLower())
             {
                 case "afrikaans":
                     return "af";
@@ -933,7 +933,7 @@ namespace SobekCM.Core.Configuration.Localization
                 case "greek":
                     return "el";
 
-				case "gujarati":
+                case "gujarati":
                     return "gu";
 
                 case "haitian":
@@ -1196,9 +1196,9 @@ namespace SobekCM.Core.Configuration.Localization
         /// <summary> Given the language enumeration, return the associated language name </summary>
         /// <param name="Web_Language"> Enumeration for the web language </param>
         /// <returns> Name for the language </returns>
-        public static string Enum_To_Name( Web_Language_Enum Web_Language )
+        public static string Enum_To_Name(Web_Language_Enum Web_Language)
         {
-            switch( Web_Language )
+            switch (Web_Language)
             {
                 case Web_Language_Enum.Afrikaans:
                     return "Afrikaans";
@@ -1323,8 +1323,8 @@ namespace SobekCM.Core.Configuration.Localization
                 case Web_Language_Enum.Greek:
                     return "Greek";
 
-				case Web_Language_Enum.Gujarati:
-					return "Gujarati";
+                case Web_Language_Enum.Gujarati:
+                    return "Gujarati";
 
                 case Web_Language_Enum.Haitian:
                     return "Haitian";
@@ -1587,9 +1587,9 @@ namespace SobekCM.Core.Configuration.Localization
         /// <summary> Convert enumeration to two digit ISO language code </summary>
         /// <param name="Enum"> Enumeration value to convert to the ISO code </param>
         /// <returns> Two digit ISO code </returns>
-        public static string Enum_To_Code(Web_Language_Enum Enum )
+        public static string Enum_To_Code(Web_Language_Enum Enum)
         {
-            switch(Enum)
+            switch (Enum)
             {
                 case Web_Language_Enum.Afrikaans:
                     return "af";
@@ -1714,7 +1714,7 @@ namespace SobekCM.Core.Configuration.Localization
                 case Web_Language_Enum.Greek:
                     return "el";
 
-				case Web_Language_Enum.Gujarati:
+                case Web_Language_Enum.Gujarati:
                     return "gu";
 
                 case Web_Language_Enum.Haitian:
@@ -1833,7 +1833,7 @@ namespace SobekCM.Core.Configuration.Localization
 
                 case Web_Language_Enum.Papiamento:
                     return "papo";
-            
+
                 case Web_Language_Enum.Papiamentu:
                     return "papu";
 
@@ -1969,7 +1969,7 @@ namespace SobekCM.Core.Configuration.Localization
                 case Web_Language_Enum.Zulu:
                     return "zu";
 
-                
+
                 default:
                     return String.Empty;
             }

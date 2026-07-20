@@ -1,10 +1,5 @@
 #region Using directives
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
 using Microsoft.AspNetCore.Http;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.Client;
@@ -25,6 +20,11 @@ using SobekCM.Engine_Library.Solr.v5;
 using SobekCM.Library.Database;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
 
 #endregion
 
@@ -44,7 +44,7 @@ namespace SobekCM.Library
         /// <param name="Site_Map"> [OUT] Optional navigational site map object related to this page </param>
         /// <returns>TRUE if successful, otherwise FALSE </returns>
         /// <remarks> This always pulls the data directly from disk; this text is not cached. </remarks>
-        public bool Get_Simple_Web_Content_Text(Navigation_Object Current_Mode, string Base_Directory, Custom_Tracer Tracer, out HTML_Based_Content Simple_Web_Content, out SobekCM_SiteMap Site_Map ) 
+        public bool Get_Simple_Web_Content_Text(Navigation_Object Current_Mode, string Base_Directory, Custom_Tracer Tracer, out HTML_Based_Content Simple_Web_Content, out SobekCM_SiteMap Site_Map)
         {
             if (Tracer != null)
             {
@@ -55,7 +55,7 @@ namespace SobekCM.Library
             Simple_Web_Content = null;
 
             // Get the web content object
-            if ((( Current_Mode.WebContentID.HasValue ) && ( Current_Mode.WebContentID.Value > 0 )) && (( !Current_Mode.Missing.HasValue ) || ( !Current_Mode.Missing.Value )))
+            if (((Current_Mode.WebContentID.HasValue) && (Current_Mode.WebContentID.Value > 0)) && ((!Current_Mode.Missing.HasValue) || (!Current_Mode.Missing.Value)))
                 Simple_Web_Content = SobekEngineClient.WebContent.Get_HTML_Based_Content(Current_Mode.WebContentID.Value, true, Tracer);
 
             // If somehow this is null and this was for DEFAULT, just add the page
@@ -74,7 +74,7 @@ namespace SobekCM.Library
             if (!String.IsNullOrEmpty(Simple_Web_Content.Redirect))
                 return true;
 
-            if ( String.IsNullOrEmpty(Simple_Web_Content.Content))
+            if (String.IsNullOrEmpty(Simple_Web_Content.Content))
             {
                 Current_Mode.Error_Message = "Unable to read the file for display";
                 return false;
@@ -151,7 +151,7 @@ namespace SobekCM.Library
         /// <returns> TRUE if successful, otherwise FALSE </returns>
         /// <remarks> This attempts to pull the objects from the cache.  If unsuccessful, it builds the objects from the
         /// database and hands off to the <see cref="CachedDataManager" /> to store in the cache </remarks>
-        public bool Get_User_Folder( string Folder_Name, int User_ID, int Results_Per_Page, int ResultsPage, Custom_Tracer Tracer, out Search_Results_Statistics Complete_Result_Set_Info, out List<iSearch_Title_Result> Paged_Results )
+        public bool Get_User_Folder(string Folder_Name, int User_ID, int Results_Per_Page, int ResultsPage, Custom_Tracer Tracer, out Search_Results_Statistics Complete_Result_Set_Info, out List<iSearch_Title_Result> Paged_Results)
         {
             if (Tracer != null)
             {
@@ -207,7 +207,7 @@ namespace SobekCM.Library
             }
 
             return true;
-        }  
+        }
 
         #endregion
 
@@ -340,7 +340,7 @@ namespace SobekCM.Library
                                     out Item_Aggregation_Child_Page Browse_Object,
                                     out Search_Results_Statistics Complete_Result_Set_Info,
                                     out List<iSearch_Title_Result> Paged_Results,
-                                    out HTML_Based_Content Browse_Info_Display_Text )
+                                    out HTML_Based_Content Browse_Info_Display_Text)
         {
             if (Tracer != null)
             {
@@ -360,7 +360,7 @@ namespace SobekCM.Library
                 string[] matching_file = Directory.GetFiles(source, Current_Mode.Info_Browse_Mode + ".*");
                 if (matching_file.Length > 0)
                 {
-                    Browse_Object = new Item_Aggregation_Child_Page( Item_Aggregation_Child_Visibility_Enum.None, Item_Aggregation_Child_Source_Data_Enum.Static_HTML, Current_Mode.Info_Browse_Mode, matching_file[0], Current_Mode.Info_Browse_Mode);
+                    Browse_Object = new Item_Aggregation_Child_Page(Item_Aggregation_Child_Visibility_Enum.None, Item_Aggregation_Child_Source_Data_Enum.Static_HTML, Current_Mode.Info_Browse_Mode, matching_file[0], Current_Mode.Info_Browse_Mode);
                 }
             }
             else
@@ -431,13 +431,13 @@ namespace SobekCM.Library
                             need_browse_statistics = false;
 
                         // Look to see if the paged results are available on any cache..
-                        Paged_Results = CachedDataManager.Retrieve_Browse_Results(Aggregation_Object.Code, browse_code, current_page_index, sort, (uint)results_per_page,Tracer);
+                        Paged_Results = CachedDataManager.Retrieve_Browse_Results(Aggregation_Object.Code, browse_code, current_page_index, sort, (uint)results_per_page, Tracer);
                         if (Paged_Results != null)
                             need_paged_results = false;
                     }
 
                     // Was a copy found in the cache?
-                    if ((!need_browse_statistics) && ( !need_paged_results ))
+                    if ((!need_browse_statistics) && (!need_paged_results))
                     {
                         if (Tracer != null)
                         {
@@ -458,7 +458,7 @@ namespace SobekCM.Library
                         if (Current_Mode.Writer_Type == Writer_Type_Enum.JSON)
                         {
                             List<short> facetsList = new List<short>();
-                            foreach(Complete_Item_Aggregation_Metadata_Type facet in Aggregation_Object.Facets)
+                            foreach (Complete_Item_Aggregation_Metadata_Type facet in Aggregation_Object.Facets)
                                 facetsList.Add(facet.ID);
 
                             Multiple_Paged_Results_Args returnArgs = Engine_Database.Get_Item_Aggregation_Browse_Paged(Current_Mode.Aggregation, "1900-01-01", false, 20, current_page_index, 0, need_browse_statistics, facetsList, need_browse_statistics, Tracer);
@@ -493,7 +493,7 @@ namespace SobekCM.Library
                             // Save the overall result set statistics to the cache if something was pulled
                             if ((need_paged_results) && (Paged_Results != null))
                             {
-                                CachedDataManager.Store_Browse_Results(Aggregation_Object.Code, browse_code, current_page_index, sort, (uint)results_per_page,pagesOfResults, Tracer);
+                                CachedDataManager.Store_Browse_Results(Aggregation_Object.Code, browse_code, current_page_index, sort, (uint)results_per_page, pagesOfResults, Tracer);
                             }
                         }
                     }
@@ -544,154 +544,154 @@ namespace SobekCM.Library
 
 
             // Depending on type of search, either go to database or Greenstone
-	        if (Current_Mode.Search_Type == Search_Type_Enum.Map)
-	        {
+            if (Current_Mode.Search_Type == Search_Type_Enum.Map)
+            {
                 // If this is showing in the map, only allow sot zero, which is by coordinates
-	            if ((Current_Mode.Result_Display_Type == "map") || ( String.IsNullOrEmpty(Current_Mode.Result_Display_Type)))
-	            {
-	                Current_Mode.Sort = 0;
-	                sort = 0;
-	            }
+                if ((Current_Mode.Result_Display_Type == "map") || (String.IsNullOrEmpty(Current_Mode.Result_Display_Type)))
+                {
+                    Current_Mode.Sort = 0;
+                    sort = 0;
+                }
 
-	            try
-		        {
-			        double lat1 = 1000;
-			        double long1 = 1000;
-			        double lat2 = 1000;
-			        double long2 = 1000;
-			        string[] terms = Current_Mode.Coordinates.Split(",".ToCharArray());
-			        if (terms.Length < 2)
-			        {
-				        Current_Mode.Mode = Display_Mode_Enum.Search;
-				        UrlWriterHelper.Redirect(Current_Mode);
-				        return;
-			        }
-			        if (terms.Length < 4)
-			        {
-				        lat1 = Convert.ToDouble(terms[0]);
-				        lat2 = lat1;
-				        long1 = Convert.ToDouble(terms[1]);
-				        long2 = long1;
-			        }
-			        if (terms.Length >= 4)
-			        {
-				        if (terms[0].Length > 0)
-					        lat1 = Convert.ToDouble(terms[0]);
-				        if (terms[1].Length > 0)
-					        long1 = Convert.ToDouble(terms[1]);
-				        if (terms[2].Length > 0)
-					        lat2 = Convert.ToDouble(terms[2]);
-				        if (terms[3].Length > 0)
-					        long2 = Convert.ToDouble(terms[3]);
-			        }
+                try
+                {
+                    double lat1 = 1000;
+                    double long1 = 1000;
+                    double lat2 = 1000;
+                    double long2 = 1000;
+                    string[] terms = Current_Mode.Coordinates.Split(",".ToCharArray());
+                    if (terms.Length < 2)
+                    {
+                        Current_Mode.Mode = Display_Mode_Enum.Search;
+                        UrlWriterHelper.Redirect(Current_Mode);
+                        return;
+                    }
+                    if (terms.Length < 4)
+                    {
+                        lat1 = Convert.ToDouble(terms[0]);
+                        lat2 = lat1;
+                        long1 = Convert.ToDouble(terms[1]);
+                        long2 = long1;
+                    }
+                    if (terms.Length >= 4)
+                    {
+                        if (terms[0].Length > 0)
+                            lat1 = Convert.ToDouble(terms[0]);
+                        if (terms[1].Length > 0)
+                            long1 = Convert.ToDouble(terms[1]);
+                        if (terms[2].Length > 0)
+                            lat2 = Convert.ToDouble(terms[2]);
+                        if (terms[3].Length > 0)
+                            long2 = Convert.ToDouble(terms[3]);
+                    }
 
-			        // If neither point is valid, return
-			        if (((lat1 == 1000) || (long1 == 1000)) && ((lat2 == 1000) || (long2 == 1000)))
-			        {
-				        Current_Mode.Mode = Display_Mode_Enum.Search;
-				        UrlWriterHelper.Redirect(Current_Mode);
-				        return;
-			        }
+                    // If neither point is valid, return
+                    if (((lat1 == 1000) || (long1 == 1000)) && ((lat2 == 1000) || (long2 == 1000)))
+                    {
+                        Current_Mode.Mode = Display_Mode_Enum.Search;
+                        UrlWriterHelper.Redirect(Current_Mode);
+                        return;
+                    }
 
-			        // If just the first point is valid, use that
-			        if ((lat2 == 1000) || (long2 == 1000))
-			        {
-				        lat2 = lat1;
-				        long2 = long1;
-			        }
+                    // If just the first point is valid, use that
+                    if ((lat2 == 1000) || (long2 == 1000))
+                    {
+                        lat2 = lat1;
+                        long2 = long1;
+                    }
 
-			        // If just the second point is valid, use that
-			        if ((lat1 == 1000) || (long1 == 1000))
-			        {
-				        lat1 = lat2;
-				        long1 = long2;
-			        }
+                    // If just the second point is valid, use that
+                    if ((lat1 == 1000) || (long1 == 1000))
+                    {
+                        lat1 = lat2;
+                        long1 = long2;
+                    }
 
-			        // Perform the coordinate search against the database
-			        try
-			        {
+                    // Perform the coordinate search against the database
+                    try
+                    {
                         // Get the page count in the results
                         int current_page_index = Current_Mode.Page.HasValue ? Math.Max(Current_Mode.Page.Value, ((ushort)1)) : 1;
 
-				        // Try to pull more than one page, so we can cache the next page or so
+                        // Try to pull more than one page, so we can cache the next page or so
                         Multiple_Paged_Results_Args returnArgs = Engine_Database.Get_Items_By_Coordinates(Current_Mode.Aggregation, lat1, long1, lat2, long2, false, 20, current_page_index, sort, false, new List<short>(), true, Tracer);
-				        List<List<iSearch_Title_Result>> pagesOfResults = returnArgs.Paged_Results;
-				        Complete_Result_Set_Info = returnArgs.Statistics;
+                        List<List<iSearch_Title_Result>> pagesOfResults = returnArgs.Paged_Results;
+                        Complete_Result_Set_Info = returnArgs.Statistics;
 
-				        if ((pagesOfResults != null) && (pagesOfResults.Count > 0))
-					        Paged_Results = pagesOfResults[0];
-			        }
-			        catch (Exception ee)
-			        {
-				        // Next, show the message to the user
-				        Current_Mode.Mode = Display_Mode_Enum.Error;
-				        string error_message = ee.Message;
-				        if (error_message.ToUpper().IndexOf("TIMEOUT") >= 0)
-				        {
-					        error_message = "Database Timeout Occurred<br /><br />Try again in a few minutes.<br /><br />";
-				        }
-				        Current_Mode.Error_Message = error_message;
-				        Current_Mode.Caught_Exception = ee;
-			        }
-		        }
-		        catch
-		        {
-			        Current_Mode.Mode = Display_Mode_Enum.Search;
-			        UrlWriterHelper.Redirect(Current_Mode);
-		        }
-	        }
-	        else
-	        {
-		        List<string> terms = new List<string>();
-		        List<string> web_fields = new List<string>();
+                        if ((pagesOfResults != null) && (pagesOfResults.Count > 0))
+                            Paged_Results = pagesOfResults[0];
+                    }
+                    catch (Exception ee)
+                    {
+                        // Next, show the message to the user
+                        Current_Mode.Mode = Display_Mode_Enum.Error;
+                        string error_message = ee.Message;
+                        if (error_message.ToUpper().IndexOf("TIMEOUT") >= 0)
+                        {
+                            error_message = "Database Timeout Occurred<br /><br />Try again in a few minutes.<br /><br />";
+                        }
+                        Current_Mode.Error_Message = error_message;
+                        Current_Mode.Caught_Exception = ee;
+                    }
+                }
+                catch
+                {
+                    Current_Mode.Mode = Display_Mode_Enum.Search;
+                    UrlWriterHelper.Redirect(Current_Mode);
+                }
+            }
+            else
+            {
+                List<string> terms = new List<string>();
+                List<string> web_fields = new List<string>();
 
-		        // Split the terms correctly ( only use the database stop words for the split if this will go to the database ultimately)
-		        if (((Current_Mode.Search_Type == Search_Type_Enum.Full_Text) || (Current_Mode.Search_Fields.IndexOf("TX") >= 0)) || ( UI_ApplicationCache_Gateway.Settings.System.Search_System == Search_System_Enum.Beta ))
-		        {
-			        Split_Clean_Search_Terms_Fields(Current_Mode.Search_String, Current_Mode.Search_Fields, Current_Mode.Search_Type, terms, web_fields, null, Current_Mode.Search_Precision, ',');
-		        }
-		        else
-		        {
+                // Split the terms correctly ( only use the database stop words for the split if this will go to the database ultimately)
+                if (((Current_Mode.Search_Type == Search_Type_Enum.Full_Text) || (Current_Mode.Search_Fields.IndexOf("TX") >= 0)) || (UI_ApplicationCache_Gateway.Settings.System.Search_System == Search_System_Enum.Beta))
+                {
+                    Split_Clean_Search_Terms_Fields(Current_Mode.Search_String, Current_Mode.Search_Fields, Current_Mode.Search_Type, terms, web_fields, null, Current_Mode.Search_Precision, ',');
+                }
+                else
+                {
                     // This is a database search, so use the stop-words here
                     Split_Clean_Search_Terms_Fields(Current_Mode.Search_String, Current_Mode.Search_Fields, Current_Mode.Search_Type, terms, web_fields, Search_Stop_Words, Current_Mode.Search_Precision, ',');
-		        }
+                }
 
-		        // Get the count that will be used
-		        int actualCount = Math.Min(terms.Count, web_fields.Count);
+                // Get the count that will be used
+                int actualCount = Math.Min(terms.Count, web_fields.Count);
 
-		        // Determine if this is a special search type which returns more rows and is not cached.
-		        // This is used to return the results as XML and DATASET
-		        bool special_search_type = false;
-		        int results_per_page = 20;
+                // Determine if this is a special search type which returns more rows and is not cached.
+                // This is used to return the results as XML and DATASET
+                bool special_search_type = false;
+                int results_per_page = 20;
 
-		        if ((Current_Mode.Writer_Type == Writer_Type_Enum.XML) || (Current_Mode.Writer_Type == Writer_Type_Enum.DataSet))
-		        {
-			        results_per_page = 1000000;
-			        special_search_type = true;
-			        sort = 2; // Sort by BibID always for these
-		        }
-	            if (String.Equals(Current_Mode.Result_Display_Type, "timeline", StringComparison.OrdinalIgnoreCase))
-	            {
+                if ((Current_Mode.Writer_Type == Writer_Type_Enum.XML) || (Current_Mode.Writer_Type == Writer_Type_Enum.DataSet))
+                {
+                    results_per_page = 1000000;
+                    special_search_type = true;
+                    sort = 2; // Sort by BibID always for these
+                }
+                if (String.Equals(Current_Mode.Result_Display_Type, "timeline", StringComparison.OrdinalIgnoreCase))
+                {
                     Tracer.Add_Trace("Get_Search_Results", "Is timeline, setting results_per_page and sort.");
 
                     results_per_page = 1000;
-	                sort = 10;
-	            }
+                    sort = 10;
+                }
 
                 // Get any included date range
-	            Nullable<DateTime> date_start = null;
-	            Nullable<DateTime> date_end = null;
-	            if (Current_Mode.DateRange_Date1.HasValue) date_start = Current_Mode.DateRange_Date1.Value;
+                Nullable<DateTime> date_start = null;
+                Nullable<DateTime> date_end = null;
+                if (Current_Mode.DateRange_Date1.HasValue) date_start = Current_Mode.DateRange_Date1.Value;
                 else if (Current_Mode.DateRange_Year1.HasValue) date_start = new DateTime(Current_Mode.DateRange_Year1.Value, 1, 1);
                 if (Current_Mode.DateRange_Date2.HasValue) date_end = Current_Mode.DateRange_Date2.Value;
                 else if (Current_Mode.DateRange_Year2.HasValue) date_end = new DateTime(Current_Mode.DateRange_Year2.Value, 12, 31);
 
 
-				// Set the flags for how much data is needed.  (i.e., do we need to pull ANYTHING?  or
+                // Set the flags for how much data is needed.  (i.e., do we need to pull ANYTHING?  or
                 // perhaps just the next page of results ( as opposed to pulling facets again).
                 bool need_search_statistics = true;
                 bool need_paged_results = true;
-                if ((!special_search_type) && ( Current_User == null ))
+                if ((!special_search_type) && (Current_User == null))
                 {
                     // Look to see if the search statistics are available on any cache..
                     Complete_Result_Set_Info = CachedDataManager.Retrieve_Search_Result_Statistics(Current_Mode, actualCount, web_fields, terms, date_start, date_end, Tracer);
@@ -729,7 +729,7 @@ namespace SobekCM.Library
                         }
 
                         // If this was a special search, don't cache this
-                        if ((!special_search_type) && ( Current_User == null ))
+                        if ((!special_search_type) && (Current_User == null))
                         {
                             // Cache the search statistics, if it was needed
                             if ((need_search_statistics) && (Complete_Result_Set_Info != null))
@@ -763,15 +763,15 @@ namespace SobekCM.Library
                             else
                             {
                                 Perform_Database_Search(Tracer, terms, web_fields, date_start, date_end, actualCount, Current_Mode, sort, Aggregation_Object, results_per_page, !special_search_type, out recomputed_search_statistics, out pagesOfResults, need_search_statistics, context);
-                                if (( pagesOfResults != null ) && ( pagesOfResults.Count > 0 ))
+                                if ((pagesOfResults != null) && (pagesOfResults.Count > 0))
                                     Paged_Results = pagesOfResults[0];
                             }
 
                             if (need_search_statistics)
                                 Complete_Result_Set_Info = recomputed_search_statistics;
 
-                           // if ((pagesOfResults != null) && (pagesOfResults.Count > 0))
-                           //     Paged_Results = pagesOfResults[0];
+                            // if ((pagesOfResults != null) && (pagesOfResults.Count > 0))
+                            //     Paged_Results = pagesOfResults[0];
                         }
                         catch (Exception ee)
                         {
@@ -787,7 +787,7 @@ namespace SobekCM.Library
                         }
 
                         // If this was a special search, don't cache this
-                        if ((!special_search_type) && ( Current_User == null ))
+                        if ((!special_search_type) && (Current_User == null))
                         {
                             // Cache the search statistics, if it was needed
                             if ((need_search_statistics) && (Complete_Result_Set_Info != null))
@@ -796,9 +796,9 @@ namespace SobekCM.Library
                             }
 
                             // Cache the search results
-                            if ((need_paged_results) && (pagesOfResults != null) && (pagesOfResults.Count > 0 ))
+                            if ((need_paged_results) && (pagesOfResults != null) && (pagesOfResults.Count > 0))
                             {
-                               // CachedDataManager.Store_Search_Results(Current_Mode, sort, actualCount, web_fields, terms, date1, date2, pagesOfResults, Tracer);
+                                // CachedDataManager.Store_Search_Results(Current_Mode, sort, actualCount, web_fields, terms, date1, date2, pagesOfResults, Tracer);
 
                                 CachedDataManager.Store_Search_Results(Current_Mode, sort, actualCount, web_fields, terms, date_start, date_end, results_per_page, pagesOfResults, Tracer);
                             }
@@ -808,15 +808,15 @@ namespace SobekCM.Library
             }
 
 
-			////create search results json object and place into session state
-			//DataTable TEMPsearchResults = new DataTable();
-			//TEMPsearchResults.Columns.Add("BibID", typeof(string));
-			//TEMPsearchResults.Columns.Add("Spatial_Coordinates", typeof(string));
-			//foreach (iSearch_Title_Result searchTitleResult in Paged_Results)
-			//{
-			//	TEMPsearchResults.Rows.Add(searchTitleResult.BibID, searchTitleResult.Spatial_Coordinates);
-			//}
-			//HttpContext.Current.Session["TEMPSearchResultsJSON"] = Google_Map_ResultsViewer_Beta.Create_JSON_Search_Results_Object(TEMPsearchResults);
+            ////create search results json object and place into session state
+            //DataTable TEMPsearchResults = new DataTable();
+            //TEMPsearchResults.Columns.Add("BibID", typeof(string));
+            //TEMPsearchResults.Columns.Add("Spatial_Coordinates", typeof(string));
+            //foreach (iSearch_Title_Result searchTitleResult in Paged_Results)
+            //{
+            //	TEMPsearchResults.Rows.Add(searchTitleResult.BibID, searchTitleResult.Spatial_Coordinates);
+            //}
+            //HttpContext.Current.Session["TEMPSearchResultsJSON"] = Google_Map_ResultsViewer_Beta.Create_JSON_Search_Results_Object(TEMPsearchResults);
         }
 
         /// <summary> Takes the search string and search fields from the URL and parses them, according to the search type,
@@ -837,7 +837,7 @@ namespace SobekCM.Library
                 default_index = "TX";
 
             // Split the parts
-            string[] fieldSplitTemp = Search_Fields.Split( new[] { Delimiter_Character });
+            string[] fieldSplitTemp = Search_Fields.Split(new[] { Delimiter_Character });
             List<string> fieldSplit = new List<string>();
             List<string> searchSplit = new List<string>();
             int first_index = 0;
@@ -892,14 +892,14 @@ namespace SobekCM.Library
                 }
                 second_index++;
             }
-            if ( second_index > first_index )
+            if (second_index > first_index)
             {
                 searchSplit.Add(Search_String.Substring(first_index));
                 fieldSplit.Add(field_index < fieldSplitTemp.Length ? fieldSplitTemp[field_index] : default_index);
             }
 
             // If this is basic, do some other preparation
-            if ( Search_Type == Search_Type_Enum.Full_Text )
+            if (Search_Type == Search_Type_Enum.Full_Text)
             {
                 Legacy_Solr_Searcher.Split_Multi_Terms(Search_String, default_index, Output_Terms, Output_Fields);
             }
@@ -956,7 +956,7 @@ namespace SobekCM.Library
             if (StartDate.HasValue)
             {
                 TimeSpan timeElapsed = StartDate.Value.Subtract(new DateTime(1, 1, 1));
-                Date1 = (long) timeElapsed.TotalDays;
+                Date1 = (long)timeElapsed.TotalDays;
             }
             long Date2 = -1;
             if (EndDate.HasValue)
@@ -976,23 +976,23 @@ namespace SobekCM.Library
             Complete_Result_Set_Info = null;
 
             const bool INCLUDE_PRIVATE = false;
-           
+
             // Special code for searching by bibid, oclc, or aleph
             if (ActualCount == 1)
             {
                 // Is this a BIBID search?
-                if ((Web_Fields[0] == "BI") && ( Terms[0].IndexOf("*") < 0 ) && ( Terms[0].Length >= 10 ))
+                if ((Web_Fields[0] == "BI") && (Terms[0].IndexOf("*") < 0) && (Terms[0].Length >= 10))
                 {
                     string bibid = Terms[0].ToUpper();
                     string vid = String.Empty;
                     if (bibid.Length > 10)
                     {
-                        if ((bibid.IndexOf("_") == 10) && ( bibid.Length > 11 ))
+                        if ((bibid.IndexOf("_") == 10) && (bibid.Length > 11))
                         {
                             vid = bibid.Substring(11).PadLeft(5, '0');
                             bibid = bibid.Substring(0, 10);
                         }
-                        else if ((bibid.IndexOf(":") == 10) && ( bibid.Length > 11 ))
+                        else if ((bibid.IndexOf(":") == 10) && (bibid.Length > 11))
                         {
                             vid = bibid.Substring(11).PadLeft(5, '0');
                             bibid = bibid.Substring(0, 10);
@@ -1008,23 +1008,23 @@ namespace SobekCM.Library
                     {
                         if (vid.Length == 5)
                         {
-                                string redirect_url = Current_Mode.Base_URL + bibid + "/" + vid;
-                                if ( Current_Mode.Writer_Type == Writer_Type_Enum.HTML_LoggedIn )
-                                    redirect_url = Current_Mode.Base_URL + "l/" + bibid + "/" + vid;
-                                context?.Response.Redirect(redirect_url);
-                                Current_Mode.Request_Completed = true;
-                                Paged_Results = null;
-                                return;
+                            string redirect_url = Current_Mode.Base_URL + bibid + "/" + vid;
+                            if (Current_Mode.Writer_Type == Writer_Type_Enum.HTML_LoggedIn)
+                                redirect_url = Current_Mode.Base_URL + "l/" + bibid + "/" + vid;
+                            context?.Response.Redirect(redirect_url);
+                            Current_Mode.Request_Completed = true;
+                            Paged_Results = null;
+                            return;
                         }
                         else
                         {
-                                string redirect_url = Current_Mode.Base_URL + bibid;
-                                if (Current_Mode.Writer_Type == Writer_Type_Enum.HTML_LoggedIn)
-                                    redirect_url = Current_Mode.Base_URL + "l/" + bibid;
-                                context?.Response.Redirect(redirect_url);
-                                Current_Mode.Request_Completed = true;
-                                Paged_Results = null;
-                                return;
+                            string redirect_url = Current_Mode.Base_URL + bibid;
+                            if (Current_Mode.Writer_Type == Writer_Type_Enum.HTML_LoggedIn)
+                                redirect_url = Current_Mode.Base_URL + "l/" + bibid;
+                            context?.Response.Redirect(redirect_url);
+                            Current_Mode.Request_Completed = true;
+                            Paged_Results = null;
+                            return;
                         }
                     }
                 }
@@ -1217,17 +1217,17 @@ namespace SobekCM.Library
                     Multiple_Paged_Results_Args returnArgs = Engine_Database.Perform_Metadata_Search_Paged(links[0], db_terms[0], db_fields[0], links[1], db_terms[1], db_fields[1], links[2], db_terms[2], db_fields[2], links[3], db_terms[3],
                                                                                                             db_fields[3], links[4], db_terms[4], db_fields[4], links[5], db_terms[5], db_fields[5], links[6], db_terms[6], db_fields[6], links[7], db_terms[7], db_fields[7], links[8], db_terms[8], db_fields[8],
                                                                                                             links[9], db_terms[9], db_fields[9], INCLUDE_PRIVATE, Current_Mode.Aggregation, Date1, Date2, Results_Per_Page, current_page_index, Current_Sort, Need_Search_Statistics, facetsList, Need_Search_Statistics, Tracer);
-					if (Need_Search_Statistics)
+                    if (Need_Search_Statistics)
                         Complete_Result_Set_Info = returnArgs.Statistics;
                     Paged_Results = returnArgs.Paged_Results;
                 }
             }
         }
 
-        private static short Metadata_Field_Number( string FieldCode )
+        private static short Metadata_Field_Number(string FieldCode)
         {
             Metadata_Search_Field field = UI_ApplicationCache_Gateway.Settings.Metadata_Search_Field_By_Code(FieldCode);
-            return (field == null) ? (short) -1 : field.ID;
+            return (field == null) ? (short)-1 : field.ID;
         }
 
         private static void Perform_Solr_Search(Custom_Tracer Tracer, List<string> Terms, List<string> Web_Fields, Nullable<DateTime> StartDate, Nullable<DateTime> EndDate, Item_Aggregation Current_Aggregation, int Current_Page, int Current_Sort, int Results_Per_Page, User_Object Current_User, out Search_Results_Statistics Complete_Result_Set_Info, out List<iSearch_Title_Result> Paged_Results, bool Need_Search_Statistics)
@@ -1277,9 +1277,9 @@ namespace SobekCM.Library
                 // Should results be grouped?  Aggregation must be set and for the moment, full text
                 // must have been NOT searched
                 bool contains_full_text = false;
-                foreach( string field in Web_Fields )
+                foreach (string field in Web_Fields)
                 {
-                    if ( field.IndexOf("TX", StringComparison.OrdinalIgnoreCase) >= 0 )
+                    if (field.IndexOf("TX", StringComparison.OrdinalIgnoreCase) >= 0)
                     {
                         contains_full_text = true;
                         break;
@@ -1300,15 +1300,15 @@ namespace SobekCM.Library
 
         #region Method to get the html skin
 
-	    /// <summary> Gets the HTML skin indicated in the current navigation mode </summary>
-	    /// <param name="Current_Mode"> Mode / navigation information for the current request</param>
-	    /// <param name="Skin_Collection"> Collection of the most common skins and source information for all the skins made on the fly </param>
-	    /// <param name="Cache_On_Build"> Flag indicates if this should be added to the ASP.net (or caching server) cache </param>
-	    /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-	    /// <returns> Fully-built object used to "skin" this digital library </returns>
-	    public Web_Skin_Object Get_HTML_Skin(Navigation_Object Current_Mode, Web_Skin_Collection Skin_Collection, bool Cache_On_Build, Custom_Tracer Tracer)
+        /// <summary> Gets the HTML skin indicated in the current navigation mode </summary>
+        /// <param name="Current_Mode"> Mode / navigation information for the current request</param>
+        /// <param name="Skin_Collection"> Collection of the most common skins and source information for all the skins made on the fly </param>
+        /// <param name="Cache_On_Build"> Flag indicates if this should be added to the ASP.net (or caching server) cache </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        /// <returns> Fully-built object used to "skin" this digital library </returns>
+        public Web_Skin_Object Get_HTML_Skin(Navigation_Object Current_Mode, Web_Skin_Collection Skin_Collection, bool Cache_On_Build, Custom_Tracer Tracer)
         {
-            return Get_HTML_Skin(Current_Mode.Skin, Current_Mode, Skin_Collection, Cache_On_Build, Tracer); 
+            return Get_HTML_Skin(Current_Mode.Skin, Current_Mode, Skin_Collection, Cache_On_Build, Tracer);
         }
 
         /// <summary> Gets the HTML skin indicated in the current navigation mode </summary>

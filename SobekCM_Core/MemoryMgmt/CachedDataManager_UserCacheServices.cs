@@ -1,9 +1,9 @@
 #region Using directives
 
-using System;
-using System.IO;
 using ProtoBuf;
 using SobekCM.Core.Users;
+using System;
+using System.IO;
 
 #endregion
 

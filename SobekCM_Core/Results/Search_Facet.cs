@@ -1,9 +1,9 @@
 ﻿#region Using directives
 
+using ProtoBuf;
 using System;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
-using ProtoBuf;
 
 #endregion
 
@@ -27,7 +27,7 @@ namespace SobekCM.Core.Results
         public int Frequency { get; set; }
 
         /// <summary> Constructor for a new instance of the Search_Facet class </summary>
-        public Search_Facet( )
+        public Search_Facet()
         {
             // Empty constructor for serialization purposes
         }

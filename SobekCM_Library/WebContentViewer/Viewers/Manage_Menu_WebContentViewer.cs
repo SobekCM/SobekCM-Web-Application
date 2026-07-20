@@ -1,11 +1,9 @@
-﻿using System;
-using System.IO;
-using SobekCM.Core.Navigation;
-using SobekCM.Core.UI_Configuration;
-using SobekCM.Core.UI_Configuration.StaticResources;
+﻿using SobekCM.Core.Navigation;
 using SobekCM.Core.WebContent;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Tools;
+using System;
+using System.IO;
 
 namespace SobekCM.Library.WebContentViewer.Viewers
 {
@@ -16,7 +14,7 @@ namespace SobekCM.Library.WebContentViewer.Viewers
         /// <summary> Constructor for a new instance of the Manage_Menu_WebContentViewer class </summary>
         /// <param name="RequestSpecificValues">  All the necessary, non-global data specific to the current request  </param>
         /// <param name="StaticPage"> Static page info for this request </param>
-        public Manage_Menu_WebContentViewer(RequestCache RequestSpecificValues, HTML_Based_Content StaticPage ) : base ( RequestSpecificValues, StaticPage )
+        public Manage_Menu_WebContentViewer(RequestCache RequestSpecificValues, HTML_Based_Content StaticPage) : base(RequestSpecificValues, StaticPage)
         {
 
         }
@@ -110,7 +108,7 @@ namespace SobekCM.Library.WebContentViewer.Viewers
             Output.WriteLine("      </td>");
             Output.WriteLine("    </tr>");
             Output.WriteLine("    <tr class=\"sbkMmav_SpacerRow\"><td colspan=\"3\"></td></tr>");
-            
+
 
             // Add the link for the usage stats
             Output.WriteLine("    <tr>");
@@ -122,7 +120,7 @@ namespace SobekCM.Library.WebContentViewer.Viewers
             Output.WriteLine("      </td>");
             Output.WriteLine("    </tr>");
             Output.WriteLine("    <tr class=\"sbkMmav_SpacerRow\"><td colspan=\"3\"></td></tr>");
-            
+
             // Add the link for aggregation management
             if ((RequestSpecificValues.Current_User.Is_System_Admin) || (RequestSpecificValues.Current_User.Is_Portal_Admin))
             {

@@ -50,9 +50,9 @@ namespace SobekCM.Resource_Object.Metadata_Modules
         /// <summary> Gets the flag which indicates that there is data in this object that needs to be written to the METS file </summary>
         public bool hasData
         {
-            get { return (( !String.IsNullOrEmpty(project)) && ( !String.IsNullOrEmpty(account))); }
+            get { return ((!String.IsNullOrEmpty(project)) && (!String.IsNullOrEmpty(account))); }
         }
-        
+
         #region Methods/Properties to implement the iMetadata_Module interface
 
         /// <summary> Name for this metadata module </summary>

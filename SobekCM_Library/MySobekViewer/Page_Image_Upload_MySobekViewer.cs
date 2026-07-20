@@ -1,30 +1,26 @@
 #region Using directives
 
+using Microsoft.AspNetCore.Http;
+using SobekCM.Core.Client;
+using SobekCM.Core.MemoryMgmt;
+using SobekCM.Core.Navigation;
+using SobekCM.Engine_Library.Configuration;
+using SobekCM.Engine_Library.Email;
+using SobekCM.Library.AdminViewer;
+// using SobekCM.Library.Helpers.UploadiFive;
+using SobekCM.Library.HTML;
+using SobekCM.Library.UI;
+using SobekCM.Resource_Object;
+using SobekCM.Resource_Object.Behaviors;
+using SobekCM.Resource_Object.Divisions;
+using SobekCM.Tools;
+using SobekCM_Resource_Database;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
-using System.Text;
-using SobekCM.Core.Client;
-using SobekCM.Core.MemoryMgmt;
-using SobekCM.Core.Navigation;
-using SobekCM.Core.UI_Configuration;
-using SobekCM.Core.UI_Configuration.StaticResources;
-using SobekCM.Engine_Library.Configuration;
-using SobekCM.Engine_Library.Email;
-using SobekCM.Library.AdminViewer;
-using Microsoft.AspNetCore.Http;
-// using SobekCM.Library.Helpers.UploadiFive;
-using SobekCM.Library.HTML;
-using SobekCM.Library.UI;
-using SobekCM.Resource_Object;
-using SobekCM.Resource_Object.Behaviors;
-using SobekCM.Resource_Object.Database;
-using SobekCM.Resource_Object.Divisions;
-using SobekCM.Tools;
-using SobekCM_Resource_Database;
 using Image = System.Drawing.Image;
 
 #endregion
@@ -77,7 +73,7 @@ namespace SobekCM.Library.MySobekViewer
 
 
             // If the current user cannot edit this currentItem, go back
-            if (!RequestSpecificValues.Current_User.Can_Edit_This_Item( currentItem.BibID, currentItem.Bib_Info.SobekCM_Type_String, currentItem.Bib_Info.Source.Code, currentItem.Bib_Info.HoldingCode, currentItem.Behaviors.Aggregation_Code_List ))
+            if (!RequestSpecificValues.Current_User.Can_Edit_This_Item(currentItem.BibID, currentItem.Bib_Info.SobekCM_Type_String, currentItem.Bib_Info.Source.Code, currentItem.Bib_Info.HoldingCode, currentItem.Behaviors.Aggregation_Code_List))
             {
                 RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
                 UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
@@ -94,8 +90,8 @@ namespace SobekCM.Library.MySobekViewer
                 Directory.CreateDirectory(digitalResourceDirectory);
             else
             {
-				// Any post-processing to do?
-				string[] files = Directory.GetFiles(digitalResourceDirectory);
+                // Any post-processing to do?
+                string[] files = Directory.GetFiles(digitalResourceDirectory);
 
                 // Make a dictionary of the included files
                 Dictionary<string, string> filesByName = new Dictionary<string, string>();
@@ -107,39 +103,39 @@ namespace SobekCM.Library.MySobekViewer
                 }
 
                 // Now, step through each TIFF
-				foreach (string thisFile in files)
-				{
+                foreach (string thisFile in files)
+                {
                     string extension = Path.GetExtension(thisFile);
                     string name = Path.GetFileName(thisFile);
 
                     // Should never happen
-                    if ((extension == null) || (name == null )) continue;
+                    if ((extension == null) || (name == null)) continue;
 
                     if ((String.Compare(extension, ".TIF", StringComparison.OrdinalIgnoreCase) == 0) || (String.Compare(extension, ".TIFF", StringComparison.OrdinalIgnoreCase) == 0))
-					{
-						// Is there a JPEG and/or thumbnail?
+                    {
+                        // Is there a JPEG and/or thumbnail?
                         string jpeg = digitalResourceDirectory + "\\" + name.Replace(extension, "") + ".jpg";
                         string jpeg_thumbnail = digitalResourceDirectory + "\\" + name.Replace(extension, "") + "thm.jpg";
 
-						// Is one missing?
-						if ((!File.Exists(jpeg)) || (!File.Exists(jpeg_thumbnail)))
-						{
-							try
-							{
-								var tiffImg = Image.FromFile(thisFile);
-								var mainImg = ScaleImage(tiffImg, UI_ApplicationCache_Gateway.Settings.Resources.JPEG_Width, UI_ApplicationCache_Gateway.Settings.Resources.JPEG_Height);
-								mainImg.Save(jpeg, ImageFormat.Jpeg);
-								var thumbnailImg = ScaleImage(tiffImg, 150, 400);
-								thumbnailImg.Save(jpeg_thumbnail, ImageFormat.Jpeg);
+                        // Is one missing?
+                        if ((!File.Exists(jpeg)) || (!File.Exists(jpeg_thumbnail)))
+                        {
+                            try
+                            {
+                                var tiffImg = Image.FromFile(thisFile);
+                                var mainImg = ScaleImage(tiffImg, UI_ApplicationCache_Gateway.Settings.Resources.JPEG_Width, UI_ApplicationCache_Gateway.Settings.Resources.JPEG_Height);
+                                mainImg.Save(jpeg, ImageFormat.Jpeg);
+                                var thumbnailImg = ScaleImage(tiffImg, 150, 400);
+                                thumbnailImg.Save(jpeg_thumbnail, ImageFormat.Jpeg);
                                 tiffImg.Dispose();
-							}
-							catch 
-							{
+                            }
+                            catch
+                            {
                                 // Do nothing
-							}
-						}
-					}
-				}
+                            }
+                        }
+                    }
+                }
 
                 // Now, check one more time for JPEGs that do not have thumbnails
                 FileStream reuseStream = null;
@@ -151,7 +147,7 @@ namespace SobekCM.Library.MySobekViewer
                     // Should never happen
                     if ((extension == null) || (name == null)) continue;
 
-                    if ((String.Compare(extension, ".JPG", StringComparison.OrdinalIgnoreCase) == 0) && ( name.IndexOf("THM.JPG", StringComparison.OrdinalIgnoreCase) < 0 ))
+                    if ((String.Compare(extension, ".JPG", StringComparison.OrdinalIgnoreCase) == 0) && (name.IndexOf("THM.JPG", StringComparison.OrdinalIgnoreCase) < 0))
                     {
                         // Is there a JPEG and/or thumbnail?
                         string jpeg_thumbnail = digitalResourceDirectory + "\\" + name.Replace(extension, "") + "thm.jpg";
@@ -195,7 +191,7 @@ namespace SobekCM.Library.MySobekViewer
                                     thumbnailImg.Save(jpeg_thumbnail, ImageFormat.Jpeg);
                                 }
                             }
-                            catch ( Exception ee)
+                            catch (Exception ee)
                             {
                                 RequestSpecificValues.Current_Mode.Error_Message = ee.Message;
                                 // Do nothing
@@ -253,10 +249,10 @@ namespace SobekCM.Library.MySobekViewer
                     }
                 }
 
-                if ( action == "next_phase")
+                if (action == "next_phase")
                 {
                     int phase = Convert.ToInt32(Context.Request.Form["phase"]);
-                    switch( phase )
+                    switch (phase)
                     {
                         case 2:
                             // Clear all the file keys in the temporary folder
@@ -267,9 +263,9 @@ namespace SobekCM.Library.MySobekViewer
                                 {
                                     File.Delete(thisFile);
                                 }
-                                catch ( Exception ee )
+                                catch (Exception ee)
                                 {
-                                    RequestSpecificValues.Tracer.Add_Trace("Page_Image_Upload_MySobekViewer.Constructor","Error deleting uploaded file: " + ee.Message );
+                                    RequestSpecificValues.Tracer.Add_Trace("Page_Image_Upload_MySobekViewer.Constructor", "Error deleting uploaded file: " + ee.Message);
                                     // Do nothing - not a fatal problem
                                 }
                             }
@@ -299,36 +295,36 @@ namespace SobekCM.Library.MySobekViewer
                                 RequestSpecificValues.Current_Mode.ViewerCode = "qc";
                                 UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
                             }
-                            break;                         
+                            break;
                     }
                 }
             }
-        } 
+        }
 
-		/// <summary> Scales an existing SourceImage to a new max width / max height </summary>
-		/// <param name="SourceImage"> Source image </param>
-		/// <param name="MaxWidth"> Maximum width for the new image </param>
-		/// <param name="MaxHeight"> Maximum height for the new image </param>
-		/// <returns> Newly scaled image, without changing the original source image </returns>
-		public static Image ScaleImage(Image SourceImage, int MaxWidth, int MaxHeight)
-		{
-			var ratioX = (double)MaxWidth / SourceImage.Width;
-			var ratioY = (double)MaxHeight / SourceImage.Height;
-			var ratio = Math.Min(ratioX, ratioY);
+        /// <summary> Scales an existing SourceImage to a new max width / max height </summary>
+        /// <param name="SourceImage"> Source image </param>
+        /// <param name="MaxWidth"> Maximum width for the new image </param>
+        /// <param name="MaxHeight"> Maximum height for the new image </param>
+        /// <returns> Newly scaled image, without changing the original source image </returns>
+        public static Image ScaleImage(Image SourceImage, int MaxWidth, int MaxHeight)
+        {
+            var ratioX = (double)MaxWidth / SourceImage.Width;
+            var ratioY = (double)MaxHeight / SourceImage.Height;
+            var ratio = Math.Min(ratioX, ratioY);
 
-			var newWidth = (int)(SourceImage.Width * ratio);
-			var newHeight = (int)(SourceImage.Height * ratio);
+            var newWidth = (int)(SourceImage.Width * ratio);
+            var newHeight = (int)(SourceImage.Height * ratio);
 
-			var newImage = new Bitmap(newWidth, newHeight);
-			Graphics.FromImage(newImage).DrawImage(SourceImage, 0, 0, newWidth, newHeight);
-			return newImage;
-		}
+            var newImage = new Bitmap(newWidth, newHeight);
+            Graphics.FromImage(newImage).DrawImage(SourceImage, 0, 0, newWidth, newHeight);
+            return newImage;
+        }
 
         #endregion
 
         #region Method commpletes the item submission on the way to the congratulations screen
 
-        private bool complete_item_submission(SobekCM_Item Item_To_Complete, Custom_Tracer Tracer )
+        private bool complete_item_submission(SobekCM_Item Item_To_Complete, Custom_Tracer Tracer)
         {
             // Set an initial flag 
             criticalErrorEncountered = false;
@@ -337,7 +333,7 @@ namespace SobekCM.Library.MySobekViewer
 
 
             string[] image_files = Directory.GetFiles(digitalResourceDirectory);
-            
+
 
             // This package is good to go, so build it, save, etc...
             try
@@ -357,7 +353,7 @@ namespace SobekCM.Library.MySobekViewer
                     File.Copy(thisFile, final_destination + "\\" + fileInfo.Name, true);
 
                     // Special code for thumbnail
-                    if ( fileInfo.Name.Equals("mainthm.jpg", StringComparison.OrdinalIgnoreCase))
+                    if (fileInfo.Name.Equals("mainthm.jpg", StringComparison.OrdinalIgnoreCase))
                     {
                         // Save as thumbnail and do nothing else
                         currentItem.Behaviors.Main_Thumbnail = "mainthm.jpg";
@@ -391,47 +387,47 @@ namespace SobekCM.Library.MySobekViewer
                 }
 
                 // Add the JPEG2000 and JPEG-specific viewers
-				//currentItem.Behaviors.Clear_Views();
-				if (jpeg_added) 
-				{
-					// Is a JPEG view already existing?
-					bool jpeg_viewer_already_exists = false;
+                //currentItem.Behaviors.Clear_Views();
+                if (jpeg_added)
+                {
+                    // Is a JPEG view already existing?
+                    bool jpeg_viewer_already_exists = false;
                     foreach (View_Object thisViewer in currentItem.Behaviors.Views)
-					{
-						if (thisViewer.View_Type == "JPEG")
-						{
-							jpeg_viewer_already_exists = true;
-							break;
-						}
-					}
+                    {
+                        if (thisViewer.View_Type == "JPEG")
+                        {
+                            jpeg_viewer_already_exists = true;
+                            break;
+                        }
+                    }
 
-					// Add the JPEG view if it did not already exists
-					if ( !jpeg_viewer_already_exists )
-						currentItem.Behaviors.Add_View("JPEG");
-				}
+                    // Add the JPEG view if it did not already exists
+                    if (!jpeg_viewer_already_exists)
+                        currentItem.Behaviors.Add_View("JPEG");
+                }
 
-				// If a JPEG2000 file was just added, ensure it exists as a view for this currentItem
-				if (jp2_added)
-				{
-					// Is a JPEG view already existing?
-					bool jpg2000_viewer_already_exists = false;
-					foreach (View_Object thisViewer in currentItem.Behaviors.Views)
-					{
-						if (thisViewer.View_Type == "JPEG2000" )
-						{
-							jpg2000_viewer_already_exists = true;
-							break;
-						}
-					}
+                // If a JPEG2000 file was just added, ensure it exists as a view for this currentItem
+                if (jp2_added)
+                {
+                    // Is a JPEG view already existing?
+                    bool jpg2000_viewer_already_exists = false;
+                    foreach (View_Object thisViewer in currentItem.Behaviors.Views)
+                    {
+                        if (thisViewer.View_Type == "JPEG2000")
+                        {
+                            jpg2000_viewer_already_exists = true;
+                            break;
+                        }
+                    }
 
-					// Add the JPEG2000 view if it did not already exists
-					if (!jpg2000_viewer_already_exists)
+                    // Add the JPEG2000 view if it did not already exists
+                    if (!jpg2000_viewer_already_exists)
                         currentItem.Behaviors.Add_View("JPEG2000");
-				}
+                }
 
                 // Determine the total size of the package before saving
                 string[] all_files_final = Directory.GetFiles(final_destination);
-                double size = all_files_final.Aggregate<string, double>(0, (Current, ThisFile) => Current + (((new FileInfo(ThisFile)).Length)/1024));
+                double size = all_files_final.Aggregate<string, double>(0, (Current, ThisFile) => Current + (((new FileInfo(ThisFile)).Length) / 1024));
                 Item_To_Complete.DiskSize_KB = size;
 
                 // Create the options dictionary used when saving information to the database, or writing MarcXML
@@ -456,11 +452,11 @@ namespace SobekCM.Library.MySobekViewer
                 catch (Exception ee)
                 {
                     StreamWriter writer = new StreamWriter(digitalResourceDirectory + "\\exception.txt", false);
-                    writer.WriteLine( "ERROR CAUGHT WHILE SAVING DIGITAL RESOURCE");
-                    writer.WriteLine( DateTime.Now.ToString());
+                    writer.WriteLine("ERROR CAUGHT WHILE SAVING DIGITAL RESOURCE");
+                    writer.WriteLine(DateTime.Now.ToString());
                     writer.WriteLine();
-                    writer.WriteLine( ee.Message );
-                    writer.WriteLine( ee.StackTrace );
+                    writer.WriteLine(ee.Message);
+                    writer.WriteLine(ee.StackTrace);
                     writer.Flush();
                     writer.Close();
                     throw;
@@ -475,7 +471,7 @@ namespace SobekCM.Library.MySobekViewer
                 Item_To_Complete.Save_SobekCM_METS();
 
                 // Finally, set the currentItem for more processing if there were any files
-                if ((image_files.Length > 0) && ( Item_To_Complete.Web.ItemID > 0 ))
+                if ((image_files.Length > 0) && (Item_To_Complete.Web.ItemID > 0))
                 {
                     SobekCM_Item_Database.Update_Additional_Work_Needed_Flag(Item_To_Complete.Web.ItemID, true);
                 }
@@ -599,14 +595,14 @@ namespace SobekCM.Library.MySobekViewer
 
             Output.WriteLine("<script src=\"" + Static_Resources_Gateway.Sobekcm_Metadata_Js + "\" type=\"text/javascript\"></script>");
 
-			// Write the top currentItem mimic html portion
-			Write_Item_Type_Top(Output, currentItem);
+            // Write the top currentItem mimic html portion
+            Write_Item_Type_Top(Output, currentItem);
 
-			Output.WriteLine("<div id=\"container-inner1000\">");
-			Output.WriteLine("<div id=\"pagecontainer\">");
+            Output.WriteLine("<div id=\"container-inner1000\">");
+            Output.WriteLine("<div id=\"pagecontainer\">");
 
-			Output.WriteLine("<div class=\"sbkMySobek_HomeText\">");
-			Output.WriteLine("  <br />");
+            Output.WriteLine("<div class=\"sbkMySobek_HomeText\">");
+            Output.WriteLine("  <br />");
 
             Output.WriteLine("  <h2>Upload Page Images</h2>");
             Output.WriteLine("  <p>Upload the page images for your item.  You will then be directed to manage the pages and divisions to ensure the new page images appear in the correct order and are reflected in the table of contents.</p>");
@@ -615,7 +611,7 @@ namespace SobekCM.Library.MySobekViewer
             Output.WriteLine("  <p><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">Click here to add download files instead.</a></p>");
             RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Page_Images_Management;
 
-			Output.WriteLine("  <br />");
+            Output.WriteLine("  <br />");
         }
 
         /// <summary> This is an opportunity to write HTML directly into the main form, without
@@ -644,13 +640,13 @@ namespace SobekCM.Library.MySobekViewer
             if (files.Length > 0)
             {
                 Output.WriteLine("The following new page images will be added to the item once you click SUBMIT:");
-				Output.WriteLine("<table class=\"sbkMySobek_FileTable\">");
-				Output.WriteLine("  <tr style=\"min-height:22px;\" >");
-				Output.WriteLine("    <th style=\"width:350px;\">FILENAME</th>");
-				Output.WriteLine("    <th style=\"width:90px\">SIZE</th>");
-				Output.WriteLine("    <th style=\"width:170px\">DATE UPLOADED</th>");
-				Output.WriteLine("    <th style=\"width:90px; text-align: center;\">ACTION</th>");
-				Output.WriteLine("  </tr>");
+                Output.WriteLine("<table class=\"sbkMySobek_FileTable\">");
+                Output.WriteLine("  <tr style=\"min-height:22px;\" >");
+                Output.WriteLine("    <th style=\"width:350px;\">FILENAME</th>");
+                Output.WriteLine("    <th style=\"width:90px\">SIZE</th>");
+                Output.WriteLine("    <th style=\"width:170px\">DATE UPLOADED</th>");
+                Output.WriteLine("    <th style=\"width:90px; text-align: center;\">ACTION</th>");
+                Output.WriteLine("  </tr>");
 
                 // Collect the page files we are uploading into groups
                 SortedDictionary<string, List<string>> file_groups = new SortedDictionary<string, List<string>>();
@@ -662,14 +658,14 @@ namespace SobekCM.Library.MySobekViewer
                     string name_sans_extension = name.Replace(extension, "").ToUpper();
                     if (name.ToUpper().IndexOf("THM.JPG") > 0)
                     {
-                        name_sans_extension = name.ToUpper().Replace("THM.JPG","");
+                        name_sans_extension = name.ToUpper().Replace("THM.JPG", "");
                     }
 
-                    if ( file_groups.ContainsKey(name_sans_extension))
+                    if (file_groups.ContainsKey(name_sans_extension))
                         file_groups[name_sans_extension].Add(thisFile);
                     else
                     {
-                        List<string> newGroup = new List<string> {thisFile};
+                        List<string> newGroup = new List<string> { thisFile };
                         file_groups.Add(name_sans_extension, newGroup);
                     }
                 }
@@ -683,17 +679,17 @@ namespace SobekCM.Library.MySobekViewer
                     foreach (string thisFile in groupFiles)
                     {
                         // Add the file name literal
-                        FileInfo fileInfo = new FileInfo(thisFile);  
-						Output.WriteLine("  <tr style=\"min-height:22px;\">");
+                        FileInfo fileInfo = new FileInfo(thisFile);
+                        Output.WriteLine("  <tr style=\"min-height:22px;\">");
                         Output.WriteLine("    <td>" + fileInfo.Name + "</td>");
                         if (fileInfo.Length < 1024)
                             Output.WriteLine("    <td>" + fileInfo.Length + "</td>");
                         else
                         {
-                            if (fileInfo.Length < (1024*1024))
-                                Output.WriteLine("    <td>" + (fileInfo.Length/1024) + " KB</td>");
+                            if (fileInfo.Length < (1024 * 1024))
+                                Output.WriteLine("    <td>" + (fileInfo.Length / 1024) + " KB</td>");
                             else
-                                Output.WriteLine("    <td>" + (fileInfo.Length/(1024*1024)) + " MB</td>");
+                                Output.WriteLine("    <td>" + (fileInfo.Length / (1024 * 1024)) + " MB</td>");
                         }
 
                         Output.WriteLine("    <td>" + fileInfo.LastWriteTime + "</td>");
@@ -707,25 +703,25 @@ namespace SobekCM.Library.MySobekViewer
                         }
                         Output.WriteLine("    <td align=\"center\"> <span class=\"sbkMySobek_ActionLink\">( <a href=\"\" onclick=\"return file_delete('" + strFileName + "');\">delete</a> )</span></td>");
 
-	                    Output.WriteLine("  </tr>");
+                        Output.WriteLine("  </tr>");
                     }
-					Output.WriteLine("  <tr><td class=\"sbkMySobek_FileTableRule\" colspan=\"4\"></td></tr>");
+                    Output.WriteLine("  <tr><td class=\"sbkMySobek_FileTableRule\" colspan=\"4\"></td></tr>");
                 }
                 Output.WriteLine("</table>");
-				Output.WriteLine();
+                Output.WriteLine();
             }
 
-			Output.WriteLine("<div class=\"sbkMySobek_FileRightButtons\">");
-			Output.WriteLine("  <button title=\"Cancel this and remove the recentely uploaded images\" onclick=\"return new_upload_next_phase(2);\" class=\"sbkPiu_RoundButton\">CANCEL</button> &nbsp; ");
-			Output.WriteLine("  <button title=\"Submit the recently uploaded page images and complete the process\" onclick=\"return new_upload_next_phase(9);\" class=\"sbkPiu_RoundButton\">SUBMIT</button> &nbsp; ");
-			Output.WriteLine("  <div id=\"circular_progress\" name=\"circular_progress\" class=\"hidden_progress\">&nbsp;</div>");
-			Output.WriteLine("</div>");
-			Output.WriteLine();
+            Output.WriteLine("<div class=\"sbkMySobek_FileRightButtons\">");
+            Output.WriteLine("  <button title=\"Cancel this and remove the recentely uploaded images\" onclick=\"return new_upload_next_phase(2);\" class=\"sbkPiu_RoundButton\">CANCEL</button> &nbsp; ");
+            Output.WriteLine("  <button title=\"Submit the recently uploaded page images and complete the process\" onclick=\"return new_upload_next_phase(9);\" class=\"sbkPiu_RoundButton\">SUBMIT</button> &nbsp; ");
+            Output.WriteLine("  <div id=\"circular_progress\" name=\"circular_progress\" class=\"hidden_progress\">&nbsp;</div>");
+            Output.WriteLine("</div>");
+            Output.WriteLine();
 
-			const string COMPLETION_MESSAGE = "Once all images are uploaded, press SUBMIT to finish this item.";
+            const string COMPLETION_MESSAGE = "Once all images are uploaded, press SUBMIT to finish this item.";
 
-			Output.WriteLine("<div class=\"sbkMySobek_FileCompletionMsg\">" + COMPLETION_MESSAGE + "</div>");
-			Output.WriteLine();
+            Output.WriteLine("<div class=\"sbkMySobek_FileCompletionMsg\">" + COMPLETION_MESSAGE + "</div>");
+            Output.WriteLine();
 
             Output.WriteLine("<br /><br />");
             Output.WriteLine("<hr />");
@@ -735,13 +731,13 @@ namespace SobekCM.Library.MySobekViewer
             Output.WriteLine(UI_ApplicationCache_Gateway.Settings.Resources.Upload_Image_Types.Replace(",", ", "));
             Output.WriteLine("</blockquote>");
             Output.WriteLine("</div>");
-			Output.WriteLine("</div>");
-			Output.WriteLine("</div>");
+            Output.WriteLine("</div>");
+            Output.WriteLine("</div>");
         }
 
         #endregion
 
-		/// <summary> Add controls directly to the form in the main control area placeholder </summary>
+        /// <summary> Add controls directly to the form in the main control area placeholder </summary>
         /// <param name="MainPlaceHolder"> Main place holder to which all main controls are added </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
         public override void Add_Controls(TextWriter Output, Custom_Tracer Tracer)
@@ -762,20 +758,20 @@ namespace SobekCM.Library.MySobekViewer
             Output.WriteLine("</blockquote><br />");
         }
 
-		/// <summary> Gets the collection of special behaviors which this admin or mySobek viewer
-		/// requests from the main HTML subwriter. </summary>
-		/// <value> This tells the HTML and mySobek writers to mimic the currentItem viewer </value>
-		public override List<HtmlSubwriter_Behaviors_Enum> Viewer_Behaviors
-		{
-			get
-			{
-				return new List<HtmlSubwriter_Behaviors_Enum>
-				{
-					HtmlSubwriter_Behaviors_Enum.MySobek_Subwriter_Mimic_Item_Subwriter,
-					HtmlSubwriter_Behaviors_Enum.Suppress_Banner
-				};
-			}
-		}
+        /// <summary> Gets the collection of special behaviors which this admin or mySobek viewer
+        /// requests from the main HTML subwriter. </summary>
+        /// <value> This tells the HTML and mySobek writers to mimic the currentItem viewer </value>
+        public override List<HtmlSubwriter_Behaviors_Enum> Viewer_Behaviors
+        {
+            get
+            {
+                return new List<HtmlSubwriter_Behaviors_Enum>
+                {
+                    HtmlSubwriter_Behaviors_Enum.MySobek_Subwriter_Mimic_Item_Subwriter,
+                    HtmlSubwriter_Behaviors_Enum.Suppress_Banner
+                };
+            }
+        }
 
         /// <summary> Returns a flag indicating whether the file upload specific holder in the itemNavForm form will be utilized 
         /// for the current request, or if it can be hidden/omitted. </summary>
@@ -783,5 +779,5 @@ namespace SobekCM.Library.MySobekViewer
         public override bool Upload_File_Possible { get { return true; } }
     }
 }
-  
+
 

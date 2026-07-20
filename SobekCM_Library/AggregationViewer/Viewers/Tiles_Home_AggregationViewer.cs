@@ -1,16 +1,7 @@
-using SobekCM.Core.MemoryMgmt;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.AspNetCore.Http;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml;
-using System.Xml.Serialization;
-using Microsoft.Win32;
+using Microsoft.Extensions.Caching.Memory;
 using SobekCM.Core.Aggregations;
+using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Search;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Engine_Library.Database;
@@ -18,6 +9,11 @@ using SobekCM.Library.HTML;
 using SobekCM.Library.UI;
 using SobekCM.Resource_Object;
 using SobekCM.Tools;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Xml;
+using System.Xml.Serialization;
 
 namespace SobekCM.Library.AggregationViewer.Viewers
 {
@@ -60,7 +56,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 // Check for a link to the bibid/vid
                 string bib_vid_for_link = String.Empty;
 
-                if ((thisFileNameSansExtension.Length == 10) && ( SobekCM_Item.is_bibid_format(thisFileNameSansExtension)))
+                if ((thisFileNameSansExtension.Length == 10) && (SobekCM_Item.is_bibid_format(thisFileNameSansExtension)))
                 {
                     bib_vid_for_link = thisFileNameSansExtension;
                     bibid = bib_vid_for_link;
@@ -84,7 +80,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 {
                     allTiles.Add(new Tiles_Home_Single_Tile
                     {
-                        JpegUri = aggregation_tile_uri + thisFileName, 
+                        JpegUri = aggregation_tile_uri + thisFileName,
                         LinkUri = RequestSpecificValues.Current_Mode.Base_URL + bib_vid_for_link,
                         BibID = bibid ?? String.Empty,
                         VID = vid ?? String.Empty
@@ -170,10 +166,10 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                         FileStream fs = new FileStream(metadata_file, FileMode.Open);
                         XmlReader reader = XmlReader.Create(fs);
 
-                        XmlSerializer x = new XmlSerializer(typeof (Database_Results_Info));
+                        XmlSerializer x = new XmlSerializer(typeof(Database_Results_Info));
 
                         // Use the Deserialize method to restore the object's state.
-                        tileMetadata = (Database_Results_Info) x.Deserialize(reader);
+                        tileMetadata = (Database_Results_Info)x.Deserialize(reader);
                         fs.Close();
 
                         // Also put this in the cache
@@ -298,16 +294,16 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 {
 
                     //Add the hidden item values for display in the tooltip
-                 //   Output.WriteLine("<tr style=\"display:none;\"><td colspan=\"100%\"><div  id=\"descThumbnail" + title_count + "\" >");
+                    //   Output.WriteLine("<tr style=\"display:none;\"><td colspan=\"100%\"><div  id=\"descThumbnail" + title_count + "\" >");
 
                     Output.WriteLine("<div  id=\"descThumbnail" + title_count + "\" style=\"display:none;\" >");
                     // Add each element to this table
                     Output.WriteLine("\t\t\t<table cellspacing=\"0px\">");
 
-                        Output.WriteLine(
-                            "\t\t\t\t<tr style=\"height:40px;\" valign=\"middle\"><td colspan=\"3\"><span class=\"qtip_BriefTitle\" style=\"color: #a5a5a5;font-weight: bold;font-size:13px;\">" + itemResult.Title.Replace("<", "&lt;").Replace(">", "&gt;") +
-                            "</span> &nbsp; </td></tr><br/>");
-                        Output.WriteLine("<tr><td colspan=\"100%\"><br/></td></tr>");
+                    Output.WriteLine(
+                        "\t\t\t\t<tr style=\"height:40px;\" valign=\"middle\"><td colspan=\"3\"><span class=\"qtip_BriefTitle\" style=\"color: #a5a5a5;font-weight: bold;font-size:13px;\">" + itemResult.Title.Replace("<", "&lt;").Replace(">", "&gt;") +
+                        "</span> &nbsp; </td></tr><br/>");
+                    Output.WriteLine("<tr><td colspan=\"100%\"><br/></td></tr>");
 
 
                     if ((!String.IsNullOrEmpty(titleResult.Primary_Identifier_Type)) && (!String.IsNullOrEmpty(titleResult.Primary_Identifier)))

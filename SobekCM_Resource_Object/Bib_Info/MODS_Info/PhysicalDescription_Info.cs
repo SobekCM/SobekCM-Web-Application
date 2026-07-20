@@ -38,7 +38,8 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// there are no physical description notes, the Notes property creates a readonly collection to pass back out.</remarks>
         public int Notes_Count
         {
-            get {
+            get
+            {
                 return notes == null ? 0 : notes.Count;
             }
         }
@@ -48,7 +49,8 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// Even if there are no notes, this property creates a readonly collection to pass back out.</remarks>
         public ReadOnlyCollection<string> Notes
         {
-            get {
+            get
+            {
                 return notes == null ? new ReadOnlyCollection<string>(new List<string>()) : new ReadOnlyCollection<string>(notes);
             }
         }
@@ -63,7 +65,8 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// form information </summary>
         public bool hasFormInformation
         {
-            get {
+            get
+            {
                 return (form != null) && (form.hasData);
             }
         }
@@ -71,7 +74,8 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// <summary> Returns flag which indicates this physical description has data </summary>
         internal bool hasData
         {
-            get {
+            get
+            {
                 return (!String.IsNullOrEmpty(extent)) || ((notes != null) && (notes.Count != 0)) || ((form != null) && (form.hasData));
             }
         }

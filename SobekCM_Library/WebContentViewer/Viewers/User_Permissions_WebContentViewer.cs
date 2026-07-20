@@ -1,16 +1,14 @@
-using SobekCM.Core.MemoryMgmt;
 using Microsoft.Extensions.Caching.Memory;
-using System;
-using System.Collections.Generic;
-using System.Data;
-using System.IO;
+using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
-using SobekCM.Core.UI_Configuration;
-using SobekCM.Core.UI_Configuration.StaticResources;
 using SobekCM.Core.WebContent;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Library.Database;
 using SobekCM.Tools;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.IO;
 
 namespace SobekCM.Library.WebContentViewer.Viewers
 {
@@ -23,14 +21,14 @@ namespace SobekCM.Library.WebContentViewer.Viewers
         /// <param name="RequestSpecificValues">  All the necessary, non-global data specific to the current request  </param>
         /// <param name="StaticPage"> Static page info for this request </param>
         public User_Permissions_WebContentViewer(RequestCache RequestSpecificValues, HTML_Based_Content StaticPage)
-            : base(RequestSpecificValues, StaticPage )
+            : base(RequestSpecificValues, StaticPage)
         {
-            
+
         }
 
 
         /// <summary> Gets the type of specialized web content viewer </summary>
-        public override WebContent_Type_Enum Type { get { return WebContent_Type_Enum.Permissions; }}
+        public override WebContent_Type_Enum Type { get { return WebContent_Type_Enum.Permissions; } }
 
         /// <summary> Title for the page that displays this viewer, this is shown in the search box at the top of the page, just below the banner </summary>
         public override string Viewer_Title

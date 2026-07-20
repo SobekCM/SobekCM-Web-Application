@@ -1,18 +1,13 @@
-using SobekCM.Core.MemoryMgmt;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Memory;
+using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Users;
 using SobekCM.Engine_Library.Database;
 using SobekCM.Library.TEI;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
 using System;
-using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 
 namespace SobekCM.Library.AdminViewer.UserAdmin.UserAdminTabs
 {
@@ -91,7 +86,7 @@ namespace SobekCM.Library.AdminViewer.UserAdmin.UserAdminTabs
             foreach (string thisFileName in teiConfig.CSS_Files)
             {
                 // Look for this checkbox
-                if ( String.IsNullOrEmpty(form["admin_user_tei_css_" + thisFileName.ToLower()].TrimFirst()))
+                if (String.IsNullOrEmpty(form["admin_user_tei_css_" + thisFileName.ToLower()].TrimFirst()))
                 {
                     // If the setting is already the same, no need to update the database
                     if (editUser.Get_Setting("TEI.CSS." + thisFileName.ToUpper(), "false") != "false")

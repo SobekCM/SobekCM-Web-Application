@@ -1,9 +1,9 @@
 #region Using directives
 
-using System.IO;
 using Microsoft.AspNetCore.Http;
 using SobekCM.Core.Navigation;
 using SobekCM.Tools;
+using System.IO;
 
 #endregion
 
@@ -21,7 +21,7 @@ namespace SobekCM.Library.MainWriters
         /// <summary> Constructor for a new instance of the abstractMainWriter abstract class </summary>
         /// <param name="Context"> Context for this individual HTTP request </param>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
-        protected abstractMainWriter(HttpContext Context, RequestCache RequestSpecificValues )
+        protected abstractMainWriter(HttpContext Context, RequestCache RequestSpecificValues)
         {
             this.Context = Context;
             this.RequestSpecificValues = RequestSpecificValues;
@@ -53,16 +53,16 @@ namespace SobekCM.Library.MainWriters
             }
         }
 
-	    /// <summary> Returns a flag indicating whether the file upload specific holder in the itemNavForm form will be utilized 
-	    /// for the current request, or if it can be hidden. </summary>
-	    /// <value> This value can be override by child classes, but by default this returns FALSE </value>
-	    public virtual bool File_Upload_Possible
-		{
-			get
-			{
-				return false;
-			}
-		}
+        /// <summary> Returns a flag indicating whether the file upload specific holder in the itemNavForm form will be utilized 
+        /// for the current request, or if it can be hidden. </summary>
+        /// <value> This value can be override by child classes, but by default this returns FALSE </value>
+        public virtual bool File_Upload_Possible
+        {
+            get
+            {
+                return false;
+            }
+        }
 
 
         /// <summary> Perform all the work of adding text directly to the response stream back to the web user </summary>
@@ -73,7 +73,7 @@ namespace SobekCM.Library.MainWriters
         /// <summary> Write any additional HTML into the main form area of the page </summary>
         /// <param name="Output"> Stream to which to write additional HTML </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-        public virtual void Add_Controls( TextWriter Output, Custom_Tracer Tracer)
+        public virtual void Add_Controls(TextWriter Output, Custom_Tracer Tracer)
         {
             // Do nothing
         }

@@ -1,14 +1,7 @@
 #region Using directives
 
-using System;
-using System.Collections.Generic;
-using System.Data;
-using System.IO;
-using System.Text;
 using SobekCM.Core.Aggregations;
-using SobekCM.Core.Configuration;
 using SobekCM.Core.Configuration.Localization;
-using SobekCM.Core.Navigation;
 using SobekCM.Core.Results;
 using SobekCM.Core.Search;
 using SobekCM.Core.Settings;
@@ -19,74 +12,79 @@ using SobekCM.Engine_Library.Configuration;
 using SobekCM.Engine_Library.Database;
 using SobekCM.Engine_Library.Solr.v5;
 using SobekCM.Tools;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.IO;
+using System.Text;
 
 #endregion
 
 namespace SobekCM.Engine_Library.Aggregations
 {
-	/// <summary> Class is used to build the appropriate instance of the <see cref="Item_Aggregation"/> object.  This class
-	/// pulls the data from the database, fills the object, and then performs final preparation for displaying the item 
-	/// aggregation via the web.  </summary>
-	public class Item_Aggregation_Utilities
-	{
-	    /// <summary> Gets a fully built item aggregation object for a particular aggregation code   </summary>
-	    /// <param name="AggregationCode">Code for this aggregation object</param>
-	    /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
-	    /// <returns>Fully built item aggregation object for the particular aggregation code and language code</returns>
-	    /// <remarks>Item aggregation object is also placed in the cache.<br /><br />
-	    /// Building of an item aggregation always starts by pulling the item from the database ( either <see cref="Engine_Database.Get_Item_Aggregation"/> or <see cref="Engine_Database.Get_Main_Aggregation"/> ).<br /><br />
-	    /// Then, either the Item Aggregation XML file is read (if present) or the entire folder hierarchy is analyzed to find the browses, infos, banners, etc..</remarks>
-	    public static Complete_Item_Aggregation Get_Complete_Item_Aggregation(string AggregationCode, Custom_Tracer Tracer)
-	    {
-	        if (Tracer != null)
-	        {
+    /// <summary> Class is used to build the appropriate instance of the <see cref="Item_Aggregation"/> object.  This class
+    /// pulls the data from the database, fills the object, and then performs final preparation for displaying the item 
+    /// aggregation via the web.  </summary>
+    public class Item_Aggregation_Utilities
+    {
+        /// <summary> Gets a fully built item aggregation object for a particular aggregation code   </summary>
+        /// <param name="AggregationCode">Code for this aggregation object</param>
+        /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <returns>Fully built item aggregation object for the particular aggregation code and language code</returns>
+        /// <remarks>Item aggregation object is also placed in the cache.<br /><br />
+        /// Building of an item aggregation always starts by pulling the item from the database ( either <see cref="Engine_Database.Get_Item_Aggregation"/> or <see cref="Engine_Database.Get_Main_Aggregation"/> ).<br /><br />
+        /// Then, either the Item Aggregation XML file is read (if present) or the entire folder hierarchy is analyzed to find the browses, infos, banners, etc..</remarks>
+        public static Complete_Item_Aggregation Get_Complete_Item_Aggregation(string AggregationCode, Custom_Tracer Tracer)
+        {
+            if (Tracer != null)
+            {
                 Tracer.Add_Trace("Item_Aggregation_Utilities.Get_Item_Aggregation", "Creating '" + AggregationCode + "' item aggregation");
-	        }
+            }
 
-	        // Get the information about this collection and this entry point
-	        Complete_Item_Aggregation hierarchyObject;
-	        if ((AggregationCode.Length > 0) && (AggregationCode != "all"))
-	            hierarchyObject = Engine_Database.Get_Item_Aggregation(AggregationCode, false, Tracer);
-	        else
-	            hierarchyObject = Engine_Database.Get_Main_Aggregation(Tracer);
+            // Get the information about this collection and this entry point
+            Complete_Item_Aggregation hierarchyObject;
+            if ((AggregationCode.Length > 0) && (AggregationCode != "all"))
+                hierarchyObject = Engine_Database.Get_Item_Aggregation(AggregationCode, false, Tracer);
+            else
+                hierarchyObject = Engine_Database.Get_Main_Aggregation(Tracer);
 
-	        // If no value was returned, don't do anything else here
-	        if (hierarchyObject != null)
-	        {
-	            // Add all the values to this object
-	            string xmlDataFile = Engine_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location + hierarchyObject.ObjDirectory + "\\" + hierarchyObject.Code + ".xml";
-	            if (File.Exists(xmlDataFile))
-	            {
-	                if (Tracer != null)
-	                {
+            // If no value was returned, don't do anything else here
+            if (hierarchyObject != null)
+            {
+                // Add all the values to this object
+                string xmlDataFile = Engine_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location + hierarchyObject.ObjDirectory + "\\" + hierarchyObject.Code + ".xml";
+                if (File.Exists(xmlDataFile))
+                {
+                    if (Tracer != null)
+                    {
                         Tracer.Add_Trace("Item_Aggregation_Utilities.Get_Item_Aggregation", "Reading aggregation XML configuration file");
-	                }
+                    }
 
-	                // Add the ALL and NEW browses
-	                Add_All_New_Browses(hierarchyObject);
+                    // Add the ALL and NEW browses
+                    Add_All_New_Browses(hierarchyObject);
 
-	                // Add all the other data from the XML file
-	                Item_Aggregation_XML_Reader reader = new Item_Aggregation_XML_Reader();
-	                reader.Add_Info_From_XML_File(hierarchyObject, xmlDataFile);
-	            }
-	            else
-	            {
-	                if (Tracer != null)
-	                {
+                    // Add all the other data from the XML file
+                    Item_Aggregation_XML_Reader reader = new Item_Aggregation_XML_Reader();
+                    reader.Add_Info_From_XML_File(hierarchyObject, xmlDataFile);
+                }
+                else
+                {
+                    if (Tracer != null)
+                    {
                         Tracer.Add_Trace("Item_Aggregation_Utilities.Get_Item_Aggregation", "Aggregation XML configuration file missing.. will try to build");
 
                         Tracer.Add_Trace("Item_Aggregation_Utilities.Get_Item_Aggregation", "Adding banner, home, and all/new browse information");
-	                }
+                    }
 
-	                Add_HTML(hierarchyObject);
-	                Add_All_New_Browses(hierarchyObject);
-	                Add_Browse_Files(hierarchyObject, Tracer);
+                    Add_HTML(hierarchyObject);
+                    Add_All_New_Browses(hierarchyObject);
+                    Add_Browse_Files(hierarchyObject, Tracer);
 
                     // If no HTML found, just add one
-	                if ((hierarchyObject.Home_Page_File_Dictionary == null) || (hierarchyObject.Home_Page_File_Dictionary.Count == 0))
-	                {
-	                    hierarchyObject.Add_Home_Page_File("html\\home\\text.html", Web_Language_Enum.DEFAULT, false);
-	                }
+                    if ((hierarchyObject.Home_Page_File_Dictionary == null) || (hierarchyObject.Home_Page_File_Dictionary.Count == 0))
+                    {
+                        hierarchyObject.Add_Home_Page_File("html\\home\\text.html", Web_Language_Enum.DEFAULT, false);
+                    }
 
                     // If no banner found, just add one
                     if ((hierarchyObject.Banner_Dictionary == null) || (hierarchyObject.Banner_Dictionary.Count == 0))
@@ -99,124 +97,124 @@ namespace SobekCM.Engine_Library.Aggregations
                         Tracer.Add_Trace("Item_Aggregation_Utilities.Get_Item_Aggregation", "Write aggregation XML configuration from built object");
                     }
 
-	                // Since there was no configuration file, save one
-	                hierarchyObject.Write_Configuration_File(Engine_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location + hierarchyObject.ObjDirectory);
-	            }
+                    // Since there was no configuration file, save one
+                    hierarchyObject.Write_Configuration_File(Engine_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location + hierarchyObject.ObjDirectory);
+                }
 
-	            // Now, look for any satellite configuration files
-	            string contactFormFile = Engine_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location + hierarchyObject.ObjDirectory + "\\config\\sobekcm_contactform.config";
-	            if (File.Exists(contactFormFile))
-	            {
+                // Now, look for any satellite configuration files
+                string contactFormFile = Engine_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location + hierarchyObject.ObjDirectory + "\\config\\sobekcm_contactform.config";
+                if (File.Exists(contactFormFile))
+                {
                     if (Tracer != null)
                     {
                         Tracer.Add_Trace("Item_Aggregation_Utilities.Get_Item_Aggregation", "Found aggregation-specific contact form configuration file");
                     }
 
-	                hierarchyObject.ContactForm = ContactForm_Configuration_Reader.Read_Config(contactFormFile);
-	            }
+                    hierarchyObject.ContactForm = ContactForm_Configuration_Reader.Read_Config(contactFormFile);
+                }
 
-	            // Return this built hierarchy object
-	            return hierarchyObject;
-	        }
+                // Return this built hierarchy object
+                return hierarchyObject;
+            }
 
-	        if (Tracer != null)
-	        {
+            if (Tracer != null)
+            {
                 Tracer.Add_Trace("Item_Aggregation_Utilities.Get_Item_Aggregation", "NULL value returned from database");
-	        }
-	        return null;
-	    }
+            }
+            return null;
+        }
 
-	    /// <summary> Adds the ALL ITEMS and NEW ITEMS browses to the item aggregation, if the display options and last added
-		/// item date call for it </summary>
-		/// <param name="ThisObject"> Item aggregation to which to add the ALL ITEMS and NEW ITEMS browse</param>
-		/// <remarks>This method is always called while building an item aggregation, irregardless of whether there is an
-		/// item aggregation configuration XML file or not.</remarks>
+        /// <summary> Adds the ALL ITEMS and NEW ITEMS browses to the item aggregation, if the display options and last added
+        /// item date call for it </summary>
+        /// <param name="ThisObject"> Item aggregation to which to add the ALL ITEMS and NEW ITEMS browse</param>
+        /// <remarks>This method is always called while building an item aggregation, irregardless of whether there is an
+        /// item aggregation configuration XML file or not.</remarks>
         protected static void Add_All_New_Browses(Complete_Item_Aggregation ThisObject)
-		{
-			// If this is the main home page for this site, do not show ALL since we cannot browse ALL items
-			if (!ThisObject.Can_Browse_Items )
-				return;
+        {
+            // If this is the main home page for this site, do not show ALL since we cannot browse ALL items
+            if (!ThisObject.Can_Browse_Items)
+                return;
 
-			// If this is in the display options, and the item browses
-			if ((ThisObject.Display_Options.Length == 0) || (ThisObject.Display_Options.IndexOf("I") >= 0))
-			{
-				// Add the ALL browse, if there should be one
+            // If this is in the display options, and the item browses
+            if ((ThisObject.Display_Options.Length == 0) || (ThisObject.Display_Options.IndexOf("I") >= 0))
+            {
+                // Add the ALL browse, if there should be one
                 ThisObject.Add_Child_Page(Item_Aggregation_Child_Visibility_Enum.Main_Menu, "all", String.Empty, "All Items");
 
-				// Add the NEW search, if the ALL search exists
-				if ((ThisObject.Get_Browse_Info_Object("all") != null) && (ThisObject.Show_New_Item_Browse))
-				{
+                // Add the NEW search, if the ALL search exists
+                if ((ThisObject.Get_Browse_Info_Object("all") != null) && (ThisObject.Show_New_Item_Browse))
+                {
                     ThisObject.Add_Child_Page(Item_Aggregation_Child_Visibility_Enum.Main_Menu, "new", String.Empty, "Recently Added Items");
-				}
-			}
-			else
-			{
-				// Add the ALL browse as an info
+                }
+            }
+            else
+            {
+                // Add the ALL browse as an info
                 ThisObject.Add_Child_Page(Item_Aggregation_Child_Visibility_Enum.None, "all", String.Empty, "All Items");
-			}
-		}
+            }
+        }
 
-		/// <summary> Checks the appropriate design folders to add any existing browse or info pages to the item aggregation </summary>
-		/// <param name="ThisObject"> Item aggregation object to add the browse and info pages to</param>
-		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-		/// <remarks>This method is only called if the item aggregation does not have an existing XML configuration file.</remarks>
+        /// <summary> Checks the appropriate design folders to add any existing browse or info pages to the item aggregation </summary>
+        /// <param name="ThisObject"> Item aggregation object to add the browse and info pages to</param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <remarks>This method is only called if the item aggregation does not have an existing XML configuration file.</remarks>
         protected static void Add_Browse_Files(Complete_Item_Aggregation ThisObject, Custom_Tracer Tracer)
-		{
-			// Collect the list of items in the browse folder
-			if (Directory.Exists(Engine_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location + ThisObject.ObjDirectory + "html/browse"))
-			{
-				string[] files = Directory.GetFiles(Engine_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location + ThisObject.ObjDirectory + "html/browse", "*.htm*");
-				foreach (string thisFile in files)
-				{
-					// Get the new browse info object
+        {
+            // Collect the list of items in the browse folder
+            if (Directory.Exists(Engine_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location + ThisObject.ObjDirectory + "html/browse"))
+            {
+                string[] files = Directory.GetFiles(Engine_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location + ThisObject.ObjDirectory + "html/browse", "*.htm*");
+                foreach (string thisFile in files)
+                {
+                    // Get the new browse info object
                     Complete_Item_Aggregation_Child_Page newBrowse = Get_Item_Aggregation_Browse_Info(thisFile, Item_Aggregation_Child_Visibility_Enum.Main_Menu, Tracer);
-					if (newBrowse != null)
-					{
-						ThisObject.Add_Child_Page(newBrowse);
-					}
-				}
-			}
+                    if (newBrowse != null)
+                    {
+                        ThisObject.Add_Child_Page(newBrowse);
+                    }
+                }
+            }
 
-			// Collect the list of items in the info folder
-			if (Directory.Exists(Engine_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location + ThisObject.ObjDirectory + "html/info"))
-			{
-				string[] files = Directory.GetFiles(Engine_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location + ThisObject.ObjDirectory + "html/info", "*.htm*");
-				foreach (string thisFile in files)
-				{
-					// Get the title for this file
-					// Get the new browse info object
+            // Collect the list of items in the info folder
+            if (Directory.Exists(Engine_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location + ThisObject.ObjDirectory + "html/info"))
+            {
+                string[] files = Directory.GetFiles(Engine_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location + ThisObject.ObjDirectory + "html/info", "*.htm*");
+                foreach (string thisFile in files)
+                {
+                    // Get the title for this file
+                    // Get the new browse info object
                     Complete_Item_Aggregation_Child_Page newInfo = Get_Item_Aggregation_Browse_Info(thisFile, Item_Aggregation_Child_Visibility_Enum.None, Tracer);
-					if (newInfo != null)
-					{
-						ThisObject.Add_Child_Page(newInfo);
-					}
-				}
-			}
-		}
+                    if (newInfo != null)
+                    {
+                        ThisObject.Add_Child_Page(newInfo);
+                    }
+                }
+            }
+        }
 
-		/// <summary>Reads the item aggregation browse or info file and returns a built <see cref="Item_Aggregation_Child_Page"/> object for
-		/// inclusion in the item aggregation </summary>
-		/// <param name="FileName"> Filename of the browse or info file</param>
-		/// <param name="Browse_Type"> Flag indicates if this is a browse or info file</param>
-		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-		/// <returns> Built object containing all of the pertinent details about this info or browse </returns>
+        /// <summary>Reads the item aggregation browse or info file and returns a built <see cref="Item_Aggregation_Child_Page"/> object for
+        /// inclusion in the item aggregation </summary>
+        /// <param name="FileName"> Filename of the browse or info file</param>
+        /// <param name="Browse_Type"> Flag indicates if this is a browse or info file</param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <returns> Built object containing all of the pertinent details about this info or browse </returns>
         private static Complete_Item_Aggregation_Child_Page Get_Item_Aggregation_Browse_Info(string FileName, Item_Aggregation_Child_Visibility_Enum Browse_Type, Custom_Tracer Tracer)
-		{
-			HTML_Based_Content fileContent = HTML_Based_Content_Reader.Read_HTML_File(FileName, false, Tracer);
+        {
+            HTML_Based_Content fileContent = HTML_Based_Content_Reader.Read_HTML_File(FileName, false, Tracer);
             Complete_Item_Aggregation_Child_Page returnObject = new Complete_Item_Aggregation_Child_Page(Browse_Type, Item_Aggregation_Child_Source_Data_Enum.Static_HTML, fileContent.Code, FileName, fileContent.Title ?? "Missing Title");
-			return returnObject;
-		}
+            return returnObject;
+        }
 
-		/// <summary> Finds the home page source file and banner images or html for this item aggregation </summary>
-		/// <param name="ThisObject"> Item aggregation to add the home page link and banner html </param>
-		/// <remarks>This method is only called if the item aggregation does not have an existing XML configuration file. </remarks>
+        /// <summary> Finds the home page source file and banner images or html for this item aggregation </summary>
+        /// <param name="ThisObject"> Item aggregation to add the home page link and banner html </param>
+        /// <remarks>This method is only called if the item aggregation does not have an existing XML configuration file. </remarks>
         protected static void Add_HTML(Complete_Item_Aggregation ThisObject)
-		{
-			// Just use the standard home text
-            if ( File.Exists(Engine_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location + ThisObject.ObjDirectory + "html/home/text.html"))
-    			ThisObject.Add_Home_Page_File(  "html/home/text.html", Engine_ApplicationCache_Gateway.Settings.System.Default_UI_Language, false );
+        {
+            // Just use the standard home text
+            if (File.Exists(Engine_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location + ThisObject.ObjDirectory + "html/home/text.html"))
+                ThisObject.Add_Home_Page_File("html/home/text.html", Engine_ApplicationCache_Gateway.Settings.System.Default_UI_Language, false);
             if (File.Exists(Engine_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location + ThisObject.ObjDirectory + "html/home/text_en.html"))
-                ThisObject.Add_Home_Page_File("html/home/text_en.html",  Web_Language_Enum.English, false );
+                ThisObject.Add_Home_Page_File("html/home/text_en.html", Web_Language_Enum.English, false);
             if (File.Exists(Engine_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location + ThisObject.ObjDirectory + "html/home/text_fr.html"))
                 ThisObject.Add_Home_Page_File("html/home/text_fr.html", Web_Language_Enum.French, false);
             if (File.Exists(Engine_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location + ThisObject.ObjDirectory + "html/home/text_es.html"))
@@ -224,7 +222,7 @@ namespace SobekCM.Engine_Library.Aggregations
             if (File.Exists(Engine_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location + ThisObject.ObjDirectory + "html/home/text_sp.html"))
                 ThisObject.Add_Home_Page_File("html/home/text_sp.html", Web_Language_Enum.Spanish, false);
 
-			// Just use the standard banner image
+            // Just use the standard banner image
             if (File.Exists(Engine_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location + ThisObject.ObjDirectory + "images/banners/coll.jpg"))
                 ThisObject.Add_Banner_Image("images/banners/coll.jpg", Engine_ApplicationCache_Gateway.Settings.System.Default_UI_Language);
             if (File.Exists(Engine_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location + ThisObject.ObjDirectory + "images/banners/coll_en.jpg"))
@@ -235,19 +233,19 @@ namespace SobekCM.Engine_Library.Aggregations
                 ThisObject.Add_Banner_Image("images/banners/coll_es.jpg", Web_Language_Enum.Spanish);
             if (File.Exists(Engine_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location + ThisObject.ObjDirectory + "images/banners/coll_sp.jpg"))
                 ThisObject.Add_Banner_Image("images/banners/coll_sp.jpg", Web_Language_Enum.Spanish);
-		}
+        }
 
-	    /// <summary> Method returns the table of results for the browse indicated </summary>
-	    /// <param name="ItemAggr"> Item Aggregation from which to return the browse </param>
-	    /// <param name = "ChildPageObject">Object with all the information about the browse</param>
-	    /// <param name = "Page"> Page of results requested for the indicated browse </param>
-	    /// <param name = "Sort"> Sort applied to the results before being returned </param>
-	    /// <param name="Potentially_Include_Facets"> Flag indicates if facets could be included in this browse results </param>
-	    /// <param name = "Need_Browse_Statistics"> Flag indicates if the browse statistics (facets and total counts) are required for this browse as well </param>
-	    /// <param name = "Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
-	    /// <param name="Results_Per_Page"> Number of results to retrieve per page</param>
-	    /// <returns> Resutls for the browse or info in table form </returns>
-	    public static Multiple_Paged_Results_Args Get_Browse_Results(Item_Aggregation ItemAggr, Item_Aggregation_Child_Page ChildPageObject,
+        /// <summary> Method returns the table of results for the browse indicated </summary>
+        /// <param name="ItemAggr"> Item Aggregation from which to return the browse </param>
+        /// <param name = "ChildPageObject">Object with all the information about the browse</param>
+        /// <param name = "Page"> Page of results requested for the indicated browse </param>
+        /// <param name = "Sort"> Sort applied to the results before being returned </param>
+        /// <param name="Potentially_Include_Facets"> Flag indicates if facets could be included in this browse results </param>
+        /// <param name = "Need_Browse_Statistics"> Flag indicates if the browse statistics (facets and total counts) are required for this browse as well </param>
+        /// <param name = "Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <param name="Results_Per_Page"> Number of results to retrieve per page</param>
+        /// <returns> Resutls for the browse or info in table form </returns>
+        public static Multiple_Paged_Results_Args Get_Browse_Results(Item_Aggregation ItemAggr, Item_Aggregation_Child_Page ChildPageObject,
                                                                       int Page, int Sort, int Results_Per_Page, bool Potentially_Include_Facets, bool Need_Browse_Statistics,
                                                                       User_Object Current_User, Custom_Tracer Tracer)
         {
@@ -271,7 +269,7 @@ namespace SobekCM.Engine_Library.Aggregations
 
                     // Build the user membership information
                     Search_User_Membership_Info userInfo = new Search_User_Membership_Info();
-                    if (( Current_User == null ) || ( !Current_User.LoggedOn ))
+                    if ((Current_User == null) || (!Current_User.LoggedOn))
                     {
                         Tracer.Add_Trace("Item_Aggregation_Utilities.Get_Browse_Results", "No current user or not logged in.");
 
@@ -283,11 +281,11 @@ namespace SobekCM.Engine_Library.Aggregations
 
                         userInfo.LoggedIn = true;
                         userInfo.UserID = userInfo.UserID;
-                        if ( Current_User.User_Groups != null )
+                        if (Current_User.User_Groups != null)
                         {
                             Tracer.Add_Trace("Item_Aggregation_Utilities.Get_Browse_Results", "User has user groups.");
 
-                            foreach ( Simple_User_Group_Info groupInfo in Current_User.User_Groups )
+                            foreach (Simple_User_Group_Info groupInfo in Current_User.User_Groups)
                             {
                                 userInfo.Add_User_Group(groupInfo.UserGroupID);
                             }
@@ -364,32 +362,32 @@ namespace SobekCM.Engine_Library.Aggregations
             return null;
         }
 
-	    /// <summary> Method returns the table of results for the browse indicated </summary>
-	    /// <param name = "ItemAggr">Object with all the information about the browse</param>
-	    /// <param name = "Page"> Page of results requested for the indicated browse </param>
-	    /// <param name = "Sort"> Sort applied to the results before being returned </param>
-	    /// <param name="Potentially_Include_Facets"> Flag indicates if facets could be included in this browse results </param>
-	    /// <param name = "Need_Browse_Statistics"> Flag indicates if the browse statistics (facets and total counts) are required for this browse as well </param>
-	    /// <param name = "Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
-	    /// <param name="Results_Per_Page"> Number of results to retrieve per page</param>
-	    /// <returns> Resutls for the browse or info in table form </returns>
-	    public static Multiple_Paged_Results_Args Gat_All_Browse(Complete_Item_Aggregation ItemAggr,
-	        int Page, int Sort, int Results_Per_Page,
-	        bool Potentially_Include_Facets, 
+        /// <summary> Method returns the table of results for the browse indicated </summary>
+        /// <param name = "ItemAggr">Object with all the information about the browse</param>
+        /// <param name = "Page"> Page of results requested for the indicated browse </param>
+        /// <param name = "Sort"> Sort applied to the results before being returned </param>
+        /// <param name="Potentially_Include_Facets"> Flag indicates if facets could be included in this browse results </param>
+        /// <param name = "Need_Browse_Statistics"> Flag indicates if the browse statistics (facets and total counts) are required for this browse as well </param>
+        /// <param name = "Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <param name="Results_Per_Page"> Number of results to retrieve per page</param>
+        /// <returns> Resutls for the browse or info in table form </returns>
+        public static Multiple_Paged_Results_Args Gat_All_Browse(Complete_Item_Aggregation ItemAggr,
+            int Page, int Sort, int Results_Per_Page,
+            bool Potentially_Include_Facets,
             bool Need_Browse_Statistics,
             User_Object Current_User,
             Custom_Tracer Tracer)
-	    {
-	        if (Tracer != null)
-	        {
-	            Tracer.Add_Trace("Item_Aggregation_Utilities.Get_Browse_Results (Gat_All_Browse)", String.Empty);
-	        }
+        {
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("Item_Aggregation_Utilities.Get_Browse_Results (Gat_All_Browse)", String.Empty);
+            }
 
-	        // Determine where to pull the data, based on search type
-	        if (Engine_ApplicationCache_Gateway.Settings.System.Search_System == Search_System_Enum.Beta)
-	        {
+            // Determine where to pull the data, based on search type
+            if (Engine_ApplicationCache_Gateway.Settings.System.Search_System == Search_System_Enum.Beta)
+            {
                 Search_Results_Statistics stats;
-	            List<iSearch_Title_Result> results;
+                List<iSearch_Title_Result> results;
 
                 // Build the user membership information
                 Search_User_Membership_Info userInfo = new Search_User_Membership_Info();
@@ -428,14 +426,14 @@ namespace SobekCM.Engine_Library.Aggregations
                 // Should results be grouped?  Aggregation must be set and for the moment
                 searchOptions.GroupItemsByTitle = ItemAggr.GroupResults;
 
-                v5_Solr_Searcher.All_Browse( searchOptions, userInfo, Tracer, out stats, out results);
+                v5_Solr_Searcher.All_Browse(searchOptions, userInfo, Tracer, out stats, out results);
 
-	            Multiple_Paged_Results_Args returnValue = new Multiple_Paged_Results_Args(stats, results);
+                Multiple_Paged_Results_Args returnValue = new Multiple_Paged_Results_Args(stats, results);
 
-	            return returnValue;
-	        }
-	        else
-	        {
+                return returnValue;
+            }
+            else
+            {
                 // Get the list of facets first
                 List<short> facetsList = new List<short>();
                 foreach (Complete_Item_Aggregation_Metadata_Type facetField in ItemAggr.Facets)
@@ -450,24 +448,24 @@ namespace SobekCM.Engine_Library.Aggregations
                 }
 
                 return Engine_Database.Get_Item_Aggregation_Browse_Paged(ItemAggr.Code, false, false, Results_Per_Page, Page, Sort, Need_Browse_Statistics, facetsList, Need_Browse_Statistics, Tracer);
-	        }
-	    }
+            }
+        }
 
-	    #region Method to save the complete item aggregation to the database
+        #region Method to save the complete item aggregation to the database
 
-	    /// <summary> Saves the information about this item aggregation to the database </summary>
-	    /// <param name="ItemAggr"> Item aggregation object with all the information to be saved </param>
-	    /// <param name="Username"> Name of the user performing this save, for the item aggregation milestones</param>
-	    /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
-	    /// <returns>TRUE if successful, otherwise FALSE </returns>
-	    public static bool Save_To_Database(Complete_Item_Aggregation ItemAggr, string Username, Custom_Tracer Tracer)
+        /// <summary> Saves the information about this item aggregation to the database </summary>
+        /// <param name="ItemAggr"> Item aggregation object with all the information to be saved </param>
+        /// <param name="Username"> Name of the user performing this save, for the item aggregation milestones</param>
+        /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <returns>TRUE if successful, otherwise FALSE </returns>
+        public static bool Save_To_Database(Complete_Item_Aggregation ItemAggr, string Username, Custom_Tracer Tracer)
         {
             // Build the list of language variants
             List<string> languageVariants = new List<string>
             {
                 Web_Language_Enum_Converter.Enum_To_Code(Engine_ApplicationCache_Gateway.Settings.System.Default_UI_Language)
             };
-	        if (ItemAggr.Home_Page_File_Dictionary != null)
+            if (ItemAggr.Home_Page_File_Dictionary != null)
             {
                 foreach (Web_Language_Enum language in ItemAggr.Home_Page_File_Dictionary.Keys)
                 {
@@ -483,7 +481,7 @@ namespace SobekCM.Engine_Library.Aggregations
                     string code = Web_Language_Enum_Converter.Enum_To_Code(language);
                     if (!languageVariants.Contains(code))
                         languageVariants.Add(code);
-                } 
+                }
             }
             if (ItemAggr.Child_Pages != null)
             {
@@ -529,27 +527,27 @@ namespace SobekCM.Engine_Library.Aggregations
 
             // If this is NOT a new one, save the views and facets
             bool returnValue2 = true;
-	        bool returnValue3 = true;
-	        if (ItemAggr.ID > 0)
-	        {
+            bool returnValue3 = true;
+            if (ItemAggr.ID > 0)
+            {
                 // Save the views.
-	            List<string> resultsViews = new List<string>();
-	            if (ItemAggr.Result_Views != null)
-	            {
-	                resultsViews.AddRange(ItemAggr.Result_Views);
-	            }
-	            for (int i = resultsViews.Count; i < 10; i++)
-	            {
-	                resultsViews.Add(String.Empty);
-	            }
+                List<string> resultsViews = new List<string>();
+                if (ItemAggr.Result_Views != null)
+                {
+                    resultsViews.AddRange(ItemAggr.Result_Views);
+                }
+                for (int i = resultsViews.Count; i < 10; i++)
+                {
+                    resultsViews.Add(String.Empty);
+                }
 
-                returnValue2 = Engine_Database.Save_Item_Aggregation_ResultViews(ItemAggr.Code, resultsViews[0], resultsViews[1], resultsViews[2], 
+                returnValue2 = Engine_Database.Save_Item_Aggregation_ResultViews(ItemAggr.Code, resultsViews[0], resultsViews[1], resultsViews[2],
                     resultsViews[3], resultsViews[4], resultsViews[5], resultsViews[6], resultsViews[7], resultsViews[8], resultsViews[9], ItemAggr.Default_Result_View, Tracer);
 
                 // Save the facets
                 List<string> facet_type = new List<string>();
                 List<string> facet_display = new List<string>();
-                foreach( Complete_Item_Aggregation_Metadata_Type facetType in ItemAggr.Facets )
+                foreach (Complete_Item_Aggregation_Metadata_Type facetType in ItemAggr.Facets)
                 {
                     facet_type.Add(facetType.SobekCode);
                     facet_display.Add(facetType.DisplayTerm);
@@ -572,34 +570,34 @@ namespace SobekCM.Engine_Library.Aggregations
 
         #region Methods to get the language-specific item aggregation
 
-	    /// <summary> Get the language specific item aggregation, from the complete item aggregation object </summary>
-	    /// <param name="CompAggr"> Copmlete item aggregation object </param>
-	    /// <param name="RequestedLanguage"> Language version requested </param>
-	    /// <param name="Tracer"></param>
-	    /// <returns> The language-specific aggregation, built from the complete aggregation object, or NULL if an error occurred </returns>
-	    public static Item_Aggregation Get_Item_Aggregation(Complete_Item_Aggregation CompAggr, Web_Language_Enum RequestedLanguage, Custom_Tracer Tracer)
-	    {
+        /// <summary> Get the language specific item aggregation, from the complete item aggregation object </summary>
+        /// <param name="CompAggr"> Copmlete item aggregation object </param>
+        /// <param name="RequestedLanguage"> Language version requested </param>
+        /// <param name="Tracer"></param>
+        /// <returns> The language-specific aggregation, built from the complete aggregation object, or NULL if an error occurred </returns>
+        public static Item_Aggregation Get_Item_Aggregation(Complete_Item_Aggregation CompAggr, Web_Language_Enum RequestedLanguage, Custom_Tracer Tracer)
+        {
             // If the complete aggregation was null, return null
-	        if (CompAggr == null)
-	        {
+            if (CompAggr == null)
+            {
                 if (Tracer != null)
                 {
                     Tracer.Add_Trace("Item_Aggregation_Utilities.Get_Item_Aggregation", "Complete item aggregation was NULL.. aborting and returning NULL");
                 }
 
-	            return null;
-	        }
+                return null;
+            }
 
             if (Tracer != null)
             {
                 Tracer.Add_Trace("Item_Aggregation_Utilities.Get_Item_Aggregation", "Building language-specific item aggregation from the complete object");
             }
 
-	        // Build the item aggregation
+            // Build the item aggregation
             Item_Aggregation returnValue = new Item_Aggregation(RequestedLanguage, CompAggr.ID, CompAggr.Code)
             {
                 Active = CompAggr.Active,
-                BannerImage = CompAggr.Banner_Image(RequestedLanguage, null ),
+                BannerImage = CompAggr.Banner_Image(RequestedLanguage, null),
                 Child_Types = CompAggr.Child_Types,
                 Contact_Email = CompAggr.Contact_Email,
                 ContactForm = CompAggr.ContactForm,
@@ -622,7 +620,7 @@ namespace SobekCM.Engine_Library.Aggregations
             };
 
             // Copy the map search and browse information
-	        if (CompAggr.Map_Search_Display != null) returnValue.Map_Search_Display = CompAggr.Map_Search_Display.Copy();
+            if (CompAggr.Map_Search_Display != null) returnValue.Map_Search_Display = CompAggr.Map_Search_Display.Copy();
             if (CompAggr.Map_Browse_Display != null) returnValue.Map_Browse_Display = CompAggr.Map_Browse_Display.Copy();
 
             // Copy any children aggregations over
@@ -701,13 +699,13 @@ namespace SobekCM.Engine_Library.Aggregations
             }
 
             // Copy all the setting values
-	        if ((CompAggr.Settings != null) && (CompAggr.Settings.Count > 0))
-	        {
-	            foreach (StringKeyValuePair setting in CompAggr.Settings)
-	            {
-	                returnValue.Add_Setting(setting.Key, setting.Value );
-	            }
-	        }
+            if ((CompAggr.Settings != null) && (CompAggr.Settings.Count > 0))
+            {
+                foreach (StringKeyValuePair setting in CompAggr.Settings)
+                {
+                    returnValue.Add_Setting(setting.Key, setting.Value);
+                }
+            }
 
             // Copy over any web skin limitations
             if ((CompAggr.Web_Skins != null) && (CompAggr.Web_Skins.Count > 0))
@@ -751,9 +749,9 @@ namespace SobekCM.Engine_Library.Aggregations
                 {
                     Item_Aggregation_Child_Page newPage = new Item_Aggregation_Child_Page
                     {
-                        Browse_Type = fullPage.Browse_Type, 
-                        Code = fullPage.Code, 
-                        Parent_Code = fullPage.Parent_Code, 
+                        Browse_Type = fullPage.Browse_Type,
+                        Code = fullPage.Code,
+                        Parent_Code = fullPage.Parent_Code,
                         Source_Data_Type = fullPage.Source_Data_Type
                     };
 
@@ -782,7 +780,7 @@ namespace SobekCM.Engine_Library.Aggregations
                 int highlight_to_use = day_integer % CompAggr.Highlights.Count;
 
                 // If this is for rotating highlights, show up to eight
-                if ((CompAggr.Rotating_Highlights.HasValue ) && ( CompAggr.Rotating_Highlights.Value ))
+                if ((CompAggr.Rotating_Highlights.HasValue) && (CompAggr.Rotating_Highlights.Value))
                 {
                     // Copy over just the eight highlights we should use 
                     int number = Math.Min(8, CompAggr.Highlights.Count);
@@ -792,7 +790,7 @@ namespace SobekCM.Engine_Library.Aggregations
 
                         Item_Aggregation_Highlights newHighlight = new Item_Aggregation_Highlights
                         {
-                            Image = thisHighlight.Image, 
+                            Image = thisHighlight.Image,
                             Link = thisHighlight.Link
                         };
 
@@ -841,21 +839,21 @@ namespace SobekCM.Engine_Library.Aggregations
             returnValue.HomePageSource = String.Empty;
             HTML_Based_Content homeHtml = Get_Home_HTML(CompAggr, RequestedLanguage, null);
             returnValue.HomePageHtml = homeHtml;
-	        returnValue.Custom_Home_Page = (CompAggr.Home_Page_File(RequestedLanguage) != null) && (CompAggr.Home_Page_File(RequestedLanguage).isCustomHome);
+            returnValue.Custom_Home_Page = (CompAggr.Home_Page_File(RequestedLanguage) != null) && (CompAggr.Home_Page_File(RequestedLanguage).isCustomHome);
 
             if (Tracer != null)
             {
                 Tracer.Add_Trace("Item_Aggregation_Utilities.Get_Item_Aggregation", "Returning fully built item aggregation object");
             }
             return returnValue;
-	    }
+        }
 
-	    /// <summary> Method gets the HOME PAGE html for the appropriate UI settings </summary>
-	    /// <param name="CompAggr"> Complete item aggregation object </param>
-	    /// <param name = "Language"> Current language of the user interface </param>
-	    /// <param name = "Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
-	    /// <returns>Home page HTML</returns>
-	    private static HTML_Based_Content Get_Home_HTML(Complete_Item_Aggregation CompAggr, Web_Language_Enum Language, Custom_Tracer Tracer)
+        /// <summary> Method gets the HOME PAGE html for the appropriate UI settings </summary>
+        /// <param name="CompAggr"> Complete item aggregation object </param>
+        /// <param name = "Language"> Current language of the user interface </param>
+        /// <param name = "Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <returns>Home page HTML</returns>
+        private static HTML_Based_Content Get_Home_HTML(Complete_Item_Aggregation CompAggr, Web_Language_Enum Language, Custom_Tracer Tracer)
         {
             if (Tracer != null)
             {
@@ -864,8 +862,8 @@ namespace SobekCM.Engine_Library.Aggregations
 
             string homeFileSource = "";
             // Get the home file source
-            if(CompAggr.Home_Page_File(Language) != null)
-               homeFileSource = Path.Combine(Engine_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location, CompAggr.ObjDirectory, CompAggr.Home_Page_File(Language).Source);
+            if (CompAggr.Home_Page_File(Language) != null)
+                homeFileSource = Path.Combine(Engine_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location, CompAggr.ObjDirectory, CompAggr.Home_Page_File(Language).Source);
 
             // If no home file source even found, return a message to that affect
             if (homeFileSource.Length == 0)

@@ -3,7 +3,6 @@
 using ProtoBuf;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
 
@@ -95,7 +94,7 @@ namespace SobekCM.Core.Results
 
         /// <summary> Adds a single item result to this private item title </summary>
         /// <param name="New_Item"> Item to add to the collection for this title </param>
-        public void Add_Item_Result( Private_Items_List_Item New_Item )
+        public void Add_Item_Result(Private_Items_List_Item New_Item)
         {
             Items.Add(New_Item);
         }

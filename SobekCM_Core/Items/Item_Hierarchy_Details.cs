@@ -1,7 +1,7 @@
-﻿using System;
+﻿using ProtoBuf;
+using System;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
-using ProtoBuf;
 
 namespace SobekCM.Core.Items
 {
@@ -39,7 +39,7 @@ namespace SobekCM.Core.Items
         [XmlAttribute("level1_index")]
         public int Level1_Index_XML
         {
-            get { return Level1_Index.Value; } 
+            get { return Level1_Index.Value; }
             set { Level1_Index = value; }
         }
 
@@ -191,7 +191,7 @@ namespace SobekCM.Core.Items
         }
 
         #endregion
-    
+
 
     }
 

@@ -1,15 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.Drawing.Imaging;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using SobekCM.Core.BriefItem;
 using SobekCM.Core.Client;
 using SobekCM.Core.Navigation;
-using SobekCM.Core.UI_Configuration;
-using SobekCM.Core.UI_Configuration.StaticResources;
 using SobekCM.Core.Users;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Library.HTML;
@@ -17,8 +9,11 @@ using SobekCM.Library.ItemViewer.Menu;
 using SobekCM.Library.UI;
 using SobekCM.Resource_Object;
 using SobekCM.Tools;
+using System;
+using System.Collections.Generic;
+using System.Drawing.Imaging;
+using System.IO;
 using Zen.Barcode;
-using Microsoft.AspNetCore.Http;
 
 namespace SobekCM.Library.ItemViewer.Viewers
 {
@@ -98,7 +93,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <param name="CurrentRequest"> Information about the current request </param>
         /// <param name="MenuItems"> List of menu items, to which this method may add one or more menu items </param>
         /// <param name="IsRestricted"> Flag indicates if this item is restricted AND the current user is outside the ranges or not in the proper groups</param>
-        public virtual void Add_Menu_Items(BriefItemInfo CurrentItem, User_Object CurrentUser, Navigation_Object CurrentRequest, List<Item_MenuItem> MenuItems, bool IsRestricted )
+        public virtual void Add_Menu_Items(BriefItemInfo CurrentItem, User_Object CurrentUser, Navigation_Object CurrentRequest, List<Item_MenuItem> MenuItems, bool IsRestricted)
         {
             // Do nothing since this is already handed and added to the menu by the MANAGE MENU item viewer
         }
@@ -115,7 +110,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// the digital resource requested.  The created viewer is then destroyed at the end of the request </remarks>
         public virtual iItemViewer Create_Viewer(BriefItemInfo CurrentItem, User_Object CurrentUser, Navigation_Object CurrentRequest, Custom_Tracer Tracer, RequestCache_RequestFlags CurrentFlags, HttpContext Context)
         {
-            return new TrackingSheet_ItemViewer(CurrentItem, CurrentUser, CurrentRequest, Tracer );
+            return new TrackingSheet_ItemViewer(CurrentItem, CurrentUser, CurrentRequest, Tracer);
         }
     }
 
@@ -140,7 +135,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <param name="CurrentUser"> Current user, who may or may not be logged on </param>
         /// <param name="CurrentRequest"> Information about the current request </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        public TrackingSheet_ItemViewer(BriefItemInfo BriefItem, User_Object CurrentUser, Navigation_Object CurrentRequest, Custom_Tracer Tracer )
+        public TrackingSheet_ItemViewer(BriefItemInfo BriefItem, User_Object CurrentUser, Navigation_Object CurrentRequest, Custom_Tracer Tracer)
         {
             // Add the trace
             Tracer.Add_Trace("TrackingSheet_ItemViewer.Constructor");
@@ -526,7 +521,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         {
             get
             {
-                return new List<HtmlSubwriter_Behaviors_Enum> 
+                return new List<HtmlSubwriter_Behaviors_Enum>
                     {
                         HtmlSubwriter_Behaviors_Enum.Item_Subwriter_NonWindowed_Mode,
                         HtmlSubwriter_Behaviors_Enum.Suppress_Footer,

@@ -1,8 +1,8 @@
 ﻿#region Using directives
 
+using SobekCM.Tools;
 using System;
 using System.IO;
-using SobekCM.Tools;
 
 #endregion
 
@@ -37,24 +37,24 @@ namespace SobekCM.Library.HTML
                 errorMessage = "Error";
 
 
-                Output.WriteLine("<center>");
-                
-                Output.WriteLine("  <br /><br />");
-                Output.WriteLine("<span style=\"font-size:large; color:red\">");
-                Output.WriteLine("    <b>Deprecated URL detected</b>");
-                Output.WriteLine("</span>");
-                Output.WriteLine("<span style=\"font-size:1.2em\">");
-                Output.WriteLine("  <br /><br />");
-                Output.WriteLine("The URL you entered is a legacy URL.  Support for this URL will end shortly.<br /><br />Please update your records to the new URL below:<br /><br />");
-                Output.WriteLine("<a href=\"" + errorMessage + "\">" + errorMessage + "</a>");
-                Output.WriteLine("  <br /><br /><br /><br />");
-                Output.WriteLine("</span>");
-                Output.WriteLine("</center>");
-                Output.WriteLine();
+            Output.WriteLine("<center>");
 
-                Output.WriteLine("<!-- Close the pagecontainer div -->");
-                Output.WriteLine("</div>");
-                Output.WriteLine();
+            Output.WriteLine("  <br /><br />");
+            Output.WriteLine("<span style=\"font-size:large; color:red\">");
+            Output.WriteLine("    <b>Deprecated URL detected</b>");
+            Output.WriteLine("</span>");
+            Output.WriteLine("<span style=\"font-size:1.2em\">");
+            Output.WriteLine("  <br /><br />");
+            Output.WriteLine("The URL you entered is a legacy URL.  Support for this URL will end shortly.<br /><br />Please update your records to the new URL below:<br /><br />");
+            Output.WriteLine("<a href=\"" + errorMessage + "\">" + errorMessage + "</a>");
+            Output.WriteLine("  <br /><br /><br /><br />");
+            Output.WriteLine("</span>");
+            Output.WriteLine("</center>");
+            Output.WriteLine();
+
+            Output.WriteLine("<!-- Close the pagecontainer div -->");
+            Output.WriteLine("</div>");
+            Output.WriteLine();
 
             return true;
         }

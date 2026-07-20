@@ -1,15 +1,13 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using SobekCM.Core.BriefItem;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Users;
 using SobekCM.Library.ItemViewer.Menu;
 using SobekCM.Tools;
-using Microsoft.AspNetCore.Http;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 
 namespace SobekCM.Library.ItemViewer.Viewers
 {
@@ -193,7 +191,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
 
             // If this is not already a link format, make it one
-            if (( !String.IsNullOrEmpty(flash_file)) && ( flash_file.IndexOf("http:") < 0))
+            if ((!String.IsNullOrEmpty(flash_file)) && (flash_file.IndexOf("http:") < 0))
             {
                 flash_file = BriefItem.Web.Source_URL + "/" + flash_file;
             }

@@ -1,13 +1,13 @@
 #region Using directives
 
 using Microsoft.AspNetCore.Http;
+using SobekCM.Core.Aggregations;
+using SobekCM.Library.HTML;
+using SobekCM.Tools;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using SobekCM.Core.Aggregations;
-using SobekCM.Library.HTML;
-using SobekCM.Tools;
 
 #endregion
 
@@ -378,8 +378,8 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         {
             Body_Attributes.Clear();
         }
-        
-       
+
+
         /// <summary> Add the HTML to be displayed in the search box </summary>
         /// <param name="Output"> Textwriter to write the HTML for this viewer</param>
         /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>

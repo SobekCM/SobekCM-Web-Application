@@ -1,9 +1,9 @@
 ﻿#region Using directives
 
+using ProtoBuf;
 using System;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
-using ProtoBuf;
 
 #endregion
 
@@ -102,7 +102,7 @@ namespace SobekCM.Core.MicroservicesClient
                     this.Protocol = Microservice_Endpoint_Protocol_Enum.JSON;
                     break;
             }
-            this.Protocol = String.Compare(Protocol, "protobuf", StringComparison.InvariantCultureIgnoreCase ) == 0 ? Microservice_Endpoint_Protocol_Enum.PROTOBUF : Microservice_Endpoint_Protocol_Enum.JSON;
+            this.Protocol = String.Compare(Protocol, "protobuf", StringComparison.InvariantCultureIgnoreCase) == 0 ? Microservice_Endpoint_Protocol_Enum.PROTOBUF : Microservice_Endpoint_Protocol_Enum.JSON;
         }
     }
 }

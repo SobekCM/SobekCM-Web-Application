@@ -46,7 +46,7 @@ namespace SobekCM.Resource_Object.Configuration
         /// <summary> Clears the dictionary of assemblies </summary>
         public static void Clear_Assemblies()
         {
-            if ( assemblyDictionary != null )
+            if (assemblyDictionary != null)
                 assemblyDictionary.Clear();
         }
     }

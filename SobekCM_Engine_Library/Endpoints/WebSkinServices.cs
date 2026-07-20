@@ -1,21 +1,19 @@
 ﻿#region Using directives
 
-using System;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Data;
-using System.IO;
-
 using Jil;
-using SobekCM.Core.Configuration;
+using SobekCM.Core.Configuration.Engine;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Skins;
 using SobekCM.Engine_Library.ApplicationState;
 using SobekCM.Engine_Library.JSON_Client_Helpers;
-using SobekCM.Core.Configuration.Engine;
 using SobekCM.Engine_Library.Skins;
 using SobekCM.Tools;
+using System;
+using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.Data;
+using System.IO;
 
 #endregion
 
@@ -30,7 +28,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="QueryString"></param>
         /// <param name="Protocol"></param>
         /// <param name="IsDebug"></param>
-        public void GetCompleteWebSkin(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug )
+        public void GetCompleteWebSkin(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
         {
             if (UrlSegments.Count > 0)
             {
@@ -44,7 +42,7 @@ namespace SobekCM.Engine_Library.Endpoints
                     Complete_Web_Skin_Object returnValue = get_complete_web_skin(skinCode, tracer);
 
                     // If this was debug mode, then just write the tracer
-                    if ( IsDebug )
+                    if (IsDebug)
                     {
                         Response.ContentType = "text/plain";
                         Response.Output.WriteLine("DEBUG MODE DETECTED");
@@ -66,7 +64,7 @@ namespace SobekCM.Engine_Library.Endpoints
                 }
                 catch (Exception ee)
                 {
-                    if ( IsDebug )
+                    if (IsDebug)
                     {
                         Response.ContentType = "text/plain";
                         Response.Output.WriteLine("EXCEPTION CAUGHT!");
@@ -92,7 +90,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="QueryString"></param>
         /// <param name="Protocol"></param>
         /// <param name="IsDebug"></param>
-        public void GetWebSkin(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug )
+        public void GetWebSkin(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
         {
             if (UrlSegments.Count > 1)
             {
@@ -111,7 +109,7 @@ namespace SobekCM.Engine_Library.Endpoints
                     returnValue = get_web_skin(skinCode, languageEnum, Engine_ApplicationCache_Gateway.Settings.System.Default_UI_Language, tracer);
 
                     // If this was debug mode, then just write the tracer
-                    if ( IsDebug )
+                    if (IsDebug)
                     {
                         Response.ContentType = "text/plain";
                         Response.Output.WriteLine("DEBUG MODE DETECTED");
@@ -121,9 +119,9 @@ namespace SobekCM.Engine_Library.Endpoints
                         return;
                     }
                 }
-                catch ( Exception ee )
+                catch (Exception ee)
                 {
-                    if ( IsDebug )
+                    if (IsDebug)
                     {
                         Response.ContentType = "text/plain";
                         Response.Output.WriteLine("EXCEPTION CAUGHT!");
@@ -145,7 +143,7 @@ namespace SobekCM.Engine_Library.Endpoints
 
                 // Get the JSON-P callback function
                 string json_callback = "parseWebSkin";
-                if (( Protocol == Microservice_Endpoint_Protocol_Enum.JSON_P) && ( !String.IsNullOrEmpty(QueryString["callback"])))
+                if ((Protocol == Microservice_Endpoint_Protocol_Enum.JSON_P) && (!String.IsNullOrEmpty(QueryString["callback"])))
                 {
                     json_callback = QueryString["callback"];
                 }
@@ -161,7 +159,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="QueryString"></param>
         /// <param name="Protocol"></param>
         /// <param name="IsDebug"></param>
-        public void GetOrderedCodes(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug )
+        public void GetOrderedCodes(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
         {
             // Get the JSON-P callback function
             string json_callback = "parseSkinCodes";
@@ -181,7 +179,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="Protocol"></param>
         /// <param name="IsDebug"></param>
         /// <remarks> This REST API should be publicly available for users that are performing administrative work </remarks>
-        public void GetWebSkinUploadedImages(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug )
+        public void GetWebSkinUploadedImages(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
         {
             if (UrlSegments.Count > 0)
             {
@@ -298,7 +296,7 @@ namespace SobekCM.Engine_Library.Endpoints
             if ((returnValue != null) && (String.IsNullOrEmpty(returnValue.Exception)))
             {
                 if (Tracer != null) Tracer.Add_Trace("WebSkinServices.get_web_skin", "Store the web skin in the memory cache");
-                CachedDataManager.WebSkins.Store_Skin(SkinCode, Web_Language_Enum_Converter.Enum_To_Code(RequestedLanguage), returnValue, Tracer );
+                CachedDataManager.WebSkins.Store_Skin(SkinCode, Web_Language_Enum_Converter.Enum_To_Code(RequestedLanguage), returnValue, Tracer);
             }
 
             // Return the object

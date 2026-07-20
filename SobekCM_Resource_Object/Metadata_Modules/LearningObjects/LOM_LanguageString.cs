@@ -27,7 +27,7 @@ namespace SobekCM.Resource_Object.Metadata_Modules.LearningObjects
         /// <summary> Constructor for a new instance of the LOM_LanguageString class </summary>
         /// <param name="Value"> Value of the string itself </param>
         /// <param name="Language"> Language of the string </param>
-        public LOM_LanguageString( string Value, string Language )
+        public LOM_LanguageString(string Value, string Language)
         {
             this.Language = Language;
             this.Value = Value;

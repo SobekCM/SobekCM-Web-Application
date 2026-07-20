@@ -1,15 +1,14 @@
 ﻿#region Using directives
 
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.Text;
 using SobekCM.Core.BriefItem;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Divisions;
 using SobekCM.Resource_Object.Metadata_Modules;
 using SobekCM.Resource_Object.Metadata_Modules.GeoSpatial;
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Text;
 
 #endregion
 
@@ -17,7 +16,7 @@ namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
 {
     /// <summary> Maps all the geo-spatial specific metadata from the METS-based SobekCM_Item object
     /// to the BriefItem, used for most the public functions of the front-end </summary>
-    public class GeoSpatial_BriefItemMapper: IBriefItemMapper
+    public class GeoSpatial_BriefItemMapper : IBriefItemMapper
     {
         /// <summary> Map one or more data elements from the original METS-based object to the
         /// BriefItem object </summary>
@@ -33,20 +32,20 @@ namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
             if ((geoInfo != null) && (geoInfo.hasData) && ((geoInfo.Point_Count > 0) || (geoInfo.Polygon_Count > 0)))
             {
                 // Ensure the brief item has a geospatial object
-                if (New.GeoSpatial == null) 
+                if (New.GeoSpatial == null)
                     New.GeoSpatial = new BriefItem_GeoSpatial();
 
                 // Add each point first into the description
                 ReadOnlyCollection<Coordinate_Point> origPoints = geoInfo.Points;
-                foreach ( Coordinate_Point thisPoint in origPoints )
+                foreach (Coordinate_Point thisPoint in origPoints)
                 {
-                    if ( !String.IsNullOrEmpty(thisPoint.Label))
+                    if (!String.IsNullOrEmpty(thisPoint.Label))
                     {
                         New.Add_Description("Coordinates", thisPoint.Latitude + " x " + thisPoint.Longitude + " ( " + thisPoint.Label + " )");
                     }
                     else
                     {
-                        New.Add_Description("Coordinates", thisPoint.Latitude + " x " + thisPoint.Longitude );
+                        New.Add_Description("Coordinates", thisPoint.Latitude + " x " + thisPoint.Longitude);
                     }
 
                     // Also add each point into the object itself
@@ -56,10 +55,10 @@ namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
                     // Create the new point
                     BriefItem_Coordinate_Point cPoint = new BriefItem_Coordinate_Point
                     {
-                        Latitude = thisPoint.Latitude, 
-                        Longitude = thisPoint.Longitude, 
-                        Altitude = thisPoint.Altitude, 
-                        Label = thisPoint.Label, 
+                        Latitude = thisPoint.Latitude,
+                        Longitude = thisPoint.Longitude,
+                        Altitude = thisPoint.Altitude,
+                        Label = thisPoint.Label,
                         FeatureType = thisPoint.FeatureType
                     };
 
@@ -217,7 +216,7 @@ namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
                     {
                         foreach (Coordinate_Polygon thisPolygon in geoInfo2.Polygons)
                         {
-                            thisPolygon.Page_Sequence = (ushort) (i + 1);
+                            thisPolygon.Page_Sequence = (ushort)(i + 1);
 
                             // Ensure the polygon collection is defined
                             if (New.GeoSpatial.Polygons == null)

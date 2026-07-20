@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml;
-using SobekCM.Core.ApplicationState;
+﻿using SobekCM.Core.ApplicationState;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Users;
 using SobekCM.Resource_Object;
+using System.IO;
+using System.Text;
+using System.Xml;
 
 namespace SobekCM.Library.Citation.Elements
 {

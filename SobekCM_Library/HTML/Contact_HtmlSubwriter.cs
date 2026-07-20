@@ -1,6 +1,16 @@
 #region Using directives
 
+using SobekCM.Core;
+using SobekCM.Core.Aggregations;
+using SobekCM.Core.Configuration;
+using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.MemoryMgmt;
+using SobekCM.Core.Navigation;
+using SobekCM.Core.Users;
+using SobekCM.Engine_Library.Configuration;
+using SobekCM.Engine_Library.Email;
+using SobekCM.Library.UI;
+using SobekCM.Tools;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -8,18 +18,6 @@ using System.IO;
 using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
-using SobekCM.Core;
-using SobekCM.Core.Aggregations;
-using SobekCM.Core.Configuration;
-using SobekCM.Core.Configuration.Localization;
-using SobekCM.Core.Navigation;
-using SobekCM.Core.UI_Configuration;
-using SobekCM.Core.UI_Configuration.StaticResources;
-using SobekCM.Core.Users;
-using SobekCM.Engine_Library.Configuration;
-using SobekCM.Engine_Library.Email;
-using SobekCM.Library.UI;
-using SobekCM.Tools;
 
 #endregion
 
@@ -317,7 +315,7 @@ namespace SobekCM.Library.HTML
                 Output.WriteLine("      <br /><br />");
                 Output.WriteLine("      <a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "\">Click here to return to the digital collection home</a>");
                 Output.WriteLine("      <br /><br />");
-                if (( !String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.Browser_Type)) && (RequestSpecificValues.Current_Mode.Browser_Type.IndexOf("IE") >= 0))
+                if ((!String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.Browser_Type)) && (RequestSpecificValues.Current_Mode.Browser_Type.IndexOf("IE") >= 0))
                 {
                     Output.WriteLine("      <a href=\"javascript:window.close();\">Click here to close this tab in your browser</a>");
                 }

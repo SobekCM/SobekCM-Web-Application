@@ -60,9 +60,9 @@ namespace SobekCM.Resource_Object.Divisions
     /// </code></example>
     public class FileMD5
     {
-/*=========================================================================
- *		PRIVATE VARIABLE DECLARATIONS of the FileMD5
- *=========================================================================*/
+        /*=========================================================================
+         *		PRIVATE VARIABLE DECLARATIONS of the FileMD5
+         *=========================================================================*/
 
         /// <summary> Private bool variable holds the flag which indicates if an 
         /// error occurred during the checksum process. </summary>
@@ -76,9 +76,9 @@ namespace SobekCM.Resource_Object.Divisions
         private string hashResult;
 
 
-/*=========================================================================
- *		CONSTRUCTOR(S) of the FileMD5 Class 
- *=========================================================================*/
+        /*=========================================================================
+         *		CONSTRUCTOR(S) of the FileMD5 Class 
+         *=========================================================================*/
 
         /// <summary> Constructor for a new FileMD5 object which accepts the filename
         /// for the first file to be checked. </summary>
@@ -100,9 +100,9 @@ namespace SobekCM.Resource_Object.Divisions
             fileName = "";
         }
 
-/*=========================================================================
- *		PUBLIC PROPERTIES of the FileMD5 Class 
- *=========================================================================*/
+        /*=========================================================================
+         *		PUBLIC PROPERTIES of the FileMD5 Class 
+         *=========================================================================*/
 
         /// <summary> Gets the checksum for the current file </summary>
         public string Checksum
@@ -139,9 +139,9 @@ namespace SobekCM.Resource_Object.Divisions
             return hashResult;
         }
 
-/*=========================================================================
- *		PRIVATE METHODS of the FileMD5 Class 
- *=========================================================================*/
+        /*=========================================================================
+         *		PRIVATE METHODS of the FileMD5 Class 
+         *=========================================================================*/
 
         /// <summary> Private helper method that computes the checksum for the 
         /// current file and set the private hashResult string to the checksum </summary>
@@ -170,7 +170,7 @@ namespace SobekCM.Resource_Object.Divisions
                     double byteAsInteger = Convert.ToDouble(t);
 
                     // Convert the integer to hex
-                    hashResult += GetHex(Math.Floor(byteAsInteger/16)) + GetHex(byteAsInteger%16);
+                    hashResult += GetHex(Math.Floor(byteAsInteger / 16)) + GetHex(byteAsInteger % 16);
                 }
 
                 // This result occurred without an error, so set the error flag to false
@@ -194,7 +194,7 @@ namespace SobekCM.Resource_Object.Divisions
             char c = 'a';
             if (Dec >= 10 && Dec <= 15)
             {
-                c += (char) (Dec - 10);
+                c += (char)(Dec - 10);
                 value += c;
             }
             else value = "" + Dec;

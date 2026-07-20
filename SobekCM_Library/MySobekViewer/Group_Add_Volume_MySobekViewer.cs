@@ -1,16 +1,10 @@
 #region Using directives
 
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Data;
-using System.IO;
+using Microsoft.AspNetCore.Http;
 using SobekCM.Core.Client;
 using SobekCM.Core.Items;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
-using SobekCM.Core.UI_Configuration;
-using SobekCM.Core.UI_Configuration.StaticResources;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Engine_Library.Database;
 using SobekCM.Engine_Library.Items;
@@ -22,11 +16,12 @@ using SobekCM.Library.MainWriters;
 using SobekCM.Library.UI;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Bib_Info;
-using SobekCM.Resource_Object.Database;
 using SobekCM.Resource_Object.Metadata_File_ReaderWriters;
 using SobekCM.Tools;
 using SobekCM_Resource_Database;
-using Microsoft.AspNetCore.Http;
+using System;
+using System.Collections.Generic;
+using System.IO;
 
 #endregion
 
@@ -184,14 +179,14 @@ namespace SobekCM.Library.MySobekViewer
                 RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Item_Display;
                 UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
             }
-            else if (hidden_request.IndexOf("save") == 0 )
+            else if (hidden_request.IndexOf("save") == 0)
             {
                 // Get the VID that used as a source for this
                 string vid = Context.Request.Form["base_volume"];
 
                 if (string.IsNullOrEmpty(vid))
                 {
-                     message = "<span style=\"color: red\"><strong>No base volume selected!</strong></span>";
+                    message = "<span style=\"color: red\"><strong>No base volume selected!</strong></span>";
                 }
                 else
                 {
@@ -200,7 +195,7 @@ namespace SobekCM.Library.MySobekViewer
                         // Get a new instance of this item
                         Tuple<SobekCM_Item, SobekCM_Item_Error> itemAndError = SobekCM_Item_Factory.Get_Item(RequestSpecificValues.Current_Mode.BibID, vid, UI_ApplicationCache_Gateway.Icon_List, RequestSpecificValues.Tracer);
                         SobekCM_Item saveItem = itemAndError.Item1;
-                        
+
                         // Clear some values for this item
                         saveItem.VID = String.Empty;
                         saveItem.Divisions.Clear();
@@ -208,16 +203,16 @@ namespace SobekCM.Library.MySobekViewer
                         saveItem.Bib_Info.Series_Part_Info.Clear();
                         saveItem.Behaviors.Clear_Ticklers();
                         saveItem.Tracking.Internal_Comments = String.Empty;
-				        saveItem.Bib_Info.Location.PURL = String.Empty;
-						saveItem.Behaviors.Main_Thumbnail = String.Empty;
-						saveItem.METS_Header.Create_Date = DateTime.Now;
-						saveItem.METS_Header.Modify_Date = saveItem.METS_Header.Create_Date;
-	                    saveItem.METS_Header.Creator_Software = "SobekCM Web - Online add a volume (derived from VID " + vid + ")";
-						saveItem.METS_Header.Clear_Creator_Individual_Notes();
-	                    saveItem.METS_Header.Creator_Individual = RequestSpecificValues.Current_User.Full_Name;
-	                    saveItem.Bib_Info.Location.Other_URL = String.Empty;
-						saveItem.Bib_Info.Location.Other_URL_Display_Label = String.Empty;
-						saveItem.Bib_Info.Location.Other_URL_Note = String.Empty;
+                        saveItem.Bib_Info.Location.PURL = String.Empty;
+                        saveItem.Behaviors.Main_Thumbnail = String.Empty;
+                        saveItem.METS_Header.Create_Date = DateTime.Now;
+                        saveItem.METS_Header.Modify_Date = saveItem.METS_Header.Create_Date;
+                        saveItem.METS_Header.Creator_Software = "SobekCM Web - Online add a volume (derived from VID " + vid + ")";
+                        saveItem.METS_Header.Clear_Creator_Individual_Notes();
+                        saveItem.METS_Header.Creator_Individual = RequestSpecificValues.Current_User.Full_Name;
+                        saveItem.Bib_Info.Location.Other_URL = String.Empty;
+                        saveItem.Bib_Info.Location.Other_URL_Display_Label = String.Empty;
+                        saveItem.Bib_Info.Location.Other_URL_Note = String.Empty;
 
                         // Save the CompleteTemplate changes to this item
                         completeTemplate.Save_To_Bib(saveItem, RequestSpecificValues.Current_User, 1, Context);
@@ -278,8 +273,8 @@ namespace SobekCM.Library.MySobekViewer
                                 break;
 
                             case "save_addfiles":
-								RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.My_Sobek;
-								RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.File_Management;
+                                RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.My_Sobek;
+                                RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.File_Management;
                                 RequestSpecificValues.Current_Mode.VID = saveItem.VID;
                                 UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
                                 break;
@@ -292,9 +287,9 @@ namespace SobekCM.Library.MySobekViewer
                         }
 
                     }
-                    catch ( Exception ee )
+                    catch (Exception ee)
                     {
-                        message = message + "<br /><span style=\"color: red\"><strong>EXCEPTION CAUGHT!<br /><br />" + ee.Message + "<br /><br />" + ee.StackTrace.Replace("\n","<br />") + "</strong></span>";
+                        message = message + "<br /><span style=\"color: red\"><strong>EXCEPTION CAUGHT!<br /><br />" + ee.Message + "<br /><br />" + ee.StackTrace.Replace("\n", "<br />") + "</strong></span>";
 
                     }
                 }
@@ -306,66 +301,66 @@ namespace SobekCM.Library.MySobekViewer
         private void complete_item_submission(SobekCM_Item Item_To_Complete, Custom_Tracer Tracer)
         {
             // If this is a newspaper type, and the pubdate has a value, try to use that for the serial heirarchy
-            if ((Item_To_Complete.Behaviors.Serial_Info.Count == 0) && (Item_To_Complete.Bib_Info.Origin_Info.Date_Issued.Length > 0) && (Item_To_Complete.Bib_Info.SobekCM_Type == TypeOfResource_SobekCM_Enum.Newspaper ))
+            if ((Item_To_Complete.Behaviors.Serial_Info.Count == 0) && (Item_To_Complete.Bib_Info.Origin_Info.Date_Issued.Length > 0) && (Item_To_Complete.Bib_Info.SobekCM_Type == TypeOfResource_SobekCM_Enum.Newspaper))
             {
-                    DateTime asDateTime;
-                    if (DateTime.TryParse(Item_To_Complete.Bib_Info.Origin_Info.Date_Issued, out asDateTime))
+                DateTime asDateTime;
+                if (DateTime.TryParse(Item_To_Complete.Bib_Info.Origin_Info.Date_Issued, out asDateTime))
+                {
+                    hierarchyCopiedFromDate = true;
+                    Item_To_Complete.Behaviors.Serial_Info.Add_Hierarchy(1, asDateTime.Year, asDateTime.Year.ToString());
+                    switch (asDateTime.Month)
                     {
-                        hierarchyCopiedFromDate = true;
-                        Item_To_Complete.Behaviors.Serial_Info.Add_Hierarchy(1, asDateTime.Year, asDateTime.Year.ToString());
-                        switch (asDateTime.Month)
-                        {
-                            case 1:
-                                Item_To_Complete.Behaviors.Serial_Info.Add_Hierarchy(2, asDateTime.Month, "January");
-                                break;
+                        case 1:
+                            Item_To_Complete.Behaviors.Serial_Info.Add_Hierarchy(2, asDateTime.Month, "January");
+                            break;
 
-                            case 2:
-                                Item_To_Complete.Behaviors.Serial_Info.Add_Hierarchy(2, asDateTime.Month, "February");
-                                break;
+                        case 2:
+                            Item_To_Complete.Behaviors.Serial_Info.Add_Hierarchy(2, asDateTime.Month, "February");
+                            break;
 
-                            case 3:
-                                Item_To_Complete.Behaviors.Serial_Info.Add_Hierarchy(2, asDateTime.Month, "March");
-                                break;
+                        case 3:
+                            Item_To_Complete.Behaviors.Serial_Info.Add_Hierarchy(2, asDateTime.Month, "March");
+                            break;
 
-                            case 4:
-                                Item_To_Complete.Behaviors.Serial_Info.Add_Hierarchy(2, asDateTime.Month, "April");
-                                break;
+                        case 4:
+                            Item_To_Complete.Behaviors.Serial_Info.Add_Hierarchy(2, asDateTime.Month, "April");
+                            break;
 
-                            case 5:
-                                Item_To_Complete.Behaviors.Serial_Info.Add_Hierarchy(2, asDateTime.Month, "May");
-                                break;
+                        case 5:
+                            Item_To_Complete.Behaviors.Serial_Info.Add_Hierarchy(2, asDateTime.Month, "May");
+                            break;
 
-                            case 6:
-                                Item_To_Complete.Behaviors.Serial_Info.Add_Hierarchy(2, asDateTime.Month, "June");
-                                break;
+                        case 6:
+                            Item_To_Complete.Behaviors.Serial_Info.Add_Hierarchy(2, asDateTime.Month, "June");
+                            break;
 
-                            case 7:
-                                Item_To_Complete.Behaviors.Serial_Info.Add_Hierarchy(2, asDateTime.Month, "July");
-                                break;
+                        case 7:
+                            Item_To_Complete.Behaviors.Serial_Info.Add_Hierarchy(2, asDateTime.Month, "July");
+                            break;
 
-                            case 8:
-                                Item_To_Complete.Behaviors.Serial_Info.Add_Hierarchy(2, asDateTime.Month, "August");
-                                break;
+                        case 8:
+                            Item_To_Complete.Behaviors.Serial_Info.Add_Hierarchy(2, asDateTime.Month, "August");
+                            break;
 
-                            case 9:
-                                Item_To_Complete.Behaviors.Serial_Info.Add_Hierarchy(2, asDateTime.Month, "September");
-                                break;
+                        case 9:
+                            Item_To_Complete.Behaviors.Serial_Info.Add_Hierarchy(2, asDateTime.Month, "September");
+                            break;
 
-                            case 10:
-                                Item_To_Complete.Behaviors.Serial_Info.Add_Hierarchy(2, asDateTime.Month, "October");
-                                break;
+                        case 10:
+                            Item_To_Complete.Behaviors.Serial_Info.Add_Hierarchy(2, asDateTime.Month, "October");
+                            break;
 
-                            case 11:
-                                Item_To_Complete.Behaviors.Serial_Info.Add_Hierarchy(2, asDateTime.Month, "November");
-                                break;
+                        case 11:
+                            Item_To_Complete.Behaviors.Serial_Info.Add_Hierarchy(2, asDateTime.Month, "November");
+                            break;
 
-                            case 12:
-                                Item_To_Complete.Behaviors.Serial_Info.Add_Hierarchy(2, asDateTime.Month, "December");
-                                break;
-                        }
-
-                        Item_To_Complete.Behaviors.Serial_Info.Add_Hierarchy(3, asDateTime.Day, asDateTime.Day.ToString());
+                        case 12:
+                            Item_To_Complete.Behaviors.Serial_Info.Add_Hierarchy(2, asDateTime.Month, "December");
+                            break;
                     }
+
+                    Item_To_Complete.Behaviors.Serial_Info.Add_Hierarchy(3, asDateTime.Day, asDateTime.Day.ToString());
+                }
             }
 
             // Determine the in process directory for this
@@ -420,10 +415,10 @@ namespace SobekCM.Library.MySobekViewer
             options["MarcXML_File_ReaderWriter:System Name"] = UI_ApplicationCache_Gateway.Settings.System.System_Name;
             options["MarcXML_File_ReaderWriter:System Abbreviation"] = UI_ApplicationCache_Gateway.Settings.System.System_Abbreviation;
 
-			// Save the MARC file
+            // Save the MARC file
             MarcXML_File_ReaderWriter marcWriter = new MarcXML_File_ReaderWriter();
             string errorMessage;
-            marcWriter.Write_Metadata(Item_To_Complete.Source_Directory + "\\marc.xml", Item_To_Complete, options, out errorMessage);          
+            marcWriter.Write_Metadata(Item_To_Complete.Source_Directory + "\\marc.xml", Item_To_Complete, options, out errorMessage);
 
             // Copy all the files over to the server 
             string serverNetworkFolder = UI_ApplicationCache_Gateway.Settings.Servers.Image_Server_Network + Item_To_Complete.Web.AssocFilePath;
@@ -434,15 +429,15 @@ namespace SobekCM.Library.MySobekViewer
             if (!Directory.Exists(serverNetworkFolder + "\\" + UI_ApplicationCache_Gateway.Settings.Resources.Backup_Files_Folder_Name))
                 Directory.CreateDirectory(serverNetworkFolder + "\\" + UI_ApplicationCache_Gateway.Settings.Resources.Backup_Files_Folder_Name);
 
-			// Copy the static HTML page over first
-			if (File.Exists(user_in_process_directory + "\\" + currentItem.BibID + "_" + currentItem.VID + ".html"))
-			{
+            // Copy the static HTML page over first
+            if (File.Exists(user_in_process_directory + "\\" + currentItem.BibID + "_" + currentItem.VID + ".html"))
+            {
                 File.Copy(user_in_process_directory + "\\" + currentItem.BibID + "_" + currentItem.VID + ".html", serverNetworkFolder + "\\" + UI_ApplicationCache_Gateway.Settings.Resources.Backup_Files_Folder_Name + "\\" + currentItem.BibID + "_" + currentItem.VID + ".html", true);
-				File.Delete(user_in_process_directory + "\\" + currentItem.BibID + "_" + currentItem.VID + ".html");
-			}
+                File.Delete(user_in_process_directory + "\\" + currentItem.BibID + "_" + currentItem.VID + ".html");
+            }
 
-			// Copy all the files 
-			string[] allFiles = Directory.GetFiles(user_in_process_directory);
+            // Copy all the files 
+            string[] allFiles = Directory.GetFiles(user_in_process_directory);
             foreach (string thisFile in allFiles)
             {
                 string destination_file = serverNetworkFolder + "\\" + (new FileInfo(thisFile)).Name;
@@ -485,177 +480,177 @@ namespace SobekCM.Library.MySobekViewer
             Tracer.Add_Trace("Group_Add_Volume_MySobekViewer.Write_HTML", "Do nothing");
         }
 
-	    /// <summary> Add the HTML to be displayed in the main SobekCM viewer area </summary>
-	    /// <param name="Output"> Textwriter to write the HTML for this viewer</param>
-	    /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
-	    public override void Write_ItemNavForm_Closing(TextWriter Output, Custom_Tracer Tracer)
-	    {
-		    const string NEWVOLUME = "NEW VOLUME";
+        /// <summary> Add the HTML to be displayed in the main SobekCM viewer area </summary>
+        /// <param name="Output"> Textwriter to write the HTML for this viewer</param>
+        /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
+        public override void Write_ItemNavForm_Closing(TextWriter Output, Custom_Tracer Tracer)
+        {
+            const string NEWVOLUME = "NEW VOLUME";
 
-		    Tracer.Add_Trace("Group_Add_Volume_MySobekViewer.Write_ItemNavForm_Closing", "");
+            Tracer.Add_Trace("Group_Add_Volume_MySobekViewer.Write_ItemNavForm_Closing", "");
 
-		    Output.WriteLine("<!-- Hidden field is used for postbacks to add new form elements (i.e., new name, new other titles, etc..) -->");
-		    Output.WriteLine("<input type=\"hidden\" id=\"action\" name=\"action\" value=\"\" />");
+            Output.WriteLine("<!-- Hidden field is used for postbacks to add new form elements (i.e., new name, new other titles, etc..) -->");
+            Output.WriteLine("<input type=\"hidden\" id=\"action\" name=\"action\" value=\"\" />");
 
-		    Output.WriteLine("<div id=\"sbkIsw_Titlebar\">");
+            Output.WriteLine("<div id=\"sbkIsw_Titlebar\">");
 
             string grouptitle = currentItem.Behaviors.GroupTitle;
-		    if (grouptitle.Length > 125)
-		    {
-			    Output.WriteLine("\t<h1 itemprop=\"name\"><abbr title=\"" + grouptitle + "\">" + grouptitle.Substring(0, 120) + "...</abbr></h1>");
-		    }
-		    else
-		    {
-			    Output.WriteLine("\t<h1 itemprop=\"name\">" + grouptitle + "</h1>");
-		    }
+            if (grouptitle.Length > 125)
+            {
+                Output.WriteLine("\t<h1 itemprop=\"name\"><abbr title=\"" + grouptitle + "\">" + grouptitle.Substring(0, 120) + "...</abbr></h1>");
+            }
+            else
+            {
+                Output.WriteLine("\t<h1 itemprop=\"name\">" + grouptitle + "</h1>");
+            }
 
-		    Output.WriteLine("</div>");
-			Output.WriteLine("<div class=\"sbkMenu_Bar\" id=\"sbkIsw_MenuBar\" style=\"height:20px\">&nbsp;</div>");
+            Output.WriteLine("</div>");
+            Output.WriteLine("<div class=\"sbkMenu_Bar\" id=\"sbkIsw_MenuBar\" style=\"height:20px\">&nbsp;</div>");
 
-		    Output.WriteLine("<div id=\"container-inner1000\">");
-		    Output.WriteLine("<div id=\"pagecontainer\">");
+            Output.WriteLine("<div id=\"container-inner1000\">");
+            Output.WriteLine("<div id=\"pagecontainer\">");
 
 
-		    Output.WriteLine("<!-- Group_Add_Volume_MySobekViewer.Write_ItemNavForm_Closing -->");
-		    Output.WriteLine("<div class=\"sbkMySobek_HomeText\">");
-		    Output.WriteLine("  <br />");
-		    Output.WriteLine("  <h2>Add a new volume to this existing title/item group</h2>");
-		    Output.WriteLine("    <ul>");
-		    Output.WriteLine("      <li>Only enter data that you wish to override the data in the existing base volume.</li>");
-		    //Output.WriteLine("      <li>Clicking on the green plus button ( <img class=\"repeat_button\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/new_element_demo.jpg\" /> ) will add another instance of the element, if the element is repeatable.</li>");
-		    Output.WriteLine("      <li>Click <a href=\"" + UI_ApplicationCache_Gateway.Settings.System.Help_URL(RequestSpecificValues.Current_Mode.Base_URL) + "help/addvolume\" target=\"_EDIT_INSTRUCTIONS\">here for detailed instructions</a> on adding new volumes online.</li>");
-		    Output.WriteLine("     </ul>");
-		    Output.WriteLine("</div>");
-		    Output.WriteLine();
+            Output.WriteLine("<!-- Group_Add_Volume_MySobekViewer.Write_ItemNavForm_Closing -->");
+            Output.WriteLine("<div class=\"sbkMySobek_HomeText\">");
+            Output.WriteLine("  <br />");
+            Output.WriteLine("  <h2>Add a new volume to this existing title/item group</h2>");
+            Output.WriteLine("    <ul>");
+            Output.WriteLine("      <li>Only enter data that you wish to override the data in the existing base volume.</li>");
+            //Output.WriteLine("      <li>Clicking on the green plus button ( <img class=\"repeat_button\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/new_element_demo.jpg\" /> ) will add another instance of the element, if the element is repeatable.</li>");
+            Output.WriteLine("      <li>Click <a href=\"" + UI_ApplicationCache_Gateway.Settings.System.Help_URL(RequestSpecificValues.Current_Mode.Base_URL) + "help/addvolume\" target=\"_EDIT_INSTRUCTIONS\">here for detailed instructions</a> on adding new volumes online.</li>");
+            Output.WriteLine("     </ul>");
+            Output.WriteLine("</div>");
+            Output.WriteLine();
 
-		    if (message.Length > 0)
-		    {
-			    Output.WriteLine("" + message + "<br />");
-		    }
+            if (message.Length > 0)
+            {
+                Output.WriteLine("" + message + "<br />");
+            }
 
-		    Output.WriteLine("<a name=\"CompleteTemplate\"> </a>");
-		    Output.WriteLine("<div id=\"tabContainer\" class=\"fulltabs\">");
-		    Output.WriteLine("  <div class=\"tabs\">");
-		    Output.WriteLine("    <ul>");
-		    Output.WriteLine("      <li id=\"tabHeader_1\" class=\"tabActiveHeader\">" + NEWVOLUME + "</li>");
-		    Output.WriteLine("    </ul>");
-		    Output.WriteLine("  </div>");
-		    Output.WriteLine("  <div class=\"graytabscontent\">");
-		    Output.WriteLine("    <div class=\"tabpage\" id=\"tabpage_1\">");
+            Output.WriteLine("<a name=\"CompleteTemplate\"> </a>");
+            Output.WriteLine("<div id=\"tabContainer\" class=\"fulltabs\">");
+            Output.WriteLine("  <div class=\"tabs\">");
+            Output.WriteLine("    <ul>");
+            Output.WriteLine("      <li id=\"tabHeader_1\" class=\"tabActiveHeader\">" + NEWVOLUME + "</li>");
+            Output.WriteLine("    </ul>");
+            Output.WriteLine("  </div>");
+            Output.WriteLine("  <div class=\"graytabscontent\">");
+            Output.WriteLine("    <div class=\"tabpage\" id=\"tabpage_1\">");
 
-		    Output.WriteLine("      <!-- Add SAVE and CANCEL buttons to top of form -->");
-		    Output.WriteLine("      <script src=\"" + Static_Resources_Gateway.Sobekcm_Metadata_Js + "\" type=\"text/javascript\"></script>");
-		    Output.WriteLine();
+            Output.WriteLine("      <!-- Add SAVE and CANCEL buttons to top of form -->");
+            Output.WriteLine("      <script src=\"" + Static_Resources_Gateway.Sobekcm_Metadata_Js + "\" type=\"text/javascript\"></script>");
+            Output.WriteLine();
 
-		    Output.WriteLine("      <div class=\"sbkMySobek_RightButtons\">");
-		    Output.WriteLine("        <button onclick=\"addvolume_cancel_form(); return false;\" class=\"sbkMySobek_BigButton\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"sbkMySobek_RoundButton_LeftImg\" alt=\"\" /> CANCEL </button> &nbsp; &nbsp; ");
-		    Output.WriteLine("        <button onclick=\"addvolume_save_form(''); return false;\" class=\"sbkMySobek_BigButton\"> SAVE <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkMySobek_RoundButton_RightImg\" alt=\"\" /></button> &nbsp; &nbsp; ");
-		    Output.WriteLine("        <button onclick=\"addvolume_save_form('_again'); return false;\" class=\"sbkMySobek_BigButton\">SAVE & ADD ANOTHER</button>");
-		    Output.WriteLine("      </div>");
-		    Output.WriteLine("      <br /><br />");
-		    Output.WriteLine();
+            Output.WriteLine("      <div class=\"sbkMySobek_RightButtons\">");
+            Output.WriteLine("        <button onclick=\"addvolume_cancel_form(); return false;\" class=\"sbkMySobek_BigButton\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"sbkMySobek_RoundButton_LeftImg\" alt=\"\" /> CANCEL </button> &nbsp; &nbsp; ");
+            Output.WriteLine("        <button onclick=\"addvolume_save_form(''); return false;\" class=\"sbkMySobek_BigButton\"> SAVE <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkMySobek_RoundButton_RightImg\" alt=\"\" /></button> &nbsp; &nbsp; ");
+            Output.WriteLine("        <button onclick=\"addvolume_save_form('_again'); return false;\" class=\"sbkMySobek_BigButton\">SAVE & ADD ANOTHER</button>");
+            Output.WriteLine("      </div>");
+            Output.WriteLine("      <br /><br />");
+            Output.WriteLine();
 
-		    // Output.WriteLine("    <td width=\"460px\"> Import metadata and behaviors from existing volume: &nbsp; ");
-		    Output.WriteLine("      <div style=\"text-align:left;padding-left:58px; padding-bottom: 10px;\">Import from existing volume: &nbsp; ");
-		    Output.WriteLine("        <select id=\"base_volume\" name=\"base_volume\" class=\"addvolume_base_volume\">");
+            // Output.WriteLine("    <td width=\"460px\"> Import metadata and behaviors from existing volume: &nbsp; ");
+            Output.WriteLine("      <div style=\"text-align:left;padding-left:58px; padding-bottom: 10px;\">Import from existing volume: &nbsp; ");
+            Output.WriteLine("        <select id=\"base_volume\" name=\"base_volume\" class=\"addvolume_base_volume\">");
 
             SortedList<string, string> sortList = new SortedList<string, string>();
-	        foreach (Item_Hierarchy_Details itemRowView in allVolumes)
-	        {
+            foreach (Item_Hierarchy_Details itemRowView in allVolumes)
+            {
                 sortList.Add(itemRowView.VID, itemRowView.VID);
-	        }
+            }
 
             // Select the LAST vid by default
-	        int i = 1;
+            int i = 1;
             IList<string> sortListValues = sortList.Values;
             foreach (string thisVid in sortListValues)
-		    {
-                if (i == sortListValues.Count )
-			    {
+            {
+                if (i == sortListValues.Count)
+                {
                     Output.WriteLine("          <option value=\"" + thisVid + "\" selected=\"selected\">" + thisVid + "</option>");
-			    }
-			    else
-			    {
+                }
+                else
+                {
                     Output.WriteLine("          <option value=\"" + thisVid + "\">" + thisVid + "</option>");
-			    }
-		        i++;
-		    }
-		    Output.WriteLine("        </select>");
-		    Output.WriteLine("      </div>");
-		    Output.WriteLine();
+                }
+                i++;
+            }
+            Output.WriteLine("        </select>");
+            Output.WriteLine("      </div>");
+            Output.WriteLine();
 
-	        bool isMozilla = ((!String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.Browser_Type)) && (RequestSpecificValues.Current_Mode.Browser_Type.ToUpper().IndexOf("FIREFOX") >= 0));
+            bool isMozilla = ((!String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.Browser_Type)) && (RequestSpecificValues.Current_Mode.Browser_Type.ToUpper().IndexOf("FIREFOX") >= 0));
 
-		    // Create a new blank item for display purposes
-		    SobekCM_Item displayItem = new SobekCM_Item {BibID = currentItem.BibID};
-		    displayItem.Behaviors.IP_Restriction_Membership = ipRestrict;
-		    displayItem.Behaviors.Serial_Info.Clear();
-		    displayItem.Tracking.Born_Digital = bornDigital;
-		    displayItem.Tracking.Tracking_Box = trackingBox;
-		    displayItem.Tracking.Material_Received_Notes = materialRecdNotes;
-		    displayItem.Tracking.Material_Received_Date = materialRecdDate;
-		    displayItem.Tracking.Disposition_Advice = dispositionAdvice;
-		    displayItem.Tracking.Disposition_Advice_Notes = dispositionAdviceNotes;
-		    if (title.Length > 0)
-		    {
-			    displayItem.Bib_Info.Main_Title.Clear();
-			    displayItem.Bib_Info.Main_Title.Title = title;
-		    }
-		    if (date.Length > 0)
-			    displayItem.Bib_Info.Origin_Info.Date_Issued = date;
-		    if ((level1.Length > 0) && (level1Order >= 0))
-		    {
-			    displayItem.Behaviors.Serial_Info.Add_Hierarchy(1, level1Order, level1);
-			    if ((level2.Length > 0) && (level2Order >= 0))
-			    {
-				    displayItem.Behaviors.Serial_Info.Add_Hierarchy(2, level2Order, level2);
-				    if ((level3.Length > 0) && (level3Order >= 0))
-				    {
-					    displayItem.Behaviors.Serial_Info.Add_Hierarchy(3, level3Order, level3);
-				    }
-			    }
-		    }
+            // Create a new blank item for display purposes
+            SobekCM_Item displayItem = new SobekCM_Item { BibID = currentItem.BibID };
+            displayItem.Behaviors.IP_Restriction_Membership = ipRestrict;
+            displayItem.Behaviors.Serial_Info.Clear();
+            displayItem.Tracking.Born_Digital = bornDigital;
+            displayItem.Tracking.Tracking_Box = trackingBox;
+            displayItem.Tracking.Material_Received_Notes = materialRecdNotes;
+            displayItem.Tracking.Material_Received_Date = materialRecdDate;
+            displayItem.Tracking.Disposition_Advice = dispositionAdvice;
+            displayItem.Tracking.Disposition_Advice_Notes = dispositionAdviceNotes;
+            if (title.Length > 0)
+            {
+                displayItem.Bib_Info.Main_Title.Clear();
+                displayItem.Bib_Info.Main_Title.Title = title;
+            }
+            if (date.Length > 0)
+                displayItem.Bib_Info.Origin_Info.Date_Issued = date;
+            if ((level1.Length > 0) && (level1Order >= 0))
+            {
+                displayItem.Behaviors.Serial_Info.Add_Hierarchy(1, level1Order, level1);
+                if ((level2.Length > 0) && (level2Order >= 0))
+                {
+                    displayItem.Behaviors.Serial_Info.Add_Hierarchy(2, level2Order, level2);
+                    if ((level3.Length > 0) && (level3Order >= 0))
+                    {
+                        displayItem.Behaviors.Serial_Info.Add_Hierarchy(3, level3Order, level3);
+                    }
+                }
+            }
 
             completeTemplate.Render_Template_HTML(Output, displayItem, RequestSpecificValues.Current_Mode.Skin == RequestSpecificValues.Current_Mode.Default_Skin ? RequestSpecificValues.Current_Mode.Skin.ToUpper() : RequestSpecificValues.Current_Mode.Skin, isMozilla, RequestSpecificValues.Current_User, RequestSpecificValues.Current_Mode.Language, UI_ApplicationCache_Gateway.Translation, RequestSpecificValues.Current_Mode.Base_URL, 1);
 
-		    // Add the second buttons at the bottom of the form
-		    Output.WriteLine("      <!-- Add SAVE and CANCEL buttons to bottom of form -->");
-		    Output.WriteLine("      <div class=\"sbkMySobek_RightButtons\">");
-		    Output.WriteLine("        <button onclick=\"addvolume_cancel_form(); return false;\" class=\"sbkMySobek_BigButton\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"sbkMySobek_RoundButton_LeftImg\" alt=\"\" /> CANCEL </button> &nbsp; &nbsp; ");
-		    Output.WriteLine("        <button onclick=\"addvolume_save_form(''); return false;\" class=\"sbkMySobek_BigButton\"> SAVE <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkMySobek_RoundButton_RightImg\" alt=\"\" /></button> &nbsp; &nbsp; ");
-		    Output.WriteLine("      </div>");
-		    Output.WriteLine();
+            // Add the second buttons at the bottom of the form
+            Output.WriteLine("      <!-- Add SAVE and CANCEL buttons to bottom of form -->");
+            Output.WriteLine("      <div class=\"sbkMySobek_RightButtons\">");
+            Output.WriteLine("        <button onclick=\"addvolume_cancel_form(); return false;\" class=\"sbkMySobek_BigButton\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"sbkMySobek_RoundButton_LeftImg\" alt=\"\" /> CANCEL </button> &nbsp; &nbsp; ");
+            Output.WriteLine("        <button onclick=\"addvolume_save_form(''); return false;\" class=\"sbkMySobek_BigButton\"> SAVE <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkMySobek_RoundButton_RightImg\" alt=\"\" /></button> &nbsp; &nbsp; ");
+            Output.WriteLine("      </div>");
+            Output.WriteLine();
 
-		    Output.WriteLine("      <br /><br />");
-		    Output.WriteLine("      <hr />");
-		    Output.WriteLine();
+            Output.WriteLine("      <br /><br />");
+            Output.WriteLine("      <hr />");
+            Output.WriteLine();
 
-		    Output.WriteLine("      <p>In addition, the following actions are available:</p>");
-		    Output.WriteLine("      <button onclick=\"addvolume_save_form('_edit'); return false;\" class=\"sbkMySobek_RoundButton\">SAVE & EDIT ITEM</button> &nbsp; &nbsp; ");
-		    Output.WriteLine("      <button onclick=\"addvolume_save_form('_addfiles'); return false;\" class=\"sbkMySobek_RoundButton\">SAVE & ADD FILES</button> &nbsp; &nbsp; ");
-		    Output.WriteLine("      <button onclick=\"addvolume_save_form('_again'); return false;\" class=\"sbkMySobek_RoundButton\">SAVE & ADD ANOTHER</button>");
+            Output.WriteLine("      <p>In addition, the following actions are available:</p>");
+            Output.WriteLine("      <button onclick=\"addvolume_save_form('_edit'); return false;\" class=\"sbkMySobek_RoundButton\">SAVE & EDIT ITEM</button> &nbsp; &nbsp; ");
+            Output.WriteLine("      <button onclick=\"addvolume_save_form('_addfiles'); return false;\" class=\"sbkMySobek_RoundButton\">SAVE & ADD FILES</button> &nbsp; &nbsp; ");
+            Output.WriteLine("      <button onclick=\"addvolume_save_form('_again'); return false;\" class=\"sbkMySobek_RoundButton\">SAVE & ADD ANOTHER</button>");
 
-		    Output.WriteLine("    </div>");
-		    Output.WriteLine("  </div>");
-		    Output.WriteLine("</div>");
-		    Output.WriteLine("</div>");
-		    Output.WriteLine("</div>");
-	    }
+            Output.WriteLine("    </div>");
+            Output.WriteLine("  </div>");
+            Output.WriteLine("</div>");
+            Output.WriteLine("</div>");
+            Output.WriteLine("</div>");
+        }
 
-	    /// <summary> Gets the collection of special behaviors which this admin or mySobek viewer
-		/// requests from the main HTML subwriter. </summary>
-		/// <value> This tells the HTML and mySobek writers to mimic the item viewer </value>
-		public override List<HtmlSubwriter_Behaviors_Enum> Viewer_Behaviors
-		{
-			get
-			{
-				return new List<HtmlSubwriter_Behaviors_Enum>
-				{
-					HtmlSubwriter_Behaviors_Enum.MySobek_Subwriter_Mimic_Item_Subwriter,
-					HtmlSubwriter_Behaviors_Enum.Suppress_Banner
-				};
-			}
-		}
+        /// <summary> Gets the collection of special behaviors which this admin or mySobek viewer
+        /// requests from the main HTML subwriter. </summary>
+        /// <value> This tells the HTML and mySobek writers to mimic the item viewer </value>
+        public override List<HtmlSubwriter_Behaviors_Enum> Viewer_Behaviors
+        {
+            get
+            {
+                return new List<HtmlSubwriter_Behaviors_Enum>
+                {
+                    HtmlSubwriter_Behaviors_Enum.MySobek_Subwriter_Mimic_Item_Subwriter,
+                    HtmlSubwriter_Behaviors_Enum.Suppress_Banner
+                };
+            }
+        }
 
         /// <summary> Gets the CSS class of the container that the page is wrapped within </summary>
         public override string Container_CssClass { get { return "container-inner1000"; } }

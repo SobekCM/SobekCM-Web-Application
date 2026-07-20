@@ -177,7 +177,7 @@ namespace SobekCM.Resource_Object.Bib_Info
                 {
                     return String.Empty;
                 }
-                
+
                 string returnString = returnVal.ToString();
                 returnString = returnString.Substring(3).Trim();
                 return Convert_String_To_XML_Safe(returnString);

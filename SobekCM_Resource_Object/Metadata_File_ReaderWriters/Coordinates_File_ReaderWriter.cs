@@ -1,11 +1,11 @@
 ﻿#region Using directives
 
+using SobekCM.Resource_Object.Metadata_Modules;
+using SobekCM.Resource_Object.Metadata_Modules.GeoSpatial;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using SobekCM.Resource_Object.Metadata_Modules;
-using SobekCM.Resource_Object.Metadata_Modules.GeoSpatial;
 
 #endregion
 
@@ -80,7 +80,7 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
         {
             // Determine if this is CSV or XML
             string extension = Path.GetExtension(MetadataFilePathName);
-            if (( extension != null ) && (( extension.ToLower() == ".csv" ) || ( extension.ToLower() == ".txt" )))
+            if ((extension != null) && ((extension.ToLower() == ".csv") || (extension.ToLower() == ".txt")))
             {
                 // In this case, need to pass a new option to the stream writer, without altering the 
                 // original options
@@ -107,7 +107,7 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
                     return false;
                 }
             }
-            
+
             try
             {
                 StreamWriter results = new StreamWriter(MetadataFilePathName, false, Encoding.UTF8);
@@ -143,7 +143,7 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
             {
                 bool.TryParse(Options["Coordinates_File_ReaderWriter:CSV_Style"].ToString(), out csv_style);
             }
-            
+
             // Get the coordinates object
             GeoSpatial_Information geoInfo = Item_To_Save.Get_Metadata_Module(GlobalVar.GEOSPATIAL_METADATA_MODULE_KEY) as GeoSpatial_Information;
             if ((geoInfo == null) || (!geoInfo.hasData))

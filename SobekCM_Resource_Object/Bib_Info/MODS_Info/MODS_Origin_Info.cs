@@ -132,31 +132,32 @@ namespace SobekCM.Resource_Object.Bib_Info
             // Do nothing
         }
 
-		/// <summary> Gets the first date discovered by going through all possible date fields </summary>
-		/// <remarks> This checks, in this order, Date Issues, Date Created, MARC Date Issued, MARC Date Issued Start, Date Copyrighted</remarks>
-	    public string Date_Check_All_Fields
-	    {
-		    get
-		    {
-				string pubdate = Date_Issued;
-				if (pubdate.Length == 0)
-					pubdate = Date_Created;
-				if (pubdate.Length == 0)
-					pubdate = MARC_DateIssued;
-				if (pubdate.Length == 0)
-					pubdate = MARC_DateIssued_Start;
-				if (pubdate.Length == 0)
-					pubdate = Date_Copyrighted;
-			    return pubdate ?? String.Empty;
-		    }
-	    }
+        /// <summary> Gets the first date discovered by going through all possible date fields </summary>
+        /// <remarks> This checks, in this order, Date Issues, Date Created, MARC Date Issued, MARC Date Issued Start, Date Copyrighted</remarks>
+        public string Date_Check_All_Fields
+        {
+            get
+            {
+                string pubdate = Date_Issued;
+                if (pubdate.Length == 0)
+                    pubdate = Date_Created;
+                if (pubdate.Length == 0)
+                    pubdate = MARC_DateIssued;
+                if (pubdate.Length == 0)
+                    pubdate = MARC_DateIssued_Start;
+                if (pubdate.Length == 0)
+                    pubdate = Date_Copyrighted;
+                return pubdate ?? String.Empty;
+            }
+        }
 
         /// <summary> Get the number of frequencies associated with this material </summary>
         /// <remarks>This should be used rather than the Count property of the <see cref="Frequencies"/> property.  Even if 
         /// there are no frequencies, the Frequencies property creates a readonly collection to pass back out.</remarks>
         public int Frequencies_Count
         {
-            get {
+            get
+            {
                 return frequencies == null ? 0 : frequencies.Count;
             }
         }
@@ -166,7 +167,8 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// Even if there are no frequencies, this property creates a readonly collection to pass back out.</remarks>
         public ReadOnlyCollection<Origin_Info_Frequency> Frequencies
         {
-            get {
+            get
+            {
                 return frequencies == null ? new ReadOnlyCollection<Origin_Info_Frequency>(new List<Origin_Info_Frequency>()) : new ReadOnlyCollection<Origin_Info_Frequency>(frequencies);
             }
         }
@@ -176,7 +178,8 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// there are no issuances, the Issuances property creates a readonly collection to pass back out.</remarks>
         public int Issuances_Count
         {
-            get {
+            get
+            {
                 return issuances == null ? 0 : issuances.Count;
             }
         }
@@ -186,7 +189,8 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// Even if there are no issuances, this property creates a readonly collection to pass back out.</remarks>
         public ReadOnlyCollection<Origin_Info_Issuance_Enum> Issuances
         {
-            get {
+            get
+            {
                 return issuances == null ? new ReadOnlyCollection<Origin_Info_Issuance_Enum>(new List<Origin_Info_Issuance_Enum>()) : new ReadOnlyCollection<Origin_Info_Issuance_Enum>(issuances);
             }
         }
@@ -196,7 +200,8 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// there are no publication places, the Places property creates a readonly collection to pass back out.</remarks>
         public int Places_Count
         {
-            get {
+            get
+            {
                 return places == null ? 0 : places.Count;
             }
         }
@@ -206,7 +211,8 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// Even if there are no publication places, this property creates a readonly collection to pass back out.</remarks>
         public ReadOnlyCollection<Origin_Info_Place> Places
         {
-            get {
+            get
+            {
                 return places == null ? new ReadOnlyCollection<Origin_Info_Place>(new List<Origin_Info_Place>()) : new ReadOnlyCollection<Origin_Info_Place>(places);
             }
         }
@@ -328,7 +334,7 @@ namespace SobekCM.Resource_Object.Bib_Info
 
         /// <summary> Add a new frequency to this origination information </summary>
         /// <param name="OtherDate"> Other date object to add </param>
-        public void Add_Date_Other(Origin_Info_Other_Date OtherDate )
+        public void Add_Date_Other(Origin_Info_Other_Date OtherDate)
         {
             if (otherDates == null)
                 otherDates = new List<Origin_Info_Other_Date>();
@@ -347,7 +353,8 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// <summary> Gets the number of publishers associated with this origination information </summary>
         internal int Publishers_Count
         {
-            get {
+            get
+            {
                 return publishers == null ? 0 : publishers.Count;
             }
         }
@@ -370,7 +377,8 @@ namespace SobekCM.Resource_Object.Bib_Info
                 // Step through all the publication places
                 if (places != null)
                 {
-                    if (places.Any(Place => (Place.Place_ISO3166.Length > 0) || (Place.Place_MarcCountry.Length > 0) || (Place.Place_Text.Length > 0))) {
+                    if (places.Any(Place => (Place.Place_ISO3166.Length > 0) || (Place.Place_MarcCountry.Length > 0) || (Place.Place_Text.Length > 0)))
+                    {
                         return true;
                     }
                 }
@@ -476,7 +484,8 @@ namespace SobekCM.Resource_Object.Bib_Info
                 publishers = new List<string>();
 
 
-            if (publishers.Any(Publisher => Publisher_Name == Publisher)) {
+            if (publishers.Any(Publisher => Publisher_Name == Publisher))
+            {
                 return;
             }
             publishers.Add(Publisher_Name);

@@ -1,12 +1,12 @@
 ﻿#region Using directives
 
-using System;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.MicroservicesClient;
 using SobekCM.Core.Skins;
 using SobekCM.Engine_Library.Endpoints;
 using SobekCM.Tools;
+using System;
 
 #endregion
 
@@ -58,7 +58,7 @@ namespace SobekCM.Core.Client
             Web_Skin_Object new_skin = WebSkinServices.get_web_skin(SkinCode, RequestedLanguage, DefaultLanguage, Tracer);
 
             // Look in the web skin row and see if it should be kept around, rather than momentarily cached
-            if ((new_skin != null) && ( String.IsNullOrEmpty(new_skin.Exception)))
+            if ((new_skin != null) && (String.IsNullOrEmpty(new_skin.Exception)))
             {
                 if (Cache_On_Build)
                 {

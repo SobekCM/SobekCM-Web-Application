@@ -1,11 +1,8 @@
-﻿using System;
+﻿using ProtoBuf;
+using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.Serialization;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml.Serialization;
-using ProtoBuf;
 
 namespace SobekCM.Core.Settings
 {
@@ -118,9 +115,9 @@ namespace SobekCM.Core.Settings
         /// <param name="NewOption"> New option to add </param>
         public void Add_Option(string NewOption)
         {
-            if ( Options == null ) Options = new List<string>();
+            if (Options == null) Options = new List<string>();
             Options.Add(NewOption);
         }
-       
+
     }
 }

@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SobekCM.Library.HtmlLayout
 {
@@ -75,7 +71,7 @@ namespace SobekCM.Library.HtmlLayout
                         {
                             Name = "Static" + static_section_count,
                             Type = HtmlLayoutSectionTypeEnum.Static_HTML,
-                            HTML = template_contents.Substring(current_index, next_section_index - current_index )
+                            HTML = template_contents.Substring(current_index, next_section_index - current_index)
                         };
                         returnObj.Sections.Add(staticSection);
                     }

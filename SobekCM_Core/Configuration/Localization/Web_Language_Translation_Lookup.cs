@@ -1,11 +1,11 @@
 ﻿#region Using directives
 
+using ProtoBuf;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
-using ProtoBuf;
 
 #endregion
 
@@ -28,7 +28,7 @@ namespace SobekCM.Core.Configuration.Localization
         [DataMember(Name = "default")]
         [XmlAttribute("default")]
         [ProtoMember(1)]
-        public string DefaultValue { get; set;  }
+        public string DefaultValue { get; set; }
 
         /// <summary> Return the number of values within this lookup object </summary>
         /// <remarks> If the default value exists and is also added under the default language, this will
@@ -42,7 +42,7 @@ namespace SobekCM.Core.Configuration.Localization
             {
                 if (!String.IsNullOrEmpty(DefaultValue))
                     return translationLookupObj.Count + 1;
-                
+
                 return translationLookupObj.Count;
             }
         }

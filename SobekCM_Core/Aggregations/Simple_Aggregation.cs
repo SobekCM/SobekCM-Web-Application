@@ -1,12 +1,11 @@
-﻿using System;
+﻿using Jil;
+using ProtoBuf;
+using SobekCM.Core.Configuration.Localization;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization;
-using System.Text;
 using System.Xml.Serialization;
-using ProtoBuf;
-using Jil;
-using SobekCM.Core.Configuration.Localization;
 
 namespace SobekCM.Core.Aggregations
 {
@@ -42,7 +41,7 @@ namespace SobekCM.Core.Aggregations
                 Search_Fields = new List<Item_Aggregation_Metadata_Type>();
                 foreach (Item_Aggregation_Metadata_Type searchField in FullAggregation.Search_Fields)
                 {
-                    Search_Fields.Add(new Item_Aggregation_Metadata_Type(searchField.DisplayTerm, searchField.SobekCode ));
+                    Search_Fields.Add(new Item_Aggregation_Metadata_Type(searchField.DisplayTerm, searchField.SobekCode));
                 }
             }
 
@@ -72,7 +71,7 @@ namespace SobekCM.Core.Aggregations
                 Child_Pages = new List<Simple_Aggregation_Child_Page>();
                 foreach (Item_Aggregation_Child_Page thisChild in FullAggregation.Child_Pages)
                 {
-                    Child_Pages.Add(new Simple_Aggregation_Child_Page( thisChild.Code, thisChild.Label ));
+                    Child_Pages.Add(new Simple_Aggregation_Child_Page(thisChild.Code, thisChild.Label));
                 }
             }
         }

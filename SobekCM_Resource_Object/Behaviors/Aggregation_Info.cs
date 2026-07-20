@@ -26,7 +26,7 @@ namespace SobekCM.Resource_Object.Behaviors
         public string Name { get; set; }
 
         /// <summary> Type of aggregation </summary>
-        public string Type { get; set;  }
+        public string Type { get; set; }
 
         #region IEquatable<Aggregation_Info> Members
 

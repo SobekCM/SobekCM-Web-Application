@@ -1,19 +1,9 @@
 #region Using directives
 
-using SobekCM.Core.MemoryMgmt;
-using Microsoft.Extensions.Caching.Memory;
-
-using System;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Data;
-using System.IO;
-using System.Linq;
-using System.Text;
-
-using System.Xml.Serialization;
 using Jil;
+using Microsoft.Extensions.Caching.Memory;
 using ProtoBuf;
+using SobekCM.Core.Configuration.Engine;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Message;
 using SobekCM.Core.WebContent;
@@ -23,8 +13,15 @@ using SobekCM.Core.WebContent.Single;
 using SobekCM.Engine_Library.ApplicationState;
 using SobekCM.Engine_Library.Database;
 using SobekCM.Engine_Library.JSON_Client_Helpers;
-using SobekCM.Core.Configuration.Engine;
 using SobekCM.Tools;
+using System;
+using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.Data;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Xml.Serialization;
 
 #endregion
 
@@ -41,7 +38,7 @@ namespace SobekCM.Engine_Library.Endpoints
 
             /// <summary> Expected source file was not found </summary>
             No_File_Found,
-     
+
             /// <summary> Unexpected error reading a source file </summary>
             Error_Reading_File
         }
@@ -71,13 +68,13 @@ namespace SobekCM.Engine_Library.Endpoints
             catch (Exception ee)
             {
                 Response.ContentType = "text/plain";
-                Response.Output.WriteLine("Exception pulling the web content hierarchy - " + ee.Message );
+                Response.Output.WriteLine("Exception pulling the web content hierarchy - " + ee.Message);
                 Response.StatusCode = 500;
 
                 // If this was debug mode, then write the tracer
                 if (IsDebug)
                 {
-                    tracer.Add_Trace("WebContentServices.Get_Hierarchy", "Exception caught " + ee.Message );
+                    tracer.Add_Trace("WebContentServices.Get_Hierarchy", "Exception caught " + ee.Message);
                     Response.Output.WriteLine();
                     Response.Output.WriteLine();
                     Response.Output.WriteLine("DEBUG MODE DETECTED");
@@ -88,7 +85,7 @@ namespace SobekCM.Engine_Library.Endpoints
                 }
                 return;
             }
-            
+
 
             // If null was returned, an error occurred
             if (returnValue == null)
@@ -321,11 +318,11 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="QueryString"></param>
         /// <param name="Protocol"></param>
         /// <param name="IsDebug"></param>
-        public void Get_HTML_Based_Content_By_URL(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug )
+        public void Get_HTML_Based_Content_By_URL(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
         {
             Custom_Tracer tracer = new Custom_Tracer();
 
-            tracer.Add_Trace("WebContentServices.Get_HTML_Based_Content_By_URL","Compute web content id from url segments");
+            tracer.Add_Trace("WebContentServices.Get_HTML_Based_Content_By_URL", "Compute web content id from url segments");
 
             if (Engine_ApplicationCache_Gateway.WebContent_Hierarchy == null)
             {
@@ -441,7 +438,7 @@ namespace SobekCM.Engine_Library.Endpoints
             }
 
             // If this was debug mode, then just write the tracer
-            if ( IsDebug )
+            if (IsDebug)
             {
                 tracer.Add_Trace("WebContentServices.Get_HTML_Based_Content_By_URL", "Debug mode detected");
                 Response.ContentType = "text/plain";
@@ -555,7 +552,7 @@ namespace SobekCM.Engine_Library.Endpoints
             // Get and validate the required USER (string) posted request object
             if ((RequestForm["User"] == null) || (String.IsNullOrEmpty(RequestForm["User"])))
             {
-                Serialize( new RestResponseMessage(ErrorRestTypeEnum.InputError, "Required posted object 'User' is missing") , Response, Protocol, null);
+                Serialize(new RestResponseMessage(ErrorRestTypeEnum.InputError, "Required posted object 'User' is missing"), Response, Protocol, null);
                 Response.StatusCode = 400;
                 return;
             }
@@ -606,7 +603,7 @@ namespace SobekCM.Engine_Library.Endpoints
             }
 
             // If content wasnot successfully deserialized, return error
-            if ( content == null )
+            if (content == null)
             {
                 Serialize(new RestResponseMessage(ErrorRestTypeEnum.InputError, "Unable to deserialize 'Content' parameter to HTML_Based_Content"), Response, Protocol, null);
                 Response.StatusCode = 400;
@@ -700,7 +697,7 @@ namespace SobekCM.Engine_Library.Endpoints
                     {
                         changeMessage = "Changed redirect URL";
                     }
-                    else if ( newRedirect.Length == 0 )
+                    else if (newRedirect.Length == 0)
                     {
                         changeMessage = "Removed redirect URL";
                     }
@@ -971,7 +968,7 @@ namespace SobekCM.Engine_Library.Endpoints
                         byte[] byteArray2 = Encoding.UTF8.GetBytes(contentString);
                         MemoryStream mstream2 = new MemoryStream(byteArray2);
                         XmlSerializer x = new XmlSerializer(typeof(HTML_Based_Content));
-                        content = (HTML_Based_Content) x.Deserialize(mstream2);
+                        content = (HTML_Based_Content)x.Deserialize(mstream2);
                         break;
                 }
             }
@@ -1640,7 +1637,7 @@ namespace SobekCM.Engine_Library.Endpoints
             List<UploadedFileFolderInfo> serverFiles = new List<UploadedFileFolderInfo>();
 
             // Build the folder which will include the uploads
-            StringBuilder designFolderBldr = new StringBuilder( "webcontent\\" + UrlSegments[0]);
+            StringBuilder designFolderBldr = new StringBuilder("webcontent\\" + UrlSegments[0]);
             if (UrlSegments.Count > 1) designFolderBldr.Append("\\" + UrlSegments[1]);
             if (UrlSegments.Count > 2) designFolderBldr.Append("\\" + UrlSegments[2]);
             if (UrlSegments.Count > 3) designFolderBldr.Append("\\" + UrlSegments[3]);
@@ -1719,7 +1716,7 @@ namespace SobekCM.Engine_Library.Endpoints
 
             // Were there updates?
             bool returnValue = changes.Tables[0].Rows.Count > 0;
-            tracer.Add_Trace("WebContentServices.Has_Global_Recent_Updates","Will return value " + returnValue.ToString().ToUpper());
+            tracer.Add_Trace("WebContentServices.Has_Global_Recent_Updates", "Will return value " + returnValue.ToString().ToUpper());
 
 
             // If this was debug mode, then just write the tracer
@@ -1751,7 +1748,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="QueryString"></param>
         /// <param name="Protocol"></param>
         /// <param name="IsDebug"></param>
-        public void Get_Global_Recent_Updates(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug )
+        public void Get_Global_Recent_Updates(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
         {
             Custom_Tracer tracer = new Custom_Tracer();
 
@@ -1778,15 +1775,15 @@ namespace SobekCM.Engine_Library.Endpoints
             }
 
             // Add a trace
-            tracer.Add_Trace("WebContentServices.Get_Recent_Updates","Get recent updates page " + page + " with " + rows_per_page + " rows per page");
+            tracer.Add_Trace("WebContentServices.Get_Recent_Updates", "Get recent updates page " + page + " with " + rows_per_page + " rows per page");
 
             // Check for a user filter
             string userFilter = QueryString["user"];
             if (!String.IsNullOrWhiteSpace(userFilter))
                 tracer.Add_Trace("WebContentServices.Get_Recent_Updates", "Filter by user '" + userFilter + "'");
-         
+
             // Get the dataset of recent updates
-            DataSet changes = get_global_recent_updates_set(tracer); 
+            DataSet changes = get_global_recent_updates_set(tracer);
 
             // If null was returned, an error occurred
             if (changes == null)
@@ -1796,7 +1793,7 @@ namespace SobekCM.Engine_Library.Endpoints
                 Response.StatusCode = 500;
 
                 // If this was debug mode, then just write the tracer
-                if ( IsDebug )
+                if (IsDebug)
                 {
                     Response.Output.WriteLine();
                     Response.Output.WriteLine();
@@ -1810,7 +1807,7 @@ namespace SobekCM.Engine_Library.Endpoints
             // Create the list for the results
             WebContent_Recent_Changes returnValue = new WebContent_Recent_Changes
             {
-                Page = page, 
+                Page = page,
                 RowsPerPage = rows_per_page
             };
 
@@ -1848,7 +1845,7 @@ namespace SobekCM.Engine_Library.Endpoints
                     Response.StatusCode = 500;
 
                     // If this was debug mode, then just write the tracer
-                    if ( IsDebug )
+                    if (IsDebug)
                     {
                         Response.Output.WriteLine();
                         Response.Output.WriteLine();
@@ -1883,7 +1880,7 @@ namespace SobekCM.Engine_Library.Endpoints
                     Response.StatusCode = 500;
 
                     // If this was debug mode, then just write the tracer
-                    if ( IsDebug )
+                    if (IsDebug)
                     {
                         Response.Output.WriteLine();
                         Response.Output.WriteLine();
@@ -1898,9 +1895,9 @@ namespace SobekCM.Engine_Library.Endpoints
                 }
             }
 
-            
+
             // If this was debug mode, then just write the tracer
-            if ( IsDebug )
+            if (IsDebug)
             {
                 tracer.Add_Trace("WebContentServices.Get_Global_Recent_Updates", "Debug mode detected");
                 Response.ContentType = "text/plain";
@@ -1952,7 +1949,7 @@ namespace SobekCM.Engine_Library.Endpoints
                 sortDirection1 = "desc";
 
             // Get the dataset of recent updates
-            DataSet changes = get_global_recent_updates_set(tracer); 
+            DataSet changes = get_global_recent_updates_set(tracer);
 
             // If null was returned, an error occurred
             if (changes == null)
@@ -2133,7 +2130,7 @@ namespace SobekCM.Engine_Library.Endpoints
             tracer.Add_Trace("WebContentServices.Get_Global_Recent_Updates_NextLevel", "Into endpoint code");
 
             // Get the dataset of recent updates
-            DataSet changes = get_global_recent_updates_set(tracer); 
+            DataSet changes = get_global_recent_updates_set(tracer);
 
             // If null was returned, an error occurred
             if (changes == null)
@@ -2305,7 +2302,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="QueryString"></param>
         /// <param name="Protocol"></param>
         /// <param name="IsDebug"></param>
-        public void Get_Global_Recent_Updates_Users(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug )
+        public void Get_Global_Recent_Updates_Users(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
         {
             Custom_Tracer tracer = new Custom_Tracer();
 
@@ -2323,7 +2320,7 @@ namespace SobekCM.Engine_Library.Endpoints
                 Response.StatusCode = 500;
 
                 // If this was debug mode, then just write the tracer
-                if ( IsDebug )
+                if (IsDebug)
                 {
                     Response.Output.WriteLine();
                     Response.Output.WriteLine();
@@ -2345,7 +2342,7 @@ namespace SobekCM.Engine_Library.Endpoints
             }
 
             // If this was debug mode, then just write the tracer
-            if ( IsDebug )
+            if (IsDebug)
             {
                 tracer.Add_Trace("WebContentServices.Get_Global_Recent_Updates_Users", "Debug mode detected");
                 Response.ContentType = "text/plain";
@@ -2372,7 +2369,7 @@ namespace SobekCM.Engine_Library.Endpoints
             // Start to buid the object to report this work
             WebContent_Recent_Changed_Page recentChange = new WebContent_Recent_Changed_Page
             {
-                WebContentID = Int32.Parse(ChangeRow[0].ToString()), 
+                WebContentID = Int32.Parse(ChangeRow[0].ToString()),
                 Level1 = ChangeRow[1].ToString()
             };
 
@@ -2494,7 +2491,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="QueryString"></param>
         /// <param name="Protocol"></param>
         /// <param name="IsDebug"></param>
-        public void Get_Global_Usage_Report(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug )
+        public void Get_Global_Usage_Report(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
         {
             Custom_Tracer tracer = new Custom_Tracer();
 
@@ -2539,8 +2536,8 @@ namespace SobekCM.Engine_Library.Endpoints
                 month2 = temp;
 
             // Add a trace
-            tracer.Add_Trace("WebContentServices.Get_Global_Usage_Report", "Report will be from " + year1 + "/" + month1 + " and " + year2 + "/" + month2 );
-            
+            tracer.Add_Trace("WebContentServices.Get_Global_Usage_Report", "Report will be from " + year1 + "/" + month1 + " and " + year2 + "/" + month2);
+
             // Get the dataset of results
             DataSet pages = get_global_usage_report_dataset(year1, month1, year2, month2, tracer);
 
@@ -2552,7 +2549,7 @@ namespace SobekCM.Engine_Library.Endpoints
                 Response.StatusCode = 500;
 
                 // If this was debug mode, then just write the tracer
-                if ( IsDebug )
+                if (IsDebug)
                 {
                     Response.Output.WriteLine();
                     Response.Output.WriteLine();
@@ -2573,8 +2570,8 @@ namespace SobekCM.Engine_Library.Endpoints
             };
 
             // Prepare to step through the rows requested and convert them for returning
-            int row_counter = (page - 1)*rows_per_page;
-            int final_row_counter = page*rows_per_page;
+            int row_counter = (page - 1) * rows_per_page;
+            int final_row_counter = page * rows_per_page;
 
 
             try
@@ -2596,7 +2593,7 @@ namespace SobekCM.Engine_Library.Endpoints
                 Response.StatusCode = 500;
 
                 // If this was debug mode, then just write the tracer
-                if ( IsDebug )
+                if (IsDebug)
                 {
                     Response.Output.WriteLine();
                     Response.Output.WriteLine();
@@ -2611,7 +2608,7 @@ namespace SobekCM.Engine_Library.Endpoints
             }
 
             // If this was debug mode, then just write the tracer
-            if ( IsDebug )
+            if (IsDebug)
             {
                 tracer.Add_Trace("WebContentServices.Get_Global_Usage_Report", "Debug mode detected");
                 Response.ContentType = "text/plain";
@@ -2808,23 +2805,23 @@ namespace SobekCM.Engine_Library.Endpoints
             Response.Output.WriteLine("\"aaData\": [");
 
             // Sort by the correct column
-                if (sortingColumn1 == 0)
-                {
-                    // Must be descending column zero then
-                    resultsView.Sort = "Level1 " + sortDirection1 + ", Level2 " + sortDirection1 + ", Level3 " + sortDirection1 + ", Level4 " + sortDirection1 + ", Level5 " + sortDirection1 + ", Level6 " + sortDirection1 + ", Level7 " + sortDirection1 + ", Level8 " + sortDirection1;
-                }
-                else if (sortingColumn1 == 1)
-                {
-                    resultsView.Sort = "Title " + sortDirection1;
-                }
-                else if (sortingColumn1 == 2)
-                {
-                    resultsView.Sort = "Hits " + sortDirection1;
-                }
-                else if (sortingColumn1 == 3)
-                {
-                    resultsView.Sort = "HitsHierarchical " + sortDirection1;
-                }
+            if (sortingColumn1 == 0)
+            {
+                // Must be descending column zero then
+                resultsView.Sort = "Level1 " + sortDirection1 + ", Level2 " + sortDirection1 + ", Level3 " + sortDirection1 + ", Level4 " + sortDirection1 + ", Level5 " + sortDirection1 + ", Level6 " + sortDirection1 + ", Level7 " + sortDirection1 + ", Level8 " + sortDirection1;
+            }
+            else if (sortingColumn1 == 1)
+            {
+                resultsView.Sort = "Title " + sortDirection1;
+            }
+            else if (sortingColumn1 == 2)
+            {
+                resultsView.Sort = "Hits " + sortDirection1;
+            }
+            else if (sortingColumn1 == 3)
+            {
+                resultsView.Sort = "HitsHierarchical " + sortDirection1;
+            }
 
             // Add the data for the rows to show
             for (int i = displayStart; (i < displayStart + displayLength) && (i < total_results); i++)
@@ -2862,7 +2859,7 @@ namespace SobekCM.Engine_Library.Endpoints
                     }
                 }
 
-                Response.Output.Write("\", \"" + thisRow["Title"] + "\", " + thisRow["Hits"] + ", " + thisRow["HitsHierarchical"] );
+                Response.Output.Write("\", \"" + thisRow["Title"] + "\", " + thisRow["Hits"] + ", " + thisRow["HitsHierarchical"]);
 
                 // Finish this row
                 if ((i < displayStart + displayLength - 1) && (i < total_results - 1))
@@ -3170,7 +3167,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="QueryString"></param>
         /// <param name="Protocol"></param>
         /// <param name="IsDebug"></param>
-        public void Get_All_Redirects(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug )
+        public void Get_All_Redirects(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
         {
             Custom_Tracer tracer = new Custom_Tracer();
 
@@ -3210,7 +3207,7 @@ namespace SobekCM.Engine_Library.Endpoints
                 Response.StatusCode = 500;
 
                 // If this was debug mode, then just write the tracer
-                if ( IsDebug )
+                if (IsDebug)
                 {
                     Response.Output.WriteLine();
                     Response.Output.WriteLine();
@@ -3252,7 +3249,7 @@ namespace SobekCM.Engine_Library.Endpoints
                 Response.StatusCode = 500;
 
                 // If this was debug mode, then just write the tracer
-                if ( IsDebug )
+                if (IsDebug)
                 {
                     Response.Output.WriteLine();
                     Response.Output.WriteLine();
@@ -3267,7 +3264,7 @@ namespace SobekCM.Engine_Library.Endpoints
             }
 
             // If this was debug mode, then just write the tracer
-            if ( IsDebug )
+            if (IsDebug)
             {
                 tracer.Add_Trace("WebContentServices.Get_All_Redirects", "Debug mode detected");
                 Response.ContentType = "text/plain";
@@ -3736,7 +3733,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="QueryString"></param>
         /// <param name="Protocol"></param>
         /// <param name="IsDebug"></param>
-        public void Get_All_Pages(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug )
+        public void Get_All_Pages(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
         {
             Custom_Tracer tracer = new Custom_Tracer();
 
@@ -3776,7 +3773,7 @@ namespace SobekCM.Engine_Library.Endpoints
                 Response.StatusCode = 500;
 
                 // If this was debug mode, then just write the tracer
-                if ( IsDebug )
+                if (IsDebug)
                 {
                     Response.Output.WriteLine();
                     Response.Output.WriteLine();
@@ -3818,7 +3815,7 @@ namespace SobekCM.Engine_Library.Endpoints
                 Response.StatusCode = 500;
 
                 // If this was debug mode, then just write the tracer
-                if ( IsDebug )
+                if (IsDebug)
                 {
                     Response.Output.WriteLine();
                     Response.Output.WriteLine();
@@ -3833,7 +3830,7 @@ namespace SobekCM.Engine_Library.Endpoints
             }
 
             // If this was debug mode, then just write the tracer
-            if ( IsDebug )
+            if (IsDebug)
             {
                 tracer.Add_Trace("WebContentServices.Get_All_Pages", "Debug mode detected");
                 Response.ContentType = "text/plain";
@@ -3863,7 +3860,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="QueryString"></param>
         /// <param name="Protocol"></param>
         /// <param name="IsDebug"></param>
-        public void Get_All_Pages_JDataTable(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug )
+        public void Get_All_Pages_JDataTable(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
         {
             Custom_Tracer tracer = new Custom_Tracer();
 
@@ -3897,7 +3894,7 @@ namespace SobekCM.Engine_Library.Endpoints
                 Response.StatusCode = 500;
 
                 // If this was debug mode, then just write the tracer
-                if ( IsDebug )
+                if (IsDebug)
                 {
                     Response.Output.WriteLine();
                     Response.Output.WriteLine();
@@ -3968,14 +3965,14 @@ namespace SobekCM.Engine_Library.Endpoints
             Response.Output.WriteLine("\"aaData\": [");
 
             // Sort by the correct column
-            if ((sortingColumn1 > 1) || ( sortDirection1 != "asc"))
+            if ((sortingColumn1 > 1) || (sortDirection1 != "asc"))
             {
                 if (sortingColumn1 == 1)
                 {
                     // Must be descending column zero then
                     resultsView.Sort = "Level1 desc, Level2 desc, Level3 desc, Level4 desc, Level5 desc, Level6 desc, Level7 desc, Level8 desc";
                 }
-                else if ( sortingColumn1 == 2 )
+                else if (sortingColumn1 == 2)
                 {
                     resultsView.Sort = "Title " + sortDirection1;
                 }
@@ -4037,7 +4034,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="QueryString"></param>
         /// <param name="Protocol"></param>
         /// <param name="IsDebug"></param>
-        public void Get_All_Pages_NextLevel(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug )
+        public void Get_All_Pages_NextLevel(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
         {
             Custom_Tracer tracer = new Custom_Tracer();
             tracer.Add_Trace("WebContentServices.Get_All_Pages_NextLevel", "Into endpoint code");
@@ -4053,7 +4050,7 @@ namespace SobekCM.Engine_Library.Endpoints
                 Response.StatusCode = 500;
 
                 // If this was debug mode, then just write the tracer
-                if ( IsDebug )
+                if (IsDebug)
                 {
                     Response.Output.WriteLine();
                     Response.Output.WriteLine();
@@ -4108,22 +4105,22 @@ namespace SobekCM.Engine_Library.Endpoints
                     // Build the filter
                     StringBuilder filterBuilder = new StringBuilder("Level1='" + level1 + "' and Level2='" + level2 + "'");
                     int column_counter = 3;
-                    if ((UrlSegments.Count > 2) && ( !String.IsNullOrWhiteSpace(UrlSegments[2])))
+                    if ((UrlSegments.Count > 2) && (!String.IsNullOrWhiteSpace(UrlSegments[2])))
                     {
                         filterBuilder.Append(" and Level3='" + UrlSegments[2] + "'");
                         column_counter++;
 
-                        if ((UrlSegments.Count > 3) && ( !String.IsNullOrWhiteSpace(UrlSegments[3])))
+                        if ((UrlSegments.Count > 3) && (!String.IsNullOrWhiteSpace(UrlSegments[3])))
                         {
                             filterBuilder.Append(" and Level4='" + UrlSegments[3] + "'");
                             column_counter++;
 
-                            if ((UrlSegments.Count > 4) && ( !String.IsNullOrWhiteSpace(UrlSegments[4])))
+                            if ((UrlSegments.Count > 4) && (!String.IsNullOrWhiteSpace(UrlSegments[4])))
                             {
                                 filterBuilder.Append(" and Level5='" + UrlSegments[4] + "'");
                                 column_counter++;
 
-                                if ((UrlSegments.Count > 5) && ( !String.IsNullOrWhiteSpace(UrlSegments[5])))
+                                if ((UrlSegments.Count > 5) && (!String.IsNullOrWhiteSpace(UrlSegments[5])))
                                 {
                                     filterBuilder.Append(" and Level6='" + UrlSegments[5] + "'");
                                     column_counter++;
@@ -4169,7 +4166,7 @@ namespace SobekCM.Engine_Library.Endpoints
                 Response.StatusCode = 500;
 
                 // If this was debug mode, then just write the tracer
-                if ( IsDebug )
+                if (IsDebug)
                 {
                     Response.Output.WriteLine();
                     Response.Output.WriteLine();
@@ -4186,7 +4183,7 @@ namespace SobekCM.Engine_Library.Endpoints
             }
 
             // If this was debug mode, then just write the tracer
-            if ( IsDebug )
+            if (IsDebug)
             {
                 tracer.Add_Trace("WebContentServices.Get_All_Pages_NextLevel", "Debug mode detected");
                 Response.ContentType = "text/plain";
@@ -4602,7 +4599,7 @@ namespace SobekCM.Engine_Library.Endpoints
             {
                 // Start the JSON response for this row
                 DataRow thisRow = resultsView[i].Row;
-                if (( thisRow["Redirect"] == DBNull.Value ) || ( thisRow["Redirect"].ToString().Length == 0 ))
+                if ((thisRow["Redirect"] == DBNull.Value) || (thisRow["Redirect"].ToString().Length == 0))
                     Response.Output.Write("[ \"" + thisRow["WebContentID"] + "\", ");
                 else
                     Response.Output.Write("[ \"" + thisRow["WebContentID"] + "R\", ");
@@ -4879,7 +4876,7 @@ namespace SobekCM.Engine_Library.Endpoints
                 // Get the sitemaps directory
                 string sitemap_directory = Path.Combine(Engine_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location, "webcontent", "sitemaps");
 
-                if ( IsDebug )
+                if (IsDebug)
                     tracer.Add_Trace("WebContentServices.Get_All_Sitemaps", "Sitemap directory: " + sitemap_directory);
 
                 // Create the return value
@@ -4928,7 +4925,7 @@ namespace SobekCM.Engine_Library.Endpoints
             if (IsDebug)
             {
                 tracer.Add_Trace("WebContentServices.Get_All_Sitemaps", "Debug mode detected");
-                
+
                 Response.ContentType = "text/plain";
                 Response.Output.WriteLine("DEBUG MODE DETECTED");
                 Response.Output.WriteLine();

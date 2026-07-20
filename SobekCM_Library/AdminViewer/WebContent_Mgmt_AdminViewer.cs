@@ -1,14 +1,12 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
 using Microsoft.AspNetCore.Http;
 using SobekCM.Core.Client;
 using SobekCM.Core.Navigation;
-using SobekCM.Core.UI_Configuration;
-using SobekCM.Core.UI_Configuration.StaticResources;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Library.HTML;
 using SobekCM.Tools;
+using System;
+using System.Collections.Generic;
+using System.IO;
 
 namespace SobekCM.Library.AdminViewer
 {
@@ -31,7 +29,7 @@ namespace SobekCM.Library.AdminViewer
         {
             RequestSpecificValues.Tracer.Add_Trace("WebContent_Mgmt_AdminViewer.Constructor", String.Empty);
             actionMessage = String.Empty;
-            
+
             // Ensure the user is the system admin or portal admin
             if ((RequestSpecificValues.Current_User == null) || ((!RequestSpecificValues.Current_User.Is_System_Admin) && (!RequestSpecificValues.Current_User.Is_Portal_Admin)))
             {
@@ -147,7 +145,7 @@ namespace SobekCM.Library.AdminViewer
                 }
             }
 
-            
+
 
             // Show any action message
             if (actionMessage.Length > 0)
@@ -702,7 +700,7 @@ namespace SobekCM.Library.AdminViewer
         }
 
         private void add_redirects_table(TextWriter Output, string Base_URL, Custom_Tracer Tracer)
-        {            
+        {
             // If there are none whatsoever, show  a special message and don't bother with the table
             if (!SobekEngineClient.WebContent.Has_Redirects(Tracer))
             {

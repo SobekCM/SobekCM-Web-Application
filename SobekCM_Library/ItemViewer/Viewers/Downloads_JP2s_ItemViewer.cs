@@ -1,14 +1,14 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+using Microsoft.AspNetCore.Http;
 using SobekCM.Core.BriefItem;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Users;
 using SobekCM.Library.ItemViewer.Menu;
 using SobekCM.Tools;
-using Microsoft.AspNetCore.Http;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 
 namespace SobekCM.Library.ItemViewer.Viewers
 {
@@ -41,7 +41,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         public virtual bool Include_Viewer(BriefItemInfo CurrentItem)
         {
             // Any download files are really good enoughh
-            if (( CurrentItem.Downloads != null ) && (CurrentItem.Downloads.Any(DownloadGroup => DownloadGroup.Files.Count > 0)))
+            if ((CurrentItem.Downloads != null) && (CurrentItem.Downloads.Any(DownloadGroup => DownloadGroup.Files.Count > 0)))
                 return true;
 
             // Otherwise, if there are JPEG2000 files, add it
@@ -271,7 +271,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     foreach (BriefItem_File thisFile in pageNode.Files)
                     {
                         string file_extension = Path.GetExtension(thisFile.Name);
-                        if ((!String.IsNullOrEmpty(file_extension)) && (String.Equals(file_extension, ".jp2", StringComparison.OrdinalIgnoreCase )))
+                        if ((!String.IsNullOrEmpty(file_extension)) && (String.Equals(file_extension, ".jp2", StringComparison.OrdinalIgnoreCase)))
                         {
                             pageDownloads.Add("<a href=\"" + (BriefItem.Web.Source_URL + "/" + thisFile.Name).Replace("\\", "/").Replace("//", "/").Replace("http:/", "http://") + "\">" + pageNode.Label + "</a>");
                             break;

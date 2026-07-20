@@ -1,5 +1,25 @@
 #region Using directives
 
+using Jil;
+using SobekCM.Core.BriefItem;
+using SobekCM.Core.Configuration.Engine;
+using SobekCM.Core.EAD;
+using SobekCM.Core.FileSystems;
+using SobekCM.Core.Items;
+using SobekCM.Core.MARC;
+using SobekCM.Core.MemoryMgmt;
+using SobekCM.Core.Users;
+using SobekCM.Engine_Library.ApplicationState;
+using SobekCM.Engine_Library.Configuration;
+using SobekCM.Engine_Library.Database;
+using SobekCM.Engine_Library.Items;
+using SobekCM.Engine_Library.Items.BriefItems;
+using SobekCM.Resource_Object;
+using SobekCM.Resource_Object.MARC;
+using SobekCM.Resource_Object.Metadata_File_ReaderWriters;
+using SobekCM.Resource_Object.Metadata_Modules;
+using SobekCM.Resource_Object.Metadata_Modules.EAD;
+using SobekCM.Tools;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -7,27 +27,6 @@ using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
 using System.Text;
-
-using Jil;
-using SobekCM.Core.BriefItem;
-using SobekCM.Core.EAD;
-using SobekCM.Core.FileSystems;
-using SobekCM.Core.Items;
-using SobekCM.Core.MARC;
-using SobekCM.Core.MemoryMgmt;
-using SobekCM.Engine_Library.ApplicationState;
-using SobekCM.Engine_Library.Configuration;
-using SobekCM.Engine_Library.Database;
-using SobekCM.Engine_Library.Items;
-using SobekCM.Engine_Library.Items.BriefItems;
-using SobekCM.Core.Configuration.Engine;
-using SobekCM.Core.Users;
-using SobekCM.Resource_Object;
-using SobekCM.Resource_Object.MARC;
-using SobekCM.Resource_Object.Metadata_File_ReaderWriters;
-using SobekCM.Resource_Object.Metadata_Modules;
-using SobekCM.Resource_Object.Metadata_Modules.EAD;
-using SobekCM.Tools;
 
 #endregion
 
@@ -236,7 +235,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="IsDebug"></param>
         public void GetItemBriefStandard(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
         {
-            brief_item_response("standard", Response, UrlSegments, QueryString, Protocol, IsDebug );
+            brief_item_response("standard", Response, UrlSegments, QueryString, Protocol, IsDebug);
         }
 
         /// <summary> Gets the information about a single digital resource, using the STANDARD mapping set </summary>
@@ -268,7 +267,7 @@ namespace SobekCM.Engine_Library.Endpoints
                 {
                     // Get the BibID and VID
                     string bibid = UrlSegments[0];
-                    string vid = ((UrlSegments.Count > 1) && ( UrlSegments[1].Length > 0 )) ? UrlSegments[1] : "00001";
+                    string vid = ((UrlSegments.Count > 1) && (UrlSegments[1].Length > 0)) ? UrlSegments[1] : "00001";
 
                     tracer.Add_Trace("ItemServices.GetItemBrief", "Requested brief item info for " + bibid + ":" + vid + " using " + Mapping + " mapping");
 
@@ -613,8 +612,8 @@ namespace SobekCM.Engine_Library.Endpoints
 
                 if (Viewer != "text")
                 {
-                    int first_page_to_show = (Page - 1)*20;
-                    int last_page_to_show = (Page*20) - 1;
+                    int first_page_to_show = (Page - 1) * 20;
+                    int last_page_to_show = (Page * 20) - 1;
                     if (first_page_to_show < BriefItem.Images.Count)
                     {
                         int page = first_page_to_show;
@@ -750,7 +749,7 @@ namespace SobekCM.Engine_Library.Endpoints
             return itemAndErrorTuple;
         }
 
-        protected Tuple<BriefItemInfo,SobekCM_Item_Error> GetBriefItem(string BibID, string VID, string MappingSet, Custom_Tracer Tracer)
+        protected Tuple<BriefItemInfo, SobekCM_Item_Error> GetBriefItem(string BibID, string VID, string MappingSet, Custom_Tracer Tracer)
         {
             // Get the full SOobekCM_Item object for the provided BibID / VID
             Tracer.Add_Trace("ItemServices.getBriefItem", "Get the full SobekCM_Item object for this BibID / VID");
@@ -826,8 +825,8 @@ namespace SobekCM.Engine_Library.Endpoints
                 BriefItemInfo item = BriefItem_Factory.Create(currentItem, Tracer);
                 return item;
             }
-            
-            
+
+
             Tracer.Add_Trace("ItemServices.getBriefTitle", "Map to the brief item, using mapping set '" + MappingSet + "'");
             BriefItemInfo item2 = BriefItem_Factory.Create(currentItem, MappingSet, Tracer);
             return item2;
@@ -889,7 +888,7 @@ namespace SobekCM.Engine_Library.Endpoints
                 if (result != null)
                 {
                     if (Protocol == Microservice_Endpoint_Protocol_Enum.JSON)
-                        JSON.Serialize(new {bibid = result.Item1, vid = result.Item2}, Response.Output, Options.ISO8601ExcludeNulls);
+                        JSON.Serialize(new { bibid = result.Item1, vid = result.Item2 }, Response.Output, Options.ISO8601ExcludeNulls);
                     if (Protocol == Microservice_Endpoint_Protocol_Enum.JSON_P)
                     {
                         // Get the JSON-P callback function
@@ -900,7 +899,7 @@ namespace SobekCM.Engine_Library.Endpoints
                         }
 
                         Response.Output.Write(json_callback + "(");
-                        JSON.Serialize(new {bibid = result.Item1, vid = result.Item2}, Response.Output, Options.ISO8601ExcludeNullsJSONP);
+                        JSON.Serialize(new { bibid = result.Item1, vid = result.Item2 }, Response.Output, Options.ISO8601ExcludeNullsJSONP);
                         Response.Output.Write(");");
                     }
                 }
@@ -947,7 +946,7 @@ namespace SobekCM.Engine_Library.Endpoints
                             switch (itemAndError.Item2.Type)
                             {
                                 case SobekCM_Item_Error_Type_Enum.System_Error:
-                                    Response.Output.WriteLine( itemAndError.Item2.Message ?? "Unknown error completing request");
+                                    Response.Output.WriteLine(itemAndError.Item2.Message ?? "Unknown error completing request");
                                     Response.StatusCode = 500;
                                     break;
 
@@ -957,7 +956,7 @@ namespace SobekCM.Engine_Library.Endpoints
                                     break;
 
                                 case SobekCM_Item_Error_Type_Enum.Invalid_VID:
-                                    Response.Output.WriteLine(itemAndError.Item2.FirstValidVid + " - Invalid VID, use vid " + itemAndError.Item2.FirstValidVid );
+                                    Response.Output.WriteLine(itemAndError.Item2.FirstValidVid + " - Invalid VID, use vid " + itemAndError.Item2.FirstValidVid);
                                     Response.StatusCode = 303;
                                     break;
                             }
@@ -2255,7 +2254,7 @@ namespace SobekCM.Engine_Library.Endpoints
                 responseBuilder.AppendLine("  <fieldset><legend>Select the options below to print this item &nbsp; </legend>");
                 responseBuilder.AppendLine("    <blockquote>");
                 responseBuilder.AppendLine("    <input type=\"checkbox\" id=\"print_citation\" name=\"print_citation\" checked=\"checked\" /> <label for=\"print_citation\">Include brief citation?</label><br /><br />");
-                if ((sobekItem.Images == null )  || ( sobekItem.Images.Count == 0 ))
+                if ((sobekItem.Images == null) || (sobekItem.Images.Count == 0))
                 {
                     responseBuilder.AppendLine("    <input type=\"radio\" name=\"print_pages\" value=\"citation_only\" id=\"citation_only\" checked=\"checked\" /> <label for=\"current_page\">Full Citation</label><br />");
                 }
@@ -2263,7 +2262,7 @@ namespace SobekCM.Engine_Library.Endpoints
                 {
 
                     bool something_selected = false;
-                    if ( String.Compare(pageviewer, "CITATION", StringComparison.OrdinalIgnoreCase ) == 0 )
+                    if (String.Compare(pageviewer, "CITATION", StringComparison.OrdinalIgnoreCase) == 0)
                     {
                         responseBuilder.AppendLine("    <input type=\"radio\" name=\"print_pages\" value=\"citation_only\" id=\"citation_only\" class=\"print_radiobutton\" checked=\"checked\" /> <label for=\"citation_only\">Full Citation</label><br />");
                         something_selected = true;
@@ -2281,7 +2280,7 @@ namespace SobekCM.Engine_Library.Endpoints
                     else
                     {
 
-                        if (sobekItem.Behaviors.Get_Viewer("THUMBNAILS") != null )
+                        if (sobekItem.Behaviors.Get_Viewer("THUMBNAILS") != null)
                         {
                             responseBuilder.AppendLine("    <input type=\"radio\" name=\"print_pages\" value=\"contact_sheet\" id=\"contact_sheet\" class=\"print_radiobutton\" /> <label for=\"contact_sheet\">Print thumbnails</label><br />");
                         }
@@ -2293,7 +2292,7 @@ namespace SobekCM.Engine_Library.Endpoints
                         something_selected = true;
                     }
 
-                    if ((sobekItem.Images != null ) && ( sobekItem.Images.Count > 1 ))
+                    if ((sobekItem.Images != null) && (sobekItem.Images.Count > 1))
                     {
                         // Add the all pages option
                         responseBuilder.AppendLine(!something_selected
@@ -2307,7 +2306,7 @@ namespace SobekCM.Engine_Library.Endpoints
                         {
                             if (thisPage.Label.Length > 25)
                             {
-                                if (current_page == sequence )
+                                if (current_page == sequence)
                                 {
                                     optionBuilder.Append("<option value=\"" + sequence + "\" selected=\"selected\">" + thisPage.Label.Substring(0, 20) + "...</option> ");
                                 }
@@ -2462,7 +2461,7 @@ namespace SobekCM.Engine_Library.Endpoints
                 string bibid = UrlSegments[0];
                 string vid = (UrlSegments.Count > 1) ? UrlSegments[1] : "00001";
 
-                tracer.Add_Trace("ItemServices.Share_HTTP_Snippet", "Get the full SobekCM_Item object for " + bibid + ":" + vid );
+                tracer.Add_Trace("ItemServices.Share_HTTP_Snippet", "Get the full SobekCM_Item object for " + bibid + ":" + vid);
                 // Get the current item first
                 Tuple<SobekCM_Item, SobekCM_Item_Error> itemAndError = getSobekItem(bibid, vid, tracer);
                 SobekCM_Item sobekItem = itemAndError.Item1;
@@ -2530,7 +2529,7 @@ namespace SobekCM.Engine_Library.Endpoints
 
                     return;
                 }
-                
+
                 tracer.Add_Trace("ItemServices.Share_HTTP_Snippet", "Building the HTML response");
 
                 // Build the response
@@ -2629,7 +2628,7 @@ namespace SobekCM.Engine_Library.Endpoints
                 }
 
                 // Try to get the user information
-                tracer.Add_Trace("ItemServices.Bookshelf_HTTP_Snippet", "Requested bookshelf HTML snippet for userid " + userid );
+                tracer.Add_Trace("ItemServices.Bookshelf_HTTP_Snippet", "Requested bookshelf HTML snippet for userid " + userid);
                 User_Object thisUser = Engine_Database.Get_User(userid, tracer);
 
                 // If null, respond

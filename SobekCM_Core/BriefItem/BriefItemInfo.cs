@@ -1,11 +1,11 @@
 ﻿#region Using directives
 
+using ProtoBuf;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
-using ProtoBuf;
 
 #endregion
 
@@ -23,7 +23,7 @@ namespace SobekCM.Core.BriefItem
         [DataMember(EmitDefaultValue = false, Name = "bibid")]
         [XmlAttribute("bibid")]
         [ProtoMember(1)]
-        public string BibID { get; set;  }
+        public string BibID { get; set; }
 
         /// <summary> Volume identifier for this item </summary>
         [DataMember(EmitDefaultValue = false, Name = "vid")]
@@ -35,7 +35,7 @@ namespace SobekCM.Core.BriefItem
         [DataMember(EmitDefaultValue = false, Name = "title")]
         [XmlElement("title")]
         [ProtoMember(3)]
-        public string Title { get; set;  }
+        public string Title { get; set; }
 
         /// <summary> Namespace definition used within the brief item (generally within the citation)  </summary>
         [DataMember(EmitDefaultValue = false, Name = "namespaces")]
@@ -178,7 +178,7 @@ namespace SobekCM.Core.BriefItem
                 descriptionTermLookup.Add(Term, newElement);
                 Description.Add(newElement);
                 return newElement.Add_Value(Value);
-                
+
             }
         }
 
@@ -188,14 +188,14 @@ namespace SobekCM.Core.BriefItem
         public void Add_Description(string Term, ReadOnlyCollection<string> Value)
         {
             // If the value is NULL or empty, do nothing
-            if (( Value == null ) || ( Value.Count == 0 ))
+            if ((Value == null) || (Value.Count == 0))
                 return;
 
             // Was a value, so look to add it
             BriefItem_DescriptiveTerm currentList;
             if (descriptionTermLookup.TryGetValue(Term, out currentList))
             {
-                foreach( string thisValue in Value )
+                foreach (string thisValue in Value)
                     currentList.Add_Value(thisValue);
             }
             else
@@ -210,7 +210,7 @@ namespace SobekCM.Core.BriefItem
 
         /// <summary> Add a fully built descriptive element, by term </summary>
         /// <param name="TermObject"> Fully built descriptive term element, as employed by the SobekCM system </param>
-        public void Add_Description(BriefItem_DescriptiveTerm TermObject )
+        public void Add_Description(BriefItem_DescriptiveTerm TermObject)
         {
             // Was a value, so look to add it
             if (!descriptionTermLookup.ContainsKey(TermObject.Term))
@@ -227,7 +227,7 @@ namespace SobekCM.Core.BriefItem
         {
             // Ensure the dictionary is built first
             if (descriptionTermLookup == null)
-                descriptionTermLookup = new Dictionary<string, BriefItem_DescriptiveTerm>( StringComparer.OrdinalIgnoreCase);
+                descriptionTermLookup = new Dictionary<string, BriefItem_DescriptiveTerm>(StringComparer.OrdinalIgnoreCase);
 
             // Ensure the dictionary count matches the description count
             if (descriptionTermLookup.Count != Description.Count)

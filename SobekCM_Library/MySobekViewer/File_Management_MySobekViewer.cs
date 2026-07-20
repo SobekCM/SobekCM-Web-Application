@@ -1,28 +1,24 @@
 #region Using directives
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
+using Microsoft.AspNetCore.Http;
 using SobekCM.Core.Client;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
-using SobekCM.Core.UI_Configuration;
-using SobekCM.Core.UI_Configuration.StaticResources;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Engine_Library.Email;
 using SobekCM.Library.AdminViewer;
-using Microsoft.AspNetCore.Http;
 // using SobekCM.Library.Helpers.UploadiFive;
 using SobekCM.Library.HTML;
 using SobekCM.Library.UI;
 using SobekCM.Resource_Object;
-using SobekCM.Resource_Object.Database;
 using SobekCM.Resource_Object.Divisions;
 using SobekCM.Tools;
 using SobekCM_Resource_Database;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text.RegularExpressions;
 
 #endregion
 
@@ -171,10 +167,10 @@ namespace SobekCM.Library.MySobekViewer
                     }
                 }
 
-                if ( action == "next_phase")
+                if (action == "next_phase")
                 {
                     int phase = Convert.ToInt32(Context.Request.Form["phase"]);
-                    switch( phase )
+                    switch (phase)
                     {
                         case 2:
                             // Clear all the file keys in the session state
@@ -201,7 +197,7 @@ namespace SobekCM.Library.MySobekViewer
                                 RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Item_Display;
                                 UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
                             }
-                            break;                         
+                            break;
                     }
                 }
             }
@@ -211,7 +207,7 @@ namespace SobekCM.Library.MySobekViewer
 
         #region Method commpletes the item submission on the way to the congratulations screen
 
-        private bool complete_item_submission(SobekCM_Item Item_To_Complete, Custom_Tracer Tracer )
+        private bool complete_item_submission(SobekCM_Item Item_To_Complete, Custom_Tracer Tracer)
         {
             // Set an initial flag 
             criticalErrorEncountered = false;
@@ -249,7 +245,7 @@ namespace SobekCM.Library.MySobekViewer
                             }
                             else
                             {
-                                List<string> newImageGrouping = new List<string> {thisFileInfo.Name};
+                                List<string> newImageGrouping = new List<string> { thisFileInfo.Name };
                                 image_files[filename_sans_extension.ToLower()] = newImageGrouping;
                             }
                         }
@@ -257,23 +253,23 @@ namespace SobekCM.Library.MySobekViewer
                     else
                     {
                         // If this does not match the exclusion regular expression, than add this
-                        if ((!Regex.Match(thisFileInfo.Name, UI_ApplicationCache_Gateway.Settings.Resources.Files_To_Exclude_From_Downloads, RegexOptions.IgnoreCase).Success) && ( String.Compare(thisFileInfo.Name, Item_To_Complete.BibID + "_" + Item_To_Complete.VID + ".html", StringComparison.OrdinalIgnoreCase) != 0 ))
+                        if ((!Regex.Match(thisFileInfo.Name, UI_ApplicationCache_Gateway.Settings.Resources.Files_To_Exclude_From_Downloads, RegexOptions.IgnoreCase).Success) && (String.Compare(thisFileInfo.Name, Item_To_Complete.BibID + "_" + Item_To_Complete.VID + ".html", StringComparison.OrdinalIgnoreCase) != 0))
                         {
-							// Also, exclude files that are .XML and marc.xml, or doc.xml, or have the bibid in the name
-							if ((thisFileInfo.Name.IndexOf("marc.xml", StringComparison.OrdinalIgnoreCase) != 0) && (thisFileInfo.Name.IndexOf("marc.xml", StringComparison.OrdinalIgnoreCase) != 0) && (thisFileInfo.Name.IndexOf(".mets", StringComparison.OrdinalIgnoreCase) < 0) && (thisFileInfo.Name.IndexOf("citation_mets.xml", StringComparison.OrdinalIgnoreCase) < 0) &&
-								((thisFileInfo.Name.IndexOf(".xml", StringComparison.OrdinalIgnoreCase) < 0) || (thisFileInfo.Name.IndexOf( Item_To_Complete.BibID, StringComparison.OrdinalIgnoreCase) < 0)))
-	                        {
-		                        // Is this the first image file with this name?
-		                        if (download_files.ContainsKey(filename_sans_extension.ToLower()))
-		                        {
-			                        download_files[filename_sans_extension.ToLower()].Add(thisFileInfo.Name);
-		                        }
-		                        else
-		                        {
-			                        List<string> newDownloadGrouping = new List<string> {thisFileInfo.Name};
-			                        download_files[filename_sans_extension.ToLower()] = newDownloadGrouping;
-		                        }
-	                        }
+                            // Also, exclude files that are .XML and marc.xml, or doc.xml, or have the bibid in the name
+                            if ((thisFileInfo.Name.IndexOf("marc.xml", StringComparison.OrdinalIgnoreCase) != 0) && (thisFileInfo.Name.IndexOf("marc.xml", StringComparison.OrdinalIgnoreCase) != 0) && (thisFileInfo.Name.IndexOf(".mets", StringComparison.OrdinalIgnoreCase) < 0) && (thisFileInfo.Name.IndexOf("citation_mets.xml", StringComparison.OrdinalIgnoreCase) < 0) &&
+                                ((thisFileInfo.Name.IndexOf(".xml", StringComparison.OrdinalIgnoreCase) < 0) || (thisFileInfo.Name.IndexOf(Item_To_Complete.BibID, StringComparison.OrdinalIgnoreCase) < 0)))
+                            {
+                                // Is this the first image file with this name?
+                                if (download_files.ContainsKey(filename_sans_extension.ToLower()))
+                                {
+                                    download_files[filename_sans_extension.ToLower()].Add(thisFileInfo.Name);
+                                }
+                                else
+                                {
+                                    List<string> newDownloadGrouping = new List<string> { thisFileInfo.Name };
+                                    download_files[filename_sans_extension.ToLower()] = newDownloadGrouping;
+                                }
+                            }
                         }
                     }
                 }
@@ -315,7 +311,7 @@ namespace SobekCM.Library.MySobekViewer
 
                 // Determine the total size of the package before saving
                 string[] all_files_final = Directory.GetFiles(digitalResourceDirectory);
-                double size = all_files_final.Aggregate<string, double>(0, (Current, ThisFile) => Current + (((new FileInfo(ThisFile)).Length)/1024));
+                double size = all_files_final.Aggregate<string, double>(0, (Current, ThisFile) => Current + (((new FileInfo(ThisFile)).Length) / 1024));
                 Item_To_Complete.DiskSize_KB = size;
 
                 // Create the options dictionary used when saving information to the database, or writing MarcXML
@@ -335,17 +331,17 @@ namespace SobekCM.Library.MySobekViewer
                 // Save to the database
                 try
                 {
-                    SobekCM_Item_Database.Save_Digital_Resource( Item_To_Complete, options  );
+                    SobekCM_Item_Database.Save_Digital_Resource(Item_To_Complete, options);
                     SobekCM_Item_Database.Save_Behaviors(Item_To_Complete, Item_To_Complete.Behaviors.Text_Searchable, false, false);
                 }
                 catch (Exception ee)
                 {
                     StreamWriter writer = new StreamWriter(digitalResourceDirectory + "\\exception.txt", false);
-                    writer.WriteLine( "ERROR CAUGHT WHILE SAVING DIGITAL RESOURCE");
-                    writer.WriteLine( DateTime.Now.ToString());
+                    writer.WriteLine("ERROR CAUGHT WHILE SAVING DIGITAL RESOURCE");
+                    writer.WriteLine(DateTime.Now.ToString());
                     writer.WriteLine();
-                    writer.WriteLine( ee.Message );
-                    writer.WriteLine( ee.StackTrace );
+                    writer.WriteLine(ee.Message);
+                    writer.WriteLine(ee.StackTrace);
                     writer.Flush();
                     writer.Close();
                     throw;
@@ -389,7 +385,7 @@ namespace SobekCM.Library.MySobekViewer
                 Item_To_Complete.Save_SobekCM_METS();
 
                 // Finally, set the currentItem for more processing if there were any files
-                if (((image_files.Count > 0) || (download_files.Count > 0)) && ( Item_To_Complete.Web.ItemID > 0 ))
+                if (((image_files.Count > 0) || (download_files.Count > 0)) && (Item_To_Complete.Web.ItemID > 0))
                 {
                     SobekCM_Item_Database.Update_Additional_Work_Needed_Flag(Item_To_Complete.Web.ItemID, true);
                 }
@@ -443,23 +439,23 @@ namespace SobekCM.Library.MySobekViewer
 
             Output.WriteLine("<script src=\"" + Static_Resources_Gateway.Sobekcm_Metadata_Js + "\" type=\"text/javascript\"></script>");
 
-			// Write the top currentItem mimic html portion
-			Write_Item_Type_Top(Output, currentItem);
+            // Write the top currentItem mimic html portion
+            Write_Item_Type_Top(Output, currentItem);
 
-			Output.WriteLine("<div id=\"container-inner1000\">");
-			Output.WriteLine("<div id=\"pagecontainer\">");
+            Output.WriteLine("<div id=\"container-inner1000\">");
+            Output.WriteLine("<div id=\"pagecontainer\">");
 
-			Output.WriteLine("<div class=\"sbkMySobek_HomeText\">");
-			Output.WriteLine("  <br />");
+            Output.WriteLine("<div class=\"sbkMySobek_HomeText\">");
+            Output.WriteLine("  <br />");
 
             Output.WriteLine("  <h2>Manage Downloads</h2>");
             Output.WriteLine("  <p>Upload the download files for your item.  You can also provide labels for each file, once they are uploaded.</p>");
-            
+
             RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Page_Images_Management;
             Output.WriteLine("  <p><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">Click here to upload page images instead.</a></p>");
             RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.File_Management;
 
-			Output.WriteLine("  <br />");
+            Output.WriteLine("  <br />");
 
         }
 
@@ -486,18 +482,18 @@ namespace SobekCM.Library.MySobekViewer
 
             #region Get the list of all files sans extensions to pages 
 
-            Dictionary<string, string> image_files_to_labels = new Dictionary<string,string>();
-            Dictionary<string, string> resource_files_to_labels = new Dictionary<string,string>();
+            Dictionary<string, string> image_files_to_labels = new Dictionary<string, string>();
+            Dictionary<string, string> resource_files_to_labels = new Dictionary<string, string>();
             List<abstract_TreeNode> imagePages = currentItem.Divisions.Physical_Tree.Pages_PreOrder;
             List<abstract_TreeNode> resourcePages = currentItem.Divisions.Download_Tree.Pages_PreOrder;
-            foreach( Page_TreeNode thisPage in imagePages )
+            foreach (Page_TreeNode thisPage in imagePages)
             {
-                if ( thisPage.Files.Count > 0 )
+                if (thisPage.Files.Count > 0)
                     image_files_to_labels[thisPage.Files[0].File_Name_Sans_Extension.ToLower()] = thisPage.Label;
             }
-            foreach( Page_TreeNode thisPage in resourcePages )
+            foreach (Page_TreeNode thisPage in resourcePages)
             {
-                if ( thisPage.Files.Count > 0 )
+                if (thisPage.Files.Count > 0)
                     resource_files_to_labels[thisPage.Files[0].File_Name_Sans_Extension.ToLower()] = thisPage.Label;
             }
 
@@ -520,7 +516,7 @@ namespace SobekCM.Library.MySobekViewer
                     string name_upper = thisFileInfo.Name.ToUpper();
 
                     // Is this a page image?
-                    if ((extension_upper == ".JPG") || (extension_upper == ".TIF") || (extension_upper == ".JP2") || (extension_upper == ".JPX") || ( extension_upper == ".PNG") || ( extension_upper == ".GIF"))
+                    if ((extension_upper == ".JPG") || (extension_upper == ".TIF") || (extension_upper == ".JP2") || (extension_upper == ".JPX") || (extension_upper == ".PNG") || (extension_upper == ".GIF"))
                     {
                         // Exclude .QC.jpg files
                         if (name_upper.IndexOf(".QC.JPG") < 0)
@@ -538,7 +534,7 @@ namespace SobekCM.Library.MySobekViewer
                             }
                             else
                             {
-                                List<string> newImageGrouping = new List<string> {thisFileInfo.Name};
+                                List<string> newImageGrouping = new List<string> { thisFileInfo.Name };
                                 image_files[filename_sans_extension.ToLower()] = newImageGrouping;
                             }
                         }
@@ -548,20 +544,20 @@ namespace SobekCM.Library.MySobekViewer
                         // If this does not match the exclusion regular expression, than add this
                         if ((!Regex.Match(thisFileInfo.Name, UI_ApplicationCache_Gateway.Settings.Resources.Files_To_Exclude_From_Downloads, RegexOptions.IgnoreCase).Success) && (String.Compare(thisFileInfo.Name, currentItem.BibID + "_" + currentItem.VID + ".html", StringComparison.OrdinalIgnoreCase) != 0))
                         {
-							if ((thisFileInfo.Name.IndexOf("marc.xml", StringComparison.OrdinalIgnoreCase) != 0) && (thisFileInfo.Name.IndexOf("marc.xml", StringComparison.OrdinalIgnoreCase) != 0) && (thisFileInfo.Name.IndexOf(".mets", StringComparison.OrdinalIgnoreCase) < 0) && (thisFileInfo.Name.IndexOf("citation_mets.xml", StringComparison.OrdinalIgnoreCase) < 0) && (thisFileInfo.Name.IndexOf("_ingest.xml", StringComparison.OrdinalIgnoreCase) < 0) &&
-	                            ((thisFileInfo.Name.IndexOf(".xml", StringComparison.OrdinalIgnoreCase) < 0) || (thisFileInfo.Name.IndexOf(currentItem.BibID, StringComparison.OrdinalIgnoreCase) < 0)))
-	                        {
-		                        // Is this the first image file with this name?
-		                        if (download_files.ContainsKey(filename_sans_extension.ToLower()))
-		                        {
-			                        download_files[filename_sans_extension.ToLower()].Add(thisFileInfo.Name);
-		                        }
-		                        else
-		                        {
-			                        List<string> newDownloadGrouping = new List<string> {thisFileInfo.Name};
-			                        download_files[filename_sans_extension.ToLower()] = newDownloadGrouping;
-		                        }
-	                        }
+                            if ((thisFileInfo.Name.IndexOf("marc.xml", StringComparison.OrdinalIgnoreCase) != 0) && (thisFileInfo.Name.IndexOf("marc.xml", StringComparison.OrdinalIgnoreCase) != 0) && (thisFileInfo.Name.IndexOf(".mets", StringComparison.OrdinalIgnoreCase) < 0) && (thisFileInfo.Name.IndexOf("citation_mets.xml", StringComparison.OrdinalIgnoreCase) < 0) && (thisFileInfo.Name.IndexOf("_ingest.xml", StringComparison.OrdinalIgnoreCase) < 0) &&
+                                ((thisFileInfo.Name.IndexOf(".xml", StringComparison.OrdinalIgnoreCase) < 0) || (thisFileInfo.Name.IndexOf(currentItem.BibID, StringComparison.OrdinalIgnoreCase) < 0)))
+                            {
+                                // Is this the first image file with this name?
+                                if (download_files.ContainsKey(filename_sans_extension.ToLower()))
+                                {
+                                    download_files[filename_sans_extension.ToLower()].Add(thisFileInfo.Name);
+                                }
+                                else
+                                {
+                                    List<string> newDownloadGrouping = new List<string> { thisFileInfo.Name };
+                                    download_files[filename_sans_extension.ToLower()] = newDownloadGrouping;
+                                }
+                            }
                         }
                     }
                 }
@@ -574,7 +570,7 @@ namespace SobekCM.Library.MySobekViewer
             if (download_files.Count > 0)
             {
                 Output.WriteLine("The following files are already uploaded for this package and will be included as downloads:");
-				Output.WriteLine("<table class=\"sbkMySobek_FileTable\">");
+                Output.WriteLine("<table class=\"sbkMySobek_FileTable\">");
                 Output.WriteLine("  <tr style=\"min-height:22px;\" >");
                 Output.WriteLine("    <th style=\"width:350px;\">FILENAME</th>");
                 Output.WriteLine("    <th style=\"width:90px\">SIZE</th>");
@@ -583,31 +579,31 @@ namespace SobekCM.Library.MySobekViewer
                 Output.WriteLine("  </tr>");
 
                 // Step through all the download file groups
-	            foreach (string fileKey in download_files.Keys)
-	            {
-		            // Get this group of files
-		            List<string> fileGroup = download_files[fileKey];
+                foreach (string fileKey in download_files.Keys)
+                {
+                    // Get this group of files
+                    List<string> fileGroup = download_files[fileKey];
 
-		            // Add each individual file
-		            foreach (string thisFile in fileGroup)
-		            {
-			            file_counter++;
+                    // Add each individual file
+                    foreach (string thisFile in fileGroup)
+                    {
+                        file_counter++;
 
-			            // Add the file name literal
-			            FileInfo fileInfo = new FileInfo(digitalResourceDirectory + "\\" + thisFile);
-			            Output.WriteLine("  <tr style=\"min-height:22px; vertical-align: bottom\" >");
-			            Output.WriteLine("    <td>" + fileInfo.Name + "</td>");
-			            if (fileInfo.Length < 1024)
-				            Output.WriteLine("    <td>" + fileInfo.Length + "</td>");
-			            else
-			            {
-				            if (fileInfo.Length < (1024*1024))
-					            Output.WriteLine("    <td>" + (fileInfo.Length/1024) + " KB</td>");
-				            else
-					            Output.WriteLine("    <td>" + (fileInfo.Length/(1024*1024)) + " MB</td>");
-			            }
+                        // Add the file name literal
+                        FileInfo fileInfo = new FileInfo(digitalResourceDirectory + "\\" + thisFile);
+                        Output.WriteLine("  <tr style=\"min-height:22px; vertical-align: bottom\" >");
+                        Output.WriteLine("    <td>" + fileInfo.Name + "</td>");
+                        if (fileInfo.Length < 1024)
+                            Output.WriteLine("    <td>" + fileInfo.Length + "</td>");
+                        else
+                        {
+                            if (fileInfo.Length < (1024 * 1024))
+                                Output.WriteLine("    <td>" + (fileInfo.Length / 1024) + " KB</td>");
+                            else
+                                Output.WriteLine("    <td>" + (fileInfo.Length / (1024 * 1024)) + " MB</td>");
+                        }
 
-			            Output.WriteLine("    <td>" + fileInfo.LastWriteTime + "</td>");
+                        Output.WriteLine("    <td>" + fileInfo.LastWriteTime + "</td>");
 
                         //add by Keven:replace single & double quote with ascII characters
                         string strFileName = fileInfo.Name;
@@ -618,67 +614,67 @@ namespace SobekCM.Library.MySobekViewer
                         }
                         Output.WriteLine("    <td style=\"text-align:center\"> <span class=\"sbkMySobek_ActionLink\">( <a href=\"\" onclick=\"return file_delete('" + strFileName + "');\">delete</a> )</span></td>");
 
-			            Output.WriteLine("  </tr>");
-		            }
+                        Output.WriteLine("  </tr>");
+                    }
 
-		            // Now add the row to include the label
-		            string input_name = "upload_label" + file_counter.ToString();
-		            Output.WriteLine("  <tr style=\"min-height: 30px;\">");
-		            Output.WriteLine("    <td colspan=\"4\">");
-		            Output.WriteLine("      <div style=\"padding-left: 90px;\">");
-					Output.WriteLine("        <span style=\"color:gray\">Label:</span>");
-		            Output.WriteLine("        <input type=\"hidden\" id=\"upload_file" + file_counter.ToString() + "\" name=\"upload_file" + file_counter.ToString() + "\" value=\"" + fileKey + "\" />");
+                    // Now add the row to include the label
+                    string input_name = "upload_label" + file_counter.ToString();
+                    Output.WriteLine("  <tr style=\"min-height: 30px;\">");
+                    Output.WriteLine("    <td colspan=\"4\">");
+                    Output.WriteLine("      <div style=\"padding-left: 90px;\">");
+                    Output.WriteLine("        <span style=\"color:gray\">Label:</span>");
+                    Output.WriteLine("        <input type=\"hidden\" id=\"upload_file" + file_counter.ToString() + "\" name=\"upload_file" + file_counter.ToString() + "\" value=\"" + fileKey + "\" />");
 
-		            if (Context.SessionObject()["file_" + currentItem.Web.ItemID + "_" + fileKey] == null)
-		            {
-			            if (resource_files_to_labels.ContainsKey(fileKey))
-			            {
-				            Set_Session_File_Label(currentItem.Web.ItemID, fileKey, resource_files_to_labels[fileKey]);
-							Output.WriteLine("        <input type=\"text\" class=\"upload_label_input sbk_Focusable\" id=\"" + input_name + "\" name=\"" + input_name + "\" value=\"" + System.Net.WebUtility.HtmlEncode(resource_files_to_labels[fileKey]) + "\" ></input>");
-			            }
-			            else
-			            {
-							Output.WriteLine("        <input type=\"text\" class=\"upload_label_input sbk_Focusable\" id=\"" + input_name + "\" name=\"" + input_name + "\" value=\"\" ></input>");
-			            }
-		            }
-		            else
-		            {
-			            string label_from_session = Context.SessionObject()["file_" + currentItem.Web.ItemID + "_" + fileKey].ToString();
-						Output.WriteLine("        <input type=\"text\" class=\"upload_label_input sbk_Focusable\" id=\"" + input_name + "\" name=\"" + input_name + "\" value=\"" + System.Net.WebUtility.HtmlEncode(label_from_session) + "\" ></input>");
-		            }
+                    if (Context.SessionObject()["file_" + currentItem.Web.ItemID + "_" + fileKey] == null)
+                    {
+                        if (resource_files_to_labels.ContainsKey(fileKey))
+                        {
+                            Set_Session_File_Label(currentItem.Web.ItemID, fileKey, resource_files_to_labels[fileKey]);
+                            Output.WriteLine("        <input type=\"text\" class=\"upload_label_input sbk_Focusable\" id=\"" + input_name + "\" name=\"" + input_name + "\" value=\"" + System.Net.WebUtility.HtmlEncode(resource_files_to_labels[fileKey]) + "\" ></input>");
+                        }
+                        else
+                        {
+                            Output.WriteLine("        <input type=\"text\" class=\"upload_label_input sbk_Focusable\" id=\"" + input_name + "\" name=\"" + input_name + "\" value=\"\" ></input>");
+                        }
+                    }
+                    else
+                    {
+                        string label_from_session = Context.SessionObject()["file_" + currentItem.Web.ItemID + "_" + fileKey].ToString();
+                        Output.WriteLine("        <input type=\"text\" class=\"upload_label_input sbk_Focusable\" id=\"" + input_name + "\" name=\"" + input_name + "\" value=\"" + System.Net.WebUtility.HtmlEncode(label_from_session) + "\" ></input>");
+                    }
 
-					Output.WriteLine("      </div>");
-		            Output.WriteLine("    </td>");
-					Output.WriteLine("  </tr>");
-		            Output.WriteLine("  <tr><td class=\"sbkMySobek_FileTableRule\" colspan=\"4\"></td></tr>");
-	            }
-	            Output.WriteLine("</table>");
-				Output.WriteLine();
+                    Output.WriteLine("      </div>");
+                    Output.WriteLine("    </td>");
+                    Output.WriteLine("  </tr>");
+                    Output.WriteLine("  <tr><td class=\"sbkMySobek_FileTableRule\" colspan=\"4\"></td></tr>");
+                }
+                Output.WriteLine("</table>");
+                Output.WriteLine();
             }
 
-			Output.WriteLine("<div class=\"sbkMySobek_FileRightButtons\">");
-			Output.WriteLine("  <button title=\"Cancel this and remove the recently uploaded files\" onclick=\"return new_upload_next_phase(2);\" class=\"sbkPiu_RoundButton\">CANCEL</button> &nbsp; ");
-			Output.WriteLine("  <button title=\"Submit the recently uploaded files and complete the process\" onclick=\"return new_upload_next_phase(9);\" class=\"sbkPiu_RoundButton\">SUBMIT</button> &nbsp; ");
-			Output.WriteLine("  <div id=\"circular_progress\" name=\"circular_progress\" class=\"hidden_progress\">&nbsp;</div>");
-			Output.WriteLine("</div>");
-			Output.WriteLine();
+            Output.WriteLine("<div class=\"sbkMySobek_FileRightButtons\">");
+            Output.WriteLine("  <button title=\"Cancel this and remove the recently uploaded files\" onclick=\"return new_upload_next_phase(2);\" class=\"sbkPiu_RoundButton\">CANCEL</button> &nbsp; ");
+            Output.WriteLine("  <button title=\"Submit the recently uploaded files and complete the process\" onclick=\"return new_upload_next_phase(9);\" class=\"sbkPiu_RoundButton\">SUBMIT</button> &nbsp; ");
+            Output.WriteLine("  <div id=\"circular_progress\" name=\"circular_progress\" class=\"hidden_progress\">&nbsp;</div>");
+            Output.WriteLine("</div>");
+            Output.WriteLine();
 
             const string COMPLETION_MESSAGE = "Once all files are uploaded, press SUBMIT to finish this item.";
 
             Output.WriteLine("<div class=\"sbkMySobek_FileCompletionMsg\">" + COMPLETION_MESSAGE + "</div>");
-			Output.WriteLine();
+            Output.WriteLine();
 
             Output.WriteLine("<br /><br />");
             Output.WriteLine("<hr />");
             Output.WriteLine("<br />");
             Output.WriteLine("The following extensions are accepted:");
             Output.WriteLine("<blockquote>");
-            Output.WriteLine(UI_ApplicationCache_Gateway.Settings.Resources.Upload_File_Types.Replace(",",", "));
+            Output.WriteLine(UI_ApplicationCache_Gateway.Settings.Resources.Upload_File_Types.Replace(",", ", "));
             Output.WriteLine("</blockquote>");
 
             Output.WriteLine("</div>");
-			Output.WriteLine("</div>");
-			Output.WriteLine("</div>");
+            Output.WriteLine("</div>");
+            Output.WriteLine("</div>");
 
             #endregion
 
@@ -686,7 +682,7 @@ namespace SobekCM.Library.MySobekViewer
 
         #endregion
 
-		/// <summary> Add controls directly to the form in the main control area placeholder </summary>
+        /// <summary> Add controls directly to the form in the main control area placeholder </summary>
         /// <param name="Output"> TextWriter to write HTML output </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
         public override void Add_Controls(TextWriter Output, Custom_Tracer Tracer)
@@ -710,20 +706,20 @@ namespace SobekCM.Library.MySobekViewer
             Output.WriteLine("</blockquote><br />");
         }
 
-		/// <summary> Gets the collection of special behaviors which this admin or mySobek viewer
-		/// requests from the main HTML subwriter. </summary>
-		/// <value> This tells the HTML and mySobek writers to mimic the currentItem viewer </value>
-		public override List<HtmlSubwriter_Behaviors_Enum> Viewer_Behaviors
-		{
-			get
-			{
-				return new List<HtmlSubwriter_Behaviors_Enum>
-				{
-					HtmlSubwriter_Behaviors_Enum.MySobek_Subwriter_Mimic_Item_Subwriter,
-					HtmlSubwriter_Behaviors_Enum.Suppress_Banner
-				};
-			}
-		}
+        /// <summary> Gets the collection of special behaviors which this admin or mySobek viewer
+        /// requests from the main HTML subwriter. </summary>
+        /// <value> This tells the HTML and mySobek writers to mimic the currentItem viewer </value>
+        public override List<HtmlSubwriter_Behaviors_Enum> Viewer_Behaviors
+        {
+            get
+            {
+                return new List<HtmlSubwriter_Behaviors_Enum>
+                {
+                    HtmlSubwriter_Behaviors_Enum.MySobek_Subwriter_Mimic_Item_Subwriter,
+                    HtmlSubwriter_Behaviors_Enum.Suppress_Banner
+                };
+            }
+        }
 
         /// <summary> Returns a flag indicating whether the file upload specific holder in the itemNavForm form will be utilized 
         /// for the current request, or if it can be hidden/omitted. </summary>
@@ -731,6 +727,6 @@ namespace SobekCM.Library.MySobekViewer
         public override bool Upload_File_Possible { get { return true; } }
     }
 }
-  
+
 
 

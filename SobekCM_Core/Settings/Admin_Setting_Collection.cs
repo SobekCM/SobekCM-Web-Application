@@ -1,11 +1,8 @@
-﻿using System;
+﻿using ProtoBuf;
+using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.Serialization;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml.Serialization;
-using ProtoBuf;
 
 namespace SobekCM.Core.Settings
 {
@@ -25,6 +22,6 @@ namespace SobekCM.Core.Settings
         [XmlArray("settings")]
         [XmlArrayItem("setting", typeof(Admin_Setting_Value))]
         [ProtoMember(1)]
-        public List<Admin_Setting_Value> Settings { get; set; } 
+        public List<Admin_Setting_Value> Settings { get; set; }
     }
 }

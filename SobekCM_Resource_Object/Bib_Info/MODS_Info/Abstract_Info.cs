@@ -1,8 +1,8 @@
 #region Using directives
 
+using SobekCM.Resource_Object.MARC;
 using System;
 using System.IO;
-using SobekCM.Resource_Object.MARC;
 
 #endregion
 
@@ -88,7 +88,7 @@ namespace SobekCM.Resource_Object.Bib_Info
             {
                 return "<b>" + display_label + "</b> " + Convert_String_To_XML_Safe(abstract_text);
             }
-            
+
             return Convert_String_To_XML_Safe(abstract_text);
         }
 
@@ -98,8 +98,8 @@ namespace SobekCM.Resource_Object.Bib_Info
         {
             MARC_Field returnValue = new MARC_Field
             {
-                Tag = 520, 
-                Indicators = "3 ", 
+                Tag = 520,
+                Indicators = "3 ",
                 Control_Field_Value = "|a " + abstract_text.Replace("|", "&bar;")
             };
 

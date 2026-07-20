@@ -32,7 +32,7 @@ namespace SobekCM.Core.Results
         public Multiple_Paged_Results_Args(Search_Results_Statistics Statistics, List<iSearch_Title_Result> Paged_Results)
         {
             this.Statistics = Statistics;
-            this.Paged_Results = new List<List<iSearch_Title_Result>> {Paged_Results};
+            this.Paged_Results = new List<List<iSearch_Title_Result>> { Paged_Results };
         }
 
         /// <summary> Statistics/information about the overall search or browse, including initial query time, complete results counts, and facets </summary>

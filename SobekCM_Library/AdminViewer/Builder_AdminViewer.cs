@@ -2,23 +2,20 @@
 
 #region Using directives
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
 using Microsoft.AspNetCore.Http;
 using SobekCM.Core.Builder;
 using SobekCM.Core.Client;
 using SobekCM.Core.Navigation;
-using SobekCM.Core.UI_Configuration;
-using SobekCM.Core.UI_Configuration.StaticResources;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Engine_Library.Database;
-using SobekCM.Library.Database;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Text;
 
 #endregion
 
@@ -47,7 +44,7 @@ namespace SobekCM.Library.AdminViewer
         public Builder_AdminViewer(RequestCache RequestSpecificValues, HttpContext Context) : base(RequestSpecificValues, Context)
         {
             // Ensure the user is the system admin
-            if ((RequestSpecificValues.Current_User == null) || ((!RequestSpecificValues.Current_User.Is_System_Admin) && (!RequestSpecificValues.Current_User.Is_Portal_Admin )))
+            if ((RequestSpecificValues.Current_User == null) || ((!RequestSpecificValues.Current_User.Is_System_Admin) && (!RequestSpecificValues.Current_User.Is_Portal_Admin)))
             {
                 RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.My_Sobek;
                 RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
@@ -55,7 +52,7 @@ namespace SobekCM.Library.AdminViewer
                 return;
             }
 
-           // If this is a postback, handle any events first
+            // If this is a postback, handle any events first
             if ((RequestSpecificValues.Current_Mode.isPostBack) && (Context.Request.HasFormContentType))
             {
                 if (((RequestSpecificValues.Current_User.Is_System_Admin) && (!UI_ApplicationCache_Gateway.Settings.Servers.isHosted)) ||
@@ -100,14 +97,14 @@ namespace SobekCM.Library.AdminViewer
         /// <summary> Gets the CSS class of the container that the page is wrapped within </summary>
         /// <value> Returns 'container-inner1215' always. </value>
 	    public override string Container_CssClass
-	    {
-	        get
-	        {
-                return "container-inner1215"; 
-	            
-	        }
-	    }
-        
+        {
+            get
+            {
+                return "container-inner1215";
+
+            }
+        }
+
 
         /// <summary> Title for the page that displays this viewer, this is shown in the search box at the top of the page, just below the banner </summary>
         /// <value> This always returns the value 'SobekCM Builder Status' </value>
@@ -129,7 +126,7 @@ namespace SobekCM.Library.AdminViewer
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         public override bool Write_Within_HTML_Head(TextWriter Output, Custom_Tracer Tracer)
         {
-           // Output.WriteLine("   <script type = \"text/javascript\" src=\"" + Static_Resources.Chart_Js + "\"></script>");
+            // Output.WriteLine("   <script type = \"text/javascript\" src=\"" + Static_Resources.Chart_Js + "\"></script>");
 
             // Add the code for the calendar pop-up if it may be required
             if (page == 2)
@@ -274,14 +271,14 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("<script src=\"" + Static_Resources_Gateway.Sobekcm_Admin_Js + "\" type=\"text/javascript\"></script>");
 
             // Start to show the text 
-			Output.WriteLine("<div class=\"sbkAdm_HomeText\">");
+            Output.WriteLine("<div class=\"sbkAdm_HomeText\">");
 
             Output.WriteLine("  <p>The SobekCM builder is constantly loading new items and updates and building the full text indexes.  This page can be used to view and update the current status as well as view the most recent log files.</p>");
             Output.WriteLine("  <p>For more information about the builder and possible actions from this screen, <a href=\"" + UI_ApplicationCache_Gateway.Settings.System.Help_URL(RequestSpecificValues.Current_Mode.Base_URL) + "adminhelp/builder\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</p>");
-			Output.WriteLine();
+            Output.WriteLine();
 
             // If missing values, display an error
-            if ( String.IsNullOrEmpty(builderStatus.Get_Setting("Builder Operation Flag"))) 
+            if (String.IsNullOrEmpty(builderStatus.Get_Setting("Builder Operation Flag")))
             {
                 Output.WriteLine("<br /><br />ERROR PULLING BUILDER SETTINGS... MISSING VALUES<br /><br />");
             }
@@ -292,41 +289,41 @@ namespace SobekCM.Library.AdminViewer
 
 
                 Output.WriteLine("  <h2>SobekCM Builder Status</h2>");
-				Output.WriteLine("  <table class=\"sbkBav_table\">");
+                Output.WriteLine("  <table class=\"sbkBav_table\">");
                 Output.WriteLine("    <tr><td>Current Status: </td><td><strong>" + operationFlag + "</strong></td><td>&nbsp;</td></tr>");
 
-                if (((RequestSpecificValues.Current_User.Is_System_Admin) && ( !UI_ApplicationCache_Gateway.Settings.Servers.isHosted )) ||
+                if (((RequestSpecificValues.Current_User.Is_System_Admin) && (!UI_ApplicationCache_Gateway.Settings.Servers.isHosted)) ||
                     (RequestSpecificValues.Current_User.Is_Host_Admin))
-	            {
-		            Output.WriteLine("    <tr>");
-		            Output.WriteLine("      <td>Next Status: </td>");
-		            Output.WriteLine("      <td>");
-		            Output.WriteLine("        <select class=\"sbkBav_select\" name=\"admin_builder_status\" id=\"admin_builder_status\">");
+                {
+                    Output.WriteLine("    <tr>");
+                    Output.WriteLine("      <td>Next Status: </td>");
+                    Output.WriteLine("      <td>");
+                    Output.WriteLine("        <select class=\"sbkBav_select\" name=\"admin_builder_status\" id=\"admin_builder_status\">");
 
-		            if ((operationFlag != "ABORT REQUESTED") && (operationFlag != "NO BUILDING REQUESTED"))
-			            Output.WriteLine("          <option value=\"STANDARD OPERATION\" selected=\"selected\">STANDARD OPERATION</option>");
-		            else
-			            Output.WriteLine("          <option value=\"STANDARD OPERATION\">STANDARD OPERATION</option>");
+                    if ((operationFlag != "ABORT REQUESTED") && (operationFlag != "NO BUILDING REQUESTED"))
+                        Output.WriteLine("          <option value=\"STANDARD OPERATION\" selected=\"selected\">STANDARD OPERATION</option>");
+                    else
+                        Output.WriteLine("          <option value=\"STANDARD OPERATION\">STANDARD OPERATION</option>");
 
-		            Output.WriteLine(operationFlag == "PAUSE REQUESTED"
-			                             ? "          <option value=\"PAUSE REQUESTED\" selected=\"selected\">PAUSE REQUESTED</option>"
-			                             : "          <option value=\"PAUSE REQUESTED\">PAUSE REQUESTED</option>");
+                    Output.WriteLine(operationFlag == "PAUSE REQUESTED"
+                                         ? "          <option value=\"PAUSE REQUESTED\" selected=\"selected\">PAUSE REQUESTED</option>"
+                                         : "          <option value=\"PAUSE REQUESTED\">PAUSE REQUESTED</option>");
 
-		            Output.WriteLine(operationFlag == "ABORT REQUESTED"
-			                             ? "          <option value=\"ABORT REQUESTED\" selected=\"selected\">ABORT REQUESTED</option>"
-			                             : "          <option value=\"ABORT REQUESTED\">ABORT REQUESTED</option>");
+                    Output.WriteLine(operationFlag == "ABORT REQUESTED"
+                                         ? "          <option value=\"ABORT REQUESTED\" selected=\"selected\">ABORT REQUESTED</option>"
+                                         : "          <option value=\"ABORT REQUESTED\">ABORT REQUESTED</option>");
 
-		            Output.WriteLine(operationFlag == "NO BUILDING REQUESTED"
-			                             ? "          <option value=\"NO BUILDING REQUESTED\" selected=\"selected\" >NO BUILDING REQUESTED</option>"
-			                             : "          <option value=\"NO BUILDING REQUESTED\" >NO BUILDING REQUESTED</option>");
+                    Output.WriteLine(operationFlag == "NO BUILDING REQUESTED"
+                                         ? "          <option value=\"NO BUILDING REQUESTED\" selected=\"selected\" >NO BUILDING REQUESTED</option>"
+                                         : "          <option value=\"NO BUILDING REQUESTED\" >NO BUILDING REQUESTED</option>");
 
-		            Output.WriteLine("        </select>");
-		            Output.WriteLine("      </td>");
-					Output.WriteLine("      <td><button title=\"Set new builder status\" class=\"sbkAdm_RoundButton\" onclick=\"return save_new_builder_status();\">SAVE <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button></td>");
-		            Output.WriteLine("    </tr>");
-	            }
-	            Output.WriteLine("  </table>");
-				Output.WriteLine();
+                    Output.WriteLine("        </select>");
+                    Output.WriteLine("      </td>");
+                    Output.WriteLine("      <td><button title=\"Set new builder status\" class=\"sbkAdm_RoundButton\" onclick=\"return save_new_builder_status();\">SAVE <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button></td>");
+                    Output.WriteLine("    </tr>");
+                }
+                Output.WriteLine("  </table>");
+                Output.WriteLine();
 
 
                 // Look for some values
@@ -346,9 +343,9 @@ namespace SobekCM.Library.AdminViewer
 
             }
 
-			Output.WriteLine();
+            Output.WriteLine();
             Output.WriteLine("  <h2>Related Links</h2>");
-			Output.WriteLine("  <ul class=\"sbkBav_List\">");
+            Output.WriteLine("  <ul class=\"sbkBav_List\">");
             Output.WriteLine("      <li><a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/internal/new\">Newly added or updated items</a></li>");
             Output.WriteLine("      <li><a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/internal/failures\">Failed packages or builder errors</a></li>");
             Output.WriteLine("  </ul>");
@@ -395,7 +392,7 @@ namespace SobekCM.Library.AdminViewer
                 if (DateTime.TryParse(date2_string, out temp))
                 {
                     date2 = temp;
-                    if ( added_arg )
+                    if (added_arg)
                         data_source_url_builder.Append("&date2=" + temp.ToShortDateString());
                     else
                         data_source_url_builder.Append("?date2=" + temp.ToShortDateString());
@@ -608,8 +605,8 @@ namespace SobekCM.Library.AdminViewer
                 if (schedTask.LastRun != null)
                 {
                     Output.WriteLine("        <td>" + schedTask.LastRun + "</td>");
-                    
-                    if ( !String.IsNullOrEmpty( schedTask.LastRun.Message ))
+
+                    if (!String.IsNullOrEmpty(schedTask.LastRun.Message))
                         Output.WriteLine("        <td>" + System.Net.WebUtility.HtmlEncode(schedTask.LastRun.Outcome) + " ( " + schedTask.LastRun.Message + " )</td>");
                     else
                         Output.WriteLine("        <td>" + System.Net.WebUtility.HtmlEncode(schedTask.LastRun.Outcome) + "</td>");
@@ -617,7 +614,7 @@ namespace SobekCM.Library.AdminViewer
                 else
                 {
                     Output.WriteLine("        <td></td>");
-                    Output.WriteLine("        <td></td>");  
+                    Output.WriteLine("        <td></td>");
                 }
                 Output.WriteLine("      </tr>");
             }

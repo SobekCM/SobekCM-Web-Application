@@ -93,11 +93,11 @@ namespace SobekCM.Core.SiteMap
 
             return -1;
         }
-        
+
         /// <summary> Gets a node from this tree by its unique node value </summary>
         /// <param name="NodeValue"> Node value to retrieve </param>
         /// <returns> Either NULL or the matching sitemap node</returns>
-        public SobekCM_SiteMap_Node Node_By_Value( int NodeValue )
+        public SobekCM_SiteMap_Node Node_By_Value(int NodeValue)
         {
             if ((RootNodes == null) || (RootNodes.Count == 0))
                 return null;
@@ -112,13 +112,13 @@ namespace SobekCM.Core.SiteMap
                 return Node;
 
             // If no children or first child is already invalid, return NULL
-            if ((Node.Child_Nodes_Count == 0) || ( Node.Child_Nodes[0].NodeValue > NodeValue ))
+            if ((Node.Child_Nodes_Count == 0) || (Node.Child_Nodes[0].NodeValue > NodeValue))
                 return null;
 
             // Look through the children nodes
             int nodeNumber = 0;
             ReadOnlyCollection<SobekCM_SiteMap_Node> childNodes = Node.Child_Nodes;
-            while (nodeNumber < ( Node.Child_Nodes_Count - 1 ))
+            while (nodeNumber < (Node.Child_Nodes_Count - 1))
             {
                 // Is the NEXT child node value too great, then it would be in THIS node's child tree
                 if (childNodes[nodeNumber + 1].NodeValue > NodeValue)

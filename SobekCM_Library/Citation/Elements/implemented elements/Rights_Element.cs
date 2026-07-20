@@ -1,19 +1,15 @@
 #region Using directives
 
+using SobekCM.Core.ApplicationState;
+using SobekCM.Core.Configuration.Localization;
+using SobekCM.Core.Users;
+using SobekCM.Engine_Library.Configuration;
+using SobekCM.Resource_Object;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using Microsoft.AspNetCore.Http;
-using SobekCM.Core.ApplicationState;
-using SobekCM.Core.Configuration;
-using SobekCM.Core.Configuration.Localization;
-using SobekCM.Core.UI_Configuration;
-using SobekCM.Core.UI_Configuration.StaticResources;
-using SobekCM.Core.Users;
-using SobekCM.Engine_Library.Configuration;
-using SobekCM.Resource_Object;
 
 #endregion
 
@@ -83,9 +79,9 @@ namespace SobekCM.Library.Citation.Elements
             string rights_stmt = String.Empty;
             if ((Bib.Bib_Info.AccessConditions_Count > 0) && (!String.IsNullOrEmpty(Bib.Bib_Info.AccessConditions[0].Text)))
                 rights_stmt = Bib.Bib_Info.AccessConditions[0].Text.Trim();
-            if (( rights_stmt.Length == 0 ) || ( rights_stmt == "All rights reserved by the source institution."))
+            if ((rights_stmt.Length == 0) || (rights_stmt == "All rights reserved by the source institution."))
             {
-                if ( DefaultValues.Count > 0 )
+                if (DefaultValues.Count > 0)
                 {
                     rights_stmt = DefaultValues[0];
                 }
@@ -204,7 +200,7 @@ namespace SobekCM.Library.Citation.Elements
                         removes.Add(license);
                 }
 
-                foreach( string remove in removes)
+                foreach (string remove in removes)
                 {
                     Bib.Bib_Info.Remove_Licensing(remove);
                 }
@@ -221,9 +217,9 @@ namespace SobekCM.Library.Citation.Elements
                 string access_text = Context.Request.Form[thisKey];
                 Bib.Bib_Info.Add_AccessCondition(access_text);
 
-                if ( !String.IsNullOrWhiteSpace(access_text))
+                if (!String.IsNullOrWhiteSpace(access_text))
                 {
-                    if (( access_text.IndexOf("[cc") == 0 ) && ( access_text.IndexOf("]") > 0 ))
+                    if ((access_text.IndexOf("[cc") == 0) && (access_text.IndexOf("]") > 0))
                     {
                         string license = access_text.Substring(1, access_text.IndexOf("]") - 1);
                         Bib.Bib_Info.Add_Licensing(license);

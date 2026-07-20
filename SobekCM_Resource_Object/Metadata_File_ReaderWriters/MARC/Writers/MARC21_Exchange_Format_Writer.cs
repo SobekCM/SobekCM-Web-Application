@@ -23,11 +23,11 @@
 
 #region Using directives
 
+using SobekCM.Resource_Object.MARC;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using SobekCM.Resource_Object.MARC;
 
 #endregion
 
@@ -37,9 +37,9 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters.MARC.Writers
     public class MARC21_Exchange_Format_Writer : IDisposable
     {
         // Constants used when writing the Marc21 stream
-        private const char GROUP_SEPERATOR = (char) 29;
-        private const char RECORD_SEPERATOR = (char) 30;
-        private const char UNIT_SEPERATOR = (char) 31;
+        private const char GROUP_SEPERATOR = (char)29;
+        private const char RECORD_SEPERATOR = (char)30;
+        private const char UNIT_SEPERATOR = (char)31;
 
         private StreamWriter writer;
 

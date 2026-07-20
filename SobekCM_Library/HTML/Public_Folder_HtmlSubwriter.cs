@@ -1,13 +1,10 @@
 ﻿#region Using directives
 
-using System.IO;
-using SobekCM.Core.Configuration;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Navigation;
-using SobekCM.Core.UI_Configuration;
-using SobekCM.Core.UI_Configuration.StaticResources;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Tools;
+using System.IO;
 
 #endregion
 
@@ -21,7 +18,7 @@ namespace SobekCM.Library.HTML
 
         /// <summary> Constructor for a new instance of the Public_Folder_HtmlSubwriter class </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
-        public Public_Folder_HtmlSubwriter(RequestCache RequestSpecificValues) : base(RequestSpecificValues) 
+        public Public_Folder_HtmlSubwriter(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
         {
             // Do nothing
         }
@@ -39,11 +36,11 @@ namespace SobekCM.Library.HTML
                     Tracer.Add_Trace("Public_Folder_HtmlSubwriter.Add_Controls", "Building Result DataSet Writer");
 
                     writeResult = new PagedResults_HtmlSubwriter(RequestSpecificValues, RequestSpecificValues.Results_Statistics, RequestSpecificValues.Paged_Results)
-                                      {
-                                          Browse_Title = RequestSpecificValues.Public_Folder.FolderName,
-                                          Folder_Owner_Name = RequestSpecificValues.Public_Folder.Name,
-                                          Folder_Owner_Email = RequestSpecificValues.Public_Folder.Email
-                                      };
+                    {
+                        Browse_Title = RequestSpecificValues.Public_Folder.FolderName,
+                        Folder_Owner_Name = RequestSpecificValues.Public_Folder.Name,
+                        Folder_Owner_Email = RequestSpecificValues.Public_Folder.Email
+                    };
                 }
 
                 Tracer.Add_Trace("Public_Folder_HtmlSubwriter.Add_Controls", "Add controls");
@@ -84,46 +81,46 @@ namespace SobekCM.Library.HTML
             {
             }
 
-			// Add the item views
-			Output.WriteLine("<!-- Add the menu -->");
-			Output.WriteLine("<div id=\"sbkPfm_MenuBar\" class=\"sbkMenu_Bar\">");
-			Output.WriteLine("<ul class=\"sf-menu\">");
+            // Add the item views
+            Output.WriteLine("<!-- Add the menu -->");
+            Output.WriteLine("<div id=\"sbkPfm_MenuBar\" class=\"sbkMenu_Bar\">");
+            Output.WriteLine("<ul class=\"sf-menu\">");
 
-			// Get ready to draw the tabs
-			string sobek_home_text = RequestSpecificValues.Current_Mode.Instance_Abbreviation + " Home";
+            // Get ready to draw the tabs
+            string sobek_home_text = RequestSpecificValues.Current_Mode.Instance_Abbreviation + " Home";
 
-			// Add the 'SOBEK HOME' first menu option and suboptions
-			RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Aggregation;
-			RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Home;
-			RequestSpecificValues.Current_Mode.Home_Type = Home_Type_Enum.List;
+            // Add the 'SOBEK HOME' first menu option and suboptions
+            RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Aggregation;
+            RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Home;
+            RequestSpecificValues.Current_Mode.Home_Type = Home_Type_Enum.List;
             Output.WriteLine("\t\t<li class=\"sbkMenu_Home\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" class=\"sbkMenu_NoPadding\"><img src=\"" + Static_Resources_Gateway.Home_Png + "\" /> <div class=\"sbkMenu_HomeText\">" + sobek_home_text + "</div></a></li>");
 
-			RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Public_Folder;
-			Output.WriteLine("\t\t<li class=\"selected-sf-menu-item-link\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + publicFolderText + "</a></li>");
-			Output.WriteLine("\t</ul></div>");
+            RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Public_Folder;
+            Output.WriteLine("\t\t<li class=\"selected-sf-menu-item-link\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + publicFolderText + "</a></li>");
+            Output.WriteLine("\t</ul></div>");
 
-			Output.WriteLine("<!-- Initialize the main user menu -->");
-			Output.WriteLine("<script>");
-			Output.WriteLine("  jQuery(document).ready(function () {");
-			Output.WriteLine("     jQuery('ul.sf-menu').superfish();");
-			Output.WriteLine("  });");
-			Output.WriteLine("</script>");
-			Output.WriteLine();
+            Output.WriteLine("<!-- Initialize the main user menu -->");
+            Output.WriteLine("<script>");
+            Output.WriteLine("  jQuery(document).ready(function () {");
+            Output.WriteLine("     jQuery('ul.sf-menu').superfish();");
+            Output.WriteLine("  });");
+            Output.WriteLine("</script>");
+            Output.WriteLine();
 
-			Output.WriteLine("<br />");
-			Output.WriteLine();
+            Output.WriteLine("<br />");
+            Output.WriteLine();
 
-            if (( RequestSpecificValues.Paged_Results != null ) && ( RequestSpecificValues.Results_Statistics != null ))
+            if ((RequestSpecificValues.Paged_Results != null) && (RequestSpecificValues.Results_Statistics != null))
             {
                 if (writeResult == null)
                 {
                     Tracer.Add_Trace("Public_Folder_HtmlSubwriter.Write_HTML", "Building Result DataSet Writer");
                     writeResult = new PagedResults_HtmlSubwriter(RequestSpecificValues, RequestSpecificValues.Results_Statistics, RequestSpecificValues.Paged_Results)
-                                      {
-                                          Browse_Title = RequestSpecificValues.Public_Folder.FolderName,
-                                          Folder_Owner_Name = RequestSpecificValues.Public_Folder.Name,
-                                          Folder_Owner_Email = RequestSpecificValues.Public_Folder.Email
-                                      };
+                    {
+                        Browse_Title = RequestSpecificValues.Public_Folder.FolderName,
+                        Folder_Owner_Name = RequestSpecificValues.Public_Folder.Name,
+                        Folder_Owner_Email = RequestSpecificValues.Public_Folder.Email
+                    };
                 }
                 writeResult.Write_HTML(Output, Tracer);
             }
@@ -135,7 +132,8 @@ namespace SobekCM.Library.HTML
         /// <summary> Title for this web page </summary>
         public override string WebPage_Title
         {
-            get {
+            get
+            {
                 return RequestSpecificValues.Public_Folder != null ? RequestSpecificValues.Public_Folder.FolderName : "{0} Folder";
             }
         }

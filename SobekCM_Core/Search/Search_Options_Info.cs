@@ -1,9 +1,9 @@
 ﻿using ProtoBuf;
+using SobekCM.Core.Aggregations;
 using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
-using SobekCM.Core.Aggregations;
 
 namespace SobekCM.Core.Search
 {

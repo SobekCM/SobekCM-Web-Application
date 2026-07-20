@@ -1,17 +1,10 @@
 #region Using directives
 
-using System;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.IO;
-using System.Text;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.Client;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Message;
 using SobekCM.Core.Navigation;
-using SobekCM.Core.UI_Configuration;
-using SobekCM.Core.UI_Configuration.StaticResources;
 using SobekCM.Core.Users;
 using SobekCM.Core.WebContent;
 using SobekCM.Engine_Library.Configuration;
@@ -21,6 +14,10 @@ using SobekCM.Library.WebContentViewer;
 using SobekCM.Library.WebContentViewer.Viewers;
 using SobekCM.Resource_Object;
 using SobekCM.Tools;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Text;
 
 #endregion
 
@@ -244,7 +241,7 @@ namespace SobekCM.Library.HTML
 
 
                 // Add new digital resource
-                if (( !contains_slash ) && ( UI_ApplicationCache_Gateway.Settings.Resources.Online_Item_Submit_Enabled))
+                if ((!contains_slash) && (UI_ApplicationCache_Gateway.Settings.Resources.Online_Item_Submit_Enabled))
                 {
                     if ((RequestSpecificValues.Current_Mode.Info_Browse_Mode.Length == 10) && (SobekCM_Item.is_bibid_format(RequestSpecificValues.Current_Mode.Info_Browse_Mode)))
                     {
@@ -272,7 +269,7 @@ namespace SobekCM.Library.HTML
                 int level = 1;
                 foreach (string thisSplitter in splitter)
                 {
-                    if ( level == 1 )
+                    if (level == 1)
                         add_webcontent_url.Append("?l1=" + thisSplitter);
                     else
                         add_webcontent_url.Append("&l" + level + "=" + thisSplitter);
@@ -316,7 +313,7 @@ namespace SobekCM.Library.HTML
 
                 Output.WriteLine("</div>");
                 Output.WriteLine("</div>");
- 
+
 
                 Output.WriteLine("</div>");
                 Output.WriteLine("</div>");
@@ -400,7 +397,7 @@ namespace SobekCM.Library.HTML
             }
 
         }
-                    
+
         private void write_banner_and_menu(TextWriter Output, Custom_Tracer Tracer)
         {
             // Save the current mode and browse
@@ -417,7 +414,7 @@ namespace SobekCM.Library.HTML
                     else
                     {
                         Item_Aggregation allCollection;
-                        if ( Get_Top_Level_Collection(RequestSpecificValues.Current_Mode, Tracer, out allCollection))
+                        if (Get_Top_Level_Collection(RequestSpecificValues.Current_Mode, Tracer, out allCollection))
                         {
                             Output.WriteLine("<img id=\"mainBanner\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + allCollection.Get_Banner_Image(RequestSpecificValues.HTML_Skin) + "\" alt=\"MISSING BANNER\" />");
                         }
@@ -555,7 +552,7 @@ namespace SobekCM.Library.HTML
             Output.WriteLine("<br /><br /><br />");
             Output.WriteLine();
 
- 
+
             Output.WriteLine("</div>");
             Output.WriteLine("<br />");
             Output.WriteLine();
@@ -565,8 +562,9 @@ namespace SobekCM.Library.HTML
         /// <summary> Title for this web page </summary>
         public override string WebPage_Title
         {
-            get {
-                return (( staticWebContent != null ) && ( staticWebContent.Title != null )) ? staticWebContent.Title : "{0}";
+            get
+            {
+                return ((staticWebContent != null) && (staticWebContent.Title != null)) ? staticWebContent.Title : "{0}";
             }
         }
 
@@ -611,7 +609,7 @@ namespace SobekCM.Library.HTML
             }
 
             // Include the interface's style sheet if it has one
-            if ((RequestSpecificValues.HTML_Skin != null) && ( !String.IsNullOrEmpty(RequestSpecificValues.HTML_Skin.CSS_Style)))
+            if ((RequestSpecificValues.HTML_Skin != null) && (!String.IsNullOrEmpty(RequestSpecificValues.HTML_Skin.CSS_Style)))
             {
                 Output.WriteLine("  <link href=\"" + RequestSpecificValues.Current_Mode.Base_URL + RequestSpecificValues.HTML_Skin.CSS_Style + "\" rel=\"stylesheet\" type=\"text/css\" />");
             }
@@ -650,7 +648,7 @@ namespace SobekCM.Library.HTML
                     HTML_Based_Content webContent = staticWebContent;
                     string urlSegments = webContent.UrlSegments;
                     string webcontent_upload_dir = UI_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location + "webcontent\\" + urlSegments.Replace("/", "\\");
-                    string webcontent_upload_url = UI_ApplicationCache_Gateway.Settings.Servers.System_Base_URL + "design/webcontent/" + urlSegments.Replace("\\","/") + "/";
+                    string webcontent_upload_url = UI_ApplicationCache_Gateway.Settings.Servers.System_Base_URL + "design/webcontent/" + urlSegments.Replace("\\", "/") + "/";
 
                     // Create the CKEditor object
                     CKEditor editor = new CKEditor
@@ -677,7 +675,7 @@ namespace SobekCM.Library.HTML
 
                     if ((staticWebContent.Content.IndexOf("<script", StringComparison.OrdinalIgnoreCase) >= 0) || (staticWebContent.Content.IndexOf("<input", StringComparison.OrdinalIgnoreCase) >= 0))
                         editor.Start_In_Source_Mode = true;
-                    else 
+                    else
                         editor.Start_In_Source_Mode = false;
 
                     // Add the HTML from the CKEditor object
@@ -692,14 +690,14 @@ namespace SobekCM.Library.HTML
             }
         }
 
-		/// <summary> Gets the CSS class of the container that the page is wrapped within </summary>
-		public override string Container_CssClass
-		{
-			get
-			{
+        /// <summary> Gets the CSS class of the container that the page is wrapped within </summary>
+        public override string Container_CssClass
+        {
+            get
+            {
                 return base.Container_CssClass;
-			}
-		}
+            }
+        }
 
 
         #region Public method to write the internal header

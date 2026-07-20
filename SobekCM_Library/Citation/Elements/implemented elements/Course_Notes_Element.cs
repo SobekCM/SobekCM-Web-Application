@@ -1,16 +1,14 @@
 #region Using directives
 
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using Microsoft.AspNetCore.Http;
 using SobekCM.Core.ApplicationState;
-using SobekCM.Core.Configuration;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Users;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Bib_Info;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
 
 #endregion
 
@@ -94,7 +92,7 @@ namespace SobekCM.Library.Citation.Elements
         public override void Save_To_Bib(SobekCM_Item Bib)
         {
             var getKeys = Context.Request.Form.Keys;
-            foreach (string thisKey in getKeys.Where(thisKey => thisKey.IndexOf(html_element_name.Replace("_","")) == 0))
+            foreach (string thisKey in getKeys.Where(thisKey => thisKey.IndexOf(html_element_name.Replace("_", "")) == 0))
             {
                 Bib.Bib_Info.Add_Note(Context.Request.Form[thisKey], Note_Type_Enum.Course);
             }

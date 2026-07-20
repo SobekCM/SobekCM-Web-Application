@@ -27,7 +27,7 @@ namespace SobekCM.Resource_Object.Metadata_Modules.LearningObjects
         /// <summary> Constructor for a new instance of the LOM_VocabularyState class </summary>
         /// <param name="Value"> Value of the string itself </param>
         /// <param name="Source"> Source or vocabulary from which the string is derived </param>
-        public LOM_VocabularyState( string Value, string Source )
+        public LOM_VocabularyState(string Value, string Source)
         {
             this.Value = Value;
             this.Source = Source;

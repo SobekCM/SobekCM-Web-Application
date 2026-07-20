@@ -1,12 +1,12 @@
 ﻿#region Using directives
 
+using SobekCM.Resource_Object.MARC;
+using SobekCM.Resource_Object.METS_Sec_ReaderWriters;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Xml;
-using SobekCM.Resource_Object.MARC;
-using SobekCM.Resource_Object.METS_Sec_ReaderWriters;
 
 #endregion
 
@@ -69,7 +69,7 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
                 // create the node reader
                 nodeReader = new XmlTextReader(reader);
 
-                MarcXML_METS_dmdSec_ReaderWriter.Read_MarcXML_Info(nodeReader, Return_Package.Bib_Info, Return_Package, true, Options );
+                MarcXML_METS_dmdSec_ReaderWriter.Read_MarcXML_Info(nodeReader, Return_Package.Bib_Info, Return_Package, true, Options);
             }
             catch (Exception ee)
             {
@@ -189,7 +189,7 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
             string thumbnail_base = String.Empty;
             if ((Options.ContainsKey("MarcXML_File_ReaderWriter:Image_Base")) && (Options["MarcXML_File_ReaderWriter:Image_Base"] != null))
                 thumbnail_base = Options["MarcXML_File_ReaderWriter:Image_Base"].ToString();
-            
+
             // Get all the standard tags
             MARC_Record tags = Item_To_Save.To_MARC_Record(cataloging_source_code, location_code, reproduction_agency, reproduction_place, system_name, system_abbreviation, thumbnail_base);
 
@@ -201,7 +201,7 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
                 {
                     try
                     {
-                        List<MARC_Field> add_tags = (List<MARC_Field>) add_tags_obj;
+                        List<MARC_Field> add_tags = (List<MARC_Field>)add_tags_obj;
                         foreach (MARC_Field thisTag in add_tags)
                         {
                             tags.Add_Field(thisTag);

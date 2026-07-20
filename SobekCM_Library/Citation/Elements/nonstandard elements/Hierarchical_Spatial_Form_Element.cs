@@ -1,18 +1,16 @@
 #region Using directives
 
+using SobekCM.Core.ApplicationState;
+using SobekCM.Core.Configuration.Localization;
+using SobekCM.Core.Users;
+using SobekCM.Library.UI;
+using SobekCM.Resource_Object;
+using SobekCM.Resource_Object.Bib_Info;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using Microsoft.AspNetCore.Http;
 using System.Xml;
-using SobekCM.Core.ApplicationState;
-using SobekCM.Core.Configuration;
-using SobekCM.Core.Configuration.Localization;
-using SobekCM.Core.Users;
-using SobekCM.Resource_Object;
-using SobekCM.Resource_Object.Bib_Info;
-using SobekCM.Library.UI;
 
 #endregion
 
@@ -28,7 +26,7 @@ namespace SobekCM.Library.Citation.Elements
             Repeatable = true;
             Title = "Spatial Coverage";
             html_element_name = "form_spatial";
-	        help_page = "spatialform";
+            help_page = "spatialform";
         }
 
         #region iElement Members
@@ -44,7 +42,7 @@ namespace SobekCM.Library.Citation.Elements
         /// <param name="Translator"> Language support object which handles simple translational duties </param>
         /// <param name="Base_URL"> Base URL for the current request </param>
         /// <remarks> This element appends a popup form to the popup_form_builder</remarks>
-        public override void Render_Template_HTML(TextWriter Output, SobekCM_Item Bib, string Skin_Code, bool IsMozilla, StringBuilder PopupFormBuilder, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL )
+        public override void Render_Template_HTML(TextWriter Output, SobekCM_Item Bib, string Skin_Code, bool IsMozilla, StringBuilder PopupFormBuilder, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL)
         {
             // Check that an acronym exists
             if (Acronym.Length == 0)
@@ -120,30 +118,30 @@ namespace SobekCM.Library.Citation.Elements
 
                         // Add the popup form
                         PopupFormBuilder.AppendLine("<!-- Hierarchical Spatial Form " + subject_index + " -->");
-						PopupFormBuilder.AppendLine("<div class=\"spatial_popup_div sbkMetadata_PopupDiv\" id=\"form_spatial_" + subject_index + "\" style=\"display:none;\">");
-						PopupFormBuilder.AppendLine("  <div class=\"sbkMetadata_PopupTitle\"><table style=\"width:100%\"><tr><td style=\"text-align:left\">Edit Hierarchical Spatial</td><td style=\"text-align:right\"><a href=\"" + Help_URL(Skin_Code, Base_URL) + "\" alt=\"HELP\" target=\"_" + html_element_name.ToUpper() + "\" >?</a> &nbsp; <a href=\"#template\" alt=\"CLOSE\" onclick=\"close_spatial_form('form_spatial_" + subject_index + "')\">X</a> &nbsp; </td></tr></table></div>");
+                        PopupFormBuilder.AppendLine("<div class=\"spatial_popup_div sbkMetadata_PopupDiv\" id=\"form_spatial_" + subject_index + "\" style=\"display:none;\">");
+                        PopupFormBuilder.AppendLine("  <div class=\"sbkMetadata_PopupTitle\"><table style=\"width:100%\"><tr><td style=\"text-align:left\">Edit Hierarchical Spatial</td><td style=\"text-align:right\"><a href=\"" + Help_URL(Skin_Code, Base_URL) + "\" alt=\"HELP\" target=\"_" + html_element_name.ToUpper() + "\" >?</a> &nbsp; <a href=\"#template\" alt=\"CLOSE\" onclick=\"close_spatial_form('form_spatial_" + subject_index + "')\">X</a> &nbsp; </td></tr></table></div>");
                         PopupFormBuilder.AppendLine("  <br />");
-						PopupFormBuilder.AppendLine("  <table class=\"sbkMetadata_PopupTable\">");
+                        PopupFormBuilder.AppendLine("  <table class=\"sbkMetadata_PopupTable\">");
 
                         // Add the rows of data
-						PopupFormBuilder.AppendLine("    <tr><td style=\"width:100px;\">Continent:</td><td colspan=\"2\"><input class=\"formspatial_input sbk_Focusable\" name=\"formspatialcontinent_" + subject_index + "\" id=\"formspatialcontinent_" + subject_index + "\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(hieroSubject.Continent) + "\" /></td></tr>");
-						PopupFormBuilder.AppendLine("    <tr><td>Country:</td><td colspan=\"2\"><input class=\"formspatial_input sbk_Focusable\" name=\"formspatialcountry_" + subject_index + "\" id=\"formspatialcountry_" + subject_index + "\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(hieroSubject.Country) + "\" /></td></tr>");
-						PopupFormBuilder.AppendLine("    <tr><td>Province:</td><td colspan=\"2\"><input class=\"formspatial_input sbk_Focusable\" name=\"formspatialprovince_" + subject_index + "\" id=\"formspatialprovince_" + subject_index + "\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(hieroSubject.Province) + "\" /></td></tr>");
-						PopupFormBuilder.AppendLine("    <tr><td>Region:</td><td colspan=\"2\"><input class=\"formspatial_input sbk_Focusable\" name=\"formspatialregion_" + subject_index + "\" id=\"formspatialregion_" + subject_index + "\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(hieroSubject.Region) + "\" /></td></tr>");
-						PopupFormBuilder.AppendLine("    <tr><td>State:</td><td colspan=\"2\"><input class=\"formspatial_input sbk_Focusable\" name=\"formspatialstate_" + subject_index + "\" id=\"formspatialstate_" + subject_index + "\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(hieroSubject.State) + "\" /></td></tr>");
-						PopupFormBuilder.AppendLine("    <tr><td>Territory:</td><td colspan=\"2\"><input class=\"formspatial_input sbk_Focusable\" name=\"formspatialterritory_" + subject_index + "\" id=\"formspatialterritory_" + subject_index + "\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(hieroSubject.Territory) + "\" /></td></tr>");
-						PopupFormBuilder.AppendLine("    <tr><td>County:</td><td colspan=\"2\"><input class=\"formspatial_input sbk_Focusable\" name=\"formspatialcounty_" + subject_index + "\" id=\"formspatialcounty_" + subject_index + "\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(hieroSubject.County) + "\" /></td></tr>");
-						PopupFormBuilder.AppendLine("    <tr><td>City:</td><td colspan=\"2\"><input class=\"formspatial_input sbk_Focusable\" name=\"formspatialcity_" + subject_index + "\" id=\"formspatialcity_" + subject_index + "\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(hieroSubject.City) + "\" /></td></tr>");
-						PopupFormBuilder.AppendLine("    <tr><td>City Section:</td><td colspan=\"2\"><input class=\"formspatial_input sbk_Focusable\" name=\"formspatialsectioncity_" + subject_index + "\" id=\"formspatialsectioncity_" + subject_index + "\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(hieroSubject.CitySection) + "\" /></td></tr>");
-						PopupFormBuilder.AppendLine("    <tr><td>Island:</td><td colspan=\"2\"><input class=\"formspatial_input sbk_Focusable\" name=\"formspatialisland_" + subject_index + "\" id=\"formspatialisland_" + subject_index + "\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(hieroSubject.Island) + "\" /></td></tr>");
-						PopupFormBuilder.AppendLine("    <tr><td>Area:</td><td colspan=\"2\"><input class=\"formspatial_input sbk_Focusable\" name=\"formspatialarea_" + subject_index + "\" id=\"formspatialarea_" + subject_index + "\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(hieroSubject.Area) + "\" /></td></tr>");
+                        PopupFormBuilder.AppendLine("    <tr><td style=\"width:100px;\">Continent:</td><td colspan=\"2\"><input class=\"formspatial_input sbk_Focusable\" name=\"formspatialcontinent_" + subject_index + "\" id=\"formspatialcontinent_" + subject_index + "\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(hieroSubject.Continent) + "\" /></td></tr>");
+                        PopupFormBuilder.AppendLine("    <tr><td>Country:</td><td colspan=\"2\"><input class=\"formspatial_input sbk_Focusable\" name=\"formspatialcountry_" + subject_index + "\" id=\"formspatialcountry_" + subject_index + "\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(hieroSubject.Country) + "\" /></td></tr>");
+                        PopupFormBuilder.AppendLine("    <tr><td>Province:</td><td colspan=\"2\"><input class=\"formspatial_input sbk_Focusable\" name=\"formspatialprovince_" + subject_index + "\" id=\"formspatialprovince_" + subject_index + "\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(hieroSubject.Province) + "\" /></td></tr>");
+                        PopupFormBuilder.AppendLine("    <tr><td>Region:</td><td colspan=\"2\"><input class=\"formspatial_input sbk_Focusable\" name=\"formspatialregion_" + subject_index + "\" id=\"formspatialregion_" + subject_index + "\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(hieroSubject.Region) + "\" /></td></tr>");
+                        PopupFormBuilder.AppendLine("    <tr><td>State:</td><td colspan=\"2\"><input class=\"formspatial_input sbk_Focusable\" name=\"formspatialstate_" + subject_index + "\" id=\"formspatialstate_" + subject_index + "\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(hieroSubject.State) + "\" /></td></tr>");
+                        PopupFormBuilder.AppendLine("    <tr><td>Territory:</td><td colspan=\"2\"><input class=\"formspatial_input sbk_Focusable\" name=\"formspatialterritory_" + subject_index + "\" id=\"formspatialterritory_" + subject_index + "\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(hieroSubject.Territory) + "\" /></td></tr>");
+                        PopupFormBuilder.AppendLine("    <tr><td>County:</td><td colspan=\"2\"><input class=\"formspatial_input sbk_Focusable\" name=\"formspatialcounty_" + subject_index + "\" id=\"formspatialcounty_" + subject_index + "\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(hieroSubject.County) + "\" /></td></tr>");
+                        PopupFormBuilder.AppendLine("    <tr><td>City:</td><td colspan=\"2\"><input class=\"formspatial_input sbk_Focusable\" name=\"formspatialcity_" + subject_index + "\" id=\"formspatialcity_" + subject_index + "\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(hieroSubject.City) + "\" /></td></tr>");
+                        PopupFormBuilder.AppendLine("    <tr><td>City Section:</td><td colspan=\"2\"><input class=\"formspatial_input sbk_Focusable\" name=\"formspatialsectioncity_" + subject_index + "\" id=\"formspatialsectioncity_" + subject_index + "\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(hieroSubject.CitySection) + "\" /></td></tr>");
+                        PopupFormBuilder.AppendLine("    <tr><td>Island:</td><td colspan=\"2\"><input class=\"formspatial_input sbk_Focusable\" name=\"formspatialisland_" + subject_index + "\" id=\"formspatialisland_" + subject_index + "\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(hieroSubject.Island) + "\" /></td></tr>");
+                        PopupFormBuilder.AppendLine("    <tr><td>Area:</td><td colspan=\"2\"><input class=\"formspatial_input sbk_Focusable\" name=\"formspatialarea_" + subject_index + "\" id=\"formspatialarea_" + subject_index + "\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(hieroSubject.Area) + "\" /></td></tr>");
 
 
                         // Add the authority and language text boxes
                         PopupFormBuilder.Append("    <tr><td>Authority:</td><td>");
                         PopupFormBuilder.Append("<input class=\"formspatial_small_input sbk_Focusable\" name=\"formspatialauthority_" + subject_index + "\" id=\"formspatialauthority_" + subject_index + "\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(hieroSubject.Authority) + "\" />");
                         PopupFormBuilder.Append("</td><td style=\"width:255px\" > &nbsp; Language: &nbsp; ");
-						PopupFormBuilder.Append("<input class=\"formspatial_small_input sbk_Focusable\" name=\"formspatiallanguage_" + subject_index + "\" id=\"formspatiallanguage_" + subject_index + "\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(hieroSubject.Language) + "\" />");
+                        PopupFormBuilder.Append("<input class=\"formspatial_small_input sbk_Focusable\" name=\"formspatiallanguage_" + subject_index + "\" id=\"formspatiallanguage_" + subject_index + "\" type=\"text\" value=\"" + System.Net.WebUtility.HtmlEncode(hieroSubject.Language) + "\" />");
                         PopupFormBuilder.AppendLine("</td></tr>");
                         PopupFormBuilder.AppendLine("    <tr style=\"height:30px; vertical-align:bottom\"><td colspan=\"3\" style=\"text-align:center\">");
 
@@ -158,9 +156,9 @@ namespace SobekCM.Library.Citation.Elements
                             PopupFormBuilder.AppendLine("        <input type=\"radio\" name=\"formspatialtype_" + subject_index + "\" id=\"formspatialtype_added_" + subject_index + "\" value=\"addedentry\" /><label for=\"formspatialtype_added_" + subject_index + "\">Added Hierarchical Entry</label>");
                         }
                         PopupFormBuilder.AppendLine("    </td></tr>");
-						PopupFormBuilder.AppendLine("    <tr style=\"height:35px; text-align: center; vertical-align: bottom;\">");
-						PopupFormBuilder.AppendLine("      <td colspan=\"3\"><button title=\"Close\" class=\"sbkMetadata_RoundButton\" onclick=\"return close_spatial_form('form_spatial_" + subject_index + "');\">CLOSE</button></td>");
-						PopupFormBuilder.AppendLine("    </tr>");
+                        PopupFormBuilder.AppendLine("    <tr style=\"height:35px; text-align: center; vertical-align: bottom;\">");
+                        PopupFormBuilder.AppendLine("      <td colspan=\"3\"><button title=\"Close\" class=\"sbkMetadata_RoundButton\" onclick=\"return close_spatial_form('form_spatial_" + subject_index + "');\">CLOSE</button></td>");
+                        PopupFormBuilder.AppendLine("    </tr>");
 
                         PopupFormBuilder.AppendLine("  </table>");
                         PopupFormBuilder.AppendLine("</div>");
@@ -239,22 +237,22 @@ namespace SobekCM.Library.Citation.Elements
                         (city.Length > 0) || (island.Length > 0))
                     {
                         Subject_Info_HierarchicalGeographic newSubject = new Subject_Info_HierarchicalGeographic
-                                                                             {
-                                                                                 Continent = continent,
-                                                                                 Country = country,
-                                                                                 Province = province,
-                                                                                 Region = region,
-                                                                                 State = state,
-                                                                                 Territory = territory,
-                                                                                 County = county,
-                                                                                 City = city,
-                                                                                 CitySection = citysection,
-                                                                                 Island = island,
-                                                                                 Area = area,
-                                                                                 Authority = authority,
-                                                                                 Language = language,
-                                                                                 ID = type == "addedentry" ? "SUBJ752" : "SUBJ662"
-                                                                             };
+                        {
+                            Continent = continent,
+                            Country = country,
+                            Province = province,
+                            Region = region,
+                            State = state,
+                            Territory = territory,
+                            County = county,
+                            City = city,
+                            CitySection = citysection,
+                            Island = island,
+                            Area = area,
+                            Authority = authority,
+                            Language = language,
+                            ID = type == "addedentry" ? "SUBJ752" : "SUBJ662"
+                        };
 
                         Bib.Bib_Info.Add_Subject(newSubject);
                     }
@@ -269,7 +267,7 @@ namespace SobekCM.Library.Citation.Elements
         /// <summary> Reads the inner data from the CompleteTemplate XML format </summary>
         /// <param name="XMLReader"> Current template xml configuration reader </param>
         /// <remarks> This procedure does not currently read any inner xml (not yet necessary) </remarks>
-        protected override void Inner_Read_Data( XmlReader XMLReader )
+        protected override void Inner_Read_Data(XmlReader XMLReader)
         {
             // Do nothing
         }

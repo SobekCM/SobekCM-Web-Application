@@ -227,7 +227,7 @@ namespace SobekCM.Tools
             byte[] bytIn = Encoding.ASCII.GetBytes(Source);
 
             // set the private key
-            SHA1 sha = new SHA1CryptoServiceProvider();
+            SHA1 sha = SHA1.Create();
             byte[] bytOut = sha.ComputeHash(bytIn);
 
             // convert into Base64 so that the result can be used in xml

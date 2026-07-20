@@ -16,7 +16,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
-using System.Net;
+using System.Net.Http;
 
 #endregion
 
@@ -425,20 +425,19 @@ namespace SobekCM.Engine_Library.Items
                 var thisPackage = new SobekCM_Item();
                 if (METS_URL.IndexOf("http:") >= 0)
                 {
-                    WebRequest objRequest = WebRequest.Create(METS_URL);
-                    objRequest.Timeout = 5000;
-                    WebResponse objResponse = objRequest.GetResponse();
-
-                    if (Tracer != null)
+                    using (var httpClient = new HttpClient { Timeout = TimeSpan.FromMilliseconds(5000) })
+                    using (Stream responseStream = httpClient.GetStreamAsync(METS_URL).GetAwaiter().GetResult())
                     {
-                        Tracer.Add_Trace("SobekCM_METS_Based_ItemBuilder.Build_Item_From_METS", "Read the METS file from the stream");
-                    }
+                        if (Tracer != null)
+                        {
+                            Tracer.Add_Trace("SobekCM_METS_Based_ItemBuilder.Build_Item_From_METS", "Read the METS file from the stream");
+                        }
 
-                    // Read the METS file and create the package
-                    var reader = new METS_File_ReaderWriter();
-                    string errorMessage;
-                    reader.Read_Metadata(objResponse.GetResponseStream(), thisPackage, null, out errorMessage);
-                    objResponse.Close();
+                        // Read the METS file and create the package
+                        var reader = new METS_File_ReaderWriter();
+                        string errorMessage;
+                        reader.Read_Metadata(responseStream, thisPackage, null, out errorMessage);
+                    }
                 }
                 else
                 {

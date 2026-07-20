@@ -650,7 +650,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 try
                 {
                     s = new FileStream(filePath, FileMode.Open, FileAccess.Read);
-                    s.Read(b, 0, 2048);
+                    s.ReadExactly(b, 0, 2048);
                 }
                 catch (Exception)
                 {
@@ -668,7 +668,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 int secondsSince1970 = BitConverter.ToInt32(b, i2 + C_LINKER_TIMESTAMP_OFFSET);
                 var dt = new DateTime(1970, 1, 1, 0, 0, 0);
                 dt = dt.AddSeconds(secondsSince1970);
-                dt = dt.AddHours(TimeZone.CurrentTimeZone.GetUtcOffset(dt).Hours);
+                dt = dt.AddHours(TimeZoneInfo.Local.GetUtcOffset(dt).Hours);
                 string debugTime_buildTimestamp = dt.ToString();
                 //get current timestamp
                 TimeSpan span = (dt - new DateTime(1970, 1, 1, 0, 0, 0, 0));

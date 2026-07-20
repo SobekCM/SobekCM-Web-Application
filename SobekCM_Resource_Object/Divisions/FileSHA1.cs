@@ -68,7 +68,7 @@ namespace SobekCM.Resource_Object.Divisions
             {
                 var hashFile = new FileStream(fileName, FileMode.Open, FileAccess.Read);
 
-                var sha1 = new SHA1CryptoServiceProvider();
+                var sha1 = SHA1.Create();
                 byte[] result = sha1.ComputeHash(hashFile);
 
                 hashFile.Close();

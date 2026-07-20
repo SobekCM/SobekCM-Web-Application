@@ -3,7 +3,7 @@
 using SobekCM.Tools;
 using System;
 using System.IO;
-using System.Net;
+using System.Net.Http;
 using System.Text;
 using System.Xml;
 
@@ -34,15 +34,11 @@ namespace SobekCM.Core.WebContent
 
                 // the html retrieved from the page
                 string displayText;
-                WebRequest objRequest = WebRequest.Create(Source_URL);
-                WebResponse objResponse = objRequest.GetResponse();
-
-                // the using keyword will automatically dispose the object once complete
-                using (var sr = new StreamReader(objResponse.GetResponseStream()))
+                using (var httpClient = new HttpClient())
+                using (Stream responseStream = httpClient.GetStreamAsync(Source_URL).GetAwaiter().GetResult())
+                using (var sr = new StreamReader(responseStream))
                 {
                     displayText = sr.ReadToEnd();
-                    // Close and clean up the StreamReader
-                    sr.Close();
                 }
 
                 if (Tracer != null)

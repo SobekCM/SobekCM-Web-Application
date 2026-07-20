@@ -2,7 +2,7 @@ using SobekCM.Core.BriefItem;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Net;
+using System.Net.Http;
 
 namespace SobekCM.Core.FileSystems
 {
@@ -40,15 +40,11 @@ namespace SobekCM.Core.FileSystems
             {
                 // the html retrieved from the page
                 String strResult;
-                WebRequest objRequest = WebRequest.Create(FileName);
-                WebResponse objResponse = objRequest.GetResponse();
-
-                // the using keyword will automatically dispose the object // once complete
-                using (var sr = new StreamReader(objResponse.GetResponseStream()))
+                using (var httpClient = new HttpClient())
+                using (Stream responseStream = httpClient.GetStreamAsync(FileName).GetAwaiter().GetResult())
+                using (var sr = new StreamReader(responseStream))
                 {
                     strResult = sr.ReadToEnd();
-                    // Close and clean up the StreamReader
-                    sr.Close();
                 }
                 return strResult;
             }

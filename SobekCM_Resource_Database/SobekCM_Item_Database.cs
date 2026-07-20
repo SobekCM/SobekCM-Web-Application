@@ -16,7 +16,7 @@ using System.Data;
 using System.Data.Common;
 using System.IO;
 using System.Linq;
-using System.Net;
+using System.Net.Http;
 using System.Text;
 
 #endregion
@@ -3507,13 +3507,12 @@ namespace SobekCM_Resource_Database
                 var returnVal = new SobekCM_All_Items();
 
                 // Create the stream to get the information from the web
-                WebResponse objResponse;
-                WebRequest objRequest = HttpWebRequest.Create(SobekCM_Base_URL);
-                objRequest.Timeout = 15000;
-                objResponse = objRequest.GetResponse();
-
-                // Load the data into the DataSet
-                returnVal.ReadXml(objResponse.GetResponseStream());
+                using (var httpClient = new HttpClient { Timeout = TimeSpan.FromMilliseconds(15000) })
+                using (Stream objStream = httpClient.GetStreamAsync(SobekCM_Base_URL).GetAwaiter().GetResult())
+                {
+                    // Load the data into the DataSet
+                    returnVal.ReadXml(objStream);
+                }
 
                 // Return this value
                 return returnVal;
@@ -3552,20 +3551,10 @@ namespace SobekCM_Resource_Database
             try
             {
                 // the html retrieved from the page
-                String strResult;
-                WebResponse objResponse;
-                WebRequest objRequest = HttpWebRequest.Create(StrURL);
-                objRequest.Timeout = SecondsToTimeOut * 1000;
-                objResponse = objRequest.GetResponse();
-                // the using keyword will automatically dispose the object 
-                // once complete
-                using (var sr = new StreamReader(objResponse.GetResponseStream()))
+                using (var httpClient = new HttpClient { Timeout = TimeSpan.FromSeconds(SecondsToTimeOut) })
                 {
-                    strResult = sr.ReadToEnd();
-                    // Close and clean up the StreamReader
-                    sr.Close();
+                    return httpClient.GetStringAsync(StrURL).GetAwaiter().GetResult();
                 }
-                return strResult;
             }
             catch
             {
@@ -3605,9 +3594,9 @@ namespace SobekCM_Resource_Database
 
                 return itemList;
             }
-            catch (Exception ee)
+            catch (Exception)
             {
-                throw ee;
+                throw;
             }
         }
 

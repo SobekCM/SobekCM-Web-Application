@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Net;
+using System.Net.Http;
 using System.Xml;
 
 #endregion
@@ -15,6 +15,8 @@ namespace SobekCM.Resource_Object.OAI.Reader
     /// records within that repository </summary>
     public class OAI_Repository_Stream_Reader
     {
+        private static readonly HttpClient httpClient = new HttpClient();
+
         /// <summary> Gets the continuing list of records from an OAI-PMH repository, from a resumption token </summary>
         /// <param name="OAI_URL">URL for the OAI repository</param>
         /// <param name="Resumption_Token"> Recent resumption token from that repository </param>
@@ -30,13 +32,7 @@ namespace SobekCM.Resource_Object.OAI.Reader
                 string url = OAI_URL + "?verb=ListRecords&resumptionToken=" + Resumption_Token;
 
                 // prepare the web page we will be asking for
-                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
-
-                // execute the request
-                HttpWebResponse response = (HttpWebResponse)request.GetResponse();
-
-                // we will read data via the response stream
-                Stream resStream = response.GetResponseStream();
+                Stream resStream = httpClient.GetStreamAsync(url).GetAwaiter().GetResult();
 
                 // Read the stream and output the list of records
                 read_list_of_records(resStream, returnValue);
@@ -68,13 +64,7 @@ namespace SobekCM.Resource_Object.OAI.Reader
                     url = OAI_URL + "?verb=ListRecords&metadataPrefix=" + MetadataPrefix;
 
                 // prepare the web page we will be asking for
-                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
-
-                // execute the request
-                HttpWebResponse response = (HttpWebResponse)request.GetResponse();
-
-                // we will read data via the response stream
-                Stream resStream = response.GetResponseStream();
+                Stream resStream = httpClient.GetStreamAsync(url).GetAwaiter().GetResult();
 
                 // Read the stream and output the list of records
                 read_list_of_records(resStream, returnValue);
@@ -277,13 +267,7 @@ namespace SobekCM.Resource_Object.OAI.Reader
             try
             {
                 // prepare the web page we will be asking for
-                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(OAI_URL + "?verb=Identify");
-
-                // execute the request
-                HttpWebResponse response = (HttpWebResponse)request.GetResponse();
-
-                // we will read data via the response stream
-                Stream resStream = response.GetResponseStream();
+                Stream resStream = httpClient.GetStreamAsync(OAI_URL + "?verb=Identify").GetAwaiter().GetResult();
 
                 // Was it null?
                 if (resStream == null)
@@ -410,13 +394,7 @@ namespace SobekCM.Resource_Object.OAI.Reader
             try
             {
                 // prepare the web page we will be asking for
-                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(Repository.Harvested_URL + "?verb=ListSets");
-
-                // execute the request
-                HttpWebResponse response = (HttpWebResponse)request.GetResponse();
-
-                // we will read data via the response stream
-                Stream resStream = response.GetResponseStream();
+                Stream resStream = httpClient.GetStreamAsync(Repository.Harvested_URL + "?verb=ListSets").GetAwaiter().GetResult();
 
                 // Was this null?
                 if (resStream == null)
@@ -501,13 +479,7 @@ namespace SobekCM.Resource_Object.OAI.Reader
             try
             {
                 // prepare the web page we will be asking for
-                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(Repository.Harvested_URL + "?verb=ListMetadataFormats");
-
-                // execute the request
-                HttpWebResponse response = (HttpWebResponse)request.GetResponse();
-
-                // we will read data via the response stream
-                Stream resStream = response.GetResponseStream();
+                Stream resStream = httpClient.GetStreamAsync(Repository.Harvested_URL + "?verb=ListMetadataFormats").GetAwaiter().GetResult();
 
                 // Was this null?
                 if (resStream == null)

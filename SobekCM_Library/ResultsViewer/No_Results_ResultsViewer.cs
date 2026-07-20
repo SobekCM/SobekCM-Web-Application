@@ -6,7 +6,7 @@ using SobekCM.Tools;
 using System;
 using System.IO;
 using System.Linq;
-using System.Net;
+using System.Net.Http;
 using System.Text;
 
 #endregion
@@ -50,16 +50,11 @@ namespace SobekCM.Library.ResultsViewer
                 {
                     // the html retrieved from the page
                     String strResult;
-                    WebRequest objRequest = WebRequest.Create(UI_ApplicationCache_Gateway.Settings.Florida.Mango_Union_Search_Base_URL + "&term=" + terms);
-                    objRequest.Timeout = 2000;
-                    WebResponse objResponse = objRequest.GetResponse();
-
-                    // the using keyword will automatically dispose the object once complete
-                    using (var sr = new StreamReader(objResponse.GetResponseStream()))
+                    using (var httpClient = new HttpClient { Timeout = TimeSpan.FromMilliseconds(2000) })
+                    using (Stream responseStream = httpClient.GetStreamAsync(UI_ApplicationCache_Gateway.Settings.Florida.Mango_Union_Search_Base_URL + "&term=" + terms).GetAwaiter().GetResult())
+                    using (var sr = new StreamReader(responseStream))
                     {
                         strResult = sr.ReadToEnd().Trim();
-                        // Close and clean up the StreamReader
-                        sr.Close();
                     }
                     if (strResult.Length > 0)
                     {

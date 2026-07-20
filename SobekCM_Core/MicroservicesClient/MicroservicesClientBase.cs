@@ -80,7 +80,14 @@ namespace SobekCM.Core.MicroservicesClient
                     Tracer.Add_Trace("MicroservicesClientBase.Deserialize", "Microservice endpoint call: [GET] " + MicroserviceUri);
 
                 // Create the request for the remote microservice, by URI
+                // Deliberately kept on WebRequest rather than HttpClient: the exception handling below
+                // is built entirely around WebException/HttpWebResponse-specific members (.Status,
+                // HttpStatusCode switches), and this is the base client used for nearly every call to
+                // the microservice backend — rewriting both to HttpClient is a bigger, riskier change
+                // than clearing a warning warrants.
+#pragma warning disable SYSLIB0014
                 WebRequest request = WebRequest.Create(MicroserviceUri);
+#pragma warning restore SYSLIB0014
                 request.Credentials = CredentialCache.DefaultCredentials;
                 request.Method = "GET";
 
@@ -236,7 +243,10 @@ namespace SobekCM.Core.MicroservicesClient
                 Tracer.Add_Trace("MicroservicesClientBase.Deserialize", "Microservice endpoint call: [" + VerbMethod + "] " + MicroserviceUri);
 
                 // Create the request for the remote microservice, by URI
+                // (see the sibling Deserialize overload above for why this stays on WebRequest)
+#pragma warning disable SYSLIB0014
                 WebRequest request = WebRequest.Create(MicroserviceUri);
+#pragma warning restore SYSLIB0014
                 request.Credentials = CredentialCache.DefaultCredentials;
                 request.Method = VerbMethod;
                 request.ContentType = "application/x-www-form-urlencoded";

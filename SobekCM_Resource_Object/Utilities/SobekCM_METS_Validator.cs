@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Drawing;
 using System.IO;
-using System.Net;
+using System.Net.Http;
 using System.Text;
 
 #endregion
@@ -197,15 +197,19 @@ namespace SobekCM.Resource_Object.Utilities
         /// <returns></returns>
         private bool IsValidIconImage(string iconUrl)
         {
-            var uriOfImage = new Uri(iconUrl);
-            Image objImage = null;
-            WebRequest objRequest = HttpWebRequest.Create(uriOfImage);
+            // Image.FromStream requires Windows 6.1+ (System.Drawing.Common)
+            if (!OperatingSystem.IsWindowsVersionAtLeast(6, 1))
+                return false;
+
             // Return true unless you found otherwise
             try
             {
-                objImage =
-                    Image.FromStream(objRequest.GetResponse().GetResponseStream());
-                return true;
+                using (var httpClient = new HttpClient())
+                using (Stream stream = httpClient.GetStreamAsync(iconUrl).GetAwaiter().GetResult())
+                using (Image objImage = Image.FromStream(stream))
+                {
+                    return true;
+                }
             }
             catch
             {

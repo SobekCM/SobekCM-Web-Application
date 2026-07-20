@@ -124,8 +124,32 @@ namespace SobekCM.Library.ItemViewer.Viewers
             // Set the behavior properties
             Behaviors = EmptyBehaviors;
 
+            // Determine the page
+            page = 1;
+            if (!String.IsNullOrEmpty(CurrentRequest.ViewerCode))
+            {
+                int tempPageParse;
+                if (Int32.TryParse(CurrentRequest.ViewerCode.Replace(OpenTextbook_ViewerCode.Replace("#", ""), ""), out tempPageParse))
+                    page = tempPageParse;
+            }
+
+            // Just a quick range check
+            if ((BriefItem.OpenTextbook_Pages != null) && (page > BriefItem.OpenTextbook_Pages.Count))
+                page = 1;
+
+            // Since this is a paging viewer, set the viewer code
+            if (String.IsNullOrEmpty(CurrentRequest.ViewerCode))
+                CurrentRequest.ViewerCode = OpenTextbook_ViewerCode.Replace("#", page.ToString());
+
             // Can the user edit this?
             canEdit = CurrentUser != null && CurrentUser.LoggedOn;
+
+            // Is this in edit mode?
+            isEditMode = false;
+            if ((!String.IsNullOrEmpty(CurrentRequest.ViewerSubCode)) && (CurrentRequest.ViewerSubCode == "edit"))
+            {
+                isEditMode = true;
+            }
 
             // Get the file info
             set_file_information(new string[] { "HTML" });

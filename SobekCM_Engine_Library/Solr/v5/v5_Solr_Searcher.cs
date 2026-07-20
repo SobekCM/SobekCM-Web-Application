@@ -165,7 +165,7 @@ namespace SobekCM.Engine_Library.Solr.v5
                 // Create the query options
                 var options = new QueryOptions{
                     Rows = SearchOptions.ResultsPerPage,
-                    Start = (pageNumber - 1) * SearchOptions.ResultsPerPage,
+                    StartOrCursor = new StartOrCursor.Start((pageNumber - 1) * SearchOptions.ResultsPerPage),
                     Fields = fields
                 };
 
@@ -679,7 +679,7 @@ namespace SobekCM.Engine_Library.Solr.v5
             // Create the query options
             var options = new QueryOptions{
                 Rows = ResultsPerPage,
-                Start = (ResultsPage - 1) * ResultsPerPage,
+                StartOrCursor = new StartOrCursor.Start((ResultsPage - 1) * ResultsPerPage),
                 Fields = new[] { "pageid", "pagename", "pageorder", "score", "thumbnail" },
                 Highlight = new HighlightingParameters { Fields = new[] { "pagetext" }, Fragsize = 1000 },
                 ExtraParams = new Dictionary<string, string> { { "hl.useFastVectorHighlighter", "true" }, { "wt", "xml" } }

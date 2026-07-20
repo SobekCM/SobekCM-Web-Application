@@ -79,8 +79,10 @@ namespace SobekCM.Resource_Object.Database.DataSets {
         }
         
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        protected SobekCM_All_Items(global::System.Runtime.Serialization.SerializationInfo info, global::System.Runtime.Serialization.StreamingContext context) : 
+#pragma warning disable SYSLIB0051 // legacy ISerializable ctor inherited from DataSet; auto-generated, not hand-written
+        protected SobekCM_All_Items(global::System.Runtime.Serialization.SerializationInfo info, global::System.Runtime.Serialization.StreamingContext context) :
                 base(info, context, false) {
+#pragma warning restore SYSLIB0051
             if ((this.IsBinarySerialized(info, context) == true)) {
                 this.InitVars(false);
                 global::System.ComponentModel.CollectionChangeEventHandler schemaChangedHandler1 = new global::System.ComponentModel.CollectionChangeEventHandler(this.SchemaChanged);
@@ -335,8 +337,10 @@ namespace SobekCM.Resource_Object.Database.DataSets {
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            protected SobekCM_ItemDataTable(global::System.Runtime.Serialization.SerializationInfo info, global::System.Runtime.Serialization.StreamingContext context) : 
+#pragma warning disable SYSLIB0051 // legacy ISerializable ctor inherited from DataTable; auto-generated, not hand-written
+            protected SobekCM_ItemDataTable(global::System.Runtime.Serialization.SerializationInfo info, global::System.Runtime.Serialization.StreamingContext context) :
                     base(info, context) {
+#pragma warning restore SYSLIB0051
                 this.InitVars();
             }
             

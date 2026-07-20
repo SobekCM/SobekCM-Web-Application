@@ -14,7 +14,7 @@ namespace SobekCM.Tools
         /// <returns> Date as the RFC-822 format </returns>
         public static string ToRfc822(DateTime Date)
         {
-            int offset = TimeZone.CurrentTimeZone.GetUtcOffset(DateTime.Now).Hours;
+            int offset = TimeZoneInfo.Local.GetUtcOffset(DateTime.Now).Hours;
             string timeZone = "+" + offset.ToString().PadLeft(2, '0');
 
             if (offset < 0)

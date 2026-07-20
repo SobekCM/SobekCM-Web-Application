@@ -154,7 +154,7 @@ namespace SobekCM.Resource_Object.Divisions
                 var hashFile = new FileStream(fileName, FileMode.Open, FileAccess.Read);
 
                 // Create the object necessary and compute the hash on the file stream
-                MD5 md5 = new MD5CryptoServiceProvider();
+                MD5 md5 = MD5.Create();
                 byte[] result = md5.ComputeHash(hashFile);
 
                 // Close the connection to the file

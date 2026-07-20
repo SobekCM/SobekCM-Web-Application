@@ -168,7 +168,7 @@ namespace SobekCM.Engine_Library.Solr.Legacy
                 // Create the query options
                 var options = new QueryOptions{
                     Rows = ResultsPerPage,
-                    Start = (Page_Number - 1) * ResultsPerPage,
+                    StartOrCursor = new StartOrCursor.Start((Page_Number - 1) * ResultsPerPage),
                     Fields = new[] { "did", "score", "url", "aleph", "donor", "edition", "format", "holdinglocation", "sourceinstitution", "maintitle", "materialtype", "oclc", "pubdate_display", "author_display", "publisher_display", "mainthumbnail" },
                     Highlight = new HighlightingParameters { Fields = new[] { "fulltext" }, },
                     ExtraParams = new Dictionary<string, string> { { "hl.useFastVectorHighlighter", "true" } }
@@ -397,7 +397,7 @@ namespace SobekCM.Engine_Library.Solr.Legacy
             // Create the query options
             var options = new QueryOptions{
                 Rows = ResultsPerPage,
-                Start = (ResultsPage - 1) * ResultsPerPage,
+                StartOrCursor = new StartOrCursor.Start((ResultsPage - 1) * ResultsPerPage),
                 Fields = new[] { "pageid", "pagename", "pageorder", "score", "thumbnail" },
                 Highlight = new HighlightingParameters { Fields = new[] { "pagetext" }, },
                 ExtraParams = new Dictionary<string, string> { { "hl.useFastVectorHighlighter", "true" } }

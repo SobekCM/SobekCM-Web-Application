@@ -2,7 +2,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.Data;
 using System.IO;
 using SobekCM.Core.Navigation;
@@ -104,7 +103,7 @@ namespace SobekCM.Builder_Library.Statistics
                 {
                     // parse the url
                     string[] splitter = hit.Query_String.ToLower().Split("&".ToCharArray());
-                    var queryStringCollection = new NameValueCollection();
+                    var queryStringCollection = new Dictionary<string, string>();
                     foreach (string thisSplit in splitter)
                     {
                         int equals_index = thisSplit.IndexOf("=");

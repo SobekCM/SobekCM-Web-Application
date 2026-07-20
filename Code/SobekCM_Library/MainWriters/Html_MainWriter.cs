@@ -403,7 +403,7 @@ namespace SobekCM.Library.MainWriters
         /// <summary> Perform all the work of adding to the response stream back to the web user </summary>
         /// <param name="Output"> TextWriter to write HTML output </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-        public override void Add_Controls(TextWriter Output, Custom_Tracer Tracer)
+        public override void Write_Main_Viewer_Section(TextWriter Output, Custom_Tracer Tracer)
         {
             // If execution should end, do it now
             if (RequestSpecificValues.Current_Mode.Request_Completed)

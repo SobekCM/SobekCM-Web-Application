@@ -412,8 +412,8 @@ namespace SobekCM
                     if ((pageGlobals.mainWriter.Writer_Type == Writer_Type_Enum.HTML) || (pageGlobals.mainWriter.Writer_Type == Writer_Type_Enum.HTML_LoggedIn))
                         ((Html_MainWriter)pageGlobals.mainWriter).Write_ItemNavForm_Opening(writer, pageGlobals.tracer);
 
-                    if (pageGlobals.mainWriter.Include_Main_Place_Holder)
-                        pageGlobals.mainWriter.Add_Controls(writer, pageGlobals.tracer);
+                    // Write the main section
+                    pageGlobals.mainWriter.Write_Main_Viewer_Section(writer, pageGlobals.tracer);
 
                     if ((pageGlobals.mainWriter.Writer_Type == Writer_Type_Enum.HTML) || (pageGlobals.mainWriter.Writer_Type == Writer_Type_Enum.HTML_LoggedIn))
                         ((Html_MainWriter)pageGlobals.mainWriter).Write_ItemNavForm_Closing(writer, pageGlobals.tracer);

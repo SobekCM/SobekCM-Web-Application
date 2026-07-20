@@ -73,7 +73,7 @@ namespace SobekCM.Library.MainWriters
         /// <summary> Write any additional HTML into the main form area of the page </summary>
         /// <param name="Output"> Stream to which to write additional HTML </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-        public virtual void Add_Controls(TextWriter Output, Custom_Tracer Tracer)
+        public virtual void Write_Main_Viewer_Section(TextWriter Output, Custom_Tracer Tracer)
         {
             // Do nothing
         }

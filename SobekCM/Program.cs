@@ -39,14 +39,18 @@ namespace SobekCM
             var builder = WebApplication.CreateBuilder(args);
 
             // Session requires a distributed cache backing store
+            var sessionIdleTimeout = TimeSpan.FromMinutes(builder.Configuration.GetValue<int>("Session:IdleTimeoutMinutes", 90));
             builder.Services.AddDistributedMemoryCache();
             builder.Services.AddSession(options =>
             {
-                options.IdleTimeout = TimeSpan.FromMinutes(
-                    builder.Configuration.GetValue<int>("Session:IdleTimeoutMinutes", 90));
+                options.IdleTimeout = sessionIdleTimeout;
                 options.Cookie.HttpOnly = true;
                 options.Cookie.IsEssential = true;
             });
+
+            // SessionObjectStore (complex-object session storage) uses the same idle timeout as
+            // ISession itself, so both expire together rather than drifting out of sync
+            SessionObjectStore.IdleTimeout = sessionIdleTimeout;
 
             // Wire System.Web.HttpContext.Current.Session to ASP.NET Core ISession
         //    builder.Services.AddSystemWebAdapters().AddWrappedAspNetCoreSession();

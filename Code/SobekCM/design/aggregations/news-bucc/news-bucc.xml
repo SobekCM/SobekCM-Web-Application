@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+
+<!-- ITEM AGGREGATION CONFIGURATION FILE FOR 'NEWS-BUCC'   -->
+<hi:aggregationInfo xmlns:hi="http://sobekrepository.org/schemas/sobekcm_aggregation/" 
+				  xmlns:xlink="http://www.w3.org/1999/xlink" 
+				  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+				  xsi:schemaLocation="http://sobekrepository.org/schemas/sobekcm_aggregation/ 
+									 http://sobekrepository.org/schemas/sobekcm_aggregation.xsd" >
+
+<!-- Simple aggregation-wide settings, including a specified web skin, facets, etc.. -->
+<hi:settings>
+    <hi:webskins>budc</hi:webskins>
+
+    <hi:facets>7,24,8,37</hi:facets>
+    <hi:mapsearch type="COMPUTED" />
+    <hi:mapbrowse type="EXTENT" />
+</hi:settings>
+
+<hi:home>
+    <hi:body lang="en" isCustom="false">html\home\text.html</hi:body>
+</hi:home>
+
+<hi:banner>
+    <hi:source lang="en">images\banners\Newspaper.jpg</hi:source>
+</hi:banner>
+
+  <hi:browse visibility="BROWSEBY" default="DEFAULT">
+    <hi:metadata>TITLE</hi:metadata>
+  </hi:browse>
+  <hi:browse visibility="BROWSEBY">
+    <hi:metadata>ABSTRACT</hi:metadata>
+  </hi:browse>
+  <hi:browse visibility="BROWSEBY">
+    <hi:metadata>PUBLICATION DATE</hi:metadata>
+  </hi:browse>
+  <hi:browse visibility="BROWSEBY">
+    <hi:metadata>SUBJECT KEYWORD</hi:metadata>
+  </hi:browse>
+
+</hi:aggregationInfo>

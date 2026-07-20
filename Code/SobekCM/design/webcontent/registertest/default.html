@@ -1,0 +1,77 @@
+<html>
+  <head>
+    <title>Test registration</title>
+    <meta name="author" content="Mark Sullivan" />
+    <meta name="date" content="2/16/2016" />
+  </head>
+<h2>Registration</h2>
+
+<p>Registration for the SobekCM Code Camp 2016 Florida is free!</p>
+
+<p>Please register below so we know you are coming.  Feel free to provide some topic ideas below as well.</p>
+
+<form name="registrationForm" id="registrationForm">
+
+	<!-- Division holds all the information necessary for registration -->
+	<div id="registerInfoDiv" style="display:block">
+
+
+	  	<label for="firstNameBox">First Name:</label> <input id="firstNameBox" name="firstNameBox" class="sbk_Focusable" /><br /><br />
+		<label for="lastNameBox">Last Name:</label> <input id="lastNameBox" name="lastNameBox" class="sbk_Focusable" /><br /><br />
+	  	<label for="emailBox">Email:</label> <input id="emailBox" name="emailBox" class="sbk_Focusable" /><br /><br />
+  		<label for="phoneBox">Phone:</label> <input id="phoneBox" name="phoneBox" class="sbk_Focusable" /><br /><br /><br />
+
+	        Enter any topics you would like to see considered:<br />
+		<textarea id="topicsBox" name="topicsBox" class="sbk_Focusable" rows="4" cols="100" ></textarea><br /><br />
+  
+	        <input id="registerSubmit" type="button" value="REGISTER" class="roundbutton">
+	</div>
+
+	<!-- Successful registration message is shown when successly registered -->
+	<div id="registerSuccessDiv" style="display:none; color: blue; font-size: 2em; font-weight:bold;">
+		<br />You have been registered for Code Camp 2016 Florida!<br /><br /><br />
+	</div>
+
+	<!-- Add the event for the register button -->
+	<script type="text/javascript">
+	$('#registerSubmit').click(function()
+	{
+		$.ajax({
+			url: '/engine/custom/register',
+			type:'POST',
+			dataType: 'json',
+			data:
+				{
+					event: 'CodeCamp2016FL',
+					firstName: $('#firstNameBox').val(),
+					lastName: $('#lastNameBox').val(),
+					email: $('#emailBox').val(),
+			 		phone: $('#phoneBox').val(),
+					topics: $('#topicsBox').val()
+			        },
+			success: function(msg)
+			{
+				$('#registerInfoDiv').hide();
+				$('#registerSuccessDiv').show();
+			},
+			error: function(response, error, errorThrown) 
+			{  
+				if(( response.status ) && (( response.status == 400 ) || ( response.status == 500 )))
+				{
+					alert(response.responseText); 
+			        }
+				else
+				{
+					alert("Registration Failed");
+				}
+			}               
+		});
+	});
+	</script>
+</form>
+   
+  
+   
+  </body>
+</html>
+

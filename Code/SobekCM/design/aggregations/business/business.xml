@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+
+<!-- ITEM AGGREGATION CONFIGURATION FILE FOR 'BUSINESS'   -->
+<hi:aggregationInfo xmlns:hi="http://sobekrepository.org/schemas/sobekcm_aggregation/" 
+				  xmlns:xlink="http://www.w3.org/1999/xlink" 
+				  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+				  xsi:schemaLocation="http://sobekrepository.org/schemas/sobekcm_aggregation/ 
+									 http://sobekrepository.org/schemas/sobekcm_aggregation.xsd" >
+
+<!-- Simple aggregation-wide settings, including a specified web skin, facets, etc.. -->
+<hi:settings>
+    <hi:webskins></hi:webskins>
+
+</hi:settings>
+
+<hi:home>
+    <hi:body lang="en" isCustom="false">html\home\text.html</hi:body>
+</hi:home>
+
+<hi:banner>
+    <hi:source lang="en">images\banners\coll.jpg</hi:source>
+</hi:banner>
+
+
+</hi:aggregationInfo>

@@ -1,0 +1,31 @@
+<p>&larr; Back to <a href="<%BASEURL%>OTC">Open Textbook Collaborative: Career and Technical Education</a></p>
+
+<h3>About Computer Programming Python</h3>
+
+<table border="0" cellpadding="1" cellspacing="1" style="width:1124px">
+	<tbody>
+		<tr>
+			<td>
+			<h3><a href="https://opennj.net/l/python/all"><img alt="Click here to access all OER developed for Computer Programming: Python" src="https://opennj.net/design/aggregations/python/uploads/simber.png" style="height:135px; width:250px" /><em>Click here to access the OER</em></a></h3>
+
+			<p>&nbsp;</p>
+
+			<p>&nbsp;</p>
+
+			<p>&nbsp;</p>
+
+			<p>&nbsp;</p>
+
+			<p>&nbsp;</p>
+			</td>
+			<td style="width:860px">
+			<p>This book is designed for use in an introductory course in programming using the Python programming language, and is intended for students who are not familiar with computer programming. The IDLE integrated development environment (IDE) is used throughout the text which is installed with Python, has a simplified interface, and provides for a short learning curve. The goal is to provide students with an overview of computers, software engineering tools and techniques, and to introduce programming in Python quickly. The examples and exercises in the text follow the PEP 8 Style Guide for Python Code and reinforce the material being introduced while building on previous material covered.</p>
+
+			<p>The chapter exercises are numbered for clarity using a shaded box, and can be used for assignment purposes. There are end-of-chapter assignments, and an answer key, exams, and accompanying lecture slides are available. Instructions for obtaining and installing Python with IDLE are provided in Appendix B. Instructions for using the PIP installer which is included in Python are provided in Appendix C for utilizing matplotlib. Links to the Python web site, Python Tutorials, and the PEP 8 Style Guide are included in Appendix D. Python version 3.9.5 was in use at the time of this writing. The modules utilized include Tkinter, random, PhotoImage, and matplotlib.</p>
+			</td>
+		</tr>
+	</tbody>
+</table>
+
+<p>&nbsp;</p>
+

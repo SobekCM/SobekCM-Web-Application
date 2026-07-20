@@ -1,0 +1,178 @@
+@font-face { font-family: 'LatoWeb'; src: url('uploads/Lato-Regular.eot'); src: url('uploads/Lato-Regular.eot?#iefix') format('embedded-opentype'), url('uploads/Lato-Regular.woff') format('woff'), url('uploads/Lato-Regular.ttf') format('truetype'), url('uploads/gothic.svg#gothic') format('svg'); font-weight: normal; font-style: normal; }
+@font-face { font-family: 'LatoWebBold'; src: url('uploads/Lato-Bold.eot'); src: url('uploads/Lato-Bold.eot') format('embedded-opentype'), url('uploads/Lato-Bold.woff') format('woff'), url('uploads/Lato-Bold.ttf') format('truetype'), url('uploads/gothicb.svg#CenturyGothicBold') format('svg'); }
+@font-face { font-family: 'robotobold'; src: url('uploads/roboto-bold-webfont.eot'); src: url('uploads/roboto-bold-webfont.eot?#iefix') format('embedded-opentype'), url('uploads/roboto-bold-webfont.woff2') format('woff2'), url('uploads/roboto-bold-webfont.woff') format('woff'), url('uploads/roboto-bold-webfont.ttf') format('truetype'), url('uploads/roboto-bold-webfont.svg#robotobold') format('svg'); font-weight: normal; font-style: normal; }
+
+
+
+/** Sample header styles **/
+header {  font-size: 16px; text-align: left; }
+
+#mcc_header_top { width: 100%; background: #0971b0; font-size: 14px; color: White; height: 35px; }
+#mcc_header_top_logon { text-align: right; max-width: 1200px; margin-left: auto; margin-right:auto; padding-top: 8px; }
+
+#mcc_header_top  a { color: #ffffff;  }
+#mcc_header_top  a:visited { color: #ffffff;}
+#mcc_header_top  a:hover { color: #ffffff;}
+
+#mcc_header_main { max-width: 1200px; text-align: center; margin-left: auto; margin-right:auto; vertical-align: top; }
+
+#mcc_logo { padding-top:22px; padding-bottom:18px; width: 206px;display:inline-block; }
+#mcc_logo img { max-width: 100%; height: auto; }
+
+#mcc_menu_fixed_links { display:inline-block; max-width: 900px; padding-bottom: 25px; vertical-align: middle; margin-left: 45px; margin-right:35px; color: #006faf; font-size: 15px;     font-weight: 400; }
+
+#mcc_menu_fixed_links ul { margin: 2px 0; padding: 0; list-style-type: none; text-align: center; }
+#mcc_menu_fixed_links ul li { display: inline; padding-left: 10px; padding-right: 12px; }
+
+#mcc_menu_fixed_links a { color: #006faf; text-decoration: none; }
+#mcc_menu_fixed_links a:visited { color: #006faf; text-decoration: none; }
+#mcc_menu_fixed_links a:hover { color: #141414; text-decoration: none; }
+
+.mcc-title-bar { width: 100%; background: url(uploads/title-bg.jpg) left top repeat-x; background-size: cover; height: 49px; color: white; }
+.inner-title-bar { max-width: 1200px; margin-left: auto; margin-right: auto; }
+.inner-title { float: left; line-height: 50px; width: auto; font-size: 26px; padding-left: 20px; font-family: 'LatoWebBold';}
+.inner-breadcrumbs { float: right; padding-right: 20px; padding-top: 15px; color: white; }
+
+.inner-title-bar  a { color:white; text-decoration: none; }
+.inner-title-bar  a:visited { color: white; text-decoration: none; }
+.inner-title-bar  a:hover { color: white; text-decoration: none; }
+
+#mcc_footer  {  width: 100%; background: url(uploads/footer-bg.jpg) left top repeat-x #393738; padding-bottom: 21px; }
+#mcc_footer_inner { max-width:1200px; margin-left: auto; margin-right: auto; padding-top: 75px; padding-left: 20px; }
+.social-media { padding-bottom: 11px; display:block; }
+.f-social-icon { float: left; margin-right: 4px; width: 43px; }
+.f-social-icon img { max-width: 100%; height: auto; }
+.address-box { color: #c3c3c3; font-size: 12px; line-height: 16px; padding-top: 48px; width: 100%; padding-bottom: 20px;  }
+.address-box span { color: #ceaf0d; }
+.address-box ul { display: inline-block; float: none; margin: 0; padding: 8px 0 5px; width: 100%; }
+.address-box ul li { float: left; padding-right: 10px; list-style-type: none; }
+
+.address-box a { color: #7badc0;  }
+.address-box a:hover { text-decoration: none; }
+
+.address-box ul li a { color: #7badc0; background: url(uploads/footer-dot.jpg) right 5px no-repeat; padding-right: 15px; }
+.address-box ul li a:hover { text-decoration: none; }
+.address-box ul li:last-child a { background: none; }
+
+
+/** Styles specific to the item header **/
+#sampleitemheaderbranding { height:50px; padding: 6px 0 6px 20px; }
+#sampleitemheadertext { display:inline-block;vertical-align:top; text-align: left; padding:7px 0 0 8px; line-height:130%; font-size:0.9em;  }
+#sampleitemheaderbottom { background-color: #333; font-size: 0.80em; color:#ffffff; }
+#sampleitemheaderbottomleft { padding: 2px 0 0 20px; display: inline-block; text-align: left; }
+#sampleitemheaderbottomright { padding: 2px 20px 0 0; display: inline-block; text-align: right; float: right; }
+#sampleitemheaderbottom a { color: #ffffff !important; text-decoration: none }
+#sampleitemheaderbottom a:visited { color: #ffffff !important; text-decoration: none }
+#sampleitemheaderbottom a:hover { color: #ffffff; text-decoration: underline; }
+
+/** Sample footer styles **/
+#samplefooter{ clear: both;  width: 100%;  border-top: 1px solid #ccc;  background-color:#eee;  border-bottom: 1px solid #ccc; text-align:center; font-size: 13px;  }
+#samplefooter p { display: inline;  color: #333333; padding: 0 0 0 10px; }
+#samplefooter a { color: #333333; text-decoration: none; }
+#samplefooter a:hover { color: #000; text-decoration: underline; }
+#samplefooternav ul { margin: 2px 0; padding: 0; list-style-type: none; text-align: center; }
+#samplefooternav ul li { display: inline; padding-left: 10px; padding-right: 10px; }
+#samplefooternav ul li+li { border-left: 1px solid #ccc}
+#samplewordmark { padding: 0 15px 0 0; float: right; margin:0; }
+#samplewordmarktext { display:inline-block; vertical-align:top; font-size: 1.1em; text-align: left; padding-top: 8px; line-height:130%;   }
+#samplecopyright { padding: 0 0 5px 10px; text-align:left; line-height: 140%; font-size: 0.85em; }
+#samplecopyright a:link { color: #333333 !important; text-decoration: none }
+#samplecopyright a:visited { color: #333333 !important; text-decoration: none }
+#samplecopyright a:hover { color: #000; text-decoration: underline; }
+
+body
+{
+   background-color: white;  font-family: 'LatoWeb'; font-size: 16px;
+}
+      
+.SobekSearchPanel { background-color: #e4edf4; border: none; padding-top: 1px; width: auto; max-width: 950px; min-width: 750px; font-size: 14px; }
+.sbkPrsw_DescPanel { background-color: white; font-size: 14px; }
+#sbkAsav_SearchPanel { padding-bottom: 15px; }
+.sbkPrsw_ResultsPanel { font-size: 14px; }
+.sbkPrsw_ResultsNavBar { background-color: white; border: none; }
+#sbkBsav_SearchPrompt { font-size: 15px; }
+#sbkAsav_SearchPrompt { font-size: 15px; }
+#sbkAsav_SearchPanel { margin-left: auto; margin-right: auto;  }
+#sbk_QuickTips { font-size: 14px; }
+#sbk_QuickTips LI { line-height: 21px; }
+
+#sbkPrsw_FacetOuterColumn { background: url(uploads/facet-box-back.jpg) left top repeat-y; width: 250px; border: none; }
+.sbkPrsw_FacetColumn { background: url(uploads/facet-box-back.jpg) left top repeat-y; width: 250px; }
+.sbkPrsw_FacetColumnTitle  { font-size: 18px; font-family: 'LatoWebBold'; 
+    background: url(uploads/yellow-title-bg.png) left top no-repeat;
+    color: #000; padding-left: 29px; line-height: 34px; padding-bottom: 12px; padding-top: 0px; text-transform: none;  }
+.sbkPrsw_FacetBoxTitle { padding-left: 25px; background-color: transparent !important; }
+.sbkPrsw_FacetBox { margin-left: 25px; }
+
+.sbkBrv_SingleResultDesc { width: auto; min-width:500px; max-width: 700px; }
+.briefResultsTitle a:link {  color: #0971b0; }
+.briefResultsTitle a:visited {  color: #0971b0; }
+
+/** Item Specific styles **/
+.sbkIsw_DocumentDisplay { font-size: 15px; line-height: 21px;  }
+.sbkIsw_DocumentDisplay2 { font-size: 15px; line-height: 21px;  }
+#sbkCsiv_Viewer { width: 980px; }
+
+/** Change menu background color **/
+.sbkMenu_Bar { background-color: White; color: #006faf; font-size: 15px; width: 100%; }
+#sbkAgm_Menu { margin-left: 100px; padding-top: 20px; }
+.sf-menu { 	background-color: White; color: #006faf; text-transform:none; }
+.sf-menu li { background-color: White; color: #006faf; }
+.sf-menu li a { color: #006faf; } 
+#sbkAgm_Menu li a { padding-left: 20px; padding-right: 20px; }
+#sbkAgm_Menu li:hover, .sf-menu li.sfHover { background: #e7e8ea; color: #141414;  }
+#sbkAgm_Menu ul  { border: 2px solid #096faf; }
+#sbkAgm_Menu ul li { background-color: White; color: #006faf; }
+#sbkAgm_Menu ul li a { color: #006faf; } 
+
+
+/ ** Change the menu selected color **/
+#selected-sf-menu-item-link { background:White !important; background-color: White !important; color:  #141414; }
+.selected-sf-menu-item-link { background: White !important; background-color: White !important;  color:  #141414; }
+#selected-sf-menu-item { background-color: White !important; background: White !important;  color:  #141414; }
+.selected-sf-menu-item { background: White !important; background-color: White !important;  color:  #141414; }
+
+#selected-sf-menu-item-link a { color:  #141414; }
+#selected-sf-menu-item-link a:visited { color:  #141414; }
+#selected-sf-menu-item-link a:hover { color:  #141414; }
+.selected-sf-menu-item-link a { color:  #141414 !important; }
+.selected-sf-menu-item-link a:visited { color:  #141414 !important; }
+.selected-sf-menu-item-link a:hover { color:  #141414 !important; }
+
+
+
+/** Change the little tabs that appear in several places in the system **/
+.sbk_FauxUpwardTabsList>li {   background-color: #002E5C; color: #ffffff;  }
+.sbk_FauxUpwardTabsList > li.current { background-color:#222222 ; color: #ffffff;  }
+.sbk_FauxDownwardTabsList>li {   background-color: #002E5C; color: #ffffff;   }
+.sbk_FauxDownwardTabsList > li.current { background-color:#222222 ;color: #ffffff;  }
+
+/ ** Change the button colors **/
+.sbkIsw_RoundButton {  background-color: #002E5C;color: #ffffff;  }
+.sbkPrsw_RoundButton { background-color: #002E5C;color: #ffffff;  }
+.roundbutton { background-color: #002E5C;color: #ffffff;  }
+.sbk_SearchButton { background-color: #002E5C;color: #ffffff;  }
+.sbkAdm_RoundButton { background-color: #002E5C; color: #ffffff;  }
+
+/** Change a few last places, such as pop-up menus, facet column, tabs used for admin, etc.. **/
+.sbk_PopupTitle  { background-color: #002E5C; color: #ffffff;  }
+.fulltabs>.tabs>ul>li  { background-color: #002E5C; color: #ffffff;  }
+.sbkAdm_Table th { background-color: #002E5C; color: #ffffff;  }
+      
+
+.sbkCiv_CitationSection h2{ color: #777777; }
+#sbkIsw_Titlebar a:hover{ color:#a9c1ed; }
+.sbkIsw_PageNavBar { color: #ffffff; }
+#sbkJiv_ImageZoomable { color: #cccccc; }
+
+#content-pane { background-image: url("uploads/top_blue_bar.jpg"); background-repeat: repeat-x; }
+#container-inner {  border:0px; width: auto; min-width: 800px; max-width: 1100px; }
+#container-facets  {  border:0px; }
+
+.SobekText { width: auto; max-width: 950px; min-width: 750px; line-height: 21px; }
+.SobekText h3 { color: #0971b0; font-family: robotobold; font-size: 24px; line-height: normal; font-weight: normal; padding-left: 25px; }
+
+#mainBanner { width: 100%; height: auto; }
+      
+
+#pagecontainer, #pagecontainer_resumed {     FONT-SIZE: 16px; }

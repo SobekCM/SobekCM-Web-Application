@@ -1,0 +1,113 @@
+<p> </p>
+
+<p style="line-height:1.6;">Open NJ  is a statewide initiative undertaken by <a href="https://vale.njedge.net/">VALE</a> to provide New Jersey college and university faculty with a space to share Open Educational Resources and expand our knowledge and adoption of OER. By creating this common space, Open NJ aims to provide a way to search for resources over multiple schools, and to grow the use of OER on individual campuses. ( <a href="<%BASEURL%>info/aboutopennj">learn more</a>, <!--<a href="<%BASEURL%>browseby">browse by metadata</a>--> )</p>
+
+
+<div style="font-size: 24px; font-weight:bold; padding-top:25px; padding-bottom:25px;">Browse Our Collections</div>
+
+<div id="tabContainer" class="fulltabs">
+    <div class="tabs" id="home-tabs">
+      <ul>
+        <li id="tabHeader_1" class="tabActiveHeader">Schools</li>
+        <li id="tabHeader_2" >Materials</li>
+        <li id="tabHeader_3" >Subjects</li>
+        <li id="tabHeader_4">Training</li>
+      </ul>
+    </div>
+    <div class="tabscontent">
+    	<div class="tabpage" id="tabpage_1" style="height:2200px">
+
+<div id="onj-home-thumbnails-div" style="padding-left:90px;padding-top:50px;">
+
+<a href="<%BASEURL%>iacc" target="_blank"><div class="onj-home-thumbnail-div"><img src="<%BASEURL%>design/aggregations/all/uploads/ACC.png" /><span>Atlantic Cape Community College</span><br /><br /></div></a>
+<a href="<%BASEURL%>ibc"  target="_blank"><div class="onj-home-thumbnail-div"><img src="<%BASEURL%>design/aggregations/all/uploads/BC.jpg" /><span>Bloomfield College</span><br /><br /></div></a>
+<a href="<%BASEURL%>ibcc"  target="_blank"><div class="onj-home-thumbnail-div"><img src="<%BASEURL%>design/aggregations/all/uploads/BCC.png" /><span>Brookdale Community College</span><br /><br /></div></a>
+<a href="<%BASEURL%>iberg"  target="_blank"><div class="onj-home-thumbnail-div"><img src="<%BASEURL%>design/aggregations/all/uploads/BERG.png" /><span>Bergen Community College</span><br /><br /></div></a>
+<a href="<%BASEURL%>iccc"  target="_blank"><div class="onj-home-thumbnail-div"><img src="<%BASEURL%>design/aggregations/all/uploads/CCC.png" /><span>Camden Community College</span><br /><br /></div></a>
+<a href="<%BASEURL%>iccm"  target="_blank"><div class="onj-home-thumbnail-div"><img src="<%BASEURL%>design/aggregations/all/uploads/CCM.jpg" /><span>County College of Morris</span><br /><br /></div></a>
+<a href="<%BASEURL%>icse"  target="_blank"><div class="onj-home-thumbnail-div"><img src="<%BASEURL%>design/aggregations/all/uploads/CSE.png" /><span>College of Saint Elizabeth</span><br /><br /></div></a>
+<a href="<%BASEURL%>idrew"  target="_blank"><div class="onj-home-thumbnail-div"><img src="<%BASEURL%>design/aggregations/all/uploads/DREW.png" /><span>Drew University</span><br /><br /></div></a>
+<a href="<%BASEURL%>ifdu"  target="_blank"><div class="onj-home-thumbnail-div"><img src="<%BASEURL%>design/aggregations/all/uploads/FDU.png" /><span>Fairleigh Dickinson University</span><br /><br /></div></a>
+<a href="<%BASEURL%>ifelu"  target="_blank"><div class="onj-home-thumbnail-div"><img src="<%BASEURL%>design/aggregations/all/uploads/FELU.jpg" /><span>Felician University</span><br /><br /></div></a>
+<a href="<%BASEURL%>igcu"  target="_blank"><div class="onj-home-thumbnail-div"><img src="<%BASEURL%>design/aggregations/all/uploads/GCU.png" /><span>Georgian Court  University </span><br /><br /></div></a>
+<a href="<%BASEURL%>ikean"  target="_blank"><div class="onj-home-thumbnail-div"><img src="<%BASEURL%>design/aggregations/all/uploads/KEAN.png" /><span>Kean  University </span><br /><br /></div></a>
+<a href="<%BASEURL%>imcc"  target="_blank"><div class="onj-home-thumbnail-div"><img src="<%BASEURL%>design/aggregations/all/uploads/MCC.png" /><span>Middlesex County College</span><br /><br /></div></a>
+<a href="<%BASEURL%>imccc"  target="_blank"><div class="onj-home-thumbnail-div"><img src="<%BASEURL%>design/aggregations/all/uploads/MCCC.png" /><span>Mercer County Community College</span><br /><br /></div></a>
+<a href="<%BASEURL%>imsu"  target="_blank"><div class="onj-home-thumbnail-div"><img src="<%BASEURL%>design/aggregations/all/uploads/MSU.jpg" /><span>Montclair State  University </span><br /><br /></div></a>
+<a href="<%BASEURL%>imu"  target="_blank"><div class="onj-home-thumbnail-div"><img src="<%BASEURL%>design/aggregations/all/uploads/MU.png" /><span>Monmouth University</span><br /><br /></div></a>
+<a href="<%BASEURL%>injcu"  target="_blank"><div class="onj-home-thumbnail-div"><img src="<%BASEURL%>design/aggregations/all/uploads/NJCU.jpg" /><span>New Jersey City University</span><br /><br /></div></a>
+<a href="<%BASEURL%>injit"  target="_blank"><div class="onj-home-thumbnail-div"><img src="<%BASEURL%>design/aggregations/all/uploads/NJIT.png" /><span>New Jersey Institute of Technology</span><br /><br /></div></a>
+<a href="<%BASEURL%>iocc"  target="_blank"><div class="onj-home-thumbnail-div"><img src="<%BASEURL%>design/aggregations/all/uploads/OCC.png" /><span>Ocean County College</span><br /><br /></div></a>
+<a href="<%BASEURL%>ipccc"  target="_blank"><div class="onj-home-thumbnail-div"><img src="<%BASEURL%>design/aggregations/all/uploads/PCCC.png" /><span>Passaic County Community College</span><br /><br /></div></a>
+<a href="<%BASEURL%>ipil"  target="_blank"><div class="onj-home-thumbnail-div"><img src="<%BASEURL%>design/aggregations/all/uploads/PIL.png" /><span> Pillar College</span><br /><br /></div></a>
+<a href="<%BASEURL%>iprin"  target="_blank"><div class="onj-home-thumbnail-div"><img src="<%BASEURL%>design/aggregations/all/uploads/PRIN.png" /><span> Princeton University</span><br /><br /></div></a>
+<a href="<%BASEURL%>ircbc"  target="_blank"><div class="onj-home-thumbnail-div"><img src="<%BASEURL%>design/aggregations/all/uploads/RCBC.jpg" /><span> Rowan College at Burlington County, Mount Laurel</span><br /><br /></div></a>
+<a href="<%BASEURL%>ircsj"  target="_blank"><div class="onj-home-thumbnail-div"><img src="<%BASEURL%>design/aggregations/all/uploads/RCSJ.jpg" /><span> Rowan College of South Jersey</span><br /><br /></div></a>
+<a href="<%BASEURL%>iride"  target="_blank"><div class="onj-home-thumbnail-div"><img src="<%BASEURL%>design/aggregations/all/uploads/RIDE.jpg" /><span> Rider University</span><br /><br /></div></a>
+<a href="<%BASEURL%>irowu"  target="_blank"><div class="onj-home-thumbnail-div"><img src="<%BASEURL%>design/aggregations/all/uploads/ROWU.png" /><span> Rowan University</span><br /><br /></div></a>
+<a href="<%BASEURL%>iruc"  target="_blank"><div class="onj-home-thumbnail-div"><img src="<%BASEURL%>design/aggregations/all/uploads/RUC.png" /><span> Rutgers University, Camden</span><br /><br /></div></a>
+<a href="<%BASEURL%>irun"  target="_blank"><div class="onj-home-thumbnail-div"><img src="<%BASEURL%>design/aggregations/all/uploads/RUN.png" /><span> Rutgers University, Newark</span><br /><br /></div></a>
+<a href="<%BASEURL%>irunb"  target="_blank"><div class="onj-home-thumbnail-div"><img src="<%BASEURL%>design/aggregations/all/uploads/RUNB.png" /><span> Rutgers University, New Brunswick</span><br /><br /></div></a>
+<a href="<%BASEURL%>irvcc"  target="_blank"><div class="onj-home-thumbnail-div"><img src="<%BASEURL%>design/aggregations/all/uploads/RVCC.png" /><span> Raritan Valley Community College</span><br /><br /></div></a>
+<a href="<%BASEURL%>iscc"  target="_blank"><div class="onj-home-thumbnail-div"><img src="<%BASEURL%>design/aggregations/all/uploads/SCC.jpg" /><span> Salem Community College</span><br /><br /></div></a>
+<a href="<%BASEURL%>isccc"  target="_blank"><div class="onj-home-thumbnail-div"><img src="<%BASEURL%>design/aggregations/all/uploads/SCCC.jpg" /><span> Sussex County Community College</span><br /><br /></div></a>
+<a href="<%BASEURL%>ispu"  target="_blank"><div class="onj-home-thumbnail-div"><img src="<%BASEURL%>design/aggregations/all/uploads/SPU.jpg" /><span> Saint Peter's University</span><br /><br /></div></a>
+<a href="<%BASEURL%>istev"  target="_blank"><div class="onj-home-thumbnail-div"><img src="<%BASEURL%>design/aggregations/all/uploads/STEV.png" /><span> Stevens Institute of Technology</span><br /><br /></div></a>
+<a href="<%BASEURL%>istoc"  target="_blank"><div class="onj-home-thumbnail-div"><img src="<%BASEURL%>design/aggregations/all/uploads/STOC.png" /><span> Stockton University</span><br /><br /></div></a>
+<a href="<%BASEURL%>itcnj"  target="_blank"><div class="onj-home-thumbnail-div"><img src="<%BASEURL%>design/aggregations/all/uploads/TCNJ.png" /><span> The College of New Jersey</span><br /><br /></div></a>
+<a href="<%BASEURL%>itenj"  target="_blank"><div class="onj-home-thumbnail-div"><img src="<%BASEURL%>design/aggregations/all/uploads/TENJ.jpg" /><span> Thomas Edison State University</span><br /><br /></div></a>
+<a href="<%BASEURL%>iucc"  target="_blank"><div class="onj-home-thumbnail-div"><img src="<%BASEURL%>design/aggregations/all/uploads/UCC.png" /><span> Union County College</span><br /><br /></div></a>
+<a href="<%BASEURL%>iwpu"  target="_blank"><div class="onj-home-thumbnail-div"><img src="<%BASEURL%>design/aggregations/all/uploads/WPU.jpg" /><span> William Paterson University</span><br /><br /></div></a>
+
+</div>
+
+  
+		</div>
+		<div class="tabpage" id="tabpage_2">
+		      <div id="material-content"> </div>
+
+		</div>
+		<div class="tabpage" id="tabpage_3">
+		      <div id="subject-content"> </div>
+
+		</div>
+		<div class="tabpage" id="tabpage_4">
+		      <div id="training-content"> </div>
+
+		</div>
+	</div>
+</div>
+		
+		
+
+<script>
+    $(document).ready(function(){
+
+       $("#tabContainer").acidTabs(1);
+
+       load_info_page_content("material-content", "materials-source");
+       load_info_page_content("subject-content", "subjects-source");
+       load_info_page_content("training-content", "training-source");
+     
+    });
+
+    function load_info_page_content( local_div, remote_info_page )
+    {
+       var $mcontent = $( "#" + local_div );
+       $mcontent.load( "<%BASEURL%>info/" + remote_info_page  + " #main-content", function() {  
+                                                                    $mcontent.find("#sbkSbia_EditableTextLink").remove();
+                                                            });     
+    }
+
+</script>
+ 
+
+  
+
+  
+
+  
+
+  
+
+  

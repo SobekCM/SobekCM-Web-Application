@@ -1,0 +1,60 @@
+<h1>SobekCM : Digital Content Management System</h1>
+<h2>About SobekCM</h2>
+
+<p>SobekCM is the software engine which powers both the <a href="http://ufdc.ufl.edu">University of Florida Digital Collections</a> (UFDC)  
+and the <a href="http://www.dloc.com">Digital Library of the Caribbean</a> (dLOC) digital repositories.</p>
+		
+<p>SobekCM allows users to discover online resources via semantic and full-text searches, as well as a variety of different browse
+mechanisms.  For each digital resource in the repository there are a plethora of display options, which may be selected
+by an appropriately authenticated use.  This repository includes online metadata editing and online submissions in 
+support of institutional repositories.</p>	
+		
+<p>This software was developed at the George A. Smathers Library at the University of Florida by a team lead by <a href="mailto:Mark.V.Sullivan@sobekdigital.com">Mark Sullivan</a>, with ongoing effort spanning several departments. Additional user testing, input, and resources have been contributed from other libraries, universities, and archives around Florida, the Caribbean, and beyond. See <a href="http://ufdc.ufl.edu/sobekcm/credits">the credits</a> for more information.</p>
+		
+<p>SobekCM is released as open source software under the <a href="http://www.gnu.org/licenses/gpl.txt">GNU GPL license</a> and can be downloaded 
+from the <a href="http://ufdc.ufl.edu/software">SobekCM Software Download Site</a>.</p>
+
+<p><a href="http://ufdc.ufl.edu/sobekcm">Learn more...</a></p>
+
+
+<h2>SobekCM Links</h2>
+
+<ul>
+<li><a href="http://ufdc.ufl.edu/sobekcm">Technical Home of SobekCM</a></li>
+<li>GitHub Site: <a href="https://github.com/MarkVSullivan/SobekCM-Web-Application">https://github.com/MarkVSullivan/SobekCM-Web-Application</a></li>
+<li>SobekCM Google Group: <span email="sobekcm-discuss@googlegroups.com"><a href="https://groups.google.com/forum/#!categories/sobekcm-discuss/general">sobekcm-discuss@googlegroups.com</a></span></li>
+
+</ul>
+
+
+<h2>SobekCM Instances</h2>
+
+<p>We suspect there are many more instances, but no registration is necessary for installing and running a SobekCM instance.  Below are the 
+known instances:</p>
+
+<ul>
+<li><a href="http://ufdc.ufl.edu">University of Florida Digital Collections</a></li>
+<li><a href="http://www.dloc.com">Digital Library of the Caribbean</a></li>
+<li><a href="http://digital.wolfsonian.org/">Wolfsonian Digital Images Collection</a></li>
+<li>Florida International University ( dPanther )</li>
+<li>Shoah Foundation</li>
+<li>University of London, School of Oriental and Asian Studies</li>
+<li><a href="http://ncf.sobek.ufl.edu">New College of Florida</a></li>
+<li>University of the Netherland Antilles</li>
+<li>University of South Florida</li>
+<li><a href="http://fiu.sobek.ufl.edu">Guantanamo Bay Collection</a> for FIU class</li>
+<li><a href="http://gulfcoast.sobek.ufl.edu">Gulf Coast College</a></li>
+		<li>Seminole State College</li>
+		<li>Lake-Sumter State College</li>
+
+
+</ul>
+
+
+<h2>Other Links</h2>
+<ul>
+<li><a href="schemas">SobekCM Schemas</a></li>
+</ul>
+
+<br /><br /><br />
+  

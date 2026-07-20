@@ -1,0 +1,25 @@
+<p>&larr; Back to <a href="<%BASEURL%>OTC">Open Textbook Collaborative</a></p>
+
+<table border="0" cellpadding="1" cellspacing="1" style="width:1124px">
+	<tbody>
+		<tr>
+			<td>
+			<h3><a href="https://opennj.net/physics-tabanli/all"><img alt="Click here to access all OER developed for Beginning Algebra" src="https://opennj.net/design/aggregations/physics-tabanli/uploads/tabanli-physics1hp.png" style="height:135px; width:250px" /></a></h3>
+
+			<h3><a href="http://opennj.net/AA00001597">Click here to access the syllabus&nbsp;</a></h3>
+			</td>
+			<td style="width:860px">
+			<h3>About General Physics 1 - Tablani</h3>
+
+			<p>This project will supplement other OER material to create a fully open General Physics I course. The collection includes lecture slides (and activity video as available)</p>
+
+			<p>This material was funded by the Fund for the Improvement of Postsecondary Education (FIPSE) of the U.S. Department of Education for the Open Textbooks Pilot grant awarded to Middlesex College for the Open Textbook Collaborative.</p>
+
+			<p style="font-size:0.90em"><img alt="Creative Commons License" class="BCX8 SCXW23678153 WACImage" src="data:image/png;base64,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" style="-webkit-tap-highlight-color:transparent; -webkit-user-drag:none; background-color:rgb(255, 255, 255); border-style:none; border-width:initial; font-family:segoe ui,segoe ui web,arial,verdana,sans-serif; font-size:12px; height:31px; margin:0px; padding:0px; text-align:start; user-select:text; vertical-align:baseline; white-space:pre !important; width:87px" unselectable="on" />&nbsp;Materials&nbsp;are licensed under a Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License, except where otherwise noted.</p>
+
+			<p style="font-size:0.90em">The Open Textbook Collaborative&nbsp;is administered by Middlesex College, Edison, NJ.&nbsp;&nbsp;<strong><a href="mailto:mochoa@middlesexcc.edu?subject=OpenNJ%20OTC%20CTE%20Collection%20">Contact us</a></strong>&nbsp;for more information.</p>
+			</td>
+		</tr>
+	</tbody>
+</table>
+

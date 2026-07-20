@@ -1,0 +1,47 @@
+<p>&larr; Back to <a href="<%BASEURL%>">All Collection Groups</a></p>
+
+<h3>About Open Textbook Collaborative: Career and Technical Education</h3>
+
+<p>The Open Textbook Collaborative is a project to create a community college-led, statewide collaborative in New Jersey to fill an important need for open textbooks and other learning resources.</p>
+
+<p>OER developed for the OTC was funded by the <a href="https://www2.ed.gov/about/offices/list/ope/fipse/index.html">Fund for the Improvement of Postsecondary Education</a> (FIPSE) of the U.S. Department of Education for the Open Textbooks Pilot grant. The grant was awarded to Middlesex College for the Open Textbook Collaborative runs through 2023.</p>
+
+<p>For more information, visit our <a href="https://middlesexcc.libguides.com/OTCProject/home" target="_blank">Open Textbook Collaborative guide</a>.</p>
+
+<p>Current projects include:</p>
+
+<ul>
+	<li><a href="http://opennj.net/python">Introduction to Computer Programming with Python</a></li>
+	<li>Analytical Geometry and Calculus 1</li>
+	<li>General Physics 1 - Kotowich</li>
+	<li>General Physics 1 - Tabanli</li>
+	<li>Human Anatomy and Physiology 1</li>
+	<li>OER ABC&#39;s</li>
+	<li>Principles of Economics 1</li>
+</ul>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;</p>
+<!--
+<table align="center" border="1" cellpadding="1" cellspacing="1" style="width:500px">
+	<tbody>
+		<tr>
+			<td><a href="http://opennj.net/python"><img alt="Introduction to Computer Programming with Python" src="https://opennj.net/design/aggregations/otc/uploads/Simber.png" style="height:135px; width:250px" /></a></td>
+			<td><img alt="Analytic Geometry and Calculus I" src="https://opennj.net/design/aggregations/otc/uploads/Bosler.png" style="height:135px; width:250px" /></td>
+			<td><img alt="The Virtual Microscope Project" src="https://opennj.net/design/aggregations/otc/uploads/Burns.png" style="height:135px; width:250px" /></td>
+			<td><img alt="" src="https://opennj.net/design/aggregations/otc/uploads/Burns.png" style="height:135px; width:250px" /></td>
+		</tr>
+		<tr>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+		</tr>
+		<tr>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+		</tr>
+	</tbody>
+</table>
+-->

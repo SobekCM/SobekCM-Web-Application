@@ -1,0 +1,46 @@
+<html>
+  <head>
+    <title>Material tab for home page</title>
+    <meta name="author" content="Mark Sullivan" />
+    <meta name="date" content="Thursday, February 4, 2021" />
+  </head>
+  <body>
+<div id="onj-home-thumbnails-div" style="padding-left:80px;padding-top:50px;">
+<p>The OpenNJ currently contains the following material types:</p>
+
+<p>&nbsp;</p>
+
+<div class="onj-home-thumbnail-div"><a href="http://open-nj.sobeklibrary.com/contains/?t=%22Activity/Lab%22&amp;f=TO" target="_blank"><img src="http://opennj.net/design/aggregations/all/uploads/1.png" /></a></div>
+
+<div class="onj-home-thumbnail-div"><a href="http://open-nj.sobeklibrary.com/contains/?t=%22Full%20course%22&amp;f=TO" target="_blank"><img src="http://opennj.net/design/aggregations/all/uploads/4.png" /></a></div>
+
+<div class="onj-home-thumbnail-div"><a href="http://open-nj.sobeklibrary.com/contains/?t=%22Lesson%20plan%22&amp;f=TO" target="_blank"><img src="http://opennj.net/design/aggregations/all/uploads/11.png" /></a></div>
+
+<div class="onj-home-thumbnail-div"><a href="http://open-nj.sobeklibrary.com/contains/?t=%22Module%22&amp;f=TO" target="_blank"><img src="http://opennj.net/design/aggregations/all/uploads/10.png" /></a></div>
+
+<div class="onj-home-thumbnail-div"><a href="http://open-nj.sobeklibrary.com/contains/?t=%22Primary%20source%22&amp;f=TO" target="_blank"><img src="http://opennj.net/design/aggregations/all/uploads/9.png" /></a></div>
+
+<div class="onj-home-thumbnail-div"><a href="http://open-nj.sobeklibrary.com/contains/?t=%22Readings%22&amp;f=TO" target="_blank"><img src="http://opennj.net/design/aggregations/all/uploads/8.png" /></a></div>
+
+<div class="onj-home-thumbnail-div"><a href="http://open-nj.sobeklibrary.com/l/contains/?t=%22Textbook%22&amp;f=TO"><img src="http://opennj.net/design/aggregations/all/uploads/5.png" /></a></div>
+
+<p>In addition, the OpenNJ is expected to contain the following material types in the near future:</p>
+
+<p>&nbsp;</p>
+
+<div class="onj-home-thumbnail-div"><img src="http://opennj.net/design/aggregations/all/uploads/2.png" /></div>
+
+<div class="onj-home-thumbnail-div"><img src="http://opennj.net/design/aggregations/all/uploads/3.png" /></div>
+
+<div class="onj-home-thumbnail-div"><img src="http://opennj.net/design/aggregations/all/uploads/12.png" /></div>
+
+<div class="onj-home-thumbnail-div"><img src="http://opennj.net/design/aggregations/all/uploads/7.png" /></div>
+
+<div class="onj-home-thumbnail-div"><img src="http://opennj.net/design/aggregations/all/uploads/6.png" /></div>
+
+<div class="onj-home-thumbnail-div"><img src="http://opennj.net/design/aggregations/all/uploads/14.png" /></div>
+</div>
+
+  </body>
+</html>
+

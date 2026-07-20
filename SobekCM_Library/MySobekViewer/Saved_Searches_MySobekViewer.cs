@@ -38,7 +38,7 @@ namespace SobekCM.Library.MySobekViewer
         {
             RequestSpecificValues.Tracer.Add_Trace("Saved_Searches_MySobekViewer.Constructor", String.Empty);
 
-            if (RequestSpecificValues.Current_Mode.isPostBack)
+            if ((RequestSpecificValues.Current_Mode.isPostBack) && (Context.Request.HasFormContentType))
             {
                 // Pull the standard values
                 var form = Context.Request.Form;

@@ -56,7 +56,7 @@ namespace SobekCM.Library.AdminViewer
             }
 
            // If this is a postback, handle any events first
-            if (RequestSpecificValues.Current_Mode.isPostBack)
+            if ((RequestSpecificValues.Current_Mode.isPostBack) && (Context.Request.HasFormContentType))
             {
                 if (((RequestSpecificValues.Current_User.Is_System_Admin) && (!UI_ApplicationCache_Gateway.Settings.Servers.isHosted)) ||
                     (RequestSpecificValues.Current_User.Is_Host_Admin))

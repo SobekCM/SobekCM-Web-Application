@@ -169,8 +169,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
             set_file_information(new string[] { "HTML" });
 
             // Handle postbacks
-            var form = Context.Request.Form;
-            if ((canEdit) && (isEditMode) && (form["sbkOeriv_HtmlEdit"].Count > 0))
+            IFormCollection form = Context.Request.HasFormContentType ? Context.Request.Form : null;
+            if ((canEdit) && (isEditMode) && (form != null) && (form["sbkOeriv_HtmlEdit"].Count > 0))
             {
                 string newSource = form["sbkOeriv_HtmlEdit"];
                 if (!String.IsNullOrEmpty(newSource))

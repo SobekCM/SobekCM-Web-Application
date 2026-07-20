@@ -90,7 +90,7 @@ namespace SobekCM.Library.MySobekViewer
                 current_folder_id = userFolder.Folder_ID;
             }
 
-            if ((RequestSpecificValues.Current_Mode.isPostBack) || ((!String.IsNullOrEmpty(Context.Request.Form["item_action"].TrimFirst())) && (Context.Request.Form["item_action"].TrimFirst().Length > 0 )))
+            if ((Context.Request.HasFormContentType) && ((RequestSpecificValues.Current_Mode.isPostBack) || ((!String.IsNullOrEmpty(Context.Request.Form["item_action"].TrimFirst())) && (Context.Request.Form["item_action"].TrimFirst().Length > 0 ))))
             {
                 try
                 {

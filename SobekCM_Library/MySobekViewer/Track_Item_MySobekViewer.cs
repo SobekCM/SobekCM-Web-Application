@@ -59,6 +59,9 @@ namespace SobekCM.Library.MySobekViewer
         {
             RequestSpecificValues.Tracer.Add_Trace("Track_Item_MySobekViewer.Constructor", String.Empty);
 
+            // Form is only readable on requests that actually posted form data
+            bool hasForm = Context.Request.HasFormContentType;
+
             //If there is no RequestSpecificValues.Current_User, go back
             if (RequestSpecificValues.Current_User == null)
             {
@@ -78,7 +81,7 @@ namespace SobekCM.Library.MySobekViewer
             if ((Context.SessionObject()["Selected_Tab"] != null) && !(String.IsNullOrEmpty(Context.SessionObject()["Selected_Tab"].ToString())) && Context.SessionObject()["Selected_Tab"].ToString() == "2")
                 page = 2;
 
-            string sub_page = Context.Request.Form["tracking_new_page"].TrimFirst();
+            string sub_page = hasForm ? Context.Request.Form["tracking_new_page"].TrimFirst() : String.Empty;
             if (sub_page == "2")
             {
                 page = 2;
@@ -116,8 +119,8 @@ namespace SobekCM.Library.MySobekViewer
             }
 
             //See if there were any hidden requests
-            hidden_request = Context.Request.Form["Track_Item_behaviors_request"].TrimFirst();
-            hidden_value = Context.Request.Form["Track_Item_hidden_value"].TrimFirst();
+            hidden_request = hasForm ? Context.Request.Form["Track_Item_behaviors_request"].TrimFirst() : String.Empty;
+            hidden_value = hasForm ? Context.Request.Form["Track_Item_hidden_value"].TrimFirst() : String.Empty;
 
 
             //Get the equipment value
@@ -134,7 +137,7 @@ namespace SobekCM.Library.MySobekViewer
             }
 
             //Check the hidden value to see if equipment was previously changed
-            if (!String.IsNullOrEmpty(Context.Request.Form["hidden_equipment"]))
+            if ((hasForm) && (!String.IsNullOrEmpty(Context.Request.Form["hidden_equipment"])))
             {
                 equipment = Context.Request.Form["hidden_equipment"];
                 //   Context.SessionObject()["equipment"] = equipment;
@@ -153,7 +156,7 @@ namespace SobekCM.Library.MySobekViewer
             }
 
             //Check if the selected RequestSpecificValues.Current_User has been changed
-            if (!String.IsNullOrEmpty(Context.Request.Form["hidden_selected_username"]))
+            if ((hasForm) && (!String.IsNullOrEmpty(Context.Request.Form["hidden_selected_username"])))
             {
                 current_selected_user = new User_Object();
                 string temp = Context.Request.Form["hidden_selected_username"];
@@ -182,7 +185,7 @@ namespace SobekCM.Library.MySobekViewer
             //If there is a valid item currently selected
             if (!String.IsNullOrEmpty(BibID) && !String.IsNullOrEmpty(VID))
             {
-                if (page == 1)
+                if ((hasForm) && (page == 1))
                 {
                     //Get the the form field values from the first tab
                     start_Time = Convert.ToDateTime(Context.Request.Form["txtStartTime"]).ToString("hh:mm tt");

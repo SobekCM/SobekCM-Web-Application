@@ -45,8 +45,8 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 			if (( RequestSpecificValues.Current_Mode.Aggregation_Type == Aggregation_Type_Enum.Child_Page_Edit) && ( !isAdmin))
 				RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Browse_Info;
 
-			var form = Context.Request.Form;
-			if ((RequestSpecificValues.Current_Mode.Aggregation_Type == Aggregation_Type_Enum.Child_Page_Edit) && (!String.IsNullOrEmpty(form["sbkSbia_ChildTextEdit"].TrimFirst())) && ( RequestSpecificValues.Current_User != null ))
+			var form = Context.Request.HasFormContentType ? Context.Request.Form : null;
+			if ((form != null) && (RequestSpecificValues.Current_Mode.Aggregation_Type == Aggregation_Type_Enum.Child_Page_Edit) && (!String.IsNullOrEmpty(form["sbkSbia_ChildTextEdit"].TrimFirst())) && ( RequestSpecificValues.Current_User != null ))
 			{
 				string aggregation_folder = UI_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location + "aggregations\\" + ViewBag.Hierarchy_Object.Code + "\\";
 

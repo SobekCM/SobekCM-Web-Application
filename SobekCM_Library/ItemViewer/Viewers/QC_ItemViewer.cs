@@ -30,6 +30,7 @@ using SobekCM.Resource_Object.Utilities;
 using SobekCM.Tools;
 using SobekCM_Resource_Database;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Primitives;
 
 namespace SobekCM.Library.ItemViewer.Viewers
 {
@@ -315,8 +316,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
             // If this was a post-back keep the required height and width for the qc area
             allThumbnailsOuterDiv1Width = -1;
             allThumbnailsOuterDiv1Height = -1;
-            string temp_width = Context.Request.Form["QC_window_width"].TrimFirst();
-            string temp_height = Context.Request.Form["QC_window_height"].TrimFirst();
+            string temp_width = Get_Form_Value("QC_window_width").TrimFirst();
+            string temp_height = Get_Form_Value("QC_window_height").TrimFirst();
 
             if ((temp_width.Length > 0) && (temp_height.Length > 0))
             {
@@ -338,18 +339,18 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
 
             // See if there were hidden requests
-            hidden_request = Context.Request.Form["QC_behaviors_request"].TrimFirst();
-            hidden_main_thumbnail = Context.Request.Form["Main_Thumbnail_File"].TrimFirst();
-            hidden_move_relative_position = Context.Request.Form["QC_move_relative_position"].TrimFirst();
-            hidden_move_destination_fileName = Context.Request.Form["QC_move_destination"].TrimFirst();
-            autonumber_number_system = Context.Request.Form["Autonumber_number_system"].TrimFirst();
-            string temp = Context.Request.Form["autonumber_mode_from_form"].TrimFirst() ?? "0";
+            hidden_request = Get_Form_Value("QC_behaviors_request").TrimFirst();
+            hidden_main_thumbnail = Get_Form_Value("Main_Thumbnail_File").TrimFirst();
+            hidden_move_relative_position = Get_Form_Value("QC_move_relative_position").TrimFirst();
+            hidden_move_destination_fileName = Get_Form_Value("QC_move_destination").TrimFirst();
+            autonumber_number_system = Get_Form_Value("Autonumber_number_system").TrimFirst();
+            string temp = Get_Form_Value("autonumber_mode_from_form").TrimFirst() ?? "0";
             Int32.TryParse(temp, out autonumber_mode_from_form);
-            autonumber_text_only = Context.Request.Form["Autonumber_text_without_number"].TrimFirst();
-            autonumber_number_only = Context.Request.Form["Autonumber_number_only"].TrimFirst();
-            autonumber_number_system = Context.Request.Form["Autonumber_number_system"].TrimFirst();
-            hidden_autonumber_filename = Context.Request.Form["Autonumber_last_filename"].TrimFirst();
-            temp = Context.Request.Form["QC_sortable_option"].TrimFirst() ?? "-1";
+            autonumber_text_only = Get_Form_Value("Autonumber_text_without_number").TrimFirst();
+            autonumber_number_only = Get_Form_Value("Autonumber_number_only").TrimFirst();
+            autonumber_number_system = Get_Form_Value("Autonumber_number_system").TrimFirst();
+            hidden_autonumber_filename = Get_Form_Value("Autonumber_last_filename").TrimFirst();
+            temp = Get_Form_Value("QC_sortable_option").TrimFirst() ?? "-1";
 
             // Check for sortable ( aka, Drag and drop pages ) setting - is it different than user's setting?
             if (Int32.TryParse(temp, out makeSortable) && (makeSortable > 0) && (makeSortable <= 3))
@@ -362,7 +363,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
 
             // Check for the autonumber option - is it different than user's setting?
-            temp = Context.Request.Form["QC_autonumber_option"].TrimFirst() ?? "-1";
+            temp = Get_Form_Value("QC_autonumber_option").TrimFirst() ?? "-1";
             if ((Int32.TryParse(temp, out autonumber_mode)) && (autonumber_mode >= 0) && (autonumber_mode <= 2))
             {
                 if (autonumber_mode.ToString() != CurrentUser.Get_Setting("QC_ItemViewer:AutonumberingMode", "NULL"))
@@ -383,9 +384,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
 
             //Get any notes/comments entered by the user
-            notes = Context.Request.Form["txtComments"].TrimFirst();
+            notes = Get_Form_Value("txtComments").TrimFirst();
 
-            if (!(Int32.TryParse(Context.Request.Form["QC_Sortable"].TrimFirst(), out makeSortable))) makeSortable = 3;
+            if (!(Int32.TryParse(Get_Form_Value("QC_Sortable").TrimFirst(), out makeSortable))) makeSortable = 3;
             // If the hidden move relative position is BEFORE, it is before the very first page
             if (hidden_move_relative_position == "Before")
                 hidden_move_destination_fileName = "[BEFORE FIRST]";
@@ -401,7 +402,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
                 if (Context.SessionObject()["autosave_option"] != null)
                     autosaveCache = bool.TryParse(Context.SessionObject()["autosave_option"].ToString(), out autosaveCacheValue);
-                bool convert = bool.TryParse(Context.Request.Form["Autosave_Option"].TrimFirst(), out autosave_option);
+                bool convert = bool.TryParse(Get_Form_Value("Autosave_Option").TrimFirst(), out autosave_option);
                 if (!convert && !autosaveCache)
                 {
                     autosave_option = true;
@@ -496,15 +497,15 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     break;
 
                 case "save_error":
-                    string error_code = Context.Request.Form["QC_error_number"].TrimFirst();
-                    string affected_page_index = Context.Request.Form["QC_affected_file"].TrimFirst();
+                    string error_code = Get_Form_Value("QC_error_number").TrimFirst();
+                    string affected_page_index = Get_Form_Value("QC_affected_file").TrimFirst();
                     SaveQcError(itemID, error_code, affected_page_index);
                     break;
 
                 case "delete_page":
                     // Read the data from the http form, perform all requests, and
                     // update the qc_item (also updates the session and temporary files)
-                    string filename_to_delete = Context.Request.Form["QC_affected_file"].TrimFirst();
+                    string filename_to_delete = Get_Form_Value("QC_affected_file").TrimFirst();
                     if (Save_From_Form_Request_To_Item(String.Empty, filename_to_delete))
                     {
                         Delete_Resource_File(filename_to_delete);
@@ -553,6 +554,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 static_pages = new List<abstract_TreeNode>();
         }
 
+        /// <summary> Safely reads a value from the posted form; Form is only readable on requests that actually posted form data </summary>
+        private StringValues Get_Form_Value(string key) => Context.Request.HasFormContentType ? Context.Request.Form[key] : StringValues.Empty;
+
         /// <summary> Sets the QC Error for a page </summary>
         /// <param name="ItemID"></param>
         /// <param name="ErrorCode"></param>
@@ -592,10 +596,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
                 case "4":
                     //thisError.ErrorName = "Other (specify)";
-                    thisError.ErrorName = Context.Request.Form["txtErrorOther1"].TrimFirst();
+                    thisError.ErrorName = Get_Form_Value("txtErrorOther1").TrimFirst();
                     if (String.IsNullOrEmpty(thisError.ErrorName))
                         thisError.ErrorName = "Other (specify)";
-                    thisError.Description = Context.Request.Form["txtErrorOther1"].TrimFirst();
+                    thisError.Description = Get_Form_Value("txtErrorOther1").TrimFirst();
                     break;
 
                 case "5":
@@ -620,8 +624,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
                 case "10":
                     //thisError.ErrorName = "Other (specify)";
-                    thisError.ErrorName = Context.Request.Form["txtErrorOther2"].TrimFirst() ?? "Other (specify)";
-                    thisError.Description = Context.Request.Form["txtErrorOther2"].TrimFirst();
+                    thisError.ErrorName = Get_Form_Value("txtErrorOther2").TrimFirst() ?? "Other (specify)";
+                    thisError.Description = Get_Form_Value("txtErrorOther2").TrimFirst();
                     break;
 
                 //11 indicates no Volume error, so simply delete any volume errors present for this item
@@ -711,7 +715,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
                     case "4":
                         thisError.ErrorName = "Other (specify)";
-                        thisError.Description = Context.Request.Form["txtErrorOther1"].TrimFirst();
+                        thisError.Description = Get_Form_Value("txtErrorOther1").TrimFirst();
                         break;
 
                     case "5":
@@ -736,7 +740,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
                     case "10":
                         thisError.ErrorName = "Other (specify)";
-                        thisError.Description = Context.Request.Form["txtErrorOther2"].TrimFirst();
+                        thisError.Description = Get_Form_Value("txtErrorOther2").TrimFirst();
                         break;
 
                     //Volume error cases

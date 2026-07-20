@@ -113,7 +113,7 @@ namespace SobekCM.Library.AdminViewer
             }
 
             // Look for a post back
-            if (RequestSpecificValues.Current_Mode.isPostBack)
+            if ((RequestSpecificValues.Current_Mode.isPostBack) && (Context.Request.HasFormContentType))
             {
                 // Get a reference to this form
                 var form = Context.Request.Form;

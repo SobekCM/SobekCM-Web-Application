@@ -26,7 +26,7 @@ namespace SobekCM.Library.HTML
         public Preferences_HtmlSubwriter(RequestCache RequestSpecificValues) : base(RequestSpecificValues) 
         {
             // See if there was a hidden request
-            string hidden_request = Context.Request.Form["hidden_request"].TrimFirst();
+            string hidden_request = Context.Request.HasFormContentType ? Context.Request.Form["hidden_request"].TrimFirst() : String.Empty;
 
             if (hidden_request == "submit")
             {

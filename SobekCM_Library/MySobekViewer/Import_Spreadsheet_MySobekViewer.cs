@@ -120,7 +120,7 @@ namespace SobekCM.Library.MySobekViewer
             }
 
             // Handle postback for changing the CompleteTemplate or project
-            if (RequestSpecificValues.Current_Mode.isPostBack)
+            if ((RequestSpecificValues.Current_Mode.isPostBack) && (Context.Request.HasFormContentType))
             {
                 string action1 = Context.Request.Form["action"].TrimFirst();
                 if (action1 == "cancel") 

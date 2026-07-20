@@ -335,7 +335,7 @@ namespace SobekCM.Library.MySobekViewer
             #region Handle any other post back requests
 
             // If this is post-back, handle it
-            if (RequestSpecificValues.Current_Mode.isPostBack)
+            if ((RequestSpecificValues.Current_Mode.isPostBack) && (Context.Request.HasFormContentType))
             {
                 // If this is a request from stage 8, save the new labels and url first
                 if (currentProcessStep == 8)

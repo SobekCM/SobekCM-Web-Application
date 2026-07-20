@@ -59,7 +59,7 @@ namespace SobekCM.Library.AdminViewer
             }
 
             // If this is posted back, look for the reset
-            if (RequestSpecificValues.Current_Mode.isPostBack)
+            if ((RequestSpecificValues.Current_Mode.isPostBack) && (Context.Request.HasFormContentType))
             {
                 // Pull the standard values
                 var form = Context.Request.Form;

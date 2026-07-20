@@ -62,7 +62,7 @@ namespace SobekCM.Library.MySobekViewer
             errorMessage = String.Empty;
 
             // If this is a postback, check to see if the user is valid
-            if (RequestSpecificValues.Current_Mode.isPostBack)
+            if ((RequestSpecificValues.Current_Mode.isPostBack) && (Context.Request.HasFormContentType))
             {
                 string possible_username = String.Empty;
                 string possible_password = String.Empty;

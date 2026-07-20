@@ -91,7 +91,7 @@ namespace SobekCM.Library.AdminViewer
                 menu_preference = RequestSpecificValues.Current_User.Get_Setting("Home_AdminViewer:View Preference", "brief");
 
 	        // Was this a post-back, which would only be due to a preference change
-	        if (RequestSpecificValues.Current_Mode.isPostBack)
+	        if ((RequestSpecificValues.Current_Mode.isPostBack) && (Context.Request.HasFormContentType))
 	        {
 	            // Get the new preference
 	            string new_preference = Context.Request.Form["admin_menu_preference"];

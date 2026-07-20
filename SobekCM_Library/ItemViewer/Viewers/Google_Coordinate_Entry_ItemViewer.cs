@@ -176,8 +176,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 }
 
                 //holds actions from page
-                string action = context?.Request.Form["action"].TrimFirst() ?? String.Empty;
-                string payload = context?.Request.Form["payload"].ToString() ?? String.Empty;
+                bool hasForm = (context != null) && (context.Request.HasFormContentType);
+                string action = hasForm ? context.Request.Form["action"].TrimFirst() ?? String.Empty : String.Empty;
+                string payload = hasForm ? context.Request.Form["payload"].ToString() ?? String.Empty : String.Empty;
 
                 // See if there were hidden requests
                 if (!String.IsNullOrEmpty(action))

@@ -60,20 +60,23 @@ namespace SobekCM.Library.HTML
                 configuration = aggregation.ContactForm;
 
             postBackValues = new Dictionary<string, string>();
-            foreach (string thisKey in Context.Request.Form.Keys)
+            if (Context.Request.HasFormContentType)
             {
-                if (thisKey != "item_action")
+                foreach (string thisKey in Context.Request.Form.Keys)
                 {
-                    string value = Context.Request.Form[thisKey];
-                    if (!String.IsNullOrEmpty(value))
+                    if (thisKey != "item_action")
                     {
-                        postBackValues[thisKey] = value;
+                        string value = Context.Request.Form[thisKey];
+                        if (!String.IsNullOrEmpty(value))
+                        {
+                            postBackValues[thisKey] = value;
+                        }
                     }
                 }
             }
 
             // If this is a post back, send email
-            if (String.IsNullOrEmpty(Context.Request.Form["item_action"].TrimFirst())) return;
+            if ((!Context.Request.HasFormContentType) || (String.IsNullOrEmpty(Context.Request.Form["item_action"].TrimFirst()))) return;
 
             string action = Context.Request.Form["item_action"];
             if (action == "email")

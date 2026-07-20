@@ -132,7 +132,7 @@ namespace SobekCM.Library.AdminViewer
 
 
             // Perform post back work
-            if (RequestSpecificValues.Current_Mode.isPostBack)
+            if ((RequestSpecificValues.Current_Mode.isPostBack) && (Context.Request.HasFormContentType))
             {
                 if ((mode == Users_Group_Admin_Mode_Enum.Edit_User_Group) && (editGroup != null))
                 {

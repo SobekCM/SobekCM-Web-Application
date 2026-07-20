@@ -30,9 +30,10 @@ namespace SobekCM.QueryInitializerHelpers
 
             // Add the full request url to the request cache for use later
             context.Items.Add(RequestCache_Keys.RequestUrl, request_url);
+            context.Items.Add(RequestCache_Keys.OriginalUrl, request_url);
 
-			// Check that something is saved for the original requested URL (may not exist if not forwarded)
-			if ( String.IsNullOrEmpty(context.Session.GetString(SessionCache_Keys.OriginalUrl)))
+            // Check that something is saved for the original requested URL (may not exist if not forwarded)
+            if ( String.IsNullOrEmpty(context.Session.GetString(SessionCache_Keys.OriginalUrl)))
 				context.Session.SetString(SessionCache_Keys.OriginalUrl, request_url);
 
             request.QueryString = get_query_string_dict(httpRequest.QueryString);

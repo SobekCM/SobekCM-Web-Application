@@ -183,9 +183,9 @@ namespace SobekCM.Library.HTML
 
             RequestSpecificValues.Tracer.Add_Trace("Aggregation_HtmlSubwriter.Constructor", "Handling post backs from mySobek.");
 
-            var form = Context.Request.Form;
+            var form = Context.Request.HasFormContentType ? Context.Request.Form : null;
 
-            if ( !String.IsNullOrEmpty(form["item_action"].TrimFirst()))
+            if ((form != null) && (!String.IsNullOrEmpty(form["item_action"].TrimFirst())))
             {
                 string action = form["item_action"].TrimFirst().ToLower();
 

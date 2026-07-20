@@ -50,7 +50,7 @@ namespace SobekCM.Library.MySobekViewer
             if (registration)
                 user = new User_Object();
 
-            if (!RequestSpecificValues.Current_Mode.isPostBack)
+            if ((!RequestSpecificValues.Current_Mode.isPostBack) || (!Context.Request.HasFormContentType))
                 return;
 
             string current_password = String.Empty;

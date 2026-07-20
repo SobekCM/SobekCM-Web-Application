@@ -112,7 +112,7 @@ namespace SobekCM.Library.MySobekViewer
             }
 
             // If this is a postback, handle any events first
-            if ((RequestSpecificValues.Current_Mode.isPostBack) && (errorCode < 0))
+            if ((RequestSpecificValues.Current_Mode.isPostBack) && (errorCode < 0) && (Context.Request.HasFormContentType))
             {
                 Debug.Assert(RequestSpecificValues.Current_User != null, "User != null");
 

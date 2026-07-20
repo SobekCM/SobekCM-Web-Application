@@ -141,7 +141,7 @@ namespace SobekCM
             app.Map("/dashboard.aspx", async (HttpContext context) =>
             {
                 context.Response.ContentType = "text/html; charset=utf-8";
-                await using var writer = new StreamWriter(context.Response.Body, Encoding.UTF8, leaveOpen: true);
+                using var writer = new StringWriter();
 
                 writer.WriteLine("<!DOCTYPE html><html><head><title>SobekCM Dashboard</title></head><body>");
 
@@ -172,6 +172,8 @@ namespace SobekCM
                 }
 
                 writer.WriteLine("</body></html>");
+
+                await context.Response.WriteAsync(writer.ToString(), Encoding.UTF8);
             });
 
             // ── Data/JSON/XML endpoint (replaces SobekCM_data.aspx) ─────────────────
@@ -195,8 +197,9 @@ namespace SobekCM
 
                 if (pageGlobals.mainWriter != null)
                 {
-                    await using var writer = new StreamWriter(context.Response.Body, Encoding.UTF8, leaveOpen: true);
+                    using var writer = new StringWriter();
                     pageGlobals.mainWriter.Write_Html(writer, pageGlobals.tracer);
+                    await context.Response.WriteAsync(writer.ToString(), Encoding.UTF8);
                 }
             });
 
@@ -224,8 +227,9 @@ namespace SobekCM
 
                 if (pageGlobals.mainWriter != null)
                 {
-                    await using var writer = new StreamWriter(context.Response.Body, Encoding.UTF8, leaveOpen: true);
+                    using var writer = new StringWriter();
                     pageGlobals.mainWriter.Write_Html(writer, pageGlobals.tracer);
+                    await context.Response.WriteAsync(writer.ToString(), Encoding.UTF8);
                 }
             });
 
@@ -267,7 +271,7 @@ namespace SobekCM
                 }
 
                 context.Response.ContentType = "text/html; charset=utf-8";
-                await using var writer = new StreamWriter(context.Response.Body, Encoding.UTF8, leaveOpen: true);
+                using var writer = new StringWriter();
 
                 // Mirrors the SobekCM.aspx template structure
                 writer.Write("<!DOCTYPE html>");
@@ -325,6 +329,8 @@ namespace SobekCM
                     ((Html_MainWriter)pageGlobals.mainWriter).Write_Final_HTML(writer, pageGlobals.tracer);
 
                 writer.Write("</body></html>");
+
+                await context.Response.WriteAsync(writer.ToString(), Encoding.UTF8);
             });
 
             app.Run();

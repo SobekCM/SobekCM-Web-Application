@@ -101,7 +101,7 @@ namespace SobekCM.Library.MySobekViewer
             
 
             // Is this a postback?
-            if (RequestSpecificValues.Current_Mode.isPostBack)
+            if ((RequestSpecificValues.Current_Mode.isPostBack) && (Context.Request.HasFormContentType))
             {
                 // Get the restriction mask and isDark flag
                 if (!String.IsNullOrEmpty(Context.Request.Form["restrictionMask"].TrimFirst()))

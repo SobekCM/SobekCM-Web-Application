@@ -72,30 +72,33 @@ namespace SobekCM.Library.HTML
                 canEdit = staticWebContent.Can_Edit(RequestSpecificValues.Current_User);
             }
 
-            var form = Context.Request.Form;
-            if ((canEdit) && (RequestSpecificValues.Current_Mode.WebContent_Type == WebContent_Type_Enum.Edit) && (!String.IsNullOrEmpty(form["sbkWchs_TextEdit"].TrimFirst())))
+            if (Context.Request.HasFormContentType)
             {
-                string newSource = form["sbkWchs_TextEdit"];
-                if (!String.IsNullOrEmpty(newSource))
+                var form = Context.Request.Form;
+                if ((canEdit) && (RequestSpecificValues.Current_Mode.WebContent_Type == WebContent_Type_Enum.Edit) && (!String.IsNullOrEmpty(form["sbkWchs_TextEdit"].TrimFirst())))
                 {
-                    // Set the source to the new source
-                    staticWebContent.Content = newSource;
-                    staticWebContent.ContentSource = newSource;
+                    string newSource = form["sbkWchs_TextEdit"];
+                    if (!String.IsNullOrEmpty(newSource))
+                    {
+                        // Set the source to the new source
+                        staticWebContent.Content = newSource;
+                        staticWebContent.ContentSource = newSource;
 
-                    // Set the date on the page to today
-                    staticWebContent.Date = DateTime.Now.ToShortDateString();
+                        // Set the date on the page to today
+                        staticWebContent.Date = DateTime.Now.ToShortDateString();
 
-                    // Send the update to the endgine
-                    RestResponseMessage response = SobekEngineClient.WebContent.Update_HTML_Based_Content(staticWebContent, RequestSpecificValues.Current_User.Full_Name, RequestSpecificValues.Tracer);
+                        // Send the update to the endgine
+                        RestResponseMessage response = SobekEngineClient.WebContent.Update_HTML_Based_Content(staticWebContent, RequestSpecificValues.Current_User.Full_Name, RequestSpecificValues.Tracer);
 
-                    // Clear the cache
-                    CachedDataManager.WebContent.Clear_Page_Details(staticWebContent.WebContentID.Value);
+                        // Clear the cache
+                        CachedDataManager.WebContent.Clear_Page_Details(staticWebContent.WebContentID.Value);
 
-                    // Forward along
-                    RequestSpecificValues.Current_Mode.Request_Completed = true;
-                    Context.Response.Redirect(staticWebContent.URL(RequestSpecificValues.Current_Mode.Base_URL));
+                        // Forward along
+                        RequestSpecificValues.Current_Mode.Request_Completed = true;
+                        Context.Response.Redirect(staticWebContent.URL(RequestSpecificValues.Current_Mode.Base_URL));
 
-                    return;
+                        return;
+                    }
                 }
             }
 

@@ -97,7 +97,7 @@ namespace SobekCM.Library.AdminViewer
                 readOnlyMode = false;
             }
 
-            if ((RequestSpecificValues.Current_Mode.isPostBack) && ( RequestSpecificValues.Current_User.Is_System_Admin ))
+            if ((RequestSpecificValues.Current_Mode.isPostBack) && ( RequestSpecificValues.Current_User.Is_System_Admin ) && (Context.Request.HasFormContentType))
             {
                 if (readOnlyMode)
                     return;

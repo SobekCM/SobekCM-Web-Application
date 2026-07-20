@@ -206,7 +206,7 @@ namespace SobekCM.Library.MySobekViewer
             }
 
             // If this is post-back, handle it
-            if (RequestSpecificValues.Current_Mode.isPostBack)
+            if ((RequestSpecificValues.Current_Mode.isPostBack) && (Context.Request.HasFormContentType))
             {
                 var getKeys = Context.Request.Form.Keys;
                 string file_name_from_keys = String.Empty;

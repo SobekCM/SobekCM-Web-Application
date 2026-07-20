@@ -197,7 +197,7 @@ namespace SobekCM.Library.MySobekViewer
             }
 
 			// Handle post backs
-	        if (RequestSpecificValues.Current_Mode.isPostBack)
+	        if ((RequestSpecificValues.Current_Mode.isPostBack) && (Context.Request.HasFormContentType))
 	        {
 		        // See if there was a hidden request
 		        string hidden_request = Context.Request.Form["new_element_requested"].TrimFirst() ?? String.Empty;

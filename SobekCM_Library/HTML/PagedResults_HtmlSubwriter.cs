@@ -84,16 +84,16 @@ namespace SobekCM.Library.HTML
 
 			// Try to get the facet configuration information
 			facetInformation = "00000000";
-			if (!String.IsNullOrEmpty(Context.Request.Form["facet"].TrimFirst()))
+			if ((Context.Request.HasFormContentType) && (!String.IsNullOrEmpty(Context.Request.Form["facet"].TrimFirst())))
 				facetInformation = Context.Request.Form["facet"].TrimFirst().PadRight(7, '0');
 
 			if ( true ) // if (currentMode.isPostBack)
 			{
 				// Pull the standard values
-				var form = Context.Request.Form;
+				var form = Context.Request.HasFormContentType ? Context.Request.Form : null;
 
-			
-				if (!String.IsNullOrEmpty(form["item_action"].TrimFirst()))
+
+				if ((form != null) && (!String.IsNullOrEmpty(form["item_action"].TrimFirst())))
 				{
 					string action = form["item_action"].TrimFirst().ToLower();
 					string url_description = form["url_description"].TrimFirst();

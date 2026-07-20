@@ -432,7 +432,7 @@ namespace SobekCM.Library.AdminViewer
             RequestSpecificValues.Current_Mode.Remaining_Url_Segments = origUrlSegments;
 
             // Is this a post-back requesting to save all this data?
-            if (RequestSpecificValues.Current_Mode.isPostBack)
+            if ((RequestSpecificValues.Current_Mode.isPostBack) && (Context.Request.HasFormContentType))
 			{
 				var form = Context.Request.Form;
 

@@ -221,7 +221,7 @@ namespace SobekCM.Library.MySobekViewer
 			default_rights = String.Empty;
 
 			// Handle post back
-			if (RequestSpecificValues.Current_Mode.isPostBack)
+			if ((RequestSpecificValues.Current_Mode.isPostBack) && (Context.Request.HasFormContentType))
 			{
 				// Loop through and get the dataa
 				var getKeys = Context.Request.Form.Keys;

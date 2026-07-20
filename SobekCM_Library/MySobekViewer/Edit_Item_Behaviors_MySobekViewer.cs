@@ -123,7 +123,7 @@ namespace SobekCM.Library.MySobekViewer
             }
 
             // See if there was a hidden request
-            string hidden_request = Context.Request.Form["behaviors_request"].TrimFirst() ?? String.Empty;
+            string hidden_request = Context.Request.HasFormContentType ? (Context.Request.Form["behaviors_request"].TrimFirst() ?? String.Empty) : String.Empty;
 
             // If this was a cancel request do that
             if (hidden_request == "cancel")

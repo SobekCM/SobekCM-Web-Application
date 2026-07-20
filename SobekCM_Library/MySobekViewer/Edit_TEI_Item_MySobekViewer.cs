@@ -312,7 +312,7 @@ namespace SobekCM.Library.MySobekViewer
             #region Handle any other post back requests
 
             // If this is post-back, handle it
-            if (RequestSpecificValues.Current_Mode.isPostBack)
+            if ((RequestSpecificValues.Current_Mode.isPostBack) && (Context.Request.HasFormContentType))
             {
                 // Was this where the mapping, xslt, and css is set?
                 if (currentProcessStep == 1)

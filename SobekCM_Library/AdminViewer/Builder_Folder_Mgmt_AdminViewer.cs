@@ -62,7 +62,7 @@ namespace SobekCM.Library.AdminViewer
 
             // Handle any post backs
             saved = false;
-            if (RequestSpecificValues.Current_Mode.isPostBack)
+            if ((RequestSpecificValues.Current_Mode.isPostBack) && (Context.Request.HasFormContentType))
             {
                 try
                 {

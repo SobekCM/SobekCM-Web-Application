@@ -82,8 +82,8 @@ namespace SobekCM.Library.AdminViewer
                 try
                 {
                     // Pull the standard values
-                    var form = Context.Request.Form;
-                    if (!String.IsNullOrEmpty(form["admin_wordmark_action"].TrimFirst()))
+                    var form = Context.Request.HasFormContentType ? Context.Request.Form : null;
+                    if ((form != null) && (!String.IsNullOrEmpty(form["admin_wordmark_action"].TrimFirst())))
 					{
                         string action_value = form["admin_wordmark_action"].TrimFirst().ToUpper();
 		                string delete_value = form["admin_wordmark_code_delete"].TrimFirst().ToUpper();

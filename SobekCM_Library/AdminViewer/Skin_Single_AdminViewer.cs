@@ -114,7 +114,7 @@ namespace SobekCM.Library.AdminViewer
                 Directory.CreateDirectory(skinDirectory);
 
             // If this is a postback, handle any events first
-            if (RequestSpecificValues.Current_Mode.isPostBack)
+            if ((RequestSpecificValues.Current_Mode.isPostBack) && (Context.Request.HasFormContentType))
             {
                 try
                 {

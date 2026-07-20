@@ -99,7 +99,7 @@ namespace SobekCM.Library.MySobekViewer
 
             // Handle postback for changing the CompleteTemplate or project
              templateCode = RequestSpecificValues.Current_User.Current_Template;
-            if (RequestSpecificValues.Current_Mode.isPostBack)
+            if ((RequestSpecificValues.Current_Mode.isPostBack) && (Context.Request.HasFormContentType))
             {
                 string action1 = Context.Request.Form["action"];
                 if ((action1 != null) && ((action1 == "template") || (action1 == "project")))
@@ -394,7 +394,7 @@ namespace SobekCM.Library.MySobekViewer
 			#region Handle any other post back requests
 
 			// If this is post-back, handle it
-            if (RequestSpecificValues.Current_Mode.isPostBack)
+            if ((RequestSpecificValues.Current_Mode.isPostBack) && (Context.Request.HasFormContentType))
             {
                 // If this is a request from stage 8, save the new labels and url first
                 if (currentProcessStep == 8)

@@ -506,7 +506,7 @@ namespace SobekCM.Library.HTML
                 }
 
                 // Handle any request from the internal header for the item
-                if ((Context != null) && (!String.IsNullOrEmpty(Context.Request.Form["internal_header_action"].TrimFirst())) && (RequestSpecificValues.Current_User != null))
+                if ((Context != null) && (Context.Request.HasFormContentType) && (!String.IsNullOrEmpty(Context.Request.Form["internal_header_action"].TrimFirst())) && (RequestSpecificValues.Current_User != null))
                 {
                     // Pull the action value
                     string internalHeaderAction = Context.Request.Form["internal_header_action"].TrimFirst();

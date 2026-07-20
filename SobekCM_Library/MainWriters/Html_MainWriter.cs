@@ -67,7 +67,7 @@ namespace SobekCM.Library.MainWriters
             }
 
 		    // Handle basic events which may be fired by the internal header
-            if (!String.IsNullOrEmpty(Context.Request.Form["internal_header_action"].TrimFirst()))
+            if ((Context.Request.HasFormContentType) && (!String.IsNullOrEmpty(Context.Request.Form["internal_header_action"].TrimFirst())))
             {
                 // Pull the action value
                 string internalHeaderAction = Context.Request.Form["internal_header_action"].TrimFirst();

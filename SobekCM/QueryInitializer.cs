@@ -57,24 +57,26 @@ namespace SobekCM
 
 		public string browse_info_display_text;
 		public SobekCM_Item currentItem;
-		public Navigation_Object currentMode;
 		public Page_TreeNode currentPage;
 		public User_Object currentUser;
 		public Item_Aggregation topLevelCollection;
 		public Web_Skin_Object htmlSkin;
 		public SobekCM_Items_In_Title itemsInTitle;
-		public abstractMainWriter mainWriter;
+		
 		public List<iSearch_Title_Result> pagedSearchResults;
 		public Public_User_Folder publicFolder;
 		public Search_Results_Statistics searchResultStatistics;
 		public SobekCM_SiteMap siteMap;
 		public HTML_Based_Content staticWebContent;
 		public RequestCache requestSpecificValues;
-		
 
 
-        public Custom_Tracer tracer;
-		public HttpContext context;
+        public abstractMainWriter mainWriter;
+        public HttpContext context;
+
+		public Custom_Tracer tracer => requestSpecificValues.Tracer;
+		public Navigation_Object currentMode => requestSpecificValues.Current_Mode;
+
 
 	    #endregion
 
@@ -82,13 +84,15 @@ namespace SobekCM
 
 		public QueryInitializer(HttpContext context, string page_name)
 		{
+			this.context = context;
+
             requestSpecificValues = new RequestCache(context)
             {
-                Page_Name = page_name
+                Page_Name = page_name,
+                Tracer = new Custom_Tracer()
             };
 
-            // Start the tracter
-            tracer = new Custom_Tracer();
+			// Start the tracter
             tracer.Add_Trace("QueryInitializer.Constructor", "Starting");
 
             // Get the user IP address
@@ -155,8 +159,7 @@ namespace SobekCM
 			}
 
 
-            try { 
-
+            try {
 				if (!currentMode.Is_Robot)
                     if (currentMode.Request_Completed)
 						return;

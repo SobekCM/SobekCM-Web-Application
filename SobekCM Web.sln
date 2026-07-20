@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27130.2020
+# Visual Studio Version 18
+VisualStudioVersion = 18.7.12002.237 oobstable
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SobekCM", "SobekCM\SobekCM.csproj", "{BEDC2D5D-491E-4A09-9C02-80C58904949D}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -12,7 +12,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SobekCM", "SobekCM\SobekCM.
 		{B481CE6E-05FD-4336-9524-64D057AAB107} = {B481CE6E-05FD-4336-9524-64D057AAB107}
 		{3D35E1A0-0126-45D2-B663-49BA144A3537} = {3D35E1A0-0126-45D2-B663-49BA144A3537}
 		{849C78A5-C60B-4FAF-9EFB-943753F64E56} = {849C78A5-C60B-4FAF-9EFB-943753F64E56}
-		{1B13C1BB-AA39-4F0E-9E12-E7051DEF30AF} = {1B13C1BB-AA39-4F0E-9E12-E7051DEF30AF}
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SobekCM_Library", "SobekCM_Library\SobekCM_Library.csproj", "{4426FF50-74C7-4B88-878B-EFB9BC2317BD}"
@@ -29,8 +28,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SobekCM_Resource_Object", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SobekCM_Tools", "SobekCM_Tools\SobekCM_Tools.csproj", "{A511CE4C-7BD6-4446-BCA8-AB71F7AA8078}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SobekCM_URL_Rewriter", "SobekCM_URL_Rewriter\SobekCM_URL_Rewriter.csproj", "{1B13C1BB-AA39-4F0E-9E12-E7051DEF30AF}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SobekCM_Core", "SobekCM_Core\SobekCM_Core.csproj", "{849C78A5-C60B-4FAF-9EFB-943753F64E56}"
 	ProjectSection(ProjectDependencies) = postProject
 		{3D35E1A0-0126-45D2-B663-49BA144A3537} = {3D35E1A0-0126-45D2-B663-49BA144A3537}
@@ -45,10 +42,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EngineAgnosticLayerDbAccess", "EngineAgnosticLayerDbAccess\EngineAgnosticLayerDbAccess.csproj", "{B481CE6E-05FD-4336-9524-64D057AAB107}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SobekCM_Resource_Database", "SobekCM_Resource_Database\SobekCM_Resource_Database.csproj", "{3D35E1A0-0126-45D2-B663-49BA144A3537}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Census_Metadata_Plugin", "Census_Metadata_Plugin\Census_Metadata_Plugin.csproj", "{6D2EF65A-B04D-40B5-A082-79030C287C14}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NSLA_Metadata_Plugin", "NSLA_Metadata_Plugin\NSLA_Metadata_Plugin.csproj", "{51A06F8D-4F8D-4662-82DE-2F4D40AEDBBD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -88,12 +81,6 @@ Global
 		{A511CE4C-7BD6-4446-BCA8-AB71F7AA8078}.Release|Any CPU.Build.0 = Release|Any CPU
 		{A511CE4C-7BD6-4446-BCA8-AB71F7AA8078}.Release|x64.ActiveCfg = Release|x64
 		{A511CE4C-7BD6-4446-BCA8-AB71F7AA8078}.Release|x64.Build.0 = Release|x64
-		{1B13C1BB-AA39-4F0E-9E12-E7051DEF30AF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1B13C1BB-AA39-4F0E-9E12-E7051DEF30AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1B13C1BB-AA39-4F0E-9E12-E7051DEF30AF}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{1B13C1BB-AA39-4F0E-9E12-E7051DEF30AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1B13C1BB-AA39-4F0E-9E12-E7051DEF30AF}.Release|Any CPU.Build.0 = Release|Any CPU
-		{1B13C1BB-AA39-4F0E-9E12-E7051DEF30AF}.Release|x64.ActiveCfg = Release|Any CPU
 		{849C78A5-C60B-4FAF-9EFB-943753F64E56}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{849C78A5-C60B-4FAF-9EFB-943753F64E56}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{849C78A5-C60B-4FAF-9EFB-943753F64E56}.Debug|x64.ActiveCfg = Debug|Any CPU
@@ -118,22 +105,6 @@ Global
 		{3D35E1A0-0126-45D2-B663-49BA144A3537}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3D35E1A0-0126-45D2-B663-49BA144A3537}.Release|Any CPU.Build.0 = Release|Any CPU
 		{3D35E1A0-0126-45D2-B663-49BA144A3537}.Release|x64.ActiveCfg = Release|Any CPU
-		{6D2EF65A-B04D-40B5-A082-79030C287C14}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6D2EF65A-B04D-40B5-A082-79030C287C14}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6D2EF65A-B04D-40B5-A082-79030C287C14}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{6D2EF65A-B04D-40B5-A082-79030C287C14}.Debug|x64.Build.0 = Debug|Any CPU
-		{6D2EF65A-B04D-40B5-A082-79030C287C14}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6D2EF65A-B04D-40B5-A082-79030C287C14}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6D2EF65A-B04D-40B5-A082-79030C287C14}.Release|x64.ActiveCfg = Release|Any CPU
-		{6D2EF65A-B04D-40B5-A082-79030C287C14}.Release|x64.Build.0 = Release|Any CPU
-		{51A06F8D-4F8D-4662-82DE-2F4D40AEDBBD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{51A06F8D-4F8D-4662-82DE-2F4D40AEDBBD}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{51A06F8D-4F8D-4662-82DE-2F4D40AEDBBD}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{51A06F8D-4F8D-4662-82DE-2F4D40AEDBBD}.Debug|x64.Build.0 = Debug|Any CPU
-		{51A06F8D-4F8D-4662-82DE-2F4D40AEDBBD}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{51A06F8D-4F8D-4662-82DE-2F4D40AEDBBD}.Release|Any CPU.Build.0 = Release|Any CPU
-		{51A06F8D-4F8D-4662-82DE-2F4D40AEDBBD}.Release|x64.ActiveCfg = Release|Any CPU
-		{51A06F8D-4F8D-4662-82DE-2F4D40AEDBBD}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

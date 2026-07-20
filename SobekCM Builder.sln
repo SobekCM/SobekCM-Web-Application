@@ -21,7 +21,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EngineAgnosticLayerDbAccess
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SobekCM_Resource_Database", "SobekCM_Resource_Database\SobekCM_Resource_Database.csproj", "{3D35E1A0-0126-45D2-B663-49BA144A3537}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ArchivingTool", "ArchivingTool\ArchivingTool.csproj", "{1525399C-A83F-4C8E-8A18-04B000E31DEA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ArchivingTool", "Utilities\ArchivingTool\ArchivingTool.csproj", "{1525399C-A83F-4C8E-8A18-04B000E31DEA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -12,9 +12,7 @@
   <ItemGroup>
     <PackageReference Include="SolrNet" Version="1.2.1" />
     <PackageReference Include="System.Drawing.Common" Version="9.0.3" Condition="'$(OS)' == 'Windows_NT'" />
-    <Reference Include="UseOffice">
-      <HintPath>..\DLLs\UseOffice.dll</HintPath>
-    </Reference>
+    <PackageReference Include="sautinsoft.useoffice" Version="2026.4.22" />
   </ItemGroup>
 
   <ItemGroup>

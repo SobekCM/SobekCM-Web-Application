@@ -27,11 +27,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <!-- Legacy file references removed SobekCM.Bib_Package types that no longer exist -->
-    <Compile Remove="Metadata_File_ReaderWriters\Coordinates_File_ReaderWriter_new.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\SobekCM_Tools\SobekCM_Tools.csproj" />
   </ItemGroup>
 

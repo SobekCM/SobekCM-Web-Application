@@ -19,7 +19,7 @@ namespace SobekCM.Builder_Library.Tools
 
             //Prepare UseOffice .Net, loads MS Word in memory
             int ret = u.InitWord();
-            u.Serial = "10006108851";
+            UseOffice.Serial = "10006108851";
 
             //Return values:
             //0 - Loading successfully
@@ -60,7 +60,7 @@ namespace SobekCM.Builder_Library.Tools
 
             //Prepare UseOffice .Net, loads MS Powerpoint in memory
             int ret = u.InitPowerPoint();
-            u.Serial = "10006108851";
+            UseOffice.Serial = "10006108851";
 
             //Return values:
             //0 - Loading successfully

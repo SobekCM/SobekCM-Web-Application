@@ -1,3 +1,9 @@
+// 2026-07-20: Swapped the vendored saxon9he-api.dll (old IKVM-cross-compiled Saxon-HE 9, DLLs\Saxon\)
+// for the SaxonCS 12.9.0 NuGet package. No code changes were needed here — the Saxon.Api surface
+// used below (Processor, NewXsltCompiler, Compile, Load, SetInputStream, Run, DomDestination) compiled
+// as-is against the new package. NOT TESTED pre- or post-change — this class doesn't appear to have
+// been exercised recently (only caller is TEI_ItemViewer.cs). Verify a real XSLT transform (both the
+// Saxon and native .NET code paths) before relying on this in production.
 using Saxon.Api;
 using System;
 using System.IO;

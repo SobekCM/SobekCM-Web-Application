@@ -9,17 +9,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <!-- These files duplicate types defined in MicroservicesClient/ with the same namespace -->
-    <Compile Remove="Configuration\Engine\MicroservicesClient_Configuration.cs" />
-    <Compile Remove="Configuration\Engine\MicroservicesClient_Endpoint.cs" />
-    <!-- AdoNetHelper used BinaryFormatter (removed in .NET 9+) for AppFabric distributed cache serialization;
-         SobekCM_Items_In_Title no longer implements ISerializable since we use in-process MemoryCache -->
-    <Compile Remove="MemoryMgmt\AdoNetHelper\FastSerializer.cs" />
-    <Compile Remove="MemoryMgmt\AdoNetHelper\AdoNetHelper.cs" />
-    <Compile Remove="MemoryMgmt\AdoNetHelper\AdoNetFastSerializerSurrogate.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Jil" Version="2.17.0" />
     <PackageReference Include="protobuf-net" Version="3.2.30" />
     <!-- Microsoft.Extensions.Caching.Memory backs SharedCache — the single in-process cache used
@@ -27,10 +16,8 @@
          and the separate ConcurrentDictionary-based application state store) -->
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="10.0.0" />
     <PackageReference Include="System.Drawing.Common" Version="9.0.3" Condition="'$(OS)' == 'Windows_NT'" />
-    <!-- Saxon-HE: keep existing DLL until API compatibility with SaxonHE12 is validated -->
-    <Reference Include="saxon9he-api">
-      <HintPath>..\DLLs\Saxon\saxon9he-api.dll</HintPath>
-    </Reference>
+    <!-- SaxonCS: pure C# port of Saxon-HE, replaces the old IKVM-cross-compiled saxon9he-api.dll -->
+    <PackageReference Include="SaxonCS" Version="12.9.0" />
   </ItemGroup>
 
   <ItemGroup>

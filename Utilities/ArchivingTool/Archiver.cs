@@ -107,7 +107,7 @@ namespace ArchivingTool
             {
                 string archiveFileName = bibid + "_" + vid + "_" + dateString + "_archived.txt";
                 string archiveDataFile = Path.Combine(sourceDir, archiveFileName);
-                StreamWriter writer = new StreamWriter(archiveDataFile);
+                var writer = new StreamWriter(archiveDataFile);
                 writer.WriteLine("FileName\tSize\tCreationDate\tSHA256 Hash");
                 foreach (var file in archivedFiles)
                 {
@@ -175,7 +175,7 @@ namespace ArchivingTool
         {
             Console.WriteLine(value);
 
-            using (StreamWriter writer = new StreamWriter(outputFile, true))
+            using (var writer = new StreamWriter(outputFile, true))
             {
                 writer.WriteLine(value);
                 writer.Flush();
@@ -186,7 +186,7 @@ namespace ArchivingTool
         public static string ComputeFileSha256Hash(string filePath)
         {
             // Use 'using' statements to ensure streams and hash objects are properly disposed
-            using (FileStream stream = File.OpenRead(filePath))
+            using (var stream = File.OpenRead(filePath))
             {
                 // Create an instance of the hash algorithm
                 using (SHA256 sha256 = SHA256.Create())
@@ -195,7 +195,7 @@ namespace ArchivingTool
                     byte[] hashBytes = sha256.ComputeHash(stream);
 
                     // Convert the byte array to a hexadecimal string
-                    StringBuilder sb = new StringBuilder();
+                    var sb = new StringBuilder();
                     for (int i = 0; i < hashBytes.Length; i++)
                     {
                         sb.Append(hashBytes[i].ToString("x2")); // "x2" formats as a two-digit hexadecimal number

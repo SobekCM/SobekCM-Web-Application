@@ -14,14 +14,9 @@
     <PackageReference Include="protobuf-net" Version="3.2.30" />
     <PackageReference Include="SolrNet" Version="1.2.1" />
     <!-- ASP.NET Core HTTP types replace System.Web.HttpContext in endpoint handlers -->
-    <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.3.0" />
 
     <PackageReference Include="System.Drawing.Common" Version="9.0.3" Condition="'$(OS)' == 'Windows_NT'" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <!-- Old pre-migration BuilderService; the actual builder service is a separate project -->
-    <Compile Remove="Endpoints\BuilderService.cs" />
   </ItemGroup>
 
   <ItemGroup>

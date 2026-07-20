@@ -266,7 +266,7 @@ namespace SobekCM.Library.HTML
 
             RequestSpecificValues.Tracer.Add_Trace("Aggregation_HtmlSubwriter.Constructor", "Handle post backs from editing home page text.");
 
-            if ((RequestSpecificValues.Current_Mode.Aggregation_Type == Aggregation_Type_Enum.Home_Edit) && (!String.IsNullOrEmpty(form["sbkAghsw_HomeTextEdit"].TrimFirst())))
+            if ((form != null) && (RequestSpecificValues.Current_Mode.Aggregation_Type == Aggregation_Type_Enum.Home_Edit) && (!String.IsNullOrEmpty(form["sbkAghsw_HomeTextEdit"].TrimFirst())))
             {
                 string aggregation_folder = UI_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location + "aggregations\\" + hierarchyObject.Code + "\\";
                 if (!Directory.Exists(aggregation_folder))
@@ -512,7 +512,7 @@ namespace SobekCM.Library.HTML
                 switch (collectionViewer.Selection_Panel_Display)
                 {
                     case Selection_Panel_Display_Enum.Selectable:
-                        if (!String.IsNullOrEmpty(form["show_subaggrs"].TrimFirst()))
+                        if ((form != null) && (!String.IsNullOrEmpty(form["show_subaggrs"].TrimFirst())))
                         {
                             string show_subaggrs = form["show_subaggrs"].TrimFirst().ToUpper();
                             if (show_subaggrs == "TRUE")

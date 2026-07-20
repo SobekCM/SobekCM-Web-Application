@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using SobekCM.Core.MemoryMgmt;
 using SobekCM.Library;
 using SobekCM.Library.Database;
 using SobekCM.Library.UI;
@@ -34,7 +35,7 @@ namespace SobekCM.QueryInitializerHelpers
                 if ((UI_ApplicationCache_Gateway.Settings.Database_Connection == null) || (String.IsNullOrEmpty(UI_ApplicationCache_Gateway.Settings.Database_Connection.Connection_String)))
                 {
                     errorMessage = "No database connection string found!";
-                    string configFileLocation = AppDomain.CurrentDomain.BaseDirectory + "config/sobekcm.xml";
+                    string configFileLocation = Path.Combine(ContentRoot_Gateway.ContentRootPath, "config", "sobekcm.xml");
                     try
                     {
                         if (!File.Exists(configFileLocation))

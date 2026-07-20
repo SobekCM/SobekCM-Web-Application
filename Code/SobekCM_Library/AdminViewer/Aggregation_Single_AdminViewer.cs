@@ -98,7 +98,7 @@ namespace SobekCM.Library.AdminViewer
             }
 
             // Get the aggregation directory and ensure it exists
-            aggregationDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "design", "aggregations", itemAggregation.Code);
+            aggregationDirectory = Path.Combine(UI_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location, "aggregations", itemAggregation.Code);
             if (!Directory.Exists(aggregationDirectory))
                 Directory.CreateDirectory(aggregationDirectory);
 

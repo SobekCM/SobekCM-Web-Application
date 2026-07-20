@@ -14,10 +14,9 @@ namespace SobekCM.QueryInitializerHelpers
             // Pull out the http request
             HttpRequest httpRequest = context.Request;
 
-            // Get the base url 
-            var base_url = $"{httpRequest.Scheme}://{httpRequest.Host}{httpRequest.PathBase}{httpRequest.Path}";
-            if (base_url.IndexOf("?") > 0)
-                base_url = base_url.Substring(0, base_url.IndexOf("?"));
+            // Get the base url (site root, not the current page's path — this feeds Base_Design_URL
+            // and must stay a stable prefix for design/skin/aggregation asset links on every page)
+            var base_url = $"{httpRequest.Scheme}://{httpRequest.Host}{httpRequest.PathBase}/";
 
             // Add the base url to the reqeust cache for use later
             context.Items.Add(RequestCache_Keys.BaseUrl, base_url);
@@ -44,7 +43,8 @@ namespace SobekCM.QueryInitializerHelpers
             var queryParams = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
             if (QueryString.HasValue)
             {
-                foreach (var kvp in QueryString.Value.Split('&'))
+                string queryString = QueryString.Value.Replace("?", "");
+                foreach (var kvp in queryString.Split('&'))
                 {
                     var parts = kvp.Split('=');
                     if (parts.Length == 2)

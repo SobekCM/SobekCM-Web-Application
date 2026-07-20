@@ -499,7 +499,7 @@ namespace SobekCM.Library.HTML
 
             // Load the HTML that can be used to customize the search/results bar
             string html_source = String.Empty;
-            string fileToRead = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "default", "fragments", "search_browse_bar.html");
+            string fileToRead = Path.Combine(ContentRoot_Gateway.ContentRootPath, "default", "fragments", "search_browse_bar.html");
             if (File.Exists(fileToRead))
             {
                 html_source = File.ReadAllText(fileToRead);
@@ -1333,7 +1333,7 @@ namespace SobekCM.Library.HTML
                 RequestSpecificValues.Current_Mode.Search_String = "<%VALUE%>";
                 ushort? page = RequestSpecificValues.Current_Mode.Page;
                 RequestSpecificValues.Current_Mode.Page = 1;
-                url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode).Replace("%3c%25", "<%").Replace("%25%3e", "%>").Replace("<%VALUE%>", "\"<%VALUE%>\"").Replace("/exact/", "/results/");
+                url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode).Replace("%3C%25", "<%").Replace("%25%3E", "%>").Replace("<%VALUE%>", "\"<%VALUE%>\"").Replace("/exact/", "/results/");
 
                 RequestSpecificValues.Current_Mode.Mode = displayMode;
                 RequestSpecificValues.Current_Mode.Page = page;
@@ -1364,7 +1364,7 @@ namespace SobekCM.Library.HTML
                     RequestSpecificValues.Current_Mode.Search_String = RequestSpecificValues.Current_Mode.Search_String + ",<%VALUE%>";
                     ushort? page = RequestSpecificValues.Current_Mode.Page;
                     RequestSpecificValues.Current_Mode.Page = 1;
-                    url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode).Replace("%3c%25", "<%").Replace("%25%3e", "%>").Replace("<%VALUE%>", "\"<%VALUE%>\"").Replace("/exact/", "/results/");
+                    url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode).Replace("%3C%25", "<%").Replace("%25%3eE", "%>").Replace("<%VALUE%>", "\"<%VALUE%>\"").Replace("/exact/", "/results/");
                     RequestSpecificValues.Current_Mode.Page = page;
                     RequestSpecificValues.Current_Mode.Search_Fields = orig_field;
                     RequestSpecificValues.Current_Mode.Search_String = orig_terms;
@@ -1379,7 +1379,7 @@ namespace SobekCM.Library.HTML
                     RequestSpecificValues.Current_Mode.Search_String = RequestSpecificValues.Current_Mode.Search_String + ",<%VALUE%>";
                     ushort? page = RequestSpecificValues.Current_Mode.Page;
                     RequestSpecificValues.Current_Mode.Page = 1;
-                    url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode).Replace("%3c%25", "<%").Replace("%25%3e", "%>").Replace("<%VALUE%>", "\"<%VALUE%>\"").Replace("/exact/", "/results/");
+                    url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode).Replace("%3C%25", "<%").Replace("%25%3E", "%>").Replace("<%VALUE%>", "\"<%VALUE%>\"").Replace("/exact/", "/results/");
                     RequestSpecificValues.Current_Mode.Page = page;
                     RequestSpecificValues.Current_Mode.Search_Fields = orig_field;
                     RequestSpecificValues.Current_Mode.Search_String = orig_terms;
@@ -1417,7 +1417,7 @@ namespace SobekCM.Library.HTML
 
                     RequestSpecificValues.Current_Mode.Search_Fields = RequestSpecificValues.Current_Mode.Search_Fields + ",<%CODE%>";
                     RequestSpecificValues.Current_Mode.Search_String = RequestSpecificValues.Current_Mode.Search_String + ",<%VALUE%>";
-                    url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode).Replace("%3c%25", "<%").Replace("%25%3e", "%>").Replace("<%VALUE%>", "\"<%VALUE%>\"");
+                    url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode).Replace("%3C%25", "<%").Replace("%25%3E", "%>").Replace("<%VALUE%>", "\"<%VALUE%>\"");
 
                     RequestSpecificValues.Current_Mode.Search_Type = Search_Type_Enum.Basic;
                     RequestSpecificValues.Current_Mode.Search_Fields = String.Empty;

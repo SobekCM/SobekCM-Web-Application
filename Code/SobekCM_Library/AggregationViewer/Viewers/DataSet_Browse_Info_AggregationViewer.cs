@@ -92,6 +92,11 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 Tracer.Add_Trace("DataSet_Browse_Info_AggregationViewer.Write_HTML", "Writing HTML from result_dataset_html_subwriter ");
             }
 
+            if (writeResult == null)
+            {
+                writeResult = new PagedResults_HtmlSubwriter(RequestSpecificValues, ViewBag.Results_Statistics, ViewBag.Paged_Results) { Browse_Title = ViewBag.Browse_Object.Label };
+            }
+
             writeResult.Write_HTML(Output, Tracer);
 
         }
@@ -108,19 +113,12 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 Tracer.Add_Trace("DataSet_Browse_Info_AggregationViewer.Add_Secondary_Controls", "Adding HTML");
             }
 
-            writeResult = new PagedResults_HtmlSubwriter(RequestSpecificValues, ViewBag.Results_Statistics, ViewBag.Paged_Results) { Browse_Title = ViewBag.Browse_Object.Label };
+            if (writeResult == null)
+            {
+                writeResult = new PagedResults_HtmlSubwriter(RequestSpecificValues, ViewBag.Results_Statistics, ViewBag.Paged_Results) { Browse_Title = ViewBag.Browse_Object.Label };
+            }
+
             writeResult.Add_Controls(Output, Tracer);
-
-
-            //if ( resultsStatistics.Total_Items > 0)
-            //{
-            //	Literal literal = new Literal
-            //						  {
-            //							  Text = "<div class=\"sbkPrsw_ResultsNavBar\">" + Environment.NewLine + "  " + writeResult.Buttons + "" + Environment.NewLine + "  " + writeResult.Showing_Text + Environment.NewLine + "</div>" + Environment.NewLine + "<br />" + Environment.NewLine 
-            //						  };
-            //	MainPlaceHolder.Controls.Add(literal);
-            //}
         }
-
     }
 }

@@ -1,3 +1,4 @@
+using DocumentFormat.OpenXml.InkML;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
@@ -56,6 +57,11 @@ namespace SobekCM
             //    builder.Services.AddSystemWebAdapters().AddWrappedAspNetCoreSession();
 
             var app = builder.Build();
+
+            // Capture the real content root once, before any request is served. AppDomain.CurrentDomain.BaseDirectory
+            // no longer equals the site root under Kestrel (see ContentRoot_Gateway remarks), so library code that
+            // needs to locate on-disk site content reads this instead.
+            ContentRoot_Gateway.ContentRootPath = app.Environment.ContentRootPath + "/";
 
             // Global last-resort exception log — replaces Global.asax's Application_Error.
             // Most request paths (sobekcm_data.aspx, sobekcm_oai.aspx, the SobekCM fallback route)
@@ -157,7 +163,7 @@ namespace SobekCM
 
                 if (!SobekEngineClient.Config_Read_Attempted && UI_ApplicationCache_Gateway.Settings?.Servers != null)
                 {
-                    string configPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "config", "default", "sobekcm_microservices.config");
+                    string configPath = Path.Combine(app.Environment.ContentRootPath, "config", "default", "sobekcm_microservices.config");
                     SobekEngineClient.Read_Config_File(configPath, UI_ApplicationCache_Gateway.Settings.Servers.System_Base_URL);
                 }
 
@@ -435,6 +441,11 @@ namespace SobekCM
         /// serves anything that exists on disk before this middleware ever runs. </remarks>
         private static async Task PrettyUrl_Rewrite(HttpContext context, Func<Task> next)
         {
+            if (context.Request.Path.Value.Contains(".css") || context.Request.Path.Value.Contains(".js") || 
+                context.Request.Path.Value.Contains(".jpg") || context.Request.Path.Value.Contains(".gif") ||
+                context.Request.Path.Value.Contains(".png"))
+                return;
+
             string relative = (context.Request.Path.Value ?? "").Trim('/').ToLower();
             string host = context.Request.Host.Host;
 

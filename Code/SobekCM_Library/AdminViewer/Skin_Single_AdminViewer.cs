@@ -104,7 +104,7 @@ namespace SobekCM.Library.AdminViewer
             updatedSourceFiles = Context.SessionObject()["Edit_Skin_" + code + "|files"] as Dictionary<string, string> ?? new Dictionary<string, string>();
 
             // Get the skin directory and ensure it exists
-            skinDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "design", "skins", webSkin.Skin_Code);
+            skinDirectory = Path.Combine(UI_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location, "skins", webSkin.Skin_Code);
             if (!Directory.Exists(skinDirectory))
                 Directory.CreateDirectory(skinDirectory);
 

@@ -31,18 +31,16 @@ namespace SobekCM.QueryInitializerHelpers
                 UI_ApplicationCache_Gateway.Settings.Servers.System_Base_URL = base_url;
                 UI_ApplicationCache_Gateway.Settings.Servers.Base_URL = base_url;
 
-                string baseDir = AppDomain.CurrentDomain.BaseDirectory;
-                int bin_index = baseDir.IndexOf("\\bin\\");
-                string mainDir = baseDir.Substring(0, bin_index + 1);
+                string mainDir = ContentRoot_Gateway.ContentRootPath;
                 UI_ApplicationCache_Gateway.Settings.Servers.Base_Directory = mainDir;
                 UI_ApplicationCache_Gateway.Settings.Servers.In_Process_Submission_Location = Path.Combine(mainDir, "mySobek", "InProcess");
             }
 #endif
 
-            // Ensure the settings base directory is set correctly 
+            // Ensure the settings base directory is set correctly
             if (String.IsNullOrEmpty(UI_ApplicationCache_Gateway.Settings.Servers.Base_Directory))
             {
-                string baseDir = AppDomain.CurrentDomain.BaseDirectory;
+                string baseDir = ContentRoot_Gateway.ContentRootPath;
                 UI_ApplicationCache_Gateway.Settings.Servers.Base_Directory = baseDir;
                 tracer.Add_Trace($"SobekCM_Page_Globals.Constructor", "No base directory set, so seting to {baseDir}");
                 Engine_Database.Set_Setting("Application Server Network", baseDir);
@@ -63,8 +61,7 @@ namespace SobekCM.QueryInitializerHelpers
             // (TEMPORARY FOR UF)
             if ((!String.IsNullOrEmpty(UI_ApplicationCache_Gateway.Settings.System.System_Abbreviation)) && (UI_ApplicationCache_Gateway.Settings.System.System_Abbreviation.IndexOf("UFDC") == 0))
             {
-                string baseDir = AppDomain.CurrentDomain.BaseDirectory;
-                UI_ApplicationCache_Gateway.Settings.Servers.Base_Directory = baseDir;
+                UI_ApplicationCache_Gateway.Settings.Servers.Base_Directory = ContentRoot_Gateway.ContentRootPath;
             }
 
             return QueryInitializerHelperResponse.Successful;

@@ -38,7 +38,7 @@ namespace SobekCM.Library.MainWriters
             {
                 RequestSpecificValues.Tracer.Add_Trace("Html_MainWriter.Constructor", "The NonIE_Hack_CSS was not loaded.");
 
-                string css_file = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "default", "SobekCM_NonIE.css");
+                string css_file = Path.Combine(ContentRoot_Gateway.ContentRootPath, "default", "SobekCM_NonIE.css");
                 if (File.Exists(css_file))
                 {
                     try
@@ -1096,7 +1096,7 @@ namespace SobekCM.Library.MainWriters
 
             try
             {
-                var writer = new StreamWriter(AppDomain.CurrentDomain.BaseDirectory + "\\temp\\exceptions.txt", true);
+                var writer = new StreamWriter(Path.Combine(ContentRoot_Gateway.ContentRootPath, "temp", "exceptions.txt"), true);
                 writer.WriteLine();
                 writer.WriteLine("Error Caught in Application_Error event ( " + DateTime.Now.ToString() + ")");
                 writer.WriteLine("User Host Address: " + (context?.Connection.RemoteIpAddress?.ToString() ?? ""));

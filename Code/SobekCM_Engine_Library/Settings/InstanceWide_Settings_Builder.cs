@@ -2,6 +2,7 @@
 
 using EngineAgnosticLayerDbAccess;
 using SobekCM.Core.Configuration;
+using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Search;
 using SobekCM.Core.Settings;
@@ -53,7 +54,7 @@ namespace SobekCM.Engine_Library.Settings
         /// <returns> A fully builder instance-wide setting object </returns>
         public static InstanceWide_Settings Build_Settings()
         {
-            string configFile = AppDomain.CurrentDomain.BaseDirectory + "\\config\\sobekcm.config";
+            string configFile = Path.Combine(ContentRoot_Gateway.ContentRootPath, "config", "sobekcm.config");
             return Build_Settings(configFile);
 
         }

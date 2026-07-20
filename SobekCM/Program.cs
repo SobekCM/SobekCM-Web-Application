@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
 using SobekCM.Core.Client;
 using SobekCM.Core.FileSystems;
 using SobekCM.Core.MemoryMgmt;
@@ -68,10 +69,35 @@ namespace SobekCM
                 ContentTypeProvider = contentTypeProvider,
                 OnPrepareResponse = ctx =>
                 {
-                    // 10-day client cache, matching the previous IIS clientCache setting
-                    ctx.Context.Response.Headers.CacheControl = "public,max-age=864000";
+                    // 1-day client cache
+                    ctx.Context.Response.Headers.CacheControl = "public,max-age=86400";
                 }
             });
+
+            // Legacy IIS-era static content lives directly under the project root (no wwwroot),
+            // e.g. SobekCM/design/skins/open/OPEN.css. Map each known asset folder explicitly —
+            // rather than pointing static files at the whole content root — so bin/, obj/, and
+            // the source tree are never exposed over HTTP. config/ is deliberately excluded: it
+            // holds sobekcm.config, which has a plaintext DB connection string — read server-side
+            // only, never served.
+            string[] staticContentFolders = { "data", "default", "design", "iipimage", "mySobek", "plugins", "temp" };
+            foreach (string folder in staticContentFolders)
+            {
+                string physicalPath = Path.Combine(app.Environment.ContentRootPath, folder);
+                if (Directory.Exists(physicalPath))
+                {
+                    app.UseStaticFiles(new StaticFileOptions
+                    {
+                        FileProvider = new PhysicalFileProvider(physicalPath),
+                        RequestPath = "/" + folder,
+                        ContentTypeProvider = contentTypeProvider,
+                        OnPrepareResponse = ctx =>
+                        {
+                            ctx.Context.Response.Headers.CacheControl = "public,max-age=86400";
+                        }
+                    });
+                }
+            }
 
             // Ensure base URL is populated before any request processing
             app.Use(async (context, next) =>

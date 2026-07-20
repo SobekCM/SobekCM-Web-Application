@@ -34,8 +34,8 @@ namespace SobekCM.QueryInitializerHelpers
                 string baseDir = AppDomain.CurrentDomain.BaseDirectory;
                 int bin_index = baseDir.IndexOf("\\bin\\");
                 string mainDir = baseDir.Substring(0, bin_index + 1);
-                UI_ApplicationCache_Gateway.Settings.Servers.Base_Directory = baseDir;
-                UI_ApplicationCache_Gateway.Settings.Servers.In_Process_Submission_Location = Path.Combine(baseDir, "mySobek", "InProcess");
+                UI_ApplicationCache_Gateway.Settings.Servers.Base_Directory = mainDir;
+                UI_ApplicationCache_Gateway.Settings.Servers.In_Process_Submission_Location = Path.Combine(mainDir, "mySobek", "InProcess");
             }
 #endif
 

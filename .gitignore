@@ -202,5 +202,5 @@ packages/DynamicJson.1.2.0.0/DynamicJson.1.2.0.0.nuspec
 packages/repositories.config
 
 
-
+.claude/settings.local.json
 .claude/*.lock

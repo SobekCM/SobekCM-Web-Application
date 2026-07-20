@@ -17,7 +17,9 @@
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="10.0.0" />
     <PackageReference Include="System.Drawing.Common" Version="9.0.3" Condition="'$(OS)' == 'Windows_NT'" />
     <!-- SaxonCS: pure C# port of Saxon-HE, replaces the old IKVM-cross-compiled saxon9he-api.dll -->
-    <PackageReference Include="SaxonCS" Version="12.9.0" />
+    <PackageReference Include="SaxonCS" Version="12.10.0" />
+    <!-- Direct reference to force resolution past SaxonCS's transitive floor of AngleSharp 1.2.0 (GHSA-pgww-w46g-26qg, fixed in 1.5.0) -->
+    <PackageReference Include="AngleSharp" Version="1.5.2" />
   </ItemGroup>
 
   <ItemGroup>

@@ -46,7 +46,7 @@ namespace SobekCM.Engine_Library.Endpoints
             // Must at least have one URL segment for the BibID
             if (UrlSegments.Count > 0)
             {
-                Custom_Tracer tracer = new Custom_Tracer();
+                var tracer = new Custom_Tracer();
 
                 try
                 {
@@ -131,7 +131,7 @@ namespace SobekCM.Engine_Library.Endpoints
 
                         // Create the wrapper to return only basic citation-type information
                         tracer.Add_Trace("ItemServices.GetItemCitation", "Create wrapper class to return only the citation info");
-                        BriefItem_CitationResponse responder = new BriefItem_CitationResponse(returnValue);
+                        var responder = new BriefItem_CitationResponse(returnValue);
 
                         // If this was debug mode, then just write the tracer
                         if (IsDebug)
@@ -180,7 +180,7 @@ namespace SobekCM.Engine_Library.Endpoints
 
                         // Create the wrapper to return only basic citation-type information
                         tracer.Add_Trace("ItemServices.GetItemCitation", "Create wrapper class to return only the citation info");
-                        BriefItem_CitationResponse responder = new BriefItem_CitationResponse(returnValue);
+                        var responder = new BriefItem_CitationResponse(returnValue);
 
                         // If this was debug mode, then just write the tracer
                         if (IsDebug)
@@ -261,7 +261,7 @@ namespace SobekCM.Engine_Library.Endpoints
             // Must at least have one URL segment for the BibID
             if (UrlSegments.Count > 0)
             {
-                Custom_Tracer tracer = new Custom_Tracer();
+                var tracer = new Custom_Tracer();
 
                 try
                 {
@@ -446,7 +446,7 @@ namespace SobekCM.Engine_Library.Endpoints
             // Must at least have one URL segment for the BibID
             if (UrlSegments.Count > 0)
             {
-                Custom_Tracer tracer = new Custom_Tracer();
+                var tracer = new Custom_Tracer();
 
                 try
                 {
@@ -642,7 +642,7 @@ namespace SobekCM.Engine_Library.Endpoints
                 else
                 {
                     // Get the list of all TEXT files
-                    List<string> existing_text_files = new List<string>();
+                    var existing_text_files = new List<string>();
                     if (Directory.Exists(network + folder))
                     {
                         string[] allFiles = Directory.GetFiles(network + folder, "*.txt");
@@ -919,7 +919,7 @@ namespace SobekCM.Engine_Library.Endpoints
 
                 if (UrlSegments.Count > 1)
                 {
-                    Custom_Tracer tracer = new Custom_Tracer();
+                    var tracer = new Custom_Tracer();
 
                     string bibid = UrlSegments[1];
                     string vid = "00001";
@@ -966,9 +966,9 @@ namespace SobekCM.Engine_Library.Endpoints
                     }
 
                     string errorMessage;
-                    Dictionary<string, object> options_rdf = new Dictionary<string, object>();
+                    var options_rdf = new Dictionary<string, object>();
                     options_rdf["DC_File_ReaderWriter:RDF_Style"] = true;
-                    DC_File_ReaderWriter rdfWriter = new DC_File_ReaderWriter();
+                    var rdfWriter = new DC_File_ReaderWriter();
                     rdfWriter.Write_Metadata(Response.Output, sobekItem, options_rdf, out errorMessage);
                 }
             }
@@ -987,7 +987,7 @@ namespace SobekCM.Engine_Library.Endpoints
 
                 if (UrlSegments.Count > 1)
                 {
-                    Custom_Tracer tracer = new Custom_Tracer();
+                    var tracer = new Custom_Tracer();
 
                     string format = UrlSegments[0];
                     string bibid = UrlSegments[1];
@@ -1039,26 +1039,26 @@ namespace SobekCM.Engine_Library.Endpoints
                     switch (format.ToLower())
                     {
                         case "dc":
-                            DC_File_ReaderWriter dcWriter = new DC_File_ReaderWriter();
+                            var dcWriter = new DC_File_ReaderWriter();
                             dcWriter.Write_Metadata(Response.Output, sobekItem, null, out errorMessage);
                             break;
 
                         case "rdf":
-                            Dictionary<string, object> options_rdf = new Dictionary<string, object>();
+                            var options_rdf = new Dictionary<string, object>();
                             options_rdf["DC_File_ReaderWriter:RDF_Style"] = true;
-                            DC_File_ReaderWriter rdfWriter = new DC_File_ReaderWriter();
+                            var rdfWriter = new DC_File_ReaderWriter();
                             rdfWriter.Write_Metadata(Response.Output, sobekItem, options_rdf, out errorMessage);
                             break;
 
                         case "mods":
-                            MODS_File_ReaderWriter modsWriter = new MODS_File_ReaderWriter();
+                            var modsWriter = new MODS_File_ReaderWriter();
                             modsWriter.Write_Metadata(Response.Output, sobekItem, null, out errorMessage);
                             break;
 
                         case "marc":
 
                             // Create the options dictionary used when saving information to the database, or writing MarcXML
-                            Dictionary<string, object> options = new Dictionary<string, object>();
+                            var options = new Dictionary<string, object>();
                             if (Engine_ApplicationCache_Gateway.Settings.MarcGeneration != null)
                             {
                                 options["MarcXML_File_ReaderWriter:MARC Cataloging Source Code"] = Engine_ApplicationCache_Gateway.Settings.MarcGeneration.Cataloging_Source_Code;
@@ -1071,7 +1071,7 @@ namespace SobekCM.Engine_Library.Endpoints
                             options["MarcXML_File_ReaderWriter:System Abbreviation"] = Engine_ApplicationCache_Gateway.Settings.System.System_Abbreviation;
 
 
-                            MarcXML_File_ReaderWriter marcWriter = new MarcXML_File_ReaderWriter();
+                            var marcWriter = new MarcXML_File_ReaderWriter();
                             marcWriter.Write_Metadata(Response.Output, sobekItem, options, out errorMessage);
                             break;
                     }
@@ -1092,7 +1092,7 @@ namespace SobekCM.Engine_Library.Endpoints
             // Must at least have one URL segment for the BibID
             if (UrlSegments.Count > 0)
             {
-                Custom_Tracer tracer = new Custom_Tracer();
+                var tracer = new Custom_Tracer();
 
                 try
                 {
@@ -1206,7 +1206,7 @@ namespace SobekCM.Engine_Library.Endpoints
 
                         // Create the wrapper to return only basic citation-type information
                         tracer.Add_Trace("ItemServices.GetItemEAD", "Create wrapper class to return only the ead info");
-                        EAD_Transfer_Object responder = new EAD_Transfer_Object();
+                        var responder = new EAD_Transfer_Object();
 
                         // Transfer all the data over to the EAD transfer object
                         EAD_Info eadInfo = itemAndError.Item1.Get_Metadata_Module(GlobalVar.PALMM_RIGHTSMD_METADATA_MODULE_KEY) as EAD_Info;
@@ -1307,8 +1307,7 @@ namespace SobekCM.Engine_Library.Endpoints
                 return null;
 
             // Create the main object, and copy over the simple string values
-            EAD_Transfer_Descriptive_Identification returnObj = new EAD_Transfer_Descriptive_Identification
-            {
+            var returnObj = new EAD_Transfer_Descriptive_Identification{
                 DAO = Source.DAO,
                 DAO_Link = Source.DAO_Link,
                 DAO_Title = Source.DAO_Title,
@@ -1336,8 +1335,7 @@ namespace SobekCM.Engine_Library.Endpoints
                 return null;
 
             // Start to build the return container and copy over basic information
-            EAD_Transfer_Container_Info returnObj = new EAD_Transfer_Container_Info
-            {
+            var returnObj = new EAD_Transfer_Container_Info{
                 Did = ead_copy_did_to_transfer(Source.Did),
                 Level = Source.Level,
                 Has_Complex_Children = Source.Has_Complex_Children,
@@ -1371,7 +1369,7 @@ namespace SobekCM.Engine_Library.Endpoints
         {
             if (UrlSegments.Count > 0)
             {
-                Custom_Tracer tracer = new Custom_Tracer();
+                var tracer = new Custom_Tracer();
 
 
 
@@ -1485,7 +1483,7 @@ namespace SobekCM.Engine_Library.Endpoints
                 MARC_Record tags = sobekItem.To_MARC_Record(cataloging_source_code, location_code, reproduction_agency, reproduction_place, system_name, system_abbreviation, thumbnail_base);
 
                 // Now, convert the MARC record from the resource library over to the transfer objects
-                MARC_Transfer_Record transferRecord = new MARC_Transfer_Record();
+                var transferRecord = new MARC_Transfer_Record();
                 if (tags != null)
                 {
                     tracer.Add_Trace("ItemServices.GetItemMarcRecord", "Mapping from marc record to transfer marc record");
@@ -1498,8 +1496,7 @@ namespace SobekCM.Engine_Library.Endpoints
                     List<MARC_Field> fields = tags.Sorted_MARC_Tag_List;
                     foreach (MARC_Field thisField in fields)
                     {
-                        MARC_Transfer_Field transferField = new MARC_Transfer_Field
-                        {
+                        var transferField = new MARC_Transfer_Field{
                             Tag = thisField.Tag,
                             Indicator1 = thisField.Indicator1,
                             Indicator2 = thisField.Indicator2
@@ -1564,7 +1561,7 @@ namespace SobekCM.Engine_Library.Endpoints
             // Must at least have one URL segment for the BibID
             if (UrlSegments.Count > 0)
             {
-                Custom_Tracer tracer = new Custom_Tracer();
+                var tracer = new Custom_Tracer();
 
                 try
                 {
@@ -1666,7 +1663,7 @@ namespace SobekCM.Engine_Library.Endpoints
             // Must at least have one URL segment for the BibID
             if (UrlSegments.Count > 0)
             {
-                Custom_Tracer tracer = new Custom_Tracer();
+                var tracer = new Custom_Tracer();
 
                 try
                 {
@@ -1763,7 +1760,7 @@ namespace SobekCM.Engine_Library.Endpoints
         {
             if (UrlSegments.Count > 1)
             {
-                Custom_Tracer tracer = new Custom_Tracer();
+                var tracer = new Custom_Tracer();
 
                 string bibid = UrlSegments[0];
                 string vid = UrlSegments[1];
@@ -1837,7 +1834,7 @@ namespace SobekCM.Engine_Library.Endpoints
             // Must at least have one URL segment for the BibID
             if (UrlSegments.Count > 1)
             {
-                Custom_Tracer tracer = new Custom_Tracer();
+                var tracer = new Custom_Tracer();
 
                 try
                 {
@@ -1981,7 +1978,7 @@ namespace SobekCM.Engine_Library.Endpoints
             // Must at least have one URL segment for the BibID
             if (UrlSegments.Count > 0)
             {
-                Custom_Tracer tracer = new Custom_Tracer();
+                var tracer = new Custom_Tracer();
 
                 try
                 {
@@ -2079,7 +2076,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="IsDebug"></param>
         public void Send_Email_HTML_Snippet(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
         {
-            Custom_Tracer tracer = new Custom_Tracer();
+            var tracer = new Custom_Tracer();
             tracer.Add_Trace("ItemServices.Send_Email_HTML_Snippet", "Serve the small EMAIL html for adding tags to an item");
 
             // Determine the number of columns for text areas, depending on browser
@@ -2088,7 +2085,7 @@ namespace SobekCM.Engine_Library.Endpoints
             //    actual_cols = 45;
 
             // Build the response
-            StringBuilder responseBuilder = new StringBuilder();
+            var responseBuilder = new StringBuilder();
             responseBuilder.AppendLine("<!-- Email form -->");
             responseBuilder.AppendLine("<div id=\"emailform_content\" class=\"sbk_PopupForm\" style=\"width: 537px;\">");
             responseBuilder.AppendLine("  <div class=\"sbk_PopupTitle\"><table style=\"width:100%\"><tr><td style=\"text-align:left;\">Send this Item to a Friend</td><td style=\"text-align:right\"> <a href=\"#template\" alt=\"CLOSE\" onclick=\"email_form_close()\">X</a> &nbsp; </td></tr></table></div>");
@@ -2156,7 +2153,7 @@ namespace SobekCM.Engine_Library.Endpoints
         {
             if (UrlSegments.Count > 1)
             {
-                Custom_Tracer tracer = new Custom_Tracer();
+                var tracer = new Custom_Tracer();
 
                 // Get the BibID and VID
                 string bibid = UrlSegments[0];
@@ -2241,7 +2238,7 @@ namespace SobekCM.Engine_Library.Endpoints
                 tracer.Add_Trace("ItemServices.Print_HTML_Snippet", "Building the HTML response");
 
                 // Build the response
-                StringBuilder responseBuilder = new StringBuilder();
+                var responseBuilder = new StringBuilder();
 
                 string print_options = String.Empty;
                 string url_redirect = Engine_ApplicationCache_Gateway.Settings.Servers.Base_URL + bibid + "/" + vid + "/print";
@@ -2300,7 +2297,7 @@ namespace SobekCM.Engine_Library.Endpoints
                                              : "    <input type=\"radio\" name=\"print_pages\" value=\"all_pages\" id=\"all_pages\" class=\"print_radiobutton\" /> <label for=\"all_pages\">Print all pages</label><br />");
 
                         // Build the options for selecting a page
-                        StringBuilder optionBuilder = new StringBuilder();
+                        var optionBuilder = new StringBuilder();
                         int sequence = 1;
                         foreach (BriefItem_FileGrouping thisPage in sobekItem.Images)
                         {
@@ -2389,7 +2386,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="IsDebug"></param>
         public void Describe_HTML_Snippet(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
         {
-            Custom_Tracer tracer = new Custom_Tracer();
+            var tracer = new Custom_Tracer();
             tracer.Add_Trace("ItemServices.Describe_HTML_Snippet", "Serve the small DESCRIBE html for adding tags to an item");
 
             // Determine the number of columns for text areas, depending on browser
@@ -2398,7 +2395,7 @@ namespace SobekCM.Engine_Library.Endpoints
             //    actual_cols = 45;
 
             // Build the response
-            StringBuilder responseBuilder = new StringBuilder();
+            var responseBuilder = new StringBuilder();
             responseBuilder.AppendLine("<!-- Add descriptive tage form  -->");
             responseBuilder.AppendLine("<div class=\"describe_popup_div\" id=\"describe_item_form\" style=\"display:none;\">");
             responseBuilder.AppendLine("  <div class=\"popup_title\"><table width=\"100%\"><tr><td align=\"left\">A<span class=\"smaller\">DD </span> I<span class=\"smaller\">TEM </span> D<span class=\"smaller\">ESCRIPTION</span></td><td align=\"right\"> <a href=\"#template\" alt=\"CLOSE\" onclick=\"describe_item_form_close()\">X</a> &nbsp; </td></tr></table></div>");
@@ -2455,7 +2452,7 @@ namespace SobekCM.Engine_Library.Endpoints
         {
             if (UrlSegments.Count > 1)
             {
-                Custom_Tracer tracer = new Custom_Tracer();
+                var tracer = new Custom_Tracer();
 
                 // Get the BibID and VID
                 string bibid = UrlSegments[0];
@@ -2533,7 +2530,7 @@ namespace SobekCM.Engine_Library.Endpoints
                 tracer.Add_Trace("ItemServices.Share_HTTP_Snippet", "Building the HTML response");
 
                 // Build the response
-                StringBuilder responseBuilder = new StringBuilder();
+                var responseBuilder = new StringBuilder();
 
                 // Calculate the title and url
                 string title = System.Net.WebUtility.HtmlEncode(sobekItem.Bib_Info.Main_Title.Title);
@@ -2604,7 +2601,7 @@ namespace SobekCM.Engine_Library.Endpoints
         {
             if (UrlSegments.Count > 0)
             {
-                Custom_Tracer tracer = new Custom_Tracer();
+                var tracer = new Custom_Tracer();
 
                 // Try to get the user id
                 int userid;
@@ -2654,7 +2651,7 @@ namespace SobekCM.Engine_Library.Endpoints
                 tracer.Add_Trace("ItemServices.Bookshelf_HTTP_Snippet", "Building the HTML response");
 
                 // Build the response
-                StringBuilder responseBuilder = new StringBuilder();
+                var responseBuilder = new StringBuilder();
 
                 // Determine the number of columns for text areas, depending on browser
                 int actual_cols = 50;

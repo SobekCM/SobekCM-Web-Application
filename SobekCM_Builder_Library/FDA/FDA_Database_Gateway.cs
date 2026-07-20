@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using EngineAgnosticLayerDbAccess;
@@ -74,8 +74,7 @@ namespace SobekCM.Builder_Library.FDA
             try
             {
                 // Build the parameters list
-                List<EalDbParameter> parameters = new List<EalDbParameter>
-                {
+                var parameters = new List<EalDbParameter>{
                     new EalDbParameter("@Package", Package), 
                     new EalDbParameter("@IEID", Ieid), 
                     new EalDbParameter("@FdaReportType", FdaReportType), 
@@ -89,7 +88,7 @@ namespace SobekCM.Builder_Library.FDA
                 };
 
                 // Add a final parameter to receive the primary key back from the database
-                EalDbParameter fdaReportParameter = new EalDbParameter("@FdaReportID", -1) { Direction = ParameterDirection.InputOutput };
+                var fdaReportParameter = new EalDbParameter("@FdaReportID", -1) { Direction = ParameterDirection.InputOutput };
                 parameters.Add(fdaReportParameter);
 
                 // Run the query

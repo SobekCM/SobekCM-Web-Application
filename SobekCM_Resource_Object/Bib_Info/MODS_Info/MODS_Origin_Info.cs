@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using System;
 using System.Collections.Generic;
@@ -327,7 +327,7 @@ namespace SobekCM.Resource_Object.Bib_Info
             if (otherDates == null)
                 otherDates = new List<Origin_Info_Other_Date>();
 
-            Origin_Info_Other_Date newOtherDate = new Origin_Info_Other_Date(Value, Type);
+            var newOtherDate = new Origin_Info_Other_Date(Value, Type);
             otherDates.Add(newOtherDate);
             return newOtherDate;
         }

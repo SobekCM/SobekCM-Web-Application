@@ -32,7 +32,7 @@ namespace SobekCM.Library.Citation.Elements
             // Get the codes for the aggregation 
             if ((Items.Count == 0) && (UI_ApplicationCache_Gateway.Aggregations != null))
             {
-                SortedList<string, string> tempItemList = new SortedList<string, string>();
+                var tempItemList = new SortedList<string, string>();
                 List<Item_Aggregation_Related_Aggregations> subcollections = UI_ApplicationCache_Gateway.Aggregations.All_Aggregations;
                 foreach (Item_Aggregation_Related_Aggregations thisAggr in subcollections)
                 {
@@ -93,8 +93,8 @@ namespace SobekCM.Library.Citation.Elements
                 }
             }
 
-            List<string> codes = new List<string>();
-            List<string> possibles = new List<string>();
+            var codes = new List<string>();
+            var possibles = new List<string>();
             if (Bib.Behaviors.Aggregation_Count > 0)
             {
                 codes.AddRange(Bib.Behaviors.Aggregation_Code_List);

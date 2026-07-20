@@ -46,7 +46,7 @@ namespace SobekCM_Resource_Database.Builder
             // Pull the sobekcm list, if there is one from today
             if (File.Exists(Drive_Location))
             {
-                FileInfo thisFileInfo = new FileInfo(Drive_Location);
+                var thisFileInfo = new FileInfo(Drive_Location);
                 DateTime fileCreation = thisFileInfo.LastWriteTime;
                 if ((fileCreation.Year == DateTime.Now.Year) && (fileCreation.Month == DateTime.Now.Month) && (fileCreation.Day == DateTime.Now.Day))
                 {
@@ -196,7 +196,7 @@ namespace SobekCM_Resource_Database.Builder
                         string mets_file = DestinationDirectory + "/" + BIBID + "_" + Volumeid.Replace("VID", "") + ".mets";
 
                         // Save this mets information to the METS file
-                        StreamWriter writer = new StreamWriter(mets_file, false);
+                        var writer = new StreamWriter(mets_file, false);
                         writer.Write(mets);
                         writer.Flush();
                         writer.Close();
@@ -316,7 +316,7 @@ namespace SobekCM_Resource_Database.Builder
                     // Save the pages which should NOT be processed
                     try
                     {
-                        StreamWriter processingInst = new StreamWriter(DestinationDirectory + "\\processing.instr", false);
+                        var processingInst = new StreamWriter(DestinationDirectory + "\\processing.instr", false);
                         string[] tiffFiles = Directory.GetFiles(DestinationDirectory, "*.tif");
                         foreach (string tiff in tiffFiles)
                         {
@@ -350,14 +350,14 @@ namespace SobekCM_Resource_Database.Builder
             if ((MARCDirectory.Length > 0) && (Directory.Exists(MARCDirectory)))
             {
                 // See if there was a record listed for this
-                List<string> alephRecords = new List<string>();
+                var alephRecords = new List<string>();
                 string aleph = BIBPackage.Bib_Info.ALEPH_Record;
                 if (aleph.Length > 0)
                 {
                     alephRecords.Add(aleph);
                 }
                 string[] notis = BIBPackage.Bib_Info.NOTIS_Records;
-                List<string> notisRecords = new List<string>();
+                var notisRecords = new List<string>();
                 if (notis.Length > 0)
                 {
                     foreach (string thisNotis in notis)
@@ -366,7 +366,7 @@ namespace SobekCM_Resource_Database.Builder
 
                 // Try to find MARC XML for any aleph records
                 string aleph_record_number = String.Empty;
-                DateTime aleph_record_date = new DateTime(1000, 1, 1);
+                var aleph_record_date = new DateTime(1000, 1, 1);
                 string oclc_record_number = String.Empty;
                 string marc_folder;
                 foreach (string thisRecord in alephRecords)
@@ -517,8 +517,8 @@ namespace SobekCM_Resource_Database.Builder
         public static void Add_Project_Info(SobekCM_Item BIBPackage, string ProjectDirectory)
         {
             // Build a collection of project information
-            ArrayList pmets_projects = new ArrayList();
-            ArrayList unenriched_collections = new ArrayList();
+            var pmets_projects = new ArrayList();
+            var unenriched_collections = new ArrayList();
 
             // Check for aggregations' project files
             foreach (Aggregation_Info aggregation in BIBPackage.Behaviors.Aggregations)
@@ -692,7 +692,7 @@ namespace SobekCM_Resource_Database.Builder
         public static void Add_All_Files(SobekCM_Item BIBPackage, string FilesFilter, bool RecursivelyIncludeSubfolders, bool PageImagesInSeperateFoldersCanBeSamePage)
         {
             // Get the set of file filters within a list
-            List<string> file_filters = new List<string>();
+            var file_filters = new List<string>();
             if (FilesFilter.IndexOf("|") < 0)
             {
                 file_filters.Add(FilesFilter.ToUpper());
@@ -707,15 +707,15 @@ namespace SobekCM_Resource_Database.Builder
             }
 
             // Get the files from the current directory (or recursive directories)
-            Builder_Page_File_Collection fileCollection = new Builder_Page_File_Collection();
+            var fileCollection = new Builder_Page_File_Collection();
             get_files_from_current_directory(fileCollection, file_filters, BIBPackage.Source_Directory, String.Empty, RecursivelyIncludeSubfolders);
 
             // Now, determine which files are already in the METS file.
             // Build a collection of file objects from the METS
-            List<SobekCM_File_Info> metsFiles = new List<SobekCM_File_Info>();
-            Builder_Page_File_Collection metsFileCollection = new Builder_Page_File_Collection();
-            Dictionary<SobekCM_File_Info, Page_TreeNode> fileToPage = new Dictionary<SobekCM_File_Info, Page_TreeNode>();
-            Dictionary<Page_TreeNode, Division_TreeNode> pageToDiv = new Dictionary<Page_TreeNode, Division_TreeNode>();
+            var metsFiles = new List<SobekCM_File_Info>();
+            var metsFileCollection = new Builder_Page_File_Collection();
+            var fileToPage = new Dictionary<SobekCM_File_Info, Page_TreeNode>();
+            var pageToDiv = new Dictionary<Page_TreeNode, Division_TreeNode>();
 
             foreach (abstract_TreeNode rootNode in BIBPackage.Divisions.Physical_Tree.Roots)
             {
@@ -723,7 +723,7 @@ namespace SobekCM_Resource_Database.Builder
             }
 
             // Determine which files to delete from the METS package
-            List<SobekCM_File_Info> deletes = new List<SobekCM_File_Info>();
+            var deletes = new List<SobekCM_File_Info>();
             foreach (SobekCM_File_Info thisFile in metsFiles)
             {
                 if ((thisFile.METS_LocType == SobekCM_File_Info_Type_Enum.SYSTEM) && (!File.Exists(BIBPackage.Source_Directory + "//" + thisFile.System_Name)))
@@ -779,14 +779,14 @@ namespace SobekCM_Resource_Database.Builder
             }
 
             // Build the list of all the remaining files 
-            Hashtable filesPresent = new Hashtable();
+            var filesPresent = new Hashtable();
             foreach (SobekCM_File_Info thisFile in metsFiles)
             {
                 filesPresent[thisFile.System_Name] = thisFile;
             }
 
             // Determine which files need to be added
-            Builder_Page_File_Collection addFiles = new Builder_Page_File_Collection();
+            var addFiles = new Builder_Page_File_Collection();
             foreach (Builder_Page_File thisFile in fileCollection)
             {
                 if (!filesPresent.Contains(thisFile.FullName_With_Relative_Directory))
@@ -801,12 +801,12 @@ namespace SobekCM_Resource_Database.Builder
                 // Make sure there is at least one division
                 if (BIBPackage.Divisions.Physical_Tree.Roots.Count == 0)
                 {
-                    Division_TreeNode newRootNode = new Division_TreeNode("Main", String.Empty);
+                    var newRootNode = new Division_TreeNode("Main", String.Empty);
                     BIBPackage.Divisions.Physical_Tree.Roots.Add(newRootNode);
                 }
 
                 // Create the map of file names to pages
-                Dictionary<string, Page_TreeNode> file_to_page_hash = new Dictionary<string, Page_TreeNode>();
+                var file_to_page_hash = new Dictionary<string, Page_TreeNode>();
                 List<abstract_TreeNode> pageNodes = BIBPackage.Divisions.Physical_Tree.Pages_PreOrder;
                 foreach (Page_TreeNode pageNode in pageNodes)
                 {
@@ -845,7 +845,7 @@ namespace SobekCM_Resource_Database.Builder
                         foreach (Builder_Page_File thisFile in addFiles)
                         {
                             // Create the new METS file object
-                            SobekCM_File_Info newFileForMETS = new SobekCM_File_Info(thisFile.FullName_With_Relative_Directory);
+                            var newFileForMETS = new SobekCM_File_Info(thisFile.FullName_With_Relative_Directory);
 
                             // Get the root of this file, to put all files of the same root on the same page
                             string thisFileShort = newFileForMETS.File_Name_Sans_Extension;
@@ -867,7 +867,7 @@ namespace SobekCM_Resource_Database.Builder
                             else
                             {
                                 // This needs a new page then
-                                Page_TreeNode newPage = new Page_TreeNode();
+                                var newPage = new Page_TreeNode();
                                 newPage.Files.Add(newFileForMETS);
                                 firstDiv.Nodes.Add(newPage);
 
@@ -893,7 +893,7 @@ namespace SobekCM_Resource_Database.Builder
                     while (new_file != null)
                     {
                         // Create the new METS file object
-                        SobekCM_File_Info newFileForMETS = new SobekCM_File_Info(new_file.FullName_With_Relative_Directory);
+                        var newFileForMETS = new SobekCM_File_Info(new_file.FullName_With_Relative_Directory);
 
                         // Get the root of this file, to put all files of the same root on the same page
                         string thisFileShort = newFileForMETS.File_Name_Sans_Extension;
@@ -929,7 +929,7 @@ namespace SobekCM_Resource_Database.Builder
                             }
 
                             // Add the page for this and link the new file
-                            Page_TreeNode newPage = new Page_TreeNode();
+                            var newPage = new Page_TreeNode();
                             newPage.Files.Add(newFileForMETS);
                             file_to_page_hash[thisFileShort] = newPage;
 
@@ -992,7 +992,7 @@ namespace SobekCM_Resource_Database.Builder
         {
             // Get the files in this directory by using file filters ( a single filter may find the same 
             // file in this directory twice, so special code is added for this case )
-            List<string> files_in_this_dir = new List<string>();
+            var files_in_this_dir = new List<string>();
             foreach (string thisFilter in FileFilters)
             {
                 string[] thisFilterFiles = Directory.GetFiles(SourceDirectory, thisFilter);
@@ -1010,7 +1010,7 @@ namespace SobekCM_Resource_Database.Builder
                 if ((thisFile.ToUpper().IndexOf("_ARCHIVE.") < 0) && (thisFile.ToUpper().IndexOf(".QC.JPG") < 0))
                 {
                     // Create the new page_file object
-                    Builder_Page_File newFile = new Builder_Page_File(thisFile, RelativeDirectory, true);
+                    var newFile = new Builder_Page_File(thisFile, RelativeDirectory, true);
 
                     // Add into the page file collection, sorting appropriately
                     FileList.Insert(newFile);
@@ -1023,7 +1023,7 @@ namespace SobekCM_Resource_Database.Builder
                 string[] subdirs = Directory.GetDirectories(SourceDirectory);
                 foreach (string thisSubDir in subdirs)
                 {
-                    DirectoryInfo thisSubDirInfo = new DirectoryInfo(thisSubDir);
+                    var thisSubDirInfo = new DirectoryInfo(thisSubDir);
                     string dir_name = thisSubDirInfo.Name;
                     if (RelativeDirectory.Length == 0)
                         get_files_from_current_directory(FileList, FileFilters, thisSubDir, dir_name, true);
@@ -1063,7 +1063,7 @@ namespace SobekCM_Resource_Database.Builder
                     if (add_file)
                     {
                         METSFiles.Add(thisFile);
-                        Builder_Page_File newPageFile = new Builder_Page_File(thisFile.System_Name, true);
+                        var newPageFile = new Builder_Page_File(thisFile.System_Name, true);
                         newPageFile.METS_Page = pageNode;
                         newPageFile.METS_Division = PageToDiv[pageNode];
                         METSFileCollection.Insert(newPageFile);

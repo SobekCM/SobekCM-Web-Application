@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using ProtoBuf;
 using System;
@@ -65,7 +65,7 @@ namespace SobekCM.Core.Builder
             get
             {
                 // Get the assembly/class/arguments string for lookup
-                StringBuilder builder = new StringBuilder(1000);
+                var builder = new StringBuilder(1000);
                 if (!String.IsNullOrEmpty(Assembly))
                     builder.Append(Assembly + "|");
                 else

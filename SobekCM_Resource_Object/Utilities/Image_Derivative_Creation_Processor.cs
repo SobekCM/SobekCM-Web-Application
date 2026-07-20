@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using System;
 using System.Diagnostics;
@@ -245,7 +245,7 @@ namespace SobekCM.Resource_Object.Utilities
                 foreach (string tifFile in TifFiles)
                 {
                     // Get the basic file information
-                    FileInfo tifFileInfo = new FileInfo(tifFile);
+                    var tifFileInfo = new FileInfo(tifFile);
                     string fileName = tifFileInfo.Name;
                     string fileNameUpper = fileName.ToUpper();
                     if (fileNameUpper.IndexOf("_ARCHIVE") < 0)
@@ -376,7 +376,7 @@ namespace SobekCM.Resource_Object.Utilities
             try
             {
                 // Start this process
-                Process convert = new Process { StartInfo = { WindowStyle = ProcessWindowStyle.Minimized, CreateNoWindow = true, ErrorDialog = true, RedirectStandardError = true, UseShellExecute = false } };
+                var convert = new Process{ StartInfo = { WindowStyle = ProcessWindowStyle.Minimized, CreateNoWindow = true, ErrorDialog = true, RedirectStandardError = true, UseShellExecute = false } };
                 if (image_magick_path.ToUpper().IndexOf("CONVERT.EXE") > 0)
                     convert.StartInfo.FileName = image_magick_path;
                 else
@@ -470,7 +470,7 @@ namespace SobekCM.Resource_Object.Utilities
             try
             {
                 // Start this process
-                using (Process convert = new Process { StartInfo = { WindowStyle = ProcessWindowStyle.Minimized, CreateNoWindow = true, ErrorDialog = true, RedirectStandardError = true, UseShellExecute = false } })
+                using (var convert = new Process{ StartInfo = { WindowStyle = ProcessWindowStyle.Minimized, CreateNoWindow = true, ErrorDialog = true, RedirectStandardError = true, UseShellExecute = false } })
                 {
                     if (Image_Magick_Path.ToUpper().IndexOf("CONVERT.EXE") > 0)
                         convert.StartInfo.FileName = Image_Magick_Path;
@@ -540,8 +540,7 @@ namespace SobekCM.Resource_Object.Utilities
             bool returnVal = true;
 
             // Start this process
-            Process convert = new Process
-            {
+            var convert = new Process{
                 StartInfo = { WindowStyle = ProcessWindowStyle.Minimized, CreateNoWindow = true, ErrorDialog = true, RedirectStandardError = true, UseShellExecute = false, FileName = kakadu_path + "\\kdu_compress_libtiff.exe", Arguments = " -i \"" + Sourcefile + "\" -o \"" + Finalfile + "\" -rate 1.0,0.84,0.7,0.6,0.5,0.4,0.35,0.3,0.25,0.21,0.18,0.15,0.125,0.1,0.088,0.075,0.0625,0.05,0.04419,0.03716,0.03125,0.025,0.0221,0.01858,0.015625 Clevels=6 Stiles={1024,1024} Corder=RLCP Cblk={64,64} Sprofile=PROFILE1" }
             };
 

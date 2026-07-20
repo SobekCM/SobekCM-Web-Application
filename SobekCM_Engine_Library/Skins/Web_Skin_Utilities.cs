@@ -97,7 +97,7 @@ namespace SobekCM.Engine_Library.Skins
                 this_javascript = String.Empty;
 
             // Create the web skin object
-            Complete_Web_Skin_Object completeSkin = new Complete_Web_Skin_Object(code, this_style)
+            var completeSkin = new Complete_Web_Skin_Object(code, this_style)
             {
                 Override_Banner = override_banner,
                 Suppress_Top_Navigation = Convert.ToBoolean(Skin_Row["SuppressTopNavigation"]),
@@ -144,7 +144,7 @@ namespace SobekCM.Engine_Library.Skins
                                     completeSkin.SourceFiles[Web_Language_Enum.DEFAULT].Header_Item_Source_File = Path.Combine("html", fileName);
                                 else
                                 {
-                                    Complete_Web_Skin_Source_Files sourceFiles = new Complete_Web_Skin_Source_Files { Header_Item_Source_File = Path.Combine("html", fileName) };
+                                    var sourceFiles = new Complete_Web_Skin_Source_Files{ Header_Item_Source_File = Path.Combine("html", fileName) };
                                     completeSkin.SourceFiles[Web_Language_Enum.DEFAULT] = sourceFiles;
                                 }
                             }
@@ -161,7 +161,7 @@ namespace SobekCM.Engine_Library.Skins
                                             completeSkin.SourceFiles[languageEnum].Header_Item_Source_File = Path.Combine("html", fileName);
                                         else
                                         {
-                                            Complete_Web_Skin_Source_Files sourceFiles = new Complete_Web_Skin_Source_Files { Header_Item_Source_File = Path.Combine("html", fileName) };
+                                            var sourceFiles = new Complete_Web_Skin_Source_Files{ Header_Item_Source_File = Path.Combine("html", fileName) };
                                             completeSkin.SourceFiles[languageEnum] = sourceFiles;
                                         }
                                     }
@@ -178,7 +178,7 @@ namespace SobekCM.Engine_Library.Skins
                                     completeSkin.SourceFiles[Web_Language_Enum.DEFAULT].Header_Source_File = Path.Combine("html", fileName);
                                 else
                                 {
-                                    Complete_Web_Skin_Source_Files sourceFiles = new Complete_Web_Skin_Source_Files { Header_Source_File = Path.Combine("html", fileName) };
+                                    var sourceFiles = new Complete_Web_Skin_Source_Files{ Header_Source_File = Path.Combine("html", fileName) };
                                     completeSkin.SourceFiles[Web_Language_Enum.DEFAULT] = sourceFiles;
                                 }
                             }
@@ -195,7 +195,7 @@ namespace SobekCM.Engine_Library.Skins
                                             completeSkin.SourceFiles[languageEnum].Header_Source_File = Path.Combine("html", fileName);
                                         else
                                         {
-                                            Complete_Web_Skin_Source_Files sourceFiles = new Complete_Web_Skin_Source_Files { Header_Source_File = Path.Combine("html", fileName) };
+                                            var sourceFiles = new Complete_Web_Skin_Source_Files{ Header_Source_File = Path.Combine("html", fileName) };
                                             completeSkin.SourceFiles[languageEnum] = sourceFiles;
                                         }
                                     }
@@ -212,7 +212,7 @@ namespace SobekCM.Engine_Library.Skins
                                     completeSkin.SourceFiles[Web_Language_Enum.DEFAULT].Footer_Item_Source_File = Path.Combine("html", fileName);
                                 else
                                 {
-                                    Complete_Web_Skin_Source_Files sourceFiles = new Complete_Web_Skin_Source_Files { Footer_Item_Source_File = Path.Combine("html", fileName) };
+                                    var sourceFiles = new Complete_Web_Skin_Source_Files{ Footer_Item_Source_File = Path.Combine("html", fileName) };
                                     completeSkin.SourceFiles[Web_Language_Enum.DEFAULT] = sourceFiles;
                                 }
                             }
@@ -229,7 +229,7 @@ namespace SobekCM.Engine_Library.Skins
                                             completeSkin.SourceFiles[languageEnum].Footer_Item_Source_File = Path.Combine("html", fileName);
                                         else
                                         {
-                                            Complete_Web_Skin_Source_Files sourceFiles = new Complete_Web_Skin_Source_Files { Footer_Item_Source_File = Path.Combine("html", fileName) };
+                                            var sourceFiles = new Complete_Web_Skin_Source_Files{ Footer_Item_Source_File = Path.Combine("html", fileName) };
                                             completeSkin.SourceFiles[languageEnum] = sourceFiles;
                                         }
                                     }
@@ -246,7 +246,7 @@ namespace SobekCM.Engine_Library.Skins
                                     completeSkin.SourceFiles[Web_Language_Enum.DEFAULT].Footer_Item_Source_File = Path.Combine("html", fileName);
                                 else
                                 {
-                                    Complete_Web_Skin_Source_Files sourceFiles = new Complete_Web_Skin_Source_Files { Footer_Source_File = Path.Combine("html", fileName) };
+                                    var sourceFiles = new Complete_Web_Skin_Source_Files{ Footer_Source_File = Path.Combine("html", fileName) };
                                     completeSkin.SourceFiles[Web_Language_Enum.DEFAULT] = sourceFiles;
                                 }
                             }
@@ -263,7 +263,7 @@ namespace SobekCM.Engine_Library.Skins
                                             completeSkin.SourceFiles[languageEnum].Footer_Source_File = Path.Combine("html", fileName);
                                         else
                                         {
-                                            Complete_Web_Skin_Source_Files sourceFiles = new Complete_Web_Skin_Source_Files { Footer_Source_File = Path.Combine("html", fileName) };
+                                            var sourceFiles = new Complete_Web_Skin_Source_Files{ Footer_Source_File = Path.Combine("html", fileName) };
                                             completeSkin.SourceFiles[languageEnum] = sourceFiles;
                                         }
                                     }
@@ -306,7 +306,7 @@ namespace SobekCM.Engine_Library.Skins
                                     completeSkin.SourceFiles[Web_Language_Enum.DEFAULT].Banner = fileName;
                                 else
                                 {
-                                    Complete_Web_Skin_Source_Files sourceFiles = new Complete_Web_Skin_Source_Files { Banner = fileName };
+                                    var sourceFiles = new Complete_Web_Skin_Source_Files{ Banner = fileName };
                                     completeSkin.SourceFiles[Web_Language_Enum.DEFAULT] = sourceFiles;
                                 }
                             }
@@ -323,7 +323,7 @@ namespace SobekCM.Engine_Library.Skins
                                             completeSkin.SourceFiles[languageEnum].Banner = fileName;
                                         else
                                         {
-                                            Complete_Web_Skin_Source_Files sourceFiles = new Complete_Web_Skin_Source_Files { Banner = fileName };
+                                            var sourceFiles = new Complete_Web_Skin_Source_Files{ Banner = fileName };
                                             completeSkin.SourceFiles[languageEnum] = sourceFiles;
                                         }
                                     }
@@ -422,7 +422,7 @@ namespace SobekCM.Engine_Library.Skins
             if (Tracer != null) Tracer.Add_Trace("Web_Skin_Utilities.Build_Skin", "Web skin not found in the memory cache, so building it now");
 
             // Build this then
-            Web_Skin_Object returnValue = new Web_Skin_Object(CompleteSkin.Skin_Code, CompleteSkin.Base_Skin_Code);
+            var returnValue = new Web_Skin_Object(CompleteSkin.Skin_Code, CompleteSkin.Base_Skin_Code);
             if (!String.IsNullOrEmpty(CompleteSkin.CSS_Style))
                 returnValue.CSS_Style = "design/skins/" + CompleteSkin.Skin_Code + "/" + CompleteSkin.CSS_Style;
             if (!String.IsNullOrEmpty(CompleteSkin.Javascript_File))

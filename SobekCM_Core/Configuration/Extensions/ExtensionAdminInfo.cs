@@ -1,4 +1,4 @@
-﻿using ProtoBuf;
+using ProtoBuf;
 using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
@@ -59,7 +59,7 @@ namespace SobekCM.Core.Configuration.Extensions
         {
             if (Authors == null) Authors = new List<ExtensionAdminAuthorInfo>();
 
-            ExtensionAdminAuthorInfo thisAuthor = new ExtensionAdminAuthorInfo();
+            var thisAuthor = new ExtensionAdminAuthorInfo();
             thisAuthor.Name = Name;
 
             if (!String.IsNullOrWhiteSpace(Email))

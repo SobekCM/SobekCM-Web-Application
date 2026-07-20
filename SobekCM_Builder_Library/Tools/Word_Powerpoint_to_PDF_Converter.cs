@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using SautinSoft;
 
@@ -15,7 +15,7 @@ namespace SobekCM.Builder_Library.Tools
         /// <returns>An error value</returns>
         public static int Word_To_PDF( string Word_In_File, string PDF_Out_File )
         {
-            UseOffice u = new UseOffice();
+            var u = new UseOffice();
 
             //Prepare UseOffice .Net, loads MS Word in memory
             int ret = u.InitWord();
@@ -56,7 +56,7 @@ namespace SobekCM.Builder_Library.Tools
         /// <returns>An error value</returns>
         public static int Powerpoint_To_PDF(string Powerpoint_In_File, string PDF_Out_File)
         {
-            UseOffice u = new UseOffice();
+            var u = new UseOffice();
 
             //Prepare UseOffice .Net, loads MS Powerpoint in memory
             int ret = u.InitPowerPoint();

@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using SobekCM.Resource_Object.Bib_Info;
 using SobekCM.Resource_Object.Metadata_Modules;
@@ -277,7 +277,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                             break;
 
                         case "Download":
-                            Download_Info_DEPRECATED newDownload = new Download_Info_DEPRECATED();
+                            var newDownload = new Download_Info_DEPRECATED();
                             if (Input_XmlReader.MoveToAttribute("label"))
                                 newDownload.Label = Input_XmlReader.Value;
                             while (Input_XmlReader.Read())
@@ -387,7 +387,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                             break;
 
                         case "Affiliation":
-                            Affiliation_Info newAffiliation = new Affiliation_Info();
+                            var newAffiliation = new Affiliation_Info();
                             if (Input_XmlReader.MoveToAttribute("nameid"))
                                 newAffiliation.Name_Reference = Input_XmlReader.Value;
                             while (Input_XmlReader.Read())
@@ -523,7 +523,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
 
                                 if ((Input_XmlReader.NodeType == XmlNodeType.Element) && (Input_XmlReader.Name == sobekcm_namespace + ":period"))
                                 {
-                                    Temporal_Info newTemporal = new Temporal_Info();
+                                    var newTemporal = new Temporal_Info();
                                     if (Input_XmlReader.MoveToAttribute("start"))
                                     {
                                         int temp_start_year;
@@ -912,7 +912,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                             break;
 
                         case "Line":
-                            Coordinate_Line newLine = new Coordinate_Line();
+                            var newLine = new Coordinate_Line();
                             if (Input_XmlReader.MoveToAttribute("label"))
                                 newLine.Label = Input_XmlReader.Value;
                             while (Input_XmlReader.Read())
@@ -931,7 +931,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                             break;
 
                         case "Polygon":
-                            Coordinate_Polygon newPolygon = new Coordinate_Polygon();
+                            var newPolygon = new Coordinate_Polygon();
                             if (Input_XmlReader.MoveToAttribute("label"))
                                 newPolygon.Label = Input_XmlReader.Value;
                             if (Input_XmlReader.MoveToAttribute("ID"))
@@ -1000,7 +1000,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
         {
             try
             {
-                Coordinate_Point newPoint = new Coordinate_Point();
+                var newPoint = new Coordinate_Point();
                 if (Input_XmlReader.MoveToAttribute("latitude"))
                     newPoint.Latitude = Convert.ToDouble(Input_XmlReader.Value.Replace("°", ""));
                 if (Input_XmlReader.MoveToAttribute("longitude"))

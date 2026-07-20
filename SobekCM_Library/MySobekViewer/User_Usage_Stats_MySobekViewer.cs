@@ -126,7 +126,7 @@ namespace SobekCM.Library.MySobekViewer
             if (usageStats != null)
             {
                 // Use the data view
-                DataView sortedView = new DataView(usageStats) { Sort = sort_term };
+                var sortedView = new DataView(usageStats) { Sort = sort_term };
 
                 // Add the table header
                 Output.WriteLine("<center>");

@@ -382,12 +382,12 @@ namespace SobekCM.Library.MainWriters
             string Until, string MetadataPrefix, string ResumptionToken)
         {
             // Set the default dates and page first
-            DateTime from_date = new DateTime(WAY_PAST_YEAR, 1, 1);
-            DateTime until_date = new DateTime(WAY_FUTURE_YEAR, 1, 1);
+            var from_date = new DateTime(WAY_PAST_YEAR, 1, 1);
+            var until_date = new DateTime(WAY_FUTURE_YEAR, 1, 1);
             int current_page = 1;
 
             // Start to build the request XML
-            StringBuilder request = new StringBuilder();
+            var request = new StringBuilder();
 
             // If there is a resumption token, that should be used to pull all information
             if (ResumptionToken.Length > 0)
@@ -584,12 +584,12 @@ namespace SobekCM.Library.MainWriters
         {
 
             // Set the default dates and page first
-            DateTime from_date = new DateTime(1900, 1, 1);
+            var from_date = new DateTime(1900, 1, 1);
             DateTime until_date = DateTime.Now.AddDays(1);
             int current_page = 1;
 
             // Start to build the request XML
-            StringBuilder request = new StringBuilder();
+            var request = new StringBuilder();
 
             // If there is a resumption token, that should be used to pull all information
             if (ResumptionToken.Length > 0)

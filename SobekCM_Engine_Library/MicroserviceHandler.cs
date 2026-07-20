@@ -152,7 +152,7 @@ namespace SobekCM.Engine_Library
                     }
 
                     // Convert IQueryCollection → NameValueCollection for endpoint methods
-                    NameValueCollection queryNVC = new NameValueCollection();
+                    var queryNVC = new NameValueCollection();
                     foreach (var kvp in Context.Request.Query)
                         queryNVC.Add(kvp.Key, kvp.Value.ToString());
 
@@ -233,7 +233,7 @@ namespace SobekCM.Engine_Library
                         else
                         {
                             // Convert IFormCollection → NameValueCollection for POST endpoints
-                            NameValueCollection formNVC = new NameValueCollection();
+                            var formNVC = new NameValueCollection();
                             foreach (var kvp in Context.Request.Form)
                                 formNVC.Add(kvp.Key, kvp.Value.ToString());
 

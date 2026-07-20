@@ -149,7 +149,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             CurrentRequest.ViewerCode = previous_code;
 
             // Add the item menu information
-            Item_MenuItem menuItem = new Item_MenuItem(first_label, null, null, url, ViewerCode);
+            var menuItem = new Item_MenuItem(first_label, null, null, url, ViewerCode);
             MenuItems.Add(menuItem);
         }
 
@@ -273,7 +273,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             if (!String.IsNullOrWhiteSpace(CurrentRequest.Text_Search))
             {
                 // Get any search terms
-                List<string> terms = new List<string>();
+                var terms = new List<string>();
                 if (CurrentRequest.Text_Search.Trim().Length > 0)
                 {
                     string[] splitter = CurrentRequest.Text_Search.Replace("\"", "").Split(" ".ToCharArray());

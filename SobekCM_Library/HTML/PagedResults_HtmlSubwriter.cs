@@ -246,7 +246,7 @@ namespace SobekCM.Library.HTML
 
             // Populate the sort list and sort the result set
             sortOptions = String.Empty;
-            StringBuilder sort_options_builder = new StringBuilder(1000);
+            var sort_options_builder = new StringBuilder(1000);
             if ((resultWriter.Sortable) && (!RequestSpecificValues.Current_Mode.Is_Robot))
             {
                 // Add the special sorts for browses
@@ -509,7 +509,7 @@ namespace SobekCM.Library.HTML
             string SORTER = String.Empty;
             if ((resultWriter.Sortable) && (!RequestSpecificValues.Current_Mode.Is_Robot) && (RequestSpecificValues.Current_Mode.Mode != Display_Mode_Enum.My_Sobek) && (RequestSpecificValues.Current_Mode.Mode != Display_Mode_Enum.Public_Folder))
             {
-                StringBuilder sorterBuilder = new StringBuilder("  <div class=\"sbkPrsw_ResultsSort\">");
+                var sorterBuilder = new StringBuilder("  <div class=\"sbkPrsw_ResultsSort\">");
                 short current_order = RequestSpecificValues.Current_Mode.Sort.HasValue ? RequestSpecificValues.Current_Mode.Sort.Value : ((short)0);
                 RequestSpecificValues.Current_Mode.Sort = 0;
                 string url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
@@ -541,10 +541,10 @@ namespace SobekCM.Library.HTML
             }
             else
             {
-                StringBuilder descriptionBuilder = new StringBuilder();
+                var descriptionBuilder = new StringBuilder();
                 descriptionBuilder.Append("<div class=\"sbkPrsw_ResultsExplanation\">");
-                StringBuilder searchInfoBuilder = new StringBuilder();
-                StringWriter writer = new StringWriter(searchInfoBuilder);
+                var searchInfoBuilder = new StringBuilder();
+                var writer = new StringWriter(searchInfoBuilder);
                 Show_Search_Info(writer, UI_ApplicationCache_Gateway.Settings.Search.Include_Result_Count_In_Search_Text);
                 summation = remove_html_tags(searchInfoBuilder.ToString()).Replace("\"", "").Replace("'", "").Replace("\n", "").Replace("\r", "").Replace("&", "%26");
                 descriptionBuilder.Append(searchInfoBuilder);
@@ -619,7 +619,7 @@ namespace SobekCM.Library.HTML
                 if ((RESULTS_PER_PAGE < resultWriter.Total_Results) && (!String.Equals(RequestSpecificValues.Current_Mode.Result_Display_Type, "timeline", StringComparison.OrdinalIgnoreCase)))
                 {
                     ushort current_page = RequestSpecificValues.Current_Mode.Page.HasValue ? RequestSpecificValues.Current_Mode.Page.Value : ((ushort)1);
-                    StringBuilder buttons_builder = new StringBuilder(1000);
+                    var buttons_builder = new StringBuilder(1000);
 
                     // Should the previous and first buttons be enabled?
                     if (current_page > 1)
@@ -681,7 +681,7 @@ namespace SobekCM.Library.HTML
             //    thumbnail_view = "MODE IMAGETTE";
             //}
             string resultView = RequestSpecificValues.Current_Mode.Result_Display_Type;
-            StringBuilder iconBuilder = new StringBuilder(1000);
+            var iconBuilder = new StringBuilder(1000);
             iconBuilder.AppendLine();
             iconBuilder.AppendLine("    <div class=\"sbkPrsw_ViewIconButtons\">");
 
@@ -918,7 +918,7 @@ namespace SobekCM.Library.HTML
 
         private static string remove_html_tags(string MixedHtmlText)
         {
-            StringBuilder builder = new StringBuilder(MixedHtmlText.Length);
+            var builder = new StringBuilder(MixedHtmlText.Length);
             bool inTag = false;
             char lastChar = '_';
             foreach (char thisChar in MixedHtmlText)
@@ -1029,8 +1029,8 @@ namespace SobekCM.Library.HTML
             // Split the parts
             if ((RequestSpecificValues.Current_Mode.Search_Type != Search_Type_Enum.Map) || (RequestSpecificValues.Current_Mode.Search_Type != Search_Type_Enum.Map_Beta))
             {
-                List<string> terms = new List<string>();
-                List<string> fields = new List<string>();
+                var terms = new List<string>();
+                var fields = new List<string>();
 
                 // Split the terms correctly
                 SobekCM_Assistant.Split_Clean_Search_Terms_Fields(RequestSpecificValues.Current_Mode.Search_String, RequestSpecificValues.Current_Mode.Search_Fields, RequestSpecificValues.Current_Mode.Search_Type, terms, fields, UI_ApplicationCache_Gateway.Search_Stop_Words, RequestSpecificValues.Current_Mode.Search_Precision, ',');
@@ -1046,8 +1046,8 @@ namespace SobekCM.Library.HTML
                         Aggregation_Type_Enum current_aggr_mode = RequestSpecificValues.Current_Mode.Aggregation_Type;
                         string current_info_browse_mode = RequestSpecificValues.Current_Mode.Info_Browse_Mode;
 
-                        StringBuilder fieldsBuilder = new StringBuilder();
-                        StringBuilder termsBuilder = new StringBuilder();
+                        var fieldsBuilder = new StringBuilder();
+                        var termsBuilder = new StringBuilder();
 
                         term_counter = 0;
                         for (int i = 0; i < Math.Min(terms.Count, fields.Count); i++)
@@ -1306,7 +1306,7 @@ namespace SobekCM.Library.HTML
         protected string Add_Facet_Information(Custom_Tracer Tracer)
         {
 
-            StringBuilder builder = new StringBuilder();
+            var builder = new StringBuilder();
 
 
             string collection = UI_ApplicationCache_Gateway.Translation.Get_Translation("Collection", RequestSpecificValues.Current_Mode.Language);
@@ -1387,13 +1387,13 @@ namespace SobekCM.Library.HTML
                 }
                 else if (RequestSpecificValues.Current_Mode.Search_Type == Search_Type_Enum.Basic)
                 {
-                    List<string> output_terms = new List<string>();
-                    List<string> output_fields = new List<string>();
+                    var output_terms = new List<string>();
+                    var output_fields = new List<string>();
                     SobekCM_Assistant.Split_Clean_Search_Terms_Fields(RequestSpecificValues.Current_Mode.Search_String, RequestSpecificValues.Current_Mode.Search_Fields, RequestSpecificValues.Current_Mode.Search_Type, output_terms, output_fields, UI_ApplicationCache_Gateway.Search_Stop_Words, RequestSpecificValues.Current_Mode.Search_Precision, ',');
 
                     string original_search = RequestSpecificValues.Current_Mode.Search_String;
                     RequestSpecificValues.Current_Mode.Search_Type = Search_Type_Enum.Advanced;
-                    StringBuilder term_builder = new StringBuilder();
+                    var term_builder = new StringBuilder();
                     foreach (string thisTerm in output_terms)
                     {
                         if (term_builder.Length > 0)
@@ -1403,7 +1403,7 @@ namespace SobekCM.Library.HTML
                         else
                             term_builder.Append(thisTerm);
                     }
-                    StringBuilder field_builder = new StringBuilder();
+                    var field_builder = new StringBuilder();
                     foreach (string thisField in output_fields)
                     {
                         if (field_builder.Length > 0)
@@ -1487,7 +1487,7 @@ namespace SobekCM.Library.HTML
                     builder.AppendLine("<div class=\"sbkPrsw_FacetReorder\"><a href=\"\" onclick=\"return set_facet(" + FACET_INDEX + ",'" + other_sort_type + "');\" title=\"" + sort_instructions + "\"><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "design/skins/" + RequestSpecificValues.Current_Mode.Base_Skin_Or_Skin + "/buttons/" + resort_image + "\" alt=\"Resort " + title + "\" /></a></div>");
                 if ((facetInformation[FACET_INDEX] == '2') || (facetInformation[FACET_INDEX] == '3'))
                 {
-                    SortedList<string, string> order_facets = new SortedList<string, string>();
+                    var order_facets = new SortedList<string, string>();
                     while ((facet_count < total_facets_to_show) && (facet_count < resultsStatistics.Aggregation_Facets.Count))
                     {
                         if (resultsStatistics.Aggregation_Facets[facet_count].Code.ToLower() != "iuf")
@@ -1611,7 +1611,7 @@ namespace SobekCM.Library.HTML
             }
             if ((facetInformation[FacetIndex - 1] == '2') || (facetInformation[FacetIndex - 1] == '3'))
             {
-                SortedList<string, string> order_facets = new SortedList<string, string>();
+                var order_facets = new SortedList<string, string>();
                 while ((facet_count < total_facets_to_show) && (facet_count < Collection.Count))
                 {
                     order_facets[Collection[facet_count].Facet.ToUpper()] = "<a href=\"\" onclick=\"return add_facet('" + SearchCode + "','" + System.Net.WebUtility.HtmlEncode(Collection[facet_count].Facet.Replace("&", "")).Replace("'", "\\'").Replace(",", "").Replace("&", "") + "');\">" + Collection[facet_count].Facet.Replace("&", "&amp;").Replace("&amp;amp;", "&amp;") + "</a> ( " + Collection[facet_count].Frequency + " ) <br />";
@@ -1692,7 +1692,7 @@ namespace SobekCM.Library.HTML
             }
             if ((facetInformation[FacetIndex - 1] == '2') || (facetInformation[FacetIndex - 1] == '3'))
             {
-                SortedList<string, string> order_facets = new SortedList<string, string>();
+                var order_facets = new SortedList<string, string>();
                 while ((facet_count < total_facets_to_show) && (facet_count < Collection.Count))
                 {
                     order_facets[Collection[facet_count].Facet.ToUpper()] = "<li><a onclick=\"add_facet_callback('" + SearchCode + "','" + System.Net.WebUtility.HtmlEncode(Collection[facet_count].Facet.Replace("&", "")).Replace("'", "\\'").Replace(",", "").Replace("&", "") + "');\">" + Collection[facet_count].Facet.Replace("&", "&amp;") + "</a> ( " + Collection[facet_count].Frequency + " ) </li>";

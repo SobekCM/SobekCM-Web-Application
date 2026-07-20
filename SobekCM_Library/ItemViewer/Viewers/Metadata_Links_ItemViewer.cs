@@ -83,7 +83,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             CurrentRequest.ViewerCode = previous_code;
 
             // Add the item menu information
-            Item_MenuItem menuItem = new Item_MenuItem("Description", "Metadata", null, url, ViewerCode);
+            var menuItem = new Item_MenuItem("Description", "Metadata", null, url, ViewerCode);
             MenuItems.Add(menuItem);
         }
 
@@ -163,7 +163,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             string viewer_code = CurrentRequest.ViewerCode;
 
             // Get any search terms
-            List<string> terms = new List<string>();
+            var terms = new List<string>();
             if (!String.IsNullOrWhiteSpace(CurrentRequest.Text_Search))
             {
                 string[] splitter = CurrentRequest.Text_Search.Replace("\"", "").Split(" ".ToCharArray());
@@ -204,7 +204,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
 
 
-            StringBuilder builder = new StringBuilder(3000);
+            var builder = new StringBuilder(3000);
 
             builder.AppendLine("<blockquote>");
             builder.AppendLine("<p>The data (or metadata) about this digital resource is available in a variety of metadata formats. For more information about these formats, see the <a href=\"http://ufdc.ufl.edu/sobekcm/metadata\">Metadata Section</a> of the <a href=\"http://ufdc.ufl.edu/sobekcm/\">Technical Aspects</a> information.</p>");

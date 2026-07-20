@@ -43,7 +43,7 @@ namespace SobekCM.Library.ResultsViewer
             bool showDate = RequestSpecificValues.Current_Mode.Sort >= 10;
 
             // Start this table
-            StringBuilder resultsBldr = new StringBuilder(5000);
+            var resultsBldr = new StringBuilder(5000);
 
             //Add the necessary JavaScript, CSS files
             resultsBldr.AppendLine("  <script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Sobekcm_Thumb_Results_Js + "\"></script>");

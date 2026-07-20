@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -15,7 +15,7 @@ namespace TestReader
         static void Main(string[] args)
         {
             // Collect the list of directories to look for and read all .xml files
-            List<string> directories = new List<string>();
+            var directories = new List<string>();
 
             // Add the default configuration directory first
             directories.Add(@"C:\GitRepository\SobekCM-Web-Application\SobekCM\config\default");
@@ -28,7 +28,7 @@ namespace TestReader
                 string[] subdirs = Directory.GetDirectories(plug_in_folder);
 
                 // Ensure it is sorted alphabetically
-                SortedList<string, string> subdirs_sorted = new SortedList<string, string>();
+                var subdirs_sorted = new SortedList<string, string>();
                 foreach (string thisSubDir in subdirs)
                 {
                     // Get the directory name and add to the sorted list
@@ -48,19 +48,19 @@ namespace TestReader
             // Add the final user configuration directory last
             directories.Add(@"C:\GitRepository\SobekCM-Web-Application\SobekCM\config\user");
 
-            InstanceWide_Settings settings = new InstanceWide_Settings();
+            var settings = new InstanceWide_Settings();
 
             // Read the configuration files
             InstanceWide_Configuration config = SobekCM.Engine_Library.Configuration.Configuration_Files_Reader.Read_Config_Files(directories, settings);
 
-            StringBuilder XmlSb = new StringBuilder();
+            var XmlSb = new StringBuilder();
             TextWriter writerXml = new StringWriter(XmlSb);
 
             // Write out the config file
-            XmlSerializer x = new XmlSerializer(config.GetType());
+            var x = new XmlSerializer(config.GetType());
             x.Serialize(writerXml, config);
 
-            StreamWriter writer = new StreamWriter("output.xml", false);
+            var writer = new StreamWriter("output.xml", false);
             writer.Write(XmlSb);
             writer.Flush();
             writer.Close();

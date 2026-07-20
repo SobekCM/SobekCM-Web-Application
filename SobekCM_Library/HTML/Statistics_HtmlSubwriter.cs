@@ -941,7 +941,7 @@ namespace SobekCM.Library.HTML
 
                     try
                     {
-                        StreamReader faq_reader = new StreamReader(directory + "\\stats_usage_definitions.txt");
+                        var faq_reader = new StreamReader(directory + "\\stats_usage_definitions.txt");
                         usage_definitions = faq_reader.ReadToEnd();
                         faq_reader.Close();
                     }
@@ -2200,7 +2200,7 @@ namespace SobekCM.Library.HTML
                 {
                     if (File.Exists(possible_source_file))
                     {
-                        FileInfo sourceFileInfo = new FileInfo(possible_source_file);
+                        var sourceFileInfo = new FileInfo(possible_source_file);
                         TimeSpan fileAge = DateTime.Now.Subtract(sourceFileInfo.LastWriteTime);
                         if (fileAge.TotalHours < 24)
                         {
@@ -2240,7 +2240,7 @@ namespace SobekCM.Library.HTML
 
                     try
                     {
-                        StreamReader faq_reader = new StreamReader(directory + "\\overall_stats_header.txt");
+                        var faq_reader = new StreamReader(directory + "\\overall_stats_header.txt");
                         overall_stats_header = faq_reader.ReadToEnd();
                         faq_reader.Close();
                     }
@@ -2540,7 +2540,7 @@ namespace SobekCM.Library.HTML
             {
                 if ((UI_ApplicationCache_Gateway.Settings.Servers.Statistics_Caching_Enabled) && (File.Exists(possible_source_file)))
                 {
-                    FileInfo sourceFileInfo = new FileInfo(possible_source_file);
+                    var sourceFileInfo = new FileInfo(possible_source_file);
                     TimeSpan fileAge = DateTime.Now.Subtract(sourceFileInfo.LastWriteTime);
                     if (fileAge.TotalMinutes < 120)
                     {
@@ -2561,7 +2561,7 @@ namespace SobekCM.Library.HTML
                 // Pull from database 
                 if (IncludesFytd)
                 {
-                    DateTime fiscalStart = new DateTime(DateTime.Now.Year, 7, 1);
+                    var fiscalStart = new DateTime(DateTime.Now.Year, 7, 1);
                     if (DateTime.Compare(DateTime.Now, fiscalStart) < 0)
                     {
                         fiscalStart = new DateTime(DateTime.Now.Year - 1, 7, 1);
@@ -2929,7 +2929,7 @@ namespace SobekCM.Library.HTML
             {
                 if ((UI_ApplicationCache_Gateway.Settings.Servers.Statistics_Caching_Enabled) && (File.Exists(possible_source_file)))
                 {
-                    FileInfo sourceFileInfo = new FileInfo(possible_source_file);
+                    var sourceFileInfo = new FileInfo(possible_source_file);
                     TimeSpan fileAge = DateTime.Now.Subtract(sourceFileInfo.LastWriteTime);
                     if (fileAge.TotalMinutes < 120)
                     {
@@ -2950,7 +2950,7 @@ namespace SobekCM.Library.HTML
                 // Pull from database 
                 if (IncludesFytd)
                 {
-                    DateTime fiscalStart = new DateTime(DateTime.Now.Year, 7, 1);
+                    var fiscalStart = new DateTime(DateTime.Now.Year, 7, 1);
                     if (DateTime.Compare(DateTime.Now, fiscalStart) < 0)
                     {
                         fiscalStart = new DateTime(DateTime.Now.Year - 1, 7, 1);

@@ -1,4 +1,4 @@
-﻿using ProtoBuf;
+using ProtoBuf;
 using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
@@ -82,7 +82,7 @@ namespace SobekCM.Core.UI_Configuration.Viewers
             }
 
             // Didn't return anything, so must be a new ID
-            SectionWriterGroupConfig newSection = new SectionWriterGroupConfig(Name);
+            var newSection = new SectionWriterGroupConfig(Name);
             Sections.Add(newSection);
             return newSection;
         }

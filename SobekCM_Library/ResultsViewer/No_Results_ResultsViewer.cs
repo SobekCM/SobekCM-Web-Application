@@ -55,7 +55,7 @@ namespace SobekCM.Library.ResultsViewer
                     WebResponse objResponse = objRequest.GetResponse();
 
                     // the using keyword will automatically dispose the object once complete
-                    using (StreamReader sr = new StreamReader(objResponse.GetResponseStream()))
+                    using (var sr = new StreamReader(objResponse.GetResponseStream()))
                     {
                         strResult = sr.ReadToEnd().Trim();
                         // Close and clean up the StreamReader
@@ -113,7 +113,7 @@ namespace SobekCM.Library.ResultsViewer
             }
 
             // Show the final data
-            StringBuilder noResultsTextBuilder = new StringBuilder(noResultsText.Replace("[%SusMangoSearchEnding%]", String.Empty).Replace("[%BaseName%]", RequestSpecificValues.Current_Mode.Instance_Name));
+            var noResultsTextBuilder = new StringBuilder(noResultsText.Replace("[%SusMangoSearchEnding%]", String.Empty).Replace("[%BaseName%]", RequestSpecificValues.Current_Mode.Instance_Name));
 
             noResultsTextBuilder.AppendLine("</td></tr></table>");
 
@@ -162,7 +162,7 @@ namespace SobekCM.Library.ResultsViewer
             // Now, if still NULL, build it the way we used to
             if ((String.IsNullOrEmpty(noResultsText)) || (noResultsText == "NOTPRESENT"))
             {
-                StringBuilder sampleFileContent = new StringBuilder();
+                var sampleFileContent = new StringBuilder();
 
                 sampleFileContent.AppendLine("<span class=\"SobekNoResultsText\"><br />Your search returned no results.<br /><br /></span>");
                 sampleFileContent.AppendLine("<div style=\"display:[%MatchesFoundDivDisplay%]\">");

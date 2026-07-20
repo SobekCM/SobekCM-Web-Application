@@ -66,7 +66,7 @@ namespace SobekCM.Library.Citation.Elements
             }
             else if (Bib.Bib_Info.LicensingCount > 1)
             {
-                StringBuilder builder = new StringBuilder();
+                var builder = new StringBuilder();
                 foreach (string license in Bib.Bib_Info.Licensing)
                 {
                     if (string.IsNullOrEmpty(license)) continue;

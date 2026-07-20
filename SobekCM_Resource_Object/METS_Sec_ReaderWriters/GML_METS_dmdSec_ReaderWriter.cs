@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using SobekCM.Resource_Object.Divisions;
 using SobekCM.Resource_Object.Metadata_Modules;
@@ -241,9 +241,9 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                                             if ((Input_XmlReader.NodeType == XmlNodeType.Text) && (Input_XmlReader.Value.Trim().Length > 0))
                                             {
                                                 // Parse the string into a collection of doubles, which represents lats AND longs
-                                                List<double> latLongs = new List<double>();
+                                                var latLongs = new List<double>();
                                                 string rValue = Input_XmlReader.Value + ' ';
-                                                StringBuilder coordinatePointBuilder = new StringBuilder();
+                                                var coordinatePointBuilder = new StringBuilder();
                                                 for (int iterator = 0; iterator < rValue.Length; iterator++)
                                                 {
                                                     char rValueChar = rValue[iterator];
@@ -261,7 +261,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                                                     }
                                                 }
                                                 //create newline obj
-                                                Coordinate_Line newline = new Coordinate_Line();
+                                                var newline = new Coordinate_Line();
                                                 //add points, In pairs, assign new points to the line and add the line to the coordinate/item
                                                 int i = 0;
                                                 while ((i + 2) <= latLongs.Count)
@@ -319,9 +319,9 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                                             if ((Input_XmlReader.NodeType == XmlNodeType.Text) && (Input_XmlReader.Value.Trim().Length > 0))
                                             {
                                                 // Parse the string into a collection of doubles, which represents lats AND longs
-                                                List<double> latLongs = new List<double>();
+                                                var latLongs = new List<double>();
                                                 string rValue = Input_XmlReader.Value + ' ';
-                                                StringBuilder coordinatePointBuilder = new StringBuilder();
+                                                var coordinatePointBuilder = new StringBuilder();
                                                 for (int iterator = 0; iterator < rValue.Length; iterator++)
                                                 {
                                                     char rValueChar = rValue[iterator];
@@ -339,7 +339,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                                                     }
                                                 }
                                                 //create a newpoly obj
-                                                Coordinate_Polygon newPoly = new Coordinate_Polygon();
+                                                var newPoly = new Coordinate_Polygon();
                                                 //add the edgepoints, In pairs, assign new points to the polygon and add the polygon to the coordinate/item
                                                 int i = 0;
                                                 while ((i + 2) <= latLongs.Count)
@@ -399,7 +399,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                                                 double latitude = double.Parse(items[0]);
                                                 double longitude = double.Parse(items[1]);
                                                 //create the circle
-                                                Coordinate_Circle newCircle = new Coordinate_Circle(latitude, longitude, circleRadius, circleLabel, circleFeatureType);
+                                                var newCircle = new Coordinate_Circle(latitude, longitude, circleRadius, circleLabel, circleFeatureType);
                                                 //add to object
                                                 geoInfo.Add_Circle(newCircle);
                                             }

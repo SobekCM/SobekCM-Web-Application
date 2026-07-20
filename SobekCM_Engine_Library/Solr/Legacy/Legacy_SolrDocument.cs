@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Behaviors;
@@ -166,7 +166,7 @@ namespace SobekCM.Engine_Library.Solr.Legacy
 
             // Get the list of all TXT files in this division
             string[] text_files = Directory.GetFiles(File_Location, "*.txt");
-            Dictionary<string, string> text_files_existing = new Dictionary<string, string>();
+            var text_files_existing = new Dictionary<string, string>();
             foreach (string thisTextFile in text_files)
             {
                 string filename = (new FileInfo(thisTextFile)).Name.ToUpper();
@@ -175,7 +175,7 @@ namespace SobekCM.Engine_Library.Solr.Legacy
 
             // Get the list of all THM.JPG files in this division
             string[] thumbnail_files = Directory.GetFiles(File_Location, "*thm.jpg");
-            Dictionary<string, string> thumbnail_files_existing = new Dictionary<string, string>();
+            var thumbnail_files_existing = new Dictionary<string, string>();
             foreach (string thisTextFile in thumbnail_files)
             {
                 string filename = (new FileInfo(thisTextFile)).Name;
@@ -183,7 +183,7 @@ namespace SobekCM.Engine_Library.Solr.Legacy
             }
 
             // Step through all division nodes from the physical tree here
-            List<string> text_files_included = new List<string>();
+            var text_files_included = new List<string>();
             foreach (abstract_TreeNode thisNode in divsAndPages)
             {
                 if (thisNode.Page)
@@ -210,7 +210,7 @@ namespace SobekCM.Engine_Library.Solr.Legacy
                                 text_files_included.Add(root.ToUpper() + ".TXT");
 
                                 // Read the page text
-                                StreamReader reader = new StreamReader(File_Location + "\\" + root + ".txt");
+                                var reader = new StreamReader(File_Location + "\\" + root + ".txt");
                                 string pageText = reader.ReadToEnd().Trim();
                                 reader.Close();
 
@@ -219,7 +219,7 @@ namespace SobekCM.Engine_Library.Solr.Legacy
                                 if (thumbnail_files_existing.ContainsKey(root.ToUpper()))
                                     thumbnail = thumbnail_files_existing[root.ToUpper()];
 
-                                Legacy_SolrPage newPage = new Legacy_SolrPage(digitalObject.BibID, digitalObject.VID, pageorder, pageNode.Label, pageText, thumbnail);
+                                var newPage = new Legacy_SolrPage(digitalObject.BibID, digitalObject.VID, pageorder, pageNode.Label, pageText, thumbnail);
                                 solrpages.Add(newPage);
                             }
                             catch
@@ -312,7 +312,7 @@ namespace SobekCM.Engine_Library.Solr.Legacy
         {
             get
             {
-                List<string> codes = new List<string>();
+                var codes = new List<string>();
                 foreach (Aggregation_Info aggregation in digitalObject.Behaviors.Aggregations)
                 {
                     codes.Add(aggregation.Code);
@@ -327,7 +327,7 @@ namespace SobekCM.Engine_Library.Solr.Legacy
         {
             get
             {
-                List<string> names = new List<string>();
+                var names = new List<string>();
                 foreach (Aggregation_Info aggregation in digitalObject.Behaviors.Aggregations)
                 {
                     if (aggregation.Name.Length > 0)
@@ -352,7 +352,7 @@ namespace SobekCM.Engine_Library.Solr.Legacy
         {
             get
             {
-                List<string> allTitles = new List<string>();
+                var allTitles = new List<string>();
 
                 // Add the main title
                 allTitles.Add(digitalObject.Bib_Info.Main_Title.Title.ToString().Replace("<i>", " ").Replace("</i>", " "));
@@ -392,7 +392,7 @@ namespace SobekCM.Engine_Library.Solr.Legacy
         {
             get
             {
-                List<string> languages = new List<string>();
+                var languages = new List<string>();
                 foreach (Language_Info thisLanguage in digitalObject.Bib_Info.Languages)
                 {
                     if (thisLanguage.Language_Text.Length > 0)
@@ -410,7 +410,7 @@ namespace SobekCM.Engine_Library.Solr.Legacy
         {
             get
             {
-                List<string> creators = new List<string>();
+                var creators = new List<string>();
 
                 // Add the main entry here
                 if ((digitalObject.Bib_Info.hasMainEntityName) && (digitalObject.Bib_Info.Main_Entity_Name.hasData))
@@ -440,7 +440,7 @@ namespace SobekCM.Engine_Library.Solr.Legacy
         {
             get
             {
-                List<string> publishers = new List<string>();
+                var publishers = new List<string>();
 
                 // Add the publishers
                 if (digitalObject.Bib_Info.Publishers_Count > 0)
@@ -474,7 +474,7 @@ namespace SobekCM.Engine_Library.Solr.Legacy
             get
             {
                 // Add publishers here
-                List<string> places = new List<string>();
+                var places = new List<string>();
                 if (digitalObject.Bib_Info.Publishers_Count > 0)
                 {
                     foreach (Publisher_Info thisPublisher in digitalObject.Bib_Info.Publishers)
@@ -524,7 +524,7 @@ namespace SobekCM.Engine_Library.Solr.Legacy
         {
             get
             {
-                List<string> audiences = new List<string>();
+                var audiences = new List<string>();
 
                 // Add all target audiences
                 if (digitalObject.Bib_Info.Target_Audiences_Count > 0)
@@ -608,7 +608,7 @@ namespace SobekCM.Engine_Library.Solr.Legacy
         {
             get
             {
-                List<string> identifiers = new List<string>();
+                var identifiers = new List<string>();
                 if (digitalObject.Bib_Info.Identifiers_Count > 0)
                 {
                     foreach (Identifier_Info thisIdentifier in digitalObject.Bib_Info.Identifiers)
@@ -628,7 +628,7 @@ namespace SobekCM.Engine_Library.Solr.Legacy
             get
             {
                 // Add any notes here
-                List<string> notes = new List<string>();
+                var notes = new List<string>();
                 if (digitalObject.Bib_Info.Notes_Count > 0)
                 {
                     foreach (Note_Info thisNote in digitalObject.Bib_Info.Notes)
@@ -658,7 +658,7 @@ namespace SobekCM.Engine_Library.Solr.Legacy
         {
             get
             {
-                List<string> abstracts = new List<string>();
+                var abstracts = new List<string>();
 
                 // Add abstracts
                 if (digitalObject.Bib_Info.Abstracts_Count > 0)
@@ -679,7 +679,7 @@ namespace SobekCM.Engine_Library.Solr.Legacy
         {
             get
             {
-                List<string> othercitations = new List<string>();
+                var othercitations = new List<string>();
 
                 // Add any location information that doesn't go anywhere else
                 if (digitalObject.Bib_Info.hasLocationInformation)
@@ -844,7 +844,7 @@ namespace SobekCM.Engine_Library.Solr.Legacy
         {
             get
             {
-                List<string> affiliations = new List<string>();
+                var affiliations = new List<string>();
 
                 // Add the affiliation information
                 if (digitalObject.Bib_Info.Affiliations_Count > 0)
@@ -865,7 +865,7 @@ namespace SobekCM.Engine_Library.Solr.Legacy
         {
             get
             {
-                List<string> frequency = new List<string>();
+                var frequency = new List<string>();
 
                 // Add any frequency here
                 if (digitalObject.Bib_Info.Origin_Info.Frequencies_Count > 0)
@@ -914,7 +914,7 @@ namespace SobekCM.Engine_Library.Solr.Legacy
         {
             get
             {
-                List<string> returnValue = new List<string>();
+                var returnValue = new List<string>();
 
                 // Add the rights statements
                 if (digitalObject.Bib_Info.AccessConditions_Count > 0)
@@ -937,7 +937,7 @@ namespace SobekCM.Engine_Library.Solr.Legacy
         {
             get
             {
-                List<string> decades = new List<string>();
+                var decades = new List<string>();
 
                 return decades;
             }
@@ -949,7 +949,7 @@ namespace SobekCM.Engine_Library.Solr.Legacy
         {
             get
             {
-                List<string> mimetypes = new List<string>();
+                var mimetypes = new List<string>();
 
                 // Add any download MIME Types
                 if (digitalObject.Divisions.Download_Tree.Has_Files)
@@ -975,7 +975,7 @@ namespace SobekCM.Engine_Library.Solr.Legacy
         {
             get
             {
-                List<string> toc = new List<string>();
+                var toc = new List<string>();
                 return toc;
             }
         }
@@ -1001,7 +1001,7 @@ namespace SobekCM.Engine_Library.Solr.Legacy
             get
             {
                 // Get the authors
-                StringBuilder author_builder = new StringBuilder();
+                var author_builder = new StringBuilder();
                 string mainAuthor = String.Empty;
                 if (digitalObject.Bib_Info.hasMainEntityName)
                     mainAuthor = digitalObject.Bib_Info.Main_Entity_Name.ToString();
@@ -1042,7 +1042,7 @@ namespace SobekCM.Engine_Library.Solr.Legacy
             get
             {
                 // Get the publishers
-                StringBuilder publisher_builder = new StringBuilder();
+                var publisher_builder = new StringBuilder();
                 foreach (Publisher_Info thisPublisher in digitalObject.Bib_Info.Publishers)
                 {
                     if (publisher_builder.Length > 0)
@@ -1214,7 +1214,7 @@ namespace SobekCM.Engine_Library.Solr.Legacy
                 if (((solrpages == null) || (solrpages.Count == 0)) && (additional_text_files.Count == 0))
                     return null;
 
-                StringBuilder builder = new StringBuilder(10000);
+                var builder = new StringBuilder(10000);
 
                 // Add the text for each page 
                 foreach (Legacy_SolrPage thisPage in solrpages)
@@ -1228,7 +1228,7 @@ namespace SobekCM.Engine_Library.Solr.Legacy
                 {
                     try
                     {
-                        StreamReader reader = new StreamReader(fileLocation + "\\" + textFile);
+                        var reader = new StreamReader(fileLocation + "\\" + textFile);
                         builder.Append(reader.ReadToEnd() + " ");
                         reader.Close();
                     }

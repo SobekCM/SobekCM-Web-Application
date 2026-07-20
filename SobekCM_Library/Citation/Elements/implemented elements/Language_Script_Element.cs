@@ -64,8 +64,8 @@ namespace SobekCM.Library.Citation.Elements.implemented_elements
                 }
             }
 
-            List<string> languages = new List<string>();
-            List<string> scripts = new List<string>();
+            var languages = new List<string>();
+            var scripts = new List<string>();
 
             //// GEt the language and script info 
             //if (Bib.Bib_Info.Languages_Count > 0 )
@@ -105,7 +105,7 @@ namespace SobekCM.Library.Citation.Elements.implemented_elements
         /// <param name="Bib"> Object into which to save the user's data, entered into the html rendered by this element </param>
         public override void Save_To_Bib(SobekCM_Item Bib)
         {
-            List<Coordinate_Point> points = new List<Coordinate_Point>();
+            var points = new List<Coordinate_Point>();
 
             var getKeys = Context.Request.Form.Keys;
             string latitude = String.Empty;

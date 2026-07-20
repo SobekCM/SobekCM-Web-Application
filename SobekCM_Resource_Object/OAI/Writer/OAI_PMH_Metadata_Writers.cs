@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using System;
 using System.Collections.Generic;
@@ -28,7 +28,7 @@ namespace SobekCM.Resource_Object.OAI.Writer
             writers.Clear();
 
             // Add OAI DC as the default writer
-            DC_OAI_Metadata_Type_Writer oai_dc_writer = new DC_OAI_Metadata_Type_Writer();
+            var oai_dc_writer = new DC_OAI_Metadata_Type_Writer();
             writers.Add(new Tuple<string, iOAI_PMH_Metadata_Type_Writer>("oai_dc", oai_dc_writer));
 
             // Add MarcXML as another default writer
@@ -79,7 +79,7 @@ namespace SobekCM.Resource_Object.OAI.Writer
         /// <returns> List of the OAI metadata prefixes and the associated metadata records </returns>
         public static List<Tuple<string, string>> Get_OAI_PMH_Metadata_Records(SobekCM_Item ThisItem, Dictionary<string, object> Options)
         {
-            List<Tuple<string, string>> returnValue = new List<Tuple<string, string>>();
+            var returnValue = new List<Tuple<string, string>>();
 
             foreach (Tuple<string, iOAI_PMH_Metadata_Type_Writer> thisWriter in writers)
             {

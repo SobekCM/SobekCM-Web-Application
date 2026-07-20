@@ -63,7 +63,7 @@ namespace SobekCM.Library.Citation.Elements
                 }
             }
 
-            List<string> allValues = new List<string>();
+            var allValues = new List<string>();
             if (Bib.Bib_Info.Subjects_Count > 0)
             {
                 allValues.AddRange(from thisSubject in Bib.Bib_Info.Subjects where thisSubject.Class_Type == Subject_Info_Type.Hierarchical_Spatial select thisSubject.ToString());

@@ -264,7 +264,7 @@ namespace SobekCM.Library.HTML
                 // Add web content page
                 RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Administrative;
                 RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.WebContent_Add_New;
-                StringBuilder add_webcontent_url = new StringBuilder(UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode));
+                var add_webcontent_url = new StringBuilder(UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode));
                 string[] splitter = RequestSpecificValues.Current_Mode.Info_Browse_Mode.Split("/".ToCharArray());
                 int level = 1;
                 foreach (string thisSplitter in splitter)
@@ -651,8 +651,7 @@ namespace SobekCM.Library.HTML
                     string webcontent_upload_url = UI_ApplicationCache_Gateway.Settings.Servers.System_Base_URL + "design/webcontent/" + urlSegments.Replace("\\", "/") + "/";
 
                     // Create the CKEditor object
-                    CKEditor editor = new CKEditor
-                    {
+                    var editor = new CKEditor{
                         Context = Context,
                         BaseUrl = RequestSpecificValues.Current_Mode.Base_URL,
                         Language = RequestSpecificValues.Current_Mode.Language,

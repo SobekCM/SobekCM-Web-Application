@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using System;
 using System.Collections.Generic;
@@ -54,7 +54,7 @@ namespace SobekCM.Builder_Library.Statistics
         public void Process_IIS_Logs()
         {
             // **** READ THE LOOKUP TABLES FROM THE DATABASE **** //
-            DataSet lookupTables = new DataSet();
+            var lookupTables = new DataSet();
             //lookupTables.ReadXml(@"C:\Users\mark.v.sullivan\Documents\Visual Studio 2012\Projects\SobekDbInfoSaver\SobekDbInfoSaver\bin\Release\uf\lookup.xml");
 
             try
@@ -76,7 +76,7 @@ namespace SobekCM.Builder_Library.Statistics
             }
 
             // Determine, from the year_month, which logs to read
-            List<string> logs_start = new List<string>();
+            var logs_start = new List<string>();
             foreach (string thisYearMonth in year_months)
             {
                 logs_start.Add("u_ex" + thisYearMonth.Substring(2, 2) + thisYearMonth.Substring(4, 2));
@@ -84,7 +84,7 @@ namespace SobekCM.Builder_Library.Statistics
 
             // ***** CODE BELOW READS ALL THE LOG FILES AND THEN WRITES THEM AS XML DATASETS *****//
             On_New_Status("Read all needed log files and write them as XML datasets", false);
-            SobekCM_Log_Reader sobekcm_log_reader = new SobekCM_Log_Reader(lookupTables.Tables[0], sobekcm_web_location);
+            var sobekcm_log_reader = new SobekCM_Log_Reader(lookupTables.Tables[0], sobekcm_web_location);
             string[] files = Directory.GetFiles(sobekcm_log_location, "u_ex*.log");
 
             foreach (string thisFile in files)
@@ -96,9 +96,9 @@ namespace SobekCM.Builder_Library.Statistics
                     {
                         On_New_Status("Processing " + (new FileInfo(thisFile)).Name, false);
 
-                        FileInfo fileInfo = new FileInfo(thisFile);
+                        var fileInfo = new FileInfo(thisFile);
                         string name = fileInfo.Name.Replace(fileInfo.Extension, "");
-                        DateTime logDate = new DateTime(Convert.ToInt32("20" + name.Substring(4, 2)),
+                        var logDate = new DateTime(Convert.ToInt32("20" + name.Substring(4, 2)),
                             Convert.ToInt32(name.Substring(6, 2)), Convert.ToInt32(name.Substring(8, 2)));
 
                         string resultant_file = dataset_location + "\\" + logDate.Year.ToString() + logDate.Month.ToString().PadLeft(2, '0') + logDate.Day.ToString().PadLeft(2, '0') + ".xml";
@@ -127,12 +127,12 @@ namespace SobekCM.Builder_Library.Statistics
                     if (year_month_files.Length > 0)
                     {
 
-                        SobekCM_Stats_DataSet combined = new SobekCM_Stats_DataSet();
+                        var combined = new SobekCM_Stats_DataSet();
                         foreach (string file in year_month_files)
                         {
                             if ((new FileInfo(file)).Name.IndexOf(year_month + ".xml") < 0)
                             {
-                                SobekCM_Stats_DataSet daily = new SobekCM_Stats_DataSet();
+                                var daily = new SobekCM_Stats_DataSet();
                                 daily.Read_XML(file);
 
                                 combined.Merge(daily);
@@ -157,7 +157,7 @@ namespace SobekCM.Builder_Library.Statistics
             // Read all the data lists first for id lookups
             Dictionary<string, int> aggregationHash = Table_To_Hash(lookupTables.Tables[2]);
             Dictionary<string, int> bibHash = Table_To_Hash(lookupTables.Tables[1]);
-            Dictionary<string, int> portalHash = new Dictionary<string, int>();
+            var portalHash = new Dictionary<string, int>();
             foreach (DataRow thisRow in lookupTables.Tables[3].Rows)
             {
                 if (!portalHash.ContainsKey(thisRow[2].ToString().ToUpper()))
@@ -197,7 +197,7 @@ namespace SobekCM.Builder_Library.Statistics
 
         private static Dictionary<string, int> Table_To_Hash(DataTable table)
         {
-            Dictionary<string, int> returnValue = new Dictionary<string, int>();
+            var returnValue = new Dictionary<string, int>();
             foreach (DataRow dataRow in table.Rows)
             {
                 returnValue[dataRow[1].ToString().ToUpper()] = Convert.ToInt32(dataRow[0]);

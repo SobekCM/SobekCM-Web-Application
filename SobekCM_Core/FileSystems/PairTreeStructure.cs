@@ -1,4 +1,4 @@
-﻿using SobekCM.Core.BriefItem;
+using SobekCM.Core.BriefItem;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -44,7 +44,7 @@ namespace SobekCM.Core.FileSystems
                 WebResponse objResponse = objRequest.GetResponse();
 
                 // the using keyword will automatically dispose the object // once complete
-                using (StreamReader sr = new StreamReader(objResponse.GetResponseStream()))
+                using (var sr = new StreamReader(objResponse.GetResponseStream()))
                 {
                     strResult = sr.ReadToEnd();
                     // Close and clean up the StreamReader
@@ -174,11 +174,10 @@ namespace SobekCM.Core.FileSystems
                 if (Directory.Exists(directory))
                 {
                     FileInfo[] files = (new DirectoryInfo(directory)).GetFiles();
-                    List<SobekFileSystem_FileInfo> returnValue = new List<SobekFileSystem_FileInfo>();
+                    var returnValue = new List<SobekFileSystem_FileInfo>();
                     foreach (FileInfo thisFile in files)
                     {
-                        SobekFileSystem_FileInfo returnFile = new SobekFileSystem_FileInfo
-                        {
+                        var returnFile = new SobekFileSystem_FileInfo{
                             Name = thisFile.Name,
                             LastWriteTime = thisFile.LastWriteTime,
                             Extension = thisFile.Extension,

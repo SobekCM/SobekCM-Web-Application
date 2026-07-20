@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using System;
 using System.Collections.Generic;
@@ -441,7 +441,7 @@ namespace SobekCM.Resource_Object.Metadata_Modules.LearningObjects
         {
             get
             {
-                List<KeyValuePair<string, string>> metadataTerms = new List<KeyValuePair<string, string>>();
+                var metadataTerms = new List<KeyValuePair<string, string>>();
 
                 // Add the LOM aggregation (level)
                 if (AggregationLevel != AggregationLevelEnum.UNDEFINED)
@@ -517,7 +517,7 @@ namespace SobekCM.Resource_Object.Metadata_Modules.LearningObjects
                 // Add the intended users
                 if ((IntendedEndUserRoles != null) && (IntendedEndUserRoles.Count > 0))
                 {
-                    StringBuilder displayBuilder = new StringBuilder();
+                    var displayBuilder = new StringBuilder();
 
                     // Add each role independently first
                     foreach (IntendedEndUserRoleEnum userRol in IntendedEndUserRoles)
@@ -635,7 +635,7 @@ namespace SobekCM.Resource_Object.Metadata_Modules.LearningObjects
                         if ((requirements.Name == null) || (String.IsNullOrEmpty(requirements.Name.Value))) continue;
 
                         // Start to build this requirements
-                        StringBuilder reqBuilder = new StringBuilder();
+                        var reqBuilder = new StringBuilder();
                         switch (requirements.RequirementType)
                         {
                             case RequirementTypeEnum.browser:

@@ -86,7 +86,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             CurrentRequest.ViewerCode = previous_code;
 
             // Add the item menu information
-            Item_MenuItem menuItem = new Item_MenuItem("Description", "Usage Statistics", null, url, ViewerCode);
+            var menuItem = new Item_MenuItem("Description", "Usage Statistics", null, url, ViewerCode);
             MenuItems.Add(menuItem);
         }
 
@@ -165,7 +165,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             string viewer_code = CurrentRequest.ViewerCode;
 
             // Get any search terms
-            List<string> terms = new List<string>();
+            var terms = new List<string>();
             if (!String.IsNullOrWhiteSpace(CurrentRequest.Text_Search))
             {
                 string[] splitter = CurrentRequest.Text_Search.Replace("\"", "").Split(" ".ToCharArray());
@@ -203,7 +203,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             // Pull the item statistics
             List<Item_Monthly_Usage> stats = SobekEngineClient.Items.Get_Item_Statistics_History(BriefItem.BibID, BriefItem.VID, Tracer);
 
-            StringBuilder builder = new StringBuilder(2000);
+            var builder = new StringBuilder(2000);
 
             builder.AppendLine("  <p>Usage statistics for items are compiled once a month from the previous month's usage logs and does not contain any personal information.</p>");
             builder.AppendLine("  <p>This item was has been viewed <%HITS%> times within <%SESSIONS%> visits.  Below are the details for overall usage for this item within this library.<br /><br />For definitions of these terms, see the <a href=\"" + CurrentRequest.Base_URL + "stats/usage/definitions\" target=\"_BLANK\">definitions on the main statistics page</a>.</p>");

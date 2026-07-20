@@ -29,7 +29,7 @@ namespace SobekCM.Resource_Object
             // Does this filename have '.info.xml' in it?
             if (Data_File.ToUpper().IndexOf(".INFO.XML") > 0)
             {
-                INFO_File_ReaderWriter readInfo = new INFO_File_ReaderWriter();
+                var readInfo = new INFO_File_ReaderWriter();
                 readInfo.Read_Metadata(Data_File, thisPackage, null, out errorMessage);
                 return;
             }
@@ -37,7 +37,7 @@ namespace SobekCM.Resource_Object
             // Does this file have '.mets' in it?
             if ((Data_File.ToUpper().IndexOf(".METS") > 0) || (Data_File.ToUpper().IndexOf(".PMETS") > 0))
             {
-                METS_File_ReaderWriter readInfo = new METS_File_ReaderWriter();
+                var readInfo = new METS_File_ReaderWriter();
                 readInfo.Read_Metadata(Data_File, thisPackage, null, out errorMessage);
                 return;
             }
@@ -46,7 +46,7 @@ namespace SobekCM.Resource_Object
             if (Data_File.ToUpper().IndexOf(".XML") > 0)
             {
                 // Read first couple lines
-                StreamReader reader = new StreamReader(Data_File);
+                var reader = new StreamReader(Data_File);
                 string thisLine = reader.ReadLine();
                 while (thisLine != null)
                 {
@@ -57,7 +57,7 @@ namespace SobekCM.Resource_Object
                         reader.Close();
 
                         // Read in the MXF file
-                        MXF_File_ReaderWriter readInfo = new MXF_File_ReaderWriter();
+                        var readInfo = new MXF_File_ReaderWriter();
                         readInfo.Read_Metadata(Data_File, thisPackage, null, out errorMessage);
                         return;
                     }
@@ -69,7 +69,7 @@ namespace SobekCM.Resource_Object
                         reader.Close();
 
                         // Read in the METS file
-                        METS_File_ReaderWriter readInfo = new METS_File_ReaderWriter();
+                        var readInfo = new METS_File_ReaderWriter();
                         readInfo.Read_Metadata(Data_File, thisPackage, null, out errorMessage);
                         return;
                     }
@@ -90,10 +90,10 @@ namespace SobekCM.Resource_Object
                 return null;
 
             // Create the bibliographic object
-            SobekCM_Item thisPackage = new SobekCM_Item();
+            var thisPackage = new SobekCM_Item();
 
             // Assign the VID and BIB if you can
-            DirectoryInfo dir = new DirectoryInfo(directory);
+            var dir = new DirectoryInfo(directory);
             string dirString = dir.Name;
 
             // If this is length of 5, probably a VID folder

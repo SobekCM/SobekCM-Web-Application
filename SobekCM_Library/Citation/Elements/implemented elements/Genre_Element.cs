@@ -64,8 +64,8 @@ namespace SobekCM.Library.Citation.Elements
                 }
             }
 
-            List<string> terms = new List<string>();
-            List<string> schemes = new List<string>();
+            var terms = new List<string>();
+            var schemes = new List<string>();
             if (Bib.Bib_Info.Genres_Count > 0)
             {
                 foreach (Genre_Info thisGenre in Bib.Bib_Info.Genres)
@@ -91,8 +91,8 @@ namespace SobekCM.Library.Citation.Elements
         /// <param name="Bib"> Object into which to save the user's data, entered into the html rendered by this element </param>
         public override void Save_To_Bib(SobekCM_Item Bib)
         {
-            Dictionary<string, string> terms = new Dictionary<string, string>();
-            Dictionary<string, string> schemes = new Dictionary<string, string>();
+            var terms = new Dictionary<string, string>();
+            var schemes = new Dictionary<string, string>();
 
             var getKeys = Context.Request.Form.Keys;
             foreach (string thisKey in getKeys)

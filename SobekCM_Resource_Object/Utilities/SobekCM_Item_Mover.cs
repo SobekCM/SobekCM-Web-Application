@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using System;
 using System.IO;
@@ -82,7 +82,7 @@ namespace SobekCM.Resource_Object.Utilities
             string[] files = Directory.GetDirectories(Source_Folder);
             foreach (string thisFile in files)
             {
-                FileInfo fileInfo = new FileInfo(thisFile);
+                var fileInfo = new FileInfo(thisFile);
                 string filename = fileInfo.Name;
                 string destination_file = destination_name + "\\" + filename;
 

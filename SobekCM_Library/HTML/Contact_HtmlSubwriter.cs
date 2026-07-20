@@ -87,10 +87,10 @@ namespace SobekCM.Library.HTML
                     message_from = UI_ApplicationCache_Gateway.Settings.Email.Setup.DefaultFromDisplay + "<" + UI_ApplicationCache_Gateway.Settings.Email.Setup.DefaultFromAddress + ">";
                 }
                 int text_area_count = configuration.TextAreaElementCount;
-                StringBuilder emailBuilder = new StringBuilder();
+                var emailBuilder = new StringBuilder();
 
                 // Make sure all the required fields are completed and build the emails
-                StringBuilder errorBuilder = new StringBuilder();
+                var errorBuilder = new StringBuilder();
                 int control_count = 1;
                 foreach (ContactForm_Configuration_Element thisElement in configuration.FormElements)
                 {
@@ -181,8 +181,7 @@ namespace SobekCM.Library.HTML
                 if (RequestSpecificValues.Current_User != null)
                     userid = RequestSpecificValues.Current_User.UserID;
 
-                EmailInfo newEmail = new EmailInfo
-                {
+                var newEmail = new EmailInfo{
                     Body = email_body,
                     isContactUs = true,
                     isHTML = false,
@@ -247,7 +246,7 @@ namespace SobekCM.Library.HTML
         private string DomainMapper(Match MatchValue)
         {
             // IdnMapping class with default property values.
-            IdnMapping idn = new IdnMapping();
+            var idn = new IdnMapping();
 
             string domainName = MatchValue.Groups[2].Value;
             try

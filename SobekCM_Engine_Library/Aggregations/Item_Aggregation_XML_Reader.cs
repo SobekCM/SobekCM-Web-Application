@@ -26,11 +26,11 @@ namespace SobekCM.Engine_Library.Aggregations
             string directory = (new FileInfo(FileLocation)).DirectoryName;
 
             // Load this XML file
-            XmlDocument hierarchyXml = new XmlDocument();
+            var hierarchyXml = new XmlDocument();
             hierarchyXml.Load(FileLocation);
 
             // create the node reader
-            XmlNodeReader nodeReader = new XmlNodeReader(hierarchyXml);
+            var nodeReader = new XmlNodeReader(hierarchyXml);
 
             // Read all the nodes
             while (nodeReader.Read())
@@ -398,7 +398,7 @@ namespace SobekCM.Engine_Library.Aggregations
                                 // Look for the matching file
                                 if (File.Exists(Directory + "\\" + directiveFile))
                                 {
-                                    StreamReader reader = new StreamReader(Directory + "\\" + directiveFile);
+                                    var reader = new StreamReader(Directory + "\\" + directiveFile);
                                     contents = reader.ReadToEnd();
                                     reader.Close();
 
@@ -414,7 +414,7 @@ namespace SobekCM.Engine_Library.Aggregations
                             }
 
                             // Create the custom derivative object
-                            Item_Aggregation_Custom_Directive newDirective = new Item_Aggregation_Custom_Directive(directiveCode, directiveFile, contents);
+                            var newDirective = new Item_Aggregation_Custom_Directive(directiveCode, directiveFile, contents);
                             if (HierarchyObject.Custom_Directives == null)
                                 HierarchyObject.Custom_Directives = new Dictionary<string, Item_Aggregation_Custom_Directive>()
                             ;
@@ -436,7 +436,7 @@ namespace SobekCM.Engine_Library.Aggregations
 
         private static void read_highlights(XmlNodeReader NodeReader, Complete_Item_Aggregation HierarchyObject)
         {
-            Complete_Item_Aggregation_Highlights highlight = new Complete_Item_Aggregation_Highlights();
+            var highlight = new Complete_Item_Aggregation_Highlights();
 
 
             // Determine if this is a rotating type of highlight or not
@@ -541,8 +541,7 @@ namespace SobekCM.Engine_Library.Aggregations
         private static void read_browse(bool Browse, XmlNodeReader NodeReader, Complete_Item_Aggregation HierarchyObject)
         {
             // Create a new browse/info object
-            Complete_Item_Aggregation_Child_Page newBrowse = new Complete_Item_Aggregation_Child_Page
-            {
+            var newBrowse = new Complete_Item_Aggregation_Child_Page{
                 Browse_Type = Item_Aggregation_Child_Visibility_Enum.Main_Menu,
                 Source_Data_Type = Item_Aggregation_Child_Source_Data_Enum.Static_HTML
             };

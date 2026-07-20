@@ -1,4 +1,4 @@
-﻿using SobekCM.Core.BriefItem;
+using SobekCM.Core.BriefItem;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Library.HTML;
 using SobekCM.Library.ItemViewer.Viewers;
@@ -198,7 +198,7 @@ namespace SobekCM.Library.ItemViewer.HtmlSectionWriters
                     return "                  ";
 
                 default:
-                    StringBuilder builder = new StringBuilder("      ");
+                    var builder = new StringBuilder("      ");
                     for (int i = Level; i > 1; i--)
                         builder.Append("    ");
                     return builder.ToString();

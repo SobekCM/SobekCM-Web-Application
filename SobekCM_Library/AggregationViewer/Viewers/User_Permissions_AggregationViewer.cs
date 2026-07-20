@@ -179,7 +179,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             Output.WriteLine("  <tbody>");
 
             // Collect the relevant user group rows, if some permissions were assined by user group
-            SortedDictionary<string, DataRow> userGroupRows = new SortedDictionary<string, DataRow>();
+            var userGroupRows = new SortedDictionary<string, DataRow>();
 
             // Users that are attached to user groups may have multiple rows with their name, so collect
             // all the user information from all rows before displaying

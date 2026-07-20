@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using System.IO;
 using SobekCM.Resource_Object.Behaviors;
@@ -23,7 +23,7 @@ namespace SobekCM.Builder_Library.Modules.Items
                 if ((thisFile.ToUpper().IndexOf(".QC.JPG") < 0) && (thisFile.ToUpper().IndexOf("THM.JPG") < 0))
                 {
                     // Add this file
-                    FileInfo thisFileInfo = new FileInfo(thisFile);
+                    var thisFileInfo = new FileInfo(thisFile);
                     Resource.Metadata.Divisions.Physical_Tree.Add_File(thisFileInfo.Name);
                 }
             }

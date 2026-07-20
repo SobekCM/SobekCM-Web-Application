@@ -49,7 +49,7 @@ namespace SobekCM.Library.ResultsViewer
                 base_url = RequestSpecificValues.Current_Mode.Base_URL + "l/";
 
             // Start the results
-            StringBuilder resultsBldr = new StringBuilder(2000);
+            var resultsBldr = new StringBuilder(2000);
             resultsBldr.AppendLine("<section class=\"sbkBrv_Results\">");
 
             // Set the counter for these results from the page 

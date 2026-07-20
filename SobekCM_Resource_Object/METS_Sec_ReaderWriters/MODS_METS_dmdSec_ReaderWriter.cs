@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using SobekCM.Resource_Object.Bib_Info;
 using SobekCM.Resource_Object.Metadata_Modules;
@@ -111,7 +111,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                     {
                         case "mods:abstract":
                         case "abstract":
-                            Abstract_Info thisAbstract = new Abstract_Info();
+                            var thisAbstract = new Abstract_Info();
                             if (R.MoveToAttribute("ID"))
                                 thisAbstract.ID = R.Value;
                             if (R.MoveToAttribute("type"))
@@ -130,7 +130,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
 
                         case "mods:accessCondition":
                         case "accessCondition":
-                            AccessCondition_Info newRights = new AccessCondition_Info();
+                            var newRights = new AccessCondition_Info();
                             if (R.MoveToAttribute("ID"))
                                 newRights.ID = R.Value;
                             if (R.MoveToAttribute("type"))
@@ -151,7 +151,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
 
                         case "mods:classification":
                         case "classification":
-                            Classification_Info thisClassification = new Classification_Info();
+                            var thisClassification = new Classification_Info();
                             if (R.MoveToAttribute("edition"))
                                 thisClassification.Edition = R.Value;
                             if (R.MoveToAttribute("authority"))
@@ -168,7 +168,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
 
                         case "mods:identifier":
                         case "identifier":
-                            Identifier_Info thisIdentifier = new Identifier_Info();
+                            var thisIdentifier = new Identifier_Info();
                             if (R.MoveToAttribute("type"))
                                 thisIdentifier.Type = R.Value;
                             if (R.MoveToAttribute("displayLabel"))
@@ -183,7 +183,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
 
                         case "mods:genre":
                         case "genre":
-                            Genre_Info thisGenre = new Genre_Info();
+                            var thisGenre = new Genre_Info();
                             if (R.MoveToAttribute("ID"))
                                 thisGenre.ID = R.Value;
                             if (R.MoveToAttribute("authority"))
@@ -427,7 +427,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
 
                         case "mods:note":
                         case "note":
-                            Note_Info newNote = new Note_Info();
+                            var newNote = new Note_Info();
                             if (R.MoveToAttribute("ID"))
                                 newNote.ID = R.Value;
                             if (R.MoveToAttribute("type"))
@@ -773,7 +773,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
 
                                             if ((cat_language_text.Length > 0) || (cat_language_rfc_code.Length > 0) || (cat_language_iso_code.Length > 0))
                                             {
-                                                Language_Info newCatLanguage = new Language_Info(cat_language_text, cat_language_iso_code, cat_language_rfc_code);
+                                                var newCatLanguage = new Language_Info(cat_language_text, cat_language_iso_code, cat_language_rfc_code);
                                                 ThisBibInfo.Record.Add_Catalog_Language(newCatLanguage);
                                             }
                                             break;
@@ -910,7 +910,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                                     break;
 
                                 default:
-                                    Related_Item_Info newRelated = new Related_Item_Info();
+                                    var newRelated = new Related_Item_Info();
                                     ThisBibInfo.Add_Related_Item(newRelated);
                                     switch (relatedItemType)
                                     {
@@ -955,7 +955,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
 
                                                 case "mods:identifier":
                                                 case "identifier":
-                                                    Identifier_Info thisRIdentifier = new Identifier_Info();
+                                                    var thisRIdentifier = new Identifier_Info();
                                                     if (R.MoveToAttribute("type"))
                                                         thisRIdentifier.Type = R.Value;
                                                     if (R.MoveToAttribute("displayLabel"))
@@ -975,7 +975,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
 
                                                 case "mods:note":
                                                 case "note":
-                                                    Note_Info newRNote = new Note_Info();
+                                                    var newRNote = new Note_Info();
                                                     if (R.MoveToAttribute("ID"))
                                                         newRNote.ID = R.Value;
                                                     if (R.MoveToAttribute("type"))
@@ -1061,7 +1061,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
 
                         case "mods:targetAudience":
                         case "targetAudience":
-                            TargetAudience_Info newTarget = new TargetAudience_Info();
+                            var newTarget = new TargetAudience_Info();
                             if (R.MoveToAttribute("ID"))
                                 newTarget.ID = R.Value;
                             if (R.MoveToAttribute("authority"))
@@ -1361,7 +1361,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
             // Was this the standard subject object?
             if (type == Subject_Info_Type.Standard)
             {
-                Subject_Info_Standard standardSubject = new Subject_Info_Standard();
+                var standardSubject = new Subject_Info_Standard();
                 standardSubject.Language = language;
                 standardSubject.Authority = authority;
                 standardSubject.ID = id;
@@ -1424,7 +1424,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
             // Was this the hierarchical geography subject?
             if (type == Subject_Info_Type.Hierarchical_Spatial)
             {
-                Subject_Info_HierarchicalGeographic geoSubject = new Subject_Info_HierarchicalGeographic();
+                var geoSubject = new Subject_Info_HierarchicalGeographic();
                 geoSubject.Language = language;
                 geoSubject.Authority = authority;
                 geoSubject.ID = id;
@@ -1525,7 +1525,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
             // Was this the cartographics subject?
             if (type == Subject_Info_Type.Cartographics)
             {
-                Subject_Info_Cartographics mapSubject = new Subject_Info_Cartographics();
+                var mapSubject = new Subject_Info_Cartographics();
                 mapSubject.Language = language;
                 mapSubject.Authority = authority;
                 mapSubject.ID = id;
@@ -1573,7 +1573,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
             // Was this the name subject?
             if (type == Subject_Info_Type.Name)
             {
-                Subject_Info_Name nameSubject = new Subject_Info_Name();
+                var nameSubject = new Subject_Info_Name();
                 nameSubject.Language = language;
                 nameSubject.Authority = authority;
                 nameSubject.ID = id;
@@ -1631,7 +1631,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
             // Was this the title subject?
             if (type == Subject_Info_Type.TitleInfo)
             {
-                Subject_Info_TitleInfo titleSubject = new Subject_Info_TitleInfo();
+                var titleSubject = new Subject_Info_TitleInfo();
                 titleSubject.Language = language;
                 titleSubject.Authority = authority;
                 titleSubject.ID = id;
@@ -1689,7 +1689,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
 
         private static Title_Info read_title_object(XmlReader r)
         {
-            Title_Info returnVal = new Title_Info();
+            var returnVal = new Title_Info();
 
             if (r.MoveToAttribute("ID"))
                 returnVal.ID = r.Value;
@@ -1794,7 +1794,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
 
         private static Name_Info read_name_object(XmlReader r)
         {
-            Name_Info returnValue = new Name_Info();
+            var returnValue = new Name_Info();
 
             if (r.MoveToAttribute("type"))
             {

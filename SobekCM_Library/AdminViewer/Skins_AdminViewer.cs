@@ -188,7 +188,7 @@ namespace SobekCM.Library.AdminViewer
                                                 Directory.CreateDirectory(folder);
 
                                                 // Create a default stylesheet
-                                                StreamWriter writer = new StreamWriter(folder + "\\" + save_value.ToLower() + ".css");
+                                                var writer = new StreamWriter(folder + "\\" + save_value.ToLower() + ".css");
                                                 writer.WriteLine("/*  Skin-specific stylesheet used to override values from the base stylesheets */");
                                                 writer.WriteLine();
                                                 writer.WriteLine();
@@ -443,7 +443,7 @@ namespace SobekCM.Library.AdminViewer
             string[] files = Directory.GetFiles(SourceFolder);
             foreach (string thisFile in files)
             {
-                FileInfo thisFileInfo = new FileInfo(thisFile);
+                var thisFileInfo = new FileInfo(thisFile);
                 if (!File.Exists(DestinationFolder + "\\" + thisFileInfo.Name))
                     File.Copy(thisFile, DestinationFolder + "\\" + thisFileInfo.Name);
             }
@@ -452,7 +452,7 @@ namespace SobekCM.Library.AdminViewer
             string[] subdirs = Directory.GetDirectories(SourceFolder);
             foreach (string thisDirectory in subdirs)
             {
-                DirectoryInfo thisDirectoryInfo = new DirectoryInfo(thisDirectory);
+                var thisDirectoryInfo = new DirectoryInfo(thisDirectory);
                 copy_entire_folder(thisDirectory, DestinationFolder + "\\" + thisDirectoryInfo.Name);
             }
         }

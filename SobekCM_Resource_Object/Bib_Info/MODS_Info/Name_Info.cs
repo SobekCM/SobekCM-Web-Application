@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using SobekCM.Resource_Object.MARC;
 using System;
@@ -297,7 +297,7 @@ namespace SobekCM.Resource_Object.Bib_Info
             {
                 if ((Roles != null) && (Roles.Count > 0))
                 {
-                    List<string> temp_role_text = new List<string>();
+                    var temp_role_text = new List<string>();
                     foreach (Name_Info_Role thisRole in Roles)
                     {
                         if (((thisRole.Role_Type == Name_Info_Role_Type_Enum.Text) || (thisRole.Role_Type == Name_Info_Role_Type_Enum.UNSPECIFIED)) && ((thisRole.Role.ToUpper() != "MAIN ENTITY") && (thisRole.Role.ToUpper() != "CREATOR")))
@@ -309,7 +309,7 @@ namespace SobekCM.Resource_Object.Bib_Info
                     if (temp_role_text.Count == 1)
                         return Convert_String_To_XML_Safe(temp_role_text[0]);
 
-                    StringBuilder nameBuilder = new StringBuilder();
+                    var nameBuilder = new StringBuilder();
                     bool role_started = false;
                     foreach (string thisRole in temp_role_text)
                     {
@@ -366,7 +366,7 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// <returns> This object in string format </returns>
         public string ToString(bool IncludeRole)
         {
-            StringBuilder nameBuilder = new StringBuilder();
+            var nameBuilder = new StringBuilder();
             if (!String.IsNullOrEmpty(full_name))
             {
                 nameBuilder.Append(Convert_String_To_XML_Safe(full_name.Replace("|", " -- ")));
@@ -521,12 +521,12 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// <returns> Built MARC tag </returns>
         internal MARC_Field to_MARC_HTML(bool ExcludeRelatorCodes)
         {
-            MARC_Field returnValue = new MARC_Field();
-            StringBuilder fieldBuilder = new StringBuilder();
+            var returnValue = new MARC_Field();
+            var fieldBuilder = new StringBuilder();
 
             // Get list of role codes first
-            List<string> role_codes = new List<string>();
-            List<string> role_texts = new List<string>();
+            var role_codes = new List<string>();
+            var role_texts = new List<string>();
 
             // Collect the codes first
             if (Roles != null)

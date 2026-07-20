@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using SobekCM.Resource_Object.Bib_Info;
 using System;
@@ -62,14 +62,14 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
             }
 
             // Load this MXF File
-            XmlDocument mxfXML = new XmlDocument();
+            var mxfXML = new XmlDocument();
             mxfXML.Load(MetadataFilePathName);
 
             // Set the source directory correctly
             Return_Package.Source_Directory = (new FileInfo(MetadataFilePathName)).DirectoryName;
 
             // create the node reader
-            XmlNodeReader nodeReader = new XmlNodeReader(mxfXML);
+            var nodeReader = new XmlNodeReader(mxfXML);
 
             // Read through all the nodes until the package tag is found
             move_to_node(nodeReader, "package");
@@ -150,7 +150,7 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
             thisPackage.Source_Directory = directory;
 
             // Create the reader to step through all of the lines of MXF
-            StreamReader reader = new StreamReader(MXF_File);
+            var reader = new StreamReader(MXF_File);
 
             // Clear out all the divisions
             thisPackage.Divisions.Clear();
@@ -532,14 +532,14 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
                             {
                                 nodeReader.MoveToAttribute(0);
                                 string scheme = nodeReader.Value.Trim();
-                                Subject_Info_HierarchicalGeographic thisSpatial = new Subject_Info_HierarchicalGeographic();
+                                var thisSpatial = new Subject_Info_HierarchicalGeographic();
                                 thisSpatial.Authority = scheme;
                                 thisSpatial.Area = read_text_node(nodeReader);
                                 thisPackage.Bib_Info.Add_Subject(thisSpatial);
                             }
                             else
                             {
-                                Subject_Info_HierarchicalGeographic thisSpatial = new Subject_Info_HierarchicalGeographic();
+                                var thisSpatial = new Subject_Info_HierarchicalGeographic();
                                 thisSpatial.Area = read_text_node(nodeReader);
                                 thisPackage.Bib_Info.Add_Subject(thisSpatial);
                             }

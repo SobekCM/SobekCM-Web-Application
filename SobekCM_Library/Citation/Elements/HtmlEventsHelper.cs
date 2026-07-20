@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Text;
 
@@ -195,8 +195,8 @@ namespace SobekCM.Library.Citation.Elements
         /// <returns> All existing events as a string </returns>
         public override string ToString()
         {
-            StringBuilder builder = new StringBuilder();
-            using (StringWriter writer = new StringWriter(builder))
+            var builder = new StringBuilder();
+            using (var writer = new StringWriter(builder))
             {
                 Add_Events_HTML(writer);
                 writer.Flush();

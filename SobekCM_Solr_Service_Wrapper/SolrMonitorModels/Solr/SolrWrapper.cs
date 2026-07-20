@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.Net;
@@ -88,7 +88,7 @@ namespace SolrServiceMonitor.Solr
             EventLogHelper.Write_Verbose("Inside SolrWrapper.Start_Direct() method");
 
             // Log this start
-            StringBuilder logStartBuilder = new StringBuilder();
+            var logStartBuilder = new StringBuilder();
 
 
             // Check to see if the solr home directory exists
@@ -228,7 +228,7 @@ namespace SolrServiceMonitor.Solr
          //   string jar_file = Path.Combine(solr_server_dir, "start.jar");
 
             // Build the arguments
-            StringBuilder argsBuilder = new StringBuilder();
+            var argsBuilder = new StringBuilder();
 
             argsBuilder.Append(ServiceSettings.StartArgs.ServerOpts);
             argsBuilder.Append(" -Xss256k");
@@ -251,15 +251,15 @@ namespace SolrServiceMonitor.Solr
             string args = argsBuilder.ToString();
 
             // Using string builders to collect the standard output and error
-            StringBuilder output = new StringBuilder();
-            StringBuilder error = new StringBuilder();
+            var output = new StringBuilder();
+            var error = new StringBuilder();
 
             // Perform all this work within using tag to encourage disposing of the process and events
             bool returnValue = true;
-            using (AutoResetEvent outputWaitHandle = new AutoResetEvent(false))
-            using (AutoResetEvent errorWaitHandle = new AutoResetEvent(false))
+            using (var outputWaitHandle = new AutoResetEvent(false))
+            using (var errorWaitHandle = new AutoResetEvent(false))
             {
-                using (Process startSolrProcess = new Process())
+                using (var startSolrProcess = new Process())
                 {
                     try
                     {
@@ -360,7 +360,7 @@ namespace SolrServiceMonitor.Solr
             string solr_log_file = Path.Combine(logs_directory, "solr-" + ServiceSettings.Solr.Port + "-service.log");
             try
             {
-                StreamWriter writer = new StreamWriter(solr_log_file, false);
+                var writer = new StreamWriter(solr_log_file, false);
 
                 writer.WriteLine("LOG FILE CREATED " + DateTime.Now.ToString() + " BY SOLR SERVICE WRAPPER");
                 writer.WriteLine();
@@ -439,7 +439,7 @@ namespace SolrServiceMonitor.Solr
             }
 
             // Build the arguments
-            StringBuilder argsBuilder = new StringBuilder();
+            var argsBuilder = new StringBuilder();
             argsBuilder.Append(" -DJetty.home=\"" + solr_server_dir + "\"");
             argsBuilder.Append(" -jar start.jar");
             argsBuilder.Append(" STOP.PORT=" + ServiceSettings.Solr.StopPort);
@@ -448,15 +448,15 @@ namespace SolrServiceMonitor.Solr
             string args = argsBuilder.ToString();
 
             // Using string builders to collect the standard output and error
-            StringBuilder output = new StringBuilder();
-            StringBuilder error = new StringBuilder();
+            var output = new StringBuilder();
+            var error = new StringBuilder();
 
             // Perform all this work within using tag to encourage disposing of the process and events
             bool returnValue = true;
-            using (AutoResetEvent outputWaitHandle = new AutoResetEvent(false))
-            using (AutoResetEvent errorWaitHandle = new AutoResetEvent(false))
+            using (var outputWaitHandle = new AutoResetEvent(false))
+            using (var errorWaitHandle = new AutoResetEvent(false))
             {
-                using (Process startSolrProcess = new Process())
+                using (var startSolrProcess = new Process())
                 {
                     try
                     {
@@ -537,7 +537,7 @@ namespace SolrServiceMonitor.Solr
                         startSolrProcess.Close();
 
                         // If there was error caught from the misdirection add it here
-                        StringBuilder stopSolrBuilder = new StringBuilder("Solr/Lucene stop attempt completed");
+                        var stopSolrBuilder = new StringBuilder("Solr/Lucene stop attempt completed");
                         if ((error.ToString().Trim().Length > 0) || (output.ToString().Trim().Length > 0))
                         {
                             stopSolrBuilder.AppendLine();
@@ -604,7 +604,7 @@ namespace SolrServiceMonitor.Solr
                             dataStream.ReadTimeout = 30000;
 
                             // Open the stream using a StreamReader for easy access.
-                            using (StreamReader reader = new StreamReader(dataStream))
+                            using (var reader = new StreamReader(dataStream))
                             {
                                 // Read the content.
                                 responseFromServer = reader.ReadToEnd();
@@ -625,7 +625,7 @@ namespace SolrServiceMonitor.Solr
                 try
                 {
                     Stream dataStream = we.Response.GetResponseStream();
-                    StreamReader reader = new StreamReader(dataStream);
+                    var reader = new StreamReader(dataStream);
                     string errorResponse = reader.ReadToEnd();
 
                     EventLogHelper.Write_Error(ServiceSettings.Logging.ExceptionEventId, "WEB EXCEPTION caught in SolrWrapper.Get_Solr_Response('" + URL + "').  Request returned a status of " + we.Status.ToString() + "\n\n--------------------\n\nRESPONSE:\n\n" + errorResponse, we);
@@ -654,7 +654,7 @@ namespace SolrServiceMonitor.Solr
 
         private static bool is_port_in_use(int Port)
         {
-            using (TcpClient tcpClient = new TcpClient())
+            using (var tcpClient = new TcpClient())
             {
                 try
                 {

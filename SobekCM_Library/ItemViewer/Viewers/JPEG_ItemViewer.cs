@@ -84,7 +84,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             CurrentRequest.ViewerCode = previous_code;
 
             // Add the item menu information
-            Item_MenuItem menuItem = new Item_MenuItem("Page Images", "Standard", null, url, ViewerCode);
+            var menuItem = new Item_MenuItem("Page Images", "Standard", null, url, ViewerCode);
             MenuItems.Add(menuItem);
         }
 

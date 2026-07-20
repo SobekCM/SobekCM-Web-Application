@@ -92,13 +92,13 @@ namespace SobekCM.Library.ItemViewer.Viewers
             if ((thisViewerInfo == null) || (String.IsNullOrWhiteSpace(thisViewerInfo.Label)))
             {
                 // Add the item menu information using the default label
-                Item_MenuItem menuItem = new Item_MenuItem("Video", null, null, url, ViewerCode);
+                var menuItem = new Item_MenuItem("Video", null, null, url, ViewerCode);
                 MenuItems.Add(menuItem);
             }
             else
             {
                 // Add the item menu information using the custom level
-                Item_MenuItem menuItem = new Item_MenuItem(thisViewerInfo.Label, null, null, url, ViewerCode);
+                var menuItem = new Item_MenuItem(thisViewerInfo.Label, null, null, url, ViewerCode);
                 MenuItems.Add(menuItem);
             }
         }

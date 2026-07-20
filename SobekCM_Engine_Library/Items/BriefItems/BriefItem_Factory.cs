@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using SobekCM.Core.BriefItem;
 using SobekCM.Core.Configuration;
@@ -47,8 +47,7 @@ namespace SobekCM.Engine_Library.Items.BriefItems
 
             // Create the mostly empty new brief item
             Tracer.Add_Trace("BriefItem_Factory.Create", "Create the mostly empty new brief item");
-            BriefItemInfo newItem = new BriefItemInfo
-            {
+            var newItem = new BriefItemInfo{
                 BibID = Original.BibID,
                 VID = Original.VID,
                 Title = Original.Bib_Info.Main_Title.Title
@@ -315,10 +314,10 @@ namespace SobekCM.Engine_Library.Items.BriefItems
                 return null;
 
             // build error messages
-            StringBuilder errormessages = new StringBuilder();
+            var errormessages = new StringBuilder();
 
             // Build this return list
-            List<IBriefItemMapper> returnValue = new List<IBriefItemMapper>();
+            var returnValue = new List<IBriefItemMapper>();
             foreach (BriefItemMapping_Mapper mappingConfig in set.Mappings)
             {
                 // Build the mapper

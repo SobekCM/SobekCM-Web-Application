@@ -104,7 +104,7 @@ namespace SobekCM_Builder_Service
                 Engine_ApplicationCache_Gateway.Settings.Builder.ImageMagick_Executable = possible_imagemagick;
 
             // Run the builder controller (blocks until complete or service stop)
-            Worker_Controller controller = new Worker_Controller(true);
+            var controller = new Worker_Controller(true);
             controller.Execute(false);
 
             // If this was set to aborting, record the final state

@@ -1,4 +1,4 @@
-﻿using SobekCM.Core.UI_Configuration.Viewers;
+using SobekCM.Core.UI_Configuration.Viewers;
 using SobekCM.Library.UI;
 using System;
 using System.Collections.Generic;
@@ -42,9 +42,8 @@ namespace SobekCM.Library.HtmlLayout
                 if (!File.Exists(source_file))
                 {
                     // Just create a dummy here
-                    HtmlLayoutInfo thisItemLayout = new HtmlLayoutInfo();
-                    HtmlLayoutSection errorSection = new HtmlLayoutSection
-                    {
+                    var thisItemLayout = new HtmlLayoutInfo();
+                    var errorSection = new HtmlLayoutSection{
                         Name = "Error",
                         Type = HtmlLayoutSectionTypeEnum.Static_HTML,
                         HTML = "Unable to find the HTML source template file under the web application ( config/html/" + source_file_name + " )"

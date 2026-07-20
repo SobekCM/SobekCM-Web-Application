@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Users;
@@ -45,7 +45,7 @@ namespace SobekCM.Library.AdminViewer.UserAdmin.SubViewers
             Output.WriteLine("  <tr valign=\"top\"><td><b>Full Name:</b></td><td>" + editUser.Full_Name + "</td></tr>");
 
             // Build the rights statement
-            StringBuilder text_builder = new StringBuilder();
+            var text_builder = new StringBuilder();
             if (editUser.Can_Submit)
                 text_builder.Append("Can submit items<br />");
             if (editUser.Is_Internal_User)
@@ -83,7 +83,7 @@ namespace SobekCM.Library.AdminViewer.UserAdmin.SubViewers
             Output.WriteLine("  <tr valign=\"top\"><td><b>Edit Templates:</b></td><td>" + editUser.Edit_Template_Code_Complex + "<br />" + editUser.Edit_Template_Code_Simple + "</td></tr>");
 
             // Build the templates list
-            List<string> addedtemplates = new List<string>();
+            var addedtemplates = new List<string>();
             foreach (string thisTemplate in editUser.Templates)
             {
                 if (!addedtemplates.Contains(thisTemplate))
@@ -103,7 +103,7 @@ namespace SobekCM.Library.AdminViewer.UserAdmin.SubViewers
             }
 
             // Build the projects list
-            List<string> addedprojects = new List<string>();
+            var addedprojects = new List<string>();
             foreach (string thisProject in editUser.Default_Metadata_Sets)
             {
                 if (!addedprojects.Contains(thisProject))
@@ -169,7 +169,7 @@ namespace SobekCM.Library.AdminViewer.UserAdmin.SubViewers
 
                 // Get the list of collections lists in the RequestSpecificValues.Current_User object
                 List<User_Permissioned_Aggregation> aggregations_in_editable_user = editUser.PermissionedAggregations;
-                Dictionary<string, User_Permissioned_Aggregation> lookup_aggs = new Dictionary<string, User_Permissioned_Aggregation>();
+                var lookup_aggs = new Dictionary<string, User_Permissioned_Aggregation>();
                 foreach (User_Permissioned_Aggregation thisAggr in aggregations_in_editable_user)
                 {
                     if (!lookup_aggs.ContainsKey(thisAggr.Code.ToLower()))

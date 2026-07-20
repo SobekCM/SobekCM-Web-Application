@@ -112,7 +112,7 @@ namespace SobekCM_Resource_Database
                         }
                     }
 
-                    Wordmark_Info newIcon = new Wordmark_Info { HTML = html, Link = link, Title = name, Code = code };
+                    var newIcon = new Wordmark_Info{ HTML = html, Link = link, Title = name, Code = code };
                     Resource.Behaviors.Add_Wordmark(newIcon);
                 }
 
@@ -171,8 +171,8 @@ namespace SobekCM_Resource_Database
             }
 
             // Get the spatial display and subjects information
-            StringBuilder spatialDisplayBuilder = new StringBuilder();
-            StringBuilder subjectsDisplayBuilder = new StringBuilder();
+            var spatialDisplayBuilder = new StringBuilder();
+            var subjectsDisplayBuilder = new StringBuilder();
             foreach (Subject_Info subject in ThisPackage.Bib_Info.Subjects)
             {
                 if (subject.Class_Type == Subject_Info_Type.Hierarchical_Spatial)
@@ -190,7 +190,7 @@ namespace SobekCM_Resource_Database
             }
 
             // Get the publishers
-            StringBuilder publisher_builder = new StringBuilder();
+            var publisher_builder = new StringBuilder();
             foreach (Publisher_Info thisPublisher in ThisPackage.Bib_Info.Publishers)
             {
                 if (publisher_builder.Length > 0)
@@ -204,7 +204,7 @@ namespace SobekCM_Resource_Database
             }
 
             // Get the authors
-            StringBuilder author_builder = new StringBuilder();
+            var author_builder = new StringBuilder();
             string mainAuthor = String.Empty;
             if (ThisPackage.Bib_Info.hasMainEntityName)
                 mainAuthor = ThisPackage.Bib_Info.Main_Entity_Name.ToString();
@@ -242,10 +242,10 @@ namespace SobekCM_Resource_Database
 
             // For now, set VRA core extension data to empty.  LATER THIS WILL
             // BE REMOVED FROM THIS STORED PROCEDURE
-            StringBuilder materialDisplayBuilder = new StringBuilder();
+            var materialDisplayBuilder = new StringBuilder();
             string measurements = String.Empty;
-            StringBuilder stylePeriodDisplayBuilder = new StringBuilder();
-            StringBuilder techniqueDisplayBuilder = new StringBuilder();
+            var stylePeriodDisplayBuilder = new StringBuilder();
+            var techniqueDisplayBuilder = new StringBuilder();
 
 
             // Pull out the spatial strings (for testing)
@@ -258,7 +258,7 @@ namespace SobekCM_Resource_Database
             //}
 
             // Get the source and holding codes and the institution display information
-            StringBuilder institutionDisplayBuilder = new StringBuilder();
+            var institutionDisplayBuilder = new StringBuilder();
             string source_code = ThisPackage.Bib_Info.Source.Code;
             string holding_code = String.Empty;
             if ((source_code.Length > 0) && (source_code[0] != 'i') && (source_code[0] != 'I'))
@@ -1099,8 +1099,8 @@ namespace SobekCM_Resource_Database
             }
 
             // Get the spatial display and subjects information
-            StringBuilder spatialDisplayBuilder = new StringBuilder();
-            StringBuilder subjectsDisplayBuilder = new StringBuilder();
+            var spatialDisplayBuilder = new StringBuilder();
+            var subjectsDisplayBuilder = new StringBuilder();
             foreach (Subject_Info subject in ThisPackage.Bib_Info.Subjects)
             {
                 if (subject.Class_Type == Subject_Info_Type.Standard)
@@ -1114,7 +1114,7 @@ namespace SobekCM_Resource_Database
             }
 
             // Get the publishers
-            StringBuilder publisher_builder = new StringBuilder();
+            var publisher_builder = new StringBuilder();
             foreach (Publisher_Info thisPublisher in ThisPackage.Bib_Info.Publishers)
             {
                 if (publisher_builder.Length > 0)
@@ -1128,7 +1128,7 @@ namespace SobekCM_Resource_Database
             }
 
             // Get the authors
-            StringBuilder author_builder = new StringBuilder();
+            var author_builder = new StringBuilder();
             string mainAuthor = String.Empty;
             if (ThisPackage.Bib_Info.hasMainEntityName)
                 mainAuthor = ThisPackage.Bib_Info.Main_Entity_Name.ToString();
@@ -1165,13 +1165,13 @@ namespace SobekCM_Resource_Database
             }
 
             // Get the material display information
-            StringBuilder materialDisplayBuilder = new StringBuilder();
+            var materialDisplayBuilder = new StringBuilder();
             string measurements = String.Empty;
-            StringBuilder stylePeriodDisplayBuilder = new StringBuilder();
-            StringBuilder techniqueDisplayBuilder = new StringBuilder();
+            var stylePeriodDisplayBuilder = new StringBuilder();
+            var techniqueDisplayBuilder = new StringBuilder();
 
             // Get the source and holding codes and the institution display information
-            StringBuilder institutionDisplayBuilder = new StringBuilder();
+            var institutionDisplayBuilder = new StringBuilder();
             string source_code = ThisPackage.Bib_Info.Source.Code;
             string holding_code = String.Empty;
             if ((source_code.Length > 0) && (source_code[0] != 'i') && (source_code[0] != 'I'))
@@ -1321,9 +1321,9 @@ namespace SobekCM_Resource_Database
             {
                 // Siunce this is a mass update, no viewer analysis is really needed here.. Just collect them all to add
                 // Collect the behavior information
-                List<string> view_types = new List<string>();
-                List<string> view_labels = new List<string>();
-                List<string> view_attributes = new List<string>();
+                var view_types = new List<string>();
+                var view_labels = new List<string>();
+                var view_attributes = new List<string>();
 
                 foreach (View_Object thisView in ThisPackage.Behaviors.Views)
                 {
@@ -1400,15 +1400,15 @@ namespace SobekCM_Resource_Database
 
                     // Determine which viewers to add or remove from this single item
                     List<View_Object> currentViews = Get_Current_Item_Viewers(ThisPackage.BibID, ThisPackage.VID);
-                    List<View_Object> removeViews = new List<View_Object>();
-                    List<View_Object> addViews = new List<View_Object>();
+                    var removeViews = new List<View_Object>();
+                    var addViews = new List<View_Object>();
 
                     // Use a found flag to determine which current viewers are NOT present in the new list
                     // booleans start with a default value of 'false', so need to initialize
                     bool[] foundFlag = new bool[currentViews.Count];
 
                     // Use a dictionary for quick lookup in current views
-                    Dictionary<string, int> currentViewTypeToIndex = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+                    var currentViewTypeToIndex = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
                     for (int i = 0; i < currentViews.Count; i++)
                     {
                         currentViewTypeToIndex[currentViews[i].View_Type] = i;
@@ -1527,7 +1527,7 @@ namespace SobekCM_Resource_Database
             int level4_index = -1;
             int level5_index = -1;
 
-            StringBuilder builder = new StringBuilder();
+            var builder = new StringBuilder();
 
             if (ThisPackage.Behaviors.hasSerialInformation)
             {
@@ -2083,8 +2083,7 @@ namespace SobekCM_Resource_Database
         private static List<View_Object> Get_Current_Item_Viewers(string BibID, string VID)
         {
             // Build the parameters list
-            List<EalDbParameter> parameters = new List<EalDbParameter>
-            {
+            var parameters = new List<EalDbParameter>{
                 new EalDbParameter("@bibid", BibID),
                 new EalDbParameter("@vid", VID)
             };
@@ -2096,7 +2095,7 @@ namespace SobekCM_Resource_Database
             DbDataReader reader = readerWrapper.Reader;
 
             //Build the return list
-            List<View_Object> returnValue = new List<View_Object>();
+            var returnValue = new List<View_Object>();
 
             // Get all the main title values first
             while (reader.Read())
@@ -2108,8 +2107,7 @@ namespace SobekCM_Resource_Database
                 bool exclude = reader.GetBoolean(4);
 
                 // Create new database title object for this
-                View_Object result = new View_Object
-                {
+                var result = new View_Object{
                     View_Type = viewType,
                     Attributes = attributes,
                     Label = label,
@@ -3506,7 +3504,7 @@ namespace SobekCM_Resource_Database
             try
             {
                 // Create the return value data set
-                SobekCM_All_Items returnVal = new SobekCM_All_Items();
+                var returnVal = new SobekCM_All_Items();
 
                 // Create the stream to get the information from the web
                 WebResponse objResponse;
@@ -3561,8 +3559,7 @@ namespace SobekCM_Resource_Database
                 objResponse = objRequest.GetResponse();
                 // the using keyword will automatically dispose the object 
                 // once complete
-                using (StreamReader sr =
-                           new StreamReader(objResponse.GetResponseStream()))
+                using (var sr = new StreamReader(objResponse.GetResponseStream()))
                 {
                     strResult = sr.ReadToEnd();
                     // Close and clean up the StreamReader
@@ -3588,20 +3585,20 @@ namespace SobekCM_Resource_Database
             try
             {
                 // Create the connection
-                SqlConnection connect = new SqlConnection(connectionString);
+                var connect = new SqlConnection(connectionString);
 
                 // Create the command 
-                SqlCommand executeCommand = new SqlCommand("SobekCM_Simple_Item_List", connect) { CommandType = CommandType.StoredProcedure };
+                var executeCommand = new SqlCommand("SobekCM_Simple_Item_List", connect) { CommandType = CommandType.StoredProcedure };
                 executeCommand.Parameters.AddWithValue("@collection_code", Aggregation_Code);
 
                 // Create the adapter
-                SqlDataAdapter adapter = new SqlDataAdapter(executeCommand);
+                var adapter = new SqlDataAdapter(executeCommand);
 
                 // Add appropriate table mappings
                 adapter.TableMappings.Add("Table", "SobekCM_Item");
 
                 // Create the strongly-typed dataset
-                SobekCM_All_Items itemList = new SobekCM_All_Items();
+                var itemList = new SobekCM_All_Items();
 
                 // Fill the strongly typed dataset
                 adapter.Fill(itemList);

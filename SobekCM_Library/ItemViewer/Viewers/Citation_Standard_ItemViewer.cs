@@ -86,7 +86,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             CurrentRequest.ViewerCode = previous_code;
 
             // Add the item menu information
-            Item_MenuItem menuItem = new Item_MenuItem("Description", "Standard View", null, url, ViewerCode);
+            var menuItem = new Item_MenuItem("Description", "Standard View", null, url, ViewerCode);
             MenuItems.Add(menuItem);
         }
 
@@ -180,7 +180,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             string viewer_code = CurrentRequest.ViewerCode;
 
             // Get any search terms
-            List<string> terms = new List<string>();
+            var terms = new List<string>();
             if (!String.IsNullOrWhiteSpace(CurrentRequest.Text_Search))
             {
                 string[] splitter = CurrentRequest.Text_Search.Replace("\"", "").Split(" ".ToCharArray());
@@ -283,7 +283,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             // Use string builder to build this
             const string INDENT = "    ";
-            StringBuilder result = new StringBuilder();
+            var result = new StringBuilder();
 
             // Now, try to add the thumbnail from any page images here
             if (BriefItem.Behaviors.Dark_Flag != true)
@@ -410,7 +410,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                         // If they can all be listed one after the other do so now
                         if (!thisField.IndividualFields)
                         {
-                            List<string> valueArray = new List<string>();
+                            var valueArray = new List<string>();
                             foreach (BriefItem_DescTermValue thisValue in briefTerm.Values)
                             {
                                 if (!String.IsNullOrEmpty(thisField.SearchCode))

@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using SobekCM.Resource_Object.MARC;
 using System;
@@ -110,7 +110,7 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// <returns> This subject expressed as a string</returns>
         public override string ToString(bool Include_Scheme)
         {
-            StringBuilder builder = new StringBuilder();
+            var builder = new StringBuilder();
             builder.Append((titleInfo.NonSort + " " + titleInfo.Title + " " + titleInfo.Subtitle).Trim());
 
             builder.Append(To_Base_String());
@@ -149,7 +149,7 @@ namespace SobekCM.Resource_Object.Bib_Info
             MARC_Field returnValue = titleInfo.to_MARC_HTML(630, 1, String.Empty, String.Empty);
 
             // Add to the built field
-            StringBuilder fieldBuilder = new StringBuilder(returnValue.Control_Field_Value + " ");
+            var fieldBuilder = new StringBuilder(returnValue.Control_Field_Value + " ");
 
             if (geographics != null)
             {

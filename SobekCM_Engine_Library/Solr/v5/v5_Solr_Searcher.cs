@@ -1,4 +1,4 @@
-﻿using SobekCM.Core.Aggregations;
+using SobekCM.Core.Aggregations;
 using SobekCM.Core.Results;
 using SobekCM.Core.Search;
 using SobekCM.Engine_Library.ApplicationState;
@@ -159,12 +159,11 @@ namespace SobekCM.Engine_Library.Solr.v5
                 var solrWorker = Solr_Operations_Cache<v5_SolrDocument>.GetSolrOperations(solrDocumentUrl);
 
                 // Get the list of fields
-                List<string> fields = new List<string> { "did", "mainthumb", "title", "discover_ips", "hidden", "restricted_msg", "group_restrictions" };
+                var fields = new List<string>{ "did", "mainthumb", "title", "discover_ips", "hidden", "restricted_msg", "group_restrictions" };
                 fields.AddRange(SearchOptions.Fields.Select(MetadataField => MetadataField.SolrCode));
 
                 // Create the query options
-                QueryOptions options = new QueryOptions
-                {
+                var options = new QueryOptions{
                     Rows = SearchOptions.ResultsPerPage,
                     Start = (pageNumber - 1) * SearchOptions.ResultsPerPage,
                     Fields = fields
@@ -242,8 +241,7 @@ namespace SobekCM.Engine_Library.Solr.v5
 
                     grouped_results = true;
 
-                    GroupingParameters groupingParams = new GroupingParameters
-                    {
+                    var groupingParams = new GroupingParameters{
                         Fields = new[] { "bibid" },
 
                         Format = GroupingFormat.Grouped,
@@ -292,7 +290,7 @@ namespace SobekCM.Engine_Library.Solr.v5
                     foreach (Complete_Item_Aggregation_Metadata_Type facetTerm in SearchOptions.Facets)
                     {
                         // Create the collection and and assifn the metadata type id
-                        Search_Facet_Collection thisCollection = new Search_Facet_Collection(facetTerm.ID);
+                        var thisCollection = new Search_Facet_Collection(facetTerm.ID);
 
                         // Add each value
                         foreach (var facet in results.FacetFields[facetTerm.SolrCode])
@@ -309,7 +307,7 @@ namespace SobekCM.Engine_Library.Solr.v5
                 }
 
                 // Build the results mapper object
-                v5_SolrDocument_Results_Mapper mapper = new v5_SolrDocument_Results_Mapper();
+                var mapper = new v5_SolrDocument_Results_Mapper();
 
                 // Build the results differently, depending on whether they were grouped or not
                 if (grouped_results)
@@ -385,7 +383,7 @@ namespace SobekCM.Engine_Library.Solr.v5
             }
 
             // Start to build the query
-            StringBuilder queryStringBuilder = new StringBuilder();
+            var queryStringBuilder = new StringBuilder();
 
             // If no query, this is an ALL browse
             if (((Web_Fields == null) || (Web_Fields.Count == 0)) || ((Terms == null) || (Terms.Count == 0)))
@@ -679,8 +677,7 @@ namespace SobekCM.Engine_Library.Solr.v5
             var solrWorker = Solr_Operations_Cache<Legacy_Solr_Page_Result>.GetSolrOperations(solrPageUrl);
 
             // Create the query options
-            QueryOptions options = new QueryOptions
-            {
+            var options = new QueryOptions{
                 Rows = ResultsPerPage,
                 Start = (ResultsPage - 1) * ResultsPerPage,
                 Fields = new[] { "pageid", "pagename", "pageorder", "score", "thumbnail" },
@@ -693,7 +690,7 @@ namespace SobekCM.Engine_Library.Solr.v5
                 options.OrderBy = new[] { new SortOrder("pageorder", Order.ASC) };
 
             // Build the query string
-            StringBuilder queryStringBuilder = new StringBuilder("(bibid:" + BibID + ")AND(vid:" + VID + ")AND(");
+            var queryStringBuilder = new StringBuilder("(bibid:" + BibID + ")AND(vid:" + VID + ")AND(");
             bool first_value = true;
             foreach (string searchTerm in Search_Terms)
             {

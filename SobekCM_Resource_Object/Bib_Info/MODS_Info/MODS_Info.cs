@@ -188,7 +188,7 @@ namespace SobekCM.Resource_Object.Bib_Info
         {
             if (accessConditions == null) accessConditions = new List<AccessCondition_Info>();
 
-            AccessCondition_Info access = new AccessCondition_Info { Text = RightsText };
+            var access = new AccessCondition_Info{ Text = RightsText };
 
             accessConditions.Add(access);
 
@@ -231,7 +231,7 @@ namespace SobekCM.Resource_Object.Bib_Info
         {
             if (tableOfContents == null) tableOfContents = new List<TableOfContents_Info>();
 
-            TableOfContents_Info returnValue = new TableOfContents_Info(Text);
+            var returnValue = new TableOfContents_Info(Text);
             tableOfContents.Add(returnValue);
             return returnValue;
         }
@@ -244,7 +244,7 @@ namespace SobekCM.Resource_Object.Bib_Info
         {
             if (tableOfContents == null) tableOfContents = new List<TableOfContents_Info>();
 
-            TableOfContents_Info returnValue = new TableOfContents_Info(Text, DisplayLabel);
+            var returnValue = new TableOfContents_Info(Text, DisplayLabel);
             tableOfContents.Add(returnValue);
             return returnValue;
         }
@@ -642,7 +642,7 @@ namespace SobekCM.Resource_Object.Bib_Info
             if (names == null)
                 names = new List<Name_Info>();
 
-            Name_Info newName = new Name_Info(Name, String.Empty);
+            var newName = new Name_Info(Name, String.Empty);
             names.Add(newName);
             return newName;
         }
@@ -656,7 +656,7 @@ namespace SobekCM.Resource_Object.Bib_Info
             if (names == null)
                 names = new List<Name_Info>();
 
-            Name_Info newName = new Name_Info(Name, Text_Role);
+            var newName = new Name_Info(Name, Text_Role);
             names.Add(newName);
             return newName;
         }
@@ -671,7 +671,7 @@ namespace SobekCM.Resource_Object.Bib_Info
             if (names == null)
                 names = new List<Name_Info>();
 
-            Name_Info newName = new Name_Info(Name, Text_Role);
+            var newName = new Name_Info(Name, Text_Role);
             newName.Add_Role(MARC_Role, "marcrelator", Name_Info_Role_Type_Enum.Code);
             names.Add(newName);
             return newName;
@@ -724,7 +724,7 @@ namespace SobekCM.Resource_Object.Bib_Info
                 genres = new List<Genre_Info>();
 
             // Create the new genre object
-            Genre_Info newGenre = new Genre_Info(Genre_Term, Authority);
+            var newGenre = new Genre_Info(Genre_Term, Authority);
 
             // If this is unique, add to the collection 
             if (!genres.Contains(newGenre))
@@ -784,7 +784,7 @@ namespace SobekCM.Resource_Object.Bib_Info
             if (notes == null)
                 notes = new List<Note_Info>();
 
-            Note_Info newNote = new Note_Info(Note);
+            var newNote = new Note_Info(Note);
             if (!notes.Contains(newNote))
             {
                 notes.Add(newNote);
@@ -805,7 +805,7 @@ namespace SobekCM.Resource_Object.Bib_Info
             if (notes == null)
                 notes = new List<Note_Info>();
 
-            Note_Info newNote = new Note_Info(Note, Note_Type);
+            var newNote = new Note_Info(Note, Note_Type);
             if (!notes.Contains(newNote))
             {
                 notes.Add(newNote);
@@ -826,7 +826,7 @@ namespace SobekCM.Resource_Object.Bib_Info
             if (notes == null)
                 notes = new List<Note_Info>();
 
-            Note_Info newNote = new Note_Info(Note, Note_Type);
+            var newNote = new Note_Info(Note, Note_Type);
             if (!notes.Contains(newNote))
             {
                 notes.Add(newNote);
@@ -848,7 +848,7 @@ namespace SobekCM.Resource_Object.Bib_Info
             if (notes == null)
                 notes = new List<Note_Info>();
 
-            Note_Info newNote = new Note_Info(Note, Note_Type, Display_Label);
+            var newNote = new Note_Info(Note, Note_Type, Display_Label);
             if (!notes.Contains(newNote))
             {
                 notes.Add(newNote);
@@ -875,7 +875,7 @@ namespace SobekCM.Resource_Object.Bib_Info
             if (notes == null)
                 notes = new List<Note_Info>();
 
-            Note_Info newNote = new Note_Info(Note, Note_Type, Display_Label);
+            var newNote = new Note_Info(Note, Note_Type, Display_Label);
             if (!notes.Contains(newNote))
             {
                 notes.Add(newNote);
@@ -941,7 +941,7 @@ namespace SobekCM.Resource_Object.Bib_Info
             if (abstracts == null)
                 abstracts = new List<Abstract_Info>();
 
-            Abstract_Info newAbstract = new Abstract_Info(Abstract, String.Empty);
+            var newAbstract = new Abstract_Info(Abstract, String.Empty);
             if (!abstracts.Contains(newAbstract))
             {
                 abstracts.Add(newAbstract);
@@ -963,7 +963,7 @@ namespace SobekCM.Resource_Object.Bib_Info
             if (abstracts == null)
                 abstracts = new List<Abstract_Info>();
 
-            Abstract_Info newAbstract = new Abstract_Info(Abstract, Language);
+            var newAbstract = new Abstract_Info(Abstract, Language);
             if (!abstracts.Contains(newAbstract))
             {
                 abstracts.Add(newAbstract);
@@ -991,7 +991,7 @@ namespace SobekCM.Resource_Object.Bib_Info
             if (abstracts == null)
                 abstracts = new List<Abstract_Info>();
 
-            Abstract_Info newAbstract = new Abstract_Info(Abstract, Language);
+            var newAbstract = new Abstract_Info(Abstract, Language);
             newAbstract.Display_Label = DisplayLabel;
             newAbstract.Type = Type;
             if (!abstracts.Contains(newAbstract))
@@ -1064,7 +1064,7 @@ namespace SobekCM.Resource_Object.Bib_Info
             if (classifications == null)
                 classifications = new List<Classification_Info>();
 
-            Classification_Info newClassification = new Classification_Info(Classification, Authority);
+            var newClassification = new Classification_Info(Classification, Authority);
             if (!classifications.Contains(newClassification))
             {
                 classifications.Add(newClassification);
@@ -1155,7 +1155,7 @@ namespace SobekCM.Resource_Object.Bib_Info
             if (identifiers == null)
                 identifiers = new List<Identifier_Info>();
 
-            Identifier_Info newIdentifier = new Identifier_Info(Identifier, Type, DisplayLabel);
+            var newIdentifier = new Identifier_Info(Identifier, Type, DisplayLabel);
             if (!identifiers.Contains(newIdentifier))
             {
                 identifiers.Add(newIdentifier);
@@ -1227,7 +1227,7 @@ namespace SobekCM.Resource_Object.Bib_Info
             if (Audience.Trim().Length == 0)
                 return null;
 
-            TargetAudience_Info newTarget = new TargetAudience_Info(Audience);
+            var newTarget = new TargetAudience_Info(Audience);
             if (!targetAudiences.Contains(newTarget))
             {
                 targetAudiences.Add(newTarget);
@@ -1249,7 +1249,7 @@ namespace SobekCM.Resource_Object.Bib_Info
             if (targetAudiences == null)
                 targetAudiences = new List<TargetAudience_Info>();
 
-            TargetAudience_Info newTarget = new TargetAudience_Info(Audience, Authority);
+            var newTarget = new TargetAudience_Info(Audience, Authority);
             if (!targetAudiences.Contains(newTarget))
             {
                 targetAudiences.Remove(newTarget);
@@ -1271,7 +1271,7 @@ namespace SobekCM.Resource_Object.Bib_Info
             if (Audience.Trim().Length == 0)
                 return null;
 
-            TargetAudience_Info newTarget = new TargetAudience_Info(Audience, Authority);
+            var newTarget = new TargetAudience_Info(Audience, Authority);
             if (!targetAudiences.Contains(newTarget))
             {
                 targetAudiences.Add(newTarget);
@@ -1314,7 +1314,7 @@ namespace SobekCM.Resource_Object.Bib_Info
             if (subjects == null)
                 subjects = new List<Subject_Info>();
 
-            Subject_Info_Cartographics returnValue = new Subject_Info_Cartographics();
+            var returnValue = new Subject_Info_Cartographics();
             subjects.Add(returnValue);
             return returnValue;
         }
@@ -1345,7 +1345,7 @@ namespace SobekCM.Resource_Object.Bib_Info
             }
 
             // Add a new subject then
-            Subject_Info_Cartographics newCarto = new Subject_Info_Cartographics();
+            var newCarto = new Subject_Info_Cartographics();
             newCarto.ID = ID;
             newCarto.Scale = Scale;
             subjects.Add(newCarto);
@@ -1382,7 +1382,7 @@ namespace SobekCM.Resource_Object.Bib_Info
             }
 
             // Add a new subject then
-            Subject_Info_Cartographics newCarto = new Subject_Info_Cartographics();
+            var newCarto = new Subject_Info_Cartographics();
             newCarto.ID = ID;
             newCarto.Scale = Scale;
             newCarto.Projection = Projection;
@@ -1398,7 +1398,7 @@ namespace SobekCM.Resource_Object.Bib_Info
             if (subjects == null)
                 subjects = new List<Subject_Info>();
 
-            Subject_Info_HierarchicalGeographic returnValue = new Subject_Info_HierarchicalGeographic();
+            var returnValue = new Subject_Info_HierarchicalGeographic();
             subjects.Add(returnValue);
             return returnValue;
         }
@@ -1410,7 +1410,7 @@ namespace SobekCM.Resource_Object.Bib_Info
             if (subjects == null)
                 subjects = new List<Subject_Info>();
 
-            Subject_Info_Name returnValue = new Subject_Info_Name();
+            var returnValue = new Subject_Info_Name();
             subjects.Add(returnValue);
             return returnValue;
         }
@@ -1422,7 +1422,7 @@ namespace SobekCM.Resource_Object.Bib_Info
             if (subjects == null)
                 subjects = new List<Subject_Info>();
 
-            Subject_Info_Standard returnValue = new Subject_Info_Standard();
+            var returnValue = new Subject_Info_Standard();
             subjects.Add(returnValue);
             return returnValue;
         }
@@ -1448,7 +1448,7 @@ namespace SobekCM.Resource_Object.Bib_Info
 
             if (Topic.Trim().Length > 0)
             {
-                Subject_Info_Standard returnValue = new Subject_Info_Standard(Topic, Authority);
+                var returnValue = new Subject_Info_Standard(Topic, Authority);
                 subjects.Add(returnValue);
                 return returnValue;
             }
@@ -1465,7 +1465,7 @@ namespace SobekCM.Resource_Object.Bib_Info
             if (subjects == null)
                 subjects = new List<Subject_Info>();
 
-            Subject_Info_TitleInfo returnValue = new Subject_Info_TitleInfo();
+            var returnValue = new Subject_Info_TitleInfo();
             subjects.Add(returnValue);
             return returnValue;
         }
@@ -1516,7 +1516,7 @@ namespace SobekCM.Resource_Object.Bib_Info
             if (languages == null)
                 languages = new List<Language_Info>();
 
-            Language_Info newLanguage = new Language_Info(Language_Text, Language_ISO_Code, Language_RFC_Code, Script_Text, Script_ISO_Code);
+            var newLanguage = new Language_Info(Language_Text, Language_ISO_Code, Language_RFC_Code, Script_Text, Script_ISO_Code);
             if (!languages.Contains(newLanguage))
             {
                 languages.Add(newLanguage);
@@ -1577,7 +1577,7 @@ namespace SobekCM.Resource_Object.Bib_Info
                 }
             }
 
-            Title_Info newTitle = new Title_Info(Title, Type);
+            var newTitle = new Title_Info(Title, Type);
             otherTitles.Add(newTitle);
             return newTitle;
         }
@@ -1629,7 +1629,7 @@ namespace SobekCM.Resource_Object.Bib_Info
         {
             get
             {
-                StringBuilder full_citation = new StringBuilder();
+                var full_citation = new StringBuilder();
 
                 if (locationInfo != null)
                 {

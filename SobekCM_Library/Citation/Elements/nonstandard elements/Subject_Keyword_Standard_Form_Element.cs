@@ -387,7 +387,7 @@ namespace SobekCM.Library.Citation.Elements
                         (temporal1.Length > 0) || (temporal2.Length > 0) || (geographic1.Length > 0) || (geographic2.Length > 0) ||
                         (genre1.Length > 0) || (genre2.Length > 0) || (occcupation.Length > 0))
                     {
-                        Subject_Info_Standard newSubject = new Subject_Info_Standard();
+                        var newSubject = new Subject_Info_Standard();
                         if (topic1.Length > 0) newSubject.Add_Topic(topic1);
                         if (topic2.Length > 0) newSubject.Add_Topic(topic2);
                         if (topic3.Length > 0) newSubject.Add_Topic(topic3);

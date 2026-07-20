@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using System;
 using System.Collections.Generic;
@@ -294,7 +294,7 @@ namespace SobekCM.Resource_Object.Metadata_Modules
         {
             get
             {
-                List<KeyValuePair<string, string>> metadataTerms = new List<KeyValuePair<string, string>>();
+                var metadataTerms = new List<KeyValuePair<string, string>>();
 
                 // Add the committeeChair
                 if (!String.IsNullOrEmpty(committeeChair))

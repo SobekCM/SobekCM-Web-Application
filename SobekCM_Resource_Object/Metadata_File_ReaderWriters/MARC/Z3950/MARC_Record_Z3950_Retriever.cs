@@ -59,7 +59,7 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters.MARC.Z3950
             try
             {
                 //	allocate MARC tools
-                MARC21_Exchange_Format_Parser parser = new MARC21_Exchange_Format_Parser();
+                var parser = new MARC21_Exchange_Format_Parser();
 
                 //	establish connection
                 IConnection connection = new Connection(Z3950_Server.URI, Convert.ToInt32(Z3950_Server.Port));
@@ -87,7 +87,7 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters.MARC.Z3950
 
                 //	capture the byte stream
                 IRecord record = records[0];
-                MemoryStream ms = new MemoryStream(record.Content);
+                var ms = new MemoryStream(record.Content);
 
                 //	display while debugging
                 //MessageBox.Show(Encoding.UTF8.GetString(record.Content));
@@ -149,7 +149,7 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters.MARC.Z3950
             try
             {
                 //	allocate MARC tools
-                MARC21_Exchange_Format_Parser parser = new MARC21_Exchange_Format_Parser();
+                var parser = new MARC21_Exchange_Format_Parser();
 
                 //	establish connection
                 IConnection connection = new Connection(Z3950_Server.URI, Convert.ToInt32(Z3950_Server.Port));
@@ -177,7 +177,7 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters.MARC.Z3950
 
                 //	capture the byte stream
                 IRecord record = records[0];
-                MemoryStream ms = new MemoryStream(record.Content);
+                var ms = new MemoryStream(record.Content);
 
                 //	display while debugging
                 //MessageBox.Show(Encoding.UTF8.GetString(record.Content));

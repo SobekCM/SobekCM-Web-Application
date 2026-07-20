@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using ProtoBuf;
 using System;
@@ -82,7 +82,7 @@ namespace SobekCM.Core.ApplicationState
         /// <returns> Built and added URL Portal for any additional work ( limiting by web skin or aggregationPermissions )</returns>
         public Portal Add_Portal(int ID, string Name, string Abbreviation, string Default_Aggregation, string Default_Web_Skin, string URL_Segment, string Base_PURL)
         {
-            Portal returnValue = new Portal(ID, Name, Abbreviation, Default_Aggregation, Default_Web_Skin, URL_Segment, Base_PURL);
+            var returnValue = new Portal(ID, Name, Abbreviation, Default_Aggregation, Default_Web_Skin, URL_Segment, Base_PURL);
             All_Portals.Add(returnValue);
             return returnValue;
         }

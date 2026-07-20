@@ -1,6 +1,7 @@
 {
   "permissions": {
     "allow": [
+      "Bash(*)",
       "Bash(git *)",
       "Bash(npm *)",
       "Bash(dotnet *)",

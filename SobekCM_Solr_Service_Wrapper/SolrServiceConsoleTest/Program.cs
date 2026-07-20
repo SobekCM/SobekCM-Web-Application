@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Sockets;
@@ -118,7 +118,7 @@ namespace SolrServiceConsoleTest
 
         private static bool is_port_in_use(int Port)
         {
-            using (TcpClient tcpClient = new TcpClient())
+            using (var tcpClient = new TcpClient())
             {
                 try
                 {

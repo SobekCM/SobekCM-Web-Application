@@ -1,4 +1,4 @@
-﻿using EngineAgnosticLayerDbAccess;
+using EngineAgnosticLayerDbAccess;
 using SobekCM.Core.MicroservicesClient;
 using System;
 using System.IO;
@@ -28,8 +28,8 @@ namespace SobekCM.Builder_Library.Settings
                 }
 
                 // Open a stream to the configuration file
-                StreamReader reader = new StreamReader(ConfigFile);
-                XmlTextReader xmlReader = new XmlTextReader(reader);
+                var reader = new StreamReader(ConfigFile);
+                var xmlReader = new XmlTextReader(reader);
                 while (xmlReader.Read())
                 {
                     if (xmlReader.NodeType == XmlNodeType.Element)
@@ -104,7 +104,7 @@ namespace SobekCM.Builder_Library.Settings
                     switch (ReaderXml.Name.ToLower())
                     {
                         case "connection_string":
-                            Single_Instance_Configuration singleInstance = new Single_Instance_Configuration();
+                            var singleInstance = new Single_Instance_Configuration();
                             if (ReaderXml.MoveToAttribute("active"))
                             {
                                 if (ReaderXml.Value.ToLower() == "false")
@@ -140,7 +140,7 @@ namespace SobekCM.Builder_Library.Settings
 
         private static void read_instances(XmlReader ReaderXml)
         {
-            Single_Instance_Configuration singleInstance = new Single_Instance_Configuration();
+            var singleInstance = new Single_Instance_Configuration();
 
             while (ReaderXml.Read())
             {

@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using System;
 using System.IO;
@@ -59,7 +59,7 @@ namespace SobekCM
 				{
 					try
 					{
-						StreamWriter writer = new StreamWriter(AppDomain.CurrentDomain.BaseDirectory + "\\temp\\exceptions.txt", true);
+						var writer = new StreamWriter(AppDomain.CurrentDomain.BaseDirectory + "\\temp\\exceptions.txt", true);
 						writer.WriteLine();
 						writer.WriteLine("Error Caught in Application_Error event ( " + DateTime.Now.ToString() + ")");
 						writer.WriteLine("User Host Address: " + Request.UserHostAddress);

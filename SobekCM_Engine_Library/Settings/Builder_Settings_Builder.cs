@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using SobekCM.Core.Builder;
 using SobekCM.Core.Settings;
@@ -24,8 +24,8 @@ namespace SobekCM.Engine_Library.Settings
             SettingsObject.Clear();
             try
             {
-                Dictionary<int, List<Builder_Source_Folder>> folder_to_set_dictionary = new Dictionary<int, List<Builder_Source_Folder>>();
-                Dictionary<int, List<Builder_Module_Setting>> setid_to_modules = new Dictionary<int, List<Builder_Module_Setting>>();
+                var folder_to_set_dictionary = new Dictionary<int, List<Builder_Source_Folder>>();
+                var setid_to_modules = new Dictionary<int, List<Builder_Module_Setting>>();
 
                 Set_Builder_Folders(SettingsObject, SobekCM_Settings.Tables[DataTableOffset], folder_to_set_dictionary);
 
@@ -66,13 +66,12 @@ namespace SobekCM.Engine_Library.Settings
             DataColumn typeAbbrevColumn = BuilderFoldersTable.Columns["TypeAbbrev"];
 
 
-            Dictionary<int, List<Builder_Module_Setting>> folderSettings = new Dictionary<int, List<Builder_Module_Setting>>();
+            var folderSettings = new Dictionary<int, List<Builder_Module_Setting>>();
             foreach (DataRow thisRow in BuilderFoldersTable.Rows)
             {
                 string type = thisRow[typeAbbrevColumn].ToString().ToUpper();
 
-                Builder_Module_Setting newSetting = new Builder_Module_Setting
-                {
+                var newSetting = new Builder_Module_Setting{
                     Class = thisRow[classColumn].ToString()
                 };
                 if (thisRow[assemblyColumn] != DBNull.Value)
@@ -135,7 +134,7 @@ namespace SobekCM.Engine_Library.Settings
             DataColumn timeOfDayColumn = BuilderFoldersTable.Columns["TimesOfDay"];
             DataColumn lastRunColumn = BuilderFoldersTable.Columns["LastRun"];
 
-            Dictionary<string, Builder_Schedulable_Module_Setting> alreadyBuilt = new Dictionary<string, Builder_Schedulable_Module_Setting>();
+            var alreadyBuilt = new Dictionary<string, Builder_Schedulable_Module_Setting>();
 
             foreach (DataRow thisRow in BuilderFoldersTable.Rows)
             {
@@ -173,7 +172,7 @@ namespace SobekCM.Engine_Library.Settings
                 }
 
                 // Get this schedule
-                Builder_Module_Schedule schedule = new Builder_Module_Schedule();
+                var schedule = new Builder_Module_Schedule();
                 schedule.DaysOfWeek = thisRow[daysOfWeekColumn].ToString();
                 schedule.TimeOfDay = thisRow[timeOfDayColumn].ToString();
                 if (thisRow[lastRunColumn] != DBNull.Value)
@@ -189,8 +188,7 @@ namespace SobekCM.Engine_Library.Settings
             SettingsObject.IncomingFolders.Clear();
             foreach (DataRow thisRow in BuilderFoldersTable.Rows)
             {
-                Builder_Source_Folder newFolder = new Builder_Source_Folder
-                {
+                var newFolder = new Builder_Source_Folder{
                     IncomingFolderID = Convert.ToInt32(thisRow["IncomingFolderId"]),
                     Folder_Name = thisRow["FolderName"].ToString(),
                     Inbound_Folder = thisRow["NetworkFolder"].ToString(),

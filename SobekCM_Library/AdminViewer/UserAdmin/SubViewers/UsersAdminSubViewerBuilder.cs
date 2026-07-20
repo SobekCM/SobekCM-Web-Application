@@ -44,7 +44,7 @@ namespace SobekCM.Library.AdminViewer.UserAdmin.SubViewers
             if (String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.My_Sobek_SubMode)) return null;
 
             // Strip out characters (used by subviewers to specify tab, other things potentially)
-            string only_numbers = new string(RequestSpecificValues.Current_Mode.My_Sobek_SubMode.Where(c => char.IsDigit(c)).ToArray()).Trim();
+            var only_numbers = new string(RequestSpecificValues.Current_Mode.My_Sobek_SubMode.Where(c => char.IsDigit(c)).ToArray()).Trim();
             if ((String.IsNullOrEmpty(only_numbers)) || (!int.TryParse(only_numbers, out int edit_userid)))
                 return null;
 

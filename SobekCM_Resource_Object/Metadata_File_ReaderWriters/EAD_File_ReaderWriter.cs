@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using SobekCM.Resource_Object.Bib_Info;
 using SobekCM.Resource_Object.Metadata_Modules;
@@ -65,7 +65,7 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
             bool returnValue = Read_Metadata(reader, Return_Package, Options, out Error_Message);
             reader.Close();
 
-            FileInfo eadFileInfo = new FileInfo(MetadataFilePathName);
+            var eadFileInfo = new FileInfo(MetadataFilePathName);
             Return_Package.Source_Directory = eadFileInfo.DirectoryName;
             if (Return_Package.BibID.Length == 0)
                 Return_Package.BibID = eadFileInfo.Name.Replace(".xml", "");
@@ -118,11 +118,11 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
 
 
             // Use a string builder to seperate the description and container sections
-            StringBuilder description_builder = new StringBuilder(20000);
-            StringBuilder container_builder = new StringBuilder(20000);
+            var description_builder = new StringBuilder(20000);
+            var container_builder = new StringBuilder(20000);
 
             // Read through with a simple stream reader first
-            StreamReader reader = new StreamReader(Input_Stream);
+            var reader = new StreamReader(Input_Stream);
             string line = reader.ReadLine();
             bool in_container_list = false;
 
@@ -172,8 +172,8 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
                 // Try to read the XML
                 try
                 {
-                    StringReader strReader = new StringReader(description_builder.ToString());
-                    XmlTextReader reader2 = new XmlTextReader(strReader);
+                    var strReader = new StringReader(description_builder.ToString());
+                    var reader2 = new XmlTextReader(strReader);
 
                     // Initial doctype declaration sometimes throws an error for a missing EAD.dtd.
                     bool ead_start_found = false;
@@ -347,8 +347,7 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
                                             {
                                                 if (reader2.NodeType == XmlNodeType.Text)
                                                 {
-                                                    Subject_Info_Name newName = new Subject_Info_Name
-                                                    {
+                                                    var newName = new Subject_Info_Name{
                                                         Full_Name = Trim_Final_Punctuation(reader2.Value),
                                                         Authority = source
                                                     };
@@ -440,13 +439,12 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
                 try
                 {
                     // Create the transform and load the XSL indicated
-                    XslCompiledTransform transform = new XslCompiledTransform();
+                    var transform = new XslCompiledTransform();
                     transform.Load(xslLocation);
 
                     // Apply the transform to convert the XML into HTML
-                    StringWriter results = new StringWriter();
-                    XmlReaderSettings settings = new XmlReaderSettings
-                    {
+                    var results = new StringWriter();
+                    var settings = new XmlReaderSettings{
                         DtdProcessing = DtdProcessing.Parse
                     };
                     using (XmlReader transformreader = XmlReader.Create(new StringReader(eadInfo.Full_Description), settings))
@@ -463,7 +461,7 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
                     }
 
                     // Since this was successful, try to build the TOC list of included sections
-                    SortedList<int, string> toc_sorter = new SortedList<int, string>();
+                    var toc_sorter = new SortedList<int, string>();
                     string description = eadInfo.Full_Description;
                     int did = description.IndexOf("<a name=\"did\"");
                     int bioghist = description.IndexOf("<a name=\"bioghist\"");
@@ -587,8 +585,8 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
             // Now, parse the container section as XML
             if (container_builder.Length > 0)
             {
-                StringReader containerReader = new StringReader(container_builder.ToString());
-                XmlTextReader xml_reader = new XmlTextReader(containerReader);
+                var containerReader = new StringReader(container_builder.ToString());
+                var xml_reader = new XmlTextReader(containerReader);
                 xml_reader.Read();
                 eadInfo.Container_Hierarchy.Read(xml_reader);
             }
@@ -635,9 +633,9 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
 
         private string Clean_Text_Block(string InnerXML)
         {
-            Regex rgx1 = new Regex("xmlns=\"[^\"]*\"");
-            Regex rgx2 = new Regex("[ ]*>");
-            Regex rgx3 = new Regex("[ ]*/>");
+            var rgx1 = new Regex("xmlns=\"[^\"]*\"");
+            var rgx2 = new Regex("[ ]*>");
+            var rgx3 = new Regex("[ ]*/>");
 
             string newInnerXML = rgx3.Replace(rgx2.Replace(rgx1.Replace(InnerXML, ""), ">"), "/>").Trim();
             if (newInnerXML.IndexOf("</head>") > 0)

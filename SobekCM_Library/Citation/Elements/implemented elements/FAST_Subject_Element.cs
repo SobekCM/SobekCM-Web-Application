@@ -99,7 +99,7 @@ namespace SobekCM.Library.Citation.Elements
                 if (thisKey.IndexOf(html_element_name.Replace("_", "") + "_select") == 0)
                 {
                     string subject_type = Context.Request.Form[thisKey];
-                    Subject_Info_Standard standardSubject = new Subject_Info_Standard { Authority = "fast" };
+                    var standardSubject = new Subject_Info_Standard{ Authority = "fast" };
 
                     if (subject_text.Trim().Length > 0)
                     {

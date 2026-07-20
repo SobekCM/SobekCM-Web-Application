@@ -457,7 +457,7 @@ namespace SobekCM.Library
                         // Get from the hierarchy object
                         if (Current_Mode.Writer_Type == Writer_Type_Enum.JSON)
                         {
-                            List<short> facetsList = new List<short>();
+                            var facetsList = new List<short>();
                             foreach (Complete_Item_Aggregation_Metadata_Type facet in Aggregation_Object.Facets)
                                 facetsList.Add(facet.ID);
 
@@ -642,8 +642,8 @@ namespace SobekCM.Library
             }
             else
             {
-                List<string> terms = new List<string>();
-                List<string> web_fields = new List<string>();
+                var terms = new List<string>();
+                var web_fields = new List<string>();
 
                 // Split the terms correctly ( only use the database stop words for the split if this will go to the database ultimately)
                 if (((Current_Mode.Search_Type == Search_Type_Enum.Full_Text) || (Current_Mode.Search_Fields.IndexOf("TX") >= 0)) || (UI_ApplicationCache_Gateway.Settings.System.Search_System == Search_System_Enum.Beta))
@@ -747,7 +747,7 @@ namespace SobekCM.Library
                     else
                     {
                         // Try to pull more than one page, so we can cache the next page or so
-                        List<List<iSearch_Title_Result>> pagesOfResults = new List<List<iSearch_Title_Result>>();
+                        var pagesOfResults = new List<List<iSearch_Title_Result>>();
 
                         // Perform the search against the database
                         try
@@ -838,8 +838,8 @@ namespace SobekCM.Library
 
             // Split the parts
             string[] fieldSplitTemp = Search_Fields.Split(new[] { Delimiter_Character });
-            List<string> fieldSplit = new List<string>();
-            List<string> searchSplit = new List<string>();
+            var fieldSplit = new List<string>();
+            var searchSplit = new List<string>();
             int first_index = 0;
             int second_index = 0;
             int field_index = 0;
@@ -966,7 +966,7 @@ namespace SobekCM.Library
             }
 
             // Get the list of facets first
-            List<short> facetsList = new List<short>();
+            var facetsList = new List<short>();
             foreach (Complete_Item_Aggregation_Metadata_Type facet in Aggregation_Object.Facets)
                 facetsList.Add(facet.ID);
             if (!Potentially_Include_Facets)
@@ -1062,8 +1062,8 @@ namespace SobekCM.Library
                 }
             }
 
-            List<short> links = new List<short>();
-            List<short> db_fields = new List<short>();
+            var links = new List<short>();
+            var db_fields = new List<short>();
             List<string> db_terms = Terms.ToList();
 
             // Step through all the web fields and convert to db fields
@@ -1170,7 +1170,7 @@ namespace SobekCM.Library
                 // Perform either the simpler metadata search, or the more complex
                 if (simplified_search)
                 {
-                    StringBuilder searchBuilder = new StringBuilder();
+                    var searchBuilder = new StringBuilder();
                     for (int i = 0; i < db_terms.Count; i++)
                     {
                         if (db_terms[i].Length > 0)
@@ -1241,7 +1241,7 @@ namespace SobekCM.Library
             if (UI_ApplicationCache_Gateway.Settings.System.Search_System == Search_System_Enum.Beta)
             {
                 // Build the user membership information
-                Search_User_Membership_Info userInfo = new Search_User_Membership_Info();
+                var userInfo = new Search_User_Membership_Info();
                 if ((Current_User == null) || (!Current_User.LoggedOn))
                 {
                     userInfo.LoggedIn = false;
@@ -1266,7 +1266,7 @@ namespace SobekCM.Library
                 }
 
                 // Build the search options
-                Search_Options_Info searchOptions = new Search_Options_Info();
+                var searchOptions = new Search_Options_Info();
                 searchOptions.Page = Current_Page;
                 searchOptions.ResultsPerPage = Results_Per_Page;
                 searchOptions.AggregationCode = Current_Aggregation.Code;

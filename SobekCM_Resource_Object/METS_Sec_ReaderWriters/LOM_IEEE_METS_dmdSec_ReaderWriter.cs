@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using SobekCM.Resource_Object.Metadata_Modules;
 using SobekCM.Resource_Object.Metadata_Modules.LearningObjects;
@@ -599,7 +599,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
 
         private void read_requirement(XmlReader Input_XmlReader, LearningObjectMetadata lomInfo)
         {
-            LOM_System_Requirements requirement = new LOM_System_Requirements();
+            var requirement = new LOM_System_Requirements();
 
             // Loop through reading each XML node
             do
@@ -710,7 +710,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                             break;
 
                         case "learningresourcetype":
-                            LOM_VocabularyState learningResourceType = new LOM_VocabularyState();
+                            var learningResourceType = new LOM_VocabularyState();
                             if (Input_XmlReader.MoveToAttribute("source"))
                                 learningResourceType.Source = Input_XmlReader.Value.Trim();
                             Input_XmlReader.Read();
@@ -778,7 +778,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                             break;
 
                         case "context":
-                            LOM_VocabularyState context = new LOM_VocabularyState();
+                            var context = new LOM_VocabularyState();
                             if (Input_XmlReader.MoveToAttribute("source"))
                                 context.Source = Input_XmlReader.Value.Trim();
                             Input_XmlReader.Read();
@@ -804,7 +804,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                                 // Start of a new language string?
                                 if ((Input_XmlReader.NodeType == XmlNodeType.Element) && (subname == "langstring"))
                                 {
-                                    LOM_LanguageString agerange = new LOM_LanguageString();
+                                    var agerange = new LOM_LanguageString();
                                     if (Input_XmlReader.MoveToAttribute("lang"))
                                         agerange.Language = Input_XmlReader.Value.Trim();
                                     Input_XmlReader.Read();
@@ -878,7 +878,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
         private void read_classification(XmlReader Input_XmlReader, LearningObjectMetadata lomInfo)
         {
             // Create the classification object
-            LOM_Classification classification = new LOM_Classification();
+            var classification = new LOM_Classification();
 
             // Loop through reading each XML node
             do
@@ -930,7 +930,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
         private void read_taxonpath(XmlReader Input_XmlReader, LOM_Classification classification)
         {
             // Create the taxon path object
-            LOM_TaxonPath taxonPath = new LOM_TaxonPath();
+            var taxonPath = new LOM_TaxonPath();
 
             // Loop through reading each XML node
             do
@@ -959,7 +959,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                                 // Start of a new language string?
                                 if ((Input_XmlReader.NodeType == XmlNodeType.Element) && (subname == "langstring"))
                                 {
-                                    LOM_LanguageString source = new LOM_LanguageString();
+                                    var source = new LOM_LanguageString();
                                     if (Input_XmlReader.MoveToAttribute("lang"))
                                         source.Language = Input_XmlReader.Value.Trim();
                                     Input_XmlReader.Read();
@@ -988,7 +988,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
         private void read_taxon(XmlReader Input_XmlReader, LOM_TaxonPath taxonPath)
         {
             // Create the taxon path object
-            LOM_Taxon taxon = new LOM_Taxon();
+            var taxon = new LOM_Taxon();
 
             // Loop through reading each XML node
             do
@@ -1025,7 +1025,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                                 // Start of a new language string?
                                 if ((Input_XmlReader.NodeType == XmlNodeType.Element) && (subname == "langstring"))
                                 {
-                                    LOM_LanguageString entry = new LOM_LanguageString();
+                                    var entry = new LOM_LanguageString();
                                     if (Input_XmlReader.MoveToAttribute("lang"))
                                         entry.Language = Input_XmlReader.Value.Trim();
                                     Input_XmlReader.Read();

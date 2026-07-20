@@ -52,7 +52,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
 
             // Build the value
-            StringBuilder builder = new StringBuilder();
+            var builder = new StringBuilder();
 
             // Save the current viewer code
             string current_view_code = CurrentMode.ViewerCode;
@@ -96,7 +96,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             CurrentMode.ViewerCode = current_view_code;
 
             // Add the HTML for the image
-            Literal mainLiteral = new Literal {Text = builder.ToString()};
+            var mainLiteral = new Literal{Text = builder.ToString()};
             MainPlaceHolder.Controls.Add( mainLiteral );
         }
 

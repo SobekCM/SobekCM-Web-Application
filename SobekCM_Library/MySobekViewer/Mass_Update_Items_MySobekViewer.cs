@@ -80,7 +80,7 @@ namespace SobekCM.Library.MySobekViewer
 
             // Since this is a mass update, just create a new empty item with the GroupID included
             // from the provided item
-            SobekCM_Item emptyItem = new SobekCM_Item { BibID = currentItem.BibID };
+            var emptyItem = new SobekCM_Item{ BibID = currentItem.BibID };
             emptyItem.Web.GroupID = currentItem.Web.GroupID;
             emptyItem.Bib_Info.Source.Code = String.Empty;
             emptyItem.Behaviors.CheckOut_Required_Is_Null = true;
@@ -107,7 +107,7 @@ namespace SobekCM.Library.MySobekViewer
                 RequestSpecificValues.Tracer.Add_Trace("Mass_Update_Items_MySobekViewer.Constructor", "Reading CompleteTemplate file");
 
                 // Read this CompleteTemplate
-                Template_XML_Reader reader = new Template_XML_Reader();
+                var reader = new Template_XML_Reader();
                 completeTemplate = new CompleteTemplate();
                 reader.Read_XML(UI_ApplicationCache_Gateway.Settings.Servers.Base_MySobek_Directory + "templates\\default\\standard\\" + TEMPLATE_CODE + ".xml", completeTemplate, true);
 

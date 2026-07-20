@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using System;
 using SobekCM.Engine_Library.Solr;
@@ -21,7 +21,7 @@ namespace SobekCM.Builder_Library.Modules.Items
             // Save this to the Solr/Lucene database
             if ( !String.IsNullOrEmpty(Settings.Servers.Document_Solr_Legacy_URL))
             {
-                Legacy_Solr_Controller controller = new Legacy_Solr_Controller();
+                var controller = new Legacy_Solr_Controller();
 
                 if (((!Resource.Metadata.Behaviors.IP_Restriction_Membership_Is_Null) && (Resource.Metadata.Behaviors.IP_Restriction_Membership < 0)) ||
                     ((!Resource.Metadata.Behaviors.Dark_Flag_Is_Null) && (Resource.Metadata.Behaviors.Dark_Flag)))

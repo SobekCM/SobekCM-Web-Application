@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using SobekCM.Core.BriefItem;
 using SobekCM.Core.EAD;
@@ -338,19 +338,19 @@ namespace SobekCM.Core.Client
 
         public SobekCM_Item Get_Sobek_Item(string BibID, string VID, Custom_Tracer Tracer)
         {
-            ItemServices srvcs = new ItemServices();
+            var srvcs = new ItemServices();
             return srvcs.getSobekItem(BibID, VID, Tracer).Item1;
         }
 
         public SobekCM_Item Get_Sobek_Item(string BibID, string VID, int UserID, Custom_Tracer Tracer)
         {
-            ItemServices srvcs = new ItemServices();
+            var srvcs = new ItemServices();
             return srvcs.getSobekItem(BibID, VID, UserID, Tracer).Item1;
         }
 
         public SobekCM_Item Get_Sobek_Item_Group(string BibID, Custom_Tracer Tracer)
         {
-            ItemServices srvcs = new ItemServices();
+            var srvcs = new ItemServices();
             return srvcs.getSobekItemGroup(BibID, Tracer);
         }
     }

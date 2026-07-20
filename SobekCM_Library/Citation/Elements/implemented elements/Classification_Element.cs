@@ -71,8 +71,8 @@ namespace SobekCM.Library.Citation.Elements
                 }
             }
 
-            List<string> terms = new List<string>();
-            List<string> schemes = new List<string>();
+            var terms = new List<string>();
+            var schemes = new List<string>();
             if (Bib.Bib_Info.Classifications_Count > 0)
             {
                 foreach (Classification_Info thisClassification in Bib.Bib_Info.Classifications)
@@ -100,15 +100,15 @@ namespace SobekCM.Library.Citation.Elements
         public override void Save_To_Bib(SobekCM_Item Bib)
         {
             // Get the list of classifications
-            List<Classification_Info> workableList = new List<Classification_Info>();
+            var workableList = new List<Classification_Info>();
             if (Bib.Bib_Info.Classifications_Count > 0)
             {
                 workableList.AddRange(Bib.Bib_Info.Classifications);
             }
 
             // Collect all the strings from the form
-            Dictionary<string, string> classifications = new Dictionary<string, string>();
-            Dictionary<string, string> authorities = new Dictionary<string, string>();
+            var classifications = new Dictionary<string, string>();
+            var authorities = new Dictionary<string, string>();
             var getKeys = Context.Request.Form.Keys;
             foreach (string thisKey in getKeys)
             {
@@ -130,8 +130,7 @@ namespace SobekCM.Library.Citation.Elements
             // Step through and add each classification
             foreach (string index in classifications.Keys)
             {
-                Classification_Info newClassification = new Classification_Info
-                { Classification = classifications[index] };
+                var newClassification = new Classification_Info{ Classification = classifications[index] };
                 if (authorities.ContainsKey(index))
                 {
                     newClassification.Authority = authorities[index];

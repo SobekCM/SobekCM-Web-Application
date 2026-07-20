@@ -116,7 +116,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 first_label = thisViewerInfo.Label;
 
             // Add the item menu information
-            Item_MenuItem menuItem = new Item_MenuItem(first_label, null, null, url, ViewerCode);
+            var menuItem = new Item_MenuItem(first_label, null, null, url, ViewerCode);
             MenuItems.Add(menuItem);
         }
 
@@ -213,7 +213,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
             catch
             {
-                StringBuilder builder = new StringBuilder();
+                var builder = new StringBuilder();
                 builder.AppendLine("<div style=\"background-color: White; color: black;text-align:center; width:630px;\">");
                 builder.AppendLine("  <br /><br />");
                 builder.AppendLine("  <span style=\"font-weight:bold;font-size:1.4em\">Unable to pull html view for item ( <a href=\"" + sourceString + "\">source</a> )</span><br /><br />");

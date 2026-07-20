@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using System;
 using System.Collections.Generic;
@@ -66,7 +66,7 @@ namespace SobekCM.Builder_Library.Modules.Folders
                     }
 
                     // Create the new object
-                    SobekCM_Item newItem = new SobekCM_Item();
+                    var newItem = new SobekCM_Item();
                     newItem.Bib_Info.SobekCM_Type = TypeOfResource_SobekCM_Enum.Archival;
                     newItem.Bib_Info.Main_Title.Title = thisSubDirName;
                     newItem.Bib_Info.Add_Identifier(thisSubDirName);

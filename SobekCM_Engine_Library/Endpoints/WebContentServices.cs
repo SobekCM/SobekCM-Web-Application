@@ -54,7 +54,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="IsDebug"></param>
         public void Get_Hierarchy(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
         {
-            Custom_Tracer tracer = new Custom_Tracer();
+            var tracer = new Custom_Tracer();
 
             // Add a trace
             tracer.Add_Trace("WebContentServices.Get_Hierarchy", "Get the hierarchy object from the application cache gateway");
@@ -141,7 +141,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="IsDebug"></param>
         public void Get_HTML_Based_Content(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
         {
-            Custom_Tracer tracer = new Custom_Tracer();
+            var tracer = new Custom_Tracer();
 
             // Add a trace
             tracer.Add_Trace("WebContentServices.Get_HTML_Based_Content");
@@ -170,7 +170,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="IsDebug"></param>
         public void Get_HTML_Based_Content_By_ID(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
         {
-            Custom_Tracer tracer = new Custom_Tracer();
+            var tracer = new Custom_Tracer();
 
             // Add a trace
             tracer.Add_Trace("WebContentServices.Get_HTML_Based_Content_By_ID", "Get content based on the primary key");
@@ -320,7 +320,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="IsDebug"></param>
         public void Get_HTML_Based_Content_By_URL(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
         {
-            Custom_Tracer tracer = new Custom_Tracer();
+            var tracer = new Custom_Tracer();
 
             tracer.Add_Trace("WebContentServices.Get_HTML_Based_Content_By_URL", "Compute web content id from url segments");
 
@@ -468,7 +468,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="IsDebug"></param>
         public void Delete_HTML_Based_Content(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, NameValueCollection RequestForm, bool IsDebug)
         {
-            Custom_Tracer tracer = new Custom_Tracer();
+            var tracer = new Custom_Tracer();
 
             // Add a trace
             tracer.Add_Trace("WebContentServices.Delete_HTML_Based_Content");
@@ -535,7 +535,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="IsDebug"></param>
         public void Update_HTML_Based_Content(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, NameValueCollection RequestForm, bool IsDebug)
         {
-            Custom_Tracer tracer = new Custom_Tracer();
+            var tracer = new Custom_Tracer();
 
             // Add a trace
             tracer.Add_Trace("WebContentServices.AddUpdate_HTML_Based_Content");
@@ -583,14 +583,14 @@ namespace SobekCM.Engine_Library.Endpoints
                     case Microservice_Endpoint_Protocol_Enum.PROTOBUF:
                         // Deserialize using the Protocol buffer-net library
                         byte[] byteArray = Encoding.ASCII.GetBytes(contentString);
-                        MemoryStream mstream = new MemoryStream(byteArray);
+                        var mstream = new MemoryStream(byteArray);
                         content = Serializer.Deserialize<HTML_Based_Content>(mstream);
                         break;
 
                     case Microservice_Endpoint_Protocol_Enum.XML:
                         byte[] byteArray2 = Encoding.UTF8.GetBytes(contentString);
-                        MemoryStream mstream2 = new MemoryStream(byteArray2);
-                        XmlSerializer x = new XmlSerializer(typeof(HTML_Based_Content));
+                        var mstream2 = new MemoryStream(byteArray2);
+                        var x = new XmlSerializer(typeof(HTML_Based_Content));
                         content = (HTML_Based_Content)x.Deserialize(mstream2);
                         break;
                 }
@@ -712,7 +712,7 @@ namespace SobekCM.Engine_Library.Endpoints
                 }
                 else
                 {
-                    List<string> updatesBuilderList = new List<string>();
+                    var updatesBuilderList = new List<string>();
                     if (!AreEqual(content.Author, currentContent.Author)) updatesBuilderList.Add("Author");
                     if (!AreEqual(content.Banner, currentContent.Banner)) updatesBuilderList.Add("Banner");
                     if (!AreEqual(content.CssFile, currentContent.CssFile)) updatesBuilderList.Add("Stylesheet");
@@ -736,7 +736,7 @@ namespace SobekCM.Engine_Library.Endpoints
                         }
                         if (updatesBuilderList.Count > 2)
                         {
-                            StringBuilder updatesBuilder = new StringBuilder("Updated the ");
+                            var updatesBuilder = new StringBuilder("Updated the ");
                             for (int i = 0; i < updatesBuilderList.Count; i++)
                             {
                                 if (i == 0)
@@ -757,7 +757,7 @@ namespace SobekCM.Engine_Library.Endpoints
             }
 
             // Get the location for this HTML file to be saved
-            StringBuilder dirBuilder = new StringBuilder(Engine_ApplicationCache_Gateway.Settings.Servers.Base_Directory + "design\\webcontent\\" + content.Level1);
+            var dirBuilder = new StringBuilder(Engine_ApplicationCache_Gateway.Settings.Servers.Base_Directory + "design\\webcontent\\" + content.Level1);
             if (!String.IsNullOrEmpty(content.Level2))
             {
                 dirBuilder.Append("\\" + content.Level2);
@@ -853,10 +853,10 @@ namespace SobekCM.Engine_Library.Endpoints
             }
 
             // Build return value
-            RestResponseMessage message = new RestResponseMessage(ErrorRestTypeEnum.Successful, "Updated web page details");
+            var message = new RestResponseMessage(ErrorRestTypeEnum.Successful, "Updated web page details");
 
             // Set the URL
-            StringBuilder urlBuilder = new StringBuilder(Engine_ApplicationCache_Gateway.Settings.Servers.Base_URL + "/" + content.Level1);
+            var urlBuilder = new StringBuilder(Engine_ApplicationCache_Gateway.Settings.Servers.Base_URL + "/" + content.Level1);
             if (!String.IsNullOrEmpty(content.Level2))
             {
                 urlBuilder.Append("/" + content.Level2);
@@ -915,7 +915,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="IsDebug"></param>
         public void Add_HTML_Based_Content(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, NameValueCollection RequestForm, bool IsDebug)
         {
-            Custom_Tracer tracer = new Custom_Tracer();
+            var tracer = new Custom_Tracer();
 
             // Add a trace
             tracer.Add_Trace("WebContentServices.Add_HTML_Based_Content");
@@ -960,14 +960,14 @@ namespace SobekCM.Engine_Library.Endpoints
                     case Microservice_Endpoint_Protocol_Enum.PROTOBUF:
                         // Deserialize using the Protocol buffer-net library
                         byte[] byteArray = Encoding.ASCII.GetBytes(contentString);
-                        MemoryStream mstream = new MemoryStream(byteArray);
+                        var mstream = new MemoryStream(byteArray);
                         content = Serializer.Deserialize<HTML_Based_Content>(mstream);
                         break;
 
                     case Microservice_Endpoint_Protocol_Enum.XML:
                         byte[] byteArray2 = Encoding.UTF8.GetBytes(contentString);
-                        MemoryStream mstream2 = new MemoryStream(byteArray2);
-                        XmlSerializer x = new XmlSerializer(typeof(HTML_Based_Content));
+                        var mstream2 = new MemoryStream(byteArray2);
+                        var x = new XmlSerializer(typeof(HTML_Based_Content));
                         content = (HTML_Based_Content)x.Deserialize(mstream2);
                         break;
                 }
@@ -1033,7 +1033,7 @@ namespace SobekCM.Engine_Library.Endpoints
                 if (inheritFromParent)
                 {
                     // Copy the current URL segment list
-                    List<string> parentCheck = new List<string>(8);
+                    var parentCheck = new List<string>(8);
                     parentCheck.AddRange(UrlSegments);
                     parentCheck.RemoveAt(parentCheck.Count - 1);
 
@@ -1085,7 +1085,7 @@ namespace SobekCM.Engine_Library.Endpoints
 
 
             // Get the location for this HTML file to be saved
-            StringBuilder dirBuilder = new StringBuilder(Engine_ApplicationCache_Gateway.Settings.Servers.Base_Directory + "design\\webcontent\\" + content.Level1);
+            var dirBuilder = new StringBuilder(Engine_ApplicationCache_Gateway.Settings.Servers.Base_Directory + "design\\webcontent\\" + content.Level1);
             if (!String.IsNullOrEmpty(content.Level2))
             {
                 dirBuilder.Append("\\" + content.Level2);
@@ -1161,10 +1161,10 @@ namespace SobekCM.Engine_Library.Endpoints
 
 
             // Build return value
-            RestResponseMessage message = new RestResponseMessage(ErrorRestTypeEnum.Successful, "Added new page");
+            var message = new RestResponseMessage(ErrorRestTypeEnum.Successful, "Added new page");
 
             // Set the URL
-            StringBuilder urlBuilder = new StringBuilder(Engine_ApplicationCache_Gateway.Settings.Servers.Base_URL + "/" + content.Level1);
+            var urlBuilder = new StringBuilder(Engine_ApplicationCache_Gateway.Settings.Servers.Base_URL + "/" + content.Level1);
             if (!String.IsNullOrEmpty(content.Level2))
             {
                 urlBuilder.Append("/" + content.Level2);
@@ -1207,7 +1207,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="IsDebug"></param>
         public void Add_Milestone(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, NameValueCollection RequestForm, bool IsDebug)
         {
-            Custom_Tracer tracer = new Custom_Tracer();
+            var tracer = new Custom_Tracer();
 
             // Add a trace
             tracer.Add_Trace("WebContentServices.Add_Milestone");
@@ -1265,7 +1265,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="IsDebug"></param>
         public void Get_Special_Missing_Page(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
         {
-            Custom_Tracer tracer = new Custom_Tracer();
+            var tracer = new Custom_Tracer();
 
             tracer.Add_Trace("WebContentServices.Get_Special_Missing_Page");
 
@@ -1285,7 +1285,7 @@ namespace SobekCM.Engine_Library.Endpoints
                             Directory.CreateDirectory(directory);
 
                         // Try to write the file
-                        StreamWriter writer = new StreamWriter(file);
+                        var writer = new StreamWriter(file);
                         writer.WriteLine("<html>");
                         writer.WriteLine("<head>");
                         writer.WriteLine("  <title>No Page Found</title>");
@@ -1405,7 +1405,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="IsDebug"></param>
         public void Get_Single_Milestones(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
         {
-            Custom_Tracer tracer = new Custom_Tracer();
+            var tracer = new Custom_Tracer();
 
             // Add a trace
             tracer.Add_Trace("WebContentServices.Get_Single_Milestones");
@@ -1492,7 +1492,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="IsDebug"></param>
         public void Get_Single_Usage_Report(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
         {
-            Custom_Tracer tracer = new Custom_Tracer();
+            var tracer = new Custom_Tracer();
 
             // Add a trace
             tracer.Add_Trace("WebContentServices.Get_Single_Usage_Report");
@@ -1580,7 +1580,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <remarks> This REST API should be publicly available for users that are performing administrative work </remarks>
         public void GetUploadedImages(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
         {
-            Custom_Tracer tracer = new Custom_Tracer();
+            var tracer = new Custom_Tracer();
 
             tracer.Add_Trace("WebContentServices.GetUploadedImages", "Compute web content id from url segments");
 
@@ -1634,10 +1634,10 @@ namespace SobekCM.Engine_Library.Endpoints
             }
 
             // Since we now know this is a valid web content page, let's just return the uploaded images
-            List<UploadedFileFolderInfo> serverFiles = new List<UploadedFileFolderInfo>();
+            var serverFiles = new List<UploadedFileFolderInfo>();
 
             // Build the folder which will include the uploads
-            StringBuilder designFolderBldr = new StringBuilder("webcontent\\" + UrlSegments[0]);
+            var designFolderBldr = new StringBuilder("webcontent\\" + UrlSegments[0]);
             if (UrlSegments.Count > 1) designFolderBldr.Append("\\" + UrlSegments[1]);
             if (UrlSegments.Count > 2) designFolderBldr.Append("\\" + UrlSegments[2]);
             if (UrlSegments.Count > 3) designFolderBldr.Append("\\" + UrlSegments[3]);
@@ -1689,7 +1689,7 @@ namespace SobekCM.Engine_Library.Endpoints
         public void Has_Global_Recent_Updates(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
         {
             // Create the tracer and add a trace
-            Custom_Tracer tracer = new Custom_Tracer();
+            var tracer = new Custom_Tracer();
             tracer.Add_Trace("WebContentServices.Has_Global_Recent_Updates");
 
             // Get the dataset of recent updates
@@ -1750,7 +1750,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="IsDebug"></param>
         public void Get_Global_Recent_Updates(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
         {
-            Custom_Tracer tracer = new Custom_Tracer();
+            var tracer = new Custom_Tracer();
 
             // Set the default page information
             int page = 1;
@@ -1805,8 +1805,7 @@ namespace SobekCM.Engine_Library.Endpoints
             }
 
             // Create the list for the results
-            WebContent_Recent_Changes returnValue = new WebContent_Recent_Changes
-            {
+            var returnValue = new WebContent_Recent_Changes{
                 Page = page,
                 RowsPerPage = rows_per_page
             };
@@ -1823,7 +1822,7 @@ namespace SobekCM.Engine_Library.Endpoints
                 try
                 {
                     // Filter by the user
-                    DataView view = new DataView(changes.Tables[0])
+                    var view = new DataView(changes.Tables[0])
                     {
                         RowFilter = "MilestoneUser = '" + userFilter + "'"
                     };
@@ -1927,7 +1926,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="IsDebug"></param>
         public void Get_Global_Recent_Updates_JDataTable(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
         {
-            Custom_Tracer tracer = new Custom_Tracer();
+            var tracer = new Custom_Tracer();
 
             // Get ready to pull the informaiton from the query string which the
             // jquery datatables library pass in
@@ -1971,7 +1970,7 @@ namespace SobekCM.Engine_Library.Endpoints
             }
 
             // Create the view for sorting and filtering
-            DataView resultsView = new DataView(changes.Tables[0]);
+            var resultsView = new DataView(changes.Tables[0]);
 
             // Check for a user filter
             string userFilter = QueryString["user"];
@@ -2126,7 +2125,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="IsDebug"></param>
         public void Get_Global_Recent_Updates_NextLevel(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
         {
-            Custom_Tracer tracer = new Custom_Tracer();
+            var tracer = new Custom_Tracer();
             tracer.Add_Trace("WebContentServices.Get_Global_Recent_Updates_NextLevel", "Into endpoint code");
 
             // Get the dataset of recent updates
@@ -2152,7 +2151,7 @@ namespace SobekCM.Engine_Library.Endpoints
             }
 
             // Start the return list
-            List<string> returnValue = new List<string>();
+            var returnValue = new List<string>();
 
             try
             {
@@ -2175,7 +2174,7 @@ namespace SobekCM.Engine_Library.Endpoints
                     {
                         tracer.Add_Trace("WebContentServices.Get_Global_Recent_Updates_NextLevel", "Special case, second level");
                         string level1_special = UrlSegments[0];
-                        DataView specialView = new DataView(changes.Tables[3])
+                        var specialView = new DataView(changes.Tables[3])
                         {
                             RowFilter = "Level1 = '" + level1_special + "'"
                         };
@@ -2193,7 +2192,7 @@ namespace SobekCM.Engine_Library.Endpoints
                     string level2 = UrlSegments[1];
 
                     // Build the filter
-                    StringBuilder filterBuilder = new StringBuilder("Level1='" + level1 + "' and Level2='" + level2 + "'");
+                    var filterBuilder = new StringBuilder("Level1='" + level1 + "' and Level2='" + level2 + "'");
                     int column_counter = 3;
                     if ((UrlSegments.Count > 2) && (!String.IsNullOrWhiteSpace(UrlSegments[2])))
                     {
@@ -2228,14 +2227,14 @@ namespace SobekCM.Engine_Library.Endpoints
                     tracer.Add_Trace("WebContentServices.Get_Global_Recent_Updates_NextLevel", filterBuilder.ToString());
 
                     // Create the dataview
-                    DataView specialView = new DataView(changes.Tables[0])
+                    var specialView = new DataView(changes.Tables[0])
                     {
                         RowFilter = filterBuilder.ToString()
                     };
 
 
                     // Step through and add each NEW term to a sorted dictionary
-                    SortedDictionary<string, string> sortList = new SortedDictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+                    var sortList = new SortedDictionary<string, string>(StringComparer.OrdinalIgnoreCase);
                     foreach (DataRowView thisRow in specialView)
                     {
                         if (thisRow[column_counter] != DBNull.Value)
@@ -2304,7 +2303,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="IsDebug"></param>
         public void Get_Global_Recent_Updates_Users(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
         {
-            Custom_Tracer tracer = new Custom_Tracer();
+            var tracer = new Custom_Tracer();
 
             // Add a trace
             tracer.Add_Trace("WebContentServices.Get_Recent_Updates_Users", "Get the list of all users that have participated in the recent updates to all top-level static web content pages");
@@ -2332,7 +2331,7 @@ namespace SobekCM.Engine_Library.Endpoints
             }
 
             // Get the list of users
-            List<string> userList = new List<string>();
+            var userList = new List<string>();
             if ((changes.Tables.Count > 1) && (changes.Tables[1].Rows.Count > 0))
             {
                 foreach (DataRow userRow in changes.Tables[1].Rows)
@@ -2367,8 +2366,7 @@ namespace SobekCM.Engine_Library.Endpoints
         protected WebContent_Recent_Changed_Page datarow_to_webcontent_recent_changed_page(DataRow ChangeRow)
         {
             // Start to buid the object to report this work
-            WebContent_Recent_Changed_Page recentChange = new WebContent_Recent_Changed_Page
-            {
+            var recentChange = new WebContent_Recent_Changed_Page{
                 WebContentID = Int32.Parse(ChangeRow[0].ToString()),
                 Level1 = ChangeRow[1].ToString()
             };
@@ -2446,7 +2444,7 @@ namespace SobekCM.Engine_Library.Endpoints
         public void Has_Global_Usage(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
         {
             // Create the tracer and add a trace
-            Custom_Tracer tracer = new Custom_Tracer();
+            var tracer = new Custom_Tracer();
             tracer.Add_Trace("WebContentServices.Has_Global_Usage");
 
             // Look in the cache
@@ -2493,7 +2491,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="IsDebug"></param>
         public void Get_Global_Usage_Report(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
         {
-            Custom_Tracer tracer = new Custom_Tracer();
+            var tracer = new Custom_Tracer();
 
             // Set the default page information
             int page = 1;
@@ -2561,8 +2559,7 @@ namespace SobekCM.Engine_Library.Endpoints
             }
 
             // Create the list for the results
-            WebContent_Usage_Report returnValue = new WebContent_Usage_Report
-            {
+            var returnValue = new WebContent_Usage_Report{
                 Page = page,
                 RowsPerPage = rows_per_page,
                 RangeStart = year1 + "-" + month1,
@@ -2635,8 +2632,7 @@ namespace SobekCM.Engine_Library.Endpoints
         protected WebContent_Page_Usage datarow_to_page_usage(DataRow ChangeRow)
         {
             // Start to buid the object to report this work
-            WebContent_Page_Usage usedPage = new WebContent_Page_Usage
-            {
+            var usedPage = new WebContent_Page_Usage{
                 Level1 = ChangeRow[0].ToString(),
                 Hits = Int32.Parse(ChangeRow[10].ToString()),
                 HitsHierarchical = Int32.Parse(ChangeRow[11].ToString()),
@@ -2684,7 +2680,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="IsDebug"></param>
         public void Get_Global_Usage_Report_JDataTable(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
         {
-            Custom_Tracer tracer = new Custom_Tracer();
+            var tracer = new Custom_Tracer();
 
             // Get ready to pull the informaiton from the query string which the
             // jquery datatables library pass in
@@ -2746,7 +2742,7 @@ namespace SobekCM.Engine_Library.Endpoints
             }
 
             // Create the view for sorting and filtering
-            DataView resultsView = new DataView(pages.Tables[0]);
+            var resultsView = new DataView(pages.Tables[0]);
 
             // Should a filter be applied?
             if (!String.IsNullOrEmpty(QueryString["l1"]))
@@ -2880,7 +2876,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="IsDebug"></param>
         public void Get_Global_Usage_Report_NextLevel(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
         {
-            Custom_Tracer tracer = new Custom_Tracer();
+            var tracer = new Custom_Tracer();
             tracer.Add_Trace("WebContentServices.Get_Global_Usage_Report_NextLevel", "Into endpoint code");
 
             // Determine the range
@@ -2924,7 +2920,7 @@ namespace SobekCM.Engine_Library.Endpoints
             }
 
             // Start the return list
-            List<string> returnValue = new List<string>();
+            var returnValue = new List<string>();
 
             try
             {
@@ -2947,7 +2943,7 @@ namespace SobekCM.Engine_Library.Endpoints
                     {
                         tracer.Add_Trace("WebContentServices.Get_Global_Usage_Report_NextLevel", "Special case, second level");
                         string level1_special = UrlSegments[0];
-                        DataView specialView = new DataView(pages.Tables[2])
+                        var specialView = new DataView(pages.Tables[2])
                         {
                             RowFilter = "Level1 = '" + level1_special + "'"
                         };
@@ -2965,7 +2961,7 @@ namespace SobekCM.Engine_Library.Endpoints
                     string level2 = UrlSegments[1];
 
                     // Build the filter
-                    StringBuilder filterBuilder = new StringBuilder("Level1='" + level1 + "' and Level2='" + level2 + "'");
+                    var filterBuilder = new StringBuilder("Level1='" + level1 + "' and Level2='" + level2 + "'");
                     int column_counter = 3;
                     if ((UrlSegments.Count > 2) && (!String.IsNullOrWhiteSpace(UrlSegments[2])))
                     {
@@ -3000,13 +2996,13 @@ namespace SobekCM.Engine_Library.Endpoints
                     tracer.Add_Trace("WebContentServices.Get_Global_Usage_Report_NextLevel", filterBuilder.ToString());
 
                     // Create the dataview
-                    DataView specialView = new DataView(pages.Tables[0])
+                    var specialView = new DataView(pages.Tables[0])
                     {
                         RowFilter = filterBuilder.ToString()
                     };
 
                     // Step through and add each NEW term to a sorted dictionary
-                    SortedDictionary<string, string> sortList = new SortedDictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+                    var sortList = new SortedDictionary<string, string>(StringComparer.OrdinalIgnoreCase);
                     foreach (DataRowView thisRow in specialView)
                     {
                         if (thisRow[column_counter] != DBNull.Value)
@@ -3108,7 +3104,7 @@ namespace SobekCM.Engine_Library.Endpoints
         public void Has_Redirects(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
         {
             // Create the tracer and add a trace
-            Custom_Tracer tracer = new Custom_Tracer();
+            var tracer = new Custom_Tracer();
             tracer.Add_Trace("WebContentServices.Has_Redirects");
 
             // Get the dataset of redirects
@@ -3169,7 +3165,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="IsDebug"></param>
         public void Get_All_Redirects(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
         {
-            Custom_Tracer tracer = new Custom_Tracer();
+            var tracer = new Custom_Tracer();
 
             // Set the default page information
             int page = 1;
@@ -3219,8 +3215,7 @@ namespace SobekCM.Engine_Library.Endpoints
             }
 
             // Create the list for the results
-            WebContent_Basic_Pages returnValue = new WebContent_Basic_Pages
-            {
+            var returnValue = new WebContent_Basic_Pages{
                 Page = page,
                 RowsPerPage = rows_per_page
             };
@@ -3294,7 +3289,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="IsDebug"></param>
         public void Get_All_Redirects_JDataTable(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
         {
-            Custom_Tracer tracer = new Custom_Tracer();
+            var tracer = new Custom_Tracer();
 
             // Get ready to pull the informaiton from the query string which the
             // jquery datatables library pass in
@@ -3338,7 +3333,7 @@ namespace SobekCM.Engine_Library.Endpoints
             }
 
             // Create the view for sorting and filtering
-            DataView resultsView = new DataView(pages.Tables[0]);
+            var resultsView = new DataView(pages.Tables[0]);
 
             // Should a filter be applied?
             if (!String.IsNullOrEmpty(QueryString["l1"]))
@@ -3468,7 +3463,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="IsDebug"></param>
         public void Get_All_Redirects_NextLevel(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
         {
-            Custom_Tracer tracer = new Custom_Tracer();
+            var tracer = new Custom_Tracer();
             tracer.Add_Trace("WebContentServices.Get_All_Redirects_NextLevel", "Into endpoint code");
 
             // Get the dataset of pages
@@ -3494,7 +3489,7 @@ namespace SobekCM.Engine_Library.Endpoints
             }
 
             // Start the return list
-            List<string> returnValue = new List<string>();
+            var returnValue = new List<string>();
 
             try
             {
@@ -3517,7 +3512,7 @@ namespace SobekCM.Engine_Library.Endpoints
                     {
                         tracer.Add_Trace("WebContentServices.Get_All_Redirects_NextLevel", "Special case, second level");
                         string level1_special = UrlSegments[0];
-                        DataView specialView = new DataView(pages.Tables[2])
+                        var specialView = new DataView(pages.Tables[2])
                         {
                             RowFilter = "Level1 = '" + level1_special + "'"
                         };
@@ -3535,7 +3530,7 @@ namespace SobekCM.Engine_Library.Endpoints
                     string level2 = UrlSegments[1];
 
                     // Build the filter
-                    StringBuilder filterBuilder = new StringBuilder("Level1='" + level1 + "' and Level2='" + level2 + "'");
+                    var filterBuilder = new StringBuilder("Level1='" + level1 + "' and Level2='" + level2 + "'");
                     int column_counter = 3;
                     if ((UrlSegments.Count > 2) && (!String.IsNullOrWhiteSpace(UrlSegments[2])))
                     {
@@ -3570,13 +3565,13 @@ namespace SobekCM.Engine_Library.Endpoints
                     tracer.Add_Trace("WebContentServices.Get_All_Redirects_NextLevel", filterBuilder.ToString());
 
                     // Create the dataview
-                    DataView specialView = new DataView(pages.Tables[0])
+                    var specialView = new DataView(pages.Tables[0])
                     {
                         RowFilter = filterBuilder.ToString()
                     };
 
                     // Step through and add each NEW term to a sorted dictionary
-                    SortedDictionary<string, string> sortList = new SortedDictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+                    var sortList = new SortedDictionary<string, string>(StringComparer.OrdinalIgnoreCase);
                     foreach (DataRowView thisRow in specialView)
                     {
                         if (thisRow[column_counter] != DBNull.Value)
@@ -3674,7 +3669,7 @@ namespace SobekCM.Engine_Library.Endpoints
         public void Has_Content_Pages(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
         {
             // Create the tracer and add a trace
-            Custom_Tracer tracer = new Custom_Tracer();
+            var tracer = new Custom_Tracer();
             tracer.Add_Trace("WebContentServices.Has_Content_Pages");
 
             // Get the dataset of web pages
@@ -3735,7 +3730,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="IsDebug"></param>
         public void Get_All_Pages(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
         {
-            Custom_Tracer tracer = new Custom_Tracer();
+            var tracer = new Custom_Tracer();
 
             // Set the default page information
             int page = 1;
@@ -3785,8 +3780,7 @@ namespace SobekCM.Engine_Library.Endpoints
             }
 
             // Create the list for the results
-            WebContent_Basic_Pages returnValue = new WebContent_Basic_Pages
-            {
+            var returnValue = new WebContent_Basic_Pages{
                 Page = page,
                 RowsPerPage = rows_per_page
             };
@@ -3862,7 +3856,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="IsDebug"></param>
         public void Get_All_Pages_JDataTable(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
         {
-            Custom_Tracer tracer = new Custom_Tracer();
+            var tracer = new Custom_Tracer();
 
             // Get ready to pull the informaiton from the query string which the
             // jquery datatables library pass in
@@ -3906,7 +3900,7 @@ namespace SobekCM.Engine_Library.Endpoints
             }
 
             // Create the view for sorting and filtering
-            DataView resultsView = new DataView(pages.Tables[0]);
+            var resultsView = new DataView(pages.Tables[0]);
 
             // Should a filter be applied?
             if (!String.IsNullOrEmpty(QueryString["l1"]))
@@ -4036,7 +4030,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="IsDebug"></param>
         public void Get_All_Pages_NextLevel(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
         {
-            Custom_Tracer tracer = new Custom_Tracer();
+            var tracer = new Custom_Tracer();
             tracer.Add_Trace("WebContentServices.Get_All_Pages_NextLevel", "Into endpoint code");
 
             // Get the dataset of pages
@@ -4062,7 +4056,7 @@ namespace SobekCM.Engine_Library.Endpoints
             }
 
             // Start the return list
-            List<string> returnValue = new List<string>();
+            var returnValue = new List<string>();
 
             try
             {
@@ -4085,7 +4079,7 @@ namespace SobekCM.Engine_Library.Endpoints
                     {
                         tracer.Add_Trace("WebContentServices.Get_All_Pages_NextLevel", "Special case, second level");
                         string level1_special = UrlSegments[0];
-                        DataView specialView = new DataView(pages.Tables[2])
+                        var specialView = new DataView(pages.Tables[2])
                         {
                             RowFilter = "Level1 = '" + level1_special + "'"
                         };
@@ -4103,7 +4097,7 @@ namespace SobekCM.Engine_Library.Endpoints
                     string level2 = UrlSegments[1];
 
                     // Build the filter
-                    StringBuilder filterBuilder = new StringBuilder("Level1='" + level1 + "' and Level2='" + level2 + "'");
+                    var filterBuilder = new StringBuilder("Level1='" + level1 + "' and Level2='" + level2 + "'");
                     int column_counter = 3;
                     if ((UrlSegments.Count > 2) && (!String.IsNullOrWhiteSpace(UrlSegments[2])))
                     {
@@ -4138,13 +4132,13 @@ namespace SobekCM.Engine_Library.Endpoints
                     tracer.Add_Trace("WebContentServices.Get_All_Pages_NextLevel", filterBuilder.ToString());
 
                     // Create the dataview
-                    DataView specialView = new DataView(pages.Tables[0])
+                    var specialView = new DataView(pages.Tables[0])
                     {
                         RowFilter = filterBuilder.ToString()
                     };
 
                     // Step through and add each NEW term to a sorted dictionary
-                    SortedDictionary<string, string> sortList = new SortedDictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+                    var sortList = new SortedDictionary<string, string>(StringComparer.OrdinalIgnoreCase);
                     foreach (DataRowView thisRow in specialView)
                     {
                         if (thisRow[column_counter] != DBNull.Value)
@@ -4208,8 +4202,7 @@ namespace SobekCM.Engine_Library.Endpoints
         protected WebContent_Basic_Info datarow_to_basic_info(DataRow ChangeRow)
         {
             // Start to buid the object to report this work
-            WebContent_Basic_Info recentChange = new WebContent_Basic_Info
-            {
+            var recentChange = new WebContent_Basic_Info{
                 WebContentID = Int32.Parse(ChangeRow[0].ToString()),
                 Level1 = ChangeRow[1].ToString()
             };
@@ -4290,7 +4283,7 @@ namespace SobekCM.Engine_Library.Endpoints
         public void Has_Pages_Or_Redirects(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
         {
             // Create the tracer and add a trace
-            Custom_Tracer tracer = new Custom_Tracer();
+            var tracer = new Custom_Tracer();
             tracer.Add_Trace("WebContentServices.Has_Pages_Or_Redirects");
 
             // Get the dataset of web pages or redirects
@@ -4351,7 +4344,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="IsDebug"></param>
         public void Get_All(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
         {
-            Custom_Tracer tracer = new Custom_Tracer();
+            var tracer = new Custom_Tracer();
 
             // Set the default page information
             int page = 1;
@@ -4401,8 +4394,7 @@ namespace SobekCM.Engine_Library.Endpoints
             }
 
             // Create the list for the results
-            WebContent_Basic_Pages returnValue = new WebContent_Basic_Pages
-            {
+            var returnValue = new WebContent_Basic_Pages{
                 Page = page,
                 RowsPerPage = rows_per_page
             };
@@ -4478,7 +4470,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="IsDebug"></param>
         public void Get_All_JDataTable(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
         {
-            Custom_Tracer tracer = new Custom_Tracer();
+            var tracer = new Custom_Tracer();
 
             // Get ready to pull the informaiton from the query string which the
             // jquery datatables library pass in
@@ -4522,7 +4514,7 @@ namespace SobekCM.Engine_Library.Endpoints
             }
 
             // Create the view for sorting and filtering
-            DataView resultsView = new DataView(pages.Tables[0]);
+            var resultsView = new DataView(pages.Tables[0]);
 
             // Should a filter be applied?
             if (!String.IsNullOrEmpty(QueryString["l1"]))
@@ -4655,7 +4647,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="IsDebug"></param>
         public void Get_All_NextLevel(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
         {
-            Custom_Tracer tracer = new Custom_Tracer();
+            var tracer = new Custom_Tracer();
             tracer.Add_Trace("WebContentServices.Get_All_NextLevel", "Into endpoint code");
 
             // Get the dataset of pages
@@ -4681,7 +4673,7 @@ namespace SobekCM.Engine_Library.Endpoints
             }
 
             // Start the return list
-            List<string> returnValue = new List<string>();
+            var returnValue = new List<string>();
 
             try
             {
@@ -4704,7 +4696,7 @@ namespace SobekCM.Engine_Library.Endpoints
                     {
                         tracer.Add_Trace("WebContentServices.Get_All_NextLevel", "Special case, second level");
                         string level1_special = UrlSegments[0];
-                        DataView specialView = new DataView(pages.Tables[2])
+                        var specialView = new DataView(pages.Tables[2])
                         {
                             RowFilter = "Level1 = '" + level1_special + "'"
                         };
@@ -4722,7 +4714,7 @@ namespace SobekCM.Engine_Library.Endpoints
                     string level2 = UrlSegments[1];
 
                     // Build the filter
-                    StringBuilder filterBuilder = new StringBuilder("Level1='" + level1 + "' and Level2='" + level2 + "'");
+                    var filterBuilder = new StringBuilder("Level1='" + level1 + "' and Level2='" + level2 + "'");
                     int column_counter = 3;
                     if ((UrlSegments.Count > 2) && (!String.IsNullOrWhiteSpace(UrlSegments[2])))
                     {
@@ -4757,13 +4749,13 @@ namespace SobekCM.Engine_Library.Endpoints
                     tracer.Add_Trace("WebContentServices.Get_All_NextLevel", filterBuilder.ToString());
 
                     // Create the dataview
-                    DataView specialView = new DataView(pages.Tables[0])
+                    var specialView = new DataView(pages.Tables[0])
                     {
                         RowFilter = filterBuilder.ToString()
                     };
 
                     // Step through and add each NEW term to a sorted dictionary
-                    SortedDictionary<string, string> sortList = new SortedDictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+                    var sortList = new SortedDictionary<string, string>(StringComparer.OrdinalIgnoreCase);
                     foreach (DataRowView thisRow in specialView)
                     {
                         if (thisRow[column_counter] != DBNull.Value)
@@ -4860,7 +4852,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="IsDebug"></param>
         public void Get_All_Sitemaps(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
         {
-            Custom_Tracer tracer = new Custom_Tracer();
+            var tracer = new Custom_Tracer();
 
             // Add a trace
             tracer.Add_Trace("WebContentServices.Get_All_Sitemaps", "Get the list of all sitemaps");
@@ -4957,7 +4949,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="IsDebug"></param>
         public void Get_All_Controlled_Javascript(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
         {
-            Custom_Tracer tracer = new Custom_Tracer();
+            var tracer = new Custom_Tracer();
 
             // Add a trace
             tracer.Add_Trace("WebContentServices.Get_All_Controlled_Javascript", "Get the list of all controlled javascript files");
@@ -5049,7 +5041,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="IsDebug"></param>
         public void Get_All_Controlled_Stylesheets(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
         {
-            Custom_Tracer tracer = new Custom_Tracer();
+            var tracer = new Custom_Tracer();
 
             // Add a trace
             tracer.Add_Trace("WebContentServices.Get_All_Controlled_Stylesheets", "Get the list of all controlled stylesheet files");
@@ -5144,7 +5136,7 @@ namespace SobekCM.Engine_Library.Endpoints
             ErrorType = WebContentEndpointErrorEnum.NONE;
 
             // Build the directory to look for the static content
-            StringBuilder possibleInfoModeBuilder = new StringBuilder(BasicInfo.Level1);
+            var possibleInfoModeBuilder = new StringBuilder(BasicInfo.Level1);
             if (!String.IsNullOrEmpty(BasicInfo.Level2))
             {
                 possibleInfoModeBuilder.Append(Path.DirectorySeparatorChar + BasicInfo.Level2);
@@ -5318,7 +5310,7 @@ namespace SobekCM.Engine_Library.Endpoints
                         try
                         {
                             // Pull from the file
-                            StreamReader reader = new StreamReader(Engine_ApplicationCache_Gateway.Settings.Servers.Base_Directory + "design\\webcontent\\" + filename_to_include);
+                            var reader = new StreamReader(Engine_ApplicationCache_Gateway.Settings.Servers.Base_Directory + "design\\webcontent\\" + filename_to_include);
                             include_text = reader.ReadToEnd();
                             reader.Close();
 

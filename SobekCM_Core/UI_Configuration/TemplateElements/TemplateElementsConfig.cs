@@ -1,4 +1,4 @@
-﻿using ProtoBuf;
+using ProtoBuf;
 using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
@@ -215,8 +215,7 @@ namespace SobekCM.Core.UI_Configuration.TemplateElements
 
 
             // New, so add it
-            TemplateElementConfig newElement = new TemplateElementConfig
-            {
+            var newElement = new TemplateElementConfig{
                 Type = Type,
                 Subtype = Subtype,
                 Assembly = Assembly,

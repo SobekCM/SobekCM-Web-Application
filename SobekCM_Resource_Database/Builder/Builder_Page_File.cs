@@ -52,7 +52,7 @@ namespace SobekCM_Resource_Database.Builder
         private void constructor2_helper(string FileLocation, string RelativeDirParam, bool SplitName)
         {
             // Create the FileInfo object
-            FileInfo fileInfo = new FileInfo(FileLocation);
+            var fileInfo = new FileInfo(FileLocation);
 
             // Populate all the date from that
             fileid = String.Empty;
@@ -223,7 +223,7 @@ namespace SobekCM_Resource_Database.Builder
                 // Create the necessary objects to draw this error
                 Brush errorBrush = new SolidBrush(Color.Tomato);
                 int fontsize = (int)(45 * Scale);
-                Font errorFont = new Font("Tahoma", fontsize, FontStyle.Bold);
+                var errorFont = new Font("Tahoma", fontsize, FontStyle.Bold);
 
                 if ((fileerrortype == 4) || (fileerrortype == 6))
                 {

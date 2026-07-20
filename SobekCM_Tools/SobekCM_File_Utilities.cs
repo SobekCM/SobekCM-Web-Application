@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using System;
 using System.Collections.Generic;
@@ -19,7 +19,7 @@ namespace SobekCM.Tools
         {
             try
             {
-                List<string> subdirs = new List<string>();
+                var subdirs = new List<string>();
                 recurse_folders(Folder, subdirs);
 
                 foreach (string thisSubFolder in subdirs)
@@ -67,7 +67,7 @@ namespace SobekCM.Tools
         public static string[] GetFiles(string SourceFolder, string Filters, SearchOption SearchOption)
         {
             // List will hold all file names
-            List<string> alFiles = new List<string>();
+            var alFiles = new List<string>();
 
             // Create an array of filter string
             string[] multipleFilters = Filters.Split('|');

@@ -417,7 +417,7 @@ namespace SobekCM.Library.MySobekViewer
 
                                 try
                                 {
-                                    StreamReader email_reader = new StreamReader(file);
+                                    var email_reader = new StreamReader(file);
                                     default_email_body = email_reader.ReadToEnd();
                                     email_reader.Close();
 

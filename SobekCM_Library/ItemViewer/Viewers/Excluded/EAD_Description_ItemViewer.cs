@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using System;
 using System.Collections.Generic;
@@ -71,7 +71,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             if ( !String.IsNullOrWhiteSpace(CurrentMode.Text_Search))
             {
                 // Get any search terms
-                List<string> terms = new List<string>();
+                var terms = new List<string>();
                 if (CurrentMode.Text_Search.Trim().Length > 0)
                 {
                     string[] splitter = CurrentMode.Text_Search.Replace("\"", "").Split(" ".ToCharArray());

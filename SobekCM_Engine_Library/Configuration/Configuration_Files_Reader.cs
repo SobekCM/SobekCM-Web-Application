@@ -1,4 +1,4 @@
-﻿using SobekCM.Core.BriefItem;
+using SobekCM.Core.BriefItem;
 using SobekCM.Core.Configuration;
 using SobekCM.Core.Configuration.Authentication;
 using SobekCM.Core.Configuration.Engine;
@@ -37,21 +37,21 @@ namespace SobekCM.Engine_Library.Configuration
         public static InstanceWide_Configuration Read_Config_Files(InstanceWide_Settings Settings)
         {
             // Get the directories to read
-            List<string> configurationDirectories = new List<string>();
+            var configurationDirectories = new List<string>();
 
             // Add the default configuration directory first
             configurationDirectories.Add(Path.Combine(Settings.Servers.Application_Server_Network, "config", "default"));
 
             // Add all of the plug-in foldersm but ensure they are sorted
             string plug_in_folder = Path.Combine(Settings.Servers.Application_Server_Network, "plugins");
-            List<string> unreadPluginDirectories = new List<string>();
+            var unreadPluginDirectories = new List<string>();
             if (Directory.Exists(plug_in_folder))
             {
                 // Get the list of subdirectories 
                 string[] subdirs = Directory.GetDirectories(plug_in_folder);
 
                 // Ensure it is sorted alphabetically
-                SortedList<string, string> subdirs_sorted = new SortedList<string, string>();
+                var subdirs_sorted = new SortedList<string, string>();
                 foreach (string thisSubDir in subdirs)
                 {
                     // Get the directory name and add to the sorted list
@@ -147,7 +147,7 @@ namespace SobekCM.Engine_Library.Configuration
         public static InstanceWide_Configuration Read_Config_Files(List<string> ConfigurationDirectories, InstanceWide_Settings Settings)
         {
             // Start to build the instance wide configuration
-            InstanceWide_Configuration returnValue = new InstanceWide_Configuration();
+            var returnValue = new InstanceWide_Configuration();
 
 
             // Add an initial log, with the data
@@ -162,8 +162,8 @@ namespace SobekCM.Engine_Library.Configuration
             }
 
             // Step through and get the configuration files to be read (in folder and alphabetical order)
-            List<string> configFiles = new List<string>();
-            SortedList<string, string> filesSorted = new SortedList<string, string>();
+            var configFiles = new List<string>();
+            var filesSorted = new SortedList<string, string>();
             foreach (string thisConfigDir in ConfigurationDirectories)
             {
                 if (Directory.Exists(thisConfigDir))
@@ -256,7 +256,7 @@ namespace SobekCM.Engine_Library.Configuration
             try
             {
                 string file = Path.GetFileName(ConfigFile);
-                DirectoryInfo dirInfo = new DirectoryInfo(Path.GetDirectoryName(ConfigFile));
+                var dirInfo = new DirectoryInfo(Path.GetDirectoryName(ConfigFile));
                 directoryName = dirInfo.Name;
                 string directory2 = dirInfo.Parent.Name;
 
@@ -737,7 +737,7 @@ namespace SobekCM.Engine_Library.Configuration
                             break;
 
                         case "metadataformat":
-                            OAI_PMH_Metadata_Format component = new OAI_PMH_Metadata_Format();
+                            var component = new OAI_PMH_Metadata_Format();
                             if (readerXml.MoveToAttribute("Prefix"))
                                 component.Prefix = readerXml.Value.Trim();
                             if (readerXml.MoveToAttribute("Schema"))
@@ -843,7 +843,7 @@ namespace SobekCM.Engine_Library.Configuration
         private static void read_contactform_element(XmlReader readerXml, ContactForm_Configuration config, ContactForm_Configuration_Element_Type_Enum type)
         {
             // Create the element object
-            ContactForm_Configuration_Element newElement = new ContactForm_Configuration_Element(type);
+            var newElement = new ContactForm_Configuration_Element(type);
 
             // Read the attributes
             if (readerXml.MoveToAttribute("Name"))
@@ -950,7 +950,7 @@ namespace SobekCM.Engine_Library.Configuration
             // During this process, small objects ( IBriefItemMappers ) which contain no data
             // but implement the mapping method will be created.  This dictionary helps to ensure
             // each one is created only once.
-            Dictionary<string, IBriefItemMapper> mappingObjDictionary = new Dictionary<string, IBriefItemMapper>();
+            var mappingObjDictionary = new Dictionary<string, IBriefItemMapper>();
 
             try
             {
@@ -1040,8 +1040,7 @@ namespace SobekCM.Engine_Library.Configuration
                             // Add this (if enabled) to the list of mappers
                             if (enabled)
                             {
-                                BriefItemMapping_Mapper mapperConfig = new BriefItemMapping_Mapper
-                                {
+                                var mapperConfig = new BriefItemMapping_Mapper{
                                     Assembly = mapperAssembly,
                                     Class = mapperClass,
                                     Enabled = true,
@@ -1302,8 +1301,7 @@ namespace SobekCM.Engine_Library.Configuration
                     {
                         case "collection":
                             string collectionName = ReaderXml["id"];
-                            MapEditor_Configuration_Collection collection = new MapEditor_Configuration_Collection
-                            {
+                            var collection = new MapEditor_Configuration_Collection{
                                 Name = collectionName
                             };
 
@@ -1426,7 +1424,7 @@ namespace SobekCM.Engine_Library.Configuration
                         case "complexendpoint":
                             // Read the top-endpoint information, before getting to each verb mapping
                             bool disabled_at_top = false;
-                            Engine_Path_Endpoint endpoint = new Engine_Path_Endpoint { IsEndpoint = true };
+                            var endpoint = new Engine_Path_Endpoint{ IsEndpoint = true };
                             if (ReaderXml.MoveToAttribute("Segment"))
                                 endpoint.Segment = ReaderXml.Value.Trim();
                             if ((ReaderXml.MoveToAttribute("Enabled")) && (String.Compare(ReaderXml.Value.Trim(), "false", StringComparison.OrdinalIgnoreCase) == 0))
@@ -1492,7 +1490,7 @@ namespace SobekCM.Engine_Library.Configuration
                             if (verb != Microservice_Endpoint_RequestType_Enum.ERROR)
                             {
                                 // Build the verb mapping
-                                Engine_VerbMapping verbMapping = new Engine_VerbMapping(null, !DisabledAtTop, Microservice_Endpoint_Protocol_Enum.JSON, verb);
+                                var verbMapping = new Engine_VerbMapping(null, !DisabledAtTop, Microservice_Endpoint_Protocol_Enum.JSON, verb);
                                 if (ReaderXml.MoveToAttribute("Method"))
                                     verbMapping.Method = ReaderXml.Value.Trim();
                                 if ((!DisabledAtTop) && (ReaderXml.MoveToAttribute("Enabled")) && (String.Compare(ReaderXml.Value.Trim(), "false", StringComparison.OrdinalIgnoreCase) == 0))
@@ -1573,7 +1571,7 @@ namespace SobekCM.Engine_Library.Configuration
 
         private static void read_microservices_simple_endpoint_details(XmlReader ReaderXml, Engine_Path_Endpoint ParentSegment)
         {
-            Engine_Path_Endpoint endpoint = new Engine_Path_Endpoint { IsEndpoint = true };
+            var endpoint = new Engine_Path_Endpoint{ IsEndpoint = true };
 
             string componentid = String.Empty;
             string restrictionid = String.Empty;
@@ -1653,7 +1651,7 @@ namespace SobekCM.Engine_Library.Configuration
                     {
                         case "component":
                             string Namespace = String.Empty;
-                            Engine_Component component = new Engine_Component();
+                            var component = new Engine_Component();
                             if (ReaderXml.MoveToAttribute("ID"))
                                 component.ID = ReaderXml.Value.Trim();
                             if (ReaderXml.MoveToAttribute("Assembly"))
@@ -1728,7 +1726,7 @@ namespace SobekCM.Engine_Library.Configuration
                         case "iprange":
                             if (currentRange != null)
                             {
-                                Engine_IpRange singleIpRange = new Engine_IpRange();
+                                var singleIpRange = new Engine_IpRange();
                                 if (ReaderXml.MoveToAttribute("Label"))
                                     singleIpRange.Label = ReaderXml.Value.Trim();
                                 if (ReaderXml.MoveToAttribute("Start"))
@@ -1768,7 +1766,7 @@ namespace SobekCM.Engine_Library.Configuration
                 return;
 
             // Build the dictionaries for all the components
-            Dictionary<string, Engine_Component> components = new Dictionary<string, Engine_Component>(StringComparer.OrdinalIgnoreCase);
+            var components = new Dictionary<string, Engine_Component>(StringComparer.OrdinalIgnoreCase);
             foreach (Engine_Component thisComponent in Configuration.Engine.Components)
             {
                 components[thisComponent.ID] = thisComponent;
@@ -1787,7 +1785,7 @@ namespace SobekCM.Engine_Library.Configuration
             }
 
             // Build the dictionaries for all the restriction ranges
-            Dictionary<string, Engine_RestrictionRange> restrictionRanges = new Dictionary<string, Engine_RestrictionRange>(StringComparer.OrdinalIgnoreCase);
+            var restrictionRanges = new Dictionary<string, Engine_RestrictionRange>(StringComparer.OrdinalIgnoreCase);
             foreach (Engine_RestrictionRange thisRange in Configuration.Engine.RestrictionRanges)
             {
                 restrictionRanges[thisRange.ID] = thisRange;
@@ -1802,7 +1800,7 @@ namespace SobekCM.Engine_Library.Configuration
 
         private static List<string> get_local_ip_addresses()
         {
-            List<string> returnValue = new List<string>();
+            var returnValue = new List<string>();
 
             try
             {
@@ -1918,7 +1916,7 @@ namespace SobekCM.Engine_Library.Configuration
                     switch (ReaderXml.Name.ToLower())
                     {
                         case "profile":
-                            QualityControl_Profile profile = new QualityControl_Profile();
+                            var profile = new QualityControl_Profile();
                             XmlReader child_readerXml = ReaderXml.ReadSubtree();
                             if (ReaderXml.MoveToAttribute("name"))
                                 profile.Profile_Name = ReaderXml.Value.Trim();
@@ -1939,7 +1937,7 @@ namespace SobekCM.Engine_Library.Configuration
                                 unnamed_profile_counter++;
                             }
 
-                            QualityControl_Division_Config thisConfig = new QualityControl_Division_Config();
+                            var thisConfig = new QualityControl_Division_Config();
                             while (child_readerXml.Read())
                             {
                                 if (child_readerXml.NodeType == XmlNodeType.Element && child_readerXml.Name.ToLower() == "divisiontype")
@@ -2002,7 +2000,7 @@ namespace SobekCM.Engine_Library.Configuration
                 Config.Metadata.Clear();
 
             // Some collections to read into
-            Dictionary<string, METS_Section_ReaderWriter_Config> readerWriters = new Dictionary<string, METS_Section_ReaderWriter_Config>();
+            var readerWriters = new Dictionary<string, METS_Section_ReaderWriter_Config>();
             if ((Config.Metadata.METS_Section_File_ReaderWriter_Configs != null) && (Config.Metadata.METS_Section_File_ReaderWriter_Configs.Count > 0))
             {
                 foreach (METS_Section_ReaderWriter_Config currentConfig in Config.Metadata.METS_Section_File_ReaderWriter_Configs)
@@ -2083,7 +2081,7 @@ namespace SobekCM.Engine_Library.Configuration
 
         private static void read_metadata_file_readerwriter_config(XmlReader ReaderXml, Metadata_Configuration Config)
         {
-            Metadata_File_ReaderWriter_Config returnValue = new Metadata_File_ReaderWriter_Config();
+            var returnValue = new Metadata_File_ReaderWriter_Config();
             ReaderXml.Read();
 
             // Move to and save the basic attributes
@@ -2176,7 +2174,7 @@ namespace SobekCM.Engine_Library.Configuration
 
         private static METS_Section_ReaderWriter_Config read_mets_section_readerwriter_config(XmlReader ReaderXml)
         {
-            METS_Section_ReaderWriter_Config returnValue = new METS_Section_ReaderWriter_Config();
+            var returnValue = new METS_Section_ReaderWriter_Config();
 
             ReaderXml.Read();
 
@@ -2238,7 +2236,7 @@ namespace SobekCM.Engine_Library.Configuration
                     switch (ReaderXml.Name.ToLower())
                     {
                         case "mapping":
-                            METS_Section_ReaderWriter_Mapping newMapping = new METS_Section_ReaderWriter_Mapping();
+                            var newMapping = new METS_Section_ReaderWriter_Mapping();
                             if (ReaderXml.MoveToAttribute("mdtype"))
                                 newMapping.MD_Type = ReaderXml.Value;
                             if (ReaderXml.MoveToAttribute("othermdtype"))
@@ -2274,7 +2272,7 @@ namespace SobekCM.Engine_Library.Configuration
                 if ((ReaderXml.NodeType == XmlNodeType.Element) && (ReaderXml.Name.ToLower() == "metadatamodule"))
                 {
                     // read all the values
-                    Additional_Metadata_Module_Config module = new Additional_Metadata_Module_Config();
+                    var module = new Additional_Metadata_Module_Config();
                     if (ReaderXml.MoveToAttribute("key"))
                         module.Key = ReaderXml.Value.Trim();
                     if (ReaderXml.MoveToAttribute("assembly"))
@@ -2305,7 +2303,7 @@ namespace SobekCM.Engine_Library.Configuration
                 if ((ReaderXml.NodeType == XmlNodeType.Element) && (ReaderXml.Name.ToLower() == "mapper"))
                 {
                     // read all the values
-                    Metadata_Mapping_Config module = new Metadata_Mapping_Config();
+                    var module = new Metadata_Mapping_Config();
                     if (ReaderXml.MoveToAttribute("name"))
                         module.Name = ReaderXml.Value.Trim();
                     if (ReaderXml.MoveToAttribute("assembly"))
@@ -2509,7 +2507,7 @@ namespace SobekCM.Engine_Library.Configuration
 
 
                         case "resultsviewer":
-                            ResultsSubViewerConfig newConfig = new ResultsSubViewerConfig();
+                            var newConfig = new ResultsSubViewerConfig();
                             if (ReaderXml.MoveToAttribute("type"))
                                 newConfig.ViewerType = ReaderXml.Value.Trim();
                             if (ReaderXml.MoveToAttribute("viewerCode"))
@@ -2621,7 +2619,7 @@ namespace SobekCM.Engine_Library.Configuration
 
                         case "layout":
 
-                            ItemWriterLayoutConfig defaultLayout = new ItemWriterLayoutConfig();
+                            var defaultLayout = new ItemWriterLayoutConfig();
                             if (ReaderXml.MoveToAttribute("id"))
                                 defaultLayout.ID = ReaderXml.Value.Trim();
                             if (ReaderXml.MoveToAttribute("source"))
@@ -2635,7 +2633,7 @@ namespace SobekCM.Engine_Library.Configuration
 
 
                         case "itemviewer":
-                            ItemSubViewerConfig newConfig = new ItemSubViewerConfig();
+                            var newConfig = new ItemSubViewerConfig();
                             if (ReaderXml.MoveToAttribute("type"))
                                 newConfig.ViewerType = ReaderXml.Value.Trim();
                             if (ReaderXml.MoveToAttribute("viewerCode"))
@@ -2699,7 +2697,7 @@ namespace SobekCM.Engine_Library.Configuration
                     switch (ReaderXml.Name.ToLower())
                     {
                         case "stylesheet":
-                            StylesheetConfig newStyleConfig = new StylesheetConfig();
+                            var newStyleConfig = new StylesheetConfig();
                             if (ReaderXml.MoveToAttribute("source"))
                                 newStyleConfig.Source = ReaderXml.Value.Trim();
                             if (ReaderXml.MoveToAttribute("media"))
@@ -3047,7 +3045,7 @@ namespace SobekCM.Engine_Library.Configuration
                             case "templateelement":
 
                                 // Build the new template element info
-                                TemplateElementConfig newElement = new TemplateElementConfig();
+                                var newElement = new TemplateElementConfig();
                                 if (ReaderXml.MoveToAttribute("type"))
                                     newElement.Type = ReaderXml.Value.Trim().ToLower();
                                 if (ReaderXml.MoveToAttribute("subtype"))
@@ -3105,7 +3103,7 @@ namespace SobekCM.Engine_Library.Configuration
             try
             {
                 string file = Path.GetFileName(ConfigFile);
-                DirectoryInfo dirInfo = new DirectoryInfo(Path.GetDirectoryName(ConfigFile));
+                var dirInfo = new DirectoryInfo(Path.GetDirectoryName(ConfigFile));
                 directoryName = dirInfo.Name;
             }
             catch
@@ -3179,8 +3177,7 @@ namespace SobekCM.Engine_Library.Configuration
             }
 
             // Create the new extension information object
-            ExtensionInfo thisExtension = new ExtensionInfo
-            {
+            var thisExtension = new ExtensionInfo{
                 Code = SourceDirectoryName,
                 Name = SourceDirectoryName,
                 Version = "0.0"

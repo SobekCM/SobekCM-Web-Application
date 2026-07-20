@@ -386,10 +386,10 @@ namespace SobekCM.Library.HTML
             if (otherBrowses.Count > included_browses)
             {
                 // Determine the hierarchy
-                List<Item_Aggregation_Child_Page> menuPages = new List<Item_Aggregation_Child_Page>();
-                List<Item_Aggregation_Child_Page> topPages = new List<Item_Aggregation_Child_Page>();
-                Dictionary<string, Item_Aggregation_Child_Page> pagesDictionary = new Dictionary<string, Item_Aggregation_Child_Page>();
-                Dictionary<Item_Aggregation_Child_Page, List<Item_Aggregation_Child_Page>> parentToChild = new Dictionary<Item_Aggregation_Child_Page, List<Item_Aggregation_Child_Page>>();
+                var menuPages = new List<Item_Aggregation_Child_Page>();
+                var topPages = new List<Item_Aggregation_Child_Page>();
+                var pagesDictionary = new Dictionary<string, Item_Aggregation_Child_Page>();
+                var parentToChild = new Dictionary<Item_Aggregation_Child_Page, List<Item_Aggregation_Child_Page>>();
 
 
                 // Now, step through the sorted list
@@ -504,7 +504,7 @@ namespace SobekCM.Library.HTML
                 RequestSpecificValues.Current_Mode.Info_Browse_Mode = String.Empty;
 
                 // Collect the html to write (this alphabetizes the children)
-                List<string> html_list = new List<string>();
+                var html_list = new List<string>();
                 foreach (Item_Aggregation_Related_Aggregations childAggr in Hierarchy_Object.Children)
                 {
                     Item_Aggregation_Related_Aggregations latest = UI_ApplicationCache_Gateway.Aggregations[childAggr.Code];
@@ -874,7 +874,7 @@ namespace SobekCM.Library.HTML
 
             // Add any additional search types
             RequestSpecificValues.Current_Mode.Mode = thisMode;
-            List<string> other_searches = new List<string>();
+            var other_searches = new List<string>();
             for (int i = 1; i < Hierarchy_Object.Views_And_Searches.Count; i++)
             {
                 other_searches.Add(Aggregation_Nav_Bar_HTML_Factory.Menu_Get_Nav_Bar_HTML(Hierarchy_Object.Views_And_Searches[i], RequestSpecificValues.Current_Mode, UI_ApplicationCache_Gateway.Translation));

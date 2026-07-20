@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Navigation;
@@ -26,7 +26,7 @@ namespace SobekCM.Core.Aggregations
             // TODO: Facet comparison below needs to look up the name of the facet,
             // TODO: rather than just showing the primary key to the facet
 
-            List<string> changes = new List<string>();
+            var changes = new List<string>();
 
             // code
             if (!Base.Code.Equals(Compared.Code))
@@ -35,8 +35,8 @@ namespace SobekCM.Core.Aggregations
             }
 
             // parents
-            List<string> base_parents = new List<string>();
-            List<string> compared_parents = new List<string>();
+            var base_parents = new List<string>();
+            var compared_parents = new List<string>();
             if (Base.Parents != null)
             {
                 foreach (Item_Aggregation_Related_Aggregations parentAggr in Base.Parents)
@@ -68,7 +68,7 @@ namespace SobekCM.Core.Aggregations
                 }
                 else
                 {
-                    StringBuilder builder = new StringBuilder("Removed parents " + base_parents[0]);
+                    var builder = new StringBuilder("Removed parents " + base_parents[0]);
                     for (int i = 1; i < base_parents.Count; i++)
                         builder.Append(", " + base_parents[i]);
                     changes.Add(builder.ToString());
@@ -82,7 +82,7 @@ namespace SobekCM.Core.Aggregations
                 }
                 else
                 {
-                    StringBuilder builder = new StringBuilder("Added parents " + compared_parents[0]);
+                    var builder = new StringBuilder("Added parents " + compared_parents[0]);
                     for (int i = 1; i < compared_parents.Count; i++)
                         builder.Append(", " + compared_parents[i]);
                     changes.Add(builder.ToString());
@@ -161,8 +161,8 @@ namespace SobekCM.Core.Aggregations
             }
 
             // web skin
-            List<string> base_skins = new List<string>();
-            List<string> compared_skins = new List<string>();
+            var base_skins = new List<string>();
+            var compared_skins = new List<string>();
             if (Base.Web_Skins != null)
             {
                 foreach (string thisSkin in Base.Web_Skins)
@@ -193,7 +193,7 @@ namespace SobekCM.Core.Aggregations
                 }
                 else
                 {
-                    StringBuilder builder = new StringBuilder("Removed web skins " + base_skins[0]);
+                    var builder = new StringBuilder("Removed web skins " + base_skins[0]);
                     for (int i = 1; i < base_skins.Count; i++)
                         builder.Append(", " + base_skins[i]);
                     changes.Add(builder.ToString());
@@ -207,7 +207,7 @@ namespace SobekCM.Core.Aggregations
                 }
                 else
                 {
-                    StringBuilder builder = new StringBuilder("Added web skins " + compared_skins[0]);
+                    var builder = new StringBuilder("Added web skins " + compared_skins[0]);
                     for (int i = 1; i < compared_skins.Count; i++)
                         builder.Append(", " + compared_skins[i]);
                     changes.Add(builder.ToString());
@@ -234,8 +234,8 @@ namespace SobekCM.Core.Aggregations
             }
 
             // home pages (multilingual)
-            List<Web_Language_Enum> removedLanguages = new List<Web_Language_Enum>();
-            List<Web_Language_Enum> addedLanguages = new List<Web_Language_Enum>();
+            var removedLanguages = new List<Web_Language_Enum>();
+            var addedLanguages = new List<Web_Language_Enum>();
             if (Base.Home_Page_File_Dictionary != null)
             {
                 foreach (KeyValuePair<Web_Language_Enum, Complete_Item_Aggregation_Home_Page> thisHomePage in Base.Home_Page_File_Dictionary)
@@ -266,7 +266,7 @@ namespace SobekCM.Core.Aggregations
                 }
                 else
                 {
-                    StringBuilder builder = new StringBuilder("Removed " + Web_Language_Enum_Converter.Enum_To_Name(removedLanguages[0]));
+                    var builder = new StringBuilder("Removed " + Web_Language_Enum_Converter.Enum_To_Name(removedLanguages[0]));
                     for (int i = 1; i < removedLanguages.Count; i++)
                         builder.Append(", " + removedLanguages[i]);
                     changes.Add(builder + " home pages");
@@ -280,7 +280,7 @@ namespace SobekCM.Core.Aggregations
                 }
                 else
                 {
-                    StringBuilder builder = new StringBuilder("Added " + Web_Language_Enum_Converter.Enum_To_Name(removedLanguages[0]));
+                    var builder = new StringBuilder("Added " + Web_Language_Enum_Converter.Enum_To_Name(removedLanguages[0]));
                     for (int i = 1; i < addedLanguages.Count; i++)
                         builder.Append(", " + addedLanguages[i]);
                     changes.Add(builder + " home pages");
@@ -338,7 +338,7 @@ namespace SobekCM.Core.Aggregations
                 }
                 else
                 {
-                    StringBuilder builder = new StringBuilder("Removed " + Web_Language_Enum_Converter.Enum_To_Name(removedLanguages[0]));
+                    var builder = new StringBuilder("Removed " + Web_Language_Enum_Converter.Enum_To_Name(removedLanguages[0]));
                     for (int i = 1; i < removedLanguages.Count; i++)
                         builder.Append(", " + removedLanguages[i]);
                     changes.Add(builder + " banners");
@@ -352,7 +352,7 @@ namespace SobekCM.Core.Aggregations
                 }
                 else
                 {
-                    StringBuilder builder = new StringBuilder("Added " + Web_Language_Enum_Converter.Enum_To_Name(addedLanguages[0]));
+                    var builder = new StringBuilder("Added " + Web_Language_Enum_Converter.Enum_To_Name(addedLanguages[0]));
                     for (int i = 1; i < addedLanguages.Count; i++)
                         builder.Append(", " + addedLanguages[i]);
                     changes.Add(builder + " banners");
@@ -360,8 +360,8 @@ namespace SobekCM.Core.Aggregations
             }
 
             // search types
-            List<Search_Type_Enum> removedSearches = new List<Search_Type_Enum>();
-            List<Search_Type_Enum> addedSearches = new List<Search_Type_Enum>();
+            var removedSearches = new List<Search_Type_Enum>();
+            var addedSearches = new List<Search_Type_Enum>();
             if (Base.Search_Types != null)
             {
                 foreach (Search_Type_Enum thisSearch in Base.Search_Types)
@@ -392,7 +392,7 @@ namespace SobekCM.Core.Aggregations
                 }
                 else
                 {
-                    StringBuilder builder = new StringBuilder("Removed " + removedSearches[0].ToString());
+                    var builder = new StringBuilder("Removed " + removedSearches[0].ToString());
                     for (int i = 1; i < removedSearches.Count; i++)
                         builder.Append(", " + removedSearches[i].ToString());
                     changes.Add(builder + " searches");
@@ -406,7 +406,7 @@ namespace SobekCM.Core.Aggregations
                 }
                 else
                 {
-                    StringBuilder builder = new StringBuilder("Added " + addedSearches[0]);
+                    var builder = new StringBuilder("Added " + addedSearches[0]);
                     for (int i = 1; i < addedSearches.Count; i++)
                         builder.Append(", " + addedSearches[i]);
                     changes.Add(builder + " searches");
@@ -492,8 +492,8 @@ namespace SobekCM.Core.Aggregations
             }
 
             // facets
-            List<Complete_Item_Aggregation_Metadata_Type> addedFacets = new List<Complete_Item_Aggregation_Metadata_Type>();
-            List<Complete_Item_Aggregation_Metadata_Type> removedFacets = new List<Complete_Item_Aggregation_Metadata_Type>();
+            var addedFacets = new List<Complete_Item_Aggregation_Metadata_Type>();
+            var removedFacets = new List<Complete_Item_Aggregation_Metadata_Type>();
             if (Base.Facets != null)
             {
                 foreach (Complete_Item_Aggregation_Metadata_Type thisFacet in Base.Facets)
@@ -524,7 +524,7 @@ namespace SobekCM.Core.Aggregations
                 }
                 else
                 {
-                    StringBuilder builder = new StringBuilder("Removed facets " + removedFacets[0]);
+                    var builder = new StringBuilder("Removed facets " + removedFacets[0]);
                     for (int i = 1; i < removedFacets.Count; i++)
                         builder.Append(", " + removedFacets[i]);
                     changes.Add(builder.ToString());
@@ -538,7 +538,7 @@ namespace SobekCM.Core.Aggregations
                 }
                 else
                 {
-                    StringBuilder builder = new StringBuilder("Added facets " + addedFacets[0]);
+                    var builder = new StringBuilder("Added facets " + addedFacets[0]);
                     for (int i = 1; i < addedFacets.Count; i++)
                         builder.Append(", " + addedFacets[i]);
                     changes.Add(builder.ToString());
@@ -546,8 +546,8 @@ namespace SobekCM.Core.Aggregations
             }
 
             // result views
-            List<string> removedResultsDisplay = new List<string>();
-            List<string> addedResultsDisplays = new List<string>();
+            var removedResultsDisplay = new List<string>();
+            var addedResultsDisplays = new List<string>();
             if (Base.Result_Views != null)
             {
                 foreach (string thisSearch in Base.Result_Views)
@@ -578,7 +578,7 @@ namespace SobekCM.Core.Aggregations
                 }
                 else
                 {
-                    StringBuilder builder = new StringBuilder("Removed " + removedResultsDisplay[0]);
+                    var builder = new StringBuilder("Removed " + removedResultsDisplay[0]);
                     for (int i = 1; i < removedResultsDisplay.Count; i++)
                         builder.Append(", " + removedResultsDisplay[i]);
                     changes.Add(builder + " result display types");
@@ -592,7 +592,7 @@ namespace SobekCM.Core.Aggregations
                 }
                 else
                 {
-                    StringBuilder builder = new StringBuilder("Added " + addedResultsDisplays[0]);
+                    var builder = new StringBuilder("Added " + addedResultsDisplays[0]);
                     for (int i = 1; i < addedResultsDisplays.Count; i++)
                         builder.Append(", " + addedResultsDisplays[i]);
                     changes.Add(builder + " result display types");

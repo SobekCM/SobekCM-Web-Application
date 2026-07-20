@@ -352,7 +352,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 ushort current_page = RequestSpecificValues.Current_Mode.Page.HasValue ? RequestSpecificValues.Current_Mode.Page.Value : ((ushort)1);
 
                 // Put in a string builder and save, so we can repeat at the bottom
-                StringBuilder buttonBuilder = new StringBuilder();
+                var buttonBuilder = new StringBuilder();
 
                 // Should the previous and first buttons be enabled?
                 buttonBuilder.AppendLine("  <span class=\"leftButtons\">");

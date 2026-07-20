@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using SobekCM.Resource_Object.MARC;
 using System;
@@ -117,7 +117,7 @@ namespace SobekCM.Resource_Object.Bib_Info
         {
             get
             {
-                StringBuilder returnValue = new StringBuilder();
+                var returnValue = new StringBuilder();
 
                 if (!String.IsNullOrEmpty(continent))
                 {
@@ -296,7 +296,7 @@ namespace SobekCM.Resource_Object.Bib_Info
 
         internal override MARC_Field to_MARC_HTML()
         {
-            MARC_Field returnValue = new MARC_Field();
+            var returnValue = new MARC_Field();
 
             if ((String.IsNullOrEmpty(country)) && (String.IsNullOrEmpty(city)) && (String.IsNullOrEmpty(county)) && (String.IsNullOrEmpty(province)) && (String.IsNullOrEmpty(territory)) && (String.IsNullOrEmpty(citysection)))
             {
@@ -330,7 +330,7 @@ namespace SobekCM.Resource_Object.Bib_Info
                 returnValue.Tag = 662;
             }
 
-            StringBuilder fieldBuilder = new StringBuilder();
+            var fieldBuilder = new StringBuilder();
             if (!String.IsNullOrEmpty(country))
             {
                 fieldBuilder.Append("|a " + country + " ");

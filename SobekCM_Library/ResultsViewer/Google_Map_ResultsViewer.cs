@@ -66,11 +66,11 @@ namespace SobekCM.Library.ResultsViewer
                 base_url = RequestSpecificValues.Current_Mode.Base_URL + "l/";
 
             // Start the results
-            StringBuilder resultsBldr = new StringBuilder("<br />\n");
+            var resultsBldr = new StringBuilder("<br />\n");
             resultsBldr.Append("<table>\n");
 
             // Start to create the HTML
-            StringBuilder builder = new StringBuilder();
+            var builder = new StringBuilder();
             builder.AppendLine("<br />");
             builder.AppendLine("<table  width=\"900px\" >");
 
@@ -99,7 +99,7 @@ namespace SobekCM.Library.ResultsViewer
             mapScriptHtml.AppendLine();
             mapScriptHtml.AppendLine("  function load() {");
 
-            List<iSearch_Title_Result> titles_for_current_map = new List<iSearch_Title_Result>();
+            var titles_for_current_map = new List<iSearch_Title_Result>();
 
 
             // Step through and add each item to the result set
@@ -667,7 +667,7 @@ namespace SobekCM.Library.ResultsViewer
         public object Process_MapSearch_Callback(string sendData)
         {
             //blank tracer
-            Custom_Tracer Tracer = new Custom_Tracer();
+            var Tracer = new Custom_Tracer();
 
             #region Process SendData
 

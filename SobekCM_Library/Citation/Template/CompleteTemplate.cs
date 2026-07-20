@@ -203,8 +203,8 @@ namespace SobekCM.Library.Citation.Template
         /// <remarks> This utilizes the <see cref="Template_XML_Reader"/> class to do the actual reading</remarks>
         public static CompleteTemplate Read_XML_Template(string XmlFile, bool ExcludeDivisions)
         {
-            CompleteTemplate returnValue = new CompleteTemplate();
-            Template_XML_Reader reader = new Template_XML_Reader();
+            var returnValue = new CompleteTemplate();
+            var reader = new Template_XML_Reader();
             reader.Read_XML(XmlFile, returnValue, ExcludeDivisions);
             returnValue.Build_Final_Adjustment_And_Checks();
             return returnValue;
@@ -305,7 +305,7 @@ namespace SobekCM.Library.Citation.Template
             Output.WriteLine("<script src=\"" + Static_Resources_Gateway.Sobekcm_Metadata_Js + "\" type=\"text/javascript\"></script>");
             Output.WriteLine("<a name=\"template\"> </a>");
             // Start to build the return value
-            StringBuilder returnValue = new StringBuilder();
+            var returnValue = new StringBuilder();
 
             // TEMPORARY CODE TO SUPPORT MULTI-PAGE TEMPLATES IN ONE PAGE (WILL CHANGE)
             bool multiple_page = templatePages.Count > 1;
@@ -370,7 +370,7 @@ namespace SobekCM.Library.Citation.Template
                 return String.Empty;
 
             // Start to build the return value
-            StringBuilder returnValue = new StringBuilder();
+            var returnValue = new StringBuilder();
 
             // Get the page
             Template_Page thisPage = templatePages[page - 1];

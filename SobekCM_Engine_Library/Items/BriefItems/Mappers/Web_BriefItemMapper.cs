@@ -1,4 +1,4 @@
-﻿using SobekCM.Core.BriefItem;
+using SobekCM.Core.BriefItem;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Divisions;
 using System;
@@ -41,7 +41,7 @@ namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
             // Step through all the files and collection file extensions
             if (!Original.Behaviors.Dark_Flag)
             {
-                List<string> extensions = new List<string>();
+                var extensions = new List<string>();
                 collect_extensions(Original.Divisions.Download_Tree, extensions);
                 collect_extensions(Original.Divisions.Physical_Tree, extensions);
                 New.Web.File_Extensions = extensions;

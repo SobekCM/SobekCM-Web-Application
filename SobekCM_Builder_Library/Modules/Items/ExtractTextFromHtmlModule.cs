@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using System.IO;
 using SobekCM.Builder_Library.Tools;
@@ -25,7 +25,7 @@ namespace SobekCM.Builder_Library.Modules.Items
             foreach (string thisHtml in html_files)
             {
                 // Get the fileinfo and the name
-                FileInfo thisHtmlInfo = new FileInfo(thisHtml);
+                var thisHtmlInfo = new FileInfo(thisHtml);
 
                 // Exclude QC_Error.html
                 if (thisHtmlInfo.Name.ToUpper() != "QC_ERROR.HTML")

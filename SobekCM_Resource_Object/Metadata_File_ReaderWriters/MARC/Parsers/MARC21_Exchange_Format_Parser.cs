@@ -164,7 +164,7 @@ namespace SobekCM.Resource_Object.MARC.Parsers
         private MARC_Record parse_next_record()
         {
             // Create the MARC record to return and subfield collection
-            MARC_Record thisRecord = new MARC_Record();
+            var thisRecord = new MARC_Record();
 
             try
             {
@@ -172,7 +172,7 @@ namespace SobekCM.Resource_Object.MARC.Parsers
                 long file_length = reader.BaseStream.Length;
 
                 // Create the StringBuilder object for this record
-                StringBuilder leaderBuilder = new StringBuilder(30);
+                var leaderBuilder = new StringBuilder(30);
 
                 // Read to first character
                 int result = reader.Read();
@@ -238,7 +238,7 @@ namespace SobekCM.Resource_Object.MARC.Parsers
                 }
 
                 // Now, read in all the directory information
-                List<MARC21_Parser_Directory_Entry> directory_entries = new List<MARC21_Parser_Directory_Entry>();
+                var directory_entries = new List<MARC21_Parser_Directory_Entry>();
                 count = 0;
                 int tag = 0;
                 int field_length = 0;
@@ -300,10 +300,10 @@ namespace SobekCM.Resource_Object.MARC.Parsers
 
                 // Use a memory stream to accumulate bytes (we don't yet know the character
                 // encoding for this record, so needs to remain bytes )
-                MemoryStream byteFieldBuilder = new MemoryStream();
+                var byteFieldBuilder = new MemoryStream();
 
                 // Read all the data from the variable fields
-                Dictionary<short, MARC21_Parser_Variable_Field_Data> field_data = new Dictionary<short, MARC21_Parser_Variable_Field_Data>();
+                var field_data = new Dictionary<short, MARC21_Parser_Variable_Field_Data>();
                 count = 0;
                 int start_index = 0;
                 short last_field_start_index = 0;
@@ -399,7 +399,7 @@ namespace SobekCM.Resource_Object.MARC.Parsers
                         string[] subfields = variable_field_data.Substring(1).Split(new[] { UNIT_SEPERATOR });
 
                         // Create the new field
-                        MARC_Field newField = new MARC_Field { Tag = Convert.ToInt32(directoryEntry.Tag), Indicators = indicator };
+                        var newField = new MARC_Field{ Tag = Convert.ToInt32(directoryEntry.Tag), Indicators = indicator };
 
                         // Step through each subfield
                         foreach (string thisSubfield in subfields)
@@ -449,7 +449,7 @@ namespace SobekCM.Resource_Object.MARC.Parsers
             int marcByte3 = -1;
 
             // Create the string builder to build the array
-            StringBuilder builder = new StringBuilder(input.Length + 5);
+            var builder = new StringBuilder(input.Length + 5);
 
             // Step through all the bytes in the array
             for (int i = 0; i < input.Length; i++)

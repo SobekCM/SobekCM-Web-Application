@@ -66,7 +66,7 @@ namespace SobekCM.Library.Citation.Elements
                 }
             }
 
-            List<string> languages = new List<string>();
+            var languages = new List<string>();
             if (Bib.Bib_Info.Languages_Count > 0)
             {
                 languages.AddRange(from thisLanguage in Bib.Bib_Info.Languages where thisLanguage.Language_Text.Length > 0 select thisLanguage.Language_Text);

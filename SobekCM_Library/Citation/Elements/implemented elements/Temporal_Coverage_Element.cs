@@ -62,7 +62,7 @@ namespace SobekCM.Library.Citation.Elements
                 }
             }
 
-            List<string> allValues = new List<string>();
+            var allValues = new List<string>();
             if (Bib.Bib_Info.TemporalSubjects_Count > 0)
             {
                 allValues.AddRange(Bib.Bib_Info.TemporalSubjects.Select(thisTemporal => thisTemporal.ToString()));

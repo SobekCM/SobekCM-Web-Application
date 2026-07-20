@@ -281,7 +281,7 @@ namespace SobekCM.Library.MySobekViewer
         {
             get
             {
-                List<HtmlSubwriter_Behaviors_Enum> returnValue = new List<HtmlSubwriter_Behaviors_Enum>();
+                var returnValue = new List<HtmlSubwriter_Behaviors_Enum>();
                 returnValue.Add(HtmlSubwriter_Behaviors_Enum.Use_Jquery_Qtip);
                 return returnValue;
             }
@@ -292,8 +292,8 @@ namespace SobekCM.Library.MySobekViewer
             DataSet thisSet = SobekCM_Database.Get_Folder_Search_Information(User.UserID, Tracer);
 
             // Add the current folder names
-            Dictionary<int, User_Folder> folderNodes = new Dictionary<int, User_Folder>();
-            List<User_Folder> parentNodes = new List<User_Folder>();
+            var folderNodes = new Dictionary<int, User_Folder>();
+            var parentNodes = new List<User_Folder>();
             foreach (DataRow folderRow in thisSet.Tables[0].Rows)
             {
                 string folder_name = folderRow["FolderName"].ToString();
@@ -301,7 +301,7 @@ namespace SobekCM.Library.MySobekViewer
                 int parentid = Convert.ToInt32(folderRow["ParentFolderID"]);
                 bool isPublic = Convert.ToBoolean(folderRow["isPublic"]);
 
-                User_Folder newFolderNode = new User_Folder(folder_name, folderid) { IsPublic = isPublic };
+                var newFolderNode = new User_Folder(folder_name, folderid) { IsPublic = isPublic };
                 if (parentid == -1)
                     parentNodes.Add(newFolderNode);
                 folderNodes.Add(folderid, newFolderNode);
@@ -566,39 +566,35 @@ namespace SobekCM.Library.MySobekViewer
                 RequestSpecificValues.Current_Mode.Result_Display_Type = currentDisplayType;
 
                 // Build the HTML tree view object and nodes
-                HtmlTreeView treeView1 = new HtmlTreeView { CssClass = "tree" };
+                var treeView1 = new HtmlTreeView{ CssClass = "tree" };
 
                 // Add the root my bookshelves node
-                HtmlTreeNode rootNode = new HtmlTreeNode
-                {
+                var rootNode = new HtmlTreeNode{
                     Text = "&nbsp; <a title=\"Manage my library\" href=\"" + redirect_url.Replace("XXXXXXXXXXXXXXXXXX", String.Empty) + "\">My Library  (Manage my bookshelves)</a>",
                     ImageUrl = Static_Resources_Gateway.Bookshelf_Img
                 };
                 treeView1.Nodes.Add(rootNode);
 
                 // Add the personalized home page
-                HtmlTreeNode homeNode = new HtmlTreeNode
-                {
+                var homeNode = new HtmlTreeNode{
                     Text = "&nbsp; <a title=\"View my collections home page\" href=\"" + personalized_home + "\">My Collections Home</a>",
                     ImageUrl = Static_Resources_Gateway.Home_Folder_Gif
                 };
                 rootNode.ChildNodes.Add(homeNode);
 
                 // Add the saved searches node
-                HtmlTreeNode savedSearchesNode = new HtmlTreeNode
-                {
+                var savedSearchesNode = new HtmlTreeNode{
                     Text = "&nbsp; <a title=\"View my saved searches\" href=\"" + saved_search_url + "\">My Saved Searches</a>",
                     ImageUrl = Static_Resources_Gateway.Saved_Searches_Img
                 };
                 rootNode.ChildNodes.Add(savedSearchesNode);
 
-                List<HtmlTreeNode> selectedNodes = new List<HtmlTreeNode>();
+                var selectedNodes = new List<HtmlTreeNode>();
                 foreach (User_Folder thisFolder in RequestSpecificValues.Current_User.Folders)
                 {
                     if (thisFolder.Folder_Name != "Submitted Items")
                     {
-                        HtmlTreeNode folderNode = new HtmlTreeNode
-                        { Text = "&nbsp; <a href=\"" + redirect_url.Replace("XXXXXXXXXXXXXXXXXX", thisFolder.Folder_Name_Encoded) + "\">" + thisFolder.Folder_Name + "</a>" };
+                        var folderNode = new HtmlTreeNode{ Text = "&nbsp; <a href=\"" + redirect_url.Replace("XXXXXXXXXXXXXXXXXX", thisFolder.Folder_Name_Encoded) + "\">" + thisFolder.Folder_Name + "</a>" };
                         if (thisFolder.Folder_Name == properFolderName)
                         {
                             selectedNodes.Add(folderNode);
@@ -650,7 +646,7 @@ namespace SobekCM.Library.MySobekViewer
                 }
 
                 // Render to HTML and write to output
-                StringBuilder treeBuilder = new StringBuilder();
+                var treeBuilder = new StringBuilder();
                 treeView1.Render(new StringWriter(treeBuilder));
                 Output.Write(treeBuilder.ToString());
             }
@@ -706,7 +702,7 @@ namespace SobekCM.Library.MySobekViewer
             else
             {
                 // Add the folder management piece here
-                StringBuilder bookshelfManageBuilder = new StringBuilder();
+                var bookshelfManageBuilder = new StringBuilder();
                 bookshelfManageBuilder.AppendLine("<br /><br />\n<h1>Manage My Bookshelves</h1>\n<div class=\"SobekHomeText\" >");
                 bookshelfManageBuilder.AppendLine("  <blockquote>");
                 bookshelfManageBuilder.AppendLine("  <table width=\"630px\">");
@@ -796,8 +792,7 @@ namespace SobekCM.Library.MySobekViewer
 
             foreach (User_Folder childFolders in ThisFolder.Children)
             {
-                HtmlTreeNode folderNode = new HtmlTreeNode
-                { Text = "&nbsp; <a href=\"" + RedirectURL.Replace("XXXXXXXXXXXXXXXXXX", childFolders.Folder_Name_Encoded) + "\">" + childFolders.Folder_Name + "</a>" };
+                var folderNode = new HtmlTreeNode{ Text = "&nbsp; <a href=\"" + RedirectURL.Replace("XXXXXXXXXXXXXXXXXX", childFolders.Folder_Name_Encoded) + "\">" + childFolders.Folder_Name + "</a>" };
                 if (childFolders.Folder_Name == SelectedFolder)
                 {
                     SelectedNodes.Add(folderNode);

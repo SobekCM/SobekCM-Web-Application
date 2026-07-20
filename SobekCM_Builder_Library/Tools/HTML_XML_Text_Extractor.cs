@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using System.Collections.Generic;
 using System.IO;
@@ -32,11 +32,11 @@ namespace SobekCM.Builder_Library.Tools
                 inFile = new StreamReader(HTML_In_Name);
                 
                 // If this is XML, we will need to keep track of all used tags and attributes
-                List<string> included_tags = new List<string>();
-                StringBuilder tagBuilder = new StringBuilder();
+                var included_tags = new List<string>();
+                var tagBuilder = new StringBuilder();
 
                 // Build this line by line
-                StringBuilder lineBuilder = new StringBuilder();
+                var lineBuilder = new StringBuilder();
 
                 // Step through each character
                 int bracket_depth = 0;

@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using SobekCM.Resource_Object.Behaviors;
 using SobekCM.Resource_Object.Bib_Info;
@@ -99,7 +99,7 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
         public bool Write_Metadata(TextWriter Output_Stream, SobekCM_Item Item_To_Save, Dictionary<string, object> Options, out string Error_Message)
         {
             // PERHAPS MAKE THESE OPTIONS?
-            HashSet<string> mimes_to_exclude = new HashSet<string>();
+            var mimes_to_exclude = new HashSet<string>();
             const bool MINIMIZE_FILE_SIZE = false;
 
             // Get the METS writing profile
@@ -136,9 +136,9 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
             }
 
             // Get the list of divisions from the division trees
-            List<abstract_TreeNode> allDivisions = new List<abstract_TreeNode>();
-            List<SobekCM_File_Info> allFiles = new List<SobekCM_File_Info>();
-            Dictionary<string, List<SobekCM_File_Info>> mimeHash = new Dictionary<string, List<SobekCM_File_Info>>();
+            var allDivisions = new List<abstract_TreeNode>();
+            var allFiles = new List<SobekCM_File_Info>();
+            var mimeHash = new Dictionary<string, List<SobekCM_File_Info>>();
 
             #region Prepare the list of divisions and files to be written by assigning proper ID's and groupid's to all
 
@@ -205,8 +205,8 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
             #region Add XMLNS and schema locations for active METS section reader/writers with data to write
 
             // Collect all the xmlns and schema locations
-            List<string> xmlnsList = new List<string>();
-            List<string> schemaLocList = new List<string>();
+            var xmlnsList = new List<string>();
+            var schemaLocList = new List<string>();
             foreach (METS_Section_ReaderWriter_Config thisRWconfig in profile.Package_Level_AmdSec_Writer_Configs)
             {
                 iPackage_amdSec_ReaderWriter thisRw = (iPackage_amdSec_ReaderWriter)thisRWconfig.ReaderWriterObject;
@@ -318,7 +318,7 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
             Item_To_Save.METS_Header.Add_METS(Item_To_Save, Output_Stream);
 
             // Create the options dictionary for these writers
-            Dictionary<string, object> options = new Dictionary<string, object>();
+            var options = new Dictionary<string, object>();
             options["SobekCM_FileInfo_METS_amdSec_ReaderWriter:All_Files"] = allFiles;
 
             // Counters to keep track of the number of each section added
@@ -331,7 +331,7 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
             #region Add all the package-level DMDSECs 
 
             // Prepare to add all the bibliographic section
-            StringBuilder dmd_secid_builder = new StringBuilder();
+            var dmd_secid_builder = new StringBuilder();
 
             // Step through all the package level dmdSecs to be added
             foreach (METS_Section_ReaderWriter_Config thisConfig in profile.Package_Level_DmdSec_Writer_Configs)
@@ -476,7 +476,7 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
             #region Add all the package-level AMDSECs
 
             // Prepare to add all the bibliographic section
-            StringBuilder amd_secid_builder = new StringBuilder();
+            var amd_secid_builder = new StringBuilder();
 
             // Step through all the package level amdSecs to be added
             foreach (METS_Section_ReaderWriter_Config thisConfig in profile.Package_Level_AmdSec_Writer_Configs)
@@ -813,14 +813,14 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
                                         // Get the size first
                                         if (thisFile.Size < 0)
                                         {
-                                            FileInfo thisFileInfo = new FileInfo(Item_To_Save.Source_Directory + "/" + thisFile.System_Name);
+                                            var thisFileInfo = new FileInfo(Item_To_Save.Source_Directory + "/" + thisFile.System_Name);
                                             thisFile.Size = thisFileInfo.Length;
                                         }
 
                                         // Get the checksum, if it doesn't exist
                                         if (String.IsNullOrEmpty(thisFile.Checksum))
                                         {
-                                            FileMD5 checksummer = new FileMD5(Item_To_Save.Source_Directory + "/" + thisFile.System_Name);
+                                            var checksummer = new FileMD5(Item_To_Save.Source_Directory + "/" + thisFile.System_Name);
                                             thisFile.Checksum = checksummer.Checksum;
 
                                             // Set the checksum type
@@ -1015,22 +1015,22 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
 
             // Keep a list of all the files created, by file id, as additional data is gathered
             // from the different locations ( amdSec, fileSec, structmap )
-            Dictionary<string, SobekCM_File_Info> files_by_fileid = new Dictionary<string, SobekCM_File_Info>();
+            var files_by_fileid = new Dictionary<string, SobekCM_File_Info>();
 
             // For now, to do support for old way of doing downloads, build a list to hold
             // the deprecated download files
-            List<Download_Info_DEPRECATED> deprecatedDownloads = new List<Download_Info_DEPRECATED>();
+            var deprecatedDownloads = new List<Download_Info_DEPRECATED>();
 
             // Need to store the unanalyzed sections of dmdSec and amdSec until we determine if 
             // the scope is the whole package, or the top-level div.  We use lists as the value since
             // several sections may have NO id and the METS may even (incorrectly) have multiple sections
             // with the same ID
-            Dictionary<string, List<Unanalyzed_METS_Section>> dmdSec = new Dictionary<string, List<Unanalyzed_METS_Section>>();
-            Dictionary<string, List<Unanalyzed_METS_Section>> amdSec = new Dictionary<string, List<Unanalyzed_METS_Section>>();
+            var dmdSec = new Dictionary<string, List<Unanalyzed_METS_Section>>();
+            var amdSec = new Dictionary<string, List<Unanalyzed_METS_Section>>();
 
             // Dictionaries store the link between dmdSec and amdSec id's to single divisions
-            Dictionary<string, abstract_TreeNode> division_dmdids = new Dictionary<string, abstract_TreeNode>();
-            Dictionary<string, abstract_TreeNode> division_amdids = new Dictionary<string, abstract_TreeNode>();
+            var division_dmdids = new Dictionary<string, abstract_TreeNode>();
+            var division_amdids = new Dictionary<string, abstract_TreeNode>();
 
 
             try
@@ -1094,7 +1094,7 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
                                     dmdSec[thisDmdSec.ID].Add(thisDmdSec);
                                 else
                                 {
-                                    List<Unanalyzed_METS_Section> newDmdSecList = new List<Unanalyzed_METS_Section>();
+                                    var newDmdSecList = new List<Unanalyzed_METS_Section>();
                                     newDmdSecList.Add(thisDmdSec);
                                     dmdSec[thisDmdSec.ID] = newDmdSecList;
                                 }
@@ -1107,7 +1107,7 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
                                     amdSec[thisAmdSec.ID].Add(thisAmdSec);
                                 else
                                 {
-                                    List<Unanalyzed_METS_Section> newAmdSecList = new List<Unanalyzed_METS_Section> { thisAmdSec };
+                                    var newAmdSecList = new List<Unanalyzed_METS_Section>{ thisAmdSec };
                                     amdSec[thisAmdSec.ID] = newAmdSecList;
                                 }
                                 break;
@@ -1142,7 +1142,7 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
             Input_Stream.Close();
 
             // Load some options for interoperability
-            Dictionary<string, object> options = new Dictionary<string, object>();
+            var options = new Dictionary<string, object>();
             options.Add("SobekCM_FileInfo_METS_amdSec_ReaderWriter:Files_By_FileID", files_by_fileid);
 
             #region Process the previously stored dmd sections
@@ -1323,7 +1323,7 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
                                 }
 
                                 // Add a page for this, with the provided label if there was one
-                                Page_TreeNode newPage = new Page_TreeNode(label);
+                                var newPage = new Page_TreeNode(label);
                                 newRoot.Nodes.Add(newPage);
 
                                 // Now, add this existing file
@@ -1373,11 +1373,11 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
                             }
 
                             // Add a page for this, with the provided label if there was one
-                            Page_TreeNode newPage = new Page_TreeNode(label);
+                            var newPage = new Page_TreeNode(label);
                             newRoot.Nodes.Add(newPage);
 
                             // Now, add this existing file
-                            SobekCM_File_Info thisDownloadFile = new SobekCM_File_Info(filename);
+                            var thisDownloadFile = new SobekCM_File_Info(filename);
                             newPage.Files.Add(thisDownloadFile);
 
                             // Add to the list of files added (in case it appears twice)
@@ -1411,7 +1411,7 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
                 {
                     // Get the pages, by sequence
                     List<abstract_TreeNode> pagesBySequence = Return_Package.Divisions.Physical_Tree.Pages_PreOrder;
-                    List<Coordinate_Polygon> polygonsToRemove = new List<Coordinate_Polygon>();
+                    var polygonsToRemove = new List<Coordinate_Polygon>();
 
                     // Step through each polygon
                     foreach (Coordinate_Polygon thisPolygon in geoSpatial.Polygons)
@@ -1422,7 +1422,7 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
                             abstract_TreeNode thisPageFromSequence = pagesBySequence[thisPolygon.Page_Sequence - 1];
 
                             // We can assume this page does not already have the coordiantes
-                            GeoSpatial_Information thisPageCoord = new GeoSpatial_Information();
+                            var thisPageCoord = new GeoSpatial_Information();
                             thisPageFromSequence.Add_Metadata_Module(GlobalVar.GEOSPATIAL_METADATA_MODULE_KEY, thisPageCoord);
                             thisPageCoord.Add_Polygon(thisPolygon);
 
@@ -1711,7 +1711,7 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
         {
             // Save all the inner XML and attributed for later analysis
             string dmdSecId = String.Empty;
-            List<KeyValuePair<string, string>> attributes = new List<KeyValuePair<string, string>>();
+            var attributes = new List<KeyValuePair<string, string>>();
 
             // Get the attributes for this DMD section
             R.Read();
@@ -1742,7 +1742,7 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
         {
             // Save all the inner XML and attributed for later analysis
             string amdSecId = String.Empty;
-            List<KeyValuePair<string, string>> attributes = new List<KeyValuePair<string, string>>();
+            var attributes = new List<KeyValuePair<string, string>>();
 
             // Get the attributes for this AMD section
             R.Read();
@@ -1777,7 +1777,7 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
             string size = String.Empty;
 
             // Only allow ONE instance of each file in the METS
-            Dictionary<string, SobekCM_File_Info> filename_to_object = new Dictionary<string, SobekCM_File_Info>();
+            var filename_to_object = new Dictionary<string, SobekCM_File_Info>();
 
             // begin to loop through the XML DOM tree
 
@@ -1887,8 +1887,8 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
 
         private static void read_struct_map(XmlReader R, SobekCM_Item Package, Dictionary<string, SobekCM_File_Info> FilesByFileid, Dictionary<string, abstract_TreeNode> DivisionDmdids, Dictionary<string, abstract_TreeNode> DivisionAmdids)
         {
-            Stack<abstract_TreeNode> parentNodes = new Stack<abstract_TreeNode>();
-            Dictionary<string, abstract_TreeNode> divisions_by_id = new Dictionary<string, abstract_TreeNode>();
+            var parentNodes = new Stack<abstract_TreeNode>();
+            var divisions_by_id = new Dictionary<string, abstract_TreeNode>();
 
             bool mainDivisionFound = false;
             Division_Tree thisDivTree = null;
@@ -2066,7 +2066,7 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
                                     {
                                         Division_TreeNode asDivNode = (Division_TreeNode)pageParentNode;
 
-                                        Page_TreeNode newPage = new Page_TreeNode();
+                                        var newPage = new Page_TreeNode();
                                         asDivNode.Add_Child(newPage);
 
                                         //parentNodes.Push(newPage);
@@ -2157,7 +2157,7 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
                 if (views_flag)
                 {
                     // Create the sorted list
-                    SortedList views_sorted = new SortedList();
+                    var views_sorted = new SortedList();
 
                     string view_id = String.Empty;
                     string view_procedure = String.Empty;
@@ -2238,7 +2238,7 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
                 if (interfaces_flag)
                 {
                     // Create the sorted list
-                    SortedList interfaces_sorted = new SortedList();
+                    var interfaces_sorted = new SortedList();
 
                     string interface_id = String.Empty;
                     string interface_title = String.Empty;

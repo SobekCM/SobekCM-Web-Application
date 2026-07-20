@@ -13,7 +13,7 @@ namespace SobekCM.Library.Citation.Template
         /// <param name="directory"> Filename and directory for the configuration file </param>
         public static void Create(string directory)
         {
-            StreamWriter writer = new StreamWriter(directory, false);
+            var writer = new StreamWriter(directory, false);
             writer.WriteLine("<?xml version=\"1.0\" encoding=\"utf-8\" ?> ");
             writer.WriteLine("");
             writer.WriteLine("<!-- Begin the XML for this input template -->");
@@ -32,7 +32,7 @@ namespace SobekCM.Library.Citation.Template
             writer.WriteLine("	<inputs>");
             writer.WriteLine("		<page>");
             writer.WriteLine("			<name language=\"eng\">General Information</name>");
-            writer.WriteLine("			<name language=\"fre\">Informations Générales</name>");
+            writer.WriteLine("			<name language=\"fre\">Informations Gï¿½nï¿½rales</name>");
             writer.WriteLine("			<name language=\"spa\">Datos Generales</name>");
             writer.WriteLine("			<panel>");
             writer.WriteLine("				<name>Codes</name>");
@@ -76,14 +76,14 @@ namespace SobekCM.Library.Citation.Template
             writer.WriteLine("			<name language=\"spa\">Documento de Fuente</name>");
             writer.WriteLine("			<panel>");
             writer.WriteLine("				<name language=\"eng\">Title Information</name>");
-            writer.WriteLine("				<name language=\"spa\">Información Titular</name>");
+            writer.WriteLine("				<name language=\"spa\">Informaciï¿½n Titular</name>");
             writer.WriteLine("				<name language=\"fre\">Information de Titre</name>");
             writer.WriteLine("				<element type=\"Title\" subtype=\"panel\" mandatory=\"true\" />");
             writer.WriteLine("			</panel>");
             writer.WriteLine("			<panel>");
             writer.WriteLine("				<name language=\"eng\">Name Authorities</name>");
             writer.WriteLine("				<name language=\"spa\">Autoridad de Nombre</name>");
-            writer.WriteLine("				<name language=\"fre\">Autorités du Nom</name>");
+            writer.WriteLine("				<name language=\"fre\">Autoritï¿½s du Nom</name>");
             writer.WriteLine("				<element type=\"Creator\" subtype=\"complex\" repeatable=\"true\" />");
             writer.WriteLine("				<element type=\"Contributor\" subtype=\"complex\" repeatable=\"true\" />");
             writer.WriteLine("				<element type=\"Publisher\" subtype=\"complex\" />");
@@ -92,7 +92,7 @@ namespace SobekCM.Library.Citation.Template
             writer.WriteLine("		</page>");
             writer.WriteLine("		<page>");
             writer.WriteLine("			<name language=\"eng\">Subjects and Keywords</name>");
-            writer.WriteLine("			<name language=\"fre\">Sujets et Mots-Clés</name>");
+            writer.WriteLine("			<name language=\"fre\">Sujets et Mots-Clï¿½s</name>");
             writer.WriteLine("			<name language=\"spa\">Temas y Palabaras Claves</name>");
             writer.WriteLine("			<panel>");
             writer.WriteLine("				<name language=\"eng\">Subjects</name>");
@@ -123,7 +123,7 @@ namespace SobekCM.Library.Citation.Template
             writer.WriteLine("			<panel>");
             writer.WriteLine("				<name language=\"eng\">Watermarks for web page</name>");
             writer.WriteLine("				<name language=\"spa\">Iconos para el Internet </name>");
-            writer.WriteLine("				<name language=\"fre\">Icônes pour l'Internet</name>");
+            writer.WriteLine("				<name language=\"fre\">Icï¿½nes pour l'Internet</name>");
             writer.WriteLine("				<element type=\"Icon\" repeatable=\"true\" />");
             writer.WriteLine("			</panel>");
             writer.WriteLine("			<panel>");
@@ -145,18 +145,18 @@ namespace SobekCM.Library.Citation.Template
             writer.WriteLine("		<page>");
             writer.WriteLine("				<name language=\"eng\">Serial</name>");
             writer.WriteLine("				<name language=\"spa\">Serial</name>");
-            writer.WriteLine("				<name language=\"fre\">Périodique</name>");
+            writer.WriteLine("				<name language=\"fre\">Pï¿½riodique</name>");
             writer.WriteLine("			<panel>");
             writer.WriteLine("				<name language=\"eng\">Serial Hierarchy</name>");
-            writer.WriteLine("				<name language=\"spa\">Jerarquía Serial</name>");
-            writer.WriteLine("				<name language=\"fre\">Hiérarchie Périodique</name>");
+            writer.WriteLine("				<name language=\"spa\">Jerarquï¿½a Serial</name>");
+            writer.WriteLine("				<name language=\"fre\">Hiï¿½rarchie Pï¿½riodique</name>");
             writer.WriteLine("				<element type=\"SerialHierarchy\" />");
             writer.WriteLine("			</panel>");
             writer.WriteLine("		</page>");
             writer.WriteLine("		<page>");
             writer.WriteLine("				<name language=\"eng\">TOC</name>");
             writer.WriteLine("				<name language=\"spa\">Indice</name>");
-            writer.WriteLine("				<name language=\"fre\">Table des Matières</name>");
+            writer.WriteLine("				<name language=\"fre\">Table des Matiï¿½res</name>");
             writer.WriteLine("			<panel>");
             writer.WriteLine("				<name language=\"eng\">Structure Map</name>");
             writer.WriteLine("				<name language=\"spa\">Mapa de Estructura</name>");

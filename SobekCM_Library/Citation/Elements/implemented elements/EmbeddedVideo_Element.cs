@@ -60,7 +60,7 @@ namespace SobekCM.Library.Citation.Elements
                 }
             }
 
-            List<string> instanceValues = new List<string>();
+            var instanceValues = new List<string>();
             if (Bib.Behaviors.Embedded_Video.Length > 0)
             {
                 instanceValues.Add(Bib.Behaviors.Embedded_Video);

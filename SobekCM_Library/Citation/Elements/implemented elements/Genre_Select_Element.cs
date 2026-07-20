@@ -67,7 +67,7 @@ namespace SobekCM.Library.Citation.Elements
                 }
             }
 
-            List<string> genres = new List<string>();
+            var genres = new List<string>();
             foreach (Genre_Info genre in Bib.Bib_Info.Genres)
             {
                 if (!genres.Contains(genre.Genre_Term))

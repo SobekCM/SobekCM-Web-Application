@@ -181,7 +181,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 width = 230;
 
             // BUild the flags object
-            RequestCache_RequestFlags currentFlags = new RequestCache_RequestFlags();
+            var currentFlags = new RequestCache_RequestFlags();
             if (BriefItem.Behaviors.HasRestrictions)
             {
                 currentFlags.ItemRestrictedFromUser = true;
@@ -225,7 +225,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             {
                 // Get the list of all TXT files in this division
                 string[] text_files = Directory.GetFiles(TextFileLocation, "*.txt");
-                Dictionary<string, string> text_files_existing = new Dictionary<string, string>();
+                var text_files_existing = new Dictionary<string, string>();
                 foreach (string thisTextFile in text_files)
                 {
                     string text_filename = (new FileInfo(thisTextFile)).Name.ToUpper();
@@ -236,7 +236,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 if (text_files.Length > 0)
                 {
                     // If this has page images, check for related text files 
-                    List<string> text_files_included = new List<string>();
+                    var text_files_included = new List<string>();
                     bool started = false;
                     if ((BriefItem.Images != null) && (BriefItem.Images.Count > 0))
                     {
@@ -282,7 +282,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
                                                 try
                                                 {
-                                                    StreamReader reader = new StreamReader(text_file);
+                                                    var reader = new StreamReader(text_file);
                                                     string text_line = reader.ReadLine();
                                                     while (text_line != null)
                                                     {
@@ -344,7 +344,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                         {
 
 
-                            StreamReader reader = new StreamReader(text_file);
+                            var reader = new StreamReader(text_file);
                             string text_line = reader.ReadLine();
                             while (text_line != null)
                             {

@@ -69,7 +69,7 @@ namespace SobekCM.Library.MySobekViewer
 
 
             //Initialize variables
-            DataTable trackingUsers = new DataTable();
+            var trackingUsers = new DataTable();
             user_list = new Dictionary<string, User_Object>();
             scanners_list = new List<string>();
 
@@ -97,7 +97,7 @@ namespace SobekCM.Library.MySobekViewer
 
             foreach (DataRow row in trackingUsers.Rows)
             {
-                User_Object temp_user = new User_Object();
+                var temp_user = new User_Object();
                 temp_user.UserName = row["UserName"].ToString();
                 temp_user.Given_Name = row["FirstName"].ToString();
                 temp_user.Family_Name = row["LastName"].ToString();
@@ -109,7 +109,7 @@ namespace SobekCM.Library.MySobekViewer
                 user_list.Add(RequestSpecificValues.Current_User.UserName, RequestSpecificValues.Current_User);
 
             //Get the list of scanning equipment
-            DataTable scanners = new DataTable();
+            var scanners = new DataTable();
             scanners = SobekCM_Database.Tracking_Get_Scanners_List();
             foreach (DataRow row in scanners.Rows)
             {
@@ -288,7 +288,7 @@ namespace SobekCM.Library.MySobekViewer
             //Get the table of any previously opened workflows for this item
             if (!String.IsNullOrEmpty(itemID.ToString()) && itemID != 0 && page == 1)
             {
-                DataView temp_open_workflows_all_users = new DataView(SobekCM_Database.Tracking_Get_Open_Workflows(itemID, stage));
+                var temp_open_workflows_all_users = new DataView(SobekCM_Database.Tracking_Get_Open_Workflows(itemID, stage));
 
                 //Filter the open workflows associated with the currently selected RequestSpecificValues.Current_User
                 open_workflows_from_DB = temp_open_workflows_all_users.ToTable().Clone();
@@ -397,7 +397,7 @@ namespace SobekCM.Library.MySobekViewer
             }
 
             //Create a new workflow object for this workflow
-            Tracking_Workflow this_workflow = new Tracking_Workflow();
+            var this_workflow = new Tracking_Workflow();
             DateTime? start_time_to_save = DateTime.Parse(new_date.ToShortDateString() + " " + new_start_time);
             DateTime? end_time_to_save = null;
             if (!String.IsNullOrEmpty(new_end_time))
@@ -846,7 +846,7 @@ namespace SobekCM.Library.MySobekViewer
             string barcode_row_style = String.Empty;
             string manual_row_style = String.Empty;
 
-            StringBuilder builder = new StringBuilder(2000);
+            var builder = new StringBuilder(2000);
             builder.AppendLine("<!-- Track_Item_MySobekViewer.Add_Controls -->");
             builder.AppendLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + Static_Resources_Gateway.Sobekcm_Mysobek_Css + "\" /> ");
             builder.AppendLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + Static_Resources_Gateway.Sobekcm_Admin_Css + "\" /> ");

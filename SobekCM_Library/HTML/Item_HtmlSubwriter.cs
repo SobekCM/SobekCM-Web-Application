@@ -1166,7 +1166,7 @@ namespace SobekCM.Library.HTML
                     }
 
                     Output.WriteLine("\t\t\t<div class=\"sbkIsw_PageNavBar\">");
-                    StringBuilder buttonsHtmlBuilder = new StringBuilder(1000);
+                    var buttonsHtmlBuilder = new StringBuilder(1000);
 
                     // Get the URL for the first and previous buttons
                     string firstButtonURL = pageViewer.First_Page_URL;
@@ -1260,7 +1260,7 @@ namespace SobekCM.Library.HTML
                             // built as well, althouogh it is subsequently used further up the page
                             if (pageViewer.Page_Selector == ItemViewer_PageSelector_Type_Enum.PageLinks)
                             {
-                                StringBuilder pageLinkBuilder = new StringBuilder();
+                                var pageLinkBuilder = new StringBuilder();
 
                                 //Get the total page count
                                 int num_of_pages = pageViewer.PageCount;
@@ -1455,8 +1455,7 @@ namespace SobekCM.Library.HTML
         {
             get
             {
-                List<Tuple<string, string>> returnValue = new List<Tuple<string, string>>
-                    {
+                var returnValue = new List<Tuple<string, string>>{
                         new Tuple<string, string>("onload", "itemwriter_load();"),
                         new Tuple<string, string>("onresize", "itemwriter_load();"),
                         new Tuple<string, string>("id", "itembody")

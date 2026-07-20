@@ -339,8 +339,7 @@ namespace SobekCM.Library.Citation.Elements
                                 }
                                 if (!found_conference_name)
                                 {
-                                    Name_Info conferenceName = new Name_Info
-                                    {
+                                    var conferenceName = new Name_Info{
                                         Name_Type = Name_Info_Type_Enum.Conference,
                                         Full_Name = largerbody
                                     };

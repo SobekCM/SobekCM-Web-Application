@@ -713,7 +713,7 @@ namespace SobekCM.Core.MemoryMgmt
 		{
 			checkOptimizable((value.Ticks % TimeSpan.TicksPerMillisecond) == 0, "Cannot optimize a DateTime with sub-millisecond accuracy");
 
-			BitVector32 dateMask = new BitVector32();
+			var dateMask = new BitVector32();
 			dateMask[DateYearMask] = value.Year;
 			dateMask[DateMonthMask] = value.Month;
 			dateMask[DateDayMask] = value.Day;
@@ -751,7 +751,7 @@ namespace SobekCM.Core.MemoryMgmt
 		{
 			int[] data = Decimal.GetBits(value);
 			byte scale = (byte) (data[3] >> 16);
-			byte flags = new byte();
+			var flags = new byte();
 
 			if((data[3] & -2147483648) != 0) flags |= 0x01;
 			if(scale != 0) flags |= 0x02;
@@ -1829,7 +1829,7 @@ namespace SobekCM.Core.MemoryMgmt
 		#region Private Methods
 		private static BinaryFormatter createBinaryFormatter()
 		{
-			BinaryFormatter result = new BinaryFormatter();	
+			var result = new BinaryFormatter();	
 			result.AssemblyFormat = FormatterAssemblyStyle.Full;
 			return result;
 		}
@@ -1847,7 +1847,7 @@ namespace SobekCM.Core.MemoryMgmt
 		/// <param name="initialData">The intial data for the BitVector32 - contains DateTimeKind or 0</param>
 		private void encodeTimeSpan(TimeSpan value, bool partOfDateTime, int initialData)
 		{
-			BitVector32 packedData = new BitVector32(initialData);
+			var packedData = new BitVector32(initialData);
 			int days;
 			int hours = Math.Abs(value.Hours);
 			int minutes = Math.Abs(value.Minutes);
@@ -2606,7 +2606,7 @@ namespace SobekCM.Core.MemoryMgmt
 		[Conditional("DEBUG")]
 		public void DumpTypeUsage()
 		{
-			StringBuilder sb = new StringBuilder("Type Usage Dump" + Environment.NewLine + "---------------" + Environment.NewLine );
+			var sb = new StringBuilder("Type Usage Dump" + Environment.NewLine + "---------------" + Environment.NewLine );
 			for(int i = 0; i < 256; i++)
 			{
 #if DEBUG
@@ -2933,7 +2933,7 @@ namespace SobekCM.Core.MemoryMgmt
 				return FullyOptimizableTypedArray;
 			else
 			{
-				BitArray result = new BitArray(base.ReadBytes((length + 7) / 8));
+				var result = new BitArray(base.ReadBytes((length + 7) / 8));
 				result.Length = length;
 				return result;
 			}
@@ -2955,8 +2955,8 @@ namespace SobekCM.Core.MemoryMgmt
 		public DateTime ReadOptimizedDateTime()
 		{
 			// Read date information from first three bytes
-			BitVector32 dateMask = new BitVector32(ReadByte() | (ReadByte() << 8) | (ReadByte() << 16));
-			DateTime result = new DateTime(
+			var dateMask = new BitVector32(ReadByte() | (ReadByte() << 8) | (ReadByte() << 16));
+			var result = new DateTime(
 					dateMask[SerializationWriter.DateYearMask],
 					dateMask[SerializationWriter.DateMonthMask],
 					dateMask[SerializationWriter.DateDayMask]
@@ -3242,7 +3242,7 @@ namespace SobekCM.Core.MemoryMgmt
 		/// <returns>A new, simple, populated generic Dictionary.</returns>
 		public Dictionary<K, V> ReadDictionary<K, V>()
 		{
-			Dictionary<K, V> result = new Dictionary<K, V>();
+			var result = new Dictionary<K, V>();
 			ReadDictionary(result);
 			return result;
 		}
@@ -3936,7 +3936,7 @@ namespace SobekCM.Core.MemoryMgmt
 			bool hasMilliseconds;
 			long ticks = 0;
 
-			BitVector32 packedData = new BitVector32(initialByte | (ReadByte() << 8)); // Read first two bytes
+			var packedData = new BitVector32(initialByte | (ReadByte() << 8)); // Read first two bytes
 			hasTime = packedData[SerializationWriter.HasTimeSection] == 1;
 			hasSeconds = packedData[SerializationWriter.HasSecondsSection] == 1;
 			hasMilliseconds = packedData[SerializationWriter.HasMillisecondsSection] == 1;

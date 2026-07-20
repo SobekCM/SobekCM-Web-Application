@@ -89,7 +89,7 @@ namespace SobekCM.Resource_Object.Divisions
         /// <remarks> This is generally used to add just a single file.  To add many files, better logic should be implemented </remarks>
         public SobekCM_File_Info Add_File(string FileName, string Label)
         {
-            SobekCM_File_Info newFile = new SobekCM_File_Info(FileName);
+            var newFile = new SobekCM_File_Info(FileName);
             Add_File(newFile, Label);
             return newFile;
         }
@@ -135,7 +135,7 @@ namespace SobekCM.Resource_Object.Divisions
                     }
 
                     // Add this as a new page on the last division
-                    Page_TreeNode newPage = new Page_TreeNode(Label);
+                    var newPage = new Page_TreeNode(Label);
                     lastDivision.Add_Child(newPage);
 
                     // Now, add this file to the page
@@ -153,11 +153,11 @@ namespace SobekCM.Resource_Object.Divisions
             else
             {
                 // No nodes exist, so add a MAIN division node
-                Division_TreeNode newDivNode = new Division_TreeNode("Main", String.Empty);
+                var newDivNode = new Division_TreeNode("Main", String.Empty);
                 Roots.Add(newDivNode);
 
                 // Add this as a new page on the new division
-                Page_TreeNode newPage = new Page_TreeNode(Label);
+                var newPage = new Page_TreeNode(Label);
                 newDivNode.Add_Child(newPage);
 
                 // Now, add this file to the page
@@ -232,7 +232,7 @@ namespace SobekCM.Resource_Object.Divisions
             get
             {
                 // Build the return collection
-                List<abstract_TreeNode> returnVal = new List<abstract_TreeNode>();
+                var returnVal = new List<abstract_TreeNode>();
 
                 // Do the preorder build on each root node
                 foreach (abstract_TreeNode rootNode in Roots)
@@ -251,7 +251,7 @@ namespace SobekCM.Resource_Object.Divisions
             get
             {
                 // Build the return collection
-                List<abstract_TreeNode> returnVal = new List<abstract_TreeNode>();
+                var returnVal = new List<abstract_TreeNode>();
 
                 // Do the preorder build on each root node
                 foreach (abstract_TreeNode rootNode in Roots)
@@ -270,7 +270,7 @@ namespace SobekCM.Resource_Object.Divisions
             get
             {
                 // Build the return collection
-                List<abstract_TreeNode> returnVal = new List<abstract_TreeNode>();
+                var returnVal = new List<abstract_TreeNode>();
 
                 // Do the preorder build on each root node
                 foreach (abstract_TreeNode rootNode in Roots)
@@ -334,8 +334,8 @@ namespace SobekCM.Resource_Object.Divisions
         {
             get
             {
-                List<SobekCM_File_Info> returnValue = new List<SobekCM_File_Info>();
-                List<Page_TreeNode> handledPages = new List<Page_TreeNode>();
+                var returnValue = new List<SobekCM_File_Info>();
+                var handledPages = new List<Page_TreeNode>();
                 foreach (abstract_TreeNode thisNode in rootNodes)
                     recursively_build_all_files_list(returnValue, handledPages, thisNode);
                 return returnValue;
@@ -419,7 +419,7 @@ namespace SobekCM.Resource_Object.Divisions
             int page_and_group_number = 1;
             int division_number = 1;
             HasFiles = false;
-            HashSet<string> fileids_used = new HashSet<string>();
+            var fileids_used = new HashSet<string>();
 
             List<abstract_TreeNode> physicalDivisions = Divisions_PreOrder;
 
@@ -583,7 +583,7 @@ namespace SobekCM.Resource_Object.Divisions
                             // If this is a new MIME type, add it, else just save this file in the MIME hash
                             if (!MimeHash.ContainsKey(mimetype))
                             {
-                                List<SobekCM_File_Info> newList = new List<SobekCM_File_Info> { thisFile };
+                                var newList = new List<SobekCM_File_Info>{ thisFile };
                                 MimeHash[mimetype] = newList;
                             }
                             else
@@ -606,7 +606,7 @@ namespace SobekCM.Resource_Object.Divisions
         /// <param name="OuterDivisions"></param>
         public void Write_METS(TextWriter Output_Stream, string MainTitle, string ID, string Type, string DmdSecIds, string AmdSecIds, List<Outer_Division_Info> OuterDivisions)
         {
-            Dictionary<abstract_TreeNode, int> pages_to_appearances = new Dictionary<abstract_TreeNode, int>();
+            var pages_to_appearances = new Dictionary<abstract_TreeNode, int>();
 
             Output_Stream.WriteLine("<METS:structMap ID=\"" + ID + "\" TYPE=\"" + Type + "\">");
 

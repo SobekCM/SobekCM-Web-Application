@@ -207,7 +207,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         private string street_display( Map_Streets_DataSet.StreetsRow thisStreet )
         {
             // Start the return 
-            StringBuilder html = new StringBuilder(5000);
+            var html = new StringBuilder(5000);
 
             // If there is a start and end streets, start with that
             if (( !thisStreet.IsStartAddressNull() ) && ( thisStreet.StartAddress > 0 ) && ( !thisStreet.IsEndAddressNull() ) && ( thisStreet.EndAddress > 0 ))

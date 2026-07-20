@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -44,7 +44,7 @@ namespace Sample_PlugIn_Library
             get 
             {
                 // Create return value
-                List<KeyValuePair<string, string>> returnVal = new List<KeyValuePair<string, string>>();
+                var returnVal = new List<KeyValuePair<string, string>>();
 
                 // Add fav color
                 if (!String.IsNullOrEmpty(Absolute_Favorite_Color))

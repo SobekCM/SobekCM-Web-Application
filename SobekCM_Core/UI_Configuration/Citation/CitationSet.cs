@@ -1,4 +1,4 @@
-﻿using ProtoBuf;
+using ProtoBuf;
 using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
@@ -65,8 +65,7 @@ namespace SobekCM.Core.UI_Configuration.Citation
             }
 
             // Since there was no match, create the new one
-            CitationFieldSet newSet = new CitationFieldSet
-            {
+            var newSet = new CitationFieldSet{
                 ID = FieldSetId,
                 Heading = DefaultHeading
             };

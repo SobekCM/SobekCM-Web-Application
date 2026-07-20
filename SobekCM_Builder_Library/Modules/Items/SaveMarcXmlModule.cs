@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using System;
 using System.Collections.Generic;
@@ -25,7 +25,7 @@ namespace SobekCM.Builder_Library.Modules.Items
                 Resource.Metadata.Web.Set_BibID_VID(Resource.Metadata.BibID, Resource.Metadata.VID);
 
                 // Create the options dictionary used when saving information to the database, or writing MarcXML
-                Dictionary<string, object> options = new Dictionary<string, object>();
+                var options = new Dictionary<string, object>();
                 if (Engine_ApplicationCache_Gateway.Settings.MarcGeneration != null)
                 {
                     options["MarcXML_File_ReaderWriter:MARC Cataloging Source Code"] = Engine_ApplicationCache_Gateway.Settings.MarcGeneration.Cataloging_Source_Code;
@@ -38,7 +38,7 @@ namespace SobekCM.Builder_Library.Modules.Items
                 options["MarcXML_File_ReaderWriter:System Abbreviation"] = Engine_ApplicationCache_Gateway.Settings.System.System_Abbreviation;
 
                 // Save the marc xml file
-                MarcXML_File_ReaderWriter marcWriter = new MarcXML_File_ReaderWriter();
+                var marcWriter = new MarcXML_File_ReaderWriter();
                 string errorMessage;
                 if (!marcWriter.Write_Metadata(Resource.Metadata.Source_Directory + "\\marc.xml", Resource.Metadata, options, out errorMessage))
                 {

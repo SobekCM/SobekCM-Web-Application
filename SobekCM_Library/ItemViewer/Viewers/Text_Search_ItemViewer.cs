@@ -84,7 +84,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             CurrentRequest.ViewerCode = previous_code;
 
             // Add the item menu information
-            Item_MenuItem menuItem = new Item_MenuItem("Search", null, null, url, ViewerCode);
+            var menuItem = new Item_MenuItem("Search", null, null, url, ViewerCode);
             MenuItems.Add(menuItem);
         }
 
@@ -132,8 +132,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             if (!String.IsNullOrWhiteSpace(CurrentRequest.Text_Search))
             {
-                List<string> terms = new List<string>();
-                List<string> web_fields = new List<string>();
+                var terms = new List<string>();
+                var web_fields = new List<string>();
 
                 // Split the terms correctly
                 SobekCM_Assistant.Split_Clean_Search_Terms_Fields(CurrentRequest.Text_Search, "ZZ", Search_Type_Enum.Basic, terms, web_fields, null, Search_Precision_Type_Enum.Contains, '|');
@@ -254,7 +254,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     }
 
                     // Use a stringbuilder here
-                    StringBuilder buttonWriter = new StringBuilder(2000);
+                    var buttonWriter = new StringBuilder(2000);
 
                     buttonWriter.AppendLine("            <div class=\"sbkIsw_PageNavBar\">");
 
@@ -426,11 +426,11 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <summary> Returns the textual explanation of the item-level search </summary>
         protected string Compute_Search_Explanation()
         {
-            StringBuilder output = new StringBuilder();
+            var output = new StringBuilder();
 
             // Split the parts
-            List<string> terms = new List<string>();
-            List<string> fields = new List<string>();
+            var terms = new List<string>();
+            var fields = new List<string>();
 
             // If this is basic, do some other preparation
             string complete_search = CurrentRequest.Text_Search;
@@ -482,10 +482,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
             bool first = true;
             bool allOr = true;
             bool allAnd = true;
-            StringBuilder allAndBldr = new StringBuilder(1000);
-            StringBuilder allOrBldr = new StringBuilder(1000);
-            StringBuilder allAndURL = new StringBuilder(1000);
-            StringBuilder allOrURL = new StringBuilder(1000);
+            var allAndBldr = new StringBuilder(1000);
+            var allOrBldr = new StringBuilder(1000);
+            var allAndURL = new StringBuilder(1000);
+            var allOrURL = new StringBuilder(1000);
             for (int i = 0; i < terms.Count; i++)
             {
                 string thisTerm = terms[i];

@@ -21,8 +21,8 @@ namespace SobekCM.Library.AdminViewer.UserAdmin.UserAdminTabs
             var getKeys = form.Keys;
 
             string editTemplate = "Standard";
-            List<string> projects = new List<string>();
-            List<string> templates = new List<string>();
+            var projects = new List<string>();
+            var templates = new List<string>();
 
             // First, set some flags to FALSE
             editUser.Can_Submit = false;
@@ -220,7 +220,7 @@ namespace SobekCM.Library.AdminViewer.UserAdmin.UserAdminTabs
 
 
             // Get the list of institution-type aggregations
-            List<Item_Aggregation_Related_Aggregations> allInstAggs = new List<Item_Aggregation_Related_Aggregations>();
+            var allInstAggs = new List<Item_Aggregation_Related_Aggregations>();
             foreach (string thisType in UI_ApplicationCache_Gateway.Aggregations.All_Types)
             {
                 if (thisType.IndexOf("Institution") >= 0)

@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using SobekCM.Resource_Object.Divisions;
 using System;
@@ -23,7 +23,7 @@ namespace SobekCM.Builder_Library.Modules.Items
             string[] all_files = Directory.GetFiles(Resource.Resource_Folder);
             foreach (string thisFile in all_files)
             {
-                FileInfo thisFileInfo = new FileInfo(thisFile);
+                var thisFileInfo = new FileInfo(thisFile);
 
                 if ((!Regex.Match(thisFileInfo.Name, Settings.Resources.Files_To_Exclude_From_Downloads, RegexOptions.IgnoreCase).Success) && (String.Compare(thisFileInfo.Name, Resource.BibID + "_" + Resource.VID + ".html", StringComparison.OrdinalIgnoreCase) != 0))
                 {

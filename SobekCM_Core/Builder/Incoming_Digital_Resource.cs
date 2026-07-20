@@ -107,7 +107,7 @@ namespace SobekCM.Builder_Library
         {
             get
             {
-                Dictionary<string, SobekCM_File_Info> returnValue = new Dictionary<string, SobekCM_File_Info>();
+                var returnValue = new Dictionary<string, SobekCM_File_Info>();
                 // Now, step through each file in this mets and look for attributes in the other
                 foreach (SobekCM_File_Info thisFile in Metadata.Divisions.Files)
                 {
@@ -267,7 +267,7 @@ namespace SobekCM.Builder_Library
                 Metadata.Web.Set_BibID_VID(Metadata.BibID, Metadata.VID);
 
 
-                List<string> collectionnames = new List<string>();
+                var collectionnames = new List<string>();
                 // Get the collection names
                 if ((Metadata.Behaviors.Aggregation_Count > 0) && (CollectionCodes != null))
                 {
@@ -275,7 +275,7 @@ namespace SobekCM.Builder_Library
                 }
 
                 // Create the options dictionary used when saving information to the database, or writing MarcXML
-                Dictionary<string, object> options = new Dictionary<string, object>();
+                var options = new Dictionary<string, object>();
                 if (Settings.MarcGeneration != null)
                 {
                     options["MarcXML_File_ReaderWriter:MARC Cataloging Source Code"] = Settings.MarcGeneration.Cataloging_Source_Code;
@@ -288,7 +288,7 @@ namespace SobekCM.Builder_Library
                 options["MarcXML_File_ReaderWriter:System Abbreviation"] = Settings.System.System_Abbreviation;
 
                 // Save the marc xml file
-                MarcXML_File_ReaderWriter marcWriter = new MarcXML_File_ReaderWriter();
+                var marcWriter = new MarcXML_File_ReaderWriter();
                 string errorMessage;
                 return marcWriter.Write_Metadata(Metadata.Source_Directory + "\\marc.xml", Metadata, options, out errorMessage);
 
@@ -315,7 +315,7 @@ namespace SobekCM.Builder_Library
                 DateTime createTime = packageTime;
 
                 // Create the options dictionary used when saving information to the database, or writing MarcXML
-                Dictionary<string, object> options = new Dictionary<string, object>();
+                var options = new Dictionary<string, object>();
                 if (Settings.MarcGeneration != null)
                 {
                     options["MarcXML_File_ReaderWriter:MARC Cataloging Source Code"] = Settings.MarcGeneration.Cataloging_Source_Code;
@@ -555,7 +555,7 @@ namespace SobekCM.Builder_Library
                 {
                     // Only a METS file, but is this METS file a DELETE or METADATA_UPDATE?
                     int lineCount = 1;
-                    StreamReader reader = new StreamReader(files[0]);
+                    var reader = new StreamReader(files[0]);
                     string line = reader.ReadLine();
                     while ((line != null) && (lineCount < 50))
                     {
@@ -600,7 +600,7 @@ namespace SobekCM.Builder_Library
                     Directory.CreateDirectory(DestinationDirectory);
 
                 // Determine the new folder for this
-                DirectoryInfo dirInfo = new DirectoryInfo(resourceFolder);
+                var dirInfo = new DirectoryInfo(resourceFolder);
                 string destFolder = DestinationDirectory + dirInfo.Name;
 
                 // Does this directory appear to be a VID folder, with a BibID folder above it?

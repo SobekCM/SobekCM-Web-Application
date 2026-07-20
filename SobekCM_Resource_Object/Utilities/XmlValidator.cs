@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Text;
 using System.Xml;
 using System.Xml.Schema;
@@ -36,7 +36,7 @@ namespace SobekCM.Resource_Object.Utilities
                 errors = new StringBuilder();
 
                 // Create the reader and validator
-                XmlReaderSettings metsSettings = new XmlReaderSettings { ValidationType = ValidationType.None };
+                var metsSettings = new XmlReaderSettings{ ValidationType = ValidationType.None };
                 metsSettings.ValidationEventHandler += MyValidationEventHandler;
 
                 validator = XmlReader.Create(XmlFile, metsSettings);

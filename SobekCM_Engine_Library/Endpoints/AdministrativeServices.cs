@@ -1,4 +1,4 @@
-﻿using SobekCM.Core.Configuration.Engine;
+using SobekCM.Core.Configuration.Engine;
 using SobekCM.Core.Configuration.Extensions;
 using SobekCM.Core.Message;
 using SobekCM.Core.Settings;
@@ -28,7 +28,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="IsDebug"></param>
         public void GetAdminSettings(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
         {
-            Custom_Tracer tracer = new Custom_Tracer();
+            var tracer = new Custom_Tracer();
 
             try
             {
@@ -63,7 +63,7 @@ namespace SobekCM.Engine_Library.Endpoints
                 }
 
                 tracer.Add_Trace("AdministrativeServices.GetAdminSettings", "Build the list of return objects");
-                Admin_Setting_Collection returnValue = new Admin_Setting_Collection();
+                var returnValue = new Admin_Setting_Collection();
 
                 try
                 {
@@ -84,8 +84,7 @@ namespace SobekCM.Engine_Library.Endpoints
                     foreach (DataRow thisRow in adminSet.Tables[0].Rows)
                     {
                         // Build the value object
-                        Admin_Setting_Value thisValue = new Admin_Setting_Value
-                        {
+                        var thisValue = new Admin_Setting_Value{
                             Key = thisRow[keyColumn].ToString(),
                             Value = thisRow[valueColumn] == DBNull.Value ? null : thisRow[valueColumn].ToString(),
                             TabPage = thisRow[tabPageColumn] == DBNull.Value ? null : thisRow[tabPageColumn].ToString(),
@@ -556,14 +555,13 @@ namespace SobekCM.Engine_Library.Endpoints
             // Must at least have one URL segment for the Plugin ID
             if (UrlSegments.Count > 0)
             {
-                Custom_Tracer tracer = new Custom_Tracer();
+                var tracer = new Custom_Tracer();
 
                 // Get the plugin to enable/disable
                 string plugin_code = UrlSegments[0];
 
                 // Create the message to return
-                EnableExtensionMessage responder = new EnableExtensionMessage
-                {
+                var responder = new EnableExtensionMessage{
                     Success = true,
                     Message = "Enable request received by the engine"
                 };
@@ -643,14 +641,13 @@ namespace SobekCM.Engine_Library.Endpoints
             // Must at least have one URL segment for the Plugin ID
             if (UrlSegments.Count > 0)
             {
-                Custom_Tracer tracer = new Custom_Tracer();
+                var tracer = new Custom_Tracer();
 
                 // Get the plugin to enable/disable
                 string plugin_code = UrlSegments[0];
 
                 // Create the message to return
-                EnableExtensionMessage responder = new EnableExtensionMessage
-                {
+                var responder = new EnableExtensionMessage{
                     Success = true,
                     Message = "Disable request received by the engine"
                 };

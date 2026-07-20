@@ -296,7 +296,7 @@ namespace SobekCM.Library.AdminViewer
                 Output.WriteLine("    </tr>");
                 Output.WriteLine("    <tr><td class=\"sbkAdm_TableRule\" colspan=\"3\"></td></tr>");
 
-                SortedList<string, string> sorter = new SortedList<string, string>();
+                var sorter = new SortedList<string, string>();
                 foreach (KeyValuePair<string, string> thisForward in UI_ApplicationCache_Gateway.Collection_Aliases)
                 {
                     sorter.Add(thisForward.Key, thisForward.Value);

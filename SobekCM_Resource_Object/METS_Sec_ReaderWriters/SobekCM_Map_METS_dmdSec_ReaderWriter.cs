@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using SobekCM.Resource_Object.Metadata_Modules;
 using SobekCM.Resource_Object.Metadata_Modules.Maps;
@@ -452,7 +452,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                     long corpid = Convert.ToInt64(Input_XmlReader.Value.Replace("COR", "").Replace("P", ""));
 
                     string primary_name = String.Empty;
-                    List<string> alternate_names = new List<string>();
+                    var alternate_names = new List<string>();
 
                     while (Input_XmlReader.Read())
                     {

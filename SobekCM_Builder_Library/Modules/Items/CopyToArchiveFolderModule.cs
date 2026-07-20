@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using System;
 using System.IO;
@@ -31,7 +31,7 @@ namespace SobekCM.Builder_Library.Modules.Items
                 string[] files = Directory.GetFiles(resourceFolder);
                 foreach (string thisFile in files)
                 {
-                    FileInfo thisFileInfo = new FileInfo(thisFile);
+                    var thisFileInfo = new FileInfo(thisFile);
                     if (Regex.Match(thisFileInfo.Name, Settings.Archive.PreArchive_Files_To_Delete, RegexOptions.IgnoreCase).Success)
                     {
                         File.Delete(thisFile);
@@ -50,7 +50,7 @@ namespace SobekCM.Builder_Library.Modules.Items
                 string[] files = Directory.GetFiles(resourceFolder);
                 foreach (string thisFile in files)
                 {
-                    FileInfo thisFileInfo = new FileInfo(thisFile);
+                    var thisFileInfo = new FileInfo(thisFile);
                     if (Regex.Match(thisFileInfo.Name, Settings.Archive.PostArchive_Files_To_Delete, RegexOptions.IgnoreCase).Success)
                     {
                         File.Delete(thisFile);

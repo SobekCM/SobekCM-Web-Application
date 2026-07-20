@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using SobekCM.Resource_Object.Metadata_Modules;
 using SobekCM.Resource_Object.Metadata_Modules.GeoSpatial;
@@ -84,7 +84,7 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
             {
                 // In this case, need to pass a new option to the stream writer, without altering the 
                 // original options
-                Dictionary<string, object> newOptions = new Dictionary<string, object>();
+                var newOptions = new Dictionary<string, object>();
                 foreach (string thisKey in Options.Keys)
                 {
                     if (thisKey != "Coordinates_File_ReaderWriter:CSV_Style")
@@ -94,7 +94,7 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
 
                 try
                 {
-                    StreamWriter results = new StreamWriter(MetadataFilePathName, false, Encoding.UTF8);
+                    var results = new StreamWriter(MetadataFilePathName, false, Encoding.UTF8);
                     bool returnValue = Write_Metadata(results, Item_To_Save, newOptions, out Error_Message);
                     results.Flush();
                     results.Close();
@@ -110,7 +110,7 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
 
             try
             {
-                StreamWriter results = new StreamWriter(MetadataFilePathName, false, Encoding.UTF8);
+                var results = new StreamWriter(MetadataFilePathName, false, Encoding.UTF8);
                 bool returnValue = Write_Metadata(results, Item_To_Save, Options, out Error_Message);
                 results.Flush();
                 results.Close();

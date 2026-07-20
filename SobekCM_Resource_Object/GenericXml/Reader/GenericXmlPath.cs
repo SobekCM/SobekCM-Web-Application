@@ -1,4 +1,4 @@
-﻿using ProtoBuf;
+using ProtoBuf;
 using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
@@ -37,7 +37,7 @@ namespace SobekCM.Resource_Object.GenericXml.Reader
         public override string ToString()
         {
             // Build the string for this
-            StringBuilder builder = new StringBuilder();
+            var builder = new StringBuilder();
 
             // Add each path node
             bool isFirst = true;

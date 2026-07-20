@@ -780,7 +780,7 @@ namespace SobekCM.Core.MemoryMgmt
             }
 
             // Determine the key
-            StringBuilder keyBuilder = new StringBuilder("WEBCONTENT|CLIENT|RECENT_UPDATES|NEXTLEVEL|");
+            var keyBuilder = new StringBuilder("WEBCONTENT|CLIENT|RECENT_UPDATES|NEXTLEVEL|");
             if (!String.IsNullOrEmpty(Level1))
             {
                 keyBuilder.Append(Level1 + "|");
@@ -857,7 +857,7 @@ namespace SobekCM.Core.MemoryMgmt
             }
 
             // Determine the key
-            StringBuilder keyBuilder = new StringBuilder("WEBCONTENT|CLIENT|RECENT_UPDATES|NEXTLEVEL|");
+            var keyBuilder = new StringBuilder("WEBCONTENT|CLIENT|RECENT_UPDATES|NEXTLEVEL|");
             if (!String.IsNullOrEmpty(Level1))
             {
                 keyBuilder.Append(Level1 + "|");
@@ -1109,7 +1109,7 @@ namespace SobekCM.Core.MemoryMgmt
             }
 
             // Determine the key
-            StringBuilder keyBuilder = new StringBuilder("WEBCONTENT|CLIENT|PAGES|NEXTLEVEL|");
+            var keyBuilder = new StringBuilder("WEBCONTENT|CLIENT|PAGES|NEXTLEVEL|");
             if (!String.IsNullOrEmpty(Level1))
             {
                 keyBuilder.Append(Level1 + "|");
@@ -1186,7 +1186,7 @@ namespace SobekCM.Core.MemoryMgmt
             }
 
             // Determine the key
-            StringBuilder keyBuilder = new StringBuilder("WEBCONTENT|CLIENT|PAGES|NEXTLEVEL|");
+            var keyBuilder = new StringBuilder("WEBCONTENT|CLIENT|PAGES|NEXTLEVEL|");
             if (!String.IsNullOrEmpty(Level1))
             {
                 keyBuilder.Append(Level1 + "|");
@@ -1356,7 +1356,7 @@ namespace SobekCM.Core.MemoryMgmt
             }
 
             // Determine the key
-            StringBuilder keyBuilder = new StringBuilder("WEBCONTENT|CLIENT|REDIRECTS|NEXTLEVEL|");
+            var keyBuilder = new StringBuilder("WEBCONTENT|CLIENT|REDIRECTS|NEXTLEVEL|");
             if (!String.IsNullOrEmpty(Level1))
             {
                 keyBuilder.Append(Level1 + "|");
@@ -1433,7 +1433,7 @@ namespace SobekCM.Core.MemoryMgmt
             }
 
             // Determine the key
-            StringBuilder keyBuilder = new StringBuilder("WEBCONTENT|CLIENT|REDIRECTS|NEXTLEVEL|");
+            var keyBuilder = new StringBuilder("WEBCONTENT|CLIENT|REDIRECTS|NEXTLEVEL|");
             if (!String.IsNullOrEmpty(Level1))
             {
                 keyBuilder.Append(Level1 + "|");
@@ -1603,7 +1603,7 @@ namespace SobekCM.Core.MemoryMgmt
             }
 
             // Determine the key
-            StringBuilder keyBuilder = new StringBuilder("WEBCONTENT|CLIENT|CONTENT|NEXTLEVEL|");
+            var keyBuilder = new StringBuilder("WEBCONTENT|CLIENT|CONTENT|NEXTLEVEL|");
             if (!String.IsNullOrEmpty(Level1))
             {
                 keyBuilder.Append(Level1 + "|");
@@ -1680,7 +1680,7 @@ namespace SobekCM.Core.MemoryMgmt
             }
 
             // Determine the key
-            StringBuilder keyBuilder = new StringBuilder("WEBCONTENT|CLIENT|CONTENT|NEXTLEVEL|");
+            var keyBuilder = new StringBuilder("WEBCONTENT|CLIENT|CONTENT|NEXTLEVEL|");
             if (!String.IsNullOrEmpty(Level1))
             {
                 keyBuilder.Append(Level1 + "|");
@@ -1854,7 +1854,7 @@ namespace SobekCM.Core.MemoryMgmt
             }
 
             // Determine the key
-            StringBuilder keyBuilder = new StringBuilder("WEBCONTENT|CLIENT|USAGE_REPORT|NEXTLEVEL|" + Year1 + "|" + Month1 + "|" + Year2 + "|" + Month2 + "|");
+            var keyBuilder = new StringBuilder("WEBCONTENT|CLIENT|USAGE_REPORT|NEXTLEVEL|" + Year1 + "|" + Month1 + "|" + Year2 + "|" + Month2 + "|");
             if (!String.IsNullOrEmpty(Level1))
             {
                 keyBuilder.Append(Level1 + "|");
@@ -1935,7 +1935,7 @@ namespace SobekCM.Core.MemoryMgmt
             }
 
             // Determine the key
-            StringBuilder keyBuilder = new StringBuilder("WEBCONTENT|CLIENT|USAGE_REPORT|NEXTLEVEL|" + Year1 + "|" + Month1 + "|" + Year2 + "|" + Month2 + "|");
+            var keyBuilder = new StringBuilder("WEBCONTENT|CLIENT|USAGE_REPORT|NEXTLEVEL|" + Year1 + "|" + Month1 + "|" + Year2 + "|" + Month2 + "|");
             if (!String.IsNullOrEmpty(Level1))
             {
                 keyBuilder.Append(Level1 + "|");

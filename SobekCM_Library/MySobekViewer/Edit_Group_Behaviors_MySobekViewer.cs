@@ -96,7 +96,7 @@ namespace SobekCM.Library.MySobekViewer
                 RequestSpecificValues.Tracer.Add_Trace("Edit_Group_Behaviors_MySobekViewer.Constructor", "Reading CompleteTemplate file");
 
                 // Read this CompleteTemplate
-                Template_XML_Reader reader = new Template_XML_Reader();
+                var reader = new Template_XML_Reader();
                 completeTemplate = new CompleteTemplate();
                 if (File.Exists(UI_ApplicationCache_Gateway.Settings.Servers.Base_MySobek_Directory + "templates\\user\\standard\\" + TEMPLATE_CODE + ".xml"))
                 {

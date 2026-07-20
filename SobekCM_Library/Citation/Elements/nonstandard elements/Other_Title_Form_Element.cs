@@ -492,8 +492,7 @@ namespace SobekCM.Library.Citation.Elements
                         }
                         else
                         {
-                            Title_Info thisTitle = new Title_Info
-                            {
+                            var thisTitle = new Title_Info{
                                 Title = title,
                                 NonSort = nonsort,
                                 Subtitle = subtitle,

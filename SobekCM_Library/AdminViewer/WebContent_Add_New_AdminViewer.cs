@@ -120,8 +120,7 @@ namespace SobekCM.Library.AdminViewer
                     if (String.IsNullOrEmpty(actionMessage))
                     {
                         // Build this web content page
-                        HTML_Based_Content newContent = new HTML_Based_Content
-                        {
+                        var newContent = new HTML_Based_Content{
                             WebContentID = -1,
                             Level1 = level1,
                             Level2 = level2,
@@ -376,7 +375,7 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("  </tr>");
 
             // Determine the initial url
-            StringBuilder urlbuilder = new StringBuilder(baseUrl);
+            var urlbuilder = new StringBuilder(baseUrl);
             if (!String.IsNullOrEmpty(level1))
             {
                 urlbuilder.Append("/" + level1);

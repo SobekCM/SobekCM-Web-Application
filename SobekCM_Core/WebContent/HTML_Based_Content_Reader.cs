@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using SobekCM.Tools;
 using System;
@@ -38,7 +38,7 @@ namespace SobekCM.Core.WebContent
                 WebResponse objResponse = objRequest.GetResponse();
 
                 // the using keyword will automatically dispose the object once complete
-                using (StreamReader sr = new StreamReader(objResponse.GetResponseStream()))
+                using (var sr = new StreamReader(objResponse.GetResponseStream()))
                 {
                     displayText = sr.ReadToEnd();
                     // Close and clean up the StreamReader
@@ -81,7 +81,7 @@ namespace SobekCM.Core.WebContent
                 }
 
                 // Read this info file 
-                StreamReader reader = new StreamReader(Source_File);
+                var reader = new StreamReader(Source_File);
                 string displayText = reader.ReadToEnd();
                 reader.Close();
 
@@ -122,9 +122,9 @@ namespace SobekCM.Core.WebContent
             string sobekControlledCss = String.Empty;
 
             // StringBuilder keeps track of any other information in the head that should be retained
-            StringBuilder headBuilder = new StringBuilder();
+            var headBuilder = new StringBuilder();
 
-            HTML_Based_Content returnValue = new HTML_Based_Content();
+            var returnValue = new HTML_Based_Content();
 
             if (Tracer != null)
             {
@@ -145,7 +145,7 @@ namespace SobekCM.Core.WebContent
                     }
 
                     string head_xml = Display_Text.Substring(head_start, (head_end - head_start) + 7);
-                    XmlTextReader xmlReader = new XmlTextReader(new StringReader(head_xml));
+                    var xmlReader = new XmlTextReader(new StringReader(head_xml));
                     while (xmlReader.Read())
                     {
                         if (xmlReader.NodeType != XmlNodeType.Element) continue;
@@ -363,7 +363,7 @@ namespace SobekCM.Core.WebContent
 
                     if ((Source.Length > 0) && (returnValue.Content.IndexOf("<%LASTMODIFIED%>") > 0))
                     {
-                        FileInfo fileInfo = new FileInfo(Source);
+                        var fileInfo = new FileInfo(Source);
                         DateTime lastWritten = fileInfo.LastWriteTime;
                         returnValue.Content = returnValue.Content.Replace("<%LASTMODIFIED%>", lastWritten.ToLongDateString());
                     }

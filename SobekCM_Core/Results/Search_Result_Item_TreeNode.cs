@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using System;
 using System.Collections.Generic;
@@ -64,7 +64,7 @@ namespace SobekCM.Core.Results
         {
             get
             {
-                List<Search_Result_Item_TreeNode> returnValue = new List<Search_Result_Item_TreeNode>();
+                var returnValue = new List<Search_Result_Item_TreeNode>();
                 foreach (List<Search_Result_Item_TreeNode> nodeList in childNodes.Values)
                 {
                     returnValue.AddRange(nodeList);
@@ -93,7 +93,7 @@ namespace SobekCM.Core.Results
         /// <returns> Newly built sorted tree node object </returns>
         public Search_Result_Item_TreeNode Add_Child_Node(string ChildName, string ChildLink, int Sort_Value)
         {
-            Search_Result_Item_TreeNode returnNode = new Search_Result_Item_TreeNode(ChildName, ChildLink);
+            var returnNode = new Search_Result_Item_TreeNode(ChildName, ChildLink);
 
             if (childNodes.ContainsKey(Sort_Value))
             {
@@ -103,7 +103,7 @@ namespace SobekCM.Core.Results
             }
             else
             {
-                List<Search_Result_Item_TreeNode> listValue = new List<Search_Result_Item_TreeNode> { returnNode };
+                var listValue = new List<Search_Result_Item_TreeNode>{ returnNode };
                 childNodes[Sort_Value] = listValue;
             }
 

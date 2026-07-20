@@ -1,4 +1,4 @@
-﻿using SobekCM.Resource_Object;
+using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Solr;
 using SolrNet;
 using System;
@@ -33,11 +33,11 @@ namespace SobekCM.Engine_Library.Solr.v5
             var solrPageWorker = Solr_Operations_Cache<Legacy_SolrPage>.GetSolrOperations(SolrPageUrl);
 
             // Get the list of all items in this collection
-            List<v5_SolrDocument> index_files = new List<v5_SolrDocument>();
-            List<Legacy_SolrPage> index_pages = new List<Legacy_SolrPage>();
+            var index_files = new List<v5_SolrDocument>();
+            var index_pages = new List<Legacy_SolrPage>();
 
             // Add this document to the list of documents to index
-            v5_SolrDocument_Builder builder = new v5_SolrDocument_Builder();
+            var builder = new v5_SolrDocument_Builder();
             v5_SolrDocument solrDocument = builder.Build_Solr_Document(Resource, Resource.Source_Directory);
             index_files.Add(solrDocument);
 

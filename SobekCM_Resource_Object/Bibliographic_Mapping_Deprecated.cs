@@ -1258,13 +1258,13 @@ namespace SobekCM.Resource_Object
                             lastNamedEntity.Family_Name = Data;
                         else
                         {
-                            Name_Info newNameEntity = new Name_Info { Family_Name = Data };
+                            var newNameEntity = new Name_Info{ Family_Name = Data };
                             Package.Bib_Info.Add_Named_Entity(newNameEntity);
                         }
                     }
                     else
                     {
-                        Name_Info newNameEntity = new Name_Info { Family_Name = Data };
+                        var newNameEntity = new Name_Info{ Family_Name = Data };
                         Package.Bib_Info.Add_Named_Entity(newNameEntity);
                     }
                     break;
@@ -1276,13 +1276,13 @@ namespace SobekCM.Resource_Object
                             lastNamedEntity.Given_Name = Data;
                         else
                         {
-                            Name_Info newNameEntity = new Name_Info { Given_Name = Data };
+                            var newNameEntity = new Name_Info{ Given_Name = Data };
                             Package.Bib_Info.Add_Named_Entity(newNameEntity);
                         }
                     }
                     else
                     {
-                        Name_Info newNameEntity = new Name_Info { Given_Name = Data };
+                        var newNameEntity = new Name_Info{ Given_Name = Data };
                         Package.Bib_Info.Add_Named_Entity(newNameEntity);
                     }
                     break;
@@ -1633,9 +1633,9 @@ namespace SobekCM.Resource_Object
                     try
                     {
                         if (geoInfo3.Point_Count == 0)
-                            geoInfo3.Add_Point(0, Convert.ToDouble(Data.Replace("°", "")), String.Empty);
+                            geoInfo3.Add_Point(0, Convert.ToDouble(Data.Replace("ï¿½", "")), String.Empty);
                         else
-                            geoInfo3.Points[0].Longitude = Convert.ToDouble(Data.Replace("°", ""));
+                            geoInfo3.Points[0].Longitude = Convert.ToDouble(Data.Replace("ï¿½", ""));
                     }
                     catch
                     {
@@ -1873,7 +1873,7 @@ namespace SobekCM.Resource_Object
             }
 
             // Add a spatial, if none exists
-            Subject_Info_HierarchicalGeographic hierarchical = new Subject_Info_HierarchicalGeographic();
+            var hierarchical = new Subject_Info_HierarchicalGeographic();
             Package.Bib_Info.Add_Subject(hierarchical);
             return hierarchical;
         }
@@ -1893,7 +1893,7 @@ namespace SobekCM.Resource_Object
             }
 
             // Add a spatial, if none exists
-            Subject_Info_Cartographics cartograhics = new Subject_Info_Cartographics();
+            var cartograhics = new Subject_Info_Cartographics();
             Package.Bib_Info.Add_Subject(cartograhics);
             return cartograhics;
         }

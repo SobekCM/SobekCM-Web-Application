@@ -1,4 +1,4 @@
-﻿using SobekCM.Core.Builder;
+using SobekCM.Core.Builder;
 using SobekCM.Core.Configuration.Engine;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Settings;
@@ -23,7 +23,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="IsDebug"></param>
         public void GetBuilderSettings(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
         {
-            Custom_Tracer tracer = new Custom_Tracer();
+            var tracer = new Custom_Tracer();
 
             // Should descriptions be suppressed?
             bool includeDescriptions = !((!String.IsNullOrEmpty(QueryString["IncludeDescs"])) && (QueryString["IncludeDescs"].ToUpper() == "FALSE"));
@@ -60,7 +60,7 @@ namespace SobekCM.Engine_Library.Endpoints
                 }
 
                 tracer.Add_Trace("BuilderServices.GetBuilderSettings", "Build the builder-specific settings object");
-                Builder_Settings returnValue = new Builder_Settings();
+                var returnValue = new Builder_Settings();
                 if (!Builder_Settings_Builder.Refresh(returnValue, builderSet, includeDescriptions))
                 {
                     Response.ContentType = "text/plain";
@@ -128,7 +128,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="IsDebug"></param>
         public void GetBuilderStatus(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
         {
-            Custom_Tracer tracer = new Custom_Tracer();
+            var tracer = new Custom_Tracer();
 
             try
             {
@@ -214,7 +214,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="IsDebug"></param>
         public void GetSingleFolder(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
         {
-            Custom_Tracer tracer = new Custom_Tracer();
+            var tracer = new Custom_Tracer();
 
             // Must at least have one URL segment for the BibID
             if (UrlSegments.Count > 0)
@@ -328,7 +328,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="IsDebug"></param>
         public void Get_Builder_Logs_JDataTable(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
         {
-            Custom_Tracer tracer = new Custom_Tracer();
+            var tracer = new Custom_Tracer();
 
             // Get ready to pull the informaiton from the query string which the
             // jquery datatables library pass in

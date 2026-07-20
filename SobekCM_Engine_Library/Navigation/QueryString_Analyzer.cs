@@ -1012,7 +1012,7 @@ namespace SobekCM.Engine_Library.Navigation
                                             possible_info_mode = url_relative_list[0] + "/" + url_relative_list[1] + "/" + url_relative_list[2] + "/" + url_relative_list[3];
                                         else if (url_relative_list.Count > 4)
                                         {
-                                            StringBuilder possibleInfoModeBuilder = new StringBuilder();
+                                            var possibleInfoModeBuilder = new StringBuilder();
                                             if (url_relative_list.Count > 0)
                                             {
                                                 possibleInfoModeBuilder.Append(url_relative_list[0]);
@@ -1241,7 +1241,7 @@ namespace SobekCM.Engine_Library.Navigation
                                         possible_info_mode = url_relative_list[0] + "/" + url_relative_list[1] + "/" + url_relative_list[2] + "/" + url_relative_list[3];
                                     else if (url_relative_list.Count > 4)
                                     {
-                                        StringBuilder possibleInfoModeBuilder = new StringBuilder();
+                                        var possibleInfoModeBuilder = new StringBuilder();
                                         if (url_relative_list.Count > 0)
                                         {
                                             possibleInfoModeBuilder.Append(url_relative_list[0]);
@@ -1280,7 +1280,7 @@ namespace SobekCM.Engine_Library.Navigation
                 try
                 {
                     // Instantiate the regular expression object.
-                    Regex r = new Regex(Custom_BibID_RegEx, RegexOptions.IgnoreCase);
+                    var r = new Regex(Custom_BibID_RegEx, RegexOptions.IgnoreCase);
 
                     // Match the regular expression pattern against a text string.
                     Match m = r.Match(BibID);
@@ -1316,7 +1316,7 @@ namespace SobekCM.Engine_Library.Navigation
             if (url_relative_list.Count == start_index + 8)
                 return new string[] { url_relative_list[start_index], url_relative_list[start_index + 1], url_relative_list[start_index + 2], url_relative_list[start_index + 3], url_relative_list[start_index + 4], url_relative_list[start_index + 5], url_relative_list[start_index + 6], url_relative_list[start_index + 7] };
 
-            List<string> allRemaining = new List<string>();
+            var allRemaining = new List<string>();
             for (int i = start_index; i < url_relative_list.Count; i++)
                 allRemaining.Add(url_relative_list[i]);
             return allRemaining.ToArray();

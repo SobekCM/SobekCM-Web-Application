@@ -246,8 +246,8 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine();
 
             // Determine the two URLS needed (one for the GO button, and another for the jQuery datatable results)
-            StringBuilder script_builder = new StringBuilder(UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode));
-            StringBuilder results_builder = new StringBuilder(SobekEngineClient.WebContent.Get_Global_Usage_Report_JDataTable_URL);
+            var script_builder = new StringBuilder(UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode));
+            var results_builder = new StringBuilder(SobekEngineClient.WebContent.Get_Global_Usage_Report_JDataTable_URL);
 
             // Get the base URL without any filtering
             string filterUrl = script_builder + "?d1=" + year1 + month1.ToString().PadLeft(2, '0') + "&d2=" + year2 + month2.ToString().PadLeft(2, '0');

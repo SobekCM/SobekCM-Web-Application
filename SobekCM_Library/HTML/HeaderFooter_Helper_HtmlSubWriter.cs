@@ -61,7 +61,7 @@ namespace SobekCM.Library.HTML
             string breadcrumbs = "&nbsp; &nbsp; ";
             if (useItemHeader)
             {
-                StringBuilder breadcrumb_builder = new StringBuilder("<a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + modified_url_options + "\">" + RequestSpecificValues.Current_Mode.Instance_Abbreviation + " Home</a>");
+                var breadcrumb_builder = new StringBuilder("<a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + modified_url_options + "\">" + RequestSpecificValues.Current_Mode.Instance_Abbreviation + " Home</a>");
 
                 int codes_added = 0;
                 if ((RequestSpecificValues.Current_Mode.Aggregation.Length > 0) && (RequestSpecificValues.Current_Mode.Aggregation != "all"))
@@ -300,7 +300,7 @@ namespace SobekCM.Library.HTML
             string userid = ((RequestSpecificValues.Current_User != null) && (RequestSpecificValues.Current_User.UserID > 0)) ? RequestSpecificValues.Current_User.UserID.ToString() : String.Empty;
 
             // Add the appropriate header
-            StringBuilder headerBuilder = new StringBuilder();
+            var headerBuilder = new StringBuilder();
             try
             {
                 if (useItemHeader)
@@ -435,7 +435,7 @@ namespace SobekCM.Library.HTML
             string sessionId = Context.Session.Id;
             string userid = ((RequestSpecificValues.Current_User != null) && (RequestSpecificValues.Current_User.UserID > 0)) ? RequestSpecificValues.Current_User.UserID.ToString() : String.Empty;
 
-            StringBuilder footerBuilder = new StringBuilder();
+            var footerBuilder = new StringBuilder();
 
             if (useItemFooter)
             {

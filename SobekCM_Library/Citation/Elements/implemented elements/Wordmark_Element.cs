@@ -87,7 +87,7 @@ namespace SobekCM.Library.Citation.Elements
                 return;
             }
 
-            List<string> allWordmarks = new List<string>();
+            var allWordmarks = new List<string>();
             if (Bib.Behaviors.Wordmark_Count > 0)
             {
                 allWordmarks.AddRange(Bib.Behaviors.Wordmarks.Select(ThisIcon => ThisIcon.Code));

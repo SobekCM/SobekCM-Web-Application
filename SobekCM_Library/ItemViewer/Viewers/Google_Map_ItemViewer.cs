@@ -108,7 +108,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 label = thisViewerInfo.Label;
 
             // Add the item menu information
-            Item_MenuItem menuItem = new Item_MenuItem(label, null, null, url, ViewerCode);
+            var menuItem = new Item_MenuItem(label, null, null, url, ViewerCode);
             MenuItems.Add(menuItem);
         }
 
@@ -241,7 +241,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     }
 
                     // Build the matching polygon HTML to overlay the matches over the non-matches
-                    StringBuilder matchingPolygonsBuilder = new StringBuilder();
+                    var matchingPolygonsBuilder = new StringBuilder();
 
                     // Collect all the polygons, points, and lines
                     BriefItem_GeoSpatial geoInfo = BriefItem.GeoSpatial;

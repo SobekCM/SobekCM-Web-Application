@@ -1,4 +1,4 @@
-﻿using ProtoBuf;
+using ProtoBuf;
 using SobekCM.Tools;
 using System;
 using System.Collections.Generic;
@@ -172,8 +172,7 @@ namespace SobekCM.Core.BriefItem
         {
             if (Restrictions == null) Restrictions = new List<BriefItem_UserGroupRestrictions>();
 
-            BriefItem_UserGroupRestrictions restriction = new BriefItem_UserGroupRestrictions
-            {
+            var restriction = new BriefItem_UserGroupRestrictions{
                 GroupID = GroupID,
                 GroupName = GroupName,
                 CanView = CanView
@@ -207,7 +206,7 @@ namespace SobekCM.Core.BriefItem
                 settingLookupDictionary[Key].Value = Value;
             else
             {
-                StringKeyValuePair newValue = new StringKeyValuePair(Key, Value);
+                var newValue = new StringKeyValuePair(Key, Value);
                 Settings.Add(newValue);
                 settingLookupDictionary[Key] = newValue;
             }

@@ -1958,7 +1958,7 @@ namespace SobekCM.Library.Database
                 string email = thisRow["EmailAddress"].ToString();
 
                 // Return the folder object
-                Public_User_Folder returnValue = new Public_User_Folder(UserFolderID, folderName, folderDescription, userID, firstName, lastName, nickname, email, true);
+                var returnValue = new Public_User_Folder(UserFolderID, folderName, folderDescription, userID, firstName, lastName, nickname, email, true);
                 return returnValue;
             }
             catch (Exception ee)
@@ -2003,7 +2003,7 @@ namespace SobekCM.Library.Database
                     string name = userRow["GroupName"].ToString();
                     string description = userRow["GroupDescription"].ToString();
                     int usergroupid = Convert.ToInt32(userRow["UserGroupID"]);
-                    User_Group group = new User_Group(name, description, usergroupid);
+                    var group = new User_Group(name, description, usergroupid);
                     group.CanSubmit = Convert.ToBoolean(userRow["Can_Submit_Items"]);
                     group.IsInternalUser = Convert.ToBoolean(userRow["Internal_User"]);
                     group.IsSystemAdmin = Convert.ToBoolean(userRow["IsSystemAdmin"]);
@@ -3848,8 +3848,7 @@ namespace SobekCM.Library.Database
         {
 
             // Build the parameter list
-            List<EalDbParameter> parameters = new List<EalDbParameter>
-            {
+            var parameters = new List<EalDbParameter>{
                 new EalDbParameter("@aggregationcode", SetCode),
                 new EalDbParameter("@data_code", DataCode),
                 new EalDbParameter("@from", FromDate),
@@ -3866,7 +3865,7 @@ namespace SobekCM.Library.Database
             DbDataReader reader = readerWrapper.Reader;
 
             // Read in each row
-            List<OAI_Record> returnVal = new List<OAI_Record>();
+            var returnVal = new List<OAI_Record>();
             while (reader.Read())
             {
                 returnVal.Add(IncludeRecord ? new OAI_Record(reader.GetString(0), reader.GetString(1), reader.GetString(2), reader.GetDateTime(3)) : new OAI_Record(reader.GetString(0), reader.GetString(1), reader.GetDateTime(2)));
@@ -3888,8 +3887,7 @@ namespace SobekCM.Library.Database
         public static OAI_Record Get_OAI_Record(string BibID, string Vid, string DataCode)
         {
             // Build the parameter list
-            List<EalDbParameter> parameters = new List<EalDbParameter>
-            {
+            var parameters = new List<EalDbParameter>{
                 new EalDbParameter("@bibid", BibID),
                 new EalDbParameter("@vid", Vid),
                 new EalDbParameter("@data_code", DataCode)
@@ -4048,8 +4046,7 @@ namespace SobekCM.Library.Database
             int this_workflow_id;
 
             // Build the parameters
-            List<EalDbParameter> parameters = new List<EalDbParameter>
-            {
+            var parameters = new List<EalDbParameter>{
                 new EalDbParameter("@itemid", ItemID),
                 new EalDbParameter("@user", WorkPerformedBy),
                 DateStarted.HasValue ? new EalDbParameter("@dateStarted", DateStarted.Value) : new EalDbParameter("@dateStarted", DBNull.Value),
@@ -4062,7 +4059,7 @@ namespace SobekCM.Library.Database
             };
 
             //Add the output parameter to get back the workflow id for this entry
-            EalDbParameter outputParam = new EalDbParameter("@workflow_entry_id", DbType.Int32) { Direction = ParameterDirection.Output };
+            var outputParam = new EalDbParameter("@workflow_entry_id", DbType.Int32) { Direction = ParameterDirection.Output };
             parameters.Add(outputParam);
 
             try
@@ -4095,8 +4092,7 @@ namespace SobekCM.Library.Database
             try
             {
                 // Build the parameters list
-                List<EalDbParameter> parameters = new List<EalDbParameter>
-                {
+                var parameters = new List<EalDbParameter>{
                     new EalDbParameter("@workflow_entry_id", WorkflowID),
                     new EalDbParameter("@itemid", ItemID),
                     new EalDbParameter("@user", WorkPerformedBy),
@@ -4128,7 +4124,7 @@ namespace SobekCM.Library.Database
             try
             {
                 // Build the parameters list
-                List<EalDbParameter> parameters = new List<EalDbParameter> { new EalDbParameter("@workflow_entry_id", WorkflowID) };
+                var parameters = new List<EalDbParameter>{ new EalDbParameter("@workflow_entry_id", WorkflowID) };
 
                 // Run the SQL 
                 EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "Tracking_Delete_Workflow", parameters);
@@ -4235,8 +4231,7 @@ namespace SobekCM.Library.Database
 
 
             // Build the parameters list
-            List<EalDbParameter> parameters = new List<EalDbParameter>
-            {
+            var parameters = new List<EalDbParameter>{
                 new EalDbParameter("@ProjectID", ProjectID),
                 new EalDbParameter("@ProjectCode", ProjectCode),
                 new EalDbParameter("@ProjectName", ProjectName),
@@ -4256,7 +4251,7 @@ namespace SobekCM.Library.Database
             };
 
             //Add the output parameter to get back the new ProjectID for this newly added project, or existing ProjectID if this has been updated
-            EalDbParameter outputParam = new EalDbParameter("@New_ProjectID", SqlDbType.Int) { Direction = ParameterDirection.Output };
+            var outputParam = new EalDbParameter("@New_ProjectID", SqlDbType.Int) { Direction = ParameterDirection.Output };
             parameters.Add(outputParam);
 
             try
@@ -4289,8 +4284,7 @@ namespace SobekCM.Library.Database
             try
             {
                 // Build the parameters list
-                List<EalDbParameter> parameters = new List<EalDbParameter>
-                {
+                var parameters = new List<EalDbParameter>{
                     new EalDbParameter("@ProjectID", ProjectID),
                     new EalDbParameter("@AggregationID", AggregationID)
                 };
@@ -4318,8 +4312,7 @@ namespace SobekCM.Library.Database
             try
             {
                 // Build the parameters list
-                List<EalDbParameter> parameters = new List<EalDbParameter>
-                {
+                var parameters = new List<EalDbParameter>{
                     new EalDbParameter("@ProjectID", ProjectID),
                     new EalDbParameter("@DefaultMetadataID", DefaultMetadataID)
                 };
@@ -4347,8 +4340,7 @@ namespace SobekCM.Library.Database
             try
             {
                 // Build the parameters list
-                List<EalDbParameter> parameters = new List<EalDbParameter>
-                {
+                var parameters = new List<EalDbParameter>{
                     new EalDbParameter("@ProjectID", ProjectID),
                     new EalDbParameter("@TemplateID", TemplateID)
                 };
@@ -4376,8 +4368,7 @@ namespace SobekCM.Library.Database
             try
             {
                 // Build the parameters list
-                List<EalDbParameter> parameters = new List<EalDbParameter>
-                {
+                var parameters = new List<EalDbParameter>{
                     new EalDbParameter("@ProjectID", ProjectID),
                     new EalDbParameter("@ItemID", ItemID)
                 };
@@ -4405,8 +4396,7 @@ namespace SobekCM.Library.Database
             try
             {
                 // Build the parameters list
-                List<EalDbParameter> parameters = new List<EalDbParameter>
-                {
+                var parameters = new List<EalDbParameter>{
                     new EalDbParameter("@ProjectID", ProjectID),
                     new EalDbParameter("@ItemID", ItemID)
                 };
@@ -4434,8 +4424,7 @@ namespace SobekCM.Library.Database
             try
             {
                 // Build the parameters list
-                List<EalDbParameter> parameters = new List<EalDbParameter>
-                {
+                var parameters = new List<EalDbParameter>{
                     new EalDbParameter("@ProjectID", ProjectID),
                     new EalDbParameter("@TemplateID", TemplateID)
                 };
@@ -4463,8 +4452,7 @@ namespace SobekCM.Library.Database
             try
             {
                 // Build the parameters list
-                List<EalDbParameter> parameters = new List<EalDbParameter>
-                {
+                var parameters = new List<EalDbParameter>{
                     new EalDbParameter("@ProjectID", ProjectID),
                     new EalDbParameter("@DefaultMetadataID", DefaultMetadataID)
                 };
@@ -4492,8 +4480,7 @@ namespace SobekCM.Library.Database
             try
             {
                 // Build the parameters list
-                List<EalDbParameter> parameters = new List<EalDbParameter>
-                {
+                var parameters = new List<EalDbParameter>{
                     new EalDbParameter("@ProjectID", ProjectID),
                     new EalDbParameter("@AggregationID", AggregationID)
                 };
@@ -4520,7 +4507,7 @@ namespace SobekCM.Library.Database
 
             try
             {
-                List<int> returnValue = new List<int>();
+                var returnValue = new List<int>();
 
                 // Define a temporary dataset
                 DataSet tempSet = EalDbAccess.ExecuteDataset(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Get_Aggregations_By_ProjectID");

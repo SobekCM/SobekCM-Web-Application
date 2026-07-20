@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using SobekCM.Core.Results;
 using System;
@@ -120,9 +120,9 @@ namespace SobekCM.Engine_Library.Database
             const int THISCHILD_LEVEL4_INDEX = -1;
 
             // Add each seperate child row to the Items_Within_Title set
-            Dictionary<string, Search_Result_Item_TreeNode> level1Nodes = new Dictionary<string, Search_Result_Item_TreeNode>();
-            Dictionary<string, Search_Result_Item_TreeNode> level2Nodes = new Dictionary<string, Search_Result_Item_TreeNode>();
-            Dictionary<string, Search_Result_Item_TreeNode> level3Nodes = new Dictionary<string, Search_Result_Item_TreeNode>();
+            var level1Nodes = new Dictionary<string, Search_Result_Item_TreeNode>();
+            var level2Nodes = new Dictionary<string, Search_Result_Item_TreeNode>();
+            var level3Nodes = new Dictionary<string, Search_Result_Item_TreeNode>();
             foreach (iSearch_Item_Result thisChild in Items)
             {
                 // Determine the final link for this item

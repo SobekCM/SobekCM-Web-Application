@@ -233,7 +233,7 @@ namespace SobekCM.Core.Skins
             // Get the header and footer html from the source information
             try
             {
-                StreamReader reader = new StreamReader(Header_Source);
+                var reader = new StreamReader(Header_Source);
                 Header_HTML = reader.ReadToEnd();
                 reader.Close();
             }
@@ -244,7 +244,7 @@ namespace SobekCM.Core.Skins
 
             try
             {
-                StreamReader reader = new StreamReader(Footer_Source);
+                var reader = new StreamReader(Footer_Source);
                 Footer_HTML = reader.ReadToEnd();
                 reader.Close();
             }
@@ -257,7 +257,7 @@ namespace SobekCM.Core.Skins
             {
                 try
                 {
-                    StreamReader reader = new StreamReader(Header_Item_Source);
+                    var reader = new StreamReader(Header_Item_Source);
                     Header_Item_HTML = reader.ReadToEnd();
                     reader.Close();
                 }
@@ -275,7 +275,7 @@ namespace SobekCM.Core.Skins
             {
                 try
                 {
-                    StreamReader reader = new StreamReader(Footer_Item_Source);
+                    var reader = new StreamReader(Footer_Item_Source);
                     Footer_Item_HTML = reader.ReadToEnd();
                     reader.Close();
                 }

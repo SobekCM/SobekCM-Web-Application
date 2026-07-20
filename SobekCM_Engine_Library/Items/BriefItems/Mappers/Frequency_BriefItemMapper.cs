@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using SobekCM.Core.BriefItem;
 using SobekCM.Resource_Object;
@@ -27,7 +27,7 @@ namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
                 // Add the frequency
                 if (Original.Bib_Info.Origin_Info.Frequencies_Count > 0)
                 {
-                    Dictionary<string, string> frequencies = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+                    var frequencies = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
                     foreach (Origin_Info_Frequency thisFrequency in Original.Bib_Info.Origin_Info.Frequencies)
                     {
                         if (!frequencies.ContainsKey(thisFrequency.Term))

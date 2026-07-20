@@ -162,7 +162,7 @@ namespace SobekCM.Library.MySobekViewer
                     user_template = UI_ApplicationCache_Gateway.Settings.Servers.Base_MySobek_Directory + "templates\\default\\standard\\" + template_code + ".xml";
 
                 // Read this template
-                Template_XML_Reader reader = new Template_XML_Reader();
+                var reader = new Template_XML_Reader();
                 completeTemplate = new CompleteTemplate();
                 reader.Read_XML(user_template, completeTemplate, true);
 
@@ -403,7 +403,7 @@ namespace SobekCM.Library.MySobekViewer
             Engine_Database.Tracking_Online_Submit_Complete(Item_To_Complete.Web.ItemID, RequestSpecificValues.Current_User.Full_Name, String.Empty);
 
             // Create the options dictionary used when saving information to the database, or writing MarcXML
-            Dictionary<string, object> options = new Dictionary<string, object>();
+            var options = new Dictionary<string, object>();
             if (UI_ApplicationCache_Gateway.Settings.MarcGeneration != null)
             {
                 options["MarcXML_File_ReaderWriter:MARC Cataloging Source Code"] = UI_ApplicationCache_Gateway.Settings.MarcGeneration.Cataloging_Source_Code;
@@ -416,7 +416,7 @@ namespace SobekCM.Library.MySobekViewer
             options["MarcXML_File_ReaderWriter:System Abbreviation"] = UI_ApplicationCache_Gateway.Settings.System.System_Abbreviation;
 
             // Save the MARC file
-            MarcXML_File_ReaderWriter marcWriter = new MarcXML_File_ReaderWriter();
+            var marcWriter = new MarcXML_File_ReaderWriter();
             string errorMessage;
             marcWriter.Write_Metadata(Item_To_Complete.Source_Directory + "\\marc.xml", Item_To_Complete, options, out errorMessage);
 
@@ -554,7 +554,7 @@ namespace SobekCM.Library.MySobekViewer
             Output.WriteLine("      <div style=\"text-align:left;padding-left:58px; padding-bottom: 10px;\">Import from existing volume: &nbsp; ");
             Output.WriteLine("        <select id=\"base_volume\" name=\"base_volume\" class=\"addvolume_base_volume\">");
 
-            SortedList<string, string> sortList = new SortedList<string, string>();
+            var sortList = new SortedList<string, string>();
             foreach (Item_Hierarchy_Details itemRowView in allVolumes)
             {
                 sortList.Add(itemRowView.VID, itemRowView.VID);
@@ -582,7 +582,7 @@ namespace SobekCM.Library.MySobekViewer
             bool isMozilla = ((!String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.Browser_Type)) && (RequestSpecificValues.Current_Mode.Browser_Type.ToUpper().IndexOf("FIREFOX") >= 0));
 
             // Create a new blank item for display purposes
-            SobekCM_Item displayItem = new SobekCM_Item { BibID = currentItem.BibID };
+            var displayItem = new SobekCM_Item{ BibID = currentItem.BibID };
             displayItem.Behaviors.IP_Restriction_Membership = ipRestrict;
             displayItem.Behaviors.Serial_Info.Clear();
             displayItem.Tracking.Born_Digital = bornDigital;

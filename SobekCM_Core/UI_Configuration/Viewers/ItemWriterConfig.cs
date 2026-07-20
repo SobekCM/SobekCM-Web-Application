@@ -1,4 +1,4 @@
-﻿using ProtoBuf;
+using ProtoBuf;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -87,7 +87,7 @@ namespace SobekCM.Core.UI_Configuration.Viewers
             }
 
             // Must not have existed, so add it
-            HtmlHeadWriterConfig newValue = new HtmlHeadWriterConfig { ID = ID, Enabled = true };
+            var newValue = new HtmlHeadWriterConfig{ ID = ID, Enabled = true };
             HtmlHeadWriters.Add(newValue);
             return newValue;
         }

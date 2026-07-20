@@ -504,7 +504,7 @@ namespace SobekCM.Core.Aggregations
         {
             get
             {
-                SortedList<string, Complete_Item_Aggregation_Child_Page> otherInfos = new SortedList<string, Complete_Item_Aggregation_Child_Page>();
+                var otherInfos = new SortedList<string, Complete_Item_Aggregation_Child_Page>();
                 foreach (Complete_Item_Aggregation_Child_Page thisInfo in childPagesHash.Values.Where(ThisInfo => ThisInfo.Browse_Type == Item_Aggregation_Child_Visibility_Enum.None))
                 {
                     otherInfos[thisInfo.Code] = thisInfo;
@@ -521,7 +521,7 @@ namespace SobekCM.Core.Aggregations
         {
             get
             {
-                List<Search_Type_Enum> returnValue = new List<Search_Type_Enum>();
+                var returnValue = new List<Search_Type_Enum>();
                 if (Views_And_Searches.Contains(Item_Aggregation_Views_Searches_Enum.Basic_Search))
                     returnValue.Add(Search_Type_Enum.Basic);
                 if (Views_And_Searches.Contains(Item_Aggregation_Views_Searches_Enum.Banner_Search))
@@ -642,7 +642,7 @@ namespace SobekCM.Core.Aggregations
                 if (Parents.Count == 1)
                     return Parents[0].Code;
 
-                StringBuilder builder = new StringBuilder();
+                var builder = new StringBuilder();
                 foreach (Item_Aggregation_Related_Aggregations thisParent in Parents)
                 {
                     if (builder.Length == 0)
@@ -701,7 +701,7 @@ namespace SobekCM.Core.Aggregations
         public Complete_Item_Aggregation_Child_Page Add_Child_Page(Item_Aggregation_Child_Visibility_Enum Browse_Type, string Browse_Code, string StaticHtmlSource, string Text)
         {
             // Create the new Browse_Info object
-            Complete_Item_Aggregation_Child_Page childPage = new Complete_Item_Aggregation_Child_Page(Browse_Type, Item_Aggregation_Child_Source_Data_Enum.Database_Table, Browse_Code, StaticHtmlSource, Text);
+            var childPage = new Complete_Item_Aggregation_Child_Page(Browse_Type, Item_Aggregation_Child_Source_Data_Enum.Database_Table, Browse_Code, StaticHtmlSource, Text);
 
             if (Child_Pages == null)
                 Child_Pages = new List<Complete_Item_Aggregation_Child_Page>();
@@ -718,7 +718,7 @@ namespace SobekCM.Core.Aggregations
         /// <remarks> These are returned in alphabetical order of the LABEL portion of each browse, according to the provided language </remarks>
         public ReadOnlyCollection<Complete_Item_Aggregation_Child_Page> Browse_Home_Pages(Web_Language_Enum Current_Language)
         {
-            SortedList<string, Complete_Item_Aggregation_Child_Page> otherBrowses = new SortedList<string, Complete_Item_Aggregation_Child_Page>();
+            var otherBrowses = new SortedList<string, Complete_Item_Aggregation_Child_Page>();
             foreach (Complete_Item_Aggregation_Child_Page thisBrowse in childPagesHash.Values.Where(ThisBrowse => ThisBrowse.Browse_Type == Item_Aggregation_Child_Visibility_Enum.Main_Menu))
             {
                 otherBrowses[thisBrowse.Get_Label(Current_Language)] = thisBrowse;
@@ -731,7 +731,7 @@ namespace SobekCM.Core.Aggregations
         /// <remarks> These are returned in alphabetical order of the CODE portion of each browse, according to the provided language </remarks>
         public ReadOnlyCollection<Complete_Item_Aggregation_Child_Page> Browse_By_Pages(Web_Language_Enum Current_Language)
         {
-            SortedList<string, Complete_Item_Aggregation_Child_Page> otherBrowses = new SortedList<string, Complete_Item_Aggregation_Child_Page>();
+            var otherBrowses = new SortedList<string, Complete_Item_Aggregation_Child_Page>();
             foreach (Complete_Item_Aggregation_Child_Page thisBrowse in childPagesHash.Values.Where(ThisBrowse => ThisBrowse.Browse_Type == Item_Aggregation_Child_Visibility_Enum.Metadata_Browse_By))
             {
                 otherBrowses[thisBrowse.Code] = thisBrowse;
@@ -832,7 +832,7 @@ namespace SobekCM.Core.Aggregations
         /// <returns> Build front banner image information object </returns>
         public Item_Aggregation_Front_Banner Add_Front_Banner_Image(string Banner_Image, Web_Language_Enum Language)
         {
-            Item_Aggregation_Front_Banner banner = new Item_Aggregation_Front_Banner(Banner_Image);
+            var banner = new Item_Aggregation_Front_Banner(Banner_Image);
 
             if (Front_Banner_Dictionary == null)
                 Front_Banner_Dictionary = new Dictionary<Web_Language_Enum, Item_Aggregation_Front_Banner>();
@@ -1101,7 +1101,7 @@ namespace SobekCM.Core.Aggregations
                 settingLookupDictionary[Key].Value = Value;
             else
             {
-                StringKeyValuePair newValue = new StringKeyValuePair(Key, Value);
+                var newValue = new StringKeyValuePair(Key, Value);
                 Settings.Add(newValue);
                 settingLookupDictionary[Key] = newValue;
             }
@@ -1161,7 +1161,7 @@ namespace SobekCM.Core.Aggregations
         /// <param name="SolrCode"> Term used when performing a search against Solr/Lucene </param>
         public void Add_Facet(short ID, string DisplayTerm, string SobekCode, string SolrCode)
         {
-            Complete_Item_Aggregation_Metadata_Type newFacet = new Complete_Item_Aggregation_Metadata_Type(ID, DisplayTerm, SobekCode, SolrCode);
+            var newFacet = new Complete_Item_Aggregation_Metadata_Type(ID, DisplayTerm, SobekCode, SolrCode);
 
             if (Facets == null) Facets = new List<Complete_Item_Aggregation_Metadata_Type>();
 
@@ -1196,7 +1196,7 @@ namespace SobekCM.Core.Aggregations
         /// <param name="SolrCode"> Term used when performing a search against Solr/Lucene </param>
         public void Add_Results_Field(short ID, string DisplayTerm, string SobekCode, string SolrCode)
         {
-            Complete_Item_Aggregation_Metadata_Type newField = new Complete_Item_Aggregation_Metadata_Type(ID, DisplayTerm, SobekCode, SolrCode);
+            var newField = new Complete_Item_Aggregation_Metadata_Type(ID, DisplayTerm, SobekCode, SolrCode);
 
             if (Results_Fields == null) Results_Fields = new List<Complete_Item_Aggregation_Metadata_Type>();
 
@@ -1230,7 +1230,7 @@ namespace SobekCM.Core.Aggregations
 
 
                 // Create the writer object
-                StreamWriter writer = new StreamWriter(Directory + "\\" + filename, false);
+                var writer = new StreamWriter(Directory + "\\" + filename, false);
 
                 // Write the header for the XML file
                 writer.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\" ?>");

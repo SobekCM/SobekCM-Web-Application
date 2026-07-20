@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using ProtoBuf;
 using System;
@@ -255,7 +255,7 @@ namespace SobekCM.Core.BriefItem
                 bounding_box = null;
             }
 
-            BriefItem_Coordinate_Point newPoint = new BriefItem_Coordinate_Point(Latitude, Longitude, String.Empty);
+            var newPoint = new BriefItem_Coordinate_Point(Latitude, Longitude, String.Empty);
             Edge_Points.Add(newPoint);
             return newPoint;
         }
@@ -273,7 +273,7 @@ namespace SobekCM.Core.BriefItem
                 bounding_box = null;
             }
 
-            BriefItem_Coordinate_Point newPoint = new BriefItem_Coordinate_Point(Latitude, Longitude, Label);
+            var newPoint = new BriefItem_Coordinate_Point(Latitude, Longitude, Label);
             Edge_Points.Add(newPoint);
             return newPoint;
         }
@@ -291,7 +291,7 @@ namespace SobekCM.Core.BriefItem
         /// <returns> Fully built BriefItem_Coordinate_Point object </returns>
         public BriefItem_Coordinate_Point Add_Inner_Point(double Latitude, double Longitude)
         {
-            BriefItem_Coordinate_Point newPoint = new BriefItem_Coordinate_Point(Latitude, Longitude, String.Empty);
+            var newPoint = new BriefItem_Coordinate_Point(Latitude, Longitude, String.Empty);
             Inner_Points.Add(newPoint);
             return newPoint;
         }
@@ -303,7 +303,7 @@ namespace SobekCM.Core.BriefItem
         /// <returns> Fully built BriefItem_Coordinate_Point object </returns>
         public BriefItem_Coordinate_Point Add_Inner_Point(double Latitude, double Longitude, string Label)
         {
-            BriefItem_Coordinate_Point newPoint = new BriefItem_Coordinate_Point(Latitude, Longitude, Label);
+            var newPoint = new BriefItem_Coordinate_Point(Latitude, Longitude, Label);
             Inner_Points.Add(newPoint);
             return newPoint;
         }

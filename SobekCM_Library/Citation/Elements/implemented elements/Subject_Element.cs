@@ -65,7 +65,7 @@ namespace SobekCM.Library.Citation.Elements
                 }
             }
 
-            List<string> instanceValues = new List<string>();
+            var instanceValues = new List<string>();
             if (Bib.Bib_Info.Subjects_Count > 0)
             {
                 instanceValues.AddRange(from thisSubject in Bib.Bib_Info.Subjects where thisSubject.Class_Type == Subject_Info_Type.Standard select (Subject_Info_Standard)thisSubject into standSubject select standSubject.ToString().Replace("<i>", "").Replace("</i>", "").Replace("( " + standSubject.Authority + " )", "").Trim());

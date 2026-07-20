@@ -213,11 +213,11 @@ namespace SobekCM.Library.MySobekViewer
             criticalErrorEncountered = false;
 
             string[] all_files = Directory.GetFiles(digitalResourceDirectory);
-            SortedList<string, List<string>> image_files = new SortedList<string, List<string>>();
-            SortedList<string, List<string>> download_files = new SortedList<string, List<string>>();
+            var image_files = new SortedList<string, List<string>>();
+            var download_files = new SortedList<string, List<string>>();
             foreach (string thisFile in all_files)
             {
-                FileInfo thisFileInfo = new FileInfo(thisFile);
+                var thisFileInfo = new FileInfo(thisFile);
 
                 if ((thisFileInfo.Name.IndexOf("agreement.txt") != 0) && (thisFileInfo.Name.IndexOf("TEMP000001_00001.mets") != 0) && (thisFileInfo.Name.IndexOf("doc.xml") != 0) && (thisFileInfo.Name.IndexOf("marc.xml") != 0))
                 {
@@ -245,7 +245,7 @@ namespace SobekCM.Library.MySobekViewer
                             }
                             else
                             {
-                                List<string> newImageGrouping = new List<string> { thisFileInfo.Name };
+                                var newImageGrouping = new List<string>{ thisFileInfo.Name };
                                 image_files[filename_sans_extension.ToLower()] = newImageGrouping;
                             }
                         }
@@ -266,7 +266,7 @@ namespace SobekCM.Library.MySobekViewer
                                 }
                                 else
                                 {
-                                    List<string> newDownloadGrouping = new List<string> { thisFileInfo.Name };
+                                    var newDownloadGrouping = new List<string>{ thisFileInfo.Name };
                                     download_files[filename_sans_extension.ToLower()] = newDownloadGrouping;
                                 }
                             }
@@ -294,8 +294,8 @@ namespace SobekCM.Library.MySobekViewer
                     foreach (string thisFile in theseFiles)
                     {
                         // Create the new file object and compute a label
-                        FileInfo fileInfo = new FileInfo(thisFile);
-                        SobekCM_File_Info newFile = new SobekCM_File_Info(fileInfo.Name);
+                        var fileInfo = new FileInfo(thisFile);
+                        var newFile = new SobekCM_File_Info(fileInfo.Name);
                         string label = fileInfo.Name.Replace(fileInfo.Extension, "");
                         if (Context.SessionObject()["file_" + currentItem.Web.ItemID + "_" + thisFileKey] != null)
                         {
@@ -315,7 +315,7 @@ namespace SobekCM.Library.MySobekViewer
                 Item_To_Complete.DiskSize_KB = size;
 
                 // Create the options dictionary used when saving information to the database, or writing MarcXML
-                Dictionary<string, object> options = new Dictionary<string, object>();
+                var options = new Dictionary<string, object>();
                 if (UI_ApplicationCache_Gateway.Settings.MarcGeneration != null)
                 {
                     options["MarcXML_File_ReaderWriter:MARC Cataloging Source Code"] = UI_ApplicationCache_Gateway.Settings.MarcGeneration.Cataloging_Source_Code;
@@ -336,7 +336,7 @@ namespace SobekCM.Library.MySobekViewer
                 }
                 catch (Exception ee)
                 {
-                    StreamWriter writer = new StreamWriter(digitalResourceDirectory + "\\exception.txt", false);
+                    var writer = new StreamWriter(digitalResourceDirectory + "\\exception.txt", false);
                     writer.WriteLine("ERROR CAUGHT WHILE SAVING DIGITAL RESOURCE");
                     writer.WriteLine(DateTime.Now.ToString());
                     writer.WriteLine();
@@ -482,8 +482,8 @@ namespace SobekCM.Library.MySobekViewer
 
             #region Get the list of all files sans extensions to pages 
 
-            Dictionary<string, string> image_files_to_labels = new Dictionary<string, string>();
-            Dictionary<string, string> resource_files_to_labels = new Dictionary<string, string>();
+            var image_files_to_labels = new Dictionary<string, string>();
+            var resource_files_to_labels = new Dictionary<string, string>();
             List<abstract_TreeNode> imagePages = currentItem.Divisions.Physical_Tree.Pages_PreOrder;
             List<abstract_TreeNode> resourcePages = currentItem.Divisions.Download_Tree.Pages_PreOrder;
             foreach (Page_TreeNode thisPage in imagePages)
@@ -502,11 +502,11 @@ namespace SobekCM.Library.MySobekViewer
             #region Add the list of all existing files and the URL box for the upload file/enter URL step
 
             string[] all_files = Directory.GetFiles(digitalResourceDirectory);
-            SortedList<string, List<string>> image_files = new SortedList<string, List<string>>();
-            SortedList<string, List<string>> download_files = new SortedList<string, List<string>>();
+            var image_files = new SortedList<string, List<string>>();
+            var download_files = new SortedList<string, List<string>>();
             foreach (string thisFile in all_files)
             {
-                FileInfo thisFileInfo = new FileInfo(thisFile);
+                var thisFileInfo = new FileInfo(thisFile);
 
                 if ((thisFileInfo.Name.IndexOf("agreement.txt") != 0) && (thisFileInfo.Name.IndexOf("TEMP000001_00001.mets") != 0) && (thisFileInfo.Name.IndexOf("doc.xml") != 0) && (thisFileInfo.Name.IndexOf("marc.xml") != 0))
                 {
@@ -534,7 +534,7 @@ namespace SobekCM.Library.MySobekViewer
                             }
                             else
                             {
-                                List<string> newImageGrouping = new List<string> { thisFileInfo.Name };
+                                var newImageGrouping = new List<string>{ thisFileInfo.Name };
                                 image_files[filename_sans_extension.ToLower()] = newImageGrouping;
                             }
                         }
@@ -554,7 +554,7 @@ namespace SobekCM.Library.MySobekViewer
                                 }
                                 else
                                 {
-                                    List<string> newDownloadGrouping = new List<string> { thisFileInfo.Name };
+                                    var newDownloadGrouping = new List<string>{ thisFileInfo.Name };
                                     download_files[filename_sans_extension.ToLower()] = newDownloadGrouping;
                                 }
                             }
@@ -590,7 +590,7 @@ namespace SobekCM.Library.MySobekViewer
                         file_counter++;
 
                         // Add the file name literal
-                        FileInfo fileInfo = new FileInfo(digitalResourceDirectory + "\\" + thisFile);
+                        var fileInfo = new FileInfo(digitalResourceDirectory + "\\" + thisFile);
                         Output.WriteLine("  <tr style=\"min-height:22px; vertical-align: bottom\" >");
                         Output.WriteLine("    <td>" + fileInfo.Name + "</td>");
                         if (fileInfo.Length < 1024)

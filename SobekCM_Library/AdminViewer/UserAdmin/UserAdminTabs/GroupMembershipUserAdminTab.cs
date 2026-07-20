@@ -18,7 +18,7 @@ namespace SobekCM.Library.AdminViewer.UserAdmin.UserAdminTabs
             // Check the RequestSpecificValues.Current_User groups for update
             bool update_user_groups = false;
             List<User_Group> userGroup = Engine_Database.Get_All_User_Groups(RequestSpecificValues.Tracer);
-            List<Simple_User_Group_Info> newGroups = new List<Simple_User_Group_Info>();
+            var newGroups = new List<Simple_User_Group_Info>();
             foreach (User_Group thisRow in userGroup)
             {
                 if (!String.IsNullOrEmpty(form["group_" + thisRow.UserGroupID].TrimFirst()))
@@ -88,7 +88,7 @@ namespace SobekCM.Library.AdminViewer.UserAdmin.UserAdminTabs
                 //Output.WriteLine("   </tr>");
 
                 // Get the dictionary of user groups in this user
-                Dictionary<int, Simple_User_Group_Info> editUserGroups = new Dictionary<int, Simple_User_Group_Info>();
+                var editUserGroups = new Dictionary<int, Simple_User_Group_Info>();
                 foreach (Simple_User_Group_Info editUserGroup in editUser.User_Groups)
                     editUserGroups[editUserGroup.UserGroupID] = editUserGroup;
 

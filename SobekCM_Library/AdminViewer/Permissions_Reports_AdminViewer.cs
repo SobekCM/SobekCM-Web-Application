@@ -276,13 +276,13 @@ namespace SobekCM.Library.AdminViewer
                     {
                         Output.WriteLine("<p style=\"width:800px;\">The lists below indicate the global permissions assigned to different registered users, either individually assigned or assigned thorugh user group membership.</p>");
 
-                        List<string> hostAdmins = new List<string>();
-                        List<string> sysAdmins = new List<string>();
-                        List<string> userAdmins = new List<string>();
-                        List<string> portalAdmins = new List<string>();
-                        List<string> canDeleteAll = new List<string>();
-                        List<string> internalUsers = new List<string>();
-                        List<string> canEditAll = new List<string>();
+                        var hostAdmins = new List<string>();
+                        var sysAdmins = new List<string>();
+                        var userAdmins = new List<string>();
+                        var portalAdmins = new List<string>();
+                        var canDeleteAll = new List<string>();
+                        var internalUsers = new List<string>();
+                        var canEditAll = new List<string>();
 
                         foreach (DataRow thisUser in globalPermissions.Rows)
                         {
@@ -853,7 +853,7 @@ namespace SobekCM.Library.AdminViewer
                             Output.WriteLine("  <tbody>");
 
                             // Collect the relevant user group rows, if some permissions were assined by user group
-                            SortedDictionary<string, DataRow> userGroupRows = new SortedDictionary<string, DataRow>();
+                            var userGroupRows = new SortedDictionary<string, DataRow>();
 
                             // Users that are attached to user groups may have multiple rows with their name, so collect
                             // all the user information from all rows before displaying

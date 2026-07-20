@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 
 namespace SobekCM.Library.HtmlLayout
@@ -17,16 +17,15 @@ namespace SobekCM.Library.HtmlLayout
             try
             {
                 // Get the template contents
-                StreamReader reader = new StreamReader(SourceFile);
+                var reader = new StreamReader(SourceFile);
                 template_contents = reader.ReadToEnd();
                 reader.Close();
             }
             catch (Exception ee)
             {
                 // Error reading the template, create a dummy here
-                HtmlLayoutInfo errorLayout = new HtmlLayoutInfo();
-                HtmlLayoutSection errorSection = new HtmlLayoutSection
-                {
+                var errorLayout = new HtmlLayoutInfo();
+                var errorSection = new HtmlLayoutSection{
                     Name = "Error",
                     Type = HtmlLayoutSectionTypeEnum.Static_HTML,
                     HTML = "Exception reading the source file ( " + SourceFile + " ) : " + ee.Message
@@ -38,7 +37,7 @@ namespace SobekCM.Library.HtmlLayout
             int static_section_count = 0;
 
             // Create the return object
-            HtmlLayoutInfo returnObj = new HtmlLayoutInfo();
+            var returnObj = new HtmlLayoutInfo();
             int current_index = 0;
             int total_length = template_contents.Length;
             while (current_index < total_length)
@@ -51,8 +50,7 @@ namespace SobekCM.Library.HtmlLayout
                 {
                     static_section_count++;
 
-                    HtmlLayoutSection staticSection = new HtmlLayoutSection
-                    {
+                    var staticSection = new HtmlLayoutSection{
                         Name = "Static" + static_section_count,
                         Type = HtmlLayoutSectionTypeEnum.Static_HTML,
                         HTML = template_contents.Substring(current_index)
@@ -67,8 +65,7 @@ namespace SobekCM.Library.HtmlLayout
                     {
                         static_section_count++;
 
-                        HtmlLayoutSection staticSection = new HtmlLayoutSection
-                        {
+                        var staticSection = new HtmlLayoutSection{
                             Name = "Static" + static_section_count,
                             Type = HtmlLayoutSectionTypeEnum.Static_HTML,
                             HTML = template_contents.Substring(current_index, next_section_index - current_index)
@@ -82,8 +79,7 @@ namespace SobekCM.Library.HtmlLayout
                     {
                         static_section_count++;
 
-                        HtmlLayoutSection staticSection = new HtmlLayoutSection
-                        {
+                        var staticSection = new HtmlLayoutSection{
                             Name = "Static" + static_section_count,
                             Type = HtmlLayoutSectionTypeEnum.Static_HTML,
                             HTML = "Unable to find end of directive tag in the HTML template file"
@@ -96,8 +92,7 @@ namespace SobekCM.Library.HtmlLayout
                         string section_name = template_contents.Substring(next_section_index + 10, section_tag_end - next_section_index - 10);
                         if (section_name == "VIEWER")
                         {
-                            HtmlLayoutSection viewerSection = new HtmlLayoutSection
-                            {
+                            var viewerSection = new HtmlLayoutSection{
                                 Name = section_name,
                                 Type = HtmlLayoutSectionTypeEnum.Viewer_Section
                             };
@@ -105,8 +100,7 @@ namespace SobekCM.Library.HtmlLayout
                         }
                         else
                         {
-                            HtmlLayoutSection dynamicSection = new HtmlLayoutSection
-                            {
+                            var dynamicSection = new HtmlLayoutSection{
                                 Name = section_name,
                                 Type = HtmlLayoutSectionTypeEnum.Dynamic_Section
                             };

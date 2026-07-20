@@ -152,7 +152,7 @@ namespace SobekCM.Core.MARC
         public override string ToString()
         {
             // Create the StringBuilder
-            StringBuilder returnVal = new StringBuilder(2000);
+            var returnVal = new StringBuilder(2000);
 
             // Add the leader
             returnVal.Append("LDR " + Leader + "\r\n");
@@ -202,7 +202,7 @@ namespace SobekCM.Core.MARC
         public string ToHTML(string Width)
         {
             // Start to build the HTML result
-            StringBuilder results = new StringBuilder();
+            var results = new StringBuilder();
             results.Append("<table style=\"border:none; text-align:left; width:" + Width + ";\">\n");
 
             // Add the LEADER

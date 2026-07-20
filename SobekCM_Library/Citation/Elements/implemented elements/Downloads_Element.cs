@@ -76,8 +76,8 @@ namespace SobekCM.Library.Citation.Elements
             PossibleSelectItems.Add(String.Empty);
 
             // Add the actual downloads from this package
-            List<string> files = new List<string>();
-            List<string> labels = new List<string>();
+            var files = new List<string>();
+            var labels = new List<string>();
             List<abstract_TreeNode> downloadGroups = Bib.Divisions.Download_Tree.Pages_PreOrder;
             foreach (Page_TreeNode thisDownload in downloadGroups)
             {
@@ -136,8 +136,8 @@ namespace SobekCM.Library.Citation.Elements
             // Collect the list of download_files and download_labels from the form
             var getKeys = Context.Request.Form.Keys;
             string filename = String.Empty;
-            List<string> download_files = new List<string>();
-            List<string> download_labels = new List<string>();
+            var download_files = new List<string>();
+            var download_labels = new List<string>();
             foreach (string thisKey in getKeys)
             {
                 if (thisKey.IndexOf(html_element_name.Replace("_", "") + "_select") == 0)
@@ -158,8 +158,8 @@ namespace SobekCM.Library.Citation.Elements
             }
 
             // Collect the list of download files and download labels from the package
-            List<string> existing_files = new List<string>();
-            List<string> existing_labels = new List<string>();
+            var existing_files = new List<string>();
+            var existing_labels = new List<string>();
             List<abstract_TreeNode> downloadGroups = Bib.Divisions.Download_Tree.Pages_PreOrder;
             foreach (Page_TreeNode thisDownload in downloadGroups)
             {
@@ -210,7 +210,7 @@ namespace SobekCM.Library.Citation.Elements
                 Bib.Divisions.Download_Tree.Clear();
 
                 // No nodes exist, so add a MAIN division node
-                Division_TreeNode newDivNode = new Division_TreeNode("Main", String.Empty);
+                var newDivNode = new Division_TreeNode("Main", String.Empty);
                 Bib.Divisions.Download_Tree.Roots.Add(newDivNode);
 
                 // Add a page for each 
@@ -221,7 +221,7 @@ namespace SobekCM.Library.Citation.Elements
                     if (files.Length > 0)
                     {
                         // Add this as a new page on the new division
-                        Page_TreeNode newPage = new Page_TreeNode(download_labels[i]);
+                        var newPage = new Page_TreeNode(download_labels[i]);
                         newDivNode.Add_Child(newPage);
 
                         // Add all the files next

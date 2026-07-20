@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using Microsoft.AspNetCore.Http;
 using SobekCM.Core.MemoryMgmt;
@@ -192,14 +192,14 @@ namespace SobekCM.Library.ResultsViewer
         private string compute_text_redirect_stem()
         {
             // Split the parts
-            List<string> terms = new List<string>();
-            List<string> fields = new List<string>();
+            var terms = new List<string>();
+            var fields = new List<string>();
 
             // Split the terms correctly
             SobekCM_Assistant.Split_Clean_Search_Terms_Fields(RequestSpecificValues.Current_Mode.Search_String, RequestSpecificValues.Current_Mode.Search_Fields, RequestSpecificValues.Current_Mode.Search_Type, terms, fields, UI_ApplicationCache_Gateway.Search_Stop_Words, RequestSpecificValues.Current_Mode.Search_Precision, ',');
 
             // See about a text search string 
-            StringBuilder textSearcher = new StringBuilder();
+            var textSearcher = new StringBuilder();
 
             // Step through each term and field
             bool text_included_in_search = false;
@@ -301,7 +301,7 @@ namespace SobekCM.Library.ResultsViewer
                 ? TitleRow.GroupTitle + " ( " + TitleRow.Item_Count + " " + multi_term + " )"
                 : TitleRow.GroupTitle.Substring(0, 65) + "... ( " + TitleRow.Item_Count + " " + multi_term + " )";
 
-            HtmlTreeNode rootNode = new HtmlTreeNode { Text = rootText };
+            var rootNode = new HtmlTreeNode{ Text = rootText };
 
             // Build the complete item tree eagerly
             if (TitleRow.Item_Tree == null)
@@ -318,10 +318,10 @@ namespace SobekCM.Library.ResultsViewer
                     populate_issue_node_children(rootNode, itemTreeRoot, base_url);
             }
 
-            HtmlTreeView treeView1 = new HtmlTreeView();
+            var treeView1 = new HtmlTreeView();
             treeView1.Nodes.Add(rootNode);
 
-            StringBuilder treeBuilder = new StringBuilder();
+            var treeBuilder = new StringBuilder();
             treeView1.Render(new StringWriter(treeBuilder));
             Output.Write(treeBuilder.ToString());
         }
@@ -331,7 +331,7 @@ namespace SobekCM.Library.ResultsViewer
             foreach (Search_Result_Item_TreeNode childNode in dataNode.ChildNodes)
             {
                 string name = UI_ApplicationCache_Gateway.Translation.Get_Translation(childNode.Name, RequestSpecificValues.Current_Mode.Language);
-                HtmlTreeNode childViewNode = new HtmlTreeNode();
+                var childViewNode = new HtmlTreeNode();
 
                 if (name.Length > 100)
                 {

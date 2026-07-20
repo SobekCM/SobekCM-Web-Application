@@ -68,7 +68,7 @@ namespace SobekCM.Library.Citation.Elements
                 }
             }
 
-            List<string> audiences = new List<string>();
+            var audiences = new List<string>();
             if (Bib.Bib_Info.Target_Audiences_Count > 0)
             {
                 audiences.AddRange(Bib.Bib_Info.Target_Audiences.Select(thisAudience => thisAudience.Audience));

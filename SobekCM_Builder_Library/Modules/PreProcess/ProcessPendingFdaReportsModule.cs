@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using System;
 using System.IO;
@@ -23,7 +23,7 @@ namespace SobekCM.Builder_Library.Modules.PreProcess
             if (( !String.IsNullOrEmpty(Settings.Florida.FDA_Report_DropBox)) && (Directory.Exists(Settings.Florida.FDA_Report_DropBox)))
             {
                 // Create the FDA process
-                FDA_Report_Processor fdaProcessor = new FDA_Report_Processor();
+                var fdaProcessor = new FDA_Report_Processor();
 
                 // Process all pending FDA reports
                 fdaProcessor.Process(Settings.Florida.FDA_Report_DropBox);

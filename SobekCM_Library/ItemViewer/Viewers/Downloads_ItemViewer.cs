@@ -107,7 +107,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 label = thisViewerInfo.Label;
 
             // Add the item menu information
-            Item_MenuItem menuItem = new Item_MenuItem(label, null, null, url, ViewerCode);
+            var menuItem = new Item_MenuItem(label, null, null, url, ViewerCode);
             MenuItems.Add(menuItem);
         }
 
@@ -267,7 +267,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             // If this was an aerial, allow each jpeg2000 page to be downloaded
             if ((BriefItem.Behaviors.Page_File_Extensions_For_Download != null) && (BriefItem.Behaviors.Page_File_Extensions_For_Download.Length > 0) && (BriefItem.Images != null))
             {
-                List<string> pageDownloads = new List<string>();
+                var pageDownloads = new List<string>();
 
                 foreach (BriefItem_FileGrouping pageNode in BriefItem.Images)
                 {

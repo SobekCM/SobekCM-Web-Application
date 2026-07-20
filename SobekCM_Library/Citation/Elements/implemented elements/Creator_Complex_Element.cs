@@ -128,8 +128,8 @@ namespace SobekCM.Library.Citation.Elements
                 }
             }
 
-            List<string> creator = new List<string>();
-            List<string> roles = new List<string>();
+            var creator = new List<string>();
+            var roles = new List<string>();
             bool isContributor = (Title.Equals("Contributor", StringComparison.OrdinalIgnoreCase));
 
             if (!isContributor && Bib.Bib_Info.hasMainEntityName)

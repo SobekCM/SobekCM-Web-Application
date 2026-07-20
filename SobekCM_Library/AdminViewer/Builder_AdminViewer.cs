@@ -368,7 +368,7 @@ namespace SobekCM.Library.AdminViewer
             RequestSpecificValues.Current_Mode.Info_Browse_Mode = currentInfoBrowseMode;
 
             // Determine the URL for the results
-            StringBuilder data_source_url_builder = new StringBuilder(SobekEngineClient.Builder.Get_Builder_Logs_JDataTable_URL);
+            var data_source_url_builder = new StringBuilder(SobekEngineClient.Builder.Get_Builder_Logs_JDataTable_URL);
             bool added_arg = false;
 
             // Get the two dates from the query string and append to the data source URl at the same time

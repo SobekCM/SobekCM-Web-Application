@@ -75,9 +75,9 @@ namespace SobekCM.Library.WebContentViewer.Viewers
 
             if (globalPermissions != null)
             {
-                List<string> hostAdmins = new List<string>();
-                List<string> sysAdmins = new List<string>();
-                List<string> portalAdmins = new List<string>();
+                var hostAdmins = new List<string>();
+                var sysAdmins = new List<string>();
+                var portalAdmins = new List<string>();
 
                 foreach (DataRow thisUser in globalPermissions.Rows)
                 {

@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using Microsoft.AspNetCore.Http;
 using SobekCM.Core.MemoryMgmt;
@@ -444,7 +444,7 @@ namespace SobekCM.Library.MySobekViewer
                         if ((!String.IsNullOrEmpty(UI_ApplicationCache_Gateway.Settings.Email.User_Registration_Email)) || (desire_to_upload))
                         {
                             // Build the information about this registrant
-                            StringBuilder builder = new StringBuilder();
+                            var builder = new StringBuilder();
                             builder.Append("Name: " + user.Full_Name + "<br />");
                             builder.Append("Email: " + user.Email + "<br />");
                             builder.Append("UserName: " + user.UserName + "<br />");

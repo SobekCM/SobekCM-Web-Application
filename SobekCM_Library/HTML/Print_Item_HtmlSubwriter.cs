@@ -306,7 +306,7 @@ namespace SobekCM.Library.HTML
         {
             get
             {
-                List<Tuple<string, string>> returnValue = new List<Tuple<string, string>>();
+                var returnValue = new List<Tuple<string, string>>();
 
                 returnValue.Add(new Tuple<string, string>("onload", "window.print();window.close();"));
 

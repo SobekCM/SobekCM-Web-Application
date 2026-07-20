@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Reflection;
 using SobekCM.Builder_Library.Settings;
@@ -46,7 +46,7 @@ namespace SobekCM.Builder_Library.Modules.Items
                     string kakadu_path = Path.Combine(startupPath, "Kakadu");
 
                     // Create the image process object for creating 
-                    Image_Derivative_Creation_Processor imageProcessor = new Image_Derivative_Creation_Processor(imagemagick_executable, kakadu_path, true, true, Settings.Resources.JPEG_Width, Settings.Resources.JPEG_Height, false, Settings.Resources.Thumbnail_Width, Settings.Resources.Thumbnail_Height, null);
+                    var imageProcessor = new Image_Derivative_Creation_Processor(imagemagick_executable, kakadu_path, true, true, Settings.Resources.JPEG_Width, Settings.Resources.JPEG_Height, false, Settings.Resources.Thumbnail_Width, Settings.Resources.Thumbnail_Height, null);
                     imageProcessor.New_Task_String += imageProcessor_New_Task_String;
                     imageProcessor.Error_Encountered += imageProcessor_Error_Encountered;
 
@@ -56,7 +56,7 @@ namespace SobekCM.Builder_Library.Modules.Items
                     {
                         foreach (string jpegFile in jpeg_files)
                         {
-                            FileInfo jpegFileInfo = new FileInfo(jpegFile);
+                            var jpegFileInfo = new FileInfo(jpegFile);
                             string name = jpegFileInfo.Name.ToUpper();
                             if ((name.IndexOf("THM.JPG") < 0) && (name.IndexOf(".QC.JPG") < 0))
                             {
@@ -81,7 +81,7 @@ namespace SobekCM.Builder_Library.Modules.Items
                         foreach (string thisTiffFile in tiff_files)
                         {
                             // Get the name of the tiff file
-                            FileInfo thisTiffFileInfo = new FileInfo(thisTiffFile);
+                            var thisTiffFileInfo = new FileInfo(thisTiffFile);
                             string tiffFileName = thisTiffFileInfo.Name.Replace(thisTiffFileInfo.Extension, "");
 
                             // Get matching files
@@ -91,7 +91,7 @@ namespace SobekCM.Builder_Library.Modules.Items
                             foreach (string derivativeFile in matching_files)
                             {
                                 // If this is a page image type file, add it
-                                FileInfo derivativeFileInfo = new FileInfo(derivativeFile);
+                                var derivativeFileInfo = new FileInfo(derivativeFile);
                                 if (Settings.System.Page_Image_Extensions.Contains(derivativeFileInfo.Extension.ToUpper().Replace(".", "")))
                                     Resource.NewImageFiles.Add(derivativeFileInfo.Name);
                             }

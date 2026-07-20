@@ -43,7 +43,7 @@ namespace SobekCM.Tools.FDA
             try
             {
                 // Open connection to file
-                StreamWriter writer = new StreamWriter(FileName, false, Encoding.UTF8);
+                var writer = new StreamWriter(FileName, false, Encoding.UTF8);
 
                 // Write the information from the data
                 writer.WriteLine(ReportData.ToString());
@@ -73,7 +73,7 @@ namespace SobekCM.Tools.FDA
                     return true;
 
                 // Open connection to file
-                StreamWriter writer = new StreamWriter(FileName, false, Encoding.UTF8);
+                var writer = new StreamWriter(FileName, false, Encoding.UTF8);
 
                 // Start this XML file
                 writer.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\" ?>");

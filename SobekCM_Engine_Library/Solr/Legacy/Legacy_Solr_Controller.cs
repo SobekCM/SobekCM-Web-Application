@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Solr;
@@ -26,8 +26,8 @@ namespace SobekCM.Engine_Library.Solr.Legacy
             var solrPageWorker = Solr_Operations_Cache<Legacy_SolrPage>.GetSolrOperations(SolrPageUrl);
 
             // Get the list of all items in this collection
-            List<Legacy_SolrDocument> index_files = new List<Legacy_SolrDocument>();
-            List<Legacy_SolrPage> index_pages = new List<Legacy_SolrPage>();
+            var index_files = new List<Legacy_SolrDocument>();
+            var index_pages = new List<Legacy_SolrPage>();
 
             // Add this document to the list of documents to index
             index_files.Add(new Legacy_SolrDocument(Resource, Resource.Source_Directory));

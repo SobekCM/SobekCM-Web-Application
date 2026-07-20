@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using ProtoBuf;
 using SobekCM.Core.Configuration;
@@ -387,7 +387,7 @@ namespace SobekCM.Core.Aggregations
         {
             get
             {
-                SortedList<string, Item_Aggregation_Child_Page> otherInfos = new SortedList<string, Item_Aggregation_Child_Page>();
+                var otherInfos = new SortedList<string, Item_Aggregation_Child_Page>();
                 if (Child_Pages != null)
                 {
                     foreach (Item_Aggregation_Child_Page thisInfo in Child_Pages.Where(ThisInfo => ThisInfo.Browse_Type == Item_Aggregation_Child_Visibility_Enum.None))
@@ -408,7 +408,7 @@ namespace SobekCM.Core.Aggregations
         {
             get
             {
-                List<Search_Type_Enum> returnValue = new List<Search_Type_Enum>();
+                var returnValue = new List<Search_Type_Enum>();
                 if (Views_And_Searches.Contains(Item_Aggregation_Views_Searches_Enum.Basic_Search))
                     returnValue.Add(Search_Type_Enum.Basic);
                 if (Views_And_Searches.Contains(Item_Aggregation_Views_Searches_Enum.Banner_Search))
@@ -501,7 +501,7 @@ namespace SobekCM.Core.Aggregations
                 if (Parents.Count == 1)
                     return Parents[0].Code;
 
-                StringBuilder builder = new StringBuilder();
+                var builder = new StringBuilder();
                 foreach (Item_Aggregation_Related_Aggregations thisParent in Parents)
                 {
                     if (builder.Length == 0)
@@ -561,7 +561,7 @@ namespace SobekCM.Core.Aggregations
         public Item_Aggregation_Child_Page Add_Child_Page(Item_Aggregation_Child_Visibility_Enum Browse_Type, string Browse_Code, string StaticHtmlSource, string Text)
         {
             // Create the new Browse_Info object
-            Item_Aggregation_Child_Page childPage = new Item_Aggregation_Child_Page(Browse_Type, Item_Aggregation_Child_Source_Data_Enum.Database_Table, Browse_Code, StaticHtmlSource, Text);
+            var childPage = new Item_Aggregation_Child_Page(Browse_Type, Item_Aggregation_Child_Source_Data_Enum.Database_Table, Browse_Code, StaticHtmlSource, Text);
 
             Add_Child_Page(childPage);
 
@@ -576,7 +576,7 @@ namespace SobekCM.Core.Aggregations
         {
             get
             {
-                SortedList<string, Item_Aggregation_Child_Page> otherBrowses = new SortedList<string, Item_Aggregation_Child_Page>();
+                var otherBrowses = new SortedList<string, Item_Aggregation_Child_Page>();
                 if (Child_Pages != null)
                 {
                     foreach (Item_Aggregation_Child_Page thisBrowse in Child_Pages.Where(ThisBrowse => ThisBrowse.Browse_Type == Item_Aggregation_Child_Visibility_Enum.Main_Menu))
@@ -596,7 +596,7 @@ namespace SobekCM.Core.Aggregations
         {
             get
             {
-                SortedList<string, Item_Aggregation_Child_Page> otherBrowses = new SortedList<string, Item_Aggregation_Child_Page>();
+                var otherBrowses = new SortedList<string, Item_Aggregation_Child_Page>();
                 if (Child_Pages != null)
                 {
                     foreach (Item_Aggregation_Child_Page thisBrowse in Child_Pages.Where(ThisBrowse => ThisBrowse.Browse_Type == Item_Aggregation_Child_Visibility_Enum.Metadata_Browse_By))
@@ -658,7 +658,7 @@ namespace SobekCM.Core.Aggregations
                 settingLookupDictionary[Key].Value = Value;
             else
             {
-                StringKeyValuePair newValue = new StringKeyValuePair(Key, Value);
+                var newValue = new StringKeyValuePair(Key, Value);
                 Settings.Add(newValue);
                 settingLookupDictionary[Key] = newValue;
             }

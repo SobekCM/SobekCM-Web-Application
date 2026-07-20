@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using SobekCM.Core.Navigation;
 using SobekCM.Engine_Library.Configuration;
@@ -72,7 +72,7 @@ namespace SobekCM.Library.HTML
         {
             get
             {
-                List<HtmlSubwriter_Behaviors_Enum> returnVal = new List<HtmlSubwriter_Behaviors_Enum>();
+                var returnVal = new List<HtmlSubwriter_Behaviors_Enum>();
 
                 returnVal.AddRange(adminViewer.Viewer_Behaviors);
 
@@ -274,10 +274,10 @@ namespace SobekCM.Library.HTML
         public override void Write_Within_HTML_Head(TextWriter Output, Custom_Tracer Tracer)
         {
             // Admin viewers can override all of this
-            StringBuilder builder = new StringBuilder();
+            var builder = new StringBuilder();
             if (adminViewer != null)
             {
-                using (StringWriter writer = new StringWriter(builder))
+                using (var writer = new StringWriter(builder))
                 {
                     bool overrideHead = adminViewer.Write_Within_HTML_Head(writer, Tracer);
                     if (overrideHead)

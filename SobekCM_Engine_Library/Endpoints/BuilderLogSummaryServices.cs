@@ -1,4 +1,4 @@
-﻿using SobekCM.Core.MicroservicesClient;
+using SobekCM.Core.MicroservicesClient;
 using SobekCM.Tools;
 using System;
 using System.Collections.Generic;
@@ -11,7 +11,7 @@ namespace SobekCM.Engine_Library.Endpoints
     {
         public void BLSS_Results_XML(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
         {
-            Custom_Tracer tracer = new Custom_Tracer();
+            var tracer = new Custom_Tracer();
 
             tracer.Add_Trace("BuilderLogSummaryServices.BLSS_Results_XML");
 

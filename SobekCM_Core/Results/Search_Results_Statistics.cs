@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using ProtoBuf;
 using System;
@@ -242,7 +242,7 @@ namespace SobekCM.Core.Results
                 if ((Reader.FieldCount == 2) && (Facet_Types.Count > current_facet_index))
                 {
                     // Create the collection and and assifn the metadata type id
-                    Search_Facet_Collection thisCollection = new Search_Facet_Collection(Facet_Types[current_facet_index]);
+                    var thisCollection = new Search_Facet_Collection(Facet_Types[current_facet_index]);
 
                     // Read all the individual facet values
                     while (Reader.Read())
@@ -282,7 +282,7 @@ namespace SobekCM.Core.Results
                 if ((Facet_Data.Tables[table_counter].Columns.Count == 2) && (Facet_Types.Count > facet_index))
                 {
                     // Create the collection and and assifn the metadata type id
-                    Search_Facet_Collection thisCollection = new Search_Facet_Collection(Facet_Types[facet_index]);
+                    var thisCollection = new Search_Facet_Collection(Facet_Types[facet_index]);
 
                     // Read all the individual facet values
                     foreach (DataRow thisRow in Facet_Data.Tables[table_counter].Rows)

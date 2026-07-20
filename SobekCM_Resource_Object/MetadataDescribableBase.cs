@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using SobekCM.Resource_Object.Bib_Info;
 using SobekCM.Resource_Object.Metadata_Modules;
@@ -48,7 +48,7 @@ namespace SobekCM.Resource_Object
                 if ((MetadataModules == null) || (MetadataModules.Count == 0))
                     return null;
 
-                List<iMetadata_Module> returnList = new List<iMetadata_Module>();
+                var returnList = new List<iMetadata_Module>();
                 returnList.AddRange(MetadataModules.Values);
                 return new ReadOnlyCollection<iMetadata_Module>(returnList);
             }

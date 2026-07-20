@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using SobekCM.Resource_Object.MARC;
 using System;
@@ -354,8 +354,7 @@ namespace SobekCM.Resource_Object.Bib_Info
 
         internal MARC_Field to_MARC_HTML()
         {
-            MARC_Field related_item_tag = new MARC_Field
-            {
+            var related_item_tag = new MARC_Field{
                 Indicators = "00",
                 Tag = 787
             };
@@ -385,7 +384,7 @@ namespace SobekCM.Resource_Object.Bib_Info
                     break;
             }
 
-            StringBuilder relatedBuilder = new StringBuilder();
+            var relatedBuilder = new StringBuilder();
             string issn = String.Empty;
             string isbn = String.Empty;
             if (!String.IsNullOrEmpty(sobekcm_id))

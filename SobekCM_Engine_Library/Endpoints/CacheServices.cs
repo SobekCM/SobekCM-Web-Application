@@ -1,4 +1,4 @@
-﻿using SobekCM.Core.Configuration.Engine;
+using SobekCM.Core.Configuration.Engine;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Tools;
 using System;
@@ -17,7 +17,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="IsDebug"></param>
         public void ClearCachedItem(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
         {
-            Custom_Tracer tracer = new Custom_Tracer();
+            var tracer = new Custom_Tracer();
             string returnMessage = "Unknown error encountered";
 
             try

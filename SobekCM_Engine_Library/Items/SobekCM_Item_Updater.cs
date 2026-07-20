@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Users;
@@ -79,7 +79,7 @@ namespace SobekCM.Engine_Library.Items
             Item.METS_Header.RecordStatus_Enum = METS_Record_Status.METADATA_UPDATE;
 
             // Create the options dictionary used when saving information to the database, or writing MarcXML
-            Dictionary<string, object> options = new Dictionary<string, object>();
+            var options = new Dictionary<string, object>();
             if (Engine_ApplicationCache_Gateway.Settings.MarcGeneration != null)
             {
                 options["MarcXML_File_ReaderWriter:MARC Cataloging Source Code"] = Engine_ApplicationCache_Gateway.Settings.MarcGeneration.Cataloging_Source_Code;
@@ -184,7 +184,7 @@ namespace SobekCM.Engine_Library.Items
             }
 
             // Save the MARC file
-            MarcXML_File_ReaderWriter marcWriter = new MarcXML_File_ReaderWriter();
+            var marcWriter = new MarcXML_File_ReaderWriter();
             string errorMessage;
             marcWriter.Write_Metadata(Item.Source_Directory + "\\marc.xml", Item, options, out errorMessage);
 
@@ -206,7 +206,7 @@ namespace SobekCM.Engine_Library.Items
                 // Rename any existing standard mets to keep a backup
                 if (File.Exists(serverNetworkFolder + "\\" + Item.BibID + "_" + Item.VID + ".mets.xml"))
                 {
-                    FileInfo currentMetsFileInfo = new FileInfo(serverNetworkFolder + "\\" + Item.BibID + "_" + Item.VID + ".mets.xml");
+                    var currentMetsFileInfo = new FileInfo(serverNetworkFolder + "\\" + Item.BibID + "_" + Item.VID + ".mets.xml");
                     DateTime lastModDate = currentMetsFileInfo.LastWriteTime;
                     File.Copy(serverNetworkFolder + "\\" + Item.BibID + "_" + Item.VID + ".mets.xml", serverNetworkFolder + "\\" + Engine_ApplicationCache_Gateway.Settings.Resources.Backup_Files_Folder_Name + "\\" + Item.BibID + "_" + Item.VID + "_" + lastModDate.Year + "_" + lastModDate.Month + "_" + lastModDate.Day + ".mets.bak", true);
                 }

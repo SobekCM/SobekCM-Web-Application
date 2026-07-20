@@ -18,11 +18,11 @@ namespace SobekCM.Library.Citation.Template
         public void Read_XML(string XML_File, CompleteTemplate ThisCompleteTemplate, bool exclude_divisions)
         {
             // Load this MXF File
-            XmlDocument templateXml = new XmlDocument();
+            var templateXml = new XmlDocument();
             templateXml.Load(XML_File);
 
             // create the node reader
-            XmlNodeReader nodeReader = new XmlNodeReader(templateXml);
+            var nodeReader = new XmlNodeReader(templateXml);
 
             // Read through all main input CompleteTemplate tag is found
             move_to_node(nodeReader, "input_template");

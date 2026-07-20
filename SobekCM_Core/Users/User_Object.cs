@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using ProtoBuf;
 using System;
@@ -702,7 +702,7 @@ namespace SobekCM.Core.Users
         {
             get
             {
-                SortedList<string, User_Folder> folder_builder = new SortedList<string, User_Folder>();
+                var folder_builder = new SortedList<string, User_Folder>();
                 foreach (User_Folder thisFolder in folders.Values)
                 {
                     folder_builder.Add(thisFolder.Folder_Name, thisFolder);
@@ -1192,7 +1192,7 @@ namespace SobekCM.Core.Users
         {
             byte[] bytIn = Encoding.ASCII.GetBytes(Source);
             // create a MemoryStream so that the process can be done without I/O files
-            MemoryStream ms = new MemoryStream();
+            var ms = new MemoryStream();
 
             // set the private key
             DES desProvider = DES.Create();
@@ -1203,7 +1203,7 @@ namespace SobekCM.Core.Users
             ICryptoTransform encrypto = desProvider.CreateEncryptor();
 
             // create Crypto Stream that transforms a stream using the encryption
-            CryptoStream cs = new CryptoStream(ms, encrypto, CryptoStreamMode.Write);
+            var cs = new CryptoStream(ms, encrypto, CryptoStreamMode.Write);
 
             // write out encrypted content into MemoryStream
             cs.Write(bytIn, 0, bytIn.Length);

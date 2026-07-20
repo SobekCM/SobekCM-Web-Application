@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using System;
 using System.Collections.Generic;
@@ -104,7 +104,7 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// <returns> This publisher expressed as a string</returns>
         public override string ToString()
         {
-            StringBuilder builder = new StringBuilder();
+            var builder = new StringBuilder();
             if (!String.IsNullOrEmpty(name))
             {
                 builder.Append(Convert_String_To_XML_Safe(name));

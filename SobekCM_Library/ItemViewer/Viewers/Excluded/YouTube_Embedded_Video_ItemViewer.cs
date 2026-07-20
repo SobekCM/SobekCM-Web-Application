@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using System.IO;
 using System.Text;
@@ -78,7 +78,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             const int height = 480;
 
             // Add the HTML for the image
-            StringBuilder result = new StringBuilder(500);
+            var result = new StringBuilder(500);
             Output.WriteLine("          <td><div id=\"sbkEmv_ViewerTitle\">Streaming Video</div></td>");
             Output.WriteLine("        </tr>");
             Output.WriteLine("        <tr>");

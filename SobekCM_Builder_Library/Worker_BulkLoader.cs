@@ -157,25 +157,25 @@ namespace SobekCM.Builder_Library
             if (firstrun)
             {
                 // Run the usage stats
-                CalculateUsageStatisticsModule statsModule = new CalculateUsageStatisticsModule();
+                var statsModule = new CalculateUsageStatisticsModule();
                 statsModule.Process += module_Process;
                 statsModule.Error += module_Error;
                 statsModule.DoWork(settings);
 
                 // Look for any aggregation tiles and cache the metadat for them
-                CacheAggregationTileMetadataModule tileModule = new CacheAggregationTileMetadataModule();
+                var tileModule = new CacheAggregationTileMetadataModule();
                 tileModule.Process += module_Process;
                 tileModule.Error += module_Error;
                 tileModule.DoWork(settings);
 
                 // Clear the old logs files
-                ExpireOldLogEntriesModule logsModule = new ExpireOldLogEntriesModule();
+                var logsModule = new ExpireOldLogEntriesModule();
                 logsModule.Process += module_Process;
                 logsModule.Error += module_Error;
                 logsModule.DoWork(settings);
 
                 // Rebuild all the static pages
-                RebuildAllAggregationBrowsesModule rebuildModule = new RebuildAllAggregationBrowsesModule();
+                var rebuildModule = new RebuildAllAggregationBrowsesModule();
                 rebuildModule.Process += module_Process;
                 rebuildModule.Error += module_Error;
                 rebuildModule.DoWork(settings);
@@ -227,8 +227,8 @@ namespace SobekCM.Builder_Library
             }
 
             // Create the seperate queues for each type of incoming digital resource files
-            List<Incoming_Digital_Resource> incoming_packages = new List<Incoming_Digital_Resource>();
-            List<Incoming_Digital_Resource> deletes = new List<Incoming_Digital_Resource>();
+            var incoming_packages = new List<Incoming_Digital_Resource>();
+            var deletes = new List<Incoming_Digital_Resource>();
 
             // Step through all the incoming folders, and run the folder modules
             if (builderSettings.IncomingFolders.Count == 0)
@@ -245,7 +245,7 @@ namespace SobekCM.Builder_Library
 
                 foreach (Builder_Source_Folder folder in builderSettings.IncomingFolders)
                 {
-                    Actionable_Builder_Source_Folder actionFolder = new Actionable_Builder_Source_Folder(folder, builderModules.AssemblyClassToModule);
+                    var actionFolder = new Actionable_Builder_Source_Folder(folder, builderModules.AssemblyClassToModule);
 
                     foreach (iFolderModule thisModule in actionFolder.BuilderModules)
                     {
@@ -396,7 +396,7 @@ namespace SobekCM.Builder_Library
         public bool Refresh_Settings_And_Item_List()
         {
             // Create the tracer for this
-		    Custom_Tracer tracer = new Custom_Tracer();
+		    var tracer = new Custom_Tracer();
 
             // Disable the cache
             CachedDataManager.Settings.Disabled = true;
@@ -634,7 +634,7 @@ namespace SobekCM.Builder_Library
 	            Add_NonError_To_Log("Processing recently loaded items needing additional work", "Standard", String.Empty, String.Empty, -1);
 
                 // Create the incoming digital folder object which will be used for all these
-                Actionable_Builder_Source_Folder sourceFolder = new Actionable_Builder_Source_Folder();
+                var sourceFolder = new Actionable_Builder_Source_Folder();
 
                 // Step through each one
                 foreach (DataRow thisRow in additionalWorkRequired.Rows)
@@ -656,7 +656,7 @@ namespace SobekCM.Builder_Library
                     if ((Directory.Exists(resource_folder)) && (File.Exists(mets_file)))
                     {
                         // Create the incoming digital resource object
-                        Incoming_Digital_Resource additionalWorkResource = new Incoming_Digital_Resource(resource_folder, sourceFolder)
+                        var additionalWorkResource = new Incoming_Digital_Resource(resource_folder, sourceFolder)
                         {
                             BibID = bibID,
                             VID = vid,
@@ -771,7 +771,7 @@ namespace SobekCM.Builder_Library
             }
             catch (Exception ee)
             {
-                StreamWriter errorWriter = new StreamWriter(logFileDirectory + "\\error.log", true);
+                var errorWriter = new StreamWriter(logFileDirectory + "\\error.log", true);
                 errorWriter.WriteLine("Message: " + ee.Message);
                 errorWriter.WriteLine("Stack Trace: " + ee.StackTrace);
                 errorWriter.Flush();
@@ -833,7 +833,7 @@ namespace SobekCM.Builder_Library
             }
             catch (Exception ee)
             {
-                StreamWriter errorWriter = new StreamWriter(logFileDirectory + "\\error.log", true);
+                var errorWriter = new StreamWriter(logFileDirectory + "\\error.log", true);
                 errorWriter.WriteLine("Message: " + ee.Message);
                 errorWriter.WriteLine("Stack Trace: " + ee.StackTrace);
                 errorWriter.Flush();
@@ -1006,7 +1006,7 @@ namespace SobekCM.Builder_Library
 
 
             // Save the exception to an exception file
-            StreamWriter exception_writer = new StreamWriter(Path.Combine(localLogArea, "exceptions_log.txt"), true);
+            var exception_writer = new StreamWriter(Path.Combine(localLogArea, "exceptions_log.txt"), true);
             exception_writer.WriteLine(String.Empty);
             exception_writer.WriteLine(String.Empty);
             exception_writer.WriteLine("----------------------------------------------------------");

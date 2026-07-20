@@ -108,7 +108,7 @@ namespace SobekCM.Resource_Object.Divisions
         {
             get
             {
-                List<KeyValuePair<string, string>> metadataTerms = new List<KeyValuePair<string, string>>();
+                var metadataTerms = new List<KeyValuePair<string, string>>();
 
                 // Add any other division or page names 
                 foreach (abstract_TreeNode thisNode in downloadDivisionTree.Divisions_PreOrder)
@@ -135,7 +135,7 @@ namespace SobekCM.Resource_Object.Divisions
                 // Add all the MIME types
                 if ((downloadDivisionTree.Has_Files) || (physicalDivisionTree.Has_Files))
                 {
-                    List<string> mimeTypes = new List<string>();
+                    var mimeTypes = new List<string>();
                     List<SobekCM_File_Info> allDownloads = downloadDivisionTree.All_Files;
                     foreach (SobekCM_File_Info thisDownload in allDownloads)
                     {
@@ -372,7 +372,7 @@ namespace SobekCM.Resource_Object.Divisions
         {
             get
             {
-                StringBuilder tocBuilder = new StringBuilder();
+                var tocBuilder = new StringBuilder();
                 List<abstract_TreeNode> divisions = physicalDivisionTree.Divisions_PreOrder;
                 foreach (abstract_TreeNode node in divisions)
                 {
@@ -542,7 +542,7 @@ namespace SobekCM.Resource_Object.Divisions
 
             // Now caulcate
             int file_count = 0;
-            FileMD5 checksummer = new FileMD5();
+            var checksummer = new FileMD5();
             foreach (Page_TreeNode pageNode in pageNodes)
             {
                 // Step through each file
@@ -555,7 +555,7 @@ namespace SobekCM.Resource_Object.Divisions
                         try
                         {
                             // Get the size first
-                            FileInfo thisFileInfo = new FileInfo(source_directory + "/" + thisFile.System_Name);
+                            var thisFileInfo = new FileInfo(source_directory + "/" + thisFile.System_Name);
                             thisFile.Size = thisFileInfo.Length;
 
                             // Get the checksum, if it doesn't exist
@@ -589,7 +589,7 @@ namespace SobekCM.Resource_Object.Divisions
                         try
                         {
                             // Get the size first
-                            FileInfo thisFileInfo = new FileInfo(source_directory + "/" + thisFile.System_Name);
+                            var thisFileInfo = new FileInfo(source_directory + "/" + thisFile.System_Name);
                             thisFile.Size = thisFileInfo.Length;
 
                             // Get the checksum, if it doesn't exist

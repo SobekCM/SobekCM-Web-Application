@@ -72,8 +72,8 @@ namespace SobekCM.Library.Citation.Elements
                 }
             }
 
-            List<string> titles = new List<string>();
-            List<string> types = new List<string>();
+            var titles = new List<string>();
+            var types = new List<string>();
 
             if (Bib.Bib_Info.Main_Title.Subtitle.Length > 0)
             {

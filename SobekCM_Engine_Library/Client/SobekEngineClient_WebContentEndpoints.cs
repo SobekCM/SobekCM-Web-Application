@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using Jil;
 using ProtoBuf;
@@ -116,8 +116,7 @@ namespace SobekCM.Core.Client
             string url = String.Format(endpoint.URL, WebContentID);
 
             // Create the post data
-            List<KeyValuePair<string, string>> postData = new List<KeyValuePair<string, string>>
-            {
+            var postData = new List<KeyValuePair<string, string>>{
                 new KeyValuePair<string, string>("User", User),
                 new KeyValuePair<string, string>("Reason", Reason)
             };
@@ -150,7 +149,7 @@ namespace SobekCM.Core.Client
                     break;
 
                 case Microservice_Endpoint_Protocol_Enum.PROTOBUF:
-                    using (MemoryStream memStream = new MemoryStream())
+                    using (var memStream = new MemoryStream())
                     {
                         Serializer.Serialize(memStream, Content);
                         contentString = Encoding.ASCII.GetString(memStream.ToArray());
@@ -158,9 +157,9 @@ namespace SobekCM.Core.Client
                     break;
 
                 case Microservice_Endpoint_Protocol_Enum.XML:
-                    XmlSerializer x = new XmlSerializer(Content.GetType());
-                    StringBuilder bldr = new StringBuilder();
-                    using (StringWriter stringWriter = new StringWriter(bldr))
+                    var x = new XmlSerializer(Content.GetType());
+                    var bldr = new StringBuilder();
+                    using (var stringWriter = new StringWriter(bldr))
                     {
                         x.Serialize(stringWriter, Content);
                         contentString = bldr.ToString();
@@ -169,15 +168,14 @@ namespace SobekCM.Core.Client
             }
 
             // Create the post data
-            List<KeyValuePair<string, string>> postData = new List<KeyValuePair<string, string>>
-            {
+            var postData = new List<KeyValuePair<string, string>>{
                 new KeyValuePair<string, string>("User", User),
                 new KeyValuePair<string, string>("Inherit", InheritFromAnyParent.ToString()),
                 new KeyValuePair<string, string>("Content", contentString)
             };
 
             // Format the URL
-            StringBuilder urlBuilder = new StringBuilder(Content.Level1);
+            var urlBuilder = new StringBuilder(Content.Level1);
             if (!String.IsNullOrEmpty(Content.Level2))
             {
                 urlBuilder.Append("/" + Content.Level2);
@@ -235,7 +233,7 @@ namespace SobekCM.Core.Client
                     break;
 
                 case Microservice_Endpoint_Protocol_Enum.PROTOBUF:
-                    using (MemoryStream memStream = new MemoryStream())
+                    using (var memStream = new MemoryStream())
                     {
                         Serializer.Serialize(memStream, Content);
                         contentString = Encoding.ASCII.GetString(memStream.ToArray());
@@ -243,9 +241,9 @@ namespace SobekCM.Core.Client
                     break;
 
                 case Microservice_Endpoint_Protocol_Enum.XML:
-                    XmlSerializer x = new XmlSerializer(Content.GetType());
-                    StringBuilder bldr = new StringBuilder();
-                    using (StringWriter stringWriter = new StringWriter(bldr))
+                    var x = new XmlSerializer(Content.GetType());
+                    var bldr = new StringBuilder();
+                    using (var stringWriter = new StringWriter(bldr))
                     {
                         x.Serialize(stringWriter, Content);
                         contentString = bldr.ToString();
@@ -254,8 +252,7 @@ namespace SobekCM.Core.Client
             }
 
             // Create the post data
-            List<KeyValuePair<string, string>> postData = new List<KeyValuePair<string, string>>
-            {
+            var postData = new List<KeyValuePair<string, string>>{
                 new KeyValuePair<string, string>("User", User),
                 new KeyValuePair<string, string>("Content", contentString)
             };
@@ -282,8 +279,7 @@ namespace SobekCM.Core.Client
             MicroservicesClient_Endpoint endpoint = GetEndpointConfig("WebContent.Add_Milestone", Tracer);
 
             // Create the post data
-            List<KeyValuePair<string, string>> postData = new List<KeyValuePair<string, string>>
-            {
+            var postData = new List<KeyValuePair<string, string>>{
                 new KeyValuePair<string, string>("User", User),
                 new KeyValuePair<string, string>("Milestone", Milestone)
             };
@@ -540,7 +536,7 @@ namespace SobekCM.Core.Client
                     url = endpoint.URL + "/" + Level1 + "/" + Level2;
                 else
                 {
-                    StringBuilder urlBuilder = new StringBuilder(endpoint.URL + "/" + Level1 + "/" + Level2 + "/" + Level3);
+                    var urlBuilder = new StringBuilder(endpoint.URL + "/" + Level1 + "/" + Level2 + "/" + Level3);
                     if (!String.IsNullOrEmpty(Level4))
                     {
                         urlBuilder.Append("/" + Level4);
@@ -726,7 +722,7 @@ namespace SobekCM.Core.Client
                     url = endpoint.URL + "/" + Level1 + "/" + Level2;
                 else
                 {
-                    StringBuilder urlBuilder = new StringBuilder(endpoint.URL + "/" + Level1 + "/" + Level2 + "/" + Level3);
+                    var urlBuilder = new StringBuilder(endpoint.URL + "/" + Level1 + "/" + Level2 + "/" + Level3);
                     if (!String.IsNullOrEmpty(Level4))
                     {
                         urlBuilder.Append("/" + Level4);
@@ -870,7 +866,7 @@ namespace SobekCM.Core.Client
                     url = endpoint.URL + "/" + Level1 + "/" + Level2;
                 else
                 {
-                    StringBuilder urlBuilder = new StringBuilder(endpoint.URL + "/" + Level1 + "/" + Level2 + "/" + Level3);
+                    var urlBuilder = new StringBuilder(endpoint.URL + "/" + Level1 + "/" + Level2 + "/" + Level3);
                     if (!String.IsNullOrEmpty(Level4))
                     {
                         urlBuilder.Append("/" + Level4);
@@ -1015,7 +1011,7 @@ namespace SobekCM.Core.Client
                     url = endpoint.URL + "/" + Level1 + "/" + Level2;
                 else
                 {
-                    StringBuilder urlBuilder = new StringBuilder(endpoint.URL + "/" + Level1 + "/" + Level2 + "/" + Level3);
+                    var urlBuilder = new StringBuilder(endpoint.URL + "/" + Level1 + "/" + Level2 + "/" + Level3);
                     if (!String.IsNullOrEmpty(Level4))
                     {
                         urlBuilder.Append("/" + Level4);
@@ -1161,7 +1157,7 @@ namespace SobekCM.Core.Client
                     url = endpoint.URL + "/" + Level1 + "/" + Level2;
                 else
                 {
-                    StringBuilder urlBuilder = new StringBuilder(endpoint.URL + "/" + Level1 + "/" + Level2 + "/" + Level3);
+                    var urlBuilder = new StringBuilder(endpoint.URL + "/" + Level1 + "/" + Level2 + "/" + Level3);
                     if (!String.IsNullOrEmpty(Level4))
                     {
                         urlBuilder.Append("/" + Level4);

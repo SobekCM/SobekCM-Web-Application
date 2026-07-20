@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using SobekCM.Core.BriefItem;
 using SobekCM.Resource_Object;
@@ -35,7 +35,7 @@ namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
                 {
                     // Build the full name and info
                     Name_Info thisName = Original.Bib_Info.Main_Entity_Name;
-                    StringBuilder nameBuilder = new StringBuilder();
+                    var nameBuilder = new StringBuilder();
                     if (!String.IsNullOrWhiteSpace(thisName.Full_Name))
                     {
                         nameBuilder.Append(thisName.Full_Name.Replace("|", " -- "));
@@ -102,7 +102,7 @@ namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
                     else
                     {
                         // Build the full name and info
-                        StringBuilder nameBuilder = new StringBuilder();
+                        var nameBuilder = new StringBuilder();
                         if (!String.IsNullOrWhiteSpace(thisName.Full_Name))
                         {
                             nameBuilder.Append(thisName.Full_Name.Replace("|", " -- "));

@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using SobekCM.Resource_Object.METS_Sec_ReaderWriters;
 using System;
@@ -106,7 +106,7 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
         {
             try
             {
-                StreamWriter results = new StreamWriter(MetadataFilePathName, false, Encoding.UTF8);
+                var results = new StreamWriter(MetadataFilePathName, false, Encoding.UTF8);
                 bool returnValue = Write_Metadata(results, Item_To_Save, Options, out Error_Message);
                 results.Flush();
                 results.Close();
@@ -172,7 +172,7 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
                 try
                 {
                     // Start to build the XML result
-                    StringBuilder results = new StringBuilder();
+                    var results = new StringBuilder();
                     Output_Stream.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\r\n");
                     Output_Stream.WriteLine("<records>\r\n");
                     Output_Stream.WriteLine("<record xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:dcterms=\"http://purl.org/dc/terms/\">\r\n");

@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using SobekCM.Core.BriefItem;
 using SobekCM.Resource_Object;
@@ -25,12 +25,12 @@ namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
             if (Original.Behaviors.Dark_Flag) return true;
 
             // Step through each of the nodes within the images first
-            List<BriefItem_FileGrouping> images = new List<BriefItem_FileGrouping>();
-            List<BriefItem_FileGrouping> downloads = new List<BriefItem_FileGrouping>();
-            List<BriefItem_FileGrouping> oer = new List<BriefItem_FileGrouping>();
-            List<BriefItem_TocElement> images_toc = new List<BriefItem_TocElement>();
-            List<BriefItem_TocElement> downloads_toc = new List<BriefItem_TocElement>();
-            List<BriefItem_TocElement> oer_toc = new List<BriefItem_TocElement>();
+            var images = new List<BriefItem_FileGrouping>();
+            var downloads = new List<BriefItem_FileGrouping>();
+            var oer = new List<BriefItem_FileGrouping>();
+            var images_toc = new List<BriefItem_TocElement>();
+            var downloads_toc = new List<BriefItem_TocElement>();
+            var oer_toc = new List<BriefItem_TocElement>();
 
             // Do the images (i.e., physical tree) first
             collect_nodes(Original.Divisions.Physical_Tree, images, images_toc, false);
@@ -71,7 +71,7 @@ namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
                 return;
 
             // Create the stack used for determining the TOC
-            Stack<BriefItem_TocElement> currDivStack = new Stack<BriefItem_TocElement>();
+            var currDivStack = new Stack<BriefItem_TocElement>();
 
             // Start at the very top?
             List<abstract_TreeNode> rootNodes = Tree.Roots;
@@ -106,12 +106,12 @@ namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
                     return false;
 
                 // Create the file grouping object for this
-                BriefItem_FileGrouping newNode = new BriefItem_FileGrouping(pageNode.Label);
+                var newNode = new BriefItem_FileGrouping(pageNode.Label);
 
                 // Add a filenode for each file
                 foreach (SobekCM_File_Info thisFile in pageNode.Files)
                 {
-                    BriefItem_File newFile = new BriefItem_File(thisFile.System_Name);
+                    var newFile = new BriefItem_File(thisFile.System_Name);
                     if (thisFile.Width > 0)
                         newFile.Width = thisFile.Width;
                     if (thisFile.Height > 0)
@@ -134,8 +134,7 @@ namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
                 Division_TreeNode divNode = (Division_TreeNode)Node;
 
                 // Create the brief item TOC element
-                BriefItem_TocElement divToc = new BriefItem_TocElement
-                {
+                var divToc = new BriefItem_TocElement{
                     Level = Level,
                     Name = divNode.Label
                 };

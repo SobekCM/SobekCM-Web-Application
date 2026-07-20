@@ -85,7 +85,7 @@ namespace SobekCM.Library.Citation.Elements
         public override void Prepare_For_Save(SobekCM_Item Bib, User_Object Current_User)
         {
             // Clear any course titles
-            List<Title_Info> courseTitles = new List<Title_Info>();
+            var courseTitles = new List<Title_Info>();
             foreach (Title_Info titleInfo in Bib.Bib_Info.Other_Titles)
             {
                 if (titleInfo.Title_Type == Title_Type_Enum.Course)

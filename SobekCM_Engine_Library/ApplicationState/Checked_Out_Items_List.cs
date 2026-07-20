@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using System;
 using System.Collections.Generic;
@@ -114,7 +114,7 @@ namespace SobekCM.Engine_Library.ApplicationState
         {
             lock (thisLock)
             {
-                Checked_Out_Item newItem = new Checked_Out_Item(ItemID, IP_Address);
+                var newItem = new Checked_Out_Item(ItemID, IP_Address);
                 bool reserved = false;
                 while (!reserved)
                 {

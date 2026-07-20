@@ -45,8 +45,8 @@ namespace SobekCM.Library.Citation.Elements
                 Acronym = "Materials out of which this resource, or a portion of this resource, was created.";
             }
 
-            List<string> terms = new List<string>();
-            List<string> schemes = new List<string>();
+            var terms = new List<string>();
+            var schemes = new List<string>();
 
             // Try to get any existing learning object metadata module
             VRACore_Info vraInfo = Bib.Get_Metadata_Module(GlobalVar.VRACORE_METADATA_MODULE_KEY) as VRACore_Info;
@@ -81,8 +81,8 @@ namespace SobekCM.Library.Citation.Elements
             // Try to get any existing VRAcore metadata module
             VRACore_Info vraInfo = Bib.Get_Metadata_Module(GlobalVar.VRACORE_METADATA_MODULE_KEY) as VRACore_Info;
 
-            Dictionary<string, string> terms = new Dictionary<string, string>();
-            Dictionary<string, string> schemes = new Dictionary<string, string>();
+            var terms = new Dictionary<string, string>();
+            var schemes = new Dictionary<string, string>();
 
             var getKeys = Context.Request.Form.Keys;
             foreach (string thisKey in getKeys)

@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using System;
 using System.Collections.Generic;
@@ -72,7 +72,7 @@ namespace SobekCM.Core.ApplicationState
         {
             lock (thisLock)
             {
-                IP_Restriction_Address thisAddress = new IP_Restriction_Address(StartIP, EndIP);
+                var thisAddress = new IP_Restriction_Address(StartIP, EndIP);
                 byte start = thisAddress.Start_Byte;
                 byte end = thisAddress.End_Byte;
                 for (byte x = start; x <= end; x++)
@@ -81,7 +81,7 @@ namespace SobekCM.Core.ApplicationState
                         ipAddresses[x].Add(thisAddress);
                     else
                     {
-                        List<IP_Restriction_Address> newList = new List<IP_Restriction_Address> { thisAddress };
+                        var newList = new List<IP_Restriction_Address>{ thisAddress };
                         ipAddresses.Add(x, newList);
                     }
                 }

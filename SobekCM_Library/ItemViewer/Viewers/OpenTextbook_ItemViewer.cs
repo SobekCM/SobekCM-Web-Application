@@ -81,7 +81,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             CurrentRequest.ViewerCode = previous_code;
 
             // Add the item menu information
-            Item_MenuItem menuItem = new Item_MenuItem("Open Textbook", null, null, url, ViewerCode);
+            var menuItem = new Item_MenuItem("Open Textbook", null, null, url, ViewerCode);
             MenuItems.Add(menuItem);
         }
 
@@ -182,7 +182,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                         Directory.CreateDirectory(folder);
 
                     // Set the source to the new source
-                    StreamWriter writer = new StreamWriter(file);
+                    var writer = new StreamWriter(file);
                     writer.Write(newSource);
                     writer.Flush();
                     writer.Close();
@@ -312,8 +312,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
 
             // Create the CKEditor object
-            CKEditor editor = new CKEditor
-            {
+            var editor = new CKEditor{
                 Context = Context,
                 BaseUrl = CurrentRequest.Base_URL,
                 Language = CurrentRequest.Language,
@@ -422,7 +421,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
             catch
             {
-                StringBuilder builder = new StringBuilder();
+                var builder = new StringBuilder();
 
                 if (page == 1)
                 {

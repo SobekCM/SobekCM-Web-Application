@@ -132,7 +132,7 @@ namespace SobekCM.Library.MySobekViewer
                         user_template = UI_ApplicationCache_Gateway.Settings.Servers.Base_MySobek_Directory + "templates\\default\\standard\\project.xml";
 
                     // Read this CompleteTemplate
-                    Template_XML_Reader reader = new Template_XML_Reader();
+                    var reader = new Template_XML_Reader();
                     completeTemplate = new CompleteTemplate();
                     reader.Read_XML(user_template, completeTemplate, true);
 
@@ -157,7 +157,7 @@ namespace SobekCM.Library.MySobekViewer
                         user_template = UI_ApplicationCache_Gateway.Settings.Servers.Base_MySobek_Directory + "templates\\default\\edit\\" + template_code + ".xml";
 
                     // Read this CompleteTemplate
-                    Template_XML_Reader reader = new Template_XML_Reader();
+                    var reader = new Template_XML_Reader();
                     completeTemplate = new CompleteTemplate();
                     reader.Read_XML(user_template, completeTemplate, true);
                     if (completeTemplate != null) completeTemplate.Build_Final_Adjustment_And_Checks();
@@ -679,10 +679,10 @@ namespace SobekCM.Library.MySobekViewer
                 case "mets":
                     Output.WriteLine("<div class=\"sbkEimv_Citation\" >");
                     //  Output.WriteLine("<table width=\"950px\"><tr><td width=\"950px\">");
-                    StringBuilder mets_builder = new StringBuilder(2000);
-                    StringWriter mets_output = new StringWriter(mets_builder);
+                    var mets_builder = new StringBuilder(2000);
+                    var mets_output = new StringWriter(mets_builder);
 
-                    METS_File_ReaderWriter metsWriter = new METS_File_ReaderWriter();
+                    var metsWriter = new METS_File_ReaderWriter();
 
                     string errorMessage;
                     metsWriter.Write_Metadata(mets_output, currentItem, null, out errorMessage);

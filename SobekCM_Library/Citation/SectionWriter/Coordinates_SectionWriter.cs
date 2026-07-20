@@ -72,7 +72,7 @@ namespace SobekCM.Library.Citation.SectionWriter
 
                     // Get the polygon and draw it
                     BriefItem_Coordinate_Polygon polygon = Item.GeoSpatial.Polygons[i];
-                    StringBuilder polygonBuilder = new StringBuilder();
+                    var polygonBuilder = new StringBuilder();
                     foreach (BriefItem_Coordinate_Point thisPoint in polygon.Edge_Points)
                     {
                         if (polygonBuilder.Length > 0)

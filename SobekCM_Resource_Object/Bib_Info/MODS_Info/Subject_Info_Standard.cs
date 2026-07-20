@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using SobekCM.Resource_Object.MARC;
 using System;
@@ -100,7 +100,7 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// <returns> This subject expressed as a string</returns>
         public override string ToString(bool Include_Scheme)
         {
-            StringBuilder builder = new StringBuilder();
+            var builder = new StringBuilder();
 
             if (occupations != null)
             {
@@ -161,7 +161,7 @@ namespace SobekCM.Resource_Object.Bib_Info
 
         internal override MARC_Field to_MARC_HTML()
         {
-            MARC_Field returnValue = new MARC_Field();
+            var returnValue = new MARC_Field();
 
             // Set the tag            
             if ((id.IndexOf("SUBJ") == 0) && (id.Length >= 7))
@@ -200,8 +200,8 @@ namespace SobekCM.Resource_Object.Bib_Info
             returnValue.Indicators = "  ";
             bool first_field_assigned = false;
             string scale = String.Empty;
-            StringBuilder fieldBuilder = new StringBuilder();
-            StringBuilder fieldBuilder2 = new StringBuilder();
+            var fieldBuilder = new StringBuilder();
+            var fieldBuilder2 = new StringBuilder();
 
             // Whenever there is an occupation, it must map into the 656
             if ((occupations != null) && (occupations.Count > 0))

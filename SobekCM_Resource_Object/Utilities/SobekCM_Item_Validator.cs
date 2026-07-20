@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using SobekCM.Resource_Object.Behaviors;
 using SobekCM.Resource_Object.Bib_Info;
@@ -26,7 +26,7 @@ namespace SobekCM.Resource_Object.Utilities
                 return false;
 
             // Use regular expressions to check format
-            Regex myReg = new Regex("[A-Z]{2}[A-Z|0-9]{4}[0-9]{4}");
+            var myReg = new Regex("[A-Z]{2}[A-Z|0-9]{4}[0-9]{4}");
             return myReg.IsMatch(test_string.ToUpper());
         }
 

@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using System;
 using System.Collections.Generic;
@@ -348,7 +348,7 @@ namespace SobekCM.Builder_Library.Statistics
             {
                 // This collection code has not been hit yet at all
                 increment_session = 1;
-                List<int> new_session_id_list = new List<int> {SessionID};
+                var new_session_id_list = new List<int>{SessionID};
                 collection_sessions.Add(Code, new_session_id_list);
             }
 
@@ -435,7 +435,7 @@ namespace SobekCM.Builder_Library.Statistics
             {
                 // This institution has not been hit yet at all
                 increment_session = 1;
-                List<int> new_institution_id_list = new List<int> {SessionID};
+                var new_institution_id_list = new List<int>{SessionID};
                 institution_sessions.Add(Code, new_institution_id_list);
             }
 
@@ -520,7 +520,7 @@ namespace SobekCM.Builder_Library.Statistics
             {
                 // This bibid has not been hit yet at all
                 increment_session = 1;
-                List<int> new_bib_id_list = new List<int> {SessionID};
+                var new_bib_id_list = new List<int>{SessionID};
                 bib_sessions.Add(BibID, new_bib_id_list);
             }
 
@@ -574,7 +574,7 @@ namespace SobekCM.Builder_Library.Statistics
             {
                 // This itemd has not been hit yet at all
                 increment_session = 1;
-                List<int> new_bib_id_list = new List<int> {SessionID};
+                var new_bib_id_list = new List<int>{SessionID};
                 item_sessions.Add(BibID + VID, new_bib_id_list);
             }
 
@@ -772,7 +772,7 @@ namespace SobekCM.Builder_Library.Statistics
                 foreach (DataRow thisRow in webcontent_stats.Rows)
                 {
                     // Calculate the complete hits
-                    StringBuilder sql_builder = new StringBuilder("Level1=\"" + thisRow[2].ToString().Replace("\"", "").Replace("'", "") + "\"");
+                    var sql_builder = new StringBuilder("Level1=\"" + thisRow[2].ToString().Replace("\"", "").Replace("'", "") + "\"");
                     if (thisRow[3].ToString().Length > 0)
                     {
                         sql_builder.Append(" and Level2=\"" + thisRow[3].ToString().Replace("\"", "").Replace("'", "") + "\"");
@@ -835,7 +835,7 @@ namespace SobekCM.Builder_Library.Statistics
 
 
             // Add the item aggregation stats (non-institutional)
-            SortedList<int, string> sql = new SortedList<int, string>();
+            var sql = new SortedList<int, string>();
             foreach (DataRow hierarchyRow in collection_stats.Rows)
             {
                 string code = hierarchyRow["code"].ToString().ToUpper();
@@ -973,7 +973,7 @@ namespace SobekCM.Builder_Library.Statistics
 
             if (ip_hits.Count > 0)
             {
-                SortedList<int, List<string>> sort_ip = new SortedList<int, List<string>>();
+                var sort_ip = new SortedList<int, List<string>>();
                 foreach (string thisKey in ip_hits.Keys)
                 {
                     int hits = ip_hits[thisKey];
@@ -983,7 +983,7 @@ namespace SobekCM.Builder_Library.Statistics
                     }
                     else
                     {
-                        List<string> new_ip_list = new List<string> {thisKey};
+                        var new_ip_list = new List<string>{thisKey};
                         sort_ip[hits] = new_ip_list;
                     }
                 }

@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using SobekCM.Resource_Object.Bib_Info;
 using SobekCM.Resource_Object.Metadata_Modules;
@@ -91,7 +91,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
         {
             // Add all the titles
             Output.WriteLine("<dc:title>" + BibInfo.Main_Title + "</dc:title>");
-            List<string> titles = new List<string> { BibInfo.Main_Title.ToString().Trim() };
+            var titles = new List<string>{ BibInfo.Main_Title.ToString().Trim() };
             if (BibInfo.Other_Titles_Count > 0)
             {
                 foreach (Title_Info thisTitle in BibInfo.Other_Titles)
@@ -114,7 +114,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
             }
 
             // Add all the creators
-            List<string> contributors = new List<string>();
+            var contributors = new List<string>();
             if ((BibInfo.hasMainEntityName) && (BibInfo.Main_Entity_Name.Full_Name.Length > 0))
             {
                 if ((BibInfo.Main_Entity_Name.Roles.Count == 0) || (BibInfo.Main_Entity_Name.Roles[0].Role.ToUpper() != "CONTRIBUTOR"))
@@ -451,7 +451,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                             R.Read();
                             if ((R.NodeType == XmlNodeType.Text) && (R.Value.Trim().Length > 0))
                             {
-                                Related_Item_Info newRelatedItem = new Related_Item_Info();
+                                var newRelatedItem = new Related_Item_Info();
                                 newRelatedItem.Main_Title.Title = R.Value.Trim();
                                 BibInfo.Add_Related_Item(newRelatedItem);
                             }

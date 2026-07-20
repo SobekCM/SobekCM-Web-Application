@@ -76,7 +76,7 @@ namespace SobekCM.Library.Citation.Elements
                 }
             }
 
-            List<string> terms = new List<string>();
+            var terms = new List<string>();
             if (Bib.Bib_Info.Identifiers_Count > 0)
             {
                 foreach (Identifier_Info thisIdentifier in Bib.Bib_Info.Identifiers)
@@ -97,7 +97,7 @@ namespace SobekCM.Library.Citation.Elements
         public override void Prepare_For_Save(SobekCM_Item Bib, User_Object Current_User)
         {
             // Find any existing accession numbers
-            List<Identifier_Info> existing_accno = new List<Identifier_Info>();
+            var existing_accno = new List<Identifier_Info>();
             foreach (Identifier_Info thisIdentifier in Bib.Bib_Info.Identifiers)
             {
                 if ((thisIdentifier.Type.IndexOf("ACCESSION", StringComparison.OrdinalIgnoreCase) >= 0) || ((thisIdentifier.Type.IndexOf("ACCN", StringComparison.OrdinalIgnoreCase) >= 0)))

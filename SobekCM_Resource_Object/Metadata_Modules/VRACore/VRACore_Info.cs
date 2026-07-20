@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using Microsoft.Data.SqlClient;
 using System;
@@ -45,7 +45,7 @@ namespace SobekCM.Resource_Object.Metadata_Modules.VRACore
         {
             get
             {
-                List<KeyValuePair<string, string>> metadataTerms = new List<KeyValuePair<string, string>>();
+                var metadataTerms = new List<KeyValuePair<string, string>>();
 
                 // Add all the cultural contexts
                 if (Cultural_Context_Count > 0)
@@ -139,7 +139,7 @@ namespace SobekCM.Resource_Object.Metadata_Modules.VRACore
             Error_Message = String.Empty;
 
             // Get the material display information
-            StringBuilder materialDisplayBuilder = new StringBuilder();
+            var materialDisplayBuilder = new StringBuilder();
             if (Material_Count > 0)
             {
                 foreach (VRACore_Materials_Info materials in Materials)
@@ -158,7 +158,7 @@ namespace SobekCM.Resource_Object.Metadata_Modules.VRACore
             }
 
             // Get the style period display information
-            StringBuilder stylePeriodDisplayBuilder = new StringBuilder();
+            var stylePeriodDisplayBuilder = new StringBuilder();
             if (Style_Period_Count > 0)
             {
                 foreach (string stylePeriod in Style_Periods)
@@ -170,7 +170,7 @@ namespace SobekCM.Resource_Object.Metadata_Modules.VRACore
             }
 
             // Get the technique display information
-            StringBuilder techniqueDisplayBuilder = new StringBuilder();
+            var techniqueDisplayBuilder = new StringBuilder();
             if (Technique_Count > 0)
             {
                 foreach (string technique in Techniques)
@@ -186,7 +186,7 @@ namespace SobekCM.Resource_Object.Metadata_Modules.VRACore
                 return true;
 
             // Open the SQL connection
-            using (SqlConnection sqlConnect = new SqlConnection(DB_ConnectionString))
+            using (var sqlConnect = new SqlConnection(DB_ConnectionString))
             {
                 try
                 {
@@ -199,7 +199,7 @@ namespace SobekCM.Resource_Object.Metadata_Modules.VRACore
                 }
 
                 // Create the sql command / stored procedure
-                SqlCommand cmd = new SqlCommand("SobekCM_Save_Item_VRACore_Extensions");
+                var cmd = new SqlCommand("SobekCM_Save_Item_VRACore_Extensions");
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Connection = sqlConnect;
 

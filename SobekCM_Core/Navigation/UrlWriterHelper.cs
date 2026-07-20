@@ -125,7 +125,7 @@ namespace SobekCM.Core.Navigation
                 case Display_Mode_Enum.Public_Folder:
                     if (Current_Mode.FolderID > 0)
                     {
-                        StringBuilder folderBuilder = new StringBuilder(this_base_url + "folder/" + Current_Mode.FolderID);
+                        var folderBuilder = new StringBuilder(this_base_url + "folder/" + Current_Mode.FolderID);
                         if (!String.IsNullOrEmpty(Current_Mode.Result_Display_Type))
                             folderBuilder.Append("/" + Current_Mode.Result_Display_Type.ToLower());
                         if (Current_Mode.Page > 1)
@@ -523,7 +523,7 @@ namespace SobekCM.Core.Navigation
                     if (!String.IsNullOrEmpty(Current_Mode.BibID))
                     {
                         // Build the url for this item
-                        StringBuilder itemDisplayBuilder = new StringBuilder(this_base_url + Current_Mode.BibID.ToUpper(), 100);
+                        var itemDisplayBuilder = new StringBuilder(this_base_url + Current_Mode.BibID.ToUpper(), 100);
                         if (!String.IsNullOrEmpty(Current_Mode.VID))
                             itemDisplayBuilder.Append("/" + Current_Mode.VID);
                         if (Current_Mode.Mode == Display_Mode_Enum.Item_Print)
@@ -668,7 +668,7 @@ namespace SobekCM.Core.Navigation
 
 
                 case Display_Mode_Enum.Results:
-                    StringBuilder results_url_builder = new StringBuilder(this_base_url);
+                    var results_url_builder = new StringBuilder(this_base_url);
                     if ((!String.IsNullOrEmpty(adjusted_aggregation)) && ((String.IsNullOrEmpty(Current_Mode.Default_Aggregation)) || (adjusted_aggregation != Current_Mode.Default_Aggregation)))
                     {
                         results_url_builder.Append(adjusted_aggregation + "/");
@@ -1048,7 +1048,7 @@ namespace SobekCM.Core.Navigation
             if (Remaining_Url_Segments.Length == 7)
                 return this_base_url + main_codes + "/" + Remaining_Url_Segments[0] + "/" + Remaining_Url_Segments[1] + "/" + Remaining_Url_Segments[2] + "/" + Remaining_Url_Segments[3] + "/" + Remaining_Url_Segments[4] + "/" + Remaining_Url_Segments[5] + "/" + Remaining_Url_Segments[6] + urlOptions1;
 
-            StringBuilder returnUrl = new StringBuilder(this_base_url + main_codes + "/" + Remaining_Url_Segments[0] + "/" + Remaining_Url_Segments[1] + "/" + Remaining_Url_Segments[2] + "/" + Remaining_Url_Segments[3] + "/" + Remaining_Url_Segments[4] + "/" + Remaining_Url_Segments[5] + "/" + Remaining_Url_Segments[6]);
+            var returnUrl = new StringBuilder(this_base_url + main_codes + "/" + Remaining_Url_Segments[0] + "/" + Remaining_Url_Segments[1] + "/" + Remaining_Url_Segments[2] + "/" + Remaining_Url_Segments[3] + "/" + Remaining_Url_Segments[4] + "/" + Remaining_Url_Segments[5] + "/" + Remaining_Url_Segments[6]);
             for (int i = 7; i < Remaining_Url_Segments.Length; i++)
                 returnUrl.Append("/" + Remaining_Url_Segments[i]);
             returnUrl.Append(urlOptions1);
@@ -1065,7 +1065,7 @@ namespace SobekCM.Core.Navigation
                 return String.Empty;
 
             // Define the StringBuilder
-            StringBuilder redirect = new StringBuilder();
+            var redirect = new StringBuilder();
 
             if (Current_Mode.Trace_Flag == Trace_Flag_Type_Enum.Explicit)
                 redirect.Append("trace=yes");

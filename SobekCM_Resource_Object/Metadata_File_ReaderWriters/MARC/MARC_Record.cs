@@ -123,7 +123,7 @@ namespace SobekCM.Resource_Object.MARC
         {
             get
             {
-                List<MARC_Field> returnValue = new List<MARC_Field>();
+                var returnValue = new List<MARC_Field>();
 
                 foreach (List<MARC_Field> fields_by_tag in fields.Values)
                 {
@@ -153,14 +153,14 @@ namespace SobekCM.Resource_Object.MARC
         public MARC_Field Add_Field(int Tag, string Control_Field_Value)
         {
             // Create the new control field
-            MARC_Field newField = new MARC_Field(Tag, Control_Field_Value);
+            var newField = new MARC_Field(Tag, Control_Field_Value);
 
             // Either add this to the existing list, or create a new one
             if (fields.ContainsKey(Tag))
                 fields[Tag].Add(newField);
             else
             {
-                List<MARC_Field> newTagCollection = new List<MARC_Field> { newField };
+                var newTagCollection = new List<MARC_Field>{ newField };
                 fields[Tag] = newTagCollection;
             }
 
@@ -176,14 +176,14 @@ namespace SobekCM.Resource_Object.MARC
         public MARC_Field Add_Field(int Tag, char Indicator1, char Indicator2)
         {
             // Create the new datafield
-            MARC_Field newField = new MARC_Field(Tag, Indicator1, Indicator2);
+            var newField = new MARC_Field(Tag, Indicator1, Indicator2);
 
             // Either add this to the existing list, or create a new one
             if (fields.ContainsKey(Tag))
                 fields[Tag].Add(newField);
             else
             {
-                List<MARC_Field> newTagCollection = new List<MARC_Field> { newField };
+                var newTagCollection = new List<MARC_Field>{ newField };
                 fields[Tag] = newTagCollection;
             }
 
@@ -199,14 +199,14 @@ namespace SobekCM.Resource_Object.MARC
         public MARC_Field Add_Field(int Tag, string Indicators, string Control_Field_Value)
         {
             // Create the new datafield
-            MARC_Field newField = new MARC_Field(Tag, Control_Field_Value) { Indicators = Indicators };
+            var newField = new MARC_Field(Tag, Control_Field_Value) { Indicators = Indicators };
 
             // Either add this to the existing list, or create a new one
             if (fields.ContainsKey(Tag))
                 fields[Tag].Add(newField);
             else
             {
-                List<MARC_Field> newTagCollection = new List<MARC_Field> { newField };
+                var newTagCollection = new List<MARC_Field>{ newField };
                 fields[Tag] = newTagCollection;
             }
 
@@ -226,7 +226,7 @@ namespace SobekCM.Resource_Object.MARC
                 fields[New_Field.Tag].Add(New_Field);
             else
             {
-                List<MARC_Field> newTagCollection = new List<MARC_Field> { New_Field };
+                var newTagCollection = new List<MARC_Field>{ New_Field };
                 fields[New_Field.Tag] = newTagCollection;
             }
         }
@@ -327,9 +327,9 @@ namespace SobekCM.Resource_Object.MARC
                 // This code below was added to prevent the resulting
                 // MARC21 file from having the UTF-8 Byte-Order Marks encoding bytes
                 // ( 0xEF,0xBB,0xBF ) included in the MARC21 file
-                MemoryStream ms = new MemoryStream();
+                var ms = new MemoryStream();
 
-                StreamWriter writer = new StreamWriter(ms, Encoding.UTF8);
+                var writer = new StreamWriter(ms, Encoding.UTF8);
                 writer.Write(To_Machine_Readable_Record());
                 writer.Flush();
 
@@ -365,7 +365,7 @@ namespace SobekCM.Resource_Object.MARC
         public override string ToString()
         {
             // Create the StringBuilder
-            StringBuilder returnVal = new StringBuilder(2000);
+            var returnVal = new StringBuilder(2000);
 
             // Add the leader
             returnVal.Append("LDR " + Leader + "\r\n");
@@ -448,7 +448,7 @@ namespace SobekCM.Resource_Object.MARC
                 warnings = new List<MARC_Record_Parsing_Warning>();
 
             // Build this warning object
-            MARC_Record_Parsing_Warning Warning = new MARC_Record_Parsing_Warning(Warning_Type, Warning_Details);
+            var Warning = new MARC_Record_Parsing_Warning(Warning_Type, Warning_Details);
 
             // If no other warning of the same type exists, add this
             if (!warnings.Contains(Warning))
@@ -464,7 +464,7 @@ namespace SobekCM.Resource_Object.MARC
                 warnings = new List<MARC_Record_Parsing_Warning>();
 
             // Build this warning object
-            MARC_Record_Parsing_Warning Warning = new MARC_Record_Parsing_Warning(Warning_Type);
+            var Warning = new MARC_Record_Parsing_Warning(Warning_Type);
 
             // If no other warning of the same type exists, add this
             if (!warnings.Contains(Warning))
@@ -510,7 +510,7 @@ namespace SobekCM.Resource_Object.MARC
                 errors = new List<MARC_Record_Parsing_Error>();
 
             // Build this Error object
-            MARC_Record_Parsing_Error Error = new MARC_Record_Parsing_Error(Error_Type, Error_Details);
+            var Error = new MARC_Record_Parsing_Error(Error_Type, Error_Details);
 
             // If no other Error of the same type exists, add this
             if (!errors.Contains(Error))
@@ -526,7 +526,7 @@ namespace SobekCM.Resource_Object.MARC
                 errors = new List<MARC_Record_Parsing_Error>();
 
             // Build this error object
-            MARC_Record_Parsing_Error Error = new MARC_Record_Parsing_Error(Error_Type);
+            var Error = new MARC_Record_Parsing_Error(Error_Type);
 
             // If no other error of the same type exists, add this
             if (!errors.Contains(Error))

@@ -38,7 +38,7 @@ namespace SobekCM.Core.MemoryMgmt
             }
 
             // Determine the key
-            StringBuilder build_key = new StringBuilder("BUILDER|LOGS|");
+            var build_key = new StringBuilder("BUILDER|LOGS|");
             if (StartDate.HasValue)
                 build_key.Append(StartDate + "|");
             else
@@ -93,7 +93,7 @@ namespace SobekCM.Core.MemoryMgmt
             }
 
             // Determine the key
-            StringBuilder build_key = new StringBuilder("BUILDER|LOGS|");
+            var build_key = new StringBuilder("BUILDER|LOGS|");
             if (StartDate.HasValue)
                 build_key.Append(StartDate + "|");
             else

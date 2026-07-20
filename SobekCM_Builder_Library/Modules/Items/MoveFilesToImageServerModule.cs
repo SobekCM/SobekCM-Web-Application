@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using System;
 using System.Collections.Generic;
@@ -125,7 +125,7 @@ namespace SobekCM.Builder_Library.Modules.Items
                 string[] all_files = Directory.GetFiles(ResourcePackage.Resource_Folder);
                 foreach (string thisFile in all_files)
                 {
-                    FileInfo thisFileInfo = new FileInfo(thisFile);
+                    var thisFileInfo = new FileInfo(thisFile);
                     string new_file = ServerPackageFolder + "\\" + thisFileInfo.Name;
 
                     // Keep the list of new image files being copied, which may be used later

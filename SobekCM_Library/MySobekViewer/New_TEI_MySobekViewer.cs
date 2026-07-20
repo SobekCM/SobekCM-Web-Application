@@ -120,7 +120,7 @@ namespace SobekCM.Library.MySobekViewer
 
 
                 // Read this CompleteTemplate
-                Template_XML_Reader reader = new Template_XML_Reader();
+                var reader = new Template_XML_Reader();
                 completeTemplate = new CompleteTemplate();
                 reader.Read_XML(user_template, completeTemplate, true);
 
@@ -293,7 +293,7 @@ namespace SobekCM.Library.MySobekViewer
                 string[] processFiles = Directory.GetFiles(userInProcessDirectory);
                 foreach (string thisFile in processFiles)
                 {
-                    FileInfo thisFileInfo = new FileInfo(thisFile);
+                    var thisFileInfo = new FileInfo(thisFile);
                     if ((thisFileInfo.Extension.ToUpper() == ".TIF") || (thisFileInfo.Extension.ToUpper() == ".TIFF"))
                     {
                         // Is there a JPEG and/or thumbnail?
@@ -476,7 +476,7 @@ namespace SobekCM.Library.MySobekViewer
 
                         // Also, save this as a text file
                         string agreement_file = userInProcessDirectory + "\\agreement.txt";
-                        StreamWriter writer = new StreamWriter(agreement_file, false);
+                        var writer = new StreamWriter(agreement_file, false);
                         writer.WriteLine("Permissions Agreement");
                         writer.WriteLine();
                         if (!String.IsNullOrWhiteSpace(RequestSpecificValues.Current_User.ShibbID))
@@ -514,7 +514,7 @@ namespace SobekCM.Library.MySobekViewer
                         // Should be a TEI file to continue
                         if (!String.IsNullOrEmpty(tei_file))
                         {
-                            XmlValidator validator = new XmlValidator();
+                            var validator = new XmlValidator();
                             string tei_filepath = Path.Combine(userInProcessDirectory, tei_file);
                             bool isValid = validator.IsValid(tei_filepath);
                             if (!isValid)
@@ -714,11 +714,11 @@ namespace SobekCM.Library.MySobekViewer
             criticalErrorEncountered = false;
 
             string[] all_files = Directory.GetFiles(userInProcessDirectory);
-            SortedList<string, List<string>> image_files = new SortedList<string, List<string>>();
-            SortedList<string, List<string>> download_files = new SortedList<string, List<string>>();
+            var image_files = new SortedList<string, List<string>>();
+            var download_files = new SortedList<string, List<string>>();
             foreach (string thisFile in all_files)
             {
-                FileInfo thisFileInfo = new FileInfo(thisFile);
+                var thisFileInfo = new FileInfo(thisFile);
 
                 if ((thisFileInfo.Name.IndexOf("agreement.txt") != 0) && (thisFileInfo.Name.IndexOf("TEMP000001_00001.mets") != 0) && (thisFileInfo.Name.IndexOf("doc.xml") != 0) && (thisFileInfo.Name.IndexOf("ufdc_mets.xml") != 0) && (thisFileInfo.Name.IndexOf("marc.xml") != 0))
                 {
@@ -750,7 +750,7 @@ namespace SobekCM.Library.MySobekViewer
                             }
                             else
                             {
-                                List<string> newImageGrouping = new List<string> { thisFileInfo.Name };
+                                var newImageGrouping = new List<string>{ thisFileInfo.Name };
                                 image_files[filename_sans_extension.ToLower()] = newImageGrouping;
                             }
                         }
@@ -770,7 +770,7 @@ namespace SobekCM.Library.MySobekViewer
                                 }
                                 else
                                 {
-                                    List<string> newDownloadGrouping = new List<string> { thisFileInfo.Name };
+                                    var newDownloadGrouping = new List<string>{ thisFileInfo.Name };
                                     download_files[filename_sans_extension.ToLower()] = newDownloadGrouping;
                                 }
                             }
@@ -803,8 +803,8 @@ namespace SobekCM.Library.MySobekViewer
                         foreach (string thisFile in theseFiles)
                         {
                             // Create the new file object and compute a label
-                            FileInfo fileInfo = new FileInfo(thisFile);
-                            SobekCM_File_Info newFile = new SobekCM_File_Info(fileInfo.Name);
+                            var fileInfo = new FileInfo(thisFile);
+                            var newFile = new SobekCM_File_Info(fileInfo.Name);
                             string label = fileInfo.Name.Replace(fileInfo.Extension, "");
                             if (Context.SessionObject()["file_" + thisFileKey] != null)
                             {
@@ -847,8 +847,8 @@ namespace SobekCM.Library.MySobekViewer
                         foreach (string thisFile in theseFiles)
                         {
                             // Create the new file object and compute a label
-                            FileInfo fileInfo = new FileInfo(thisFile);
-                            SobekCM_File_Info newFile = new SobekCM_File_Info(fileInfo.Name);
+                            var fileInfo = new FileInfo(thisFile);
+                            var newFile = new SobekCM_File_Info(fileInfo.Name);
                             string label = fileInfo.Name.Replace(fileInfo.Extension, "");
                             if (Context.SessionObject()["file_" + thisFileKey] != null)
                             {
@@ -863,7 +863,7 @@ namespace SobekCM.Library.MySobekViewer
                     }
 
                     // Now, add the TEI file
-                    SobekCM_File_Info tei_newFile = new SobekCM_File_Info(tei_file);
+                    var tei_newFile = new SobekCM_File_Info(tei_file);
                     string tei_label = tei_file + " (TEI)";
                     Item_To_Complete.Divisions.Download_Tree.Add_File(tei_newFile, tei_label);
                 }
@@ -891,7 +891,7 @@ namespace SobekCM.Library.MySobekViewer
                 }
                 catch (Exception ee)
                 {
-                    StreamWriter writer = new StreamWriter(userInProcessDirectory + "\\exception.txt", false);
+                    var writer = new StreamWriter(userInProcessDirectory + "\\exception.txt", false);
                     writer.WriteLine("ERROR CAUGHT WHILE SAVING NEW DIGITAL RESOURCE");
                     writer.WriteLine(DateTime.Now.ToString());
                     writer.WriteLine();
@@ -953,7 +953,7 @@ namespace SobekCM.Library.MySobekViewer
                 Item_To_Complete.Save_SobekCM_METS();
 
                 // Create the options dictionary used when saving information to the database, or writing MarcXML
-                Dictionary<string, object> options = new Dictionary<string, object>();
+                var options = new Dictionary<string, object>();
                 if (UI_ApplicationCache_Gateway.Settings.MarcGeneration != null)
                 {
                     options["MarcXML_File_ReaderWriter:MARC Cataloging Source Code"] = UI_ApplicationCache_Gateway.Settings.MarcGeneration.Cataloging_Source_Code;
@@ -966,7 +966,7 @@ namespace SobekCM.Library.MySobekViewer
                 options["MarcXML_File_ReaderWriter:System Abbreviation"] = UI_ApplicationCache_Gateway.Settings.System.System_Abbreviation;
 
                 // Save the marc xml file
-                MarcXML_File_ReaderWriter marcWriter = new MarcXML_File_ReaderWriter();
+                var marcWriter = new MarcXML_File_ReaderWriter();
                 string errorMessage;
                 marcWriter.Write_Metadata(Item_To_Complete.Source_Directory + "\\marc.xml", Item_To_Complete, options, out errorMessage);
 
@@ -1207,7 +1207,7 @@ namespace SobekCM.Library.MySobekViewer
                 Output.WriteLine("  </tr>");
 
                 // Get the list of Mapping files that exist and this user is enabled for
-                List<string> mapping_files = new List<string>();
+                var mapping_files = new List<string>();
                 foreach (string thisSettingKey in RequestSpecificValues.Current_User.SettingsKeys)
                 {
                     if (thisSettingKey.IndexOf("TEI.MAPPING.") == 0)
@@ -1300,7 +1300,7 @@ namespace SobekCM.Library.MySobekViewer
                 Output.WriteLine("  </tr>");
 
                 // Get the list of XSLT files that exist and this user is enabled for
-                List<string> xslt_files = new List<string>();
+                var xslt_files = new List<string>();
                 foreach (string thisSettingKey in RequestSpecificValues.Current_User.SettingsKeys)
                 {
                     if (thisSettingKey.IndexOf("TEI.XSLT.") == 0)
@@ -1384,7 +1384,7 @@ namespace SobekCM.Library.MySobekViewer
                 }
 
                 // CSS is not required, so check to see if any enable CSS's exist
-                List<string> css_files = new List<string>();
+                var css_files = new List<string>();
                 foreach (string thisSettingKey in RequestSpecificValues.Current_User.SettingsKeys)
                 {
                     if (thisSettingKey.IndexOf("TEI.CSS.") == 0)
@@ -1474,7 +1474,7 @@ namespace SobekCM.Library.MySobekViewer
                     new_item(RequestSpecificValues.Tracer);
 
                     // Use the mapper and pull the results
-                    GenericXmlReader testMapper = new GenericXmlReader();
+                    var testMapper = new GenericXmlReader();
                     GenericXmlReaderResults returnValue = testMapper.ProcessFile(complete_tei_file, complete_mapping_file);
 
                     // Was there an error converting using the selected mapping?
@@ -1489,7 +1489,7 @@ namespace SobekCM.Library.MySobekViewer
                     else
                     {
                         // Create the mapper to map these values into the SobekCM object
-                        Standard_Bibliographic_Mapper mappingObject = new Standard_Bibliographic_Mapper();
+                        var mappingObject = new Standard_Bibliographic_Mapper();
 
                         // Add all this information
                         foreach (MappedValue mappedValue in returnValue.MappedValues)
@@ -1509,7 +1509,7 @@ namespace SobekCM.Library.MySobekViewer
                                     try
                                     {
                                         string text_file = Path.Combine(userInProcessDirectory, "fulltext.txt");
-                                        StreamWriter writer = new StreamWriter(text_file);
+                                        var writer = new StreamWriter(text_file);
                                         writer.Write(mappedValue.Value);
                                         writer.Flush();
                                         writer.Close();
@@ -1673,11 +1673,11 @@ namespace SobekCM.Library.MySobekViewer
                 if ((completeTemplate.Upload_Types == CompleteTemplate.Template_Upload_Types.File) || (completeTemplate.Upload_Types == CompleteTemplate.Template_Upload_Types.File_or_URL))
                 {
                     string[] all_files = Directory.GetFiles(userInProcessDirectory);
-                    SortedList<string, List<string>> image_files = new SortedList<string, List<string>>();
-                    SortedList<string, List<string>> download_files = new SortedList<string, List<string>>();
+                    var image_files = new SortedList<string, List<string>>();
+                    var download_files = new SortedList<string, List<string>>();
                     foreach (string thisFile in all_files)
                     {
-                        FileInfo thisFileInfo = new FileInfo(thisFile);
+                        var thisFileInfo = new FileInfo(thisFile);
 
                         if ((thisFileInfo.Name.IndexOf("agreement.txt") != 0) && (thisFileInfo.Name.IndexOf("TEMP000001_00001.mets") != 0) && (thisFileInfo.Name.IndexOf("doc.xml") != 0) && (thisFileInfo.Name.IndexOf("sobek_mets.xml") != 0) && (thisFileInfo.Name.IndexOf("marc.xml") != 0))
                         {
@@ -1705,7 +1705,7 @@ namespace SobekCM.Library.MySobekViewer
                                     }
                                     else
                                     {
-                                        List<string> newImageGrouping = new List<string> { thisFileInfo.Name };
+                                        var newImageGrouping = new List<string>{ thisFileInfo.Name };
                                         image_files[filename_sans_extension.ToLower()] = newImageGrouping;
                                     }
                                 }
@@ -1724,7 +1724,7 @@ namespace SobekCM.Library.MySobekViewer
                                         }
                                         else
                                         {
-                                            List<string> newDownloadGrouping = new List<string> { thisFileInfo.Name };
+                                            var newDownloadGrouping = new List<string>{ thisFileInfo.Name };
                                             download_files[filename_sans_extension.ToLower()] = newDownloadGrouping;
                                         }
                                     }
@@ -1768,7 +1768,7 @@ namespace SobekCM.Library.MySobekViewer
                                 file_counter++;
 
                                 // Add the file name literal
-                                FileInfo fileInfo = new FileInfo(userInProcessDirectory + "\\" + thisFile);
+                                var fileInfo = new FileInfo(userInProcessDirectory + "\\" + thisFile);
                                 Output.WriteLine("  <tr style=\"min-height:22px\">");
                                 Output.WriteLine("    <td>" + fileInfo.Name + "</td>");
                                 if (fileInfo.Length < 1024)
@@ -1853,7 +1853,7 @@ namespace SobekCM.Library.MySobekViewer
                                 file_counter++;
 
                                 // Add the file name literal
-                                FileInfo fileInfo = new FileInfo(userInProcessDirectory + "\\" + thisFile);
+                                var fileInfo = new FileInfo(userInProcessDirectory + "\\" + thisFile);
                                 Output.WriteLine("  <tr>");
                                 Output.WriteLine("    <td>" + fileInfo.Name + "</td>");
                                 if (fileInfo.Length < 1024)
@@ -1993,7 +1993,7 @@ namespace SobekCM.Library.MySobekViewer
 
             // Use string builder to build this
             const string INDENT = "    ";
-            StringBuilder result = new StringBuilder();
+            var result = new StringBuilder();
 
             // Need to convert this current item to a brief item
             BriefItemInfo BriefItem = BriefItem_Factory.Create(item, Tracer);
@@ -2116,7 +2116,7 @@ namespace SobekCM.Library.MySobekViewer
                         // If they can all be listed one after the other do so now
                         if (!thisField.IndividualFields)
                         {
-                            List<string> valueArray = new List<string>();
+                            var valueArray = new List<string>();
                             foreach (BriefItem_DescTermValue thisValue in briefTerm.Values)
                             {
                                 if (!String.IsNullOrEmpty(thisField.SearchCode))

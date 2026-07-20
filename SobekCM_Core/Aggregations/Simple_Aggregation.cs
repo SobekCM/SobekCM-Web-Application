@@ -1,4 +1,4 @@
-﻿using Jil;
+using Jil;
 using ProtoBuf;
 using SobekCM.Core.Configuration.Localization;
 using System;
@@ -154,9 +154,9 @@ namespace SobekCM.Core.Aggregations
         /// <returns> This simple aggregation, as a XML string </returns>
         public string ToXML()
         {
-            XmlSerializer x = new XmlSerializer(this.GetType());
+            var x = new XmlSerializer(this.GetType());
 
-            using (StringWriter textWriter = new StringWriter())
+            using (var textWriter = new StringWriter())
             {
                 x.Serialize(textWriter, this);
                 return textWriter.ToString();

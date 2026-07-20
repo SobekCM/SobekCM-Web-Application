@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using SobekCM.Resource_Object.METS_Sec_ReaderWriters;
 using System;
@@ -75,7 +75,7 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
         {
             try
             {
-                StreamWriter results = new StreamWriter(MetadataFilePathName, false, Encoding.UTF8);
+                var results = new StreamWriter(MetadataFilePathName, false, Encoding.UTF8);
                 bool returnValue = Write_Metadata(results, Item_To_Save, Options, out Error_Message);
                 results.Flush();
                 results.Close();
@@ -112,7 +112,7 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
                 DateTime.TryParse(Options["OAI_File_ReaderWriter:OAI_Date"].ToString(), out OAI_Date);
             }
 
-            StringBuilder returnValue = new StringBuilder();
+            var returnValue = new StringBuilder();
 
             // Add the header for this OAI
             Output_Stream.WriteLine("<xml>");

@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using System;
 using System.Collections.Generic;
@@ -40,7 +40,7 @@ namespace SobekCM.Core.Results
         /// <returns> Built sorted tree node object </returns>
         public Search_Result_Item_TreeNode Add_Root_Node(string Name, string Link, string Value)
         {
-            Search_Result_Item_TreeNode newRootNode = new Search_Result_Item_TreeNode(Name, Link, Value);
+            var newRootNode = new Search_Result_Item_TreeNode(Name, Link, Value);
             rootNodes.Add(newRootNode);
             return newRootNode;
         }

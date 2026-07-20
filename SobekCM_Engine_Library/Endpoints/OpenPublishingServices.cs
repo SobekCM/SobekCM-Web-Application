@@ -1,4 +1,4 @@
-﻿using SobekCM.Core.Configuration.Engine;
+using SobekCM.Core.Configuration.Engine;
 using SobekCM.Engine_Library.Database;
 using SobekCM.Tools;
 using System;
@@ -22,7 +22,7 @@ namespace SobekCM.Engine_Library.Endpoints
             if (UrlSegments.Count == 0)
                 return;
 
-            Custom_Tracer tracer = new Custom_Tracer();
+            var tracer = new Custom_Tracer();
 
             // Get the theme id
             if (!Int32.TryParse(UrlSegments[0], out int id))
@@ -118,7 +118,7 @@ namespace SobekCM.Engine_Library.Endpoints
             if (UrlSegments.Count == 0)
                 return;
 
-            Custom_Tracer tracer = new Custom_Tracer();
+            var tracer = new Custom_Tracer();
 
             try
             {

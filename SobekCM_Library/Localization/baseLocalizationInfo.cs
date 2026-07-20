@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using System.Collections.Generic;
 using System.IO;
@@ -45,7 +45,7 @@ namespace SobekCM.Library.Localization
         internal void Write_Localization_XML(TextWriter Writer)
         {
             // Get the list of all the keys, sorted
-            SortedList<string, string> sortedKeys = new SortedList<string, string>();
+            var sortedKeys = new SortedList<string, string>();
             foreach (string thisKey in OtherValues.Keys)
             {
                 sortedKeys[thisKey.ToUpper()] = thisKey;

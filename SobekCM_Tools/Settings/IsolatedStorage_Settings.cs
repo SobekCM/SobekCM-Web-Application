@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using System;
 using System.Data;
@@ -45,7 +45,7 @@ namespace SobekCM.Tools.Settings
             Setting_DataSet = new DataSet("Settings");
 
             // Create a new table to store the row of user information
-            DataTable dsTbl = new DataTable("userSettings");
+            var dsTbl = new DataTable("userSettings");
 
             // Add this table to the data set
             Setting_DataSet.Tables.Add(dsTbl);
@@ -68,7 +68,7 @@ namespace SobekCM.Tools.Settings
             if (files.Length > 0)
             {
                 // Create a stream reader to get the data from the isolated storage for this user
-                StreamReader stmReader = new StreamReader(new IsolatedStorageFileStream(fileName + ".xml", FileMode.Open, userSettingFile));
+                var stmReader = new StreamReader(new IsolatedStorageFileStream(fileName + ".xml", FileMode.Open, userSettingFile));
 
                 // Read the xml file
                 Setting_DataSet = new DataSet();
@@ -124,7 +124,7 @@ namespace SobekCM.Tools.Settings
                     IsolatedStorageFile userSettingFile = IsolatedStorageFile.GetUserStoreForAssembly();
 
                     // Create a stream writer to write to the file in isolated storage
-                    StreamWriter stmWriter = new StreamWriter(new IsolatedStorageFileStream(fileName + ".xml", FileMode.Create, userSettingFile));
+                    var stmWriter = new StreamWriter(new IsolatedStorageFileStream(fileName + ".xml", FileMode.Create, userSettingFile));
 
                     // Write the XML file
                     Setting_DataSet.WriteXml(stmWriter, XmlWriteMode.WriteSchema);

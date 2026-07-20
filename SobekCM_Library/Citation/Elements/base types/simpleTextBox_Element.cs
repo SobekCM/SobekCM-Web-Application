@@ -107,7 +107,7 @@ namespace SobekCM.Library.Citation.Elements
         /// <param name="HTML_ID_Name"> ID name used for these elements.  This is usually provided when there are multiple fixed-roles or fixed-type elements </param>
         protected void render_helper(TextWriter Output, ReadOnlyCollection<string> InstanceValues, string Skin_Code, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL, string HTML_ID_Name)
         {
-            List<string> allValues = new List<string>();
+            var allValues = new List<string>();
             allValues.AddRange(DefaultValues);
             allValues.AddRange(InstanceValues);
 

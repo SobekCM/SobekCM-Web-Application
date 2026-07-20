@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using System;
 using System.Collections.Generic;
@@ -136,10 +136,10 @@ namespace SobekCM.Resource_Object.Metadata_Modules
         {
             get
             {
-                List<KeyValuePair<string, string>> metadataTerms = new List<KeyValuePair<string, string>>();
+                var metadataTerms = new List<KeyValuePair<string, string>>();
 
                 // Also, build a hierarchical version
-                StringBuilder builder = new StringBuilder();
+                var builder = new StringBuilder();
 
                 // Add the kingdom
                 if (!String.IsNullOrEmpty(kingdom))
@@ -261,7 +261,7 @@ namespace SobekCM.Resource_Object.Metadata_Modules
         /// <returns></returns>
         public override string ToString()
         {
-            StringBuilder builder = new StringBuilder();
+            var builder = new StringBuilder();
             if (!String.IsNullOrEmpty(kingdom))
                 builder.Append(kingdom);
             if (!String.IsNullOrEmpty(phylum))

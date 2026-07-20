@@ -111,7 +111,7 @@ namespace SobekCM.Library.MySobekViewer
 
 
                 // Read this CompleteTemplate
-                Template_XML_Reader reader = new Template_XML_Reader();
+                var reader = new Template_XML_Reader();
                 completeTemplate = new CompleteTemplate();
                 reader.Read_XML(user_template, completeTemplate, true);
 

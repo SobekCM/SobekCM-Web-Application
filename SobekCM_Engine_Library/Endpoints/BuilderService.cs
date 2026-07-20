@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -89,7 +89,7 @@ namespace SobekCM_Builder_Service
             try
             {
 
-                StreamWriter testWriter = new StreamWriter(Path.Combine(logFileDirectory, "test.log"), false);
+                var testWriter = new StreamWriter(Path.Combine(logFileDirectory, "test.log"), false);
                 testWriter.WriteLine("TEST");
                 testWriter.Flush();
                 testWriter.Close();
@@ -117,7 +117,7 @@ namespace SobekCM_Builder_Service
                 Engine_ApplicationCache_Gateway.Settings.Builder.ImageMagick_Executable = possible_imagemagick;
 
             // Two ways to run this... constantly in background or once
-            Worker_Controller controller = new Worker_Controller(true, logFileDirectory);
+            var controller = new Worker_Controller(true, logFileDirectory);
             controller.Execute_In_Background();
 
             // If this was set to aborting, set to last execution aborted

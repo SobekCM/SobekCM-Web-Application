@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -58,7 +58,7 @@ namespace SobekCM.Core.BriefItem
                     (ViewerCode.IndexOf("9") >= 0))
                 {
                     // Build the fuzzy match viewer code
-                    StringBuilder builder = new StringBuilder();
+                    var builder = new StringBuilder();
                     foreach (char thisChar in ViewerCode)
                     {
                         if (Char.IsNumber(thisChar))

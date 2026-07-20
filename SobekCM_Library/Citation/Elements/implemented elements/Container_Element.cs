@@ -73,8 +73,8 @@ namespace SobekCM.Library.Citation.Elements
                 }
             }
 
-            List<string> type = new List<string>();
-            List<string> levels = new List<string>();
+            var type = new List<string>();
+            var levels = new List<string>();
             if (Bib.Bib_Info.Containers_Count > 0)
             {
                 foreach (Finding_Guide_Container thisContainer in Bib.Bib_Info.Containers)

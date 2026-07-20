@@ -65,7 +65,7 @@ namespace SobekCM.Library.Citation.Elements
             }
 
             // Start the list to collect all current instance values
-            List<string> instanceValues = new List<string>();
+            var instanceValues = new List<string>();
 
             // Try to get any existing learning object metadata module
             LearningObjectMetadata lomInfo = Bib.Get_Metadata_Module(GlobalVar.IEEE_LOM_METADATA_MODULE_KEY) as LearningObjectMetadata;

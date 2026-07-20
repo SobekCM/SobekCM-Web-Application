@@ -1,4 +1,4 @@
-﻿using ProtoBuf;
+using ProtoBuf;
 using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
@@ -53,7 +53,7 @@ namespace SobekCM.Core.UI_Configuration.Citation
             }
 
             // Add a new one then
-            CitationSet newSet = new CitationSet { Name = SetName };
+            var newSet = new CitationSet{ Name = SetName };
             CitationSets.Add(newSet);
             return newSet;
         }
@@ -96,16 +96,16 @@ namespace SobekCM.Core.UI_Configuration.Citation
         private void set_defaults()
         {
             // Create the new set
-            CitationSet defaultSet = new CitationSet { Name = "DEFAULT" };
+            var defaultSet = new CitationSet{ Name = "DEFAULT" };
             DefaultCitationSet = "DEFAULT";
 
             // Add the purl in its own field set
-            CitationFieldSet purlSet = new CitationFieldSet { ID = "PURL" };
+            var purlSet = new CitationFieldSet{ ID = "PURL" };
             purlSet.Elements.Add(new CitationElement("Permanent Link", "Permanent Link", null, null));
             defaultSet.FieldSets.Add(purlSet);
 
             // Add the main material information field set
-            CitationFieldSet materialSet = new CitationFieldSet { ID = "MATERIAL", Heading = "Material Information" };
+            var materialSet = new CitationFieldSet{ ID = "MATERIAL", Heading = "Material Information" };
             materialSet.Elements.Add(new CitationElement("Title", "Title", null, "name"));
             materialSet.Elements.Add(new CitationElement("Series Title", "Series Title", "TI", null));
             materialSet.Elements.Add(new CitationElement("Uniform Title", "Uniform Title", null, null));
@@ -137,7 +137,7 @@ namespace SobekCM.Core.UI_Configuration.Citation
             defaultSet.FieldSets.Add(materialSet);
 
             // Add the thesis / dissertation field set
-            CitationFieldSet thesesSet = new CitationFieldSet { ID = "THESIS", Heading = "Thesis/Dissertation Information" };
+            var thesesSet = new CitationFieldSet{ ID = "THESIS", Heading = "Thesis/Dissertation Information" };
             thesesSet.Elements.Add(new CitationElement("Degree", "Degree", null, null));
             thesesSet.Elements.Add(new CitationElement("Degree Grantor", "Degree Grantor", null, null));
             thesesSet.Elements.Add(new CitationElement("Degree Divisions", "Degree Divisions", "EJ", null));
@@ -148,7 +148,7 @@ namespace SobekCM.Core.UI_Configuration.Citation
             defaultSet.FieldSets.Add(thesesSet);
 
             // Add the Darwin Core field set
-            CitationFieldSet darwinSet = new CitationFieldSet { ID = "DARWIN", Heading = "Zoological Taxonomic Information" };
+            var darwinSet = new CitationFieldSet{ ID = "DARWIN", Heading = "Zoological Taxonomic Information" };
             darwinSet.Elements.Add(new CitationElement("Scientific Name", "Scientific Name", null, null));
             darwinSet.Elements.Add(new CitationElement("Kingdom", "Kingdom", null, null));
             darwinSet.Elements.Add(new CitationElement("Phylum", "Phylum", null, null));
@@ -162,7 +162,7 @@ namespace SobekCM.Core.UI_Configuration.Citation
             defaultSet.FieldSets.Add(darwinSet);
 
             // Add the IEEE-LOM learning object field set
-            CitationFieldSet lomSet = new CitationFieldSet { ID = "LOM", Heading = "Learning Resource Information" };
+            var lomSet = new CitationFieldSet{ ID = "LOM", Heading = "Learning Resource Information" };
             lomSet.Elements.Add(new CitationElement("Aggregation Level", "Aggregation Level", null, null));
             lomSet.Elements.Add(new CitationElement("Learning Resource Type", "Learning Resource Type", null, null));
             lomSet.Elements.Add(new CitationElement("Status", "Status", null, null));
@@ -177,7 +177,7 @@ namespace SobekCM.Core.UI_Configuration.Citation
             defaultSet.FieldSets.Add(lomSet);
 
             // Add the subjects field set
-            CitationFieldSet subjectSet = new CitationFieldSet { ID = "SUBJECTS", Heading = "Subjects" };
+            var subjectSet = new CitationFieldSet{ ID = "SUBJECTS", Heading = "Subjects" };
             subjectSet.Elements.Add(new CitationElement("Subjects / Keywords", "Subjects / Keywords", null, null));
             subjectSet.Elements.Add(new CitationElement("Genre", "Genre", null, null));
             subjectSet.Elements.Add(new CitationElement("Temporal Coverage", "Temporal Coverage", null, null));
@@ -187,7 +187,7 @@ namespace SobekCM.Core.UI_Configuration.Citation
             defaultSet.FieldSets.Add(subjectSet);
 
             // Add the notes field set
-            CitationFieldSet notesSet = new CitationFieldSet { ID = "NOTES", Heading = "Notes" };
+            var notesSet = new CitationFieldSet{ ID = "NOTES", Heading = "Notes" };
             notesSet.Elements.Add(new CitationElement("Abstract", "Abstract", null, "description", CitationElement_OverrideDispayTerm_Enum.subterm));
             notesSet.Elements.Add(new CitationElement("Note", "General Note", null, "notes", CitationElement_OverrideDispayTerm_Enum.subterm));
             notesSet.Elements.Add(new CitationElement("Inscription", "Inscription", null, null));
@@ -195,7 +195,7 @@ namespace SobekCM.Core.UI_Configuration.Citation
             defaultSet.FieldSets.Add(notesSet);
 
             // Add the record information field set
-            CitationFieldSet recordSet = new CitationFieldSet { ID = "RECORD", Heading = "Record Information" };
+            var recordSet = new CitationFieldSet{ ID = "RECORD", Heading = "Record Information" };
             recordSet.Elements.Add(new CitationElement("Source Institution", "Source Institution", null, "sourceOrganization"));
             recordSet.Elements.Add(new CitationElement("Holding Location", "Holding Location", null, "contentLocation"));
             recordSet.Elements.Add(new CitationElement("Rights Management", "Rights Management", null, "rights"));
@@ -206,7 +206,7 @@ namespace SobekCM.Core.UI_Configuration.Citation
             defaultSet.FieldSets.Add(recordSet);
 
             // Add the related items field set
-            CitationFieldSet relatedSet = new CitationFieldSet { ID = "RELATED", Heading = "Related Items" };
+            var relatedSet = new CitationFieldSet{ ID = "RELATED", Heading = "Related Items" };
             relatedSet.Elements.Add(new CitationElement("Related Item", "Related Item", null, null, CitationElement_OverrideDispayTerm_Enum.subterm));
             defaultSet.FieldSets.Add(relatedSet);
 

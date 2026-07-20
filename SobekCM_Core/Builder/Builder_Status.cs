@@ -1,4 +1,4 @@
-﻿using ProtoBuf;
+using ProtoBuf;
 using SobekCM.Tools;
 using System;
 using System.Collections.Generic;
@@ -60,7 +60,7 @@ namespace SobekCM.Core.Builder
                 settingLookupTable[Key].Value = Value;
             else
             {
-                StringKeyValuePair pair = new StringKeyValuePair(Key, Value);
+                var pair = new StringKeyValuePair(Key, Value);
                 Settings.Add(pair);
                 settingLookupTable[Key] = pair;
             }

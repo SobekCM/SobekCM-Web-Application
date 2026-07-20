@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using System;
 using System.Collections.Generic;
@@ -72,7 +72,7 @@ namespace SobekCM.Builder_Library.Modules.Folders
                             // If there is no METS file, use special code to check this
                             if (Directory.GetFiles(resource.Resource_Folder, "*.mets*").Length == 0)
                             {
-                                DirectoryInfo noMetsDirInfo = new DirectoryInfo(resource.Resource_Folder);
+                                var noMetsDirInfo = new DirectoryInfo(resource.Resource_Folder);
                                 string vid = noMetsDirInfo.Name;
                                 if (noMetsDirInfo.Parent != null) // Should never be null
                                 {
@@ -280,7 +280,7 @@ namespace SobekCM.Builder_Library.Modules.Folders
 
 
             // check the mets file against the scheme
-            FileInfo metsFileInfo = new FileInfo(mets_file);
+            var metsFileInfo = new FileInfo(mets_file);
             if (Settings.Builder.Verbose_Flag)
                 OnProcess("ValidateAndClassifyModule.Validate_and_Read_METS: Validate against " + metsFileInfo.Name + " against the schema", "Verbose", bib_vid, String.Empty, -1);
 
@@ -420,7 +420,7 @@ namespace SobekCM.Builder_Library.Modules.Folders
 
             try
             {
-                LogFileXhtml errorLog = new LogFileXhtml(Resource_Folder + "\\" + Folder_Name + ".log.html", "Package Processing Log", "SobekCM Builder Errors");
+                var errorLog = new LogFileXhtml(Resource_Folder + "\\" + Folder_Name + ".log.html", "Package Processing Log", "SobekCM Builder Errors");
                 errorLog.New();
                 errorLog.AddComplete("Error Log for " + Folder_Name + " processed at: " + DateTime.Now.ToString());
                 errorLog.AddComplete("");

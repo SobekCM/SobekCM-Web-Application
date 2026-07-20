@@ -222,7 +222,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 List<abstract_TreeNode> pages = currentItem.Divisions.Physical_Tree.Pages_PreOrder;
 
                 //create a new list of all the polygons for a resource item
-                Dictionary<string, Page_TreeNode> pageLookup = new Dictionary<string, Page_TreeNode>();
+                var pageLookup = new Dictionary<string, Page_TreeNode>();
                 int page_index = 1;
                 foreach (var abstractTreeNode in pages)
                 {
@@ -270,7 +270,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                                 //clear all the previous mains featureTypes (this will work for an item because there is only ever one item)
                                 resourceGeoInfo.Clear_NonPOIs();
                                 //add the point obj
-                                Coordinate_Point newPoint = new Coordinate_Point(temp1Lat, temp1Long, currentItem.METS_Header.ObjectID, "main");
+                                var newPoint = new Coordinate_Point(temp1Lat, temp1Long, currentItem.METS_Header.ObjectID, "main");
                                 //add the new point 
                                 resourceGeoInfo.Add_Point(newPoint);
                                 //save to db
@@ -291,7 +291,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                                     //create new
                                     pageGeo = new GeoSpatial_Information();
                                     //create a polygon
-                                    Coordinate_Polygon pagePolygon = new Coordinate_Polygon();
+                                    var pagePolygon = new Coordinate_Polygon();
                                     //prep incoming bounds
                                     string[] temp2 = ar[4].Split(',');
                                     pagePolygon.Clear_Edge_Points();
@@ -342,7 +342,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                                         try
                                         {
                                             //make a polygon
-                                            Coordinate_Polygon pagePolygon = new Coordinate_Polygon();
+                                            var pagePolygon = new Coordinate_Polygon();
                                             //prep incoming bounds
                                             string[] temp2 = ar[4].Split(',');
                                             pagePolygon.Clear_Edge_Points();
@@ -480,7 +480,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                                         break;
                                     case "circle":
                                         //create new circle
-                                        Coordinate_Circle poiCircle = new Coordinate_Circle { Label = ar[3], Radius = Convert.ToDouble(ar[5]), FeatureType = "poi" };
+                                        var poiCircle = new Coordinate_Circle{ Label = ar[3], Radius = Convert.ToDouble(ar[5]), FeatureType = "poi" };
 
                                         //add the incoming lat/long
                                         string[] temp3 = ar[4].Split(',');
@@ -491,7 +491,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                                         break;
                                     case "rectangle":
                                         //create new polygon
-                                        Coordinate_Polygon poiRectangle = new Coordinate_Polygon { Label = ar[3], FeatureType = "poi", PolygonType = "rectangle" };
+                                        var poiRectangle = new Coordinate_Polygon{ Label = ar[3], FeatureType = "poi", PolygonType = "rectangle" };
 
                                         //add the incoming bounds
                                         string[] temp4 = ar[4].Split(',');
@@ -503,7 +503,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                                         break;
                                     case "polygon":
                                         //create new polygon
-                                        Coordinate_Polygon poiPolygon = new Coordinate_Polygon { Label = ar[3], FeatureType = "poi" };
+                                        var poiPolygon = new Coordinate_Polygon{ Label = ar[3], FeatureType = "poi" };
 
                                         //add the edge points
                                         for (int i2 = 5; i2 < ar.Length; i2++)
@@ -516,7 +516,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                                         break;
                                     case "polyline":
                                         //create new line
-                                        Coordinate_Line poiLine = new Coordinate_Line { Label = ar[3], FeatureType = "poi" };
+                                        var poiLine = new Coordinate_Line{ Label = ar[3], FeatureType = "poi" };
 
                                         //add the edge points
                                         for (int i2 = 5; i2 < ar.Length; i2++)
@@ -666,7 +666,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 }
                 int i2 = BitConverter.ToInt32(b, C_PE_HEADER_OFFSET);
                 int secondsSince1970 = BitConverter.ToInt32(b, i2 + C_LINKER_TIMESTAMP_OFFSET);
-                DateTime dt = new DateTime(1970, 1, 1, 0, 0, 0);
+                var dt = new DateTime(1970, 1, 1, 0, 0, 0);
                 dt = dt.AddSeconds(secondsSince1970);
                 dt = dt.AddHours(TimeZone.CurrentTimeZone.GetUtcOffset(dt).Hours);
                 string debugTime_buildTimestamp = dt.ToString();
@@ -706,7 +706,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 try
                 {
                     //get collectionIdsFromPage
-                    List<string> collectionIdsFromPage = new List<string>();
+                    var collectionIdsFromPage = new List<string>();
                     collectionIdsFromPage.Add(currentItem.Behaviors.Aggregations[0].Code);
                     collectionIdsFromPage.Add(currentItem.BibID);
 

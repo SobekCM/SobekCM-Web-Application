@@ -71,7 +71,7 @@ namespace SobekCM.Library.Citation.Elements
                 LabelFromTemplateFile = FixedTypeFromTemplateFile;
             }
 
-            List<string> terms = new List<string>();
+            var terms = new List<string>();
             if (Bib.Bib_Info.Identifiers_Count > 0)
             {
                 terms.AddRange(Bib.Bib_Info.Identifiers.Select(thisIdentifier => thisIdentifier.Identifier));

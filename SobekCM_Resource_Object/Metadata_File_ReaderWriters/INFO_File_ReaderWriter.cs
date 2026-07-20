@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using System;
 using System.Collections.Generic;
@@ -63,7 +63,7 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
 
             // The INFO file is just a DataSet written out to XML use C#.
             // This makes this initial read VERY easy
-            DataSet readInfo = new DataSet();
+            var readInfo = new DataSet();
             try
             {
                 readInfo.ReadXml(MetadataFilePathName);

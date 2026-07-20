@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using System;
 using System.Collections.Generic;
@@ -56,7 +56,7 @@ namespace SobekCM.Builder_Library.Tools
 
             string last_bibid = String.Empty;
 
-            StreamWriter writer = new StreamWriter(XML_File, false);
+            var writer = new StreamWriter(XML_File, false);
 
             writer.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\" ?>");
             writer.WriteLine("<collection xmlns=\"http://www.loc.gov/MARC21/slim\">");
@@ -76,7 +76,7 @@ namespace SobekCM.Builder_Library.Tools
                         string marc_xml = server_root1 + thisRow["File_Location"].ToString().Replace("/", "\\") + "\\" + this_vid + "\\marc.xml";
                         if (File.Exists(marc_xml))
                         {
-                            StreamReader reader = new StreamReader(marc_xml);
+                            var reader = new StreamReader(marc_xml);
                             reader.ReadLine();
                             reader.ReadLine();
 
@@ -107,7 +107,7 @@ namespace SobekCM.Builder_Library.Tools
 
             // Validate this XML file
             // Define the new XmlSChemeCollection
-            XmlSchemaSet cache = new XmlSchemaSet();
+            var cache = new XmlSchemaSet();
 
             // Import the METS schema, which is the only schema needed.
             // METS schema governs the importing of other schemas.
@@ -125,7 +125,7 @@ namespace SobekCM.Builder_Library.Tools
             {
 
                 // Create the reader and validator
-                XmlReaderSettings marcXmlSettings = new XmlReaderSettings();
+                var marcXmlSettings = new XmlReaderSettings();
                 marcXmlSettings.Schemas.Add(cache);
                 marcXmlSettings.ValidationType = ValidationType.Schema;
                 marcXmlSettings.ValidationEventHandler += MyValidationEventHandler;
@@ -149,11 +149,11 @@ namespace SobekCM.Builder_Library.Tools
             // Now, build the final error message
             if (error_lines.Count > 0)
             {
-                StringBuilder errorBuilder = new StringBuilder();
+                var errorBuilder = new StringBuilder();
                 string record_number = String.Empty;
                 int line_number = 1;
                 int next_error_number = 0;
-                StreamReader rereader = new StreamReader(XML_File);
+                var rereader = new StreamReader(XML_File);
                 string line = rereader.ReadLine();
                 while ((line != null) && (error_lines.Count > next_error_number))
                 {
@@ -189,7 +189,7 @@ namespace SobekCM.Builder_Library.Tools
             {
                 if (error_messages.Count > 0)
                 {
-                    StringBuilder exceptionErrorBuilder = new StringBuilder();
+                    var exceptionErrorBuilder = new StringBuilder();
                     foreach (string thisError in error_messages)
                     {
                         exceptionErrorBuilder.AppendLine(thisError);

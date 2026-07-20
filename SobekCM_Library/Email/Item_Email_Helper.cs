@@ -43,7 +43,7 @@ namespace SobekCM.Library.Email
         {
             try
             {
-                StringBuilder messageBuilder = new StringBuilder();
+                var messageBuilder = new StringBuilder();
 
                 messageBuilder.AppendLine("<span style=\"font-family:Arial, Helvetica, sans-serif;\">");
                 if (Comments.Length > 0)
@@ -106,7 +106,7 @@ namespace SobekCM.Library.Email
                         // If they can all be listed one after the other do so now
                         if (!thisField.IndividualFields)
                         {
-                            List<string> valueArray = new List<string>();
+                            var valueArray = new List<string>();
                             foreach (BriefItem_DescTermValue thisValue in briefTerm.Values)
                             {
 
@@ -194,8 +194,7 @@ namespace SobekCM.Library.Email
                 int error_count = 0;
                 foreach (string thisReceipient in email_recepients)
                 {
-                    EmailInfo newEmail = new EmailInfo
-                    {
+                    var newEmail = new EmailInfo{
                         Body = messageBuilder.ToString(),
                         isContactUs = false,
                         isHTML = true,
@@ -261,7 +260,7 @@ namespace SobekCM.Library.Email
             try
             {
 
-                StringBuilder messageBuilder = new StringBuilder();
+                var messageBuilder = new StringBuilder();
 
                 if (Comments.Length > 0)
                 {
@@ -312,7 +311,7 @@ namespace SobekCM.Library.Email
                         // If they can all be listed one after the other do so now
                         if (!thisField.IndividualFields)
                         {
-                            List<string> valueArray = new List<string>();
+                            var valueArray = new List<string>();
                             foreach (BriefItem_DescTermValue thisValue in briefTerm.Values)
                             {
 
@@ -396,8 +395,7 @@ namespace SobekCM.Library.Email
                 int error_count = 0;
                 foreach (string thisReceipient in email_recepients)
                 {
-                    EmailInfo newEmail = new EmailInfo
-                    {
+                    var newEmail = new EmailInfo{
                         Body = messageBuilder.ToString(),
                         isContactUs = false,
                         isHTML = false,

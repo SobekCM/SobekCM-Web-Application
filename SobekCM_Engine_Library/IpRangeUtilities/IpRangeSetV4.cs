@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using System.Collections.Generic;
 using System.Linq;
@@ -34,7 +34,7 @@ namespace SobekCM.Engine_Library.IpRangeUtilities
         /// <param name="SingleIpAddress"> Single IP address/range (as an unsigned long)</param>
         public void AddIpRange(ulong SingleIpAddress)
         {
-            SingleIpRangeV4 range = new SingleIpRangeV4(SingleIpAddress);
+            var range = new SingleIpRangeV4(SingleIpAddress);
             AddIpRange(range);
         }
 
@@ -43,7 +43,7 @@ namespace SobekCM.Engine_Library.IpRangeUtilities
         /// <param name="EndIpAddress">  Last IP address in the range (as an unsigned long)</param>
         public void AddIpRange(ulong StartIpAddress, ulong EndIpAddress)
         {
-            SingleIpRangeV4 range = new SingleIpRangeV4(StartIpAddress, EndIpAddress);
+            var range = new SingleIpRangeV4(StartIpAddress, EndIpAddress);
             AddIpRange(range);
         }
 
@@ -51,7 +51,7 @@ namespace SobekCM.Engine_Library.IpRangeUtilities
         /// <param name="SingleIpAddress"> Single IP address/range (as a string)</param>
         public void AddIpRange(string SingleIpAddress)
         {
-            SingleIpRangeV4 range = new SingleIpRangeV4(SingleIpAddress);
+            var range = new SingleIpRangeV4(SingleIpAddress);
             AddIpRange(range);
         }
 
@@ -60,14 +60,14 @@ namespace SobekCM.Engine_Library.IpRangeUtilities
         /// <param name="EndIpAddress">  Last IP address in the range (as a string)</param>
         public void AddIpRange(string StartIpAddress, string EndIpAddress)
         {
-            SingleIpRangeV4 range = new SingleIpRangeV4(StartIpAddress, EndIpAddress);
+            var range = new SingleIpRangeV4(StartIpAddress, EndIpAddress);
             AddIpRange(range);
         }
 
         /// <summary> Readies this set for comparisons, by building some internal data structures </summary>
         public void Ready()
         {
-            Dictionary<byte, SortedList<ulong, SingleIpRangeV4>> tempDictionary = new Dictionary<byte, SortedList<ulong, SingleIpRangeV4>>();
+            var tempDictionary = new Dictionary<byte, SortedList<ulong, SingleIpRangeV4>>();
             foreach (SingleIpRangeV4 ipRange in ranges)
             {
                 if (tempDictionary.ContainsKey(ipRange.Prefix))
@@ -76,7 +76,7 @@ namespace SobekCM.Engine_Library.IpRangeUtilities
                 }
                 else
                 {
-                    SortedList<ulong, SingleIpRangeV4> newSorted = new SortedList<ulong, SingleIpRangeV4> { { ipRange.StartIpAddress, ipRange } };
+                    var newSorted = new SortedList<ulong, SingleIpRangeV4>{ { ipRange.StartIpAddress, ipRange } };
                     tempDictionary[ipRange.Prefix] = newSorted;
                 }
             }
@@ -94,7 +94,7 @@ namespace SobekCM.Engine_Library.IpRangeUtilities
         /// <returns> TRUE if the IP address is within the ranges, otherwise FALSE </returns>
         public bool Contains(string Address)
         {
-            ComparableIpAddress address = new ComparableIpAddress(Address);
+            var address = new ComparableIpAddress(Address);
             return Contains(address);
         }
 

@@ -1,4 +1,4 @@
-﻿using SobekCM.Core.Aggregations;
+using SobekCM.Core.Aggregations;
 using System.IO;
 
 
@@ -18,7 +18,7 @@ namespace SobekCM.Library.AggregationViewer.HtmlHeadWriters
                 return;
 
             // Create the simple aggregation object, and get the JSON
-            Simple_Aggregation simpleAggr = new Simple_Aggregation(CurrentAggregation);
+            var simpleAggr = new Simple_Aggregation(CurrentAggregation);
             string simpleAggr_asJson = simpleAggr.ToJSON();
 
             // Write the JSON to the header

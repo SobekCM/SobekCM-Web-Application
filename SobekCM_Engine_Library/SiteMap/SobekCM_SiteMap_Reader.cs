@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using SobekCM.Core.SiteMap;
 using System;
@@ -23,7 +23,7 @@ namespace SobekCM.Engine_Library.SiteMap
             SobekCM_SiteMap siteMap = null;
             int nodeValue = 1;
 
-            Stack<SobekCM_SiteMap_Node> nodesStack = new Stack<SobekCM_SiteMap_Node>();
+            var nodesStack = new Stack<SobekCM_SiteMap_Node>();
 
             try
             {
@@ -97,7 +97,7 @@ namespace SobekCM.Engine_Library.SiteMap
                             }
 
                             // Create the new node
-                            SobekCM_SiteMap_Node newNode = new SobekCM_SiteMap_Node(url, title, description, nodeValue++);
+                            var newNode = new SobekCM_SiteMap_Node(url, title, description, nodeValue++);
 
                             // Add to the parent
                             if (nodesStack.Count == 0)

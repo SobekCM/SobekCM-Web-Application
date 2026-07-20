@@ -62,7 +62,7 @@ namespace SobekCM.Library.Citation.Elements
                 }
             }
 
-            List<string> instanceValues = new List<string>();
+            var instanceValues = new List<string>();
             if (Bib.Bib_Info.Notes_Count > 0)
             {
                 instanceValues.AddRange(from thisNote in Bib.Bib_Info.Notes where (thisNote.Note_Type != Note_Type_Enum.PublicationStatus) && (thisNote.Note_Type != Note_Type_Enum.Funding) && (thisNote.Note_Type != Note_Type_Enum.Acquisition) && (thisNote.Note_Type != Note_Type_Enum.DefaultType) select thisNote.ToString().Replace("<b>", "(").Replace("</b>", ")"));

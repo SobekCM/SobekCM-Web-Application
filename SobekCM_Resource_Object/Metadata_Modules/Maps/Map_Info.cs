@@ -88,7 +88,7 @@ namespace SobekCM.Resource_Object.Metadata_Modules.Maps
         /// <returns> Empty map index object added to this map object </returns>
         public Map_Index New_Index()
         {
-            Map_Index returnValue = new Map_Index();
+            var returnValue = new Map_Index();
             indexCollection.Add(returnValue);
             return returnValue;
         }
@@ -102,7 +102,7 @@ namespace SobekCM.Resource_Object.Metadata_Modules.Maps
         /// <returns> Built map index object added to this map object </returns>
         public Map_Index New_Index(long IndexID, string Title, string Image_File, string HTML_File, string Type)
         {
-            Map_Index returnValue = new Map_Index(IndexID, Title, Image_File, HTML_File, Type);
+            var returnValue = new Map_Index(IndexID, Title, Image_File, HTML_File, Type);
             indexCollection.Add(returnValue);
             return returnValue;
         }
@@ -190,7 +190,7 @@ namespace SobekCM.Resource_Object.Metadata_Modules.Maps
         /// <returns> Map corporate body related to this map item </returns>
         public Map_Corporation New_Corporation(long CorpID, string Primary_Name)
         {
-            Map_Corporation newCorp = new Map_Corporation(CorpID, Primary_Name);
+            var newCorp = new Map_Corporation(CorpID, Primary_Name);
             corpHash[CorpID] = newCorp;
             return newCorp;
         }
@@ -264,7 +264,7 @@ namespace SobekCM.Resource_Object.Metadata_Modules.Maps
         /// <returns> Mostly empty map personal name added to this item </returns>
         public Map_Person New_Person(long PersonID, string Primary_Name)
         {
-            Map_Person newPerson = new Map_Person(PersonID, Primary_Name);
+            var newPerson = new Map_Person(PersonID, Primary_Name);
             personHash[PersonID] = newPerson;
             return newPerson;
         }
@@ -339,7 +339,7 @@ namespace SobekCM.Resource_Object.Metadata_Modules.Maps
         /// <returns> Fully built and added map sheet object </returns>
         public Map_Sheet New_Sheet(long SheetID, int Index, string FilePtr, string File)
         {
-            Map_Sheet newSheet = new Map_Sheet(SheetID, Index, FilePtr, File);
+            var newSheet = new Map_Sheet(SheetID, Index, FilePtr, File);
             sheetHash[SheetID] = newSheet;
             return newSheet;
         }
@@ -526,7 +526,7 @@ namespace SobekCM.Resource_Object.Metadata_Modules.Maps
         public string ToXML(string prefix, bool include_map_id)
         {
             // Start to build this data
-            StringBuilder results = new StringBuilder();
+            var results = new StringBuilder();
             if ((include_map_id) && (mapid.Length > 0))
                 results.Append("<" + prefix + "ufdc_map id=\"" + mapid + "\">\r\n");
             else
@@ -571,7 +571,7 @@ namespace SobekCM.Resource_Object.Metadata_Modules.Maps
                 results.Append("<" + prefix + "entities>\r\n");
 
                 // Add all the features first
-                DataView featureView = new DataView(Features);
+                var featureView = new DataView(Features);
                 featureView.Sort = "FeatureID ASC";
                 foreach (DataRowView thisFeatureView in featureView)
                 {
@@ -641,7 +641,7 @@ namespace SobekCM.Resource_Object.Metadata_Modules.Maps
 
                 // Add all the streets next
                 // Collect all the street ids
-                ArrayList streetids = new ArrayList();
+                var streetids = new ArrayList();
                 foreach (Map_Info_Tables.StreetRow thisStreet in Streets)
                 {
                     if (!streetids.Contains(thisStreet.StreetID))
@@ -651,7 +651,7 @@ namespace SobekCM.Resource_Object.Metadata_Modules.Maps
                 }
 
                 // Create a data view
-                DataView streetView = new DataView(Streets);
+                var streetView = new DataView(Streets);
                 streetView.Sort = "StreetID ASC, SheetID ASC";
                 foreach (long thisStreetID in streetids)
                 {
@@ -1212,7 +1212,7 @@ namespace SobekCM.Resource_Object.Metadata_Modules.Maps
             // Look for the primary name and alternate names
             string type = String.Empty;
             string primary_name = String.Empty;
-            ArrayList alternate_names = new ArrayList();
+            var alternate_names = new ArrayList();
             foreach (XmlNode childNode in corpNode.ChildNodes)
             {
                 // Look at each corp name

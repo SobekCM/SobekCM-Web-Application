@@ -173,7 +173,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             ReadOnlyCollection<Item_Aggregation_Child_Page> public_browses = ViewBag.Hierarchy_Object.Browse_By_Pages;
 
             // Determine if this is an internal user and create list of internal user browses
-            List<string> internal_browses = new List<string>();
+            var internal_browses = new List<string>();
             if ((RequestSpecificValues.Current_User != null) && ((RequestSpecificValues.Current_User.Is_Internal_User) || (RequestSpecificValues.Current_User.Is_Aggregation_Curator(RequestSpecificValues.Current_Mode.Aggregation))))
             {
                 // Just add every metadata field here
@@ -206,7 +206,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 if (public_browses.Count > 0)
                 {
                     // Sort these by title
-                    SortedList<string, Item_Aggregation_Child_Page> sortedBrowses = new SortedList<string, Item_Aggregation_Child_Page>();
+                    var sortedBrowses = new SortedList<string, Item_Aggregation_Child_Page>();
                     foreach (Item_Aggregation_Child_Page thisBrowse in public_browses)
                     {
                         if (thisBrowse.Source_Data_Type == Item_Aggregation_Child_Source_Data_Enum.Static_HTML)
@@ -353,7 +353,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 if ((results != null) && (results.Count > 0))
                 {
                     // Determine which letters appear
-                    List<char> letters_appearing = new List<char>();
+                    var letters_appearing = new List<char>();
                     char last_char = '\n';
                     if (results.Count > 100)
                     {

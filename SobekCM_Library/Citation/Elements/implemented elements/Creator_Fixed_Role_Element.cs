@@ -73,7 +73,7 @@ namespace SobekCM.Library.Citation.Elements
                 LabelFromTemplateFile = FixedTypeFromTemplateFile;
             }
 
-            List<string> instanceValues = new List<string>();
+            var instanceValues = new List<string>();
             if ((Bib.Bib_Info.hasMainEntityName) && (Bib.Bib_Info.Main_Entity_Name.ToString().Length > 0))
             {
                 string main_name_as_string = Bib.Bib_Info.Main_Entity_Name.ToString(false);

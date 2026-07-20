@@ -1210,7 +1210,7 @@ namespace SobekCM.Resource_Object.Divisions
             try
             {
                 // Get the height and width of this JPEG file
-                FileStream reader = new FileStream(File, FileMode.Open, FileAccess.Read);
+                var reader = new FileStream(File, FileMode.Open, FileAccess.Read);
                 int[] previousValues = { 0, 0, 0, 0 };
                 int bytevalue = reader.ReadByte();
                 int count = 1;

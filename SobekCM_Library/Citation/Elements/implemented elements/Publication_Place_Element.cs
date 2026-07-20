@@ -68,7 +68,7 @@ namespace SobekCM.Library.Citation.Elements
                 }
             }
 
-            List<string> instanceValues = new List<string>();
+            var instanceValues = new List<string>();
             if (Bib.Bib_Info.Publishers_Count > 0)
             {
                 foreach (Publisher_Info thisName in Bib.Bib_Info.Publishers)

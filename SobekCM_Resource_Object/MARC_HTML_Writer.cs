@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using SobekCM.Resource_Object.MARC;
 using System;
@@ -89,7 +89,7 @@ namespace SobekCM.Resource_Object
             }
 
             // Start to build the HTML result
-            StringBuilder results = new StringBuilder();
+            var results = new StringBuilder();
             results.Append("<table style=\"border:none; text-align:left; width:" + Width + ";\">\n");
 
             // Add the LEADER

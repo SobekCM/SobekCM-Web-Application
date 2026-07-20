@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using SobekCM.Core;
 using SobekCM.Core.Settings;
@@ -23,7 +23,7 @@ namespace SobekCM.Engine_Library.Email
         /// <returns> TRUE if successful, otherwise FALSE </returns>
         public static bool SendEmail(string ToAddress, string Subject, string Body, bool isHtml, string InstanceName)
         {
-            EmailInfo newEmail = new EmailInfo { RecipientsList = ToAddress, Subject = Subject, Body = Body, isHTML = isHtml };
+            var newEmail = new EmailInfo{ RecipientsList = ToAddress, Subject = Subject, Body = Body, isHTML = isHtml };
 
             if (String.IsNullOrEmpty(Engine_ApplicationCache_Gateway.Settings.Email.Setup.DefaultFromDisplay))
             {
@@ -87,7 +87,7 @@ namespace SobekCM.Engine_Library.Email
                         }
                     }
 
-                    MailMessage myMail = new MailMessage(Email.FromAddress, Email.RecipientsList)
+                    var myMail = new MailMessage(Email.FromAddress, Email.RecipientsList)
                     {
                         Subject = Email.Subject,
                         Body = Email.Body
@@ -100,7 +100,7 @@ namespace SobekCM.Engine_Library.Email
                     }
 
                     // Mail this
-                    SmtpClient client = new SmtpClient(Engine_ApplicationCache_Gateway.Settings.Email.Setup.SmtpServer, Engine_ApplicationCache_Gateway.Settings.Email.Setup.SmtpPort);
+                    var client = new SmtpClient(Engine_ApplicationCache_Gateway.Settings.Email.Setup.SmtpServer, Engine_ApplicationCache_Gateway.Settings.Email.Setup.SmtpPort);
                     client.Send(myMail);
 
                     // Log this in the database

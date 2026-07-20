@@ -33,8 +33,8 @@ namespace SobekCM.Library.AdminViewer.UserAdmin.SubViewers
                     User_Object reset_user = Engine_Database.Get_User(userid, RequestSpecificValues.Tracer);
 
                     // Create the random password
-                    StringBuilder passwordBuilder = new StringBuilder();
-                    Random randomGenerator = new Random(DateTime.Now.Millisecond);
+                    var passwordBuilder = new StringBuilder();
+                    var randomGenerator = new Random(DateTime.Now.Millisecond);
                     while (passwordBuilder.Length < 12)
                     {
                         switch (randomGenerator.Next(0, 3))

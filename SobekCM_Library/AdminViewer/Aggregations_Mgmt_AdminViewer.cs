@@ -172,7 +172,7 @@ namespace SobekCM.Library.AdminViewer
                             }
 
                             // Convert to the integer id for the parent and begin to do checking
-                            List<string> errors = new List<string>();
+                            var errors = new List<string>();
                             if (String.IsNullOrEmpty(new_parent))
                             {
                                 errors.Add("You must select a PARENT for this new aggregation");
@@ -299,8 +299,7 @@ namespace SobekCM.Library.AdminViewer
                                 }
 
                                 // Create the new aggregation argument object
-                                New_Aggregation_Arguments args = new New_Aggregation_Arguments
-                                {
+                                var args = new New_Aggregation_Arguments{
                                     Active = is_active,
                                     Code = new_aggregation_code,
                                     Description = new_description,

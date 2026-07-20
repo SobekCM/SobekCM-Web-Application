@@ -39,7 +39,7 @@ namespace SobekCM.Engine_Library.Endpoints
                     break;
 
                 case Microservice_Endpoint_Protocol_Enum.XML:
-                    XmlSerializer x = new XmlSerializer(ReturnValue.GetType());
+                    var x = new XmlSerializer(ReturnValue.GetType());
                     x.Serialize(Response.Output, ReturnValue);
                     break;
 

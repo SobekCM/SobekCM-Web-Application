@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using System.IO;
 using SobekCM.Builder_Library.Tools;
@@ -24,7 +24,7 @@ namespace SobekCM.Builder_Library.Modules.Items
             foreach (string thisPdf in pdfs)
             {
                 // Get the fileinfo and the name
-                FileInfo thisPdfInfo = new FileInfo(thisPdf);
+                var thisPdfInfo = new FileInfo(thisPdf);
                 string fileName = thisPdfInfo.Name.Replace(thisPdfInfo.Extension, "");
 
                 // Does the full text exist for this item?

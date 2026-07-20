@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace SobekCM.Core.ApplicationState
@@ -51,8 +51,7 @@ namespace SobekCM.Core.ApplicationState
         public void Add_Title(string BibID, string ThumbnailUrl, byte FlagByte, short LastFour, string GroupTitle)
         {
             // Create the multi-volume object
-            Multiple_Volume_Item titleItem = new Multiple_Volume_Item
-            {
+            var titleItem = new Multiple_Volume_Item{
                 CustomThumbnail = ThumbnailUrl,
                 FlagByte = FlagByte,
                 GroupTitle = GroupTitle
@@ -62,7 +61,7 @@ namespace SobekCM.Core.ApplicationState
             string short_bibid = (BibID.Length > 6) ? BibID.Substring(0, 6) : BibID;
             if (!lookupDictionary.ContainsKey(short_bibid))
             {
-                Dictionary<short, Multiple_Volume_Item> innerDictionary = new Dictionary<short, Multiple_Volume_Item>();
+                var innerDictionary = new Dictionary<short, Multiple_Volume_Item>();
                 lookupDictionary[short_bibid] = innerDictionary;
                 innerDictionary[LastFour] = titleItem;
             }

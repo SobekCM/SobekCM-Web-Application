@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using Microsoft.AspNetCore.Http;
 using SobekCM.Core.Client;
@@ -103,7 +103,7 @@ namespace SobekCM.Library.MainWriters
                 else
                 {
                     // Get the list of all TEXT files
-                    List<string> existing_text_files = new List<string>();
+                    var existing_text_files = new List<string>();
                     if (Directory.Exists(UI_ApplicationCache_Gateway.Settings.Servers.Image_Server_Network + currentItem.Web.AssocFilePath))
                     {
                         string[] allFiles = Directory.GetFiles(UI_ApplicationCache_Gateway.Settings.Servers.Image_Server_Network + currentItem.Web.AssocFilePath, "*.txt");

@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using System;
 using System.Collections.Generic;
@@ -30,8 +30,8 @@ namespace SobekCM.Builder_Library.Modules.Schedulable
             {
                 // Create a list of all the collection codes
                 DataTable allCollections = Engine_Database.Get_Codes_Item_Aggregations(null);
-                DataView collectionView = new DataView(allCollections) {Sort = "Name ASC"};
-                List<string> allCodes = new List<string>();
+                var collectionView = new DataView(allCollections) {Sort = "Name ASC"};
+                var allCodes = new List<string>();
                 foreach (DataRowView collectionRow in collectionView)
                 {
                     bool hidden = bool.Parse(collectionRow["Hidden"].ToString());
@@ -44,7 +44,7 @@ namespace SobekCM.Builder_Library.Modules.Schedulable
                 }
 
                 // Create the (new) helper class
-                Aggregation_Static_Page_Writer staticWriter = new Aggregation_Static_Page_Writer();
+                var staticWriter = new Aggregation_Static_Page_Writer();
                 staticWriter.Process += staticWriter_Process;
                 staticWriter.Error += staticWriter_Error;
 
@@ -71,7 +71,7 @@ namespace SobekCM.Builder_Library.Modules.Schedulable
 
 
                 // Build the sitemap for all the collections
-                StreamWriter sitemap_writer = new StreamWriter(Path.Combine(staticSobekcmDataLocation, "sitemap_collections.xml"), false);
+                var sitemap_writer = new StreamWriter(Path.Combine(staticSobekcmDataLocation, "sitemap_collections.xml"), false);
                 sitemap_writer.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                 sitemap_writer.WriteLine("<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">");
                 sitemap_writer.WriteLine("\t<url>");
@@ -79,9 +79,9 @@ namespace SobekCM.Builder_Library.Modules.Schedulable
                 sitemap_writer.WriteLine("\t</url>");
 
                 // Prepare to build all the links to static pages
-                StringBuilder static_browse_links = new StringBuilder();
-                StringBuilder recent_rss_link_builder = new StringBuilder();
-                StringBuilder all_rss_link_builder = new StringBuilder();
+                var static_browse_links = new StringBuilder();
+                var recent_rss_link_builder = new StringBuilder();
+                var all_rss_link_builder = new StringBuilder();
                 int col = 2;
                 foreach (DataRowView collectionRow in collectionView)
                 {
@@ -129,7 +129,7 @@ namespace SobekCM.Builder_Library.Modules.Schedulable
                 int sitemaps = staticWriter.Build_Site_Maps(staticSobekcmDataLocation, primaryUrl);
 
                 // Create the sitemaps collection index
-                StreamWriter sitemap_collections_writer = new StreamWriter(Path.Combine(staticSobekcmDataLocation, "sitemaps.xml"), false);
+                var sitemap_collections_writer = new StreamWriter(Path.Combine(staticSobekcmDataLocation, "sitemaps.xml"), false);
                 sitemap_collections_writer.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                 sitemap_collections_writer.WriteLine("<sitemapindex xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">");
                 string current_date = DateTime.Now.Year + "-" + DateTime.Now.Month.ToString().PadLeft(2, '0') + "-" + DateTime.Now.Day.ToString().PadLeft(2, '0');
@@ -155,7 +155,7 @@ namespace SobekCM.Builder_Library.Modules.Schedulable
                 string empty_page_source;
                 try
                 {
-                    using (WebClient client = new WebClient())
+                    using (var client = new WebClient())
                     {
                         string empty_page = primaryUrl + "empty";
                         empty_page_source = client.DownloadString(empty_page);
@@ -176,9 +176,9 @@ namespace SobekCM.Builder_Library.Modules.Schedulable
 
                 // Build the main HTML page linking to all RSS feeds
                 OnProcess("Building HTML page with links to all the RSS feeds", "Aggregation Updates", null, null, updatedId);
-                using (StreamWriter main_rss_writer = new StreamWriter(Path.Combine(staticSobekcmDataLocation, "rss", "index.htm"), false))
+                using (var main_rss_writer = new StreamWriter(Path.Combine(staticSobekcmDataLocation, "rss", "index.htm"), false))
                 {
-                    StringBuilder main_rss_builder = new StringBuilder(2000);
+                    var main_rss_builder = new StringBuilder(2000);
                     main_rss_builder.AppendLine("<div id=\"pagecontainer\">");
                     main_rss_builder.AppendLine("<div class=\"SobekText\" role=\"main\" id=\"main-content\">");
                     main_rss_builder.AppendLine("<h1><strong>RSS Feeds for the " + Settings.System.System_Name + "</strong></h1>");
@@ -224,9 +224,9 @@ namespace SobekCM.Builder_Library.Modules.Schedulable
 
                 // Create the HTML page with links to the sitemap pages
                 OnProcess("Building HTML page with links to all the sitemaps", "Aggregation Updates", null, null, updatedId);
-                using (StreamWriter main_html_sitemap_writer = new StreamWriter(Path.Combine(staticSobekcmDataLocation, "sitemaps.htm"), false))
+                using (var main_html_sitemap_writer = new StreamWriter(Path.Combine(staticSobekcmDataLocation, "sitemaps.htm"), false))
                 {
-                    StringBuilder main_html_subwriter_builder = new StringBuilder(2000);
+                    var main_html_subwriter_builder = new StringBuilder(2000);
                     main_html_subwriter_builder.AppendLine("<div id=\"pagecontainer\">");
                     main_html_subwriter_builder.AppendLine("<div class=\"SobekText\" role=\"main\" id=\"main-content\">");
                     main_html_subwriter_builder.AppendLine("<h1><strong>Sitemaps for the " + Settings.System.System_Name + "</strong></h1>");

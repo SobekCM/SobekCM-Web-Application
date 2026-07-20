@@ -89,7 +89,7 @@ namespace SobekCM.Builder_Library
             }
             try
             {
-                StreamWriter testWriter = new StreamWriter(Path.Combine(logFileDirectory, "test.log"), false);
+                var testWriter = new StreamWriter(Path.Combine(logFileDirectory, "test.log"), false);
                 testWriter.WriteLine("TEST");
                 testWriter.Flush();
                 testWriter.Close();
@@ -121,7 +121,7 @@ namespace SobekCM.Builder_Library
             }
             try
             {
-                StreamWriter testWriter = new StreamWriter(Path.Combine(pluginRootDirectory, "test.log"), false);
+                var testWriter = new StreamWriter(Path.Combine(pluginRootDirectory, "test.log"), false);
                 testWriter.WriteLine("TEST");
                 testWriter.Flush();
                 testWriter.Close();
@@ -334,7 +334,7 @@ namespace SobekCM.Builder_Library
                 Engine_Database.Builder_Add_Log_Entry(-1, String.Empty, "Standard", "Preparing to begin polling", String.Empty);
 
                 // Create the new bulk loader
-                Worker_BulkLoader newLoader = new Worker_BulkLoader(PreloaderLogger, dbConfig, verbose, logFileDirectory, pluginRootDirectory);
+                var newLoader = new Worker_BulkLoader(PreloaderLogger, dbConfig, verbose, logFileDirectory, pluginRootDirectory);
 
                 // Try to refresh to test database and engine connectivity
                 if (newLoader.Refresh_Settings_And_Item_List())

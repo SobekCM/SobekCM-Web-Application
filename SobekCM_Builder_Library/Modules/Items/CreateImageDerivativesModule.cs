@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using System;
 using System.Collections.Generic;
@@ -37,7 +37,7 @@ namespace SobekCM.Builder_Library.Modules.Items
             if (!String.IsNullOrEmpty(imagemagick_executable))
             {
                 // Get the list of image files first
-                List<string> imageFiles = new List<string>();
+                var imageFiles = new List<string>();
                 foreach (string imageExtension in image_extensions)
                 {
                     imageFiles.AddRange(Directory.GetFiles(resourceFolder, "*" + imageExtension));
@@ -55,8 +55,8 @@ namespace SobekCM.Builder_Library.Modules.Items
                     //}
 
                     // Step through all the image files and find the collection of page images
-                    Dictionary<string, List<string>> imageRootFiles = new Dictionary<string, List<string>>( StringComparer.OrdinalIgnoreCase );
-                    List<string> possibleThumbnails = new List<string>();
+                    var imageRootFiles = new Dictionary<string, List<string>>( StringComparer.OrdinalIgnoreCase );
+                    var possibleThumbnails = new List<string>();
                     foreach (string thisImageFile in imageFiles)
                     {
                         // Skip .QC.JPG files
@@ -107,7 +107,7 @@ namespace SobekCM.Builder_Library.Modules.Items
                     }
 
                     // Create the image process object for creating 
-                    Image_Derivative_Creation_Processor imageProcessor = new Image_Derivative_Creation_Processor(imagemagick_executable, kakadu_directory, true, true, Settings.Resources.JPEG_Width, Settings.Resources.JPEG_Height, false, Settings.Resources.Thumbnail_Width, Settings.Resources.Thumbnail_Height, null);
+                    var imageProcessor = new Image_Derivative_Creation_Processor(imagemagick_executable, kakadu_directory, true, true, Settings.Resources.JPEG_Width, Settings.Resources.JPEG_Height, false, Settings.Resources.Thumbnail_Width, Settings.Resources.Thumbnail_Height, null);
                     imageProcessor.New_Task_String += imageProcessor_New_Task_String;
                     imageProcessor.Error_Encountered += imageProcessor_Error_Encountered;
 
@@ -183,7 +183,7 @@ namespace SobekCM.Builder_Library.Modules.Items
                         {
                             // Keep track of newest source file and date
                             string newest_source_file = String.Empty;
-                            DateTime newest_source_file_date = new DateTime(1900, 1, 1);
+                            var newest_source_file_date = new DateTime(1900, 1, 1);
 
                             // Find the newest source file
                             foreach (string thisSourceFile in theseImageFiles)

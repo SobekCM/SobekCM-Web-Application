@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using System;
 using System.Collections.Generic;
@@ -63,7 +63,7 @@ namespace SobekCM.Resource_Object.Metadata_Modules.GeoSpatial
         /// <returns> Fully built and added point object </returns>
         public Coordinate_Point Add_Point(double Latitude, double Longitude, string Label)
         {
-            Coordinate_Point newPoint = new Coordinate_Point(Latitude, Longitude, Label);
+            var newPoint = new Coordinate_Point(Latitude, Longitude, Label);
             points.Add(newPoint);
             return newPoint;
         }
@@ -76,7 +76,7 @@ namespace SobekCM.Resource_Object.Metadata_Modules.GeoSpatial
         /// <returns>Fully built and added point object </returns>
         public Coordinate_Point Add_Point(double Latitude, double Longitude, string Label, long Altitude)
         {
-            Coordinate_Point newPoint = new Coordinate_Point(Latitude, Longitude, Label, Altitude);
+            var newPoint = new Coordinate_Point(Latitude, Longitude, Label, Altitude);
             points.Add(newPoint);
             return newPoint;
         }

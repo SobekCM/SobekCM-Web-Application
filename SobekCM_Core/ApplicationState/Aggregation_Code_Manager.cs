@@ -59,7 +59,7 @@ namespace SobekCM.Core.ApplicationState
         {
             get
             {
-                SortedDictionary<string, Item_Aggregation_Related_Aggregations> sorter = new SortedDictionary<string, Item_Aggregation_Related_Aggregations>();
+                var sorter = new SortedDictionary<string, Item_Aggregation_Related_Aggregations>();
                 foreach (Item_Aggregation_Related_Aggregations thisAggr in All_Aggregations)
                 {
                     sorter[thisAggr.Name.ToUpper()] = thisAggr;
@@ -75,7 +75,7 @@ namespace SobekCM.Core.ApplicationState
         {
             get
             {
-                SortedDictionary<string, Item_Aggregation_Related_Aggregations> sorter = new SortedDictionary<string, Item_Aggregation_Related_Aggregations>();
+                var sorter = new SortedDictionary<string, Item_Aggregation_Related_Aggregations>();
                 foreach (Item_Aggregation_Related_Aggregations thisAggr in All_Aggregations)
                 {
                     sorter[thisAggr.ShortName.ToUpper()] = thisAggr;

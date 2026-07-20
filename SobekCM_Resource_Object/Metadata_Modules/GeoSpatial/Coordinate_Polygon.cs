@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using System;
 using System.Collections.Generic;
@@ -266,7 +266,7 @@ namespace SobekCM.Resource_Object.Metadata_Modules.GeoSpatial
                 bounding_box = null;
             }
 
-            Coordinate_Point newPoint = new Coordinate_Point(Latitude, Longitude, String.Empty);
+            var newPoint = new Coordinate_Point(Latitude, Longitude, String.Empty);
             edge_points.Add(newPoint);
             return newPoint;
         }
@@ -284,7 +284,7 @@ namespace SobekCM.Resource_Object.Metadata_Modules.GeoSpatial
                 bounding_box = null;
             }
 
-            Coordinate_Point newPoint = new Coordinate_Point(Latitude, Longitude, Label);
+            var newPoint = new Coordinate_Point(Latitude, Longitude, Label);
             edge_points.Add(newPoint);
             return newPoint;
         }
@@ -302,7 +302,7 @@ namespace SobekCM.Resource_Object.Metadata_Modules.GeoSpatial
         /// <returns> Fully built Coordinate_Point object </returns>
         public Coordinate_Point Add_Inner_Point(double Latitude, double Longitude)
         {
-            Coordinate_Point newPoint = new Coordinate_Point(Latitude, Longitude, String.Empty);
+            var newPoint = new Coordinate_Point(Latitude, Longitude, String.Empty);
             internal_points.Add(newPoint);
             return newPoint;
         }
@@ -314,7 +314,7 @@ namespace SobekCM.Resource_Object.Metadata_Modules.GeoSpatial
         /// <returns> Fully built Coordinate_Point object </returns>
         public Coordinate_Point Add_Inner_Point(double Latitude, double Longitude, string Label)
         {
-            Coordinate_Point newPoint = new Coordinate_Point(Latitude, Longitude, Label);
+            var newPoint = new Coordinate_Point(Latitude, Longitude, Label);
             internal_points.Add(newPoint);
             return newPoint;
         }

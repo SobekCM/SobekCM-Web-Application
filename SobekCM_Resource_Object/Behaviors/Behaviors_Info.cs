@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using SobekCM.Resource_Object.Bib_Info;
 using System;
@@ -184,7 +184,7 @@ namespace SobekCM.Resource_Object.Behaviors
                 BehaviorSec.Write("<METS:behaviorSec ID=\"VIEWS\" LABEL=\"Options available to the user for viewing this item\" >\r\n");
 
                 // Add each view behavior
-                List<string> views_added = new List<string>();
+                var views_added = new List<string>();
                 int view_count = 1;
                 if (Views != null)
                 {
@@ -266,7 +266,7 @@ namespace SobekCM.Resource_Object.Behaviors
             {
                 List<Wordmark_Info> existing = wordmarks.ToList();
                 wordmarks.Clear();
-                List<string> codes = new List<string>();
+                var codes = new List<string>();
                 foreach (Wordmark_Info thisWordmark in existing.Where(ThisWordmark => (ThisWordmark.Code.ToUpper() != "WATERFRONT") && (ThisWordmark.Code.ToUpper() != "NEWS") && (!codes.Contains(ThisWordmark.Code.ToUpper()))))
                 {
                     codes.Add(thisWordmark.Code.ToUpper());
@@ -301,7 +301,7 @@ namespace SobekCM.Resource_Object.Behaviors
                             wordmarks = new List<Wordmark_Info>();
 
                         string trimmedIcon = thisIcon.ToUpper().Replace(".GIF", "").Replace(".JPG", "").Trim();
-                        Wordmark_Info newIcon = new Wordmark_Info(trimmedIcon.ToUpper());
+                        var newIcon = new Wordmark_Info(trimmedIcon.ToUpper());
                         if (!wordmarks.Contains(newIcon))
                             wordmarks.Add(newIcon);
                     }
@@ -334,7 +334,7 @@ namespace SobekCM.Resource_Object.Behaviors
         {
             get
             {
-                StringBuilder returnValue = new StringBuilder();
+                var returnValue = new StringBuilder();
                 if (aggregations != null)
                 {
                     foreach (Aggregation_Info aggregation in aggregations)
@@ -353,7 +353,7 @@ namespace SobekCM.Resource_Object.Behaviors
         {
             get
             {
-                List<string> returnValue = new List<string>();
+                var returnValue = new List<string>();
                 if (aggregations != null)
                 {
                     returnValue.AddRange(aggregations.Select(Aggregation => Aggregation.Code));
@@ -394,7 +394,7 @@ namespace SobekCM.Resource_Object.Behaviors
                             aggregations = new List<Aggregation_Info>();
 
                         // Create this aggregation object
-                        Aggregation_Info newAggregation = new Aggregation_Info(Code.Trim().ToUpper(), String.Empty);
+                        var newAggregation = new Aggregation_Info(Code.Trim().ToUpper(), String.Empty);
 
                         // If this doesn't exist, add it
                         if (!aggregations.Contains(newAggregation))
@@ -416,7 +416,7 @@ namespace SobekCM.Resource_Object.Behaviors
                     aggregations = new List<Aggregation_Info>();
 
                 // Create this aggregation object
-                Aggregation_Info newAggregation = new Aggregation_Info(Code.Trim().ToUpper(), Name);
+                var newAggregation = new Aggregation_Info(Code.Trim().ToUpper(), Name);
 
                 // If this doesn't exist, add it
                 if (!aggregations.Contains(newAggregation))
@@ -437,7 +437,7 @@ namespace SobekCM.Resource_Object.Behaviors
                     aggregations = new List<Aggregation_Info>();
 
                 // Create this aggregation object
-                Aggregation_Info newAggregation = new Aggregation_Info(Code.Trim().ToUpper(), Name) { Type = Type };
+                var newAggregation = new Aggregation_Info(Code.Trim().ToUpper(), Name) { Type = Type };
 
                 // If this doesn't exist, add it
                 if (!aggregations.Contains(newAggregation))
@@ -553,7 +553,7 @@ namespace SobekCM.Resource_Object.Behaviors
                 if (Views == null)
                     Views = new List<View_Object>();
 
-                View_Object newView = new View_Object(View_Type, Label, Attributes);
+                var newView = new View_Object(View_Type, Label, Attributes);
                 Views.Add(newView);
                 return newView;
             }
@@ -572,7 +572,7 @@ namespace SobekCM.Resource_Object.Behaviors
                 if (Views == null)
                     Views = new List<View_Object>();
 
-                View_Object newView = new View_Object(View_Type, String.Empty, String.Empty);
+                var newView = new View_Object(View_Type, String.Empty, String.Empty);
                 Views.Insert(Index, newView);
                 return newView;
             }
@@ -592,7 +592,7 @@ namespace SobekCM.Resource_Object.Behaviors
                 if (Views == null)
                     Views = new List<View_Object>();
 
-                View_Object newView = new View_Object(View_Type, Label, Attributes);
+                var newView = new View_Object(View_Type, Label, Attributes);
                 Views.Insert(Index, newView);
                 return newView;
             }
@@ -614,7 +614,7 @@ namespace SobekCM.Resource_Object.Behaviors
                 if (Views == null)
                     Views = new List<View_Object>();
 
-                View_Object newView = new View_Object(View_Type, Label, Attributes) { MenuOrder = MenuOrder, Exclude = Exclude };
+                var newView = new View_Object(View_Type, Label, Attributes) { MenuOrder = MenuOrder, Exclude = Exclude };
                 Views.Add(newView);
                 return newView;
             }
@@ -1076,7 +1076,7 @@ namespace SobekCM.Resource_Object.Behaviors
                 byte[] bytIn = Encoding.ASCII.GetBytes(License);
 
                 // create a MemoryStream so that the process can be done without I/O files
-                MemoryStream ms = new MemoryStream();
+                var ms = new MemoryStream();
 
                 // set the private key
                 DES desProvider = DES.Create();
@@ -1087,7 +1087,7 @@ namespace SobekCM.Resource_Object.Behaviors
                 ICryptoTransform encrypto = desProvider.CreateEncryptor();
 
                 // create Crypto Stream that transforms a stream using the encryption
-                CryptoStream cs = new CryptoStream(ms, encrypto, CryptoStreamMode.Write);
+                var cs = new CryptoStream(ms, encrypto, CryptoStreamMode.Write);
 
                 // write out encrypted content into MemoryStream
                 cs.Write(bytIn, 0, bytIn.Length);

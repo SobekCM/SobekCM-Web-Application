@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using Microsoft.AspNetCore.Http;
 using SobekCM.Core.Configuration.Localization;
@@ -82,7 +82,7 @@ namespace SobekCM.Library.Helpers.CKEditor
             if ((!String.IsNullOrEmpty(UploadPath)) && (!String.IsNullOrEmpty(UploadURL)) && (!String.IsNullOrEmpty(FileBrowser_ImageUploadUrl)))
             {
                 // Create a new security token, save in session, and set token GUID in the form data
-                CKEditor_Security_Token newToken = new CKEditor_Security_Token(UploadPath, UploadURL);
+                var newToken = new CKEditor_Security_Token(UploadPath, UploadURL);
                 string token = newToken.ThisGuid.ToString();
                 Context.SessionObject()["#CKEDITOR::" + token] = newToken;
 
@@ -116,7 +116,7 @@ namespace SobekCM.Library.Helpers.CKEditor
         /// <returns> HTML as a string </returns>
         public string HTML_To_Write()
         {
-            StringBuilder builder = new StringBuilder(500);
+            var builder = new StringBuilder(500);
             TextWriter writer = new StringWriter(builder);
             Add_To_Stream(writer);
             writer.Close();

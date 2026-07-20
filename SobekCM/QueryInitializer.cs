@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using Microsoft.AspNetCore.Http;
 using SobekCM.Core.Aggregations;
@@ -217,7 +217,7 @@ namespace SobekCM
             string userip = context.Items[RequestCache_Keys.UserIP].ToString();
 
             // Wrap this into the SobekCM Exception
-            SobekCM_Traced_Exception newException = new SobekCM_Traced_Exception(response.Message, response.InnerException, tracer);
+            var newException = new SobekCM_Traced_Exception(response.Message, response.InnerException, tracer);
 
             // Save this to the session state
             context.SessionObject()[SessionCache_Keys.LastException] = newException;
@@ -335,7 +335,7 @@ namespace SobekCM
         {
             tracer.Add_Trace("QueryInitializer.Public_Folder", "Retrieving public folder information and browse");
 
-            SobekCM_Assistant assistant = new SobekCM_Assistant();
+            var assistant = new SobekCM_Assistant();
             int currentPageIndex = currentMode.Page.HasValue ? currentMode.Page.Value : 1;
             int currentFolderId = currentMode.FolderID.HasValue ? currentMode.FolderID.Value : -1;
             bool result = assistant.Get_Public_User_Folder(currentFolderId, currentPageIndex, tracer, out publicFolder, out searchResultStatistics, out pagedSearchResults);
@@ -355,7 +355,7 @@ namespace SobekCM
         {
             tracer.Add_Trace("QueryInitializer.Simple_Web_Content_Text_Block", "Retrieiving Simple Web Content Object");
 
-            SobekCM_Assistant assistant = new SobekCM_Assistant();
+            var assistant = new SobekCM_Assistant();
             if (!assistant.Get_Simple_Web_Content_Text(currentMode, UI_ApplicationCache_Gateway.Settings.Servers.Base_Directory, tracer,
                                                        out staticWebContent, out siteMap))
             {
@@ -402,7 +402,7 @@ namespace SobekCM
                     return;
                 }
 
-                SobekCM_Assistant assistant = new SobekCM_Assistant();
+                var assistant = new SobekCM_Assistant();
                 assistant.Get_Search_Results(currentMode, hierarchyObject, UI_ApplicationCache_Gateway.Search_Stop_Words, currentUser, tracer, out searchResultStatistics, out pagedSearchResults, context);
 
                 if ((!currentMode.isPostBack) && (UI_ApplicationCache_Gateway.Search_History != null))
@@ -423,7 +423,7 @@ namespace SobekCM
 
         private Recent_Searches.Search Get_Search_From_Mode(Navigation_Object currentMode, string SessionIP, Search_Type_Enum Search_Type, string Aggregation, string Search_Terms)
         {
-            Recent_Searches.Search returnValue = new Recent_Searches.Search();
+            var returnValue = new Recent_Searches.Search();
 
             returnValue.Time = DateTime.Now.ToShortDateString().Replace("/", "-") + " " + DateTime.Now.ToShortTimeString().Replace(" ", "");
 
@@ -485,7 +485,7 @@ namespace SobekCM
                 }
 
                 // Get the folder
-                SobekCM_Assistant assistant = new SobekCM_Assistant();
+                var assistant = new SobekCM_Assistant();
                 if (!assistant.Get_User_Folder(currentMode.My_Sobek_SubMode, requestSpecificValues.Current_User.UserID, results_per_page, current_page, tracer, out searchResultStatistics, out pagedSearchResults))
                 {
                     currentMode.Mode = Display_Mode_Enum.Error;

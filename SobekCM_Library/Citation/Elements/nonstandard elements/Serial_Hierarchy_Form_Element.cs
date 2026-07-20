@@ -354,7 +354,7 @@ namespace SobekCM.Library.Citation.Elements
 
         private static string show_hierarchy_value(Serial_Info serialInfo)
         {
-            StringBuilder builder = new StringBuilder();
+            var builder = new StringBuilder();
             if ((serialInfo != null) && (serialInfo.Count > 0))
             {
                 builder.Append(serialInfo[0].Display + " (" + serialInfo[0].Order + ")");

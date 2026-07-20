@@ -180,7 +180,7 @@ namespace SobekCM.Builder_Library.FDA
 
         private string[] get_reports_recursively(string StartingDirectory)
         {
-            List<string> reports = new List<string>();
+            var reports = new List<string>();
             reports_recurse(StartingDirectory, reports);
 
             string[] returnVal = new string[reports.Count];

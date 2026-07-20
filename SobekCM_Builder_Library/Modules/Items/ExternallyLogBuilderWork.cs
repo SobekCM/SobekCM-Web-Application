@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -31,7 +31,7 @@ namespace SobekCM.Builder_Library.Modules.Items
                 //lock (logfile_lock)
                 //{
                     // Add this info
-                    using (StreamWriter writer = new StreamWriter(log_file_name, true))
+                    using (var writer = new StreamWriter(log_file_name, true))
                     {
                         writer.WriteLine(Resource.BibID + ":" + Resource.VID + " handled at " + DateTime.Now.ToShortDateString());
                         writer.Flush();

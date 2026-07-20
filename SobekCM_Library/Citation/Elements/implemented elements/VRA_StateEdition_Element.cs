@@ -47,7 +47,7 @@ namespace SobekCM.Library.Citation.Elements
             }
 
             // Start the list to collect all current instance values
-            List<string> instanceValues = new List<string>();
+            var instanceValues = new List<string>();
 
             // Try to get any existing metadata module
             VRACore_Info vraInfo = Bib.Get_Metadata_Module(GlobalVar.VRACORE_METADATA_MODULE_KEY) as VRACore_Info;

@@ -69,7 +69,7 @@ namespace SobekCM.Library.Citation.Elements
             }
 
             // Get the list of viewers in the system available
-            List<string> systemViewers = new List<string>();
+            var systemViewers = new List<string>();
             foreach (var viewer in UI_ApplicationCache_Gateway.Configuration.UI.WriterViewers.Items.Viewers)
             {
                 if ((viewer.Enabled) && (!viewer.ManagementViewer))
@@ -99,7 +99,7 @@ namespace SobekCM.Library.Citation.Elements
 
             // Options = NONE, HTML, HTML_MAP, JPEG, JPEG2000, RELATED_IMAGES, TEXT, PAGE TURNER, GOOGLE MAP, EMPTY STRING
             // Get collection of all items
-            List<View_Object> views = new List<View_Object>();
+            var views = new List<View_Object>();
             if ((Bib.Behaviors.Views != null) && (Bib.Behaviors.Views_Count > 0))
             {
                 views.AddRange(Bib.Behaviors.Views.Where(ThisView => !ThisView.Exclude));
@@ -248,7 +248,7 @@ namespace SobekCM.Library.Citation.Elements
         public override void Save_To_Bib(SobekCM_Item Bib)
         {
             // Build a dictionary of the current views
-            Dictionary<string, View_Object> typeToViewObjectDictionary = new Dictionary<string, View_Object>(StringComparer.OrdinalIgnoreCase);
+            var typeToViewObjectDictionary = new Dictionary<string, View_Object>(StringComparer.OrdinalIgnoreCase);
             foreach (View_Object thisView in Bib.Behaviors.Views)
             {
                 typeToViewObjectDictionary[thisView.View_Type] = thisView;
@@ -259,7 +259,7 @@ namespace SobekCM.Library.Citation.Elements
 
             // Save each view
             var getKeys = Context.Request.Form.Keys;
-            Dictionary<string, string> addedViewTypes = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            var addedViewTypes = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
             foreach (string thisKey in getKeys)
             {
                 if (thisKey.IndexOf("viewer_type") == 0)

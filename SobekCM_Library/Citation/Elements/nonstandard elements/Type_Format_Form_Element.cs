@@ -254,7 +254,7 @@ namespace SobekCM.Library.Citation.Elements
 
 
             // List of possible audiences (marcgt)
-            List<string> audiences_list = new List<string>(8)
+            var audiences_list = new List<string>(8)
                                               {
                                                   "adolescent",
                                                   "adult",
@@ -267,7 +267,7 @@ namespace SobekCM.Library.Citation.Elements
                                               };
 
             // List of possible nature of contents
-            List<string> nature_contents_list = new List<string>(26)
+            var nature_contents_list = new List<string>(26)
                                                     {
                                                         "abstract or summary",
                                                         "bibliography",
@@ -297,7 +297,7 @@ namespace SobekCM.Library.Citation.Elements
                                                     };
 
             // List of government genres
-            List<string> government_list = new List<string>(8)
+            var government_list = new List<string>(8)
                                                {
                                                    "federal government publication",
                                                    "international intergovernmental publication",
@@ -310,7 +310,7 @@ namespace SobekCM.Library.Citation.Elements
                                                };
 
             // Get list of literary forms
-            List<string> literary_form_list = new List<string>(11)
+            var literary_form_list = new List<string>(11)
                                                   {
                                                       "comic strip",
                                                       "drama",
@@ -326,7 +326,7 @@ namespace SobekCM.Library.Citation.Elements
                                                   };
 
             // Get list of literary forms
-            List<string> computer_file_form_list = new List<string>(12)
+            var computer_file_form_list = new List<string>(12)
                                                   {
                                                       "numeric data",
                                                       "computer program",
@@ -343,14 +343,14 @@ namespace SobekCM.Library.Citation.Elements
                                                   };
 
             // Get list of biography type information
-            List<string> biography_list = new List<string>(3)
+            var biography_list = new List<string>(3)
                                               {"autobiography", "individual biography", "collective biography"};
 
             // Get list of map subtypes
-            List<string> map_subtypes = new List<string>(5) { "atlas", "globe", "map serial", "map series", "single map" };
+            var map_subtypes = new List<string>(5) { "atlas", "globe", "map serial", "map series", "single map" };
 
             // Get the list of visual materials subtypes
-            List<string> visual_subtypes = new List<string>(17)
+            var visual_subtypes = new List<string>(17)
                                                {
                                                    "art original",
                                                    "art reproduction",
@@ -372,7 +372,7 @@ namespace SobekCM.Library.Citation.Elements
                                                };
 
             // Get the list of continuing materials subtypes
-            List<string> continuing_subtypes = new List<string>(6)
+            var continuing_subtypes = new List<string>(6)
                                                    {
                                                        "database",
                                                        "loose-leaf",
@@ -383,7 +383,7 @@ namespace SobekCM.Library.Citation.Elements
                                                    };
 
             // Get the list of frequency
-            List<string> frequency_list = new List<string>(17)
+            var frequency_list = new List<string>(17)
                                               {
                                                   "annual",
                                                   "biennial",
@@ -405,7 +405,7 @@ namespace SobekCM.Library.Citation.Elements
                                               };
 
             // Get the list of regularities
-            List<string> regularity_list = new List<string>(3)
+            var regularity_list = new List<string>(3)
                                                {"completely irregular", "normalized irregular", "regular"};
 
             // Get the place code
@@ -1571,7 +1571,7 @@ namespace SobekCM.Library.Citation.Elements
                 }
             }
 
-            StringBuilder builder = new StringBuilder();
+            var builder = new StringBuilder();
             if (Bib.Bib_Info.Original_Description.Extent.Length > 0)
                 builder.Append(Bib.Bib_Info.Original_Description.Extent + " -- ");
             if (place_code.Length > 0)

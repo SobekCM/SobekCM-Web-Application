@@ -1,4 +1,4 @@
-﻿using SobekCM.Resource_Object.GenericXml.Mapping;
+using SobekCM.Resource_Object.GenericXml.Mapping;
 using SobekCM.Resource_Object.GenericXml.Results;
 using System;
 using System.Collections.Generic;
@@ -20,9 +20,9 @@ namespace SobekCM.Resource_Object.GenericXml.Reader
             XmlTextReader readerXml = null;
 
             // Return value
-            Dictionary<string, string> pathExistenceCheck = new Dictionary<string, string>();
-            List<GenericXmlPath> returnValue = new List<GenericXmlPath>();
-            Stack<GenericXmlNode> currentStack = new Stack<GenericXmlNode>();
+            var pathExistenceCheck = new Dictionary<string, string>();
+            var returnValue = new List<GenericXmlPath>();
+            var currentStack = new Stack<GenericXmlNode>();
 
             try
             {
@@ -39,7 +39,7 @@ namespace SobekCM.Resource_Object.GenericXml.Reader
                     {
                         // Create the node for this top-level element
                         string nodeName = readerXml.Name;
-                        GenericXmlNode topNode = new GenericXmlNode { NodeName = nodeName };
+                        var topNode = new GenericXmlNode{ NodeName = nodeName };
 
                         // Add this to the stack
                         currentStack.Push(topNode);
@@ -73,7 +73,7 @@ namespace SobekCM.Resource_Object.GenericXml.Reader
 
             // Check to see if this node has been added yet
             // Create the path for this
-            GenericXmlPath currentPath = new GenericXmlPath();
+            var currentPath = new GenericXmlPath();
             for (int j = currentReverseList.Count - 1; j >= 0; j--)
             {
                 currentPath.PathNodes.Add(currentReverseList[j]);
@@ -97,7 +97,7 @@ namespace SobekCM.Resource_Object.GenericXml.Reader
                     readerXml.MoveToAttribute(i);
 
                     // Create the path for this
-                    GenericXmlPath thisPath = new GenericXmlPath();
+                    var thisPath = new GenericXmlPath();
                     for (int j = currentReverseList.Count - 1; j >= 0; j--)
                     {
                         thisPath.PathNodes.Add(currentReverseList[j]);
@@ -149,7 +149,7 @@ namespace SobekCM.Resource_Object.GenericXml.Reader
                 if (readerXml.NodeType == XmlNodeType.Text)
                 {
                     // Create the path for this
-                    GenericXmlPath thisPath = new GenericXmlPath();
+                    var thisPath = new GenericXmlPath();
                     for (int j = currentReverseList.Count - 1; j >= 0; j--)
                     {
                         thisPath.PathNodes.Add(currentReverseList[j]);
@@ -168,7 +168,7 @@ namespace SobekCM.Resource_Object.GenericXml.Reader
                 {
                     // Create the node for this top-level element
                     string nodeName = readerXml.Name;
-                    GenericXmlNode topNode = new GenericXmlNode { NodeName = nodeName };
+                    var topNode = new GenericXmlNode{ NodeName = nodeName };
 
                     // Add this to the stack
                     currentStack.Push(topNode);
@@ -192,8 +192,8 @@ namespace SobekCM.Resource_Object.GenericXml.Reader
             GenericXmlMappingSet set = GenericXmlMappingSet.Read(MappingFile);
 
             // Return value
-            List<GenericXmlPathValue> returnValue = new List<GenericXmlPathValue>();
-            Stack<GenericXmlNode> currentStack = new Stack<GenericXmlNode>();
+            var returnValue = new List<GenericXmlPathValue>();
+            var currentStack = new Stack<GenericXmlNode>();
 
             try
             {
@@ -201,7 +201,7 @@ namespace SobekCM.Resource_Object.GenericXml.Reader
                 string content = cleaned_xml_string_from_file(XmlFile, set);
 
                 // Streams used for reading
-                XmlTextReader readerXml = new XmlTextReader(new StringReader(content));
+                var readerXml = new XmlTextReader(new StringReader(content));
 
                 // Step through the top-level elements
                 while (readerXml.Read())
@@ -210,7 +210,7 @@ namespace SobekCM.Resource_Object.GenericXml.Reader
                     {
                         // Create the node for this top-level element
                         string nodeName = readerXml.Name;
-                        GenericXmlNode topNode = new GenericXmlNode { NodeName = nodeName };
+                        var topNode = new GenericXmlNode{ NodeName = nodeName };
 
                         // Add this to the stack
                         currentStack.Push(topNode);
@@ -244,7 +244,7 @@ namespace SobekCM.Resource_Object.GenericXml.Reader
 
             // Check to see if this node has been added yet
             // Create the path for this
-            GenericXmlPath currentPath = new GenericXmlPath();
+            var currentPath = new GenericXmlPath();
             for (int j = currentReverseList.Count - 1; j >= 0; j--)
             {
                 currentPath.PathNodes.Add(currentReverseList[j]);
@@ -268,7 +268,7 @@ namespace SobekCM.Resource_Object.GenericXml.Reader
                     readerXml.MoveToAttribute(i);
 
                     // Create the path for this
-                    GenericXmlPath thisPath = new GenericXmlPath();
+                    var thisPath = new GenericXmlPath();
                     for (int j = currentReverseList.Count - 1; j >= 0; j--)
                     {
                         thisPath.PathNodes.Add(currentReverseList[j]);
@@ -318,7 +318,7 @@ namespace SobekCM.Resource_Object.GenericXml.Reader
                 if (readerXml.NodeType == XmlNodeType.Text)
                 {
                     // Create the path for this
-                    GenericXmlPath thisPath = new GenericXmlPath();
+                    var thisPath = new GenericXmlPath();
                     for (int j = currentReverseList.Count - 1; j >= 0; j--)
                     {
                         thisPath.PathNodes.Add(currentReverseList[j]);
@@ -335,7 +335,7 @@ namespace SobekCM.Resource_Object.GenericXml.Reader
                 {
                     // Create the node for this top-level element
                     string nodeName = readerXml.Name;
-                    GenericXmlNode topNode = new GenericXmlNode { NodeName = nodeName };
+                    var topNode = new GenericXmlNode{ NodeName = nodeName };
 
                     // Add this to the stack
                     currentStack.Push(topNode);
@@ -359,8 +359,8 @@ namespace SobekCM.Resource_Object.GenericXml.Reader
             GenericXmlMappingSet set = GenericXmlMappingSet.Read(MappingFile);
 
             // Return value
-            List<GenericXmlPathValue> returnValue = new List<GenericXmlPathValue>();
-            Stack<GenericXmlNode> currentStack = new Stack<GenericXmlNode>();
+            var returnValue = new List<GenericXmlPathValue>();
+            var currentStack = new Stack<GenericXmlNode>();
 
             try
             {
@@ -368,7 +368,7 @@ namespace SobekCM.Resource_Object.GenericXml.Reader
                 string content = cleaned_xml_string_from_file(XmlFile, set);
 
                 // Streams used for reading
-                XmlTextReader readerXml = new XmlTextReader(new StringReader(content));
+                var readerXml = new XmlTextReader(new StringReader(content));
 
                 // Step through the top-level elements
                 while (readerXml.Read())
@@ -377,7 +377,7 @@ namespace SobekCM.Resource_Object.GenericXml.Reader
                     {
                         // Create the node for this top-level element
                         string nodeName = readerXml.Name;
-                        GenericXmlNode topNode = new GenericXmlNode { NodeName = nodeName };
+                        var topNode = new GenericXmlNode{ NodeName = nodeName };
 
                         // Add this to the stack
                         currentStack.Push(topNode);
@@ -411,7 +411,7 @@ namespace SobekCM.Resource_Object.GenericXml.Reader
 
             // Check to see if this node has been added yet
             // Create the path for this
-            GenericXmlPath currentPath = new GenericXmlPath();
+            var currentPath = new GenericXmlPath();
             for (int j = currentReverseList.Count - 1; j >= 0; j--)
             {
                 currentPath.PathNodes.Add(currentReverseList[j]);
@@ -435,7 +435,7 @@ namespace SobekCM.Resource_Object.GenericXml.Reader
                     readerXml.MoveToAttribute(i);
 
                     // Create the path for this
-                    GenericXmlPath thisPath = new GenericXmlPath();
+                    var thisPath = new GenericXmlPath();
                     for (int j = currentReverseList.Count - 1; j >= 0; j--)
                     {
                         thisPath.PathNodes.Add(currentReverseList[j]);
@@ -485,7 +485,7 @@ namespace SobekCM.Resource_Object.GenericXml.Reader
                 if (readerXml.NodeType == XmlNodeType.Text)
                 {
                     // Create the path for this
-                    GenericXmlPath thisPath = new GenericXmlPath();
+                    var thisPath = new GenericXmlPath();
                     for (int j = currentReverseList.Count - 1; j >= 0; j--)
                     {
                         thisPath.PathNodes.Add(currentReverseList[j]);
@@ -502,7 +502,7 @@ namespace SobekCM.Resource_Object.GenericXml.Reader
                 {
                     // Create the node for this top-level element
                     string nodeName = readerXml.Name;
-                    GenericXmlNode topNode = new GenericXmlNode { NodeName = nodeName };
+                    var topNode = new GenericXmlNode{ NodeName = nodeName };
 
                     // Add this to the stack
                     currentStack.Push(topNode);
@@ -526,10 +526,10 @@ namespace SobekCM.Resource_Object.GenericXml.Reader
             GenericXmlMappingSet set = GenericXmlMappingSet.Read(MappingFile);
 
             // Return value
-            GenericXmlReaderResults returnValue = new GenericXmlReaderResults();
+            var returnValue = new GenericXmlReaderResults();
 
             // Stack to keep all the parent nodes
-            Stack<GenericXmlNode> currentStack = new Stack<GenericXmlNode>();
+            var currentStack = new Stack<GenericXmlNode>();
 
             try
             {
@@ -537,7 +537,7 @@ namespace SobekCM.Resource_Object.GenericXml.Reader
                 string content = cleaned_xml_string_from_file(XmlFile, set);
 
                 // Streams used for reading
-                XmlTextReader readerXml = new XmlTextReader(new StringReader(content));
+                var readerXml = new XmlTextReader(new StringReader(content));
 
                 // Step through the top-level elements
                 while (readerXml.Read())
@@ -546,7 +546,7 @@ namespace SobekCM.Resource_Object.GenericXml.Reader
                     {
                         // Create the node for this top-level element
                         string nodeName = readerXml.Name;
-                        GenericXmlNode topNode = new GenericXmlNode { NodeName = nodeName };
+                        var topNode = new GenericXmlNode{ NodeName = nodeName };
 
                         // Add this to the stack
                         currentStack.Push(topNode);
@@ -578,7 +578,7 @@ namespace SobekCM.Resource_Object.GenericXml.Reader
             if (!readerXml.Read()) return;
 
             // Create the path for this
-            GenericXmlPath currentPath = new GenericXmlPath();
+            var currentPath = new GenericXmlPath();
             for (int j = currentReverseList.Count - 1; j >= 0; j--)
             {
                 currentPath.PathNodes.Add(currentReverseList[j]);
@@ -662,7 +662,7 @@ namespace SobekCM.Resource_Object.GenericXml.Reader
                 {
                     // Create the node for this top-level element
                     string nodeName = readerXml.Name;
-                    GenericXmlNode topNode = new GenericXmlNode { NodeName = nodeName };
+                    var topNode = new GenericXmlNode{ NodeName = nodeName };
 
                     // Add this to the stack
                     currentStack.Push(topNode);
@@ -673,7 +673,7 @@ namespace SobekCM.Resource_Object.GenericXml.Reader
                     // It may be that mapping exists right here at this level
                     // Create the path for this
                     currentReverseList = currentStack.ToList();
-                    GenericXmlPath thisPath = new GenericXmlPath();
+                    var thisPath = new GenericXmlPath();
                     for (int j = currentReverseList.Count - 1; j >= 0; j--)
                     {
                         thisPath.PathNodes.Add(currentReverseList[j]);
@@ -702,7 +702,7 @@ namespace SobekCM.Resource_Object.GenericXml.Reader
                         // If instructions, this was mapped
                         if ((instructions != null) && (!String.IsNullOrEmpty(instructions.SobekMapping)) && (instructions.IgnoreSubTree))
                         {
-                            MappedValue thisMappedValue = new MappedValue();
+                            var thisMappedValue = new MappedValue();
                             thisMappedValue.Mapping = instructions.SobekMapping;
                             thisMappedValue.Path = thisPath;
 
@@ -712,7 +712,7 @@ namespace SobekCM.Resource_Object.GenericXml.Reader
                             }
                             else
                             {
-                                StringBuilder builder = new StringBuilder();
+                                var builder = new StringBuilder();
                                 XmlReader innerReader = readerXml.ReadSubtree();
                                 while (innerReader.Read())
                                 {
@@ -746,7 +746,7 @@ namespace SobekCM.Resource_Object.GenericXml.Reader
                                 // If instructions, this was mapped
                                 if ((attrInstructions != null) && (!String.IsNullOrEmpty(attrInstructions.SobekMapping)))
                                 {
-                                    MappedValue thisMappedValue = new MappedValue();
+                                    var thisMappedValue = new MappedValue();
                                     thisMappedValue.Mapping = attrInstructions.SobekMapping;
                                     thisMappedValue.Path = thisPath;
                                     thisMappedValue.Path.AttributeName = attribute.Item1;
@@ -780,7 +780,7 @@ namespace SobekCM.Resource_Object.GenericXml.Reader
                 return fullText;
 
             // Open the content and read it into the StringBuilder
-            StringBuilder builder = new StringBuilder((int)(fullText.Length * 1.1));
+            var builder = new StringBuilder((int)(fullText.Length * 1.1));
 
             // The cleaning of the tags will not include the <text> portion of any metadata file
             int text_tag_index = -1;

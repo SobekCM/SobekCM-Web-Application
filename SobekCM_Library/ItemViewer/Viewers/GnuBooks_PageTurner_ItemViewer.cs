@@ -94,7 +94,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 label = thisViewerInfo.Label;
 
             // Add the item menu information
-            Item_MenuItem menuItem = new Item_MenuItem(label, null, null, url, ViewerCode);
+            var menuItem = new Item_MenuItem(label, null, null, url, ViewerCode);
             MenuItems.Add(menuItem);
         }
 
@@ -162,10 +162,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
 
             // Get the list of jpegs, along with widths and heights
-            List<int> width = new List<int>();
-            List<int> height = new List<int>();
-            List<string> files = new List<string>();
-            List<string> pagename = new List<string>();
+            var width = new List<int>();
+            var height = new List<int>();
+            var files = new List<string>();
+            var pagename = new List<string>();
             foreach (BriefItem_FileGrouping thisPage in BriefItem.Images)
             {
                 // Step through each page looking for the jpeg

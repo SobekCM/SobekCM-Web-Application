@@ -106,7 +106,7 @@ namespace SobekCM.Resource_Object
             {
                 foreach (string thisCoverage in OAI_Record.Coverages)
                 {
-                    Subject_Info_Standard thisSubject = new Subject_Info_Standard();
+                    var thisSubject = new Subject_Info_Standard();
                     thisSubject.Add_Geographic(thisCoverage);
                     Bib_Info.Add_Subject(thisSubject);
                 }
@@ -164,7 +164,7 @@ namespace SobekCM.Resource_Object
             {
                 foreach (string thisRelation in OAI_Record.Relations)
                 {
-                    Related_Item_Info newRelatedItem = new Related_Item_Info();
+                    var newRelatedItem = new Related_Item_Info();
                     newRelatedItem.Main_Title.Title = thisRelation;
                     Bib_Info.Add_Related_Item(newRelatedItem);
                 }
@@ -247,7 +247,7 @@ namespace SobekCM.Resource_Object
             get
             {
                 // Build lists of the metadata now
-                List<KeyValuePair<string, string>> metadataTerms = new List<KeyValuePair<string, string>>();
+                var metadataTerms = new List<KeyValuePair<string, string>>();
 
                 // Add the BibID
                 metadataTerms.Add(new KeyValuePair<string, string>("BibID", BibID));
@@ -616,7 +616,7 @@ namespace SobekCM.Resource_Object
         public static bool Validate_Files(SobekCM_Item thisPackage, bool matchCheckSums)
         {
             // Build the METS validator and validate the files
-            SobekCM_METS_Validator validator = new SobekCM_METS_Validator(thisPackage);
+            var validator = new SobekCM_METS_Validator(thisPackage);
             return validator.Check_Files(thisPackage.Source_Directory, matchCheckSums);
         }
 
@@ -627,7 +627,7 @@ namespace SobekCM.Resource_Object
         public bool Validate_Files(bool matchCheckSums)
         {
             // Build the METS validator and validate the files
-            SobekCM_METS_Validator validator = new SobekCM_METS_Validator(this);
+            var validator = new SobekCM_METS_Validator(this);
             bool returnVal = validator.Check_Files(Source_Directory, matchCheckSums);
 
             // Save the validation errors
@@ -642,7 +642,7 @@ namespace SobekCM.Resource_Object
         public static bool Validate_Against_Schema(SobekCM_Item thisPackage)
         {
             // Build the METS validator object
-            METS_Validator_Object validator = new METS_Validator_Object(false);
+            var validator = new METS_Validator_Object(false);
 
             // Get the METS file
             string[] files_xml = Directory.GetFiles(thisPackage.Source_Directory, "*.METS_Header.xml");
@@ -662,7 +662,7 @@ namespace SobekCM.Resource_Object
         public bool Validate_Against_Schema()
         {
             // Build the METS validator object
-            METS_Validator_Object validator = new METS_Validator_Object(false);
+            var validator = new METS_Validator_Object(false);
 
             // Get the METS file
             string[] files_xml = Directory.GetFiles(Source_Directory, "*.METS_Header.xml");
@@ -724,7 +724,7 @@ namespace SobekCM.Resource_Object
             }
 
             // Make sure no repeats in aggregation
-            List<string> subs = new List<string>();
+            var subs = new List<string>();
             foreach (Aggregation_Info aggregation in behaviorInfo.Aggregations)
             {
                 string thisSub = aggregation.Code;
@@ -755,7 +755,7 @@ namespace SobekCM.Resource_Object
                 // Create names for each page that does not have a name, using the division
                 // as the template
                 total_order = 1;
-                List<abstract_TreeNode> visitedNodes = new List<abstract_TreeNode>();
+                var visitedNodes = new List<abstract_TreeNode>();
                 foreach (abstract_TreeNode thisNode in Divisions.Physical_Tree.Roots)
                 {
                     if (!thisNode.Page)
@@ -854,12 +854,12 @@ namespace SobekCM.Resource_Object
             try
             {
                 // Build the collections to hold all the file information
-                Dictionary<string, Page_TreeNode> allFiles = new Dictionary<string, Page_TreeNode>();
-                Dictionary<string, SobekCM_File_Info> jpegFiles = new Dictionary<string, SobekCM_File_Info>();
-                Dictionary<string, SobekCM_File_Info> tiffFiles = new Dictionary<string, SobekCM_File_Info>();
-                Dictionary<string, SobekCM_File_Info> jp2Files = new Dictionary<string, SobekCM_File_Info>();
-                Dictionary<string, SobekCM_File_Info> textFiles = new Dictionary<string, SobekCM_File_Info>();
-                Dictionary<string, SobekCM_File_Info> proFiles = new Dictionary<string, SobekCM_File_Info>();
+                var allFiles = new Dictionary<string, Page_TreeNode>();
+                var jpegFiles = new Dictionary<string, SobekCM_File_Info>();
+                var tiffFiles = new Dictionary<string, SobekCM_File_Info>();
+                var jp2Files = new Dictionary<string, SobekCM_File_Info>();
+                var textFiles = new Dictionary<string, SobekCM_File_Info>();
+                var proFiles = new Dictionary<string, SobekCM_File_Info>();
 
                 // Step through each file in the division section of the METS
                 string name;
@@ -937,7 +937,7 @@ namespace SobekCM.Resource_Object
                     if ((allFiles.ContainsKey(shortName)) && (!textFiles.ContainsKey(shortName)))
                     {
                         // Create the new file object
-                        SobekCM_File_Info thisFile = new SobekCM_File_Info(name);
+                        var thisFile = new SobekCM_File_Info(name);
 
                         // Add to the page
                         allFiles[shortName].Files.Add(thisFile);
@@ -956,7 +956,7 @@ namespace SobekCM.Resource_Object
                     if ((allFiles.ContainsKey(shortName)) && (!proFiles.ContainsKey(shortName)))
                     {
                         // Create the new file object
-                        SobekCM_File_Info thisFile = new SobekCM_File_Info(name);
+                        var thisFile = new SobekCM_File_Info(name);
 
                         // Add to the page
                         allFiles[shortName].Files.Add(thisFile);
@@ -984,7 +984,7 @@ namespace SobekCM.Resource_Object
                         if ((allFiles.ContainsKey(shortName)) && (!jpegFiles.ContainsKey(shortName)))
                         {
                             // Create the new file object
-                            SobekCM_File_Info thisFile = new SobekCM_File_Info(name);
+                            var thisFile = new SobekCM_File_Info(name);
 
                             // Add to the page
                             allFiles[shortName].Files.Add(thisFile);
@@ -1011,7 +1011,7 @@ namespace SobekCM.Resource_Object
                     if ((allFiles.ContainsKey(shortName)) && (!jp2Files.ContainsKey(shortName)))
                     {
                         // Create the new file object
-                        SobekCM_File_Info thisFile = new SobekCM_File_Info(name);
+                        var thisFile = new SobekCM_File_Info(name);
 
                         // Add to the page
                         allFiles[shortName].Files.Add(thisFile);
@@ -1104,7 +1104,7 @@ namespace SobekCM.Resource_Object
         /// is currently using, and selects the appropriate reader</remarks>
         public void Read(string fileName)
         {
-            Generic_Reader reader = new Generic_Reader();
+            var reader = new Generic_Reader();
             reader.Read(fileName, this);
         }
 
@@ -1115,8 +1115,8 @@ namespace SobekCM.Resource_Object
         /// <returns>Built SobekCM_Item object</returns>
         public static SobekCM_Item Read_File(string fileName)
         {
-            SobekCM_Item returnVal = new SobekCM_Item();
-            Generic_Reader reader = new Generic_Reader();
+            var returnVal = new SobekCM_Item();
+            var reader = new Generic_Reader();
             reader.Read(fileName, returnVal);
             return returnVal;
         }
@@ -1128,7 +1128,7 @@ namespace SobekCM.Resource_Object
         /// <returns>Built SobekCM_Item object</returns>
         public static SobekCM_Item Read_Directory(string directory)
         {
-            Generic_Reader reader = new Generic_Reader();
+            var reader = new Generic_Reader();
             return reader.Read_Directory(directory);
         }
 
@@ -1138,7 +1138,7 @@ namespace SobekCM.Resource_Object
         {
             string errorMessage;
 
-            MXF_File_ReaderWriter reader = new MXF_File_ReaderWriter();
+            var reader = new MXF_File_ReaderWriter();
             return reader.Read_Metadata(fileName, this, null, out errorMessage);
         }
 
@@ -1147,10 +1147,10 @@ namespace SobekCM.Resource_Object
         /// <returns>Built SobekCM_Item object</returns>
         public static SobekCM_Item Read_MXF(string fileName)
         {
-            SobekCM_Item returnVal = new SobekCM_Item();
+            var returnVal = new SobekCM_Item();
             string errorMessage;
 
-            MXF_File_ReaderWriter reader = new MXF_File_ReaderWriter();
+            var reader = new MXF_File_ReaderWriter();
             reader.Read_Metadata(fileName, returnVal, null, out errorMessage);
             return returnVal;
         }
@@ -1160,7 +1160,7 @@ namespace SobekCM.Resource_Object
         public void Read_From_METS(string fileName)
         {
             // Save this to the METS file format
-            METS_File_ReaderWriter writer = new METS_File_ReaderWriter();
+            var writer = new METS_File_ReaderWriter();
             string Error_Message;
             writer.Read_Metadata(fileName, this, null, out Error_Message);
         }
@@ -1170,10 +1170,10 @@ namespace SobekCM.Resource_Object
         /// <returns>Built SobekCM_Item object</returns>
         public static SobekCM_Item Read_METS(string fileName)
         {
-            SobekCM_Item returnVal = new SobekCM_Item();
+            var returnVal = new SobekCM_Item();
 
             // Save this to the METS file format
-            METS_File_ReaderWriter writer = new METS_File_ReaderWriter();
+            var writer = new METS_File_ReaderWriter();
             string Error_Message;
             writer.Read_Metadata(fileName, returnVal, null, out Error_Message);
 
@@ -1186,7 +1186,7 @@ namespace SobekCM.Resource_Object
         public bool Read_Divisions_From_INFO(string fileName)
         {
             string errorMessage;
-            INFO_File_ReaderWriter reader = new INFO_File_ReaderWriter();
+            var reader = new INFO_File_ReaderWriter();
             return reader.Read_Metadata(fileName, this, null, out errorMessage);
         }
 
@@ -1195,10 +1195,10 @@ namespace SobekCM.Resource_Object
         /// <returns>Built SobekCM_Item object</returns>
         public static SobekCM_Item Read_INFO(string fileName)
         {
-            SobekCM_Item returnVal = new SobekCM_Item();
+            var returnVal = new SobekCM_Item();
 
             string errorMessage;
-            INFO_File_ReaderWriter reader = new INFO_File_ReaderWriter();
+            var reader = new INFO_File_ReaderWriter();
             reader.Read_Metadata(fileName, returnVal, null, out errorMessage);
 
             return returnVal;
@@ -1209,7 +1209,7 @@ namespace SobekCM.Resource_Object
         public bool Read_From_MARC_XML(string fileName)
         {
             string errorMessage;
-            MarcXML_File_ReaderWriter reader = new MarcXML_File_ReaderWriter();
+            var reader = new MarcXML_File_ReaderWriter();
             return reader.Read_Metadata(fileName, this, null, out errorMessage);
         }
 
@@ -1218,9 +1218,9 @@ namespace SobekCM.Resource_Object
         /// <returns>Built SobekCM_Item object</returns>
         public static SobekCM_Item Read_MARC_XML(string fileName)
         {
-            SobekCM_Item returnVal = new SobekCM_Item();
+            var returnVal = new SobekCM_Item();
             string errorMessage;
-            MarcXML_File_ReaderWriter reader = new MarcXML_File_ReaderWriter();
+            var reader = new MarcXML_File_ReaderWriter();
             reader.Read_Metadata(fileName, returnVal, null, out errorMessage);
             return returnVal;
         }
@@ -1255,7 +1255,7 @@ namespace SobekCM.Resource_Object
             }
 
             // Save this to the METS file format
-            METS_File_ReaderWriter writer = new METS_File_ReaderWriter();
+            var writer = new METS_File_ReaderWriter();
             string Error_Message;
             writer.Write_Metadata(FileName, this, null, out Error_Message);
         }
@@ -1284,7 +1284,7 @@ namespace SobekCM.Resource_Object
             }
 
             // Save this to the METS file format
-            METS_File_ReaderWriter writer = new METS_File_ReaderWriter();
+            var writer = new METS_File_ReaderWriter();
             string Error_Message;
             writer.Write_Metadata(Destination_File, this, null, out Error_Message);
         }
@@ -1305,7 +1305,7 @@ namespace SobekCM.Resource_Object
             }
 
             // Save this to the METS file format
-            METS_File_ReaderWriter writer = new METS_File_ReaderWriter();
+            var writer = new METS_File_ReaderWriter();
             string Error_Message;
             writer.Write_Metadata(Destination_File, this, null, out Error_Message);
         }
@@ -1315,7 +1315,7 @@ namespace SobekCM.Resource_Object
         public void Save_SobekCM_METS()
         {
             // Save this to the METS file format
-            METS_File_ReaderWriter writer = new METS_File_ReaderWriter();
+            var writer = new METS_File_ReaderWriter();
             string Error_Message;
             writer.Write_Metadata(Source_Directory + "\\" + BibID + "_" + VID + ".mets.xml", this, null, out Error_Message);
         }
@@ -1451,7 +1451,7 @@ namespace SobekCM.Resource_Object
         /// <returns> Complete HTML as a string, ready for display </returns>
         public string Get_MARC_HTML(Dictionary<string, object> Options)
         {
-            MARC_HTML_Writer marcHtmlWriter = new MARC_HTML_Writer();
+            var marcHtmlWriter = new MARC_HTML_Writer();
             return marcHtmlWriter.MARC_HTML(this, Options);
         }
 
@@ -1461,7 +1461,7 @@ namespace SobekCM.Resource_Object
         /// <returns> Complete HTML as a string, ready for display </returns>
         public string Get_MARC_HTML(Dictionary<string, object> Options, string Width)
         {
-            MARC_HTML_Writer marcHtmlWriter = new MARC_HTML_Writer();
+            var marcHtmlWriter = new MARC_HTML_Writer();
             return marcHtmlWriter.MARC_HTML(this, Width, Options);
         }
 
@@ -1502,13 +1502,13 @@ namespace SobekCM.Resource_Object
             }
 
             // Create the sorted list
-            MARC_Record tags = new MARC_Record();
+            var tags = new MARC_Record();
 
             // Compute the sobekcm type, which will be used for some of these mappings
             TypeOfResource_SobekCM_Enum sobekcm_type = BIBInfo.SobekCM_Type;
 
             // Build a hashtable of all the pertinent genres
-            Dictionary<string, string> genreHash = new Dictionary<string, string>();
+            var genreHash = new Dictionary<string, string>();
             if (Bib_Info.Genres_Count > 0)
             {
                 foreach (Genre_Info thisGenre in Bib_Info.Genres)
@@ -1521,7 +1521,7 @@ namespace SobekCM.Resource_Object
             }
 
             // ADD THE 006 FOR ONLINE MATERIAL
-            StringBuilder bldr006 = new StringBuilder("m     o  ");
+            var bldr006 = new StringBuilder("m     o  ");
             switch (Bib_Info.SobekCM_Type)
             {
                 case TypeOfResource_SobekCM_Enum.Book:
@@ -1570,7 +1570,7 @@ namespace SobekCM.Resource_Object
             tags.Add_Field(6, "  ", bldr006.ToString());
 
             // ADD THE 007 FOR ELECTRONIC RESOURCE
-            StringBuilder bldr007 = new StringBuilder("cr  n");
+            var bldr007 = new StringBuilder("cr  n");
             switch (Bib_Info.SobekCM_Type)
             {
                 case TypeOfResource_SobekCM_Enum.Audio:
@@ -1670,8 +1670,8 @@ namespace SobekCM.Resource_Object
             // ADD THE 260
             if ((Bib_Info.Origin_Info.Publishers_Count > 0) || (Bib_Info.Origin_Info.Date_Issued.Length > 0) || (Bib_Info.Origin_Info.MARC_DateIssued.Length > 0))
             {
-                MARC_Field publisher_tag = new MARC_Field();
-                StringBuilder builder260 = new StringBuilder();
+                var publisher_tag = new MARC_Field();
+                var builder260 = new StringBuilder();
                 publisher_tag.Tag = 260;
                 publisher_tag.Indicators = "  ";
                 int pub_count = 0;
@@ -1792,7 +1792,7 @@ namespace SobekCM.Resource_Object
                 {
                     if (frequency.Authority != "marcfrequency")
                     {
-                        MARC_Field frequency_tag = new MARC_Field { Tag = 310, Indicators = "  " };
+                        var frequency_tag = new MARC_Field{ Tag = 310, Indicators = "  " };
 
                         if (frequency.Term.IndexOf("[") < 0)
                         {
@@ -1858,7 +1858,7 @@ namespace SobekCM.Resource_Object
             }
 
             // Add an 856 pointing to this item first
-            MARC_Field tag856 = new MARC_Field { Tag = 856, Indicators = "40" };
+            var tag856 = new MARC_Field{ Tag = 856, Indicators = "40" };
             string url = Bib_Info.Location.PURL;
             if (url.Length == 0)
             {
@@ -1887,7 +1887,7 @@ namespace SobekCM.Resource_Object
             // ADD THE LOCATION / OTHER URL
             if ((!String.IsNullOrEmpty(Bib_Info.Location.Other_URL)) && (Bib_Info.Location.Other_URL.Length > 4))
             {
-                MARC_Field tag856O = new MARC_Field { Tag = 856, Indicators = "41" };
+                var tag856O = new MARC_Field{ Tag = 856, Indicators = "41" };
                 string urlO = Bib_Info.Location.Other_URL;
 
                 string linkTextO = "Other Version";
@@ -1911,11 +1911,11 @@ namespace SobekCM.Resource_Object
                     // If there is a URL listed, add another tag
                     if (relatedItem.URL.Length > 0)
                     {
-                        MARC_Field linking_tag = new MARC_Field { Tag = 856, Indicators = "42" };
+                        var linking_tag = new MARC_Field{ Tag = 856, Indicators = "42" };
                         if (relatedItem.Relationship == Related_Item_Type_Enum.OtherVersion)
                             linking_tag.Indicators = "41";
 
-                        StringBuilder linking856_builder = new StringBuilder();
+                        var linking856_builder = new StringBuilder();
                         if (relatedItem.URL_Display_Label.Length > 0)
                         {
                             linking856_builder.Append("|3 " + XML_Writing_Base_Type.Convert_String_To_XML_Safe_Static(relatedItem.URL_Display_Label) + " ");
@@ -2032,9 +2032,9 @@ namespace SobekCM.Resource_Object
             if ((!String.IsNullOrEmpty(CatalogingSourceCode)) || (Bib_Info.Record.MARC_Record_Content_Sources_Count > 0))
             {
 
-                MARC_Field catSource = new MARC_Field { Tag = 40, Indicators = "  " };
+                var catSource = new MARC_Field{ Tag = 40, Indicators = "  " };
 
-                StringBuilder catSourceBuilder = new StringBuilder();
+                var catSourceBuilder = new StringBuilder();
                 if (Bib_Info.Record.MARC_Record_Content_Sources_Count > 0)
                 {
                     bool a_added = false;
@@ -2138,7 +2138,7 @@ namespace SobekCM.Resource_Object
                         //tags.Add_Field("300", "  ", "|a " + this.Bib_Info.Original_Description.Extent.Substring(0, colon_index + 1) + " |b " + this.Bib_Info.Original_Description.Extent.Substring(colon_index + 1));
                     }
 
-                    StringBuilder builder_300 = new StringBuilder("|a " + a_300_subfield_string, a_300_subfield_string.Length + b_300_subfield_string.Length + c_300_subfield_string.Length + 10);
+                    var builder_300 = new StringBuilder("|a " + a_300_subfield_string, a_300_subfield_string.Length + b_300_subfield_string.Length + c_300_subfield_string.Length + 10);
                     if (b_300_subfield_string.Trim().Length > 0)
                     {
                         builder_300.Append(": |b " + b_300_subfield_string);
@@ -2311,7 +2311,7 @@ namespace SobekCM.Resource_Object
 
                     if (!found)
                     {
-                        Subject_Info_Standard tempSubject = new Subject_Info_Standard();
+                        var tempSubject = new Subject_Info_Standard();
                         if (years.Length > 0)
                         {
                             tempSubject.Add_Temporal(years);
@@ -2381,7 +2381,7 @@ namespace SobekCM.Resource_Object
             // IF THERE IS MORE THAN ONE LANGUAGE, ADD THEM ALL IN THE 041
             if (Bib_Info.Languages_Count > 1)
             {
-                StringBuilder marc_coded_languages = new StringBuilder();
+                var marc_coded_languages = new StringBuilder();
                 foreach (Language_Info thisLanguage in Bib_Info.Languages)
                 {
                     if (thisLanguage.Language_ISO_Code.Length > 0)
@@ -2392,8 +2392,8 @@ namespace SobekCM.Resource_Object
             }
 
             // ADD THE 008 FIELD (FIXED LENGTH DATA ELEMENTS)
-            MARC_Field fixedField008 = new MARC_Field { Indicators = "  ", Tag = 008 };
-            StringBuilder builder008 = new StringBuilder();
+            var fixedField008 = new MARC_Field{ Indicators = "  ", Tag = 008 };
+            var builder008 = new StringBuilder();
             builder008.Append(METS_Header.Create_Date.Year.ToString().Substring(2) + METS_Header.Create_Date.Month.ToString().PadLeft(2, '0') + METS_Header.Create_Date.Day.ToString().PadLeft(2, '0'));
 
             if ((Bib_Info.Origin_Info.MARC_DateIssued_Start.Length == 0) && (Bib_Info.Origin_Info.MARC_DateIssued_End.Length == 0))
@@ -3141,7 +3141,7 @@ namespace SobekCM.Resource_Object
             // Add the collection name as well ( Was getting duplicates here sometimes )
             if (Behaviors.Aggregations != null)
             {
-                List<string> added_already = new List<string>();
+                var added_already = new List<string>();
                 foreach (Aggregation_Info thisAggr in Behaviors.Aggregations)
                 {
                     if ((String.Compare(thisAggr.Code, "ALL", true) != 0) && ((String.IsNullOrEmpty(thisAggr.Type)) || (thisAggr.Type.IndexOf("INSTITUT", StringComparison.InvariantCultureIgnoreCase) < 0)))
@@ -3181,14 +3181,14 @@ namespace SobekCM.Resource_Object
             bool borndigital = Bib_Info.Genres.Any(ThisGenre => (ThisGenre.Authority == "sobekcm") && (ThisGenre.Genre_Term == "born-digital"));
             if (!borndigital)
             {
-                MARC_Field tag533 = new MARC_Field { Tag = 533, Indicators = "  " };
-                StringBuilder builder533 = new StringBuilder(100);
+                var tag533 = new MARC_Field{ Tag = 533, Indicators = "  " };
+                var builder533 = new StringBuilder(100);
                 builder533.Append("|a Electronic reproduction. ");
 
                 if (!String.IsNullOrEmpty(ReproductionPlace))
                     builder533.Append("|b " + ReproductionPlace + " : ");
 
-                List<string> agencies = new List<string>();
+                var agencies = new List<string>();
                 if (!String.IsNullOrEmpty(ReproductionAgency))
                 {
                     builder533.Append("|c " + ReproductionAgency + ", ");
@@ -3264,8 +3264,8 @@ namespace SobekCM.Resource_Object
             if ((!String.IsNullOrEmpty(SystemAbbreviation)) || (!String.IsNullOrEmpty(LocationCode)))
             {
                 // Add the 852
-                MARC_Field tag852 = new MARC_Field { Tag = 852, Indicators = "  " };
-                StringBuilder builder852 = new StringBuilder(100);
+                var tag852 = new MARC_Field{ Tag = 852, Indicators = "  " };
+                var builder852 = new StringBuilder(100);
 
                 if (!String.IsNullOrEmpty(LocationCode))
                 {
@@ -3558,7 +3558,7 @@ namespace SobekCM.Resource_Object
                 return false;
 
             // Use regular expressions to check format
-            Regex myReg = new Regex("[A-Z]{2}[A-Z|0-9]{4}[0-9]{4}");
+            var myReg = new Regex("[A-Z]{2}[A-Z|0-9]{4}[0-9]{4}");
             return myReg.IsMatch(TestString.ToUpper());
         }
 

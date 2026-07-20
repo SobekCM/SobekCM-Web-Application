@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -48,8 +48,8 @@ namespace SobekCM.Builder_Library.Modules.Schedulable
                     continue;
 
                 // Step through each image, collecting the bibs and vids
-                List<string> bibs = new List<string>();
-                List<string> vids = new List<string>();
+                var bibs = new List<string>();
+                var vids = new List<string>();
                 foreach (string thisTile in tile_images)
                 {
                     string thisFileNameSansExtension = Path.GetFileNameWithoutExtension(thisTile);
@@ -90,7 +90,7 @@ namespace SobekCM.Builder_Library.Modules.Schedulable
                 aggrCode = "";
 
                 // Start the results object
-                Database_Results_Info allResults = new Database_Results_Info();
+                var allResults = new Database_Results_Info();
 
                 // Now, get the results
                 int offset = 0;
@@ -116,9 +116,9 @@ namespace SobekCM.Builder_Library.Modules.Schedulable
 
                 // Save these results
                 string cached_results_file = Path.Combine(tile_folder, "tile_metadata.xml");
-                StreamWriter writer = new StreamWriter(cached_results_file, false);
+                var writer = new StreamWriter(cached_results_file, false);
 
-                XmlSerializer x = new XmlSerializer(allResults.GetType());
+                var x = new XmlSerializer(allResults.GetType());
                 x.Serialize(writer, allResults);
             }
         }

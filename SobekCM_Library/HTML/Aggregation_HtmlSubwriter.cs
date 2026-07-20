@@ -141,7 +141,7 @@ namespace SobekCM.Library.HTML
                 // If this is a robot, then get the text from the static page
                 if ((RequestSpecificValues.Current_Mode.Is_Robot) && (RequestSpecificValues.Current_Mode.Info_Browse_Mode == "all"))
                 {
-                    SobekCM_Assistant assistant = new SobekCM_Assistant();
+                    var assistant = new SobekCM_Assistant();
                     browse_info_display_text = assistant.Get_All_Browse_Static_HTML(RequestSpecificValues.Current_Mode, RequestSpecificValues.Tracer);
                     RequestSpecificValues.Current_Mode.Writer_Type = Writer_Type_Enum.HTML_Echo;
                 }
@@ -292,7 +292,7 @@ namespace SobekCM.Library.HTML
                 }
 
                 // Write to the file now
-                StreamWriter homeWriter = new StreamWriter(file, false);
+                var homeWriter = new StreamWriter(file, false);
                 homeWriter.WriteLine(form["sbkAghsw_HomeTextEdit"].TrimFirst().Replace("%]", "%>").Replace("[%", "<%"));
                 homeWriter.Flush();
                 homeWriter.Close();
@@ -372,7 +372,7 @@ namespace SobekCM.Library.HTML
             RequestSpecificValues.Tracer.Add_Trace("Aggregation_HtmlSubwriter.Constructor", "Creating the new subviewer to handle the request.");
 
             // First, create the aggregation view bag
-            AggregationViewBag viewBag = new AggregationViewBag(hierarchyObject, datasetBrowseResultsStats, pagedResults, thisBrowseObject, staticBrowse);
+            var viewBag = new AggregationViewBag(hierarchyObject, datasetBrowseResultsStats, pagedResults, thisBrowseObject, staticBrowse);
 
             if (RequestSpecificValues.Current_Mode.Mode == Display_Mode_Enum.Search)
             {
@@ -633,8 +633,7 @@ namespace SobekCM.Library.HTML
                     string aggregation_upload_url = UI_ApplicationCache_Gateway.Settings.Servers.System_Base_URL + "design/aggregations/" + hierarchyObject.Code + "/uploads/";
 
                     // Create the CKEditor object
-                    CKEditor editor = new CKEditor
-                    {
+                    var editor = new CKEditor{
                         Context = Context,
                         BaseUrl = RequestSpecificValues.Current_Mode.Base_URL,
                         Language = RequestSpecificValues.Current_Mode.Language,
@@ -671,8 +670,7 @@ namespace SobekCM.Library.HTML
                     string aggregation_upload_url = UI_ApplicationCache_Gateway.Settings.Servers.System_Base_URL + "design/aggregations/" + hierarchyObject.Code + "/uploads/";
 
                     // Create the CKEditor object
-                    CKEditor editor = new CKEditor
-                    {
+                    var editor = new CKEditor{
                         Context = Context,
                         BaseUrl = RequestSpecificValues.Current_Mode.Base_URL,
                         Language = RequestSpecificValues.Current_Mode.Language,
@@ -736,13 +734,13 @@ namespace SobekCM.Library.HTML
             Output.WriteLine();
 
             // Add the aggregation html head writers
-            DublinCore_AggregationHtmlHeadWriter dcWriter = new DublinCore_AggregationHtmlHeadWriter();
+            var dcWriter = new DublinCore_AggregationHtmlHeadWriter();
             Output.WriteLine("<!-- Start of DublinCore_AggregationHtmlHeaderWriter -->");
             dcWriter.Write_Within_HTML_Head(Output, hierarchyObject, RequestSpecificValues);
             Output.WriteLine("<!-- End of DublinCore_AggregationHtmlHeaderWriter -->");
             Output.WriteLine();
 
-            JSON_AggregationHtmlHeadWriter jsonWriter = new JSON_AggregationHtmlHeadWriter();
+            var jsonWriter = new JSON_AggregationHtmlHeadWriter();
             Output.WriteLine("<!-- Start of JSON_AggregationHtmlHeaderWriter -->");
             jsonWriter.Write_Within_HTML_Head(Output, hierarchyObject, RequestSpecificValues);
             Output.WriteLine("<!-- End of JSON_AggregationHtmlHeaderWriter -->");
@@ -824,7 +822,7 @@ namespace SobekCM.Library.HTML
         {
             get
             {
-                List<Tuple<string, string>> returnValue = new List<Tuple<string, string>>();
+                var returnValue = new List<Tuple<string, string>>();
                 if (RequestSpecificValues.Current_Mode.Mode == Display_Mode_Enum.Search)
                 {
                     if (RequestSpecificValues.Current_Mode.Search_Type == Search_Type_Enum.Map)
@@ -1165,8 +1163,8 @@ namespace SobekCM.Library.HTML
 
                 if (collectionViewer.Type == Item_Aggregation_Views_Searches_Enum.Rotating_Highlight_Search)
                 {
-                    StringBuilder builder = new StringBuilder(2000);
-                    StringWriter writer = new StringWriter(builder);
+                    var builder = new StringBuilder(2000);
+                    var writer = new StringWriter(builder);
                     Add_Sharing_Buttons(writer, FORM_NAME, "SobekHomeBannerButton");
                     ((Rotating_Highlight_Search_AggregationViewer)collectionViewer).Sharing_Buttons_HTML = builder.ToString();
 
@@ -1180,8 +1178,8 @@ namespace SobekCM.Library.HTML
                 }
                 else if (collectionViewer.Type == Item_Aggregation_Views_Searches_Enum.Banner_Search)
                 {
-                    StringBuilder builder = new StringBuilder(2000);
-                    StringWriter writer = new StringWriter(builder);
+                    var builder = new StringBuilder(2000);
+                    var writer = new StringWriter(builder);
                     Add_Sharing_Buttons(writer, FORM_NAME, "SobekHomeBannerButton");
                     ((Banner_Search_AggregationViewer)collectionViewer).Sharing_Buttons_HTML = builder.ToString();
 
@@ -1789,7 +1787,7 @@ namespace SobekCM.Library.HTML
             RequestSpecificValues.Current_Mode.Aggregation_Alias = String.Empty;
 
             // Collect the html to write (this alphabetizes the children)
-            List<string> html_list = new List<string>();
+            var html_list = new List<string>();
             int aggreCount = -1;
             foreach (Item_Aggregation_Related_Aggregations childAggr in hierarchyObject.Children)
             {
@@ -2025,7 +2023,7 @@ namespace SobekCM.Library.HTML
             foreach (Thematic_Heading thisTheme in UI_ApplicationCache_Gateway.Thematic_Headings)
             {
                 // Build the list of html to display, first adding collections and subcollections
-                SortedList<string, string> html_list = new SortedList<string, string>();
+                var html_list = new SortedList<string, string>();
                 ReadOnlyCollection<Item_Aggregation_Related_Aggregations> thisThemesAggrs = UI_ApplicationCache_Gateway.Aggregations.Aggregations_By_ThemeID(thisTheme.ID);
                 foreach (Item_Aggregation_Related_Aggregations thisAggr in thisThemesAggrs)
                 {
@@ -2148,7 +2146,7 @@ namespace SobekCM.Library.HTML
             foreach (Thematic_Heading thisTheme in UI_ApplicationCache_Gateway.Thematic_Headings)
             {
                 // Build the list of html to display
-                SortedList<string, string> html_list = new SortedList<string, string>();
+                var html_list = new SortedList<string, string>();
                 ReadOnlyCollection<Item_Aggregation_Related_Aggregations> thisThemesAggrs = UI_ApplicationCache_Gateway.Aggregations.Aggregations_By_ThemeID(thisTheme.ID);
                 foreach (Item_Aggregation_Related_Aggregations thisAggr in thisThemesAggrs)
                 {
@@ -2235,7 +2233,7 @@ namespace SobekCM.Library.HTML
             Output.WriteLine("<!-- Start of Aggregation_HtmlSubwriter.write_personalized_home -->");
 
             // Build the list of html to display, first adding collections and subcollections
-            SortedList<string, string> html_list = new SortedList<string, string>();
+            var html_list = new SortedList<string, string>();
 
             //Output.WriteLine("<script type=\"text/javascript\" src=\"" + Static_Resources.Jquery_1_10_2_Js + "\"></script>");
             //Output.WriteLine("<script type=\"text/javascript\" src=\"" + Static_Resources.Jquery_Qtip_Js + "\"></script>");
@@ -2319,7 +2317,7 @@ namespace SobekCM.Library.HTML
             }
 
             // Were there any public folders
-            SortedList<string, string> public_folder_list = new SortedList<string, string>();
+            var public_folder_list = new SortedList<string, string>();
             RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Public_Folder;
             RequestSpecificValues.Current_Mode.Result_Display_Type = "brief";
             RequestSpecificValues.Current_Mode.Aggregation = String.Empty;
@@ -2420,7 +2418,7 @@ namespace SobekCM.Library.HTML
             Output.WriteLine("<!-- Start of Aggregation_HtmlSubwriter.write_institution_list -->");
 
             // Build the list of html to display, first adding collections and subcollections
-            SortedList<string, string> html_list = new SortedList<string, string>();
+            var html_list = new SortedList<string, string>();
 
             // Get the institutions
             ReadOnlyCollection<Item_Aggregation_Related_Aggregations> institutions = UI_ApplicationCache_Gateway.Aggregations.Aggregations_By_Type("Institution");
@@ -2481,7 +2479,7 @@ namespace SobekCM.Library.HTML
             Output.WriteLine("<!-- Start of Aggregation_HtmlSubwriter.write_institution_icons -->");
 
             // Build the list of html to display, first adding collections and subcollections
-            SortedList<string, string> html_list = new SortedList<string, string>();
+            var html_list = new SortedList<string, string>();
 
             // Get the institutions
             ReadOnlyCollection<Item_Aggregation_Related_Aggregations> institutions = UI_ApplicationCache_Gateway.Aggregations.Aggregations_By_Type("Institution");
@@ -2614,7 +2612,7 @@ namespace SobekCM.Library.HTML
 
                     //if(datasetBrowseResultsStats.)
                     ushort current_page = RequestSpecificValues.Current_Mode.Page.HasValue ? RequestSpecificValues.Current_Mode.Page.Value : (ushort)1;
-                    StringBuilder buttons_builder = new StringBuilder(1000);
+                    var buttons_builder = new StringBuilder(1000);
 
                     if (current_page > 1)
                     {
@@ -2719,7 +2717,7 @@ namespace SobekCM.Library.HTML
         {
             RequestSpecificValues.Tracer.Add_Trace("Aggregation_HtmlSubwriter.Highlight_To_Html", "Entered...");
 
-            StringBuilder highlightBldr = new StringBuilder(500);
+            var highlightBldr = new StringBuilder(500);
             highlightBldr.Append("<span id=\"SobekHighlight\">" + Environment.NewLine);
             highlightBldr.Append("  <table>" + Environment.NewLine);
             highlightBldr.Append("    <tr><td>" + Environment.NewLine);

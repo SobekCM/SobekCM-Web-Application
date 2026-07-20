@@ -1,4 +1,4 @@
-﻿using SobekCM.Resource_Object;
+using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Bib_Info;
 using SobekCM_Resource_Database;
 using System;
@@ -60,7 +60,7 @@ namespace SobekCM.Builder_Library.Modules.Folders
                     }
 
                     // Create the new object
-                    SobekCM_Item newItem = new SobekCM_Item();
+                    var newItem = new SobekCM_Item();
                     newItem.Bib_Info.SobekCM_Type = TypeOfResource_SobekCM_Enum.Archival;
                     newItem.Bib_Info.Main_Title.Title = thisSubDirName;
                     newItem.Bib_Info.Add_Identifier(thisSubDirName);

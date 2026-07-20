@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using Microsoft.Data.SqlClient;
 using System;
@@ -181,7 +181,7 @@ namespace SobekCM.Resource_Object.Metadata_Modules.GeoSpatial
             Error_Message = String.Empty;
 
             // Open the SQL connection
-            using (SqlConnection sqlConnect = new SqlConnection(DB_ConnectionString))
+            using (var sqlConnect = new SqlConnection(DB_ConnectionString))
             {
                 try
                 {
@@ -194,7 +194,7 @@ namespace SobekCM.Resource_Object.Metadata_Modules.GeoSpatial
                 }
 
                 // Create the sql command / stored procedure
-                SqlCommand cmd = new SqlCommand("SobekCM_Save_Item_Footprint")
+                var cmd = new SqlCommand("SobekCM_Save_Item_Footprint")
                 {
                     CommandType = CommandType.StoredProcedure,
                     Connection = sqlConnect
@@ -395,7 +395,7 @@ namespace SobekCM.Resource_Object.Metadata_Modules.GeoSpatial
             double most_longitude = 0;
 
             // Build the spatial_kml for this
-            StringBuilder spatial_kml_builder = new StringBuilder(50);
+            var spatial_kml_builder = new StringBuilder(50);
             try
             {
                 // Check for areas first
@@ -592,7 +592,7 @@ namespace SobekCM.Resource_Object.Metadata_Modules.GeoSpatial
             double upper_right_longitude = Longitude_Point;
 
             // Create the polygon
-            Coordinate_Polygon aerialPolygon = new Coordinate_Polygon();
+            var aerialPolygon = new Coordinate_Polygon();
             aerialPolygon.Add_Edge_Point(upper_right_latitude, upper_right_longitude);
             aerialPolygon.Add_Edge_Point(upper_right_latitude, lower_left_longitude);
             aerialPolygon.Add_Edge_Point(lower_left_latitude, lower_left_longitude);
@@ -770,10 +770,10 @@ namespace SobekCM.Resource_Object.Metadata_Modules.GeoSpatial
         public void Clear_POIs()
         {
             //create restore holders
-            List<Coordinate_Point> tempRestorePoints = new List<Coordinate_Point>();
-            List<Coordinate_Circle> tempRestoreCircles = new List<Coordinate_Circle>();
-            List<Coordinate_Line> tempRestoreLines = new List<Coordinate_Line>();
-            List<Coordinate_Polygon> tempRestorePolygons = new List<Coordinate_Polygon>();
+            var tempRestorePoints = new List<Coordinate_Point>();
+            var tempRestoreCircles = new List<Coordinate_Circle>();
+            var tempRestoreLines = new List<Coordinate_Line>();
+            var tempRestorePolygons = new List<Coordinate_Polygon>();
             //add objs to restore holders
             foreach (var temp in points)
                 if (temp.FeatureType != "poi")
@@ -819,10 +819,10 @@ namespace SobekCM.Resource_Object.Metadata_Modules.GeoSpatial
         public void Clear_NonPOIs()
         {
             //create restore holders
-            List<Coordinate_Point> tempRestorePoints = new List<Coordinate_Point>();
-            List<Coordinate_Circle> tempRestoreCircles = new List<Coordinate_Circle>();
-            List<Coordinate_Line> tempRestoreLines = new List<Coordinate_Line>();
-            List<Coordinate_Polygon> tempRestorePolygons = new List<Coordinate_Polygon>();
+            var tempRestorePoints = new List<Coordinate_Point>();
+            var tempRestoreCircles = new List<Coordinate_Circle>();
+            var tempRestoreLines = new List<Coordinate_Line>();
+            var tempRestorePolygons = new List<Coordinate_Polygon>();
             //add objs to restore holders
             foreach (var temp in points)
                 if (temp.FeatureType == "poi")
@@ -856,7 +856,7 @@ namespace SobekCM.Resource_Object.Metadata_Modules.GeoSpatial
         public void Clear_NonPOIPoints()
         {
             //create restore holders
-            List<Coordinate_Point> tempRestorePoints = new List<Coordinate_Point>();
+            var tempRestorePoints = new List<Coordinate_Point>();
             //add objs to restore holders
             foreach (var temp in points)
                 if (temp.FeatureType == "poi")
@@ -874,7 +874,7 @@ namespace SobekCM.Resource_Object.Metadata_Modules.GeoSpatial
             // Save any user entered polygons
             if (polygons.Count > 0)
             {
-                List<Coordinate_Polygon> savePolys = new List<Coordinate_Polygon>();
+                var savePolys = new List<Coordinate_Polygon>();
                 foreach (Coordinate_Polygon thisPoly in polygons)
                 {
                     if (thisPoly.ID.IndexOf("USER") >= 0)

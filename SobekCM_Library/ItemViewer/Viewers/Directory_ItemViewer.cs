@@ -167,7 +167,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 List<SobekFileSystem_FileInfo> files = SobekFileSystem.GetFiles(BriefItem);
 
                 // Get all the file info objects and order by name
-                SortedList<string, SobekFileSystem_FileInfo> sortedFiles = new SortedList<string, SobekFileSystem_FileInfo>();
+                var sortedFiles = new SortedList<string, SobekFileSystem_FileInfo>();
                 foreach (SobekFileSystem_FileInfo thisFile in files)
                 {
                     sortedFiles.Add(thisFile.Name.ToUpper(), thisFile);
@@ -201,7 +201,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     Output.WriteLine("<th align=\"right\"><span style=\"color: White\">SIZE</span></th>");
                     Output.WriteLine("</tr>");
 
-                    List<string> file_names_added = new List<string>();
+                    var file_names_added = new List<string>();
                     foreach (BriefItem_FileGrouping thisNode in nodes)
                     {
                         // Only show pages with files
@@ -270,7 +270,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 Output.WriteLine("</tr>");
 
                 // Add each metadata file
-                List<string> files_handled = new List<string>();
+                var files_handled = new List<string>();
                 foreach (string thisFile in sortedFiles.Keys.Where(ThisFile => (ThisFile.IndexOf(".METS.BAK") > 0) || (ThisFile.IndexOf(".METS.XML") > 0) || (ThisFile == "DOC.XML") || (ThisFile == "MARC.XML") || (ThisFile == "CITATION_METS.XML") || (ThisFile == BriefItem.BibID.ToUpper() + "_" + BriefItem.VID + ".HTML")))
                 {
                     files_handled.Add(thisFile);

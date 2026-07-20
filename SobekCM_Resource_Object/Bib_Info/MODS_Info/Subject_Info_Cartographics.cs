@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using SobekCM.Resource_Object.MARC;
 using System;
@@ -100,7 +100,7 @@ namespace SobekCM.Resource_Object.Bib_Info
 
         internal override MARC_Field to_MARC_HTML()
         {
-            MARC_Field returnValue = new MARC_Field { Tag = 255 };
+            var returnValue = new MARC_Field{ Tag = 255 };
 
             // Set the tag
             if ((id.IndexOf("SUBJ") == 0) && (id.Length >= 7))
@@ -116,7 +116,7 @@ namespace SobekCM.Resource_Object.Bib_Info
                 }
             }
 
-            StringBuilder builder = new StringBuilder(50);
+            var builder = new StringBuilder(50);
             if (!String.IsNullOrEmpty(scale))
                 builder.Append("|a " + scale + " ");
             if (!String.IsNullOrEmpty(projection))

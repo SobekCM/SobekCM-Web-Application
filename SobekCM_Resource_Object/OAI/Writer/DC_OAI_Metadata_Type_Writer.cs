@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using SobekCM.Resource_Object.METS_Sec_ReaderWriters;
 using System;
@@ -23,8 +23,8 @@ namespace SobekCM.Resource_Object.OAI.Writer
             // Set default error outpt message
             Error_Message = String.Empty;
 
-            StringBuilder results = new StringBuilder();
-            StringWriter writer = new StringWriter(results);
+            var results = new StringBuilder();
+            var writer = new StringWriter(results);
 
             writer.WriteLine("<oai_dc:dc xmlns:oai_dc=\"http://www.openarchives.org/OAI/2.0/oai_dc/\" ");
             writer.WriteLine("xmlns:dc=\"http://purl.org/dc/elements/1.1/\" ");
@@ -54,7 +54,7 @@ namespace SobekCM.Resource_Object.OAI.Writer
 
 
             // add by Keven for FIU dPanther, 10/06/2017
-            DirectoryInfo di = new DirectoryInfo(Item_To_Save.Source_Directory);
+            var di = new DirectoryInfo(Item_To_Save.Source_Directory);
             FileInfo[] thumbnails = di.GetFiles("*thm.jpg");
             if (thumbnails.Length > 0)
             {

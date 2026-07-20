@@ -119,7 +119,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 
             // Add the google script information
             mapHeight = 500;
-            StringBuilder scriptBuilder = new StringBuilder();
+            var scriptBuilder = new StringBuilder();
 
             // Only continue if there actually IS a map key
             if (!String.IsNullOrWhiteSpace(UI_ApplicationCache_Gateway.Settings.System.Google_Map_API_Key))
@@ -401,7 +401,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 
                     try
                     {
-                        StreamReader faq_reader = new StreamReader(directory + "\\map_faq" + language_code + ".txt");
+                        var faq_reader = new StreamReader(directory + "\\map_faq" + language_code + ".txt");
                         aggregation_specific_faq = faq_reader.ReadToEnd();
                         faq_reader.Close();
                     }
@@ -427,7 +427,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 
                         try
                         {
-                            StreamReader faq_reader = new StreamReader(directory + "\\map_faq" + language_code + ".txt");
+                            var faq_reader = new StreamReader(directory + "\\map_faq" + language_code + ".txt");
                             aggregation_specific_faq = faq_reader.ReadToEnd();
                             faq_reader.Close();
                         }

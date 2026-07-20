@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using ProtoBuf;
 using SobekCM.Core.ApplicationState;
@@ -219,7 +219,7 @@ namespace SobekCM.Core.Aggregations
         public void Add_Parent_Aggregation(string ParentCode, string ParentName, string ParentShortName)
         {
             // Create the object
-            Item_Aggregation_Minimal parentAggregation = new Item_Aggregation_Minimal(ParentCode, ParentName, ParentShortName);
+            var parentAggregation = new Item_Aggregation_Minimal(ParentCode, ParentName, ParentShortName);
 
             // If the list is currently null, create it
             if (Parents == null)

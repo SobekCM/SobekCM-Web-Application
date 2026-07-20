@@ -107,7 +107,7 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters.MARC.Writers
         /// <returns> This record as MarcXML-formatted string </returns>
         public static string To_MarcXML(MARC_Record Record, bool Include_Start_End_Tags)
         {
-            StringBuilder returnValue = new StringBuilder(5000);
+            var returnValue = new StringBuilder(5000);
 
             // Add the MARC XML header and start this collection
             if (Include_Start_End_Tags)
@@ -121,7 +121,7 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters.MARC.Writers
             }
 
             // Begin this record and add the leader
-            XElement record_root = new XElement("record",
+            var record_root = new XElement("record",
                                                 new XElement("leader", Record.Leader)
                 );
 
@@ -133,7 +133,7 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters.MARC.Writers
                     if (thisField.Control_Field_Value.Length > 0)
                     {
                         // Create this new control field and add it to the root element
-                        XElement controlField = new XElement("controlfield",
+                        var controlField = new XElement("controlfield",
                                                              thisField.Control_Field_Value.Replace(Convert.ToChar((byte)0x1F), ' '),
                                                              new XAttribute("tag", thisField.Tag.ToString(CultureInfo.InvariantCulture).PadLeft(3, '0'))
                             );
@@ -143,7 +143,7 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters.MARC.Writers
                 else
                 {
                     // Create the new datafield element and add it to the root element
-                    XElement dataField = new XElement("datafield",
+                    var dataField = new XElement("datafield",
                                                       new XAttribute("tag", thisField.Tag.ToString(CultureInfo.InvariantCulture).PadLeft(3, '0')),
                                                       new XAttribute("ind1", thisField.Indicator1),
                                                       new XAttribute("ind2", thisField.Indicator2)
@@ -154,7 +154,7 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters.MARC.Writers
                     foreach (MARC_Subfield thisSubfield in thisField.Subfields)
                     {
                         // Create this subfield element and add it to the datafield
-                        XElement subfield = new XElement("subfield",
+                        var subfield = new XElement("subfield",
                                                          thisSubfield.Data.Replace(Convert.ToChar((byte)0x1F), ' '),
                                                          new XAttribute("code", thisSubfield.Subfield_Code)
                             );

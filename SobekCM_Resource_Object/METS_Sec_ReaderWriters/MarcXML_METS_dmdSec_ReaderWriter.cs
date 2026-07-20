@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using SobekCM.Resource_Object.Bib_Info;
 using SobekCM.Resource_Object.MARC;
@@ -155,7 +155,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
         public static void Read_MarcXML_Info(XmlReader r, Bibliographic_Info thisBibInfo, SobekCM_Item package, bool Importing_Record, Dictionary<string, object> Options)
         {
             // Create the MARC_XML_Reader to load everything into first
-            MARC_Record record = new MARC_Record();
+            var record = new MARC_Record();
 
             // Read from the file
             record.Read_MARC_Info(r);
@@ -324,7 +324,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                                 g_value = -1 * g_value;
                             }
                         }
-                        Coordinate_Polygon polygon = new Coordinate_Polygon();
+                        var polygon = new Coordinate_Polygon();
                         polygon.Add_Edge_Point(f_value, d_value);
                         polygon.Add_Edge_Point(g_value, d_value);
                         polygon.Add_Edge_Point(g_value, e_value);
@@ -341,7 +341,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
             {
                 if (thisRecord.has_Subfield('a'))
                 {
-                    Abstract_Info newAbstract = new Abstract_Info();
+                    var newAbstract = new Abstract_Info();
                     switch (thisRecord.Indicator1)
                     {
                         case ' ':
@@ -389,7 +389,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
             // Load the format ( 300 )
             if (record.has_Field(300))
             {
-                StringBuilder builder300 = new StringBuilder();
+                var builder300 = new StringBuilder();
                 if (record.Get_Data_Subfield(300, 'a').Length > 0)
                 {
                     builder300.Append(record.Get_Data_Subfield(300, 'a').Replace(":", "").Replace(";", "").Trim());
@@ -490,7 +490,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
             if (record.has_Field(260))
             {
                 string[] special_260_splitter = record[260][0].Control_Field_Value.Split("|".ToCharArray());
-                Publisher_Info thisInfo = new Publisher_Info();
+                var thisInfo = new Publisher_Info();
                 foreach (string thisSplitter in special_260_splitter)
                 {
                     if (thisSplitter.Length > 2)
@@ -748,7 +748,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
             // Look for classification ( UDC ) in field 80
             if (record.Get_Data_Subfield(80, 'a').Length > 0)
             {
-                StringBuilder builder = new StringBuilder();
+                var builder = new StringBuilder();
                 builder.Append(record.Get_Data_Subfield(80, 'a'));
                 if (record.Get_Data_Subfield(80, 'b').Length > 0)
                     builder.Append(" " + record.Get_Data_Subfield(80, 'b'));
@@ -940,7 +940,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
             {
                 if (thisRecord.has_Subfield('a'))
                 {
-                    Title_Info abbrTitle = new Title_Info(thisRecord['a'], Title_Type_Enum.Abbreviated);
+                    var abbrTitle = new Title_Info(thisRecord['a'], Title_Type_Enum.Abbreviated);
                     if (thisRecord.has_Subfield('b'))
                         abbrTitle.Subtitle = thisRecord['b'];
                     thisBibInfo.Add_Other_Title(abbrTitle);
@@ -979,7 +979,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
             // Add the Other Edition Value (775)
             foreach (MARC_Field thisRecord in record[775])
             {
-                Related_Item_Info otherEditionItem = new Related_Item_Info();
+                var otherEditionItem = new Related_Item_Info();
                 otherEditionItem.Relationship = Related_Item_Type_Enum.OtherVersion;
                 if (thisRecord.has_Subfield('t'))
                     otherEditionItem.Main_Title.Title = thisRecord['t'];
@@ -1008,7 +1008,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
             // Add the Preceding Entry (780)
             foreach (MARC_Field thisRecord in record[780])
             {
-                Related_Item_Info precedingItem = new Related_Item_Info();
+                var precedingItem = new Related_Item_Info();
                 precedingItem.Relationship = Related_Item_Type_Enum.Preceding;
                 if (thisRecord.has_Subfield('t'))
                     precedingItem.Main_Title.Title = thisRecord['t'];
@@ -1049,7 +1049,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
             // Add the Suceeding Entry (785)
             foreach (MARC_Field thisRecord in record[785])
             {
-                Related_Item_Info succeedingItem = new Related_Item_Info();
+                var succeedingItem = new Related_Item_Info();
                 succeedingItem.Relationship = Related_Item_Type_Enum.Succeeding;
                 if (thisRecord.has_Subfield('t'))
                     succeedingItem.Main_Title.Title = thisRecord['t'];
@@ -1090,7 +1090,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
             // Add the Other Relationship Entry (787)
             foreach (MARC_Field thisRecord in record[787])
             {
-                Related_Item_Info otherRelationItem = new Related_Item_Info();
+                var otherRelationItem = new Related_Item_Info();
                 otherRelationItem.Relationship = Related_Item_Type_Enum.UNKNOWN;
                 if (thisRecord.has_Subfield('t'))
                     otherRelationItem.Main_Title.Title = thisRecord['t'];
@@ -1422,7 +1422,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                     // Get the projection, if there is one
                     if ((field_008.Substring(22, 2) != "  ") && (field_008.Substring(22, 2) != "||") && (field_008.Substring(22, 2) != "^^") && (field_008.Substring(22, 2) != "||"))
                     {
-                        Subject_Info_Cartographics cartographicsSubject = new Subject_Info_Cartographics();
+                        var cartographicsSubject = new Subject_Info_Cartographics();
                         cartographicsSubject.ID = "SUBJ008";
                         cartographicsSubject.Projection = field_008.Substring(22, 2);
                         thisBibInfo.Add_Subject(cartographicsSubject);
@@ -1749,7 +1749,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
 
             foreach (MARC_Field thisRecord in record[tag])
             {
-                Subject_Info_HierarchicalGeographic spatial = new Subject_Info_HierarchicalGeographic();
+                var spatial = new Subject_Info_HierarchicalGeographic();
 
                 // Look for 'a' first
                 if (thisRecord.has_Subfield('a'))
@@ -1800,7 +1800,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
             foreach (MARC_Field thisRecord in record[tag])
             {
                 // Declare new title
-                Title_Info newTitle = new Title_Info();
+                var newTitle = new Title_Info();
                 newTitle.Title_Type = type;
 
                 switch (non_filling_type)
@@ -1931,7 +1931,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                         break;
 
                     case 4:
-                        Subject_Info_TitleInfo newTitleSubj = new Subject_Info_TitleInfo();
+                        var newTitleSubj = new Subject_Info_TitleInfo();
                         newTitleSubj.Set_Internal_Title(newTitle);
                         if (thisRecord.has_Subfield('v'))
                             newTitleSubj.Add_Genre(Remove_Trailing_Punctuation(thisRecord['v']));
@@ -1981,7 +1981,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
             foreach (MARC_Field thisRecord in record[tag])
             {
                 // Create the name object
-                Name_Info newName = new Name_Info();
+                var newName = new Name_Info();
                 newName.Name_Type = Name_Info_Type_Enum.Personal;
 
                 // Only continue if there is an id in this record
@@ -2082,7 +2082,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                             break;
 
                         case 4:
-                            Subject_Info_Name newNameSubj = new Subject_Info_Name();
+                            var newNameSubj = new Subject_Info_Name();
                             newNameSubj.Set_Internal_Name(newName);
                             if (thisRecord.has_Subfield('v'))
                                 newNameSubj.Add_Genre(Remove_Trailing_Punctuation(thisRecord['v']));
@@ -2134,7 +2134,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                 if ((name_type != 3) || (thisRecord.Indicator2 == '3'))
                 {
                     // Create the name object
-                    Name_Info newName = new Name_Info();
+                    var newName = new Name_Info();
                     newName.Name_Type = Name_Info_Type_Enum.Corporate;
 
                     // Only continue if there is an id in this record
@@ -2177,7 +2177,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                                 break;
 
                             case 4:
-                                Subject_Info_Name newNameSubj = new Subject_Info_Name();
+                                var newNameSubj = new Subject_Info_Name();
                                 newNameSubj.Set_Internal_Name(newName);
                                 if (thisRecord.has_Subfield('v'))
                                     newNameSubj.Add_Genre(Remove_Trailing_Punctuation(thisRecord['v']));
@@ -2228,7 +2228,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
             foreach (MARC_Field thisRecord in record[tag])
             {
                 // Create the name object
-                Name_Info newName = new Name_Info();
+                var newName = new Name_Info();
                 newName.Name_Type = Name_Info_Type_Enum.Conference;
 
                 // Only continue if there is an id in this record
@@ -2269,7 +2269,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                             break;
 
                         case 4:
-                            Subject_Info_Name newNameSubj = new Subject_Info_Name();
+                            var newNameSubj = new Subject_Info_Name();
                             newNameSubj.Set_Internal_Name(newName);
                             if (thisRecord.has_Subfield('v'))
                                 newNameSubj.Add_Genre(Remove_Trailing_Punctuation(thisRecord['v']));
@@ -2412,7 +2412,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
             // Look for any ADDITIONAL PHYSICAL FORM note
             foreach (MARC_Field thisRecord in record[530])
             {
-                StringBuilder builder_530 = new StringBuilder();
+                var builder_530 = new StringBuilder();
                 if (thisRecord.has_Subfield('3'))
                 {
                     builder_530.Append(thisRecord['3'] + " ");
@@ -2439,7 +2439,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
             // Look for any ORIGINAL VERSION note
             foreach (MARC_Field thisRecord in record[534])
             {
-                StringBuilder builder_534 = new StringBuilder();
+                var builder_534 = new StringBuilder();
                 if (thisRecord.has_Subfield('p'))
                 {
                     builder_534.Append(thisRecord['p'] + " ");
@@ -2486,7 +2486,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
             // Look for any ORIGINAL LOCATION note
             foreach (MARC_Field thisRecord in record[535])
             {
-                StringBuilder builder_535 = new StringBuilder();
+                var builder_535 = new StringBuilder();
                 bool possibly_holding_location = true;
                 if (thisRecord.has_Subfield('3'))
                 {
@@ -2603,7 +2603,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
             // Look for any VERSION IDENTIFICATION note
             foreach (MARC_Field thisRecord in record[562])
             {
-                StringBuilder builder_562 = new StringBuilder();
+                var builder_562 = new StringBuilder();
                 if (thisRecord.has_Subfield('3'))
                 {
                     builder_562.Append(thisRecord['3'] + " ");
@@ -2707,7 +2707,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
             }
 
             // Look for any other NOTES fields ( 500, 501, 513, 522, 525, 563, 567, 586 )
-            int[] other_notes = new int[] { 500, 501, 513, 522, 525, 563, 567, 586 };
+            var other_notes = new int[]{ 500, 501, 513, 522, 525, 563, 567, 586 };
             foreach (int tagNumber in other_notes)
             {
                 foreach (MARC_Field thisRecord in record[tagNumber])
@@ -2792,7 +2792,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                         }
                     }
 
-                    Subject_Info_Standard obj = new Subject_Info_Standard();
+                    var obj = new Subject_Info_Standard();
                     obj.Authority = source;
                     obj.ID = "SUBJ" + tag + "_" + subj_index;
                     subj_index++;

@@ -1,4 +1,4 @@
-﻿using SobekCM.Core.BriefItem;
+using SobekCM.Core.BriefItem;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Bib_Info;
 using System;
@@ -29,7 +29,7 @@ namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
                             term = term + " (" + spatial_count + ")";
 
                         // Start to build this
-                        BriefItem_DescriptiveTerm thisTerm = new BriefItem_DescriptiveTerm(term);
+                        var thisTerm = new BriefItem_DescriptiveTerm(term);
 
                         // Cast to the hierarchical geographic subject
                         Subject_Info_HierarchicalGeographic hieroSubj = (Subject_Info_HierarchicalGeographic)thisSubject;

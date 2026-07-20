@@ -63,7 +63,7 @@ namespace SobekCM.Resource_Object.Utilities
                 errors = new StringBuilder();
 
                 // Create the reader and validator
-                XmlReaderSettings metsSettings = new XmlReaderSettings();
+                var metsSettings = new XmlReaderSettings();
                 metsSettings.Schemas.Add(cache);
                 metsSettings.ValidationType = ValidationType.Schema;
                 metsSettings.ValidationEventHandler += new ValidationEventHandler(MyValidationEventHandler);

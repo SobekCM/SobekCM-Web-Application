@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using Microsoft.Data.SqlClient;
 using SobekCM.Core.Configuration.Engine;
@@ -26,7 +26,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="IsDebug"></param>
         public void Register_User(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, NameValueCollection RequestForm, bool IsDebug)
         {
-            Custom_Tracer tracer = new Custom_Tracer();
+            var tracer = new Custom_Tracer();
 
             // Add a trace
             tracer.Add_Trace("CustomServices.Register_User");
@@ -39,7 +39,7 @@ namespace SobekCM.Engine_Library.Endpoints
 
 
             // Collect all the errors
-            StringBuilder requiredValues = new StringBuilder();
+            var requiredValues = new StringBuilder();
 
             // Get and validate the required EVENT posted request string
             if (String.IsNullOrEmpty(RequestForm["event"]))
@@ -91,7 +91,7 @@ namespace SobekCM.Engine_Library.Endpoints
 
             // Ensure the email address appears to be valid
             const string VALID_EMAIL_PATTERN = @"^\s*[\w\-\+_']+(\.[\w\-\+_']+)*\@[A-Za-z0-9]([\w\.-]*[A-Za-z0-9])?\.[A-Za-z][A-Za-z\.]*[A-Za-z]$";
-            Regex emailCheck = new Regex(VALID_EMAIL_PATTERN, RegexOptions.IgnoreCase);
+            var emailCheck = new Regex(VALID_EMAIL_PATTERN, RegexOptions.IgnoreCase);
             if ((email != null) && (!emailCheck.IsMatch(email)))
             {
                 Response.Output.Write("Provided email address is not in the correct format.\n\nPlease correct the email address and select REGISTER again.");
@@ -104,7 +104,7 @@ namespace SobekCM.Engine_Library.Endpoints
             string topics = RequestForm["topics"] ?? String.Empty;
 
             // Create the SQL connection
-            using (SqlConnection sqlConnect = new SqlConnection("data source=SOB-SQL01\\SOBEK2;initial catalog=sobekrepository;integrated security=Yes;"))
+            using (var sqlConnect = new SqlConnection("data source=SOB-SQL01\\SOBEK2;initial catalog=sobekrepository;integrated security=Yes;"))
             {
                 try
                 {
@@ -118,7 +118,7 @@ namespace SobekCM.Engine_Library.Endpoints
                 }
 
                 // Create the SQL command
-                SqlCommand sqlCommand = new SqlCommand("LOCAL_AddEventRegistration", sqlConnect)
+                var sqlCommand = new SqlCommand("LOCAL_AddEventRegistration", sqlConnect)
                 {
                     CommandType = CommandType.StoredProcedure
                 };

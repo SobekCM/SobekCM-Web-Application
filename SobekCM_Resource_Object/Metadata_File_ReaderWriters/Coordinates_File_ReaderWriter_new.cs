@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -81,7 +81,7 @@ namespace SobekCM.Bib_Package.Metadata_File_ReaderWriters
             {
                 // In this case, need to pass a new option to the stream writer, without altering the 
                 // original options
-                Dictionary<string, object> newOptions = new Dictionary<string, object>();
+                var newOptions = new Dictionary<string, object>();
                 foreach (string thisKey in Options.Keys)
                 {
                     if (thisKey != "Coordinates_File_ReaderWriter:CSV_Style")
@@ -91,7 +91,7 @@ namespace SobekCM.Bib_Package.Metadata_File_ReaderWriters
 
                 try
                 {
-                    StreamWriter results = new StreamWriter(MetadataFilePathName, false, Encoding.UTF8);
+                    var results = new StreamWriter(MetadataFilePathName, false, Encoding.UTF8);
                     bool returnValue = Write_Metadata(results, Item_To_Save, newOptions, out Error_Message);
                     results.Flush();
                     results.Close();
@@ -108,7 +108,7 @@ namespace SobekCM.Bib_Package.Metadata_File_ReaderWriters
             {
                 try
                 {
-                    StreamWriter results = new StreamWriter(MetadataFilePathName, false, Encoding.UTF8);
+                    var results = new StreamWriter(MetadataFilePathName, false, Encoding.UTF8);
                     bool returnValue = Write_Metadata(results, Item_To_Save, Options, out Error_Message);
                     results.Flush();
                     results.Close();
@@ -340,7 +340,7 @@ namespace SobekCM.Bib_Package.Metadata_File_ReaderWriters
         //new KML Writer
         public bool Write_KMLFile(String KMLOutputPathName, SobekCM_Item METS_Item)
         {
-            StreamWriter KMLOutput = new StreamWriter(KMLOutputPathName, false);
+            var KMLOutput = new StreamWriter(KMLOutputPathName, false);
 
             // GEt the geo-spatial information if it exists
             GeoSpatial_Information geoInfo = METS_Item.Get_Metadata_Module("GeoSpatial") as GeoSpatial_Information;

@@ -1,4 +1,4 @@
-﻿using SobekCM.Engine_Library.ApplicationState;
+using SobekCM.Engine_Library.ApplicationState;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Divisions;
 using SobekCM.Resource_Object.Metadata_Modules;
@@ -22,7 +22,7 @@ namespace SobekCM.Engine_Library.Solr.v5
         public v5_SolrDocument Build_Solr_Document(SobekCM_Item Digital_Object, string File_Location)
         {
             // Start the return object
-            v5_SolrDocument returnValue = new v5_SolrDocument();
+            var returnValue = new v5_SolrDocument();
             returnValue.FileLocation = File_Location;
 
             // Set the unique key
@@ -49,7 +49,7 @@ namespace SobekCM.Engine_Library.Solr.v5
                     returnValue.Group_Restrictions = "|" + matches[0] + "|";
                 else
                 {
-                    StringBuilder groupBuilder = new StringBuilder("|");
+                    var groupBuilder = new StringBuilder("|");
                     foreach (int groupid in matches)
                     {
                         groupBuilder.Append(groupid + "|");
@@ -277,7 +277,7 @@ namespace SobekCM.Engine_Library.Solr.v5
                         {
                             // Add each segment of the identifier
                             string[] split = searchTerm.Value.Split(".".ToCharArray());
-                            StringBuilder builder = new StringBuilder(split[0]);
+                            var builder = new StringBuilder(split[0]);
                             returnValue.AccessionNumber.Add(builder.ToString());
                             for (int i = 1; i < split.Length; i++)
                             {
@@ -694,7 +694,7 @@ namespace SobekCM.Engine_Library.Solr.v5
                         break;
 
                     default:
-                        StreamWriter writer = new StreamWriter("missing_fields.txt", true);
+                        var writer = new StreamWriter("missing_fields.txt", true);
                         writer.WriteLine(searchTerm.Key);
                         writer.Flush();
                         writer.Close();
@@ -745,7 +745,7 @@ namespace SobekCM.Engine_Library.Solr.v5
 
             // Get the list of all TXT files in this division
             string[] text_files = Directory.GetFiles(File_Location, "*.txt");
-            Dictionary<string, string> text_files_existing = new Dictionary<string, string>();
+            var text_files_existing = new Dictionary<string, string>();
             foreach (string thisTextFile in text_files)
             {
                 string filename = (new FileInfo(thisTextFile)).Name.ToUpper();
@@ -754,7 +754,7 @@ namespace SobekCM.Engine_Library.Solr.v5
 
             // Get the list of all THM.JPG files in this division
             string[] thumbnail_files = Directory.GetFiles(File_Location, "*thm.jpg");
-            Dictionary<string, string> thumbnail_files_existing = new Dictionary<string, string>();
+            var thumbnail_files_existing = new Dictionary<string, string>();
             foreach (string thisTextFile in thumbnail_files)
             {
                 string filename = (new FileInfo(thisTextFile)).Name;
@@ -762,7 +762,7 @@ namespace SobekCM.Engine_Library.Solr.v5
             }
 
             // Step through all division nodes from the physical tree here
-            List<string> text_files_included = new List<string>();
+            var text_files_included = new List<string>();
             foreach (abstract_TreeNode thisNode in divsAndPages)
             {
                 if (thisNode.Page)
@@ -782,7 +782,7 @@ namespace SobekCM.Engine_Library.Solr.v5
                                 text_files_included.Add(root.ToUpper() + ".TXT");
 
                                 // Read the page text
-                                StreamReader reader = new StreamReader(File_Location + "\\" + root + ".txt");
+                                var reader = new StreamReader(File_Location + "\\" + root + ".txt");
                                 string pageText = reader.ReadToEnd().Trim();
                                 reader.Close();
 
@@ -791,7 +791,7 @@ namespace SobekCM.Engine_Library.Solr.v5
                                 if (thumbnail_files_existing.ContainsKey(root.ToUpper()))
                                     thumbnail = thumbnail_files_existing[root.ToUpper()];
 
-                                Legacy_SolrPage newPage = new Legacy_SolrPage(Digital_Object.BibID, Digital_Object.VID, pageorder, pageNode.Label, pageText, thumbnail);
+                                var newPage = new Legacy_SolrPage(Digital_Object.BibID, Digital_Object.VID, pageorder, pageNode.Label, pageText, thumbnail);
                                 returnValue.Solr_Pages.Add(newPage);
                             }
                             catch

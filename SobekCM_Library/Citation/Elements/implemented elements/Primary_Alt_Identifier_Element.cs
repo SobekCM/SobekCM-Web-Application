@@ -63,8 +63,8 @@ namespace SobekCM.Library.Citation.Elements
 
             // NOTE: This part isn't optimized for this element, but rather kept as similar to the
             // standard identifier class as possible to support any later changes.
-            List<string> terms = new List<string>();
-            List<string> schemes = new List<string>();
+            var terms = new List<string>();
+            var schemes = new List<string>();
             terms.Add(Bib.Behaviors.Primary_Identifier.Identifier);
             schemes.Add(Bib.Behaviors.Primary_Identifier.Type);
 
@@ -87,8 +87,8 @@ namespace SobekCM.Library.Citation.Elements
             // NOTE: This part isn't optimized for this element, but rather kept as similar to the
             // standard identifier class as possible to support any later changes.
 
-            Dictionary<string, string> terms = new Dictionary<string, string>();
-            Dictionary<string, string> schemes = new Dictionary<string, string>();
+            var terms = new Dictionary<string, string>();
+            var schemes = new Dictionary<string, string>();
 
             var getKeys = Context.Request.Form.Keys;
             foreach (string thisKey in getKeys)

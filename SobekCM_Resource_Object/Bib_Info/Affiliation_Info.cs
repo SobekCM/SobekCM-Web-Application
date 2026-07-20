@@ -126,7 +126,7 @@ namespace SobekCM.Resource_Object.Bib_Info
                 if (!String.IsNullOrEmpty(term))
                     return Convert_String_To_XML_Safe(term);
 
-                StringBuilder returnVal = new StringBuilder();
+                var returnVal = new StringBuilder();
 
                 if (!String.IsNullOrEmpty(university))
                 {

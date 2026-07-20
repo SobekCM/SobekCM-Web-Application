@@ -61,7 +61,7 @@ namespace SobekCM.Resource_Object.Bib_Info
         {
             get
             {
-                List<KeyValuePair<string, string>> metadataTerms = new List<KeyValuePair<string, string>>();
+                var metadataTerms = new List<KeyValuePair<string, string>>();
 
                 // Add abstracts
                 if (Abstracts_Count > 0)
@@ -250,7 +250,7 @@ namespace SobekCM.Resource_Object.Bib_Info
                 }
 
                 // Add publishers and the display publisher here here
-                List<string> places = new List<string>();
+                var places = new List<string>();
                 if (Publishers_Count > 0)
                 {
                     foreach (Publisher_Info thisPublisher in Publishers)
@@ -343,14 +343,14 @@ namespace SobekCM.Resource_Object.Bib_Info
                 }
 
                 // Add the subjects
-                List<string> country = new List<string>();
-                List<string> state = new List<string>();
-                List<string> county = new List<string>();
-                List<string> city = new List<string>();
-                List<string> continent = new List<string>();
-                List<string> island = new List<string>();
-                List<string> spatials_display = new List<string>();
-                List<string> subjects_display = new List<string>();
+                var country = new List<string>();
+                var state = new List<string>();
+                var county = new List<string>();
+                var city = new List<string>();
+                var continent = new List<string>();
+                var island = new List<string>();
+                var spatials_display = new List<string>();
+                var subjects_display = new List<string>();
                 if (Subjects_Count > 0)
                 {
                     foreach (Subject_Info thisSubject in Subjects)
@@ -395,7 +395,7 @@ namespace SobekCM.Resource_Object.Bib_Info
                             }
                             if (standSubj.Geographics_Count > 0)
                             {
-                                StringBuilder thisSpatialBuilder = new StringBuilder();
+                                var thisSpatialBuilder = new StringBuilder();
                                 foreach (string geoTerm in standSubj.Geographics)
                                 {
                                     if (geoTerm.Length > 0)
@@ -1021,7 +1021,7 @@ namespace SobekCM.Resource_Object.Bib_Info
         {
             get
             {
-                StringBuilder full_citation = new StringBuilder();
+                var full_citation = new StringBuilder();
 
                 // Add the data from the base class
                 full_citation.Append(MODS_Citation_String);
@@ -1117,7 +1117,7 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// <returns> Subject_Info_Standard object that was created and added </returns>
         public Subject_Info_Standard Add_Spatial_Subject(string SpatialTerm)
         {
-            Subject_Info_Standard returnValue = new Subject_Info_Standard();
+            var returnValue = new Subject_Info_Standard();
             returnValue.Add_Geographic(SpatialTerm);
             Add_Subject(returnValue);
 
@@ -1154,7 +1154,7 @@ namespace SobekCM.Resource_Object.Bib_Info
             if (temporalSubjects == null)
                 temporalSubjects = new List<Temporal_Info>();
 
-            Temporal_Info newTemporal = new Temporal_Info(Start_Year, End_Year, TimePeriod);
+            var newTemporal = new Temporal_Info(Start_Year, End_Year, TimePeriod);
             if (!temporalSubjects.Contains(newTemporal))
             {
                 temporalSubjects.Add(newTemporal);
@@ -1175,7 +1175,7 @@ namespace SobekCM.Resource_Object.Bib_Info
             if (publishers == null)
                 publishers = new List<Publisher_Info>();
 
-            Publisher_Info newPublisher = new Publisher_Info(Name);
+            var newPublisher = new Publisher_Info(Name);
             if (!publishers.Contains(newPublisher))
             {
                 publishers.Add(newPublisher);
@@ -1217,7 +1217,7 @@ namespace SobekCM.Resource_Object.Bib_Info
             if (manufacturers == null)
                 manufacturers = new List<Publisher_Info>();
 
-            Publisher_Info newPublisher = new Publisher_Info(Name);
+            var newPublisher = new Publisher_Info(Name);
             if (!manufacturers.Contains(newPublisher))
             {
                 manufacturers.Add(newPublisher);
@@ -1588,7 +1588,7 @@ namespace SobekCM.Resource_Object.Bib_Info
                 try
                 {
                     string year = DateString.Substring(start, 4).Replace("X", "0").Replace("?", "0").Replace("U", "0").Replace("-", "0");
-                    DateTime thisYear = new DateTime(Convert.ToInt16(year), 1, 1);
+                    var thisYear = new DateTime(Convert.ToInt16(year), 1, 1);
                     TimeSpan timeElapsed = thisYear.Subtract(new DateTime(1, 1, 1));
                     sortDate = (int)timeElapsed.TotalDays;
                     return sortDate;

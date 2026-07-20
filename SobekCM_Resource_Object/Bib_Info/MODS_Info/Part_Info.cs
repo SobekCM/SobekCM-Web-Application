@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using System;
 using System.IO;
@@ -65,8 +65,7 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// <returns></returns>
         public Part_Info Copy()
         {
-            Part_Info copy = new Part_Info
-            {
+            var copy = new Part_Info{
                 Day = day,
                 Day_Index = Day_Index,
                 Enum1 = Enum1,

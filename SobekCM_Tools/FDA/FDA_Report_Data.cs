@@ -217,7 +217,7 @@ namespace SobekCM.Tools.FDA
         public override string ToString()
         {
             // Use a string builder
-            StringBuilder writer = new StringBuilder();
+            var writer = new StringBuilder();
 
             // Write the basic data
             writer.Append("------------------------------------------\r\n");

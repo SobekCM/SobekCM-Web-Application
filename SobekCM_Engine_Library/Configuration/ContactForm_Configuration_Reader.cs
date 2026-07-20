@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using SobekCM.Core.Configuration;
 using SobekCM.Core.Configuration.Localization;
@@ -21,7 +21,7 @@ namespace SobekCM.Engine_Library.Configuration
         /// <returns> Built configuration object for the contact form </returns>
         public static ContactForm_Configuration Read_Config(string ConfigFile)
         {
-            ContactForm_Configuration returnValue = new ContactForm_Configuration();
+            var returnValue = new ContactForm_Configuration();
 
             // Streams used for reading
             Stream readerStream = null;
@@ -140,7 +140,7 @@ namespace SobekCM.Engine_Library.Configuration
         private static void read_contactform_element(XmlReader readerXml, ContactForm_Configuration config, ContactForm_Configuration_Element_Type_Enum type)
         {
             // Create the element object
-            ContactForm_Configuration_Element newElement = new ContactForm_Configuration_Element(type);
+            var newElement = new ContactForm_Configuration_Element(type);
 
             // Read the attributes
             if (readerXml.MoveToAttribute("Name"))

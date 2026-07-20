@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using System;
 using System.Collections.Generic;
@@ -68,7 +68,7 @@ namespace SobekCM.Core.MicroservicesClient
         public void Add_Endpoint(string Key, string URL, Microservice_Endpoint_Protocol_Enum Protocol)
         {
             // Build the endpoint object
-            MicroservicesClient_Endpoint endpoint = new MicroservicesClient_Endpoint(Key, URL, Protocol);
+            var endpoint = new MicroservicesClient_Endpoint(Key, URL, Protocol);
 
             // Add this endpoint
             Add_Endpoint(Key, endpoint);
@@ -81,7 +81,7 @@ namespace SobekCM.Core.MicroservicesClient
         public void Add_Endpoint(string Key, string URL, string Protocol)
         {
             // Build the endpoint object
-            MicroservicesClient_Endpoint endpoint = new MicroservicesClient_Endpoint(Key, URL, Protocol);
+            var endpoint = new MicroservicesClient_Endpoint(Key, URL, Protocol);
 
             // Add this endpoint
             Add_Endpoint(Key, endpoint);

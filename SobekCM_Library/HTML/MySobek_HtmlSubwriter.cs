@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
@@ -119,10 +119,10 @@ namespace SobekCM.Library.HTML
         public override void Write_Within_HTML_Head(TextWriter Output, Custom_Tracer Tracer)
         {
             // Admin viewers can override all of this
-            StringBuilder builder = new StringBuilder();
+            var builder = new StringBuilder();
             if (mySobekViewer != null)
             {
-                using (StringWriter writer = new StringWriter(builder))
+                using (var writer = new StringWriter(builder))
                 {
                     bool overrideHead = mySobekViewer.Write_Within_HTML_Head(writer, Tracer);
                     if (overrideHead)

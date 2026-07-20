@@ -32,7 +32,7 @@ namespace SobekCM.Engine_Library.Items
             }
 
             // Get the METS based item builder
-            SobekCM_METS_Based_ItemBuilder builder = new SobekCM_METS_Based_ItemBuilder();
+            var builder = new SobekCM_METS_Based_ItemBuilder();
 
             // Allow the builder to build the item
             return builder.Build_Item(BibID, VID, Icon_Dictionary, Tracer);
@@ -55,7 +55,7 @@ namespace SobekCM.Engine_Library.Items
             }
 
             // Get the METS based item builder
-            SobekCM_METS_Based_ItemBuilder builder = new SobekCM_METS_Based_ItemBuilder();
+            var builder = new SobekCM_METS_Based_ItemBuilder();
 
             // Allow the builder to build the item
             return builder.Build_Item(METS_Location, BibID, VID, Icon_Dictionary, Tracer);
@@ -75,7 +75,7 @@ namespace SobekCM.Engine_Library.Items
             }
 
             // Get the METS based item builder
-            SobekCM_METS_Based_ItemBuilder builder = new SobekCM_METS_Based_ItemBuilder();
+            var builder = new SobekCM_METS_Based_ItemBuilder();
 
             // Allow the builder to build the item
             return builder.Build_Item_Group(BibID, Icon_Dictionary, Tracer);

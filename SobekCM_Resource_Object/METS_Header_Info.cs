@@ -336,7 +336,7 @@ namespace SobekCM.Resource_Object
 
         private string Date_to_METS(DateTime thisDate)
         {
-            StringBuilder returnVal = new StringBuilder(thisDate.Year.ToString() + "-");
+            var returnVal = new StringBuilder(thisDate.Year.ToString() + "-");
             if (thisDate.Month.ToString().Length == 2) returnVal.Append(thisDate.Month.ToString() + "-");
             else returnVal.Append("0" + thisDate.Month + "-");
             if (thisDate.Day.ToString().Length == 2) returnVal.Append(thisDate.Day);

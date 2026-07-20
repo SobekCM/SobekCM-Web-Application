@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using ProtoBuf;
 using System;
@@ -54,7 +54,7 @@ namespace SobekCM.Core.BriefItem
             if (Values == null)
                 Values = new List<BriefItem_DescTermValue>();
 
-            BriefItem_DescTermValue newValue = new BriefItem_DescTermValue(Value);
+            var newValue = new BriefItem_DescTermValue(Value);
             Values.Add(newValue);
             return newValue;
         }
@@ -67,7 +67,7 @@ namespace SobekCM.Core.BriefItem
             if (Values == null)
                 Values = new List<BriefItem_DescTermValue>();
 
-            BriefItem_DescTermValue newValue = new BriefItem_DescTermValue(Value) { SubTerm = SubTerm };
+            var newValue = new BriefItem_DescTermValue(Value) { SubTerm = SubTerm };
             Values.Add(newValue);
             return newValue;
         }

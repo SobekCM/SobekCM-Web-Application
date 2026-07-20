@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using ProtoBuf;
 using SobekCM.Core.Configuration.Localization;
@@ -104,8 +104,7 @@ namespace SobekCM.Core.Configuration
             Clear();
 
             // Create the default profile
-            QualityControl_Profile newProfile = new QualityControl_Profile
-            {
+            var newProfile = new QualityControl_Profile{
                 Default_Profile = true,
                 Profile_Name = "System Default",
                 Profile_Description = "Default profile used when no config file is present"
@@ -113,8 +112,7 @@ namespace SobekCM.Core.Configuration
             Add_Profile(newProfile);
 
             // Add back cover
-            QualityControl_Division_Config div1 = new QualityControl_Division_Config
-            {
+            var div1 = new QualityControl_Division_Config{
                 ID = 1,
                 TypeName = "Back Cover",
                 isActive = true,
@@ -126,8 +124,7 @@ namespace SobekCM.Core.Configuration
             newProfile.Add_Division_Type(div1);
 
             // Add back matter
-            QualityControl_Division_Config div2 = new QualityControl_Division_Config
-            {
+            var div2 = new QualityControl_Division_Config{
                 ID = 2,
                 TypeName = "Back Matter",
                 isActive = true,
@@ -138,8 +135,7 @@ namespace SobekCM.Core.Configuration
             newProfile.Add_Division_Type(div2);
 
             // Add chapter ( misorder of the object names here and below matters not)
-            QualityControl_Division_Config div4 = new QualityControl_Division_Config
-            {
+            var div4 = new QualityControl_Division_Config{
                 ID = 3,
                 TypeName = "Chapter",
                 isActive = true,
@@ -150,8 +146,7 @@ namespace SobekCM.Core.Configuration
             newProfile.Add_Division_Type(div4);
 
             // Add front cover
-            QualityControl_Division_Config div3 = new QualityControl_Division_Config
-            {
+            var div3 = new QualityControl_Division_Config{
                 ID = 4,
                 TypeName = "Front Cover",
                 isActive = true,
@@ -163,8 +158,7 @@ namespace SobekCM.Core.Configuration
             newProfile.Add_Division_Type(div3);
 
             // Add front matter
-            QualityControl_Division_Config div5 = new QualityControl_Division_Config
-            {
+            var div5 = new QualityControl_Division_Config{
                 ID = 5,
                 TypeName = "Front Matter",
                 isActive = true,
@@ -175,8 +169,7 @@ namespace SobekCM.Core.Configuration
             newProfile.Add_Division_Type(div5);
 
             // Add index
-            QualityControl_Division_Config div6 = new QualityControl_Division_Config
-            {
+            var div6 = new QualityControl_Division_Config{
                 ID = 6,
                 TypeName = "Index",
                 isActive = true,
@@ -187,8 +180,7 @@ namespace SobekCM.Core.Configuration
             newProfile.Add_Division_Type(div6);
 
             // Add introduction
-            QualityControl_Division_Config div7 = new QualityControl_Division_Config
-            {
+            var div7 = new QualityControl_Division_Config{
                 ID = 7,
                 TypeName = "Introduction",
                 isActive = true,
@@ -200,8 +192,7 @@ namespace SobekCM.Core.Configuration
             newProfile.Add_Division_Type(div7);
 
             // Add spine
-            QualityControl_Division_Config div8 = new QualityControl_Division_Config
-            {
+            var div8 = new QualityControl_Division_Config{
                 ID = 8,
                 TypeName = "Spine",
                 isActive = true,
@@ -212,8 +203,7 @@ namespace SobekCM.Core.Configuration
             newProfile.Add_Division_Type(div8);
 
             // Add table of contents
-            QualityControl_Division_Config div9 = new QualityControl_Division_Config
-            {
+            var div9 = new QualityControl_Division_Config{
                 ID = 9,
                 TypeName = "Table of Contents",
                 isActive = true,
@@ -225,8 +215,7 @@ namespace SobekCM.Core.Configuration
             newProfile.Add_Division_Type(div9);
 
             // Add title page
-            QualityControl_Division_Config div10 = new QualityControl_Division_Config
-            {
+            var div10 = new QualityControl_Division_Config{
                 ID = 10,
                 TypeName = "Title Page",
                 isActive = true,

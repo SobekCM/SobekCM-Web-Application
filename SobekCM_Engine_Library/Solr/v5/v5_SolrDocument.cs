@@ -1,4 +1,4 @@
-﻿using SobekCM.Resource_Object.Solr;
+using SobekCM.Resource_Object.Solr;
 using SolrNet.Attributes;
 using System;
 using System.Collections.Generic;
@@ -38,7 +38,7 @@ namespace SobekCM.Engine_Library.Solr.v5
                 if (((Solr_Pages == null) || (Solr_Pages.Count == 0)) && (AdditionalTextFiles.Count == 0))
                     return null;
 
-                StringBuilder builder = new StringBuilder(10000);
+                var builder = new StringBuilder(10000);
 
                 // Add the text for each page 
                 if (Solr_Pages != null)
@@ -57,7 +57,7 @@ namespace SobekCM.Engine_Library.Solr.v5
                     {
                         try
                         {
-                            StreamReader reader = new StreamReader(FileLocation + "\\" + textFile);
+                            var reader = new StreamReader(FileLocation + "\\" + textFile);
                             builder.Append(reader.ReadToEnd() + " ");
                             reader.Close();
                         }

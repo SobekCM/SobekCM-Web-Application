@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using SobekCM.Core.ApplicationState;
 using SobekCM.Engine_Library.ApplicationState;
@@ -146,7 +146,7 @@ namespace SobekCM.Engine_Library.Items
                     }
                 }
 
-                Wordmark_Info newIcon = new Wordmark_Info { HTML = html, Link = link, Title = name, Code = code };
+                var newIcon = new Wordmark_Info{ HTML = html, Link = link, Title = name, Code = code };
                 Item_Group_Object.Behaviors.Add_Wordmark(newIcon);
             }
 
@@ -239,7 +239,7 @@ namespace SobekCM.Engine_Library.Items
                 // and we did not get a valid error message either
                 if (itemDetails == null)
                 {
-                    SobekCM_Item_Error itemError = new SobekCM_Item_Error(SobekCM_Item_Error_Type_Enum.System_Error);
+                    var itemError = new SobekCM_Item_Error(SobekCM_Item_Error_Type_Enum.System_Error);
                     if (Engine_Database.Last_Exception != null)
                         itemError.Message = Engine_Database.Last_Exception.Message;
 
@@ -252,7 +252,7 @@ namespace SobekCM.Engine_Library.Items
                     // Was a VID provided?
                     if ((itemDetails.Tables[0].Rows[0]["VID"] != DBNull.Value) && (itemDetails.Tables[0].Rows[0]["VID"].ToString().Length > 0))
                     {
-                        SobekCM_Item_Error itemError = new SobekCM_Item_Error(SobekCM_Item_Error_Type_Enum.Invalid_VID)
+                        var itemError = new SobekCM_Item_Error(SobekCM_Item_Error_Type_Enum.Invalid_VID)
                         {
                             Message = itemDetails.Tables[0].Rows[0]["ErrorMsg"].ToString(),
                             FirstValidVid = itemDetails.Tables[0].Rows[0]["VID"].ToString()
@@ -262,7 +262,7 @@ namespace SobekCM.Engine_Library.Items
                     }
                     else
                     {
-                        SobekCM_Item_Error itemError = new SobekCM_Item_Error(SobekCM_Item_Error_Type_Enum.Invalid_BibID)
+                        var itemError = new SobekCM_Item_Error(SobekCM_Item_Error_Type_Enum.Invalid_BibID)
                         {
                             Message = itemDetails.Tables[0].Rows[0]["ErrorMsg"].ToString()
                         };
@@ -350,7 +350,7 @@ namespace SobekCM.Engine_Library.Items
                 // and we did not get a valid error message either
                 if (itemDetails == null)
                 {
-                    SobekCM_Item_Error itemError = new SobekCM_Item_Error(SobekCM_Item_Error_Type_Enum.System_Error);
+                    var itemError = new SobekCM_Item_Error(SobekCM_Item_Error_Type_Enum.System_Error);
                     if (Engine_Database.Last_Exception != null)
                         itemError.Message = Engine_Database.Last_Exception.Message;
 
@@ -363,7 +363,7 @@ namespace SobekCM.Engine_Library.Items
                     // Was a VID provided?
                     if ((itemDetails.Tables[0].Rows[0]["VID"] != DBNull.Value) && (itemDetails.Tables[0].Rows[0]["VID"].ToString().Length > 0))
                     {
-                        SobekCM_Item_Error itemError = new SobekCM_Item_Error(SobekCM_Item_Error_Type_Enum.Invalid_VID)
+                        var itemError = new SobekCM_Item_Error(SobekCM_Item_Error_Type_Enum.Invalid_VID)
                         {
                             Message = itemDetails.Tables[0].Rows[0]["ErrorMsg"].ToString(),
                             FirstValidVid = itemDetails.Tables[0].Rows[0]["VID"].ToString()
@@ -373,7 +373,7 @@ namespace SobekCM.Engine_Library.Items
                     }
                     else
                     {
-                        SobekCM_Item_Error itemError = new SobekCM_Item_Error(SobekCM_Item_Error_Type_Enum.Invalid_BibID)
+                        var itemError = new SobekCM_Item_Error(SobekCM_Item_Error_Type_Enum.Invalid_BibID)
                         {
                             Message = itemDetails.Tables[0].Rows[0]["ErrorMsg"].ToString()
                         };
@@ -422,7 +422,7 @@ namespace SobekCM.Engine_Library.Items
                     Tracer.Add_Trace("SobekCM_METS_Based_ItemBuilder.Build_Item_From_METS", "Open http web request stream to METS file ( <a href=\"" + METS_URL + "\">" + METS_Name + "</a> )");
                 }
 
-                SobekCM_Item thisPackage = new SobekCM_Item();
+                var thisPackage = new SobekCM_Item();
                 if (METS_URL.IndexOf("http:") >= 0)
                 {
                     WebRequest objRequest = WebRequest.Create(METS_URL);
@@ -435,7 +435,7 @@ namespace SobekCM.Engine_Library.Items
                     }
 
                     // Read the METS file and create the package
-                    METS_File_ReaderWriter reader = new METS_File_ReaderWriter();
+                    var reader = new METS_File_ReaderWriter();
                     string errorMessage;
                     reader.Read_Metadata(objResponse.GetResponseStream(), thisPackage, null, out errorMessage);
                     objResponse.Close();
@@ -445,7 +445,7 @@ namespace SobekCM.Engine_Library.Items
                     if (File.Exists(METS_URL.Replace("/", "\\")))
                     {
                         // Read the METS file and create the package
-                        METS_File_ReaderWriter reader = new METS_File_ReaderWriter();
+                        var reader = new METS_File_ReaderWriter();
                         string errorMessage;
                         reader.Read_Metadata(METS_URL.Replace("/", "\\"), thisPackage, null, out errorMessage);
                     }
@@ -743,7 +743,7 @@ namespace SobekCM.Engine_Library.Items
                     }
                 }
 
-                Wordmark_Info newIcon = new Wordmark_Info { HTML = html, Link = link, Title = name, Code = code };
+                var newIcon = new Wordmark_Info{ HTML = html, Link = link, Title = name, Code = code };
                 Package_To_Finalize.Behaviors.Add_Wordmark(newIcon);
             }
 
@@ -825,7 +825,7 @@ namespace SobekCM.Engine_Library.Items
                                             try
                                             {
                                                 // Do it this way since hopefully that will work for localization issues
-                                                DateTime date = new DateTime(year, month, day);
+                                                var date = new DateTime(year, month, day);
                                                 Package_To_Finalize.Bib_Info.Origin_Info.Date_Created = date.ToShortDateString();
                                             }
                                             catch
@@ -877,7 +877,7 @@ namespace SobekCM.Engine_Library.Items
             // Step through each page and set the static page count
             Tracer.Add_Trace("SobekCM_METS_Based_ItemBuilder.Finish_Building_Item", "Set the static page count");
             pageseq = 0;
-            List<Page_TreeNode> pages_encountered = new List<Page_TreeNode>();
+            var pages_encountered = new List<Page_TreeNode>();
             foreach (abstract_TreeNode rootNode in Package_To_Finalize.Divisions.Physical_Tree.Roots)
             {
                 recurse_through_nodes(rootNode, pages_encountered);

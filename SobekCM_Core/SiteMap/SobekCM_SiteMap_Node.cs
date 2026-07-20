@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using System;
 using System.Collections.Generic;
@@ -78,7 +78,7 @@ namespace SobekCM.Core.SiteMap
         /// <returns> Fully built SobekCM_SiteMap_Node child object </returns>
         public SobekCM_SiteMap_Node Add_Child_Node(string Child_URL, string Child_Title, string Child_Description, int Child_NodeValue)
         {
-            SobekCM_SiteMap_Node newNode = new SobekCM_SiteMap_Node(Child_URL, Child_Title, Child_Description, Child_NodeValue);
+            var newNode = new SobekCM_SiteMap_Node(Child_URL, Child_Title, Child_Description, Child_NodeValue);
             Add_Child_Node(newNode);
             newNode.Parent_Node = this;
             return newNode;

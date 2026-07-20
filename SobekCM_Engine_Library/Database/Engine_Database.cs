@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using EngineAgnosticLayerDbAccess;
 using SobekCM.Core;
@@ -233,14 +233,13 @@ namespace SobekCM.Engine_Library.Database
                 EalDbReaderWrapper readerWrapper = EalDbAccess.ExecuteDataReader(DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_Get_Multiple_Volumes", new List<EalDbParameter> { new EalDbParameter("@bibid", BibID) });
 
                 // Start the return value
-                List<Item_Hierarchy_Details> returnValue = new List<Item_Hierarchy_Details>();
+                var returnValue = new List<Item_Hierarchy_Details>();
 
                 // Step through each value
                 while (readerWrapper.Reader.Read())
                 {
                     // Build this item information
-                    Item_Hierarchy_Details thisItem = new Item_Hierarchy_Details
-                    {
+                    var thisItem = new Item_Hierarchy_Details{
                         ItemID = readerWrapper.Reader.GetInt32(0),
                         Title = readerWrapper.Reader.GetString(1)
                     };
@@ -306,13 +305,13 @@ namespace SobekCM.Engine_Library.Database
                 EalDbReaderWrapper readerWrapper = EalDbAccess.ExecuteDataReader(DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_Get_Item_Statistics", paramList);
 
                 // Start the return value
-                List<Item_Monthly_Usage> returnValue = new List<Item_Monthly_Usage>();
+                var returnValue = new List<Item_Monthly_Usage>();
 
                 // Step through each value
                 while (readerWrapper.Reader.Read())
                 {
                     // Build this item information
-                    Item_Monthly_Usage thisItem = new Item_Monthly_Usage();
+                    var thisItem = new Item_Monthly_Usage();
 
                     thisItem.Year = readerWrapper.Reader.GetInt16(0);
                     thisItem.Month = readerWrapper.Reader.GetInt16(1);
@@ -369,14 +368,13 @@ namespace SobekCM.Engine_Library.Database
                 EalDbReaderWrapper readerWrapper = EalDbAccess.ExecuteDataReader(DatabaseType, Connection_String, CommandType.StoredProcedure, "Tracking_Get_Work_History", paramList);
 
                 // Start the return value
-                Item_Tracking_Details returnValue = new Item_Tracking_Details();
+                var returnValue = new Item_Tracking_Details();
 
                 // Step through each work event
                 while (readerWrapper.Reader.Read())
                 {
                     // Build this item information
-                    Item_Tracking_Event thisItem = new Item_Tracking_Event
-                    {
+                    var thisItem = new Item_Tracking_Event{
                         WorkflowName = readerWrapper.Reader.GetString(1),
                         CompletedDate = readerWrapper.Reader.GetString(2),
                         WorkPerformedBy = readerWrapper.Reader.GetString(3)
@@ -542,7 +540,7 @@ namespace SobekCM.Engine_Library.Database
             }
 
             // Build return list
-            List<string> returnValue = new List<string>();
+            var returnValue = new List<string>();
 
             try
             {
@@ -677,7 +675,7 @@ namespace SobekCM.Engine_Library.Database
             {
                 DataSet resultSet = EalDbAccess.ExecuteDataset(DatabaseType, Connection_String, CommandType.StoredProcedure, "mySobek_Get_All_User_Groups");
 
-                List<User_Group> returnValue = new List<User_Group>();
+                var returnValue = new List<User_Group>();
 
                 foreach (DataRow thisRow in resultSet.Tables[0].Rows)
                 {
@@ -686,7 +684,7 @@ namespace SobekCM.Engine_Library.Database
                     int usergroupid = Convert.ToInt32(thisRow["UserGroupID"]);
                     bool specialGroup = Convert.ToBoolean(thisRow["IsSpecialGroup"]);
 
-                    User_Group userGroup = new User_Group(name, description, usergroupid) { IsSpecialGroup = specialGroup };
+                    var userGroup = new User_Group(name, description, usergroupid) { IsSpecialGroup = specialGroup };
 
                     returnValue.Add(userGroup);
 
@@ -1437,8 +1435,7 @@ namespace SobekCM.Engine_Library.Database
             }
 
             // Build the parameter list
-            List<EalDbParameter> parameters = new List<EalDbParameter>
-            {
+            var parameters = new List<EalDbParameter>{
                 new EalDbParameter("@link1", Link1),
                 new EalDbParameter("@term1", Term1),
                 new EalDbParameter("@field1", Field1),
@@ -1520,33 +1517,32 @@ namespace SobekCM.Engine_Library.Database
             }
 
             // Add parameters for total items and total titles
-            EalDbParameter totalItemsParameter = new EalDbParameter("@total_items", 0) { Direction = ParameterDirection.InputOutput };
+            var totalItemsParameter = new EalDbParameter("@total_items", 0) { Direction = ParameterDirection.InputOutput };
             parameters.Add(totalItemsParameter);
 
-            EalDbParameter totalTitlesParameter = new EalDbParameter("@total_titles", 0) { Direction = ParameterDirection.InputOutput };
+            var totalTitlesParameter = new EalDbParameter("@total_titles", 0) { Direction = ParameterDirection.InputOutput };
             parameters.Add(totalTitlesParameter);
 
             // Add parameters for items and titles if this search is expanded to include all aggregationPermissions
-            EalDbParameter expandedItemsParameter = new EalDbParameter("@all_collections_items", 0) { Direction = ParameterDirection.InputOutput };
+            var expandedItemsParameter = new EalDbParameter("@all_collections_items", 0) { Direction = ParameterDirection.InputOutput };
             parameters.Add(expandedItemsParameter);
 
-            EalDbParameter expandedTitlesParameter = new EalDbParameter("@all_collections_titles", 0) { Direction = ParameterDirection.InputOutput };
+            var expandedTitlesParameter = new EalDbParameter("@all_collections_titles", 0) { Direction = ParameterDirection.InputOutput };
             parameters.Add(expandedTitlesParameter);
 
             // Get the data reader (wrapper)
             EalDbReaderWrapper readerWrapper = EalDbAccess.ExecuteDataReader(DatabaseType, Connection_String + "Connection Timeout=45", CommandType.StoredProcedure, "SobekCM_Metadata_Search_Paged", parameters);
 
             // Create the return argument object
-            List<string> metadataLabels = new List<string>();
-            Multiple_Paged_Results_Args returnArgs = new Multiple_Paged_Results_Args
-            {
+            var metadataLabels = new List<string>();
+            var returnArgs = new Multiple_Paged_Results_Args{
                 Paged_Results = DataReader_To_Result_List_With_LookAhead2(readerWrapper.Reader, ResultsPerPage, metadataLabels)
             };
 
             // Create the overall search statistics?
             if (ReturnSearchStatistics)
             {
-                Search_Results_Statistics stats = new Search_Results_Statistics(readerWrapper.Reader, FacetTypes, metadataLabels);
+                var stats = new Search_Results_Statistics(readerWrapper.Reader, FacetTypes, metadataLabels);
                 returnArgs.Statistics = stats;
                 readerWrapper.Close();
                 stats.Total_Items = Convert.ToInt32(totalItemsParameter.Value);
@@ -1598,8 +1594,7 @@ namespace SobekCM.Engine_Library.Database
                 AggregationCode = String.Empty;
 
             // Build the list of parameters
-            List<EalDbParameter> parameters = new List<EalDbParameter>
-            {
+            var parameters = new List<EalDbParameter>{
                 new EalDbParameter("@searchcondition", SearchCondition.Replace("''", "'")),
                 new EalDbParameter("@include_private", IncludePrivateItems),
                 new EalDbParameter("@aggregationcode", AggregationCode),
@@ -1650,17 +1645,17 @@ namespace SobekCM.Engine_Library.Database
             }
 
             // Add parameters for total items and total titles
-            EalDbParameter totalItemsParameter = new EalDbParameter("@total_items", 0) { Direction = ParameterDirection.InputOutput };
+            var totalItemsParameter = new EalDbParameter("@total_items", 0) { Direction = ParameterDirection.InputOutput };
             parameters.Add(totalItemsParameter);
 
-            EalDbParameter totalTitlesParameter = new EalDbParameter("@total_titles", 0) { Direction = ParameterDirection.InputOutput };
+            var totalTitlesParameter = new EalDbParameter("@total_titles", 0) { Direction = ParameterDirection.InputOutput };
             parameters.Add(totalTitlesParameter);
 
             // Add parameters for items and titles if this search is expanded to include all aggregationPermissions
-            EalDbParameter expandedItemsParameter = new EalDbParameter("@all_collections_items", 0) { Direction = ParameterDirection.InputOutput };
+            var expandedItemsParameter = new EalDbParameter("@all_collections_items", 0) { Direction = ParameterDirection.InputOutput };
             parameters.Add(expandedItemsParameter);
 
-            EalDbParameter expandedTitlesParameter = new EalDbParameter("@all_collections_titles", 0) { Direction = ParameterDirection.InputOutput };
+            var expandedTitlesParameter = new EalDbParameter("@all_collections_titles", 0) { Direction = ParameterDirection.InputOutput };
             parameters.Add(expandedTitlesParameter);
 
             // Create the database agnostic reader
@@ -1670,16 +1665,15 @@ namespace SobekCM.Engine_Library.Database
             DbDataReader reader = readerWrapper.Reader;
 
             // Create the return argument object
-            List<string> metadataLabels = new List<string>();
-            Multiple_Paged_Results_Args returnArgs = new Multiple_Paged_Results_Args
-            {
+            var metadataLabels = new List<string>();
+            var returnArgs = new Multiple_Paged_Results_Args{
                 Paged_Results = DataReader_To_Result_List_With_LookAhead2(reader, ResultsPerPage, metadataLabels)
             };
 
             // Create the overall search statistics?
             if (ReturnSearchStatistics)
             {
-                Search_Results_Statistics stats = new Search_Results_Statistics(reader, FacetTypes, metadataLabels);
+                var stats = new Search_Results_Statistics(reader, FacetTypes, metadataLabels);
                 returnArgs.Statistics = stats;
                 readerWrapper.Close();
                 stats.Total_Items = Convert.ToInt32(totalItemsParameter.Value);
@@ -1732,8 +1726,7 @@ namespace SobekCM.Engine_Library.Database
                 AggregationCode = String.Empty;
 
             // Build the parameters
-            List<EalDbParameter> parameters = new List<EalDbParameter>
-            {
+            var parameters = new List<EalDbParameter>{
                 new EalDbParameter("@term1", SearchTerm),
                 new EalDbParameter("@field1", FieldID),
                 new EalDbParameter("@include_private", IncludePrivateItems),
@@ -1785,17 +1778,17 @@ namespace SobekCM.Engine_Library.Database
             }
 
             // Add parameters for total items and total titles
-            EalDbParameter totalItemsParameter = new EalDbParameter("@total_items", 0) { Direction = ParameterDirection.InputOutput };
+            var totalItemsParameter = new EalDbParameter("@total_items", 0) { Direction = ParameterDirection.InputOutput };
             parameters.Add(totalItemsParameter);
 
-            EalDbParameter totalTitlesParameter = new EalDbParameter("@total_titles", 0) { Direction = ParameterDirection.InputOutput };
+            var totalTitlesParameter = new EalDbParameter("@total_titles", 0) { Direction = ParameterDirection.InputOutput };
             parameters.Add(totalTitlesParameter);
 
             // Add parameters for items and titles if this search is expanded to include all aggregationPermissions
-            EalDbParameter expandedItemsParameter = new EalDbParameter("@all_collections_items", 0) { Direction = ParameterDirection.InputOutput };
+            var expandedItemsParameter = new EalDbParameter("@all_collections_items", 0) { Direction = ParameterDirection.InputOutput };
             parameters.Add(expandedItemsParameter);
 
-            EalDbParameter expandedTitlesParameter = new EalDbParameter("@all_collections_titles", 0) { Direction = ParameterDirection.InputOutput };
+            var expandedTitlesParameter = new EalDbParameter("@all_collections_titles", 0) { Direction = ParameterDirection.InputOutput };
             parameters.Add(expandedTitlesParameter);
 
             // Create the database agnostic reader
@@ -1811,16 +1804,15 @@ namespace SobekCM.Engine_Library.Database
             }
 
             // Create the return argument object
-            List<string> metadataLabels = new List<string>();
-            Multiple_Paged_Results_Args returnArgs = new Multiple_Paged_Results_Args
-            {
+            var metadataLabels = new List<string>();
+            var returnArgs = new Multiple_Paged_Results_Args{
                 Paged_Results = DataReader_To_Result_List_With_LookAhead2(reader, ResultsPerPage, metadataLabels)
             };
 
             // Create the overall search statistics?
             if (ReturnSearchStatistics)
             {
-                Search_Results_Statistics stats = new Search_Results_Statistics(reader, FacetTypes, metadataLabels);
+                var stats = new Search_Results_Statistics(reader, FacetTypes, metadataLabels);
                 returnArgs.Statistics = stats;
                 readerWrapper.Close();
                 stats.Total_Items = Convert.ToInt32(totalItemsParameter.Value);
@@ -1885,8 +1877,7 @@ namespace SobekCM.Engine_Library.Database
                 AggregationCode = String.Empty;
 
             // Build the list of parameters
-            List<EalDbParameter> parameters = new List<EalDbParameter>
-            {
+            var parameters = new List<EalDbParameter>{
                 new EalDbParameter("@aggregationcode", AggregationCode),
                 new EalDbParameter("@bibid1", BibID1),
                 new EalDbParameter("@vid1", VID1),
@@ -1917,11 +1908,11 @@ namespace SobekCM.Engine_Library.Database
             DbDataReader reader = readerWrapper.Reader;
 
             // Create the return argument object
-            List<string> metadataLabels = new List<string>();
+            var metadataLabels = new List<string>();
             List<List<iSearch_Title_Result>> results = DataReader_To_Result_List_With_LookAhead2(reader, 100, metadataLabels);
 
             // Copy this over
-            Database_Results_Info returnArgs = new Database_Results_Info();
+            var returnArgs = new Database_Results_Info();
             if ((results != null) && (results.Count != 0))
             {
                 foreach (List<iSearch_Title_Result> resultsPage in results)
@@ -1946,12 +1937,12 @@ namespace SobekCM.Engine_Library.Database
         private static List<List<iSearch_Title_Result>> DataReader_To_Result_List_With_LookAhead2(DbDataReader Reader, int ResultsPerPage, List<string> MetadataFieldNames)
         {
             // Create return list
-            List<List<iSearch_Title_Result>> returnValue = new List<List<iSearch_Title_Result>>();
+            var returnValue = new List<List<iSearch_Title_Result>>();
 
             // Create some lists used during the construction
-            Dictionary<int, Database_Title_Result> titleLookupByRowNumber = new Dictionary<int, Database_Title_Result>();
-            Dictionary<int, Database_Item_Result> itemLookupByItemID = new Dictionary<int, Database_Item_Result>();
-            Dictionary<int, int> rowNumberLookupByItemID = new Dictionary<int, int>();
+            var titleLookupByRowNumber = new Dictionary<int, Database_Title_Result>();
+            var itemLookupByItemID = new Dictionary<int, Database_Item_Result>();
+            var rowNumberLookupByItemID = new Dictionary<int, int>();
 
             // May have not values returned
             if (Reader.FieldCount < 5)
@@ -1962,8 +1953,7 @@ namespace SobekCM.Engine_Library.Database
             while (Reader.Read())
             {
                 // Create new database title object for this
-                Database_Title_Result result = new Database_Title_Result
-                {
+                var result = new Database_Title_Result{
                     RowNumber = Reader.GetInt32(0),
                     BibID = Reader.GetString(1),
                     GroupTitle = Reader.GetString(2),
@@ -1992,7 +1982,7 @@ namespace SobekCM.Engine_Library.Database
 
             // Step through all the item rows, build the item, and add to the title 
             Database_Title_Result titleResult = titleLookupByRowNumber[minimumRownumber];
-            List<iSearch_Title_Result> currentList = new List<iSearch_Title_Result> { titleResult };
+            var currentList = new List<iSearch_Title_Result>{ titleResult };
             returnValue.Add(currentList);
             int lastRownumber = titleResult.RowNumber;
             int titlesInCurrentList = 1;
@@ -2039,8 +2029,7 @@ namespace SobekCM.Engine_Library.Database
 
 
                 // Create new database item object for this
-                Database_Item_Result result = new Database_Item_Result
-                {
+                var result = new Database_Item_Result{
                     ItemID = itemID,
                     VID = vid,
                     Title = title,
@@ -2094,7 +2083,7 @@ namespace SobekCM.Engine_Library.Database
             // Set some values for checking for uniformity of values
             const int ITEMS_TO_CHECK_IN_EACH_TITLE = 20;
             bool first_item_analyzed = true;
-            List<bool> checking_fields = new List<bool>();
+            var checking_fields = new List<bool>();
             int display_fields_count = 0;
             int itemcount = 0;
             int lastRowNumber = -1;
@@ -2186,12 +2175,12 @@ namespace SobekCM.Engine_Library.Database
         private static List<iSearch_Title_Result> DataReader_To_Simple_Result_List2(DbDataReader Reader, List<string> MetadataFieldNames)
         {
             // Create return list
-            List<iSearch_Title_Result> returnValue = new List<iSearch_Title_Result>();
+            var returnValue = new List<iSearch_Title_Result>();
 
             // Create some lists used during the construction
-            Dictionary<int, Database_Title_Result> titleLookupByRowNumber = new Dictionary<int, Database_Title_Result>();
-            Dictionary<int, Database_Item_Result> itemLookupByItemID = new Dictionary<int, Database_Item_Result>();
-            Dictionary<int, int> rowNumberLookupByItemID = new Dictionary<int, int>();
+            var titleLookupByRowNumber = new Dictionary<int, Database_Title_Result>();
+            var itemLookupByItemID = new Dictionary<int, Database_Item_Result>();
+            var rowNumberLookupByItemID = new Dictionary<int, int>();
 
             // May have not values returned
             if (Reader.FieldCount < 5)
@@ -2202,8 +2191,7 @@ namespace SobekCM.Engine_Library.Database
             while (Reader.Read())
             {
                 // Create new database title object for this
-                Database_Title_Result result = new Database_Title_Result
-                {
+                var result = new Database_Title_Result{
                     RowNumber = Reader.GetInt32(0),
                     BibID = Reader.GetString(1),
                     GroupTitle = Reader.GetString(2),
@@ -2248,8 +2236,7 @@ namespace SobekCM.Engine_Library.Database
                 }
 
                 // Create new database item object for this
-                Database_Item_Result result = new Database_Item_Result
-                {
+                var result = new Database_Item_Result{
                     ItemID = Reader.GetInt32(1),
                     VID = Reader.GetString(2),
                     Title = Reader.GetString(3),
@@ -2282,7 +2269,7 @@ namespace SobekCM.Engine_Library.Database
             // Set some values for checking for uniformity of values
             const int ITEMS_TO_CHECK_IN_EACH_TITLE = 20;
             bool first_item_analyzed = true;
-            List<bool> checking_fields = new List<bool>();
+            var checking_fields = new List<bool>();
             int display_fields_count = 0;
             int itemcount = 0;
             int lastRowNumber = -1;
@@ -2392,7 +2379,7 @@ namespace SobekCM.Engine_Library.Database
             }
 
             // Build the parameters
-            List<EalDbParameter> parameters = new List<EalDbParameter>();
+            var parameters = new List<EalDbParameter>();
             parameters.Add(new EalDbParameter("@lat1", Latitude1));
             parameters.Add(new EalDbParameter("@long1", Longitude1));
             if ((Latitude1 == Latitude2) && (Longitude1 == Longitude2))
@@ -2440,10 +2427,10 @@ namespace SobekCM.Engine_Library.Database
             }
 
             // Add parameters for total items and total titles
-            EalDbParameter totalItemsParameter = new EalDbParameter("@total_items", 0) { Direction = ParameterDirection.InputOutput };
+            var totalItemsParameter = new EalDbParameter("@total_items", 0) { Direction = ParameterDirection.InputOutput };
             parameters.Add(totalItemsParameter);
 
-            EalDbParameter totalTitlesParameter = new EalDbParameter("@total_titles", 0) { Direction = ParameterDirection.InputOutput };
+            var totalTitlesParameter = new EalDbParameter("@total_titles", 0) { Direction = ParameterDirection.InputOutput };
             parameters.Add(totalTitlesParameter);
 
             // Create the database agnostic reader
@@ -2453,14 +2440,14 @@ namespace SobekCM.Engine_Library.Database
             DbDataReader reader = readerWrapper.Reader;
 
 
-            List<string> metadataFields = new List<string>();
+            var metadataFields = new List<string>();
             // Create the return argument object
-            Multiple_Paged_Results_Args returnArgs = new Multiple_Paged_Results_Args { Paged_Results = DataReader_To_Result_List_With_LookAhead2(reader, ResultsPerPage, metadataFields) };
+            var returnArgs = new Multiple_Paged_Results_Args{ Paged_Results = DataReader_To_Result_List_With_LookAhead2(reader, ResultsPerPage, metadataFields) };
 
             // Create the overall search statistics?
             if (ReturnSearchStatistics)
             {
-                Search_Results_Statistics stats = new Search_Results_Statistics(reader, FacetTypes, metadataFields);
+                var stats = new Search_Results_Statistics(reader, FacetTypes, metadataFields);
                 returnArgs.Statistics = stats;
                 readerWrapper.Close();
                 stats.Total_Items = Convert.ToInt32(totalItemsParameter.Value);
@@ -2511,16 +2498,15 @@ namespace SobekCM.Engine_Library.Database
             DbDataReader reader = readerWrapper.Reader;
 
             // Create the return argument object
-            List<string> metadataFields = new List<string>();
-            Multiple_Paged_Results_Args returnArgs = new Multiple_Paged_Results_Args
-            {
+            var metadataFields = new List<string>();
+            var returnArgs = new Multiple_Paged_Results_Args{
                 Paged_Results = DataReader_To_Result_List_With_LookAhead2(reader, ResultsPerPage, metadataFields)
             };
 
             // Create the overall search statistics?
             if (ReturnSearchStatistics)
             {
-                Search_Results_Statistics stats = new Search_Results_Statistics(reader, null, metadataFields);
+                var stats = new Search_Results_Statistics(reader, null, metadataFields);
                 returnArgs.Statistics = stats;
                 readerWrapper.Close();
                 stats.Total_Items = Convert.ToInt32(paramList[3].Value);
@@ -2567,14 +2553,13 @@ namespace SobekCM.Engine_Library.Database
             DbDataReader reader = readerWrapper.Reader;
 
             // Create the return argument object
-            List<string> metadataFields = new List<string>();
-            Multiple_Paged_Results_Args returnArgs = new Multiple_Paged_Results_Args
-            { Paged_Results = DataReader_To_Result_List_With_LookAhead2(reader, ResultsPerPage, metadataFields) };
+            var metadataFields = new List<string>();
+            var returnArgs = new Multiple_Paged_Results_Args{ Paged_Results = DataReader_To_Result_List_With_LookAhead2(reader, ResultsPerPage, metadataFields) };
 
             // Create the overall search statistics?
             if (ReturnSearchStatistics)
             {
-                Search_Results_Statistics stats = new Search_Results_Statistics(reader, null, metadataFields);
+                var stats = new Search_Results_Statistics(reader, null, metadataFields);
                 returnArgs.Statistics = stats;
                 readerWrapper.Close();
                 stats.Total_Items = Convert.ToInt32(paramList[3].Value);
@@ -2613,8 +2598,7 @@ namespace SobekCM.Engine_Library.Database
             }
 
             // Build the parameters
-            List<EalDbParameter> parameters = new List<EalDbParameter>
-            {
+            var parameters = new List<EalDbParameter>{
                 new EalDbParameter("@userid", UserID),
                 new EalDbParameter("@foldername", FolderName),
                 new EalDbParameter("@pagesize", ResultsPerPage),
@@ -2645,10 +2629,10 @@ namespace SobekCM.Engine_Library.Database
             }
 
             // Add parameters for total items and total titles
-            EalDbParameter totalItemsParameter = new EalDbParameter("@total_items", 0) { Direction = ParameterDirection.InputOutput };
+            var totalItemsParameter = new EalDbParameter("@total_items", 0) { Direction = ParameterDirection.InputOutput };
             parameters.Add(totalItemsParameter);
 
-            EalDbParameter totalTitlesParameter = new EalDbParameter("@total_titles", 0) { Direction = ParameterDirection.InputOutput };
+            var totalTitlesParameter = new EalDbParameter("@total_titles", 0) { Direction = ParameterDirection.InputOutput };
             parameters.Add(totalTitlesParameter);
 
             // Create the database agnostic reader
@@ -2658,13 +2642,13 @@ namespace SobekCM.Engine_Library.Database
             DbDataReader reader = readerWrapper.Reader;
 
             // Create the return argument object
-            List<string> metadataLabels = new List<string>();
-            Single_Paged_Results_Args returnArgs = new Single_Paged_Results_Args { Paged_Results = DataReader_To_Simple_Result_List2(reader, metadataLabels) };
+            var metadataLabels = new List<string>();
+            var returnArgs = new Single_Paged_Results_Args{ Paged_Results = DataReader_To_Simple_Result_List2(reader, metadataLabels) };
 
             // Create the overall search statistics?
             if (ReturnSearchStatistics)
             {
-                Search_Results_Statistics stats = new Search_Results_Statistics(reader, FacetTypes, metadataLabels);
+                var stats = new Search_Results_Statistics(reader, FacetTypes, metadataLabels);
                 returnArgs.Statistics = stats;
                 readerWrapper.Close();
                 stats.Total_Items = Convert.ToInt32(totalItemsParameter.Value);
@@ -2699,8 +2683,7 @@ namespace SobekCM.Engine_Library.Database
             }
 
             // Build the paremeters list
-            List<EalDbParameter> parameters = new List<EalDbParameter>
-            {
+            var parameters = new List<EalDbParameter>{
                 new EalDbParameter("@folderid", UserFolderID),
                 new EalDbParameter("@pagesize", ResultsPerPage),
                 new EalDbParameter("@pagenumber", ResultsPage),
@@ -2730,10 +2713,10 @@ namespace SobekCM.Engine_Library.Database
             }
 
             // Add parameters for total items and total titles
-            EalDbParameter totalItemsParameter = new EalDbParameter("@total_items", 0) { Direction = ParameterDirection.InputOutput };
+            var totalItemsParameter = new EalDbParameter("@total_items", 0) { Direction = ParameterDirection.InputOutput };
             parameters.Add(totalItemsParameter);
 
-            EalDbParameter totalTitlesParameter = new EalDbParameter("@total_titles", 0) { Direction = ParameterDirection.InputOutput };
+            var totalTitlesParameter = new EalDbParameter("@total_titles", 0) { Direction = ParameterDirection.InputOutput };
             parameters.Add(totalTitlesParameter);
 
             // Create the database agnostic reader
@@ -2743,13 +2726,13 @@ namespace SobekCM.Engine_Library.Database
             DbDataReader reader = readerWrapper.Reader;
 
             // Create the return argument object
-            List<string> metadataLabels = new List<string>();
-            Single_Paged_Results_Args returnArgs = new Single_Paged_Results_Args { Paged_Results = DataReader_To_Simple_Result_List2(reader, metadataLabels) };
+            var metadataLabels = new List<string>();
+            var returnArgs = new Single_Paged_Results_Args{ Paged_Results = DataReader_To_Simple_Result_List2(reader, metadataLabels) };
 
             // Create the overall search statistics?
             if (ReturnSearchStatistics)
             {
-                Search_Results_Statistics stats = new Search_Results_Statistics(reader, FacetTypes, metadataLabels);
+                var stats = new Search_Results_Statistics(reader, FacetTypes, metadataLabels);
                 returnArgs.Statistics = stats;
                 readerWrapper.Close();
                 stats.Total_Items = Convert.ToInt32(totalItemsParameter.Value);
@@ -2815,8 +2798,7 @@ namespace SobekCM.Engine_Library.Database
             }
 
             // Create the parameter list
-            List<EalDbParameter> parameters = new List<EalDbParameter>
-            {
+            var parameters = new List<EalDbParameter>{
                 SinceDate.Length > 0 ? new EalDbParameter("@date", SinceDate) : new EalDbParameter("@date", DBNull.Value),
                 new EalDbParameter("@include_private", IncludePrivateItems),
                 new EalDbParameter("@pagesize", ResultsPerPage),
@@ -2852,10 +2834,10 @@ namespace SobekCM.Engine_Library.Database
             parameters.Add(new EalDbParameter("@item_count_to_use_cached", 1000));
 
             // Add parameters for total items and total titles
-            EalDbParameter totalItemsParameter = new EalDbParameter("@total_items", 0) { Direction = ParameterDirection.InputOutput };
+            var totalItemsParameter = new EalDbParameter("@total_items", 0) { Direction = ParameterDirection.InputOutput };
             parameters.Add(totalItemsParameter);
 
-            EalDbParameter totalTitlesParameter = new EalDbParameter("@total_titles", 0) { Direction = ParameterDirection.InputOutput };
+            var totalTitlesParameter = new EalDbParameter("@total_titles", 0) { Direction = ParameterDirection.InputOutput };
             parameters.Add(totalTitlesParameter);
 
 
@@ -2870,7 +2852,7 @@ namespace SobekCM.Engine_Library.Database
                 DbDataReader reader = readerWrapper.Reader;
 
                 // Create the return argument object
-                List<string> metadataLabels = new List<string>();
+                var metadataLabels = new List<string>();
                 returnArgs = new Multiple_Paged_Results_Args
                 {
                     Paged_Results = DataReader_To_Result_List_With_LookAhead2(reader, ResultsPerPage, metadataLabels)
@@ -2879,7 +2861,7 @@ namespace SobekCM.Engine_Library.Database
                 // Create the overall search statistics?
                 if (ReturnSearchStatistics)
                 {
-                    Search_Results_Statistics stats = new Search_Results_Statistics(reader, FacetTypes, metadataLabels);
+                    var stats = new Search_Results_Statistics(reader, FacetTypes, metadataLabels);
                     returnArgs.Statistics = stats;
                     readerWrapper.Close();
                     stats.Total_Items = Convert.ToInt32(totalItemsParameter.Value);
@@ -2959,8 +2941,7 @@ namespace SobekCM.Engine_Library.Database
             }
 
             // Build the parameters list
-            List<EalDbParameter> parameters = new List<EalDbParameter>
-            {
+            var parameters = new List<EalDbParameter>{
                 new EalDbParameter("@code", AggregationCode),
                 new EalDbParameter("@date", SinceDate),
                 new EalDbParameter("@include_private", IncludePrivateItems),
@@ -3010,10 +2991,10 @@ namespace SobekCM.Engine_Library.Database
             parameters.Add(new EalDbParameter("@item_count_to_use_cached", 1000));
 
             // Add parameters for total items and total titles
-            EalDbParameter totalItemsParameter = new EalDbParameter("@total_items", 0) { Direction = ParameterDirection.InputOutput };
+            var totalItemsParameter = new EalDbParameter("@total_items", 0) { Direction = ParameterDirection.InputOutput };
             parameters.Add(totalItemsParameter);
 
-            EalDbParameter totalTitlesParameter = new EalDbParameter("@total_titles", 0) { Direction = ParameterDirection.InputOutput };
+            var totalTitlesParameter = new EalDbParameter("@total_titles", 0) { Direction = ParameterDirection.InputOutput };
             parameters.Add(totalTitlesParameter);
 
             // Create the database agnostic reader
@@ -3023,13 +3004,13 @@ namespace SobekCM.Engine_Library.Database
             DbDataReader reader = readerWrapper.Reader;
 
             // Create the return argument object
-            List<string> metadataLabels = new List<string>();
-            Multiple_Paged_Results_Args returnArgs = new Multiple_Paged_Results_Args { Paged_Results = DataReader_To_Result_List_With_LookAhead2(reader, ResultsPerPage, metadataLabels) };
+            var metadataLabels = new List<string>();
+            var returnArgs = new Multiple_Paged_Results_Args{ Paged_Results = DataReader_To_Result_List_With_LookAhead2(reader, ResultsPerPage, metadataLabels) };
 
             // Create the overall search statistics?
             if (ReturnSearchStatistics)
             {
-                Search_Results_Statistics stats = new Search_Results_Statistics(reader, FacetTypes, metadataLabels);
+                var stats = new Search_Results_Statistics(reader, FacetTypes, metadataLabels);
                 returnArgs.Statistics = stats;
                 readerWrapper.Close();
                 stats.Total_Items = Convert.ToInt32(totalItemsParameter.Value);
@@ -3451,7 +3432,7 @@ namespace SobekCM.Engine_Library.Database
             DataColumn solrColumn = FacetTable.Columns["SolrCode_Display"];
 
             // For now, add all result fields, but each one only once
-            Dictionary<short, short> added_fields = new Dictionary<short, short>();
+            var added_fields = new Dictionary<short, short>();
 
             // Step through each row
             foreach (DataRow thisRow in FacetTable.Rows)
@@ -3506,12 +3487,12 @@ namespace SobekCM.Engine_Library.Database
             DataRow thisRow = BasicInfo.Rows[0];
 
             string displayOptions = thisRow[15].ToString();
-            DateTime lastAdded = new DateTime(2000, 1, 1);
+            var lastAdded = new DateTime(2000, 1, 1);
             if (thisRow[16] != DBNull.Value)
                 lastAdded = Convert.ToDateTime(thisRow[16]);
 
             // Build the collection group object
-            Complete_Item_Aggregation aggrInfo = new Complete_Item_Aggregation(Engine_ApplicationCache_Gateway.Settings.System.Default_UI_Language,
+            var aggrInfo = new Complete_Item_Aggregation(Engine_ApplicationCache_Gateway.Settings.System.Default_UI_Language,
                 thisRow[1].ToString().ToLower(), thisRow[4].ToString(), Convert.ToInt32(thisRow[0]), displayOptions, lastAdded)
             {
                 Name = thisRow[2].ToString(),
@@ -3568,7 +3549,7 @@ namespace SobekCM.Engine_Library.Database
             string childTypes = String.Empty;
 
             // Build a dictionary of nodes while building this tree
-            Dictionary<string, Item_Aggregation_Related_Aggregations> nodes = new Dictionary<string, Item_Aggregation_Related_Aggregations>(ChildInfo.Rows.Count);
+            var nodes = new Dictionary<string, Item_Aggregation_Related_Aggregations>(ChildInfo.Rows.Count);
 
             // Step through each row of children
             foreach (DataRow thisRow in ChildInfo.Rows)
@@ -3582,7 +3563,7 @@ namespace SobekCM.Engine_Library.Database
                 if (!nodes.ContainsKey(code))
                 {
                     // Create the object
-                    Item_Aggregation_Related_Aggregations childObject = new Item_Aggregation_Related_Aggregations(code, thisRow[2].ToString(), thisRow[4].ToString(), Convert.ToBoolean(thisRow[6]), Convert.ToBoolean(thisRow[7]));
+                    var childObject = new Item_Aggregation_Related_Aggregations(code, thisRow[2].ToString(), thisRow[4].ToString(), Convert.ToBoolean(thisRow[6]), Convert.ToBoolean(thisRow[7]));
 
                     // Add this object to the node dictionary
                     nodes.Add(code, childObject);
@@ -3625,7 +3606,7 @@ namespace SobekCM.Engine_Library.Database
         {
             foreach (DataRow parentRow in ParentInfo.Rows)
             {
-                Item_Aggregation_Related_Aggregations parentObject = new Item_Aggregation_Related_Aggregations(parentRow[0].ToString(), parentRow[1].ToString(), parentRow[3].ToString(), Convert.ToBoolean(parentRow[4]), false);
+                var parentObject = new Item_Aggregation_Related_Aggregations(parentRow[0].ToString(), parentRow[1].ToString(), parentRow[3].ToString(), Convert.ToBoolean(parentRow[4]), false);
                 AggrInfo.Add_Parent_Aggregation(parentObject);
             }
         }
@@ -3650,7 +3631,7 @@ namespace SobekCM.Engine_Library.Database
                     string sobekCode = thisRow[3].ToString();
                     string solrCode = thisRow[4].ToString();
 
-                    Complete_Item_Aggregation_Metadata_Type metadataType = new Complete_Item_Aggregation_Metadata_Type(thisTypeId, displayTerm, sobekCode) { SolrCode = solrCode };
+                    var metadataType = new Complete_Item_Aggregation_Metadata_Type(thisTypeId, displayTerm, sobekCode) { SolrCode = solrCode };
 
                     if (!AggrInfo.Search_Fields.Contains(metadataType))
                     {
@@ -4155,7 +4136,7 @@ namespace SobekCM.Engine_Library.Database
                     return null;
 
                 // Create the return object
-                Builder_Status returnObj = new Builder_Status();
+                var returnObj = new Builder_Status();
 
                 // Add the settings first
                 foreach (DataRow thisRow in tempSet.Tables[0].Rows)
@@ -4167,8 +4148,7 @@ namespace SobekCM.Engine_Library.Database
                 foreach (DataRow thisRow in tempSet.Tables[1].Rows)
                 {
                     // Builder the scheduled task update object
-                    Builder_Scheduled_Task_Status schedTask = new Builder_Scheduled_Task_Status
-                    {
+                    var schedTask = new Builder_Scheduled_Task_Status{
                         ModuleScheduleID = Int32.Parse(thisRow["ModuleScheduleID"].ToString()),
                         Description = thisRow["Description"].ToString(),
                         DaysOfWeek = thisRow["DaysOfWeek"].ToString(),
@@ -4241,11 +4221,10 @@ namespace SobekCM.Engine_Library.Database
                 DataSet tempSet = EalDbAccess.ExecuteDataset(DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_Builder_Get_Folder_Module_Sets");
 
                 // Build the module sets to return
-                List<Builder_Module_Set_Info> returnvalue = new List<Builder_Module_Set_Info>();
+                var returnvalue = new List<Builder_Module_Set_Info>();
                 foreach (DataRow thisRow in tempSet.Tables[0].Rows)
                 {
-                    Builder_Module_Set_Info thisModule = new Builder_Module_Set_Info
-                    {
+                    var thisModule = new Builder_Module_Set_Info{
                         SetID = Int32.Parse(thisRow["ModuleSetID"].ToString()),
                         SetName = thisRow["SetName"].ToString(),
                         Used_Count = Int32.Parse(thisRow["UsedCount"].ToString())
@@ -4290,8 +4269,7 @@ namespace SobekCM.Engine_Library.Database
                     return null;
 
                 DataRow thisRow = resultSet.Tables[0].Rows[0];
-                Builder_Source_Folder newFolder = new Builder_Source_Folder
-                {
+                var newFolder = new Builder_Source_Folder{
                     IncomingFolderID = Convert.ToInt32(thisRow["IncomingFolderId"]),
                     Folder_Name = thisRow["FolderName"].ToString(),
                     Inbound_Folder = thisRow["NetworkFolder"].ToString(),
@@ -5075,7 +5053,7 @@ namespace SobekCM.Engine_Library.Database
                 string redirect = pageRow["Redirect"].ToString();
 
                 // Build and return the basic info object
-                WebContent_Basic_Info returnValue = new WebContent_Basic_Info(webid, title, summary, deleted, redirect);
+                var returnValue = new WebContent_Basic_Info(webid, title, summary, deleted, redirect);
                 if (bool.Parse(pageRow["Locked"].ToString()))
                     returnValue.Locked = true;
 
@@ -5174,7 +5152,7 @@ namespace SobekCM.Engine_Library.Database
                 string redirect = pageRow["Redirect"].ToString();
 
                 // Build and return the basic info object
-                WebContent_Basic_Info returnValue = new WebContent_Basic_Info(webid, title, summary, deleted, redirect);
+                var returnValue = new WebContent_Basic_Info(webid, title, summary, deleted, redirect);
                 if (bool.Parse(pageRow["Locked"].ToString()))
                     returnValue.Locked = true;
 
@@ -5320,7 +5298,7 @@ namespace SobekCM.Engine_Library.Database
             }
 
             // Build return list
-            Single_WebContent_Usage_Report returnValue = new Single_WebContent_Usage_Report { WebContentID = WebContentID };
+            var returnValue = new Single_WebContent_Usage_Report{ WebContentID = WebContentID };
 
             try
             {
@@ -5341,7 +5319,7 @@ namespace SobekCM.Engine_Library.Database
                     int hitsComplete = reader.GetInt32(3);
 
                     // Build the hit object
-                    Single_WebContent_Usage hitObject = new Single_WebContent_Usage(year, month, hits, hitsComplete);
+                    var hitObject = new Single_WebContent_Usage(year, month, hits, hitsComplete);
 
                     // Add the hit object to the list
                     returnValue.Usage.Add(hitObject);
@@ -5380,7 +5358,7 @@ namespace SobekCM.Engine_Library.Database
             }
 
             // Build return list
-            Single_WebContent_Change_Report returnValue = new Single_WebContent_Change_Report { WebContentID = WebContentID };
+            var returnValue = new Single_WebContent_Change_Report{ WebContentID = WebContentID };
 
             try
             {
@@ -5400,7 +5378,7 @@ namespace SobekCM.Engine_Library.Database
                     string user = reader.GetString(2);
 
                     // Build the hit object
-                    Milestone_Entry hitObject = new Milestone_Entry(date, user, milestone);
+                    var hitObject = new Milestone_Entry(date, user, milestone);
 
                     // Add the hit object to the list
                     returnValue.Changes.Add(hitObject);
@@ -5571,7 +5549,7 @@ namespace SobekCM.Engine_Library.Database
                     if ((list[0] == null) || (String.Compare(list[0].Segment, segment1, StringComparison.OrdinalIgnoreCase) != 0))
                     {
                         // Build the node and add to the root nodes
-                        WebContent_Hierarchy_Node newNode = new WebContent_Hierarchy_Node(segment1, id, redirect);
+                        var newNode = new WebContent_Hierarchy_Node(segment1, id, redirect);
                         ReturnValue.Add_Child(newNode);
 
                         // If there are additional non-null segments, than this node does not represent the 
@@ -5593,7 +5571,7 @@ namespace SobekCM.Engine_Library.Database
                         if ((list[1] == null) || (String.Compare(list[1].Segment, segment2, StringComparison.OrdinalIgnoreCase) != 0))
                         {
                             // Build the node and add to the current parent node
-                            WebContent_Hierarchy_Node newNode = new WebContent_Hierarchy_Node(segment2, id, redirect);
+                            var newNode = new WebContent_Hierarchy_Node(segment2, id, redirect);
                             list[0].Add_Child(newNode);
 
                             // If there are additional non-null segments, than this node does not represent the 
@@ -5615,7 +5593,7 @@ namespace SobekCM.Engine_Library.Database
                             if ((list[2] == null) || (String.Compare(list[2].Segment, segment3, StringComparison.OrdinalIgnoreCase) != 0))
                             {
                                 // Build the node and add to the current parent node
-                                WebContent_Hierarchy_Node newNode = new WebContent_Hierarchy_Node(segment3, id, redirect);
+                                var newNode = new WebContent_Hierarchy_Node(segment3, id, redirect);
                                 list[1].Add_Child(newNode);
 
                                 // If there are additional non-null segments, than this node does not represent the 
@@ -5637,7 +5615,7 @@ namespace SobekCM.Engine_Library.Database
                                 if ((list[3] == null) || (String.Compare(list[3].Segment, segment4, StringComparison.OrdinalIgnoreCase) != 0))
                                 {
                                     // Build the node and add to the current parent node
-                                    WebContent_Hierarchy_Node newNode = new WebContent_Hierarchy_Node(segment4, id, redirect);
+                                    var newNode = new WebContent_Hierarchy_Node(segment4, id, redirect);
                                     list[2].Add_Child(newNode);
 
                                     // If there are additional non-null segments, than this node does not represent the 
@@ -5659,7 +5637,7 @@ namespace SobekCM.Engine_Library.Database
                                     if ((list[4] == null) || (String.Compare(list[4].Segment, segment5, StringComparison.OrdinalIgnoreCase) != 0))
                                     {
                                         // Build the node and add to the current parent node
-                                        WebContent_Hierarchy_Node newNode = new WebContent_Hierarchy_Node(segment5, id, redirect);
+                                        var newNode = new WebContent_Hierarchy_Node(segment5, id, redirect);
                                         list[3].Add_Child(newNode);
 
                                         // If there are additional non-null segments, than this node does not represent the 
@@ -5681,7 +5659,7 @@ namespace SobekCM.Engine_Library.Database
                                         if ((list[5] == null) || (String.Compare(list[5].Segment, segment6, StringComparison.OrdinalIgnoreCase) != 0))
                                         {
                                             // Build the node and add to the current parent node
-                                            WebContent_Hierarchy_Node newNode = new WebContent_Hierarchy_Node(segment6, id, redirect);
+                                            var newNode = new WebContent_Hierarchy_Node(segment6, id, redirect);
                                             list[4].Add_Child(newNode);
 
                                             // If there are additional non-null segments, than this node does not represent the 
@@ -5703,7 +5681,7 @@ namespace SobekCM.Engine_Library.Database
                                             if ((list[6] == null) || (String.Compare(list[6].Segment, segment7, StringComparison.OrdinalIgnoreCase) != 0))
                                             {
                                                 // Build the node and add to the current parent node
-                                                WebContent_Hierarchy_Node newNode = new WebContent_Hierarchy_Node(segment7, id, redirect);
+                                                var newNode = new WebContent_Hierarchy_Node(segment7, id, redirect);
                                                 list[5].Add_Child(newNode);
 
                                                 // If there are additional non-null segments, than this node does not represent the 
@@ -5721,7 +5699,7 @@ namespace SobekCM.Engine_Library.Database
                                                 string segment8 = reader.GetString(8);
 
                                                 // Build the node and add to the current parent node
-                                                WebContent_Hierarchy_Node newNode = new WebContent_Hierarchy_Node(segment8, id, redirect);
+                                                var newNode = new WebContent_Hierarchy_Node(segment8, id, redirect);
                                                 list[6].Add_Child(newNode);
 
                                                 // Note, this last node always represents the web content page or redirect if
@@ -5966,7 +5944,7 @@ namespace SobekCM.Engine_Library.Database
 
         private static User_Object build_user_object_from_dataset(DataSet ResultSet)
         {
-            User_Object user = new User_Object();
+            var user = new User_Object();
 
             DataRow userRow = ResultSet.Tables[0].Rows[0];
             user.ShibbID = userRow["ShibbID"].ToString();
@@ -6037,8 +6015,8 @@ namespace SobekCM.Engine_Library.Database
             }
 
             // Add the current folder names
-            Dictionary<int, User_Folder> folderNodes = new Dictionary<int, User_Folder>();
-            List<User_Folder> parentNodes = new List<User_Folder>();
+            var folderNodes = new Dictionary<int, User_Folder>();
+            var parentNodes = new List<User_Folder>();
             foreach (DataRow folderRow in ResultSet.Tables[6].Rows)
             {
                 string folderName = folderRow["FolderName"].ToString();
@@ -6046,7 +6024,7 @@ namespace SobekCM.Engine_Library.Database
                 int parentid = Convert.ToInt32(folderRow["ParentFolderID"]);
                 bool isPublic = Convert.ToBoolean(folderRow["isPublic"]);
 
-                User_Folder newFolderNode = new User_Folder(folderName, folderid) { IsPublic = isPublic };
+                var newFolderNode = new User_Folder(folderName, folderid) { IsPublic = isPublic };
                 if (parentid == -1)
                     parentNodes.Add(newFolderNode);
                 folderNodes.Add(folderid, newFolderNode);
@@ -6251,12 +6229,11 @@ namespace SobekCM.Engine_Library.Database
         /// <returns> Corresponding list of <see cref="ExtensionInfo" /> objects </returns>
         public static List<ExtensionInfo> DataTable_to_Extensions(DataTable Source)
         {
-            List<ExtensionInfo> returnValue = new List<ExtensionInfo>();
+            var returnValue = new List<ExtensionInfo>();
 
             foreach (DataRow thisRow in Source.Rows)
             {
-                ExtensionInfo newExtension = new ExtensionInfo
-                {
+                var newExtension = new ExtensionInfo{
                     Code = thisRow["Code"].ToString(),
                     Name = thisRow["Name"].ToString(),
                     Enabled = Boolean.Parse(thisRow["IsEnabled"].ToString()),
@@ -6285,7 +6262,7 @@ namespace SobekCM.Engine_Library.Database
                 // Define a temporary dataset
                 DataSet returnSet = EalDbAccess.ExecuteDataset(DatabaseType, Connection_String, CommandType.StoredProcedure, "Tracking_Box_List");
 
-                List<string> returnValue = new List<string>();
+                var returnValue = new List<string>();
                 if (returnSet != null)
                 {
                     returnValue.AddRange(from DataRow thisRow in returnSet.Tables[0].Rows where thisRow["Tracking_Box"] != DBNull.Value select thisRow["Tracking_Box"].ToString() into trackingBox where trackingBox.Length > 0 select trackingBox);
@@ -6486,8 +6463,7 @@ namespace SobekCM.Engine_Library.Database
             try
             {
                 // Build the parameters list
-                List<EalDbParameter> parameters = new List<EalDbParameter>
-                {
+                var parameters = new List<EalDbParameter>{
                     new EalDbParameter("@code1", AggregationCode1),
                     new EalDbParameter("@code2", AggregationCode2),
                     new EalDbParameter("@include_online", OnlineStatsType),
@@ -6771,8 +6747,7 @@ namespace SobekCM.Engine_Library.Database
                 Tracer.Add_Trace("Engine_Database.Tracking_Get_Aggregation_Private_Items", "Pulling list of private items for this aggregation");
 
             // Build the parameters list
-            List<EalDbParameter> parameters = new List<EalDbParameter>
-            {
+            var parameters = new List<EalDbParameter>{
                 new EalDbParameter("@code", AggregationCode),
                 new EalDbParameter("@pagesize", ResultsPerPage),
                 new EalDbParameter("@pagenumber", ResultsPage),
@@ -6783,10 +6758,10 @@ namespace SobekCM.Engine_Library.Database
             };
 
             // Add parameters for total items and total titles
-            EalDbParameter totalItemsParameter = new EalDbParameter("@total_items", 0) { Direction = ParameterDirection.InputOutput };
+            var totalItemsParameter = new EalDbParameter("@total_items", 0) { Direction = ParameterDirection.InputOutput };
             parameters.Add(totalItemsParameter);
 
-            EalDbParameter totalTitlesParameter = new EalDbParameter("@total_titles", 0) { Direction = ParameterDirection.InputOutput };
+            var totalTitlesParameter = new EalDbParameter("@total_titles", 0) { Direction = ParameterDirection.InputOutput };
             parameters.Add(totalTitlesParameter);
 
             // Create the database agnostic reader
@@ -6796,7 +6771,7 @@ namespace SobekCM.Engine_Library.Database
             DbDataReader reader = readerWrapper.Reader;
 
             // Create the return argument object
-            Private_Items_List returnArgs = new Private_Items_List { TitleResults = DataReader_To_Private_Items_List(reader) };
+            var returnArgs = new Private_Items_List{ TitleResults = DataReader_To_Private_Items_List(reader) };
 
             // Close the reader (which also closes the connection)
             readerWrapper.Close();
@@ -6815,16 +6790,15 @@ namespace SobekCM.Engine_Library.Database
         private static List<Private_Items_List_Title> DataReader_To_Private_Items_List(DbDataReader Reader)
         {
             // Create return list
-            List<Private_Items_List_Title> returnValue = new List<Private_Items_List_Title>();
+            var returnValue = new List<Private_Items_List_Title>();
 
-            Dictionary<int, int> lookup = new Dictionary<int, int>();
+            var lookup = new Dictionary<int, int>();
 
             // Get all the main title values first
             while (Reader.Read())
             {
                 // Create new database title object for this
-                Private_Items_List_Title result = new Private_Items_List_Title
-                {
+                var result = new Private_Items_List_Title{
                     RowNumber = Reader.GetInt32(0),
                     BibID = Reader.GetString(1),
                     Group_Title = Reader.GetString(2),
@@ -6863,8 +6837,7 @@ namespace SobekCM.Engine_Library.Database
                 }
 
                 // Create new database item object for this
-                Private_Items_List_Item result = new Private_Items_List_Item
-                {
+                var result = new Private_Items_List_Item{
                     VID = Reader.GetString(1),
                     Title = Reader.GetString(2),
                     LocallyArchived = Reader.GetBoolean(5),
@@ -6946,8 +6919,7 @@ namespace SobekCM.Engine_Library.Database
         {
 
             // Build the parameters list
-            List<EalDbParameter> parameters = new List<EalDbParameter>
-            {
+            var parameters = new List<EalDbParameter>{
                 new EalDbParameter("@term1", Term1),
                 new EalDbParameter("@field1", Field1),
                 new EalDbParameter("@link2", Link2),
@@ -6992,8 +6964,7 @@ namespace SobekCM.Engine_Library.Database
         public static DataSet Tracking_Metadata_Search(string SearchCondition, string AggregationCode)
         {
             // Build the parameters list
-            List<EalDbParameter> parameters = new List<EalDbParameter>
-            {
+            var parameters = new List<EalDbParameter>{
                 new EalDbParameter("@searchcondition", SearchCondition),
                 new EalDbParameter("@aggregationcode", AggregationCode)
             };
@@ -7011,8 +6982,7 @@ namespace SobekCM.Engine_Library.Database
         public static DataSet Tracking_Metadata_Exact_Search(string SearchTerm, int FieldID, string AggregationCode)
         {
             // Build the parameters list
-            List<EalDbParameter> parameters = new List<EalDbParameter>
-            {
+            var parameters = new List<EalDbParameter>{
                 new EalDbParameter("@term1", SearchTerm.Replace("''", "'")),
                 new EalDbParameter("@field1", FieldID),
                 new EalDbParameter("@aggregationcode", String.Compare(AggregationCode, "ALL", StringComparison.OrdinalIgnoreCase) == 0 ? String.Empty : AggregationCode)
@@ -7101,7 +7071,7 @@ namespace SobekCM.Engine_Library.Database
                 }
 
                 // Create the object
-                SobekCM_Items_In_Title returnValue = new SobekCM_Items_In_Title(valueSet.Tables[0]);
+                var returnValue = new SobekCM_Items_In_Title(valueSet.Tables[0]);
 
                 // Return the fully built object
                 return returnValue;
@@ -7428,7 +7398,7 @@ namespace SobekCM.Engine_Library.Database
         /// <remarks> This calls the 'SobekCM_Get_Settings' stored procedure </remarks> 
         public static Dictionary<string, string> Get_Settings(Custom_Tracer Tracer)
         {
-            Dictionary<string, string> returnValue = new Dictionary<string, string>();
+            var returnValue = new Dictionary<string, string>();
 
             try
             {
@@ -7883,7 +7853,7 @@ namespace SobekCM.Engine_Library.Database
                         }
                     }
 
-                    Wordmark_Info newIcon = new Wordmark_Info { HTML = html, Link = link, Title = name, Code = code };
+                    var newIcon = new Wordmark_Info{ HTML = html, Link = link, Title = name, Code = code };
                     Resource.Behaviors.Add_Wordmark(newIcon);
                 }
 
@@ -7905,8 +7875,7 @@ namespace SobekCM.Engine_Library.Database
                     bool exclude = Boolean.Parse(viewRow[4].ToString());
 
                     // Create new database title object for this
-                    View_Object result = new View_Object
-                    {
+                    var result = new View_Object{
                         View_Type = viewType,
                         Attributes = attributes,
                         Label = label,
@@ -8035,14 +8004,13 @@ namespace SobekCM.Engine_Library.Database
                 EalDbReaderWrapper readerWrapper = EalDbAccess.ExecuteDataReader(DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_Get_Group_Titles_All");
 
                 // Start the return value
-                List<Minimal_Item_Group_Info> returnValue = new List<Minimal_Item_Group_Info>();
+                var returnValue = new List<Minimal_Item_Group_Info>();
 
                 // Step through each value
                 while (readerWrapper.Reader.Read())
                 {
                     // Build this item information
-                    Minimal_Item_Group_Info thisItem = new Minimal_Item_Group_Info
-                    {
+                    var thisItem = new Minimal_Item_Group_Info{
                         BibID = readerWrapper.Reader.GetString(0),
                         GroupTitle = readerWrapper.Reader.GetString(1),
                         GroupThumbnail = readerWrapper.Reader.GetString(2)
@@ -8081,7 +8049,7 @@ namespace SobekCM.Engine_Library.Database
             try
             {
                 // Build the parameters
-                List<EalDbParameter> dbParams = new List<EalDbParameter>();
+                var dbParams = new List<EalDbParameter>();
                 dbParams.Add(new EalDbParameter("@bibid1", (BibIDs.Count > 0) ? BibIDs[0] : String.Empty));
                 dbParams.Add(new EalDbParameter("@bibid2", (BibIDs.Count > 1) ? BibIDs[1] : String.Empty));
                 dbParams.Add(new EalDbParameter("@bibid3", (BibIDs.Count > 2) ? BibIDs[2] : String.Empty));
@@ -8107,14 +8075,13 @@ namespace SobekCM.Engine_Library.Database
                 EalDbReaderWrapper readerWrapper = EalDbAccess.ExecuteDataReader(DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_Get_Group_Titles_All", dbParams);
 
                 // Start the return value
-                List<Minimal_Item_Group_Info> returnValue = new List<Minimal_Item_Group_Info>();
+                var returnValue = new List<Minimal_Item_Group_Info>();
 
                 // Step through each value
                 while (readerWrapper.Reader.Read())
                 {
                     // Build this item information
-                    Minimal_Item_Group_Info thisItem = new Minimal_Item_Group_Info
-                    {
+                    var thisItem = new Minimal_Item_Group_Info{
                         BibID = readerWrapper.Reader.GetString(0),
                         GroupTitle = readerWrapper.Reader.GetString(1),
                         GroupThumbnail = readerWrapper.Reader.GetString(2)
@@ -8169,7 +8136,7 @@ namespace SobekCM.Engine_Library.Database
                     return null;
                 }
 
-                List<OPTheme> returnValue = new List<OPTheme>();
+                var returnValue = new List<OPTheme>();
 
                 foreach (DataRow row in valueSet.Tables[0].Rows)
                 {

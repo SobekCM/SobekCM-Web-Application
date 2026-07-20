@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using System;
 using System.Collections.Generic;
@@ -61,7 +61,7 @@ namespace SobekCM.Builder_Library.Settings
         public List<string> Builder_Modules_From_Settings( string InstanceName )
         {
             // Build the return value
-            List<string> errors = new List<string>();
+            var errors = new List<string>();
             string errorMessage;
 
             // Clear existing modules

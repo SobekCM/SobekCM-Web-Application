@@ -99,7 +99,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 label = thisViewerInfo.Label;
 
             // Add the item menu information
-            Item_MenuItem menuItem = new Item_MenuItem(label, null, null, url, ViewerCode);
+            var menuItem = new Item_MenuItem(label, null, null, url, ViewerCode);
             MenuItems.Add(menuItem);
         }
 
@@ -340,7 +340,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 //  string current_Page_url = UrlWriterHelper.Redirect_URL(currentRequest, "1thumbs");
 
                 // Collect the list of options to display
-                List<int> thumbsOptions = new List<int> { 25 };
+                var thumbsOptions = new List<int>{ 25 };
                 if (pageCount > 50) thumbsOptions.Add(50);
                 if (pageCount > 100) thumbsOptions.Add(100);
                 if (pageCount > 250) thumbsOptions.Add(250);
@@ -486,7 +486,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             Output.WriteLine("<div style=\"margin:5px;text-align:center;\">");
 
             // Get any search terms for highlighting purposes
-            List<string> terms = new List<string>();
+            var terms = new List<string>();
             if (!String.IsNullOrWhiteSpace(currentRequest.Text_Search))
             {
                 string[] splitter = currentRequest.Text_Search.Replace("\"", "").Split(" ".ToCharArray());
@@ -666,7 +666,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         {
             get
             {
-                List<string> goToUrls = new List<string>();
+                var goToUrls = new List<string>();
                 for (int i = 1; i <= PageCount; i++)
                 {
                     goToUrls.Add(UrlWriterHelper.Redirect_URL(currentRequest, i + "thumbs"));

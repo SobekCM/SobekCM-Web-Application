@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using Microsoft.Data.SqlClient;
 using System;
@@ -22,7 +22,7 @@ namespace EngineAgnosticLayerDbAccess
             if (DbType == EalDbTypeEnum.MSSQL)
             {
                 // Create the SQL connection
-                using (SqlConnection sqlConnect = new SqlConnection(DbConnectionString))
+                using (var sqlConnect = new SqlConnection(DbConnectionString))
                 {
                     try
                     {
@@ -79,7 +79,7 @@ namespace EngineAgnosticLayerDbAccess
             if (DbType == EalDbTypeEnum.MSSQL)
             {
                 // Create the SQL connection
-                using (SqlConnection sqlConnect = new SqlConnection(DbConnectionString))
+                using (var sqlConnect = new SqlConnection(DbConnectionString))
                 {
                     try
                     {
@@ -91,7 +91,7 @@ namespace EngineAgnosticLayerDbAccess
                     }
 
                     // Create the SQL command
-                    SqlCommand sqlCommand = new SqlCommand(DbCommandText, sqlConnect)
+                    var sqlCommand = new SqlCommand(DbCommandText, sqlConnect)
                     {
                         CommandType = DbCommandType
                     };
@@ -147,7 +147,7 @@ namespace EngineAgnosticLayerDbAccess
             if (DbType == EalDbTypeEnum.MSSQL)
             {
                 // Create the SQL connection
-                using (SqlConnection sqlConnect = new SqlConnection(DbConnectionString))
+                using (var sqlConnect = new SqlConnection(DbConnectionString))
                 {
                     try
                     {
@@ -159,7 +159,7 @@ namespace EngineAgnosticLayerDbAccess
                     }
 
                     // Create the SQL command
-                    SqlCommand sqlCommand = new SqlCommand(DbCommandText, sqlConnect)
+                    var sqlCommand = new SqlCommand(DbCommandText, sqlConnect)
                     {
                         CommandType = DbCommandType
                     };
@@ -224,10 +224,10 @@ namespace EngineAgnosticLayerDbAccess
         {
             if (DbType == EalDbTypeEnum.MSSQL)
             {
-                DataSet returnedSet = new DataSet();
+                var returnedSet = new DataSet();
 
                 // Create the SQL connection
-                using (SqlConnection sqlConnect = new SqlConnection(DbConnectionString))
+                using (var sqlConnect = new SqlConnection(DbConnectionString))
                 {
                     try
                     {
@@ -239,7 +239,7 @@ namespace EngineAgnosticLayerDbAccess
                     }
 
                     // Create the data adapter
-                    SqlDataAdapter sqlAdapter = new SqlDataAdapter(DbCommandText, sqlConnect)
+                    var sqlAdapter = new SqlDataAdapter(DbCommandText, sqlConnect)
                     {
                         SelectCommand = { CommandType = DbCommandType }
                     };
@@ -276,10 +276,10 @@ namespace EngineAgnosticLayerDbAccess
         {
             if (DbType == EalDbTypeEnum.MSSQL)
             {
-                DataSet returnedSet = new DataSet();
+                var returnedSet = new DataSet();
 
                 // Create the SQL connection
-                using (SqlConnection sqlConnect = new SqlConnection(DbConnectionString))
+                using (var sqlConnect = new SqlConnection(DbConnectionString))
                 {
                     try
                     {
@@ -291,7 +291,7 @@ namespace EngineAgnosticLayerDbAccess
                     }
 
                     // Create the data adapter
-                    SqlDataAdapter sqlAdapter = new SqlDataAdapter(DbCommandText, sqlConnect)
+                    var sqlAdapter = new SqlDataAdapter(DbCommandText, sqlConnect)
                     {
                         SelectCommand = { CommandType = DbCommandType }
                     };
@@ -339,7 +339,7 @@ namespace EngineAgnosticLayerDbAccess
             if (DbType == EalDbTypeEnum.MSSQL)
             {
                 // Create the SQL connection
-                SqlConnection sqlConnect = new SqlConnection(DbConnectionString);
+                var sqlConnect = new SqlConnection(DbConnectionString);
 
                 try
                 {
@@ -351,7 +351,7 @@ namespace EngineAgnosticLayerDbAccess
                 }
 
                 // Create the SQL command
-                SqlCommand sqlCommand = new SqlCommand(DbCommandText, sqlConnect)
+                var sqlCommand = new SqlCommand(DbCommandText, sqlConnect)
                 {
                     CommandType = DbCommandType
                 };
@@ -375,7 +375,7 @@ namespace EngineAgnosticLayerDbAccess
                 }
 
                 // Create the reader wrapper
-                EalDbReaderWrapper returnValue = new EalDbReaderWrapper(sqlConnect, reader);
+                var returnValue = new EalDbReaderWrapper(sqlConnect, reader);
 
                 // Copy any output values back to the parameters
                 sql_copy_returned_values_back_to_params(returnValue, sqlCommand.Parameters, DbParameters);
@@ -403,7 +403,7 @@ namespace EngineAgnosticLayerDbAccess
             if (DbType == EalDbTypeEnum.MSSQL)
             {
                 // Create the SQL connection
-                SqlConnection sqlConnect = new SqlConnection(DbConnectionString);
+                var sqlConnect = new SqlConnection(DbConnectionString);
 
 
                 try
@@ -416,7 +416,7 @@ namespace EngineAgnosticLayerDbAccess
                 }
 
                 // Create the SQL command
-                SqlCommand sqlCommand = new SqlCommand(DbCommandText, sqlConnect)
+                var sqlCommand = new SqlCommand(DbCommandText, sqlConnect)
                 {
                     CommandType = DbCommandType
                 };
@@ -440,7 +440,7 @@ namespace EngineAgnosticLayerDbAccess
                 }
 
                 // Create the reader wrapper
-                EalDbReaderWrapper returnValue = new EalDbReaderWrapper(sqlConnect, reader);
+                var returnValue = new EalDbReaderWrapper(sqlConnect, reader);
 
                 // Copy any output values back to the parameters
                 sql_copy_returned_values_back_to_params(returnValue, sqlCommand.Parameters, DbParameters);
@@ -479,7 +479,7 @@ namespace EngineAgnosticLayerDbAccess
             if (DbType == EalDbTypeEnum.MSSQL)
             {
                 // Create the SQL connection
-                SqlConnection sqlConnect = new SqlConnection(DbConnectionString);
+                var sqlConnect = new SqlConnection(DbConnectionString);
                 try
                 {
                     sqlConnect.Open();
@@ -490,7 +490,7 @@ namespace EngineAgnosticLayerDbAccess
                 }
 
                 // Create the SQL command
-                SqlCommand sqlCommand = new SqlCommand(DbCommandText, sqlConnect)
+                var sqlCommand = new SqlCommand(DbCommandText, sqlConnect)
                 {
                     CommandType = DbCommandType
                 };
@@ -531,7 +531,7 @@ namespace EngineAgnosticLayerDbAccess
             if (DbType == EalDbTypeEnum.MSSQL)
             {
                 // Create the SQL connection
-                SqlConnection sqlConnect = new SqlConnection(DbConnectionString);
+                var sqlConnect = new SqlConnection(DbConnectionString);
 
                 try
                 {
@@ -543,7 +543,7 @@ namespace EngineAgnosticLayerDbAccess
                 }
 
                 // Create the SQL command
-                SqlCommand sqlCommand = new SqlCommand(DbCommandText, sqlConnect)
+                var sqlCommand = new SqlCommand(DbCommandText, sqlConnect)
                 {
                     CommandType = DbCommandType
                 };
@@ -622,7 +622,7 @@ namespace EngineAgnosticLayerDbAccess
 
 
                     // Create the sql parameter
-                    SqlParameter sqlParam = new SqlParameter(thisParam.ParameterName, sqlType)
+                    var sqlParam = new SqlParameter(thisParam.ParameterName, sqlType)
                     {
                         Direction = thisParam.Direction,
                         Value = thisParam.Value
@@ -681,7 +681,7 @@ namespace EngineAgnosticLayerDbAccess
 
 
                     // Create the sql parameter
-                    SqlParameter sqlParam = new SqlParameter(thisParam.ParameterName, sqlType)
+                    var sqlParam = new SqlParameter(thisParam.ParameterName, sqlType)
                     {
                         Direction = thisParam.Direction,
                         Value = thisParam.Value

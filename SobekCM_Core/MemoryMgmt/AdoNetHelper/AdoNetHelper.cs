@@ -402,7 +402,7 @@ namespace SobekCM.Core.MemoryMgmt
 		/// <param name="description">A description of the DataSet contents</param>
 		/// <returns></returns>
 		public static string GetDataSetDump(DataSet dataset, string description) {
-			StringBuilder sb = new StringBuilder();
+			var sb = new StringBuilder();
 
 			// Dump the description
 			sb.Append(description);
@@ -423,7 +423,7 @@ namespace SobekCM.Core.MemoryMgmt
         /// <param name="description"> Description of the table </param>
         /// <returns> Dumped table and description</returns>
 		public static string GetTableDump(DataTable dataTable, string description) {
-			StringBuilder sb = new StringBuilder();
+			var sb = new StringBuilder();
 
 			// Dump the description
 			sb.Append(description);
@@ -440,7 +440,7 @@ namespace SobekCM.Core.MemoryMgmt
 		
 		#region Private Static Methods
 		private static string getTableDump(DataTable dataTable) {
-			StringBuilder sb = new StringBuilder();
+			var sb = new StringBuilder();
 
 			sb.AppendFormat("table '{0}' contains {1} rows", dataTable.TableName, dataTable.Rows.Count);
 			sb.Append(Environment.NewLine);
@@ -464,7 +464,7 @@ namespace SobekCM.Core.MemoryMgmt
 		}
 
 		private static ArrayList getUniqueValues(DataRow[] rows, DataColumn column) {
-			ArrayList uniqueValues = new ArrayList();
+			var uniqueValues = new ArrayList();
 
 			if (rows.Length == 1)
 				uniqueValues.Add(rows[0][column]);
@@ -496,7 +496,7 @@ namespace SobekCM.Core.MemoryMgmt
 
 		private static BitVector32 GetDataSetFlags(DataSet dataSet)
 		{
-			BitVector32 flags = new BitVector32();
+			var flags = new BitVector32();
 			
 			flags[DataSetHasName] = dataSet.DataSetName != "NewDataSet";
 			flags[DataSetIsCaseSensitive] = dataSet.CaseSensitive;
@@ -540,7 +540,7 @@ namespace SobekCM.Core.MemoryMgmt
 		
 		private static BitVector32 GetTableFlags(DataTable dataTable)
 		{
-			BitVector32 flags = new BitVector32();
+			var flags = new BitVector32();
 			
 			flags[TableHasName] = dataTable.TableName != string.Empty;
 			flags[TableIsCaseSensitive] = dataTable.CaseSensitive;
@@ -588,7 +588,7 @@ namespace SobekCM.Core.MemoryMgmt
 
 		private static BitVector32 GetColumnFlags(DataColumn dataColumn)
 		{
-			BitVector32 flags = new BitVector32();
+			var flags = new BitVector32();
 
 			flags[ColumnIsNullable] = dataColumn.AllowDBNull;
 			flags[ColumnIsNotStringDataType] = dataColumn.DataType != typeof(string);
@@ -621,7 +621,7 @@ namespace SobekCM.Core.MemoryMgmt
 		
 		private static BitVector32 GetRowFlags(DataRow row)
 		{
-			BitVector32 flags = new BitVector32();
+			var flags = new BitVector32();
 			
 			DataRowState state = row.RowState;
 			flags[RowHasOldData] = state == DataRowState.Deleted || state == DataRowState.Modified;
@@ -649,7 +649,7 @@ namespace SobekCM.Core.MemoryMgmt
 
 		private static BitVector32 GetUniqueConstraintFlags(UniqueConstraint uniqueConstraint)
 		{
-			BitVector32 flags = new BitVector32();
+			var flags = new BitVector32();
 
 			flags[UniqueConstraintHasDefaultName] = DefaultConstraintNameMatcher.IsMatch(uniqueConstraint.ConstraintName);
 			
@@ -664,7 +664,7 @@ namespace SobekCM.Core.MemoryMgmt
 		private static UniqueConstraint[] getUniqueConstraints(DataTable dataTable)
 		{
 			if (dataTable.Constraints.Count == 0) return new UniqueConstraint[0];
-			ArrayList constraints = new ArrayList();
+			var constraints = new ArrayList();
 			foreach(Constraint constraint in dataTable.Constraints)
 			{
 				if (constraint is UniqueConstraint) constraints.Add(constraint);
@@ -691,7 +691,7 @@ namespace SobekCM.Core.MemoryMgmt
 		
 		private static BitVector32 GetForeignKeyConstraintFlags(ForeignKeyConstraint foreignKeyConstraint)
 		{
-			BitVector32 flags = new BitVector32();
+			var flags = new BitVector32();
 
 			flags[ForeignKeyConstraintHasDefaultName] = DefaultConstraintNameMatcher.IsMatch(foreignKeyConstraint.ConstraintName);
 			flags[ForeignKeyConstraintIsPrimaryKeyOnParentTable] =
@@ -708,7 +708,7 @@ namespace SobekCM.Core.MemoryMgmt
 
 		private static ForeignKeyConstraint[] getForeignKeyConstraints(DataSet dataSet)
 		{
-			ArrayList constraints = new ArrayList();
+			var constraints = new ArrayList();
 			foreach(DataTable dataTable in dataSet.Tables)
 			{
 				foreach(Constraint constraint in dataTable.Constraints)
@@ -755,7 +755,7 @@ namespace SobekCM.Core.MemoryMgmt
 
 		private static BitVector32 GetRelationFlags(DataRelation relation)
 		{
-			BitVector32 flags = new BitVector32();
+			var flags = new BitVector32();
 			
 			flags[RelationHasDefaultName] = relation.RelationName != string.Empty;
 			flags[RelationIsNested] = relation.Nested;
@@ -1252,7 +1252,7 @@ namespace SobekCM.Core.MemoryMgmt
 					
 					childColumns = readTableAndColumnOrdinals(flags[RelationHasMultipleColumns]);
 
-					DataRelation relation = new DataRelation(relationName, parentColumns, childColumns, false);
+					var relation = new DataRelation(relationName, parentColumns, childColumns, false);
 					relation.Nested = flags[RelationIsNested];
 					if (flags[RelationHasExtendedProperties]) deserializeExtendedProperties(relation.ExtendedProperties);
 				

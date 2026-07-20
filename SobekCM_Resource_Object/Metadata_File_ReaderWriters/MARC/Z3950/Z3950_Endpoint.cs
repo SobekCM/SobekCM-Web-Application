@@ -103,7 +103,7 @@ namespace SobekCM.Resource_Object.MARC
         /// <returns> Copy of this object with all the same data </returns>
         public Z3950_Endpoint Copy()
         {
-            Z3950_Endpoint copyPoint = new Z3950_Endpoint(Name, URI, Port, Database_Name, Username);
+            var copyPoint = new Z3950_Endpoint(Name, URI, Port, Database_Name, Username);
             copyPoint.Password = Password;
             copyPoint.Save_Password_Flag = Save_Password_Flag;
             return copyPoint;

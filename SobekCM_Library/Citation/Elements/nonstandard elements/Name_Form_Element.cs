@@ -90,7 +90,7 @@ namespace SobekCM.Library.Citation.Elements
             // Collect all the names
             int name_count = 1;
             bool first_is_main = false;
-            List<Name_Info> names = new List<Name_Info>();
+            var names = new List<Name_Info>();
             if ((Bib.Bib_Info.hasMainEntityName) && (Bib.Bib_Info.Main_Entity_Name.hasData))
             {
                 names.Add(Bib.Bib_Info.Main_Entity_Name);

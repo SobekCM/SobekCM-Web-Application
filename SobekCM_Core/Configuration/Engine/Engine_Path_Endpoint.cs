@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using ProtoBuf;
 using System;
@@ -199,7 +199,7 @@ namespace SobekCM.Core.Configuration.Engine
                     return new List<Engine_VerbMapping> { GetMapping };
 
                 // Build the list 
-                List<Engine_VerbMapping> returnValue = new List<Engine_VerbMapping>();
+                var returnValue = new List<Engine_VerbMapping>();
                 if (GetMapping != null) returnValue.Add(GetMapping);
                 if (PostMapping != null) returnValue.Add(PostMapping);
                 if (PutMapping != null) returnValue.Add(PutMapping);

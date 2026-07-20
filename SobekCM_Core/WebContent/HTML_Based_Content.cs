@@ -314,7 +314,7 @@ namespace SobekCM.Core.WebContent
         {
             get
             {
-                StringBuilder urlBuilder = new StringBuilder();
+                var urlBuilder = new StringBuilder();
 
                 if (!String.IsNullOrEmpty(Level1))
                 {
@@ -463,7 +463,7 @@ namespace SobekCM.Core.WebContent
         {
             try
             {
-                StreamWriter writer = new StreamWriter(File, false);
+                var writer = new StreamWriter(File, false);
                 writer.WriteLine("<html>");
                 writer.WriteLine("  <head>");
                 if (!String.IsNullOrEmpty(Title))

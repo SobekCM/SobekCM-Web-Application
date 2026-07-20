@@ -22,8 +22,8 @@ namespace SobekCM_Resource_Database.Builder
             origName = FileName;
 
             // Create the collections for building the parts
-            StringCollection parts = new StringCollection();
-            StringBuilder partBuilder = new StringBuilder();
+            var parts = new StringCollection();
+            var partBuilder = new StringBuilder();
 
             // Check the first digit of the filename
             bool lastDigit = Char.IsDigit(FileName[0]);

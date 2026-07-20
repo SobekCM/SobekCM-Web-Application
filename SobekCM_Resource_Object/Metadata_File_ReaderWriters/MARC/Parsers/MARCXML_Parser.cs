@@ -143,7 +143,7 @@ namespace SobekCM.Resource_Object.MARC.Parsers
         private MARC_Record parse_next_record()
         {
             // Create the MARC record to return and subfield collection
-            MARC_Record thisRecord = new MARC_Record();
+            var thisRecord = new MARC_Record();
 
             // Try to read this
             Read_MARC_Info(reader, thisRecord);
@@ -247,13 +247,13 @@ namespace SobekCM.Resource_Object.MARC.Parsers
             try
             {
                 // Load this MXF File
-                XmlDocument marcXML = new XmlDocument();
+                var marcXML = new XmlDocument();
                 marcXML.Load(MARC_XML_File);
 
                 Stream reader = new FileStream(MARC_XML_File, FileMode.Open, FileAccess.Read);
 
                 // create the node reader
-                XmlTextReader nodeReader = new XmlTextReader(reader);
+                var nodeReader = new XmlTextReader(reader);
 
                 return Read_MARC_Info(nodeReader, Record);
             }

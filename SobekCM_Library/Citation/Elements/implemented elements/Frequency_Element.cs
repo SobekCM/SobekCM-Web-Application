@@ -68,7 +68,7 @@ namespace SobekCM.Library.Citation.Elements
                 }
             }
 
-            List<string> frequencies = new List<string>();
+            var frequencies = new List<string>();
             foreach (Origin_Info_Frequency frequency in Bib.Bib_Info.Origin_Info.Frequencies)
             {
                 if (!frequencies.Contains(frequency.Term.ToLower()))

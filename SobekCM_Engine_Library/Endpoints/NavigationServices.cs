@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using SobekCM.Core.Configuration.Engine;
 using SobekCM.Core.Navigation;
@@ -24,7 +24,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="IsDebug"></param>
         public void ResolveUrl(CompatHttpResponse Response, List<string> UrlSegments, Dictionary<string, string> QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
         {
-            Custom_Tracer tracer = new Custom_Tracer();
+            var tracer = new Custom_Tracer();
             tracer.Add_Trace("NavigationServices.ResolveUrl", "Parse request and return navigation object");
 
             try
@@ -99,7 +99,7 @@ namespace SobekCM.Engine_Library.Endpoints
             redirect_url = redirect_url.Replace("/url-resolver/json", "").Replace("/url-resolver/json-p", "").Replace("/url-resolver/protobuf", "").Replace("/url-resolver/xml", "");
             keys["urlrelative"] = redirect_url;
 
-            Navigation_Object currentMode = new Navigation_Object();
+            var currentMode = new Navigation_Object();
             QueryString_Analyzer.Parse_Query(keys, currentMode, BaseUrl, RequestUserLanguages, Engine_ApplicationCache_Gateway.Codes, Engine_ApplicationCache_Gateway.Collection_Aliases, Engine_ApplicationCache_Gateway.URL_Portals, Engine_ApplicationCache_Gateway.WebContent_Hierarchy, Engine_ApplicationCache_Gateway.Settings.System.Custom_BibID_RegEx, Tracer);
 
             return currentMode;

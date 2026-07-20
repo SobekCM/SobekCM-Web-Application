@@ -246,7 +246,7 @@ namespace SobekCM.Core.MARC
         public override string ToString()
         {
             // Build the return value
-            StringBuilder returnValue = new StringBuilder(Tag + " " + Indicator1 + Indicator2 + " ");
+            var returnValue = new StringBuilder(Tag + " " + Indicator1 + Indicator2 + " ");
             foreach (MARC_Transfer_Subfield thisSubfield in Subfields)
             {
                 returnValue.Append(thisSubfield + " ");

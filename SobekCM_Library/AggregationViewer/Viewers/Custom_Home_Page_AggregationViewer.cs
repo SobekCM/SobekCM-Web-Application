@@ -85,7 +85,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 
             // Do all the replacements
             string text = ViewBag.Hierarchy_Object.HomePageHtml.Content; //.Content;
-            StringBuilder textToDisplay = new StringBuilder(text);
+            var textToDisplay = new StringBuilder(text);
 
             // Determine if certain (more costly) replacements are even needed
             bool header_replacement_needed = text.IndexOf("%HEADER%") > 0;
@@ -95,8 +95,8 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             // If necessary, replace the header
             if (header_replacement_needed)
             {
-                StringBuilder headerBuilder = new StringBuilder();
-                StringWriter headerWriter = new StringWriter(headerBuilder);
+                var headerBuilder = new StringBuilder();
+                var headerWriter = new StringWriter(headerBuilder);
                 HeaderFooter_Helper_HtmlSubWriter.Add_Header(headerWriter, RequestSpecificValues, "container-inner-custom", ViewBag.Hierarchy_Object.ShortName, null, ViewBag.Hierarchy_Object, null, Context);
                 string header = headerBuilder.ToString();
                 textToDisplay = textToDisplay.Replace("<%HEADER%>", header).Replace("[%HEADER%]", header);
@@ -105,8 +105,8 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             // If necessary, replace the footer
             if (footer_replacement_needed)
             {
-                StringBuilder footerBuilder = new StringBuilder();
-                StringWriter footerWriter = new StringWriter(footerBuilder);
+                var footerBuilder = new StringBuilder();
+                var footerWriter = new StringWriter(footerBuilder);
                 HeaderFooter_Helper_HtmlSubWriter.Add_Footer(footerWriter, RequestSpecificValues, null, ViewBag.Hierarchy_Object, null, Context);
                 string footer = footerBuilder.ToString();
                 textToDisplay = textToDisplay.Replace("<%FOOTER%>", footer).Replace("[%FOOTER%]", footer);
@@ -115,8 +115,8 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             // If necessary, insert the main menu
             if (menu_replacement_needed)
             {
-                StringBuilder menuBuilder = new StringBuilder();
-                StringWriter menuWriter = new StringWriter(menuBuilder);
+                var menuBuilder = new StringBuilder();
+                var menuWriter = new StringWriter(menuBuilder);
                 MainMenus_Helper_HtmlSubWriter.Add_Aggregation_Main_Menu(menuWriter, RequestSpecificValues, ViewBag.Hierarchy_Object);
                 string menu = menuBuilder.ToString();
                 textToDisplay = textToDisplay.Replace("<%MAINMENU%>", menu).Replace("[%MAINMENU%]", menu);

@@ -116,7 +116,7 @@ namespace SobekCM.Resource_Object.Utilities
             }
 
             // Validate the folder matches the package object id
-            DirectoryInfo dirInfo = new DirectoryInfo(packageDir);
+            var dirInfo = new DirectoryInfo(packageDir);
             string dirName = dirInfo.Name;
             if (dirName.Length < 16)
             {
@@ -197,7 +197,7 @@ namespace SobekCM.Resource_Object.Utilities
         /// <returns></returns>
         private bool IsValidIconImage(string iconUrl)
         {
-            Uri uriOfImage = new Uri(iconUrl);
+            var uriOfImage = new Uri(iconUrl);
             Image objImage = null;
             WebRequest objRequest = HttpWebRequest.Create(uriOfImage);
             // Return true unless you found otherwise
@@ -222,7 +222,7 @@ namespace SobekCM.Resource_Object.Utilities
         {
             bool returnVal = true;
             validationErrors = new StringBuilder();
-            StringCollection fileToCheck = new StringCollection();
+            var fileToCheck = new StringCollection();
             fileToCheck.Add("jpg");
             fileToCheck.Add("txt");
             fileToCheck.Add("jp2");

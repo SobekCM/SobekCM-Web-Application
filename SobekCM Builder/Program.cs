@@ -75,7 +75,7 @@ namespace SobekCM.Builder
             // Was there an invalid argument or was help requested
             if ((invalid_arg.Length > 0 ) || (show_help))
             {
-                StringBuilder builder = new StringBuilder();
+                var builder = new StringBuilder();
                 builder.Append("\nThis application is used to bulk load SobekCM items, perform post-processing\n");
                 builder.Append("for items loaded through the web, and perform some regular maintenance activities\n");
                 builder.Append("in support of a SobekCM web application.\n\n");
@@ -100,7 +100,7 @@ namespace SobekCM.Builder
             
 
             // Controller always runs in background mode
-            Worker_Controller controller = new Worker_Controller(verbose );
+            var controller = new Worker_Controller(verbose );
             controller.Execute(run_once_only);
 
             // If this was set to aborting, set to last execution aborted

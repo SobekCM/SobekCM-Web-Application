@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using System.IO;
 using SobekCM.Builder_Library.Settings;
@@ -122,7 +122,7 @@ namespace SobekCM.Builder_Library.Modules.Items
 
             try
             {
-                Process tessProcess = new Process();
+                var tessProcess = new Process();
                 tessProcess.StartInfo.FileName = Tesseract_Executable;
                 tessProcess.StartInfo.Arguments = SourceFileName + " " + TextFileName;
 

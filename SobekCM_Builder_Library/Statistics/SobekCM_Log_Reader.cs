@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using System;
 using System.Collections.Generic;
@@ -59,17 +59,17 @@ namespace SobekCM.Builder_Library.Statistics
             sessions = new Dictionary<string, SobekCM_Session>();
 
             // Create the return set
-            SobekCM_Stats_DataSet returnValue = new SobekCM_Stats_DataSet();
+            var returnValue = new SobekCM_Stats_DataSet();
 
             // Get the date of the log file
-            FileInfo fileInfo = new FileInfo(Log_File);
+            var fileInfo = new FileInfo(Log_File);
             string name = fileInfo.Name.Replace(fileInfo.Extension, "");
-            DateTime logDate = new DateTime(Convert.ToInt32("20" + name.Substring(4, 2)),
+            var logDate = new DateTime(Convert.ToInt32("20" + name.Substring(4, 2)),
                                             Convert.ToInt32(name.Substring(6, 2)), Convert.ToInt32(name.Substring(8, 2)));
             returnValue.Date = logDate;
 
             // Open a connection to the log file and save each hit
-            StreamReader reader = new StreamReader(Log_File);
+            var reader = new StreamReader(Log_File);
             string line = reader.ReadLine();
             while (line != null)
             {
@@ -104,7 +104,7 @@ namespace SobekCM.Builder_Library.Statistics
                 {
                     // parse the url
                     string[] splitter = hit.Query_String.ToLower().Split("&".ToCharArray());
-                    NameValueCollection queryStringCollection = new NameValueCollection();
+                    var queryStringCollection = new NameValueCollection();
                     foreach (string thisSplit in splitter)
                     {
                         int equals_index = thisSplit.IndexOf("=");
@@ -123,7 +123,7 @@ namespace SobekCM.Builder_Library.Statistics
 
                     try
                     {
-                        Navigation_Object currentMode = new Navigation_Object();
+                        var currentMode = new Navigation_Object();
                         QueryString_Analyzer.Parse_Query(queryStringCollection, currentMode, hit.SobekCM_URL,
                             new string[] { "en" }, Engine_ApplicationCache_Gateway.Codes, Engine_ApplicationCache_Gateway.Collection_Aliases,
                             Engine_ApplicationCache_Gateway.URL_Portals, Engine_ApplicationCache_Gateway.WebContent_Hierarchy, 
@@ -332,7 +332,7 @@ namespace SobekCM.Builder_Library.Statistics
                 string useragent = StatsLine.Substring(source_ip_location + 1, end_agent_location - source_ip_location);
 
                 // Create the hit object
-                SobekCM_Hit thisHit = new SobekCM_Hit(date, ip, query_string.ToUpper(), url_result, useragent);
+                var thisHit = new SobekCM_Hit(date, ip, query_string.ToUpper(), url_result, useragent);
 
                 // Add this URL to the list
                 hits.Add(thisHit, thisHit);

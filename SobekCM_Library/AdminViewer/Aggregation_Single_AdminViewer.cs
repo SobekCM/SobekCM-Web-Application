@@ -276,7 +276,7 @@ namespace SobekCM.Library.AdminViewer
                                 List<string> changes = Complete_Item_Aggregation_Comparer.Compare(currentAggregation, itemAggregation);
                                 if ((changes != null) && (changes.Count > 0))
                                 {
-                                    StringBuilder builder = new StringBuilder(changes[0]);
+                                    var builder = new StringBuilder(changes[0]);
                                     for (int i = 1; i < changes.Count; i++)
                                     {
                                         builder.Append("\n" + changes[i]);
@@ -854,7 +854,7 @@ namespace SobekCM.Library.AdminViewer
                         string file = aggregationDirectory + "\\" + itemAggregation.CSS_File;
                         if (!File.Exists(file))
                         {
-                            StreamWriter writer = new StreamWriter(file);
+                            var writer = new StreamWriter(file);
                             writer.WriteLine("/**  Aggregation-level CSS for " + itemAggregation.Code + " **/");
                             writer.WriteLine();
                             writer.Flush();
@@ -888,7 +888,7 @@ namespace SobekCM.Library.AdminViewer
                             }
                             if ((!created_exists) && (!File.Exists(new_file)))
                             {
-                                StreamWriter writer = new StreamWriter(new_file);
+                                var writer = new StreamWriter(new_file);
                                 writer.WriteLine("New home page text in " + language + " goes here.");
                                 writer.Flush();
                                 writer.Close();
@@ -921,7 +921,7 @@ namespace SobekCM.Library.AdminViewer
                                     btypeEnum = Item_Aggregation_Front_Banner_Type_Enum.Left;
                                 if (btype == "right")
                                     btypeEnum = Item_Aggregation_Front_Banner_Type_Enum.Right;
-                                Item_Aggregation_Front_Banner newFront = new Item_Aggregation_Front_Banner("images\\banners\\" + bfile) { Type = btypeEnum };
+                                var newFront = new Item_Aggregation_Front_Banner("images\\banners\\" + bfile) { Type = btypeEnum };
 
                                 try
                                 {
@@ -1155,7 +1155,7 @@ namespace SobekCM.Library.AdminViewer
             // Add all the home page information
             Web_Language_Enum currLanguage = RequestSpecificValues.Current_Mode.Language;
             RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Aggregation;
-            List<string> existing_languages = new List<string>();
+            var existing_languages = new List<string>();
             if (itemAggregation.Home_Page_File_Dictionary != null)
             {
                 foreach (KeyValuePair<Web_Language_Enum, Complete_Item_Aggregation_Home_Page> thisHomeSource in itemAggregation.Home_Page_File_Dictionary)
@@ -1306,7 +1306,7 @@ namespace SobekCM.Library.AdminViewer
             }
 
             // Also, build the list to keep track of unused banners
-            List<string> unused_banners = new List<string>();
+            var unused_banners = new List<string>();
             if (banner_files != null)
             {
                 unused_banners.AddRange(banner_files.Select(Path.GetFileName));
@@ -1795,7 +1795,7 @@ namespace SobekCM.Library.AdminViewer
             //    itemAggregation.Map_Search = Convert.ToUInt16(Form["admin_aggr_mapsearch_type"]);
 
             // Build the display options string
-            StringBuilder displayOptionsBldr = new StringBuilder();
+            var displayOptionsBldr = new StringBuilder();
 
             // Choose the basic search
             if (!String.IsNullOrEmpty(Form["basicsearch"].TrimFirst()))
@@ -2367,7 +2367,7 @@ namespace SobekCM.Library.AdminViewer
                     Metadata_Search_Field field = UI_ApplicationCache_Gateway.Settings.Metadata_Search_Field_By_ID(aggr_id);
                     if (field != null)
                     {
-                        Complete_Item_Aggregation_Metadata_Type mType = new Complete_Item_Aggregation_Metadata_Type(aggr_id, field.Facet_Term, field.Web_Code, field.Solr_Field);
+                        var mType = new Complete_Item_Aggregation_Metadata_Type(aggr_id, field.Facet_Term, field.Web_Code, field.Solr_Field);
 
                         if (!String.IsNullOrEmpty(Form["admin_aggr_facet1_display"]))
                         {
@@ -2385,7 +2385,7 @@ namespace SobekCM.Library.AdminViewer
                     Metadata_Search_Field field = UI_ApplicationCache_Gateway.Settings.Metadata_Search_Field_By_ID(aggr_id);
                     if (field != null)
                     {
-                        Complete_Item_Aggregation_Metadata_Type mType = new Complete_Item_Aggregation_Metadata_Type(aggr_id, field.Facet_Term, field.Web_Code, field.Solr_Field);
+                        var mType = new Complete_Item_Aggregation_Metadata_Type(aggr_id, field.Facet_Term, field.Web_Code, field.Solr_Field);
 
                         if (!String.IsNullOrEmpty(Form["admin_aggr_facet2_display"]))
                         {
@@ -2403,7 +2403,7 @@ namespace SobekCM.Library.AdminViewer
                     Metadata_Search_Field field = UI_ApplicationCache_Gateway.Settings.Metadata_Search_Field_By_ID(aggr_id);
                     if (field != null)
                     {
-                        Complete_Item_Aggregation_Metadata_Type mType = new Complete_Item_Aggregation_Metadata_Type(aggr_id, field.Facet_Term, field.Web_Code, field.Solr_Field);
+                        var mType = new Complete_Item_Aggregation_Metadata_Type(aggr_id, field.Facet_Term, field.Web_Code, field.Solr_Field);
 
                         if (!String.IsNullOrEmpty(Form["admin_aggr_facet3_display"]))
                         {
@@ -2421,7 +2421,7 @@ namespace SobekCM.Library.AdminViewer
                     Metadata_Search_Field field = UI_ApplicationCache_Gateway.Settings.Metadata_Search_Field_By_ID(aggr_id);
                     if (field != null)
                     {
-                        Complete_Item_Aggregation_Metadata_Type mType = new Complete_Item_Aggregation_Metadata_Type(aggr_id, field.Facet_Term, field.Web_Code, field.Solr_Field);
+                        var mType = new Complete_Item_Aggregation_Metadata_Type(aggr_id, field.Facet_Term, field.Web_Code, field.Solr_Field);
 
                         if (!String.IsNullOrEmpty(Form["admin_aggr_facet4_display"]))
                         {
@@ -2439,7 +2439,7 @@ namespace SobekCM.Library.AdminViewer
                     Metadata_Search_Field field = UI_ApplicationCache_Gateway.Settings.Metadata_Search_Field_By_ID(aggr_id);
                     if (field != null)
                     {
-                        Complete_Item_Aggregation_Metadata_Type mType = new Complete_Item_Aggregation_Metadata_Type(aggr_id, field.Facet_Term, field.Web_Code, field.Solr_Field);
+                        var mType = new Complete_Item_Aggregation_Metadata_Type(aggr_id, field.Facet_Term, field.Web_Code, field.Solr_Field);
 
                         if (!String.IsNullOrEmpty(Form["admin_aggr_facet5_display"]))
                         {
@@ -2457,7 +2457,7 @@ namespace SobekCM.Library.AdminViewer
                     Metadata_Search_Field field = UI_ApplicationCache_Gateway.Settings.Metadata_Search_Field_By_ID(aggr_id);
                     if (field != null)
                     {
-                        Complete_Item_Aggregation_Metadata_Type mType = new Complete_Item_Aggregation_Metadata_Type(aggr_id, field.Facet_Term, field.Web_Code, field.Solr_Field);
+                        var mType = new Complete_Item_Aggregation_Metadata_Type(aggr_id, field.Facet_Term, field.Web_Code, field.Solr_Field);
 
                         if (!String.IsNullOrEmpty(Form["admin_aggr_facet6_display"]))
                         {
@@ -2475,7 +2475,7 @@ namespace SobekCM.Library.AdminViewer
                     Metadata_Search_Field field = UI_ApplicationCache_Gateway.Settings.Metadata_Search_Field_By_ID(aggr_id);
                     if (field != null)
                     {
-                        Complete_Item_Aggregation_Metadata_Type mType = new Complete_Item_Aggregation_Metadata_Type(aggr_id, field.Facet_Term, field.Web_Code, field.Solr_Field);
+                        var mType = new Complete_Item_Aggregation_Metadata_Type(aggr_id, field.Facet_Term, field.Web_Code, field.Solr_Field);
 
                         if (!String.IsNullOrEmpty(Form["admin_aggr_facet7_display"]))
                         {
@@ -2493,7 +2493,7 @@ namespace SobekCM.Library.AdminViewer
                     Metadata_Search_Field field = UI_ApplicationCache_Gateway.Settings.Metadata_Search_Field_By_ID(aggr_id);
                     if (field != null)
                     {
-                        Complete_Item_Aggregation_Metadata_Type mType = new Complete_Item_Aggregation_Metadata_Type(aggr_id, field.Facet_Term, field.Web_Code, field.Solr_Field);
+                        var mType = new Complete_Item_Aggregation_Metadata_Type(aggr_id, field.Facet_Term, field.Web_Code, field.Solr_Field);
 
                         if (!String.IsNullOrEmpty(Form["admin_aggr_facet8_display"]))
                         {
@@ -2740,7 +2740,7 @@ namespace SobekCM.Library.AdminViewer
                         Metadata_Search_Field field = UI_ApplicationCache_Gateway.Settings.Metadata_Search_Field_By_ID(default_browseby_id);
                         if (field != null)
                         {
-                            Complete_Item_Aggregation_Child_Page newBrowse = new Complete_Item_Aggregation_Child_Page(Item_Aggregation_Child_Visibility_Enum.Metadata_Browse_By, Item_Aggregation_Child_Source_Data_Enum.Database_Table, field.Display_Term, String.Empty, field.Display_Term);
+                            var newBrowse = new Complete_Item_Aggregation_Child_Page(Item_Aggregation_Child_Visibility_Enum.Metadata_Browse_By, Item_Aggregation_Child_Source_Data_Enum.Database_Table, field.Display_Term, String.Empty, field.Display_Term);
                             itemAggregation.Add_Child_Page(newBrowse);
                             itemAggregation.Default_BrowseBy = field.Display_Term;
                         }
@@ -2763,7 +2763,7 @@ namespace SobekCM.Library.AdminViewer
                         Metadata_Search_Field field = UI_ApplicationCache_Gateway.Settings.Metadata_Search_Field_By_ID(browseby_id);
                         if (field != null)
                         {
-                            Complete_Item_Aggregation_Child_Page newBrowse = new Complete_Item_Aggregation_Child_Page(Item_Aggregation_Child_Visibility_Enum.Metadata_Browse_By, Item_Aggregation_Child_Source_Data_Enum.Database_Table, field.Display_Term, String.Empty, field.Display_Term);
+                            var newBrowse = new Complete_Item_Aggregation_Child_Page(Item_Aggregation_Child_Visibility_Enum.Metadata_Browse_By, Item_Aggregation_Child_Source_Data_Enum.Database_Table, field.Display_Term, String.Empty, field.Display_Term);
                             itemAggregation.Add_Child_Page(newBrowse);
                         }
                     }
@@ -2779,9 +2779,9 @@ namespace SobekCM.Library.AdminViewer
         private void Add_Page_4(TextWriter Output)
         {
             // Get the metadata browses
-            List<string> metadata_browse_bys = new List<string>();
+            var metadata_browse_bys = new List<string>();
             string default_browse_by = itemAggregation.Default_BrowseBy ?? String.Empty;
-            List<string> otherBrowseBys = new List<string>();
+            var otherBrowseBys = new List<string>();
             foreach (Complete_Item_Aggregation_Child_Page thisBrowse in itemAggregation.Browse_By_Pages(UI_ApplicationCache_Gateway.Settings.System.Default_UI_Language))
             {
                 if (thisBrowse.Browse_Type == Item_Aggregation_Child_Visibility_Enum.Metadata_Browse_By)
@@ -3003,7 +3003,7 @@ namespace SobekCM.Library.AdminViewer
                     Output.WriteLine("<tr><td colspan=\"2\">&nbsp;</td></tr>");
 
                     // Either get the highlight, or just make one
-                    Complete_Item_Aggregation_Highlights emptyHighlight = new Complete_Item_Aggregation_Highlights();
+                    var emptyHighlight = new Complete_Item_Aggregation_Highlights();
                     if (i < itemAggregation.Highlights.Count)
                         emptyHighlight = itemAggregation.Highlights[i];
 
@@ -3127,7 +3127,7 @@ namespace SobekCM.Library.AdminViewer
                     childPageParent = Form["admin_aggr_parent"];
 
                     // Convert to the integer id for the parent and begin to do checking
-                    List<string> errors = new List<string>();
+                    var errors = new List<string>();
 
                     // Validate the code
                     if (childPageCode.Length > 20)
@@ -3163,7 +3163,7 @@ namespace SobekCM.Library.AdminViewer
                     }
                     else
                     {
-                        Complete_Item_Aggregation_Child_Page newPage = new Complete_Item_Aggregation_Child_Page { Code = childPageCode, Parent_Code = childPageParent, Source_Data_Type = Item_Aggregation_Child_Source_Data_Enum.Static_HTML };
+                        var newPage = new Complete_Item_Aggregation_Child_Page{ Code = childPageCode, Parent_Code = childPageParent, Source_Data_Type = Item_Aggregation_Child_Source_Data_Enum.Static_HTML };
                         newPage.Add_Label(childPageLabel, UI_ApplicationCache_Gateway.Settings.System.Default_UI_Language);
                         switch (childPageVisibility)
                         {
@@ -3187,8 +3187,7 @@ namespace SobekCM.Library.AdminViewer
                         string html_source_file = html_source_dir + "\\" + childPageCode + "_" + Web_Language_Enum_Converter.Enum_To_Code(UI_ApplicationCache_Gateway.Settings.System.Default_UI_Language) + ".html";
                         if (!File.Exists(html_source_file))
                         {
-                            HTML_Based_Content htmlContent = new HTML_Based_Content
-                            {
+                            var htmlContent = new HTML_Based_Content{
                                 Content = "<br /><br />This is a new browse page.<br /><br />" + childPageLabel + "<br /><br />The code for this browse is: " + childPageCode,
                                 Author = RequestSpecificValues.Current_User.Full_Name,
                                 Date = DateTime.Now.ToLongDateString(),
@@ -3228,7 +3227,7 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("  <tr class=\"sbkSaav_TextRow\"><td colspan=\"3\"><p>Child pages are pages related to the aggregation and allow additional information to be presented within the same aggregational branding.  These can appear in the aggregation main menu, with any metadata browses pulled from the database, or you can set them to for no automatic visibility, in which case they are only accessible by links in the home page or other child pages.</p><p>For more information about the settings on this tab, <a href=\"" + UI_ApplicationCache_Gateway.Settings.System.Help_URL(RequestSpecificValues.Current_Mode.Base_URL) + "adminhelp/singleaggr\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</p></td></tr>");
 
             // Put in alphabetical order
-            SortedList<string, Complete_Item_Aggregation_Child_Page> sortedChildren = new SortedList<string, Complete_Item_Aggregation_Child_Page>();
+            var sortedChildren = new SortedList<string, Complete_Item_Aggregation_Child_Page>();
             if (itemAggregation.Child_Pages != null)
             {
                 foreach (Complete_Item_Aggregation_Child_Page childPage in itemAggregation.Child_Pages)
@@ -3518,7 +3517,7 @@ namespace SobekCM.Library.AdminViewer
                 Output.WriteLine("        </tr>");
 
                 // Put in alphabetical order
-                SortedDictionary<string, Item_Aggregation_Related_Aggregations> sortedChildren = new SortedDictionary<string, Item_Aggregation_Related_Aggregations>();
+                var sortedChildren = new SortedDictionary<string, Item_Aggregation_Related_Aggregations>();
                 foreach (Item_Aggregation_Related_Aggregations childAggrs in itemAggregation.Children)
                     sortedChildren[childAggrs.Code] = childAggrs;
 
@@ -3888,7 +3887,7 @@ namespace SobekCM.Library.AdminViewer
                 {
                     itemAggregation.CSS_File = itemAggregation.Code + ".css";
                 }
-                StreamWriter writer = new StreamWriter(file, false);
+                var writer = new StreamWriter(file, false);
                 writer.WriteLine(css_contents);
                 writer.WriteLine();
                 writer.Flush();
@@ -3903,7 +3902,7 @@ namespace SobekCM.Library.AdminViewer
             string file = aggregationDirectory + "\\" + itemAggregation.CSS_File;
             if (File.Exists(file))
             {
-                StreamReader reader = new StreamReader(file);
+                var reader = new StreamReader(file);
                 css_contents = reader.ReadToEnd();
                 reader.Close();
             }
@@ -3973,8 +3972,7 @@ namespace SobekCM.Library.AdminViewer
                     }
                     else if (!File.Exists(fileDir))
                     {
-                        HTML_Based_Content htmlContent = new HTML_Based_Content
-                        {
+                        var htmlContent = new HTML_Based_Content{
                             Content = "<br /><br />This is a new " + Web_Language_Enum_Converter.Enum_To_Name(languageEnum) + " browse page.<br /><br />" + title + "<br /><br />The code for this browse is: " + childPage.Code,
                             Author = RequestSpecificValues.Current_User.Full_Name,
                             Date = DateTime.Now.ToLongDateString(),
@@ -4071,7 +4069,7 @@ namespace SobekCM.Library.AdminViewer
 
 
             // Put OTHER children in alphabetical order
-            SortedList<string, Complete_Item_Aggregation_Child_Page> sortedChildren = new SortedList<string, Complete_Item_Aggregation_Child_Page>();
+            var sortedChildren = new SortedList<string, Complete_Item_Aggregation_Child_Page>();
             if (itemAggregation.Child_Pages != null)
             {
                 foreach (Complete_Item_Aggregation_Child_Page childPage2 in itemAggregation.Child_Pages)
@@ -4084,7 +4082,7 @@ namespace SobekCM.Library.AdminViewer
             }
 
             // Get all the children of this code
-            List<string> childCodes = new List<string>();
+            var childCodes = new List<string>();
             foreach (Complete_Item_Aggregation_Child_Page childPage2 in sortedChildren.Values)
             {
                 if (!String.IsNullOrEmpty(childPage2.Parent_Code))
@@ -4174,7 +4172,7 @@ namespace SobekCM.Library.AdminViewer
                 RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Browse_By;
             RequestSpecificValues.Current_Mode.Info_Browse_Mode = childPage.Code;
 
-            List<string> existing_languages = new List<string>();
+            var existing_languages = new List<string>();
             if (childPage.Source_Dictionary != null)
             {
                 foreach (KeyValuePair<Web_Language_Enum, string> thisHomeSource in childPage.Source_Dictionary)

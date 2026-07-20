@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using ProtoBuf;
 using System;
@@ -45,7 +45,7 @@ namespace SobekCM.Core.Configuration.Engine
         /// <param name="IpAddress"> IP address, or the beginning of a range of IP addresses </param>
         public void Add_IP_Range(string Label, string IpAddress)
         {
-            Engine_IpRange singleIpRange = new Engine_IpRange { Label = Label, StartIp = IpAddress };
+            var singleIpRange = new Engine_IpRange{ Label = Label, StartIp = IpAddress };
             IpRanges.Add(singleIpRange);
         }
     }

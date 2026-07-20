@@ -60,7 +60,7 @@ namespace SobekCM.Library.Citation.SectionWriter
                     Output.AppendLine("<br />");
 
                 // Step through each subterm
-                StringBuilder spatial_builder = new StringBuilder();
+                var spatial_builder = new StringBuilder();
                 foreach (BriefItem_DescTermValue thisValue in thisSpatial.Values)
                 {
                     if (spatial_builder.Length > 0) spatial_builder.Append(" -- ");

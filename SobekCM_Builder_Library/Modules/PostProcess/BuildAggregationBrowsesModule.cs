@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using System;
 using System.Collections.Generic;
@@ -29,7 +29,7 @@ namespace SobekCM.Builder_Library.Modules.PostProcess
             long updatedId = OnProcess("....Performing some aggregation update functions", "Aggregation Updates", String.Empty, String.Empty, -1);
 
             // Create the (new) helper class
-            Aggregation_Static_Page_Writer staticWriter = new Aggregation_Static_Page_Writer();
+            var staticWriter = new Aggregation_Static_Page_Writer();
             staticWriter.Process += staticWriter_Process;
             staticWriter.Error += staticWriter_Error;
 

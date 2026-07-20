@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using SobekCM.Core.BriefItem;
 using SobekCM.Core.UI_Configuration.Viewers;
@@ -38,7 +38,7 @@ namespace SobekCM.Library.ItemViewer
             if (BriefItem.UI.Viewers_Menu_Order == null) BriefItem.UI.Viewers_Menu_Order = new List<string>();
 
             // Use a sorted list to build the menu order
-            SortedDictionary<float, string> menuOrderSort = new SortedDictionary<float, string>();
+            var menuOrderSort = new SortedDictionary<float, string>();
 
             // Step through each viewer included from the database
             foreach (BriefItem_BehaviorViewer viewer in BriefItem.Behaviors.Viewers)
@@ -128,7 +128,7 @@ namespace SobekCM.Library.ItemViewer
             if (mgmtViewerConfigs == null) mgmtViewerConfigs = new List<ItemSubViewerConfig>();
 
             // Temporary sorter
-            SortedDictionary<float, ItemSubViewerConfig> mgmtOrder = new SortedDictionary<float, ItemSubViewerConfig>();
+            var mgmtOrder = new SortedDictionary<float, ItemSubViewerConfig>();
 
             // Step through all the potential item viewers prototypes in the dictionary
             foreach (ItemSubViewerConfig thisViewerConfig in UI_ApplicationCache_Gateway.Configuration.UI.WriterViewers.Items.Viewers)

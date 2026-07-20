@@ -94,7 +94,7 @@ namespace SobekCM.Library.MySobekViewer
                 string[] files = Directory.GetFiles(digitalResourceDirectory);
 
                 // Make a dictionary of the included files
-                Dictionary<string, string> filesByName = new Dictionary<string, string>();
+                var filesByName = new Dictionary<string, string>();
                 foreach (string thisFile in files)
                 {
                     string fileName = Path.GetFileName(thisFile);
@@ -347,7 +347,7 @@ namespace SobekCM.Library.MySobekViewer
                 foreach (string thisFile in image_files)
                 {
                     // Create the new file object 
-                    FileInfo fileInfo = new FileInfo(thisFile);
+                    var fileInfo = new FileInfo(thisFile);
 
                     // Copy this file
                     File.Copy(thisFile, final_destination + "\\" + fileInfo.Name, true);
@@ -361,7 +361,7 @@ namespace SobekCM.Library.MySobekViewer
                     }
 
                     // Add this file to the physical tree
-                    SobekCM_File_Info newFile = new SobekCM_File_Info(fileInfo.Name);
+                    var newFile = new SobekCM_File_Info(fileInfo.Name);
                     currentItem.Divisions.Physical_Tree.Add_File(newFile, "New Page");
 
                     // Seperate code for JP2 and JPEG type files
@@ -431,7 +431,7 @@ namespace SobekCM.Library.MySobekViewer
                 Item_To_Complete.DiskSize_KB = size;
 
                 // Create the options dictionary used when saving information to the database, or writing MarcXML
-                Dictionary<string, object> options = new Dictionary<string, object>();
+                var options = new Dictionary<string, object>();
                 if (UI_ApplicationCache_Gateway.Settings.MarcGeneration != null)
                 {
                     options["MarcXML_File_ReaderWriter:MARC Cataloging Source Code"] = UI_ApplicationCache_Gateway.Settings.MarcGeneration.Cataloging_Source_Code;
@@ -451,7 +451,7 @@ namespace SobekCM.Library.MySobekViewer
                 }
                 catch (Exception ee)
                 {
-                    StreamWriter writer = new StreamWriter(digitalResourceDirectory + "\\exception.txt", false);
+                    var writer = new StreamWriter(digitalResourceDirectory + "\\exception.txt", false);
                     writer.WriteLine("ERROR CAUGHT WHILE SAVING DIGITAL RESOURCE");
                     writer.WriteLine(DateTime.Now.ToString());
                     writer.WriteLine();
@@ -551,7 +551,7 @@ namespace SobekCM.Library.MySobekViewer
 
             Bitmap img;
             ReuseStream = new FileStream(FilePath, FileMode.Open, FileAccess.Read);
-            using (Bitmap b = new Bitmap(ReuseStream))
+            using (var b = new Bitmap(ReuseStream))
             {
                 img = new Bitmap(b.Width, b.Height, b.PixelFormat);
                 using (Graphics g = Graphics.FromImage(img))
@@ -649,10 +649,10 @@ namespace SobekCM.Library.MySobekViewer
                 Output.WriteLine("  </tr>");
 
                 // Collect the page files we are uploading into groups
-                SortedDictionary<string, List<string>> file_groups = new SortedDictionary<string, List<string>>();
+                var file_groups = new SortedDictionary<string, List<string>>();
                 foreach (string thisFile in files)
                 {
-                    FileInfo newFileInfo = new FileInfo(thisFile);
+                    var newFileInfo = new FileInfo(thisFile);
                     string name = newFileInfo.Name;
                     string extension = newFileInfo.Extension;
                     string name_sans_extension = name.Replace(extension, "").ToUpper();
@@ -665,7 +665,7 @@ namespace SobekCM.Library.MySobekViewer
                         file_groups[name_sans_extension].Add(thisFile);
                     else
                     {
-                        List<string> newGroup = new List<string> { thisFile };
+                        var newGroup = new List<string>{ thisFile };
                         file_groups.Add(name_sans_extension, newGroup);
                     }
                 }
@@ -679,7 +679,7 @@ namespace SobekCM.Library.MySobekViewer
                     foreach (string thisFile in groupFiles)
                     {
                         // Add the file name literal
-                        FileInfo fileInfo = new FileInfo(thisFile);
+                        var fileInfo = new FileInfo(thisFile);
                         Output.WriteLine("  <tr style=\"min-height:22px;\">");
                         Output.WriteLine("    <td>" + fileInfo.Name + "</td>");
                         if (fileInfo.Length < 1024)

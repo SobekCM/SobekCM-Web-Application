@@ -193,7 +193,7 @@ namespace SobekCM.Library.AdminViewer
             extensionCodes = new List<string>();
             if ((UI_ApplicationCache_Gateway.Configuration.Extensions != null) && (UI_ApplicationCache_Gateway.Configuration.Extensions.Extensions != null) && (UI_ApplicationCache_Gateway.Configuration.Extensions.Extensions.Count > 0))
             {
-                SortedList<string, string> extensionSorter = new SortedList<string, string>();
+                var extensionSorter = new SortedList<string, string>();
                 foreach (ExtensionInfo thisInfo in UI_ApplicationCache_Gateway.Configuration.Extensions.Extensions)
                     extensionSorter[thisInfo.Code] = thisInfo.Code;
                 extensionCodes = extensionSorter.Values.ToList();
@@ -493,7 +493,7 @@ namespace SobekCM.Library.AdminViewer
                         {
                             string missing_contents = form["missing_page_content"].TrimFirst();
                             string file_name = Path.Combine(UI_ApplicationCache_Gateway.Settings.Servers.Application_Server_Network, "design", "webcontent", "missing.html");
-                            StreamWriter writer = new StreamWriter(file_name, false);
+                            var writer = new StreamWriter(file_name, false);
                             writer.Write(missing_contents);
                             writer.Flush();
                             writer.Close();
@@ -513,7 +513,7 @@ namespace SobekCM.Library.AdminViewer
                         {
                             string no_results_content = form["no_results_content"].TrimFirst();
                             string file_name = Path.Combine(UI_ApplicationCache_Gateway.Settings.Servers.Application_Server_Network, "design", "webcontent", "noresults.html");
-                            StreamWriter writer = new StreamWriter(file_name, false);
+                            var writer = new StreamWriter(file_name, false);
                             writer.Write(no_results_content);
                             writer.Flush();
                             writer.Close();
@@ -535,7 +535,7 @@ namespace SobekCM.Library.AdminViewer
                             if (!Directory.Exists(email_dir))
                                 Directory.CreateDirectory(email_dir);
                             string file_name = Path.Combine(email_dir, "stats_email_body.txt");
-                            StreamWriter writer = new StreamWriter(file_name, false);
+                            var writer = new StreamWriter(file_name, false);
                             writer.Write(usage_email_content.Replace("[%", "<%").Replace("%]", "%>"));
                             writer.Flush();
                             writer.Close();
@@ -593,8 +593,8 @@ namespace SobekCM.Library.AdminViewer
             var form = Context.Request.Form;
 
             // First, create the setting lookup by ID, and the list of IDs to look for
-            List<short> settingIds = new List<short>();
-            Dictionary<short, Admin_Setting_Value> settingsObjsById = new Dictionary<short, Admin_Setting_Value>();
+            var settingIds = new List<short>();
+            var settingsObjsById = new Dictionary<short, Admin_Setting_Value>();
             foreach (Admin_Setting_Value value in pageSettings)
             {
                 // If this is readonly, will not prepare to update
@@ -606,7 +606,7 @@ namespace SobekCM.Library.AdminViewer
             }
 
             // Now, step through and get the values for each of these
-            List<Simple_Setting> newValues = new List<Simple_Setting>();
+            var newValues = new List<Simple_Setting>();
             foreach (short id in settingIds)
             {
                 // Get the setting information
@@ -1109,8 +1109,7 @@ namespace SobekCM.Library.AdminViewer
                 }
 
                 // Build the values to add
-                Admin_Setting_Value dbString = new Admin_Setting_Value
-                {
+                var dbString = new Admin_Setting_Value{
                     Heading = "Configuration Settings",
                     Help = "Connection string used to connect to the SobekCM database\n\nThis value resides in the configuration file on the web server.  See your database and web server administrator to change this value.",
                     Hidden = false,
@@ -1120,8 +1119,7 @@ namespace SobekCM.Library.AdminViewer
                     Value = UI_ApplicationCache_Gateway.Settings.Database_Connection.Connection_String
                 };
 
-                Admin_Setting_Value dbType = new Admin_Setting_Value
-                {
+                var dbType = new Admin_Setting_Value{
                     Heading = "Configuration Settings",
                     Help = "Type of database used to drive the SobekCM system.\n\nCurrently, only Microsoft SQL Server is allowed with plans to add PostgreSQL and MySQL to the supported database system.\n\nThis value resides in the configuration on the web server.  See your database and web server administrator to change this value.",
                     Hidden = false,
@@ -1131,8 +1129,7 @@ namespace SobekCM.Library.AdminViewer
                     Value = UI_ApplicationCache_Gateway.Settings.Database_Connection.Database_Type_String
                 };
 
-                Admin_Setting_Value isHosted = new Admin_Setting_Value
-                {
+                var isHosted = new Admin_Setting_Value{
                     Heading = "Configuration Settings",
                     Help = "Flag indicates if this instance is set as 'hosted', in which case a new Host Administrator role is added and some rights are reserved to that role which are normally assigned to system administrators.\n\nThis value resides in the configuration on the web server.  See your database and web server administrator to change this value.",
                     Hidden = false,
@@ -1142,8 +1139,7 @@ namespace SobekCM.Library.AdminViewer
                     Value = UI_ApplicationCache_Gateway.Settings.Servers.isHosted.ToString().ToLower()
                 };
 
-                Admin_Setting_Value errorEmails = new Admin_Setting_Value
-                {
+                var errorEmails = new Admin_Setting_Value{
                     Heading = "Configuration Settings",
                     Help = "Email address for the web application to mail for any errors encountered while executing requests.\n\nThis account will be notified of inabilities to connect to servers, potential attacks, missing files, etc..\n\nIf the system is able to connect to the database, the 'System Error Email' address listed there, if there is one, will be used instead.\n\nUse a semi-colon betwen email addresses if multiple addresses are included.\n\nExample: 'person1@corp.edu;person2@corp2.edu'.\n\nThis value resides in the web.config file on the web server.  See your web server administrator to change this value.",
                     Hidden = false,
@@ -1153,8 +1149,7 @@ namespace SobekCM.Library.AdminViewer
                     Value = UI_ApplicationCache_Gateway.Settings.Email.System_Error_Email
                 };
 
-                Admin_Setting_Value errorWebPage = new Admin_Setting_Value
-                {
+                var errorWebPage = new Admin_Setting_Value{
                     Heading = "Configuration Settings",
                     Help = "Static page the user should be redirected towards if an unexpected exception occurs which cannot be handled by the web application.\n\nExample: 'http://ufdc.ufl.edu/error.html'.\n\nThis value resides in the web.config file on the web server.  See your web server administrator to change this value.",
                     Hidden = false,
@@ -1185,8 +1180,8 @@ namespace SobekCM.Library.AdminViewer
             if (category_view)
             {
                 // Sort these admin settings within the headings
-                SortedList<string, string> headingSorted = new SortedList<string, string>();
-                Dictionary<string, SortedList<string, Admin_Setting_Value>> headingValuesSorted = new Dictionary<string, SortedList<string, Admin_Setting_Value>>();
+                var headingSorted = new SortedList<string, string>();
+                var headingValuesSorted = new Dictionary<string, SortedList<string, Admin_Setting_Value>>();
 
                 // Step through each heading 
                 foreach (Admin_Setting_Value thisValue in AdminSettingValues)
@@ -1197,7 +1192,7 @@ namespace SobekCM.Library.AdminViewer
                     if (!headingSorted.ContainsKey(headingName))
                     {
                         headingSorted.Add(headingName, headingName);
-                        SortedList<string, Admin_Setting_Value> sortedList = new SortedList<string, Admin_Setting_Value> { { thisValue.Key, thisValue } };
+                        var sortedList = new SortedList<string, Admin_Setting_Value>{ { thisValue.Key, thisValue } };
                         headingValuesSorted[headingName] = sortedList;
                     }
                     else
@@ -1233,7 +1228,7 @@ namespace SobekCM.Library.AdminViewer
             else  // Just add all the values alphabetically witout headers
             {
                 // Sort these admin settings
-                SortedList<string, Admin_Setting_Value> valuesSorted = new SortedList<string, Admin_Setting_Value>();
+                var valuesSorted = new SortedList<string, Admin_Setting_Value>();
 
                 // Add each value alphabetically
                 // If there was a heading value to omit, skip it here
@@ -1983,7 +1978,7 @@ namespace SobekCM.Library.AdminViewer
                         Output.WriteLine("    <tr><th>BibID Restrictions:</th><td>" + incomingFolder.BibID_Roots_Restrictions + "</td></tr>");
 
                     // Collect all the options and display them
-                    StringBuilder builder = new StringBuilder();
+                    var builder = new StringBuilder();
                     if (incomingFolder.Allow_Deletes) builder.Append("Allow deletes ; ");
                     if (incomingFolder.Allow_Folders_No_Metadata) builder.Append("Allow folder with no metadata ; ");
                     if (incomingFolder.Allow_Metadata_Updates) builder.Append("Allow metadata updates ; ");
@@ -2290,7 +2285,7 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("  <p>Generally, new metadata terms do not need to be added directly to the database.  If a new metadata module is added to the METS file, when the values are saved, new metadata fields will automatically be claimed by the SobekCM system and will then appear in the list below.</p>");
 
             // Create the data table
-            DataTable tempTable = new DataTable();
+            var tempTable = new DataTable();
             tempTable.Columns.Add("Name");
             tempTable.Columns.Add("WebCode");
             tempTable.Columns.Add("DisplayTerm");
@@ -2333,7 +2328,7 @@ namespace SobekCM.Library.AdminViewer
             }
 
             // Create the data view
-            DataView sortMetadata = new DataView(tempTable) { Sort = columnSort + " ASC" };
+            var sortMetadata = new DataView(tempTable) { Sort = columnSort + " ASC" };
 
             Output.WriteLine("  <table class=\"sbkSeav_BaseTable\" id=\"sbkSeav_MetadataFieldsTable\">");
             Output.WriteLine("    <tr>");
@@ -3613,7 +3608,7 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("  <p>It would also be possible to point a set of endpoints to an entirely different system or create custom endpoints outside the application.  The microservice endpoints configuration is where you would instruct the user interface to use those different endpoints.</p>");
 
             // Create the data table
-            DataTable tempTable = new DataTable();
+            var tempTable = new DataTable();
             tempTable.Columns.Add("Key");
             tempTable.Columns.Add("Protocol");
             tempTable.Columns.Add("URL");
@@ -3649,7 +3644,7 @@ namespace SobekCM.Library.AdminViewer
             }
 
             // Create the data view
-            DataView sortMetadata = new DataView(tempTable) { Sort = "Key ASC" };
+            var sortMetadata = new DataView(tempTable) { Sort = "Key ASC" };
 
             Output.WriteLine("  <h3>Microservice Endpoints</h3>");
             Output.WriteLine("  <table class=\"sbkSeav_BaseTable\" id=\"sbkSeav_UiMicroservicesEndpointsTable\">");
@@ -3681,7 +3676,7 @@ namespace SobekCM.Library.AdminViewer
 
 
             // Create the data table
-            DataTable tempTable = new DataTable();
+            var tempTable = new DataTable();
             tempTable.Columns.Add("Type");
             tempTable.Columns.Add("Subtype");
             tempTable.Columns.Add("Class");
@@ -3705,7 +3700,7 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("    </tr>");
 
             // Create the data view
-            DataView sortMetadata = new DataView(tempTable) { Sort = "Type ASC, Subtype ASC" };
+            var sortMetadata = new DataView(tempTable) { Sort = "Type ASC, Subtype ASC" };
 
             // Step through all the roots
             foreach (DataRowView thisRow in sortMetadata)
@@ -3737,10 +3732,10 @@ namespace SobekCM.Library.AdminViewer
 
             // This is a little complicated since we are adding from TWO sources.. the database
             // settings list and the configuration which points to the classes in the UI
-            Dictionary<string, string> viewerAdded = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            var viewerAdded = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
             // Create the data table
-            DataTable tempTable = new DataTable();
+            var tempTable = new DataTable();
             DataColumn enabledCol = tempTable.Columns.Add("Enabled?");
             DataColumn defaultCol = tempTable.Columns.Add("Default?");
             DataColumn alwaysAddCol = tempTable.Columns.Add("AlwaysAdd");
@@ -3775,7 +3770,7 @@ namespace SobekCM.Library.AdminViewer
                     newRow[alwaysAddCol] = "<img src=\"" + Static_Resources_Gateway.Checkmark2_Png + "\" alt=\"yes\" />";
                 else
                     newRow[alwaysAddCol] = "<img src=\"" + Static_Resources_Gateway.Checkmark_Png + "\" alt=\"no\" />";
-                StringBuilder extensionsBldr = new StringBuilder();
+                var extensionsBldr = new StringBuilder();
                 if ((viewer.FileExtensions != null) && (viewer.FileExtensions.Length > 0))
                 {
                     foreach (string thisExtension in viewer.FileExtensions)
@@ -3854,7 +3849,7 @@ namespace SobekCM.Library.AdminViewer
             }
 
             // Create the data view
-            DataView sortMetadata = new DataView(tempTable) { Sort = "ViewerType ASC" };
+            var sortMetadata = new DataView(tempTable) { Sort = "ViewerType ASC" };
 
             Output.WriteLine("  <table class=\"sbkSeav_BaseTable\" id=\"sbkSeav_UiViewersTable\">");
             Output.WriteLine("    <tr>");
@@ -3970,7 +3965,7 @@ namespace SobekCM.Library.AdminViewer
                 string snippet = missingContent.Content;
 
                 // Add the ace editor for editing this HTML
-                AceEditor aceEditor = new AceEditor(AceEditor_Mode.HTML)
+                var aceEditor = new AceEditor(AceEditor_Mode.HTML)
                 {
                     ContentsId = "missing_page_content",
                     EditorId = "sbkSeav_HtmlEdit",
@@ -4005,7 +4000,7 @@ namespace SobekCM.Library.AdminViewer
             string noResultsSnippet = No_Results_ResultsViewer.Get_NoResults_Text();
 
             // Add the ace editor for editing this HTML
-            AceEditor aceEditor = new AceEditor(AceEditor_Mode.HTML)
+            var aceEditor = new AceEditor(AceEditor_Mode.HTML)
             {
                 ContentsId = "no_results_content",
                 EditorId = "sbkSeav_HtmlEdit",
@@ -4046,7 +4041,7 @@ namespace SobekCM.Library.AdminViewer
             }
 
             // Add the ace editor for editing this HTML
-            AceEditor aceEditor = new AceEditor(AceEditor_Mode.HTML)
+            var aceEditor = new AceEditor(AceEditor_Mode.HTML)
             {
                 ContentsId = "usage_email_content",
                 EditorId = "sbkSeav_HtmlEdit",

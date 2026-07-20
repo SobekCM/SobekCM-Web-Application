@@ -564,8 +564,8 @@ namespace SobekCM.Tools.Logs
             // Now, display the local log file copy with IEXPLORE.exe
             try
             {
-                Process toRun = new Process();
-                ProcessStartInfo psI = new ProcessStartInfo("C:\\Program Files\\Internet Explorer\\IEXPLORE.exe")
+                var toRun = new Process();
+                var psI = new ProcessStartInfo("C:\\Program Files\\Internet Explorer\\IEXPLORE.exe")
                 {
                     UseShellExecute = false,
                     Arguments = "\"" + FileName + "\"",
@@ -789,13 +789,13 @@ namespace SobekCM.Tools.Logs
         private string TextOfLogFile()
         {
             //Read from file
-            StreamReader sr = new StreamReader(FileName);
+            var sr = new StreamReader(FileName);
 
             //Single line from fileIO.txt 
             String strLine;
 
             // Object used to add each line
-            StringBuilder entireFile = new StringBuilder();
+            var entireFile = new StringBuilder();
 
             //Continues to output one line at a time until end of file(EOF) is reached
             while ((strLine = sr.ReadLine()) != null)
@@ -954,7 +954,7 @@ namespace SobekCM.Tools.Logs
         {
             try
             {
-                StringBuilder tempRead = new StringBuilder("          ");
+                var tempRead = new StringBuilder("          ");
 
                 // Input all of the information in the header
                 while (!tempRead.ToString().Substring(tempRead.Length - 8, 7).Equals("</head>"))
@@ -994,7 +994,7 @@ namespace SobekCM.Tools.Logs
         private string ConfigureText(string OrigMsg, string StyleType, bool Strong)
         {
             // Declare the new stringBuilder and set to the original message
-            StringBuilder lineBuilder = new StringBuilder(OrigMsg);
+            var lineBuilder = new StringBuilder(OrigMsg);
 
             // If this text should be strong add the strong tags
             if (Strong)

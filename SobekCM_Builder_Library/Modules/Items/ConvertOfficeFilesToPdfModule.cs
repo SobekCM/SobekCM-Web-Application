@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using System;
 using System.IO;
@@ -32,7 +32,7 @@ namespace SobekCM.Builder_Library.Modules.Items
                     foreach (string thisPowerpoint in ppt_files)
                     {
                         // Get the fileinfo and the name
-                        FileInfo thisPowerpointInfo = new FileInfo(thisPowerpoint);
+                        var thisPowerpointInfo = new FileInfo(thisPowerpoint);
                         string filename = thisPowerpointInfo.Name.Replace(thisPowerpointInfo.Extension, "");
 
                         // Does a PDF version exist for this item?
@@ -66,7 +66,7 @@ namespace SobekCM.Builder_Library.Modules.Items
                     foreach (string thisWordDoc in doc_files)
                     {
                         // Get the fileinfo and the name
-                        FileInfo thisWordDocInfo = new FileInfo(thisWordDoc);
+                        var thisWordDocInfo = new FileInfo(thisWordDoc);
                         string filename = thisWordDocInfo.Name.Replace(thisWordDocInfo.Extension, "");
 
                         // Does a PDF version exist for this item?
@@ -97,7 +97,7 @@ namespace SobekCM.Builder_Library.Modules.Items
                 }
                 catch (Exception ee)
                 {
-                    StreamWriter errorWriter = new StreamWriter(Path.Combine(MultiInstance_Builder_Settings.Builder_Executable_Directory, "Logs\\error.log"), true);
+                    var errorWriter = new StreamWriter(Path.Combine(MultiInstance_Builder_Settings.Builder_Executable_Directory, "Logs\\error.log"), true);
                     errorWriter.WriteLine("Message: " + ee.Message);
                     errorWriter.WriteLine("Stack Trace: " + ee.StackTrace);
                     errorWriter.Flush();

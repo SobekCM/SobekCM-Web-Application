@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Results;
@@ -44,7 +44,7 @@ namespace SobekCM.Library.ResultsViewer
                 base_url = RequestSpecificValues.Current_Mode.Base_URL + "l/";
 
             // Start this table
-            StringBuilder resultsBldr = new StringBuilder(5000);
+            var resultsBldr = new StringBuilder(5000);
             resultsBldr.AppendLine();
             resultsBldr.AppendLine("<br />\n<table width=\"100%\" cellspacing=\"0px\" class=\"statsTable\">");
 

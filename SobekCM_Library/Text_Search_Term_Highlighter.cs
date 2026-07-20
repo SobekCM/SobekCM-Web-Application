@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using System.Collections.Generic;
 using System.Text;
@@ -20,7 +20,7 @@ namespace SobekCM.Library
         /// <returns> Source text including highlights </returns>
         public static string Hightlight_Term_In_HTML(string Source_Text, string Search_Term)
         {
-            List<string> terms = new List<string> { Search_Term };
+            var terms = new List<string>{ Search_Term };
             return Hightlight_Term_In_HTML(Source_Text, terms);
         }
 
@@ -46,9 +46,9 @@ namespace SobekCM.Library
             string sourceLower = Source_Text.ToLower();
 
             // Step through and only keep search terms that exist along with first index
-            List<string> terms = new List<string>(Search_Terms.Count);
-            List<int> nextIndex = new List<int>(Search_Terms.Count);
-            List<int> termLength = new List<int>(Search_Terms.Count);
+            var terms = new List<string>(Search_Terms.Count);
+            var nextIndex = new List<int>(Search_Terms.Count);
+            var termLength = new List<int>(Search_Terms.Count);
             foreach (string searchTerm in Search_Terms)
             {
                 string termLower = searchTerm.ToLower();
@@ -65,7 +65,7 @@ namespace SobekCM.Library
                 return Source_Text;
 
             // Create the string builder to populate with the text as we build it
-            StringBuilder builder = new StringBuilder(Source_Text.Length + 500);
+            var builder = new StringBuilder(Source_Text.Length + 500);
 
             // Now, step through the entire text, looking for each term
             int current_start = 0;

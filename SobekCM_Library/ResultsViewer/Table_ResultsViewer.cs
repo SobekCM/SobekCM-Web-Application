@@ -45,7 +45,7 @@ namespace SobekCM.Library.ResultsViewer
                 base_url = RequestSpecificValues.Current_Mode.Base_URL + "l/";
 
             // Start the results
-            StringBuilder resultsBldr = new StringBuilder(5000);
+            var resultsBldr = new StringBuilder(5000);
             resultsBldr.AppendLine("<br />");
             resultsBldr.AppendLine("<table width=\"100%\">");
 

@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using SobekCM.Core.BriefItem;
 using SobekCM.Resource_Object;
@@ -22,7 +22,7 @@ namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
         public bool MapToBriefItem(SobekCM_Item Original, BriefItemInfo New)
         {
             // Keep track of place of publications alreadyadded
-            Dictionary<string, string> pub_places = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            var pub_places = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
             // Add the publisher, and place of publications
             if (Original.Bib_Info.Publishers_Count > 0)

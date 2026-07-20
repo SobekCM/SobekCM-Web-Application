@@ -63,7 +63,7 @@ namespace SobekCM.Library.Citation.Elements
                 }
             }
 
-            List<string> instanceValues = new List<string>();
+            var instanceValues = new List<string>();
             if (Bib.Bib_Info.Manufacturers_Count > 0)
             {
                 instanceValues.AddRange(Bib.Bib_Info.Manufacturers.Select(thisName => thisName.ToString()));

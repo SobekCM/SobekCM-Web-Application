@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using SobekCM.Resource_Object.Bib_Info;
 using SobekCM.Resource_Object.Divisions;
@@ -26,7 +26,7 @@ namespace SobekCM.Resource_Object.Testing
         /// <returns>Fully built test bib package</returns>
         public static SobekCM_Item Create(string directory)
         {
-            SobekCM_Item testPackage = new SobekCM_Item();
+            var testPackage = new SobekCM_Item();
 
             // Add all the METS header information
             testPackage.METS_Header.Create_Date = new DateTime(2007, 1, 1);
@@ -45,8 +45,7 @@ namespace SobekCM.Resource_Object.Testing
             testAbstract.Display_Label = "Summary Abstract";
             testAbstract.Type = "summary";
 
-            AccessCondition_Info newAccessInfo = new AccessCondition_Info
-            {
+            var newAccessInfo = new AccessCondition_Info{
                 Text = "All rights are reserved by source institution.",
                 Language = "en",
                 Type = "restrictions on use",
@@ -79,7 +78,7 @@ namespace SobekCM.Resource_Object.Testing
             testPackage.Bib_Info.Main_Entity_Name.Description = "Chemistry Professor Emeritus";
             testPackage.Bib_Info.Main_Entity_Name.Add_Role("Author");
 
-            Zoological_Taxonomy_Info taxonInfo = new Zoological_Taxonomy_Info();
+            var taxonInfo = new Zoological_Taxonomy_Info();
             testPackage.Add_Metadata_Module(GlobalVar.ZOOLOGICAL_TAXONOMY_METADATA_MODULE_KEY, taxonInfo);
             taxonInfo.Scientific_Name = "Ctenomys sociabilis";
             taxonInfo.Higher_Classification = "Animalia; Chordata; Vertebrata; Mammalia; Theria; Eutheria; Rodentia; Hystricognatha; Hystricognathi; Ctenomyidae; Ctenomyini; Ctenomys";
@@ -93,7 +92,7 @@ namespace SobekCM.Resource_Object.Testing
             taxonInfo.Taxonomic_Rank = "species";
             taxonInfo.Common_Name = "Social Tuco-Tuco";
 
-            Name_Info name1 = new Name_Info();
+            var name1 = new Name_Info();
             name1.Name_Type = Name_Info_Type_Enum.Personal;
             name1.Given_Name = "John Paul";
             name1.Terms_Of_Address = "Pope; II";
@@ -101,18 +100,18 @@ namespace SobekCM.Resource_Object.Testing
             name1.User_Submitted = true;
             testPackage.Bib_Info.Add_Named_Entity(name1);
 
-            Name_Info name2 = new Name_Info();
+            var name2 = new Name_Info();
             name2.Name_Type = Name_Info_Type_Enum.Conference;
             name2.Full_Name = "Paris Peace Conference (1919-1920)";
             name2.Dates = "1919-1920";
             testPackage.Bib_Info.Add_Named_Entity(name2);
 
-            Name_Info name3 = new Name_Info();
+            var name3 = new Name_Info();
             name3.Name_Type = Name_Info_Type_Enum.Corporate;
             name3.Full_Name = "United States -- Court of Appeals (2nd Court)";
             testPackage.Bib_Info.Add_Named_Entity(name3);
 
-            Name_Info name4 = new Name_Info();
+            var name4 = new Name_Info();
             name4.Name_Type = Name_Info_Type_Enum.Personal;
             name4.Full_Name = "Wilson, Mary";
             name4.Display_Form = "Mary 'Weels' Wilson";
@@ -124,7 +123,7 @@ namespace SobekCM.Resource_Object.Testing
             name4.Add_Role("cartographer");
             testPackage.Bib_Info.Add_Named_Entity(name4);
 
-            Name_Info donor = new Name_Info();
+            var donor = new Name_Info();
             donor.Name_Type = Name_Info_Type_Enum.Personal;
             donor.Full_Name = "Livingston, Arthur";
             donor.Description = "Gift in honor of Arthur Livingston";
@@ -136,19 +135,19 @@ namespace SobekCM.Resource_Object.Testing
             testPackage.Bib_Info.Main_Title.Title = "Man Who Would Be King";
             testPackage.Bib_Info.Main_Title.Subtitle = "The story of succession in England";
 
-            Title_Info title1 = new Title_Info("homme qui voulut être roi", Title_Type_Enum.Translated);
+            var title1 = new Title_Info("homme qui voulut être roi", Title_Type_Enum.Translated);
             title1.NonSort = "L'";
             title1.Language = "fr";
             testPackage.Bib_Info.Add_Other_Title(title1);
 
-            Title_Info title2 = new Title_Info();
+            var title2 = new Title_Info();
             title2.Title = "Man Who Be King";
             title2.Display_Label = "also known as";
             title2.NonSort = "The";
             title2.Title_Type = Title_Type_Enum.Alternative;
             testPackage.Bib_Info.Add_Other_Title(title2);
 
-            Title_Info title3 = new Title_Info();
+            var title3 = new Title_Info();
             title3.Title = "Great works of England";
             title3.Authority = "naf";
             title3.Add_Part_Name("Second Portion");
@@ -293,7 +292,7 @@ namespace SobekCM.Resource_Object.Testing
             testPackage.Bib_Info.Source.Statement = "University of Florida";
 
             // Add an affiliation
-            Affiliation_Info affiliation1 = new Affiliation_Info();
+            var affiliation1 = new Affiliation_Info();
             affiliation1.University = "University of Florida";
             affiliation1.Campus = "Gainesville Campus";
             affiliation1.College = "College of Engineering";
@@ -303,7 +302,7 @@ namespace SobekCM.Resource_Object.Testing
             testPackage.Bib_Info.Add_Affiliation(affiliation1);
 
             // Add a related item
-            Related_Item_Info relatedItem1 = new Related_Item_Info();
+            var relatedItem1 = new Related_Item_Info();
             relatedItem1.SobekCM_ID = "UF00001234";
             relatedItem1.Relationship = Related_Item_Type_Enum.Preceding;
             relatedItem1.Publisher = "Gainesville Sun Publishing House";
@@ -313,7 +312,7 @@ namespace SobekCM.Resource_Object.Testing
             relatedItem1.Main_Title.Title = "Gainesville Bee";
             relatedItem1.Add_Identifier("01234353", "oclc");
             relatedItem1.Add_Identifier("002232311", "aleph");
-            Name_Info ri_name = new Name_Info();
+            var ri_name = new Name_Info();
             ri_name.Full_Name = "Hills, Bryan";
             ri_name.Terms_Of_Address = "Mr.";
             ri_name.Name_Type = Name_Info_Type_Enum.Personal;
@@ -324,7 +323,7 @@ namespace SobekCM.Resource_Object.Testing
             testPackage.Bib_Info.Add_Related_Item(relatedItem1);
 
             // Add another related item
-            Related_Item_Info relatedItem2 = new Related_Item_Info();
+            var relatedItem2 = new Related_Item_Info();
             relatedItem2.Relationship = Related_Item_Type_Enum.Succeeding;
             relatedItem2.SobekCM_ID = "UF00009999";
             relatedItem2.Main_Title.NonSort = "The";
@@ -354,11 +353,11 @@ namespace SobekCM.Resource_Object.Testing
             testPackage.Divisions.Download_Tree.Add_File("MVS_Part1.PDF");
 
             // Add some coordinate information
-            GeoSpatial_Information geoSpatial = new GeoSpatial_Information();
+            var geoSpatial = new GeoSpatial_Information();
             testPackage.Add_Metadata_Module(GlobalVar.GEOSPATIAL_METADATA_MODULE_KEY, geoSpatial);
             geoSpatial.Add_Point(29.530151, -82.301459, "Lake Wauberg");
             geoSpatial.Add_Point(29.634352, -82.350640, "Veterinary School");
-            Coordinate_Polygon polygon = new Coordinate_Polygon();
+            var polygon = new Coordinate_Polygon();
             polygon.Label = "University of Florida Campus";
             polygon.Add_Edge_Point(new Coordinate_Point(29.651435, -82.339869, String.Empty));
             polygon.Add_Edge_Point(new Coordinate_Point(29.641216, -82.340298, String.Empty));
@@ -367,7 +366,7 @@ namespace SobekCM.Resource_Object.Testing
             polygon.Add_Inner_Point(29.649794, -82.351971, "Stadium");
             polygon.Add_Inner_Point(29.650988, -82.341156, "Library");
             geoSpatial.Add_Polygon(polygon);
-            Coordinate_Line line = new Coordinate_Line();
+            var line = new Coordinate_Line();
             line.Label = "Waldo Road";
             line.Add_Point(29.652852, -82.310944, "Gainesville");
             line.Add_Point(29.716681, -82.268372, String.Empty);
@@ -376,7 +375,7 @@ namespace SobekCM.Resource_Object.Testing
 
 
             // Add some performing arts information
-            Performing_Arts_Info partInfo = new Performing_Arts_Info();
+            var partInfo = new Performing_Arts_Info();
             testPackage.Add_Metadata_Module("PerformingArts", partInfo);
             partInfo.Performance = "Hamlet";
             partInfo.Performance_Date = "August 12, 1923";
@@ -393,23 +392,23 @@ namespace SobekCM.Resource_Object.Testing
             performer2.Title = "Mrs.";
 
             // Add some oral history information
-            Oral_Interview_Info oralInfo = new Oral_Interview_Info();
+            var oralInfo = new Oral_Interview_Info();
             testPackage.Add_Metadata_Module("OralInterview", oralInfo);
             oralInfo.Interviewee = "Edwards, Herm";
             oralInfo.Interviewer = "Proctor, Samual";
 
             // Add some learning object resource information
-            LearningObjectMetadata lomInfo = new LearningObjectMetadata();
+            var lomInfo = new LearningObjectMetadata();
             testPackage.Add_Metadata_Module(GlobalVar.IEEE_LOM_METADATA_MODULE_KEY, lomInfo);
             lomInfo.AggregationLevel = AggregationLevelEnum.level3;
             lomInfo.Status = StatusEnum.draft;
-            LOM_System_Requirements lomReq1 = new LOM_System_Requirements();
+            var lomReq1 = new LOM_System_Requirements();
             lomReq1.RequirementType = RequirementTypeEnum.operating_system;
             lomReq1.Name.Value = "Windows";
             lomReq1.MinimumVersion = "Windows XP";
             lomReq1.MaximumVersion = "Windows 7";
             lomInfo.Add_SystemRequirements(lomReq1);
-            LOM_System_Requirements lomReq2 = new LOM_System_Requirements();
+            var lomReq2 = new LOM_System_Requirements();
             lomReq2.RequirementType = RequirementTypeEnum.software;
             lomReq2.Name.Value = "Java SDK";
             lomReq2.MinimumVersion = "1.7.1";
@@ -429,72 +428,72 @@ namespace SobekCM.Resource_Object.Testing
             lomInfo.DifficultyLevel = DifficultyLevelEnum.medium;
             lomInfo.TypicalLearningTime = "PT45M";
 
-            LOM_Classification lomClassification1 = new LOM_Classification();
+            var lomClassification1 = new LOM_Classification();
             lomInfo.Add_Classification(lomClassification1);
             lomClassification1.Purpose.Value = "Discipline";
-            LOM_TaxonPath lomTaxonPath1 = new LOM_TaxonPath();
+            var lomTaxonPath1 = new LOM_TaxonPath();
             lomClassification1.Add_TaxonPath(lomTaxonPath1);
             lomTaxonPath1.Add_SourceName("ARIADNE");
-            LOM_Taxon lomTaxon1 = new LOM_Taxon();
+            var lomTaxon1 = new LOM_Taxon();
             lomTaxonPath1.Add_Taxon(lomTaxon1);
             lomTaxon1.ID = "BF120";
             lomTaxon1.Add_Entry("Work_History", "en");
             lomTaxon1.Add_Entry("Historie", "nl");
-            LOM_Taxon lomTaxon2 = new LOM_Taxon();
+            var lomTaxon2 = new LOM_Taxon();
             lomTaxonPath1.Add_Taxon(lomTaxon2);
             lomTaxon2.ID = "BF120.1";
             lomTaxon2.Add_Entry("American Work_History", "en");
-            LOM_Taxon lomTaxon3 = new LOM_Taxon();
+            var lomTaxon3 = new LOM_Taxon();
             lomTaxonPath1.Add_Taxon(lomTaxon3);
             lomTaxon3.ID = "BF120.1.4";
             lomTaxon3.Add_Entry("American Civil War", "en");
 
-            LOM_Classification lomClassification2 = new LOM_Classification();
+            var lomClassification2 = new LOM_Classification();
             lomInfo.Add_Classification(lomClassification2);
             lomClassification2.Purpose.Value = "Educational Objective";
 
-            LOM_TaxonPath lomTaxonPath2 = new LOM_TaxonPath();
+            var lomTaxonPath2 = new LOM_TaxonPath();
             lomClassification2.Add_TaxonPath(lomTaxonPath2);
             lomTaxonPath2.Add_SourceName("Common Core Standards", "en");
-            LOM_Taxon lomTaxon4 = new LOM_Taxon();
+            var lomTaxon4 = new LOM_Taxon();
             lomTaxonPath2.Add_Taxon(lomTaxon4);
             lomTaxon4.ID = "CCS.Math.Content";
-            LOM_Taxon lomTaxon5 = new LOM_Taxon();
+            var lomTaxon5 = new LOM_Taxon();
             lomTaxonPath2.Add_Taxon(lomTaxon5);
             lomTaxon5.ID = "3";
             lomTaxon5.Add_Entry("Grade 3", "en");
-            LOM_Taxon lomTaxon6 = new LOM_Taxon();
+            var lomTaxon6 = new LOM_Taxon();
             lomTaxonPath2.Add_Taxon(lomTaxon6);
             lomTaxon6.ID = "OA";
             lomTaxon6.Add_Entry("Operations and Algebraic Thinking", "en");
-            LOM_Taxon lomTaxon7 = new LOM_Taxon();
+            var lomTaxon7 = new LOM_Taxon();
             lomTaxonPath2.Add_Taxon(lomTaxon7);
             lomTaxon7.ID = "A";
             lomTaxon7.Add_Entry("Represent and solve problems involving multiplication and division.", "en");
-            LOM_Taxon lomTaxon8 = new LOM_Taxon();
+            var lomTaxon8 = new LOM_Taxon();
             lomTaxonPath2.Add_Taxon(lomTaxon8);
             lomTaxon8.ID = "3";
             lomTaxon8.Add_Entry("Use multiplication and division within 100 to solve word problems in situations involving equal groups, arrays, and measurement quantities, e.g., by using drawings and equations with a symbol for the unknown number to represent the problem.", "en");
 
-            LOM_TaxonPath lomTaxonPath3 = new LOM_TaxonPath();
+            var lomTaxonPath3 = new LOM_TaxonPath();
             lomClassification2.Add_TaxonPath(lomTaxonPath3);
             lomTaxonPath3.Add_SourceName("Common Core Standards", "en");
-            LOM_Taxon lomTaxon14 = new LOM_Taxon();
+            var lomTaxon14 = new LOM_Taxon();
             lomTaxonPath3.Add_Taxon(lomTaxon14);
             lomTaxon14.ID = "CCS.Math.Content";
-            LOM_Taxon lomTaxon15 = new LOM_Taxon();
+            var lomTaxon15 = new LOM_Taxon();
             lomTaxonPath3.Add_Taxon(lomTaxon15);
             lomTaxon15.ID = "3";
             lomTaxon15.Add_Entry("Grade 3", "en");
-            LOM_Taxon lomTaxon16 = new LOM_Taxon();
+            var lomTaxon16 = new LOM_Taxon();
             lomTaxonPath3.Add_Taxon(lomTaxon16);
             lomTaxon16.ID = "OA";
             lomTaxon16.Add_Entry("Operations and Algebraic Thinking", "en");
-            LOM_Taxon lomTaxon17 = new LOM_Taxon();
+            var lomTaxon17 = new LOM_Taxon();
             lomTaxonPath3.Add_Taxon(lomTaxon17);
             lomTaxon17.ID = "A";
             lomTaxon17.Add_Entry("Represent and solve problems involving multiplication and division.", "en");
-            LOM_Taxon lomTaxon18 = new LOM_Taxon();
+            var lomTaxon18 = new LOM_Taxon();
             lomTaxonPath3.Add_Taxon(lomTaxon18);
             lomTaxon18.ID = "4";
             lomTaxon18.Add_Entry("Determine the unknown whole number in a multiplication or division equation relating three whole numbers. For example, determine the unknown number that makes the equation true in each of the equations 8 × ? = 48, 5 = _ ÷ 3, 6 × 6 = ?", "en");
@@ -510,32 +509,32 @@ namespace SobekCM.Resource_Object.Testing
             testPackage.Behaviors.Add_View("HTML", "Full Document", "MVS001214.html");
 
             // Create the chapters and pages and link them
-            Division_TreeNode chapter1 = new Division_TreeNode("Chapter", "First Chapter");
-            Page_TreeNode page1 = new Page_TreeNode("First Page");
-            Page_TreeNode page2 = new Page_TreeNode("Page 2");
+            var chapter1 = new Division_TreeNode("Chapter", "First Chapter");
+            var page1 = new Page_TreeNode("First Page");
+            var page2 = new Page_TreeNode("Page 2");
             chapter1.Nodes.Add(page1);
             chapter1.Nodes.Add(page2);
-            Division_TreeNode chapter2 = new Division_TreeNode("Chapter", "Last Chapter");
-            Page_TreeNode page3 = new Page_TreeNode("Page 3");
-            Page_TreeNode page4 = new Page_TreeNode("Last Page");
+            var chapter2 = new Division_TreeNode("Chapter", "Last Chapter");
+            var page3 = new Page_TreeNode("Page 3");
+            var page4 = new Page_TreeNode("Last Page");
             chapter2.Nodes.Add(page3);
             chapter2.Nodes.Add(page4);
             testPackage.Divisions.Physical_Tree.Roots.Add(chapter1);
             testPackage.Divisions.Physical_Tree.Roots.Add(chapter2);
 
             // Create the files
-            SobekCM_File_Info file1_1 = new SobekCM_File_Info("2000626_0001.jp2", 2120, 1100);
-            SobekCM_File_Info file1_2 = new SobekCM_File_Info("2000626_0001.jpg", 630, 330);
-            SobekCM_File_Info file1_3 = new SobekCM_File_Info("2000626_0001.tif");
-            SobekCM_File_Info file2_1 = new SobekCM_File_Info("2000626_0002.jp2", 1754, 2453);
-            SobekCM_File_Info file2_2 = new SobekCM_File_Info("2000626_0002.jpg", 630, 832);
-            SobekCM_File_Info file2_3 = new SobekCM_File_Info("2000626_0002.tif");
-            SobekCM_File_Info file3_1 = new SobekCM_File_Info("2000626_0003.jp2", 2321, 1232);
-            SobekCM_File_Info file3_2 = new SobekCM_File_Info("2000626_0003.jpg", 630, 342);
-            SobekCM_File_Info file3_3 = new SobekCM_File_Info("2000626_0003.tif");
-            SobekCM_File_Info file4_1 = new SobekCM_File_Info("2000626_0004.jp2", 2145, 1024);
-            SobekCM_File_Info file4_2 = new SobekCM_File_Info("2000626_0004.jpg", 630, 326);
-            SobekCM_File_Info file4_3 = new SobekCM_File_Info("2000626_0004.tif");
+            var file1_1 = new SobekCM_File_Info("2000626_0001.jp2", 2120, 1100);
+            var file1_2 = new SobekCM_File_Info("2000626_0001.jpg", 630, 330);
+            var file1_3 = new SobekCM_File_Info("2000626_0001.tif");
+            var file2_1 = new SobekCM_File_Info("2000626_0002.jp2", 1754, 2453);
+            var file2_2 = new SobekCM_File_Info("2000626_0002.jpg", 630, 832);
+            var file2_3 = new SobekCM_File_Info("2000626_0002.tif");
+            var file3_1 = new SobekCM_File_Info("2000626_0003.jp2", 2321, 1232);
+            var file3_2 = new SobekCM_File_Info("2000626_0003.jpg", 630, 342);
+            var file3_3 = new SobekCM_File_Info("2000626_0003.tif");
+            var file4_1 = new SobekCM_File_Info("2000626_0004.jp2", 2145, 1024);
+            var file4_2 = new SobekCM_File_Info("2000626_0004.jpg", 630, 326);
+            var file4_3 = new SobekCM_File_Info("2000626_0004.tif");
 
             // Link the files to the pages
             page1.Files.Add(file1_1);
@@ -552,7 +551,7 @@ namespace SobekCM.Resource_Object.Testing
             page4.Files.Add(file4_3);
 
             // Add the DAITSS information
-            DAITSS_Info daitssInfo = new DAITSS_Info();
+            var daitssInfo = new DAITSS_Info();
             daitssInfo.Account = "FTU";
             daitssInfo.SubAccount = "CLAS";
             daitssInfo.Project = "UFDC";

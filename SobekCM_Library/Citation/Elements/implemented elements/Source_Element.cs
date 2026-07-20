@@ -35,7 +35,7 @@ namespace SobekCM.Library.Citation.Elements
             codeToNameDictionary = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
             if (UI_ApplicationCache_Gateway.Aggregations != null)
             {
-                SortedList<string, string> tempItemList = new SortedList<string, string>(StringComparer.OrdinalIgnoreCase);
+                var tempItemList = new SortedList<string, string>(StringComparer.OrdinalIgnoreCase);
                 foreach (string thisType in UI_ApplicationCache_Gateway.Aggregations.All_Types)
                 {
                     if (thisType.IndexOf("Institution") >= 0)
@@ -117,7 +117,7 @@ namespace SobekCM.Library.Citation.Elements
 
             // Check the user to see if this should be limited
             bool some_set_as_selectable = false;
-            List<string> possibles = new List<string> { Bib.Bib_Info.Source.Code.ToUpper() };
+            var possibles = new List<string>{ Bib.Bib_Info.Source.Code.ToUpper() };
             if ((!Current_User.Is_Internal_User) && (Current_User.PermissionedAggregations != null))
             {
                 // Are there aggregationPermissions set aside for the user?

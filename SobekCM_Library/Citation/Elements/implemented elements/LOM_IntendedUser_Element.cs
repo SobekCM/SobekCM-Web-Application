@@ -80,7 +80,7 @@ namespace SobekCM.Library.Citation.Elements
             }
 
             // Start the list to collect all current end user roles 
-            List<string> endusers = new List<string>();
+            var endusers = new List<string>();
 
             // Try to get any existing learning object metadata module
             LearningObjectMetadata lomInfo = Bib.Get_Metadata_Module(GlobalVar.IEEE_LOM_METADATA_MODULE_KEY) as LearningObjectMetadata;

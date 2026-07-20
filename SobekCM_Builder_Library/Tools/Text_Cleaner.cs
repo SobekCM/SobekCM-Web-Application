@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using System;
 using System.IO;
@@ -16,7 +16,7 @@ namespace SobekCM.Builder_Library.Tools
         /// <param name="File"> Name of the file to scrub </param>
         public static void Clean_Text_File(string File)
         {
-            StreamReader textReader = new StreamReader(File);
+            var textReader = new StreamReader(File);
             string alltext = textReader.ReadToEnd();
             textReader.Close();
 
@@ -34,7 +34,7 @@ namespace SobekCM.Builder_Library.Tools
                 alltext = alltext.Replace("  ", " ");
             }
 
-            StreamWriter textWriter = new StreamWriter(File, false);
+            var textWriter = new StreamWriter(File, false);
             foreach (char thisChar in alltext)
             {
                 int ascii = thisChar;
@@ -55,7 +55,7 @@ namespace SobekCM.Builder_Library.Tools
         {
             const string SSN_REGEX_MATCHER = @"[/,,/.,/=,\s]([0-6]\d{2}|7[0-6]\d|77[0-2])(\s|\-)?(\d{2})\2(\d{4})[/,,/.,\s]";
 
-            StreamReader textReader = new StreamReader(File);
+            var textReader = new StreamReader(File);
 
             string line = textReader.ReadLine();
             while (line != null)

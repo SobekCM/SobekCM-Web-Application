@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using SobekCM.Core.BriefItem;
 using SobekCM.Resource_Object;
@@ -53,8 +53,7 @@ namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
                         New.GeoSpatial.Points = new List<BriefItem_Coordinate_Point>();
 
                     // Create the new point
-                    BriefItem_Coordinate_Point cPoint = new BriefItem_Coordinate_Point
-                    {
+                    var cPoint = new BriefItem_Coordinate_Point{
                         Latitude = thisPoint.Latitude,
                         Longitude = thisPoint.Longitude,
                         Altitude = thisPoint.Altitude,
@@ -72,7 +71,7 @@ namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
                     for (int i = 0; i < geoInfo.Polygon_Count; i++)
                     {
                         Coordinate_Polygon polygon = geoInfo.Get_Polygon(i);
-                        StringBuilder polygonBuilder = new StringBuilder();
+                        var polygonBuilder = new StringBuilder();
                         foreach (Coordinate_Point thisPoint in polygon.Edge_Points)
                         {
                             if (polygonBuilder.Length > 0)
@@ -108,8 +107,7 @@ namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
                     foreach (Coordinate_Polygon thisPoly in origPolys)
                     {
                         // Start to build the new poly
-                        BriefItem_Coordinate_Polygon cPoly = new BriefItem_Coordinate_Polygon
-                        {
+                        var cPoly = new BriefItem_Coordinate_Polygon{
                             Label = thisPoly.Label,
                             FeatureType = thisPoly.FeatureType,
                             Page_Sequence = thisPoly.Page_Sequence,
@@ -129,8 +127,7 @@ namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
                             foreach (Coordinate_Point thisPoint in origVertices)
                             {
                                 // Create the new point
-                                BriefItem_Coordinate_Point cPoint = new BriefItem_Coordinate_Point
-                                {
+                                var cPoint = new BriefItem_Coordinate_Point{
                                     Latitude = thisPoint.Latitude,
                                     Longitude = thisPoint.Longitude,
                                     Altitude = thisPoint.Altitude,
@@ -160,8 +157,7 @@ namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
                     foreach (Coordinate_Line thisLine in origLines)
                     {
                         // Start to build the new line
-                        BriefItem_Coordinate_Line cLine = new BriefItem_Coordinate_Line
-                        {
+                        var cLine = new BriefItem_Coordinate_Line{
                             Label = thisLine.Label,
                             FeatureType = thisLine.FeatureType
                         };
@@ -178,8 +174,7 @@ namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
                             foreach (Coordinate_Point thisPoint in origVertices)
                             {
                                 // Create the new point
-                                BriefItem_Coordinate_Point cPoint = new BriefItem_Coordinate_Point
-                                {
+                                var cPoint = new BriefItem_Coordinate_Point{
                                     Latitude = thisPoint.Latitude,
                                     Longitude = thisPoint.Longitude,
                                     Altitude = thisPoint.Altitude,
@@ -227,8 +222,7 @@ namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
                             foreach (Coordinate_Polygon thisPoly in origPolys)
                             {
                                 // Start to build the new poly
-                                BriefItem_Coordinate_Polygon cPoly = new BriefItem_Coordinate_Polygon
-                                {
+                                var cPoly = new BriefItem_Coordinate_Polygon{
                                     Label = thisPoly.Label,
                                     FeatureType = thisPoly.FeatureType,
                                     Page_Sequence = thisPoly.Page_Sequence,
@@ -248,8 +242,7 @@ namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
                                     foreach (Coordinate_Point thisPoint in origVertices)
                                     {
                                         // Create the new point
-                                        BriefItem_Coordinate_Point cPoint = new BriefItem_Coordinate_Point
-                                        {
+                                        var cPoint = new BriefItem_Coordinate_Point{
                                             Latitude = thisPoint.Latitude,
                                             Longitude = thisPoint.Longitude,
                                             Altitude = thisPoint.Altitude,
@@ -277,8 +270,7 @@ namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
                         foreach (Coordinate_Line thisLine in geoInfo2.Lines)
                         {
                             // Start to build the new line
-                            BriefItem_Coordinate_Line cLine = new BriefItem_Coordinate_Line
-                            {
+                            var cLine = new BriefItem_Coordinate_Line{
                                 Label = thisLine.Label,
                                 FeatureType = thisLine.FeatureType
                             };
@@ -295,8 +287,7 @@ namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
                                 foreach (Coordinate_Point thisPoint in origVertices)
                                 {
                                     // Create the new point
-                                    BriefItem_Coordinate_Point cPoint = new BriefItem_Coordinate_Point
-                                    {
+                                    var cPoint = new BriefItem_Coordinate_Point{
                                         Latitude = thisPoint.Latitude,
                                         Longitude = thisPoint.Longitude,
                                         Altitude = thisPoint.Altitude,
@@ -323,8 +314,7 @@ namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
                         foreach (Coordinate_Point thisPoint in geoInfo2.Points)
                         {
                             // Create the new point
-                            BriefItem_Coordinate_Point cPoint = new BriefItem_Coordinate_Point
-                            {
+                            var cPoint = new BriefItem_Coordinate_Point{
                                 Latitude = thisPoint.Latitude,
                                 Longitude = thisPoint.Longitude,
                                 Altitude = thisPoint.Altitude,

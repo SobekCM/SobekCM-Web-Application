@@ -61,7 +61,7 @@ namespace SobekCM.Library.Citation.Elements
                 }
             }
 
-            List<string> audiences = new List<string>();
+            var audiences = new List<string>();
             foreach (TargetAudience_Info audience in Bib.Bib_Info.Target_Audiences)
             {
                 if (!audiences.Contains(audience.Audience))

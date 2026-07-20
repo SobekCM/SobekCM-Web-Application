@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using System;
 using System.Collections.Generic;
@@ -66,7 +66,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             EAD_Transfer_Object eadInfo = SobekEngineClient.Items.Get_Item_EAD(BriefItem.BibID, BriefItem.VID, true, Tracer);
 
             // Build any search terms
-            List<string> terms = new List<string>();
+            var terms = new List<string>();
             if ( !String.IsNullOrWhiteSpace(CurrentMode.Text_Search))
             {
                 // Get any search terms
@@ -78,7 +78,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
 
             // Build the value
-            StringBuilder builder = new StringBuilder(15000);
+            var builder = new StringBuilder(15000);
             builder.AppendLine("          <td><div id=\"sbkEad_ViewerTitle\">Container List</div></td>");
             builder.AppendLine("        </tr>");
             builder.AppendLine("        <tr>");
@@ -110,16 +110,14 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 if (container.Children.Count > 0)
                 {
                     // Dump the current builder into a literal
-                    Literal newLiteral = new Literal
-                                             { Text = Text_Search_Term_Highlighter.Hightlight_Term_In_HTML( builder.ToString(), terms) };
+                    var newLiteral = new Literal{ Text = Text_Search_Term_Highlighter.Hightlight_Term_In_HTML( builder.ToString(), terms) };
                     MainPlaceHolder.Controls.Add(newLiteral);
 
                     // Clear the contents of the builder
                     builder.Remove(0, builder.Length);
 
                     // Now, add this as a tree
-                    TreeView treeView1 = new TreeView
-                                             { Width = new Unit(700), NodeWrap = true, EnableClientScript = true, PopulateNodesFromClient = false };
+                    var treeView1 = new TreeView{ Width = new Unit(700), NodeWrap = true, EnableClientScript = true, PopulateNodesFromClient = false };
 
                     // Set some tree view properties
                     treeView1.TreeNodePopulate += treeView1_TreeNodePopulate;
@@ -128,7 +126,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     foreach (EAD_Transfer_Container_Info child in container.Children)
                     {
                         // Add this node
-                        TreeNode childNode = new TreeNode(child.Unit_Title) {SelectAction = TreeNodeSelectAction.None};
+                        var childNode = new TreeNode(child.Unit_Title) {SelectAction = TreeNodeSelectAction.None};
                         if (child.DAO_Link.Length > 0)
                         {
                             if (child.DAO_Title.Length > 0)
@@ -146,7 +144,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                         // Add the description, if there is one
                         if (child.Scope_And_Content.Length > 0)
                         {
-                            TreeNode scopeContentNode = new TreeNode(child.Scope_And_Content)
+                            var scopeContentNode = new TreeNode(child.Scope_And_Content)
                                                             {SelectAction = TreeNodeSelectAction.None};
                             childNode.ChildNodes.Add(scopeContentNode);
                         }
@@ -157,7 +155,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                             foreach (EAD_Transfer_Container_Info grandChild in child.Children)
                             {
                                 // Add this node
-                                TreeNode grandChildNode = new TreeNode(grandChild.Unit_Title)
+                                var grandChildNode = new TreeNode(grandChild.Unit_Title)
                                                               {SelectAction = TreeNodeSelectAction.None};
                                 if (grandChild.DAO_Link.Length > 0)
                                 {
@@ -189,7 +187,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             builder.AppendLine("          </td>");
 
             // Add the HTML for the image
-            Literal mainLiteral = new Literal {Text = builder.ToString()};
+            var mainLiteral = new Literal{Text = builder.ToString()};
             MainPlaceHolder.Controls.Add(mainLiteral);
         }
 

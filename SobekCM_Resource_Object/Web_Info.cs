@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using SobekCM.Resource_Object.Behaviors;
 using SobekCM.Resource_Object.Divisions;
@@ -158,7 +158,7 @@ namespace SobekCM.Resource_Object
                     string[] files = System.IO.Directory.GetFiles(Directory);
                     foreach (string thisFile in files)
                     {
-                        FileInfo thisFileInfo = new FileInfo(thisFile);
+                        var thisFileInfo = new FileInfo(thisFile);
                         string extension = thisFileInfo.Extension.ToUpper();
                         if ((extension.IndexOf("JPG") < 0) && (extension != ".JP2") && (extension != ".TXT") && (extension != ".PRO") && (extension.IndexOf("METS") < 0) && (extension.IndexOf("HTM") < 0))
                         {
@@ -190,13 +190,13 @@ namespace SobekCM.Resource_Object
         /// for the online metadata update.</remarks>
         public ReadOnlyCollection<string> Get_Thumbnail_Files(string Directory)
         {
-            SortedList<string, string> thumbnail_files = new SortedList<string, string>();
+            var thumbnail_files = new SortedList<string, string>();
             try
             {
                 string[] files = System.IO.Directory.GetFiles(Directory, "*thm.jpg");
                 foreach (string thisFile in files)
                 {
-                    FileInfo thisFileInfo = new FileInfo(thisFile);
+                    var thisFileInfo = new FileInfo(thisFile);
                     thumbnail_files[thisFileInfo.Name] = thisFileInfo.Name;
                 }
             }

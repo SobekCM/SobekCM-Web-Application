@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using SobekCM.Resource_Object.MARC;
 using SobekCM.Resource_Object.METS_Sec_ReaderWriters;
@@ -134,7 +134,7 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
         {
             try
             {
-                StreamWriter results = new StreamWriter(MetadataFilePathName, false, Encoding.UTF8);
+                var results = new StreamWriter(MetadataFilePathName, false, Encoding.UTF8);
                 bool returnValue = Write_Metadata(results, Item_To_Save, Options, out Error_Message);
                 results.Flush();
                 results.Close();

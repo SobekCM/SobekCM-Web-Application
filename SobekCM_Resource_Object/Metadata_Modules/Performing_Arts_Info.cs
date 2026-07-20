@@ -134,7 +134,7 @@ namespace SobekCM.Resource_Object.Metadata_Modules
             if (performers == null)
                 performers = new List<Performer>();
 
-            Performer newPerformer = new Performer(Name);
+            var newPerformer = new Performer(Name);
             performers.Add(newPerformer);
             return newPerformer;
         }
@@ -154,7 +154,7 @@ namespace SobekCM.Resource_Object.Metadata_Modules
         {
             get
             {
-                List<KeyValuePair<string, string>> metadataTerms = new List<KeyValuePair<string, string>>();
+                var metadataTerms = new List<KeyValuePair<string, string>>();
 
                 // Add the performance name
                 if (!String.IsNullOrEmpty(Performance))

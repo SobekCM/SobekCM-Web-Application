@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using Microsoft.AspNetCore.Http;
 using SobekCM.Core.Navigation;
@@ -66,8 +66,8 @@ namespace SobekCM.Library.MainWriters
 
             try
             {
-                FileStream fileStream = new FileStream(fileToEcho, FileMode.Open, FileAccess.Read);
-                StreamReader reader = new StreamReader(fileStream);
+                var fileStream = new FileStream(fileToEcho, FileMode.Open, FileAccess.Read);
+                var reader = new StreamReader(fileStream);
                 string line = reader.ReadLine();
                 while (line != null)
                 {

@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using Jil;
 using ProtoBuf;
@@ -393,8 +393,7 @@ namespace SobekCM.Core.MicroservicesClient
             MicroservicesClient_Endpoint endpoint = GetEndpointConfig("ConfigUrl1", Tracer);
 
             // Create the post data
-            List<KeyValuePair<string, string>> postData = new List<KeyValuePair<string, string>>
-            {
+            var postData = new List<KeyValuePair<string, string>>{
                 new KeyValuePair<string, string>("UserId", UserId),
                 new KeyValuePair<string, string>("RemoveObject", JSON.Serialize(RemoveObject))
             };

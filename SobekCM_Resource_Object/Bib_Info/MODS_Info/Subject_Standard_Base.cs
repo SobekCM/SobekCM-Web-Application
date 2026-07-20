@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using System;
 using System.Collections.Generic;
@@ -208,7 +208,7 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// <returns> This subject expressed as a string</returns>
         public string To_Base_String()
         {
-            StringBuilder builder = new StringBuilder();
+            var builder = new StringBuilder();
 
             if (topics != null)
             {

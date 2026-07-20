@@ -193,7 +193,7 @@ namespace SobekCM.Library.Citation.Elements
         /// <remarks> This clears any preexisting hierarchical spatial subjects </remarks>
         public override void Prepare_For_Save(SobekCM_Item Bib, User_Object Current_User)
         {
-            List<Subject_Info> deletes = new List<Subject_Info>();
+            var deletes = new List<Subject_Info>();
             if (Bib.Bib_Info.Subjects_Count > 0)
             {
                 deletes.AddRange(Bib.Bib_Info.Subjects.Where(ThisSubject => ThisSubject.Class_Type == Subject_Info_Type.Hierarchical_Spatial));
@@ -236,8 +236,7 @@ namespace SobekCM.Library.Citation.Elements
                         (region.Length > 0) || (state.Length > 0) || (territory.Length > 0) || (county.Length > 0) ||
                         (city.Length > 0) || (island.Length > 0))
                     {
-                        Subject_Info_HierarchicalGeographic newSubject = new Subject_Info_HierarchicalGeographic
-                        {
+                        var newSubject = new Subject_Info_HierarchicalGeographic{
                             Continent = continent,
                             Country = country,
                             Province = province,

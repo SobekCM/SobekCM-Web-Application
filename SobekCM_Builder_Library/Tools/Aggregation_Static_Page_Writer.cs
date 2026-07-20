@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
@@ -174,7 +174,7 @@ namespace SobekCM.Builder_Library.Tools
             string aggregation_empty_page_source;
             try
             {
-                using (WebClient client = new WebClient())
+                using (var client = new WebClient())
                 {
                     string empty_page = PrimaryUrl + Aggregation.Code + "/empty";
                     aggregation_empty_page_source = client.DownloadString(empty_page);
@@ -194,7 +194,7 @@ namespace SobekCM.Builder_Library.Tools
             }
 
             // Build the list with links to each item
-            StringBuilder builder = new StringBuilder(4000);
+            var builder = new StringBuilder(4000);
             if (AllItems.Tables[0].Rows.Count > 0)
             {
                 foreach (DataRow thisRow in AllItems.Tables[0].Rows)
@@ -212,7 +212,7 @@ namespace SobekCM.Builder_Library.Tools
             }
 
             // Write this to the temporary page
-            StreamWriter writer = new StreamWriter(DestinationFile, false);
+            var writer = new StreamWriter(DestinationFile, false);
             writer.WriteLine(aggregation_empty_page_source.Replace(TOKEN, builder.ToString()));
             writer.Flush();
             writer.Close();
@@ -290,9 +290,9 @@ namespace SobekCM.Builder_Library.Tools
                 if (Collection_Code == "all")
                     final_most_recent = 100;
 
-                DataView viewer = new DataView(AllItems.Tables[0]) { Sort = "CreateDate DESC" };
+                var viewer = new DataView(AllItems.Tables[0]) { Sort = "CreateDate DESC" };
 
-                StreamWriter rss_writer = new StreamWriter( Path.Combine(RssFeedLocation, Collection_Code + "_rss.xml"), false, Encoding.UTF8);
+                var rss_writer = new StreamWriter( Path.Combine(RssFeedLocation, Collection_Code + "_rss.xml"), false, Encoding.UTF8);
                 rss_writer.WriteLine("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
                 rss_writer.WriteLine("<rss version=\"2.0\" xmlns:atom=\"http://www.w3.org/2005/Atom\">");
                 rss_writer.WriteLine("<channel>");
@@ -306,7 +306,7 @@ namespace SobekCM.Builder_Library.Tools
 
                 rss_writer.WriteLine("");
 
-                StreamWriter short_rss_writer = new StreamWriter(Path.Combine(RssFeedLocation, Collection_Code + "_short_rss.xml"), false, Encoding.UTF8);
+                var short_rss_writer = new StreamWriter(Path.Combine(RssFeedLocation, Collection_Code + "_short_rss.xml"), false, Encoding.UTF8);
                 short_rss_writer.WriteLine("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
                 short_rss_writer.WriteLine("<rss version=\"2.0\" xmlns:atom=\"http://www.w3.org/2005/Atom\">");
                 short_rss_writer.WriteLine("<channel>");
@@ -396,7 +396,7 @@ namespace SobekCM.Builder_Library.Tools
                 string site_map_file = "sitemap" + site_map_index + ".xml";
                 int record_count = 0;
 
-                StreamWriter writer = new StreamWriter( Path.Combine(DestinationPath, site_map_file), false);
+                var writer = new StreamWriter( Path.Combine(DestinationPath, site_map_file), false);
                 writer.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                 writer.WriteLine("<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">");
                 DataSet item_list_table = Engine_Database.Simple_Item_List(String.Empty, null);

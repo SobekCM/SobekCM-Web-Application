@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -130,7 +130,7 @@ namespace SobekCM.Builder_Library.Modules.Items
             // http://stackoverflow.com/questions/18250848/how-to-prevent-the-image-fromfile-method-to-lock-the-file
             Bitmap img;
             ReuseStream = new FileStream(FilePath, FileMode.Open, FileAccess.Read);
-            using (Bitmap b = new Bitmap(ReuseStream))
+            using (var b = new Bitmap(ReuseStream))
             {
                 img = new Bitmap(b.Width, b.Height, b.PixelFormat);
 
@@ -157,9 +157,9 @@ namespace SobekCM.Builder_Library.Modules.Items
         private static Image EmptyImageFromFile(string FilePath)
         {
             Bitmap img;
-            using (FileStream ReuseStream = new FileStream(FilePath, FileMode.Open, FileAccess.Read))
+            using (var ReuseStream = new FileStream(FilePath, FileMode.Open, FileAccess.Read))
             {
-                using (Bitmap b = new Bitmap(ReuseStream))
+                using (var b = new Bitmap(ReuseStream))
                 {
                     img = new Bitmap(b.Width, b.Height, b.PixelFormat);
                 }

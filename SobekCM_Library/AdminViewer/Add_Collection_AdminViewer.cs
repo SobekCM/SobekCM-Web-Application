@@ -277,7 +277,7 @@ namespace SobekCM.Library.AdminViewer
                     {
                         // Some final validation
                         // Convert to the integer id for the parent and begin to do checking
-                        List<string> errors = new List<string>();
+                        var errors = new List<string>();
                         if (String.IsNullOrEmpty(newAggr.ParentCode))
                         {
                             errors.Add("You must select a PARENT for this new aggregation");
@@ -668,7 +668,7 @@ namespace SobekCM.Library.AdminViewer
 
 
             // Convert to the integer id for the parent and begin to do checking
-            List<string> errors = new List<string>();
+            var errors = new List<string>();
 
 
             if ((!newAggr.ParentLocked.HasValue) || (!newAggr.ParentLocked.Value))

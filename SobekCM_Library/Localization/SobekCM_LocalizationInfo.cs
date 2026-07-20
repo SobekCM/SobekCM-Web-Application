@@ -2572,7 +2572,7 @@ namespace SobekCM.Library.Localization
             try
             {
                 // Open the file and write to it
-                StreamWriter writer = new StreamWriter(File, false);
+                var writer = new StreamWriter(File, false);
                 writer.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>");
                 writer.WriteLine("<localization lang=\"" + Web_Language_Enum_Converter.Enum_To_Name(Language) + "\">");
 

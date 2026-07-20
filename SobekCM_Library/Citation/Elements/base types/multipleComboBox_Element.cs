@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using SobekCM.Core.ApplicationState;
 using SobekCM.Core.Configuration.Localization;
@@ -132,7 +132,7 @@ namespace SobekCM.Library.Citation.Elements
         /// <param name="Base_URL"> Base URL for the current request </param>
         protected void render_helper(TextWriter Output, ReadOnlyCollection<string> InstanceValues, List<string> PossibleValues, string Skin_Code, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL)
         {
-            List<string> allValues = new List<string>();
+            var allValues = new List<string>();
             allValues.AddRange(InstanceValues);
 
             if (allValues.Count == 0)

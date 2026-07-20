@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using System;
 using System.IO;
@@ -17,7 +17,7 @@ namespace SobekCM.Core.MicroservicesClient
         /// <returns> Fully configured microservices configuration object </returns>
         public static MicroservicesClient_Configuration Read_Config(string ConfigFile, string SystemBaseUrl)
         {
-            MicroservicesClient_Configuration returnValue = new MicroservicesClient_Configuration();
+            var returnValue = new MicroservicesClient_Configuration();
 
             // Streams used for reading
             Stream readerStream = null;

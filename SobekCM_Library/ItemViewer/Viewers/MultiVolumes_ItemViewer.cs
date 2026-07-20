@@ -108,7 +108,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 label = thisViewerInfo.Label;
 
             // Add the item menu information
-            Item_MenuItem menuItem = new Item_MenuItem(label, null, null, url, ViewerCode);
+            var menuItem = new Item_MenuItem(label, null, null, url, ViewerCode);
             MenuItems.Add(menuItem);
         }
 
@@ -312,9 +312,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 Output.WriteLine("            <div id=\"sbkMviv_MainArea\">");
 
                 // Build the tree and render it directly to output
-                HtmlTreeView treeView1 = new HtmlTreeView { CssClass = "sbkMviv_Tree" };
+                var treeView1 = new HtmlTreeView{ CssClass = "sbkMviv_Tree" };
                 Build_Tree(treeView1);
-                StringBuilder treeBuilder = new StringBuilder();
+                var treeBuilder = new StringBuilder();
                 treeView1.Render(new StringWriter(treeBuilder));
                 Output.Write(treeBuilder.ToString());
             }
@@ -727,7 +727,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             const int LINE_TO_LONG = 100;
 
             // Add the root node
-            HtmlTreeNode rootNode = new HtmlTreeNode { Text = "<span id=\"sbkMviv_TableGroupTitle\">" + briefItem.Behaviors.GroupTitle + "</span>" };
+            var rootNode = new HtmlTreeNode{ Text = "<span id=\"sbkMviv_TableGroupTitle\">" + briefItem.Behaviors.GroupTitle + "</span>" };
             if (briefItem.Behaviors.GroupTitle.Length > LINE_TO_LONG)
                 rootNode.Text = "<span id=\"sbkMviv_TableGroupTitle\">" + briefItem.Behaviors.GroupTitle.Substring(0, LINE_TO_LONG) + "...</span>";
             TreeView1.Nodes.Add(rootNode);
@@ -799,7 +799,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     string title = thisItem.Title;
                     if (level1_text.Length == 0)
                     {
-                        HtmlTreeNode singleNode = new HtmlTreeNode { Text = access_span_start + title + access_string + access_span_end };
+                        var singleNode = new HtmlTreeNode{ Text = access_span_start + title + access_string + access_span_end };
                         if (title.Length > LINE_TO_LONG)
                         {
                             singleNode.ToolTip = title;
@@ -824,7 +824,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                         level2_text = UI_ApplicationCache_Gateway.Translation.Get_Translation(thisItem.Level2_Text, currentRequest.Language);
                         if (level2_text.Length == 0)
                         {
-                            HtmlTreeNode singleNode1 = new HtmlTreeNode { Text = access_span_start + level1_text + access_string + access_span_end };
+                            var singleNode1 = new HtmlTreeNode{ Text = access_span_start + level1_text + access_string + access_span_end };
                             if (thisItem.Level1_Text.Length > LINE_TO_LONG)
                             {
                                 singleNode1.ToolTip = level1_text;
@@ -882,7 +882,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                         level3_text = UI_ApplicationCache_Gateway.Translation.Get_Translation(thisItem.Level3_Text, currentRequest.Language);
                         if (level3_text.Length == 0)
                         {
-                            HtmlTreeNode singleNode2 = new HtmlTreeNode { Text = access_span_start + level2_text + access_string + access_span_end };
+                            var singleNode2 = new HtmlTreeNode{ Text = access_span_start + level2_text + access_string + access_span_end };
                             if (level2_text.Length > LINE_TO_LONG)
                             {
                                 singleNode2.ToolTip = level2_text;
@@ -927,7 +927,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                         level4_text = UI_ApplicationCache_Gateway.Translation.Get_Translation(thisItem.Level4_Text, currentRequest.Language);
                         if (level4_text.Length == 0)
                         {
-                            HtmlTreeNode singleNode3 = new HtmlTreeNode { Text = access_span_start + level3_text + access_string + access_span_end };
+                            var singleNode3 = new HtmlTreeNode{ Text = access_span_start + level3_text + access_string + access_span_end };
                             if (level3_text.Length > LINE_TO_LONG)
                             {
                                 singleNode3.ToolTip = level3_text;
@@ -977,7 +977,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                         UI_ApplicationCache_Gateway.Translation.Get_Translation(thisItem.Level5_Text, currentRequest.Language);
                         if (level5_text.Length == 0)
                         {
-                            HtmlTreeNode singleNode4 = new HtmlTreeNode { Text = access_span_start + level4_text + access_string + access_span_end };
+                            var singleNode4 = new HtmlTreeNode{ Text = access_span_start + level4_text + access_string + access_span_end };
                             if (level4_text.Length > LINE_TO_LONG)
                             {
                                 singleNode4.ToolTip = level4_text;
@@ -1014,7 +1014,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     // Look at the fifth level
                     if ((level5_text.Length > 0) && (lastNode4 != null))
                     {
-                        HtmlTreeNode lastNode5 = new HtmlTreeNode { Text = access_span_start + level5_text + access_string + access_span_end };
+                        var lastNode5 = new HtmlTreeNode{ Text = access_span_start + level5_text + access_string + access_span_end };
                         if (level5_text.Length > LINE_TO_LONG)
                         {
                             lastNode5.ToolTip = level5_text;

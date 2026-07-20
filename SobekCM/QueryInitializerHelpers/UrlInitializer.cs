@@ -41,7 +41,7 @@ namespace SobekCM.QueryInitializerHelpers
         private static Dictionary<string, string> get_query_string_dict(QueryString QueryString)
         {
             // Convert QueryString to Dictionary for easier access
-            Dictionary<string, string> queryParams = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            var queryParams = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
             if (QueryString.HasValue)
             {
                 foreach (var kvp in QueryString.Value.Split('&'))

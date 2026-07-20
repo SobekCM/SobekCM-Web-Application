@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using System;
 using System.Data;
@@ -66,14 +66,14 @@ namespace SobekCM.Builder_Library.Statistics
                 if (usageStats != null)
                 {
                     // Use the data view
-                    DataView sortedView = new DataView(usageStats) {Sort = "Month_Hits DESC"};
+                    var sortedView = new DataView(usageStats) {Sort = "Month_Hits DESC"};
 
                     // Keep track for a total row at the bottom
                     int total_total_hits = 0;
                     int total_month_hits = 0;
 
                     // Build the string here
-                    StringBuilder itemStatsBuilder = new StringBuilder();
+                    var itemStatsBuilder = new StringBuilder();
 
                     // Display the stats for each item
                     int item_count = 0;
@@ -112,8 +112,7 @@ namespace SobekCM.Builder_Library.Statistics
                     if (total_month_hits > 0)
                     {
                         // Send this email
-                        EmailInfo newEmail = new EmailInfo
-                        {
+                        var newEmail = new EmailInfo{
                             FromAddress = FromAddress,
                             RecipientsList = User_Email, 
                             isContactUs = false, 

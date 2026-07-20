@@ -71,7 +71,7 @@ namespace SobekCM.Library.HTML
             {
                 if (String.Equals(RequestSpecificValues.Current_Mode.Result_Display_Type, "map", StringComparison.OrdinalIgnoreCase))
                 {
-                    List<Tuple<string, string>> returnValue = new List<Tuple<string, string>> { new Tuple<string, string>("onload", "load();") };
+                    var returnValue = new List<Tuple<string, string>>{ new Tuple<string, string>("onload", "load();") };
 
                     return returnValue;
                 }

@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using System.Collections.Generic;
 using System.Runtime.Serialization;
@@ -65,7 +65,7 @@ namespace SobekCM.Core.Users
         /// <returns> Child folder object </returns>
         public User_Folder Add_Child_Folder(string Child_Folder_Name, int Child_Folder_ID)
         {
-            User_Folder returnValue = new User_Folder(Child_Folder_Name, Child_Folder_ID);
+            var returnValue = new User_Folder(Child_Folder_Name, Child_Folder_ID);
             Add_Child_Folder(returnValue);
             return returnValue;
         }

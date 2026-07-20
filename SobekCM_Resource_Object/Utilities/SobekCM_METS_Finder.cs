@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using System;
 using System.Data;
@@ -60,7 +60,7 @@ namespace SobekCM.Resource_Object.Utilities
         {
             SobekCM_Item bibPackage = null;
             bool mets_found = false;
-            DateTime lastWriteDate = new DateTime(1900, 1, 1);
+            var lastWriteDate = new DateTime(1900, 1, 1);
 
             // Look for pre-existing mets files in the inbound Folder(s)
             if (Directory.Exists(SOBEKCM_DROPBOX_LOCATION + "inbound\\" + BibID + "\\" + VID))
@@ -230,7 +230,7 @@ namespace SobekCM.Resource_Object.Utilities
                 if (oclcNumber.Length > 1)
                 {
                     oclcNumber = oclcNumber.PadLeft(8, '0');
-                    StringBuilder oclcDirBuilder = new StringBuilder(SOBEKCM_DATA_LOCATION + "MARCXML\\OCLC\\");
+                    var oclcDirBuilder = new StringBuilder(SOBEKCM_DATA_LOCATION + "MARCXML\\OCLC\\");
                     foreach (char thisChar in oclcNumber)
                     {
                         oclcDirBuilder.Append(thisChar + "\\");
@@ -249,7 +249,7 @@ namespace SobekCM.Resource_Object.Utilities
                 if ((!recordCreated) && (alephNumber.Length > 1))
                 {
                     alephNumber = alephNumber.PadLeft(9, '0');
-                    StringBuilder alephDirBuilder = new StringBuilder(SOBEKCM_DATA_LOCATION + "MARCXML\\");
+                    var alephDirBuilder = new StringBuilder(SOBEKCM_DATA_LOCATION + "MARCXML\\");
                     foreach (char thisChar in alephNumber)
                     {
                         alephDirBuilder.Append(thisChar + "\\");

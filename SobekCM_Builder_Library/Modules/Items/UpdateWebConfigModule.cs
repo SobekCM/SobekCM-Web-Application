@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using System;
 using System.IO;
@@ -24,7 +24,7 @@ namespace SobekCM.Builder_Library.Modules.Items
                     File.Delete(web_config);
                 if ((Resource.Metadata.Behaviors.Dark_Flag) || (Resource.Metadata.Behaviors.IP_Restriction_Membership > 0))
                 {
-                    StreamWriter writer = new StreamWriter(web_config, false);
+                    var writer = new StreamWriter(web_config, false);
                     writer.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     writer.WriteLine("<configuration>");
                     writer.WriteLine("    <system.webServer>");

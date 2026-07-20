@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using ProtoBuf;
 using System;
@@ -174,7 +174,7 @@ namespace SobekCM.Core.BriefItem
             }
             else
             {
-                BriefItem_DescriptiveTerm newElement = new BriefItem_DescriptiveTerm(Term);
+                var newElement = new BriefItem_DescriptiveTerm(Term);
                 descriptionTermLookup.Add(Term, newElement);
                 Description.Add(newElement);
                 return newElement.Add_Value(Value);
@@ -200,7 +200,7 @@ namespace SobekCM.Core.BriefItem
             }
             else
             {
-                BriefItem_DescriptiveTerm newElement = new BriefItem_DescriptiveTerm(Term);
+                var newElement = new BriefItem_DescriptiveTerm(Term);
                 foreach (string thisValue in Value)
                     newElement.Add_Value(thisValue);
                 Description.Add(newElement);

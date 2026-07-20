@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using SobekCM.Resource_Object.Bib_Info;
 using SobekCM.Resource_Object.Divisions;
@@ -294,8 +294,8 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
             if (Item_To_Save.Bib_Info.Subjects_Count > 0)
             {
                 // Categorize the terms
-                List<string> lcsh = new List<string>();
-                List<string> non = new List<string>();
+                var lcsh = new List<string>();
+                var non = new List<string>();
                 foreach (Subject_Info thisSubj in Item_To_Save.Bib_Info.Subjects)
                 {
                     if (String.Equals(thisSubj.Authority, "lcsh", StringComparison.OrdinalIgnoreCase))

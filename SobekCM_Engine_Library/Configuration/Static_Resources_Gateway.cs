@@ -18,7 +18,7 @@ namespace SobekCM.Engine_Library.Configuration
         static Static_Resources_Gateway()
         {
             // Get the static resource configuration from the engine 
-            Custom_Tracer tracer = new Custom_Tracer();
+            var tracer = new Custom_Tracer();
 
             if (SobekEngineClient.Admin == null)
             {

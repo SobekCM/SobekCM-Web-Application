@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using System;
 using System.Collections.Generic;
@@ -74,7 +74,7 @@ namespace SobekCM.Resource_Object.Metadata_Modules.EAD
                     }
                     else if (Reader.Name == "c01")
                     {
-                        Container_Info c_tag = new Container_Info();
+                        var c_tag = new Container_Info();
                         c_tag.Read(Reader);
                         Containers.Add(c_tag);
                     }
@@ -91,7 +91,7 @@ namespace SobekCM.Resource_Object.Metadata_Modules.EAD
         /// <returns> Child container information, returned as a string for debug purposes </returns>
         public override string ToString()
         {
-            StringBuilder builder = new StringBuilder();
+            var builder = new StringBuilder();
             foreach (Container_Info component in Containers)
             {
                 component.recursively_add_container_information(builder);

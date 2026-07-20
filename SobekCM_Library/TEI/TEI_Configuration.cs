@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 
@@ -28,7 +28,7 @@ namespace SobekCM.Library.TEI
 
             // Get the list of existing XSLT files
             string xslt_directory = Path.Combine(PlugIn_Directory, "xslt");
-            SortedList<string, string> xslt_files_sorted = new SortedList<string, string>(StringComparer.OrdinalIgnoreCase);
+            var xslt_files_sorted = new SortedList<string, string>(StringComparer.OrdinalIgnoreCase);
             if (Directory.Exists(xslt_directory))
             {
                 // Collect all the XSLT files
@@ -57,7 +57,7 @@ namespace SobekCM.Library.TEI
 
             // Get the list of existing CSS files
             string css_directory = Path.Combine(PlugIn_Directory, "css");
-            SortedList<string, string> css_files_sorted = new SortedList<string, string>(StringComparer.OrdinalIgnoreCase);
+            var css_files_sorted = new SortedList<string, string>(StringComparer.OrdinalIgnoreCase);
             if (Directory.Exists(css_directory))
             {
                 // Collect all the CSS files
@@ -76,7 +76,7 @@ namespace SobekCM.Library.TEI
 
             // Get the list of existing mapping files
             string mapping_directory = Path.Combine(PlugIn_Directory, "mapping");
-            SortedList<string, string> mapping_files_sorted = new SortedList<string, string>(StringComparer.OrdinalIgnoreCase);
+            var mapping_files_sorted = new SortedList<string, string>(StringComparer.OrdinalIgnoreCase);
             if (Directory.Exists(mapping_directory))
             {
                 // Collect all the mapping files

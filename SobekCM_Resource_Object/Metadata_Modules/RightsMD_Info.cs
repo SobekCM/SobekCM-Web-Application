@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using Microsoft.Data.SqlClient;
 using System;
@@ -170,7 +170,7 @@ namespace SobekCM.Resource_Object.Metadata_Modules
             try
             {
                 // Create the SQL connection
-                using (SqlConnection sqlConnect = new SqlConnection(DB_ConnectionString))
+                using (var sqlConnect = new SqlConnection(DB_ConnectionString))
                 {
                     try
                     {
@@ -182,7 +182,7 @@ namespace SobekCM.Resource_Object.Metadata_Modules
                     }
 
                     // Create the SQL command
-                    SqlCommand sqlCommand = new SqlCommand("SobekCM_RightsMD_Save_Access_Embargo_UMI", sqlConnect)
+                    var sqlCommand = new SqlCommand("SobekCM_RightsMD_Save_Access_Embargo_UMI", sqlConnect)
                     {
                         CommandType = CommandType.StoredProcedure
                     };

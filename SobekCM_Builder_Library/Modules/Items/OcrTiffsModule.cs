@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using System;
 using System.Diagnostics;
@@ -25,14 +25,14 @@ namespace SobekCM.Builder_Library.Modules.Items
                 string[] ocr_tiff_files = Directory.GetFiles(resourceFolder, "*.tif");
                 foreach (string thisTiffFile in ocr_tiff_files)
                 {
-                    FileInfo thisTiffFileInfo = new FileInfo(thisTiffFile);
+                    var thisTiffFileInfo = new FileInfo(thisTiffFile);
                     string text_file = resourceFolder + "\\" + thisTiffFileInfo.Name.Replace(thisTiffFileInfo.Extension, "") + ".txt";
                     if (!File.Exists(text_file))
                     {
                         try
                         {
                             string command = String.Format(Settings.Builder.OCR_Command_Prompt, thisTiffFile, text_file);
-                            Process ocrProcess = new Process { StartInfo = { FileName = command } };
+                            var ocrProcess = new Process{ StartInfo = { FileName = command } };
                             ocrProcess.Start();
                             ocrProcess.WaitForExit();
                         }

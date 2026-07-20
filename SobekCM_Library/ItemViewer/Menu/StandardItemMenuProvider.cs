@@ -179,7 +179,7 @@ namespace SobekCM.Library.ItemViewer.Menu
             }
 
             // Add the item level viewers - collect the menu portions
-            List<Item_MenuItem> menuItems = new List<Item_MenuItem>();
+            var menuItems = new List<Item_MenuItem>();
             foreach (string viewType in CurrentItem.UI.Viewers_Menu_Order)
             {
                 iItemViewerPrototyper prototyper = ItemViewer_Factory.Get_Viewer_By_ViewType(viewType);
@@ -190,7 +190,7 @@ namespace SobekCM.Library.ItemViewer.Menu
             }
 
             // Now, get ready to start adding the menu items
-            Dictionary<string, List<Item_MenuItem>> topMenuToChildren = new Dictionary<string, List<Item_MenuItem>>(StringComparer.OrdinalIgnoreCase);
+            var topMenuToChildren = new Dictionary<string, List<Item_MenuItem>>(StringComparer.OrdinalIgnoreCase);
             foreach (Item_MenuItem menuItem in menuItems)
             {
                 if (topMenuToChildren.ContainsKey(menuItem.MenuStripText))

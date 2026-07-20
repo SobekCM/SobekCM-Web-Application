@@ -69,7 +69,7 @@ namespace SobekCM.Resource_Object.Metadata_Modules
         {
             get
             {
-                List<KeyValuePair<string, string>> metadataTerms = new List<KeyValuePair<string, string>>();
+                var metadataTerms = new List<KeyValuePair<string, string>>();
 
                 // Add the interviewee
                 if (!String.IsNullOrEmpty(interviewee))

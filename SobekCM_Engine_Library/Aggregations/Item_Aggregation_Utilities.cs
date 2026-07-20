@@ -64,7 +64,7 @@ namespace SobekCM.Engine_Library.Aggregations
                     Add_All_New_Browses(hierarchyObject);
 
                     // Add all the other data from the XML file
-                    Item_Aggregation_XML_Reader reader = new Item_Aggregation_XML_Reader();
+                    var reader = new Item_Aggregation_XML_Reader();
                     reader.Add_Info_From_XML_File(hierarchyObject, xmlDataFile);
                 }
                 else
@@ -201,7 +201,7 @@ namespace SobekCM.Engine_Library.Aggregations
         private static Complete_Item_Aggregation_Child_Page Get_Item_Aggregation_Browse_Info(string FileName, Item_Aggregation_Child_Visibility_Enum Browse_Type, Custom_Tracer Tracer)
         {
             HTML_Based_Content fileContent = HTML_Based_Content_Reader.Read_HTML_File(FileName, false, Tracer);
-            Complete_Item_Aggregation_Child_Page returnObject = new Complete_Item_Aggregation_Child_Page(Browse_Type, Item_Aggregation_Child_Source_Data_Enum.Static_HTML, fileContent.Code, FileName, fileContent.Title ?? "Missing Title");
+            var returnObject = new Complete_Item_Aggregation_Child_Page(Browse_Type, Item_Aggregation_Child_Source_Data_Enum.Static_HTML, fileContent.Code, FileName, fileContent.Title ?? "Missing Title");
             return returnObject;
         }
 
@@ -268,7 +268,7 @@ namespace SobekCM.Engine_Library.Aggregations
                     List<iSearch_Title_Result> results;
 
                     // Build the user membership information
-                    Search_User_Membership_Info userInfo = new Search_User_Membership_Info();
+                    var userInfo = new Search_User_Membership_Info();
                     if ((Current_User == null) || (!Current_User.LoggedOn))
                     {
                         Tracer.Add_Trace("Item_Aggregation_Utilities.Get_Browse_Results", "No current user or not logged in.");
@@ -307,7 +307,7 @@ namespace SobekCM.Engine_Library.Aggregations
                     }
 
                     // Build the search options
-                    Search_Options_Info searchOptions = new Search_Options_Info();
+                    var searchOptions = new Search_Options_Info();
                     searchOptions.Page = Page;
                     searchOptions.ResultsPerPage = Results_Per_Page;
                     searchOptions.AggregationCode = ItemAggr.Code;
@@ -327,7 +327,7 @@ namespace SobekCM.Engine_Library.Aggregations
                         v5_Solr_Searcher.All_Browse(searchOptions, userInfo, Tracer, out stats, out results);
                     }
 
-                    Multiple_Paged_Results_Args returnValue = new Multiple_Paged_Results_Args(stats, results);
+                    var returnValue = new Multiple_Paged_Results_Args(stats, results);
 
                     return returnValue;
                 }
@@ -336,7 +336,7 @@ namespace SobekCM.Engine_Library.Aggregations
                     Tracer.Add_Trace("Item_Aggregation_Utilities.Get_Browse_Results", "Legacy/database browse");
 
                     // Get the list of facets first
-                    List<short> facetsList = new List<short>();
+                    var facetsList = new List<short>();
                     foreach (Complete_Item_Aggregation_Metadata_Type facet in ItemAggr.Facets)
                         facetsList.Add(facet.ID);
                     if (!Potentially_Include_Facets)
@@ -390,7 +390,7 @@ namespace SobekCM.Engine_Library.Aggregations
                 List<iSearch_Title_Result> results;
 
                 // Build the user membership information
-                Search_User_Membership_Info userInfo = new Search_User_Membership_Info();
+                var userInfo = new Search_User_Membership_Info();
                 if ((Current_User == null) || (!Current_User.LoggedOn))
                 {
                     userInfo.LoggedIn = false;
@@ -415,7 +415,7 @@ namespace SobekCM.Engine_Library.Aggregations
                 }
 
                 // Build the search options
-                Search_Options_Info searchOptions = new Search_Options_Info();
+                var searchOptions = new Search_Options_Info();
                 searchOptions.Page = Page;
                 searchOptions.ResultsPerPage = Results_Per_Page;
                 searchOptions.AggregationCode = ItemAggr.Code;
@@ -428,14 +428,14 @@ namespace SobekCM.Engine_Library.Aggregations
 
                 v5_Solr_Searcher.All_Browse(searchOptions, userInfo, Tracer, out stats, out results);
 
-                Multiple_Paged_Results_Args returnValue = new Multiple_Paged_Results_Args(stats, results);
+                var returnValue = new Multiple_Paged_Results_Args(stats, results);
 
                 return returnValue;
             }
             else
             {
                 // Get the list of facets first
-                List<short> facetsList = new List<short>();
+                var facetsList = new List<short>();
                 foreach (Complete_Item_Aggregation_Metadata_Type facetField in ItemAggr.Facets)
                     facetsList.Add(facetField.ID);
                 if (!Potentially_Include_Facets)
@@ -461,8 +461,7 @@ namespace SobekCM.Engine_Library.Aggregations
         public static bool Save_To_Database(Complete_Item_Aggregation ItemAggr, string Username, Custom_Tracer Tracer)
         {
             // Build the list of language variants
-            List<string> languageVariants = new List<string>
-            {
+            var languageVariants = new List<string>{
                 Web_Language_Enum_Converter.Enum_To_Code(Engine_ApplicationCache_Gateway.Settings.System.Default_UI_Language)
             };
             if (ItemAggr.Home_Page_File_Dictionary != null)
@@ -507,7 +506,7 @@ namespace SobekCM.Engine_Library.Aggregations
                     }
                 }
             }
-            StringBuilder languageVariantsBuilder = new StringBuilder();
+            var languageVariantsBuilder = new StringBuilder();
             foreach (string language in languageVariants)
             {
                 if (language.Length > 0)
@@ -531,7 +530,7 @@ namespace SobekCM.Engine_Library.Aggregations
             if (ItemAggr.ID > 0)
             {
                 // Save the views.
-                List<string> resultsViews = new List<string>();
+                var resultsViews = new List<string>();
                 if (ItemAggr.Result_Views != null)
                 {
                     resultsViews.AddRange(ItemAggr.Result_Views);
@@ -545,8 +544,8 @@ namespace SobekCM.Engine_Library.Aggregations
                     resultsViews[3], resultsViews[4], resultsViews[5], resultsViews[6], resultsViews[7], resultsViews[8], resultsViews[9], ItemAggr.Default_Result_View, Tracer);
 
                 // Save the facets
-                List<string> facet_type = new List<string>();
-                List<string> facet_display = new List<string>();
+                var facet_type = new List<string>();
+                var facet_display = new List<string>();
                 foreach (Complete_Item_Aggregation_Metadata_Type facetType in ItemAggr.Facets)
                 {
                     facet_type.Add(facetType.SobekCode);
@@ -594,7 +593,7 @@ namespace SobekCM.Engine_Library.Aggregations
             }
 
             // Build the item aggregation
-            Item_Aggregation returnValue = new Item_Aggregation(RequestedLanguage, CompAggr.ID, CompAggr.Code)
+            var returnValue = new Item_Aggregation(RequestedLanguage, CompAggr.ID, CompAggr.Code)
             {
                 Active = CompAggr.Active,
                 BannerImage = CompAggr.Banner_Image(RequestedLanguage, null),
@@ -747,8 +746,7 @@ namespace SobekCM.Engine_Library.Aggregations
                 returnValue.Child_Pages = new List<Item_Aggregation_Child_Page>();
                 foreach (Complete_Item_Aggregation_Child_Page fullPage in CompAggr.Child_Pages)
                 {
-                    Item_Aggregation_Child_Page newPage = new Item_Aggregation_Child_Page
-                    {
+                    var newPage = new Item_Aggregation_Child_Page{
                         Browse_Type = fullPage.Browse_Type,
                         Code = fullPage.Code,
                         Parent_Code = fullPage.Parent_Code,
@@ -788,8 +786,7 @@ namespace SobekCM.Engine_Library.Aggregations
                     {
                         Complete_Item_Aggregation_Highlights thisHighlight = CompAggr.Highlights[highlight_to_use];
 
-                        Item_Aggregation_Highlights newHighlight = new Item_Aggregation_Highlights
-                        {
+                        var newHighlight = new Item_Aggregation_Highlights{
                             Image = thisHighlight.Image,
                             Link = thisHighlight.Link
                         };
@@ -813,8 +810,7 @@ namespace SobekCM.Engine_Library.Aggregations
                 {
                     Complete_Item_Aggregation_Highlights thisHighlight = CompAggr.Highlights[highlight_to_use];
 
-                    Item_Aggregation_Highlights newHighlight = new Item_Aggregation_Highlights
-                    {
+                    var newHighlight = new Item_Aggregation_Highlights{
                         Image = thisHighlight.Image,
                         Link = thisHighlight.Link
                     };
@@ -916,7 +912,7 @@ namespace SobekCM.Engine_Library.Aggregations
             }
 
             // Build the return value
-            Aggregation_Hierarchy returnValue = new Aggregation_Hierarchy();
+            var returnValue = new Aggregation_Hierarchy();
 
             // Add all the collections
             if (Tracer != null)
@@ -940,7 +936,7 @@ namespace SobekCM.Engine_Library.Aggregations
                 return;
 
             // Build a dictionary of nodes while building this tree
-            Dictionary<string, Item_Aggregation_Related_Aggregations> nodes = new Dictionary<string, Item_Aggregation_Related_Aggregations>(ChildInfo.Rows.Count);
+            var nodes = new Dictionary<string, Item_Aggregation_Related_Aggregations>(ChildInfo.Rows.Count);
 
             // Step through each row of children
             foreach (DataRow thisRow in ChildInfo.Rows)
@@ -954,7 +950,7 @@ namespace SobekCM.Engine_Library.Aggregations
                 if (!nodes.ContainsKey(code))
                 {
                     // Create the object
-                    Item_Aggregation_Related_Aggregations childObject = new Item_Aggregation_Related_Aggregations(code, thisRow[2].ToString(), thisRow[4].ToString(), Convert.ToBoolean(thisRow[6]), Convert.ToBoolean(thisRow[7]));
+                    var childObject = new Item_Aggregation_Related_Aggregations(code, thisRow[2].ToString(), thisRow[4].ToString(), Convert.ToBoolean(thisRow[6]), Convert.ToBoolean(thisRow[7]));
 
                     // Add this object to the node dictionary
                     nodes.Add(code, childObject);

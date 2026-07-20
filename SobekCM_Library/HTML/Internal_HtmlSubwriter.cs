@@ -225,7 +225,7 @@ namespace SobekCM.Library.HTML
                 Output.WriteLine("  <tr align=\"center\" valign=\"bottom\" >");
 
                 int current_column = 0;
-                SortedList<string, Wordmark_Icon> sortedIcons = new SortedList<string, Wordmark_Icon>();
+                var sortedIcons = new SortedList<string, Wordmark_Icon>();
                 foreach (Wordmark_Icon thisIcon in UI_ApplicationCache_Gateway.Icon_List.Values)
                 {
                     sortedIcons.Add(thisIcon.Code, thisIcon);

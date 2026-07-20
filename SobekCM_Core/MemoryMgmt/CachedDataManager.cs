@@ -57,7 +57,7 @@ namespace SobekCM.Core.MemoryMgmt
             get
             {
                 // Build the sorted list
-                SortedList<string, Cached_Object_Info> sortedList = new SortedList<string, Cached_Object_Info>();
+                var sortedList = new SortedList<string, Cached_Object_Info>();
                 foreach (KeyValuePair<string, object> thisItem in SharedCache.Instance)
                 {
                     sortedList.Add(thisItem.Key, new Cached_Object_Info(thisItem.Key, thisItem.Value.GetType()));
@@ -660,7 +660,7 @@ namespace SobekCM.Core.MemoryMgmt
             }
 
             // Start to build the key
-            StringBuilder keyBuilder = new StringBuilder("TOTALRESULTS_" + precision + "_" + aggregation_code + "_T_");
+            var keyBuilder = new StringBuilder("TOTALRESULTS_" + precision + "_" + aggregation_code + "_T_");
             for (int i = 0; i < Count; i++)
             {
                 keyBuilder.Append(Terms[i].ToLower() + "_");
@@ -751,7 +751,7 @@ namespace SobekCM.Core.MemoryMgmt
             }
 
             // Start to build the key
-            StringBuilder keyBuilder = new StringBuilder("TOTALRESULTS_" + precision + "_" + aggregation_code + "_T_");
+            var keyBuilder = new StringBuilder("TOTALRESULTS_" + precision + "_" + aggregation_code + "_T_");
             for (int i = 0; i < Count; i++)
             {
                 keyBuilder.Append(Terms[i].ToLower() + "_");
@@ -836,7 +836,7 @@ namespace SobekCM.Core.MemoryMgmt
             }
 
             // Start to build the key
-            StringBuilder keyBuilder = new StringBuilder("TOTALRESULTS_" + precision + "_" + aggregation_code + "_T_");
+            var keyBuilder = new StringBuilder("TOTALRESULTS_" + precision + "_" + aggregation_code + "_T_");
             for (int i = 0; i < Count; i++)
             {
                 keyBuilder.Append(Terms[i].ToLower() + "_");
@@ -918,7 +918,7 @@ namespace SobekCM.Core.MemoryMgmt
             }
 
             // Start to build the key
-            StringBuilder keyBuilder = new StringBuilder("TOTALRESULTS_" + precision + "_" + aggregation_code + "_T_");
+            var keyBuilder = new StringBuilder("TOTALRESULTS_" + precision + "_" + aggregation_code + "_T_");
             for (int i = 0; i < Count; i++)
             {
                 keyBuilder.Append(Terms[i].ToLower() + "_");
@@ -1012,7 +1012,7 @@ namespace SobekCM.Core.MemoryMgmt
             }
 
             // Start to build the key
-            StringBuilder keyBuilder = new StringBuilder("PAGEDRESULTS_" + precision + "_" + aggregation_code + "_" + Current_Mode.Page + "_T_");
+            var keyBuilder = new StringBuilder("PAGEDRESULTS_" + precision + "_" + aggregation_code + "_" + Current_Mode.Page + "_T_");
             for (int i = 0; i < Count; i++)
             {
                 keyBuilder.Append(Terms[i].ToLower() + "_");
@@ -1105,7 +1105,7 @@ namespace SobekCM.Core.MemoryMgmt
             }
 
             // Start to build the key
-            StringBuilder keyBuilder = new StringBuilder("PAGEDRESULTS_" + precision + "_" + aggregation_code + "_" + Current_Mode.Page + "_T_");
+            var keyBuilder = new StringBuilder("PAGEDRESULTS_" + precision + "_" + aggregation_code + "_" + Current_Mode.Page + "_T_");
             for (int i = 0; i < Count; i++)
             {
                 keyBuilder.Append(Terms[i].ToLower() + "_");
@@ -1190,7 +1190,7 @@ namespace SobekCM.Core.MemoryMgmt
             }
 
             // Start to build the key
-            StringBuilder keyBuilder = new StringBuilder("PAGEDRESULTS_" + precision + "_" + aggregation_code + "_" + Current_Mode.Page + "_T_");
+            var keyBuilder = new StringBuilder("PAGEDRESULTS_" + precision + "_" + aggregation_code + "_" + Current_Mode.Page + "_T_");
             for (int i = 0; i < Count; i++)
             {
                 keyBuilder.Append(Terms[i].ToLower() + "_");
@@ -1275,7 +1275,7 @@ namespace SobekCM.Core.MemoryMgmt
             }
 
             // Start to build the key
-            StringBuilder keyBuilder = new StringBuilder("PAGEDRESULTS_" + precision + "_" + aggregation_code + "_" + Current_Mode.Page + "_T_");
+            var keyBuilder = new StringBuilder("PAGEDRESULTS_" + precision + "_" + aggregation_code + "_" + Current_Mode.Page + "_T_");
             for (int i = 0; i < Count; i++)
             {
                 keyBuilder.Append(Terms[i].ToLower() + "_");
@@ -1364,7 +1364,7 @@ namespace SobekCM.Core.MemoryMgmt
             foreach (List<iSearch_Title_Result> pageOfResults in StoreObject)
             {
                 // Start to build the key
-                StringBuilder keyBuilder = new StringBuilder("PAGEDRESULTS_" + precision + "_" + aggregation_code + "_" + currentpage + "_T_");
+                var keyBuilder = new StringBuilder("PAGEDRESULTS_" + precision + "_" + aggregation_code + "_" + currentpage + "_T_");
                 for (int i = 0; i < Count; i++)
                 {
                     keyBuilder.Append(Terms[i].ToLower() + "_");
@@ -1457,7 +1457,7 @@ namespace SobekCM.Core.MemoryMgmt
             foreach (List<iSearch_Title_Result> pageOfResults in StoreObject)
             {
                 // Start to build the key
-                StringBuilder keyBuilder = new StringBuilder("PAGEDRESULTS_" + precision + "_" + aggregation_code + "_" + currentpage + "_T_");
+                var keyBuilder = new StringBuilder("PAGEDRESULTS_" + precision + "_" + aggregation_code + "_" + currentpage + "_T_");
                 for (int i = 0; i < Count; i++)
                 {
                     keyBuilder.Append(Terms[i].ToLower() + "_");

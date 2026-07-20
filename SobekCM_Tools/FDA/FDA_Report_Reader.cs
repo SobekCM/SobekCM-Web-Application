@@ -55,11 +55,11 @@ namespace SobekCM.Tools.FDA
             lastError = String.Empty;
 
             // Load the XML Document
-            XmlDocument report_xml = new XmlDocument();
+            var report_xml = new XmlDocument();
             report_xml.Load(FileName);
 
             // Create the data repository
-            FDA_Report_Data report_data = new FDA_Report_Data { FileName = FileName };
+            var report_data = new FDA_Report_Data{ FileName = FileName };
 
             // Step through
             try
@@ -261,7 +261,7 @@ namespace SobekCM.Tools.FDA
         private static void read_file_info(XmlNode FilesNode, FDA_Report_Data ReportData)
         {
             // Declare some variables for all the files
-            ArrayList storage_nodes = new ArrayList();
+            var storage_nodes = new ArrayList();
 
             // Step through all the individual files
             foreach (XmlNode fileNode in FilesNode)
@@ -313,8 +313,7 @@ namespace SobekCM.Tools.FDA
                 if ((global.ToLower() == "false") && (origin.ToUpper() == "DEPOSITOR"))
                 {
                     // This is a valid file to save
-                    FDA_File file = new FDA_File
-                    { ID = dfid, Name = path, Preservation = preservation, XML_Node = fileNode };
+                    var file = new FDA_File{ ID = dfid, Name = path, Preservation = preservation, XML_Node = fileNode };
                     ReportData.Files.Add(file);
 
                     // Get the size

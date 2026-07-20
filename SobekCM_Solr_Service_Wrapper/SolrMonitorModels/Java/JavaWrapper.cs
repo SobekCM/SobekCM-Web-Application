@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
@@ -19,7 +19,7 @@ namespace SolrMonitorModels.Java
         public static bool Check_Java()
         {
             // Log some of this work
-            StringBuilder loggingBuilder = new StringBuilder();
+            var loggingBuilder = new StringBuilder();
 
             // Was the Java executable hard coded in the settings?
             string java_executable;
@@ -198,15 +198,15 @@ namespace SolrMonitorModels.Java
         private static SimpleJavaResponse Run_Java_Executable(string Arguments)
         {
             // Using string builders to collect the standard output and error
-            StringBuilder output = new StringBuilder();
-            StringBuilder error = new StringBuilder();
+            var output = new StringBuilder();
+            var error = new StringBuilder();
             int exitCode = -1;
 
 
             // Perform all this work within using tag to encourage disposing of the process and events
-            using (Process startSolrProcess = new Process())
-            using (AutoResetEvent outputWaitHandle = new AutoResetEvent(false))
-            using (AutoResetEvent errorWaitHandle = new AutoResetEvent(false))
+            using (var startSolrProcess = new Process())
+            using (var outputWaitHandle = new AutoResetEvent(false))
+            using (var errorWaitHandle = new AutoResetEvent(false))
             {
 
                 startSolrProcess.StartInfo.FileName = Java_Executable;

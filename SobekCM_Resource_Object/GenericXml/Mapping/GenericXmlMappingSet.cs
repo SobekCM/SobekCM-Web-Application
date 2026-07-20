@@ -1,4 +1,4 @@
-﻿using ProtoBuf;
+using ProtoBuf;
 using SobekCM.Resource_Object.GenericXml.Reader;
 using System;
 using System.Collections.Generic;
@@ -96,7 +96,7 @@ namespace SobekCM.Resource_Object.GenericXml.Mapping
 
         public GenericXmlMappingPath Add_Path(GenericXmlPath Path)
         {
-            GenericXmlMappingPath addPath = new GenericXmlMappingPath(Path);
+            var addPath = new GenericXmlMappingPath(Path);
             Mappings.Add(addPath);
             return addPath;
         }
@@ -104,10 +104,10 @@ namespace SobekCM.Resource_Object.GenericXml.Mapping
 
         public static GenericXmlMappingSet Read(string MappingSetFile)
         {
-            XmlSerializer serializer = new XmlSerializer(typeof(GenericXmlMappingSet));
+            var serializer = new XmlSerializer(typeof(GenericXmlMappingSet));
 
             // A FileStream is needed to read the XML document.
-            FileStream fs = new FileStream(MappingSetFile, FileMode.Open);
+            var fs = new FileStream(MappingSetFile, FileMode.Open);
             XmlReader reader = XmlReader.Create(fs);
 
             // Use the Deserialize method to restore the object's state.
@@ -122,10 +122,10 @@ namespace SobekCM.Resource_Object.GenericXml.Mapping
             try
             {
                 // Open a stream to the file
-                StreamWriter outputFile = new StreamWriter(MappingSetFile, false);
+                var outputFile = new StreamWriter(MappingSetFile, false);
 
                 // Create the XML serializer
-                XmlSerializer x = new XmlSerializer(this.GetType());
+                var x = new XmlSerializer(this.GetType());
 
                 // Serialize the mapping object
                 x.Serialize(outputFile, this);
@@ -269,7 +269,7 @@ namespace SobekCM.Resource_Object.GenericXml.Mapping
                             }
                             else
                             {
-                                GenericXmlMappingTreeNode newChildNode = new GenericXmlMappingTreeNode();
+                                var newChildNode = new GenericXmlMappingTreeNode();
                                 newChildNode.Node = mapping.XmlPath.PathNodes[i];
                                 rootNode.Children[mapping.XmlPath.PathNodes[i].NodeName] = newChildNode;
                                 rootNode = newChildNode;

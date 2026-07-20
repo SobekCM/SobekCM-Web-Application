@@ -69,7 +69,7 @@ namespace SobekCM.Library.Citation.Elements
             }
             else if (Bib.Bib_Info.SystemRequirementsCount > 1)
             {
-                StringBuilder builder = new StringBuilder();
+                var builder = new StringBuilder();
                 foreach (string sysReqs in Bib.Bib_Info.SystemRequirements)
                 {
                     if (string.IsNullOrEmpty(sysReqs)) continue;

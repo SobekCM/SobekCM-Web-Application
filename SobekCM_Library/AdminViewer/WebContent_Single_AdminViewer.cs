@@ -1052,7 +1052,7 @@ namespace SobekCM.Library.AdminViewer
                 Output.WriteLine("           \"sDom\": \"lprtip\",");
 
                 // Determine the URL for the results
-                StringBuilder redirect_url_builder = new StringBuilder(SobekEngineClient.WebContent.Get_All_JDataTable_URL);
+                var redirect_url_builder = new StringBuilder(SobekEngineClient.WebContent.Get_All_JDataTable_URL);
 
                 // Add any query string (should probably use StringBuilder, but this should be fairly seldomly used very deeply)
                 if (!String.IsNullOrEmpty(level1))

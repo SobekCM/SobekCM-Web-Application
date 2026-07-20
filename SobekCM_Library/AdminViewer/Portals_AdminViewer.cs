@@ -455,7 +455,7 @@ namespace SobekCM.Library.AdminViewer
                 Output.WriteLine("  <div class=\"sbkPoav_NewDiv\">");
                 Output.WriteLine("    <table class=\"sbkAdm_PopupTable\">");
 
-                Portal newPortal = new Portal(-1, entered_portal_name, entered_sys_abbrev, entered_aggregation, entered_web_skin, entered_url_segment, entered_base_purl);
+                var newPortal = new Portal(-1, entered_portal_name, entered_sys_abbrev, entered_aggregation, entered_web_skin, entered_url_segment, entered_base_purl);
 
 
                 // Add the line for the url portal name

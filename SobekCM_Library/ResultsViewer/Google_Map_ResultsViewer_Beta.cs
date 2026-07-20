@@ -69,7 +69,7 @@ namespace SobekCM.Library.ResultsViewer
                 Tracer.Add_Trace("Map_ResultsWriter.Add_HTML", "Rendering results in map view");
 
             // Start to build the response
-            StringBuilder mapSearchBuilder = new StringBuilder();
+            var mapSearchBuilder = new StringBuilder();
 
             //HEADER CONTENT
             //hidden input (for callback)
@@ -134,7 +134,7 @@ namespace SobekCM.Library.ResultsViewer
                 Context.SessionObject()["FIDKey"] = ""; //init
             string FIDKey = Context.SessionObject()["FIDKey"].ToString();
             List<string> FIDs = (List<string>)Context.SessionObject()[FIDKey];
-            List<string> temp_FIDs = new List<string>();
+            var temp_FIDs = new List<string>();
             foreach (string FID in FIDs)
             {
                 //add the metadata name (converted to dbColumn name format)
@@ -173,8 +173,8 @@ namespace SobekCM.Library.ResultsViewer
             #region search the database for all items in all of the provided aggregationPermissions and merge them into one datatable
 
             //define MSR support objects
-            DataTable searchResults = new DataTable();
-            DataTable displaySearchResults = new DataTable();
+            var searchResults = new DataTable();
+            var displaySearchResults = new DataTable();
 
             //create MSR columns
             searchResults.Columns.Add("ItemID", typeof(string));
@@ -210,8 +210,8 @@ namespace SobekCM.Library.ResultsViewer
                 #region Create New MSR
 
                 //temp objects
-                List<DataTable> temp_Tables = new List<DataTable>(); //change to dataset?
-                DataTable temp_searchResults = new DataTable();
+                var temp_Tables = new List<DataTable>(); //change to dataset?
+                var temp_searchResults = new DataTable();
 
                 //holds bounds calculator fields
                 double swx = -1;
@@ -291,7 +291,7 @@ namespace SobekCM.Library.ResultsViewer
                         if (searchResult["CreateDate"] != null)
                             e = searchResult["CreateDate"].ToString();
 
-                    List<string> filterValues = new List<string>();
+                    var filterValues = new List<string>();
                     foreach (string filterName in FIDs)
                     {
                         //hande empty filter slots
@@ -335,8 +335,8 @@ namespace SobekCM.Library.ResultsViewer
                         #region Create new MSR
 
                         //temp objects
-                        List<DataTable> temp_Tables = new List<DataTable>(); //change to dataset?
-                        DataTable temp_searchResults = new DataTable();
+                        var temp_Tables = new List<DataTable>(); //change to dataset?
+                        var temp_searchResults = new DataTable();
 
                         //holds bounds calculator fields
                         double swx = -1;
@@ -400,7 +400,7 @@ namespace SobekCM.Library.ResultsViewer
                             if (string.IsNullOrEmpty(e))
                                 e = searchResult["CreateDate"].ToString();
 
-                            List<string> filterValues = new List<string>();
+                            var filterValues = new List<string>();
                             foreach (string filterName in FIDs)
                             {
                                 //hande empty filter slots
@@ -476,7 +476,7 @@ namespace SobekCM.Library.ResultsViewer
         {
 
             //create them display search results object
-            DataTable displaySearchResults = new DataTable();
+            var displaySearchResults = new DataTable();
             displaySearchResults.Columns.Add("ItemID", typeof(string));
             displaySearchResults.Columns.Add("Point_Latitude", typeof(string));
             displaySearchResults.Columns.Add("Point_Longitude", typeof(string));
@@ -485,7 +485,7 @@ namespace SobekCM.Library.ResultsViewer
 
             string MSRKey = Context.SessionObject()["MapSearchResultsKey"].ToString();
 
-            DataTable SR = new DataTable();
+            var SR = new DataTable();
             SR = Context.SessionObject()[MSRKey] as DataTable;
 
             //add only the points within the bounds to the display search results
@@ -550,10 +550,10 @@ namespace SobekCM.Library.ResultsViewer
         public static object Create_JSON_Search_Results_Object(DataTable searchResults)
         {
             //take the search results from db query (incoming) and parse into JSON
-            List<Dictionary<string, object>> rows = new List<Dictionary<string, object>>();
+            var rows = new List<Dictionary<string, object>>();
             foreach (DataRow dr in searchResults.Rows)
             {
-                Dictionary<string, object> row = new Dictionary<string, object>();
+                var row = new Dictionary<string, object>();
                 foreach (DataColumn col in searchResults.Columns)
                 {
                     object val = dr[col];

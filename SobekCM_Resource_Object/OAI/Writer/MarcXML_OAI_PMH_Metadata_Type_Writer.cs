@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using SobekCM.Resource_Object.MARC;
 using System;
@@ -44,7 +44,7 @@ namespace SobekCM.Resource_Object.OAI.Writer
             // Set default error outpt message
             Error_Message = String.Empty;
 
-            StringBuilder results = new StringBuilder();
+            var results = new StringBuilder();
 
             results.AppendLine("<marc:record xmlns:marc=\"http://www.loc.gov/MARC21/slim\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www.loc.gov/MARC21/slim http://www.loc.gov/standards/marcxml/schema/MARC21slim.xsd\" type=\"Bibliographic\">");
 

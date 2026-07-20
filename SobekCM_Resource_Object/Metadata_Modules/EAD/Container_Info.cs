@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using System;
 using System.Collections.Generic;
@@ -151,12 +151,12 @@ namespace SobekCM.Resource_Object.Metadata_Modules.EAD
         /// <param name="Reader"> EAD XML Text Reader </param>
         public void Read(XmlTextReader Reader)
         {
-            Regex rgx1 = new Regex("xmlns=\"[^\"]*\"");
-            Regex rgx2 = new Regex("[ ]*>");
-            Regex rgx3 = new Regex("[ ]*/>");
+            var rgx1 = new Regex("xmlns=\"[^\"]*\"");
+            var rgx2 = new Regex("[ ]*>");
+            var rgx3 = new Regex("[ ]*/>");
 
             string tagname = Reader.Name;
-            Regex ctagPattern = new Regex("c[0-9][0-9]");
+            var ctagPattern = new Regex("c[0-9][0-9]");
             if (Reader.MoveToAttribute("level"))
                 Level = Reader.Value;
 
@@ -168,7 +168,7 @@ namespace SobekCM.Resource_Object.Metadata_Modules.EAD
                     if (ctagPattern.IsMatch(Reader.Name))
                     {
                         // Read this child component
-                        Container_Info c_tag = new Container_Info();
+                        var c_tag = new Container_Info();
                         c_tag.Read(Reader);
                         if (Children == null)
                             Children = new List<Container_Info>();

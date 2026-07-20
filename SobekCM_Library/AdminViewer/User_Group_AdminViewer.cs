@@ -221,7 +221,7 @@ namespace SobekCM.Library.AdminViewer
                             break;
 
                         case 2:
-                            Dictionary<string, User_Permissioned_Aggregation> aggregations = new Dictionary<string, User_Permissioned_Aggregation>();
+                            var aggregations = new Dictionary<string, User_Permissioned_Aggregation>();
 
                             // Step through each key
                             foreach (string thisKey in getKeys)
@@ -272,7 +272,7 @@ namespace SobekCM.Library.AdminViewer
                                     }
                                     else
                                     {
-                                        User_Permissioned_Aggregation thisAggrLink = new User_Permissioned_Aggregation(edit_project, String.Empty, false, false, false, false, false)
+                                        var thisAggrLink = new User_Permissioned_Aggregation(edit_project, String.Empty, false, false, false, false, false)
                                         {
                                             CanEditMetadata = true
                                         };
@@ -288,7 +288,7 @@ namespace SobekCM.Library.AdminViewer
                                     }
                                     else
                                     {
-                                        User_Permissioned_Aggregation thisAggrLink = new User_Permissioned_Aggregation(edit_project, String.Empty, false, false, false, false, false)
+                                        var thisAggrLink = new User_Permissioned_Aggregation(edit_project, String.Empty, false, false, false, false, false)
                                         {
                                             CanEditBehaviors = true
                                         };
@@ -304,7 +304,7 @@ namespace SobekCM.Library.AdminViewer
                                     }
                                     else
                                     {
-                                        User_Permissioned_Aggregation thisAggrLink = new User_Permissioned_Aggregation(edit_project, String.Empty, false, false, false, false, false)
+                                        var thisAggrLink = new User_Permissioned_Aggregation(edit_project, String.Empty, false, false, false, false, false)
                                         {
                                             CanPerformQc = true
                                         };
@@ -320,7 +320,7 @@ namespace SobekCM.Library.AdminViewer
                                     }
                                     else
                                     {
-                                        User_Permissioned_Aggregation thisAggrLink = new User_Permissioned_Aggregation(edit_project, String.Empty, false, false, false, false, false)
+                                        var thisAggrLink = new User_Permissioned_Aggregation(edit_project, String.Empty, false, false, false, false, false)
                                         {
                                             CanUploadFiles = true
                                         };
@@ -336,7 +336,7 @@ namespace SobekCM.Library.AdminViewer
                                     }
                                     else
                                     {
-                                        User_Permissioned_Aggregation thisAggrLink = new User_Permissioned_Aggregation(edit_project, String.Empty, false, false, false, false, false)
+                                        var thisAggrLink = new User_Permissioned_Aggregation(edit_project, String.Empty, false, false, false, false, false)
                                         {
                                             CanChangeVisibility = true
                                         };
@@ -352,7 +352,7 @@ namespace SobekCM.Library.AdminViewer
                                     }
                                     else
                                     {
-                                        User_Permissioned_Aggregation thisAggrLink = new User_Permissioned_Aggregation(edit_project, String.Empty, false, false, false, false, false)
+                                        var thisAggrLink = new User_Permissioned_Aggregation(edit_project, String.Empty, false, false, false, false, false)
                                         {
                                             CanDelete = true
                                         };
@@ -575,7 +575,7 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("  <tr valign=\"top\"><td><b>Description:</b></td><td>" + editGroup.Description + "</td></tr>");
 
             // Build the rights statement
-            StringBuilder text_builder = new StringBuilder();
+            var text_builder = new StringBuilder();
             if (editGroup.CanSubmit)
                 text_builder.Append("Can submit items<br />");
             if (editGroup.IsInternalUser)

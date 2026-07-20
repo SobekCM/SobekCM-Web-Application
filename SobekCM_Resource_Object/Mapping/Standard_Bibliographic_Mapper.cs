@@ -1,4 +1,4 @@
-﻿using SobekCM.Resource_Object.Bib_Info;
+using SobekCM.Resource_Object.Bib_Info;
 using SobekCM.Resource_Object.Metadata_Modules;
 using SobekCM.Resource_Object.Metadata_Modules.GeoSpatial;
 using SobekCM.Resource_Object.Metadata_Modules.VRACore;
@@ -234,13 +234,13 @@ namespace SobekCM.Resource_Object.Mapping
                         }
                     }
 
-                    Name_Info personalCreator = new Name_Info(Data, "creator");
+                    var personalCreator = new Name_Info(Data, "creator");
                     personalCreator.Name_Type = Name_Info_Type_Enum.Personal;
                     Package.Bib_Info.Add_Named_Entity(personalCreator);
                     return true;
 
                 case "CREATORCORPORATENAME":
-                    Name_Info corporateCreator = new Name_Info(Data, "creator");
+                    var corporateCreator = new Name_Info(Data, "creator");
                     corporateCreator.Name_Type = Name_Info_Type_Enum.Corporate;
                     Package.Bib_Info.Add_Named_Entity(corporateCreator);
                     return true;
@@ -278,13 +278,13 @@ namespace SobekCM.Resource_Object.Mapping
                             lastNamedEntity.Family_Name = Data;
                         else
                         {
-                            Name_Info newNameEntity = new Name_Info { Family_Name = Data };
+                            var newNameEntity = new Name_Info{ Family_Name = Data };
                             Package.Bib_Info.Add_Named_Entity(newNameEntity);
                         }
                     }
                     else
                     {
-                        Name_Info newNameEntity = new Name_Info { Family_Name = Data };
+                        var newNameEntity = new Name_Info{ Family_Name = Data };
                         Package.Bib_Info.Add_Named_Entity(newNameEntity);
                     }
                     return true;
@@ -299,13 +299,13 @@ namespace SobekCM.Resource_Object.Mapping
                             lastNamedEntity.Given_Name = Data;
                         else
                         {
-                            Name_Info newNameEntity = new Name_Info { Given_Name = Data };
+                            var newNameEntity = new Name_Info{ Given_Name = Data };
                             Package.Bib_Info.Add_Named_Entity(newNameEntity);
                         }
                     }
                     else
                     {
-                        Name_Info newNameEntity = new Name_Info { Given_Name = Data };
+                        var newNameEntity = new Name_Info{ Given_Name = Data };
                         Package.Bib_Info.Add_Named_Entity(newNameEntity);
                     }
                     return true;
@@ -1143,7 +1143,7 @@ namespace SobekCM.Resource_Object.Mapping
             }
 
             // Add a spatial, if none exists
-            Subject_Info_HierarchicalGeographic hierarchical = new Subject_Info_HierarchicalGeographic();
+            var hierarchical = new Subject_Info_HierarchicalGeographic();
             Package.Bib_Info.Add_Subject(hierarchical);
             return hierarchical;
         }
@@ -1163,7 +1163,7 @@ namespace SobekCM.Resource_Object.Mapping
             }
 
             // Add a spatial, if none exists
-            Subject_Info_Cartographics cartograhics = new Subject_Info_Cartographics();
+            var cartograhics = new Subject_Info_Cartographics();
             Package.Bib_Info.Add_Subject(cartograhics);
             return cartograhics;
 

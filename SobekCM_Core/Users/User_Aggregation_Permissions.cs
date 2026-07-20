@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using System.Collections.Generic;
 using System.Runtime.Serialization;
@@ -67,7 +67,7 @@ namespace SobekCM.Core.Users
 		public void Add(string Code, string Name, bool CanSelect, bool CanEditMetadata, bool CanEditBehaviors, bool CanPerformQc, bool CanUploadFiles, bool CanChangeVisibility, bool CanDelete, bool IsCurator, bool OnHomePage, bool IsAdmin, bool GroupDefined)
         {
             // Create the aggregation object
-            User_Permissioned_Aggregation aggrLink = new User_Permissioned_Aggregation(Code.ToUpper(), Name, CanSelect, false, IsCurator, OnHomePage, IsAdmin);
+            var aggrLink = new User_Permissioned_Aggregation(Code.ToUpper(), Name, CanSelect, false, IsCurator, OnHomePage, IsAdmin);
             aggrLink.CanEditMetadata = CanEditMetadata;
             aggrLink.CanEditBehaviors = CanEditBehaviors;
             aggrLink.CanPerformQc = CanPerformQc;

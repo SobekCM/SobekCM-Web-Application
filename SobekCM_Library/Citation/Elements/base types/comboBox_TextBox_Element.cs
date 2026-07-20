@@ -450,7 +450,7 @@ namespace SobekCM.Library.Citation.Elements
                     PossibleSelectItems.Clear();
                     if (options.Length > 0)
                     {
-                        SortedList<string, string> sorted_codes = new SortedList<string, string>();
+                        var sorted_codes = new SortedList<string, string>();
                         string[] options_parsed = options.Split(",".ToCharArray());
                         foreach (string thisOption in options_parsed.Where(ThisOption => !sorted_codes.ContainsKey(ThisOption.Trim())))
                         {

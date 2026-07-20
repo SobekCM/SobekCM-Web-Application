@@ -1,4 +1,4 @@
-﻿using Saxon.Api;
+using Saxon.Api;
 using System;
 using System.IO;
 using System.Xml;
@@ -19,7 +19,7 @@ namespace SobekCM.Core.XSLT
             // Ensure the XSLT file exists
             if (!File.Exists(XSLT_File))
             {
-                XSLT_Transformer_ReturnArgs returnArgs = new XSLT_Transformer_ReturnArgs();
+                var returnArgs = new XSLT_Transformer_ReturnArgs();
                 returnArgs.Successful = false;
                 returnArgs.ErrorMessage = "Indicated XSLT file ( " + XSLT_File + " ) does not exist.";
                 return returnArgs;
@@ -66,7 +66,7 @@ namespace SobekCM.Core.XSLT
             // Ensure the XSLT file exists
             if (!File.Exists(XSLT_File))
             {
-                XSLT_Transformer_ReturnArgs returnArgs = new XSLT_Transformer_ReturnArgs();
+                var returnArgs = new XSLT_Transformer_ReturnArgs();
                 returnArgs.Successful = false;
                 returnArgs.ErrorMessage = "Indicated XSLT file ( " + XSLT_File + " ) does not exist.";
                 return returnArgs;
@@ -114,7 +114,7 @@ namespace SobekCM.Core.XSLT
             try
             {
                 using (Stream readerStream = new FileStream(XSLT_File, FileMode.Open, FileAccess.Read))
-                using (XmlTextReader readerXml = new XmlTextReader(readerStream))
+                using (var readerXml = new XmlTextReader(readerStream))
                 {
                     // Step through this configuration file
                     while (readerXml.Read())
@@ -225,7 +225,7 @@ namespace SobekCM.Core.XSLT
             DateTime starTime = DateTime.Now;
 
             // Create the return object
-            XSLT_Transformer_ReturnArgs returnArgs = new XSLT_Transformer_ReturnArgs();
+            var returnArgs = new XSLT_Transformer_ReturnArgs();
             returnArgs.Engine = XSLT_Transformer_Engine_Enum.Saxon;
 
             // Ensure the XSLT file exists
@@ -244,7 +244,7 @@ namespace SobekCM.Core.XSLT
                 return returnArgs;
             }
 
-            FileInfo input = new FileInfo(SourceFile);
+            var input = new FileInfo(SourceFile);
 
             try
             {
@@ -291,7 +291,7 @@ namespace SobekCM.Core.XSLT
             DateTime starTime = DateTime.Now;
 
             // Create the return object
-            XSLT_Transformer_ReturnArgs returnArgs = new XSLT_Transformer_ReturnArgs();
+            var returnArgs = new XSLT_Transformer_ReturnArgs();
             returnArgs.Engine = XSLT_Transformer_Engine_Enum.Saxon;
 
             // Ensure the XSLT file exists
@@ -310,7 +310,7 @@ namespace SobekCM.Core.XSLT
                 return returnArgs;
             }
 
-            FileInfo input = new FileInfo(SourceFile);
+            var input = new FileInfo(SourceFile);
 
             try
             {
@@ -364,7 +364,7 @@ namespace SobekCM.Core.XSLT
             DateTime starTime = DateTime.Now;
 
             // Create the return object
-            XSLT_Transformer_ReturnArgs returnArgs = new XSLT_Transformer_ReturnArgs();
+            var returnArgs = new XSLT_Transformer_ReturnArgs();
             returnArgs.Engine = XSLT_Transformer_Engine_Enum.Native_dotNet;
 
             // Ensure the XSLT file exists
@@ -386,16 +386,15 @@ namespace SobekCM.Core.XSLT
             try
             {
                 // Create the XsltSettings object with script enabled.
-                XsltSettings xslt_settings = new XsltSettings(true, true);
+                var xslt_settings = new XsltSettings(true, true);
 
                 // Create the transform and load the XSL indicated
-                XslCompiledTransform transform = new XslCompiledTransform();
+                var transform = new XslCompiledTransform();
                 transform.Load(XSLT_File, xslt_settings, new XmlUrlResolver());
 
                 // Apply the transform to convert the XML into HTML
-                StringWriter results = new StringWriter();
-                XmlReaderSettings settings = new XmlReaderSettings
-                {
+                var results = new StringWriter();
+                var settings = new XmlReaderSettings{
                     DtdProcessing = DtdProcessing.Parse
                 };
                 using (XmlReader transformreader = XmlReader.Create(SourceFile, settings))
@@ -404,7 +403,7 @@ namespace SobekCM.Core.XSLT
                 }
 
                 // Write the transformed string
-                StreamWriter writer = new StreamWriter(OutputFile);
+                var writer = new StreamWriter(OutputFile);
                 writer.WriteLine(results.ToString());
                 writer.Flush();
                 writer.Close();
@@ -434,7 +433,7 @@ namespace SobekCM.Core.XSLT
             DateTime starTime = DateTime.Now;
 
             // Create the return object
-            XSLT_Transformer_ReturnArgs returnArgs = new XSLT_Transformer_ReturnArgs();
+            var returnArgs = new XSLT_Transformer_ReturnArgs();
             returnArgs.Engine = XSLT_Transformer_Engine_Enum.Native_dotNet;
 
             // Ensure the XSLT file exists
@@ -456,16 +455,15 @@ namespace SobekCM.Core.XSLT
             try
             {
                 // Create the XsltSettings object with script enabled.
-                XsltSettings xslt_settings = new XsltSettings(true, true);
+                var xslt_settings = new XsltSettings(true, true);
 
                 // Create the transform and load the XSL indicated
-                XslCompiledTransform transform = new XslCompiledTransform();
+                var transform = new XslCompiledTransform();
                 transform.Load(XSLT_File, xslt_settings, new XmlUrlResolver());
 
                 // Apply the transform to convert the XML into HTML
-                StringWriter results = new StringWriter();
-                XmlReaderSettings settings = new XmlReaderSettings
-                {
+                var results = new StringWriter();
+                var settings = new XmlReaderSettings{
                     DtdProcessing = DtdProcessing.Parse
                 };
                 using (XmlReader transformreader = XmlReader.Create(SourceFile, settings))

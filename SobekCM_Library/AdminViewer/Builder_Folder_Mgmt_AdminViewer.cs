@@ -135,7 +135,7 @@ namespace SobekCM.Library.AdminViewer
                         if (action_value == "save")
                         {
                             // Perform some validations
-                            List<string> errors = new List<string>();
+                            var errors = new List<string>();
                             if (String.IsNullOrWhiteSpace(folderName)) errors.Add("DESCRIPTIVE NAME is required and missing");
                             if (String.IsNullOrWhiteSpace(failuresFolder)) errors.Add("FAILURES FOLDER is required and missing");
                             if (String.IsNullOrWhiteSpace(inboundFolder)) errors.Add("INBOUND FOLDER is required and missing");
@@ -171,7 +171,7 @@ namespace SobekCM.Library.AdminViewer
                                     UI_ApplicationCache_Gateway.ResetSettings();
 
                                     // Also, look to see if a warning might be suitable
-                                    List<string> warnings = new List<string>();
+                                    var warnings = new List<string>();
                                     try
                                     {
                                         if (!Directory.Exists(failuresFolder)) warnings.Add("Can't verify existence of the FAILURES FOLDER");

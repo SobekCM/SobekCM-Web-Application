@@ -81,7 +81,7 @@ namespace SobekCM.Library.AdminViewer
             }
 
             // Create the list of sorted users approvied for TEI
-            SortedList<string, Tuple<string, int>> nameSorter = new SortedList<string, Tuple<string, int>>();
+            var nameSorter = new SortedList<string, Tuple<string, int>>();
             DataRow[] enabledRows = teiUserSettings.Select("Setting_Key = 'TEI.Enabled'");
             foreach (DataRow thisRow in enabledRows)
             {

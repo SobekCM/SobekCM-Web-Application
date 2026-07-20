@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using System.Collections.Specialized;
 
@@ -14,7 +14,7 @@ namespace SobekCM.Engine_Library
         /// <returns> Copied NameValueCollection collection </returns>
         public static NameValueCollection Copy(this NameValueCollection Nvc)
         {
-            NameValueCollection collection = new NameValueCollection();
+            var collection = new NameValueCollection();
             foreach (string k in Nvc.AllKeys)
                 collection.Add(k, Nvc[k]);
 

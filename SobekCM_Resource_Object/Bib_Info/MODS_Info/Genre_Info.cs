@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using SobekCM.Resource_Object.MARC;
 using System;
@@ -103,7 +103,7 @@ namespace SobekCM.Resource_Object.Bib_Info
             if ((authority == "marcgt") || (genre_term.Trim().Length == 0))
                 return null;
 
-            MARC_Field returnValue = new MARC_Field { Tag = 655 };
+            var returnValue = new MARC_Field{ Tag = 655 };
 
             string second_indicator;
             string authority_builder = String.Empty;

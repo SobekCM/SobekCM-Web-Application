@@ -120,7 +120,7 @@ namespace SobekCM.Tools.Logs
         public override string ToString()
         {
             // Add the style sheet components
-            StringBuilder returnVal = new StringBuilder("     ." + name.ToLower() + " { color: \"" + fontColor + "\"; ");
+            var returnVal = new StringBuilder("     ." + name.ToLower() + " { color: \"" + fontColor + "\"; ");
             returnVal.Append("font-size: \"" + fontSize + "\"; font-family: \"" + fontFamily + "\"; ");
 
             // Add remarks for bold and italics

@@ -1,4 +1,4 @@
-﻿using ProtoBuf;
+using ProtoBuf;
 using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
@@ -48,7 +48,7 @@ namespace SobekCM.Core.WebContent.Hierarchy
                 Children = new Dictionary<string, WebContent_Hierarchy_Node>(StringComparer.OrdinalIgnoreCase);
 
             // Build the child node
-            WebContent_Hierarchy_Node returnValue = new WebContent_Hierarchy_Node { Segment = NewSegment };
+            var returnValue = new WebContent_Hierarchy_Node{ Segment = NewSegment };
             if (NewWebContentID.HasValue) returnValue.WebContentID = NewWebContentID.Value;
             Children[NewSegment] = returnValue;
 

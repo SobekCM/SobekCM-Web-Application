@@ -83,7 +83,7 @@ namespace SobekCM.Library.MySobekViewer
             // Ensure item has a divisions object (should really always have this)
             if (currentItem.Divisions.OpenTextbook_Tree.Roots?.Count == 0)
             {
-                Division_TreeNode divNode = new Division_TreeNode("Chapter", "Main Body");
+                var divNode = new Division_TreeNode("Chapter", "Main Body");
                 currentItem.Divisions.OpenTextbook_Tree.Roots.Add(divNode);
             }
 
@@ -110,11 +110,11 @@ namespace SobekCM.Library.MySobekViewer
                             Division_TreeNode divNode = (Division_TreeNode)node;
                             if ((divNode.Nodes == null) || (divNode.Nodes.Count == 0))
                             {
-                                Page_TreeNode page = new Page_TreeNode();
+                                var page = new Page_TreeNode();
                                 page.Label = node.Label;
                                 divNode.Nodes.Add(page);
 
-                                SobekCM_File_Info fileInfo = new SobekCM_File_Info();
+                                var fileInfo = new SobekCM_File_Info();
                                 string guid = Guid.NewGuid().ToString() + ".html";
                                 fileInfo.System_Name = "oer/" + guid;
                                 page.Files.Add(fileInfo);

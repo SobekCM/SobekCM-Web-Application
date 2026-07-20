@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using System;
 using System.Collections.Generic;
@@ -24,7 +24,7 @@ namespace SobekCM.Resource_Object.OAI.Reader
             try
             {
                 // Create the return value
-                OAI_Repository_Records_List returnValue = new OAI_Repository_Records_List();
+                var returnValue = new OAI_Repository_Records_List();
 
                 // Get the URL
                 string url = OAI_URL + "?verb=ListRecords&resumptionToken=" + Resumption_Token;
@@ -60,7 +60,7 @@ namespace SobekCM.Resource_Object.OAI.Reader
             try
             {
                 // Create the return value
-                OAI_Repository_Records_List returnValue = new OAI_Repository_Records_List();
+                var returnValue = new OAI_Repository_Records_List();
 
                 // Get the URL
                 string url = OAI_URL + "?verb=ListRecords&set=" + Set + "&metadataPrefix=" + MetadataPrefix;
@@ -90,10 +90,10 @@ namespace SobekCM.Resource_Object.OAI.Reader
         private static void read_list_of_records(Stream ResStream, OAI_Repository_Records_List ReturnValue)
         {
             // Try to read the XML
-            XmlTextReader r = new XmlTextReader(ResStream);
+            var r = new XmlTextReader(ResStream);
 
             bool inRecord = false;
-            OAI_Repository_DublinCore_Record thisRecord = new OAI_Repository_DublinCore_Record();
+            var thisRecord = new OAI_Repository_DublinCore_Record();
             while (r.Read())
             {
                 if (inRecord)
@@ -272,7 +272,7 @@ namespace SobekCM.Resource_Object.OAI.Reader
         public static OAI_Repository_Information Identify(string OAI_URL)
         {
             // Create the return object 
-            OAI_Repository_Information returnValue = new OAI_Repository_Information(OAI_URL);
+            var returnValue = new OAI_Repository_Information(OAI_URL);
 
             try
             {
@@ -294,7 +294,7 @@ namespace SobekCM.Resource_Object.OAI.Reader
 
 
                 // Try to read the XML
-                XmlTextReader r = new XmlTextReader(resStream);
+                var r = new XmlTextReader(resStream);
 
                 bool inOaiResponse = false;
                 while (r.Read())
@@ -423,10 +423,10 @@ namespace SobekCM.Resource_Object.OAI.Reader
                     return false;
 
                 // Try to read the XML
-                XmlTextReader r = new XmlTextReader(resStream);
+                var r = new XmlTextReader(resStream);
 
                 // Sort the list for display purposes
-                SortedList<string, KeyValuePair<string, string>> sorter = new SortedList<string, KeyValuePair<string, string>>();
+                var sorter = new SortedList<string, KeyValuePair<string, string>>();
 
                 bool inSet = false;
                 string setName = String.Empty;
@@ -460,7 +460,7 @@ namespace SobekCM.Resource_Object.OAI.Reader
                         {
                             if ((setSpec.Length > 0) && (setName.Length > 0))
                             {
-                                KeyValuePair<string, string> newSet = new KeyValuePair<string, string>(setSpec, setName);
+                                var newSet = new KeyValuePair<string, string>(setSpec, setName);
                                 sorter.Add(setSpec, newSet);
                             }
                             setSpec = String.Empty;
@@ -514,7 +514,7 @@ namespace SobekCM.Resource_Object.OAI.Reader
                     return false;
 
                 // Try to read the XML
-                XmlTextReader r = new XmlTextReader(resStream);
+                var r = new XmlTextReader(resStream);
 
                 while (r.Read())
                 {

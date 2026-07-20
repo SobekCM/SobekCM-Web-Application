@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using System.IO;
 using SobekCM.Builder_Library.Tools;
@@ -23,7 +23,7 @@ namespace SobekCM.Builder_Library.Modules.Items
             foreach (string thisXml in xml_files)
             {
                 // Get the fileinfo and the name
-                FileInfo thisXmlInfo = new FileInfo(thisXml);
+                var thisXmlInfo = new FileInfo(thisXml);
 
                 // Just don't pull text for the static page
                 string xml_upper = thisXmlInfo.Name.ToUpper();

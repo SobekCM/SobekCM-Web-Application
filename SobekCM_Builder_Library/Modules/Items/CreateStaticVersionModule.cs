@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using System;
 using System.IO;
@@ -34,7 +34,7 @@ namespace SobekCM.Builder_Library.Modules.Items
 
             try
             {
-                using (WebClient client = new WebClient())
+                using (var client = new WebClient())
                 {
                     string downloadString = client.DownloadString(source_url);
 
@@ -45,7 +45,7 @@ namespace SobekCM.Builder_Library.Modules.Items
                             Directory.CreateDirectory(Resource.Resource_Folder + "\\" + Settings.Resources.Backup_Files_Folder_Name);
 
                         string static_file = Resource.Resource_Folder + "\\" + Settings.Resources.Backup_Files_Folder_Name + "\\" + Resource.Metadata.BibID + "_" + Resource.Metadata.VID + ".html";
-                        using (StreamWriter writer = new StreamWriter(static_file, false))
+                        using (var writer = new StreamWriter(static_file, false))
                         {
                             writer.Write(downloadString);
                             writer.Flush();

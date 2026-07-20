@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using System;
 using System.Collections.Generic;
@@ -553,7 +553,7 @@ namespace SobekCM.Resource_Object.Tracking
                     int images = 0;
                     if (thisRow[mediaImgesColumn] != DBNull.Value)
                         images = Convert.ToInt32(thisRow[mediaImgesColumn]);
-                    Tracking_ArchiveMedia addMedia = new Tracking_ArchiveMedia(thisRow[mediaNumberColumn].ToString(), thisRow[mediaFilerangeColumn].ToString(), images, size, Convert.ToDateTime(thisRow[mediaDateColumn]));
+                    var addMedia = new Tracking_ArchiveMedia(thisRow[mediaNumberColumn].ToString(), thisRow[mediaFilerangeColumn].ToString(), images, size, Convert.ToDateTime(thisRow[mediaDateColumn]));
                     archiveMedia.Add(addMedia);
                 }
             }

@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using SobekCM.Resource_Object.MARC;
 using System;
@@ -107,8 +107,8 @@ namespace SobekCM.Resource_Object.Bib_Info
             if (String.IsNullOrEmpty(title))
                 return null;
 
-            MARC_Field returnValue = new MARC_Field();
-            StringBuilder fieldBuilder = new StringBuilder();
+            var returnValue = new MARC_Field();
+            var fieldBuilder = new StringBuilder();
             returnValue.Tag = Tag;
             if (Tag < 0)
                 returnValue.Tag = 0;

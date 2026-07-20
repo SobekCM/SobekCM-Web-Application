@@ -65,8 +65,8 @@ namespace SobekCM.Library.Citation.Elements
                 }
             }
 
-            List<string> latitudes = new List<string>();
-            List<string> longitudes = new List<string>();
+            var latitudes = new List<string>();
+            var longitudes = new List<string>();
 
             // GEt the geospatial metadata module
             GeoSpatial_Information geoInfo = Bib.Get_Metadata_Module(GlobalVar.GEOSPATIAL_METADATA_MODULE_KEY) as GeoSpatial_Information;
@@ -104,7 +104,7 @@ namespace SobekCM.Library.Citation.Elements
         /// <param name="Bib"> Object into which to save the user's data, entered into the html rendered by this element </param>
         public override void Save_To_Bib(SobekCM_Item Bib)
         {
-            List<Coordinate_Point> points = new List<Coordinate_Point>();
+            var points = new List<Coordinate_Point>();
 
             var getKeys = Context.Request.Form.Keys;
             string latitude = String.Empty;

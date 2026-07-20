@@ -85,7 +85,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             CurrentRequest.ViewerCode = previous_code;
 
             // Add the item menu information
-            Item_MenuItem menuItem = new Item_MenuItem("Description", "MARC View", null, url, ViewerCode);
+            var menuItem = new Item_MenuItem("Description", "MARC View", null, url, ViewerCode);
             MenuItems.Add(menuItem);
         }
 
@@ -165,7 +165,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             string viewer_code = CurrentRequest.ViewerCode;
 
             // Get any search terms
-            List<string> terms = new List<string>();
+            var terms = new List<string>();
             if (!String.IsNullOrWhiteSpace(CurrentRequest.Text_Search))
             {
                 string[] splitter = CurrentRequest.Text_Search.Replace("\"", "").Split(" ".ToCharArray());
@@ -215,7 +215,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
 
             //// Build the value
-            StringBuilder builder = new StringBuilder();
+            var builder = new StringBuilder();
 
             // Add the edit item button, if the user can edit it
             if ((userCanEdit) && (BriefItem.Type != "BIBLEVEL"))

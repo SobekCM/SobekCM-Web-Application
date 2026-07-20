@@ -557,7 +557,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <param name="AffectedPageFilename"></param>
         public void SaveQcError(int ItemID, string ErrorCode, string AffectedPageFilename)
         {
-            QC_Error thisError = new QC_Error();
+            var thisError = new QC_Error();
             thisError.Description = String.Empty;
             thisError.ErrorCode = ErrorCode;
             thisError.FileName = AffectedPageFilename;
@@ -674,7 +674,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         {
             //Get the DataTable of all page errors for this item from the database
             qc_errors_table = SobekCM_Item_Database.Get_QC_Errors_For_Item(ThisItemID);
-            QC_Error thisError = new QC_Error();
+            var thisError = new QC_Error();
 
             if (Context.SessionObject()["QC_Errors"] == null)
             {
@@ -826,7 +826,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             makeSortable = CurrentUser.Get_Setting("QC_ItemViewer:SortableMode", 3);
 
             // Ensure there are no pages directly under the item
-            List<abstract_TreeNode> add_to_new_main = new List<abstract_TreeNode>();
+            var add_to_new_main = new List<abstract_TreeNode>();
             foreach (abstract_TreeNode rootNode in qc_item.Divisions.Physical_Tree.Roots)
             {
                 if (rootNode.Page)
@@ -836,7 +836,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
             if (add_to_new_main.Count > 0)
             {
-                Division_TreeNode newMain = new Division_TreeNode("Main", String.Empty);
+                var newMain = new Division_TreeNode("Main", String.Empty);
                 qc_item.Divisions.Physical_Tree.Roots.Add(newMain);
                 foreach (abstract_TreeNode thisNode in add_to_new_main)
                     newMain.Add_Child(thisNode);
@@ -918,7 +918,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// </summary>
         private void Clear_Pagination_And_Reorder_Pages()
         {
-            SortedDictionary<string, Page_TreeNode> nodeToFilename = new SortedDictionary<string, Page_TreeNode>();
+            var nodeToFilename = new SortedDictionary<string, Page_TreeNode>();
             int newPageCount = 0;
 
             // Add each page node to a sorted list/dictionary and clear the label
@@ -940,7 +940,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             qc_item.Divisions.Physical_Tree.Clear();
 
             // Add the main node to the physical (TOC) division tree 
-            Division_TreeNode mainNode = new Division_TreeNode("Main", String.Empty);
+            var mainNode = new Division_TreeNode("Main", String.Empty);
             qc_item.Divisions.Physical_Tree.Roots.Add(mainNode);
 
             //Update the web Page count for this item
@@ -1028,7 +1028,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 if (!Directory.Exists(error_folder))
                     Directory.CreateDirectory(error_folder);
                 string error_message_file = "qc_error_" + DateTime.Now.Year + "_" + DateTime.Now.Month.ToString().PadLeft(2, '0') + "_" + DateTime.Now.Day.ToString().PadLeft(2, '0') + "_" + DateTime.Now.Hour.ToString().PadLeft(2, '0') + "_" + DateTime.Now.Minute.ToString().PadLeft(2, '0') + "_" + DateTime.Now.Second.ToString().PadLeft(2, '0') + "_" + DateTime.Now.Millisecond + ".txt";
-                StreamWriter writer = new StreamWriter(error_folder + "//" + error_message_file, true);
+                var writer = new StreamWriter(error_folder + "//" + error_message_file, true);
                 writer.WriteLine("EXCEPTION CAUGHT DURING SAVE_FROM_FORM_REQUEST_TO_ITEM METHOD");
                 writer.WriteLine();
                 writer.WriteLine(e.Message);
@@ -1071,10 +1071,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 Int32.TryParse(CurrentRequest.ViewerCode.Replace("qc", ""), out current_qc_viewer_page_num);
 
             // First, build a dictionary of all the pages ( filename --> page division object )
-            Dictionary<Page_TreeNode, Division_TreeNode> pages_to_division = new Dictionary<Page_TreeNode, Division_TreeNode>();
-            Dictionary<string, Page_TreeNode> pages_by_name = new Dictionary<string, Page_TreeNode>();
-            List<Page_TreeNode> page_list = new List<Page_TreeNode>();
-            List<string> page_filename_list = new List<string>();
+            var pages_to_division = new Dictionary<Page_TreeNode, Division_TreeNode>();
+            var pages_by_name = new Dictionary<string, Page_TreeNode>();
+            var page_list = new List<Page_TreeNode>();
+            var page_filename_list = new List<string>();
             Division_TreeNode lastDivision = null;
 
             //Autonumber the remaining pages based on the selected option
@@ -1164,8 +1164,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
 
             // Step through and collect all the form data
-            List<QC_Viewer_Page_Division_Info> page_div_from_form = new List<QC_Viewer_Page_Division_Info>();
-            List<Page_TreeNode> existing_pages_in_window = new List<Page_TreeNode>();
+            var page_div_from_form = new List<QC_Viewer_Page_Division_Info>();
+            var existing_pages_in_window = new List<Page_TreeNode>();
 
             //Get the list of pages to be moved
             Selected_Page_Div_From_Form = new List<QC_Viewer_Page_Division_Info>();
@@ -1181,7 +1181,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     if ((thisKey.IndexOf("filename") == 0) && (thisKey.Length > 8))
                     {
                         // Create the qc viewer page information, and assign the filename
-                        QC_Viewer_Page_Division_Info thisInfo = new QC_Viewer_Page_Division_Info { Filename = Context.Request.Form[thisKey].TrimFirst() };
+                        var thisInfo = new QC_Viewer_Page_Division_Info{ Filename = Context.Request.Form[thisKey].TrimFirst() };
 
                         // Get the index to use for all the other keys
                         string thisIndex = thisKey.Substring(8);
@@ -1268,7 +1268,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     existing_division_containing_first_page = window_first_division;
 
                 // Collect any additional, non-cleared pages from the division which contained the last page originally
-                List<Page_TreeNode> remnant_pages = new List<Page_TreeNode>();
+                var remnant_pages = new List<Page_TreeNode>();
                 Page_TreeNode window_last_page = page_list[window_last_page_index];
                 Division_TreeNode window_last_division = pages_to_division[window_last_page];
                 if (window_last_division.Nodes.IndexOf(window_last_page) < window_last_division.Nodes.Count)
@@ -1433,7 +1433,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 if (!Directory.Exists(error_folder))
                     Directory.CreateDirectory(error_folder);
                 string error_message_file = "qc_error_" + DateTime.Now.Year + "_" + DateTime.Now.Month.ToString().PadLeft(2, '0') + "_" + DateTime.Now.Day.ToString().PadLeft(2, '0') + "_" + DateTime.Now.Hour.ToString().PadLeft(2, '0') + "_" + DateTime.Now.Minute.ToString().PadLeft(2, '0') + "_" + DateTime.Now.Second.ToString().PadLeft(2, '0') + "_" + DateTime.Now.Millisecond + ".txt";
-                StreamWriter writer = new StreamWriter(error_folder + "\\" + error_message_file, true);
+                var writer = new StreamWriter(error_folder + "\\" + error_message_file, true);
 
                 writer.WriteLine("EXCEPTION CAUGHT DURING SAVE_FROM_FORM_REQUEST_TO_ITEM METHOD (2nd spot)");
                 writer.WriteLine();
@@ -1576,7 +1576,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             foreach (string thisFile in files)
             {
-                FileInfo thisFileInfo = new FileInfo(thisFile);
+                var thisFileInfo = new FileInfo(thisFile);
                 string extension = thisFileInfo.Extension.ToUpper();
                 if ((extension == ".JPG") || (extension == ".TIF") || (extension == ".JP2") || (extension == ".TXT") || (extension == ".PRO") || (extension == ".TIFF") || (extension == ".JPEG") || (extension == ".GIF") || (extension == ".PNG"))
                 {
@@ -1676,7 +1676,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 Int32.TryParse(hidden_main_thumbnail, out main_thumbnail_index);
 
             //Add the division types from the current QC Config profile to a local dictionary
-            Dictionary<string, bool> qcDivisionList = new Dictionary<string, bool>();
+            var qcDivisionList = new Dictionary<string, bool>();
             foreach (QualityControl_Division_Config qcDivConfig in qc_profile.Division_Types)
             {
                 qcDivisionList.Add(qcDivConfig.TypeName, qcDivConfig.isNameable);
@@ -1781,9 +1781,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
             Output.WriteLine("<script type=\"text/javascript\">Set_Default_Images('" + Static_Resources_Gateway.No_Pages_Jpg + "', '" + Static_Resources_Gateway.Nothumb_Jpg + "');</script>");
 
             //Save all the thumbnail image locations in the JavaScript global image dictionary
-            List<string> image_by_pageindex = new List<string>();
-            List<string> file_sans_by_pageindex = new List<string>();
-            StringBuilder builder = new StringBuilder();
+            var image_by_pageindex = new List<string>();
+            var file_sans_by_pageindex = new List<string>();
+            var builder = new StringBuilder();
             for (int i = 0; i < static_pages.Count; i++)
             {
                 Page_TreeNode thisPage = (Page_TreeNode)static_pages[i];
@@ -1887,7 +1887,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 int itemID = SobekCM_Item_Database.Get_ItemID(BriefItem.BibID, BriefItem.VID);
                 string url = UrlWriterHelper.Redirect_URL(CurrentRequest).Replace("&", "&amp;").Replace("\"", "&quot;");
 
-                QC_Error thisError = new QC_Error();
+                var thisError = new QC_Error();
                 bool errorPresentThisPage = false;
                 if (qc_errors_dictionary.ContainsKey(itemID.ToString() + filename_sans_extension))
                 {
@@ -2466,7 +2466,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         {
             get
             {
-                List<string> goToUrls = new List<string>();
+                var goToUrls = new List<string>();
                 for (int i = 1; i <= PageCount; i++)
                 {
                     CurrentRequest.Thumbnails_Per_Page = (short)thumbnailsPerPage;
@@ -2869,7 +2869,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
 
             //Initialize the string builder
-            StringBuilder result = new StringBuilder();
+            var result = new StringBuilder();
 
             for (int i = 0; i < 13; i++)
             {
@@ -2929,7 +2929,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
                 //Create an arraylist containing the values
                 int ptr = 0;
-                ArrayList values = new ArrayList();
+                var values = new ArrayList();
                 int maxDigit = 1000;
 
                 while (ptr < Roman.Length)

@@ -93,12 +93,12 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters.MARC.Writers
         public static string To_Machine_Readable_Record(MARC_Record Record)
         {
             // Create the stringbuilder for this
-            StringBuilder directory = new StringBuilder(1000);
-            StringBuilder completefields = new StringBuilder(2000);
-            StringBuilder completeLine = new StringBuilder(200);
+            var directory = new StringBuilder(1000);
+            var completefields = new StringBuilder(2000);
+            var completeLine = new StringBuilder(200);
 
             // Step through each entry by key from the hashtable
-            List<string> overallRecord = new List<string>();
+            var overallRecord = new List<string>();
             int runningLength = 0;
 
             // Step through each field ( control and data ) in the record

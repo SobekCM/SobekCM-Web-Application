@@ -157,7 +157,7 @@ namespace SobekCM.Library
                 DataTable settingsTable = SobekCM_Settings.Tables[0];
 
                 // Create the dictionary for quick lookups for the next work
-                Dictionary<string, string> settingsDictionary = new Dictionary<string, string>();
+                var settingsDictionary = new Dictionary<string, string>();
                 foreach (DataRow thisRow in settingsTable.Rows)
                 {
                     settingsDictionary[thisRow["Setting_Key"].ToString()] = thisRow["Setting_Value"].ToString();
@@ -322,8 +322,8 @@ namespace SobekCM.Library
                     string future = thisRow["DispositionFuture"].ToString();
                     string past = thisRow["DispositionPast"].ToString();
 
-                    KeyValuePair<int, string> futureValue = new KeyValuePair<int, string>(id, future);
-                    KeyValuePair<int, string> pastValue = new KeyValuePair<int, string>(id, past);
+                    var futureValue = new KeyValuePair<int, string>(id, future);
+                    var pastValue = new KeyValuePair<int, string>(id, past);
                     dispositionFutureTypes[id] = futureValue;
                     dispositionPastTypes[id] = pastValue;
                 }
@@ -333,7 +333,7 @@ namespace SobekCM.Library
                     int id = Convert.ToInt32(thisRow["WorkFlowID"]);
                     string workflow = thisRow["WorkFlowName"].ToString();
 
-                    KeyValuePair<int, string> newValue = new KeyValuePair<int, string>(id, workflow);
+                    var newValue = new KeyValuePair<int, string>(id, workflow);
                     workflowTypes[id] = newValue;
                 }
             }
@@ -346,7 +346,7 @@ namespace SobekCM.Library
             {
                 lock (thisLock)
                 {
-                    List<string> returnValue = new List<string>();
+                    var returnValue = new List<string>();
                     foreach (KeyValuePair<int, string> thisValue in dispositionFutureTypes.Values)
                     {
                         returnValue.Add(thisValue.Value);
@@ -363,7 +363,7 @@ namespace SobekCM.Library
             {
                 lock (thisLock)
                 {
-                    List<string> returnValue = new List<string>();
+                    var returnValue = new List<string>();
                     foreach (KeyValuePair<int, string> thisValue in dispositionPastTypes.Values)
                     {
                         returnValue.Add(thisValue.Value);
@@ -380,7 +380,7 @@ namespace SobekCM.Library
             {
                 lock (thisLock)
                 {
-                    List<string> returnValue = new List<string>();
+                    var returnValue = new List<string>();
                     foreach (KeyValuePair<int, string> thisValue in workflowTypes.Values)
                     {
                         returnValue.Add(thisValue.Value);
@@ -480,21 +480,21 @@ namespace SobekCM.Library
             lock (thisLock)
             {
                 // Add ANYWHERE
-                Metadata_Search_Field anywhere = new Metadata_Search_Field(-1, "INVALID", "Anywhere", "ZZ", "all");
+                var anywhere = new Metadata_Search_Field(-1, "INVALID", "Anywhere", "ZZ", "all");
                 metadataFields.Add(anywhere);
                 metadataFieldsByCode["ZZ"] = anywhere;
                 metadataFieldsByID[-1] = anywhere;
 
                 // Add OCLC
-                Metadata_Search_Field oclc = new Metadata_Search_Field(-1, "INVALID", "OCLC", "OC", "oclc");
+                var oclc = new Metadata_Search_Field(-1, "INVALID", "OCLC", "OC", "oclc");
                 metadataFieldsByCode["OC"] = oclc;
 
                 // Add ALEPH
-                Metadata_Search_Field aleph = new Metadata_Search_Field(-1, "INVALID", "ALEPH", "AL", "aleph");
+                var aleph = new Metadata_Search_Field(-1, "INVALID", "ALEPH", "AL", "aleph");
                 metadataFieldsByCode["AL"] = aleph;
 
                 // Add Full Text
-                Metadata_Search_Field fulltext = new Metadata_Search_Field(-1, "INVALID", "Full Text", "TX", "fulltext");
+                var fulltext = new Metadata_Search_Field(-1, "INVALID", "Full Text", "TX", "fulltext");
                 metadataFieldsByCode["TX"] = fulltext;
 
                 // Get the data columns
@@ -520,7 +520,7 @@ namespace SobekCM.Library
                         string solr = thisRow[solrColumn].ToString();
 
                         // Create the new field object
-                        Metadata_Search_Field newField = new Metadata_Search_Field(id, facet, display, code, solr);
+                        var newField = new Metadata_Search_Field(id, facet, display, code, solr);
 
                         // Add this to the collections
                         metadataFields.Add(newField);

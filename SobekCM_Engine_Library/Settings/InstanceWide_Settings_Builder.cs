@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using EngineAgnosticLayerDbAccess;
 using SobekCM.Core.Configuration;
@@ -62,7 +62,7 @@ namespace SobekCM.Engine_Library.Settings
         /// <returns> A fully builder instance-wide setting object </returns>
         public static InstanceWide_Settings Build_Settings(string ConfigFileLocation)
         {
-            InstanceWide_Settings returnValue = new InstanceWide_Settings();
+            var returnValue = new InstanceWide_Settings();
 
             // Read the main configuration file, with database and error information
             // returnValue.Servers.Base_Directory = AppDomain.CurrentDomain.BaseDirectory;
@@ -86,7 +86,7 @@ namespace SobekCM.Engine_Library.Settings
         /// <returns> A fully builder instance-wide setting object </returns>
         public static InstanceWide_Settings Build_Settings(Database_Instance_Configuration DbInstance)
         {
-            InstanceWide_Settings returnValue = new InstanceWide_Settings();
+            var returnValue = new InstanceWide_Settings();
 
             // Don't read the configuration file now.. we already have the db data
             Engine_Database.Connection_String = DbInstance.Connection_String;
@@ -135,7 +135,7 @@ namespace SobekCM.Engine_Library.Settings
                 DataTable settingsTable = SobekCM_Settings.Tables[0];
 
                 // Create the dictionary for quick lookups for the next work
-                Dictionary<string, string> settingsDictionary = new Dictionary<string, string>();
+                var settingsDictionary = new Dictionary<string, string>();
                 foreach (DataRow thisRow in settingsTable.Rows)
                 {
                     settingsDictionary[thisRow["Setting_Key"].ToString()] = thisRow["Setting_Value"].ToString().Trim();
@@ -218,7 +218,7 @@ namespace SobekCM.Engine_Library.Settings
                 Get_Integer_Value(settingsDictionary, "Web Output Caching Minutes", SettingsObject.Servers, X => X.Web_Output_Caching_Minutes, ref error, 0);
 
                 // Load the subsetting object for MarcXML 
-                Marc21_Settings marcSettings = new Marc21_Settings();
+                var marcSettings = new Marc21_Settings();
                 Get_String_Value(settingsDictionary, "MarcXML Feed Location", marcSettings, X => X.MarcXML_Feed_Location, String.Empty);
                 Get_Boolean_Value(settingsDictionary, "Create MARC Feed By Default", marcSettings, X => X.Build_MARC_Feed_By_Default, ref error, false);
                 Get_String_Value(settingsDictionary, "MARC Cataloging Source Code", marcSettings, X => X.Cataloging_Source_Code, String.Empty);
@@ -460,7 +460,7 @@ namespace SobekCM.Engine_Library.Settings
                     continue;
 
                 // Create the new field object
-                Metadata_Search_Field newField = new Metadata_Search_Field(id, facet, display, code, solr, name, solr_facet, solr_display, legacy_solr);
+                var newField = new Metadata_Search_Field(id, facet, display, code, solr, name, solr_facet, solr_display, legacy_solr);
 
                 // Add this to the collections
                 SettingsObject.Metadata_Search_Fields.Add(newField);
@@ -482,7 +482,7 @@ namespace SobekCM.Engine_Library.Settings
                 string future = thisRow["DispositionFuture"].ToString();
                 string past = thisRow["DispositionPast"].ToString();
 
-                Disposition_Option newOption = new Disposition_Option(id, past, future);
+                var newOption = new Disposition_Option(id, past, future);
                 SettingsObject.Disposition_Options.Add(newOption);
             }
 
@@ -491,7 +491,7 @@ namespace SobekCM.Engine_Library.Settings
                 int id = Convert.ToInt32(thisRow["WorkFlowID"]);
                 string workflow = thisRow["WorkFlowName"].ToString();
 
-                Workflow_Type newWorkFlow = new Workflow_Type(id, workflow);
+                var newWorkFlow = new Workflow_Type(id, workflow);
                 SettingsObject.Workflow_Types.Add(newWorkFlow);
             }
         }
@@ -508,8 +508,8 @@ namespace SobekCM.Engine_Library.Settings
 
             SettingsObject.Database_Connection = null;
 
-            StreamReader reader = new StreamReader(ConfigFile);
-            XmlTextReader xmlReader = new XmlTextReader(reader);
+            var reader = new StreamReader(ConfigFile);
+            var xmlReader = new XmlTextReader(reader);
             while (xmlReader.Read())
             {
                 if (xmlReader.NodeType == XmlNodeType.Element)
@@ -518,7 +518,7 @@ namespace SobekCM.Engine_Library.Settings
                     switch (node_name)
                     {
                         case "connection_string":
-                            Database_Instance_Configuration newDb = new Database_Instance_Configuration();
+                            var newDb = new Database_Instance_Configuration();
                             if (xmlReader.MoveToAttribute("type"))
                             {
                                 if (xmlReader.Value.ToLower() == "postgresql")

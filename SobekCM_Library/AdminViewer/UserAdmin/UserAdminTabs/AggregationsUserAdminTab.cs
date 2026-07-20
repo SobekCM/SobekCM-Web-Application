@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.Users;
 using SobekCM.Library.UI;
@@ -18,7 +18,7 @@ namespace SobekCM.Library.AdminViewer.UserAdmin.UserAdminTabs
         {
             var getKeys = form.Keys;
 
-            Dictionary<string, User_Permissioned_Aggregation> aggregations = new Dictionary<string, User_Permissioned_Aggregation>();
+            var aggregations = new Dictionary<string, User_Permissioned_Aggregation>();
 
             // Step through each key
             foreach (string thisKey in getKeys)
@@ -68,7 +68,7 @@ namespace SobekCM.Library.AdminViewer.UserAdmin.UserAdminTabs
                     }
                     else
                     {
-                        User_Permissioned_Aggregation thisAggrLink = new User_Permissioned_Aggregation(edit_project, String.Empty, false, false, false, false, false) { CanEditMetadata = true };
+                        var thisAggrLink = new User_Permissioned_Aggregation(edit_project, String.Empty, false, false, false, false, false) { CanEditMetadata = true };
                         aggregations.Add(edit_project, thisAggrLink);
                     }
                 }
@@ -81,7 +81,7 @@ namespace SobekCM.Library.AdminViewer.UserAdmin.UserAdminTabs
                     }
                     else
                     {
-                        User_Permissioned_Aggregation thisAggrLink = new User_Permissioned_Aggregation(edit_project, String.Empty, false, false, false, false, false) { CanEditBehaviors = true };
+                        var thisAggrLink = new User_Permissioned_Aggregation(edit_project, String.Empty, false, false, false, false, false) { CanEditBehaviors = true };
                         aggregations.Add(edit_project, thisAggrLink);
                     }
                 }
@@ -94,7 +94,7 @@ namespace SobekCM.Library.AdminViewer.UserAdmin.UserAdminTabs
                     }
                     else
                     {
-                        User_Permissioned_Aggregation thisAggrLink = new User_Permissioned_Aggregation(edit_project, String.Empty, false, false, false, false, false) { CanPerformQc = true };
+                        var thisAggrLink = new User_Permissioned_Aggregation(edit_project, String.Empty, false, false, false, false, false) { CanPerformQc = true };
                         aggregations.Add(edit_project, thisAggrLink);
                     }
                 }
@@ -107,7 +107,7 @@ namespace SobekCM.Library.AdminViewer.UserAdmin.UserAdminTabs
                     }
                     else
                     {
-                        User_Permissioned_Aggregation thisAggrLink = new User_Permissioned_Aggregation(edit_project, String.Empty, false, false, false, false, false) { CanUploadFiles = true };
+                        var thisAggrLink = new User_Permissioned_Aggregation(edit_project, String.Empty, false, false, false, false, false) { CanUploadFiles = true };
                         aggregations.Add(edit_project, thisAggrLink);
                     }
                 }
@@ -120,7 +120,7 @@ namespace SobekCM.Library.AdminViewer.UserAdmin.UserAdminTabs
                     }
                     else
                     {
-                        User_Permissioned_Aggregation thisAggrLink = new User_Permissioned_Aggregation(edit_project, String.Empty, false, false, false, false, false) { CanChangeVisibility = true };
+                        var thisAggrLink = new User_Permissioned_Aggregation(edit_project, String.Empty, false, false, false, false, false) { CanChangeVisibility = true };
                         aggregations.Add(edit_project, thisAggrLink);
                     }
                 }
@@ -133,7 +133,7 @@ namespace SobekCM.Library.AdminViewer.UserAdmin.UserAdminTabs
                     }
                     else
                     {
-                        User_Permissioned_Aggregation thisAggrLink = new User_Permissioned_Aggregation(edit_project, String.Empty, false, false, false, false, false) { CanDelete = true };
+                        var thisAggrLink = new User_Permissioned_Aggregation(edit_project, String.Empty, false, false, false, false, false) { CanDelete = true };
                         aggregations.Add(edit_project, thisAggrLink);
                     }
                 }
@@ -222,7 +222,7 @@ namespace SobekCM.Library.AdminViewer.UserAdmin.UserAdminTabs
             // Get the list of collections lists in the RequestSpecificValues.Current_User object
             List<User_Permissioned_Aggregation> aggregations_in_editable_user = editUser.PermissionedAggregations;
 
-            Dictionary<string, List<User_Permissioned_Aggregation>> lookup_aggs = new Dictionary<string, List<User_Permissioned_Aggregation>>();
+            var lookup_aggs = new Dictionary<string, List<User_Permissioned_Aggregation>>();
             if (aggregations_in_editable_user != null)
                 foreach (User_Permissioned_Aggregation thisAggr in aggregations_in_editable_user)
                 {
@@ -232,7 +232,7 @@ namespace SobekCM.Library.AdminViewer.UserAdmin.UserAdminTabs
                     }
                     else
                     {
-                        List<User_Permissioned_Aggregation> thisAggrList = new List<User_Permissioned_Aggregation>();
+                        var thisAggrList = new List<User_Permissioned_Aggregation>();
                         thisAggrList.Add(thisAggr);
                         lookup_aggs[thisAggr.Code.ToLower()] = thisAggrList;
                     }

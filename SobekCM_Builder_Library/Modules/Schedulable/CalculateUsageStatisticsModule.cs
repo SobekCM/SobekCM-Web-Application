@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using System;
 using System.Collections.Generic;
@@ -101,7 +101,7 @@ namespace SobekCM.Builder_Library.Modules.Schedulable
             }
 
             // Determine which year/months already have been analyzed for this instance
-            Statistics_Dates statsDates = new Statistics_Dates();
+            var statsDates = new Statistics_Dates();
             if (Engine_ApplicationCache_Gateway.Stats_Date_Range != null)
             {
 
@@ -155,7 +155,7 @@ namespace SobekCM.Builder_Library.Modules.Schedulable
             
 
             // Determine what years/months are missing
-            List<string> year_month = new List<string>();
+            var year_month = new List<string>();
             if (statsDates.Earliest_Year == 2000)
             {
                 // No stats every collected, so collect them all
@@ -203,7 +203,7 @@ namespace SobekCM.Builder_Library.Modules.Schedulable
                 return;
 
             // Create the processor
-            SobekCM_Stats_Reader_Processor processor = new SobekCM_Stats_Reader_Processor(log_directory, temporary_workspace, sobekcm_directory, year_month);
+            var processor = new SobekCM_Stats_Reader_Processor(log_directory, temporary_workspace, sobekcm_directory, year_month);
             processor.New_Status += processor_New_Status;
 
             // Create the thread

@@ -215,7 +215,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         public override void Add_Secondary_Controls(TextWriter Output, Custom_Tracer Tracer)
         {
             // Build the search options
-            Search_Options_Info searchOptions = new Search_Options_Info();
+            var searchOptions = new Search_Options_Info();
             searchOptions.Page = 1;
             searchOptions.ResultsPerPage = 20;
             searchOptions.AggregationCode = hierarchyObject.Code;
@@ -230,7 +230,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             List<iSearch_Title_Result> results;
 
             // Build the user membership information
-            Search_User_Membership_Info userInfo = new Search_User_Membership_Info();
+            var userInfo = new Search_User_Membership_Info();
             var Current_User = RequestSpecificValues.Current_User;
             if ((Current_User == null) || (!Current_User.LoggedOn))
             {
@@ -268,11 +268,11 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 
             v5_Solr_Searcher.All_Browse(searchOptions, userInfo, Tracer, out stats, out results);
 
-            Multiple_Paged_Results_Args returnValue = new Multiple_Paged_Results_Args(stats, results);
+            var returnValue = new Multiple_Paged_Results_Args(stats, results);
 
             if (stats.Total_Items > 0)
             {
-                StringBuilder builder = new StringBuilder();
+                var builder = new StringBuilder();
                 builder.AppendLine("<div id=\"Thp_ResultsDesc\" style=\"background-color:#eee; border: #ccc 1px solid;width: 100%\">");
                 builder.AppendLine("<div id=\"Thp_ResultsTitle\" style=\"width:30%;display:inline-block; font-size: 1.15em; padding: 12px; padding-left:30px\" >Collection Items</div>");
                 if (stats.Total_Items > results.Count)
@@ -305,7 +305,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         {
             RequestSpecificValues.Tracer.Add_Trace("Aggregation_HtmlSubwriter.Highlight_To_Html", "Entered...");
 
-            StringBuilder highlightBldr = new StringBuilder(500);
+            var highlightBldr = new StringBuilder(500);
             highlightBldr.Append("<span id=\"SobekHighlight\">" + Environment.NewLine);
             highlightBldr.Append("  <table>" + Environment.NewLine);
             highlightBldr.Append("    <tr><td>" + Environment.NewLine);

@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using Jil;
 using SobekCM.Core.Aggregations;
@@ -43,7 +43,7 @@ namespace SobekCM.Engine_Library.Endpoints
         {
             if (UrlSegments.Count > 0)
             {
-                Custom_Tracer tracer = new Custom_Tracer();
+                var tracer = new Custom_Tracer();
 
                 try
                 {
@@ -107,7 +107,7 @@ namespace SobekCM.Engine_Library.Endpoints
         {
             if (UrlSegments.Count > 1)
             {
-                Custom_Tracer tracer = new Custom_Tracer();
+                var tracer = new Custom_Tracer();
 
                 try
                 {
@@ -176,7 +176,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="IsDebug"></param>
         public void GetAllAggregations(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
         {
-            Custom_Tracer tracer = new Custom_Tracer();
+            var tracer = new Custom_Tracer();
             tracer.Add_Trace("AggregationServices.GetAllAggregations", "Return the list of all aggregations (including inactive and hidden)");
 
             try
@@ -249,7 +249,7 @@ namespace SobekCM.Engine_Library.Endpoints
                 Item_Aggregation_Related_Aggregations aggrInfo = Engine_ApplicationCache_Gateway.Codes[aggregation];
                 if (aggrInfo != null)
                 {
-                    List<UploadedFileFolderInfo> serverFiles = new List<UploadedFileFolderInfo>();
+                    var serverFiles = new List<UploadedFileFolderInfo>();
 
                     string design_folder = Engine_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location + "aggregations\\" + aggregation + "\\uploads";
                     if (Directory.Exists(design_folder))
@@ -286,7 +286,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="IsDebug"></param>
         public void GetCollectionHierarchy(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
         {
-            Custom_Tracer tracer = new Custom_Tracer();
+            var tracer = new Custom_Tracer();
             tracer.Add_Trace("AggregationServices.GetCollectionHierarchy", "Return the hierarchical list of all active and unhidden aggregations");
 
             try
@@ -346,7 +346,7 @@ namespace SobekCM.Engine_Library.Endpoints
         {
             if (UrlSegments.Count > 2)
             {
-                Custom_Tracer tracer = new Custom_Tracer();
+                var tracer = new Custom_Tracer();
 
                 try
                 {
@@ -423,7 +423,7 @@ namespace SobekCM.Engine_Library.Endpoints
             if (UrlSegments.Count > 0)
                 aggCode = UrlSegments[0];
 
-            Custom_Tracer tracer = new Custom_Tracer();
+            var tracer = new Custom_Tracer();
 
             try
             {
@@ -498,7 +498,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="IsDebug"></param>
         public void GetPrivateItems(CompatHttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
         {
-            Custom_Tracer tracer = new Custom_Tracer();
+            var tracer = new Custom_Tracer();
 
             string aggCode = String.Empty;
             if (UrlSegments.Count > 0)
@@ -809,7 +809,7 @@ namespace SobekCM.Engine_Library.Endpoints
         public static RestResponseMessage add_new_aggregation(New_Aggregation_Arguments NewAggregation)
         {
             // Convert to the integer id for the parent and begin to do checking
-            List<string> errors = new List<string>();
+            var errors = new List<string>();
             int parentid = -1;
             if (NewAggregation.ParentCode.Length > 0)
             {
@@ -907,7 +907,7 @@ namespace SobekCM.Engine_Library.Endpoints
             {
 
                 // Create the error message
-                StringBuilder actionMessage = new StringBuilder("ERROR: Invalid entry for new item aggregation.<br />");
+                var actionMessage = new StringBuilder("ERROR: Invalid entry for new item aggregation.<br />");
                 foreach (string error in errors)
                     actionMessage.Append("<br />" + error);
 
@@ -951,7 +951,7 @@ namespace SobekCM.Engine_Library.Endpoints
                     }
 
                     // Create a default home text file
-                    StreamWriter writer = new StreamWriter(folder + "/html/home/text.html");
+                    var writer = new StreamWriter(folder + "/html/home/text.html");
                     writer.WriteLine(link_to_parent + "<h3>About " + NewAggregation.Name + "</h3>" + Environment.NewLine + "<p>" + NewAggregation.Description + "</p>" + Environment.NewLine + "<p>To edit this, log on as the aggregation admin and hover over this text to edit it.</p>" + Environment.NewLine);
 
                     writer.Flush();
@@ -993,11 +993,11 @@ namespace SobekCM.Engine_Library.Endpoints
                                 string[] banners = Directory.GetFiles(Engine_ApplicationCache_Gateway.Settings.Servers.Application_Server_Network + "\\default\\banner_images", "*.jpg");
                                 if (banners.Length > 0)
                                 {
-                                    Random randomizer = new Random();
+                                    var randomizer = new Random();
                                     string banner_to_use = banners[randomizer.Next(0, banners.Length - 1)];
                                     Bitmap bitmap = (Bitmap)(Image.FromFile(banner_to_use));
 
-                                    RectangleF rectf = new RectangleF(30, bitmap.Height - 55, bitmap.Width - 40, 40);
+                                    var rectf = new RectangleF(30, bitmap.Height - 55, bitmap.Width - 40, 40);
                                     Graphics g = Graphics.FromImage(bitmap);
                                     g.SmoothingMode = SmoothingMode.AntiAlias;
                                     g.InterpolationMode = InterpolationMode.HighQualityBicubic;
@@ -1031,7 +1031,7 @@ namespace SobekCM.Engine_Library.Endpoints
                     }
 
                     // Now, try to create the item aggregation and write the configuration file
-                    Custom_Tracer tracer = new Custom_Tracer();
+                    var tracer = new Custom_Tracer();
                     Complete_Item_Aggregation itemAggregation = SobekEngineClient.Aggregations.Get_Complete_Aggregation(NewAggregation.Code, true, tracer);
                     if (banner_file.Length > 0)
                     {

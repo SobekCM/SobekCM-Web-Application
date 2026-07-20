@@ -382,7 +382,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				Output.WriteLine(INDENT + "      <tr>");
 				Output.WriteLine(INDENT + "        <th>Row</th>");
 
-				List<DataColumn> eachColumn = new List<DataColumn>();
+				var eachColumn = new List<DataColumn>();
 				foreach (DataColumn thisColumn in thisTable.Columns)
 				{
 					Output.WriteLine(INDENT + "        <th>" + thisColumn.ColumnName.Replace("_", " ") + "</th>");

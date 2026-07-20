@@ -587,7 +587,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 
                     try
                     {
-                        StreamReader faqReader = new StreamReader(directory + "\\stats_usage_definitions.txt");
+                        var faqReader = new StreamReader(directory + "\\stats_usage_definitions.txt");
                         usageDefinitions = faqReader.ReadToEnd();
                         faqReader.Close();
                     }

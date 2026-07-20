@@ -67,8 +67,8 @@ namespace SobekCM.Library.Citation.Elements
             }
 
             // Start the lists to get the current values
-            List<string> type = new List<string>();
-            List<string> levels = new List<string>();
+            var type = new List<string>();
+            var levels = new List<string>();
 
             // Try to get any existing learning object metadata module
             LearningObjectMetadata lomInfo = Bib.Get_Metadata_Module(GlobalVar.IEEE_LOM_METADATA_MODULE_KEY) as LearningObjectMetadata;

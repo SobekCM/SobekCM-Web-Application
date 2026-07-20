@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using ProtoBuf;
 using System;
@@ -67,7 +67,7 @@ namespace SobekCM.Core.EAD
         /// <returns> Child container information, returned as a string for debug purposes </returns>
         public override string ToString()
         {
-            StringBuilder builder = new StringBuilder();
+            var builder = new StringBuilder();
             foreach (EAD_Transfer_Container_Info component in Containers)
             {
                 component.recursively_add_container_information(builder);

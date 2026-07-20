@@ -192,7 +192,7 @@ namespace SobekCM.Library.AdminViewer
                                     string new_skin_file = Path.Combine(skinDirectory, webSkin.Skin_Code + ".css");
                                     if (File.Exists(new_skin_file))
                                     {
-                                        StreamReader reader = new StreamReader(new_skin_file);
+                                        var reader = new StreamReader(new_skin_file);
                                         string current_contents = reader.ReadToEnd();
                                         reader.Close();
 
@@ -204,7 +204,7 @@ namespace SobekCM.Library.AdminViewer
                                             if (!File.Exists(css_backup_folder + "\\" + backup_name))
                                                 File.Copy(new_skin_file, css_backup_folder + "\\" + backup_name, false);
 
-                                            StreamWriter writer = new StreamWriter(new_skin_file, false);
+                                            var writer = new StreamWriter(new_skin_file, false);
                                             writer.Write(pairs.Value);
                                             writer.Flush();
                                             writer.Close();
@@ -212,7 +212,7 @@ namespace SobekCM.Library.AdminViewer
                                     }
                                     else
                                     {
-                                        StreamWriter writer = new StreamWriter(new_skin_file, false);
+                                        var writer = new StreamWriter(new_skin_file, false);
                                         writer.Write(pairs.Value.Replace("[%", "<%").Replace("%]", "%>"));
                                         writer.Flush();
                                         writer.Close();
@@ -223,7 +223,7 @@ namespace SobekCM.Library.AdminViewer
                                     string new_javascript_file = Path.Combine(skinDirectory, webSkin.Skin_Code + ".js");
                                     if (File.Exists(new_javascript_file))
                                     {
-                                        StreamReader reader = new StreamReader(new_javascript_file);
+                                        var reader = new StreamReader(new_javascript_file);
                                         string current_contents = reader.ReadToEnd();
                                         reader.Close();
 
@@ -235,7 +235,7 @@ namespace SobekCM.Library.AdminViewer
                                             if (!File.Exists(new_javascript_file + "\\" + backup_name))
                                                 File.Copy(new_javascript_file, javascript_backup_folder + "\\" + backup_name, false);
 
-                                            StreamWriter writer = new StreamWriter(new_javascript_file, false);
+                                            var writer = new StreamWriter(new_javascript_file, false);
                                             writer.Write(pairs.Value);
                                             writer.Flush();
                                             writer.Close();
@@ -250,7 +250,7 @@ namespace SobekCM.Library.AdminViewer
                                         }
                                         else
                                         {
-                                            StreamWriter writer = new StreamWriter(new_javascript_file, false);
+                                            var writer = new StreamWriter(new_javascript_file, false);
                                             writer.Write(pairs.Value.Replace("[%", "<%").Replace("%]", "%>"));
                                             writer.Flush();
                                             writer.Close();
@@ -280,7 +280,7 @@ namespace SobekCM.Library.AdminViewer
                                         string fullName = Path.Combine(skinDirectory, filename);
                                         if (File.Exists(fullName))
                                         {
-                                            StreamReader reader = new StreamReader(fullName);
+                                            var reader = new StreamReader(fullName);
                                             string current_contents = reader.ReadToEnd();
                                             reader.Close();
 
@@ -292,7 +292,7 @@ namespace SobekCM.Library.AdminViewer
                                                 if (!File.Exists(backup_folder + "\\" + backup_name))
                                                     File.Copy(fullName, backup_folder + "\\" + backup_name, false);
 
-                                                StreamWriter writer = new StreamWriter(fullName, false);
+                                                var writer = new StreamWriter(fullName, false);
                                                 writer.Write(pairs.Value.Replace("[%", "<%").Replace("%]", "%>"));
                                                 writer.Flush();
                                                 writer.Close();
@@ -300,7 +300,7 @@ namespace SobekCM.Library.AdminViewer
                                         }
                                         else
                                         {
-                                            StreamWriter writer = new StreamWriter(fullName, false);
+                                            var writer = new StreamWriter(fullName, false);
                                             writer.Write(pairs.Value.Replace("[%", "<%").Replace("%]", "%>"));
                                             writer.Flush();
                                             writer.Close();
@@ -355,7 +355,7 @@ namespace SobekCM.Library.AdminViewer
                             {
                                 string language_code = "_" + new_language;
 
-                                Complete_Web_Skin_Source_Files sources = new Complete_Web_Skin_Source_Files();
+                                var sources = new Complete_Web_Skin_Source_Files();
                                 sources.Header_Source_File = "html\\header" + language_code + ".html";
                                 sources.Footer_Source_File = "html\\footer" + language_code + ".html";
                                 sources.Header_Item_Source_File = "html\\header_item" + language_code + ".html";
@@ -842,7 +842,7 @@ namespace SobekCM.Library.AdminViewer
                 string file = skinDirectory + "\\" + webSkin.CSS_Style;
                 if (File.Exists(file))
                 {
-                    StreamReader reader = new StreamReader(file);
+                    var reader = new StreamReader(file);
                     css_contents = reader.ReadToEnd();
                     reader.Close();
                 }
@@ -863,7 +863,7 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("    <td>");
 
             // Add the ACE editor
-            AceEditor editor = new AceEditor(AceEditor_Mode.CSS)
+            var editor = new AceEditor(AceEditor_Mode.CSS)
             {
                 ContentsId = "css_source_content",
                 EditorId = "sbkSsav_CssEditor",
@@ -913,8 +913,7 @@ namespace SobekCM.Library.AdminViewer
                     if (current_language == Web_Language_Enum.DEFAULT)
                         language_code = String.Empty;
 
-                    Complete_Web_Skin_Source_Files sources = new Complete_Web_Skin_Source_Files
-                    {
+                    var sources = new Complete_Web_Skin_Source_Files{
                         Header_Source_File = "html\\header" + language_code + ".html",
                         Footer_Source_File = "html\\footer" + language_code + ".html",
                         Header_Item_Source_File = "html\\header_item" + language_code + ".html",
@@ -957,7 +956,7 @@ namespace SobekCM.Library.AdminViewer
             //Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\"><td colspan=\"3\"></tr>");
 
             // Find all the existing languages
-            List<string> existing_languages = new List<string>();
+            var existing_languages = new List<string>();
             bool found_language = false;
             if ((webSkin.SourceFiles != null) && (webSkin.SourceFiles.Count > 0))
             {
@@ -1142,8 +1141,7 @@ namespace SobekCM.Library.AdminViewer
                 string skin_upload_url = UI_ApplicationCache_Gateway.Settings.Servers.System_Base_URL + "design/skins/" + webSkin.Skin_Code + "/uploads/";
 
                 // Create the CKEditor objects
-                CKEditor editor1 = new CKEditor
-                {
+                var editor1 = new CKEditor{
                     Context = Context,
                     BaseUrl = RequestSpecificValues.Current_Mode.Base_URL,
                     Language = RequestSpecificValues.Current_Mode.Language,
@@ -1153,8 +1151,7 @@ namespace SobekCM.Library.AdminViewer
                     UploadURL = skin_upload_url,
                     Start_In_Source_Mode = true
                 };
-                CKEditor editor2 = new CKEditor
-                {
+                var editor2 = new CKEditor{
                     Context = Context,
                     BaseUrl = RequestSpecificValues.Current_Mode.Base_URL,
                     Language = RequestSpecificValues.Current_Mode.Language,
@@ -1164,8 +1161,7 @@ namespace SobekCM.Library.AdminViewer
                     UploadURL = skin_upload_url,
                     Start_In_Source_Mode = true
                 };
-                CKEditor editor3 = new CKEditor
-                {
+                var editor3 = new CKEditor{
                     Context = Context,
                     BaseUrl = RequestSpecificValues.Current_Mode.Base_URL,
                     Language = RequestSpecificValues.Current_Mode.Language,
@@ -1175,8 +1171,7 @@ namespace SobekCM.Library.AdminViewer
                     UploadURL = skin_upload_url,
                     Start_In_Source_Mode = true
                 };
-                CKEditor editor4 = new CKEditor
-                {
+                var editor4 = new CKEditor{
                     Context = Context,
                     BaseUrl = RequestSpecificValues.Current_Mode.Base_URL,
                     Language = RequestSpecificValues.Current_Mode.Language,
@@ -1223,7 +1218,7 @@ namespace SobekCM.Library.AdminViewer
             if (!File.Exists(file_in_dir))
                 return String.Empty;
 
-            StreamReader reader = new StreamReader(file_in_dir);
+            var reader = new StreamReader(file_in_dir);
             string contents = reader.ReadToEnd();
             reader.Close();
 
@@ -1601,7 +1596,7 @@ namespace SobekCM.Library.AdminViewer
                 string file = skinDirectory + "\\" + webSkin.Javascript_File;
                 if (File.Exists(file))
                 {
-                    StreamReader reader = new StreamReader(file);
+                    var reader = new StreamReader(file);
                     javascript_contents = reader.ReadToEnd();
                     reader.Close();
                 }
@@ -1618,7 +1613,7 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("    <td>");
 
             // Add the ACE editor
-            AceEditor editor = new AceEditor(AceEditor_Mode.Javascript)
+            var editor = new AceEditor(AceEditor_Mode.Javascript)
             {
                 ContentsId = "javascript_source_content",
                 EditorId = "sbkSsav_JsEditor",

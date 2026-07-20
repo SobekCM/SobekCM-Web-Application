@@ -41,7 +41,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             DataTable coordinates = Engine_Database.Get_All_Coordinate_Points_By_Aggregation(ViewBag.Hierarchy_Object.Code, RequestSpecificValues.Tracer);
 
             // Add the google script information
-            StringBuilder scriptBuilder = new StringBuilder(10000);
+            var scriptBuilder = new StringBuilder(10000);
 
             // Only continue if there actually IS a map key
             if (!String.IsNullOrWhiteSpace(UI_ApplicationCache_Gateway.Settings.System.Google_Map_API_Key))
@@ -104,7 +104,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                     scriptBuilder.AppendLine("    // Add all the points");
                     string last_latitude = coordinates.Rows[0]["Point_Latitude"].ToString();
                     string last_longitude = coordinates.Rows[0]["Point_Longitude"].ToString();
-                    List<DataRow> bibids_in_this_point = new List<DataRow>();
+                    var bibids_in_this_point = new List<DataRow>();
                     foreach (DataRow thisRow in coordinates.Rows)
                     {
                         string latitude = thisRow["Point_Latitude"].ToString();
@@ -213,7 +213,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         private void add_single_point(string Latitude, string Longitude, Navigation_Object Current_Mode, List<DataRow> DatarowsInThisPoint, StringBuilder ScriptBuilder)
         {
             // Build the info window
-            StringBuilder contentBuilder = new StringBuilder(2000);
+            var contentBuilder = new StringBuilder(2000);
             contentBuilder.Append(DatarowsInThisPoint.Count <= 2 ? "<div class=\"sbkMbav_InfoDivSmall\">" : "<div class=\"sbkMbav_InfoDiv\">");
             contentBuilder.Append("<table><tr style=\"vertical-align:top;\">");
             string thisBibId = String.Empty;

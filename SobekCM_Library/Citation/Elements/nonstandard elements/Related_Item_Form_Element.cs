@@ -277,7 +277,7 @@ namespace SobekCM.Library.Citation.Elements
                     if ((title.Length > 0) || (url.Length > 0) || (sobekid.Length > 0) || (issn.Length > 0) ||
                         (oclc.Length > 0) || (lccn.Length > 0))
                     {
-                        Related_Item_Info newItem = new Related_Item_Info();
+                        var newItem = new Related_Item_Info();
 
                         switch (relation)
                         {

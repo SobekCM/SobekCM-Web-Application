@@ -1,4 +1,4 @@
-﻿using SobekCM.Resource_Object.Bib_Info;
+using SobekCM.Resource_Object.Bib_Info;
 using SobekCM.Resource_Object.Metadata_Modules.VRACore;
 using System;
 using System.Collections.Generic;
@@ -332,7 +332,7 @@ namespace SobekCM.Resource_Object.Mapping
                     return true;
 
                 case "relatedbminewsletter":
-                    Related_Item_Info relatedNewsletter = new Related_Item_Info();
+                    var relatedNewsletter = new Related_Item_Info();
                     relatedNewsletter.Main_Title.Title = Data;
                     relatedNewsletter.Relationship = Related_Item_Type_Enum.UNKNOWN;
                     relatedNewsletter.Add_Note("Related BMI Newsletter");
@@ -340,7 +340,7 @@ namespace SobekCM.Resource_Object.Mapping
                     return true;
 
                 case "relatedbmiphoto":
-                    Related_Item_Info relatedPhoto = new Related_Item_Info();
+                    var relatedPhoto = new Related_Item_Info();
                     relatedPhoto.Main_Title.Title = Data;
                     relatedPhoto.Relationship = Related_Item_Type_Enum.UNKNOWN;
                     relatedPhoto.Add_Note("Related BMI Photograph");
@@ -496,7 +496,7 @@ namespace SobekCM.Resource_Object.Mapping
                 Package.Bib_Info.Add_Subject(new Subject_Info_Standard(Data, null));
             else
             {
-                Subject_Info_Standard subject = new Subject_Info_Standard();
+                var subject = new Subject_Info_Standard();
                 string[] splitter = Data.Split("-".ToCharArray());
                 foreach (string thisSplit in splitter)
                 {

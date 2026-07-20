@@ -104,7 +104,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             fileFromViewerAttribute = thisViewer.Attributes;
 
             // Add the item menu information
-            Item_MenuItem menuItem = new Item_MenuItem(first_label, null, null, url, ViewerCode);
+            var menuItem = new Item_MenuItem(first_label, null, null, url, ViewerCode);
             MenuItems.Add(menuItem);
         }
 

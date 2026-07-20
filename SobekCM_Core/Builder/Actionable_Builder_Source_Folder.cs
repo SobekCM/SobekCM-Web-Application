@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using SobekCM.Builder_Library.Modules.Folders;
 using SobekCM.Core.Builder;
@@ -101,7 +101,7 @@ namespace SobekCM.Builder_Library
         /// <returns></returns>
         private static IEnumerable<string> Get_Terminal_SubDirectories(string InitialDir)
         {
-            List<string> returnVal = new List<string>();
+            var returnVal = new List<string>();
             foreach (string thisDir in Directory.GetDirectories(InitialDir))
             {
                 Collect_Terminal_Dirs(returnVal, thisDir);

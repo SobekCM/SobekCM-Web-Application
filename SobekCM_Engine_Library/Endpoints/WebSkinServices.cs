@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using Jil;
 using SobekCM.Core.Configuration.Engine;
@@ -32,7 +32,7 @@ namespace SobekCM.Engine_Library.Endpoints
         {
             if (UrlSegments.Count > 0)
             {
-                Custom_Tracer tracer = new Custom_Tracer();
+                var tracer = new Custom_Tracer();
 
                 try
                 {
@@ -94,7 +94,7 @@ namespace SobekCM.Engine_Library.Endpoints
         {
             if (UrlSegments.Count > 1)
             {
-                Custom_Tracer tracer = new Custom_Tracer();
+                var tracer = new Custom_Tracer();
                 Web_Skin_Object returnValue;
                 try
                 {
@@ -189,7 +189,7 @@ namespace SobekCM.Engine_Library.Endpoints
                 Complete_Web_Skin_Object skinObject = get_complete_web_skin(webSkin, null);
                 if (skinObject != null)
                 {
-                    List<UploadedFileFolderInfo> serverFiles = new List<UploadedFileFolderInfo>();
+                    var serverFiles = new List<UploadedFileFolderInfo>();
 
                     string design_folder = Engine_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location + "skins\\" + webSkin + "\\uploads";
                     if (Directory.Exists(design_folder))

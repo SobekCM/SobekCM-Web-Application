@@ -452,7 +452,7 @@ namespace SobekCM.Library.AdminViewer
                 Output.WriteLine("    <tr style=\"text-align:center; vertical-align:bottom;\" >");
 
                 int current_column = 0;
-                SortedList<string, Wordmark_Icon> sortedIcons = new SortedList<string, Wordmark_Icon>();
+                var sortedIcons = new SortedList<string, Wordmark_Icon>();
                 foreach (Wordmark_Icon thisIcon in wordmarks.Values)
                 {
                     sortedIcons.Add(thisIcon.Code, thisIcon);

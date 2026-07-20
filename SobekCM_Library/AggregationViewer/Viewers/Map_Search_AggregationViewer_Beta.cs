@@ -36,7 +36,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             #region MY STUFF
 
             // Start to build the response
-            StringBuilder mapSearchBuilder = new StringBuilder();
+            var mapSearchBuilder = new StringBuilder();
 
             //start of custom content
             mapSearchBuilder.AppendLine("<td> MapSearchHolder");

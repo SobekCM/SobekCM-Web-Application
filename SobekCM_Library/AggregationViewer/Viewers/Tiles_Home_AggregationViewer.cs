@@ -43,7 +43,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             string aggregation_tile_uri = RequestSpecificValues.Current_Mode.Base_URL + "design/aggregations/" + ViewBag.Hierarchy_Object.Code + "/images/tiles/";
 
             // Get the list of all potential tiles, by checking name
-            List<Tiles_Home_Single_Tile> allTiles = new List<Tiles_Home_Single_Tile>();
+            var allTiles = new List<Tiles_Home_Single_Tile>();
             string bibid = null;
             string vid = null;
             foreach (string thisJpegTile in jpeg_tiles)
@@ -100,8 +100,8 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 if (!File.Exists(metadata_file))
                 {
                     // Step through each image, collecting the bibs and vids
-                    List<string> bibs = new List<string>();
-                    List<string> vids = new List<string>();
+                    var bibs = new List<string>();
+                    var vids = new List<string>();
                     foreach (Tiles_Home_Single_Tile thisTile in allTiles)
                     {
                         bibs.Add(thisTile.BibID);
@@ -124,7 +124,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                     aggrCode = "";
 
                     // Start the results object
-                    Database_Results_Info allResults = new Database_Results_Info();
+                    var allResults = new Database_Results_Info();
 
                     // Now, get the results
                     int offset = 0;
@@ -149,9 +149,9 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 
 
                     // Save these results
-                    StreamWriter writer = new StreamWriter(metadata_file, false);
+                    var writer = new StreamWriter(metadata_file, false);
 
-                    XmlSerializer x = new XmlSerializer(allResults.GetType());
+                    var x = new XmlSerializer(allResults.GetType());
                     x.Serialize(writer, allResults);
 
                     writer.Close();
@@ -163,10 +163,10 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 {
                     try
                     {
-                        FileStream fs = new FileStream(metadata_file, FileMode.Open);
+                        var fs = new FileStream(metadata_file, FileMode.Open);
                         XmlReader reader = XmlReader.Create(fs);
 
-                        XmlSerializer x = new XmlSerializer(typeof(Database_Results_Info));
+                        var x = new XmlSerializer(typeof(Database_Results_Info));
 
                         // Use the Deserialize method to restore the object's state.
                         tileMetadata = (Database_Results_Info)x.Deserialize(reader);
@@ -187,7 +187,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 selectedTiles.AddRange(allTiles);
             else
             {
-                Random randomGen = new Random();
+                var randomGen = new Random();
                 while (selectedTiles.Count < 15)
                 {
                     int random_index = randomGen.Next(0, allTiles.Count);

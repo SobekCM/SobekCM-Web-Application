@@ -62,7 +62,7 @@ namespace SobekCM.Library.Citation.Elements
                 }
             }
 
-            List<string> instanceValues = new List<string>();
+            var instanceValues = new List<string>();
             if (Bib.Bib_Info.Publishers_Count > 0)
             {
                 instanceValues.AddRange(Bib.Bib_Info.Publishers.Select(thisName => thisName.Name));

@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using SobekCM.Resource_Object.MARC;
 using System;
@@ -94,8 +94,7 @@ namespace SobekCM.Resource_Object.Bib_Info
             if (String.IsNullOrEmpty(classification))
                 return null;
 
-            MARC_Field returnValue = new MARC_Field
-            {
+            var returnValue = new MARC_Field{
                 Indicators = "  ",
                 Tag = 84
             };

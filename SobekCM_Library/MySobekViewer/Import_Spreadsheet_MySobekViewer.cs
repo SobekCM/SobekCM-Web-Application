@@ -286,11 +286,11 @@ namespace SobekCM.Library.MySobekViewer
 
         private List<string> excel_get_worksheet_names(string file_name)
         {
-            List<string> returnValue = new List<string>();
+            var returnValue = new List<string>();
 
             try
             {
-                XLWorkbook workbook = new XLWorkbook(file_name);
+                var workbook = new XLWorkbook(file_name);
                 int worksheets_count = workbook.Worksheets.Count;
                 foreach (IXLWorksheet worksheet in workbook.Worksheets)
                 {

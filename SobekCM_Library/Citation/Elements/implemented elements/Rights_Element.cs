@@ -193,7 +193,7 @@ namespace SobekCM.Library.Citation.Elements
 
             if (Bib.Bib_Info.LicensingCount > 0)
             {
-                List<string> removes = new List<string>();
+                var removes = new List<string>();
                 foreach (string license in Bib.Bib_Info.Licensing)
                 {
                     if ((!String.IsNullOrEmpty(license)) && (license.IndexOf("cc") == 0))

@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using SobekCM.Core;
 using SobekCM.Engine_Library.Email;
@@ -40,7 +40,7 @@ namespace SobekCM.Library.Email
         {
             try
             {
-                StringBuilder messageBuilder = new StringBuilder();
+                var messageBuilder = new StringBuilder();
 
                 messageBuilder.Append("<span style=\"font-family:Arial, Helvetica, sans-serif;\">");
                 if ((Comments.Length > 0) && (Comments != URL_Title))
@@ -59,8 +59,7 @@ namespace SobekCM.Library.Email
                 string[] email_recepients = Recepient_List.Split(";,".ToCharArray());
                 foreach (string thisEmailRecepient in email_recepients)
                 {
-                    EmailInfo newEmail = new EmailInfo
-                    {
+                    var newEmail = new EmailInfo{
                         Body = messageBuilder.ToString(),
                         isContactUs = false,
                         isHTML = true,
@@ -93,7 +92,7 @@ namespace SobekCM.Library.Email
         {
             try
             {
-                StringBuilder messageBuilder = new StringBuilder();
+                var messageBuilder = new StringBuilder();
 
                 if ((Comments.Length > 0) && (Comments != URL_Title))
                 {
@@ -111,8 +110,7 @@ namespace SobekCM.Library.Email
                 string[] email_recepients = Recepient_List.Split(";,".ToCharArray());
                 foreach (string thisEmailRecepient in email_recepients)
                 {
-                    EmailInfo newEmail = new EmailInfo
-                    {
+                    var newEmail = new EmailInfo{
                         Body = messageBuilder.ToString(),
                         isContactUs = false,
                         isHTML = false,

@@ -151,12 +151,12 @@ namespace SobekCM.Tools
             try
             {
                 // Open the necessary file streams
-                FileStream projectDataFile = new FileStream(Filename, FileMode.Open, FileAccess.Read);
+                var projectDataFile = new FileStream(Filename, FileMode.Open, FileAccess.Read);
                 DES desProvider = DES.Create();
                 desProvider.Key = Encoding.ASCII.GetBytes(Key);
                 desProvider.IV = Encoding.ASCII.GetBytes(Iv);
-                CryptoStream cryptoStreamDecrypt = new CryptoStream(projectDataFile, desProvider.CreateDecryptor(), CryptoStreamMode.Read);
-                StreamReader streamInput = new StreamReader(cryptoStreamDecrypt);
+                var cryptoStreamDecrypt = new CryptoStream(projectDataFile, desProvider.CreateDecryptor(), CryptoStreamMode.Read);
+                var streamInput = new StreamReader(cryptoStreamDecrypt);
 
                 // Jump to position provided and read the data requested
                 projectDataFile.Position = Position;
@@ -185,11 +185,11 @@ namespace SobekCM.Tools
             try
             {
                 // Open file streams necessary
-                FileStream projectDataFile = new FileStream(Filename, FileMode.OpenOrCreate, FileAccess.Write);
+                var projectDataFile = new FileStream(Filename, FileMode.OpenOrCreate, FileAccess.Write);
                 DES desProvider = DES.Create();
                 desProvider.Key = Encoding.ASCII.GetBytes(Key);
                 desProvider.IV = Encoding.ASCII.GetBytes(Iv);
-                CryptoStream cryptoStreamEncrypt = new CryptoStream(projectDataFile, desProvider.CreateEncryptor(), CryptoStreamMode.Write);
+                var cryptoStreamEncrypt = new CryptoStream(projectDataFile, desProvider.CreateEncryptor(), CryptoStreamMode.Write);
 
                 // Get to the correct position in the file to write
                 projectDataFile.Position = Position;
@@ -237,7 +237,7 @@ namespace SobekCM.Tools
         {
             byte[] bytIn = Encoding.ASCII.GetBytes(Source);
             // create a MemoryStream so that the process can be done without I/O files
-            MemoryStream ms = new MemoryStream();
+            var ms = new MemoryStream();
 
             // set the private key
             DES desProvider = DES.Create();
@@ -249,7 +249,7 @@ namespace SobekCM.Tools
             ICryptoTransform encrypto = desProvider.CreateEncryptor();
 
             // create Crypto Stream that transforms a stream using the encryption
-            CryptoStream cs = new CryptoStream(ms, encrypto, CryptoStreamMode.Write);
+            var cs = new CryptoStream(ms, encrypto, CryptoStreamMode.Write);
 
             // write out encrypted content into MemoryStream
             cs.Write(bytIn, 0, bytIn.Length);
@@ -272,7 +272,7 @@ namespace SobekCM.Tools
         {
             byte[] bytIn = Encoding.ASCII.GetBytes(Source);
             // create a MemoryStream so that the process can be done without I/O files
-            MemoryStream ms = new MemoryStream();
+            var ms = new MemoryStream();
 
             // set the private key
             DES desProvider = DES.Create();
@@ -283,7 +283,7 @@ namespace SobekCM.Tools
             ICryptoTransform encrypto = desProvider.CreateEncryptor();
 
             // create Crypto Stream that transforms a stream using the encryption
-            CryptoStream cs = new CryptoStream(ms, encrypto, CryptoStreamMode.Write);
+            var cs = new CryptoStream(ms, encrypto, CryptoStreamMode.Write);
 
             // write out encrypted content into MemoryStream
             cs.Write(bytIn, 0, bytIn.Length);
@@ -307,7 +307,7 @@ namespace SobekCM.Tools
             // convert from Base64 to binary
             byte[] bytIn = Convert.FromBase64String(Source);
             // create a MemoryStream with the input
-            MemoryStream ms = new MemoryStream(bytIn, 0, bytIn.Length);
+            var ms = new MemoryStream(bytIn, 0, bytIn.Length);
 
             // set the private key
             DES desProvider = DES.Create();
@@ -318,10 +318,10 @@ namespace SobekCM.Tools
             ICryptoTransform encrypto = desProvider.CreateDecryptor();
 
             // create Crypto Stream that transforms a stream using the decryption
-            CryptoStream cs = new CryptoStream(ms, encrypto, CryptoStreamMode.Read);
+            var cs = new CryptoStream(ms, encrypto, CryptoStreamMode.Read);
 
             // read out the result from the Crypto Stream
-            StreamReader sr = new StreamReader(cs);
+            var sr = new StreamReader(cs);
             return sr.ReadToEnd();
         }
     }

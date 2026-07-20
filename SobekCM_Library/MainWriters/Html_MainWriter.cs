@@ -43,7 +43,7 @@ namespace SobekCM.Library.MainWriters
                 {
                     try
                     {
-                        StreamReader reader = new StreamReader(css_file);
+                        var reader = new StreamReader(css_file);
                         SobekCM_Application.State["NonIE_Hack_CSS"] = reader.ReadToEnd().Trim();
                         reader.Close();
                     }
@@ -142,7 +142,7 @@ namespace SobekCM.Library.MainWriters
 
                     case Display_Mode_Enum.Contact:
                         RequestSpecificValues.Tracer.Add_Trace("Html_MainWriter.Consructor", "Contact html sub writer.");
-                        StringBuilder builder = new StringBuilder();
+                        var builder = new StringBuilder();
                         builder.Append("\n\nSUBMISSION INFORMATION\n");
                         builder.Append("\tDate:\t\t\t\t" + DateTime.Now.ToString() + "\n");
                         string lastMode = String.Empty;
@@ -270,7 +270,7 @@ namespace SobekCM.Library.MainWriters
                 }
 
                 // Now, pull the web skin
-                SobekCM_Assistant assistant = new SobekCM_Assistant();
+                var assistant = new SobekCM_Assistant();
 
                 // Try to get the web skin from the cache or skin collection, otherwise build it
                 Web_Skin_Object htmlSkin = assistant.Get_HTML_Skin(RequestSpecificValues.Current_Mode.Skin, RequestSpecificValues.Current_Mode, UI_ApplicationCache_Gateway.Web_Skin_Collection, true, RequestSpecificValues.Tracer);
@@ -311,7 +311,7 @@ namespace SobekCM.Library.MainWriters
                     RequestSpecificValues.Tracer.Add_Trace("Html_MainWriter.Constructor", ee.StackTrace, Custom_Trace_Type_Enum.Error);
 
                     // Wrap this into the SobekCM Exception
-                    SobekCM_Traced_Exception newException = new SobekCM_Traced_Exception("Exception caught while building the mode-specific HTML Subwriter", ee, RequestSpecificValues.Tracer);
+                    var newException = new SobekCM_Traced_Exception("Exception caught while building the mode-specific HTML Subwriter", ee, RequestSpecificValues.Tracer);
 
                     // Save this to the session state, and then forward to the dashboard
                     Context.SessionObject()[SessionCache_Keys.LastException] = newException;
@@ -825,7 +825,7 @@ namespace SobekCM.Library.MainWriters
                 return String.Empty;
 
             // Create the string for the body attributes
-            Dictionary<string, string> collapsedAttributes = new Dictionary<string, string>();
+            var collapsedAttributes = new Dictionary<string, string>();
             foreach (Tuple<string, string> thisAttr in bodyAttributes)
             {
                 if (collapsedAttributes.ContainsKey(thisAttr.Item1))
@@ -835,7 +835,7 @@ namespace SobekCM.Library.MainWriters
             }
 
             // Now, build and return the string
-            StringBuilder builder = new StringBuilder(" ");
+            var builder = new StringBuilder(" ");
             foreach (string thisKey in collapsedAttributes.Keys)
             {
                 builder.Append(thisKey + "=\"" + collapsedAttributes[thisKey] + "\" ");
@@ -1096,7 +1096,7 @@ namespace SobekCM.Library.MainWriters
 
             try
             {
-                StreamWriter writer = new StreamWriter(AppDomain.CurrentDomain.BaseDirectory + "\\temp\\exceptions.txt", true);
+                var writer = new StreamWriter(AppDomain.CurrentDomain.BaseDirectory + "\\temp\\exceptions.txt", true);
                 writer.WriteLine();
                 writer.WriteLine("Error Caught in Application_Error event ( " + DateTime.Now.ToString() + ")");
                 writer.WriteLine("User Host Address: " + (context?.Connection.RemoteIpAddress?.ToString() ?? ""));

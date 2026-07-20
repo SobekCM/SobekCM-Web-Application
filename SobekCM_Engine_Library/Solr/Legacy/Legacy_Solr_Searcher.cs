@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using SobekCM.Core.Results;
 using SobekCM.Core.Search;
@@ -41,7 +41,7 @@ namespace SobekCM.Engine_Library.Solr.Legacy
             }
 
             // Step through all the terms and fields
-            StringBuilder queryStringBuilder = new StringBuilder();
+            var queryStringBuilder = new StringBuilder();
             for (int i = 0; i < Math.Min(Terms.Count, Web_Fields.Count); i++)
             {
                 string web_field = Web_Fields[i];
@@ -166,8 +166,7 @@ namespace SobekCM.Engine_Library.Solr.Legacy
                 var solrWorker = Solr_Operations_Cache<Legacy_Solr_Document_Result>.GetSolrOperations(Engine_ApplicationCache_Gateway.Settings.Servers.Document_Solr_Legacy_URL);
 
                 // Create the query options
-                QueryOptions options = new QueryOptions
-                {
+                var options = new QueryOptions{
                     Rows = ResultsPerPage,
                     Start = (Page_Number - 1) * ResultsPerPage,
                     Fields = new[] { "did", "score", "url", "aleph", "donor", "edition", "format", "holdinglocation", "sourceinstitution", "maintitle", "materialtype", "oclc", "pubdate_display", "author_display", "publisher_display", "mainthumbnail" },
@@ -214,7 +213,7 @@ namespace SobekCM.Engine_Library.Solr.Legacy
                 SolrQueryResults<Legacy_Solr_Document_Result> results = solrWorker.Query(queryString, options);
 
                 // Create the search statistcs
-                List<string> metadataLabels = new List<string> { "Author", "Publisher", "Format", "Edition", "Institution", "Donor" };
+                var metadataLabels = new List<string>{ "Author", "Publisher", "Format", "Edition", "Institution", "Donor" };
 
                 Complete_Result_Set_Info = new Search_Results_Statistics(metadataLabels)
                 {
@@ -396,8 +395,7 @@ namespace SobekCM.Engine_Library.Solr.Legacy
             var solrWorker = Solr_Operations_Cache<Legacy_Solr_Page_Result>.GetSolrOperations(Engine_ApplicationCache_Gateway.Settings.Servers.Page_Solr_Legacy_URL);
 
             // Create the query options
-            QueryOptions options = new QueryOptions
-            {
+            var options = new QueryOptions{
                 Rows = ResultsPerPage,
                 Start = (ResultsPage - 1) * ResultsPerPage,
                 Fields = new[] { "pageid", "pagename", "pageorder", "score", "thumbnail" },
@@ -410,7 +408,7 @@ namespace SobekCM.Engine_Library.Solr.Legacy
                 options.OrderBy = new[] { new SortOrder("pageorder", Order.ASC) };
 
             // Build the query string
-            StringBuilder queryStringBuilder = new StringBuilder("(bibid:" + BibID + ")AND(vid:" + VID + ")AND(");
+            var queryStringBuilder = new StringBuilder("(bibid:" + BibID + ")AND(vid:" + VID + ")AND(");
             bool first_value = true;
             foreach (string searchTerm in Search_Terms)
             {

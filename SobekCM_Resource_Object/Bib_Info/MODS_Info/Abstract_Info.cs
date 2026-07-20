@@ -96,8 +96,7 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// <returns> Built MARC tag </returns>
         internal MARC_Field to_MARC_HTML()
         {
-            MARC_Field returnValue = new MARC_Field
-            {
+            var returnValue = new MARC_Field{
                 Tag = 520,
                 Indicators = "3 ",
                 Control_Field_Value = "|a " + abstract_text.Replace("|", "&bar;")

@@ -1,4 +1,4 @@
-﻿using SobekCM.Core.Aggregations;
+using SobekCM.Core.Aggregations;
 using SobekCM.Core.ApplicationState;
 using SobekCM.Core.Results;
 using SobekCM.Engine_Library.ApplicationState;
@@ -12,7 +12,7 @@ namespace SobekCM.Engine_Library.Solr.v5
         public v5_Solr_Title_Result Map_To_Result(v5_SolrDocument solrDocument, List<Complete_Item_Aggregation_Metadata_Type> DisplayFields)
         {
             // Create the results
-            v5_Solr_Title_Result resultConverted = new v5_Solr_Title_Result();
+            var resultConverted = new v5_Solr_Title_Result();
             resultConverted.MaterialType = solrDocument.Type;
 
             // Get the bibid
@@ -28,7 +28,7 @@ namespace SobekCM.Engine_Library.Solr.v5
             resultConverted.Snippet = String.Empty;
 
             // Add the item
-            v5_Solr_Item_Result itemResult = new v5_Solr_Item_Result();
+            var itemResult = new v5_Solr_Item_Result();
             itemResult.VID = solrDocument.DID.Substring(11, 5);
             itemResult.Title = solrDocument.Title ?? "NO TITLE";
             itemResult.MainThumbnail = solrDocument.MainThumbnail;
@@ -46,7 +46,7 @@ namespace SobekCM.Engine_Library.Solr.v5
             }
 
             // Build the display results values
-            List<string> display_result_fields = new List<string>();
+            var display_result_fields = new List<string>();
             foreach (Complete_Item_Aggregation_Metadata_Type metadataField in DisplayFields)
             {
                 display_result_fields.Add(data_from_display_field(solrDocument, metadataField.SolrCode) ?? String.Empty);
@@ -60,7 +60,7 @@ namespace SobekCM.Engine_Library.Solr.v5
         public v5_Solr_Title_Result Map_To_Result(SolrNet.Group<v5_SolrDocument> Grouping, List<Complete_Item_Aggregation_Metadata_Type> DisplayFields)
         {
             // Create the results
-            v5_Solr_Title_Result resultConverted = new v5_Solr_Title_Result();
+            var resultConverted = new v5_Solr_Title_Result();
 
             // These should not really be necessary
             resultConverted.Primary_Identifier = String.Empty;
@@ -95,7 +95,7 @@ namespace SobekCM.Engine_Library.Solr.v5
                     }
 
                     // Build the display results values
-                    List<string> display_result_fields = new List<string>();
+                    var display_result_fields = new List<string>();
                     foreach (Complete_Item_Aggregation_Metadata_Type metadataField in DisplayFields)
                     {
                         display_result_fields.Add(data_from_display_field(solrDocument, metadataField.SolrCode) ?? String.Empty);
@@ -107,7 +107,7 @@ namespace SobekCM.Engine_Library.Solr.v5
                 }
 
                 // Add the item
-                v5_Solr_Item_Result itemResult = new v5_Solr_Item_Result();
+                var itemResult = new v5_Solr_Item_Result();
                 itemResult.VID = solrDocument.DID.Substring(11, 5);
                 itemResult.Title = solrDocument.Title ?? "NO TITLE";
                 itemResult.MainThumbnail = solrDocument.MainThumbnail;

@@ -301,7 +301,7 @@ namespace SobekCM.Library.MySobekViewer
                         string jpeg_thumbnail = userInProcessDirectory + "\\" + thisFileInfo.Name.Replace(thisFileInfo.Extension, "") + "thm.jpg";
 
                         // Is one missing?
-                        if ((!File.Exists(jpeg)) || (!File.Exists(jpeg_thumbnail)))
+                        if (((!File.Exists(jpeg)) || (!File.Exists(jpeg_thumbnail))) && (OperatingSystem.IsWindowsVersionAtLeast(6, 1)))
                         {
                             using (Image tiffImg = Image.FromFile(thisFile))
                             {

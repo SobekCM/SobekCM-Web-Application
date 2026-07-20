@@ -1169,7 +1169,7 @@ namespace SobekCM.Resource_Object.Divisions
         public bool Compute_Jpeg_Attributes(string File_Location)
         {
             // Does this file exist?
-            if ((filetype == SobekCM_File_Info_Type_Enum.SYSTEM) && (File.Exists(File_Location + "/" + System_Name)))
+            if ((filetype == SobekCM_File_Info_Type_Enum.SYSTEM) && (File.Exists(File_Location + "/" + System_Name)) && (OperatingSystem.IsWindowsVersionAtLeast(6, 1)))
             {
                 try
                 {

@@ -88,7 +88,7 @@ namespace SobekCM.Library.MySobekViewer
             // Make the folder for the RequestSpecificValues.Current_User in process directory
             if (!Directory.Exists(digitalResourceDirectory))
                 Directory.CreateDirectory(digitalResourceDirectory);
-            else
+            else if (OperatingSystem.IsWindowsVersionAtLeast(6, 1))
             {
                 // Any post-processing to do?
                 string[] files = Directory.GetFiles(digitalResourceDirectory);

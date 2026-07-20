@@ -345,7 +345,7 @@ namespace SobekCM.Library.MySobekViewer
             #region Special code to handle any uploaded files
 
             // Any post-processing to do?
-            if ((currentProcessStep == 8) && (Directory.Exists(userInProcessDirectory)))
+            if ((currentProcessStep == 8) && (Directory.Exists(userInProcessDirectory)) && (OperatingSystem.IsWindowsVersionAtLeast(6, 1)))
             {
                 string[] processFiles = Directory.GetFiles(userInProcessDirectory);
                 foreach (string thisFile in processFiles)

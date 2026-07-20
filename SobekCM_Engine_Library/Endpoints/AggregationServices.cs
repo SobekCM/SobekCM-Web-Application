@@ -986,7 +986,7 @@ namespace SobekCM.Engine_Library.Endpoints
                         bool custom_banner_created = false;
 
                         // Create the banner with the name of the collection
-                        if (Directory.Exists(Engine_ApplicationCache_Gateway.Settings.Servers.Application_Server_Network + "\\default\\banner_images"))
+                        if ((Directory.Exists(Engine_ApplicationCache_Gateway.Settings.Servers.Application_Server_Network + "\\default\\banner_images")) && (OperatingSystem.IsWindowsVersionAtLeast(6, 1)))
                         {
                             try
                             {
@@ -995,6 +995,8 @@ namespace SobekCM.Engine_Library.Endpoints
                                 {
                                     var randomizer = new Random();
                                     string banner_to_use = banners[randomizer.Next(0, banners.Length - 1)];
+
+
                                     Bitmap bitmap = (Bitmap)(Image.FromFile(banner_to_use));
 
                                     var rectf = new RectangleF(30, bitmap.Height - 55, bitmap.Width - 40, 40);

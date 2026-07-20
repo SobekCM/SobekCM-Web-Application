@@ -61,7 +61,7 @@ namespace SobekCM.Builder_Library.Modules.Items
         {
             // Does this file exist?
             string file_in_place = Path.Combine(File_Location, JPEG_File.System_Name);
-            if (File.Exists(file_in_place))
+            if ((File.Exists(file_in_place)) && (OperatingSystem.IsWindowsVersionAtLeast(6, 1)))
             {
                 try
                 {

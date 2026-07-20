@@ -480,6 +480,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <returns>The url of the generated barcode GIF image</returns>
         public string Get_BarcodeImageUrl_from_string(int ItemID, string Action, string FilenameToSave)
         {
+            // Barcode generation depends on System.Drawing.Common, which requires Windows 6.1+
+            if (!OperatingSystem.IsWindowsVersionAtLeast(6, 1))
+                return String.Empty;
+
             string convertedItemID = int_to_base26(ItemID);
             string inputString = (convertedItemID + Action).ToUpper();
             if (inputString == null) throw new ArgumentNullException("InputString");

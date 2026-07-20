@@ -23,6 +23,10 @@ namespace SobekCM.Builder_Library.Modules.Items
         /// <returns> TRUE if processing can continue, FALSE if a critical error occurred which should stop all processing </returns>
         public override bool DoWork(Incoming_Digital_Resource Resource)
         {
+            // Relies on System.Drawing.Common, which requires Windows 6.1+; skip this step elsewhere
+            if (!OperatingSystem.IsWindowsVersionAtLeast(6, 1))
+                return true;
+
             string resourceFolder = Resource.Resource_Folder;
             string[] all_jpegs = Directory.GetFiles(resourceFolder, "*.jpg");
 

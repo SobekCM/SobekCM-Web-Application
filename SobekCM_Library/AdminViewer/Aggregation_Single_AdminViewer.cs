@@ -926,7 +926,7 @@ namespace SobekCM.Library.AdminViewer
                                 try
                                 {
                                     string banner_file = aggregationDirectory + "\\images\\banners\\" + bfile;
-                                    if (File.Exists(banner_file))
+                                    if ((File.Exists(banner_file)) && (OperatingSystem.IsWindowsVersionAtLeast(6, 1)))
                                     {
                                         using (Image bannerImage = Image.FromFile(banner_file))
                                         {

@@ -245,13 +245,77 @@ namespace SobekCM.Library.MySobekViewer
         public override void Write_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
             Tracer.Add_Trace("Edit_Item_OpenPublisher_MySobekViewer.Write_HTML", "Do nothing");
-        }
 
-        /// <summary> Add the HTML to be displayed in the main SobekCM viewer area </summary>
-        /// <param name="Output"> Textwriter to write the HTML for this viewer</param>
-        /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
-        public override void Write_ItemNavForm_Closing(TextWriter Output, Custom_Tracer Tracer)
-        {
+            // Open the item nav form (was written externally by MySobek_HtmlSubwriter)
+            Write_ItemNavForm_Opening(Output);
+
+            // Original Write_ItemNavForm_Opening(Output, Tracer) and Add_Controls(Output, Tracer) overrides did not exist for this viewer
+
+            // ===== BEGIN: moved from Add_Popup_HTML(Output, Tracer) (was always called - Contains_Popup_Forms is TRUE) =====
+            Tracer.Add_Trace("Edit_Item_OpenPublisher_MySobekViewer.Add_Popup_HTML", "Add any popup divisions for form elements");
+
+            // Add the hidden field
+            Output.WriteLine("<!-- Hidden field is used for postbacks to add new form elements (i.e., new name, new other titles, etc..) -->");
+            Output.WriteLine("<input type=\"hidden\" id=\"action_requested\" name=\"action_requested\" value=\"\" />");
+            Output.WriteLine("<input type=\"hidden\" id=\"action_value\" name=\"action_value\" value=\"\" />");
+            Output.WriteLine("<input type=\"hidden\" id=\"action_index\" name=\"action_index\" value=\"\" />");
+            Output.WriteLine("<input type=\"hidden\" id=\"new_structure\" name=\"new_structure\" value=\"\"/>");
+            Output.WriteLine();
+            Output.WriteLine("<script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Jquery_Ui_1_10_3_Custom_Js + "\"></script>");
+            Output.WriteLine("<script src=\"" + Static_Resources_Gateway.Sobekcm_OpenPublisher_Js + "\" type=\"text/javascript\"></script>");
+
+            // Add form for new chapter (and title)
+            Output.WriteLine("<!-- New chapter form -->");
+            Output.WriteLine("<div class=\"related_url_popup_div sbkMetadata_PopupDiv\" id=\"form_new_chapter\" style=\"display:none;\">");
+            Output.WriteLine("  <div class=\"sbkMetadata_PopupTitle\"><table style=\"width:100%\"><tr><td style=\"text-align:left\">New Chapter</td><td style=\"text-align:right\">");
+            //Output.Write("<a href=\"" + Help_URL(Skin_Code, Base_URL) + "\" alt=\"HELP\" target=\"_" + html_element_name.ToUpper() + "\" >?</a> &nbsp;");
+            Output.Write("<a href=\"#template\" alt=\"CANCEL\" onclick=\"return cancel_new_chapter_form()\">X</a> &nbsp; </td></tr></table></div>");
+            Output.WriteLine("  <br />");
+            Output.WriteLine("  <table class=\"sbkMetadata_PopupTable\">");
+
+            // Add the rows of data
+            Output.WriteLine("    <tr><td style=\"width:70px\"><label for=\"form_chapter_type\">Type:</label></td><td><input class=\"form_new_chapter_input sbk_Focusable\" name=\"form_chapter_type\" id=\"form_chapter_type\" type=\"text\" value=\"\" /></td></tr>");
+            Output.WriteLine("    <tr><td><label for=\"form_chapter_title\">Title:</label></td><td><input class=\"form_new_chapter_input sbk_Focusable\" name=\"form_chapter_title\" id=\"form_chapter_title\" type=\"text\" value=\"\" onkeypress=\"op_handle_title_keypress(event)\"/></td></tr>");
+
+
+            // Finish the popup form and add the CLOSE button
+            Output.WriteLine("    <tr style=\"height:35px; text-align: center; vertical-align: bottom;\">");
+            Output.WriteLine("      <td colspan=\"2\">");
+            Output.WriteLine("         <button title=\"Cancel\" class=\"sbkMetadata_RoundButton\" onclick=\"return cancel_new_chapter_form();\">CANCEL</button> &nbsp;");
+            Output.WriteLine("         <button title=\"Save\" class=\"sbkMetadata_RoundButton\" onclick=\"return save_new_chapter_form();\">SAVE</button> &nbsp;");
+            Output.WriteLine("       </td>");
+            Output.WriteLine("    </tr>");
+            Output.WriteLine("  </table>");
+            Output.WriteLine("</div>");
+            Output.WriteLine();
+
+            // Add form for new division (and title)
+            Output.WriteLine("<!-- New division form -->");
+            Output.WriteLine("<div class=\"related_url_popup_div sbkMetadata_PopupDiv\" id=\"form_new_division\" style=\"display:none;\">");
+            Output.WriteLine("  <div class=\"sbkMetadata_PopupTitle\"><table style=\"width:100%\"><tr><td style=\"text-align:left\">New Division</td><td style=\"text-align:right\">");
+            //Output.Write("<a href=\"" + Help_URL(Skin_Code, Base_URL) + "\" alt=\"HELP\" target=\"_" + html_element_name.ToUpper() + "\" >?</a> &nbsp;");
+            Output.Write("<a href=\"#template\" alt=\"CANCEL\" onclick=\"return cancel_new_division_form()\">X</a> &nbsp; </td></tr></table></div>");
+            Output.WriteLine("  <br />");
+            Output.WriteLine("  <table class=\"sbkMetadata_PopupTable\">");
+
+            // Add the rows of data
+            Output.WriteLine("    <tr><td style=\"width:70px\">Type:</td><td>Division</td></tr>");
+            Output.WriteLine("    <tr><td><label for=\"form_division_title\">Title:</label></td><td><input class=\"form_new_chapter_input sbk_Focusable\" name=\"form_division_title\" id=\"form_division_title\" type=\"text\" value=\"\" onkeypress=\"op_handle_divtitle_keypress(event)\" /></td></tr>");
+
+
+            // Finish the popup form and add the CLOSE button
+            Output.WriteLine("    <tr style=\"height:35px; text-align: center; vertical-align: bottom;\">");
+            Output.WriteLine("      <td colspan=\"2\">");
+            Output.WriteLine("         <button title=\"Cancel\" class=\"sbkMetadata_RoundButton\" onclick=\"return cancel_new_division_form();\">CANCEL</button> &nbsp;");
+            Output.WriteLine("         <button title=\"Save\" class=\"sbkMetadata_RoundButton\" onclick=\"return save_new_division_form();\">SAVE</button> &nbsp;");
+            Output.WriteLine("       </td>");
+            Output.WriteLine("    </tr>");
+            Output.WriteLine("  </table>");
+            Output.WriteLine("</div>");
+            Output.WriteLine();
+            // ===== END: moved from Add_Popup_HTML(Output, Tracer) =====
+
+            // ===== BEGIN: moved from Write_ItemNavForm_Closing(Output, Tracer) =====
             Tracer.Add_Trace("Edit_Item_OpenPublisher_MySobekViewer.Write_ItemNavForm_Closing", "");
 
 
@@ -405,76 +469,10 @@ namespace SobekCM.Library.MySobekViewer
             Output.WriteLine("</div>");
             Output.WriteLine("</div>");
             Output.WriteLine();
-        }
+            // ===== END: moved from Write_ItemNavForm_Closing(Output, Tracer) =====
 
-
-        /// <summary> Add the HTML to be added near the top of the page for those viewers that implement pop-up forms for data retrieval </summary>
-        /// <param name="Output"> Textwriter to write the pop-up form HTML for this viewer </param>
-        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-        /// <remarks> This adds any popup divisions for form metadata elements </remarks>
-        public override void Add_Popup_HTML(TextWriter Output, Custom_Tracer Tracer)
-        {
-            Tracer.Add_Trace("Edit_Item_OpenPublisher_MySobekViewer.Add_Popup_HTML", "Add any popup divisions for form elements");
-
-            // Add the hidden field
-            Output.WriteLine("<!-- Hidden field is used for postbacks to add new form elements (i.e., new name, new other titles, etc..) -->");
-            Output.WriteLine("<input type=\"hidden\" id=\"action_requested\" name=\"action_requested\" value=\"\" />");
-            Output.WriteLine("<input type=\"hidden\" id=\"action_value\" name=\"action_value\" value=\"\" />");
-            Output.WriteLine("<input type=\"hidden\" id=\"action_index\" name=\"action_index\" value=\"\" />");
-            Output.WriteLine("<input type=\"hidden\" id=\"new_structure\" name=\"new_structure\" value=\"\"/>");
-            Output.WriteLine();
-            Output.WriteLine("<script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Jquery_Ui_1_10_3_Custom_Js + "\"></script>");
-            Output.WriteLine("<script src=\"" + Static_Resources_Gateway.Sobekcm_OpenPublisher_Js + "\" type=\"text/javascript\"></script>");
-
-            // Add form for new chapter (and title)
-            Output.WriteLine("<!-- New chapter form -->");
-            Output.WriteLine("<div class=\"related_url_popup_div sbkMetadata_PopupDiv\" id=\"form_new_chapter\" style=\"display:none;\">");
-            Output.WriteLine("  <div class=\"sbkMetadata_PopupTitle\"><table style=\"width:100%\"><tr><td style=\"text-align:left\">New Chapter</td><td style=\"text-align:right\">");
-            //Output.Write("<a href=\"" + Help_URL(Skin_Code, Base_URL) + "\" alt=\"HELP\" target=\"_" + html_element_name.ToUpper() + "\" >?</a> &nbsp;");
-            Output.Write("<a href=\"#template\" alt=\"CANCEL\" onclick=\"return cancel_new_chapter_form()\">X</a> &nbsp; </td></tr></table></div>");
-            Output.WriteLine("  <br />");
-            Output.WriteLine("  <table class=\"sbkMetadata_PopupTable\">");
-
-            // Add the rows of data
-            Output.WriteLine("    <tr><td style=\"width:70px\"><label for=\"form_chapter_type\">Type:</label></td><td><input class=\"form_new_chapter_input sbk_Focusable\" name=\"form_chapter_type\" id=\"form_chapter_type\" type=\"text\" value=\"\" /></td></tr>");
-            Output.WriteLine("    <tr><td><label for=\"form_chapter_title\">Title:</label></td><td><input class=\"form_new_chapter_input sbk_Focusable\" name=\"form_chapter_title\" id=\"form_chapter_title\" type=\"text\" value=\"\" onkeypress=\"op_handle_title_keypress(event)\"/></td></tr>");
-
-
-            // Finish the popup form and add the CLOSE button
-            Output.WriteLine("    <tr style=\"height:35px; text-align: center; vertical-align: bottom;\">");
-            Output.WriteLine("      <td colspan=\"2\">");
-            Output.WriteLine("         <button title=\"Cancel\" class=\"sbkMetadata_RoundButton\" onclick=\"return cancel_new_chapter_form();\">CANCEL</button> &nbsp;");
-            Output.WriteLine("         <button title=\"Save\" class=\"sbkMetadata_RoundButton\" onclick=\"return save_new_chapter_form();\">SAVE</button> &nbsp;");
-            Output.WriteLine("       </td>");
-            Output.WriteLine("    </tr>");
-            Output.WriteLine("  </table>");
-            Output.WriteLine("</div>");
-            Output.WriteLine();
-
-            // Add form for new division (and title)
-            Output.WriteLine("<!-- New division form -->");
-            Output.WriteLine("<div class=\"related_url_popup_div sbkMetadata_PopupDiv\" id=\"form_new_division\" style=\"display:none;\">");
-            Output.WriteLine("  <div class=\"sbkMetadata_PopupTitle\"><table style=\"width:100%\"><tr><td style=\"text-align:left\">New Division</td><td style=\"text-align:right\">");
-            //Output.Write("<a href=\"" + Help_URL(Skin_Code, Base_URL) + "\" alt=\"HELP\" target=\"_" + html_element_name.ToUpper() + "\" >?</a> &nbsp;");
-            Output.Write("<a href=\"#template\" alt=\"CANCEL\" onclick=\"return cancel_new_division_form()\">X</a> &nbsp; </td></tr></table></div>");
-            Output.WriteLine("  <br />");
-            Output.WriteLine("  <table class=\"sbkMetadata_PopupTable\">");
-
-            // Add the rows of data
-            Output.WriteLine("    <tr><td style=\"width:70px\">Type:</td><td>Division</td></tr>");
-            Output.WriteLine("    <tr><td><label for=\"form_division_title\">Title:</label></td><td><input class=\"form_new_chapter_input sbk_Focusable\" name=\"form_division_title\" id=\"form_division_title\" type=\"text\" value=\"\" onkeypress=\"op_handle_divtitle_keypress(event)\" /></td></tr>");
-
-
-            // Finish the popup form and add the CLOSE button
-            Output.WriteLine("    <tr style=\"height:35px; text-align: center; vertical-align: bottom;\">");
-            Output.WriteLine("      <td colspan=\"2\">");
-            Output.WriteLine("         <button title=\"Cancel\" class=\"sbkMetadata_RoundButton\" onclick=\"return cancel_new_division_form();\">CANCEL</button> &nbsp;");
-            Output.WriteLine("         <button title=\"Save\" class=\"sbkMetadata_RoundButton\" onclick=\"return save_new_division_form();\">SAVE</button> &nbsp;");
-            Output.WriteLine("       </td>");
-            Output.WriteLine("    </tr>");
-            Output.WriteLine("  </table>");
-            Output.WriteLine("</div>");
-            Output.WriteLine();
+            // Close the item nav form (was written externally by MySobek_HtmlSubwriter)
+            Write_ItemNavForm_Closing(Output);
         }
 
         /// <summary> Gets the collection of special behaviors which this admin or mySobek viewer

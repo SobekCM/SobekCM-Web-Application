@@ -299,10 +299,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         {
             if (viewType == View_Type.Tree)
             {
-                if (Tracer != null)
-                {
-                    Tracer.Add_Trace("MultiVolumes_ItemViewer.Write_Main_Viewer_Section", "Write the main viewer section (tree view)");
-                }
+                Tracer?.Add_Trace("MultiVolumes_ItemViewer.Write_Main_Viewer_Section", "Write the main viewer section (tree view)");
 
                 // Build the value
                 Output.WriteLine("          <td><div id=\"sbkMviv_ViewerTitle\">" + issues_type + "</div></td>");
@@ -320,10 +317,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
             else
             {
-                if (Tracer != null)
-                {
-                    Tracer.Add_Trace("MultiVolumes_ItemViewer.Write_Main_Viewer_Section", "Write the main viewer section (list/thumbnail view)");
-                }
+                Tracer?.Add_Trace("MultiVolumes_ItemViewer.Write_Main_Viewer_Section", "Write the main viewer section (list/thumbnail view)");
 
                 // Build the value
                 Output.WriteLine("          <td><div id=\"sbkMviv_ViewerTitle\">" + issues_type + "</div></td>");
@@ -345,10 +339,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             // Add the final HTML (related titles and closing divs)
             if ((briefItem.Web.Related_Titles != null) && (briefItem.Web.Related_Titles.Count > 0))
             {
-                if (Tracer != null)
-                {
-                    Tracer.Add_Trace("MultiVolumes_ItemViewer.Write_Main_Viewer_Section", "Add the related titles and close the remaining divs");
-                }
+                Tracer?.Add_Trace("MultiVolumes_ItemViewer.Write_Main_Viewer_Section", "Add the related titles and close the remaining divs");
 
                 Output.WriteLine("<table id=\"sbkMviv_RelatedTitles\">");
                 Output.WriteLine("  <tr>");
@@ -368,10 +359,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
             else
             {
-                if (Tracer != null)
-                {
-                    Tracer.Add_Trace("MultiVolumes_ItemViewer.Write_Main_Viewer_Section", "Close the remaining divs");
-                }
+                Tracer?.Add_Trace("MultiVolumes_ItemViewer.Write_Main_Viewer_Section", "Close the remaining divs");
 
                 Output.WriteLine("            </div><!-- FINISHING -->");
                 Output.WriteLine("</td>");

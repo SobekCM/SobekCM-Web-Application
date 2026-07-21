@@ -135,10 +135,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         /// <remarks> This adds the title of the static browse or info into the box </remarks>
         public override void Write_Search_Box_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("Static_Browse_Info_AggregationViewer.Write_Search_Box_HTML", "Adding HTML");
-            }
+            Tracer?.Add_Trace("Static_Browse_Info_AggregationViewer.Write_Search_Box_HTML", "Adding HTML");
 
             Output.WriteLine("  <h1>" + ViewBag.Browse_Object.Label + "</h1>");
         }
@@ -149,10 +146,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         /// <remarks> This writes the HTML from the static browse or info page here  </remarks>
         public override void Write_Main_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("Static_Browse_Info_AggregationViewer.Write_Main_HTML", "Adding HTML");
-            }
+            Tracer?.Add_Trace("Static_Browse_Info_AggregationViewer.Write_Main_HTML", "Adding HTML");
 
             // Get the adjusted text for this user's session
             if (ViewBag.Static_Web_Content == null)

@@ -1,4 +1,4 @@
-﻿using SobekCM.Core.Navigation;
+using SobekCM.Core.Navigation;
 using SobekCM.Core.WebContent;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Tools;
@@ -42,10 +42,7 @@ namespace SobekCM.Library.WebContentViewer.Viewers
         /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
         public override void Add_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("Manage_Menu_WebContentViewer.Add_HTML", "Start to add the html content");
-            }
+            Tracer?.Add_Trace("Manage_Menu_WebContentViewer.Add_HTML", "Start to add the html content");
 
             Output.WriteLine("  <table id=\"sbkMmav_MainTable\">");
 
@@ -172,10 +169,7 @@ namespace SobekCM.Library.WebContentViewer.Viewers
 
             Output.WriteLine("  </table>");
 
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("Manage_Menu_WebContentViewer.Add_HTML", "Done adding the html content");
-            }
+            Tracer?.Add_Trace("Manage_Menu_WebContentViewer.Add_HTML", "Done adding the html content");
         }
     }
 }

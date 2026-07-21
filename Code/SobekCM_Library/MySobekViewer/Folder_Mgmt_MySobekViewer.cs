@@ -332,14 +332,13 @@ namespace SobekCM.Library.MySobekViewer
                 Output.WriteLine("  <h1>" + Web_Title + "</h1>");
                 Output.WriteLine();
             }
-        }
 
-        /// <summary> Add the HTML to be added near the top of the page for those viewers that implement pop-up forms for data retrieval </summary>
-        /// <param name="Output"> Textwriter to write the pop-up form HTML for this viewer </param>
-        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-        /// <remarks> This adds any popup divisions for form metadata elements </remarks>
-        public override void Add_Popup_HTML(TextWriter Output, Custom_Tracer Tracer)
-        {
+            // Open the item nav form (was written externally by MySobek_HtmlSubwriter)
+            Write_ItemNavForm_Opening(Output);
+
+            // Original Write_ItemNavForm_Opening(Output, Tracer) override did not exist for this viewer
+
+            // ===== BEGIN: moved from Add_Popup_HTML(Output, Tracer) (was always called - Contains_Popup_Forms is TRUE) =====
             Tracer.Add_Trace("Folder_Mgmt_MySobekViewer.Add_Popup_HTML", "Add any popup divisions for form elements");
 
             Output.WriteLine("<script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Jquery_Ui_1_10_3_Custom_Js + "\"></script>");
@@ -532,15 +531,9 @@ namespace SobekCM.Library.MySobekViewer
 
                 #endregion
             }
-        }
+            // ===== END: moved from Add_Popup_HTML(Output, Tracer) =====
 
-
-        /// <summary> Add controls directly to the form in the main control area placeholder </summary>
-        /// <param name="Output"> TextWriter to write HTML output </param>
-        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-        /// <remarks> The <see cref="PagedResults_HtmlHelper"/> class is instantiated and adds controls to the placeholder here </remarks>
-        public override void Add_Controls(TextWriter Output, Custom_Tracer Tracer)
-        {
+            // ===== BEGIN: moved from Add_Controls(Output, Tracer) =====
             Tracer.Add_Trace("Folder_Mgmt_MySobekViewer.Add_Controls", String.Empty);
 
             // If this is submitted items, don't show the folders
@@ -783,6 +776,12 @@ namespace SobekCM.Library.MySobekViewer
                 // Write to output
                 Output.Write(bookshelfManageBuilder.ToString());
             }
+            // ===== END: moved from Add_Controls(Output, Tracer) =====
+
+            // Original Write_ItemNavForm_Closing(Output, Tracer) override did not exist for this viewer
+
+            // Close the item nav form (was written externally by MySobek_HtmlSubwriter)
+            Write_ItemNavForm_Closing(Output);
         }
 
         private void add_children_nodes(HtmlTreeNode ParentNode, User_Folder ThisFolder, string SelectedFolder, string RedirectURL, List<HtmlTreeNode> SelectedNodes)

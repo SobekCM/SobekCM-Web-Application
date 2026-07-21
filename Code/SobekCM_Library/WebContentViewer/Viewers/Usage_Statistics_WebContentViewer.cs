@@ -1,4 +1,4 @@
-﻿using SobekCM.Core.Client;
+using SobekCM.Core.Client;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.WebContent;
 using SobekCM.Core.WebContent.Single;
@@ -43,10 +43,7 @@ namespace SobekCM.Library.WebContentViewer.Viewers
         /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
         public override void Add_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("Usage_Statistics_WebContentViewer.Add_HTML", "No html added");
-            }
+            Tracer?.Add_Trace("Usage_Statistics_WebContentViewer.Add_HTML", "No html added");
 
             Output.WriteLine("<div class=\"Wchs_Text\">");
             Output.WriteLine("  <p>Usage statistics for this web content page (or rediect) over time appears below, broken down by month and year.");

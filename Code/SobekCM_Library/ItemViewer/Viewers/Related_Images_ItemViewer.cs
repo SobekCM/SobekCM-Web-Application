@@ -293,10 +293,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         public void Write_Top_Additional_Navigation_Row(TextWriter Output, Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("Related_Images_ItemViewer.Write_Top_Additional_Navigation_Row", "");
-            }
+            Tracer?.Add_Trace("Related_Images_ItemViewer.Write_Top_Additional_Navigation_Row", "");
 
             string numOfThumbnails = "thumbnails per page";
             string goToThumbnail = "Go to thumbnail";
@@ -460,10 +457,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         public void Write_Main_Viewer_Section(TextWriter Output, Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("Related_Images_ItemViewer.Write_Main_Viewer_Section", "");
-            }
+            Tracer?.Add_Trace("Related_Images_ItemViewer.Write_Main_Viewer_Section", "");
 
             int images_per_page = thumbnailsPerPage;
             int size_of_thumbnails = thumbnailSize;

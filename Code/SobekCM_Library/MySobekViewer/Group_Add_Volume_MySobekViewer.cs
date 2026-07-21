@@ -478,13 +478,13 @@ namespace SobekCM.Library.MySobekViewer
         public override void Write_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
             Tracer.Add_Trace("Group_Add_Volume_MySobekViewer.Write_HTML", "Do nothing");
-        }
 
-        /// <summary> Add the HTML to be displayed in the main SobekCM viewer area </summary>
-        /// <param name="Output"> Textwriter to write the HTML for this viewer</param>
-        /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
-        public override void Write_ItemNavForm_Closing(TextWriter Output, Custom_Tracer Tracer)
-        {
+            // Open the item nav form (was written externally by MySobek_HtmlSubwriter)
+            Write_ItemNavForm_Opening(Output);
+
+            // Original Write_ItemNavForm_Opening(Output, Tracer), Add_Popup_HTML(Output, Tracer), and Add_Controls(Output, Tracer) overrides did not exist for this viewer
+
+            // ===== BEGIN: moved from Write_ItemNavForm_Closing(Output, Tracer) =====
             const string NEWVOLUME = "NEW VOLUME";
 
             Tracer.Add_Trace("Group_Add_Volume_MySobekViewer.Write_ItemNavForm_Closing", "");
@@ -635,6 +635,10 @@ namespace SobekCM.Library.MySobekViewer
             Output.WriteLine("</div>");
             Output.WriteLine("</div>");
             Output.WriteLine("</div>");
+            // ===== END: moved from Write_ItemNavForm_Closing(Output, Tracer) =====
+
+            // Close the item nav form (was written externally by MySobek_HtmlSubwriter)
+            Write_ItemNavForm_Closing(Output);
         }
 
         /// <summary> Gets the collection of special behaviors which this admin or mySobek viewer

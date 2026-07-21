@@ -65,10 +65,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         /// <remarks> This adds the title of the static browse or info into the box </remarks>
         public override void Write_Search_Box_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("Empty_AggregationViewer.Write_Search_Box_HTML", "Do nothing");
-            }
+            Tracer?.Add_Trace("Empty_AggregationViewer.Write_Search_Box_HTML", "Do nothing");
         }
 
         /// <summary> Add the HTML to be displayed below the search box </summary>
@@ -77,10 +74,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         /// <remarks> This writes the HTML from the static browse or info page here  </remarks>
         public override void Write_Main_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("Empty_AggregationViewer.Write_Main_HTML", "Adding HTML");
-            }
+            Tracer?.Add_Trace("Empty_AggregationViewer.Write_Main_HTML", "Adding HTML");
 
             Output.WriteLine("<div id=\"empty\"></div>");
 

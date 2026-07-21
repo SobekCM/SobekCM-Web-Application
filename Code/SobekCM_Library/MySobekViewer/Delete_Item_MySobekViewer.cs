@@ -255,45 +255,6 @@ namespace SobekCM.Library.MySobekViewer
             }
         }
 
-        /// <summary> Write the text for this delete request directly into the main form </summary>
-        /// <param name="Output"> Textwriter to write the pop-up form HTML for this viewer </param>
-        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-        /// <remarks> This text will appear within the ItemNavForm form tags </remarks>
-        public override void Write_ItemNavForm_Closing(TextWriter Output, Custom_Tracer Tracer)
-        {
-            Tracer.Add_Trace("Delete_Item_MySobekViewer.Write_ItemNavForm_Closing", String.Empty);
-
-            if (errorCode == -1)
-            {
-                // Add the hidden field
-                Output.WriteLine("<!-- Hidden field is used for postbacks to indicate what to save and reset -->");
-                Output.WriteLine("<input type=\"hidden\" id=\"admin_delete_item\" name=\"admin_delete_item\" value=\"\" />");
-                Output.WriteLine();
-
-                // Write the top item mimic html portion
-                Write_Item_Type_Top(Output, itemToDelete);
-
-                Output.WriteLine("<div id=\"container-inner\">");
-                Output.WriteLine("<div id=\"pagecontainer\">");
-
-                Output.WriteLine("<div class=\"sbkMySobek_HomeText\" >");
-                Output.WriteLine("  <br /><br />");
-                Output.WriteLine("  <p>Enter DELETE in the textbox below and select GO to complete this deletion.</p>");
-                Output.WriteLine("  <div id=\"sbkDimv_VerifyDiv\">");
-                Output.WriteLine("    <input class=\"sbkDimv_input sbkMySobek_Focusable\" name=\"admin_delete_confirm\" id=\"admin_delete_confirm\" type=\"text\" value=\"\" /> &nbsp; &nbsp; ");
-                Output.WriteLine("    <button title=\"Confirm delete of this item\" class=\"sbkMySobek_RoundButton\" onclick=\"delete_item(); return false;\">CONFIRM <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkMySobek_RoundButton_RightImg\" alt=\"\" /></button>");
-                Output.WriteLine("  </div>");
-                Output.WriteLine("</div>");
-                Output.WriteLine();
-                Output.WriteLine("</div>");
-                Output.WriteLine("</div>");
-                Output.WriteLine();
-                Output.WriteLine("<!-- Focus on confirm box -->");
-                Output.WriteLine("<script type=\"text/javascript\">focus_element('admin_delete_confirm');</script>");
-                Output.WriteLine();
-            }
-        }
-
         /// <summary> Add the HTML to be displayed in the main SobekCM viewer area </summary>
         /// <param name="Output"> Textwriter to write the HTML for this viewer</param>
         /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
@@ -342,6 +303,46 @@ namespace SobekCM.Library.MySobekViewer
                 Output.WriteLine("</div>");
                 Output.WriteLine("</div>");
             }
+
+            // Open the item nav form (was written externally by MySobek_HtmlSubwriter)
+            Write_ItemNavForm_Opening(Output);
+
+            // ===== BEGIN: moved from Write_ItemNavForm_Closing(Output, Tracer) =====
+            Tracer.Add_Trace("Delete_Item_MySobekViewer.Write_ItemNavForm_Closing", String.Empty);
+
+            if (errorCode == -1)
+            {
+                // Add the hidden field
+                Output.WriteLine("<!-- Hidden field is used for postbacks to indicate what to save and reset -->");
+                Output.WriteLine("<input type=\"hidden\" id=\"admin_delete_item\" name=\"admin_delete_item\" value=\"\" />");
+                Output.WriteLine();
+
+                // Write the top item mimic html portion
+                Write_Item_Type_Top(Output, itemToDelete);
+
+                Output.WriteLine("<div id=\"container-inner\">");
+                Output.WriteLine("<div id=\"pagecontainer\">");
+
+                Output.WriteLine("<div class=\"sbkMySobek_HomeText\" >");
+                Output.WriteLine("  <br /><br />");
+                Output.WriteLine("  <p>Enter DELETE in the textbox below and select GO to complete this deletion.</p>");
+                Output.WriteLine("  <div id=\"sbkDimv_VerifyDiv\">");
+                Output.WriteLine("    <input class=\"sbkDimv_input sbkMySobek_Focusable\" name=\"admin_delete_confirm\" id=\"admin_delete_confirm\" type=\"text\" value=\"\" /> &nbsp; &nbsp; ");
+                Output.WriteLine("    <button title=\"Confirm delete of this item\" class=\"sbkMySobek_RoundButton\" onclick=\"delete_item(); return false;\">CONFIRM <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkMySobek_RoundButton_RightImg\" alt=\"\" /></button>");
+                Output.WriteLine("  </div>");
+                Output.WriteLine("</div>");
+                Output.WriteLine();
+                Output.WriteLine("</div>");
+                Output.WriteLine("</div>");
+                Output.WriteLine();
+                Output.WriteLine("<!-- Focus on confirm box -->");
+                Output.WriteLine("<script type=\"text/javascript\">focus_element('admin_delete_confirm');</script>");
+                Output.WriteLine();
+            }
+            // ===== END: moved from Write_ItemNavForm_Closing(Output, Tracer) =====
+
+            // Close the item nav form (was written externally by MySobek_HtmlSubwriter)
+            Write_ItemNavForm_Closing(Output);
         }
 
         /// <summary> Gets the collection of special behaviors which this admin or mySobek viewer

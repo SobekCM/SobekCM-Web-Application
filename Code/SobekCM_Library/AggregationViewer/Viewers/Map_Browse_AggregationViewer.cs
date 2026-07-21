@@ -267,10 +267,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         /// <remarks> This adds the title of the static browse or info into the box </remarks>
         public override void Write_Search_Box_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("Map_Browse_AggregationViewer.Write_Search_Box_HTML", "Adding HTML");
-            }
+            Tracer?.Add_Trace("Map_Browse_AggregationViewer.Write_Search_Box_HTML", "Adding HTML");
 
             Output.WriteLine("<div class=\"sbkMbav_MainPanel\">");
 
@@ -307,10 +304,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         /// <remarks> This writes the HTML from the static browse or info page here  </remarks>
         public override void Write_Main_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("Map_Browse_AggregationViewer.Write_Main_HTML", "Adding HTML");
-            }
+            Tracer?.Add_Trace("Map_Browse_AggregationViewer.Write_Main_HTML", "Adding HTML");
 
             Output.WriteLine("<div id=\"sbk_QuickTips\">");
             Output.WriteLine("  <h1>Frequently Asked Questions</h1>");

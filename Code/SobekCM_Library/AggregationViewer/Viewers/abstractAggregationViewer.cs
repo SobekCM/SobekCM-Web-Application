@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
@@ -113,10 +113,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         ///  <remarks> No html is added here, although some children class override this virtual method to add HTML </remarks>
         public virtual void Write_Main_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("abstractAggregationViewer.Write_Main_HTML", "No html added");
-            }
+            Tracer?.Add_Trace("abstractAggregationViewer.Write_Main_HTML", "No html added");
 
             // No html to be added here
         }
@@ -139,10 +136,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         protected void Add_Simple_Search_Tips(TextWriter Output, Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("abstractAggregationViewer.Add_Simple_Search_Tips", "Adding simple search tips");
-            }
+            Tracer?.Add_Trace("abstractAggregationViewer.Add_Simple_Search_Tips", "Adding simple search tips");
 
             // Write the quick tips
             Output.WriteLine("<!-- Add quick tips ( abstractAggregationViewer ) -->");
@@ -246,10 +240,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
         protected void Add_Basic_Search_Box_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("abstractAggregationViewer.Add_Basic_Search_Box_HTML", "Adding html for basic search box");
-            }
+            Tracer?.Add_Trace("abstractAggregationViewer.Add_Basic_Search_Box_HTML", "Adding html for basic search box");
 
             // Determine the sub text to use
             const string SUB_CODE = "s=";

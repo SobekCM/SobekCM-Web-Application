@@ -102,10 +102,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         /// <remarks> This writes the HTML from the static browse or info page here  </remarks>
         public override void Write_Main_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("Item_Count_AggregationViewer.Write_Main_HTML", "Adding HTML");
-            }
+            Tracer?.Add_Trace("Item_Count_AggregationViewer.Write_Main_HTML", "Adding HTML");
 
             var stats = SobekEngineClient.Aggregations.Get_Item_Count(ViewBag.Hierarchy_Object.Code, Tracer);
 

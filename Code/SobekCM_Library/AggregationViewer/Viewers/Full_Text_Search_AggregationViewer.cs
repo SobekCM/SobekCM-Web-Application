@@ -122,10 +122,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
         public override void Write_Search_Box_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("Full_Text_Search_AggregationViewer.Write_Search_Box_HTML", "Adding html for search box");
-            }
+            Tracer?.Add_Trace("Full_Text_Search_AggregationViewer.Write_Search_Box_HTML", "Adding html for search box");
 
             string search_collection = "Search full text";
             if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.Spanish)
@@ -158,10 +155,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         /// <remarks> This adds the search tips by calling the base method <see cref="abstractAggregationViewer.Add_Simple_Search_Tips"/> </remarks>
         public override void Write_Main_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("Advanced_Search_AggregationViewer.Write_Main_HTML", "Adding simple search tips");
-            }
+            Tracer?.Add_Trace("Advanced_Search_AggregationViewer.Write_Main_HTML", "Adding simple search tips");
 
             Add_Simple_Search_Tips(Output, Tracer);
         }

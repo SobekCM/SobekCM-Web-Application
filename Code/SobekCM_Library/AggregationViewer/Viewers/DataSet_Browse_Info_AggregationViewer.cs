@@ -77,10 +77,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
         public override void Write_Search_Box_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("DataSet_Browse_Info_AggregationViewer.Write_HTML", "Writing HTML from result_dataset_html_subwriter ");
-            }
+            Tracer?.Add_Trace("DataSet_Browse_Info_AggregationViewer.Write_HTML", "Writing HTML from result_dataset_html_subwriter ");
 
             if (writeResult == null)
             {

@@ -240,28 +240,9 @@ namespace SobekCM.Library.HTML
                 Output.WriteLine("<div id=\"pagecontainer\">");
             }
 
-            // Add the text here
+            // Add the text here - this now also opens/closes the item nav form and writes any
+            // popup HTML, controls, and closing content, all collapsed into the viewer's own Write_HTML
             mySobekViewer.Write_HTML(Output, Tracer);
-
-            // Start the item nav form
-            Write_ItemNavForm_Opening(Output);
-
-            // Also, add any additional stuff here
-            mySobekViewer.Write_ItemNavForm_Opening(Output, Tracer);
-
-            if (mySobekViewer.Contains_Popup_Forms)
-            {
-                mySobekViewer.Add_Popup_HTML(Output, Tracer);
-            }
-
-            // Add any controls needed
-            mySobekViewer.Add_Controls(Output, Tracer);
-
-            // Also, add any additional stuff here
-            mySobekViewer.Write_ItemNavForm_Closing(Output, Tracer);
-
-            // End the item nav form
-            Write_ItemNavForm_Closing(Output);
 
             // Close the pagecontainer if needed
             if (!Subwriter_Behaviors.Contains(HtmlSubwriter_Behaviors_Enum.MySobek_Subwriter_Mimic_Item_Subwriter))

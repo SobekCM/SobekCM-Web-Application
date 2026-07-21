@@ -168,10 +168,7 @@ namespace SobekCM.Library.MainWriters
         /// <returns> Title to use in the HTML result document </returns>
         public string Get_Page_Title(Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("Html_MainWriter.Get_Page_Title", "Getting page title");
-            }
+            Tracer?.Add_Trace("Html_MainWriter.Get_Page_Title", "Getting page title");
 
             string thisTitle = null;
             if (subwriter != null)

@@ -1323,19 +1323,25 @@ namespace SobekCM.Library.MySobekViewer
                                      : " ( Optional )</h2>");
                 Output.WriteLine("<blockquote>" + explanation + "</blockquote><br />");
             }
-        }
 
-        /// <summary> This is an opportunity to write HTML directly into the main form, without
-        /// using the pop-up html form architecture </summary>
-        /// <param name="Output"> Textwriter to write the pop-up form HTML for this viewer </param>
-        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-        /// <remarks> This text will appear within the ItemNavForm form tags </remarks>
-        public override void Write_ItemNavForm_Closing(TextWriter Output, Custom_Tracer Tracer)
-        {
-            if (Tracer != null)
+            // Open the item nav form (was written externally by MySobek_HtmlSubwriter)
+            Write_ItemNavForm_Opening(Output);
+
+            // Original Write_ItemNavForm_Opening(Output, Tracer) and Add_Popup_HTML(Output, Tracer) overrides did not exist for this viewer
+
+            // ===== BEGIN: moved from Add_Controls(Output, Tracer) =====
+            Tracer.Add_Trace("New_Group_And_Item_MySobekViewer.Add_Controls", String.Empty);
+
+            // Do nothing if this is the very last step
+            if (currentProcessStep == 8)
             {
-                Tracer.Add_Trace("New_Group_And_Item_MySobekViewer.Write_ItemNavForm_Closing", "");
+                // Add the upload controls to the file place holder
+                add_upload_controls(Output, Tracer);
             }
+            // ===== END: moved from Add_Controls(Output, Tracer) =====
+
+            // ===== BEGIN: moved from Write_ItemNavForm_Closing(Output, Tracer) =====
+            Tracer?.Add_Trace("New_Group_And_Item_MySobekViewer.Write_ItemNavForm_Closing", "");
 
             string templateLabel = "Template";
             string projectLabel = "Default Metadata";
@@ -1601,6 +1607,10 @@ namespace SobekCM.Library.MySobekViewer
             {
                 add_congratulations_html(Output, Tracer);
             }
+            // ===== END: moved from Write_ItemNavForm_Closing(Output, Tracer) =====
+
+            // Close the item nav form (was written externally by MySobek_HtmlSubwriter)
+            Write_ItemNavForm_Closing(Output);
         }
 
         private void add_files_html(TextWriter Output, Custom_Tracer Tracer)
@@ -1881,22 +1891,6 @@ namespace SobekCM.Library.MySobekViewer
         }
 
         #endregion
-
-        /// <summary> Add controls directly to the form in the main control area placeholder </summary>
-        /// <param name="MainPlaceHolder"> Main place holder to which all main controls are added </param>
-        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-        public override void Add_Controls(TextWriter Output, Custom_Tracer Tracer)
-        {
-            Tracer.Add_Trace("New_Group_And_Item_MySobekViewer.Add_Controls", String.Empty);
-
-            // Do nothing if this is the very last step
-            if (currentProcessStep == 8)
-            {
-                // Add the upload controls to the file place holder
-                add_upload_controls(Output, Tracer);
-            }
-        }
-
         #region Step 3: Upload Related Files
 
         private void add_upload_controls(TextWriter Output, Custom_Tracer Tracer)
@@ -2032,10 +2026,7 @@ namespace SobekCM.Library.MySobekViewer
                 {
                     string project_name = UI_ApplicationCache_Gateway.Settings.Servers.Base_MySobek_Directory + "projects\\" + project_code + ".pmets";
 
-                    if (Tracer != null)
-                    {
-                        Tracer.Add_Trace("New_Group_And_Item_MySobekViewer.new_item()", "Loading project<br />(" + project_name + ")");
-                    }
+                    Tracer?.Add_Trace("New_Group_And_Item_MySobekViewer.new_item()", "Loading project<br />(" + project_name + ")");
 
                     if (File.Exists(project_name))
                     {
@@ -2078,10 +2069,7 @@ namespace SobekCM.Library.MySobekViewer
             }
             catch (Exception ee)
             {
-                if (Tracer != null)
-                {
-                    Tracer.Add_Trace("New_Group_And_Item_MySobekViewer.new_item()", "Error loading projects<br />" + ee);
-                }
+                Tracer?.Add_Trace("New_Group_And_Item_MySobekViewer.new_item()", "Error loading projects<br />" + ee);
                 project_code = String.Empty;
             }
 

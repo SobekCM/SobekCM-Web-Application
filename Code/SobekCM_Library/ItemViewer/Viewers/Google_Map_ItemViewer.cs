@@ -433,10 +433,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             if (CurrentRequest.ViewerCode == "mapsearch")
                 googleItemSearch = true;
 
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("Google_Map_ItemViewer.Write_Main_Viewer_Section", "");
-            }
+            Tracer?.Add_Trace("Google_Map_ItemViewer.Write_Main_Viewer_Section", "");
 
             Output.WriteLine("        <!-- GOOGLE MAP VIEWER OUTPUT -->" + Environment.NewLine);
 

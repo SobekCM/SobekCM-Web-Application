@@ -203,6 +203,14 @@ namespace SobekCM.Library.MySobekViewer
             RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.My_Sobek;
             Output.WriteLine("</div>");
             Output.WriteLine();
+
+            // Open the item nav form (was written externally by MySobek_HtmlSubwriter)
+            Write_ItemNavForm_Opening(Output);
+
+            // Original Write_ItemNavForm_Opening(Output, Tracer), Add_Popup_HTML(Output, Tracer), Add_Controls(Output, Tracer), and Write_ItemNavForm_Closing(Output, Tracer) overrides did not exist for this viewer
+
+            // Close the item nav form (was written externally by MySobek_HtmlSubwriter)
+            Write_ItemNavForm_Closing(Output);
         }
     }
 }

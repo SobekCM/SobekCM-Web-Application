@@ -118,10 +118,7 @@ namespace SobekCM.Library.WebContentViewer.Viewers
         /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
         public override void Add_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("Delete_Verify_WebContentViewer.Add_HTML", "No html added");
-            }
+            Tracer?.Add_Trace("Delete_Verify_WebContentViewer.Add_HTML", "No html added");
 
             // Start the form
             string return_url = (RequestSpecificValues.Current_Mode.Base_URL + Context.Items[RequestCache_Keys.OriginalUrl]).Replace("//", "/").Replace("http:/", "http://");

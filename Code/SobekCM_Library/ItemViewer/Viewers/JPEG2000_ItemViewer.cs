@@ -133,8 +133,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         public JPEG2000_ItemViewer(BriefItemInfo BriefItem, User_Object CurrentUser, Navigation_Object CurrentRequest, Custom_Tracer Tracer, string ViewerCode, string[] FileExtensions)
         {
             // Add the trace
-            if (Tracer != null)
-                Tracer.Add_Trace("JPEG2000_ItemViewer.Constructor");
+            Tracer?.Add_Trace("JPEG2000_ItemViewer.Constructor");
 
             // Save the arguments for use later
             this.BriefItem = BriefItem;
@@ -242,10 +241,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         public override void Write_Left_Nav_Menu_Section(TextWriter Output, Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("JPEG2000_ItemViewer.Write_Nav_Bar_Menu_Section", "Adds small thumbnail for image navigation");
-            }
+            Tracer?.Add_Trace("JPEG2000_ItemViewer.Write_Nav_Bar_Menu_Section", "Adds small thumbnail for image navigation");
 
             if (suppressNavigator)
                 return;
@@ -276,10 +272,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         public override void Write_Main_Viewer_Section(TextWriter Output, Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("JPEG2000_ItemViewer.Write_Main_Viewer_Section", "Adds the container for the zoomable image");
-            }
+            Tracer?.Add_Trace("JPEG2000_ItemViewer.Write_Main_Viewer_Section", "Adds the container for the zoomable image");
 
             Output.WriteLine("<td>");
             Output.WriteLine("<div id=\"sbkJp2_Container\" ></div>");

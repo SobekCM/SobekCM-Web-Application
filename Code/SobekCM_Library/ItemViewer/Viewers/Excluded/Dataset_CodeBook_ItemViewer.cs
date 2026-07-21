@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using System;
 using System.Data;
@@ -140,10 +140,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
 		public override void Write_Main_Viewer_Section(TextWriter Output, Custom_Tracer Tracer)
 		{
-			if (Tracer != null)
-			{
-				Tracer.Add_Trace("Dataset_CodeBook_ItemViewer.Write_Main_Viewer_Section", "");
-			}
+			Tracer?.Add_Trace("Dataset_CodeBook_ItemViewer.Write_Main_Viewer_Section", "");
 
 			Output.WriteLine("          <td><div id=\"sbkDcv_ViewerTitle\">Data Structure / Codebook</div></td>");
 			Output.WriteLine("        </tr>");

@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.WebContent;
 using SobekCM.Tools;
@@ -51,10 +51,7 @@ namespace SobekCM.Library.WebContentViewer.Viewers
         /// <remarks> No html is added here, although children classes should override this virtual method to add HTML </remarks>
         public virtual void Add_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("abstractWebContentViewer.Add_HTML", "No html added");
-            }
+            Tracer?.Add_Trace("abstractWebContentViewer.Add_HTML", "No html added");
 
             // No html to be added here
         }

@@ -152,10 +152,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         public override void Write_Main_Viewer_Section(TextWriter Output, Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("Citation_Standard_ItemViewer.Write_Main_Viewer_Section", "Write the citation information directly to the output stream");
-            }
+            Tracer?.Add_Trace("Citation_Standard_ItemViewer.Write_Main_Viewer_Section", "Write the citation information directly to the output stream");
 
             // Determine if user can edit
             bool userCanEditItem = false;
@@ -276,10 +273,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
 
 
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("Citation_Standard_ItemViewer.Standard_Citation_String", "Configuring brief item data into standard citation format");
-            }
+            Tracer?.Add_Trace("Citation_Standard_ItemViewer.Standard_Citation_String", "Configuring brief item data into standard citation format");
 
             // Use string builder to build this
             const string INDENT = "    ";

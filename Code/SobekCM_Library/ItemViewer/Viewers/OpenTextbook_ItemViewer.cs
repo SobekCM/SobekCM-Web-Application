@@ -123,8 +123,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         public OpenTextbook_ItemViewer(BriefItemInfo BriefItem, User_Object CurrentUser, Navigation_Object CurrentRequest, Custom_Tracer Tracer, string OpenTextbook_ViewerCode, string[] FileExtensions, HttpContext context)
         {
             // Add the trace
-            if (Tracer != null)
-                Tracer.Add_Trace("OpenTextbook_ItemViewer.Constructor");
+            Tracer?.Add_Trace("OpenTextbook_ItemViewer.Constructor");
 
             // Save the arguments for use later
             this.BriefItem = BriefItem;
@@ -306,10 +305,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         {
             if (!isEditMode) return;
 
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("OpenTextbook_ItemViewer.Write_Within_HTML_Head", "Add html editing libraries and javascript to HTML head");
-            }
+            Tracer?.Add_Trace("OpenTextbook_ItemViewer.Write_Within_HTML_Head", "Add html editing libraries and javascript to HTML head");
 
             // Create the CKEditor object
             var editor = new CKEditor{
@@ -379,10 +375,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         public override void Write_Main_Viewer_Section(TextWriter Output, Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("OpenTextbook_ItemViewer.Write_Main_Viewer_Section", "");
-            }
+            Tracer?.Add_Trace("OpenTextbook_ItemViewer.Write_Main_Viewer_Section", "");
 
             string displayFileName = SobekFileSystem.Resource_Web_Uri(BriefItem, filename);
 
@@ -409,10 +402,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
 
             // Try to get the HTML for this
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("HTML_ItemViewer.Write_Main_Viewer_Section", "Reading html for this view from static page");
-            }
+            Tracer?.Add_Trace("HTML_ItemViewer.Write_Main_Viewer_Section", "Reading html for this view from static page");
             string html;
             try
             {

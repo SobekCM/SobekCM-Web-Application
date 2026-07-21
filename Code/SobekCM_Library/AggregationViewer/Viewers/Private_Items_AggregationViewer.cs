@@ -165,10 +165,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         /// <remarks> This writes the HTML from the static browse or info page here  </remarks>
         public override void Write_Main_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("Private_Items_AggregationViewer.Write_Main_HTML", "Adding HTML");
-            }
+            Tracer?.Add_Trace("Private_Items_AggregationViewer.Write_Main_HTML", "Adding HTML");
 
             if (privateItems == null)
             {

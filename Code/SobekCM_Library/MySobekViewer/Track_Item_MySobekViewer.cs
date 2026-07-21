@@ -828,7 +828,7 @@ namespace SobekCM.Library.MySobekViewer
         /// <remarks> This class does nothing, since the individual metadata elements are added as controls, not HTML </remarks>
         public override void Write_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
-            Tracer.Add_Trace("Track_Item_MySobekViewer.Write_HTML", "Do nothing");
+            Tracer.Add_Trace("Track_Item_MySobekViewer.Write_HTML");
 
             //Include the js files
             Output.WriteLine("<script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Jquery_Ui_1_10_3_Custom_Js + "\"></script>");
@@ -837,18 +837,15 @@ namespace SobekCM.Library.MySobekViewer
             Output.WriteLine("<script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Sobekcm_Track_Item_Js + "\" ></script>");
             Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + Static_Resources_Gateway.Jquery_Ui_Css + "\" />");
             Output.WriteLine("<script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Jquery_Timeentry_Js + "\"></script>");
-        }
 
-
-        public override void Add_Controls(TextWriter Output, Custom_Tracer Tracer)
-        {
-            Tracer.Add_Trace("Track_Item_MySobekViewer.Add_Controls", "");
+            // Open the item nav form
+            Write_ItemNavForm_Opening(Output);
 
             string barcode_row_style = String.Empty;
             string manual_row_style = String.Empty;
 
             var builder = new StringBuilder(2000);
-            builder.AppendLine("<!-- Track_Item_MySobekViewer.Add_Controls -->");
+            builder.AppendLine("<!-- Track_Item_MySobekViewer.Write_HTML -->");
             builder.AppendLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + Static_Resources_Gateway.Sobekcm_Mysobek_Css + "\" /> ");
             builder.AppendLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + Static_Resources_Gateway.Sobekcm_Admin_Css + "\" /> ");
 
@@ -1573,12 +1570,11 @@ namespace SobekCM.Library.MySobekViewer
             builder.AppendLine("    });");
             builder.AppendLine("  </script>");
 
-
             Output.Write(builder.ToString());
 
-
+            // Close the item nav form 
+            Write_ItemNavForm_Closing(Output);
         }
-
 
 
 

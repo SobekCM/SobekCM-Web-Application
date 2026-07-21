@@ -1579,10 +1579,7 @@ namespace SobekCM.Library.HTML
 
                     if (sobekcm_home_page_obj == null)
                     {
-                        if (Tracer != null)
-                        {
-                            Tracer.Add_Trace("Aggregation_HtmlSubwriter.add_home_html", "Reading main library home text source file");
-                        }
+                        Tracer?.Add_Trace("Aggregation_HtmlSubwriter.add_home_html", "Reading main library home text source file");
 
                         sobekcm_home_page_text = hierarchyObject.HomePageHtml.Content; //.Get_Home_HTML(RequestSpecificValues.Current_Mode.Language, Tracer);
 

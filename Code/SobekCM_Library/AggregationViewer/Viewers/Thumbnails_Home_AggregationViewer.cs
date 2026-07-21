@@ -72,10 +72,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
         public override void Write_Search_Box_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("Thumbnails_Home_AggregationViewer.Write_Search_Box_HTML", "Adding html for search box");
-            }
+            Tracer?.Add_Trace("Thumbnails_Home_AggregationViewer.Write_Search_Box_HTML", "Adding html for search box");
 
             base.Add_Basic_Search_Box_HTML(Output, Tracer);
         }
@@ -86,10 +83,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         /// <remarks> This adds the search tips by calling the base method <see cref="abstractAggregationViewer.Add_Simple_Search_Tips"/> </remarks>
         public override void Write_Main_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("Thumbnails_Home_AggregationViewer.Write_Main_HTML", "Add the search thumbnails to the home page");
-            }
+            Tracer?.Add_Trace("Thumbnails_Home_AggregationViewer.Write_Main_HTML", "Add the search thumbnails to the home page");
 
             string url_options = UrlWriterHelper.URL_Options(RequestSpecificValues.Current_Mode);
             string urlOptions1 = String.Empty;

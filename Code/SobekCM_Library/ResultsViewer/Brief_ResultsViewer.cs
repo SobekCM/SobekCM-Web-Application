@@ -31,10 +31,7 @@ namespace SobekCM.Library.ResultsViewer
         /// <returns> Sorted tree with the results in hierarchical structure with volumes and issues under the titles and sorted by serial hierarchy </returns>
         public override void Add_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("Brief_ResultsWriter.Add_HTML", "Rendering results in brief view");
-            }
+            Tracer?.Add_Trace("Brief_ResultsWriter.Add_HTML", "Rendering results in brief view");
 
             // If results are null, or no results, return empty string
             if ((PagedResults == null) || (ResultsStats == null) || (ResultsStats.Total_Items <= 0))

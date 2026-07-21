@@ -145,10 +145,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         public override void Write_Main_Viewer_Section(TextWriter Output, Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("Citation_Standard_ItemViewer.Write_Main_Viewer_Section", "Write the citation information directly to the output stream");
-            }
+            Tracer?.Add_Trace("Citation_Standard_ItemViewer.Write_Main_Viewer_Section", "Write the citation information directly to the output stream");
 
 
             // Add the HTML for the citation
@@ -209,10 +206,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <returns> HTML string with the MARC information for this digital resource </returns>
         public string MARC_String(string Width, Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("Citation_ItemViewer.MARC_String", "Configuring METS data into MARC format");
-            }
+            Tracer?.Add_Trace("Citation_ItemViewer.MARC_String", "Configuring METS data into MARC format");
 
             //// Build the value
             var builder = new StringBuilder();

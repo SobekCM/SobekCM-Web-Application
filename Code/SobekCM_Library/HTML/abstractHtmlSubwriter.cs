@@ -298,10 +298,7 @@ namespace SobekCM.Library.HTML
         {
             string languageCode = Web_Language_Enum_Converter.Enum_To_Code(Current_Mode.Language);
 
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("abstractHtmlSubwriter.Get_Collection", "Get aggregation (" + Current_Mode.Aggregation + ") or (" + Current_Mode.Default_Aggregation + ") for language (" + languageCode + ")");
-            }
+            Tracer?.Add_Trace("abstractHtmlSubwriter.Get_Collection", "Get aggregation (" + Current_Mode.Aggregation + ") or (" + Current_Mode.Default_Aggregation + ") for language (" + languageCode + ")");
 
             // If there is an aggregation listed, try to get that now
             if ((Current_Mode.Aggregation.Length > 0) && (Current_Mode.Aggregation != "all"))
@@ -380,10 +377,7 @@ namespace SobekCM.Library.HTML
         /// database and hands off to the <see cref="CachedDataManager" /> to store in the cache. </remarks>
         protected static bool Get_Top_Level_Collection(Navigation_Object Current_Mode, Custom_Tracer Tracer, out Item_Aggregation Aggregation_Object)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("abstractHtmlSubwriter.Get_Top_Level_Collection", String.Empty);
-            }
+            Tracer?.Add_Trace("abstractHtmlSubwriter.Get_Top_Level_Collection", String.Empty);
 
             string languageCode = Web_Language_Enum_Converter.Enum_To_Code(Current_Mode.Language);
 
@@ -438,10 +432,7 @@ namespace SobekCM.Library.HTML
                                     out List<iSearch_Title_Result> Paged_Results,
                                     out HTML_Based_Content Browse_Info_Display_Text)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("abstractHtmlSubwriter.Get_Browse_Info", String.Empty);
-            }
+            Tracer?.Add_Trace("abstractHtmlSubwriter.Get_Browse_Info", String.Empty);
 
             // Set output initially to null
             Paged_Results = null;
@@ -521,17 +512,11 @@ namespace SobekCM.Library.HTML
                     // Was a copy found in the cache?
                     if ((!need_browse_statistics) && (!need_paged_results))
                     {
-                        if (Tracer != null)
-                        {
-                            Tracer.Add_Trace("SobekCM_Assistant.Get_Browse_Info", "Browse statistics and paged results retrieved from cache");
-                        }
+                        Tracer?.Add_Trace("SobekCM_Assistant.Get_Browse_Info", "Browse statistics and paged results retrieved from cache");
                     }
                     else
                     {
-                        if (Tracer != null)
-                        {
-                            Tracer.Add_Trace("SobekCM_Assistant.Get_Browse_Info", "Building results information");
-                        }
+                        Tracer?.Add_Trace("SobekCM_Assistant.Get_Browse_Info", "Building results information");
 
                         // Try to pull more than one page, so we can cache the next page or so
                         List<List<iSearch_Title_Result>> pagesOfResults;

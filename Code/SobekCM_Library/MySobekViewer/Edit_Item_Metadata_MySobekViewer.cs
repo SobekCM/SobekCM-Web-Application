@@ -323,20 +323,12 @@ namespace SobekCM.Library.MySobekViewer
         /// <summary> Add the HTML to be displayed in the main SobekCM viewer area (outside of any form)  </summary>
         /// <param name="Output">Textwriter to write the HTML for this viewer</param>
         /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
-        /// <remarks> Does nothing </remarks>
 		public override void Write_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
-            // DO nothing
-        }
+            // Open the item nav form 
+            Write_ItemNavForm_Opening(Output);
 
-        /// <summary> This is an opportunity to write HTML directly into the main form before any controls are 
-        /// placed in the main place holder </summary>
-        /// <param name="Output">Textwriter to write the pop-up form HTML for this viewer</param>
-        /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
-        /// <remarks> This text will appear within the ItemNavForm form tags  </remarks>
-	    public override void Write_ItemNavForm_Opening(TextWriter Output, Custom_Tracer Tracer)
-        {
-            Output.WriteLine("<!-- Edit_Item_Metadata_MySobekViewer.Write_ItemNavForm_Opening -->");
+            Output.WriteLine("<!-- Edit_Item_Metadata_MySobekViewer.Write_HTML -->");
 
             // Write the top item mimic html portion
             Write_Item_Type_Top(Output, currentItem);
@@ -461,8 +453,7 @@ namespace SobekCM.Library.MySobekViewer
             Output.WriteLine("      <br /><br />");
             Output.WriteLine();
 
-
-            Tracer.Add_Trace("Edit_Item_Metadata_MySobekViewer.Add_Controls", "Render CompleteTemplate html");
+            Tracer.Add_Trace("Edit_Item_Metadata_MySobekViewer.Write_HTML", "Render CompleteTemplate html");
             if (!preview)
             {
                 if (page >= 1)
@@ -492,16 +483,8 @@ namespace SobekCM.Library.MySobekViewer
             Output.WriteLine("</div>");
             Output.WriteLine();
 
-        }
-
-
-        /// <summary> Add the HTML to be added near the top of the page for those viewers that implement pop-up forms for data retrieval </summary>
-        /// <param name="Output"> Textwriter to write the pop-up form HTML for this viewer </param>
-        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-        /// <remarks> This adds any popup divisions for form metadata elements </remarks>
-        public override void Add_Popup_HTML(TextWriter Output, Custom_Tracer Tracer)
-        {
-            Tracer.Add_Trace("Edit_Item_Metadata_MySobekViewer.Add_Popup_HTML", "Add any popup divisions for form elements");
+            // ===== BEGIN: moved from Add_Popup_HTML(Output, Tracer) (was always called - Contains_Popup_Forms is TRUE) =====
+            Tracer.Add_Trace("Edit_Item_Metadata_MySobekViewer.Write_HTML", "Add any popup divisions for form elements");
 
             // Add the hidden field
             Output.WriteLine("<!-- Hidden field is used for postbacks to add new form elements (i.e., new name, new other titles, etc..) -->");
@@ -589,6 +572,10 @@ namespace SobekCM.Library.MySobekViewer
                         break;
                 }
             }
+            // ===== END: moved from Add_Popup_HTML(Output, Tracer) =====
+
+            // Close the item nav form 
+            Write_ItemNavForm_Closing(Output);
         }
 
 

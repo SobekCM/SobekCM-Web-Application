@@ -23,10 +23,7 @@ namespace SobekCM.Library.Citation
         /// <returns> Requested template object for online submissions and editing</returns>
         public static CompleteTemplate Retrieve_Template(string Template_Code, Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("Template_MemoryMgmt_Utility.Retrieve_Template", "");
-            }
+            Tracer?.Add_Trace("Template_MemoryMgmt_Utility.Retrieve_Template", "");
 
             string key = "TEMPLATE_" + Template_Code;
             return SharedCache.Instance.Get(key) as CompleteTemplate;
@@ -40,10 +37,7 @@ namespace SobekCM.Library.Citation
         {
             string key = "TEMPLATE_" + Template_Code;
 
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("Template_MemoryMgmt_Utility.Store_Template", "Adding object '" + key + "' to the cache with expiration of thirty minutes");
-            }
+            Tracer?.Add_Trace("Template_MemoryMgmt_Utility.Store_Template", "Adding object '" + key + "' to the cache with expiration of thirty minutes");
 
             if (SharedCache.Instance[key] == null)
             {

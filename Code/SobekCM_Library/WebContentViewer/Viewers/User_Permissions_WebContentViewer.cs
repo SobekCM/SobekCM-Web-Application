@@ -47,10 +47,7 @@ namespace SobekCM.Library.WebContentViewer.Viewers
         /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
         public override void Add_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("User_Permissions_WebContentViewer.Add_HTML", "No html added");
-            }
+            Tracer?.Add_Trace("User_Permissions_WebContentViewer.Add_HTML", "No html added");
 
             Output.WriteLine("<div class=\"Wchs_Text\">");
             Output.WriteLine("  <p>Below are the users that have permissions to edit this page. This includes system and portal administrators, as well as users and user groups that are individually permissioned to this web content page.</p>");

@@ -65,8 +65,7 @@ namespace SobekCM.Library.ResultsViewer
         public override void Add_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
             //tracer
-            if (Tracer != null)
-                Tracer.Add_Trace("Map_ResultsWriter.Add_HTML", "Rendering results in map view");
+            Tracer?.Add_Trace("Map_ResultsWriter.Add_HTML", "Rendering results in map view");
 
             // Start to build the response
             var mapSearchBuilder = new StringBuilder();

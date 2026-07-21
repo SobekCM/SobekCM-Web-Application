@@ -131,10 +131,7 @@ namespace SobekCM.Library.HTML
         /// <remarks> This always pulls the data directly from disk; this text is not cached. </remarks>
         private bool Get_Simple_Web_Content_Text(Navigation_Object Current_Mode, Custom_Tracer Tracer, out HTML_Based_Content Simple_Web_Content)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("Web_Content_HtmlSubwriter.Get_Simple_Web_Content_Text", String.Empty);
-            }
+            Tracer?.Add_Trace("Web_Content_HtmlSubwriter.Get_Simple_Web_Content_Text", String.Empty);
 
             Simple_Web_Content = null;
 

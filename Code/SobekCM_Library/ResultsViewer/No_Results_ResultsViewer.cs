@@ -30,10 +30,7 @@ namespace SobekCM.Library.ResultsViewer
         /// <returns> Sorted tree with the results in hierarchical structure with volumes and issues under the titles and sorted by serial hierarchy </returns>
         public override void Add_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("No_Results_ResultsWriter.Add_HTML", "Adding no result text");
-            }
+            Tracer?.Add_Trace("No_Results_ResultsWriter.Add_HTML", "Adding no result text");
 
             // Get the no results text
             string noResultsText = Get_NoResults_Text();
@@ -67,8 +64,7 @@ namespace SobekCM.Library.ResultsViewer
                 }
                 catch (Exception)
                 {
-                    if (Tracer != null)
-                        Tracer.Add_Trace("No_Results_ResultsWriter.Add_HTML", "Exception caught while querying Mango state union catalog", Custom_Trace_Type_Enum.Error);
+                    Tracer?.Add_Trace("No_Results_ResultsWriter.Add_HTML", "Exception caught while querying Mango state union catalog", Custom_Trace_Type_Enum.Error);
                 }
             }
 

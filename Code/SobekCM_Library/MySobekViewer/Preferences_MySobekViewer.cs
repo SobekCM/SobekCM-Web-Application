@@ -604,13 +604,11 @@ namespace SobekCM.Library.MySobekViewer
 	    public override void Write_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
             // Do nothing
-        }
 
-        /// <summary> Add the HTML to be displayed in the main SobekCM viewer area with the form </summary>
-        /// <param name="Output"> Textwriter to write the HTML for this viewer</param>
-        /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
-        public override void Write_ItemNavForm_Opening(TextWriter Output, Custom_Tracer Tracer)
-        {
+            // Open the item nav form (was written externally by MySobek_HtmlSubwriter)
+            Write_ItemNavForm_Opening(Output);
+
+            // ===== BEGIN: moved from Write_ItemNavForm_Opening(Output, Tracer) =====
             Tracer.Add_Trace("Preferences_MySobekViewer.Write_HTML", "Do nothing");
 
             Output.WriteLine("<h1>" + Web_Title + "</h1>");
@@ -809,6 +807,12 @@ namespace SobekCM.Library.MySobekViewer
                  : "</td></tr></table></blockquote></div>\n\n<!-- Focus on the first preferences text box -->\n<script type=\"text/javascript\">focus_element('prefGivenName');</script>");
 
 
+            // ===== END: moved from Write_ItemNavForm_Opening(Output, Tracer) =====
+
+            // Original Add_Popup_HTML(Output, Tracer), Add_Controls(Output, Tracer), and Write_ItemNavForm_Closing(Output, Tracer) overrides did not exist for this viewer
+
+            // Close the item nav form (was written externally by MySobek_HtmlSubwriter)
+            Write_ItemNavForm_Closing(Output);
         }
 
         /// <summary> Flag indicates if a user must be logged in to access this 

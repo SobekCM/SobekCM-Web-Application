@@ -164,10 +164,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         public override void Write_Main_Viewer_Section(TextWriter Output, Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("Text_Search_ItemViewer.Write_Main_Viewer_Section", "");
-            }
+            Tracer?.Add_Trace("Text_Search_ItemViewer.Write_Main_Viewer_Section", "");
 
             string search_this_document = "Search this document";
 

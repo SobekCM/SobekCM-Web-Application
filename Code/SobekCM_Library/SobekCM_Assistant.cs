@@ -46,10 +46,7 @@ namespace SobekCM.Library
         /// <remarks> This always pulls the data directly from disk; this text is not cached. </remarks>
         public bool Get_Simple_Web_Content_Text(Navigation_Object Current_Mode, string Base_Directory, Custom_Tracer Tracer, out HTML_Based_Content Simple_Web_Content, out SobekCM_SiteMap Site_Map)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("SobekCM_Assistant.Get_Simple_Web_Content_Text", String.Empty);
-            }
+            Tracer?.Add_Trace("SobekCM_Assistant.Get_Simple_Web_Content_Text", String.Empty);
 
             Site_Map = null;
             Simple_Web_Content = null;
@@ -96,10 +93,7 @@ namespace SobekCM.Library
                     // Only continue if the file exists
                     if (File.Exists(UI_ApplicationCache_Gateway.Settings.Servers.Base_Directory + "design\\webcontent\\sitemaps\\" + sitemap_file))
                     {
-                        if (Tracer != null)
-                        {
-                            Tracer.Add_Trace("SobekCM_Assistant.Get_Simple_Web_Content_Text", "Reading site map file");
-                        }
+                        Tracer?.Add_Trace("SobekCM_Assistant.Get_Simple_Web_Content_Text", "Reading site map file");
 
                         // Try to read this sitemap file
                         Site_Map = SobekCM_SiteMap_Reader.Read_SiteMap_File(UI_ApplicationCache_Gateway.Settings.Servers.Base_Directory + "design\\webcontent\\sitemaps\\" + sitemap_file);
@@ -113,10 +107,7 @@ namespace SobekCM.Library
                     else if (File.Exists(UI_ApplicationCache_Gateway.Settings.Servers.Base_Directory + "design\\webcontent\\" + sitemap_file))
                     {
                         // This is just for some legacy material
-                        if (Tracer != null)
-                        {
-                            Tracer.Add_Trace("SobekCM_Assistant.Get_Simple_Web_Content_Text", "Reading site map file");
-                        }
+                        Tracer?.Add_Trace("SobekCM_Assistant.Get_Simple_Web_Content_Text", "Reading site map file");
 
                         // Try to read this sitemap file
                         Site_Map = SobekCM_SiteMap_Reader.Read_SiteMap_File(UI_ApplicationCache_Gateway.Settings.Servers.Base_Directory + "design\\webcontent\\" + sitemap_file);
@@ -153,10 +144,7 @@ namespace SobekCM.Library
         /// database and hands off to the <see cref="CachedDataManager" /> to store in the cache </remarks>
         public bool Get_User_Folder(string Folder_Name, int User_ID, int Results_Per_Page, int ResultsPage, Custom_Tracer Tracer, out Search_Results_Statistics Complete_Result_Set_Info, out List<iSearch_Title_Result> Paged_Results)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("SobekCM_Assistant.Get_User_Folder", String.Empty);
-            }
+            Tracer?.Add_Trace("SobekCM_Assistant.Get_User_Folder", String.Empty);
 
             // Look to see if the browse statistics are available on any cache for this browse
             bool need_browse_statistics = true;
@@ -173,17 +161,11 @@ namespace SobekCM.Library
             // Was a copy found in the cache?
             if ((!need_browse_statistics) && (!need_paged_results))
             {
-                if (Tracer != null)
-                {
-                    Tracer.Add_Trace("SobekCM_Assistant.Get_User_Folder", "Browse statistics and paged results retrieved from cache");
-                }
+                Tracer?.Add_Trace("SobekCM_Assistant.Get_User_Folder", "Browse statistics and paged results retrieved from cache");
             }
             else
             {
-                if (Tracer != null)
-                {
-                    Tracer.Add_Trace("SobekCM_Assistant.Get_User_Folder", "Building results information");
-                }
+                Tracer?.Add_Trace("SobekCM_Assistant.Get_User_Folder", "Building results information");
 
 
                 Single_Paged_Results_Args returnArgs = Engine_Database.Get_User_Folder_Browse(User_ID, Folder_Name, Results_Per_Page, ResultsPage, false, new List<short>(), need_browse_statistics, Tracer);
@@ -225,10 +207,7 @@ namespace SobekCM.Library
         /// database and hands off to the <see cref="CachedDataManager" /> to store in the cache </remarks>
         public bool Get_Public_User_Folder(int UserFolderID, int ResultsPage, Custom_Tracer Tracer, out Public_User_Folder Folder_Info, out Search_Results_Statistics Complete_Result_Set_Info, out List<iSearch_Title_Result> Paged_Results)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("SobekCM_Assistant.Get_Public_User_Folder", String.Empty);
-            }
+            Tracer?.Add_Trace("SobekCM_Assistant.Get_Public_User_Folder", String.Empty);
 
             // Set output initially to null
             Paged_Results = null;
@@ -266,17 +245,11 @@ namespace SobekCM.Library
             // Was a copy found in the cache?
             if ((!need_browse_statistics) && (!need_paged_results))
             {
-                if (Tracer != null)
-                {
-                    Tracer.Add_Trace("SobekCM_Assistant.Get_User_Folder", "Browse statistics and paged results retrieved from cache");
-                }
+                Tracer?.Add_Trace("SobekCM_Assistant.Get_User_Folder", "Browse statistics and paged results retrieved from cache");
             }
             else
             {
-                if (Tracer != null)
-                {
-                    Tracer.Add_Trace("SobekCM_Assistant.Get_User_Folder", "Building results information");
-                }
+                Tracer?.Add_Trace("SobekCM_Assistant.Get_User_Folder", "Building results information");
 
                 Single_Paged_Results_Args returnArgs = Engine_Database.Get_Public_Folder_Browse(UserFolderID, 20, ResultsPage, false, new List<short>(), need_browse_statistics, Tracer);
                 if (need_browse_statistics)
@@ -342,10 +315,7 @@ namespace SobekCM.Library
                                     out List<iSearch_Title_Result> Paged_Results,
                                     out HTML_Based_Content Browse_Info_Display_Text)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("SobekCM_Assistant.Get_Browse_Info", "RRB: Start of Get_Browse_Info...");
-            }
+            Tracer?.Add_Trace("SobekCM_Assistant.Get_Browse_Info", "RRB: Start of Get_Browse_Info...");
 
             // Set output initially to null
             Browse_Object = null;
@@ -439,17 +409,11 @@ namespace SobekCM.Library
                     // Was a copy found in the cache?
                     if ((!need_browse_statistics) && (!need_paged_results))
                     {
-                        if (Tracer != null)
-                        {
-                            Tracer.Add_Trace("SobekCM_Assistant.Get_Browse_Info", "Browse statistics and paged results retrieved from cache");
-                        }
+                        Tracer?.Add_Trace("SobekCM_Assistant.Get_Browse_Info", "Browse statistics and paged results retrieved from cache");
                     }
                     else
                     {
-                        if (Tracer != null)
-                        {
-                            Tracer.Add_Trace("SobekCM_Assistant.Get_Browse_Info", "Building results information");
-                        }
+                        Tracer?.Add_Trace("SobekCM_Assistant.Get_Browse_Info", "Building results information");
 
                         // Try to pull more than one page, so we can cache the next page or so
                         List<List<iSearch_Title_Result>> pagesOfResults;
@@ -528,10 +492,7 @@ namespace SobekCM.Library
                                        out List<iSearch_Title_Result> Paged_Results,
                                        HttpContext context = null)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("SobekCM_Assistant.Get_Search_Results", String.Empty);
-            }
+            Tracer?.Add_Trace("SobekCM_Assistant.Get_Search_Results", String.Empty);
 
             // Set output initially to null
             Paged_Results = null;
@@ -946,10 +907,7 @@ namespace SobekCM.Library
 
         private void Perform_Database_Search(Custom_Tracer Tracer, List<string> Terms, List<string> Web_Fields, Nullable<DateTime> StartDate, Nullable<DateTime> EndDate, int ActualCount, Navigation_Object Current_Mode, int Current_Sort, Item_Aggregation Aggregation_Object, int Results_Per_Page, bool Potentially_Include_Facets, out Search_Results_Statistics Complete_Result_Set_Info, out List<List<iSearch_Title_Result>> Paged_Results, bool Need_Search_Statistics, HttpContext context = null)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("SobekCM_Assistant.Perform_Database_Search", "Query the database for search results");
-            }
+            Tracer?.Add_Trace("SobekCM_Assistant.Perform_Database_Search", "Query the database for search results");
 
             // Convert the dates to longs
             long Date1 = -1;
@@ -1232,10 +1190,7 @@ namespace SobekCM.Library
 
         private static void Perform_Solr_Search(Custom_Tracer Tracer, List<string> Terms, List<string> Web_Fields, Nullable<DateTime> StartDate, Nullable<DateTime> EndDate, Item_Aggregation Current_Aggregation, int Current_Page, int Current_Sort, int Results_Per_Page, User_Object Current_User, out Search_Results_Statistics Complete_Result_Set_Info, out List<iSearch_Title_Result> Paged_Results, bool Need_Search_Statistics)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("SobekCM_Assistant.Perform_Solr_Search", "Build the Solr query");
-            }
+            Tracer?.Add_Trace("SobekCM_Assistant.Perform_Solr_Search", "Build the Solr query");
 
             // Use this built query to query against Solr
             if (UI_ApplicationCache_Gateway.Settings.System.Search_System == Search_System_Enum.Beta)

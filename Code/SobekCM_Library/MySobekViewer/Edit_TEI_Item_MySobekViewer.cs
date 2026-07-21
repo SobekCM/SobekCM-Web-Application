@@ -798,19 +798,25 @@ namespace SobekCM.Library.MySobekViewer
 
 
 
-        }
 
-        /// <summary> This is an opportunity to write HTML directly into the main form, without
-        /// using the pop-up html form architecture </summary>
-        /// <param name="Output"> Textwriter to write the pop-up form HTML for this viewer </param>
-        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-        /// <remarks> This text will appear within the ItemNavForm form tags </remarks>
-        public override void Write_ItemNavForm_Closing(TextWriter Output, Custom_Tracer Tracer)
-        {
-            if (Tracer != null)
+            // Open the item nav form (was written externally by MySobek_HtmlSubwriter)
+            Write_ItemNavForm_Opening(Output);
+
+            // Original Write_ItemNavForm_Opening(Output, Tracer) and Add_Popup_HTML(Output, Tracer) overrides did not exist for this viewer
+
+            // ===== BEGIN: moved from Add_Controls(Output, Tracer) =====
+            Tracer.Add_Trace("Edit_TEI_Item_MySobekViewer.Add_Controls", String.Empty);
+
+            // Do nothing if this is the very last step
+            if (currentProcessStep == 1)
             {
-                Tracer.Add_Trace("Edit_TEI_Item_MySobekViewer.Write_ItemNavForm_Closing", "");
+                // Add the upload controls to the file place holder
+                add_upload_controls_tei(Output, "", ".xml", Tracer);
             }
+            // ===== END: moved from Add_Controls(Output, Tracer) =====
+
+            // ===== BEGIN: moved from Write_ItemNavForm_Closing(Output, Tracer) =====
+            Tracer?.Add_Trace("Edit_TEI_Item_MySobekViewer.Write_ItemNavForm_Closing", "");
 
             // Add the hidden fields first
             Output.WriteLine("<!-- Hidden field is used for postbacks to indicate what to save and reset -->");
@@ -1376,25 +1382,13 @@ namespace SobekCM.Library.MySobekViewer
             Output.WriteLine("</div>");
             Output.WriteLine("</div>");
 
+            // ===== END: moved from Write_ItemNavForm_Closing(Output, Tracer) =====
+
+            // Close the item nav form (was written externally by MySobek_HtmlSubwriter)
+            Write_ItemNavForm_Closing(Output);
         }
 
         #endregion
-
-        /// <summary> Add controls directly to the form in the main control area placeholder </summary>
-        /// <param name="MainPlaceHolder"> Main place holder to which all main controls are added </param>
-        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-        public override void Add_Controls(TextWriter Output, Custom_Tracer Tracer)
-        {
-            Tracer.Add_Trace("Edit_TEI_Item_MySobekViewer.Add_Controls", String.Empty);
-
-            // Do nothing if this is the very last step
-            if (currentProcessStep == 1)
-            {
-                // Add the upload controls to the file place holder
-                add_upload_controls_tei(Output, "", ".xml", Tracer);
-            }
-        }
-
         #region Step 1: Upload TEI uploadify code
 
         private void add_upload_controls_tei(TextWriter Output, string Prompt, string AllowedFileExtensions, Custom_Tracer Tracer)
@@ -1444,10 +1438,7 @@ namespace SobekCM.Library.MySobekViewer
             }
 
 
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("Citation_Standard_ItemViewer.Standard_Citation_String", "Configuring brief item data into standard citation format");
-            }
+            Tracer?.Add_Trace("Citation_Standard_ItemViewer.Standard_Citation_String", "Configuring brief item data into standard citation format");
 
             // Use string builder to build this
             const string INDENT = "    ";

@@ -57,10 +57,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         public override void Add_Main_Viewer_Section(PlaceHolder MainPlaceHolder, Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("EAD_Container_List_ItemViewer.Add_Main_Viewer_Section", "");
-            }
+            Tracer?.Add_Trace("EAD_Container_List_ItemViewer.Add_Main_Viewer_Section", "");
 
             // Try to get the ead information
             EAD_Transfer_Object eadInfo = SobekEngineClient.Items.Get_Item_EAD(BriefItem.BibID, BriefItem.VID, true, Tracer);

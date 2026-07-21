@@ -1,4 +1,4 @@
-﻿using SobekCM.Core;
+using SobekCM.Core;
 using SobekCM.Core.Client;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.WebContent;
@@ -44,10 +44,7 @@ namespace SobekCM.Library.WebContentViewer.Viewers
         /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
         public override void Add_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("Work_History_WebContentViewer.Add_HTML", "No html added");
-            }
+            Tracer?.Add_Trace("Work_History_WebContentViewer.Add_HTML", "No html added");
 
             Output.WriteLine("<div class=\"Wchs_Text\">");
             Output.WriteLine("  <p>The list of changes, including the user that performed the change, appear below.</p>");

@@ -130,8 +130,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         public JPEG_ItemViewer(BriefItemInfo BriefItem, User_Object CurrentUser, Navigation_Object CurrentRequest, Custom_Tracer Tracer, string JPEG_ViewerCode, string[] FileExtensions)
         {
             // Add the trace
-            if (Tracer != null)
-                Tracer.Add_Trace("JPEG_ItemViewer.Constructor");
+            Tracer?.Add_Trace("JPEG_ItemViewer.Constructor");
 
             // Save the arguments for use later
             this.BriefItem = BriefItem;
@@ -301,10 +300,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         public override void Write_Main_Viewer_Section(TextWriter Output, Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("JPEG_ItemViewer.Write_Main_Viewer_Section", "");
-            }
+            Tracer?.Add_Trace("JPEG_ItemViewer.Write_Main_Viewer_Section", "");
 
             string displayFileName = SobekFileSystem.Resource_Web_Uri(BriefItem, filename);
 

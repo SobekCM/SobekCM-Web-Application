@@ -78,10 +78,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         /// <remarks> This adds the search tips by calling the base method <see cref="abstractAggregationViewer.Add_Simple_Search_Tips"/> </remarks>
         public override void Write_Main_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("Custom_Home_Page_AggregationViewer.Write_Main_HTML", "Add the entire custom page, doing suitable replacements");
-            }
+            Tracer?.Add_Trace("Custom_Home_Page_AggregationViewer.Write_Main_HTML", "Add the entire custom page, doing suitable replacements");
 
             // Do all the replacements
             string text = ViewBag.Hierarchy_Object.HomePageHtml.Content; //.Content;

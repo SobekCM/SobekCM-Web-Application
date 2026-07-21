@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
@@ -88,10 +88,7 @@ namespace SobekCM.Library.MySobekViewer
         ///  <remarks> No html is added here, although some children class override this virtual method to add pop-up form HTML </remarks>
         public virtual void Add_Popup_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("abstract_MySobekViewer.Add_Popup_HTML", "No html added");
-            }
+            Tracer?.Add_Trace("abstract_MySobekViewer.Add_Popup_HTML", "No html added");
 
             // No html to be added here
         }
@@ -102,10 +99,7 @@ namespace SobekCM.Library.MySobekViewer
         /// <remarks> This text will appear within the ItemNavForm form tags </remarks>
         public virtual void Write_ItemNavForm_Opening(TextWriter Output, Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("abstract_MySobekViewer.Write_ItemNavForm_Opening", "No HTML Added");
-            }
+            Tracer?.Add_Trace("abstract_MySobekViewer.Write_ItemNavForm_Opening", "No HTML Added");
         }
 
         /// <summary> This is an opportunity to write HTML directly into the main form, without
@@ -115,10 +109,7 @@ namespace SobekCM.Library.MySobekViewer
         /// <remarks> This text will appear within the ItemNavForm form tags </remarks>
         public virtual void Write_ItemNavForm_Closing(TextWriter Output, Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("abstract_MySobekViewer.Write_ItemNavForm_Closing", "No HTML Added");
-            }
+            Tracer?.Add_Trace("abstract_MySobekViewer.Write_ItemNavForm_Closing", "No HTML Added");
         }
 
         /// <summary> Add controls directly to the form in the main control area placeholder </summary>
@@ -127,10 +118,7 @@ namespace SobekCM.Library.MySobekViewer
         ///  <remarks> No controls are added here, although some children class override this virtual method to add controls </remarks>
         public virtual void Add_Controls(TextWriter Output, Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("abstract_MySobekViewer.Add_Controls", "No controls added");
-            }
+            Tracer?.Add_Trace("abstract_MySobekViewer.Add_Controls", "No controls added");
 
             // No controls to be added here
         }

@@ -138,10 +138,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         /// <remarks> This writes the HTML from the static browse or info page here  </remarks>
         public override void Write_Main_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("Usage_Statistics_AggregationViewer.Write_Main_HTML", "Adding HTML");
-            }
+            Tracer?.Add_Trace("Usage_Statistics_AggregationViewer.Write_Main_HTML", "Adding HTML");
 
             const string COLLECTION_VIEWS = "COLLECTION VIEWS";
             const string ITEM_VIEWS = "ITEM VIEWS";
@@ -580,10 +577,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             {
                 if (File.Exists(directory + "\\stats_usage_definitions.txt"))
                 {
-                    if (Tracer != null)
-                    {
-                        Tracer.Add_Trace("Usage_Statistics_AggregationViewer.add_usage_definitions", "Loading usage definitions");
-                    }
+                    Tracer?.Add_Trace("Usage_Statistics_AggregationViewer.add_usage_definitions", "Loading usage definitions");
 
                     try
                     {
@@ -606,8 +600,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 
                 string sysName = RequestSpecificValues.Current_Mode.Instance_Name;
 
-                if (Tracer != null)
-                    Tracer.Add_Trace("Usage_Statistics_AggregationViewer.add_usage_definitions", "Rendering HTML read from source file");
+                Tracer?.Add_Trace("Usage_Statistics_AggregationViewer.add_usage_definitions", "Rendering HTML read from source file");
                 Output.WriteLine("<div class=\"SobekText\">");
                 Output.WriteLine(usageDefinitions.Replace("<%BASEURL%>", RequestSpecificValues.Current_Mode.Base_URL).Replace("<%?URLOPTS%>", urloptions).Replace("<%SYSNAME%>", sysName));
                 Output.WriteLine("</div>");
@@ -615,8 +608,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             }
             else
             {
-                if (Tracer != null)
-                    Tracer.Add_Trace("Usage_Statistics_AggregationViewer.add_usage_definitions", "Rendering Default HTML");
+                Tracer?.Add_Trace("Usage_Statistics_AggregationViewer.add_usage_definitions", "Rendering Default HTML");
                 Output.WriteLine("<div class=\"SobekText\">");
                 Output.WriteLine("<p>The following terms are defined below:</p>");
 

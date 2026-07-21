@@ -135,10 +135,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         /// <remarks> This adds the title of the static browse or info into the box </remarks>
         public override void Write_Search_Box_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("Metadata_Browse_AggregationViewer.Write_Search_Box_HTML", "Adding HTML");
-            }
+            Tracer?.Add_Trace("Metadata_Browse_AggregationViewer.Write_Search_Box_HTML", "Adding HTML");
 
             if ((browseObject != null) && (browseObject.Source_Data_Type == Item_Aggregation_Child_Source_Data_Enum.Static_HTML))
             {
@@ -164,10 +161,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         /// <remarks> This writes the HTML from the static browse or info page here  </remarks>
         public override void Write_Main_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("Metadata_Browse_AggregationViewer.Write_Main_HTML", "Adding HTML");
-            }
+            Tracer?.Add_Trace("Metadata_Browse_AggregationViewer.Write_Main_HTML", "Adding HTML");
 
             // Get collection of (public) browse bys linked to this aggregation
             ReadOnlyCollection<Item_Aggregation_Child_Page> public_browses = ViewBag.Hierarchy_Object.Browse_By_Pages;

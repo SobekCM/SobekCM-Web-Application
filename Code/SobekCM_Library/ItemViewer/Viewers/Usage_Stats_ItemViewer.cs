@@ -139,10 +139,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         public override void Write_Main_Viewer_Section(TextWriter Output, Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("Usage_Stats_ItemViewer.Write_Main_Viewer_Section", "Write the usage statistics information directly to the output stream");
-            }
+            Tracer?.Add_Trace("Usage_Stats_ItemViewer.Write_Main_Viewer_Section", "Write the usage statistics information directly to the output stream");
 
             // Determine if user can edit
             bool userCanEditItem = false;
@@ -192,10 +189,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <returns> Sttring with the statistical usage information for this item and title</returns>
         protected string Statistics_String(Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("Citation_ItemViewer.Statistics_String", "Create the statistics html");
-            }
+            Tracer?.Add_Trace("Citation_ItemViewer.Statistics_String", "Create the statistics html");
 
             int hits = 0;
             int sessions = 0;

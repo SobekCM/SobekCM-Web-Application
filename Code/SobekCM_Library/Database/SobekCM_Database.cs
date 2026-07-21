@@ -180,10 +180,7 @@ namespace SobekCM.Library.Database
         /// This is used by the <see cref="Statistics_HtmlSubwriter"/> class</remarks>
         public static DataSet Statistics_Aggregation_Titles(string AggregationCode, Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("SobekCM_Database.Statistics_Aggregation_Titles", "Pulling data from database");
-            }
+            Tracer?.Add_Trace("SobekCM_Database.Statistics_Aggregation_Titles", "Pulling data from database");
 
             try
             {
@@ -196,12 +193,9 @@ namespace SobekCM.Library.Database
             catch (Exception ee)
             {
                 lastException = ee;
-                if (Tracer != null)
-                {
-                    Tracer.Add_Trace("SobekCM_Database.Statistics_Aggregation_Titles", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Statistics_Aggregation_Titles", ee.Message, Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Statistics_Aggregation_Titles", ee.StackTrace, Custom_Trace_Type_Enum.Error);
-                }
+                Tracer?.Add_Trace("SobekCM_Database.Statistics_Aggregation_Titles", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Statistics_Aggregation_Titles", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Statistics_Aggregation_Titles", ee.StackTrace, Custom_Trace_Type_Enum.Error);
                 return null;
             }
         }
@@ -217,10 +211,7 @@ namespace SobekCM.Library.Database
         /// This is used by the <see cref="Statistics_HtmlSubwriter"/> class</remarks>
         public static DataTable Statistics_By_Date_Range(int Early_Year, int Early_Month, int Last_Year, int Last_Month, Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("SobekCM_Database.Statistics_By_Date_Range", "Pulling data from database");
-            }
+            Tracer?.Add_Trace("SobekCM_Database.Statistics_By_Date_Range", "Pulling data from database");
 
             try
             {
@@ -236,12 +227,9 @@ namespace SobekCM.Library.Database
             catch (Exception ee)
             {
                 lastException = ee;
-                if (Tracer != null)
-                {
-                    Tracer.Add_Trace("SobekCM_Database.Statistics_By_Date_Range", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Statistics_By_Date_Range", ee.Message, Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Statistics_By_Date_Range", ee.StackTrace, Custom_Trace_Type_Enum.Error);
-                }
+                Tracer?.Add_Trace("SobekCM_Database.Statistics_By_Date_Range", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Statistics_By_Date_Range", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Statistics_By_Date_Range", ee.StackTrace, Custom_Trace_Type_Enum.Error);
                 return null;
             }
         }
@@ -257,10 +245,7 @@ namespace SobekCM.Library.Database
         /// This is used by the <see cref="Statistics_HtmlSubwriter"/> class</remarks>
         public static DataTable Get_Aggregation_Statistics_History(string AggregationCode, Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("SobekCM_Database.Get_Collection_Statistics_History", "Pulling history for '" + AggregationCode + "' from database");
-            }
+            Tracer?.Add_Trace("SobekCM_Database.Get_Collection_Statistics_History", "Pulling history for '" + AggregationCode + "' from database");
 
             try
             {
@@ -273,12 +258,9 @@ namespace SobekCM.Library.Database
             catch (Exception ee)
             {
                 lastException = ee;
-                if (Tracer != null)
-                {
-                    Tracer.Add_Trace("SobekCM_Database.Get_Aggregation_Statistics_History", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Get_Aggregation_Statistics_History", ee.Message, Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Get_Aggregation_Statistics_History", ee.StackTrace, Custom_Trace_Type_Enum.Error);
-                }
+                Tracer?.Add_Trace("SobekCM_Database.Get_Aggregation_Statistics_History", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Get_Aggregation_Statistics_History", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Get_Aggregation_Statistics_History", ee.StackTrace, Custom_Trace_Type_Enum.Error);
                 return null;
             }
         }
@@ -293,10 +275,7 @@ namespace SobekCM.Library.Database
         /// This is used by the <see cref="Internal_HtmlSubwriter"/> class</remarks>
         public static DataTable Get_Item_Aggregation_Count(int Option, Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("SobekCM_Database.Get_Item_Aggregation_Count", "Pulling list from database");
-            }
+            Tracer?.Add_Trace("SobekCM_Database.Get_Item_Aggregation_Count", "Pulling list from database");
 
             try
             {
@@ -311,12 +290,9 @@ namespace SobekCM.Library.Database
             catch (Exception ee)
             {
                 lastException = ee;
-                if (Tracer != null)
-                {
-                    Tracer.Add_Trace("SobekCM_Database.Get_Item_Aggregation_Count", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Get_Item_Aggregation_Count", ee.Message, Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Get_Item_Aggregation_Count", ee.StackTrace, Custom_Trace_Type_Enum.Error);
-                }
+                Tracer?.Add_Trace("SobekCM_Database.Get_Item_Aggregation_Count", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Get_Item_Aggregation_Count", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Get_Item_Aggregation_Count", ee.StackTrace, Custom_Trace_Type_Enum.Error);
                 return null;
             }
         }
@@ -330,10 +306,7 @@ namespace SobekCM.Library.Database
         /// This is used by the <see cref="Internal_HtmlSubwriter"/> class</remarks>
         public static DataTable Get_Item_Aggregation_Count(DateTime Date1, int Option, Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("SobekCM_Database.Get_Item_Aggregation_Count", "Pulling from database ( includes fytd starting " + Date1.ToShortDateString() + ")");
-            }
+            Tracer?.Add_Trace("SobekCM_Database.Get_Item_Aggregation_Count", "Pulling from database ( includes fytd starting " + Date1.ToShortDateString() + ")");
 
             try
             {
@@ -350,12 +323,9 @@ namespace SobekCM.Library.Database
             catch (Exception ee)
             {
                 lastException = ee;
-                if (Tracer != null)
-                {
-                    Tracer.Add_Trace("SobekCM_Database.Get_Item_Aggregation_Count", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Get_Item_Aggregation_Count", ee.Message, Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Get_Item_Aggregation_Count", ee.StackTrace, Custom_Trace_Type_Enum.Error);
-                }
+                Tracer?.Add_Trace("SobekCM_Database.Get_Item_Aggregation_Count", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Get_Item_Aggregation_Count", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Get_Item_Aggregation_Count", ee.StackTrace, Custom_Trace_Type_Enum.Error);
                 return null;
             }
         }
@@ -370,10 +340,7 @@ namespace SobekCM.Library.Database
         /// This is used by the <see cref="Internal_HtmlSubwriter"/> class</remarks>
         public static DataTable Get_Item_Aggregation_Count_DateRange(DateTime Date1, DateTime Date2, int Option, Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("SobekCM_Database.Get_Item_Aggregation_Count_DateRange", "Pulling from database");
-            }
+            Tracer?.Add_Trace("SobekCM_Database.Get_Item_Aggregation_Count_DateRange", "Pulling from database");
 
             try
             {
@@ -390,12 +357,9 @@ namespace SobekCM.Library.Database
             catch (Exception ee)
             {
                 lastException = ee;
-                if (Tracer != null)
-                {
-                    Tracer.Add_Trace("SobekCM_Database.Get_Item_Aggregation_Count_DateRange", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Get_Item_Aggregation_Count_DateRange", ee.Message, Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Get_Item_Aggregation_Count_DateRange", ee.StackTrace, Custom_Trace_Type_Enum.Error);
-                }
+                Tracer?.Add_Trace("SobekCM_Database.Get_Item_Aggregation_Count_DateRange", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Get_Item_Aggregation_Count_DateRange", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Get_Item_Aggregation_Count_DateRange", ee.StackTrace, Custom_Trace_Type_Enum.Error);
                 return null;
             }
         }
@@ -408,10 +372,7 @@ namespace SobekCM.Library.Database
         /// <remarks> This calls the 'SobekCM_Page_Item_Count_History' stored procedure </remarks>
         public static DataTable Get_Page_Item_Count_History(Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("SobekCM_Database.Get_Page_Item_Count_History", "Pulling from database");
-            }
+            Tracer?.Add_Trace("SobekCM_Database.Get_Page_Item_Count_History", "Pulling from database");
 
             try
             {
@@ -430,12 +391,9 @@ namespace SobekCM.Library.Database
             catch (Exception ee)
             {
                 lastException = ee;
-                if (Tracer != null)
-                {
-                    Tracer.Add_Trace("SobekCM_Database.Get_Page_Item_Count_History", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Get_Page_Item_Count_History", ee.Message, Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Get_Page_Item_Count_History", ee.StackTrace, Custom_Trace_Type_Enum.Error);
-                }
+                Tracer?.Add_Trace("SobekCM_Database.Get_Page_Item_Count_History", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Get_Page_Item_Count_History", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Get_Page_Item_Count_History", ee.StackTrace, Custom_Trace_Type_Enum.Error);
                 return null;
             }
         }
@@ -454,10 +412,7 @@ namespace SobekCM.Library.Database
         /// <remarks> This calls the 'SobekCM_Coordinate_Points_By_Aggregation' stored procedure </remarks>
         public static DataTable Get_All_Items_By_AggregationID(string AggregationCode, List<string> FIDs, Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("SobekCM_Database.Get_All_Items_By_AggregationID", "Pull the item list");
-            }
+            Tracer?.Add_Trace("SobekCM_Database.Get_All_Items_By_AggregationID", "Pull the item list");
 
             string HOOK_FIDDBCallPrefix = "SobekCM_Metadata_Basic_Search_Table"; //this is the correct sql syntax for searching the db table for a specific metadata type
             int nonFIDsParamCount = 2; //how many non fids are there?
@@ -499,10 +454,7 @@ namespace SobekCM.Library.Database
         /// <remarks> This calls the 'SobekCM_Get_Metadata_Name_From_MetadataTypeID' stored procedure </remarks>
         public static string Get_Metadata_Name_From_MetadataTypeID(short MetadataTypeId, Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("SobekCM_Database.Get_Metadata_Name_From_MetadataTypeID", "Get the metadataID name");
-            }
+            Tracer?.Add_Trace("SobekCM_Database.Get_Metadata_Name_From_MetadataTypeID", "Get the metadataID name");
 
             // Build the parameter list
             EalDbParameter[] paramList = new EalDbParameter[1];
@@ -531,10 +483,7 @@ namespace SobekCM.Library.Database
             IsDark = true;
             IP_Restrction_Mask = -1;
 
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("SobekCM_Database.Get_Item_Restrictions", "");
-            }
+            Tracer?.Add_Trace("SobekCM_Database.Get_Item_Restrictions", "");
 
             try
             {
@@ -556,12 +505,9 @@ namespace SobekCM.Library.Database
             catch (Exception ee)
             {
                 lastException = ee;
-                if (Tracer != null)
-                {
-                    Tracer.Add_Trace("SobekCM_Database.Get_Item_Restrictions", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Get_Item_Restrictions", ee.Message, Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Get_Item_Restrictions", ee.StackTrace, Custom_Trace_Type_Enum.Error);
-                }
+                Tracer?.Add_Trace("SobekCM_Database.Get_Item_Restrictions", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Get_Item_Restrictions", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Get_Item_Restrictions", ee.StackTrace, Custom_Trace_Type_Enum.Error);
             }
         }
 
@@ -572,10 +518,7 @@ namespace SobekCM.Library.Database
         /// <remarks> This calls the 'SobekCM_Get_BibID_VID_From_ItemID' stored procedure </remarks> 
         public static DataRow Lookup_Item_By_ItemID(int ItemID, Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("SobekCM_Database.Lookup_Item_By_ItemID", "Trying to pull information for " + ItemID);
-            }
+            Tracer?.Add_Trace("SobekCM_Database.Lookup_Item_By_ItemID", "Trying to pull information for " + ItemID);
 
             try
             {
@@ -597,12 +540,9 @@ namespace SobekCM.Library.Database
             catch (Exception ee)
             {
                 lastException = ee;
-                if (Tracer != null)
-                {
-                    Tracer.Add_Trace("SobekCM_Database.Lookup_Item_By_ItemID", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Lookup_Item_By_ItemID", ee.Message, Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Lookup_Item_By_ItemID", ee.StackTrace, Custom_Trace_Type_Enum.Error);
-                }
+                Tracer?.Add_Trace("SobekCM_Database.Lookup_Item_By_ItemID", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Lookup_Item_By_ItemID", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Lookup_Item_By_ItemID", ee.StackTrace, Custom_Trace_Type_Enum.Error);
                 return null;
             }
         }
@@ -621,10 +561,7 @@ namespace SobekCM.Library.Database
         /// <remarks> This calls the 'SobekCM_Delete_Portal' stored procedure </remarks>
         public static bool Delete_URL_Portal(int PortalID, Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("SobekCM_Database.Delete_URL_Portal", "Delete a URL Portal by portal id ( " + PortalID + " )");
-            }
+            Tracer?.Add_Trace("SobekCM_Database.Delete_URL_Portal", "Delete a URL Portal by portal id ( " + PortalID + " )");
 
             try
             {
@@ -639,12 +576,9 @@ namespace SobekCM.Library.Database
             }
             catch (Exception ee)
             {
-                if (Tracer != null)
-                {
-                    Tracer.Add_Trace("SobekCM_Database.Delete_URL_Portal", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Delete_URL_Portal", ee.Message, Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Delete_URL_Portal", ee.StackTrace, Custom_Trace_Type_Enum.Error);
-                }
+                Tracer?.Add_Trace("SobekCM_Database.Delete_URL_Portal", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Delete_URL_Portal", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Delete_URL_Portal", ee.StackTrace, Custom_Trace_Type_Enum.Error);
                 return false;
             }
         }
@@ -664,10 +598,7 @@ namespace SobekCM.Library.Database
         /// <remarks> This calls the 'SobekCM_Edit_Portal' stored procedure </remarks>
         public static int Edit_URL_Portal(int PortalID, string BaseUrl, bool IsActive, bool IsDefault, string Abbreviation, string Name, string DefaultAggregation, string DefaultWebSkin, string BasePurl, Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("SobekCM_Database.Edit_URL_Portal", "Edit an existing URL portal, or add a new one");
-            }
+            Tracer?.Add_Trace("SobekCM_Database.Edit_URL_Portal", "Edit an existing URL portal, or add a new one");
 
             try
             {
@@ -691,12 +622,9 @@ namespace SobekCM.Library.Database
             }
             catch (Exception ee)
             {
-                if (Tracer != null)
-                {
-                    Tracer.Add_Trace("SobekCM_Database.Edit_URL_Portal", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Edit_URL_Portal", ee.Message, Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Edit_URL_Portal", ee.StackTrace, Custom_Trace_Type_Enum.Error);
-                }
+                Tracer?.Add_Trace("SobekCM_Database.Edit_URL_Portal", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Edit_URL_Portal", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Edit_URL_Portal", ee.StackTrace, Custom_Trace_Type_Enum.Error);
                 return -1;
             }
         }
@@ -733,10 +661,7 @@ namespace SobekCM.Library.Database
         /// <remarks> This calls the 'SobekCM_Item_List_Brief2' stored procedure </remarks> 
         public static DataSet Get_Item_List(bool IncludePrivate, Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("SobekCM_Database.Get_Item_List", String.Empty);
-            }
+            Tracer?.Add_Trace("SobekCM_Database.Get_Item_List", String.Empty);
 
             DataSet tempSet = EalDbAccess.ExecuteDataset(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Item_List_Brief2", new List<EalDbParameter> { new EalDbParameter("@include_private", IncludePrivate) });
 
@@ -762,10 +687,7 @@ namespace SobekCM.Library.Database
         /// <remarks> This calls the 'SobekCM_Get_All_IP_Restrictions' stored procedure </remarks> 
         public static DataTable Get_IP_Restriction_Ranges(Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("Engine_Database.Get_IP_Restriction_Range", "Pulls all the IP restriction range information");
-            }
+            Tracer?.Add_Trace("Engine_Database.Get_IP_Restriction_Range", "Pulls all the IP restriction range information");
 
             try
             {
@@ -781,12 +703,9 @@ namespace SobekCM.Library.Database
             catch (Exception ee)
             {
                 lastException = ee;
-                if (Tracer != null)
-                {
-                    Tracer.Add_Trace("SobekCM_Database.Get_IP_Restriction_Ranges", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Get_IP_Restriction_Ranges", ee.Message, Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Get_IP_Restriction_Ranges", ee.StackTrace, Custom_Trace_Type_Enum.Error);
-                }
+                Tracer?.Add_Trace("SobekCM_Database.Get_IP_Restriction_Ranges", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Get_IP_Restriction_Ranges", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Get_IP_Restriction_Ranges", ee.StackTrace, Custom_Trace_Type_Enum.Error);
                 return null;
             }
         }
@@ -799,10 +718,7 @@ namespace SobekCM.Library.Database
         /// <remarks> This calls the 'SobekCM_Get_IP_Restriction_Range' stored procedure </remarks> 
         public static DataSet Get_IP_Restriction_Range_Details(int PrimaryID, Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("SobekCM_Database.Get_IP_Restriction_Range_Details", "Pulls all the IP restriction range details for range #" + PrimaryID);
-            }
+            Tracer?.Add_Trace("SobekCM_Database.Get_IP_Restriction_Range_Details", "Pulls all the IP restriction range details for range #" + PrimaryID);
 
             try
 
@@ -826,12 +742,9 @@ namespace SobekCM.Library.Database
             catch (Exception ee)
             {
                 lastException = ee;
-                if (Tracer != null)
-                {
-                    Tracer.Add_Trace("SobekCM_Database.Get_IP_Restriction_Range_Details", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Get_IP_Restriction_Range_Details", ee.Message, Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Get_IP_Restriction_Range_Details", ee.StackTrace, Custom_Trace_Type_Enum.Error);
-                }
+                Tracer?.Add_Trace("SobekCM_Database.Get_IP_Restriction_Range_Details", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Get_IP_Restriction_Range_Details", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Get_IP_Restriction_Range_Details", ee.StackTrace, Custom_Trace_Type_Enum.Error);
                 return null;
             }
         }
@@ -843,10 +756,7 @@ namespace SobekCM.Library.Database
         /// <remarks> This calls the 'SobekCM_Delete_Single_IP' stored procedure </remarks> 
         public static bool Delete_Single_IP(int PrimaryID, Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("SobekCM_Database.Delete_Single_IP", "Delete single IP information within a range");
-            }
+            Tracer?.Add_Trace("SobekCM_Database.Delete_Single_IP", "Delete single IP information within a range");
 
             try
             {
@@ -862,12 +772,9 @@ namespace SobekCM.Library.Database
             catch (Exception ee)
             {
                 lastException = ee;
-                if (Tracer != null)
-                {
-                    Tracer.Add_Trace("SobekCM_Database.Delete_Single_IP", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Delete_Single_IP", ee.Message, Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Delete_Single_IP", ee.StackTrace, Custom_Trace_Type_Enum.Error);
-                }
+                Tracer?.Add_Trace("SobekCM_Database.Delete_Single_IP", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Delete_Single_IP", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Delete_Single_IP", ee.StackTrace, Custom_Trace_Type_Enum.Error);
                 return false;
             }
         }
@@ -883,10 +790,7 @@ namespace SobekCM.Library.Database
         /// <remarks> This calls the 'SobekCM_Edit_Single_IP' stored procedure </remarks> 
         public static int Edit_Single_IP(int PrimaryID, int IpRangeID, string StartIp, string EndIp, string Note, Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("SobekCM_Database.Edit_Single_IP", "Edit a single IP within a restriction range");
-            }
+            Tracer?.Add_Trace("SobekCM_Database.Edit_Single_IP", "Edit a single IP within a restriction range");
 
             try
             {
@@ -907,12 +811,9 @@ namespace SobekCM.Library.Database
             catch (Exception ee)
             {
                 lastException = ee;
-                if (Tracer != null)
-                {
-                    Tracer.Add_Trace("SobekCM_Database.Edit_Single_IP", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Edit_Single_IP", ee.Message, Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Edit_Single_IP", ee.StackTrace, Custom_Trace_Type_Enum.Error);
-                }
+                Tracer?.Add_Trace("SobekCM_Database.Edit_Single_IP", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Edit_Single_IP", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Edit_Single_IP", ee.StackTrace, Custom_Trace_Type_Enum.Error);
                 return -1;
             }
         }
@@ -928,10 +829,7 @@ namespace SobekCM.Library.Database
         /// <remarks> This calls the 'SobekCM_Edit_IP_Range' stored procedure </remarks> 
         public static bool Edit_IP_Range(int IpRangeID, string Title, string Notes, string ItemRestrictedStatement, Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("SobekCM_Database.Edit_IP_Range", "Edit an existing IP restriction range");
-            }
+            Tracer?.Add_Trace("SobekCM_Database.Edit_IP_Range", "Edit an existing IP restriction range");
 
             try
             {
@@ -950,12 +848,9 @@ namespace SobekCM.Library.Database
             catch (Exception ee)
             {
                 lastException = ee;
-                if (Tracer != null)
-                {
-                    Tracer.Add_Trace("SobekCM_Database.Edit_IP_Range", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Edit_IP_Range", ee.Message, Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Edit_IP_Range", ee.StackTrace, Custom_Trace_Type_Enum.Error);
-                }
+                Tracer?.Add_Trace("SobekCM_Database.Edit_IP_Range", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Edit_IP_Range", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Edit_IP_Range", ee.StackTrace, Custom_Trace_Type_Enum.Error);
                 return false;
             }
         }
@@ -967,10 +862,7 @@ namespace SobekCM.Library.Database
         /// <remarks> This calls the 'SobekCM_Delete_IP_Range' stored procedure </remarks> 
         public static bool Delete_IP_Range(int IdToDelete, Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("SobekCM_Database.Delete_IP_Range", "Delete an existing IP restriction range");
-            }
+            Tracer?.Add_Trace("SobekCM_Database.Delete_IP_Range", "Delete an existing IP restriction range");
 
             try
             {
@@ -986,12 +878,9 @@ namespace SobekCM.Library.Database
             catch (Exception ee)
             {
                 lastException = ee;
-                if (Tracer != null)
-                {
-                    Tracer.Add_Trace("SobekCM_Database.Delete_IP_Range", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Delete_IP_Range", ee.Message, Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Delete_IP_Range", ee.StackTrace, Custom_Trace_Type_Enum.Error);
-                }
+                Tracer?.Add_Trace("SobekCM_Database.Delete_IP_Range", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Delete_IP_Range", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Delete_IP_Range", ee.StackTrace, Custom_Trace_Type_Enum.Error);
                 return false;
             }
         }
@@ -1103,10 +992,7 @@ namespace SobekCM.Library.Database
         /// <remarks> This calls the 'mySobek_Save_User' stored procedure</remarks> 
         public static bool Save_User(User_Object User, string Password, User_Authentication_Type_Enum AuthenticationType, Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("SobekCM_Database.Save_User", String.Empty);
-            }
+            Tracer?.Add_Trace("SobekCM_Database.Save_User", String.Empty);
 
             // Save the basic information about this user
             bool result = save_user_basic_information(User, Password, AuthenticationType, Tracer);
@@ -1139,10 +1025,7 @@ namespace SobekCM.Library.Database
         /// <remarks> This calls the 'mySobek_Save_User' stored procedure</remarks> 
         private static bool save_user_basic_information(User_Object User, string Password, User_Authentication_Type_Enum AuthenticationType, Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("SobekCM_Database.save_user_basic_information", String.Empty);
-            }
+            Tracer?.Add_Trace("SobekCM_Database.save_user_basic_information", String.Empty);
 
             const string SALT = "This is my salt to add to the password";
             string encryptedPassword = SecurityInfo.SHA1_EncryptString(Password + SALT);
@@ -1204,12 +1087,9 @@ namespace SobekCM.Library.Database
             catch (Exception ee)
             {
                 lastException = ee;
-                if (Tracer != null)
-                {
-                    Tracer.Add_Trace("SobekCM_Database.Save_User", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Save_User", ee.Message, Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Save_User", ee.StackTrace, Custom_Trace_Type_Enum.Error);
-                }
+                Tracer?.Add_Trace("SobekCM_Database.Save_User", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Save_User", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Save_User", ee.StackTrace, Custom_Trace_Type_Enum.Error);
                 return false;
             }
         }
@@ -1221,10 +1101,7 @@ namespace SobekCM.Library.Database
         /// <remarks> This calls the 'mySobek_Save_User' stored procedure</remarks> 
         private static bool clear_user_settings(int userid, Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("SobekCM_Database.clear_user_settings", String.Empty);
-            }
+            Tracer?.Add_Trace("SobekCM_Database.clear_user_settings", String.Empty);
 
             try
             {
@@ -1238,12 +1115,9 @@ namespace SobekCM.Library.Database
             catch (Exception ee)
             {
                 lastException = ee;
-                if (Tracer != null)
-                {
-                    Tracer.Add_Trace("SobekCM_Database.Save_User", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Save_User", ee.Message, Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Save_User", ee.StackTrace, Custom_Trace_Type_Enum.Error);
-                }
+                Tracer?.Add_Trace("SobekCM_Database.Save_User", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Save_User", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Save_User", ee.StackTrace, Custom_Trace_Type_Enum.Error);
                 return false;
             }
         }
@@ -1257,10 +1131,7 @@ namespace SobekCM.Library.Database
         /// <remarks> This calls the 'mySobek_Save_User' stored procedure</remarks> 
         private static bool save_user_settings(int userid, string setting_key, string setting_value, Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("SobekCM_Database.save_user_settings", "Saving setting for " + setting_key);
-            }
+            Tracer?.Add_Trace("SobekCM_Database.save_user_settings", "Saving setting for " + setting_key);
 
             try
             {
@@ -1276,12 +1147,9 @@ namespace SobekCM.Library.Database
             catch (Exception ee)
             {
                 lastException = ee;
-                if (Tracer != null)
-                {
-                    Tracer.Add_Trace("SobekCM_Database.Save_User", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Save_User", ee.Message, Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Save_User", ee.StackTrace, Custom_Trace_Type_Enum.Error);
-                }
+                Tracer?.Add_Trace("SobekCM_Database.Save_User", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Save_User", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Save_User", ee.StackTrace, Custom_Trace_Type_Enum.Error);
                 return false;
             }
         }
@@ -1321,10 +1189,7 @@ namespace SobekCM.Library.Database
         /// <remarks> This calls the 'mySobek_Change_Password' stored procedure</remarks> 
         public static bool Change_Password(string Username, string CurrentPassword, string NewPassword, bool IsTemporary, Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("SobekCM_Database.Change_Password", String.Empty);
-            }
+            Tracer?.Add_Trace("SobekCM_Database.Change_Password", String.Empty);
 
             const string SALT = "This is my salt to add to the password";
             string encryptedCurrentPassword = SecurityInfo.SHA1_EncryptString(CurrentPassword + SALT);
@@ -1347,12 +1212,9 @@ namespace SobekCM.Library.Database
             catch (Exception ee)
             {
                 lastException = ee;
-                if (Tracer != null)
-                {
-                    Tracer.Add_Trace("SobekCM_Database.Change_Password", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Change_Password", ee.Message, Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Change_Password", ee.StackTrace, Custom_Trace_Type_Enum.Error);
-                }
+                Tracer?.Add_Trace("SobekCM_Database.Change_Password", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Change_Password", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Change_Password", ee.StackTrace, Custom_Trace_Type_Enum.Error);
                 return false;
             }
 
@@ -1369,10 +1231,7 @@ namespace SobekCM.Library.Database
         /// This is used to enforce uniqueness during registration </remarks> 
         public static bool UserName_Exists(string UserName, string Email, out bool UserNameExists, out bool EmailExists, Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("SobekCM_Database.UserName_Exists", String.Empty);
-            }
+            Tracer?.Add_Trace("SobekCM_Database.UserName_Exists", String.Empty);
 
             try
             {
@@ -1392,12 +1251,9 @@ namespace SobekCM.Library.Database
             catch (Exception ee)
             {
                 lastException = ee;
-                if (Tracer != null)
-                {
-                    Tracer.Add_Trace("SobekCM_Database.UserName_Exists", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.UserName_Exists", ee.Message, Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.UserName_Exists", ee.StackTrace, Custom_Trace_Type_Enum.Error);
-                }
+                Tracer?.Add_Trace("SobekCM_Database.UserName_Exists", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.UserName_Exists", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.UserName_Exists", ee.StackTrace, Custom_Trace_Type_Enum.Error);
                 UserNameExists = true;
                 EmailExists = true;
                 return false;
@@ -1412,10 +1268,7 @@ namespace SobekCM.Library.Database
         /// <remarks> This calls the 'mySobek_Set_Receive_Stats_Email_Flag' stored procedure</remarks> 
         public static bool Set_User_Receive_Stats_Email(int UserID, bool NewFlag, Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("SobekCM_Database.Set_Receive_Stats_Email_Flag", String.Empty);
-            }
+            Tracer?.Add_Trace("SobekCM_Database.Set_Receive_Stats_Email_Flag", String.Empty);
 
             try
             {
@@ -1430,12 +1283,9 @@ namespace SobekCM.Library.Database
             catch (Exception ee)
             {
                 lastException = ee;
-                if (Tracer != null)
-                {
-                    Tracer.Add_Trace("SobekCM_Database.Set_Receive_Stats_Email_Flag", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Set_Receive_Stats_Email_Flag", ee.Message, Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Set_Receive_Stats_Email_Flag", ee.StackTrace, Custom_Trace_Type_Enum.Error);
-                }
+                Tracer?.Add_Trace("SobekCM_Database.Set_Receive_Stats_Email_Flag", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Set_Receive_Stats_Email_Flag", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Set_Receive_Stats_Email_Flag", ee.StackTrace, Custom_Trace_Type_Enum.Error);
                 return false;
             }
         }
@@ -1507,10 +1357,7 @@ namespace SobekCM.Library.Database
         /// <remarks> This calls the 'mySobek_Get_Folder_Search_Information' stored procedure</remarks> 
         public static DataSet Get_Folder_Search_Information(int UserID, Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("SobekCM_Database.Get_Folder_Search_Information", String.Empty);
-            }
+            Tracer?.Add_Trace("SobekCM_Database.Get_Folder_Search_Information", String.Empty);
 
             try
             {
@@ -1527,12 +1374,9 @@ namespace SobekCM.Library.Database
             catch (Exception ee)
             {
                 lastException = ee;
-                if (Tracer != null)
-                {
-                    Tracer.Add_Trace("SobekCM_Database.Get_Folder_Search_Information", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Get_Folder_Search_Information", ee.Message, Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Get_Folder_Search_Information", ee.StackTrace, Custom_Trace_Type_Enum.Error);
-                }
+                Tracer?.Add_Trace("SobekCM_Database.Get_Folder_Search_Information", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Get_Folder_Search_Information", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Get_Folder_Search_Information", ee.StackTrace, Custom_Trace_Type_Enum.Error);
                 return null;
             }
         }
@@ -1544,10 +1388,7 @@ namespace SobekCM.Library.Database
         /// <remarks> This calls the 'mySobek_Delete_User_Search' stored procedure</remarks> 
         public static bool Delete_User_Search(int UserSearchID, Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("SobekCM_Database.Delete_User_Search", String.Empty);
-            }
+            Tracer?.Add_Trace("SobekCM_Database.Delete_User_Search", String.Empty);
 
             try
             {
@@ -1564,12 +1405,9 @@ namespace SobekCM.Library.Database
             catch (Exception ee)
             {
                 lastException = ee;
-                if (Tracer != null)
-                {
-                    Tracer.Add_Trace("SobekCM_Database.Delete_User_Search", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Delete_User_Search", ee.Message, Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Delete_User_Search", ee.StackTrace, Custom_Trace_Type_Enum.Error);
-                }
+                Tracer?.Add_Trace("SobekCM_Database.Delete_User_Search", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Delete_User_Search", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Delete_User_Search", ee.StackTrace, Custom_Trace_Type_Enum.Error);
                 return false;
             }
         }
@@ -1581,10 +1419,7 @@ namespace SobekCM.Library.Database
         /// <remarks> This calls the 'mySobek_Get_User_Searches' stored procedure</remarks> 
         public static DataTable Get_User_Searches(int UserID, Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("SobekCM_Database.Get_User_Searches", String.Empty);
-            }
+            Tracer?.Add_Trace("SobekCM_Database.Get_User_Searches", String.Empty);
 
             try
             {
@@ -1600,12 +1435,9 @@ namespace SobekCM.Library.Database
             catch (Exception ee)
             {
                 lastException = ee;
-                if (Tracer != null)
-                {
-                    Tracer.Add_Trace("SobekCM_Database.Get_User_Searches", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Get_User_Searches", ee.Message, Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Get_User_Searches", ee.StackTrace, Custom_Trace_Type_Enum.Error);
-                }
+                Tracer?.Add_Trace("SobekCM_Database.Get_User_Searches", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Get_User_Searches", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Get_User_Searches", ee.StackTrace, Custom_Trace_Type_Enum.Error);
                 return null;
             }
         }
@@ -1621,10 +1453,7 @@ namespace SobekCM.Library.Database
         /// <remarks> This calls the 'mySobek_Save_User_Search' stored procedure</remarks> 
         public static int Save_User_Search(int UserID, string SearchUrl, string SearchDescription, int ItemOrder, string UserNotes, Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("SobekCM_Database.Save_User_Search", String.Empty);
-            }
+            Tracer?.Add_Trace("SobekCM_Database.Save_User_Search", String.Empty);
 
             try
             {
@@ -1647,12 +1476,9 @@ namespace SobekCM.Library.Database
             catch (Exception ee)
             {
                 lastException = ee;
-                if (Tracer != null)
-                {
-                    Tracer.Add_Trace("SobekCM_Database.Save_User_Search", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Save_User_Search", ee.Message, Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Save_User_Search", ee.StackTrace, Custom_Trace_Type_Enum.Error);
-                }
+                Tracer?.Add_Trace("SobekCM_Database.Save_User_Search", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Save_User_Search", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Save_User_Search", ee.StackTrace, Custom_Trace_Type_Enum.Error);
                 return -1000;
             }
         }
@@ -1667,10 +1493,7 @@ namespace SobekCM.Library.Database
         /// <remarks> This calls the 'mySobek_Delete_Item_From_User_Folder' stored procedure</remarks> 
         public static bool Delete_Item_From_User_Folder(int UserID, string FolderName, string BibID, string Vid, Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("SobekCM_Database.Delete_Item_From_User_Folder", String.Empty);
-            }
+            Tracer?.Add_Trace("SobekCM_Database.Delete_Item_From_User_Folder", String.Empty);
 
             try
             {
@@ -1690,12 +1513,9 @@ namespace SobekCM.Library.Database
             catch (Exception ee)
             {
                 lastException = ee;
-                if (Tracer != null)
-                {
-                    Tracer.Add_Trace("SobekCM_Database.Delete_Item_From_User_Folder", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Delete_Item_From_User_Folder", ee.Message, Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Delete_Item_From_User_Folder", ee.StackTrace, Custom_Trace_Type_Enum.Error);
-                }
+                Tracer?.Add_Trace("SobekCM_Database.Delete_Item_From_User_Folder", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Delete_Item_From_User_Folder", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Delete_Item_From_User_Folder", ee.StackTrace, Custom_Trace_Type_Enum.Error);
                 return false;
             }
         }
@@ -1709,10 +1529,7 @@ namespace SobekCM.Library.Database
         /// <remarks> This calls the 'mySobek_Delete_Item_From_All_User_Folders' stored procedure</remarks> 
         public static bool Delete_Item_From_User_Folders(int UserID, string BibID, string Vid, Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("SobekCM_Database.Delete_Item_From_User_Folder", String.Empty);
-            }
+            Tracer?.Add_Trace("SobekCM_Database.Delete_Item_From_User_Folder", String.Empty);
 
             try
             {
@@ -1731,12 +1548,9 @@ namespace SobekCM.Library.Database
             catch (Exception ee)
             {
                 lastException = ee;
-                if (Tracer != null)
-                {
-                    Tracer.Add_Trace("SobekCM_Database.Delete_Item_From_User_Folders", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Delete_Item_From_User_Folders", ee.Message, Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Delete_Item_From_User_Folders", ee.StackTrace, Custom_Trace_Type_Enum.Error);
-                }
+                Tracer?.Add_Trace("SobekCM_Database.Delete_Item_From_User_Folders", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Delete_Item_From_User_Folders", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Delete_Item_From_User_Folders", ee.StackTrace, Custom_Trace_Type_Enum.Error);
                 return false;
             }
         }
@@ -1753,10 +1567,7 @@ namespace SobekCM.Library.Database
         /// <remarks> This calls the 'mySobek_Add_Item_To_User_Folder' stored procedure</remarks> 
         public static bool Add_Item_To_User_Folder(int UserID, string FolderName, string BibID, string Vid, int ItemOrder, string UserNotes, Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("SobekCM_Database.Add_Item_To_User_Folder", String.Empty);
-            }
+            Tracer?.Add_Trace("SobekCM_Database.Add_Item_To_User_Folder", String.Empty);
 
             try
             {
@@ -1778,12 +1589,9 @@ namespace SobekCM.Library.Database
             catch (Exception ee)
             {
                 lastException = ee;
-                if (Tracer != null)
-                {
-                    Tracer.Add_Trace("SobekCM_Database.Add_Item_To_User_Folder", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Add_Item_To_User_Folder", ee.Message, Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Add_Item_To_User_Folder", ee.StackTrace, Custom_Trace_Type_Enum.Error);
-                }
+                Tracer?.Add_Trace("SobekCM_Database.Add_Item_To_User_Folder", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Add_Item_To_User_Folder", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Add_Item_To_User_Folder", ee.StackTrace, Custom_Trace_Type_Enum.Error);
                 return false;
             }
         }
@@ -1798,10 +1606,7 @@ namespace SobekCM.Library.Database
         /// <remarks> This calls the 'mySobek_Delete_User_Folder' stored procedure</remarks> 
         public static bool Delete_User_Folder(int UserID, int UserFolderID, Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("SobekCM_Database.Delete_User_Folder", String.Empty);
-            }
+            Tracer?.Add_Trace("SobekCM_Database.Delete_User_Folder", String.Empty);
 
             try
             {
@@ -1819,12 +1624,9 @@ namespace SobekCM.Library.Database
             catch (Exception ee)
             {
                 lastException = ee;
-                if (Tracer != null)
-                {
-                    Tracer.Add_Trace("SobekCM_Database.Delete_User_Folder", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Delete_User_Folder", ee.Message, Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Delete_User_Folder", ee.StackTrace, Custom_Trace_Type_Enum.Error);
-                }
+                Tracer?.Add_Trace("SobekCM_Database.Delete_User_Folder", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Delete_User_Folder", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Delete_User_Folder", ee.StackTrace, Custom_Trace_Type_Enum.Error);
                 return false;
             }
         }
@@ -1841,10 +1643,7 @@ namespace SobekCM.Library.Database
         /// <remarks> This calls the 'mySobek_Edit_User_Folder' stored procedure</remarks> 
         public static int Edit_User_Folder(int UserFolderID, int UserID, int ParentFolderID, string FolderName, bool IsPublic, string Description, Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("SobekCM_Database.Edit_User_Folder", String.Empty);
-            }
+            Tracer?.Add_Trace("SobekCM_Database.Edit_User_Folder", String.Empty);
 
             try
             {
@@ -1867,12 +1666,9 @@ namespace SobekCM.Library.Database
             catch (Exception ee)
             {
                 lastException = ee;
-                if (Tracer != null)
-                {
-                    Tracer.Add_Trace("SobekCM_Database.Edit_User_Folder", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Edit_User_Folder", ee.Message, Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Edit_User_Folder", ee.StackTrace, Custom_Trace_Type_Enum.Error);
-                }
+                Tracer?.Add_Trace("SobekCM_Database.Edit_User_Folder", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Edit_User_Folder", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Edit_User_Folder", ee.StackTrace, Custom_Trace_Type_Enum.Error);
                 return -1;
             }
         }
@@ -1886,10 +1682,7 @@ namespace SobekCM.Library.Database
         /// <remarks> This calls the 'mySobek_Set_Aggregation_Home_Page_Flag' stored procedure</remarks> 
         public static bool User_Set_Aggregation_Home_Page_Flag(int UserID, int AggregationID, bool NewFlag, Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("SobekCM_Database.User_Set_Aggregation_Home_Page_Flag", String.Empty);
-            }
+            Tracer?.Add_Trace("SobekCM_Database.User_Set_Aggregation_Home_Page_Flag", String.Empty);
 
             try
             {
@@ -1908,12 +1701,9 @@ namespace SobekCM.Library.Database
             catch (Exception ee)
             {
                 lastException = ee;
-                if (Tracer != null)
-                {
-                    Tracer.Add_Trace("SobekCM_Database.User_Set_Aggregation_Home_Page_Flag", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.User_Set_Aggregation_Home_Page_Flag", ee.Message, Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.User_Set_Aggregation_Home_Page_Flag", ee.StackTrace, Custom_Trace_Type_Enum.Error);
-                }
+                Tracer?.Add_Trace("SobekCM_Database.User_Set_Aggregation_Home_Page_Flag", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.User_Set_Aggregation_Home_Page_Flag", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.User_Set_Aggregation_Home_Page_Flag", ee.StackTrace, Custom_Trace_Type_Enum.Error);
                 return false;
             }
         }
@@ -1925,10 +1715,7 @@ namespace SobekCM.Library.Database
         /// <remarks> This calls the 'mySobek_Get_Folder_Information' stored procedure</remarks> 
         public static Public_User_Folder Get_Public_User_Folder(int UserFolderID, Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("SobekCM_Database.Get_Public_User_Folder", String.Empty);
-            }
+            Tracer?.Add_Trace("SobekCM_Database.Get_Public_User_Folder", String.Empty);
 
             try
             {
@@ -1964,12 +1751,9 @@ namespace SobekCM.Library.Database
             catch (Exception ee)
             {
                 lastException = ee;
-                if (Tracer != null)
-                {
-                    Tracer.Add_Trace("SobekCM_Database.Get_Public_User_Folder", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Get_Public_User_Folder", ee.Message, Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Get_Public_User_Folder", ee.StackTrace, Custom_Trace_Type_Enum.Error);
-                }
+                Tracer?.Add_Trace("SobekCM_Database.Get_Public_User_Folder", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Get_Public_User_Folder", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Get_Public_User_Folder", ee.StackTrace, Custom_Trace_Type_Enum.Error);
                 return null;
             }
         }
@@ -1982,10 +1766,7 @@ namespace SobekCM.Library.Database
         /// <remarks> This calls the 'mySobek_Get_User_Group' stored procedure </remarks> 
         public static User_Group Get_User_Group(int UserGroupID, Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("SobekCM_Database.Get_User_Group", String.Empty);
-            }
+            Tracer?.Add_Trace("SobekCM_Database.Get_User_Group", String.Empty);
 
             try
             {
@@ -2058,12 +1839,9 @@ namespace SobekCM.Library.Database
             catch (Exception ee)
             {
                 lastException = ee;
-                if (Tracer != null)
-                {
-                    Tracer.Add_Trace("SobekCM_Database.Get_User_Group", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Get_User_Group", ee.Message, Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Get_User_Group", ee.StackTrace, Custom_Trace_Type_Enum.Error);
-                }
+                Tracer?.Add_Trace("SobekCM_Database.Get_User_Group", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Get_User_Group", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Get_User_Group", ee.StackTrace, Custom_Trace_Type_Enum.Error);
                 return null;
             }
         }
@@ -2085,10 +1863,7 @@ namespace SobekCM.Library.Database
         /// <remarks> This calls the 'mySobek_Add_Description_Tag' stored procedure</remarks> 
         public static int Add_Description_Tag(int UserID, int TagID, int ItemID, string AddedDescription, Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("SobekCM_Database.Add_Description_Tag", String.Empty);
-            }
+            Tracer?.Add_Trace("SobekCM_Database.Add_Description_Tag", String.Empty);
 
             try
             {
@@ -2110,12 +1885,9 @@ namespace SobekCM.Library.Database
             catch (Exception ee)
             {
                 lastException = ee;
-                if (Tracer != null)
-                {
-                    Tracer.Add_Trace("SobekCM_Database.Add_Description_Tag", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Add_Description_Tag", ee.Message, Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Add_Description_Tag", ee.StackTrace, Custom_Trace_Type_Enum.Error);
-                }
+                Tracer?.Add_Trace("SobekCM_Database.Add_Description_Tag", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Add_Description_Tag", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Add_Description_Tag", ee.StackTrace, Custom_Trace_Type_Enum.Error);
                 return -1;
             }
         }
@@ -2127,10 +1899,7 @@ namespace SobekCM.Library.Database
         /// <remarks> This calls the 'mySobek_Delete_Description_Tag' stored procedure</remarks> 
         public static bool Delete_Description_Tag(int TagID, Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("SobekCM_Database.Delete_Description_Tag", String.Empty);
-            }
+            Tracer?.Add_Trace("SobekCM_Database.Delete_Description_Tag", String.Empty);
 
             try
             {
@@ -2147,12 +1916,9 @@ namespace SobekCM.Library.Database
             catch (Exception ee)
             {
                 lastException = ee;
-                if (Tracer != null)
-                {
-                    Tracer.Add_Trace("SobekCM_Database.Delete_Description_Tag", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Delete_Description_Tag", ee.Message, Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Delete_Description_Tag", ee.StackTrace, Custom_Trace_Type_Enum.Error);
-                }
+                Tracer?.Add_Trace("SobekCM_Database.Delete_Description_Tag", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Delete_Description_Tag", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Delete_Description_Tag", ee.StackTrace, Custom_Trace_Type_Enum.Error);
                 return false;
             }
         }
@@ -2164,10 +1930,7 @@ namespace SobekCM.Library.Database
         /// <remarks> This calls the 'mySobek_View_All_User_Tags' stored procedure</remarks> 
         public static DataTable View_Tags_By_User(int UserID, Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("SobekCM_Database.View_Tags_By_User", String.Empty);
-            }
+            Tracer?.Add_Trace("SobekCM_Database.View_Tags_By_User", String.Empty);
 
             try
             {
@@ -2182,12 +1945,9 @@ namespace SobekCM.Library.Database
             catch (Exception ee)
             {
                 lastException = ee;
-                if (Tracer != null)
-                {
-                    Tracer.Add_Trace("SobekCM_Database.View_Tags_By_User", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.View_Tags_By_User", ee.Message, Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.View_Tags_By_User", ee.StackTrace, Custom_Trace_Type_Enum.Error);
-                }
+                Tracer?.Add_Trace("SobekCM_Database.View_Tags_By_User", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.View_Tags_By_User", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.View_Tags_By_User", ee.StackTrace, Custom_Trace_Type_Enum.Error);
                 return null;
             }
         }
@@ -2200,10 +1960,7 @@ namespace SobekCM.Library.Database
         /// <remarks> This calls the 'SobekCM_Get_Description_Tags_By_Aggregation' stored procedure  </remarks> 
         public static DataTable View_Tags_By_Aggregation(string AggregationCode, Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("SobekCM_Database.View_Tags_By_Aggregation", String.Empty);
-            }
+            Tracer?.Add_Trace("SobekCM_Database.View_Tags_By_Aggregation", String.Empty);
 
             try
             {
@@ -2218,12 +1975,9 @@ namespace SobekCM.Library.Database
             catch (Exception ee)
             {
                 lastException = ee;
-                if (Tracer != null)
-                {
-                    Tracer.Add_Trace("SobekCM_Database.View_Tags_By_Aggregation", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.View_Tags_By_Aggregation", ee.Message, Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.View_Tags_By_Aggregation", ee.StackTrace, Custom_Trace_Type_Enum.Error);
-                }
+                Tracer?.Add_Trace("SobekCM_Database.View_Tags_By_Aggregation", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.View_Tags_By_Aggregation", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.View_Tags_By_Aggregation", ee.StackTrace, Custom_Trace_Type_Enum.Error);
                 return null;
             }
         }
@@ -2242,10 +1996,7 @@ namespace SobekCM.Library.Database
         /// <remarks> This calls the 'SobekCM_Save_Item_Aggregation_Alias' stored procedure </remarks> 
         public static bool Save_Aggregation_Alias(string Alias, string AggregationCode, Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("SobekCM_Database.Save_Aggregation_Alias", String.Empty);
-            }
+            Tracer?.Add_Trace("SobekCM_Database.Save_Aggregation_Alias", String.Empty);
 
             try
             {
@@ -2260,12 +2011,9 @@ namespace SobekCM.Library.Database
             catch (Exception ee)
             {
                 lastException = ee;
-                if (Tracer != null)
-                {
-                    Tracer.Add_Trace("SobekCM_Database.Save_Aggregation_Alias", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Save_Aggregation_Alias", ee.Message, Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Save_Aggregation_Alias", ee.StackTrace, Custom_Trace_Type_Enum.Error);
-                }
+                Tracer?.Add_Trace("SobekCM_Database.Save_Aggregation_Alias", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Save_Aggregation_Alias", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Save_Aggregation_Alias", ee.StackTrace, Custom_Trace_Type_Enum.Error);
                 return false;
             }
         }
@@ -2277,10 +2025,7 @@ namespace SobekCM.Library.Database
         /// <remarks> This calls the 'SobekCM_Delete_Item_Aggregation_Alias' stored procedure </remarks> 
         public static bool Delete_Aggregation_Alias(string Alias, Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("SobekCM_Database.Delete_Aggregation_Alias", String.Empty);
-            }
+            Tracer?.Add_Trace("SobekCM_Database.Delete_Aggregation_Alias", String.Empty);
 
             try
             {
@@ -2294,12 +2039,9 @@ namespace SobekCM.Library.Database
             catch (Exception ee)
             {
                 lastException = ee;
-                if (Tracer != null)
-                {
-                    Tracer.Add_Trace("SobekCM_Database.Delete_Aggregation_Alias", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Delete_Aggregation_Alias", ee.Message, Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Delete_Aggregation_Alias", ee.StackTrace, Custom_Trace_Type_Enum.Error);
-                }
+                Tracer?.Add_Trace("SobekCM_Database.Delete_Aggregation_Alias", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Delete_Aggregation_Alias", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Delete_Aggregation_Alias", ee.StackTrace, Custom_Trace_Type_Enum.Error);
                 return false;
             }
         }
@@ -2317,10 +2059,7 @@ namespace SobekCM.Library.Database
         /// <remarks> This calls the 'SobekCM_Add_Web_Skin' stored procedure </remarks> 
         public static bool Save_Web_Skin(string SkinCode, string BaseSkinCode, bool OverrideBanner, bool OverrideHeaderFooter, string BannerLink, string Notes, bool SuppressTopNavigation, Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("SobekCM_Database.Save_Skin", String.Empty);
-            }
+            Tracer?.Add_Trace("SobekCM_Database.Save_Skin", String.Empty);
 
             try
             {
@@ -2341,12 +2080,9 @@ namespace SobekCM.Library.Database
             catch (Exception ee)
             {
                 lastException = ee;
-                if (Tracer != null)
-                {
-                    Tracer.Add_Trace("SobekCM_Database.Save_Web_Skin", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Save_Web_Skin", ee.Message, Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Save_Web_Skin", ee.StackTrace, Custom_Trace_Type_Enum.Error);
-                }
+                Tracer?.Add_Trace("SobekCM_Database.Save_Web_Skin", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Save_Web_Skin", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Save_Web_Skin", ee.StackTrace, Custom_Trace_Type_Enum.Error);
                 return false;
             }
         }
@@ -2361,10 +2097,7 @@ namespace SobekCM.Library.Database
         {
             lastException = null;
 
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("SobekCM_Database.Delete_Web_Skin", String.Empty);
-            }
+            Tracer?.Add_Trace("SobekCM_Database.Delete_Web_Skin", String.Empty);
 
             try
             {
@@ -2386,12 +2119,9 @@ namespace SobekCM.Library.Database
             catch (Exception ee)
             {
                 lastException = ee;
-                if (Tracer != null)
-                {
-                    Tracer.Add_Trace("SobekCM_Database.Delete_Web_Skin", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Delete_Web_Skin", ee.Message, Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Delete_Web_Skin", ee.StackTrace, Custom_Trace_Type_Enum.Error);
-                }
+                Tracer?.Add_Trace("SobekCM_Database.Delete_Web_Skin", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Delete_Web_Skin", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Delete_Web_Skin", ee.StackTrace, Custom_Trace_Type_Enum.Error);
                 return false;
             }
         }
@@ -2420,10 +2150,7 @@ namespace SobekCM.Library.Database
         /// <remarks> This calls the 'SobekCM_Save_Icon' stored procedure </remarks> 
         public static int Save_Icon(string IconName, string IconFile, string IconLink, int Height, string IconTitle, Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("SobekCM_Database.Save_Icon", String.Empty);
-            }
+            Tracer?.Add_Trace("SobekCM_Database.Save_Icon", String.Empty);
 
             try
             {
@@ -2446,12 +2173,9 @@ namespace SobekCM.Library.Database
             catch (Exception ee)
             {
                 lastException = ee;
-                if (Tracer != null)
-                {
-                    Tracer.Add_Trace("SobekCM_Database.Save_Icon", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Save_Icon", ee.Message, Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Save_Icon", ee.StackTrace, Custom_Trace_Type_Enum.Error);
-                }
+                Tracer?.Add_Trace("SobekCM_Database.Save_Icon", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Save_Icon", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Save_Icon", ee.StackTrace, Custom_Trace_Type_Enum.Error);
                 return -1;
             }
         }
@@ -2463,10 +2187,7 @@ namespace SobekCM.Library.Database
         /// <remarks> This calls the 'SobekCM_Delete_Icon' stored procedure </remarks> 
         public static bool Delete_Icon(string IconCode, Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("SobekCM_Database.Delete_Icon", String.Empty);
-            }
+            Tracer?.Add_Trace("SobekCM_Database.Delete_Icon", String.Empty);
 
             try
             {
@@ -2490,12 +2211,9 @@ namespace SobekCM.Library.Database
             catch (Exception ee)
             {
                 lastException = ee;
-                if (Tracer != null)
-                {
-                    Tracer.Add_Trace("SobekCM_Database.Delete_Icon", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Delete_Icon", ee.Message, Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Delete_Icon", ee.StackTrace, Custom_Trace_Type_Enum.Error);
-                }
+                Tracer?.Add_Trace("SobekCM_Database.Delete_Icon", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Delete_Icon", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Delete_Icon", ee.StackTrace, Custom_Trace_Type_Enum.Error);
                 return false;
             }
         }
@@ -2508,10 +2226,7 @@ namespace SobekCM.Library.Database
         /// <remarks> This calls the 'mySobek_Get_All_Users' stored procedure</remarks> 
         public static DataTable Get_All_Users(Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("SobekCM_Database.Get_All_Users", String.Empty);
-            }
+            Tracer?.Add_Trace("SobekCM_Database.Get_All_Users", String.Empty);
 
             // Define a temporary dataset
             DataSet tempSet = EalDbAccess.ExecuteDataset(DatabaseType, connectionString, CommandType.StoredProcedure, "mySobek_Get_All_Users");
@@ -2531,10 +2246,7 @@ namespace SobekCM.Library.Database
         /// <remarks> This calls the 'SobekCM_Update_Item_Aggregation' stored procedure in the SobekCM database</remarks> 
         public static bool Update_Item_Aggregation(string Code, string Name, string ShortName, bool IsActive, bool IsHidden, string ExternalLink, Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("SobekCM_Database.Update_Item_Aggregation", String.Empty);
-            }
+            Tracer?.Add_Trace("SobekCM_Database.Update_Item_Aggregation", String.Empty);
 
             try
             {
@@ -2556,12 +2268,9 @@ namespace SobekCM.Library.Database
             catch (Exception ee)
             {
                 lastException = ee;
-                if (Tracer != null)
-                {
-                    Tracer.Add_Trace("SobekCM_Database.Update_Item_Aggregation", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Update_Item_Aggregation", ee.Message, Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Update_Item_Aggregation", ee.StackTrace, Custom_Trace_Type_Enum.Error);
-                }
+                Tracer?.Add_Trace("SobekCM_Database.Update_Item_Aggregation", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Update_Item_Aggregation", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Update_Item_Aggregation", ee.StackTrace, Custom_Trace_Type_Enum.Error);
                 return false;
             }
         }
@@ -2580,10 +2289,7 @@ namespace SobekCM.Library.Database
         {
             ErrorMessage = String.Empty;
 
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("SobekCM_Database.Delete_Item_Aggregation", String.Empty);
-            }
+            Tracer?.Add_Trace("SobekCM_Database.Delete_Item_Aggregation", String.Empty);
 
             try
             {
@@ -2607,12 +2313,9 @@ namespace SobekCM.Library.Database
             catch (Exception ee)
             {
                 lastException = ee;
-                if (Tracer != null)
-                {
-                    Tracer.Add_Trace("SobekCM_Database.Delete_Item_Aggregation", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Delete_Item_Aggregation", ee.Message, Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Delete_Item_Aggregation", ee.StackTrace, Custom_Trace_Type_Enum.Error);
-                }
+                Tracer?.Add_Trace("SobekCM_Database.Delete_Item_Aggregation", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Delete_Item_Aggregation", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Delete_Item_Aggregation", ee.StackTrace, Custom_Trace_Type_Enum.Error);
                 return -1;
             }
         }
@@ -2678,10 +2381,7 @@ namespace SobekCM.Library.Database
         /// <remarks> This calls the 'mySobek_Reset_User_Password' stored procedure</remarks> 
         public static bool Reset_User_Password(int UserID, string NewPassword, bool IsTemporaryPassword, Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("SobekCM_Database.Reset_User_Password", String.Empty);
-            }
+            Tracer?.Add_Trace("SobekCM_Database.Reset_User_Password", String.Empty);
 
             const string SALT = "This is my salt to add to the password";
             string encryptedPassword = SecurityInfo.SHA1_EncryptString(NewPassword + SALT);
@@ -2703,12 +2403,9 @@ namespace SobekCM.Library.Database
             catch (Exception ee)
             {
                 lastException = ee;
-                if (Tracer != null)
-                {
-                    Tracer.Add_Trace("SobekCM_Database.Reset_User_Password", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Reset_User_Password", ee.Message, Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Reset_User_Password", ee.StackTrace, Custom_Trace_Type_Enum.Error);
-                }
+                Tracer?.Add_Trace("SobekCM_Database.Reset_User_Password", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Reset_User_Password", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Reset_User_Password", ee.StackTrace, Custom_Trace_Type_Enum.Error);
                 return false;
             }
         }
@@ -2734,10 +2431,7 @@ namespace SobekCM.Library.Database
         /// <remarks> This calls the 'mySobek_Update_User' stored procedure</remarks> 
         public static bool Update_SobekCM_User(int UserID, bool CanSubmit, bool IsInternal, bool CanEditAll, bool CanDeleteAll, bool IsUserAdmin, bool IsSystemAdmin, bool IsHostAdmin, bool IsPortalAdmin, bool IncludeTrackingStandardForms, string EditTemplate, string EditTemplateMarc, bool ClearProjectsTemplates, bool ClearAggregationLinks, bool ClearUserGroups, Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("SobekCM_Database.Update_SobekCM_User", String.Empty);
-            }
+            Tracer?.Add_Trace("SobekCM_Database.Update_SobekCM_User", String.Empty);
 
             try
             {
@@ -2768,12 +2462,9 @@ namespace SobekCM.Library.Database
             catch (Exception ee)
             {
                 lastException = ee;
-                if (Tracer != null)
-                {
-                    Tracer.Add_Trace("SobekCM_Database.Update_SobekCM_User", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Update_SobekCM_User", ee.Message, Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Update_SobekCM_User", ee.StackTrace, Custom_Trace_Type_Enum.Error);
-                }
+                Tracer?.Add_Trace("SobekCM_Database.Update_SobekCM_User", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Update_SobekCM_User", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Update_SobekCM_User", ee.StackTrace, Custom_Trace_Type_Enum.Error);
                 return false;
             }
         }
@@ -2786,10 +2477,7 @@ namespace SobekCM.Library.Database
         /// <remarks> This calls the 'mySobek_Add_User_Templates_Link' stored procedure</remarks> 
         public static bool Update_SobekCM_User_Templates(int UserID, List<string> Templates, Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("SobekCM_Database.Update_SobekCM_User_Templates", String.Empty);
-            }
+            Tracer?.Add_Trace("SobekCM_Database.Update_SobekCM_User_Templates", String.Empty);
 
             // Call the routine
             try
@@ -2863,12 +2551,9 @@ namespace SobekCM.Library.Database
             catch (Exception ee)
             {
                 lastException = ee;
-                if (Tracer != null)
-                {
-                    Tracer.Add_Trace("SobekCM_Database.Update_SobekCM_User_Templates", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Update_SobekCM_User_Templates", ee.Message, Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Update_SobekCM_User_Templates", ee.StackTrace, Custom_Trace_Type_Enum.Error);
-                }
+                Tracer?.Add_Trace("SobekCM_Database.Update_SobekCM_User_Templates", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Update_SobekCM_User_Templates", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Update_SobekCM_User_Templates", ee.StackTrace, Custom_Trace_Type_Enum.Error);
                 return false;
             }
         }
@@ -2881,10 +2566,7 @@ namespace SobekCM.Library.Database
         /// <remarks> This calls the 'mySobek_Add_User_DefaultMetadata_Link' stored procedure</remarks> 
         public static bool Update_SobekCM_User_DefaultMetadata(int UserID, List<string> MetadataSets, Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("SobekCM_Database.Update_SobekCM_User_DefaultMetadata", String.Empty);
-            }
+            Tracer?.Add_Trace("SobekCM_Database.Update_SobekCM_User_DefaultMetadata", String.Empty);
 
             // Call the routine
             try
@@ -2957,12 +2639,9 @@ namespace SobekCM.Library.Database
             catch (Exception ee)
             {
                 lastException = ee;
-                if (Tracer != null)
-                {
-                    Tracer.Add_Trace("SobekCM_Database.Update_SobekCM_User_DefaultMetadata", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Update_SobekCM_User_DefaultMetadata", ee.Message, Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Update_SobekCM_User_DefaultMetadata", ee.StackTrace, Custom_Trace_Type_Enum.Error);
-                }
+                Tracer?.Add_Trace("SobekCM_Database.Update_SobekCM_User_DefaultMetadata", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Update_SobekCM_User_DefaultMetadata", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Update_SobekCM_User_DefaultMetadata", ee.StackTrace, Custom_Trace_Type_Enum.Error);
                 return false;
             }
         }
@@ -2975,10 +2654,7 @@ namespace SobekCM.Library.Database
         /// <remarks> This calls the 'SobekCM_Add_User_Aggregations_Link' stored procedure</remarks> 
         public static bool Update_SobekCM_User_Aggregations(int UserID, List<User_Permissioned_Aggregation> Aggregations, Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("SobekCM_Database.Update_SobekCM_User_Aggregations", String.Empty);
-            }
+            Tracer?.Add_Trace("SobekCM_Database.Update_SobekCM_User_Aggregations", String.Empty);
 
             // Call the routine
             try
@@ -3183,12 +2859,9 @@ namespace SobekCM.Library.Database
             catch (Exception ee)
             {
                 lastException = ee;
-                if (Tracer != null)
-                {
-                    Tracer.Add_Trace("SobekCM_Database.Update_SobekCM_User_Aggregations", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Update_SobekCM_User_Aggregations", ee.Message, Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Update_SobekCM_User_Aggregations", ee.StackTrace, Custom_Trace_Type_Enum.Error);
-                }
+                Tracer?.Add_Trace("SobekCM_Database.Update_SobekCM_User_Aggregations", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Update_SobekCM_User_Aggregations", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Update_SobekCM_User_Aggregations", ee.StackTrace, Custom_Trace_Type_Enum.Error);
                 return false;
             }
         }
@@ -3215,10 +2888,7 @@ namespace SobekCM.Library.Database
         /// <remarks> This calls the 'mySobek_Save_User_Group' stored procedure</remarks> 
         public static int Save_User_Group(int UserGroupID, string GroupName, string GroupDescription, bool CanSubmit, bool IsInternal, bool CanEditAll, bool IsSystemAdmin, bool IsPortalAdmin, bool IncludeTrackingStandardForms, bool ClearMetadataTemplates, bool ClearAggregationLinks, bool ClearEditableLinks, bool IsSobekDefault, bool IsShibbolethDefault, bool IsLdapDefault, Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("SobekCM_Database.Save_User_Group", String.Empty);
-            }
+            Tracer?.Add_Trace("SobekCM_Database.Save_User_Group", String.Empty);
 
             try
             {
@@ -3250,12 +2920,9 @@ namespace SobekCM.Library.Database
             catch (Exception ee)
             {
                 lastException = ee;
-                if (Tracer != null)
-                {
-                    Tracer.Add_Trace("SobekCM_Database.Save_User_Group", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Save_User_Group", ee.Message, Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Save_User_Group", ee.StackTrace, Custom_Trace_Type_Enum.Error);
-                }
+                Tracer?.Add_Trace("SobekCM_Database.Save_User_Group", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Save_User_Group", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Save_User_Group", ee.StackTrace, Custom_Trace_Type_Enum.Error);
                 return -1;
             }
         }
@@ -3268,10 +2935,7 @@ namespace SobekCM.Library.Database
         /// <remarks> This calls the 'mySobek_Add_User_Group_Templates_Link' stored procedure</remarks> 
         public static bool Update_SobekCM_User_Group_Templates(int UserGroupID, List<string> Templates, Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("SobekCM_Database.Update_SobekCM_User_Group_Templates", String.Empty);
-            }
+            Tracer?.Add_Trace("SobekCM_Database.Update_SobekCM_User_Group_Templates", String.Empty);
 
             // Ensure five values
             while (Templates.Count < 5)
@@ -3316,12 +2980,9 @@ namespace SobekCM.Library.Database
             catch (Exception ee)
             {
                 lastException = ee;
-                if (Tracer != null)
-                {
-                    Tracer.Add_Trace("SobekCM_Database.Update_SobekCM_User_Group_Templates", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Update_SobekCM_User_Group_Templates", ee.Message, Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Update_SobekCM_User_Group_Templates", ee.StackTrace, Custom_Trace_Type_Enum.Error);
-                }
+                Tracer?.Add_Trace("SobekCM_Database.Update_SobekCM_User_Group_Templates", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Update_SobekCM_User_Group_Templates", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Update_SobekCM_User_Group_Templates", ee.StackTrace, Custom_Trace_Type_Enum.Error);
                 return false;
             }
         }
@@ -3334,10 +2995,7 @@ namespace SobekCM.Library.Database
         /// <remarks> This calls the 'mySobek_Add_User_Group_Metadata_Link' stored procedure</remarks> 
         public static bool Update_SobekCM_User_Group_DefaultMetadata(int UserGroupID, List<string> MetadataSets, Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("SobekCM_Database.Update_SobekCM_User_Group_DefaultMetadata", String.Empty);
-            }
+            Tracer?.Add_Trace("SobekCM_Database.Update_SobekCM_User_Group_DefaultMetadata", String.Empty);
 
             // Ensure five values
             while (MetadataSets.Count < 5)
@@ -3382,12 +3040,9 @@ namespace SobekCM.Library.Database
             catch (Exception ee)
             {
                 lastException = ee;
-                if (Tracer != null)
-                {
-                    Tracer.Add_Trace("SobekCM_Database.Update_SobekCM_User_Group_DefaultMetadata", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Update_SobekCM_User_Group_DefaultMetadata", ee.Message, Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Update_SobekCM_User_Group_DefaultMetadata", ee.StackTrace, Custom_Trace_Type_Enum.Error);
-                }
+                Tracer?.Add_Trace("SobekCM_Database.Update_SobekCM_User_Group_DefaultMetadata", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Update_SobekCM_User_Group_DefaultMetadata", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Update_SobekCM_User_Group_DefaultMetadata", ee.StackTrace, Custom_Trace_Type_Enum.Error);
                 return false;
             }
         }
@@ -3400,10 +3055,7 @@ namespace SobekCM.Library.Database
         /// <remarks> This calls the 'SobekCM_Add_User_Group_Aggregations_Link' stored procedure</remarks> 
         public static bool Update_SobekCM_User_Group_Aggregations(int UserGroupID, List<User_Permissioned_Aggregation> Aggregations, Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("SobekCM_Database.Update_SobekCM_User_Group_Aggregations", String.Empty);
-            }
+            Tracer?.Add_Trace("SobekCM_Database.Update_SobekCM_User_Group_Aggregations", String.Empty);
 
             // Call the routine
             try
@@ -3609,12 +3261,9 @@ namespace SobekCM.Library.Database
             catch (Exception ee)
             {
                 lastException = ee;
-                if (Tracer != null)
-                {
-                    Tracer.Add_Trace("SobekCM_Database.Update_SobekCM_User_Group_Aggregations", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Update_SobekCM_User_Group_Aggregations", ee.Message, Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Update_SobekCM_User_Group_Aggregations", ee.StackTrace, Custom_Trace_Type_Enum.Error);
-                }
+                Tracer?.Add_Trace("SobekCM_Database.Update_SobekCM_User_Group_Aggregations", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Update_SobekCM_User_Group_Aggregations", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Update_SobekCM_User_Group_Aggregations", ee.StackTrace, Custom_Trace_Type_Enum.Error);
                 return false;
             }
         }
@@ -3626,10 +3275,7 @@ namespace SobekCM.Library.Database
         /// <remarks> This calls the 'mySobek_Delete_User_Group' stored procedure</remarks> 
         public static int Delete_User_Group(int UserGroupID, Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("SobekCM_Database.Delete_User_Group", String.Empty);
-            }
+            Tracer?.Add_Trace("SobekCM_Database.Delete_User_Group", String.Empty);
 
             try
             {
@@ -3647,12 +3293,9 @@ namespace SobekCM.Library.Database
             catch (Exception ee)
             {
                 lastException = ee;
-                if (Tracer != null)
-                {
-                    Tracer.Add_Trace("SobekCM_Database.Delete_User_Group", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Delete_User_Group", ee.Message, Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Delete_User_Group", ee.StackTrace, Custom_Trace_Type_Enum.Error);
-                }
+                Tracer?.Add_Trace("SobekCM_Database.Delete_User_Group", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Delete_User_Group", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Delete_User_Group", ee.StackTrace, Custom_Trace_Type_Enum.Error);
                 return -3;
             }
         }
@@ -3667,10 +3310,7 @@ namespace SobekCM.Library.Database
         /// <remarks> This calls the 'mySobek_Save_DefaultMetadata' stored procedure</remarks> 
         public static bool Save_Default_Metadata(string Code, string Name, string Description, int UserID, Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("SobekCM_Database.Save_Default_Metadata", String.Empty);
-            }
+            Tracer?.Add_Trace("SobekCM_Database.Save_Default_Metadata", String.Empty);
 
             try
             {
@@ -3693,12 +3333,9 @@ namespace SobekCM.Library.Database
             catch (Exception ee)
             {
                 lastException = ee;
-                if (Tracer != null)
-                {
-                    Tracer.Add_Trace("SobekCM_Database.Save_Default_Metadata", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Save_Default_Metadata", ee.Message, Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Save_Default_Metadata", ee.StackTrace, Custom_Trace_Type_Enum.Error);
-                }
+                Tracer?.Add_Trace("SobekCM_Database.Save_Default_Metadata", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Save_Default_Metadata", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Save_Default_Metadata", ee.StackTrace, Custom_Trace_Type_Enum.Error);
                 return false;
             }
         }
@@ -3710,10 +3347,7 @@ namespace SobekCM.Library.Database
         /// <remarks> This calls the 'mySobek_Delete_Project' stored procedure</remarks> 
         public static bool Delete_Default_Metadata(string Code, Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("SobekCM_Database.Delete_Project", String.Empty);
-            }
+            Tracer?.Add_Trace("SobekCM_Database.Delete_Project", String.Empty);
 
             try
             {
@@ -3730,12 +3364,9 @@ namespace SobekCM.Library.Database
             catch (Exception ee)
             {
                 lastException = ee;
-                if (Tracer != null)
-                {
-                    Tracer.Add_Trace("SobekCM_Database.Delete_Project", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Delete_Project", ee.Message, Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Delete_Project", ee.StackTrace, Custom_Trace_Type_Enum.Error);
-                }
+                Tracer?.Add_Trace("SobekCM_Database.Delete_Project", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Delete_Project", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Delete_Project", ee.StackTrace, Custom_Trace_Type_Enum.Error);
                 return false;
             }
         }
@@ -3749,10 +3380,7 @@ namespace SobekCM.Library.Database
         /// <remarks> This calls the 'mySobek_Save_Template' stored procedure</remarks> 
         public static bool Save_Template(string Code, string Name, string Description, Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("SobekCM_Database.Save_Template", String.Empty);
-            }
+            Tracer?.Add_Trace("SobekCM_Database.Save_Template", String.Empty);
 
             try
             {
@@ -3771,12 +3399,9 @@ namespace SobekCM.Library.Database
             catch (Exception ee)
             {
                 lastException = ee;
-                if (Tracer != null)
-                {
-                    Tracer.Add_Trace("SobekCM_Database.Save_Template", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Save_Template", ee.Message, Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Save_Template", ee.StackTrace, Custom_Trace_Type_Enum.Error);
-                }
+                Tracer?.Add_Trace("SobekCM_Database.Save_Template", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Save_Template", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Save_Template", ee.StackTrace, Custom_Trace_Type_Enum.Error);
                 return false;
             }
         }
@@ -4222,10 +3847,7 @@ namespace SobekCM.Library.Database
         /// <returns>The ProjectID of the inserted/edited row</returns>
         public static int Save_Project(Custom_Tracer Tracer, int ProjectID, string ProjectCode, string ProjectName, string ProjectManager, string GrantID, DateTime StartDate, DateTime EndDate, bool isActive, string Description, string Specifications, string Priority, string QcProfile, int TargetItemCount, int TargetPageCount, string Comments, string CopyrightPermissions)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("SobekCM_Database.Save_Project", "Saving to the database");
-            }
+            Tracer?.Add_Trace("SobekCM_Database.Save_Project", "Saving to the database");
 
             int newProjectID;
 
@@ -4276,10 +3898,7 @@ namespace SobekCM.Library.Database
         /// <param name="AggregationID"></param>
         public static void Add_Project_Aggregation_Link(Custom_Tracer Tracer, int ProjectID, int AggregationID)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("SobekCM_Database.Add_Project_Aggregation_Link", "Saving link to the database");
-            }
+            Tracer?.Add_Trace("SobekCM_Database.Add_Project_Aggregation_Link", "Saving link to the database");
 
             try
             {
@@ -4304,10 +3923,7 @@ namespace SobekCM.Library.Database
         /// <param name="DefaultMetadataID"></param>
         public static void Add_Project_DefaultMetadata_Link(Custom_Tracer Tracer, int ProjectID, int DefaultMetadataID)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("SobekCM_Database.Add_Project_DefaultMetadata_Link", "Saving link to the database");
-            }
+            Tracer?.Add_Trace("SobekCM_Database.Add_Project_DefaultMetadata_Link", "Saving link to the database");
 
             try
             {
@@ -4332,10 +3948,7 @@ namespace SobekCM.Library.Database
         /// <param name="TemplateID"></param>
         public static void Add_Project_Template_Link(Custom_Tracer Tracer, int ProjectID, int TemplateID)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("SobekCM_Database.Add_Project_Template_Link", "Saving link to the database");
-            }
+            Tracer?.Add_Trace("SobekCM_Database.Add_Project_Template_Link", "Saving link to the database");
 
             try
             {
@@ -4360,10 +3973,7 @@ namespace SobekCM.Library.Database
         /// <param name="ItemID"></param>
         public static void Add_Project_Item_Link(Custom_Tracer Tracer, int ProjectID, int ItemID)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("SobekCM_Database.Add_Project_Item_Link", "Saving link to the database");
-            }
+            Tracer?.Add_Trace("SobekCM_Database.Add_Project_Item_Link", "Saving link to the database");
 
             try
             {
@@ -4388,10 +3998,7 @@ namespace SobekCM.Library.Database
         /// <param name="ItemID"></param>
         public static void Delete_Project_Item_Link(Custom_Tracer Tracer, int ProjectID, int ItemID)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("SobekCM_Database.Delete_Project_Item_Link", "Deleting link from the database");
-            }
+            Tracer?.Add_Trace("SobekCM_Database.Delete_Project_Item_Link", "Deleting link from the database");
 
             try
             {
@@ -4416,10 +4023,7 @@ namespace SobekCM.Library.Database
         /// <param name="TemplateID"></param>
         public static void Delete_Project_Template_Link(Custom_Tracer Tracer, int ProjectID, int TemplateID)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("SobekCM_Database.Delete_Project_Template_Link", "Deleting link from the database");
-            }
+            Tracer?.Add_Trace("SobekCM_Database.Delete_Project_Template_Link", "Deleting link from the database");
 
             try
             {
@@ -4444,10 +4048,7 @@ namespace SobekCM.Library.Database
         /// <param name="DefaultMetadataID"></param>
         public static void Delete_Project_DefaultMetadata_Link(Custom_Tracer Tracer, int ProjectID, int DefaultMetadataID)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("SobekCM_Database.Delete_Project_DefaultMetadata_Link", "Deleting link from the database");
-            }
+            Tracer?.Add_Trace("SobekCM_Database.Delete_Project_DefaultMetadata_Link", "Deleting link from the database");
 
             try
             {
@@ -4472,10 +4073,7 @@ namespace SobekCM.Library.Database
         /// <param name="AggregationID"></param>
         public static void Delete_Project_Aggregation_Link(Custom_Tracer Tracer, int ProjectID, int AggregationID)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("SobekCM_Database.Delete_Project_Aggregation_Link", "Deleting link from the database");
-            }
+            Tracer?.Add_Trace("SobekCM_Database.Delete_Project_Aggregation_Link", "Deleting link from the database");
 
             try
             {
@@ -4500,10 +4098,7 @@ namespace SobekCM.Library.Database
         /// <returns></returns>
         public static List<int> Get_Aggregations_By_ProjectID(Custom_Tracer Tracer, int ProjectID)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("SobekCM_Database.Get_Aggregations_By_ProjectID", "Pulling from database");
-            }
+            Tracer?.Add_Trace("SobekCM_Database.Get_Aggregations_By_ProjectID", "Pulling from database");
 
             try
             {
@@ -4528,12 +4123,9 @@ namespace SobekCM.Library.Database
             catch (Exception ee)
             {
                 lastException = ee;
-                if (Tracer != null)
-                {
-                    Tracer.Add_Trace("SobekCM_Database.Get_Aggregations_By_ProjectID", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Get_Aggregations_By_ProjectID", ee.Message, Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Get_Aggregations_By_ProjectID", ee.StackTrace, Custom_Trace_Type_Enum.Error);
-                }
+                Tracer?.Add_Trace("SobekCM_Database.Get_Aggregations_By_ProjectID", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Get_Aggregations_By_ProjectID", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Get_Aggregations_By_ProjectID", ee.StackTrace, Custom_Trace_Type_Enum.Error);
                 return null;
             }
         }
@@ -4552,10 +4144,7 @@ namespace SobekCM.Library.Database
         /// <returns></returns>
         public static DataTable Get_Global_User_Permissions(Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("SobekCM_Database.Get_Global_User_Permissions", "");
-            }
+            Tracer?.Add_Trace("SobekCM_Database.Get_Global_User_Permissions", "");
 
             try
             {
@@ -4568,12 +4157,9 @@ namespace SobekCM.Library.Database
             catch (Exception ee)
             {
                 lastException = ee;
-                if (Tracer != null)
-                {
-                    Tracer.Add_Trace("SobekCM_Database.Get_Global_User_Permissions", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Get_Global_User_Permissions", ee.Message, Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Get_Global_User_Permissions", ee.StackTrace, Custom_Trace_Type_Enum.Error);
-                }
+                Tracer?.Add_Trace("SobekCM_Database.Get_Global_User_Permissions", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Get_Global_User_Permissions", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Get_Global_User_Permissions", ee.StackTrace, Custom_Trace_Type_Enum.Error);
                 return null;
             }
         }
@@ -4584,10 +4170,7 @@ namespace SobekCM.Library.Database
         /// <returns></returns>
         public static DataTable Get_Global_User_Permissions_Aggregations_Links(Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("SobekCM_Database.Get_Global_User_Permissions_Aggregations_Links", "");
-            }
+            Tracer?.Add_Trace("SobekCM_Database.Get_Global_User_Permissions_Aggregations_Links", "");
 
             try
             {
@@ -4600,12 +4183,9 @@ namespace SobekCM.Library.Database
             catch (Exception ee)
             {
                 lastException = ee;
-                if (Tracer != null)
-                {
-                    Tracer.Add_Trace("SobekCM_Database.Get_Global_User_Permissions_Aggregations_Links", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Get_Global_User_Permissions_Aggregations_Links", ee.Message, Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Get_Global_User_Permissions_Aggregations_Links", ee.StackTrace, Custom_Trace_Type_Enum.Error);
-                }
+                Tracer?.Add_Trace("SobekCM_Database.Get_Global_User_Permissions_Aggregations_Links", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Get_Global_User_Permissions_Aggregations_Links", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Get_Global_User_Permissions_Aggregations_Links", ee.StackTrace, Custom_Trace_Type_Enum.Error);
                 return null;
             }
         }
@@ -4615,10 +4195,7 @@ namespace SobekCM.Library.Database
         /// <returns></returns>
         public static DataTable Get_Global_User_Permissions_Linked_Aggregations(Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("SobekCM_Database.Get_Global_User_Permissions_Linked_Aggregations", "");
-            }
+            Tracer?.Add_Trace("SobekCM_Database.Get_Global_User_Permissions_Linked_Aggregations", "");
 
             try
             {
@@ -4631,12 +4208,9 @@ namespace SobekCM.Library.Database
             catch (Exception ee)
             {
                 lastException = ee;
-                if (Tracer != null)
-                {
-                    Tracer.Add_Trace("SobekCM_Database.Get_Global_User_Permissions_Linked_Aggregations", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Get_Global_User_Permissions_Linked_Aggregations", ee.Message, Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Get_Global_User_Permissions_Linked_Aggregations", ee.StackTrace, Custom_Trace_Type_Enum.Error);
-                }
+                Tracer?.Add_Trace("SobekCM_Database.Get_Global_User_Permissions_Linked_Aggregations", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Get_Global_User_Permissions_Linked_Aggregations", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Get_Global_User_Permissions_Linked_Aggregations", ee.StackTrace, Custom_Trace_Type_Enum.Error);
                 return null;
             }
         }
@@ -4647,10 +4221,7 @@ namespace SobekCM.Library.Database
         /// <returns></returns>
         public static DataTable Get_Global_User_Permissions_Submission_Rights(Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("SobekCM_Database.Get_Global_User_Permissions_Submission_Rights", "");
-            }
+            Tracer?.Add_Trace("SobekCM_Database.Get_Global_User_Permissions_Submission_Rights", "");
 
             try
             {
@@ -4663,12 +4234,9 @@ namespace SobekCM.Library.Database
             catch (Exception ee)
             {
                 lastException = ee;
-                if (Tracer != null)
-                {
-                    Tracer.Add_Trace("SobekCM_Database.Get_Global_User_Permissions_Submission_Rights", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Get_Global_User_Permissions_Submission_Rights", ee.Message, Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Get_Global_User_Permissions_Submission_Rights", ee.StackTrace, Custom_Trace_Type_Enum.Error);
-                }
+                Tracer?.Add_Trace("SobekCM_Database.Get_Global_User_Permissions_Submission_Rights", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Get_Global_User_Permissions_Submission_Rights", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Get_Global_User_Permissions_Submission_Rights", ee.StackTrace, Custom_Trace_Type_Enum.Error);
                 return null;
             }
         }
@@ -4682,10 +4250,7 @@ namespace SobekCM.Library.Database
         /// <returns></returns>
         public static DataTable Get_Aggregation_User_Permissions(string AggregationCode, Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("SobekCM_Database.Get_Aggregation_User_Permissions", "");
-            }
+            Tracer?.Add_Trace("SobekCM_Database.Get_Aggregation_User_Permissions", "");
 
             try
             {
@@ -4704,12 +4269,9 @@ namespace SobekCM.Library.Database
             catch (Exception ee)
             {
                 lastException = ee;
-                if (Tracer != null)
-                {
-                    Tracer.Add_Trace("SobekCM_Database.Get_Aggregation_User_Permissions", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Get_Aggregation_User_Permissions", ee.Message, Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Get_Aggregation_User_Permissions", ee.StackTrace, Custom_Trace_Type_Enum.Error);
-                }
+                Tracer?.Add_Trace("SobekCM_Database.Get_Aggregation_User_Permissions", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Get_Aggregation_User_Permissions", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Get_Aggregation_User_Permissions", ee.StackTrace, Custom_Trace_Type_Enum.Error);
                 return null;
             }
         }
@@ -4722,10 +4284,7 @@ namespace SobekCM.Library.Database
         /// <returns></returns>
         public static DataTable Get_Aggregation_Change_Log(string AggregationCode, Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("SobekCM_Database.Get_Aggregation_Change_Log", "");
-            }
+            Tracer?.Add_Trace("SobekCM_Database.Get_Aggregation_Change_Log", "");
 
             try
             {
@@ -4744,12 +4303,9 @@ namespace SobekCM.Library.Database
             catch (Exception ee)
             {
                 lastException = ee;
-                if (Tracer != null)
-                {
-                    Tracer.Add_Trace("SobekCM_Database.Get_Aggregation_Change_Log", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Get_Aggregation_Change_Log", ee.Message, Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Get_Aggregation_Change_Log", ee.StackTrace, Custom_Trace_Type_Enum.Error);
-                }
+                Tracer?.Add_Trace("SobekCM_Database.Get_Aggregation_Change_Log", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Get_Aggregation_Change_Log", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Get_Aggregation_Change_Log", ee.StackTrace, Custom_Trace_Type_Enum.Error);
                 return null;
             }
         }
@@ -4765,10 +4321,7 @@ namespace SobekCM.Library.Database
         /// <remarks> This calls the 'SobekCM_Builder_Incoming_Folder_Delete' stored procedure </remarks> 
         public static bool Builder_Folder_Delete(int FolderID, Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("SobekCM_Database.Builder_Folder_Delete", String.Empty);
-            }
+            Tracer?.Add_Trace("SobekCM_Database.Builder_Folder_Delete", String.Empty);
 
             try
             {
@@ -4785,12 +4338,9 @@ namespace SobekCM.Library.Database
             catch (Exception ee)
             {
                 lastException = ee;
-                if (Tracer != null)
-                {
-                    Tracer.Add_Trace("SobekCM_Database.Builder_Folder_Delete", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Builder_Folder_Delete", ee.Message, Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Builder_Folder_Delete", ee.StackTrace, Custom_Trace_Type_Enum.Error);
-                }
+                Tracer?.Add_Trace("SobekCM_Database.Builder_Folder_Delete", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Builder_Folder_Delete", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Builder_Folder_Delete", ee.StackTrace, Custom_Trace_Type_Enum.Error);
                 return false;
             }
         }
@@ -4815,10 +4365,7 @@ namespace SobekCM.Library.Database
             bool Perform_Checksum, bool Archive_TIFF, bool Archive_All_Files, bool Allow_Deletes, bool Allow_Folders_No_Metadata,
             string BibID_Roots_Restrictions, int ModuleSetID, Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("SobekCM_Database.Builder_Folder_Edit", String.Empty);
-            }
+            Tracer?.Add_Trace("SobekCM_Database.Builder_Folder_Edit", String.Empty);
 
             try
             {
@@ -4846,12 +4393,9 @@ namespace SobekCM.Library.Database
             catch (Exception ee)
             {
                 lastException = ee;
-                if (Tracer != null)
-                {
-                    Tracer.Add_Trace("SobekCM_Database.Builder_Folder_Edit", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Builder_Folder_Edit", ee.Message, Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Builder_Folder_Edit", ee.StackTrace, Custom_Trace_Type_Enum.Error);
-                }
+                Tracer?.Add_Trace("SobekCM_Database.Builder_Folder_Edit", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Builder_Folder_Edit", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_Database.Builder_Folder_Edit", ee.StackTrace, Custom_Trace_Type_Enum.Error);
                 return false;
             }
         }

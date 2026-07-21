@@ -1100,7 +1100,7 @@ namespace SobekCM.Library.MySobekViewer
         /// <remarks> This adds the CompleteTemplate HTML for step 2 and the congratulations text for step 4 </remarks>
         public override void Write_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
-            Tracer.Add_Trace("New_TEI_MySobekViewer.Write_HTML", "Do nothing");
+            Tracer.Add_Trace("New_TEI_MySobekViewer.Write_HTML");
 
             if (currentProcessStep == 2)
             {
@@ -1141,18 +1141,21 @@ namespace SobekCM.Library.MySobekViewer
                 string explanation = "Upload the related files for your new item.  You can also provide labels for each file, once they are uploaded.";
                 Output.WriteLine("<blockquote>" + explanation + "</blockquote><br />");
             }
-        }
 
-        /// <summary> This is an opportunity to write HTML directly into the main form, without
-        /// using the pop-up html form architecture </summary>
-        /// <param name="Output"> Textwriter to write the pop-up form HTML for this viewer </param>
-        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-        /// <remarks> This text will appear within the ItemNavForm form tags </remarks>
-        public override void Write_ItemNavForm_Closing(TextWriter Output, Custom_Tracer Tracer)
-        {
-            if (Tracer != null)
+            // Open the item nav form (was written externally by MySobek_HtmlSubwriter)
+            Write_ItemNavForm_Opening(Output);
+
+            // Do nothing if this is the very last step
+            if (currentProcessStep == 2)
             {
-                Tracer.Add_Trace("New_TEI_MySobekViewer.Write_ItemNavForm_Closing", "");
+                // Add the upload controls to the file place holder
+                add_upload_controls_tei(Output, "", ".xml", Tracer);
+            }
+
+            if (currentProcessStep == 8)
+            {
+                // Add the upload controls to the file place holder
+                add_upload_controls(Output, "Add a new related file for this package:", UI_ApplicationCache_Gateway.Settings.Resources.Upload_Image_Types + "," + UI_ApplicationCache_Gateway.Settings.Resources.Upload_File_Types, Tracer);
             }
 
             // Add the hidden fields first
@@ -1954,8 +1957,10 @@ namespace SobekCM.Library.MySobekViewer
             {
                 add_congratulations_html(Output, Tracer);
             }
-        }
 
+            // Close the item nav form 
+            Write_ItemNavForm_Closing(Output);
+        }
         #endregion
 
         #region Code to create the regular citation string
@@ -1989,10 +1994,7 @@ namespace SobekCM.Library.MySobekViewer
             }
 
 
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("Citation_Standard_ItemViewer.Standard_Citation_String", "Configuring brief item data into standard citation format");
-            }
+            Tracer?.Add_Trace("Citation_Standard_ItemViewer.Standard_Citation_String", "Configuring brief item data into standard citation format");
 
             // Use string builder to build this
             const string INDENT = "    ";
@@ -2489,26 +2491,6 @@ namespace SobekCM.Library.MySobekViewer
 
         #endregion
 
-        /// <summary> Add controls directly to the form in the main control area placeholder </summary>
-        /// <param name="MainPlaceHolder"> Main place holder to which all main controls are added </param>
-        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-        public override void Add_Controls(TextWriter Output, Custom_Tracer Tracer)
-        {
-            Tracer.Add_Trace("New_TEI_MySobekViewer.Add_Controls", String.Empty);
-
-            // Do nothing if this is the very last step
-            if (currentProcessStep == 2)
-            {
-                // Add the upload controls to the file place holder
-                add_upload_controls_tei(Output, "", ".xml", Tracer);
-            }
-
-            if (currentProcessStep == 8)
-            {
-                // Add the upload controls to the file place holder
-                add_upload_controls(Output, "Add a new related file for this package:", UI_ApplicationCache_Gateway.Settings.Resources.Upload_Image_Types + "," + UI_ApplicationCache_Gateway.Settings.Resources.Upload_File_Types, Tracer);
-            }
-        }
 
         #region Step 3: Upload Related Files
 

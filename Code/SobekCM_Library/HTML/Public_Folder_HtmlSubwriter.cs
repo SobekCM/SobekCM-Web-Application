@@ -14,7 +14,7 @@ namespace SobekCM.Library.HTML
     /// <remarks> This class extends the <see cref="abstractHtmlSubwriter"/> abstract class. </remarks>
     public class Public_Folder_HtmlSubwriter : abstractHtmlSubwriter
     {
-        private PagedResults_HtmlSubwriter writeResult;
+        private PagedResults_HtmlHelper writeResult;
 
         /// <summary> Constructor for a new instance of the Public_Folder_HtmlSubwriter class </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
@@ -26,16 +26,16 @@ namespace SobekCM.Library.HTML
         /// <summary> Adds controls to the main navigational page </summary>
         /// <param name="Output"> TextWriter to write HTML output </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        /// <remarks> This uses a <see cref="PagedResults_HtmlSubwriter"/> instance to render the browse  </remarks>
-        public override void Add_Main_Viewer_Section(TextWriter Output, Custom_Tracer Tracer)
+        /// <remarks> This uses a <see cref="PagedResults_HtmlHelper"/> instance to render the browse  </remarks>
+        public override void Add_ItemNavForm_Content(TextWriter Output, Custom_Tracer Tracer)
         {
             if ((RequestSpecificValues.Paged_Results != null) && (RequestSpecificValues.Results_Statistics != null))
             {
                 if (writeResult == null)
                 {
-                    Tracer.Add_Trace("Public_Folder_HtmlSubwriter.Add_Main_Viewer_Section", "Building Result DataSet Writer");
+                    Tracer.Add_Trace("Public_Folder_HtmlSubwriter.Add_ItemNavForm_Content", "Building Result DataSet Writer");
 
-                    writeResult = new PagedResults_HtmlSubwriter(RequestSpecificValues, RequestSpecificValues.Results_Statistics, RequestSpecificValues.Paged_Results)
+                    writeResult = new PagedResults_HtmlHelper(RequestSpecificValues, RequestSpecificValues.Results_Statistics, RequestSpecificValues.Paged_Results)
                     {
                         Browse_Title = RequestSpecificValues.Public_Folder.FolderName,
                         Folder_Owner_Name = RequestSpecificValues.Public_Folder.Name,
@@ -43,15 +43,15 @@ namespace SobekCM.Library.HTML
                     };
                 }
 
-                Tracer.Add_Trace("Public_Folder_HtmlSubwriter.Add_Main_Viewer_Section", "Add controls");
-                writeResult.Add_Main_Viewer_Section(Output, Tracer);
+                Tracer.Add_Trace("Public_Folder_HtmlSubwriter.Add_ItemNavForm_Content", "Add controls");
+                writeResult.Add_ItemNavForm_Content(Output, Tracer);
             }
         }
 
         /// <summary> Writes the final output to close this public folder browse, including the results page navigation buttons </summary>
         /// <param name="Output"> Stream to which to write the HTML for this subwriter </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        /// <remarks> This calls the <see cref="PagedResults_HtmlSubwriter.Write_Final_HTML"/> method in the <see cref="PagedResults_HtmlSubwriter"/> object. </remarks>
+        /// <remarks> This calls the <see cref="PagedResults_HtmlHelper.Write_Final_HTML"/> method in the <see cref="PagedResults_HtmlHelper"/> object. </remarks>
         public override void Write_Final_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
             Tracer.Add_Trace("Public_Folder_HtmlSubwriter.Write_Final_Html", "Rendering HTML ( finish the main viewer section )");
@@ -115,7 +115,7 @@ namespace SobekCM.Library.HTML
                 if (writeResult == null)
                 {
                     Tracer.Add_Trace("Public_Folder_HtmlSubwriter.Write_HTML", "Building Result DataSet Writer");
-                    writeResult = new PagedResults_HtmlSubwriter(RequestSpecificValues, RequestSpecificValues.Results_Statistics, RequestSpecificValues.Paged_Results)
+                    writeResult = new PagedResults_HtmlHelper(RequestSpecificValues, RequestSpecificValues.Results_Statistics, RequestSpecificValues.Paged_Results)
                     {
                         Browse_Title = RequestSpecificValues.Public_Folder.FolderName,
                         Folder_Owner_Name = RequestSpecificValues.Public_Folder.Name,

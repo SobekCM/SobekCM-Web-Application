@@ -23,12 +23,12 @@ namespace SobekCM.Library.AggregationViewer.Viewers
     /// <li>Main writer is created for rendering the output, in this case the <see cref="Html_MainWriter"/> </li>
     /// <li>The HTML writer will create the necessary subwriter.  For a collection-level request, an instance of the  <see cref="Aggregation_HtmlSubwriter"/> class is created. </li>
     /// <li>To display the requested collection view, the collection subwriter will creates an instance of this class </li>
-    /// <li>To display the actual results, this class will create an instance of the <see cref="PagedResults_HtmlSubwriter"/> class</li>
+    /// <li>To display the actual results, this class will create an instance of the <see cref="PagedResults_HtmlHelper"/> class</li>
     /// <li>That subwriter creates its own results viewer which extends the <see cref="ResultsViewer.abstract_ResultsViewer"/> class </li>
     /// </ul></remarks>
     public class DataSet_Browse_Info_AggregationViewer : abstractAggregationViewer
     {
-        private PagedResults_HtmlSubwriter writeResult;
+        private PagedResults_HtmlHelper writeResult;
 
 
         /// <summary> Constructor for a new instance of the DataSet_Browse_Info_AggregationViewer class </summary>
@@ -94,7 +94,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 
             if (writeResult == null)
             {
-                writeResult = new PagedResults_HtmlSubwriter(RequestSpecificValues, ViewBag.Results_Statistics, ViewBag.Paged_Results) { Browse_Title = ViewBag.Browse_Object.Label };
+                writeResult = new PagedResults_HtmlHelper(RequestSpecificValues, ViewBag.Results_Statistics, ViewBag.Paged_Results) { Browse_Title = ViewBag.Browse_Object.Label };
             }
 
             writeResult.Write_HTML(Output, Tracer);
@@ -105,7 +105,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         /// <param name="MainPlaceHolder"> Placeholder into which to place controls to be rendered</param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
         /// <remarks> This adds the results from the dataset into the space below the search box.<br /><br />
-        /// This creates and uses a <see cref="PagedResults_HtmlSubwriter"/> to write the results. </remarks>
+        /// This creates and uses a <see cref="PagedResults_HtmlHelper"/> to write the results. </remarks>
         public override void Add_Secondary_Controls(TextWriter Output, Custom_Tracer Tracer)
         {
             if (Tracer != null)
@@ -115,10 +115,10 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 
             if (writeResult == null)
             {
-                writeResult = new PagedResults_HtmlSubwriter(RequestSpecificValues, ViewBag.Results_Statistics, ViewBag.Paged_Results) { Browse_Title = ViewBag.Browse_Object.Label };
+                writeResult = new PagedResults_HtmlHelper(RequestSpecificValues, ViewBag.Results_Statistics, ViewBag.Paged_Results) { Browse_Title = ViewBag.Browse_Object.Label };
             }
 
-            writeResult.Add_Main_Viewer_Section(Output, Tracer);
+            writeResult.Add_ItemNavForm_Content(Output, Tracer);
         }
     }
 }

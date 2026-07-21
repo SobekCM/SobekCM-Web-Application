@@ -558,11 +558,7 @@ namespace SobekCM.Library.MainWriters
 
                 if ( subwriter != null )
                 {
-                    subwriter.Write_ItemNavForm_Opening(Output, Tracer);
-
-                    subwriter.Add_Main_Viewer_Section(Output, Tracer);
-
-                    subwriter.Write_ItemNavForm_Closing(Output, Tracer);
+                    subwriter.Add_ItemNavForm_Content(Output, Tracer);
                 }
 
                 Output.Write("</form>");

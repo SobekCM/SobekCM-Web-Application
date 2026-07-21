@@ -245,10 +245,10 @@ namespace SobekCM.Library.HTML
             return false;
         }
 
-        /// <summary> Writes the html to the output stream within the main form, before the ASP.net placeholder for controls </summary>
+        /// <summary> Writes the complete itemNavForm content: the opening HTML, the main viewer/controls, then the closing HTML </summary>
         /// <param name="Output">Stream to directly write to</param>
         /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
-		public override void Write_ItemNavForm_Opening(TextWriter Output, Custom_Tracer Tracer)
+        public override void Add_ItemNavForm_Content(TextWriter Output, Custom_Tracer Tracer)
         {
             Tracer.Add_Trace("MySobek_HtmlSubwriter.Write_ItemNavForm_Closing", "");
 
@@ -260,26 +260,13 @@ namespace SobekCM.Library.HTML
             {
                 mySobekViewer.Add_Popup_HTML(Output, Tracer);
             }
-        }
 
-
-        /// <summary> Adds any necessary controls to one of two place holders on the main ASPX page </summary>
-        /// <param name="Output"> TextWriter to write HTML output </param>
-        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        public override void Add_Main_Viewer_Section(TextWriter Output, Custom_Tracer Tracer)
-        {
             Tracer.Add_Trace("MySobek_HtmlSubwriter.Add_Main_Viewer_Section", "Build my sobek viewer and add controls");
 
             // Add any controls needed
             if (mySobekViewer != null)
                 mySobekViewer.Add_Controls(Output, Tracer);
-        }
 
-        /// <summary> Writes final HTML to the output stream after all the placeholders and just before the itemNavForm is closed.  </summary>
-        /// <param name="Output"> Stream to which to write the text for this main writer </param>
-        /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
-        public override void Write_ItemNavForm_Closing(TextWriter Output, Custom_Tracer Tracer)
-        {
             Tracer.Add_Trace("MySobek_HtmlSubwriter.Write_ItemNavForm_Closing", "");
 
             // Also, add any additional stuff here

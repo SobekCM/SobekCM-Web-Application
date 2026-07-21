@@ -35,12 +35,12 @@ namespace SobekCM.Library.MySobekViewer
     /// <li>Main writer is created for rendering the output, in his case the <see cref="Html_MainWriter"/> </li>
     /// <li>The HTML writer will create the necessary subwriter.  Since this action requires authentication, an instance of the  <see cref="MySobek_HtmlSubwriter"/> class is created. </li>
     /// <li>The mySobek subwriter creates an instance of this viewer to display the list of items in each bookshelf or the list of bookshelves</li>
-    /// <li>This viewer uses the <see cref="PagedResults_HtmlSubwriter"/> class to display the items just like any search or browse on SobekCM </li>
+    /// <li>This viewer uses the <see cref="PagedResults_HtmlHelper"/> class to display the items just like any search or browse on SobekCM </li>
     /// </ul></remarks>
     public class Folder_Mgmt_MySobekViewer : abstract_MySobekViewer
     {
         private readonly string properFolderName;
-        private PagedResults_HtmlSubwriter writeResult;
+        private PagedResults_HtmlHelper writeResult;
 
         /// <summary> Constructor for a new instance of the Folder_Mgmt_MySobekViewer class </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
@@ -538,7 +538,7 @@ namespace SobekCM.Library.MySobekViewer
         /// <summary> Add controls directly to the form in the main control area placeholder </summary>
         /// <param name="Output"> TextWriter to write HTML output </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-        /// <remarks> The <see cref="PagedResults_HtmlSubwriter"/> class is instantiated and adds controls to the placeholder here </remarks>
+        /// <remarks> The <see cref="PagedResults_HtmlHelper"/> class is instantiated and adds controls to the placeholder here </remarks>
         public override void Add_Controls(TextWriter Output, Custom_Tracer Tracer)
         {
             Tracer.Add_Trace("Folder_Mgmt_MySobekViewer.Add_Controls", String.Empty);
@@ -671,7 +671,7 @@ namespace SobekCM.Library.MySobekViewer
                 else
                 {
 
-                    writeResult = new PagedResults_HtmlSubwriter(RequestSpecificValues, RequestSpecificValues.Results_Statistics, RequestSpecificValues.Paged_Results)
+                    writeResult = new PagedResults_HtmlHelper(RequestSpecificValues, RequestSpecificValues.Results_Statistics, RequestSpecificValues.Paged_Results)
                     {
                         Browse_Title = properFolderName,
                         Outer_Form_Name = "itemNavForm"
@@ -686,7 +686,7 @@ namespace SobekCM.Library.MySobekViewer
                     writeResult.Write_HTML(Output, Tracer);
 
                     // Now, add the results controls as well
-                    writeResult.Add_Main_Viewer_Section(Output, Tracer);
+                    writeResult.Add_ItemNavForm_Content(Output, Tracer);
 
                     // Close the div
                     Output.Write("<br />\n");

@@ -18,7 +18,7 @@ namespace SobekCM.Library.HTML
     /// <remarks> This class extends the <see cref="abstractHtmlSubwriter"/> abstract class. </remarks>
     public class Search_Results_HtmlSubwriter : abstractHtmlSubwriter
     {
-        private PagedResults_HtmlSubwriter writeResult;
+        private PagedResults_HtmlHelper writeResult;
         private readonly Item_Aggregation hierarchyObject;
 
         /// <summary> Constructor for a new instance of the Search_Results_HtmlSubwriter class </summary>
@@ -127,8 +127,8 @@ namespace SobekCM.Library.HTML
         /// <summary> Adds controls to the main navigational page </summary>
         /// <param name="Output"> TextWriter to write HTML output </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        /// <remarks> This uses a <see cref="PagedResults_HtmlSubwriter"/> instance to render the items  </remarks>
-        public override void Add_Main_Viewer_Section(TextWriter Output, Custom_Tracer Tracer)
+        /// <remarks> This uses a <see cref="PagedResults_HtmlHelper"/> instance to render the items  </remarks>
+        public override void Add_ItemNavForm_Content(TextWriter Output, Custom_Tracer Tracer)
         {
             // Make sure the corresponding 'search' is the latest
             RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Search;
@@ -139,20 +139,20 @@ namespace SobekCM.Library.HTML
 
             if (writeResult == null)
             {
-                Tracer.Add_Trace("Search_Results_HtmlSubwriter.Add_Main_Viewer_Section", "Building Result DataSet Writer");
+                Tracer.Add_Trace("Search_Results_HtmlSubwriter.Add_ItemNavForm_Content", "Building Result DataSet Writer");
 
-                writeResult = new PagedResults_HtmlSubwriter(RequestSpecificValues, RequestSpecificValues.Results_Statistics, RequestSpecificValues.Paged_Results);
+                writeResult = new PagedResults_HtmlHelper(RequestSpecificValues, RequestSpecificValues.Results_Statistics, RequestSpecificValues.Paged_Results);
             }
 
-            Tracer.Add_Trace("Search_Results_HtmlSubwriter.Add_Main_Viewer_Section", "Add controls");
-            writeResult.Add_Main_Viewer_Section(Output, Tracer);
+            Tracer.Add_Trace("Search_Results_HtmlSubwriter.Add_ItemNavForm_Content", "Add controls");
+            writeResult.Add_ItemNavForm_Content(Output, Tracer);
         }
 
         /// <summary> Writes the final output to close this search page results, including the results page navigation buttons </summary>
         /// <param name="Output"> Stream to which to write the HTML for this subwriter </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         /// <returns> TRUE is always returned </returns>
-        /// <remarks> This calls the <see cref="PagedResults_HtmlSubwriter.Write_Final_HTML"/> method in the <see cref="PagedResults_HtmlSubwriter"/> object. </remarks>
+        /// <remarks> This calls the <see cref="PagedResults_HtmlHelper.Write_Final_HTML"/> method in the <see cref="PagedResults_HtmlHelper"/> object. </remarks>
 		public override void Write_Final_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
             Tracer.Add_Trace("browse_info_html_subwriter.Write_Final_Html", "Rendering HTML ( finish the main viewer section )");
@@ -187,7 +187,7 @@ namespace SobekCM.Library.HTML
                 if (writeResult == null)
                 {
                     Tracer.Add_Trace("Search_Results_HtmlSubwriter.Write_HTML", "Building Result DataSet Writer");
-                    writeResult = new PagedResults_HtmlSubwriter(RequestSpecificValues, RequestSpecificValues.Results_Statistics, RequestSpecificValues.Paged_Results);
+                    writeResult = new PagedResults_HtmlHelper(RequestSpecificValues, RequestSpecificValues.Results_Statistics, RequestSpecificValues.Paged_Results);
                 }
                 writeResult.Write_HTML(Output, Tracer);
             }

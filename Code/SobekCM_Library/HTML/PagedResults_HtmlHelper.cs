@@ -25,8 +25,11 @@ using System.Text;
 namespace SobekCM.Library.HTML
 {
     /// <summary> Accepts a result set of titles and items and renders the correct page of results in the result view the user has requested </summary>
-    /// <remarks> This class extends the <see cref="abstractHtmlSubwriter"/> abstract class. </remarks>
-    public class PagedResults_HtmlSubwriter : abstractHtmlSubwriter
+    /// <remarks> This class extends the <see cref="abstractHtmlSubwriter"/> abstract class for its shared Context/RequestSpecificValues
+    /// plumbing and Get_Collection helper, not for polymorphism -- it is a composed helper used by other subwriters
+    /// (Search_Results_HtmlSubwriter, Public_Folder_HtmlSubwriter, Folder_Mgmt_MySobekViewer, DataSet_Browse_Info_AggregationViewer),
+    /// always addressed by this concrete type. It is never dispatched by Display_Mode_Enum (absent from HtmlSubwriterFactory). </remarks>
+    public class PagedResults_HtmlHelper : abstractHtmlSubwriter
     {
         private const int MINIMIZED_FACET_COUNT = 10;
         private const int MAXIMIZED_FACET_COUNT = 100;
@@ -43,11 +46,11 @@ namespace SobekCM.Library.HTML
         private readonly Search_Results_Statistics resultsStatistics;
         private readonly List<iSearch_Title_Result> pagedResults;
 
-        /// <summary> Constructor for a new instance of the paged_result_html_subwriter class </summary>
+        /// <summary> Constructor for a new instance of the PagedResults_HtmlHelper class </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
         /// <param name="ResultsStats"> Statistics about the results to display including the facets </param>
         /// <param name="PagedResults"> Actual pages of results </param>
-        public PagedResults_HtmlSubwriter(RequestCache RequestSpecificValues, Search_Results_Statistics ResultsStats, List<iSearch_Title_Result> PagedResults) : base(RequestSpecificValues)
+        public PagedResults_HtmlHelper(RequestCache RequestSpecificValues, Search_Results_Statistics ResultsStats, List<iSearch_Title_Result> PagedResults) : base(RequestSpecificValues)
         {
             // Save the search results info
             resultsStatistics = ResultsStats;
@@ -355,9 +358,9 @@ namespace SobekCM.Library.HTML
         /// <summary> Adds controls to the main navigational page </summary>
         /// <param name="Output"> TextWriter to write HTML output </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        public override void Add_Main_Viewer_Section(TextWriter Output, Custom_Tracer Tracer)
+        public override void Add_ItemNavForm_Content(TextWriter Output, Custom_Tracer Tracer)
         {
-            Tracer.Add_Trace("paged_result_html_subwriter.Add_Main_Viewer_Section", "Adding controls for the result set");
+            Tracer.Add_Trace("PagedResults_HtmlHelper.Add_ItemNavForm_Content", "Adding controls for the result set");
 
             // If the results have facets, this should be rendered in a table with the facets to the left
             if ((resultsStatistics.Has_Facet_Info) && (resultsStatistics.Total_Items > 1) && (!String.Equals(RequestSpecificValues.Current_Mode.Result_Display_Type, "export", StringComparison.OrdinalIgnoreCase)) && (!String.Equals(RequestSpecificValues.Current_Mode.Result_Display_Type, "map", StringComparison.OrdinalIgnoreCase)))
@@ -399,7 +402,7 @@ namespace SobekCM.Library.HTML
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         public override void Write_Final_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
-            Tracer.Add_Trace("paged_result_html_subwriter.Write_Final_Html", "Rendering HTML ( finish the main viewer section )");
+            Tracer.Add_Trace("PagedResults_HtmlHelper.Write_Final_Html", "Rendering HTML ( finish the main viewer section )");
 
             if (resultsStatistics.Total_Items > 0)
             {
@@ -419,7 +422,7 @@ namespace SobekCM.Library.HTML
         /// <returns> TRUE -- Value indicating if html writer should finish the page immediately after this, or if there are other controls or routines which need to be called first </returns>
         public override bool Write_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
-            Tracer.Add_Trace("paged_result_html_subwriter.Write_HTML", "Rendering HTML");
+            Tracer.Add_Trace("PagedResults_HtmlHelper.Write_HTML", "Rendering HTML");
 
             string sort_by = "Sort By";
             string showing_range_text = "{0} - {1} of {2} matching titles";
@@ -448,7 +451,7 @@ namespace SobekCM.Library.HTML
 
             Display_Mode_Enum initialMode = RequestSpecificValues.Current_Mode.Mode;
 
-            Tracer.Add_Trace("paged_result_html_subwriter.Write_HTML", "Building appropriate ResultsWriter");
+            Tracer.Add_Trace("PagedResults_HtmlHelper.Write_HTML", "Building appropriate ResultsWriter");
 
             RequestSpecificValues.Current_Mode.Mode = initialMode;
             if (RequestSpecificValues.Current_Mode.Mode == Display_Mode_Enum.Search)

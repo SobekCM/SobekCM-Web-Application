@@ -992,23 +992,78 @@ namespace SobekCM.Library.HTML
             return true;
         }
 
-        /// <summary> Writes the html to the output stream open for the itemNavForm, which appears just before the TocPlaceHolder </summary>
+        /// <summary> Writes the complete itemNavForm content: the opening HTML, the main viewer section, then the closing HTML </summary>
         /// <param name="Output">Stream to directly write to</param>
         /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
-        public override void Write_ItemNavForm_Opening(TextWriter Output, Custom_Tracer Tracer)
+        /// <remarks> Mechanically combined from the three original separate methods, boundaries marked below for review.
+        /// NOTE: for layouts with a Viewer_Section entry, the original Write_ItemNavForm_Opening calls
+        /// add_viewer_area_start(), which itself already calls pageViewer.Write_Main_Viewer_Section(...) and then
+        /// returns -- but the (former) Add_Main_Viewer_Section step below calls pageViewer.Write_Main_Viewer_Section(...)
+        /// again unconditionally. This looks like the likely cause of the "main viewer rendered twice" TODO item. </remarks>
+        public override void Add_ItemNavForm_Content(TextWriter Output, Custom_Tracer Tracer)
         {
-            Tracer.Add_Trace("Item_HtmlSubwriter.Write_ItemNavForm_Opening", "Write the area up and including the start of the viewer area");
+            Tracer.Add_Trace("Item_HtmlSubwriter.Add_ItemNavForm_Content", "Write the area up and including the start of the viewer area");
 
             // Write from the layout
             if (itemLayout == null) return;
+            if (pageViewer == null) return;
 
-            // Step through all the sections 
+            // Step through all the beginning sections
             while (itemLayoutIndex < itemLayout.Sections.Count)
             {
                 if (itemLayout.Sections[itemLayoutIndex].Type == HtmlLayoutSectionTypeEnum.Viewer_Section)
                 {
                     add_viewer_area_start(Output, Tracer);
-                    return;
+                    break;
+                }
+                else if (itemLayout.Sections[itemLayoutIndex].Type == HtmlLayoutSectionTypeEnum.Static_HTML)
+                {
+                    Output.WriteLine(itemLayout.Sections[itemLayoutIndex].HTML);
+                }
+                else if (itemLayout.Sections[itemLayoutIndex].Type == HtmlLayoutSectionTypeEnum.Dynamic_Section)
+                {
+                    string section_name = itemLayout.Sections[itemLayoutIndex].Name;
+                    Tracer.Add_Trace("Item_HtmlSubwriter.Add_ItemNavForm_Content", "Adding html into the " + section_name + " section");
+
+                    // Get the writer list to write here
+                    SectionWriterGroupConfig config = itemLayoutConfig.GetSection(section_name);
+                    if ((config != null) && (config.Writers != null))
+                    {
+                        // Step through each writer in the config
+                        foreach (SectionWriterConfig thisWriterConfig in config.Writers)
+                        {
+                            // Only continue if it is enabled
+                            if (!thisWriterConfig.Enabled) continue;
+
+                            // Get the writer
+                            iItemSectionWriter writer = ItemSectionWriter_Factory.Get_ItemSectionWriter(thisWriterConfig.Assembly, thisWriterConfig.Class);
+                            if (writer == null)
+                            {
+                                Tracer.Add_Trace("Item_HtmlSubwriter.Add_ItemNavForm_Content", "Writer returned from factory was null for " + thisWriterConfig.ID);
+                                continue;
+                            }
+
+                            // Add the HTML
+                            writer.Write_HTML(Output, prototyper, pageViewer, currentItem, RequestSpecificValues, behaviors);
+                        }
+                    }
+                }
+
+                itemLayoutIndex++;
+            }
+
+            // Add the main viewer section
+            Tracer.Add_Trace("Item_HtmlSubwriter.Add_ItemNavForm_Content", "Allowing page viewer to write main viewer section");
+            pageViewer.Write_Main_Viewer_Section(Output, Tracer);
+
+            Tracer.Add_Trace("Item_HtmlSubwriter.Add_ItemNavForm_Content", "Write the area after the controls placeholder of the viewer area");
+
+            // Step through all the sections
+            while (itemLayoutIndex < itemLayout.Sections.Count)
+            {
+                if (itemLayout.Sections[itemLayoutIndex].Type == HtmlLayoutSectionTypeEnum.Viewer_Section)
+                {
+                    add_viewer_area_end(Output, Tracer);
                 }
                 else if (itemLayout.Sections[itemLayoutIndex].Type == HtmlLayoutSectionTypeEnum.Static_HTML)
                 {
@@ -1044,6 +1099,11 @@ namespace SobekCM.Library.HTML
                 }
 
                 itemLayoutIndex++;
+            }
+
+            if (!behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Item_Subwriter_Full_JQuery_UI))
+            {
+                Output.WriteLine("<script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Jquery_Ui_1_10_3_Draggable_Js + "\"></script>");
             }
         }
 
@@ -1337,19 +1397,6 @@ namespace SobekCM.Library.HTML
             pageViewer.Write_Main_Viewer_Section(Output, Tracer);
         }
 
-        /// <summary> Performs the final HTML writing which completes the item table and adds the final page navigation buttons at the bottom of the page </summary>
-        /// <param name="Output"> TextWriter to write HTML output </param>
-        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        public void Add_Main_Viewer_Section(TextWriter Output, Custom_Tracer Tracer)
-        {
-            // Add the main viewer section
-            if (pageViewer != null)
-            {
-                Tracer.Add_Trace("Item_HtmlSubwriter.Add_Main_Viewer_Section", "Allowing page viewer to write main viewer section");
-                pageViewer.Write_Main_Viewer_Section(Output, Tracer);
-            }
-        }
-
         private void add_viewer_area_end(TextWriter Output, Custom_Tracer Tracer)
         {
             Tracer.Add_Trace("Item_HtmlSubwriter.add_viewer_area_end", "Close the item viewer and add final pagination");
@@ -1385,66 +1432,7 @@ namespace SobekCM.Library.HTML
             Output.WriteLine("</table>");
         }
 
-        /// <summary> Writes final HTML to the output stream after all the placeholders and just before the itemNavForm is closed.  </summary>
-        /// <param name="Output"> Stream to which to write the text for this main writer </param>
-        /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
-        public override void Write_ItemNavForm_Closing(TextWriter Output, Custom_Tracer Tracer)
-        {
-            Tracer.Add_Trace("Item_HtmlSubwriter.Write_ItemNavForm_Closing", "Write the area after the controls placeholder of the viewer area");
-
-            // Write from the layout
-            if (itemLayout == null) return;
-
-            // Step through all the sections 
-            while (itemLayoutIndex < itemLayout.Sections.Count)
-            {
-                if (itemLayout.Sections[itemLayoutIndex].Type == HtmlLayoutSectionTypeEnum.Viewer_Section)
-                {
-                    add_viewer_area_end(Output, Tracer);
-                }
-                else if (itemLayout.Sections[itemLayoutIndex].Type == HtmlLayoutSectionTypeEnum.Static_HTML)
-                {
-                    Output.WriteLine(itemLayout.Sections[itemLayoutIndex].HTML);
-                }
-                else if (itemLayout.Sections[itemLayoutIndex].Type == HtmlLayoutSectionTypeEnum.Dynamic_Section)
-                {
-                    string section_name = itemLayout.Sections[itemLayoutIndex].Name;
-                    Tracer.Add_Trace("Item_HtmlSubwriter.Write_ItemNavForm_Opening", "Adding html into the " + section_name + " section");
-
-                    // Get the writer list to write here
-                    SectionWriterGroupConfig config = itemLayoutConfig.GetSection(section_name);
-                    if ((config != null) && (config.Writers != null))
-                    {
-                        // Step through each writer in the config
-                        foreach (SectionWriterConfig thisWriterConfig in config.Writers)
-                        {
-                            // Only continue if it is enabled
-                            if (!thisWriterConfig.Enabled) continue;
-
-                            // Get the writer
-                            iItemSectionWriter writer = ItemSectionWriter_Factory.Get_ItemSectionWriter(thisWriterConfig.Assembly, thisWriterConfig.Class);
-                            if (writer == null)
-                            {
-                                Tracer.Add_Trace("Item_HtmlSubwriter.Write_ItemNavForm_Opening", "Writer returned from factory was null for " + thisWriterConfig.ID);
-                                continue;
-                            }
-
-                            // Add the HTML
-                            writer.Write_HTML(Output, prototyper, pageViewer, currentItem, RequestSpecificValues, behaviors);
-                        }
-                    }
-                }
-
-                itemLayoutIndex++;
-            }
-
-            if (!behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Item_Subwriter_Full_JQuery_UI))
-            {
-                Output.WriteLine("<script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Jquery_Ui_1_10_3_Draggable_Js + "\"></script>");
-            }
-        }
-
-        /// <summary> Gets the collection of body attributes to be included 
+        /// <summary> Gets the collection of body attributes to be included
         /// within the HTML body tag (usually to add events to the body) </summary>
         public override List<Tuple<string, string>> Body_Attributes
         {

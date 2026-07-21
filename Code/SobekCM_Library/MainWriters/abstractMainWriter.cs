@@ -30,17 +30,6 @@ namespace SobekCM.Library.MainWriters
         /// <summary> Gets the enumeration of the type of main writer </summary>
         public abstract Writer_Type_Enum Writer_Type { get; }
 
-
-        /// <summary> Returns a flag indicating whether the navigation form should be included in the page </summary>
-        /// <value> This value can be override by child classes, but by default this returns FALSE </value>
-        public virtual bool Include_Navigation_Form
-        {
-            get
-            {
-                return false;
-            }
-        }
-
         /// <summary> Perform all the work of adding the full body content to the response stream back to the web user </summary>
         /// <param name="Output"> Stream to which to write the text for this main writer </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>

@@ -267,33 +267,10 @@ namespace SobekCM.Library.AdminViewer
 
         public override void Write_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
-            // do noting
-        }
+            // Open the item nav form
+            Write_ItemNavForm_Opening(Output);
 
-        /// <summary> Title for the page that displays this viewer, this is shown in the search box at the top of the page, just below the banner </summary>
-        /// <value> This always returns the value 'TEI Administrative Features' </value>
-        public override string Web_Title
-        {
-            get { return "TEI Administrative Features"; }
-        }
-
-        /// <summary> Gets the URL for the icon related to this administrative task </summary>
-        public override string Viewer_Icon
-        {
-            get { return Static_Resources_Gateway.Settings_Img; }
-        }
-
-
-
-        /// <summary> Add the HTML to be displayed in the main SobekCM viewer area </summary>
-        /// <param name="Output"> Textwriter to write the HTML for this viewer</param>
-        /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
-        /// <remarks> This class does nothing, since the wordmarks list is added as controls, not HTML </remarks>
-        public override void Write_ItemNavForm_Opening(TextWriter Output, Custom_Tracer Tracer)
-        {
-            Tracer.Add_Trace("TEI_PlugIn_AdminViewer.Write_ItemNavForm_Opening", "");
-
-            Output.WriteLine("<!-- TEI_PlugIn_AdminViewer.Write_ItemNavForm_Opening -->");
+            Output.WriteLine("<!-- TEI_PlugIn_AdminViewer.Write_HTML -->");
 
             Output.WriteLine("<!-- Hidden field is used for postbacks to indicate what to save and reset -->");
             Output.WriteLine("<input type=\"hidden\" id=\"tei_admin_action\" name=\"tei_admin_action\" value=\"\" />");
@@ -319,8 +296,6 @@ namespace SobekCM.Library.AdminViewer
             }
 
             Output.WriteLine("  <p style=\"text-align: left; padding:0 20px 0 70px;width:800px;\">These tabs allow you to manage the different portions of the TEI plug-in.  This includes uploading new XSLTs, CSS files, and mapping files.  In addition, you can map the different users to the different files to enable different functionality to different users.</p>");
-
-
 
             //Output.WriteLine("    <ul>");
             //Output.WriteLine("      <li>Enter the permissions for this user below and press the SAVE button when all your edits are complete.</li>");
@@ -365,7 +340,6 @@ namespace SobekCM.Library.AdminViewer
                 Output.WriteLine("    <li onclick=\"window.location.href=\'" + url.Replace("XyzzyXyzzy", "c") + "';return false;\"> Metadata Mappings </li>");
             }
 
-
             Output.WriteLine("    </ul>");
             Output.WriteLine("  </div>");
 
@@ -378,7 +352,6 @@ namespace SobekCM.Library.AdminViewer
             //Output.WriteLine("    <button title=\"Save changes to this user group\" class=\"sbkAdm_RoundButton\" onclick=\"return save_user_edits();return false;\">SAVE <img src=\"" + Static_Resources.Button_Next_Arrow_Png + "\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button>");
             //Output.WriteLine("  </div>");
             //Output.WriteLine();
-
 
             Output.WriteLine();
 
@@ -409,19 +382,46 @@ namespace SobekCM.Library.AdminViewer
                     break;
             }
 
+            // Determine the directory and the extensions
+            string directory = Path.Combine(UI_ApplicationCache_Gateway.Settings.Servers.Application_Server_Network, "plugins", "tei");
+            string extensions = "";
+            string buttonText = "Select Files";
+            switch (page)
+            {
+                case 1:
+                    directory = Path.Combine(directory, "xslt");
+                    extensions = ".xslt";
+                    buttonText = "Select XSLT Files";
+                    break;
 
+                case 2:
+                    directory = Path.Combine(directory, "css");
+                    extensions = ".css";
+                    buttonText = "Select CSS Files";
+                    break;
 
-        }
+                case 3:
+                    directory = Path.Combine(directory, "mapping");
+                    extensions = ".xml";
+                    buttonText = "Select Mapping Files";
+                    break;
 
-        /// <summary> This is an opportunity to write HTML directly into the main form, without
-        /// using the pop-up html form architecture </summary>
-        /// <param name="Output"> Textwriter to write the pop-up form HTML for this viewer </param>
-        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-        /// <remarks> This text will appear within the ItemNavForm form tags </remarks>
-        public override void Write_ItemNavForm_Closing(TextWriter Output, Custom_Tracer Tracer)
-        {
-            Output.WriteLine("<!-- TEI_PlugIn_AdminViewer.Write_ItemNavForm_Closing -->");
+            }
 
+            // Check to see if the directory exists
+            try
+            {
+                if (!Directory.Exists(directory))
+                    Directory.CreateDirectory(directory);
+            }
+            catch (Exception)
+            {
+                actionMessage = "Error creating the necesasry folder under the TEI plug-in folder";
+                return;
+            }
+
+            // Add the upload controls to the file place holder
+            add_upload_controls(directory, extensions, buttonText, Output, Tracer);
 
             //// Add the buttons
             //RequestSpecificValues.Current_Mode.My_Sobek_SubMode = String.Empty;
@@ -435,10 +435,10 @@ namespace SobekCM.Library.AdminViewer
             string view = RequestSpecificValues.QueryString["view"];
 
             // Get the URl for the other view type
-            string url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+            string closing_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
             if (view != "users")
             {
-                url = (url.IndexOf("?") > 0) ? (url + "&view=users") : (url + "?view=users");
+                closing_url = (closing_url.IndexOf("?") > 0) ? (closing_url + "&view=users") : (closing_url + "?view=users");
             }
 
             switch (page)
@@ -465,7 +465,7 @@ namespace SobekCM.Library.AdminViewer
 
                         if (view != "users")
                         {
-                            Output.WriteLine("    	  <p style=\"width:800px;\">You are currently viewing the table by XSLT filename.  <a href=\"" + url + "\">Click here to view by user.</a></p>");
+                            Output.WriteLine("    	  <p style=\"width:800px;\">You are currently viewing the table by XSLT filename.  <a href=\"" + closing_url + "\">Click here to view by user.</a></p>");
                             Output.WriteLine();
 
                             Output.WriteLine("        <table class=\"sbkAdm_Table\" id=\"sbkTeiAv_Table\">");
@@ -511,7 +511,7 @@ namespace SobekCM.Library.AdminViewer
                         else
                         {
 
-                            Output.WriteLine("    	  <p style=\"width:800px;\">You are currently viewing the table by username.  <a href=\"" + url + "\">Click here to view by XSLT filename.</a></p>");
+                            Output.WriteLine("    	  <p style=\"width:800px;\">You are currently viewing the table by username.  <a href=\"" + closing_url + "\">Click here to view by XSLT filename.</a></p>");
                             Output.WriteLine();
 
                             Output.WriteLine("        <table class=\"sbkAdm_Table\" id=\"sbkTeiAv_Table\">");
@@ -584,7 +584,7 @@ namespace SobekCM.Library.AdminViewer
 
                         if (view != "users")
                         {
-                            Output.WriteLine("    	  <p style=\"width:800px;\">You are currently viewing the table by CSS filename.  <a href=\"" + url + "\">Click here to view by user.</a></p>");
+                            Output.WriteLine("    	  <p style=\"width:800px;\">You are currently viewing the table by CSS filename.  <a href=\"" + closing_url + "\">Click here to view by user.</a></p>");
                             Output.WriteLine();
 
                             Output.WriteLine("        <table class=\"sbkAdm_Table\" id=\"sbkTeiAv_Table\">");
@@ -630,7 +630,7 @@ namespace SobekCM.Library.AdminViewer
                         else
                         {
 
-                            Output.WriteLine("    	  <p style=\"width:800px;\">You are currently viewing the table by username.  <a href=\"" + url + "\">Click here to view by CSS filename.</a></p>");
+                            Output.WriteLine("    	  <p style=\"width:800px;\">You are currently viewing the table by username.  <a href=\"" + closing_url + "\">Click here to view by CSS filename.</a></p>");
                             Output.WriteLine();
 
                             Output.WriteLine("        <table class=\"sbkAdm_Table\" id=\"sbkTeiAv_Table\">");
@@ -702,7 +702,7 @@ namespace SobekCM.Library.AdminViewer
 
                         if (view != "users")
                         {
-                            Output.WriteLine("    	  <p style=\"width:800px;\">You are currently viewing the table by mapping filename.  <a href=\"" + url + "\">Click here to view by user.</a></p>");
+                            Output.WriteLine("    	  <p style=\"width:800px;\">You are currently viewing the table by mapping filename.  <a href=\"" + closing_url + "\">Click here to view by user.</a></p>");
                             Output.WriteLine();
 
                             Output.WriteLine("        <table class=\"sbkAdm_Table\" id=\"sbkTeiAv_Table\">");
@@ -748,7 +748,7 @@ namespace SobekCM.Library.AdminViewer
                         else
                         {
 
-                            Output.WriteLine("    	  <p style=\"width:800px;\">You are currently viewing the table by username.  <a href=\"" + url + "\">Click here to view by mapping filename.</a></p>");
+                            Output.WriteLine("    	  <p style=\"width:800px;\">You are currently viewing the table by username.  <a href=\"" + closing_url + "\">Click here to view by mapping filename.</a></p>");
                             Output.WriteLine();
 
                             Output.WriteLine("        <table class=\"sbkAdm_Table\" id=\"sbkTeiAv_Table\">");
@@ -807,57 +807,23 @@ namespace SobekCM.Library.AdminViewer
 
             Output.WriteLine("<br />");
             Output.WriteLine("<br />");
+
+            // Close the item nav form
+            Write_ItemNavForm_Closing(Output);
         }
 
-        /// <summary> Add controls directly to the form in the main control area placeholder </summary>
-        /// <param name="MainPlaceHolder"> Main place holder to which all main controls are added </param>
-        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-        public override void Add_Controls(TextWriter Output, Custom_Tracer Tracer)
+        /// <summary> Title for the page that displays this viewer, this is shown in the search box at the top of the page, just below the banner </summary>
+        /// <value> This always returns the value 'TEI Administrative Features' </value>
+        public override string Web_Title
         {
-            Tracer.Add_Trace("File_Managament_MySobekViewer.Add_Controls", String.Empty);
-
-            // Determine the directory and the extensions
-            string directory = Path.Combine(UI_ApplicationCache_Gateway.Settings.Servers.Application_Server_Network, "plugins", "tei");
-            string extensions = "";
-            string buttonText = "Select Files";
-            switch (page)
-            {
-                case 1:
-                    directory = Path.Combine(directory, "xslt");
-                    extensions = ".xslt";
-                    buttonText = "Select XSLT Files";
-                    break;
-
-                case 2:
-                    directory = Path.Combine(directory, "css");
-                    extensions = ".css";
-                    buttonText = "Select CSS Files";
-                    break;
-
-                case 3:
-                    directory = Path.Combine(directory, "mapping");
-                    extensions = ".xml";
-                    buttonText = "Select Mapping Files";
-                    break;
-
-            }
-
-            // Check to see if the directory exists
-            try
-            {
-                if (!Directory.Exists(directory))
-                    Directory.CreateDirectory(directory);
-            }
-            catch (Exception)
-            {
-                actionMessage = "Error creating the necesasry folder under the TEI plug-in folder";
-                return;
-            }
-
-            // Add the upload controls to the file place holder
-            add_upload_controls(directory, extensions, buttonText, Output, Tracer);
+            get { return "TEI Administrative Features"; }
         }
 
+        /// <summary> Gets the URL for the icon related to this administrative task </summary>
+        public override string Viewer_Icon
+        {
+            get { return Static_Resources_Gateway.Settings_Img; }
+        }
 
         private void add_upload_controls(string DestinationDirectory, string Extensions, string ButtonText, TextWriter Output, Custom_Tracer Tracer)
         {

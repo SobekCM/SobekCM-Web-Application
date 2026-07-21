@@ -98,7 +98,7 @@ namespace SobekCM.Library.HTML
         /// <param name="Output"> Stream to which to write the HTML for this header </param>
         public override void Add_Header(TextWriter Output)
         {
-            HeaderFooter_Helper_HtmlSubWriter.Add_Header(Output, RequestSpecificValues, Container_CssClass, WebPage_Title, Subwriter_Behaviors, hierarchyObject, null, Context);
+            HeaderFooter_Helper.Add_Header(Output, RequestSpecificValues, Container_CssClass, WebPage_Title, Subwriter_Behaviors, hierarchyObject, null, Context);
         }
 
         /// <summary> Flag indicates if the internal header should included </summary>
@@ -181,7 +181,7 @@ namespace SobekCM.Library.HTML
         /// <param name="Output"> Stream to which to write the HTML for this footer </param>
         public override void Add_Footer(TextWriter Output)
         {
-            HeaderFooter_Helper_HtmlSubWriter.Add_Footer(Output, RequestSpecificValues, Subwriter_Behaviors, hierarchyObject, null, Context);
+            HeaderFooter_Helper.Add_Footer(Output, RequestSpecificValues, Subwriter_Behaviors, hierarchyObject, null, Context);
         }
 
 

@@ -317,15 +317,10 @@ namespace SobekCM.Library.AdminViewer
         /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
         public override void Write_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
-            Tracer.Add_Trace("Home_AdminViewer.Write_HTML", "Do nothing");
-        }
+            Tracer.Add_Trace("Home_AdminViewer.Write_HTML");
 
-        /// <summary> Add the HTML to be displayed in the main SobekCM viewer area </summary>
-        /// <param name="Output"> Textwriter to write the HTML for this viewer</param>
-        /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
-        public override void Write_ItemNavForm_Opening(TextWriter Output, Custom_Tracer Tracer)
-        {
-            Tracer.Add_Trace("Home_AdminViewer.Write_ItemNavForm_Opening", String.Empty);
+            // Open the item nav form
+            Write_ItemNavForm_Opening(Output);
 
             // Add the hidden field
             Output.WriteLine("<!-- Hidden field is used for postbacks to indicate what to save and reset -->");
@@ -387,6 +382,12 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("  <p>For clarification on any of these options, <a href=\"" + UI_ApplicationCache_Gateway.Settings.System.Help_URL(RequestSpecificValues.Current_Mode.Base_URL) + "adminhelp/tasks\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</p>");
             Output.WriteLine("  <p>You are currently running version " + UI_ApplicationCache_Gateway.Settings.Static.Current_Web_Version + ". ( <a href=\"http://sobekrepository.org/sobekcm/development/history\">see release notes</a> )</p>");
             Output.WriteLine("</div>");
+            
+            // Add banner
+            Banner_Helper.Add_Banner(Output, "sbkAhs_BannerDiv", "System Administration", RequestSpecificValues.Current_Mode, RequestSpecificValues.HTML_Skin, RequestSpecificValues.Top_Collection);
+
+            // Close the item nav form
+            Write_ItemNavForm_Closing(Output);
         }
 
         private void write_brief(TextWriter Output)

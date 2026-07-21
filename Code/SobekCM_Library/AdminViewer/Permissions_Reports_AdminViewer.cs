@@ -90,17 +90,10 @@ namespace SobekCM.Library.AdminViewer
         /// <remarks> This does nothing </remarks>
         public override void Write_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
-            // Nothin yet
-        }
+            // Open the item nav form
+            Write_ItemNavForm_Opening(Output);
 
-        /// <summary> This is an opportunity to write HTML directly into the main form, without
-        /// using the pop-up html form architecture </summary>
-        /// <param name="Output"> Textwriter to write the pop-up form HTML for this viewer </param>
-        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-        /// <remarks> This text will appear within the ItemNavForm form tags </remarks>
-        public override void Write_ItemNavForm_Closing(TextWriter Output, Custom_Tracer Tracer)
-        {
-            Output.WriteLine("<!-- Permissions_Reports_AdminViewer.Write_ItemNavForm_Closing -->");
+            Output.WriteLine("<!-- Permissions_Reports_AdminViewer.Write_HTML -->");
             Output.WriteLine("<script src=\"" + Static_Resources_Gateway.Sobekcm_Admin_Js + "\" type=\"text/javascript\"></script>");
 
             int page = 1;
@@ -1185,6 +1178,9 @@ namespace SobekCM.Library.AdminViewer
 
             Output.WriteLine("<br />");
             Output.WriteLine("<br />");
+
+            // Close the item nav form
+            Write_ItemNavForm_Closing(Output);
         }
 
         private string flag_to_display(bool ToDisplay)

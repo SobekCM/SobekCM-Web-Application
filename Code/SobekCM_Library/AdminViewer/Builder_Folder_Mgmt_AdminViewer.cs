@@ -4,6 +4,7 @@ using SobekCM.Core.Client;
 using SobekCM.Core.Navigation;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Library.Database;
+using SobekCM.Library.HTML;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
 using System;
@@ -268,16 +269,14 @@ namespace SobekCM.Library.AdminViewer
         /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
         public override void Write_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
-            Tracer.Add_Trace("Builder_AdminViewer.Write_HTML", "Do nothing");
-        }
+            Tracer.Add_Trace("Builder_Folder_Mgmt_AdminViewer.Write_HTML");
 
-        /// <summary> This is an opportunity to write HTML directly into the main form, without
-        /// using the pop-up html form architecture </summary>
-        /// <param name="Output"> Textwriter to write the pop-up form HTML for this viewer </param>
-        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-        /// <remarks> This text will appear within the ItemNavForm form tags </remarks>
-        public override void Write_ItemNavForm_Closing(TextWriter Output, Custom_Tracer Tracer)
-        {
+            // Open the item nav form
+            Write_ItemNavForm_Opening(Output);
+
+            // Add the banner
+            Banner_Helper.Add_Banner(Output, "sbkAhs_BannerDiv", "System Administration", RequestSpecificValues.Current_Mode, RequestSpecificValues.HTML_Skin, RequestSpecificValues.Top_Collection);
+
             // Add the javascript
             Output.WriteLine("<script src=\"" + Static_Resources_Gateway.Sobekcm_Admin_Js + "\" type=\"text/javascript\"></script>");
 
@@ -440,7 +439,6 @@ namespace SobekCM.Library.AdminViewer
                 cancel_text = "Done with changes";
             }
 
-
             // Add line for button
             Output.WriteLine("  <tr>");
             Output.WriteLine("    <td></td>");
@@ -457,6 +455,9 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("</table>");
 
             Output.WriteLine("</div>");
+
+            // Close the item nav form
+            Write_ItemNavForm_Closing(Output);
         }
     }
 }

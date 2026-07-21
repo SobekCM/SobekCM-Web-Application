@@ -698,18 +698,10 @@ namespace SobekCM.Library.AdminViewer
         /// <remarks> This class does nothing, since the themes list is added as controls, not HTML </remarks>
         public override void Write_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
-            Tracer.Add_Trace("Settings_AdminViewer.Write_HTML", "Do nothing");
-        }
+            Tracer.Add_Trace("Settings_AdminViewer.Write_HTML");
 
-        /// <summary> This is an opportunity to write HTML directly into the main form, without
-        /// using the pop-up html form architecture </summary>
-        /// <param name="Output"> Textwriter to write the pop-up form HTML for this viewer </param>
-        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-        /// <remarks> This text will appear within the ItemNavForm form tags </remarks>
-        public override void Write_ItemNavForm_Closing(TextWriter Output, Custom_Tracer Tracer)
-        {
-            Tracer.Add_Trace("Settings_AdminViewer.Write_ItemNavForm_Closing", "Write the rest of the form ");
-
+            // Open the item nav form
+            Write_ItemNavForm_Opening(Output);
 
             // Add the hidden field
             Output.WriteLine("<!-- Hidden field is used for postbacks to indicate what to save and reset -->");
@@ -721,7 +713,7 @@ namespace SobekCM.Library.AdminViewer
 
             Output.WriteLine();
 
-            Output.WriteLine("<!-- Settings_AdminViewer.Write_ItemNavForm_Closing -->");
+            Output.WriteLine("<!-- Settings_AdminViewer.Write_HTML -->");
             Output.WriteLine("<script src=\"" + Static_Resources_Gateway.Sobekcm_Admin_Js + "\" type=\"text/javascript\"></script>");
             Output.WriteLine();
 
@@ -883,14 +875,11 @@ namespace SobekCM.Library.AdminViewer
                     break;
             }
 
-
             Output.WriteLine("<br />");
             Output.WriteLine("<br />");
-
 
             Output.WriteLine("  <br />");
             Output.WriteLine("</div>");
-
 
             Output.WriteLine("    </td>");
             Output.WriteLine("  </tr>");
@@ -899,6 +888,9 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("<div id=\"pagecontainer_resumed\">");
 
             Output.WriteLine();
+
+            // Close the item nav form
+            Write_ItemNavForm_Closing(Output);
         }
 
         #region HTML helper methods for the left TOC portion 

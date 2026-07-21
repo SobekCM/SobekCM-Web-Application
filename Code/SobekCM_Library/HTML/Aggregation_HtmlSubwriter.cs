@@ -864,7 +864,7 @@ namespace SobekCM.Library.HTML
         public override void Add_Header(TextWriter Output)
         {
             RequestSpecificValues.Tracer.Add_Trace("Aggregation_HtmlSubwriter.Add_Header", "Entered. WebPage_Title=[" + WebPage_Title + "].");
-            HeaderFooter_Helper_HtmlSubWriter.Add_Header(Output, RequestSpecificValues, Container_CssClass, WebPage_Title, Subwriter_Behaviors, hierarchyObject, null, Context);
+            HeaderFooter_Helper.Add_Header(Output, RequestSpecificValues, Container_CssClass, WebPage_Title, Subwriter_Behaviors, hierarchyObject, null, Context);
             RequestSpecificValues.Tracer.Add_Trace("Aggregation_HtmlSubwriter.Add_Header", "Leaving.");
         }
 
@@ -2735,7 +2735,7 @@ namespace SobekCM.Library.HTML
             RequestSpecificValues.Tracer.Add_Trace("Aggregation_HtmlSubwriter.Add_Footer", "Entered...");
 
             Output.WriteLine("<!-- Start of Aggregation_HtmlSubwriter.Add_Footer -->");
-            HeaderFooter_Helper_HtmlSubWriter.Add_Footer(Output, RequestSpecificValues, Subwriter_Behaviors, hierarchyObject, null, Context);
+            HeaderFooter_Helper.Add_Footer(Output, RequestSpecificValues, Subwriter_Behaviors, hierarchyObject, null, Context);
             Output.WriteLine("<!-- End of Aggregation_HtmlSubwriter.Add_Footer -->");
         }
     }

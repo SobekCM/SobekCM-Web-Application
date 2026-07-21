@@ -513,17 +513,14 @@ namespace SobekCM.Library.AdminViewer
         /// <remarks> This class does nothing </remarks>
         public override void Write_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
-            Tracer.Add_Trace("User_Group_AdminViewer.Write_HTML", "Do nothing");
-        }
+            Tracer.Add_Trace("User_Group_AdminViewer.Write_HTML");
 
-        /// <summary> This is an opportunity to write HTML directly into the main form, without
-        /// using the pop-up html form architecture </summary>
-        /// <param name="Output"> Textwriter to write the pop-up form HTML for this viewer </param>
-        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-        /// <remarks> This text will appear within the ItemNavForm form tags </remarks>
-		public override void Write_ItemNavForm_Closing(TextWriter Output, Custom_Tracer Tracer)
-        {
-            Tracer.Add_Trace("User_Group_AdminViewer.Write_ItemNavForm_Closing", "Add hidden field");
+            // Open the item nav form
+            Write_ItemNavForm_Opening(Output);
+
+            // Add the banner
+            Banner_Helper.Add_Banner(Output, "sbkAhs_BannerDiv", "System Administration", RequestSpecificValues.Current_Mode, RequestSpecificValues.HTML_Skin, RequestSpecificValues.Top_Collection);
+
 
             // Add the hidden field
             Output.WriteLine("<!-- Hidden field is used for postbacks to indicate what to save and reset -->");
@@ -531,11 +528,8 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine();
             Output.WriteLine();
 
-            Tracer.Add_Trace("User_Group_AdminViewer.Write_ItemNavForm_Closing", "Add the rest of the form");
-
-            Output.WriteLine("<!-- User_Group_AdminViewer.Write_ItemNavForm_Closing -->");
+            Output.WriteLine("<!-- User_Group_AdminViewer.Write_HTML -->");
             Output.WriteLine("<script src=\"" + Static_Resources_Gateway.Sobekcm_Admin_Js + "\" type=\"text/javascript\"></script>");
-
 
             // Is this for a single user edit more, or to list all the users
             switch (mode)
@@ -548,6 +542,9 @@ namespace SobekCM.Library.AdminViewer
                     Write_View_User_Group_Form(Output);
                     break;
             }
+
+            // Close the item nav form
+            Write_ItemNavForm_Closing(Output);
         }
 
         private void Write_View_User_Group_Form(TextWriter Output)

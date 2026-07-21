@@ -254,17 +254,12 @@ namespace SobekCM.Library.AdminViewer
         /// <remarks> This class does nothing, since the interface list is added as controls, not HTML </remarks>
         public override void Write_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
-            Tracer.Add_Trace("WebContent_Add_New_AdminViewer.Write_HTML", "Do nothing");
-        }
+            Tracer.Add_Trace("WebContent_Add_New_AdminViewer.Write_HTML");
 
-        /// <summary> This is an opportunity to write HTML directly into the main form, without
-        /// using the pop-up html form architecture </summary>
-        /// <param name="Output"> Textwriter to write the pop-up form HTML for this viewer </param>
-        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-        /// <remarks> This text will appear within the ItemNavForm form tags </remarks>
-        public override void Write_ItemNavForm_Closing(TextWriter Output, Custom_Tracer Tracer)
-        {
-            Output.WriteLine("<!-- WebContent_Add_New_AdminViewer.Write_ItemNavForm_Closing -->");
+            // Open the item nav form
+            Write_ItemNavForm_Opening(Output);
+
+            Output.WriteLine("<!-- WebContent_Add_New_AdminViewer.Write_HTML -->");
             Output.WriteLine("<script src=\"" + Static_Resources_Gateway.Sobekcm_Admin_Js + "\" type=\"text/javascript\"></script>");
 
             // Add the hidden field
@@ -289,8 +284,6 @@ namespace SobekCM.Library.AdminViewer
                 Output.WriteLine("  <br />");
                 Output.WriteLine("  </div>");
             }
-
-
 
             // Start the outer tab containe
             Output.WriteLine("  <div id=\"tabContainer\" class=\"fulltabs sbkAdm_HomeTabs\">");
@@ -415,10 +408,8 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("    <td><span id=\"urlSpan\">" + urlbuilder + "</span></td>");
             Output.WriteLine("  </tr>");
 
-
             Output.WriteLine("  <tr class=\"sbkSaav_TitleRow2\"><td colspan=\"3\">Basic Information</td></tr>");
             Output.WriteLine("  <tr class=\"sbkSaav_TextRow\"><td colspan=\"3\"><p>The information in this section is the basic information about the web content page and includes much of the metadata that is provided to search engines to increase page rank on relevant searches.</p></td></tr>");
-
 
             // Add the Title
             Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\">");
@@ -450,11 +441,8 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("     </td>");
             Output.WriteLine("  </tr>");
 
-
-
             Output.WriteLine("  <tr class=\"sbkSaav_TitleRow2\"><td colspan=\"3\">Appearance</td></tr>");
             Output.WriteLine("  <tr class=\"sbkSaav_TextRow\"><td colspan=\"3\"><p>The value in this section determines how this web content page appears to users by allowing a web skin to be selected for this web content page to appear under.</p></td></tr>");
-
 
             // Add the Include Menu behavior
             Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\">");
@@ -504,22 +492,20 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("     </td>");
             Output.WriteLine("  </tr>");
 
-
             Output.WriteLine("</table>");
             Output.WriteLine("<br />");
 
             Output.WriteLine();
 
-
-
-
-
             Output.WriteLine("</div>");
             Output.WriteLine("</div>");
             Output.WriteLine("</div>");
 
             Output.WriteLine("<br />");
             Output.WriteLine("<br />");
+
+            // Close the item nav form
+            Write_ItemNavForm_Closing(Output);
         }
 
         /// <summary> Gets the CSS class of the container that the page is wrapped within </summary>

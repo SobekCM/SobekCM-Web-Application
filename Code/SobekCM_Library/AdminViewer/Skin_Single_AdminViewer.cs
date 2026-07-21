@@ -464,16 +464,10 @@ namespace SobekCM.Library.AdminViewer
         /// <remarks> This class does nothing, since the interface list is added as controls, not HTML </remarks>
         public override void Write_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
-            Tracer.Add_Trace("Skin_Single_AdminViewer.Write_HTML", "Do nothing");
-        }
+            Tracer.Add_Trace("Skin_Single_AdminViewer.Write_HTML");
 
-        /// <summary> This is an opportunity to write HTML directly into the main form before any controls are placed in the main place holder </summary>
-        /// <param name="Output"> Textwriter to write the pop-up form HTML for this viewer </param>
-        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-        /// <remarks> This text will appear within the ItemNavForm form tags </remarks>
-        public override void Write_ItemNavForm_Opening(TextWriter Output, Custom_Tracer Tracer)
-        {
-            Tracer.Add_Trace("Skin_Single_AdminViewer.Write_ItemNavForm_Opening", "Add the majority of the HTML before the placeholder");
+            // Open the item nav form
+            Write_ItemNavForm_Opening(Output);
 
             // Add the hidden field
             Output.WriteLine("<!-- Hidden field is used for postbacks to indicate what to save and reset -->");
@@ -483,9 +477,7 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("<input type=\"hidden\" id=\"admin_skin_language\" name=\"admin_skin_language\" value=\"\" />");
             Output.WriteLine();
 
-            Tracer.Add_Trace("Skin_Single_AdminViewer.Write_ItemNavForm_Closing", "Add the rest of the form");
-
-            Output.WriteLine("<!-- Users_AdminViewer.Write_ItemNavForm_Closing -->");
+            Output.WriteLine("<!-- Skin_Single_AdminViewer.Write_HTML -->");
 
             Output.WriteLine("<script src=\"" + Static_Resources_Gateway.Sobekcm_Admin_Js + "\" type=\"text/javascript\"></script>");
             Output.WriteLine();
@@ -616,44 +608,26 @@ namespace SobekCM.Library.AdminViewer
 
                 case 4:
                     Add_Page_4(Output);
+                    add_upload_controls(Output, ".gif", skinDirectory, "banner.gif", false, Tracer);
+                    Finish_Page_4(Output);
                     break;
 
                 case 5:
                     Add_Page_Uploads(Output);
+                    add_upload_controls(Output, ".gif,.bmp,.jpg,.png,.jpeg,.ai,.doc,.docx,.eps,.kml,.pdf,.psd,.pub,.txt,.vsd,.vsdx,.xls,.xlsx,.xml,.zip,.eot,.svg,.ttf,.woff,.woff2", skinDirectory + "\\uploads", String.Empty, true, Tracer);
+                    Finish_Page_Uploads(Output);
                     break;
 
                 case 6:
                     Add_Page_6(Output);
                     break;
             }
-        }
-
-        /// <summary> This is an opportunity to write HTML directly into the main form, without
-        /// using the pop-up html form architecture </summary>
-        /// <param name="Output"> Textwriter to write the pop-up form HTML for this viewer </param>
-        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-        /// <remarks> This text will appear within the ItemNavForm form tags </remarks>
-        public override void Write_ItemNavForm_Closing(TextWriter Output, Custom_Tracer Tracer)
-        {
-            Tracer.Add_Trace("Skin_Single_AdminViewer.Write_ItemNavForm_Closing", "Add any html after the placeholder and close tabs");
-
-            switch (page)
-            {
-                case 4:
-                    Finish_Page_4(Output);
-                    break;
-
-                case 5:
-                    Finish_Page_Uploads(Output);
-                    break;
-            }
-
 
             Output.WriteLine("    </div>");
             Output.WriteLine("  </div>");
 
             // Add the BOTTOM buttons
-            string last_mode = RequestSpecificValues.Current_Mode.My_Sobek_SubMode;
+            string closing_last_mode = RequestSpecificValues.Current_Mode.My_Sobek_SubMode;
             RequestSpecificValues.Current_Mode.My_Sobek_SubMode = String.Empty;
             Output.WriteLine("  <div class=\"sbkSaav_ButtonsDiv\">");
             Output.WriteLine("    <button title=\"Do not apply changes\" class=\"sbkAdm_RoundButton\" onclick=\"return new_skin_edit_page('z');\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"sbkAdm_RoundButton_LeftImg\" alt=\"\" /> CANCEL</button> &nbsp; &nbsp; ");
@@ -674,13 +648,16 @@ namespace SobekCM.Library.AdminViewer
             }
             Output.WriteLine("  </div>");
             Output.WriteLine();
-            RequestSpecificValues.Current_Mode.My_Sobek_SubMode = last_mode;
+            RequestSpecificValues.Current_Mode.My_Sobek_SubMode = closing_last_mode;
 
             Output.WriteLine("<br />");
             Output.WriteLine("<br />");
 
             Output.WriteLine("</div>");
             Output.WriteLine("<br />");
+
+            // Close the item nav form
+            Write_ItemNavForm_Closing(Output);
         }
 
         #region Methods to render (and parse) page 1 - Basic Information
@@ -1628,27 +1605,11 @@ namespace SobekCM.Library.AdminViewer
         }
 
         #endregion
-
         #region Methods to add file upload controls to the page
 
         /// <summary> Add controls directly to the form in the main control area placeholder </summary>
         /// <param name="MainPlaceHolder"> Main place holder to which all main controls are added </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-        public override void Add_Controls(TextWriter Output, Custom_Tracer Tracer)
-        {
-            Tracer.Add_Trace("Skin_Single_AdminViewer.Add_Controls", String.Empty);
-
-            switch (page)
-            {
-                case 4:
-                    add_upload_controls(Output, ".gif", skinDirectory, "banner.gif", false, Tracer);
-                    break;
-
-                case 5:
-                    add_upload_controls(Output, ".gif,.bmp,.jpg,.png,.jpeg,.ai,.doc,.docx,.eps,.kml,.pdf,.psd,.pub,.txt,.vsd,.vsdx,.xls,.xlsx,.xml,.zip,.eot,.svg,.ttf,.woff,.woff2", skinDirectory + "\\uploads", String.Empty, true, Tracer);
-                    break;
-            }
-        }
 
         private void add_upload_controls(TextWriter Output, string FileExtensions, string UploadDirectory, string ServerSideName, bool UploadMultiple, Custom_Tracer Tracer)
         {

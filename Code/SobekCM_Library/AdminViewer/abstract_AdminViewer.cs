@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Library.HTML;
-using SobekCM.Library.MySobekViewer;
 using SobekCM.Tools;
 using System.Collections.Generic;
 using System.IO;
@@ -159,18 +158,6 @@ namespace SobekCM.Library.AdminViewer
         protected void Write_ItemNavForm_Closing(TextWriter Output)
         {
             Output.Write("</form>");
-        }
-
-        protected void Write_Banner_If_Needed(TextWriter Output)
-        {
-            if (((RequestSpecificValues.Current_Mode.Logon_Required) || (Contains_Popup_Forms)) && (!(this is Edit_Item_Metadata_MySobekViewer)))
-            {
-                if (!Viewer_Behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Suppress_Banner))
-                {
-                    // Write banner
-                   // Add_Banner(Output, "sbkAhs_BannerDiv", WebPage_Title.Replace("{0} ", ""), RequestSpecificValues.Current_Mode, RequestSpecificValues.HTML_Skin, RequestSpecificValues.Top_Collection);
-                }
-            }
         }
     }
 }

@@ -21,8 +21,6 @@ namespace SobekCM.Library.AdminViewer
     public class WebContent_Single_AdminViewer : abstract_AdminViewer
     {
         private string actionMessage;
-        //  private readonly Complete_Item_Aggregation itemAggregation;
-
 
         private readonly HTML_Based_Content webContent;
         private readonly string webContentDirectory;
@@ -30,10 +28,6 @@ namespace SobekCM.Library.AdminViewer
 
         private readonly int page;
 
-        //private string childPageCode;
-        //private string childPageLabel;
-        //private string childPageVisibility;
-        //private string childPageParent;
         private Exception storedException;
 
 
@@ -243,16 +237,10 @@ namespace SobekCM.Library.AdminViewer
         /// <remarks> This class does nothing, since the interface list is added as controls, not HTML </remarks>
         public override void Write_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
-            Tracer.Add_Trace("WebContent_Single_AdminViewer.Write_HTML", "Do nothing");
-        }
+            Tracer.Add_Trace("WebContent_Single_AdminViewer.Write_HTML");
 
-        /// <summary> This is an opportunity to write HTML directly into the main form before any controls are placed in the main place holder </summary>
-        /// <param name="Output"> Textwriter to write the pop-up form HTML for this viewer </param>
-        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-        /// <remarks> This text will appear within the ItemNavForm form tags </remarks>
-        public override void Write_ItemNavForm_Opening(TextWriter Output, Custom_Tracer Tracer)
-        {
-            Tracer.Add_Trace("WebContent_Single_AdminViewer.Write_ItemNavForm_Opening", "Add the majority of the HTML before the placeholder");
+            // Open the item nav form (was written externally by Admin_HtmlSubwriter)
+            Write_ItemNavForm_Opening(Output);
 
             // Add the hidden field
             Output.WriteLine("<!-- Hidden field is used for postbacks to indicate what to save and reset -->");
@@ -261,9 +249,7 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("<input type=\"hidden\" id=\"admin_webcontent_action\" name=\"admin_webcontent_action\" value=\"\" />");
             Output.WriteLine();
 
-            Tracer.Add_Trace("WebContent_Single_AdminViewer.Write_ItemNavForm_Closing", "Add the rest of the form");
-
-            Output.WriteLine("<!-- Users_AdminViewer.Write_ItemNavForm_Closing -->");
+            Output.WriteLine("<!-- WebContent_Single_AdminViewer.Write_HTML -->");
 
             Output.WriteLine("<script src=\"" + Static_Resources_Gateway.Sobekcm_Admin_Js + "\" type=\"text/javascript\"></script>");
             Output.WriteLine();
@@ -279,12 +265,10 @@ namespace SobekCM.Library.AdminViewer
                 Output.WriteLine();
                 Output.WriteLine(storedException.StackTrace);
                 return;
-
             }
 
             try
             {
-
                 // Add the buttons (unless this is a sub-page like editing the CSS file)
                 if (page < 10)
                 {
@@ -298,7 +282,6 @@ namespace SobekCM.Library.AdminViewer
                     Output.WriteLine();
                     RequestSpecificValues.Current_Mode.My_Sobek_SubMode = last_mode;
                 }
-
 
                 Output.WriteLine("  <div class=\"sbkAdm_TitleDiv_Wchs\" style=\"padding-left:20px\">");
                 Output.WriteLine("    <img id=\"sbkAdm_TitleDivImg_Wchs\" src=\"" + Static_Resources_Gateway.Admin_View_Img + "\" alt=\"\" />");
@@ -316,7 +299,6 @@ namespace SobekCM.Library.AdminViewer
                     Output.WriteLine("    <div class=\"tabs\">");
                     Output.WriteLine("      <ul>");
 
-
                     // Draw all the page tabs for this form
                     const string GENERAL = "General";
                     if (page == 1)
@@ -327,7 +309,6 @@ namespace SobekCM.Library.AdminViewer
                     {
                         Output.WriteLine("    <li id=\"tabHeader_1\" onclick=\"return new_webcontent_edit_page('a');\">" + GENERAL + "</li>");
                     }
-
 
                     //const string LOCALIZATION = "Localization";
                     //if (page == 2)
@@ -369,7 +350,6 @@ namespace SobekCM.Library.AdminViewer
                         Output.WriteLine("    <li id=\"tabHeader_4\" onclick=\"return new_webcontent_edit_page('e');\">" + UPLOADS + "</li>");
                     }
 
-
                     Output.WriteLine("      </ul>");
                     Output.WriteLine("    </div>");
                 }
@@ -378,7 +358,6 @@ namespace SobekCM.Library.AdminViewer
                 // to render the correct tab content
                 Output.WriteLine("    <div class=\"tabscontent\">");
                 Output.WriteLine("    	<div class=\"tabpage\" id=\"tabpage_1\">");
-
 
                 switch (page)
                 {
@@ -400,6 +379,8 @@ namespace SobekCM.Library.AdminViewer
 
                     case 5:
                         Add_Page_Uploads(Output);
+                        add_upload_controls(Output, ".gif,.bmp,.jpg,.png,.jpeg,.ai,.doc,.docx,.eps,.kml,.pdf,.psd,.pub,.txt,.vsd,.vsdx,.xls,.xlsx,.xml,.zip", webContentDirectory, String.Empty, true, "WebContent|" + webContent.WebContentID + "|Uploads", Tracer);
+                        Finish_Page_Uploads(Output);
                         break;
                 }
             }
@@ -413,32 +394,18 @@ namespace SobekCM.Library.AdminViewer
                 Output.WriteLine();
                 Output.WriteLine(storedException.StackTrace);
             }
-        }
-
-        /// <summary> This is an opportunity to write HTML directly into the main form, without
-        /// using the pop-up html form architecture </summary>
-        /// <param name="Output"> Textwriter to write the pop-up form HTML for this viewer </param>
-        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-        /// <remarks> This text will appear within the ItemNavForm form tags </remarks>
-        public override void Write_ItemNavForm_Closing(TextWriter Output, Custom_Tracer Tracer)
-        {
-            Tracer.Add_Trace("WebContent_Single_AdminViewer.Write_ItemNavForm_Closing", "Add any html after the placeholder and close tabs");
 
             if (storedException != null)
                 return;
-
-            switch (page)
-            {
-                case 5:
-                    Finish_Page_Uploads(Output);
-                    break;
-            }
 
             Output.WriteLine("      </div>");
             Output.WriteLine("    </div>");
             Output.WriteLine("  </div>");
             Output.WriteLine("</div>");
             Output.WriteLine("<br />");
+
+            // Close the item nav form
+            Write_ItemNavForm_Closing(Output);
         }
 
         #region Methods to render (and parse) page 1 - General Information
@@ -1473,17 +1440,6 @@ namespace SobekCM.Library.AdminViewer
         /// <summary> Add controls directly to the form in the main control area placeholder </summary>
         /// <param name="MainPlaceHolder"> Main place holder to which all main controls are added </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-        public override void Add_Controls(TextWriter Output, Custom_Tracer Tracer)
-        {
-            Tracer.Add_Trace("File_Managament_MySobekViewer.Add_Controls", String.Empty);
-
-            switch (page)
-            {
-                case 5:
-                    add_upload_controls(Output, ".gif,.bmp,.jpg,.png,.jpeg,.ai,.doc,.docx,.eps,.kml,.pdf,.psd,.pub,.txt,.vsd,.vsdx,.xls,.xlsx,.xml,.zip", webContentDirectory, String.Empty, true, "WebContent|" + webContent.WebContentID + "|Uploads", Tracer);
-                    break;
-            }
-        }
 
         private void add_upload_controls(TextWriter Output, string FileExtensions, string UploadDirectory, string ServerSideName, bool UploadMultiple, string ReturnToken, Custom_Tracer Tracer)
         {

@@ -125,19 +125,12 @@ namespace SobekCM.Library.AdminViewer
         /// <remarks> This class does nothing, since the interface list is added as controls, not HTML </remarks>
         public override void Write_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
-            Tracer.Add_Trace("WebContent_History_AdminViewer.Write_HTML", "Do nothing");
-        }
+            Tracer.Add_Trace("WebContent_History_AdminViewer.Write_HTML");
 
-        /// <summary> This is an opportunity to write HTML directly into the main form, without
-        /// using the pop-up html form architecture </summary>
-        /// <param name="Output"> Textwriter to write the pop-up form HTML for this viewer </param>
-        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-        /// <remarks> This text will appear within the ItemNavForm form tags </remarks>
-        public override void Write_ItemNavForm_Closing(TextWriter Output, Custom_Tracer Tracer)
-        {
-            Tracer.Add_Trace("WebContent_History_AdminViewer.Write_ItemNavForm_Closing", "");
+            // Open the item nav form
+            Write_ItemNavForm_Opening(Output);
 
-            Output.WriteLine("<!-- WebContent_History_AdminViewer.Write_ItemNavForm_Closing -->");
+            Output.WriteLine("<!-- WebContent_History_AdminViewer.Write_HTML -->");
             Output.WriteLine("<script src=\"" + Static_Resources_Gateway.Sobekcm_Admin_Js + "\" type=\"text/javascript\"></script>");
 
             // Show any action message
@@ -159,12 +152,10 @@ namespace SobekCM.Library.AdminViewer
                 Output.WriteLine("  </div>");
             }
 
-
             // Start the outer tab containe
             Output.WriteLine("  <div id=\"tabContainer\" class=\"fulltabs sbkAdm_HomeTabs\">");
             Output.WriteLine("  <div class=\"tabs\">");
             Output.WriteLine("    <ul>");
-
 
             string last_mode = RequestSpecificValues.Current_Mode.My_Sobek_SubMode;
             RequestSpecificValues.Current_Mode.My_Sobek_SubMode = "XyzzyXyzzy";
@@ -180,7 +171,6 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("    <div class=\"tabscontent\">");
             Output.WriteLine("    	<div class=\"sbkUgav_TabPage\" id=\"tabpage_1\">");
 
-
             Output.WriteLine();
 
             // Get the base url
@@ -193,8 +183,6 @@ namespace SobekCM.Library.AdminViewer
             }
             else
             {
-
-
                 Output.WriteLine("  <p>Below is this list of all the recent updates to web content pages or redirects.</p>");
 
                 // Add the filter boxes
@@ -304,7 +292,6 @@ namespace SobekCM.Library.AdminViewer
                                                 Output.WriteLine("      <option value=\"" + thisOption + "\">" + thisOption + "</option>");
                                         }
                                         Output.WriteLine("    </select>");
-
 
                                         // Should the fifth level be shown?
                                         if (!String.IsNullOrEmpty(level4))
@@ -427,6 +414,9 @@ namespace SobekCM.Library.AdminViewer
 
             Output.WriteLine("<br />");
             Output.WriteLine("<br />");
+
+            // Close the item nav form
+            Write_ItemNavForm_Closing(Output);
         }
 
         /// <summary> Gets the CSS class of the container that the page is wrapped within </summary>

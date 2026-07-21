@@ -4,7 +4,6 @@ using SobekCM.Core.Navigation;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Library.AdminViewer;
 using SobekCM.Library.MainWriters;
-using SobekCM.Library.MySobekViewer;
 using SobekCM.Tools;
 using System;
 using System.Collections.Generic;
@@ -125,11 +124,7 @@ namespace SobekCM.Library.HTML
             {
                 if ((RequestSpecificValues.Current_Mode.Admin_Type != Admin_Type_Enum.Aggregation_Single) && (RequestSpecificValues.Current_Mode.Admin_Type != Admin_Type_Enum.Skins_Single) && (RequestSpecificValues.Current_Mode.Admin_Type != Admin_Type_Enum.Add_Collection_Wizard))
                 {
-                    // Add the banner
-                    if (!adminViewer.Viewer_Behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Suppress_Banner))
-                    {
-                        Add_Banner(Output, "sbkAhs_BannerDiv", WebPage_Title.Replace("{0} ", ""), RequestSpecificValues.Current_Mode, RequestSpecificValues.HTML_Skin, RequestSpecificValues.Top_Collection);
-                    }
+                    // Banner drawing is now handled by each admin viewer's own Write_HTML (via Banner_Helper), not here
 
                     // Add the RequestSpecificValues.Current_User-specific main menu
                     MainMenus_Helper_HtmlSubWriter.Add_UserSpecific_Main_Menu(Output, RequestSpecificValues);
@@ -205,46 +200,10 @@ namespace SobekCM.Library.HTML
                 }
             }
 
-            // Add the text here
+            // Add the text here - this now also opens/closes the item nav form and writes any
+            // popup HTML, controls, closing content, and (where needed) the banner, all collapsed
+            // into the admin viewer's own Write_HTML, via Banner_Helper
             adminViewer.Write_HTML(Output, Tracer);
-
-            // ===== Begin original Add_ItemNavForm_Content =====
-            Tracer.Add_Trace("Admin_HtmlSubwriter.Write_ItemNavForm_Opening", "Rendering the starting HTML for the admin HTML subwriter");
-
-            // Start the item nav form
-            Write_ItemNavForm_Opening(Output);
-
-            // Add any intro html text here
-            adminViewer.Write_ItemNavForm_Opening(Output, Tracer);
-
-            Tracer.Add_Trace("Admin_HtmlSubwriter.Write_ItemNavForm_Opening", "Adding any form elements popup divs");
-            if ((RequestSpecificValues.Current_Mode.Logon_Required) || (adminViewer.Contains_Popup_Forms))
-            {
-                adminViewer.Add_Popup_HTML(Output, Tracer);
-            }
-
-            Tracer.Add_Trace("Admin_HtmlSubwriter.Add_Main_Viewer_Section", "Build admin viewer and add controls");
-
-            // Add the banner now
-            if (((RequestSpecificValues.Current_Mode.Logon_Required) || (adminViewer.Contains_Popup_Forms)) && (!(adminViewer is Edit_Item_Metadata_MySobekViewer)))
-            {
-                if (!adminViewer.Viewer_Behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Suppress_Banner))
-                {
-                    Add_Banner(Output, "sbkAhs_BannerDiv", WebPage_Title.Replace("{0} ", ""), RequestSpecificValues.Current_Mode, RequestSpecificValues.HTML_Skin, RequestSpecificValues.Top_Collection);
-                }
-            }
-
-            // Add any controls needed
-            adminViewer.Add_Controls(Output, Tracer);
-
-            Tracer.Add_Trace("Admin_HtmlSubwriter.Write_ItemNavForm_Closing", "");
-
-            // Also, add any additional stuff here
-            adminViewer.Write_ItemNavForm_Closing(Output, Tracer);
-
-            // End the item nav form
-            Write_ItemNavForm_Closing(Output);
-            // ===== End original Add_ItemNavForm_Content =====
 
             // ===== Begin original Write_Final_HTML =====
             Output.WriteLine("<!-- Close the pagecontainer div -->");

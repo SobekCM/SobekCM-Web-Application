@@ -456,16 +456,13 @@ namespace SobekCM.Library.AdminViewer
         /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
         public override void Write_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
-            Tracer.Add_Trace("Add_Collection_AdminViewer.Write_HTML", "Do nothing");
-        }
+            Tracer.Add_Trace("Add_Collection_AdminViewer.Write_HTML");
 
-        /// <summary> This is an opportunity to write HTML directly into the main form before any controls are placed in the main place holder </summary>
-        /// <param name="Output"> Textwriter to write the pop-up form HTML for this viewer </param>
-        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-        /// <remarks> This text will appear within the ItemNavForm form tags </remarks>
-        public override void Write_ItemNavForm_Opening(TextWriter Output, Custom_Tracer Tracer)
-        {
-            Tracer.Add_Trace("Add_Collection_AdminViewer.Write_ItemNavForm_Opening", "Add the majority of the HTML before the placeholder");
+            // Open the item nav form
+            Write_ItemNavForm_Opening(Output);
+
+            // ===== BEGIN: moved from Write_ItemNavForm_Opening(Output, Tracer) =====
+            Tracer.Add_Trace("Add_Collection_AdminViewer.Write_HTML", "Add the majority of the HTML before the placeholder");
 
             Output.WriteLine("<script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Jquery_Ui_1_10_3_Custom_Js + "\"></script>");
 
@@ -566,6 +563,49 @@ namespace SobekCM.Library.AdminViewer
                     Add_Page_Welcome(Output);
                     break;
             }
+
+            switch (page)
+            {
+                case 3:
+                    string code = newAggr.Code;
+                    string new_file = code;
+                    int next_decimal = 65;
+                    if (!Directory.Exists(userInProcessDirectory + "\\images\\banners"))
+                        Directory.CreateDirectory(userInProcessDirectory + "\\images\\banners");
+                    while (Directory.GetFiles(userInProcessDirectory + "\\images\\banners\\", new_file + ".*").Length > 0)
+                    {
+                        new_file = code + "_" + Convert.ToChar(next_decimal++);
+                    }
+                    add_upload_controls(Output, ".gif,.bmp,.jpg,.png,.jpeg", userInProcessDirectory + "\\images\\banners", new_file, false, Tracer);
+
+                    Finish_Page_Banner(Output);
+
+                    break;
+
+                case 4:
+                    string code2 = newAggr.Code;
+                    string new_file2 = code2;
+                    int next_decimal2 = 65;
+                    if (!Directory.Exists(userInProcessDirectory + "\\images\\buttons"))
+                        Directory.CreateDirectory(userInProcessDirectory + "\\images\\buttons");
+                    while (Directory.GetFiles(userInProcessDirectory + "\\images\\buttons\\", new_file2 + ".*").Length > 0)
+                    {
+                        new_file2 = code2 + "_" + Convert.ToChar(next_decimal2++);
+                    }
+                    add_upload_controls(Output, ".gif", userInProcessDirectory + "\\images\\buttons", new_file2 + ".gif", false, Tracer);
+
+                    Finish_Page_Buttons(Output);
+
+                    break;
+            }
+
+            Output.WriteLine("    </div>");
+            Output.WriteLine("  </div>");
+            Output.WriteLine("</div>");
+            Output.WriteLine("<br />");
+
+            // Close the item nav form
+            Write_ItemNavForm_Closing(Output);
         }
 
         private char page_to_char(int PageAsInt)
@@ -588,37 +628,6 @@ namespace SobekCM.Library.AdminViewer
 
             return 'x';
         }
-
-        /// <summary> This is an opportunity to write HTML directly into the main form, without
-        /// using the pop-up html form architecture </summary>
-        /// <param name="Output"> Textwriter to write the pop-up form HTML for this viewer </param>
-        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-        /// <remarks> This text will appear within the ItemNavForm form tags </remarks>
-        public override void Write_ItemNavForm_Closing(TextWriter Output, Custom_Tracer Tracer)
-        {
-            Tracer.Add_Trace("Add_Collection_AdminViewer.Write_ItemNavForm_Closing", "Add any html after the placeholder and close tabs");
-
-            switch (page)
-            {
-                case 3:
-                    Finish_Page_Banner(Output);
-                    break;
-
-                case 4:
-                    Finish_Page_Buttons(Output);
-                    break;
-
-
-            }
-
-
-            Output.WriteLine("    </div>");
-            Output.WriteLine("  </div>");
-            Output.WriteLine("</div>");
-            Output.WriteLine("<br />");
-        }
-
-
         #region Methods to render (and parse) page 0 - Welcome
 
         private void Save_Page_Welcome_Postback(IFormCollection Form)
@@ -1325,45 +1334,11 @@ namespace SobekCM.Library.AdminViewer
         }
 
         #endregion
-
         #region Methods to add file upload controls to the page
 
         /// <summary> Add controls directly to the form in the main control area placeholder </summary>
         /// <param name="MainPlaceHolder"> Main place holder to which all main controls are added </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-        public override void Add_Controls(TextWriter Output, Custom_Tracer Tracer)
-        {
-            Tracer.Add_Trace("File_Managament_MySobekViewer.Add_Controls", String.Empty);
-
-            switch (page)
-            {
-                case 3:
-                    string code = newAggr.Code;
-                    string new_file = code;
-                    int next_decimal = 65;
-                    if (!Directory.Exists(userInProcessDirectory + "\\images\\banners"))
-                        Directory.CreateDirectory(userInProcessDirectory + "\\images\\banners");
-                    while (Directory.GetFiles(userInProcessDirectory + "\\images\\banners\\", new_file + ".*").Length > 0)
-                    {
-                        new_file = code + "_" + Convert.ToChar(next_decimal++);
-                    }
-                    add_upload_controls(Output, ".gif,.bmp,.jpg,.png,.jpeg", userInProcessDirectory + "\\images\\banners", new_file, false, Tracer);
-                    break;
-
-                case 4:
-                    string code2 = newAggr.Code;
-                    string new_file2 = code2;
-                    int next_decimal2 = 65;
-                    if (!Directory.Exists(userInProcessDirectory + "\\images\\buttons"))
-                        Directory.CreateDirectory(userInProcessDirectory + "\\images\\buttons");
-                    while (Directory.GetFiles(userInProcessDirectory + "\\images\\buttons\\", new_file2 + ".*").Length > 0)
-                    {
-                        new_file2 = code2 + "_" + Convert.ToChar(next_decimal2++);
-                    }
-                    add_upload_controls(Output, ".gif", userInProcessDirectory + "\\images\\buttons", new_file2 + ".gif", false, Tracer);
-                    break;
-            }
-        }
 
         private void add_upload_controls(TextWriter Output, string FileExtensions, string UploadDirectory, string ServerSideName, bool UploadMultiple, Custom_Tracer Tracer)
         {

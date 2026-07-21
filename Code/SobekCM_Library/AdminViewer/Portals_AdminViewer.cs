@@ -294,16 +294,14 @@ namespace SobekCM.Library.AdminViewer
         /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
         public override void Write_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
-            Tracer.Add_Trace("Portals_AdminViewer.Write_HTML", "Do nothing");
-        }
+            Tracer.Add_Trace("Portals_AdminViewer.Write_HTML");
 
-        /// <summary> This is an opportunity to write HTML directly into the main form, without
-        /// using the pop-up html form architecture </summary>
-        /// <param name="Output"> Textwriter to write the pop-up form HTML for this viewer </param>
-        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-        /// <remarks> This text will appear within the ItemNavForm form tags </remarks>
-        public override void Write_ItemNavForm_Closing(TextWriter Output, Custom_Tracer Tracer)
-        {
+            // Open the item nav form
+            Write_ItemNavForm_Opening(Output);
+
+            // Add the banner
+            Banner_Helper.Add_Banner(Output, "sbkAhs_BannerDiv", "System Administration", RequestSpecificValues.Current_Mode, RequestSpecificValues.HTML_Skin, RequestSpecificValues.Top_Collection);
+
             // Set the help for these subelements
             const string PORTAL_NAME_HELP = "Name for the system when accessed through this url portal.  This additionally identifies this url portal to administrators.\n\nFor example, Digital Library of the Caribbean, or University of Florida Digital Collections.";
             const string ABBREVIATION_HELP = "Abbreviation for the system, when accessed through this url portal.\n\nFor example, 'dLOC', or UFDC.";
@@ -311,10 +309,10 @@ namespace SobekCM.Library.AdminViewer
             const string AGGREGATION_HELP = "Default aggregation which should be displayed under this url portal.  If none is provided, this url portal will display the main system home page.";
             const string URL_SEGMENT_HELP = "URL segment used for matching purposes to determine which url portal a user is accessing this system from.\n\nA blank URL portal will make this the default portal.";
             const string BASE_PURL_HELP = "Base permanent link URL to be used when constructing permanent URLs for items which do not have itt explicitly entered.\n\nA blank value here will result in the current URL being used as the base for the purl.";
+             
+            Tracer.Add_Trace("Portals_AdminViewer.Write_HTML", "Adds the portal information to the main form");
 
-            Tracer.Add_Trace("Portals_AdminViewer.Write_ItemNavForm_Closing", "Adds the portal information to the main form");
-
-            Output.WriteLine("<!-- Portals_AdminViewer.Write_ItemNavForm_Closing -->");
+            Output.WriteLine("<!-- Portals_AdminViewer.Write_HTML -->");
             Output.WriteLine("<script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Jquery_Ui_1_10_3_Custom_Js + "\"></script>");
             Output.WriteLine();
 
@@ -627,6 +625,8 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("  </table>");
             Output.WriteLine("</div>");
 
+            // Close the item nav form
+            Write_ItemNavForm_Closing(Output);
         }
     }
 }

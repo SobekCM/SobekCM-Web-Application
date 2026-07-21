@@ -480,19 +480,17 @@ namespace SobekCM.Library.AdminViewer
         /// <remarks> This class does nothing, since the skin list is added as controls, not HTML </remarks>
         public override void Write_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
-            Tracer.Add_Trace("Skins_AdminViewer.Write_HTML", "Do nothing");
-        }
+            Tracer.Add_Trace("Skins_AdminViewer.Write_HTML");
 
-        /// <summary> This is an opportunity to write HTML directly into the main form, without
-        /// using the pop-up html form architecture </summary>
-        /// <param name="Output"> Textwriter to write the pop-up form HTML for this viewer </param>
-        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-        /// <remarks> This text will appear within the ItemNavForm form tags </remarks>
-		public override void Write_ItemNavForm_Closing(TextWriter Output, Custom_Tracer Tracer)
-        {
-            Tracer.Add_Trace("Skins_AdminViewer.Write_ItemNavForm_Closing", "Add any popup divisions for form elements");
+            // Open the item nav form
+            Write_ItemNavForm_Opening(Output);
 
-            Output.WriteLine("<!-- Skins_AdminViewer.Write_ItemNavForm_Closing -->");
+            // Add the banner
+            Banner_Helper.Add_Banner(Output, "sbkAhs_BannerDiv", "System Administration", RequestSpecificValues.Current_Mode, RequestSpecificValues.HTML_Skin, RequestSpecificValues.Top_Collection);
+
+            Tracer.Add_Trace("Skins_AdminViewer.Write_HTML", "Add any popup divisions for form elements");
+
+            Output.WriteLine("<!-- Skins_AdminViewer.Write_HTML -->");
             Output.WriteLine("<script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Jquery_Ui_1_10_3_Custom_Js + "\"></script>");
 
             // Add the hidden field
@@ -623,6 +621,9 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("  <br />");
             Output.WriteLine("</div>");
             Output.WriteLine();
+
+            // Close the item nav form
+            Write_ItemNavForm_Closing(Output);
         }
     }
 }

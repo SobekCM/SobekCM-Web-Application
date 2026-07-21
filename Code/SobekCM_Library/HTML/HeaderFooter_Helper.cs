@@ -18,7 +18,7 @@ using System.Text;
 namespace SobekCM.Library.HTML
 {
     /// <summary> Class is a helper class used for writing the header and footers for HTML responses </summary>
-    public static class HeaderFooter_Helper_HtmlSubWriter
+    public static class HeaderFooter_Helper
     {
         /// <summary> Add the header to the output </summary>
         /// <param name="Output"> Stream to which to write the HTML for this header </param>
@@ -40,7 +40,7 @@ namespace SobekCM.Library.HTML
             Display_Mode_Enum thisMode = RequestSpecificValues.Current_Mode.Mode;
             RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Contact;
             string contact = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
-            RequestSpecificValues.Tracer.Add_Trace("HeaderFooter_Helper_HtmlSubWriter.Add_Header", "Curent contact URL=[" + contact + "].");
+            RequestSpecificValues.Tracer.Add_Trace("HeaderFooter_Helper.Add_Header", "Curent contact URL=[" + contact + "].");
 
             // Restore the old mode
             RequestSpecificValues.Current_Mode.Mode = thisMode;
@@ -50,11 +50,11 @@ namespace SobekCM.Library.HTML
 
             if (useItemHeader)
             {
-                RequestSpecificValues.Tracer.Add_Trace("HeaderFooter_Helper_HtmlSubWriter.Add_Header", "Going to use item header.");
+                RequestSpecificValues.Tracer.Add_Trace("HeaderFooter_Helper.Add_Header", "Going to use item header.");
             }
             else
             {
-                RequestSpecificValues.Tracer.Add_Trace("HeaderFooter_Helper_HtmlSubWriter.Add_Header", "Will NOT use item header.");
+                RequestSpecificValues.Tracer.Add_Trace("HeaderFooter_Helper.Add_Header", "Will NOT use item header.");
             }
 
             // Create the breadcrumbs text
@@ -270,8 +270,8 @@ namespace SobekCM.Library.HTML
                     if (Current_Aggregation != null)
                     {
                         string banner_image = Current_Aggregation.Get_Banner_Image(RequestSpecificValues.HTML_Skin);
-                        RequestSpecificValues.Tracer.Add_Trace("HeaderFooter_Helper_HtmlSubWriter.Add_Header", "banner_image=[" + banner_image + "].");
-                        RequestSpecificValues.Tracer.Add_Trace("HeaderFooter_Helper_HtmlSubWriter.Add_Header", "Current_Aggregation_Shortname=[" + Current_Aggregation.ShortName + "].");
+                        RequestSpecificValues.Tracer.Add_Trace("HeaderFooter_Helper.Add_Header", "banner_image=[" + banner_image + "].");
+                        RequestSpecificValues.Tracer.Add_Trace("HeaderFooter_Helper.Add_Header", "Current_Aggregation_Shortname=[" + Current_Aggregation.ShortName + "].");
 
                         if (Current_Aggregation.Code != "all")
                         {
@@ -344,11 +344,11 @@ namespace SobekCM.Library.HTML
             }
             catch (Exception)
             {
-                RequestSpecificValues.Tracer.Add_Trace("HeaderFooter_Helper_HtmlSubWriter.Add_Header", "EXCEPTION CAUGHT while trying to write the header.");
+                RequestSpecificValues.Tracer.Add_Trace("HeaderFooter_Helper.Add_Header", "EXCEPTION CAUGHT while trying to write the header.");
                 if (RequestSpecificValues.HTML_Skin == null)
-                    RequestSpecificValues.Tracer.Add_Trace("HeaderFooter_Helper_HtmlSubWriter.Add_Header", "HTML Skin was NULL");
+                    RequestSpecificValues.Tracer.Add_Trace("HeaderFooter_Helper.Add_Header", "HTML Skin was NULL");
                 else if (RequestSpecificValues.HTML_Skin.Header_Item_HTML == null)
-                    RequestSpecificValues.Tracer.Add_Trace("HeaderFooter_Helper_HtmlSubWriter.Add_Header", "HTML Skin was not NULL, but Header_Item_HTML property was NULL");
+                    RequestSpecificValues.Tracer.Add_Trace("HeaderFooter_Helper.Add_Header", "HTML Skin was not NULL, but Header_Item_HTML property was NULL");
             }
 
             // Write the header
@@ -363,18 +363,18 @@ namespace SobekCM.Library.HTML
         /// <param name="Current_Item"> Current item object, if there is one </param>
         public static void Add_Footer(TextWriter Output, RequestCache RequestSpecificValues, List<HtmlSubwriter_Behaviors_Enum> Behaviors, Item_Aggregation Current_Aggregation, BriefItemInfo Current_Item, HttpContext Context)
         {
-            RequestSpecificValues.Tracer.Add_Trace("HeaderFooter_Helper_HtmlSubWriter.Add_Footer");
+            RequestSpecificValues.Tracer.Add_Trace("HeaderFooter_Helper.Add_Footer");
 
             // Determine which header and footer to display
             bool useItemFooter = (RequestSpecificValues.Current_Mode.Mode == Display_Mode_Enum.Item_Display) || (RequestSpecificValues.Current_Mode.Mode == Display_Mode_Enum.Item_Print) || ((Behaviors != null) && (Behaviors.Contains(HtmlSubwriter_Behaviors_Enum.MySobek_Subwriter_Mimic_Item_Subwriter)));
 
             if (useItemFooter)
             {
-                RequestSpecificValues.Tracer.Add_Trace("HeaderFooter_Helper_HtmlSubWriter.Add_Footer", "WILL use item footer.");
+                RequestSpecificValues.Tracer.Add_Trace("HeaderFooter_Helper.Add_Footer", "WILL use item footer.");
             }
             else
             {
-                RequestSpecificValues.Tracer.Add_Trace("HeaderFooter_Helper_HtmlSubWriter.Add_Footer", "Will NOT use item footer.");
+                RequestSpecificValues.Tracer.Add_Trace("HeaderFooter_Helper.Add_Footer", "Will NOT use item footer.");
             }
 
             // Get the current contact URL
@@ -478,7 +478,7 @@ namespace SobekCM.Library.HTML
 
         private static string create_mysobek_link(RequestCache RequestSpecificValues, string url_options, string login_text, HttpContext Context)
         {
-            RequestSpecificValues.Tracer.Add_Trace("HeaderFooter_Helper_HtmlSubWriter.create_mysobek_link");
+            RequestSpecificValues.Tracer.Add_Trace("HeaderFooter_Helper.create_mysobek_link");
 
             string mySobekLinks = String.Empty;
             if (!RequestSpecificValues.Current_Mode.Is_Robot)

@@ -190,7 +190,7 @@ namespace SobekCM.Library.HTML
 
 
                 Output.WriteLine("<div id=\"sbkWchs_Panel\">");
-                Add_Banner(Output, "sbkAhs_BannerDiv", WebPage_Title.Replace("{0} ", ""), RequestSpecificValues.Current_Mode, RequestSpecificValues.HTML_Skin, RequestSpecificValues.Top_Collection);
+                Banner_Helper.Add_Banner(Output, "sbkAhs_BannerDiv", WebPage_Title.Replace("{0} ", ""), RequestSpecificValues.Current_Mode, RequestSpecificValues.HTML_Skin, RequestSpecificValues.Top_Collection);
 
                 Output.WriteLine("<div id=\"sbkWchs_InnerPanel\">");
 

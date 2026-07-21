@@ -260,11 +260,9 @@ namespace SobekCM.Library.AdminViewer
         /// <remarks> This class does nothing, since the wordmarks list is added as controls, not HTML </remarks>
         public override void Write_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
-            Tracer.Add_Trace("Wordmarks_AdminViewer.Write_HTML", "");
+            Tracer.Add_Trace("Wordmarks_AdminViewer.Write_HTML");
 
             Output.WriteLine("<!-- Wordmarks_AdminViewer.Write_HTML -->");
-
-            Tracer.Add_Trace("Wordmarks_AdminViewer.Write_ItemNavForm_Closing", "Add any popup divisions for form elements");
 
             Output.WriteLine("<script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Jquery_Ui_1_10_3_Custom_Js + "\"></script>");
 
@@ -310,8 +308,6 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("  </table>");
             Output.WriteLine("</div>");
 
-            Tracer.Add_Trace("Wordmarks_AdminViewer.Write_HTML", "Write the HTML for the rest of the form");
-
             Output.WriteLine();
             Output.WriteLine("<script src=\"" + Static_Resources_Gateway.Sobekcm_Admin_Js + "\" type=\"text/javascript\"></script>");
             Output.WriteLine("<div class=\"sbkAdm_HomeText\">");
@@ -324,14 +320,11 @@ namespace SobekCM.Library.AdminViewer
 
             Output.WriteLine("  <p>For clarification of any terms on this form, <a href=\"" + UI_ApplicationCache_Gateway.Settings.System.Help_URL(RequestSpecificValues.Current_Mode.Base_URL) + "adminhelp/wordmarks\" target=\"ADMIN_WORDMARK_HELP\" >click here to view the help page</a>.</p>");
 
-
-
             Output.WriteLine("  <h2>New Wordmark / Icon</h2>");
             Output.WriteLine("  <p>Add a new wordmark to this repository.  If you have not yet uploaded the image to use, do this first.</p>");
 
             if (loweredFiles.Count > 0)
             {
-
                 Output.WriteLine("  <div style=\"width:210px; float:right;\"><img id=\"sbkWav_SelectedImage\" name=\"sbkWav_SelectedImage\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "design/wordmarks/" + loweredFiles[0] + "\" alt=\"Missing\" Title=\"Selected image file\" /></div>");
 
                 Output.WriteLine("    <div class=\"sbkWav_NewDiv\">");
@@ -383,19 +376,17 @@ namespace SobekCM.Library.AdminViewer
             //Output.WriteLine("  <h2>Upload New Image File</h2>");
             Output.WriteLine("  <blockquote>");
             Output.WriteLine("  Browse to a new wordmark image file below and then select Upload to add the new wordmark image file.  The image should be a jpeg, gif, bmp, or png file.<br /><br />");
-        }
 
-        /// <summary> This is an opportunity to write HTML directly into the main form, without
-        /// using the pop-up html form architecture </summary>
-        /// <param name="Output"> Textwriter to write the pop-up form HTML for this viewer </param>
-        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-        /// <remarks> This text will appear within the ItemNavForm form tags </remarks>
-		public override void Write_ItemNavForm_Closing(TextWriter Output, Custom_Tracer Tracer)
-        {
-            Output.WriteLine("<!-- Wordmarks_AdminViewer.Write_ItemNavForm_Closing -->");
+            // Open the item nav form
+            Write_ItemNavForm_Opening(Output);
+
+            // Add the banner
+            Banner_Helper.Add_Banner(Output, "sbkAhs_BannerDiv", "System Administration", RequestSpecificValues.Current_Mode, RequestSpecificValues.HTML_Skin, RequestSpecificValues.Top_Collection);
+
+            // Add the upload controls to the file place holder
+            add_upload_controls(Output, Tracer);
 
             Output.WriteLine("  </blockquote>");
-
 
             Output.WriteLine("  <br />");
             Output.WriteLine("  <br />");
@@ -499,19 +490,11 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("</div>");
             Output.WriteLine();
 
-            Output.WriteLine("<!-- END Wordmarks_AdminViewer.Write_ItemNavForm_Closing -->");
+            Output.WriteLine("<!-- END Wordmarks_AdminViewer.Write_HTML -->");
             Output.WriteLine();
-        }
 
-        /// <summary> Add controls directly to the form in the main control area placeholder </summary>
-        /// <param name="MainPlaceHolder"> Main place holder to which all main controls are added </param>
-        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-        public override void Add_Controls(TextWriter Output, Custom_Tracer Tracer)
-        {
-            Tracer.Add_Trace("File_Managament_MySobekViewer.Add_Controls", String.Empty);
-
-            // Add the upload controls to the file place holder
-            add_upload_controls(Output, Tracer);
+            // Close the item nav form
+            Write_ItemNavForm_Closing(Output);
         }
 
 

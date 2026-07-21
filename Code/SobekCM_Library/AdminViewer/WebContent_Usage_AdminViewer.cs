@@ -36,7 +36,6 @@ namespace SobekCM.Library.AdminViewer
             RequestSpecificValues.Tracer.Add_Trace("WebContent_Usage_AdminViewer.Constructor", String.Empty);
             actionMessage = String.Empty;
 
-
             // Ensure the user is the system admin or portal admin
             if ((RequestSpecificValues.Current_User == null) || ((!RequestSpecificValues.Current_User.Is_System_Admin) && (!RequestSpecificValues.Current_User.Is_Portal_Admin)))
             {
@@ -182,24 +181,15 @@ namespace SobekCM.Library.AdminViewer
         /// <remarks> This class does nothing, since the interface list is added as controls, not HTML </remarks>
         public override void Write_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
-            Tracer.Add_Trace("WebContent_Usage_AdminViewer.Write_HTML", "Do nothing");
-        }
+            Tracer.Add_Trace("WebContent_Usage_AdminViewer.Write_HTML");
 
-        /// <summary> This is an opportunity to write HTML directly into the main form, without
-        /// using the pop-up html form architecture </summary>
-        /// <param name="Output"> Textwriter to write the pop-up form HTML for this viewer </param>
-        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-        /// <remarks> This text will appear within the ItemNavForm form tags </remarks>
-        public override void Write_ItemNavForm_Closing(TextWriter Output, Custom_Tracer Tracer)
-        {
-            Tracer.Add_Trace("WebContent_Usage_AdminViewer.Write_ItemNavForm_Closing", "");
+            // Open the item nav form
+            Write_ItemNavForm_Opening(Output);
 
-            Output.WriteLine("<!-- WebContent_Usage_AdminViewer.Write_ItemNavForm_Closing -->");
+            Output.WriteLine("<!-- WebContent_Usage_AdminViewer.Write_HTML -->");
             Output.WriteLine("<script src=\"" + Static_Resources_Gateway.Sobekcm_Admin_Js + "\" type=\"text/javascript\"></script>");
 
             string last_mode = RequestSpecificValues.Current_Mode.My_Sobek_SubMode;
-
-
 
             if (actionMessage.Length > 0)
             {
@@ -218,8 +208,6 @@ namespace SobekCM.Library.AdminViewer
                 Output.WriteLine("  <br />");
                 Output.WriteLine("  </div>");
             }
-
-
 
             // Start the outer tab containe
             Output.WriteLine("  <div id=\"tabContainer\" class=\"fulltabs sbkAdm_HomeTabs\">");
@@ -241,7 +229,6 @@ namespace SobekCM.Library.AdminViewer
             //Output.WriteLine("    <button title=\"Save changes to this user group\" class=\"sbkAdm_RoundButton\" onclick=\"return save_user_edits();return false;\">SAVE <img src=\"" + Static_Resources.Button_Next_Arrow_Png + "\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button>");
             //Output.WriteLine("  </div>");
             //Output.WriteLine();
-
 
             Output.WriteLine();
 
@@ -285,11 +272,6 @@ namespace SobekCM.Library.AdminViewer
             // Get the URLS from the string builders
             string goUrl = script_builder.ToString();
             string dataUrl = results_builder.ToString();
-
-
-
-
-
 
             // If there are none whatsoever, show  a special message and don't bother with the table
             if (!SobekEngineClient.WebContent.Has_Global_Usage(Tracer))
@@ -529,9 +511,6 @@ namespace SobekCM.Library.AdminViewer
                 Output.WriteLine("           \"serverSide\": true,");
                 Output.WriteLine("           \"sDom\": \"lprtip\",");
 
-
-
-
                 Output.WriteLine("           \"sAjaxSource\": \"" + dataUrl + "\",");
                 Output.WriteLine("           \"aoColumns\": [ null, null, null, null ]  });");
                 Output.WriteLine();
@@ -566,6 +545,9 @@ namespace SobekCM.Library.AdminViewer
 
             Output.WriteLine("<br />");
             Output.WriteLine("<br />");
+
+            // Close the item nav form
+            Write_ItemNavForm_Closing(Output);
         }
 
         private static string Month_From_Int(int Month_Int)

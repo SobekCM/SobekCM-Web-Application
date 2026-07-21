@@ -270,17 +270,14 @@ namespace SobekCM.Library.AdminViewer
         /// <remarks> This class does nothing, since the alias list is added as controls, not HTML </remarks>
         public override void Write_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
-            Tracer.Add_Trace("IP_Restrictions_AdminViewer.Write_HTML", "Do nothing");
-        }
+            Tracer.Add_Trace("IP_Restrictions_AdminViewer.Write_HTML");
 
-        /// <summary> This is an opportunity to write HTML directly into the main form, without
-        /// using the pop-up html form architecture </summary>
-        /// <param name="Output"> Textwriter to write the pop-up form HTML for this viewer </param>
-        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-        /// <remarks> This text will appear within the ItemNavForm form tags </remarks>
-		public override void Write_ItemNavForm_Closing(TextWriter Output, Custom_Tracer Tracer)
-        {
-            Output.WriteLine("<!-- IP_Restrictions_AdminViewer.Write_ItemNavForm_Closing -->");
+            // Open the item nav form
+            Write_ItemNavForm_Opening(Output);
+
+            Banner_Helper.Add_Banner(Output, "sbkAhs_BannerDiv", "System Administration", RequestSpecificValues.Current_Mode, RequestSpecificValues.HTML_Skin, RequestSpecificValues.Top_Collection);
+
+            Output.WriteLine("<!-- IP_Restrictions_AdminViewer.Write_HTML -->");
 
             // Add the stylesheet(s)and javascript  needed
             Output.WriteLine("<script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Sobekcm_Admin_Js + "\" ></script>");
@@ -304,7 +301,7 @@ namespace SobekCM.Library.AdminViewer
 
             if ((details != null) && (thisRange != null) && (details.Tables[0].Rows.Count > 0))
             {
-                Tracer.Add_Trace("IP_Restrictions_AdminViewer.Write_ItemNavForm_Closing", "Display details regarding one IP restrictive range");
+                Tracer.Add_Trace("IP_Restrictions_AdminViewer.Write_HTML", "Display details regarding one IP restrictive range");
 
                 // Assign some of the values from the details to the range
                 thisRange.Title = details.Tables[0].Rows[0]["Title"].ToString();
@@ -416,7 +413,7 @@ namespace SobekCM.Library.AdminViewer
                 return;
             }
 
-            Tracer.Add_Trace("IP_Restrictions_AdminViewer.Write_ItemNavForm_Closing", "Display main IP restrictive range admin form");
+            Tracer.Add_Trace("IP_Restrictions_AdminViewer.Write_HTML", "Display main IP restrictive range admin form");
 
 
             Output.WriteLine("  <p>Restrictive ranges of IP addresses may be used to restrict access to digital resources.  This form allows system administrators to edit the individual IP addresses and contiguous IP addresses associated with an existing restrictive range.</p>");
@@ -503,6 +500,9 @@ namespace SobekCM.Library.AdminViewer
             }
 
             Output.WriteLine("</div>");
+
+            // Close the item nav form
+            Write_ItemNavForm_Closing(Output);
         }
     }
 }

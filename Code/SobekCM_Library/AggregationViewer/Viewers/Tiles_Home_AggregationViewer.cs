@@ -221,7 +221,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         /// <summary> Add the HTML to be displayed in the search box </summary>
         /// <param name="Output"> Textwriter to write the HTML for this viewer</param>
         /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
-        public override void Add_Search_Box_HTML(TextWriter Output, Custom_Tracer Tracer)
+        public override void Write_Search_Box_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
             // do nothing
         }
@@ -230,11 +230,11 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         /// <param name="Output"> Textwriter to write the HTML for this viewer</param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
         /// <remarks> This adds the search tips by calling the base method <see cref="abstractAggregationViewer.Add_Simple_Search_Tips"/> </remarks>
-        public override void Add_Secondary_HTML(TextWriter Output, Custom_Tracer Tracer)
+        public override void Write_Main_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
             if (Tracer != null)
             {
-                Tracer.Add_Trace("Tiles_Home_AggregationViewer.Add_Secondary_HTML", "Add the entire tiled home page");
+                Tracer.Add_Trace("Tiles_Home_AggregationViewer.Write_Main_HTML", "Add the entire tiled home page");
             }
 
             const string VARIES_STRING = "<span style=\"color:Gray\">( varies )</span>";

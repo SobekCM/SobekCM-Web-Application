@@ -54,11 +54,11 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         /// <summary> Add the HTML to be displayed in the search box </summary>
         /// <param name="Output"> Textwriter to write the HTML for this viewer</param>
         /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
-        public override void Add_Search_Box_HTML(TextWriter Output, Custom_Tracer Tracer)
+        public override void Write_Search_Box_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
             if (Tracer != null)
             {
-                Tracer.Add_Trace("No_Search_AggregationViewer.Add_Search_Box_HTML", "Adding html for search box");
+                Tracer.Add_Trace("No_Search_AggregationViewer.Write_Search_Box_HTML", "Adding html for search box");
             }
 
             Output.WriteLine("<h1>" + ViewBag.Hierarchy_Object.Name + " Home</h1>");

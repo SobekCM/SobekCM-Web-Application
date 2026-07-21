@@ -69,16 +69,11 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         /// <summary> Add the HTML to be displayed in the search box </summary>
         /// <param name="Output"> Textwriter to write the HTML for this viewer </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-        void Add_Search_Box_HTML(TextWriter Output, Custom_Tracer Tracer);
+        void Write_Search_Box_HTML(TextWriter Output, Custom_Tracer Tracer);
 
         /// <summary> Add the HTML to be displayed below the search box </summary>
         /// <param name="Output"> Textwriter to write the HTML for this viewer </param>
         /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
-        void Add_Secondary_HTML(TextWriter Output, Custom_Tracer Tracer);
-
-        /// <summary> Add the HTML and controls to the section below the search box </summary>
-        /// <param name="Output">TextWriter to write HTML directly to</param>
-        /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
-        void Add_Secondary_Controls(TextWriter Output, Custom_Tracer Tracer);
+        void Write_Main_HTML(TextWriter Output, Custom_Tracer Tracer);
     }
 }

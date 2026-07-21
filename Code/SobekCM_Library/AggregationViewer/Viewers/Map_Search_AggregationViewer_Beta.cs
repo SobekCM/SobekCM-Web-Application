@@ -375,7 +375,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         /// <param name="Output"> Textwriter to write the HTML for this viewer</param>
         /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
         /// <remarks> This addes the map search panel which holds the google map, as well as the coordinate entry boxes </remarks>
-        public override void Add_Search_Box_HTML(TextWriter Output, Custom_Tracer Tracer)
+        public override void Write_Search_Box_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
 
         }
@@ -384,7 +384,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         /// <param name="Output"> Textwriter to write the HTML for this viewer</param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
         /// <remarks> This adds the search tips by calling the base method <see cref="abstractAggregationViewer.Add_Simple_Search_Tips"/> </remarks>
-        public override void Add_Secondary_HTML(TextWriter Output, Custom_Tracer Tracer)
+        public override void Write_Main_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
 
         }

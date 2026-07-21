@@ -85,7 +85,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         /// <summary> Add the HTML to be displayed in the search box </summary>
         /// <param name="Output"> Textwriter to write the HTML for this viewer</param>
         /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
-        public override void Add_Search_Box_HTML(TextWriter Output, Custom_Tracer Tracer)
+        public override void Write_Search_Box_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
             if (Tracer != null)
             {
@@ -101,17 +101,16 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 
         }
 
-        /// <summary> Add controls to the placeholder below the search box </summary>
-        /// <param name="MainPlaceHolder"> Placeholder into which to place controls to be rendered</param>
+        /// <summary> Add the HTML to be displayed below the search box </summary>
+        /// <param name="Output"> Textwriter to write the HTML for this viewer</param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-        /// <remarks> This adds the results from the dataset into the space below the search box.<br /><br />
-        /// This creates and uses a <see cref="PagedResults_HtmlHelper"/> to write the results. </remarks>
-        public override void Add_Secondary_Controls(TextWriter Output, Custom_Tracer Tracer)
+        /// <remarks> This adds the search tips by calling the base method <see cref="abstractAggregationViewer.Add_Simple_Search_Tips"/> </remarks>
+        public override void Write_Main_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("DataSet_Browse_Info_AggregationViewer.Add_Secondary_Controls", "Adding HTML");
-            }
+            Tracer?.Add_Trace("DataSet_Browse_Info_AggregationViewer.Write_Main_HTML", "Adding HTML");
+
+            // Start the item nav form
+            Write_ItemNavForm_Opening(Output);
 
             if (writeResult == null)
             {
@@ -119,6 +118,9 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             }
 
             writeResult.Add_ItemNavForm_Content(Output, Tracer);
+
+            // End the item nav form
+            Write_ItemNavForm_Closing(Output);
         }
     }
 }

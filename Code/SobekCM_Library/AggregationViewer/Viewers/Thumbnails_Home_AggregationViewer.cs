@@ -73,11 +73,11 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         /// <summary> Add the HTML to be displayed in the search box </summary>
         /// <param name="Output"> Textwriter to write the HTML for this viewer</param>
         /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
-        public override void Add_Search_Box_HTML(TextWriter Output, Custom_Tracer Tracer)
+        public override void Write_Search_Box_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
             if (Tracer != null)
             {
-                Tracer.Add_Trace("Thumbnails_Home_AggregationViewer.Add_Search_Box_HTML", "Adding html for search box");
+                Tracer.Add_Trace("Thumbnails_Home_AggregationViewer.Write_Search_Box_HTML", "Adding html for search box");
             }
 
             base.Add_Basic_Search_Box_HTML(Output, Tracer);
@@ -87,11 +87,11 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         /// <param name="Output"> Textwriter to write the HTML for this viewer</param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
         /// <remarks> This adds the search tips by calling the base method <see cref="abstractAggregationViewer.Add_Simple_Search_Tips"/> </remarks>
-        public override void Add_Secondary_HTML(TextWriter Output, Custom_Tracer Tracer)
+        public override void Write_Main_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
             if (Tracer != null)
             {
-                Tracer.Add_Trace("Thumbnails_Home_AggregationViewer.Add_Secondary_HTML", "Add the search thumbnails to the home page");
+                Tracer.Add_Trace("Thumbnails_Home_AggregationViewer.Write_Main_HTML", "Add the search thumbnails to the home page");
             }
 
             string url_options = UrlWriterHelper.URL_Options(RequestSpecificValues.Current_Mode);
@@ -205,29 +205,23 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 Output.WriteLine("</div>");
             }
             RequestSpecificValues.Current_Mode.Aggregation = ViewBag.Hierarchy_Object.Code;
-        }
 
-        private void add_thumbnails(Custom_Tracer Tracer)
-        {
+            // Start the item nav form
+            Write_ItemNavForm_Opening(Output);
 
-        }
-
-        public override void Add_Secondary_Controls(TextWriter Output, Custom_Tracer Tracer)
-        {
             // Build the search options
-            var searchOptions = new Search_Options_Info();
-            searchOptions.Page = 1;
-            searchOptions.ResultsPerPage = 20;
-            searchOptions.AggregationCode = hierarchyObject.Code;
-            searchOptions.Facets = hierarchyObject.Facets;
-            searchOptions.Fields = hierarchyObject.Results_Fields;
-            searchOptions.Sort = (ushort)1;
+            var searchOptions = new Search_Options_Info
+            {
+                Page = 1,
+                ResultsPerPage = 20,
+                AggregationCode = hierarchyObject.Code,
+                Facets = hierarchyObject.Facets,
+                Fields = hierarchyObject.Results_Fields,
+                Sort = (ushort)1,
 
-            // Should results be grouped?  Aggregation must be set and for the moment
-            searchOptions.GroupItemsByTitle = hierarchyObject.GroupResults;
-
-            Search_Results_Statistics stats;
-            List<iSearch_Title_Result> results;
+                // Should results be grouped?  Aggregation must be set and for the moment
+                GroupItemsByTitle = hierarchyObject.GroupResults
+            };
 
             // Build the user membership information
             var userInfo = new Search_User_Membership_Info();
@@ -266,7 +260,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 }
             }
 
-            v5_Solr_Searcher.All_Browse(searchOptions, userInfo, Tracer, out stats, out results);
+            v5_Solr_Searcher.All_Browse(searchOptions, userInfo, Tracer, out Search_Results_Statistics stats, out List<iSearch_Title_Result> results);
 
             var returnValue = new Multiple_Paged_Results_Args(stats, results);
 
@@ -299,6 +293,9 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             }
 
             Output.WriteLine("</div>");
+
+            // End the item nav form
+            Write_ItemNavForm_Closing(Output);
         }
 
         private string Highlight_To_Html(Item_Aggregation_Highlights Highlight, string Directory)

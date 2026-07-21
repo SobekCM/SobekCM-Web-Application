@@ -86,7 +86,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         /// <param name="Output"> Textwriter to write the HTML for this viewer</param>
         /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
         /// <remarks> This does nothing - as an internal type view, this will not be called </remarks>
-        public override void Add_Search_Box_HTML(TextWriter Output, Custom_Tracer Tracer)
+        public override void Write_Search_Box_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
             // Do nothing
         }
@@ -95,7 +95,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         /// <param name="Output"> Textwriter to write the HTML for this viewer</param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
         /// <remarks> This writes the HTML from the static browse or info page here  </remarks>
-        public override void Add_Secondary_HTML(TextWriter Output, Custom_Tracer Tracer)
+        public override void Write_Main_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
             DataTable permissionsTbl = SobekCM_Database.Get_Aggregation_User_Permissions(ViewBag.Hierarchy_Object.Code, RequestSpecificValues.Tracer);
 

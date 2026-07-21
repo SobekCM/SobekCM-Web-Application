@@ -1,8 +1,10 @@
 ﻿#region Using directives
 
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Extensions;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.Configuration.Localization;
+using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
@@ -110,34 +112,31 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         /// <summary> Add the HTML to be displayed in the search box </summary>
         /// <param name="Output"> Textwriter to write the HTML for this viewer</param>
         /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
-        public abstract void Add_Search_Box_HTML(TextWriter Output, Custom_Tracer Tracer);
+        public abstract void Write_Search_Box_HTML(TextWriter Output, Custom_Tracer Tracer);
 
         /// <summary> Add the HTML to be displayed below the search box </summary>
         /// <param name="Output"> Textwriter to write the HTML for this viewer </param>
         /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
         ///  <remarks> No html is added here, although some children class override this virtual method to add HTML </remarks>
-        public virtual void Add_Secondary_HTML(TextWriter Output, Custom_Tracer Tracer)
+        public virtual void Write_Main_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
             if (Tracer != null)
             {
-                Tracer.Add_Trace("abstractAggregationViewer.Add_Secondary_HTML", "No html added");
+                Tracer.Add_Trace("abstractAggregationViewer.Write_Main_HTML", "No html added");
             }
 
             // No html to be added here
         }
 
-        /// <summary> Add the HTML and controls to the section below the search box </summary>
-        /// <param name="Output">TextWriter to write HTML directly to</param>
-        /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
-        /// <remarks> No controls are added here, although some children class override this virtual method to add controls </remarks>
-        public virtual void Add_Secondary_Controls(TextWriter Output, Custom_Tracer Tracer)
+        protected void Write_ItemNavForm_Opening(TextWriter Output)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("abstractAggregationViewer.Add_Secondary_Controls", "No controls added");
-            }
+            string formAction = Context.Items[RequestCache_Keys.OriginalUrl]?.ToString() ?? Context.Request.GetDisplayUrl();
+            Output.Write($"<form id=\"itemNavForm\" action=\"{formAction}\" method=\"post\">");
+        }
 
-            // No controls to be added here
+        protected void Write_ItemNavForm_Closing(TextWriter Output)
+        {
+            Output.Write("</form>");
         }
 
         #endregion

@@ -216,11 +216,11 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         /// <param name="Output"> Textwriter to write the HTML for this viewer</param>
         /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
         /// <remarks> This addes the map search panel which holds the google map, as well as the coordinate entry boxes </remarks>
-        public override void Add_Search_Box_HTML(TextWriter Output, Custom_Tracer Tracer)
+        public override void Write_Search_Box_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
             if (Tracer != null)
             {
-                Tracer.Add_Trace("Map_Search_AggregationViewer.Add_Search_Box_HTML", "Adding html for search box");
+                Tracer.Add_Trace("Map_Search_AggregationViewer.Write_Search_Box_HTML", "Adding html for search box");
             }
 
             string search_button_text = "Search";
@@ -373,11 +373,11 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         /// <param name="Output"> Textwriter to write the HTML for this viewer</param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
         /// <remarks> This adds the search tips by calling the base method <see cref="abstractAggregationViewer.Add_Simple_Search_Tips"/> </remarks>
-        public override void Add_Secondary_HTML(TextWriter Output, Custom_Tracer Tracer)
+        public override void Write_Main_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
             if (Tracer != null)
             {
-                Tracer.Add_Trace("Map_Search_AggregationViewer.Add_Secondary_HTML", "Adds map search-specific search tips");
+                Tracer.Add_Trace("Map_Search_AggregationViewer.Write_Main_HTML", "Adds map search-specific search tips");
             }
 
             // Write the quick tips
@@ -396,7 +396,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 {
                     if (Tracer != null)
                     {
-                        Tracer.Add_Trace("Map_Search_AggregationViewer.Add_Secondary_HTML", "Reading aggregation specific map search faq");
+                        Tracer.Add_Trace("Map_Search_AggregationViewer.Write_Main_HTML", "Reading aggregation specific map search faq");
                     }
 
                     try
@@ -422,7 +422,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                     {
                         if (Tracer != null)
                         {
-                            Tracer.Add_Trace("Map_Search_AggregationViewer.Add_Secondary_HTML", "Reading application-wide map search faq");
+                            Tracer.Add_Trace("Map_Search_AggregationViewer.Write_Main_HTML", "Reading application-wide map search faq");
                         }
 
                         try

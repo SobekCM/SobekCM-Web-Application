@@ -1177,7 +1177,7 @@ namespace SobekCM.Library.HTML
                     Add_Sharing_Buttons(writer, FORM_NAME, "SobekHomeBannerButton");
                     ((Rotating_Highlight_Search_AggregationViewer)collectionViewer).Sharing_Buttons_HTML = builder.ToString();
 
-                    collectionViewer.Add_Search_Box_HTML(Output, Tracer);
+                    collectionViewer.Write_Search_Box_HTML(Output, Tracer);
 
                     Output.WriteLine("<!-- Aggregation_HtmlSubwriter.Write_HTML - MainMenus_Helper_HtmlSubWriter.Add_Aggregation_Main_menu -->");
                     MainMenus_Helper_HtmlSubWriter.Add_Aggregation_Main_Menu(Output, RequestSpecificValues, hierarchyObject);
@@ -1192,7 +1192,7 @@ namespace SobekCM.Library.HTML
                     Add_Sharing_Buttons(writer, FORM_NAME, "SobekHomeBannerButton");
                     ((Banner_Search_AggregationViewer)collectionViewer).Sharing_Buttons_HTML = builder.ToString();
 
-                    collectionViewer.Add_Search_Box_HTML(Output, Tracer);
+                    collectionViewer.Write_Search_Box_HTML(Output, Tracer);
 
                     Output.WriteLine("<!-- Aggregation_HtmlSubwriter.Write_HTML - MainMenus_Helper_HtmlSubWriter.Add_Aggregation_Main_menu -->");
                     MainMenus_Helper_HtmlSubWriter.Add_Aggregation_Main_Menu(Output, RequestSpecificValues, hierarchyObject);
@@ -1202,7 +1202,7 @@ namespace SobekCM.Library.HTML
                 }
                 else
                 {
-                    collectionViewer.Add_Search_Box_HTML(Output, Tracer);
+                    collectionViewer.Write_Search_Box_HTML(Output, Tracer);
 
                     Output.WriteLine(((RequestSpecificValues.Current_Mode.Mode != Display_Mode_Enum.Aggregation) || (RequestSpecificValues.Current_Mode.Aggregation_Type != Aggregation_Type_Enum.Browse_Map)) ? "</div>" : "<div id=\"pagecontainer_resumed\">");
                 }
@@ -1219,7 +1219,7 @@ namespace SobekCM.Library.HTML
             }
             else
             {
-                collectionViewer.Add_Search_Box_HTML(Output, Tracer);
+                collectionViewer.Write_Search_Box_HTML(Output, Tracer);
             }
 
             Tracer.Add_Trace("Aggregation_HtmlSubwriter.Write_HTML", "Add the secondary HTML to the home page.");
@@ -1233,7 +1233,7 @@ namespace SobekCM.Library.HTML
             }
             else
             {
-                collectionViewer.Add_Secondary_HTML(Output, Tracer);
+                collectionViewer.Write_Main_HTML(Output, Tracer);
             }
 
             if ((RequestSpecificValues.Current_Mode.Mode == Display_Mode_Enum.Aggregation) && (RequestSpecificValues.Current_Mode.Aggregation_Type == Aggregation_Type_Enum.Browse_Info))
@@ -1241,39 +1241,6 @@ namespace SobekCM.Library.HTML
                 if (datasetBrowseResultsStats != null)
                     finish_page = false;
             }
-
-            Tracer.Add_Trace("Aggregation_HtmlSubwriter.Write_HTML", "End of Write_HTML.");
-            Output.WriteLine("<!-- End of Aggregation_HtmlSubwriter.Write_HTML -->");
-
-            // ===== Begin original Add_ItemNavForm_Content =====
-            Tracer.Add_Trace("Aggregation_HtmlSubwriter.Add_ItemNavForm_Content", "Entered...");
-
-            // Start the item nav form
-            if ( Include_Navigation_Form )
-            {
-                Write_ItemNavForm_Opening(Output);
-            }
-
-            if (collectionViewer.Secondary_Text_Requires_Controls)
-            {
-                Tracer.Add_Trace("Aggregation_HtmlSubwriter.Add_ItemNavForm_Content", "Secondary text requires controls.");
-                collectionViewer.Add_Secondary_Controls(Output, Tracer);
-            }
-            else
-            {
-                Tracer.Add_Trace("Aggregation_HtmlSubwriter.Add_ItemNavForm_Content", "NO secondary text requires controls.");
-            }
-
-            // End the item nav form
-            if (Include_Navigation_Form)
-            {
-                Write_ItemNavForm_Closing(Output);
-            }
-            // ===== End original Add_ItemNavForm_Content =====
-
-            // ===== Begin original Write_Final_HTML =====
-            Tracer.Add_Trace("Aggregation_HtmlSubwriter.Write_Final_HTML", "Entered...");
-            Output.WriteLine("<!-- Start of Aggregation_HtmlSubwriter.Write_Final_HTML -->");
 
             if ((collectionViewer != null) && (collectionViewer.Type != Item_Aggregation_Views_Searches_Enum.Custom_Home_Page))
             {
@@ -1384,21 +1351,6 @@ namespace SobekCM.Library.HTML
             // ===== End original Write_Final_HTML =====
 
             return finish_page;
-        }
-
-        public bool Include_Navigation_Form
-        {
-            get
-            {
-                if (collectionViewer is Thumbnails_Home_AggregationViewer)
-                    return true;
-
-                if ((RequestSpecificValues.Current_Mode.Aggregation_Type == Aggregation_Type_Enum.Home) || (RequestSpecificValues.Current_Mode.Aggregation_Type == Aggregation_Type_Enum.Home_Edit))
-                {
-                    return false;
-                }
-                return true;
-            }
         }
 
         private void Add_Sharing_Buttons(TextWriter Output, string FormName, string Style)

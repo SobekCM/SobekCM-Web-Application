@@ -481,13 +481,6 @@ namespace SobekCM.Library.MainWriters
             try
             {
                 subwriter.Write_HTML(Output, Tracer);
-
-                subwriter.Add_ItemNavForm_Content(Output, Tracer);
-
-                //if ((RequestSpecificValues.Current_Mode.isPostBack) && (RequestSpecificValues.Current_Mode.Mode != Display_Mode_Enum.My_Sobek) && (RequestSpecificValues.Current_Mode.Mode != Display_Mode_Enum.Administrative)) return;
-
-                subwriter.Write_Final_HTML(Output, Tracer);
-
             }
             catch (Exception ee)
             {

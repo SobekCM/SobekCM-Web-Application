@@ -124,57 +124,16 @@ namespace SobekCM.Library.HTML
             }
         }
 
-        /// <summary> Adds controls to the main navigational page </summary>
-        /// <param name="Output"> TextWriter to write HTML output </param>
-        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        /// <remarks> This uses a <see cref="PagedResults_HtmlHelper"/> instance to render the items  </remarks>
-        public override void Add_ItemNavForm_Content(TextWriter Output, Custom_Tracer Tracer)
-        {
-            if (writeResult == null) return;
-
-            // Start the item nav form
-            Write_ItemNavForm_Opening(Output);
-
-            // Make sure the corresponding 'search' is the latest
-            RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Search;
-            Context.Session.SetString(SessionCache_Keys.LastSearch, UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode));
-            RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Results;
-
-            if (RequestSpecificValues.Results_Statistics == null) return;
-
-            if (writeResult == null)
-            {
-                Tracer.Add_Trace("Search_Results_HtmlSubwriter.Add_ItemNavForm_Content", "Building Result DataSet Writer");
-
-                writeResult = new PagedResults_HtmlHelper(RequestSpecificValues, RequestSpecificValues.Results_Statistics, RequestSpecificValues.Paged_Results);
-            }
-
-            Tracer.Add_Trace("Search_Results_HtmlSubwriter.Add_ItemNavForm_Content", "Add controls");
-            writeResult.Add_ItemNavForm_Content(Output, Tracer);
-
-            // Start the item nav form
-            Write_ItemNavForm_Closing(Output);
-        }
-
-        /// <summary> Writes the final output to close this search page results, including the results page navigation buttons </summary>
-        /// <param name="Output"> Stream to which to write the HTML for this subwriter </param>
-        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        /// <returns> TRUE is always returned </returns>
-        /// <remarks> This calls the <see cref="PagedResults_HtmlHelper.Write_Final_HTML"/> method in the <see cref="PagedResults_HtmlHelper"/> object. </remarks>
-		public override void Write_Final_HTML(TextWriter Output, Custom_Tracer Tracer)
-        {
-            Tracer.Add_Trace("browse_info_html_subwriter.Write_Final_Html", "Rendering HTML ( finish the main viewer section )");
-
-            if (writeResult != null)
-            {
-                writeResult.Write_Final_HTML(Output, Tracer);
-            }
-        }
-
         /// <summary> Writes the HTML generated to browse the results of a search directly to the response stream </summary>
         /// <param name="Output"> Stream to which to write the HTML for this subwriter </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         /// <returns> TRUE -- Value indicating if html writer should finish the page immediately after this, or if there are other controls or routines which need to be called first </returns>
+        /// <remarks> Uses a <see cref="PagedResults_HtmlHelper"/> instance to render the items. Mechanically merged from
+        /// the former separate Write_HTML / Add_ItemNavForm_Content / Write_Final_HTML methods; the early `return;`
+        /// statements inside the original Add_ItemNavForm_Content are preserved as-is below (they're each guarded by
+        /// writeResult/Results_Statistics being null, which also makes the now-appended Write_Final_HTML step a no-op
+        /// in those cases, so behavior is unchanged) -- one of them fires after Write_ItemNavForm_Opening has already
+        /// written the opening &lt;form&gt; tag, which was already a pre-existing unbalanced-tag risk before this merge. </remarks>
         public override bool Write_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
             Tracer.Add_Trace("Search_Results_HtmlSubwriter.Write_HTML", "Rendering HTML");
@@ -199,6 +158,44 @@ namespace SobekCM.Library.HTML
                 }
                 writeResult.Write_HTML(Output, Tracer);
             }
+
+            // ===== Begin original Add_ItemNavForm_Content =====
+            if (writeResult != null)
+            {
+                // Start the item nav form
+                Write_ItemNavForm_Opening(Output);
+
+                // Make sure the corresponding 'search' is the latest
+                RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Search;
+                Context.Session.SetString(SessionCache_Keys.LastSearch, UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode));
+                RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Results;
+
+                if (RequestSpecificValues.Results_Statistics != null)
+                {
+                    if (writeResult == null)
+                    {
+                        Tracer.Add_Trace("Search_Results_HtmlSubwriter.Add_ItemNavForm_Content", "Building Result DataSet Writer");
+
+                        writeResult = new PagedResults_HtmlHelper(RequestSpecificValues, RequestSpecificValues.Results_Statistics, RequestSpecificValues.Paged_Results);
+                    }
+
+                    Tracer.Add_Trace("Search_Results_HtmlSubwriter.Add_ItemNavForm_Content", "Add controls");
+                    writeResult.Add_ItemNavForm_Content(Output, Tracer);
+
+                    // Start the item nav form
+                    Write_ItemNavForm_Closing(Output);
+                }
+            }
+            // ===== End original Add_ItemNavForm_Content =====
+
+            // ===== Begin original Write_Final_HTML =====
+            Tracer.Add_Trace("browse_info_html_subwriter.Write_Final_Html", "Rendering HTML ( finish the main viewer section )");
+
+            if (writeResult != null)
+            {
+                writeResult.Write_Final_HTML(Output, Tracer);
+            }
+            // ===== End original Write_Final_HTML =====
 
             return true;
         }

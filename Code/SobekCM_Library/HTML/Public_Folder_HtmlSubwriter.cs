@@ -23,57 +23,12 @@ namespace SobekCM.Library.HTML
             // Do nothing
         }
 
-        /// <summary> Adds controls to the main navigational page </summary>
-        /// <param name="Output"> TextWriter to write HTML output </param>
-        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        /// <remarks> This uses a <see cref="PagedResults_HtmlHelper"/> instance to render the browse  </remarks>
-        public override void Add_ItemNavForm_Content(TextWriter Output, Custom_Tracer Tracer)
-        {
-            if (RequestSpecificValues.Paged_Results == null || RequestSpecificValues.Results_Statistics == null )
-            {
-                return;
-            }
-
-            // Start the item nav form
-            Write_ItemNavForm_Opening(Output);
-
-            Tracer.Add_Trace("Public_Folder_HtmlSubwriter.Add_ItemNavForm_Content", "Building Result DataSet Writer");
-
-
-            writeResult = new PagedResults_HtmlHelper(RequestSpecificValues, RequestSpecificValues.Results_Statistics, RequestSpecificValues.Paged_Results)
-            {
-                Browse_Title = RequestSpecificValues.Public_Folder.FolderName,
-                Folder_Owner_Name = RequestSpecificValues.Public_Folder.Name,
-                Folder_Owner_Email = RequestSpecificValues.Public_Folder.Email
-            };
-
-
-            Tracer.Add_Trace("Public_Folder_HtmlSubwriter.Add_ItemNavForm_Content", "Add controls");
-            writeResult.Add_ItemNavForm_Content(Output, Tracer);
-
-            // End the item nav form
-            Write_ItemNavForm_Closing(Output);
-        }
-
-        /// <summary> Writes the final output to close this public folder browse, including the results page navigation buttons </summary>
-        /// <param name="Output"> Stream to which to write the HTML for this subwriter </param>
-        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        /// <remarks> This calls the <see cref="PagedResults_HtmlHelper.Write_Final_HTML"/> method in the <see cref="PagedResults_HtmlHelper"/> object. </remarks>
-        public override void Write_Final_HTML(TextWriter Output, Custom_Tracer Tracer)
-        {
-            Tracer.Add_Trace("Public_Folder_HtmlSubwriter.Write_Final_Html", "Rendering HTML ( finish the main viewer section )");
-
-            if (writeResult != null)
-            {
-                writeResult.Write_Final_HTML(Output, Tracer);
-            }
-
-        }
-
         /// <summary> Writes the HTML generated to browse a public folder  directly to the response stream </summary>
         /// <param name="Output"> Stream to which to write the HTML for this subwriter </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         /// <returns> TRUE -- Value indicating if html writer should finish the page immediately after this, or if there are other controls or routines which need to be called first </returns>
+        /// <remarks> Uses a <see cref="PagedResults_HtmlHelper"/> instance to render the browse. Mechanically merged
+        /// from the former separate Write_HTML / Add_ItemNavForm_Content / Write_Final_HTML methods. </remarks>
         public override bool Write_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
             Tracer.Add_Trace("Public_Folder_HtmlSubwriter.Write_HTML", "Rendering HTML");
@@ -131,6 +86,38 @@ namespace SobekCM.Library.HTML
                 }
                 writeResult.Write_HTML(Output, Tracer);
             }
+
+            // ===== Begin original Add_ItemNavForm_Content =====
+            if ((RequestSpecificValues.Paged_Results != null) && (RequestSpecificValues.Results_Statistics != null))
+            {
+                // Start the item nav form
+                Write_ItemNavForm_Opening(Output);
+
+                Tracer.Add_Trace("Public_Folder_HtmlSubwriter.Add_ItemNavForm_Content", "Building Result DataSet Writer");
+
+                writeResult = new PagedResults_HtmlHelper(RequestSpecificValues, RequestSpecificValues.Results_Statistics, RequestSpecificValues.Paged_Results)
+                {
+                    Browse_Title = RequestSpecificValues.Public_Folder.FolderName,
+                    Folder_Owner_Name = RequestSpecificValues.Public_Folder.Name,
+                    Folder_Owner_Email = RequestSpecificValues.Public_Folder.Email
+                };
+
+                Tracer.Add_Trace("Public_Folder_HtmlSubwriter.Add_ItemNavForm_Content", "Add controls");
+                writeResult.Add_ItemNavForm_Content(Output, Tracer);
+
+                // End the item nav form
+                Write_ItemNavForm_Closing(Output);
+            }
+            // ===== End original Add_ItemNavForm_Content =====
+
+            // ===== Begin original Write_Final_HTML =====
+            Tracer.Add_Trace("Public_Folder_HtmlSubwriter.Write_Final_Html", "Rendering HTML ( finish the main viewer section )");
+
+            if (writeResult != null)
+            {
+                writeResult.Write_Final_HTML(Output, Tracer);
+            }
+            // ===== End original Write_Final_HTML =====
 
             return true;
         }

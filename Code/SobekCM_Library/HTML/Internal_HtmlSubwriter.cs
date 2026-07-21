@@ -191,6 +191,12 @@ namespace SobekCM.Library.HTML
                 }
             }
 
+            // ===== Begin original Write_Final_HTML =====
+            Output.WriteLine("<!-- Close the pagecontainer div -->");
+            Output.WriteLine("</div>");
+            Output.WriteLine();
+            // ===== End original Write_Final_HTML =====
+
             return true;
         }
 
@@ -1384,16 +1390,6 @@ namespace SobekCM.Library.HTML
         public override List<HtmlSubwriter_Behaviors_Enum> Subwriter_Behaviors
         {
             get { return new List<HtmlSubwriter_Behaviors_Enum> { HtmlSubwriter_Behaviors_Enum.Suppress_Banner }; }
-        }
-
-        /// <summary> Writes final HTML after all the forms </summary>
-        /// <param name="Output">Stream to directly write to</param>
-        /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
-        public override void Write_Final_HTML(TextWriter Output, Custom_Tracer Tracer)
-        {
-            Output.WriteLine("<!-- Close the pagecontainer div -->");
-            Output.WriteLine("</div>");
-            Output.WriteLine();
         }
 
         /// <summary> Gets the CSS class of the container that the page is wrapped within </summary>

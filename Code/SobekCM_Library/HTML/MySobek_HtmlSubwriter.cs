@@ -242,14 +242,7 @@ namespace SobekCM.Library.HTML
             // Add the text here
             mySobekViewer.Write_HTML(Output, Tracer);
 
-            return false;
-        }
-
-        /// <summary> Writes the complete itemNavForm content: the opening HTML, the main viewer/controls, then the closing HTML </summary>
-        /// <param name="Output">Stream to directly write to</param>
-        /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
-        public override void Add_ItemNavForm_Content(TextWriter Output, Custom_Tracer Tracer)
-        {
+            // ===== Begin original Add_ItemNavForm_Content =====
             Tracer.Add_Trace("MySobek_HtmlSubwriter.Write_ItemNavForm_Content", "");
 
             // Start the item nav form
@@ -274,24 +267,21 @@ namespace SobekCM.Library.HTML
 
             // Also, add any additional stuff here
             mySobekViewer.Write_ItemNavForm_Closing(Output, Tracer);
-            
+
             // End the item nav form
             Write_ItemNavForm_Closing(Output);
-        }
+            // ===== End original Add_ItemNavForm_Content =====
 
-        /// <summary> Writes final HTML after all the forms </summary>
-        /// <param name="Output">Stream to directly write to</param>
-        /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
-        public override void Write_Final_HTML(TextWriter Output, Custom_Tracer Tracer)
-        {
-
+            // ===== Begin original Write_Final_HTML =====
             if (!Subwriter_Behaviors.Contains(HtmlSubwriter_Behaviors_Enum.MySobek_Subwriter_Mimic_Item_Subwriter))
             {
                 Output.WriteLine("<!-- Close the pagecontainer div -->");
                 Output.WriteLine("</div>");
                 Output.WriteLine();
             }
+            // ===== End original Write_Final_HTML =====
 
+            return false;
         }
 
         /// <summary> Gets the CSS class of the container that the page is wrapped within </summary>

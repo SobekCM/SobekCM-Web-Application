@@ -984,29 +984,16 @@ namespace SobekCM.Library.HTML
         /// <param name="Output"> Stream to which to write the HTML for this subwriter </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         /// <returns> Value indicating if html writer should finish the page immediately after this, or if there are other controls or routines which need to be called first </returns>
-        /// <remarks> This begins writing this page, up to the item-level main menu</remarks>
+        /// <remarks> Merged from the former separate Write_HTML / Add_ItemNavForm_Content methods -- Write_HTML itself
+        /// used to do nothing but trace and return true, so this is just the (already-fixed) itemNavForm content
+        /// followed by that same return. </remarks>
         public override bool Write_HTML(TextWriter Output, Custom_Tracer Tracer)
-        {
-            Tracer.Add_Trace("Item_HtmlSubwriter.Write_HTML", "Do Nothing");
-
-            return true;
-        }
-
-        /// <summary> Writes the complete itemNavForm content: the opening HTML, the main viewer section, then the closing HTML </summary>
-        /// <param name="Output">Stream to directly write to</param>
-        /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
-        /// <remarks> Mechanically combined from the three original separate methods, boundaries marked below for review.
-        /// NOTE: for layouts with a Viewer_Section entry, the original Write_ItemNavForm_Opening calls
-        /// add_viewer_area_start(), which itself already calls pageViewer.Write_Main_Viewer_Section(...) and then
-        /// returns -- but the (former) Add_Main_Viewer_Section step below calls pageViewer.Write_Main_Viewer_Section(...)
-        /// again unconditionally. This looks like the likely cause of the "main viewer rendered twice" TODO item. </remarks>
-        public override void Add_ItemNavForm_Content(TextWriter Output, Custom_Tracer Tracer)
         {
             Tracer.Add_Trace("Item_HtmlSubwriter.Add_ItemNavForm_Content", "Write the area up and including the start of the viewer area");
 
             // Write from the layout
-            if (itemLayout == null) return;
-            if (pageViewer == null) return;
+            if (itemLayout == null) return true;
+            if (pageViewer == null) return true;
 
             // Start the item nav form
             Write_ItemNavForm_Opening(Output);
@@ -1111,6 +1098,8 @@ namespace SobekCM.Library.HTML
 
             // End the item nav form
             Write_ItemNavForm_Closing(Output);
+
+            return true;
         }
 
         private void add_viewer_area_start(TextWriter Output, Custom_Tracer Tracer)

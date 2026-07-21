@@ -387,146 +387,6 @@ namespace SobekCM.Library.MainWriters
         /// <value> This property always returns the enumerational value <see cref="Writer_Type_Enum.HTML"/>. </value>
         public override Writer_Type_Enum Writer_Type { get { return Writer_Type_Enum.HTML; } }
 
-        /// <summary> Perform all the work of adding to the response stream back to the web user </summary>
-        /// <param name="Output"> TextWriter to write HTML output </param>
-        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-        private void Write_Main_Viewer_Section(TextWriter Output, Custom_Tracer Tracer)
-        {
-            // If execution should end, do it now
-            if (RequestSpecificValues.Current_Mode.Request_Completed)
-                return;
-
-            Tracer.Add_Trace("Html_MainWriter.Add_Controls", "Adding any necessary controls to the placeholders on the page");
-
-            // Render HTML and add controls depending on the current mode
-            switch (RequestSpecificValues.Current_Mode.Mode)
-            {
-                subwriter.Add_Main_Viewer_Section(Output, Tracer);
-
-                #region Start adding HTML and controls for SIMPLE WEB CONTENT TEXT mode
-
-                case Display_Mode_Enum.Simple_HTML_CMS:
-                    // No controls needed; sitemap rendered directly in Write_HTML
-                    break;
-
-                #endregion
-
-                #region Start adding HTML and controls for MY SOBEK mode
-
-                case Display_Mode_Enum.My_Sobek:
-                    RequestSpecificValues.Tracer.Add_Trace("Html_MainWriter.Consructor", "Adding controls for my sobek.");
-
-                    MySobek_HtmlSubwriter mySobekWriter = subwriter as MySobek_HtmlSubwriter;
-                    if (mySobekWriter != null)
-                    {
-                        // Add any necessary controls
-                        mySobekWriter.Add_Controls(Output, Tracer);
-                    }
-                    break;
-
-                #endregion
-
-                #region Start adding HTML and controls for ADMINISTRATIVE mode
-
-                case Display_Mode_Enum.Administrative:
-                    RequestSpecificValues.Tracer.Add_Trace("Html_MainWriter.Consructor", "Adding controls for administrative.");
-
-                    Admin_HtmlSubwriter adminWriter = subwriter as Admin_HtmlSubwriter;
-                    if (adminWriter != null)
-                    {
-                        bool add_footer = false;
-                        // If the my sobek writer contains pop up forms, add the header here first
-                        if ((adminWriter.Contains_Popup_Forms) && (!adminWriter.Subwriter_Behaviors.Contains(HtmlSubwriter_Behaviors_Enum.MySobek_Subwriter_Mimic_Item_Subwriter)))
-                        {
-                            add_footer = true;
-                            Display_Header(Output, Tracer);
-                        }
-
-                        // Add any necessary controls
-                        adminWriter.Add_Controls(Output, Tracer);
-
-                        // Finally, add the footer
-                        if (add_footer)
-                        {
-                            Display_Footer(Output, Tracer);
-                        }
-                    }
-
-                    break;
-
-                #endregion
-
-                #region Start adding HTML and add controls for RESULTS mode
-
-                case Display_Mode_Enum.Results:
-                    RequestSpecificValues.Tracer.Add_Trace("Html_MainWriter.Consructor", "Adding controls for results");
-
-                    Search_Results_HtmlSubwriter searchResultsSub = subwriter as Search_Results_HtmlSubwriter;
-                    if (searchResultsSub != null)
-                    {
-
-
-                        // Add the controls
-                        searchResultsSub.Add_Controls(Output, Tracer);
-                    }
-
-                    break;
-
-                #endregion
-
-                #region Add HTML and controls for PUBLIC FOLDER mode
-
-                case Display_Mode_Enum.Public_Folder:
-                    RequestSpecificValues.Tracer.Add_Trace("Html_MainWriter.Consructor", "Adding controls for public folder.");
-
-                    Public_Folder_HtmlSubwriter publicFolderSub = subwriter as Public_Folder_HtmlSubwriter;
-                    if (publicFolderSub != null)
-                    {
-                        // Also try to add any controls
-                        publicFolderSub.Add_Controls(Output, Tracer);
-                    }
-                    break;
-
-                #endregion
-
-                #region Add HTML and controls for COLLECTION VIEWS
-
-                case Display_Mode_Enum.Search:
-                case Display_Mode_Enum.Aggregation:
-                    RequestSpecificValues.Tracer.Add_Trace("Html_MainWriter.Consructor", "Adding controls for search or aggregation.");
-                    Aggregation_HtmlSubwriter aggregationSub = subwriter as Aggregation_HtmlSubwriter;
-                    if (aggregationSub != null)
-                    {
-                        // Also try to add any controls
-                        aggregationSub.Add_Controls(Output, Tracer);
-                    }
-                    break;
-
-                #endregion
-
-                #region Start adding HTML and add controls for ITEM DISPLAY mode
-
-                case Display_Mode_Enum.Item_Display:
-                    RequestSpecificValues.Tracer.Add_Trace("Html_MainWriter.Consructor", "Adding controls for item display.");
-
-                    Item_HtmlSubwriter itemWriter = subwriter as Item_HtmlSubwriter;
-                    if (itemWriter != null)
-                    {
-                        // Add the TOC section
-                        Tracer.Add_Trace("Html_MainWriter.Add_Controls", "Allowing item viewer to write main viewer section");
-
-                        // Add the main viewer section
-                        itemWriter.Add_Main_Viewer_Section(Output, Tracer);
-                    }
-                    break;
-
-                #endregion
-
-                default:
-                    Tracer.Add_Trace("Html_MainWriter.Add_Html_And_Controls", "No controls or html added to page");
-                    break;
-            }
-        }
 
         /// <summary> Gets the title to use for this web page, based on the current request mode </summary>
         /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
@@ -856,19 +716,19 @@ namespace SobekCM.Library.MainWriters
 
             if (Include_Navigation_Form)
             {
+                if (RequestSpecificValues.Current_Mode.Request_Completed)
+                    return;
+
+
                 string enctype = File_Upload_Possible ? " enctype=\"multipart/form-data\"" : "";
                 Output.Write($"<form id=\"itemNavForm\" action=\"{FormAction}\" method=\"post\"{enctype}>");
 
                 if ( subwriter != null )
                 {
                     subwriter.Write_ItemNavForm_Opening(Output, Tracer);
-                }
 
-                // Write the main section
-                Write_Main_Viewer_Section(Output, Tracer);
+                    subwriter.Add_Main_Viewer_Section(Output, Tracer);
 
-                if (subwriter != null)
-                {
                     subwriter.Write_ItemNavForm_Closing(Output, Tracer);
                 }
 

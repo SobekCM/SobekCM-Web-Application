@@ -686,7 +686,7 @@ namespace SobekCM.Library.MySobekViewer
                     writeResult.Write_HTML(Output, Tracer);
 
                     // Now, add the results controls as well
-                    writeResult.Add_Controls(Output, Tracer);
+                    writeResult.Add_Main_Viewer_Section(Output, Tracer);
 
                     // Close the div
                     Output.Write("<br />\n");

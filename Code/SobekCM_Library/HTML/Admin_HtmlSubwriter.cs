@@ -242,9 +242,9 @@ namespace SobekCM.Library.HTML
         /// <summary> Add controls directly to the form in the main control area placeholder</summary>
         /// <param name="MainPlaceHolder"> Main place holder ( &quot;mainPlaceHolder&quot; ) in the itemNavForm form, widely used throughout the application</param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        public void Add_Controls(TextWriter Output, Custom_Tracer Tracer)
+        public override void Add_Main_Viewer_Section(TextWriter Output, Custom_Tracer Tracer)
         {
-            Tracer.Add_Trace("Admin_HtmlSubwriter.Add_Controls", "Build admin viewer and add controls");
+            Tracer.Add_Trace("Admin_HtmlSubwriter.Add_Main_Viewer_Section", "Build admin viewer and add controls");
 
             // Add the banner now
             if (((RequestSpecificValues.Current_Mode.Logon_Required) || (adminViewer.Contains_Popup_Forms)) && (!(adminViewer is Edit_Item_Metadata_MySobekViewer)))

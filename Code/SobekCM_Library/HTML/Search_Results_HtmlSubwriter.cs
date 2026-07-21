@@ -128,7 +128,7 @@ namespace SobekCM.Library.HTML
         /// <param name="Output"> TextWriter to write HTML output </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         /// <remarks> This uses a <see cref="PagedResults_HtmlSubwriter"/> instance to render the items  </remarks>
-        public void Add_Controls(TextWriter Output, Custom_Tracer Tracer)
+        public override void Add_Main_Viewer_Section(TextWriter Output, Custom_Tracer Tracer)
         {
             // Make sure the corresponding 'search' is the latest
             RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Search;
@@ -139,13 +139,13 @@ namespace SobekCM.Library.HTML
 
             if (writeResult == null)
             {
-                Tracer.Add_Trace("Search_Results_HtmlSubwriter.Add_Controls", "Building Result DataSet Writer");
+                Tracer.Add_Trace("Search_Results_HtmlSubwriter.Add_Main_Viewer_Section", "Building Result DataSet Writer");
 
                 writeResult = new PagedResults_HtmlSubwriter(RequestSpecificValues, RequestSpecificValues.Results_Statistics, RequestSpecificValues.Paged_Results);
             }
 
-            Tracer.Add_Trace("Search_Results_HtmlSubwriter.Add_Controls", "Add controls");
-            writeResult.Add_Controls(Output, Tracer);
+            Tracer.Add_Trace("Search_Results_HtmlSubwriter.Add_Main_Viewer_Section", "Add controls");
+            writeResult.Add_Main_Viewer_Section(Output, Tracer);
         }
 
         /// <summary> Writes the final output to close this search page results, including the results page navigation buttons </summary>

@@ -355,9 +355,9 @@ namespace SobekCM.Library.HTML
         /// <summary> Adds controls to the main navigational page </summary>
         /// <param name="Output"> TextWriter to write HTML output </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        public void Add_Controls(TextWriter Output, Custom_Tracer Tracer)
+        public override void Add_Main_Viewer_Section(TextWriter Output, Custom_Tracer Tracer)
         {
-            Tracer.Add_Trace("paged_result_html_subwriter.Add_Controls", "Adding controls for the result set");
+            Tracer.Add_Trace("paged_result_html_subwriter.Add_Main_Viewer_Section", "Adding controls for the result set");
 
             // If the results have facets, this should be rendered in a table with the facets to the left
             if ((resultsStatistics.Has_Facet_Info) && (resultsStatistics.Total_Items > 1) && (!String.Equals(RequestSpecificValues.Current_Mode.Result_Display_Type, "export", StringComparison.OrdinalIgnoreCase)) && (!String.Equals(RequestSpecificValues.Current_Mode.Result_Display_Type, "map", StringComparison.OrdinalIgnoreCase)))

@@ -118,7 +118,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 writeResult = new PagedResults_HtmlSubwriter(RequestSpecificValues, ViewBag.Results_Statistics, ViewBag.Paged_Results) { Browse_Title = ViewBag.Browse_Object.Label };
             }
 
-            writeResult.Add_Controls(Output, Tracer);
+            writeResult.Add_Main_Viewer_Section(Output, Tracer);
         }
     }
 }

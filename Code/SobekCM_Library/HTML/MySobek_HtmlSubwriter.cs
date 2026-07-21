@@ -266,9 +266,9 @@ namespace SobekCM.Library.HTML
         /// <summary> Adds any necessary controls to one of two place holders on the main ASPX page </summary>
         /// <param name="Output"> TextWriter to write HTML output </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        public void Add_Controls(TextWriter Output, Custom_Tracer Tracer)
+        public override void Add_Main_Viewer_Section(TextWriter Output, Custom_Tracer Tracer)
         {
-            Tracer.Add_Trace("MySobek_HtmlSubwriter.Add_Controls", "Build my sobek viewer and add controls");
+            Tracer.Add_Trace("MySobek_HtmlSubwriter.Add_Main_Viewer_Section", "Build my sobek viewer and add controls");
 
             // Add any controls needed
             if (mySobekViewer != null)

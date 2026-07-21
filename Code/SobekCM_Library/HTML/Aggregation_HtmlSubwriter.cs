@@ -1335,23 +1335,19 @@ namespace SobekCM.Library.HTML
         /// <summary> Adds the tree view control to the provided place holder if this is the tree view main home page </summary>
         /// <param name="MainPlaceHolder"> Place holder into which to place the built tree control </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        /// <returns>Flag indicates if secondary text contains controls </returns>
-        public bool Add_Controls(TextWriter Output, Custom_Tracer Tracer)
+        public override void Add_Main_Viewer_Section(TextWriter Output, Custom_Tracer Tracer)
         {
-            Tracer.Add_Trace("Aggregation_HtmlSubwriter.Add_Controls", "Entered...");
+            Tracer.Add_Trace("Aggregation_HtmlSubwriter.Add_Main_Viewer_Section", "Entered...");
 
             if (collectionViewer.Secondary_Text_Requires_Controls)
             {
-                Tracer.Add_Trace("Aggregation_HtmlSubwriter.Add_Controls", "Secondary text requires controls.");
+                Tracer.Add_Trace("Aggregation_HtmlSubwriter.Add_Main_Viewer_Section", "Secondary text requires controls.");
                 collectionViewer.Add_Secondary_Controls(Output, Tracer);
-                return true;
             }
             else
             {
-                Tracer.Add_Trace("Aggregation_HtmlSubwriter.Add_Controls", "NO secondary text requires controls.");
+                Tracer.Add_Trace("Aggregation_HtmlSubwriter.Add_Main_Viewer_Section", "NO secondary text requires controls.");
             }
-
-            return false;
         }
 
         #endregion

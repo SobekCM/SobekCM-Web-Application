@@ -27,13 +27,13 @@ namespace SobekCM.Library.HTML
         /// <param name="Output"> TextWriter to write HTML output </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         /// <remarks> This uses a <see cref="PagedResults_HtmlSubwriter"/> instance to render the browse  </remarks>
-        public void Add_Controls(TextWriter Output, Custom_Tracer Tracer)
+        public override void Add_Main_Viewer_Section(TextWriter Output, Custom_Tracer Tracer)
         {
             if ((RequestSpecificValues.Paged_Results != null) && (RequestSpecificValues.Results_Statistics != null))
             {
                 if (writeResult == null)
                 {
-                    Tracer.Add_Trace("Public_Folder_HtmlSubwriter.Add_Controls", "Building Result DataSet Writer");
+                    Tracer.Add_Trace("Public_Folder_HtmlSubwriter.Add_Main_Viewer_Section", "Building Result DataSet Writer");
 
                     writeResult = new PagedResults_HtmlSubwriter(RequestSpecificValues, RequestSpecificValues.Results_Statistics, RequestSpecificValues.Paged_Results)
                     {
@@ -43,8 +43,8 @@ namespace SobekCM.Library.HTML
                     };
                 }
 
-                Tracer.Add_Trace("Public_Folder_HtmlSubwriter.Add_Controls", "Add controls");
-                writeResult.Add_Controls(Output, Tracer);
+                Tracer.Add_Trace("Public_Folder_HtmlSubwriter.Add_Main_Viewer_Section", "Add controls");
+                writeResult.Add_Main_Viewer_Section(Output, Tracer);
             }
         }
 

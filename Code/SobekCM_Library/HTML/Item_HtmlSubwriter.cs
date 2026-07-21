@@ -115,7 +115,7 @@ namespace SobekCM.Library.HTML
                     string vid = ee_message.Substring(6, 5);
                     RequestSpecificValues.Current_Mode.VID = vid;
 
-                    UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                    UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode, Context);
                     return;
                 }
 

@@ -126,7 +126,7 @@ namespace SobekCM.Library.MySobekViewer
                             else
                             {
                                 RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
-                                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode, Context);
                             }
                         }
                         else

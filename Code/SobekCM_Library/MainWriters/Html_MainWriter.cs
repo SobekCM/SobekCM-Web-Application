@@ -80,14 +80,14 @@ namespace SobekCM.Library.MainWriters
                     if ((internalHeaderAction == "hide") && (shown))
                     {
                         Context.Session.SetString(SessionCache_Keys.InternalHeader, "hidden");
-                        UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                        UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode, Context);
                         return;
                     }
 
                     if ((internalHeaderAction == "show") && (!shown))
                     {
                         Context.Session.SetString(SessionCache_Keys.InternalHeader, "shown");
-                        UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                        UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode, Context);
                         return;
                     }
                 }

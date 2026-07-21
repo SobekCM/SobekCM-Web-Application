@@ -1,5 +1,6 @@
 #region Using directives
 
+using Microsoft.AspNetCore.Http;
 using SobekCM.Core.Configuration.Localization;
 using System;
 using System.Text;
@@ -1137,17 +1138,10 @@ namespace SobekCM.Core.Navigation
         /// and be costly in terms of performance) but it does set the 
         /// Request_Completed flag, which should be checked and will effectively stop any 
         /// further actions. </remarks>
-        public static void Redirect(Navigation_Object Current_Mode)
+        public static void Redirect(Navigation_Object Current_Mode, HttpContext Context)
         {
-            Current_Mode.Request_Completed = true;
-        }
-
-        /// <summary> Redirect the user to the current mode's URL </summary>
-        /// <param name="Current_Mode"> Current navigation object which contains the information  </param>
-        /// <param name="Flush_Response"> Flag indicates if the response should be flushed (ignored; callers must use ASP.NET Core HttpResponse)</param>
-        /// <remarks> Sets Request_Completed flag. Callers should use Redirect_URL() and HttpContext.Response.Redirect() in the web layer. </remarks>
-        public static void Redirect(Navigation_Object Current_Mode, bool Flush_Response)
-        {
+            string url = Redirect_URL(Current_Mode);
+            Context.Response.Redirect(url);
             Current_Mode.Request_Completed = true;
         }
     }

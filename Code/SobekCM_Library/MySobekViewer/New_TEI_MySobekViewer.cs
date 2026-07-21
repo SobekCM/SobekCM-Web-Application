@@ -75,7 +75,7 @@ namespace SobekCM.Library.MySobekViewer
             if (!RequestSpecificValues.Current_User.Can_Submit)
             {
                 RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
-                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode, Context);
                 return;
             }
 
@@ -85,7 +85,7 @@ namespace SobekCM.Library.MySobekViewer
                 (!UI_ApplicationCache_Gateway.Configuration.Extensions.Get_Extension("TEI").Enabled))
             {
                 RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
-                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode, Context);
                 return;
             }
 
@@ -94,7 +94,7 @@ namespace SobekCM.Library.MySobekViewer
             if (String.Compare(user_tei_enabled, "true", StringComparison.OrdinalIgnoreCase) != 0)
             {
                 RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
-                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode, Context);
                 return;
             }
 
@@ -424,7 +424,7 @@ namespace SobekCM.Library.MySobekViewer
 
                     // Forward back to my Sobek home
                     RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
-                    UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                    UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode, Context);
                 }
 
                 if (action == "delete")
@@ -436,7 +436,7 @@ namespace SobekCM.Library.MySobekViewer
                             File.Delete(userInProcessDirectory + "\\" + filename);
 
                         // Forward
-                        UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                        UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode, Context);
                         return;
                     }
                     catch (Exception)
@@ -458,7 +458,7 @@ namespace SobekCM.Library.MySobekViewer
 
                     // Forward back to the same URL
                     RequestSpecificValues.Current_Mode.My_Sobek_SubMode = "2";
-                    UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                    UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode, Context);
                     return;
                 }
 
@@ -596,7 +596,7 @@ namespace SobekCM.Library.MySobekViewer
                     if (currentProcessStep.ToString() != next_phase)
                     {
                         RequestSpecificValues.Current_Mode.My_Sobek_SubMode = next_phase;
-                        UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                        UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode, Context);
                         return;
                     }
                 }
@@ -613,7 +613,7 @@ namespace SobekCM.Library.MySobekViewer
                 if ((completeTemplate.Permissions_Agreement.Length > 0) && (!File.Exists(userInProcessDirectory + "\\agreement.txt")))
                 {
                     RequestSpecificValues.Current_Mode.My_Sobek_SubMode = "1";
-                    UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                    UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode, Context);
                     return;
                 }
 
@@ -626,7 +626,7 @@ namespace SobekCM.Library.MySobekViewer
             if ((currentProcessStep > 2) && (String.IsNullOrEmpty(tei_file)))
             {
                 RequestSpecificValues.Current_Mode.My_Sobek_SubMode = "2";
-                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode, Context);
                 return;
             }
 
@@ -635,7 +635,7 @@ namespace SobekCM.Library.MySobekViewer
             if ((currentProcessStep > 3) && ((String.IsNullOrEmpty(mapping_file)) || (String.IsNullOrEmpty(xslt_file))))
             {
                 RequestSpecificValues.Current_Mode.My_Sobek_SubMode = "3";
-                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode, Context);
                 return;
             }
 
@@ -646,7 +646,7 @@ namespace SobekCM.Library.MySobekViewer
                 if (Directory.GetFiles(userInProcessDirectory, "*.mets*").Length == 0)
                 {
                     RequestSpecificValues.Current_Mode.My_Sobek_SubMode = "2";
-                    UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                    UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode, Context);
                     return;
                 }
 
@@ -657,7 +657,7 @@ namespace SobekCM.Library.MySobekViewer
                 {
                     item.Web.Show_Validation_Errors = true;
                     RequestSpecificValues.Current_Mode.My_Sobek_SubMode = "2";
-                    UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                    UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode, Context);
                     return;
                 }
             }
@@ -666,7 +666,7 @@ namespace SobekCM.Library.MySobekViewer
             if ((currentProcessStep == 8) && (completeTemplate.Upload_Types == CompleteTemplate.Template_Upload_Types.None))
             {
                 RequestSpecificValues.Current_Mode.My_Sobek_SubMode = "9";
-                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode, Context);
                 return;
             }
 

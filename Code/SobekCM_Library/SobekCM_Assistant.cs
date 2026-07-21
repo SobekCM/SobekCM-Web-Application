@@ -563,7 +563,7 @@ namespace SobekCM.Library
                     if (terms.Length < 2)
                     {
                         Current_Mode.Mode = Display_Mode_Enum.Search;
-                        UrlWriterHelper.Redirect(Current_Mode);
+                        UrlWriterHelper.Redirect(Current_Mode, context);
                         return;
                     }
                     if (terms.Length < 4)
@@ -589,7 +589,7 @@ namespace SobekCM.Library
                     if (((lat1 == 1000) || (long1 == 1000)) && ((lat2 == 1000) || (long2 == 1000)))
                     {
                         Current_Mode.Mode = Display_Mode_Enum.Search;
-                        UrlWriterHelper.Redirect(Current_Mode);
+                        UrlWriterHelper.Redirect(Current_Mode, context);
                         return;
                     }
 
@@ -637,7 +637,7 @@ namespace SobekCM.Library
                 catch
                 {
                     Current_Mode.Mode = Display_Mode_Enum.Search;
-                    UrlWriterHelper.Redirect(Current_Mode);
+                    UrlWriterHelper.Redirect(Current_Mode, context);
                 }
             }
             else

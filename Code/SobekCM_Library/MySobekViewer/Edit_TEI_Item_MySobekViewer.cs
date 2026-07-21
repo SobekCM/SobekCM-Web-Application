@@ -82,7 +82,7 @@ namespace SobekCM.Library.MySobekViewer
             if (!RequestSpecificValues.Current_User.Can_Submit)
             {
                 RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
-                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode, Context);
                 return;
             }
 
@@ -92,7 +92,7 @@ namespace SobekCM.Library.MySobekViewer
                 (!UI_ApplicationCache_Gateway.Configuration.Extensions.Get_Extension("TEI").Enabled))
             {
                 RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
-                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode, Context);
                 return;
             }
 
@@ -408,7 +408,7 @@ namespace SobekCM.Library.MySobekViewer
                     RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Item_Display;
                     RequestSpecificValues.Current_Mode.BibID = bibid;
                     RequestSpecificValues.Current_Mode.VID = vid;
-                    UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                    UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode, Context);
                 }
 
                 if (action == "next_phase")
@@ -466,7 +466,7 @@ namespace SobekCM.Library.MySobekViewer
                     if (currentProcessStep.ToString() != next_phase)
                     {
                         RequestSpecificValues.Current_Mode.My_Sobek_SubMode = next_phase;
-                        UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                        UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode, Context);
                         return;
                     }
                 }
@@ -480,7 +480,7 @@ namespace SobekCM.Library.MySobekViewer
             if ((currentProcessStep > 1) && ((String.IsNullOrEmpty(mapping_file)) || (String.IsNullOrEmpty(xslt_file))))
             {
                 RequestSpecificValues.Current_Mode.My_Sobek_SubMode = "1";
-                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode, Context);
                 return;
             }
 
@@ -491,7 +491,7 @@ namespace SobekCM.Library.MySobekViewer
                 if (Directory.GetFiles(userInProcessDirectory, "*.mets*").Length == 0)
                 {
                     RequestSpecificValues.Current_Mode.My_Sobek_SubMode = "2";
-                    UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                    UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode, Context);
                     return;
                 }
 
@@ -507,7 +507,7 @@ namespace SobekCM.Library.MySobekViewer
                     editingItem.Web.Show_Validation_Errors = true;
 
                     RequestSpecificValues.Current_Mode.My_Sobek_SubMode = "4";
-                    UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                    UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode, Context);
                     return;
                 }
             }
@@ -712,7 +712,7 @@ namespace SobekCM.Library.MySobekViewer
                 RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Item_Display;
                 RequestSpecificValues.Current_Mode.BibID = bibid;
                 RequestSpecificValues.Current_Mode.VID = vid;
-                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode, Context);
             }
 
             return criticalErrorEncountered;

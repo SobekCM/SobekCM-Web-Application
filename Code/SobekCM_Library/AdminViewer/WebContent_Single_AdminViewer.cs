@@ -49,7 +49,7 @@ namespace SobekCM.Library.AdminViewer
             if ((RequestSpecificValues.Current_User == null) || (!RequestSpecificValues.Current_User.LoggedOn))
             {
                 RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Aggregation;
-                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode, Context);
                 return;
             }
 
@@ -58,7 +58,7 @@ namespace SobekCM.Library.AdminViewer
             {
                 RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.My_Sobek;
                 RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
-                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode, Context);
                 return;
             }
 
@@ -86,7 +86,7 @@ namespace SobekCM.Library.AdminViewer
                 if (webContent == null)
                 {
                     RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
-                    UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                    UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode, Context);
                     return;
                 }
 
@@ -95,7 +95,7 @@ namespace SobekCM.Library.AdminViewer
                 {
                     RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.My_Sobek;
                     RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
-                    UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                    UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode, Context);
                     return;
                 }
 

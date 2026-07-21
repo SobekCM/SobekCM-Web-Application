@@ -118,6 +118,7 @@ namespace SobekCM
             else if (!String.IsNullOrEmpty(result.RedirectUrl))
             {
                 context.Response.Redirect(result.RedirectUrl, false);
+                currentMode.Request_Completed = true;
                 return;
             }
 
@@ -131,6 +132,7 @@ namespace SobekCM
             else if (!String.IsNullOrEmpty(result.RedirectUrl))
             {
                 context.Response.Redirect(result.RedirectUrl, false);
+                currentMode.Request_Completed = true;
                 return;
             }
 
@@ -398,7 +400,7 @@ namespace SobekCM
                 {
                     currentMode.Mode = Display_Mode_Enum.Aggregation;
                     currentMode.Aggregation_Type = Aggregation_Type_Enum.Home;
-                    UrlWriterHelper.Redirect(currentMode);
+                    UrlWriterHelper.Redirect(currentMode, context);
                     return;
                 }
 

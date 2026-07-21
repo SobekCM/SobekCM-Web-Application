@@ -659,7 +659,7 @@ namespace SobekCM.Library.MySobekViewer
                     RequestSpecificValues.Current_Mode.My_Sobek_SubMode = String.Empty;
                     if (folder_name.Length == 0)
                     {
-                        UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                        UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode, Context);
                         return;
                     }
 

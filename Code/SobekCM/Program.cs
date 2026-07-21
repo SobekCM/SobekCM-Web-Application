@@ -331,6 +331,10 @@ namespace SobekCM
                 bool isPostBack = string.Equals(context.Request.Method, "POST", StringComparison.OrdinalIgnoreCase);
                 var pageGlobals = new QueryInitializer(context, "SOBEKCM");
 
+                // The constructor may have already redirected (e.g. logoff) and have nothing left to do
+                if (pageGlobals.currentMode == null || pageGlobals.currentMode.Request_Completed)
+                    return;
+
                 try
                 {
                     pageGlobals.On_Page_Load();
@@ -354,7 +358,8 @@ namespace SobekCM
                     }
                 }
 
-                if (pageGlobals.currentMode == null || pageGlobals.currentMode.Request_Completed)
+                // No HTML rendering is needed, a redirect was likely called
+                if (pageGlobals.currentMode.Request_Completed)
                     return;
 
                 // Save the current URL to session for "back" navigation

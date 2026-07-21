@@ -48,7 +48,7 @@ namespace SobekCM.Library.AdminViewer
             {
                 RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.My_Sobek;
                 RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
-                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode, Context);
                 return;
             }
 
@@ -63,7 +63,7 @@ namespace SobekCM.Library.AdminViewer
                 {
                     RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.My_Sobek;
                     RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
-                    UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                    UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode, Context);
                     return;
                 }
             }
@@ -122,7 +122,7 @@ namespace SobekCM.Library.AdminViewer
                     {
                         RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.My_Sobek;
                         RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
-                        UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                        UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode, Context);
                         return;
                     }
                 }
@@ -130,7 +130,7 @@ namespace SobekCM.Library.AdminViewer
                 {
                     RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.My_Sobek;
                     RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
-                    UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                    UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode, Context);
                     return;
                 }
             }
@@ -231,7 +231,7 @@ namespace SobekCM.Library.AdminViewer
                             RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Aggregations_Mgmt;
 
                         }
-                        UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                        UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode, Context);
                         return;
                     }
 
@@ -403,7 +403,7 @@ namespace SobekCM.Library.AdminViewer
                             // Clear the add collection wizard info from the sessions
                             Context.SessionObject()["Add_Coll_Wizard"] = null;
 
-                            UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                            UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode, Context);
                         }
                         else
                         {

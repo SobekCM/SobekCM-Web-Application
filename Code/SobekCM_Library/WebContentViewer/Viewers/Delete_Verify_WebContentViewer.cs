@@ -34,7 +34,7 @@ namespace SobekCM.Library.WebContentViewer.Viewers
             if ((webContent == null) || (!webContent.WebContentID.HasValue))
             {
                 RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Aggregation;
-                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode, Context);
                 return;
             }
 
@@ -43,7 +43,7 @@ namespace SobekCM.Library.WebContentViewer.Viewers
             if ((RequestSpecificValues.Current_User == null) || (!RequestSpecificValues.Current_User.LoggedOn))
             {
                 RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Aggregation;
-                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode, Context);
                 return;
             }
 

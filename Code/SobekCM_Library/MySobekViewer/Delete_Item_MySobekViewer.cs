@@ -103,7 +103,7 @@ namespace SobekCM.Library.MySobekViewer
                     RequestSpecificValues.Tracer.Add_Trace("Delete_Item_MySobekViewer.Constructor", "User does not have delete permissions", Custom_Trace_Type_Enum.Error);
                     RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Aggregation;
                     RequestSpecificValues.Current_Mode.Aggregation = String.Empty;
-                    UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                    UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode, Context);
                     return;
                 }
             }

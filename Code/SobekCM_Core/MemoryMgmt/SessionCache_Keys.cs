@@ -19,8 +19,5 @@
 
         /// <summary> Holds the JSON-serialized map search results (item ID / latitude / longitude points) used to plot markers on the Google Map results viewer. Formerly known by the abbreviation "DSR" (Display Search Results). </summary>
         public const string DisplaySearchResults = "DisplaySearchResults";
-
-        // Legacy / other
-        public const string UserId = "UserId";
     }
 }

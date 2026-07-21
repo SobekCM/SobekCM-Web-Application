@@ -85,7 +85,7 @@ namespace SobekCM.Library.AdminViewer.UserAdmin.SubViewers
 
                 // Redirect the RequestSpecificValues.Current_User
                 RequestSpecificValues.Current_Mode.My_Sobek_SubMode = String.Empty;
-                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode, Context);
                 return;
             }
 
@@ -153,7 +153,7 @@ namespace SobekCM.Library.AdminViewer.UserAdmin.SubViewers
                         RequestSpecificValues.Current_Mode.My_Sobek_SubMode = String.Empty;
                     }
 
-                    UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                    UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode, Context);
                 }
             }
             else
@@ -161,7 +161,7 @@ namespace SobekCM.Library.AdminViewer.UserAdmin.SubViewers
                 // Save to the current session
                 Context.SessionObject()["Edit_User_" + editUser.UserID] = editUser;
                 RequestSpecificValues.Current_Mode.My_Sobek_SubMode = action;
-                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode, Context);
             }
         }
 

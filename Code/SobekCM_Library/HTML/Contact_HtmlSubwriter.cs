@@ -204,7 +204,7 @@ namespace SobekCM.Library.HTML
                 {
                     // Send back to the home for this collection, sub, or group
                     RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Contact_Sent;
-                    UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                    UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode, Context);
                 }
             }
         }

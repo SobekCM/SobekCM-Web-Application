@@ -73,7 +73,7 @@ namespace SobekCM.Library.MySobekViewer
             {
                 RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Aggregation;
                 RequestSpecificValues.Current_Mode.Aggregation = String.Empty;
-                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode, Context);
                 return;
             }
 
@@ -103,7 +103,7 @@ namespace SobekCM.Library.MySobekViewer
             if (!RequestSpecificValues.Current_User.Can_Edit_This_Item(currentItem.BibID, currentItem.Bib_Info.SobekCM_Type_String, currentItem.Bib_Info.Source.Code, currentItem.Bib_Info.HoldingCode, currentItem.Behaviors.Aggregation_Code_List))
             {
                 RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
-                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode, Context);
                 return;
             }
 
@@ -158,7 +158,7 @@ namespace SobekCM.Library.MySobekViewer
                         }
 
                         // Forward
-                        UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                        UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode, Context);
                         return;
                     }
                     catch
@@ -178,7 +178,7 @@ namespace SobekCM.Library.MySobekViewer
 
                             // Redirect to the currentItem
                             RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Item_Display;
-                            UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                            UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode, Context);
                             break;
 
                         case 9:
@@ -195,7 +195,7 @@ namespace SobekCM.Library.MySobekViewer
 
                                 // Redirect to the currentItem
                                 RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Item_Display;
-                                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode, Context);
                             }
                             break;
                     }

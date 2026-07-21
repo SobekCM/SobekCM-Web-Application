@@ -165,7 +165,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     CurrentRequest.Mode = Display_Mode_Enum.My_Sobek;
                     CurrentRequest.My_Sobek_Type = My_Sobek_Type_Enum.Logon;
                     CurrentRequest.Return_URL = BriefItem.BibID + "/" + BriefItem.VID + "/mapedit";
-                    UrlWriterHelper.Redirect(CurrentRequest);
+                    UrlWriterHelper.Redirect(CurrentRequest, Context);
                     return;
                 }
 

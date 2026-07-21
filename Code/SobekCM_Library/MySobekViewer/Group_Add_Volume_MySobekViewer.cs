@@ -75,7 +75,7 @@ namespace SobekCM.Library.MySobekViewer
             {
                 RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Aggregation;
                 RequestSpecificValues.Current_Mode.Aggregation = String.Empty;
-                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode, Context);
                 return;
             }
 
@@ -137,7 +137,7 @@ namespace SobekCM.Library.MySobekViewer
             if (!RequestSpecificValues.Current_User.Can_Edit_This_Item(currentItem.BibID, currentItem.Bib_Info.SobekCM_Type_String, currentItem.Bib_Info.Source.Code, currentItem.Bib_Info.HoldingCode, currentItem.Behaviors.Aggregation_Code_List))
             {
                 RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
-                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode, Context);
                 return;
             }
 
@@ -177,7 +177,7 @@ namespace SobekCM.Library.MySobekViewer
             if (hidden_request == "cancel")
             {
                 RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Item_Display;
-                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode, Context);
             }
             else if (hidden_request.IndexOf("save") == 0)
             {
@@ -238,7 +238,7 @@ namespace SobekCM.Library.MySobekViewer
                                 RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.My_Sobek;
                                 RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Edit_Item_Metadata;
                                 RequestSpecificValues.Current_Mode.VID = saveItem.VID;
-                                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode, Context);
                                 break;
 
                             case "save_again":
@@ -276,13 +276,13 @@ namespace SobekCM.Library.MySobekViewer
                                 RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.My_Sobek;
                                 RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.File_Management;
                                 RequestSpecificValues.Current_Mode.VID = saveItem.VID;
-                                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode, Context);
                                 break;
 
                             default:
                                 RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Item_Display;
                                 RequestSpecificValues.Current_Mode.VID = saveItem.VID;
-                                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode, Context);
                                 break;
                         }
 

@@ -56,7 +56,7 @@ namespace SobekCM.Library.AdminViewer
             {
                 RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.My_Sobek;
                 RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
-                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode, Context);
                 return;
             }
 
@@ -65,7 +65,7 @@ namespace SobekCM.Library.AdminViewer
             {
                 RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.My_Sobek;
                 RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
-                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode, Context);
                 return;
             }
 
@@ -123,7 +123,7 @@ namespace SobekCM.Library.AdminViewer
             {
                 RequestSpecificValues.Current_Mode.My_Sobek_SubMode = String.Empty;
                 RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Users;
-                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode, Context);
                 return;
             }
 
@@ -155,7 +155,7 @@ namespace SobekCM.Library.AdminViewer
 
                         // Redirect the RequestSpecificValues.Current_User
                         RequestSpecificValues.Current_Mode.My_Sobek_SubMode = String.Empty;
-                        UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                        UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode, Context);
                         return;
                     }
 
@@ -449,7 +449,7 @@ namespace SobekCM.Library.AdminViewer
 
 
                             RequestSpecificValues.Current_Mode.My_Sobek_SubMode = String.Empty;
-                            UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                            UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode, Context);
                         }
                     }
                     else
@@ -457,7 +457,7 @@ namespace SobekCM.Library.AdminViewer
                         // Save to the admins session
                         Context.SessionObject()["Edit_UserGroup_" + editGroup.UserGroupID] = editGroup;
                         RequestSpecificValues.Current_Mode.My_Sobek_SubMode = action;
-                        UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                        UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode, Context);
                     }
                 }
             }

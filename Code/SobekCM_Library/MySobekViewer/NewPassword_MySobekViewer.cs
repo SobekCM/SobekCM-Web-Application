@@ -97,7 +97,7 @@ namespace SobekCM.Library.MySobekViewer
                     if (raw_url.ToUpper().IndexOf("M=HML") > 0)
                     {
                         RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
-                        UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                        UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode, Context);
                     }
                     else
                     {

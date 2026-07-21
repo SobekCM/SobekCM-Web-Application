@@ -551,7 +551,7 @@ namespace SobekCM.Library.MySobekViewer
                             RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Administrative;
                             RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Settings;
                         }
-                        UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                        UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode, Context);
                     }
                     else
                     {
@@ -560,7 +560,7 @@ namespace SobekCM.Library.MySobekViewer
 
                         // Now, forward back to the My Sobek home page
                         RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
-                        UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                        UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode, Context);
                     }
                 }
             }

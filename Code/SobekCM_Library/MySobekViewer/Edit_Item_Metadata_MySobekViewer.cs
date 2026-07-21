@@ -66,7 +66,7 @@ namespace SobekCM.Library.MySobekViewer
             {
                 RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Aggregation;
                 RequestSpecificValues.Current_Mode.Aggregation = String.Empty;
-                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode, Context);
                 return;
             }
 
@@ -210,7 +210,7 @@ namespace SobekCM.Library.MySobekViewer
                         RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Administrative;
                         RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Default_Metadata;
                         RequestSpecificValues.Current_Mode.My_Sobek_SubMode = String.Empty;
-                        UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                        UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode, Context);
                     }
                     else
                     {
@@ -220,7 +220,7 @@ namespace SobekCM.Library.MySobekViewer
                         SobekEngineClient.Items.Clear_Item_Cache(currentItem.BibID, currentItem.VID, RequestSpecificValues.Tracer);
 
                         RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Item_Display;
-                        UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                        UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode, Context);
                     }
                     return;
                 }
@@ -607,7 +607,7 @@ namespace SobekCM.Library.MySobekViewer
                 RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Administrative;
                 RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Default_Metadata;
                 RequestSpecificValues.Current_Mode.My_Sobek_SubMode = String.Empty;
-                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode, Context);
             }
             else
             {
@@ -626,7 +626,7 @@ namespace SobekCM.Library.MySobekViewer
                 // Forward to the display item again
                 RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Item_Display;
                 RequestSpecificValues.Current_Mode.ViewerCode = "citation";
-                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode, Context);
             }
         }
 

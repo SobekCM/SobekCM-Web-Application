@@ -198,7 +198,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             {
                 CurrentRequest.Mode = Display_Mode_Enum.My_Sobek;
                 CurrentRequest.My_Sobek_Type = My_Sobek_Type_Enum.Logon;
-                UrlWriterHelper.Redirect(CurrentRequest);
+                UrlWriterHelper.Redirect(CurrentRequest, Context);
                 return;
             }
 
@@ -207,7 +207,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             if (!CurrentUser.Can_Edit_This_Item(BriefItem.BibID, BriefItem.Type, BriefItem.Behaviors.Source_Institution_Aggregation, BriefItem.Behaviors.Holding_Location_Aggregation, BriefItem.Behaviors.Aggregation_Code_List))
             {
                 CurrentRequest.ViewerCode = String.Empty;
-                UrlWriterHelper.Redirect(CurrentRequest);
+                UrlWriterHelper.Redirect(CurrentRequest, Context);
                 return;
             }
 
@@ -216,7 +216,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             {
                 CurrentRequest.Mode = Display_Mode_Enum.My_Sobek;
                 CurrentRequest.My_Sobek_Type = My_Sobek_Type_Enum.Page_Images_Management;
-                UrlWriterHelper.Redirect(CurrentRequest);
+                UrlWriterHelper.Redirect(CurrentRequest, Context);
                 return;
             }
 
@@ -300,7 +300,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             {
                 CurrentRequest.Mode = Display_Mode_Enum.My_Sobek;
                 CurrentRequest.My_Sobek_Type = My_Sobek_Type_Enum.Page_Images_Management;
-                UrlWriterHelper.Redirect(CurrentRequest);
+                UrlWriterHelper.Redirect(CurrentRequest, Context);
                 return;
             }
 
@@ -465,7 +465,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                         {
                             // Forward to the item
                             CurrentRequest.ViewerCode = String.Empty;
-                            UrlWriterHelper.Redirect(CurrentRequest);
+                            UrlWriterHelper.Redirect(CurrentRequest, Context);
                         }
                     }
                     break;
@@ -475,7 +475,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
                     // Forward back to the default item view
                     CurrentRequest.ViewerCode = String.Empty;
-                    UrlWriterHelper.Redirect(CurrentRequest);
+                    UrlWriterHelper.Redirect(CurrentRequest, Context);
                     break;
 
                 case "clear_pagination":

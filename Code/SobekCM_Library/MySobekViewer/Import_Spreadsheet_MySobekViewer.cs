@@ -47,7 +47,7 @@ namespace SobekCM.Library.MySobekViewer
             //if (!RequestSpecificValues.Current_User.Can_Submit)
             //{
             //    RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
-            //    UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+            //    UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode, Context);
             //    return;
             //}
 
@@ -133,7 +133,7 @@ namespace SobekCM.Library.MySobekViewer
                     Context.Session.Remove("Import_Data_Current_GUID");
                     Context.SessionObject()["Import_Data_Current_Worksheet"] = null;
                     RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
-                    UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                    UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode, Context);
                     return;
                 }
 

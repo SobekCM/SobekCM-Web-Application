@@ -42,7 +42,7 @@ namespace SobekCM.Library.MySobekViewer
             {
                 RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Aggregation;
                 RequestSpecificValues.Current_Mode.Aggregation = String.Empty;
-                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode, Context);
                 return;
             }
 
@@ -71,7 +71,7 @@ namespace SobekCM.Library.MySobekViewer
             if (!userCanEditItem)
             {
                 RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Item_Display;
-                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode, Context);
             }
 
             // See if this user is explicitly denied access to permission changes
@@ -79,7 +79,7 @@ namespace SobekCM.Library.MySobekViewer
             if (!hasAccess)
             {
                 RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Item_Display;
-                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode, Context);
             }
 
             // Start by setting the values by the item (good the first time user comes here)
@@ -219,7 +219,7 @@ namespace SobekCM.Library.MySobekViewer
                             }
                         }
                         RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Item_Display;
-                        UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                        UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode, Context);
                     }
                 }
             }

@@ -13,7 +13,7 @@ namespace SobekCM.Library.MySobekViewer
             if (RequestSpecificValues.Current_User.Get_Setting("Rights_Management_MySobekViewer", string.Empty) != "true")
             {
                 RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
-                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode, Context);
                 return;
             }
         }

@@ -72,7 +72,7 @@ namespace SobekCM.Library.AdminViewer
             {
                 RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.My_Sobek;
                 RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
-                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode, Context);
                 return;
             }
 
@@ -93,7 +93,7 @@ namespace SobekCM.Library.AdminViewer
             if (itemAggregation == null)
             {
                 RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
-                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode, Context);
                 return;
             }
 
@@ -159,7 +159,7 @@ namespace SobekCM.Library.AdminViewer
                         // Redirect the RequestSpecificValues.Current_User
                         RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Aggregation;
                         RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Home;
-                        UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                        UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode, Context);
                         return;
                     }
 
@@ -304,7 +304,7 @@ namespace SobekCM.Library.AdminViewer
                             {
                                 RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Aggregation;
                                 RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Home;
-                                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode, Context);
                             }
                             else if (action == "save_wizard")
                             {
@@ -324,7 +324,7 @@ namespace SobekCM.Library.AdminViewer
                             }
                             else
                             {
-                                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode, Context);
                             }
                         }
                         else

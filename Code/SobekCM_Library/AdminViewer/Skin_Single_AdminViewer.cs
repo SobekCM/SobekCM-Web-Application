@@ -83,7 +83,7 @@ namespace SobekCM.Library.AdminViewer
             {
                 RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.My_Sobek;
                 RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
-                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode, Context);
                 return;
             }
 
@@ -96,7 +96,7 @@ namespace SobekCM.Library.AdminViewer
             if (webSkin == null)
             {
                 RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
-                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode, Context);
                 return;
             }
 
@@ -133,7 +133,7 @@ namespace SobekCM.Library.AdminViewer
 
                         // Redirect the user to the skins mgmt screen
                         RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Skins_Mgmt;
-                        UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                        UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode, Context);
                         return;
                     }
 
@@ -331,7 +331,7 @@ namespace SobekCM.Library.AdminViewer
 
                                 // Redirect the user to the skins mgmt screen
                                 RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Skins_Mgmt;
-                                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode, Context);
                             }
                         }
                         else

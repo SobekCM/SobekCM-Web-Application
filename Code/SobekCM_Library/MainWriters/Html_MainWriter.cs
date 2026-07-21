@@ -158,64 +158,6 @@ namespace SobekCM.Library.MainWriters
             }
         }
 
-        /// <summary> Returns a flag indicating if the current request requires the navigation form in the main ASPX
-        /// application page, or whether all the html is served directly to the output stream, without the need of this form
-        /// or any controls added to it </summary>
-        /// <value> The return value of this varies according to the current request </value>
-        public override bool Include_Navigation_Form
-        {
-            get
-            {
-                // Switchig this to use the behaviors
-                if (subwriter != null)
-                {
-                    if (subwriter.Subwriter_Behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Omit_Main_Navigation_Form))
-                        return false;
-                }
-
-                // Old method
-                switch (RequestSpecificValues.Current_Mode.Mode)
-                {
-                    case Display_Mode_Enum.Item_Print:
-                    case Display_Mode_Enum.Internal:
-                    case Display_Mode_Enum.Statistics:
-                    case Display_Mode_Enum.Preferences:
-                    case Display_Mode_Enum.Search:
-                    case Display_Mode_Enum.Contact_Sent:
-                    case Display_Mode_Enum.Error:
-                    case Display_Mode_Enum.Legacy_URL:
-                        return false;
-
-                    case Display_Mode_Enum.Simple_HTML_CMS:
-                        return true; //RequestSpecificValues.Site_Map != null;
-
-                    case Display_Mode_Enum.Aggregation:
-                        if (subwriter is Aggregation_HtmlSubwriter)
-                            return ((Aggregation_HtmlSubwriter)subwriter).Include_Navigation_Form;
-
-                        if ((RequestSpecificValues.Current_Mode.Aggregation_Type == Aggregation_Type_Enum.Home) || (RequestSpecificValues.Current_Mode.Aggregation_Type == Aggregation_Type_Enum.Home_Edit))
-                        {
-                            return false;
-                        }
-                        return true;
-
-                    default:
-                        return true;
-                }
-            }
-        }
-
-        /// <summary> Returns a flag indicating whether the file upload specific holder in the itemNavForm form will be utilized
-        /// for the current request, or if it can be hidden. </summary>
-        /// <value> This value can be override by child classes, but by default this returns FALSE </value>
-        public override bool File_Upload_Possible
-        {
-            get
-            {
-                return subwriter != null && subwriter.Upload_File_Possible;
-            }
-        }
-
         /// <summary> Gets the enumeration of the type of main writer </summary>
         /// <value> This property always returns the enumerational value <see cref="Writer_Type_Enum.HTML"/>. </value>
         public override Writer_Type_Enum Writer_Type { get { return Writer_Type_Enum.HTML; } }
@@ -526,8 +468,7 @@ namespace SobekCM.Library.MainWriters
         /// <summary> Perform all the work of adding the full body content to the response stream back to the web user </summary>
         /// <param name="Output"> Stream to which to write the text for this main writer </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        /// <param name="FormAction"> Action URL for the navigation form, when this request includes one </param>
-        public override void Write_Body(TextWriter Output, Custom_Tracer Tracer, string FormAction)
+        public override void Write_Body(TextWriter Output, Custom_Tracer Tracer)
         {
             Tracer.Add_Trace("Html_MainWriter.Write_Body", String.Empty);
 
@@ -540,6 +481,13 @@ namespace SobekCM.Library.MainWriters
             try
             {
                 subwriter.Write_HTML(Output, Tracer);
+
+                subwriter.Add_ItemNavForm_Content(Output, Tracer);
+
+                //if ((RequestSpecificValues.Current_Mode.isPostBack) && (RequestSpecificValues.Current_Mode.Mode != Display_Mode_Enum.My_Sobek) && (RequestSpecificValues.Current_Mode.Mode != Display_Mode_Enum.Administrative)) return;
+
+                subwriter.Write_Final_HTML(Output, Tracer);
+
             }
             catch (Exception ee)
             {
@@ -547,46 +495,13 @@ namespace SobekCM.Library.MainWriters
                 throw new SobekCM_Traced_Exception("Error caught in Html_MainWriter.Write_Body", ee, Tracer);
             }
 
-            if (Include_Navigation_Form)
-            {
-                if (RequestSpecificValues.Current_Mode.Request_Completed)
-                    return;
-
-
-                string enctype = File_Upload_Possible ? " enctype=\"multipart/form-data\"" : "";
-                Output.Write($"<form id=\"itemNavForm\" action=\"{FormAction}\" method=\"post\"{enctype}>");
-
-                if ( subwriter != null )
-                {
-                    subwriter.Add_ItemNavForm_Content(Output, Tracer);
-                }
-
-                Output.Write("</form>");
-            }
-
-            Write_Final_HTML(Output, Tracer);
-        }
-
-
-        /// <summary> Writes any final HTML needed after the main place holder directly to the output stream</summary>
-        /// <param name="Output"> Stream to which to write the text for this main writer </param>
-        /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
-        private void Write_Final_HTML(TextWriter Output, Custom_Tracer Tracer)
-        {
-            if ((RequestSpecificValues.Current_Mode.isPostBack) && (RequestSpecificValues.Current_Mode.Mode != Display_Mode_Enum.My_Sobek) && (RequestSpecificValues.Current_Mode.Mode != Display_Mode_Enum.Administrative)) return;
-            if (subwriter == null) return;
-
-            Tracer.Add_Trace("Html_MainWriter.Write_Final_HTML", String.Empty);
-
-            // Allow the html subwriter to write some final HTML
-            subwriter.Write_Final_HTML(Output, Tracer);
-
             // Add the footer if necessary
             if (!subwriter.Subwriter_Behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Suppress_Footer))
             {
                 Display_Footer(Output, Tracer);
             }
         }
+
 
         #region Protected internal methods to write the header and footer to the stream
 

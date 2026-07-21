@@ -41,23 +41,9 @@ namespace SobekCM.Library.MainWriters
             }
         }
 
-
-        /// <summary> Returns a flag indicating whether the file upload specific holder in the itemNavForm form will be utilized
-        /// for the current request, or if it can be hidden. </summary>
-        /// <value> This value can be override by child classes, but by default this returns FALSE </value>
-        public virtual bool File_Upload_Possible
-        {
-            get
-            {
-                return false;
-            }
-        }
-
-
         /// <summary> Perform all the work of adding the full body content to the response stream back to the web user </summary>
         /// <param name="Output"> Stream to which to write the text for this main writer </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        /// <param name="FormAction"> Action URL for the navigation form, for main writers that include one </param>
-        public abstract void Write_Body(TextWriter Output, Custom_Tracer Tracer, string FormAction);
+        public abstract void Write_Body(TextWriter Output, Custom_Tracer Tracer);
     }
 }

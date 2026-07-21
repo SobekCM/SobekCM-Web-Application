@@ -1,6 +1,9 @@
 #region Using directives
 
+using DocumentFormat.OpenXml.InkML;
+using DocumentFormat.OpenXml.Math;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Extensions;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.Client;
 using SobekCM.Core.Configuration.Localization;
@@ -232,6 +235,19 @@ namespace SobekCM.Library.HTML
         {
             // Do nothing by default
         }
+
+        protected void Write_ItemNavForm_Opening(TextWriter Output)
+        {
+            string formAction = Context.Items[RequestCache_Keys.OriginalUrl]?.ToString() ?? Context.Request.GetDisplayUrl();
+            string enctype = Upload_File_Possible ? " enctype=\"multipart/form-data\"" : "";
+            Output.Write($"<form id=\"itemNavForm\" action=\"{formAction}\" method=\"post\"{enctype}>");
+        }
+
+        protected void Write_ItemNavForm_Closing(TextWriter Output)
+        {
+            Output.Write("</form>");
+        }
+
 
         /// <summary> Add the footer to the output </summary>
         /// <param name="Output"> Stream to which to write the HTML for this footer </param>

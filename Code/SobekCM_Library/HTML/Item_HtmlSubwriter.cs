@@ -1008,6 +1008,9 @@ namespace SobekCM.Library.HTML
             if (itemLayout == null) return;
             if (pageViewer == null) return;
 
+            // Start the item nav form
+            Write_ItemNavForm_Opening(Output);
+
             // Step through all the beginning sections
             while (itemLayoutIndex < itemLayout.Sections.Count)
             {
@@ -1105,6 +1108,9 @@ namespace SobekCM.Library.HTML
             {
                 Output.WriteLine("<script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Jquery_Ui_1_10_3_Draggable_Js + "\"></script>");
             }
+
+            // End the item nav form
+            Write_ItemNavForm_Closing(Output);
         }
 
         private void add_viewer_area_start(TextWriter Output, Custom_Tracer Tracer)

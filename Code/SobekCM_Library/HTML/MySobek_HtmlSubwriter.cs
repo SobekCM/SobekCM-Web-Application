@@ -250,7 +250,10 @@ namespace SobekCM.Library.HTML
         /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
         public override void Add_ItemNavForm_Content(TextWriter Output, Custom_Tracer Tracer)
         {
-            Tracer.Add_Trace("MySobek_HtmlSubwriter.Write_ItemNavForm_Closing", "");
+            Tracer.Add_Trace("MySobek_HtmlSubwriter.Write_ItemNavForm_Content", "");
+
+            // Start the item nav form
+            Write_ItemNavForm_Opening(Output);
 
             // Also, add any additional stuff here
             mySobekViewer.Write_ItemNavForm_Opening(Output, Tracer);
@@ -271,6 +274,9 @@ namespace SobekCM.Library.HTML
 
             // Also, add any additional stuff here
             mySobekViewer.Write_ItemNavForm_Closing(Output, Tracer);
+            
+            // End the item nav form
+            Write_ItemNavForm_Closing(Output);
         }
 
         /// <summary> Writes final HTML after all the forms </summary>

@@ -281,7 +281,7 @@ namespace SobekCM
                 if (pageGlobals.mainWriter != null)
                 {
                     using var writer = new StringWriter();
-                    pageGlobals.mainWriter.Write_Body(writer, pageGlobals.tracer, String.Empty);
+                    pageGlobals.mainWriter.Write_Body(writer, pageGlobals.tracer);
                     await context.Response.WriteAsync(writer.ToString(), Encoding.UTF8);
                 }
             });
@@ -319,7 +319,7 @@ namespace SobekCM
                 if (pageGlobals.mainWriter != null)
                 {
                     using var writer = new StringWriter();
-                    pageGlobals.mainWriter.Write_Body(writer, pageGlobals.tracer, String.Empty);
+                    pageGlobals.mainWriter.Write_Body(writer, pageGlobals.tracer);
                     await context.Response.WriteAsync(writer.ToString(), Encoding.UTF8);
                 }
             });
@@ -401,7 +401,7 @@ namespace SobekCM
                     writer.Write(" id=\"itembody\"");
                 writer.Write(">");
 
-                pageGlobals.mainWriter.Write_Body(writer, pageGlobals.tracer, originalUrl);
+                pageGlobals.mainWriter.Write_Body(writer, pageGlobals.tracer);
 
                 writer.Write("</body></html>");
 

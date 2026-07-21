@@ -1339,6 +1339,12 @@ namespace SobekCM.Library.HTML
         {
             Tracer.Add_Trace("Aggregation_HtmlSubwriter.Add_ItemNavForm_Content", "Entered...");
 
+            // Start the item nav form
+            if ( Include_Navigation_Form )
+            {
+                Write_ItemNavForm_Opening(Output);
+            }
+
             if (collectionViewer.Secondary_Text_Requires_Controls)
             {
                 Tracer.Add_Trace("Aggregation_HtmlSubwriter.Add_ItemNavForm_Content", "Secondary text requires controls.");
@@ -1347,6 +1353,12 @@ namespace SobekCM.Library.HTML
             else
             {
                 Tracer.Add_Trace("Aggregation_HtmlSubwriter.Add_ItemNavForm_Content", "NO secondary text requires controls.");
+            }
+
+            // End the item nav form
+            if (Include_Navigation_Form)
+            {
+                Write_ItemNavForm_Closing(Output);
             }
         }
 

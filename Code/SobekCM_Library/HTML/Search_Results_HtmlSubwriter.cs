@@ -130,6 +130,11 @@ namespace SobekCM.Library.HTML
         /// <remarks> This uses a <see cref="PagedResults_HtmlHelper"/> instance to render the items  </remarks>
         public override void Add_ItemNavForm_Content(TextWriter Output, Custom_Tracer Tracer)
         {
+            if (writeResult == null) return;
+
+            // Start the item nav form
+            Write_ItemNavForm_Opening(Output);
+
             // Make sure the corresponding 'search' is the latest
             RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Search;
             Context.Session.SetString(SessionCache_Keys.LastSearch, UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode));
@@ -146,6 +151,9 @@ namespace SobekCM.Library.HTML
 
             Tracer.Add_Trace("Search_Results_HtmlSubwriter.Add_ItemNavForm_Content", "Add controls");
             writeResult.Add_ItemNavForm_Content(Output, Tracer);
+
+            // Start the item nav form
+            Write_ItemNavForm_Closing(Output);
         }
 
         /// <summary> Writes the final output to close this search page results, including the results page navigation buttons </summary>

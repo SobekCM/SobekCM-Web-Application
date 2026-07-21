@@ -29,23 +29,30 @@ namespace SobekCM.Library.HTML
         /// <remarks> This uses a <see cref="PagedResults_HtmlHelper"/> instance to render the browse  </remarks>
         public override void Add_ItemNavForm_Content(TextWriter Output, Custom_Tracer Tracer)
         {
-            if ((RequestSpecificValues.Paged_Results != null) && (RequestSpecificValues.Results_Statistics != null))
+            if (RequestSpecificValues.Paged_Results == null || RequestSpecificValues.Results_Statistics == null )
             {
-                if (writeResult == null)
-                {
-                    Tracer.Add_Trace("Public_Folder_HtmlSubwriter.Add_ItemNavForm_Content", "Building Result DataSet Writer");
-
-                    writeResult = new PagedResults_HtmlHelper(RequestSpecificValues, RequestSpecificValues.Results_Statistics, RequestSpecificValues.Paged_Results)
-                    {
-                        Browse_Title = RequestSpecificValues.Public_Folder.FolderName,
-                        Folder_Owner_Name = RequestSpecificValues.Public_Folder.Name,
-                        Folder_Owner_Email = RequestSpecificValues.Public_Folder.Email
-                    };
-                }
-
-                Tracer.Add_Trace("Public_Folder_HtmlSubwriter.Add_ItemNavForm_Content", "Add controls");
-                writeResult.Add_ItemNavForm_Content(Output, Tracer);
+                return;
             }
+
+            // Start the item nav form
+            Write_ItemNavForm_Opening(Output);
+
+            Tracer.Add_Trace("Public_Folder_HtmlSubwriter.Add_ItemNavForm_Content", "Building Result DataSet Writer");
+
+
+            writeResult = new PagedResults_HtmlHelper(RequestSpecificValues, RequestSpecificValues.Results_Statistics, RequestSpecificValues.Paged_Results)
+            {
+                Browse_Title = RequestSpecificValues.Public_Folder.FolderName,
+                Folder_Owner_Name = RequestSpecificValues.Public_Folder.Name,
+                Folder_Owner_Email = RequestSpecificValues.Public_Folder.Email
+            };
+
+
+            Tracer.Add_Trace("Public_Folder_HtmlSubwriter.Add_ItemNavForm_Content", "Add controls");
+            writeResult.Add_ItemNavForm_Content(Output, Tracer);
+
+            // End the item nav form
+            Write_ItemNavForm_Closing(Output);
         }
 
         /// <summary> Writes the final output to close this public folder browse, including the results page navigation buttons </summary>

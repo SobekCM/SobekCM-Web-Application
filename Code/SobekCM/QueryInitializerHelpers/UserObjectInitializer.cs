@@ -70,7 +70,7 @@ namespace SobekCM.QueryInitializerHelpers
                 }
 
                 // If this is a system admin, they can run as a different user actually
-                if ((request.Current_User != null) && (request.Current_User.Is_System_Admin) && (request.QueryString["userid"] != null))
+                if ((request.Current_User != null) && (request.Current_User.Is_System_Admin) && (request.QueryString.ContainsKey("userid")))
                 {
                     try
                     {

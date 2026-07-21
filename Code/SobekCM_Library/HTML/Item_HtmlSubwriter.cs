@@ -1004,7 +1004,12 @@ namespace SobekCM.Library.HTML
                 if (itemLayout.Sections[itemLayoutIndex].Type == HtmlLayoutSectionTypeEnum.Viewer_Section)
                 {
                     add_viewer_area_start(Output, Tracer);
-                    break;
+
+                    // Add the main viewer section
+                    Tracer.Add_Trace("Item_HtmlSubwriter.Add_ItemNavForm_Content", "Allowing page viewer to write main viewer section");
+                    pageViewer.Write_Main_Viewer_Section(Output, Tracer);
+
+                    add_viewer_area_end(Output, Tracer);
                 }
                 else if (itemLayout.Sections[itemLayoutIndex].Type == HtmlLayoutSectionTypeEnum.Static_HTML)
                 {
@@ -1030,55 +1035,6 @@ namespace SobekCM.Library.HTML
                             if (writer == null)
                             {
                                 Tracer.Add_Trace("Item_HtmlSubwriter.Add_ItemNavForm_Content", "Writer returned from factory was null for " + thisWriterConfig.ID);
-                                continue;
-                            }
-
-                            // Add the HTML
-                            writer.Write_HTML(Output, prototyper, pageViewer, currentItem, RequestSpecificValues, behaviors);
-                        }
-                    }
-                }
-
-                itemLayoutIndex++;
-            }
-
-            // Add the main viewer section
-            Tracer.Add_Trace("Item_HtmlSubwriter.Add_ItemNavForm_Content", "Allowing page viewer to write main viewer section");
-            pageViewer.Write_Main_Viewer_Section(Output, Tracer);
-
-            Tracer.Add_Trace("Item_HtmlSubwriter.Add_ItemNavForm_Content", "Write the area after the controls placeholder of the viewer area");
-
-            // Step through all the sections
-            while (itemLayoutIndex < itemLayout.Sections.Count)
-            {
-                if (itemLayout.Sections[itemLayoutIndex].Type == HtmlLayoutSectionTypeEnum.Viewer_Section)
-                {
-                    add_viewer_area_end(Output, Tracer);
-                }
-                else if (itemLayout.Sections[itemLayoutIndex].Type == HtmlLayoutSectionTypeEnum.Static_HTML)
-                {
-                    Output.WriteLine(itemLayout.Sections[itemLayoutIndex].HTML);
-                }
-                else if (itemLayout.Sections[itemLayoutIndex].Type == HtmlLayoutSectionTypeEnum.Dynamic_Section)
-                {
-                    string section_name = itemLayout.Sections[itemLayoutIndex].Name;
-                    Tracer.Add_Trace("Item_HtmlSubwriter.Write_ItemNavForm_Opening", "Adding html into the " + section_name + " section");
-
-                    // Get the writer list to write here
-                    SectionWriterGroupConfig config = itemLayoutConfig.GetSection(section_name);
-                    if ((config != null) && (config.Writers != null))
-                    {
-                        // Step through each writer in the config
-                        foreach (SectionWriterConfig thisWriterConfig in config.Writers)
-                        {
-                            // Only continue if it is enabled
-                            if (!thisWriterConfig.Enabled) continue;
-
-                            // Get the writer
-                            iItemSectionWriter writer = ItemSectionWriter_Factory.Get_ItemSectionWriter(thisWriterConfig.Assembly, thisWriterConfig.Class);
-                            if (writer == null)
-                            {
-                                Tracer.Add_Trace("Item_HtmlSubwriter.Write_ItemNavForm_Opening", "Writer returned from factory was null for " + thisWriterConfig.ID);
                                 continue;
                             }
 
@@ -1386,10 +1342,6 @@ namespace SobekCM.Library.HTML
             #endregion
 
             Output.WriteLine("\t<tr>");
-
-            // Add the HTML from the pageviewer, the main viewer section
-            Tracer.Add_Trace("Item_MainWriter.Write_Additional_HTML", "Allowing page viewer to write directly to the output to add main viewer section");
-            pageViewer.Write_Main_Viewer_Section(Output, Tracer);
         }
 
         private void add_viewer_area_end(TextWriter Output, Custom_Tracer Tracer)

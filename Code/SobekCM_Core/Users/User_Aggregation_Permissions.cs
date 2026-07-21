@@ -1,7 +1,10 @@
 #region Using directives
 
+using ProtoBuf;
+using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
+using System.Xml.Serialization;
 
 #endregion
 
@@ -9,7 +12,8 @@ namespace SobekCM.Core.Users
 {
     /// <summary> Maintains a list of item aggregationPermissions, along with the rights the current user
     /// has over items in that aggregation and the actual item aggregation pages </summary>
-    [DataContract]
+    [Serializable, DataContract, ProtoContract]
+    [XmlRoot("AggregationPermissions")]
     public class User_Aggregation_Permissions : iSerializationEvents
     {
         private readonly Dictionary<string, User_Permissioned_Aggregation> code_to_aggregation;
@@ -22,7 +26,10 @@ namespace SobekCM.Core.Users
         }
 
         /// <summary> Gets the collection of user editable item aggregationPermissions </summary>
-        [DataMember(EmitDefaultValue = false)]
+        [DataMember(EmitDefaultValue = false, Name = "aggregations")]
+        [XmlArray("aggregations")]
+        [XmlArrayItem("aggregation", typeof(User_Permissioned_Aggregation))]
+        [ProtoMember(1)]
         public List<User_Permissioned_Aggregation> Aggregations { get; set; }
 
         /// <summary> Gets the information about detailed permissions for this user over an aggregation </summary>

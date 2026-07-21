@@ -1,23 +1,38 @@
 #region Using directives
 
+using ProtoBuf;
+using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
+using System.Xml.Serialization;
 
 #endregion
 
 namespace SobekCM.Core.Users
 {
     /// <summary> Represents a single folder in the folder hierarchy for this user </summary>
-    [DataContract]
+    [Serializable, DataContract, ProtoContract]
+    [XmlRoot("Folder")]
     public class User_Folder
     {
         /// <summary> Readonly field stores the primary key to this folder </summary>
-        [DataMember]
-        public readonly int Folder_ID;
+        [DataMember(EmitDefaultValue = false, Name = "folderID")]
+        [XmlAttribute("folderID")]
+        [ProtoMember(1)]
+        public int Folder_ID { get; set; }
 
         /// <summary> Readonly field stores the name of this folder </summary>
-        [DataMember]
-        public readonly string Folder_Name;
+        [DataMember(EmitDefaultValue = false, Name = "folderName")]
+        [XmlAttribute("folderName")]
+        [ProtoMember(2)]
+        public string Folder_Name { get; set; }
+
+        /// <summary> Constructor for a new instance of the User_Folder class </summary>
+        /// <remark> parameterless  constructor for deserializing</remark>>
+        public User_Folder()
+        { 
+            IsPublic = false;
+        }
 
         /// <summary> Constructor for a new instance of the User_Folder class </summary>
         /// <param name="Folder_Name"> Name of this folder </param>
@@ -31,6 +46,7 @@ namespace SobekCM.Core.Users
         }
 
         /// <summary> Gets the folder name with some of the special characters encoded for HTML  </summary>
+        [XmlIgnore]
         public string Folder_Name_Encoded
         {
             get
@@ -40,14 +56,20 @@ namespace SobekCM.Core.Users
         }
 
         /// <summary> Collection of the children folders under this folder </summary>
-        [DataMember(EmitDefaultValue = false)]
+        [DataMember(EmitDefaultValue = false, Name = "children")]
+        [XmlArray("children")]
+        [XmlArrayItem("folder", typeof(User_Folder))]
+        [ProtoMember(3)]
         public List<User_Folder> Children { get; set; }
 
         /// <summary> Flag indicates if this folder is public </summary>
-        [DataMember]
+        [DataMember(EmitDefaultValue = false, Name = "isPublic")]
+        [XmlAttribute("isPublic")]
+        [ProtoMember(4)]
         public bool IsPublic { get; set; }
 
         /// <summary> Gets the number of children folders under this folder </summary>
+        [XmlIgnore]
         public int Child_Count
         {
             get

@@ -561,6 +561,8 @@ namespace SobekCM.Library.HTML
         /// <remarks> By default this does nothing, but can be overwritten by all the individual html subwriters </remarks>
         public override void Write_Within_HTML_Head(TextWriter Output, Custom_Tracer Tracer)
         {
+            if (collectionViewer == null) return;
+
             Tracer.Add_Trace("Aggregation_HtmlSubwriter.Write_Within_HTML_Header", "Entered...");
             Output.WriteLine("<!-- Start of Aggregation_HtmlSubwriter.Write_Within_HTML_Header -->");
 
@@ -1015,8 +1017,9 @@ namespace SobekCM.Library.HTML
         /// they moved into Write_Main_HTML on the two collection viewers that actually need them
         /// (DataSet_Browse_Info_AggregationViewer, Thumbnails_Home_AggregationViewer). NOTE: the early `return true;`
         /// a few lines down (custom home page case, when collectionViewer is null) is preserved as-is from the
-        /// original Write_HTML; the `collectionViewer.Write_Main_HTML(...)`/`Write_Search_Box_HTML(...)` calls further
-        /// down are unguarded against null, same as they always were pre-merge -- not introduced by this merge. </remarks>
+        /// original Write_HTML; a second `collectionViewer == null` guard right after it also returns true, so the
+        /// `collectionViewer.Write_Main_HTML(...)`/`Write_Search_Box_HTML(...)` calls further down can assume a
+        /// non-null collectionViewer. </remarks>
         public override bool Write_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
             Tracer.Add_Trace("Aggregation_HtmlSubwriter.Write_HTML", "Rendering HTML");
@@ -1030,6 +1033,8 @@ namespace SobekCM.Library.HTML
                 Output.Write(hierarchyObject.HomePageHtml.Content);
                 return true;
             }
+
+            if (collectionViewer == null) return true;
 
             // Draw the banner and add links to the other views first
             if ((collectionViewer.Type != Item_Aggregation_Views_Searches_Enum.Rotating_Highlight_Search) && (collectionViewer.Type != Item_Aggregation_Views_Searches_Enum.Custom_Home_Page) && (collectionViewer.Type != Item_Aggregation_Views_Searches_Enum.Banner_Search))

@@ -67,9 +67,6 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             }
         }
 
-        public override bool Secondary_Text_Requires_Controls => true;
-
-
         /// <summary> Add the HTML to be displayed in the search box </summary>
         /// <param name="Output"> Textwriter to write the HTML for this viewer</param>
         /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>

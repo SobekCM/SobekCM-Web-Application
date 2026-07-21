@@ -64,13 +64,6 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         /// <summary> Gets the type of collection view or search supported by this collection viewer </summary>
         public abstract Item_Aggregation_Views_Searches_Enum Type { get; }
 
-        /// <summary> Flag indicates whether the secondary text requires controls </summary>
-        /// <value> This defaults to FALSE but is overwritten by most collection viewers </value>
-        public virtual bool Secondary_Text_Requires_Controls
-        {
-            get { return false; }
-        }
-
         /// <summary> Gets the collection of special behaviors which this aggregation viewer
         /// requests from the main HTML subwriter. </summary>
         /// <remarks> By default, this returns an empty list </remarks>

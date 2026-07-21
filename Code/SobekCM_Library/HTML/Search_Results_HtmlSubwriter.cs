@@ -149,53 +149,30 @@ namespace SobekCM.Library.HTML
                 MainMenus_Helper_HtmlSubWriter.Add_Aggregation_Search_Results_Menu(Output, RequestSpecificValues, hierarchyObject, false);
             }
 
-            if (RequestSpecificValues.Results_Statistics != null)
+            if (RequestSpecificValues.Results_Statistics == null) return true;
+
+            // Make sure the corresponding 'search' is the latest
+            RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Search;
+            Context.Session.SetString(SessionCache_Keys.LastSearch, UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode));
+            RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Results;
+
+            if (writeResult == null)
             {
-                if (writeResult == null)
-                {
-                    Tracer.Add_Trace("Search_Results_HtmlSubwriter.Write_HTML", "Building Result DataSet Writer");
-                    writeResult = new PagedResults_HtmlHelper(RequestSpecificValues, RequestSpecificValues.Results_Statistics, RequestSpecificValues.Paged_Results);
-                }
-                writeResult.Write_HTML(Output, Tracer);
+                Tracer.Add_Trace("Search_Results_HtmlSubwriter.Write_HTML", "Building Result DataSet Writer");
+                writeResult = new PagedResults_HtmlHelper(RequestSpecificValues, RequestSpecificValues.Results_Statistics, RequestSpecificValues.Paged_Results);
             }
 
-            // ===== Begin original Add_ItemNavForm_Content =====
-            if (writeResult != null)
-            {
-                // Start the item nav form
-                Write_ItemNavForm_Opening(Output);
+            writeResult.Write_HTML(Output, Tracer);
 
-                // Make sure the corresponding 'search' is the latest
-                RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Search;
-                Context.Session.SetString(SessionCache_Keys.LastSearch, UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode));
-                RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Results;
+            // Start the item nav form
+            Write_ItemNavForm_Opening(Output);
 
-                if (RequestSpecificValues.Results_Statistics != null)
-                {
-                    if (writeResult == null)
-                    {
-                        Tracer.Add_Trace("Search_Results_HtmlSubwriter.Add_ItemNavForm_Content", "Building Result DataSet Writer");
+            writeResult.Add_ItemNavForm_Content(Output, Tracer);
 
-                        writeResult = new PagedResults_HtmlHelper(RequestSpecificValues, RequestSpecificValues.Results_Statistics, RequestSpecificValues.Paged_Results);
-                    }
+            // Start the item nav form
+            Write_ItemNavForm_Closing(Output);
 
-                    Tracer.Add_Trace("Search_Results_HtmlSubwriter.Add_ItemNavForm_Content", "Add controls");
-                    writeResult.Add_ItemNavForm_Content(Output, Tracer);
-
-                    // Start the item nav form
-                    Write_ItemNavForm_Closing(Output);
-                }
-            }
-            // ===== End original Add_ItemNavForm_Content =====
-
-            // ===== Begin original Write_Final_HTML =====
-            Tracer.Add_Trace("browse_info_html_subwriter.Write_Final_Html", "Rendering HTML ( finish the main viewer section )");
-
-            if (writeResult != null)
-            {
-                writeResult.Write_Final_HTML(Output, Tracer);
-            }
-            // ===== End original Write_Final_HTML =====
+            writeResult.Write_Final_HTML(Output, Tracer);
 
             return true;
         }

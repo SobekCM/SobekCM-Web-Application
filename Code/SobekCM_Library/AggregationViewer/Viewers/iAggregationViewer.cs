@@ -46,10 +46,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         /// <summary> Gets the reference to the javascript method to be called </summary>
         string Search_Script_Action { get; }
 
-        /// <summary> Gets flag which indicates whether the secondary text requires controls </summary>
-        bool Secondary_Text_Requires_Controls { get; }
-
-        /// <summary> Gets flag which indicates whether this is an internal view, which may have a 
+        /// <summary> Gets flag which indicates whether this is an internal view, which may have a
         /// slightly different design feel </summary>
         bool Is_Internal_View { get; }
 

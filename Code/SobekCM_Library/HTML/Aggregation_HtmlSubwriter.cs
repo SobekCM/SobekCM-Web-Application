@@ -1010,15 +1010,13 @@ namespace SobekCM.Library.HTML
         /// <param name="Output"> Stream to which to write the HTML for this subwriter </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         /// <returns> Value indicating if html writer should finish the page immediately after this, or if there are other controls or routines which need to be called first </returns>
-        /// <remarks> Mechanically merged from the former separate Write_HTML / Add_ItemNavForm_Content / Write_Final_HTML
-        /// methods; boundaries marked below for review. NOTE: the early `return true;` a few lines down (custom home
-        /// page case, when collectionViewer is null) is preserved as-is from the original Write_HTML, but the appended
-        /// Add_ItemNavForm_Content body right after this method's old ending unconditionally dereferences
-        /// collectionViewer.Secondary_Text_Requires_Controls with no null check -- this was already true in the
-        /// pre-merge code, since Html_MainWriter called Add_ItemNavForm_Content unconditionally regardless of what
-        /// Write_HTML returned. Not introduced by this merge, but flagging since it's now visibly in one method: if
-        /// collectionViewer can legitimately be null here, this is a latent NullReferenceException on the custom home
-        /// page path. </remarks>
+        /// <remarks> Merged from the former separate Write_HTML / Add_ItemNavForm_Content / Write_Final_HTML methods;
+        /// boundaries marked below for review. The itemNavForm open/close tags are no longer written here at all --
+        /// they moved into Write_Main_HTML on the two collection viewers that actually need them
+        /// (DataSet_Browse_Info_AggregationViewer, Thumbnails_Home_AggregationViewer). NOTE: the early `return true;`
+        /// a few lines down (custom home page case, when collectionViewer is null) is preserved as-is from the
+        /// original Write_HTML; the `collectionViewer.Write_Main_HTML(...)`/`Write_Search_Box_HTML(...)` calls further
+        /// down are unguarded against null, same as they always were pre-merge -- not introduced by this merge. </remarks>
         public override bool Write_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
             Tracer.Add_Trace("Aggregation_HtmlSubwriter.Write_HTML", "Rendering HTML");
@@ -1346,9 +1344,6 @@ namespace SobekCM.Library.HTML
                     RequestSpecificValues.Tracer.Add_Trace("Aggregation_HtmlSubwriter.Write_Final_HTML", "datasetBrowseResultsStats is null or has no items.");
                 }
             }
-
-            Output.WriteLine("<!-- End of Aggregation_HtmlSubwriter.Write_Final_HTML -->");
-            // ===== End original Write_Final_HTML =====
 
             return finish_page;
         }

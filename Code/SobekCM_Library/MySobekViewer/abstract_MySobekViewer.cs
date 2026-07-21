@@ -1,7 +1,9 @@
 ﻿#region Using directives
 
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Extensions;
 using SobekCM.Core.BriefItem;
+using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
 using SobekCM.Library.AdminViewer;
 using SobekCM.Library.HTML;
@@ -277,5 +279,17 @@ namespace SobekCM.Library.MySobekViewer
         /// admin or mySobek view.  </summary>
         /// <value> This returns TRUE by default, but can be overriden by classes that extend this abstract class </value>
         public virtual bool Requires_Logged_In_User { get { return true; } }
+
+        protected void Write_ItemNavForm_Opening(TextWriter Output)
+        {
+            string formAction = Context.Items[RequestCache_Keys.OriginalUrl]?.ToString() ?? Context.Request.GetDisplayUrl();
+            string enctype = Upload_File_Possible ? " enctype=\"multipart/form-data\"" : "";
+            Output.Write($"<form id=\"itemNavForm\" action=\"{formAction}\" method=\"post\"{enctype}>");
+        }
+
+        protected void Write_ItemNavForm_Closing(TextWriter Output)
+        {
+            Output.Write("</form>");
+        }
     }
 }

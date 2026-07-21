@@ -185,10 +185,13 @@ namespace SobekCM.Library.HTML
         {
             Tracer.Add_Trace("MySobek_HtmlSubwriter.Write_HTML", "Rendering HTML");
 
+            if (mySobekViewer == null) return false;
+
             if ((Context.SessionObject()["agreement_date"] == null) && (RequestSpecificValues.Current_Mode.My_Sobek_Type == My_Sobek_Type_Enum.New_Item) && ((String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.My_Sobek_SubMode)) || (RequestSpecificValues.Current_Mode.My_Sobek_SubMode[0] != '1')))
             {
                 RequestSpecificValues.Current_Mode.My_Sobek_SubMode = "1";
             }
+
             // A few cases skip the view selectors at the top entirely
             if (mySobekViewer.Standard_Navigation_Type == MySobek_Admin_Included_Navigation_Enum.Standard)
             {
@@ -230,8 +233,6 @@ namespace SobekCM.Library.HTML
                 // Start the page container
                 Output.WriteLine("<div id=\"pagecontainer\">");
                 Output.WriteLine("<br />");
-
-
             }
             else if (!Subwriter_Behaviors.Contains(HtmlSubwriter_Behaviors_Enum.MySobek_Subwriter_Mimic_Item_Subwriter))
             {
@@ -242,44 +243,33 @@ namespace SobekCM.Library.HTML
             // Add the text here
             mySobekViewer.Write_HTML(Output, Tracer);
 
-            // ===== Begin original Add_ItemNavForm_Content =====
-            Tracer.Add_Trace("MySobek_HtmlSubwriter.Write_ItemNavForm_Content", "");
-
             // Start the item nav form
             Write_ItemNavForm_Opening(Output);
 
             // Also, add any additional stuff here
             mySobekViewer.Write_ItemNavForm_Opening(Output, Tracer);
 
-            Tracer.Add_Trace("MySobek_HtmlSubwriter.Write_Additional_HTML", "Adding any form elements popup divs");
-            if ((RequestSpecificValues.Current_Mode.Logon_Required) || (mySobekViewer.Contains_Popup_Forms))
+            if (mySobekViewer.Contains_Popup_Forms)
             {
                 mySobekViewer.Add_Popup_HTML(Output, Tracer);
             }
 
-            Tracer.Add_Trace("MySobek_HtmlSubwriter.Add_Main_Viewer_Section", "Build my sobek viewer and add controls");
-
             // Add any controls needed
-            if (mySobekViewer != null)
-                mySobekViewer.Add_Controls(Output, Tracer);
-
-            Tracer.Add_Trace("MySobek_HtmlSubwriter.Write_ItemNavForm_Closing", "");
+            mySobekViewer.Add_Controls(Output, Tracer);
 
             // Also, add any additional stuff here
             mySobekViewer.Write_ItemNavForm_Closing(Output, Tracer);
 
             // End the item nav form
             Write_ItemNavForm_Closing(Output);
-            // ===== End original Add_ItemNavForm_Content =====
 
-            // ===== Begin original Write_Final_HTML =====
+            // Close the pagecontainer if needed
             if (!Subwriter_Behaviors.Contains(HtmlSubwriter_Behaviors_Enum.MySobek_Subwriter_Mimic_Item_Subwriter))
             {
                 Output.WriteLine("<!-- Close the pagecontainer div -->");
                 Output.WriteLine("</div>");
                 Output.WriteLine();
             }
-            // ===== End original Write_Final_HTML =====
 
             return false;
         }

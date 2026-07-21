@@ -572,7 +572,6 @@ namespace SobekCM.Library.MySobekViewer
 
         #endregion
 
-
         /// <summary> Navigation type to be displayed (mostly used by the mySobek viewers) </summary>
         /// <value> This returns none since this viewer writes all the necessary navigational elements </value>
         /// <remarks> This is set to NONE if the viewer will write its own navigation and ADMIN if the standard
@@ -619,20 +618,11 @@ namespace SobekCM.Library.MySobekViewer
 
             Output.WriteLine("  <br />");
 
-            // Open the item nav form (was written externally by MySobek_HtmlSubwriter)
+            // Open the item nav form
             Write_ItemNavForm_Opening(Output);
-
-            // Original Write_ItemNavForm_Opening(Output, Tracer) and Add_Popup_HTML(Output, Tracer) overrides did not exist for this viewer
-
-            // ===== BEGIN: moved from Add_Controls(Output, Tracer) =====
-            Tracer.Add_Trace("New_Group_And_Item_MySobekViewer.Add_Controls", String.Empty);
 
             // Add the upload controls to the file place holder
             add_upload_controls(Output, Tracer);
-            // ===== END: moved from Add_Controls(Output, Tracer) =====
-
-            // ===== BEGIN: moved from Write_ItemNavForm_Closing(Output, Tracer) =====
-            Tracer?.Add_Trace("File_Management_MySobekViewer.Write_ItemNavForm_Closing", "");
 
             // Add the hidden fields first
             Output.WriteLine("<!-- Hidden field is used for postbacks to indicate what to save and reset -->");
@@ -677,7 +667,6 @@ namespace SobekCM.Library.MySobekViewer
                         file_groups.Add(name_sans_extension, newGroup);
                     }
                 }
-
 
                 // Step through all the page image file groups
                 for (int i = 0; i < file_groups.Count; i++)
@@ -741,13 +730,13 @@ namespace SobekCM.Library.MySobekViewer
             Output.WriteLine("</div>");
             Output.WriteLine("</div>");
             Output.WriteLine("</div>");
-            // ===== END: moved from Write_ItemNavForm_Closing(Output, Tracer) =====
 
-            // Close the item nav form (was written externally by MySobek_HtmlSubwriter)
+            // Close the item nav form
             Write_ItemNavForm_Closing(Output);
         }
 
         #endregion
+
         private void add_upload_controls(TextWriter Output, Custom_Tracer Tracer)
         {
             Tracer.Add_Trace("New_Group_And_Item_MySobekViewer.add_upload_controls", String.Empty);

@@ -543,13 +543,10 @@ namespace SobekCM.Library.MySobekViewer
         /// <remarks> This does nothing </remarks>
 	    public override void Write_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
-            // Do nothing
+            Tracer.Add_Trace("OpenNJ_Register_MySobekViewer.Write_HTML");
 
-            // Open the item nav form (was written externally by MySobek_HtmlSubwriter)
+            // Open the item nav form
             Write_ItemNavForm_Opening(Output);
-
-            // ===== BEGIN: moved from Write_ItemNavForm_Opening(Output, Tracer) =====
-            Tracer.Add_Trace("Preferences_MySobekViewer.Write_HTML", "Do nothing");
 
             Output.WriteLine("<h1>" + Web_Title + "</h1>");
             Output.WriteLine();
@@ -718,12 +715,7 @@ namespace SobekCM.Library.MySobekViewer
                  ? "</td></tr></table></blockquote></div>\n\n<!-- Focus on the first registration text box -->\n<script type=\"text/javascript\">focus_element('prefUsername');</script>"
                  : "</td></tr></table></blockquote></div>\n\n<!-- Focus on the first preferences text box -->\n<script type=\"text/javascript\">focus_element('prefGivenName');</script>");
 
-
-            // ===== END: moved from Write_ItemNavForm_Opening(Output, Tracer) =====
-
-            // Original Add_Popup_HTML(Output, Tracer), Add_Controls(Output, Tracer), and Write_ItemNavForm_Closing(Output, Tracer) overrides did not exist for this viewer
-
-            // Close the item nav form (was written externally by MySobek_HtmlSubwriter)
+            // Close the item nav form
             Write_ItemNavForm_Closing(Output);
         }
 

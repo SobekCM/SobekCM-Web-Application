@@ -197,21 +197,11 @@ namespace SobekCM.Library.MySobekViewer
         /// <remarks> This class does nothing, since the CompleteTemplate html is added in the <see cref="Write_ItemNavForm_Closing" /> method </remarks>
         public override void Write_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
-            Tracer.Add_Trace("Edit_Item_Behaviors_MySobekViewer.Write_HTML", "Do nothing");
+            Tracer.Add_Trace("Edit_Item_Behaviors_MySobekViewer.Write_HTML");
 
-            // Open the item nav form (was written externally by MySobek_HtmlSubwriter)
+            // Open the item nav form
             Write_ItemNavForm_Opening(Output);
 
-            // Original Write_ItemNavForm_Opening(Output, Tracer) and Add_Controls(Output, Tracer) overrides did not exist for this viewer
-
-            // ===== BEGIN: moved from Add_Popup_HTML(Output, Tracer) (NOTE: Contains_Popup_Forms was never overridden here, so this never ran previously - flagged for review) =====
-            Tracer.Add_Trace("Edit_Item_Behaviors_MySobekViewer.Add_Popup_HTML", "Add any popup divisions for form elements");
-
-            // Add the hidden field
-            Output.WriteLine();
-            // ===== END: moved from Add_Popup_HTML(Output, Tracer) =====
-
-            // ===== BEGIN: moved from Write_ItemNavForm_Closing(Output, Tracer) =====
             const string BEHAVIORS = "BEHAVIORS";
 
             Tracer.Add_Trace("Edit_Item_Behaviors_MySobekViewer.Write_ItemNavForm_Closing", "");
@@ -275,9 +265,8 @@ namespace SobekCM.Library.MySobekViewer
             Output.WriteLine("</div>");
             Output.WriteLine("</div>");
             Output.WriteLine("<br />");
-            // ===== END: moved from Write_ItemNavForm_Closing(Output, Tracer) =====
 
-            // Close the item nav form (was written externally by MySobek_HtmlSubwriter)
+            // Close the item nav form
             Write_ItemNavForm_Closing(Output);
         }
 

@@ -483,8 +483,15 @@ namespace SobekCM.Library.MySobekViewer
             Output.WriteLine("</div>");
             Output.WriteLine();
 
-            // ===== BEGIN: moved from Add_Popup_HTML(Output, Tracer) (was always called - Contains_Popup_Forms is TRUE) =====
-            Tracer.Add_Trace("Edit_Item_Metadata_MySobekViewer.Write_HTML", "Add any popup divisions for form elements");
+            write_popup_forms(Output, Tracer);
+
+            // Close the item nav form 
+            Write_ItemNavForm_Closing(Output);
+        }
+
+        private void write_popup_forms(TextWriter Output, Custom_Tracer Tracer)
+        {
+            Tracer.Add_Trace("Edit_Item_Metadata_MySobekViewer.write_popup_forms", "Add any popup divisions for form elements");
 
             // Add the hidden field
             Output.WriteLine("<!-- Hidden field is used for postbacks to add new form elements (i.e., new name, new other titles, etc..) -->");
@@ -572,10 +579,6 @@ namespace SobekCM.Library.MySobekViewer
                         break;
                 }
             }
-            // ===== END: moved from Add_Popup_HTML(Output, Tracer) =====
-
-            // Close the item nav form 
-            Write_ItemNavForm_Closing(Output);
         }
 
 

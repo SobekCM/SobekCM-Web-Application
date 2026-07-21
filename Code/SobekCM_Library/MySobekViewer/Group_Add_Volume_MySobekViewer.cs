@@ -477,17 +477,12 @@ namespace SobekCM.Library.MySobekViewer
         /// <remarks> This class does nothing, since the CompleteTemplate html is added in the <see cref="Write_ItemNavForm_Closing" /> method </remarks>
         public override void Write_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
-            Tracer.Add_Trace("Group_Add_Volume_MySobekViewer.Write_HTML", "Do nothing");
+            Tracer.Add_Trace("Group_Add_Volume_MySobekViewer.Write_HTML");
 
-            // Open the item nav form (was written externally by MySobek_HtmlSubwriter)
+            // Open the item nav form
             Write_ItemNavForm_Opening(Output);
 
-            // Original Write_ItemNavForm_Opening(Output, Tracer), Add_Popup_HTML(Output, Tracer), and Add_Controls(Output, Tracer) overrides did not exist for this viewer
-
-            // ===== BEGIN: moved from Write_ItemNavForm_Closing(Output, Tracer) =====
             const string NEWVOLUME = "NEW VOLUME";
-
-            Tracer.Add_Trace("Group_Add_Volume_MySobekViewer.Write_ItemNavForm_Closing", "");
 
             Output.WriteLine("<!-- Hidden field is used for postbacks to add new form elements (i.e., new name, new other titles, etc..) -->");
             Output.WriteLine("<input type=\"hidden\" id=\"action\" name=\"action\" value=\"\" />");
@@ -635,9 +630,8 @@ namespace SobekCM.Library.MySobekViewer
             Output.WriteLine("</div>");
             Output.WriteLine("</div>");
             Output.WriteLine("</div>");
-            // ===== END: moved from Write_ItemNavForm_Closing(Output, Tracer) =====
 
-            // Close the item nav form (was written externally by MySobek_HtmlSubwriter)
+            // Close the item nav form
             Write_ItemNavForm_Closing(Output);
         }
 

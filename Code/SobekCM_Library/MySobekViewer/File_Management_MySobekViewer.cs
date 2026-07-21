@@ -457,20 +457,11 @@ namespace SobekCM.Library.MySobekViewer
 
             Output.WriteLine("  <br />");
 
-            // Open the item nav form (was written externally by MySobek_HtmlSubwriter)
+            // Open the item nav form
             Write_ItemNavForm_Opening(Output);
-
-            // Original Write_ItemNavForm_Opening(Output, Tracer) and Add_Popup_HTML(Output, Tracer) overrides did not exist for this viewer
-
-            // ===== BEGIN: moved from Add_Controls(Output, Tracer) =====
-            Tracer.Add_Trace("File_Managament_MySobekViewer.Add_Controls", String.Empty);
 
             // Add the upload controls
             add_upload_controls(Output, Tracer);
-            // ===== END: moved from Add_Controls(Output, Tracer) =====
-
-            // ===== BEGIN: moved from Write_ItemNavForm_Closing(Output, Tracer) =====
-            Tracer?.Add_Trace("File_Managament_MySobekViewer.Write_ItemNavForm_Closing", "");
 
             // Add the hidden fields first
             Output.WriteLine("<!-- Hidden field is used for postbacks to indicate what to save and reset -->");
@@ -679,13 +670,12 @@ namespace SobekCM.Library.MySobekViewer
 
             #endregion
 
-            // ===== END: moved from Write_ItemNavForm_Closing(Output, Tracer) =====
-
-            // Close the item nav form (was written externally by MySobek_HtmlSubwriter)
+            // Close the item nav form
             Write_ItemNavForm_Closing(Output);
         }
 
         #endregion
+
         private void add_upload_controls(TextWriter Output, Custom_Tracer Tracer)
         {
             Tracer.Add_Trace("File_Managament_MySobekViewer.add_upload_controls", String.Empty);

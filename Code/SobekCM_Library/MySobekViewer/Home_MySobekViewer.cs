@@ -57,7 +57,7 @@ namespace SobekCM.Library.MySobekViewer
         /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
         public override void Write_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
-            Tracer.Add_Trace("Home_MySobekViewer.Write_HTML", String.Empty);
+            Tracer.Add_Trace("Home_MySobekViewer.Write_HTML");
 
             string sobek_text = RequestSpecificValues.Current_Mode.Instance_Abbreviation;
             string my_sobek = "my" + sobek_text;
@@ -95,7 +95,6 @@ namespace SobekCM.Library.MySobekViewer
 
                     }
 
-
                     // Check to see if the TEI extension should be added here
                     // Ensure the plug-in list exists and contains the TEI plug-in
                     if ((UI_ApplicationCache_Gateway.Configuration.Extensions != null) &&
@@ -111,7 +110,6 @@ namespace SobekCM.Library.MySobekViewer
                             Output.WriteLine("    <tr><td style=\"width:35px\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"http://cdn.sobekrepository.org/images/misc/add_tei.png\" /></a></td><td><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" >Add a new TEI item</a></td></tr>");
                         }
                     }
-
                 }
                 else
                 {
@@ -203,14 +201,6 @@ namespace SobekCM.Library.MySobekViewer
             RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.My_Sobek;
             Output.WriteLine("</div>");
             Output.WriteLine();
-
-            // Open the item nav form (was written externally by MySobek_HtmlSubwriter)
-            Write_ItemNavForm_Opening(Output);
-
-            // Original Write_ItemNavForm_Opening(Output, Tracer), Add_Popup_HTML(Output, Tracer), Add_Controls(Output, Tracer), and Write_ItemNavForm_Closing(Output, Tracer) overrides did not exist for this viewer
-
-            // Close the item nav form (was written externally by MySobek_HtmlSubwriter)
-            Write_ItemNavForm_Closing(Output);
         }
     }
 }

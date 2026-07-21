@@ -170,7 +170,6 @@ namespace SobekCM.Library.MySobekViewer
         /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
         public override void Write_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
-
             // Get ready to draw the tabs
             string my_sobek = "my" + RequestSpecificValues.Current_Mode.Instance_Abbreviation;
 
@@ -234,12 +233,10 @@ namespace SobekCM.Library.MySobekViewer
             Output.WriteLine("<br />");
             Output.WriteLine("<br />");
 
-            // Open the item nav form (was written externally by MySobek_HtmlSubwriter)
+            // Open the item nav form
             Write_ItemNavForm_Opening(Output);
 
-            // Original Write_ItemNavForm_Opening(Output, Tracer) and Add_Controls(Output, Tracer) overrides did not exist for this viewer
-
-            // ===== BEGIN: moved from Add_Popup_HTML(Output, Tracer) (was always called - Contains_Popup_Forms is TRUE) =====
+            #region Popup Form Html
             Tracer.Add_Trace("Logon_MySobekViewer.Add_Popup_HTML", "Add any popup divisions for form elements");
 
             Output.WriteLine("<script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Jquery_Ui_1_10_3_Custom_Js + "\"></script>");
@@ -276,11 +273,9 @@ namespace SobekCM.Library.MySobekViewer
             Output.WriteLine("  <br />");
             Output.WriteLine("</div>");
             Output.WriteLine();
-            // ===== END: moved from Add_Popup_HTML(Output, Tracer) =====
+            #endregion
 
-            // Original Write_ItemNavForm_Closing(Output, Tracer) override did not exist for this viewer
-
-            // Close the item nav form (was written externally by MySobek_HtmlSubwriter)
+            // Close the item nav form
             Write_ItemNavForm_Closing(Output);
         }
 

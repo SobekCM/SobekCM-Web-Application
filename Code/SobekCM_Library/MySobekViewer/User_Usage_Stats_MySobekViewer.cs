@@ -33,7 +33,7 @@ namespace SobekCM.Library.MySobekViewer
 
         public override void Write_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
-            Tracer.Add_Trace("User_Usage_Stats_MySobekViewer.Write_HTML", String.Empty);
+            Tracer.Add_Trace("User_Usage_Stats_MySobekViewer.Write_HTML");
 
             string submode = RequestSpecificValues.Current_Mode.My_Sobek_SubMode;
             if (String.IsNullOrEmpty(submode))
@@ -227,14 +227,6 @@ namespace SobekCM.Library.MySobekViewer
             }
             Output.WriteLine("<br /> <br />");
             Output.WriteLine("</div>");
-
-            // Open the item nav form (was written externally by MySobek_HtmlSubwriter)
-            Write_ItemNavForm_Opening(Output);
-
-            // Original Write_ItemNavForm_Opening(Output, Tracer), Add_Popup_HTML(Output, Tracer), Add_Controls(Output, Tracer), and Write_ItemNavForm_Closing(Output, Tracer) overrides did not exist for this viewer
-
-            // Close the item nav form (was written externally by MySobek_HtmlSubwriter)
-            Write_ItemNavForm_Closing(Output);
         }
 
         private static string Month_From_Int(int Month_Int)

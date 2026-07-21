@@ -260,7 +260,7 @@ namespace SobekCM.Library.MySobekViewer
         /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
         public override void Write_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
-            Tracer.Add_Trace("Delete_Item_MySobekViewer.Write_HTML", String.Empty);
+            Tracer.Add_Trace("Delete_Item_MySobekViewer.Write_HTML");
 
             if (errorCode >= 0)
             {
@@ -304,11 +304,8 @@ namespace SobekCM.Library.MySobekViewer
                 Output.WriteLine("</div>");
             }
 
-            // Open the item nav form (was written externally by MySobek_HtmlSubwriter)
+            // Open the item nav form
             Write_ItemNavForm_Opening(Output);
-
-            // ===== BEGIN: moved from Write_ItemNavForm_Closing(Output, Tracer) =====
-            Tracer.Add_Trace("Delete_Item_MySobekViewer.Write_ItemNavForm_Closing", String.Empty);
 
             if (errorCode == -1)
             {
@@ -339,9 +336,8 @@ namespace SobekCM.Library.MySobekViewer
                 Output.WriteLine("<script type=\"text/javascript\">focus_element('admin_delete_confirm');</script>");
                 Output.WriteLine();
             }
-            // ===== END: moved from Write_ItemNavForm_Closing(Output, Tracer) =====
 
-            // Close the item nav form (was written externally by MySobek_HtmlSubwriter)
+            // Close the item nav form
             Write_ItemNavForm_Closing(Output);
         }
 

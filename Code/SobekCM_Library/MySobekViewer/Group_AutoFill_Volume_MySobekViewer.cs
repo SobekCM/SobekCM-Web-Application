@@ -53,23 +53,11 @@ namespace SobekCM.Library.MySobekViewer
         /// <remarks> This class does nothing, since the interface list is added as controls, not HTML </remarks>
         public override void Write_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
-            Tracer.Add_Trace("Group_AutoFill_Volume_MySobekViewer.Write_HTML", "Do nothing");
+            Tracer.Add_Trace("Group_AutoFill_Volume_MySobekViewer.Write_HTML");
 
             Output.WriteLine("<br /><br />");
             Output.WriteLine("<strong>AUTO-FILL NEW VOLUMES</strong><br /><br />");
             Output.WriteLine("Implementation for this feature is currently pending.<br /><br /><br />");
-
-            // Open the item nav form (was written externally by MySobek_HtmlSubwriter)
-            Write_ItemNavForm_Opening(Output);
-
-            // Original Write_ItemNavForm_Opening(Output, Tracer), Add_Popup_HTML(Output, Tracer), and Add_Controls(Output, Tracer) overrides did not exist for this viewer
-
-            // ===== BEGIN: moved from Write_ItemNavForm_Closing(Output, Tracer) =====
-            Tracer.Add_Trace("Group_AutoFill_Volume_MySobekViewer.Write_ItemNavForm_Closing", "Do nothing");
-            // ===== END: moved from Write_ItemNavForm_Closing(Output, Tracer) =====
-
-            // Close the item nav form (was written externally by MySobek_HtmlSubwriter)
-            Write_ItemNavForm_Closing(Output);
         }
     }
 }

@@ -69,15 +69,12 @@ namespace SobekCM.Library.MySobekViewer
         /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
         public override void Write_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
-            // Do nothing
+            Tracer.Add_Trace("Saved_Searches_MySobekViewer.Write_HTML");
 
-            // Open the item nav form (was written externally by MySobek_HtmlSubwriter)
+            // Open the item nav form
             Write_ItemNavForm_Opening(Output);
-
-            // ===== BEGIN: moved from Write_ItemNavForm_Opening(Output, Tracer) =====
-            Tracer.Add_Trace("Saved_Searches_MySobekViewer.Write_HTML", String.Empty);
+            
             DataTable searchesTable = SobekCM_Database.Get_User_Searches(RequestSpecificValues.Current_User.UserID, Tracer);
-
 
             Output.WriteLine("<!-- Hidden field is used for postbacks to indicate what to save and reset -->");
             Output.WriteLine("<input type=\"hidden\" id=\"item_action\" name=\"item_action\" value=\"\" />");
@@ -89,7 +86,6 @@ namespace SobekCM.Library.MySobekViewer
             Output.WriteLine("<div class=\"SobekHomeText\" >");
             if (searchesTable.Rows.Count > 0)
             {
-
                 Output.WriteLine("  <blockquote>");
                 Output.WriteLine("  <table border=\"0px\" cellspacing=\"0px\" class=\"statsTable\">");
                 Output.WriteLine("    <tr align=\"left\" bgcolor=\"#0022a7\" >");
@@ -97,8 +93,6 @@ namespace SobekCM.Library.MySobekViewer
                 Output.WriteLine("      <th width=\"480px\" align=\"left\"><span style=\"color: White\">SAVED SEARCH</span></th>");
                 Output.WriteLine("     </tr>");
                 Output.WriteLine("    <tr><td bgcolor=\"#e7e7e7\" colspan=\"2\"></td></tr>");
-
-
 
                 // Write the data for each interface
                 foreach (DataRow thisRow in searchesTable.Rows)
@@ -126,11 +120,8 @@ namespace SobekCM.Library.MySobekViewer
                 Output.WriteLine("<blockquote>You do not have any saved searches or browses.<br /><br />To add a search or browse, use the ADD button while viewing the results of your search or browse.</blockquote><br />");
             }
             Output.WriteLine("</div>");
-            // ===== END: moved from Write_ItemNavForm_Opening(Output, Tracer) =====
 
-            // Original Add_Popup_HTML(Output, Tracer), Add_Controls(Output, Tracer), and Write_ItemNavForm_Closing(Output, Tracer) overrides did not exist for this viewer
-
-            // Close the item nav form (was written externally by MySobek_HtmlSubwriter)
+            // Close the item nav form
             Write_ItemNavForm_Closing(Output);
         }
     }

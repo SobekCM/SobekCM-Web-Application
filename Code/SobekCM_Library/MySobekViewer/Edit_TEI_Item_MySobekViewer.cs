@@ -67,8 +67,6 @@ namespace SobekCM.Library.MySobekViewer
         private readonly string bibid;
         private readonly string vid;
 
-
-
         #region Constructor
 
         /// <summary> Constructor for a new instance of the Edit_TEI_Item_MySobekViewer class </summary>
@@ -747,7 +745,7 @@ namespace SobekCM.Library.MySobekViewer
         /// <remarks> This adds the CompleteTemplate HTML for step 2 and the congratulations text for step 4 </remarks>
         public override void Write_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
-            Tracer.Add_Trace("Edit_TEI_Item_MySobekViewer.Write_HTML", "Do nothing");
+            Tracer.Add_Trace("Edit_TEI_Item_MySobekViewer.Write_HTML");
 
             Output.WriteLine("<script src=\"" + Static_Resources_Gateway.Sobekcm_Metadata_Js + "\" type=\"text/javascript\"></script>");
 
@@ -777,7 +775,6 @@ namespace SobekCM.Library.MySobekViewer
                     Output.WriteLine("</div>");
                 }
 
-
                 Output.WriteLine("<table class=\"sbkMySobek_TemplateTbl\" cellpadding=\"4px\" >");
                 Output.WriteLine("  <tr>");
                 Output.WriteLine("    <td colspan=\"3\" class=\"sbkMySobek_TemplateTblTitle_first\">New TEI File</td>");
@@ -796,16 +793,8 @@ namespace SobekCM.Library.MySobekViewer
                 Output.WriteLine("    <td colspan=\"3\">");
             }
 
-
-
-
-            // Open the item nav form (was written externally by MySobek_HtmlSubwriter)
+            // Open the item nav form
             Write_ItemNavForm_Opening(Output);
-
-            // Original Write_ItemNavForm_Opening(Output, Tracer) and Add_Popup_HTML(Output, Tracer) overrides did not exist for this viewer
-
-            // ===== BEGIN: moved from Add_Controls(Output, Tracer) =====
-            Tracer.Add_Trace("Edit_TEI_Item_MySobekViewer.Add_Controls", String.Empty);
 
             // Do nothing if this is the very last step
             if (currentProcessStep == 1)
@@ -813,10 +802,6 @@ namespace SobekCM.Library.MySobekViewer
                 // Add the upload controls to the file place holder
                 add_upload_controls_tei(Output, "", ".xml", Tracer);
             }
-            // ===== END: moved from Add_Controls(Output, Tracer) =====
-
-            // ===== BEGIN: moved from Write_ItemNavForm_Closing(Output, Tracer) =====
-            Tracer?.Add_Trace("Edit_TEI_Item_MySobekViewer.Write_ItemNavForm_Closing", "");
 
             // Add the hidden fields first
             Output.WriteLine("<!-- Hidden field is used for postbacks to indicate what to save and reset -->");
@@ -1382,13 +1367,12 @@ namespace SobekCM.Library.MySobekViewer
             Output.WriteLine("</div>");
             Output.WriteLine("</div>");
 
-            // ===== END: moved from Write_ItemNavForm_Closing(Output, Tracer) =====
-
-            // Close the item nav form (was written externally by MySobek_HtmlSubwriter)
+            // Close the item nav form
             Write_ItemNavForm_Closing(Output);
         }
 
         #endregion
+
         #region Step 1: Upload TEI uploadify code
 
         private void add_upload_controls_tei(TextWriter Output, string Prompt, string AllowedFileExtensions, Custom_Tracer Tracer)

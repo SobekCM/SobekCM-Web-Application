@@ -124,13 +124,10 @@ namespace SobekCM.Library.MySobekViewer
         /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
         public override void Write_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
-            Tracer.Add_Trace("NewPassword_MySobekViewer.Write_HTML", "Do nothing");
+            Tracer.Add_Trace("NewPassword_MySobekViewer.Write_HTML");
 
-            // Open the item nav form (was written externally by MySobek_HtmlSubwriter)
+            // Open the item nav form
             Write_ItemNavForm_Opening(Output);
-
-            // ===== BEGIN: moved from Write_ItemNavForm_Opening(Output, Tracer) =====
-            Tracer.Add_Trace("NewPassword_MySobekViewer.Write_ItemNavForm_Opening", String.Empty);
 
             Output.WriteLine("<script src=\"" + Static_Resources_Gateway.Sobekcm_Metadata_Js + "\" type=\"text/javascript\"></script>");
             Output.WriteLine("<div class=\"SobekHomeText\">");
@@ -183,11 +180,8 @@ namespace SobekCM.Library.MySobekViewer
             Output.WriteLine();
             Output.WriteLine("<!-- Focus on current password text box -->");
             Output.WriteLine("<script type=\"text/javascript\">focus_element('current_password_enter');</script>");
-            // ===== END: moved from Write_ItemNavForm_Opening(Output, Tracer) =====
 
-            // Original Add_Popup_HTML(Output, Tracer), Add_Controls(Output, Tracer), and Write_ItemNavForm_Closing(Output, Tracer) overrides did not exist for this viewer
-
-            // Close the item nav form (was written externally by MySobek_HtmlSubwriter)
+            // Close the item nav form
             Write_ItemNavForm_Closing(Output);
         }
     }

@@ -333,208 +333,10 @@ namespace SobekCM.Library.MySobekViewer
                 Output.WriteLine();
             }
 
-            // Open the item nav form (was written externally by MySobek_HtmlSubwriter)
+            // Open the item nav form
             Write_ItemNavForm_Opening(Output);
 
-            // Original Write_ItemNavForm_Opening(Output, Tracer) override did not exist for this viewer
-
-            // ===== BEGIN: moved from Add_Popup_HTML(Output, Tracer) (was always called - Contains_Popup_Forms is TRUE) =====
-            Tracer.Add_Trace("Folder_Mgmt_MySobekViewer.Add_Popup_HTML", "Add any popup divisions for form elements");
-
-            Output.WriteLine("<script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Jquery_Ui_1_10_3_Custom_Js + "\"></script>");
-            Output.WriteLine();
-
-            // Add the hidden fields
-            Output.WriteLine("<!-- Hidden field is used for postbacks to indicate what to save and reset -->");
-            Output.WriteLine("<input type=\"hidden\" id=\"item_action\" name=\"item_action\" value=\"\" />");
-            Output.WriteLine("<input type=\"hidden\" id=\"bookshelf_items\" name=\"bookshelf_items\" value=\"\" />");
-            Output.WriteLine("<input type=\"hidden\" id=\"bookshelf_params\" name=\"bookshelf_params\" value=\"\" />");
-            Output.WriteLine();
-
-            if (RequestSpecificValues.Current_Mode.My_Sobek_SubMode.Length > 0)
-            {
-                #region Email form
-
-                if (RequestSpecificValues.Current_User != null)
-                {
-                    Output.WriteLine("<!-- Email form -->");
-                    Output.WriteLine("<div class=\"sbkFmsv_EmailPopup sbkMySobek_PopupForm\" id=\"form_email\" style=\"display:none;\">");
-                    Output.WriteLine("  <div class=\"sbkMySobek_PopupTitle\"><table style=\"width:100%;\"><tr style=\"height:20px;\"><td style=\"text-align:left;\">SEND THIS ITEM TO A FRIEND</td><td style=\"text-align:right;\"> <a href=\"#template\" alt=\"CLOSE\" onclick=\"email_form_close()\">X</a> &nbsp; </td></tr></table></div>");
-
-
-                    Output.WriteLine("  <fieldset><legend>Enter the email information below &nbsp; </legend>");
-                    Output.WriteLine("    <table class=\"sbkMySobek_PopupTable\">");
-
-
-                    // Add email address line
-                    Output.WriteLine("      <tr>");
-                    Output.WriteLine("        <td style=\"width:80px\"><label for=\"email_address\">To:</label></td>");
-                    Output.WriteLine("        <td><input class=\"sbkFmsv_EmailInput sbkMySobek_Focusable\" name=\"email_address\" id=\"email_address\" type=\"text\" value=\"" + RequestSpecificValues.Current_User.Email + "\" /></td>");
-                    Output.WriteLine("      </tr>");
-
-                    // Add comments area
-                    Output.WriteLine("      <tr style=\"vertical-align:top\">");
-                    Output.WriteLine("        <td><label for=\"email_comments\">Comments:</label></td>");
-                    Output.WriteLine("        <td><textarea rows=\"6\" class=\"sbkFmsv_EmailTextArea sbkMySobek_Focusable\" name=\"email_comments\" id=\"email_comments\"></textarea></td>");
-                    Output.WriteLine("      </tr>");
-
-                    // Add format area
-                    Output.WriteLine("      <tr>");
-                    Output.WriteLine("        <td>Format:</td>");
-                    Output.WriteLine("        <td>");
-                    Output.WriteLine("            <input type=\"radio\" class=\"sbkMySobek_checkbox\" name=\"email_format\" id=\"email_format_html\" value=\"html\" checked=\"checked\" /> <label for=\"email_format_html\">HTML</label> &nbsp; &nbsp; ");
-                    Output.WriteLine("            <input type=\"radio\" class=\"sbkMySobek_checkbox\" name=\"email_format\" id=\"email_format_text\" value=\"text\" /> <label for=\"email_format_text\">Plain Text</label>");
-                    Output.WriteLine("        </td>");
-                    Output.WriteLine("      </tr>");
-
-                    Output.WriteLine("    </table>");
-                    Output.WriteLine("  </fieldset>");
-                    Output.WriteLine("  <div class=\"sbk_PopupButtonsDiv\">");
-                    Output.WriteLine("    <button title=\"Send\" class=\"roundbutton\" onclick=\"return email_form_close();\"> CANCEL </button> &nbsp; &nbsp; ");
-                    Output.WriteLine("    <button title=\"Send\" class=\"roundbutton\" type=\"submit\"> SEND </button>");
-                    Output.WriteLine("  </div><br />");
-                    Output.WriteLine("</div>");
-                    Output.WriteLine();
-                }
-
-                #endregion
-
-                #region Move item
-
-                if (RequestSpecificValues.Current_User != null)
-                {
-                    Output.WriteLine("<!-- Move between bookshelves form -->");
-                    Output.WriteLine("<div class=\"add_popup_div\" id=\"move_item_form\" style=\"display:none;\">");
-                    Output.WriteLine("  <div class=\"popup_title\"><table width=\"100%\"><tr><td align=\"left\">M<span class=\"smaller\">OVE</span> I<span class=\"smaller\">TEM BETWEEN </span>B<span class=\"smaller\">OOKSHELVES</span></td><td align=\"right\"> <a href=\"#template\" alt=\"CLOSE\" onclick=\"move_form_close()\">X</a> &nbsp; </td></tr></table></div>");
-                    Output.WriteLine("  <br />");
-                    Output.WriteLine("  <fieldset><legend><span id=\"move_legend\">Select new bookshelf for this item</span> &nbsp; </legend>");
-                    Output.WriteLine("    <br />");
-                    Output.WriteLine("    <table class=\"popup_table\">");
-
-
-                    // Add the list of all bookshelves
-                    Output.Write("      <tr align=\"left\"><td width=\"80px\"><label for=\"add_bookshelf\">Bookshelf:</label></td>");
-                    Output.Write("<td><select class=\"email_bookshelf_input\" name=\"add_bookshelf\" id=\"add_bookshelf\">");
-
-                    foreach (User_Folder folder in RequestSpecificValues.Current_User.All_Folders)
-                    {
-                        if (folder.Folder_Name.Length > 80)
-                        {
-                            Output.Write("<option value=\"" + System.Net.WebUtility.HtmlEncode(folder.Folder_Name) + "\">" + System.Net.WebUtility.HtmlEncode(folder.Folder_Name.Substring(0, 75)) + "...</option>");
-                        }
-                        else
-                        {
-                            if (folder.Folder_Name != "Submitted Items")
-                            {
-                                if (folder.Folder_Name == properFolderName)
-                                    Output.Write("<option value=\"" + System.Net.WebUtility.HtmlEncode(folder.Folder_Name) + "\" selected=\"selected\" >" + System.Net.WebUtility.HtmlEncode(folder.Folder_Name) + "</option>");
-                                else
-                                    Output.Write("<option value=\"" + System.Net.WebUtility.HtmlEncode(folder.Folder_Name) + "\">" + System.Net.WebUtility.HtmlEncode(folder.Folder_Name) + "</option>");
-                            }
-                        }
-                    }
-                    Output.WriteLine("</select></td></tr>");
-
-                    Output.WriteLine("    </table>");
-                    Output.WriteLine("    <br />");
-                    Output.WriteLine("  </fieldset><br />");
-                    Output.WriteLine("  <div class=\"sbk_PopupButtonsDiv\">");
-                    Output.WriteLine("    <button title=\"Send\" class=\"roundbutton\" onclick=\"return move_form_close();\"> CANCEL </button> &nbsp; &nbsp; ");
-                    Output.WriteLine("    <button title=\"Send\" class=\"roundbutton\" type=\"submit\"> SAVE </button>");
-                    Output.WriteLine("  </div><br />");
-                    Output.WriteLine("</div>");
-                    Output.WriteLine();
-                }
-
-                #endregion
-
-                #region Edit RequestSpecificValues.Current_User notes
-
-                if (RequestSpecificValues.Current_User != null)
-                {
-                    Output.WriteLine("<!-- Add/Edit Bookshelf Item Notes -->");
-                    Output.WriteLine("<div class=\"add_popup_div\" id=\"add_item_form\" style=\"display:none;\">");
-                    Output.WriteLine("  <div class=\"popup_title\"><table width=\"100%\"><tr><td align=\"left\">A<span class=\"smaller\">DD/</span>E<span class=\"smaller\">DIT</span> N<span class=\"smaller\">OTES FOR</span> B<span class=\"smaller\">OOKSHELF</span> I<span class=\"smaller\">TEM</span></td><td align=\"right\"> <a href=\"#template\" alt=\"CLOSE\" onclick=\"add_item_form_close()\">X</a> &nbsp; </td></tr></table></div>");
-                    Output.WriteLine("  <br />");
-                    Output.WriteLine("  <fieldset><legend>Enter notes for this item in your bookshelf &nbsp; </legend>");
-                    Output.WriteLine("    <br />");
-                    Output.WriteLine("    <table class=\"popup_table\">");
-
-                    // Add comments area
-                    Output.Write("      <tr align=\"left\" valign=\"top\"><td><br /><label for=\"add_notes\">Notes:</label></td>");
-                    Output.WriteLine("<td><textarea rows=\"6\" cols=\"70\" name=\"add_notes\" id=\"add_notes\" class=\"add_notes_textarea\" onfocus=\"javascript:textbox_enter('add_notes','add_notes_textarea_focused')\" onblur=\"javascript:textbox_leave('add_notes','add_notes_textarea')\"></textarea></td></tr>");
-
-                    Output.WriteLine("    </table>");
-                    Output.WriteLine("    <br />");
-                    Output.WriteLine("  </fieldset><br />");
-                    Output.WriteLine("  <div class=\"sbk_PopupButtonsDiv\">");
-                    Output.WriteLine("    <button title=\"Send\" class=\"roundbutton\" onclick=\"return add_item_form_close();\"> CANCEL </button> &nbsp; &nbsp; ");
-                    Output.WriteLine("    <button title=\"Send\" class=\"roundbutton\" type=\"submit\"> SAVE </button>");
-                    Output.WriteLine("  </div><br />");
-                    Output.WriteLine("</div>");
-                    Output.WriteLine();
-                }
-
-                #endregion
-            }
-            else
-            {
-                #region New bookshelf form
-
-                if (RequestSpecificValues.Current_User != null)
-                {
-                    Output.WriteLine("<!-- New bookshelf form -->");
-                    Output.WriteLine("<div class=\"add_popup_div\" id=\"new_bookshelf_form\" style=\"display:none;\">");
-                    Output.WriteLine("  <div class=\"popup_title\"><table width=\"100%\"><tr><td align=\"left\">N<span class=\"smaller\">EW</span> B<span class=\"smaller\">OOKSHELF</span></td><td align=\"right\"> <a href=\"#template\" alt=\"CLOSE\" onclick=\"new_bookshelf_form_close()\">X</a> &nbsp; </td></tr></table></div>");
-                    Output.WriteLine("  <br />");
-                    Output.WriteLine("  <fieldset><legend><span id=\"move_legend\">Enter the information for your new bookshelf</span> &nbsp; </legend>");
-                    Output.WriteLine("    <br />");
-                    Output.WriteLine("    <table class=\"popup_table\">");
-
-                    // Add the bookshelf name row
-                    Output.Write("      <tr align=\"left\"><td width=\"80px\"><label for=\"new_bookshelf_name\">Name:</label></td>");
-                    Output.WriteLine("<td><input class=\"email_input\" name=\"new_bookshelf_name\" id=\"new_bookshelf_name\" type=\"text\" value=\"\" onfocus=\"javascript:textbox_enter('new_bookshelf_name', 'email_input_focused')\" onblur=\"javascript:textbox_leave('new_bookshelf_name', 'email_input')\" /></td></tr>");
-
-
-                    // Add the list of all bookshelves to select a parent
-                    Output.Write("      <tr align=\"left\"><td><label for=\"new_bookshelf_parent\">Parent:</label></td>");
-                    Output.Write("<td><select class=\"email_bookshelf_input\" name=\"new_bookshelf_parent\" id=\"new_bookshelf_parent\">");
-                    Output.Write("<option value=\"-1\" selected=\"selected\" >(none)</option>");
-
-                    foreach (User_Folder folder in RequestSpecificValues.Current_User.All_Folders)
-                    {
-
-                        if (folder.Folder_Name.Length > 80)
-                        {
-                            Output.Write("<option value=\"" + folder.Folder_ID + "\">" + System.Net.WebUtility.HtmlEncode(folder.Folder_Name.Substring(0, 75)) + "...</option>");
-                        }
-                        else
-                        {
-                            if (folder.Folder_Name != "Submitted Items")
-                            {
-                                Output.Write("<option value=\"" + folder.Folder_ID + "\">" + System.Net.WebUtility.HtmlEncode(folder.Folder_Name) + "</option>");
-                            }
-                        }
-                    }
-                    Output.WriteLine("</select></td></tr>");
-
-                    Output.WriteLine("    </table>");
-                    Output.WriteLine("    <br />");
-                    Output.WriteLine("  </fieldset><br />");
-                    Output.WriteLine("  <div class=\"sbk_PopupButtonsDiv\">");
-                    Output.WriteLine("    <button title=\"Send\" class=\"roundbutton\" onclick=\"return new_bookshelf_form_close();\"> CANCEL </button> &nbsp; &nbsp; ");
-                    Output.WriteLine("    <button title=\"Send\" class=\"roundbutton\" type=\"submit\"> SAVE </button>");
-                    Output.WriteLine("  </div><br />");
-                    Output.WriteLine("</div>");
-                    Output.WriteLine();
-                }
-
-                #endregion
-            }
-            // ===== END: moved from Add_Popup_HTML(Output, Tracer) =====
-
-            // ===== BEGIN: moved from Add_Controls(Output, Tracer) =====
-            Tracer.Add_Trace("Folder_Mgmt_MySobekViewer.Add_Controls", String.Empty);
+            write_popup_forms(Output, Tracer);    
 
             // If this is submitted items, don't show the folders
             string redirect_url = String.Empty;
@@ -776,12 +578,205 @@ namespace SobekCM.Library.MySobekViewer
                 // Write to output
                 Output.Write(bookshelfManageBuilder.ToString());
             }
-            // ===== END: moved from Add_Controls(Output, Tracer) =====
 
-            // Original Write_ItemNavForm_Closing(Output, Tracer) override did not exist for this viewer
-
-            // Close the item nav form (was written externally by MySobek_HtmlSubwriter)
+            // Close the item nav form
             Write_ItemNavForm_Closing(Output);
+        }
+
+        private void write_popup_forms(TextWriter Output, Custom_Tracer Tracer)
+        {
+            Tracer.Add_Trace("Folder_Mgmt_MySobekViewer.write_popup_forms", "Add any popup divisions for form elements");
+
+            Output.WriteLine("<script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Jquery_Ui_1_10_3_Custom_Js + "\"></script>");
+            Output.WriteLine();
+
+            // Add the hidden fields
+            Output.WriteLine("<!-- Hidden field is used for postbacks to indicate what to save and reset -->");
+            Output.WriteLine("<input type=\"hidden\" id=\"item_action\" name=\"item_action\" value=\"\" />");
+            Output.WriteLine("<input type=\"hidden\" id=\"bookshelf_items\" name=\"bookshelf_items\" value=\"\" />");
+            Output.WriteLine("<input type=\"hidden\" id=\"bookshelf_params\" name=\"bookshelf_params\" value=\"\" />");
+            Output.WriteLine();
+
+            if (RequestSpecificValues.Current_Mode.My_Sobek_SubMode.Length > 0)
+            {
+                #region Email form
+
+                if (RequestSpecificValues.Current_User != null)
+                {
+                    Output.WriteLine("<!-- Email form -->");
+                    Output.WriteLine("<div class=\"sbkFmsv_EmailPopup sbkMySobek_PopupForm\" id=\"form_email\" style=\"display:none;\">");
+                    Output.WriteLine("  <div class=\"sbkMySobek_PopupTitle\"><table style=\"width:100%;\"><tr style=\"height:20px;\"><td style=\"text-align:left;\">SEND THIS ITEM TO A FRIEND</td><td style=\"text-align:right;\"> <a href=\"#template\" alt=\"CLOSE\" onclick=\"email_form_close()\">X</a> &nbsp; </td></tr></table></div>");
+
+
+                    Output.WriteLine("  <fieldset><legend>Enter the email information below &nbsp; </legend>");
+                    Output.WriteLine("    <table class=\"sbkMySobek_PopupTable\">");
+
+
+                    // Add email address line
+                    Output.WriteLine("      <tr>");
+                    Output.WriteLine("        <td style=\"width:80px\"><label for=\"email_address\">To:</label></td>");
+                    Output.WriteLine("        <td><input class=\"sbkFmsv_EmailInput sbkMySobek_Focusable\" name=\"email_address\" id=\"email_address\" type=\"text\" value=\"" + RequestSpecificValues.Current_User.Email + "\" /></td>");
+                    Output.WriteLine("      </tr>");
+
+                    // Add comments area
+                    Output.WriteLine("      <tr style=\"vertical-align:top\">");
+                    Output.WriteLine("        <td><label for=\"email_comments\">Comments:</label></td>");
+                    Output.WriteLine("        <td><textarea rows=\"6\" class=\"sbkFmsv_EmailTextArea sbkMySobek_Focusable\" name=\"email_comments\" id=\"email_comments\"></textarea></td>");
+                    Output.WriteLine("      </tr>");
+
+                    // Add format area
+                    Output.WriteLine("      <tr>");
+                    Output.WriteLine("        <td>Format:</td>");
+                    Output.WriteLine("        <td>");
+                    Output.WriteLine("            <input type=\"radio\" class=\"sbkMySobek_checkbox\" name=\"email_format\" id=\"email_format_html\" value=\"html\" checked=\"checked\" /> <label for=\"email_format_html\">HTML</label> &nbsp; &nbsp; ");
+                    Output.WriteLine("            <input type=\"radio\" class=\"sbkMySobek_checkbox\" name=\"email_format\" id=\"email_format_text\" value=\"text\" /> <label for=\"email_format_text\">Plain Text</label>");
+                    Output.WriteLine("        </td>");
+                    Output.WriteLine("      </tr>");
+
+                    Output.WriteLine("    </table>");
+                    Output.WriteLine("  </fieldset>");
+                    Output.WriteLine("  <div class=\"sbk_PopupButtonsDiv\">");
+                    Output.WriteLine("    <button title=\"Send\" class=\"roundbutton\" onclick=\"return email_form_close();\"> CANCEL </button> &nbsp; &nbsp; ");
+                    Output.WriteLine("    <button title=\"Send\" class=\"roundbutton\" type=\"submit\"> SEND </button>");
+                    Output.WriteLine("  </div><br />");
+                    Output.WriteLine("</div>");
+                    Output.WriteLine();
+                }
+
+                #endregion
+
+                #region Move item
+
+                if (RequestSpecificValues.Current_User != null)
+                {
+                    Output.WriteLine("<!-- Move between bookshelves form -->");
+                    Output.WriteLine("<div class=\"add_popup_div\" id=\"move_item_form\" style=\"display:none;\">");
+                    Output.WriteLine("  <div class=\"popup_title\"><table width=\"100%\"><tr><td align=\"left\">M<span class=\"smaller\">OVE</span> I<span class=\"smaller\">TEM BETWEEN </span>B<span class=\"smaller\">OOKSHELVES</span></td><td align=\"right\"> <a href=\"#template\" alt=\"CLOSE\" onclick=\"move_form_close()\">X</a> &nbsp; </td></tr></table></div>");
+                    Output.WriteLine("  <br />");
+                    Output.WriteLine("  <fieldset><legend><span id=\"move_legend\">Select new bookshelf for this item</span> &nbsp; </legend>");
+                    Output.WriteLine("    <br />");
+                    Output.WriteLine("    <table class=\"popup_table\">");
+
+
+                    // Add the list of all bookshelves
+                    Output.Write("      <tr align=\"left\"><td width=\"80px\"><label for=\"add_bookshelf\">Bookshelf:</label></td>");
+                    Output.Write("<td><select class=\"email_bookshelf_input\" name=\"add_bookshelf\" id=\"add_bookshelf\">");
+
+                    foreach (User_Folder folder in RequestSpecificValues.Current_User.All_Folders)
+                    {
+                        if (folder.Folder_Name.Length > 80)
+                        {
+                            Output.Write("<option value=\"" + System.Net.WebUtility.HtmlEncode(folder.Folder_Name) + "\">" + System.Net.WebUtility.HtmlEncode(folder.Folder_Name.Substring(0, 75)) + "...</option>");
+                        }
+                        else
+                        {
+                            if (folder.Folder_Name != "Submitted Items")
+                            {
+                                if (folder.Folder_Name == properFolderName)
+                                    Output.Write("<option value=\"" + System.Net.WebUtility.HtmlEncode(folder.Folder_Name) + "\" selected=\"selected\" >" + System.Net.WebUtility.HtmlEncode(folder.Folder_Name) + "</option>");
+                                else
+                                    Output.Write("<option value=\"" + System.Net.WebUtility.HtmlEncode(folder.Folder_Name) + "\">" + System.Net.WebUtility.HtmlEncode(folder.Folder_Name) + "</option>");
+                            }
+                        }
+                    }
+                    Output.WriteLine("</select></td></tr>");
+
+                    Output.WriteLine("    </table>");
+                    Output.WriteLine("    <br />");
+                    Output.WriteLine("  </fieldset><br />");
+                    Output.WriteLine("  <div class=\"sbk_PopupButtonsDiv\">");
+                    Output.WriteLine("    <button title=\"Send\" class=\"roundbutton\" onclick=\"return move_form_close();\"> CANCEL </button> &nbsp; &nbsp; ");
+                    Output.WriteLine("    <button title=\"Send\" class=\"roundbutton\" type=\"submit\"> SAVE </button>");
+                    Output.WriteLine("  </div><br />");
+                    Output.WriteLine("</div>");
+                    Output.WriteLine();
+                }
+
+                #endregion
+
+                #region Edit RequestSpecificValues.Current_User notes
+
+                if (RequestSpecificValues.Current_User != null)
+                {
+                    Output.WriteLine("<!-- Add/Edit Bookshelf Item Notes -->");
+                    Output.WriteLine("<div class=\"add_popup_div\" id=\"add_item_form\" style=\"display:none;\">");
+                    Output.WriteLine("  <div class=\"popup_title\"><table width=\"100%\"><tr><td align=\"left\">A<span class=\"smaller\">DD/</span>E<span class=\"smaller\">DIT</span> N<span class=\"smaller\">OTES FOR</span> B<span class=\"smaller\">OOKSHELF</span> I<span class=\"smaller\">TEM</span></td><td align=\"right\"> <a href=\"#template\" alt=\"CLOSE\" onclick=\"add_item_form_close()\">X</a> &nbsp; </td></tr></table></div>");
+                    Output.WriteLine("  <br />");
+                    Output.WriteLine("  <fieldset><legend>Enter notes for this item in your bookshelf &nbsp; </legend>");
+                    Output.WriteLine("    <br />");
+                    Output.WriteLine("    <table class=\"popup_table\">");
+
+                    // Add comments area
+                    Output.Write("      <tr align=\"left\" valign=\"top\"><td><br /><label for=\"add_notes\">Notes:</label></td>");
+                    Output.WriteLine("<td><textarea rows=\"6\" cols=\"70\" name=\"add_notes\" id=\"add_notes\" class=\"add_notes_textarea\" onfocus=\"javascript:textbox_enter('add_notes','add_notes_textarea_focused')\" onblur=\"javascript:textbox_leave('add_notes','add_notes_textarea')\"></textarea></td></tr>");
+
+                    Output.WriteLine("    </table>");
+                    Output.WriteLine("    <br />");
+                    Output.WriteLine("  </fieldset><br />");
+                    Output.WriteLine("  <div class=\"sbk_PopupButtonsDiv\">");
+                    Output.WriteLine("    <button title=\"Send\" class=\"roundbutton\" onclick=\"return add_item_form_close();\"> CANCEL </button> &nbsp; &nbsp; ");
+                    Output.WriteLine("    <button title=\"Send\" class=\"roundbutton\" type=\"submit\"> SAVE </button>");
+                    Output.WriteLine("  </div><br />");
+                    Output.WriteLine("</div>");
+                    Output.WriteLine();
+                }
+
+                #endregion
+            }
+            else
+            {
+                #region New bookshelf form
+
+                if (RequestSpecificValues.Current_User != null)
+                {
+                    Output.WriteLine("<!-- New bookshelf form -->");
+                    Output.WriteLine("<div class=\"add_popup_div\" id=\"new_bookshelf_form\" style=\"display:none;\">");
+                    Output.WriteLine("  <div class=\"popup_title\"><table width=\"100%\"><tr><td align=\"left\">N<span class=\"smaller\">EW</span> B<span class=\"smaller\">OOKSHELF</span></td><td align=\"right\"> <a href=\"#template\" alt=\"CLOSE\" onclick=\"new_bookshelf_form_close()\">X</a> &nbsp; </td></tr></table></div>");
+                    Output.WriteLine("  <br />");
+                    Output.WriteLine("  <fieldset><legend><span id=\"move_legend\">Enter the information for your new bookshelf</span> &nbsp; </legend>");
+                    Output.WriteLine("    <br />");
+                    Output.WriteLine("    <table class=\"popup_table\">");
+
+                    // Add the bookshelf name row
+                    Output.Write("      <tr align=\"left\"><td width=\"80px\"><label for=\"new_bookshelf_name\">Name:</label></td>");
+                    Output.WriteLine("<td><input class=\"email_input\" name=\"new_bookshelf_name\" id=\"new_bookshelf_name\" type=\"text\" value=\"\" onfocus=\"javascript:textbox_enter('new_bookshelf_name', 'email_input_focused')\" onblur=\"javascript:textbox_leave('new_bookshelf_name', 'email_input')\" /></td></tr>");
+
+
+                    // Add the list of all bookshelves to select a parent
+                    Output.Write("      <tr align=\"left\"><td><label for=\"new_bookshelf_parent\">Parent:</label></td>");
+                    Output.Write("<td><select class=\"email_bookshelf_input\" name=\"new_bookshelf_parent\" id=\"new_bookshelf_parent\">");
+                    Output.Write("<option value=\"-1\" selected=\"selected\" >(none)</option>");
+
+                    foreach (User_Folder folder in RequestSpecificValues.Current_User.All_Folders)
+                    {
+
+                        if (folder.Folder_Name.Length > 80)
+                        {
+                            Output.Write("<option value=\"" + folder.Folder_ID + "\">" + System.Net.WebUtility.HtmlEncode(folder.Folder_Name.Substring(0, 75)) + "...</option>");
+                        }
+                        else
+                        {
+                            if (folder.Folder_Name != "Submitted Items")
+                            {
+                                Output.Write("<option value=\"" + folder.Folder_ID + "\">" + System.Net.WebUtility.HtmlEncode(folder.Folder_Name) + "</option>");
+                            }
+                        }
+                    }
+                    Output.WriteLine("</select></td></tr>");
+
+                    Output.WriteLine("    </table>");
+                    Output.WriteLine("    <br />");
+                    Output.WriteLine("  </fieldset><br />");
+                    Output.WriteLine("  <div class=\"sbk_PopupButtonsDiv\">");
+                    Output.WriteLine("    <button title=\"Send\" class=\"roundbutton\" onclick=\"return new_bookshelf_form_close();\"> CANCEL </button> &nbsp; &nbsp; ");
+                    Output.WriteLine("    <button title=\"Send\" class=\"roundbutton\" type=\"submit\"> SAVE </button>");
+                    Output.WriteLine("  </div><br />");
+                    Output.WriteLine("</div>");
+                    Output.WriteLine();
+                }
+
+                #endregion
+            }
         }
 
         private void add_children_nodes(HtmlTreeNode ParentNode, User_Folder ThisFolder, string SelectedFolder, string RedirectURL, List<HtmlTreeNode> SelectedNodes)

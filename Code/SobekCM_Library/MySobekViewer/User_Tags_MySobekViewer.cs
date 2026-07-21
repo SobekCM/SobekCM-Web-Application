@@ -51,7 +51,7 @@ namespace SobekCM.Library.MySobekViewer
         /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
         public override void Write_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
-            Tracer.Add_Trace("User_Tags_MySobekViewer.Write_HTML", String.Empty);
+            Tracer.Add_Trace("User_Tags_MySobekViewer.Write_HTML");
 
             Output.WriteLine("<h1>" + Web_Title + "</h1>");
             Output.WriteLine();
@@ -264,14 +264,6 @@ namespace SobekCM.Library.MySobekViewer
             }
 
             Output.WriteLine("</div>");
-
-            // Open the item nav form (was written externally by MySobek_HtmlSubwriter)
-            Write_ItemNavForm_Opening(Output);
-
-            // Original Write_ItemNavForm_Opening(Output, Tracer), Add_Popup_HTML(Output, Tracer), Add_Controls(Output, Tracer), and Write_ItemNavForm_Closing(Output, Tracer) overrides did not exist for this viewer
-
-            // Close the item nav form (was written externally by MySobek_HtmlSubwriter)
-            Write_ItemNavForm_Closing(Output);
         }
     }
 }

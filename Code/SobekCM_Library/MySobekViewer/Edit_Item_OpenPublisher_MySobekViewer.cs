@@ -244,14 +244,12 @@ namespace SobekCM.Library.MySobekViewer
         /// <remarks> This class does nothing, since the CompleteTemplate html is added in the <see cref="Write_ItemNavForm_Closing" /> method </remarks>
         public override void Write_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
-            Tracer.Add_Trace("Edit_Item_OpenPublisher_MySobekViewer.Write_HTML", "Do nothing");
+            Tracer.Add_Trace("Edit_Item_OpenPublisher_MySobekViewer.Write_HTML");
 
-            // Open the item nav form (was written externally by MySobek_HtmlSubwriter)
+            // Open the item nav form
             Write_ItemNavForm_Opening(Output);
 
-            // Original Write_ItemNavForm_Opening(Output, Tracer) and Add_Controls(Output, Tracer) overrides did not exist for this viewer
-
-            // ===== BEGIN: moved from Add_Popup_HTML(Output, Tracer) (was always called - Contains_Popup_Forms is TRUE) =====
+            #region Popup Form Html
             Tracer.Add_Trace("Edit_Item_OpenPublisher_MySobekViewer.Add_Popup_HTML", "Add any popup divisions for form elements");
 
             // Add the hidden field
@@ -313,13 +311,7 @@ namespace SobekCM.Library.MySobekViewer
             Output.WriteLine("  </table>");
             Output.WriteLine("</div>");
             Output.WriteLine();
-            // ===== END: moved from Add_Popup_HTML(Output, Tracer) =====
-
-            // ===== BEGIN: moved from Write_ItemNavForm_Closing(Output, Tracer) =====
-            Tracer.Add_Trace("Edit_Item_OpenPublisher_MySobekViewer.Write_ItemNavForm_Closing", "");
-
-
-            Output.WriteLine("<!-- Edit_Item_OpenPublisher_MySobekViewer.Write_ItemNavForm_Closing -->");
+            #endregion
 
             // Find the link for this item
             var lastMode = RequestSpecificValues.Current_Mode.Mode;
@@ -373,11 +365,7 @@ namespace SobekCM.Library.MySobekViewer
             Output.WriteLine("    <li>Click <a href=\"http://sobekrepository.org/helpyhelphelp/editinstructions\" target=\"_EDIT_INSTRUCTIONS\">here for detailed instructions</a> on this functionality.</li>");
             Output.WriteLine("  </ul>");
 
-
-
             Output.WriteLine("</div>");
-
-
 
             Output.WriteLine("<div id=\"oer_div_container\">");
 
@@ -463,15 +451,11 @@ namespace SobekCM.Library.MySobekViewer
 
             Output.WriteLine("</div>");
 
-
-
-
             Output.WriteLine("</div>");
             Output.WriteLine("</div>");
             Output.WriteLine();
-            // ===== END: moved from Write_ItemNavForm_Closing(Output, Tracer) =====
 
-            // Close the item nav form (was written externally by MySobek_HtmlSubwriter)
+            // Close the item nav form
             Write_ItemNavForm_Closing(Output);
         }
 

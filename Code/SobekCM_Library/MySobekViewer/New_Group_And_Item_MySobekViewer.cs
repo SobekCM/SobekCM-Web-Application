@@ -1272,7 +1272,7 @@ namespace SobekCM.Library.MySobekViewer
         /// <remarks> This adds the CompleteTemplate HTML for step 2 and the congratulations text for step 4 </remarks>
         public override void Write_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
-            Tracer.Add_Trace("New_Group_And_Item_MySobekViewer.Write_HTML", "Do nothing");
+            Tracer.Add_Trace("New_Group_And_Item_MySobekViewer.Write_HTML");
 
             if (currentProcessStep == 8)
             {
@@ -1324,13 +1324,8 @@ namespace SobekCM.Library.MySobekViewer
                 Output.WriteLine("<blockquote>" + explanation + "</blockquote><br />");
             }
 
-            // Open the item nav form (was written externally by MySobek_HtmlSubwriter)
+            // Open the item nav form
             Write_ItemNavForm_Opening(Output);
-
-            // Original Write_ItemNavForm_Opening(Output, Tracer) and Add_Popup_HTML(Output, Tracer) overrides did not exist for this viewer
-
-            // ===== BEGIN: moved from Add_Controls(Output, Tracer) =====
-            Tracer.Add_Trace("New_Group_And_Item_MySobekViewer.Add_Controls", String.Empty);
 
             // Do nothing if this is the very last step
             if (currentProcessStep == 8)
@@ -1338,10 +1333,6 @@ namespace SobekCM.Library.MySobekViewer
                 // Add the upload controls to the file place holder
                 add_upload_controls(Output, Tracer);
             }
-            // ===== END: moved from Add_Controls(Output, Tracer) =====
-
-            // ===== BEGIN: moved from Write_ItemNavForm_Closing(Output, Tracer) =====
-            Tracer?.Add_Trace("New_Group_And_Item_MySobekViewer.Write_ItemNavForm_Closing", "");
 
             string templateLabel = "Template";
             string projectLabel = "Default Metadata";
@@ -1607,9 +1598,8 @@ namespace SobekCM.Library.MySobekViewer
             {
                 add_congratulations_html(Output, Tracer);
             }
-            // ===== END: moved from Write_ItemNavForm_Closing(Output, Tracer) =====
 
-            // Close the item nav form (was written externally by MySobek_HtmlSubwriter)
+            // Close the item nav form
             Write_ItemNavForm_Closing(Output);
         }
 
@@ -1891,6 +1881,7 @@ namespace SobekCM.Library.MySobekViewer
         }
 
         #endregion
+
         #region Step 3: Upload Related Files
 
         private void add_upload_controls(TextWriter Output, Custom_Tracer Tracer)

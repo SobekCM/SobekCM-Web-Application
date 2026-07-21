@@ -1142,7 +1142,7 @@ namespace SobekCM.Library.MySobekViewer
                 Output.WriteLine("<blockquote>" + explanation + "</blockquote><br />");
             }
 
-            // Open the item nav form (was written externally by MySobek_HtmlSubwriter)
+            // Open the item nav form
             Write_ItemNavForm_Opening(Output);
 
             // Do nothing if this is the very last step

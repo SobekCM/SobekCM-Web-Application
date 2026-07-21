@@ -161,12 +161,9 @@ namespace SobekCM.Library.MySobekViewer
 
         public override void Write_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
-            //Output.WriteLine("IMPORT SPREADSHEET STUFF HERE");
-
-            // Open the item nav form (was written externally by MySobek_HtmlSubwriter)
+            // Open the item nav form
             Write_ItemNavForm_Opening(Output);
 
-            // ===== BEGIN: moved from Write_ItemNavForm_Opening(Output, Tracer) =====
             // Add the hidden fields first
             Output.WriteLine("<!-- Hidden field is used for postbacks to indicate what to save and reset -->");
             Output.WriteLine("<input type=\"hidden\" id=\"action\" name=\"action\" value=\"\" />");
@@ -177,11 +174,7 @@ namespace SobekCM.Library.MySobekViewer
             {
                 write_upload_page(Output);
             }
-            // ===== END: moved from Write_ItemNavForm_Opening(Output, Tracer) =====
 
-            // Original Add_Popup_HTML(Output, Tracer) override did not exist for this viewer
-
-            // ===== BEGIN: moved from Add_Controls(Output, Tracer) =====
             if ((page == 1) && (String.IsNullOrEmpty(file_name)))
             {
                 Tracer.Add_Trace("Import_Spreadsheet_MySobekViewer.Add_Controls", "Add upload controls for the spreadsheet upload");
@@ -189,9 +182,7 @@ namespace SobekCM.Library.MySobekViewer
                 // Add the upload controls to the file place holder
                 add_upload_controls(Output, Tracer);
             }
-            // ===== END: moved from Add_Controls(Output, Tracer) =====
 
-            // ===== BEGIN: moved from Write_ItemNavForm_Closing(Output, Tracer) =====
             if (page == 1)
             {
                 Output.WriteLine("<br /><br />");
@@ -199,9 +190,8 @@ namespace SobekCM.Library.MySobekViewer
                 Output.WriteLine("<br /><br />");
 
             }
-            // ===== END: moved from Write_ItemNavForm_Closing(Output, Tracer) =====
 
-            // Close the item nav form (was written externally by MySobek_HtmlSubwriter)
+            // Close the item nav form
             Write_ItemNavForm_Closing(Output);
         }
 

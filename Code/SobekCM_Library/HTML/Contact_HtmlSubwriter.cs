@@ -199,6 +199,7 @@ namespace SobekCM.Library.HTML
                 if (email_error)
                 {
                     Context.Response.Redirect(UI_ApplicationCache_Gateway.Settings.Servers.System_Error_URL);
+                    RequestSpecificValues.Current_Mode.Request_Completed = true;
                 }
                 else
                 {

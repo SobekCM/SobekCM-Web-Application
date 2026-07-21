@@ -102,7 +102,8 @@ namespace SobekCM.Library.MySobekViewer
             if (!RequestSpecificValues.Current_User.Can_Edit_This_Item(currentItem.BibID, currentItem.Bib_Info.SobekCM_Type_String, currentItem.Bib_Info.Source.Code, currentItem.Bib_Info.HoldingCode, currentItem.Behaviors.Aggregation_Code_List))
             {
                 RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
-                Context.Response.Redirect(UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode));
+                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode, Context);
+                return;
             }
 
             // Is this a project

@@ -96,178 +96,11 @@ namespace SobekCM.Library.MainWriters
             try
             {
                 // Create the html sub writer now
-                switch (RequestSpecificValues.Current_Mode.Mode)
-                {
-                    case Display_Mode_Enum.Internal:
-                        RequestSpecificValues.Tracer.Add_Trace("Html_MainWriter.Consructor", "Internal html sub writer.");
-                        subwriter = new Internal_HtmlSubwriter(RequestSpecificValues);
-                        break;
-
-                    case Display_Mode_Enum.Statistics:
-                        RequestSpecificValues.Tracer.Add_Trace("Html_MainWriter.Consructor", "Statistics html sub writer.");
-                        subwriter = new Statistics_HtmlSubwriter(RequestSpecificValues);
-                        break;
-
-                    case Display_Mode_Enum.Preferences:
-                        RequestSpecificValues.Tracer.Add_Trace("Html_MainWriter.Consructor", "Preferences html sub writer.");
-                        subwriter = new Preferences_HtmlSubwriter(RequestSpecificValues);
-                        break;
-
-                    case Display_Mode_Enum.Empty:
-                        RequestSpecificValues.Tracer.Add_Trace("Html_MainWriter.Consructor", "Empty html sub writer.");
-                        subwriter = new Empty_HtmlSubwriter(RequestSpecificValues);
-                        break;
-
-                    case Display_Mode_Enum.Error:
-                        RequestSpecificValues.Tracer.Add_Trace("Html_MainWriter.Consructor", "Error html sub writer.");
-                        subwriter = new Error_HtmlSubwriter(false, RequestSpecificValues);
-                        // Send the email now
-                        if (RequestSpecificValues.Current_Mode.Caught_Exception != null)
-                        {
-                            if (String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.Error_Message))
-                                RequestSpecificValues.Current_Mode.Error_Message = "Unknown exception caught";
-                            Email_Information(RequestSpecificValues.Current_Mode.Error_Message, RequestSpecificValues.Current_Mode.Caught_Exception, RequestSpecificValues.Tracer, false, Context);
-                        }
-                        break;
-
-                    case Display_Mode_Enum.Legacy_URL:
-                        RequestSpecificValues.Tracer.Add_Trace("Html_MainWriter.Consructor", "Legacy URL html sub writer.");
-                        subwriter = new LegacyUrl_HtmlSubwriter(RequestSpecificValues);
-                        break;
-
-                    case Display_Mode_Enum.Item_Print:
-                        RequestSpecificValues.Tracer.Add_Trace("Html_MainWriter.Consructor", "Item print html sub writer.");
-                        subwriter = new Print_Item_HtmlSubwriter(RequestSpecificValues);
-                        break;
-
-                    case Display_Mode_Enum.Contact:
-                        RequestSpecificValues.Tracer.Add_Trace("Html_MainWriter.Consructor", "Contact html sub writer.");
-                        var builder = new StringBuilder();
-                        builder.Append("\n\nSUBMISSION INFORMATION\n");
-                        builder.Append("\tDate:\t\t\t\t" + DateTime.Now.ToString() + "\n");
-                        string lastMode = String.Empty;
-                        try
-                        {
-                            if (Context.Session.GetString(SessionCache_Keys.LastMode) != null)
-                                lastMode = Context.Session.GetString(SessionCache_Keys.LastMode);
-
-                            builder.Append("\tIP Address:\t\t\t" + (Context.Connection.RemoteIpAddress?.ToString() ?? "") + "\n");
-                            builder.Append("\tHost Name:\t\t\t" + (Context.Connection.RemoteIpAddress?.ToString() ?? "") + "\n");
-                            string contactUserAgent = Context.Request.Headers.UserAgent.ToString();
-                            builder.Append("\tBrowser:\t\t\t" + contactUserAgent + "\n");
-                            builder.Append("\tBrowser Platform:\t\t" + "UNKNOWN" + "\n");
-                            builder.Append("\tBrowser Version:\t\t" + "UNKNOWN" + "\n");
-                            builder.Append("\tBrowser Language:\t\t");
-                            bool first = true;
-                            string acceptLangHeader = Context.Request.Headers["Accept-Language"].ToString();
-                            string[] languages = string.IsNullOrEmpty(acceptLangHeader) ? null : acceptLangHeader.Split(',');
-
-                            if (languages != null)
-                                foreach (string thisLanguage in languages)
-                                {
-                                    if (first)
-                                    {
-                                        builder.Append(thisLanguage);
-                                        first = false;
-                                    }
-                                    else
-                                    {
-                                        builder.Append(", " + thisLanguage);
-                                    }
-                                }
-
-                            builder.Append("\n\nHISTORY\n");
-                            if (Context.Session.GetString(SessionCache_Keys.LastSearch) != null)
-                                builder.Append("\tLast Search:\t\t" + Context.Session.GetString(SessionCache_Keys.LastSearch) + "\n");
-                            if (Context.Session.GetString(SessionCache_Keys.LastResults) != null)
-                                builder.Append("\tLast Results:\t\t" + Context.Session.GetString(SessionCache_Keys.LastResults) + "\n");
-                            if (Context.Session.GetString(SessionCache_Keys.LastMode) != null)
-                                builder.Append("\tLast Mode:\t\t\t" + Context.Session.GetString(SessionCache_Keys.LastMode) + "\n");
-                            builder.Append("\tURL:\t\t\t\t" + Context.Items[RequestCache_Keys.OriginalUrl]);
-                        }
-                        catch
-                        {
-
-                        }
-                        subwriter = new Contact_HtmlSubwriter(lastMode, builder.ToString(), RequestSpecificValues);
-                        break;
-
-                    case Display_Mode_Enum.Contact_Sent:
-                        RequestSpecificValues.Tracer.Add_Trace("Html_MainWriter.Consructor", "Contact sent html sub writer.");
-                        subwriter = new Contact_HtmlSubwriter(String.Empty, String.Empty, RequestSpecificValues);
-                        break;
-
-                    case Display_Mode_Enum.Simple_HTML_CMS:
-                        RequestSpecificValues.Tracer.Add_Trace("Html_MainWriter.Consructor", "Simple html cms html sub writer.");
-                        subwriter = new Web_Content_HtmlSubwriter(RequestSpecificValues);
-                        break;
-
-                    case Display_Mode_Enum.My_Sobek:
-                        RequestSpecificValues.Tracer.Add_Trace("Html_MainWriter.Consructor", "My sobek html sub writer.");
-                        subwriter = new MySobek_HtmlSubwriter(RequestSpecificValues);
-                        break;
-
-                    case Display_Mode_Enum.Administrative:
-                        RequestSpecificValues.Tracer.Add_Trace("Html_MainWriter.Consructor", "Administrative html sub writer.");
-                        subwriter = new Admin_HtmlSubwriter(RequestSpecificValues);
-                        break;
-
-                    case Display_Mode_Enum.Results:
-                        RequestSpecificValues.Tracer.Add_Trace("Html_MainWriter.Consructor", "Results html sub writer.");
-                        subwriter = new Search_Results_HtmlSubwriter(RequestSpecificValues);
-                        break;
-
-                    case Display_Mode_Enum.Public_Folder:
-                        RequestSpecificValues.Tracer.Add_Trace("Html_MainWriter.Consructor", "Public folder html sub writer.");
-                        subwriter = new Public_Folder_HtmlSubwriter(RequestSpecificValues);
-                        break;
-
-                    case Display_Mode_Enum.Search:
-                    case Display_Mode_Enum.Aggregation:
-                        RequestSpecificValues.Tracer.Add_Trace("Html_MainWriter.Consructor", "Search or Aggregation html sub writer.");
-                        subwriter = new Aggregation_HtmlSubwriter(RequestSpecificValues);
-                        break;
-
-                    case Display_Mode_Enum.Item_Display:
-                        RequestSpecificValues.Tracer.Add_Trace("Html_MainWriter.Consructor", "Item display html sub writer.");
-                        if ((!RequestSpecificValues.Current_Mode.Invalid_Item.HasValue || !RequestSpecificValues.Current_Mode.Invalid_Item.Value))
-                        {
-                            // Create the item viewer writer
-                            subwriter = new Item_HtmlSubwriter(RequestSpecificValues);
-                        }
-                        else
-                        {
-                            // Create the invalid item html subwrite and write the HTML
-                            subwriter = new Error_HtmlSubwriter(true, RequestSpecificValues);
-                        }
-                        break;
-                }
+                subwriter = HtmlSubwriterFactory.Create(Context, RequestSpecificValues);
 
                 // Might be redirected
                 if (RequestSpecificValues.Current_Mode.Request_Completed)
-                    return;
-
-                // Now, look for error or the web content, which is also often
-                // used for resource missing type errors
-                switch (RequestSpecificValues.Current_Mode.Mode)
-                {
-                    case Display_Mode_Enum.Error:
-                        RequestSpecificValues.Tracer.Add_Trace("Html_MainWriter.Consructor", "Error html sub writer.");
-                        subwriter = new Error_HtmlSubwriter(false, RequestSpecificValues);
-                        // Send the email now
-                        if (RequestSpecificValues.Current_Mode.Caught_Exception != null)
-                        {
-                            if (String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.Error_Message))
-                                RequestSpecificValues.Current_Mode.Error_Message = "Unknown exception caught";
-                            Email_Information(RequestSpecificValues.Current_Mode.Error_Message, RequestSpecificValues.Current_Mode.Caught_Exception, RequestSpecificValues.Tracer, false, Context);
-                        }
-                        break;
-
-                    case Display_Mode_Enum.Simple_HTML_CMS:
-                        RequestSpecificValues.Tracer.Add_Trace("Html_MainWriter.Consructor", "Simple html cms html sub writer.");
-                        subwriter = new Web_Content_HtmlSubwriter(RequestSpecificValues);
-                        break;
-                }
+                    return;              
 
                 // Now, pull the web skin
                 var assistant = new SobekCM_Assistant();
@@ -891,7 +724,7 @@ namespace SobekCM.Library.MainWriters
 
         #region Method to email information during an error
 
-        private static void Email_Information(string EmailTitle, Exception ObjErr, Custom_Tracer Tracer, bool Redirect, HttpContext context = null)
+        internal static void Email_Information(string EmailTitle, Exception ObjErr, Custom_Tracer Tracer, bool Redirect, HttpContext context = null)
         {
             // Is there an error email address in the configuration?
             if (UI_ApplicationCache_Gateway.Settings.Email.System_Error_Email.Length > 0)

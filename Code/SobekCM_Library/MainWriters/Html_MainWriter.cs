@@ -372,20 +372,7 @@ namespace SobekCM.Library.MainWriters
             }
         }
 
-        /// <summary> Returns a flag indicating whether the additional place holder ( &quot;mainPlaceHolder&quot; ) in the itemNavForm form will be utilized 
-        /// for the current request, or if it can be hidden. </summary>
-        /// <value> This property always returns TRUE for the Html_MainWriter </value>
-        public override bool Include_Main_Place_Holder
-        {
-            get
-            {
-                if (subwriter == null) return true;
-
-                return !(subwriter.Subwriter_Behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Omit_Main_PlaceHolder));
-            }
-        }
-
-        /// <summary> Returns a flag indicating whether the file upload specific holder in the itemNavForm form will be utilized 
+        /// <summary> Returns a flag indicating whether the file upload specific holder in the itemNavForm form will be utilized
         /// for the current request, or if it can be hidden. </summary>
         /// <value> This value can be override by child classes, but by default this returns FALSE </value>
         public override bool File_Upload_Possible
@@ -403,7 +390,7 @@ namespace SobekCM.Library.MainWriters
         /// <summary> Perform all the work of adding to the response stream back to the web user </summary>
         /// <param name="Output"> TextWriter to write HTML output </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-        public override void Write_Main_Viewer_Section(TextWriter Output, Custom_Tracer Tracer)
+        private void Write_Main_Viewer_Section(TextWriter Output, Custom_Tracer Tracer)
         {
             // If execution should end, do it now
             if (RequestSpecificValues.Current_Mode.Request_Completed)
@@ -414,6 +401,8 @@ namespace SobekCM.Library.MainWriters
             // Render HTML and add controls depending on the current mode
             switch (RequestSpecificValues.Current_Mode.Mode)
             {
+                subwriter.Add_Main_Viewer_Section(Output, Tracer);
+
                 #region Start adding HTML and controls for SIMPLE WEB CONTENT TEXT mode
 
                 case Display_Mode_Enum.Simple_HTML_CMS:
@@ -475,10 +464,7 @@ namespace SobekCM.Library.MainWriters
                     Search_Results_HtmlSubwriter searchResultsSub = subwriter as Search_Results_HtmlSubwriter;
                     if (searchResultsSub != null)
                     {
-                        // Make sure the corresponding 'search' is the latest
-                        RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Search;
-                        Context.Session.SetString(SessionCache_Keys.LastSearch, UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode));
-                        RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Results;
+
 
                         // Add the controls
                         searchResultsSub.Add_Controls(Output, Tracer);
@@ -844,12 +830,13 @@ namespace SobekCM.Library.MainWriters
             return builder.ToString();
         }
 
-        /// <summary> Perform all the work of adding text directly to the response stream back to the web user </summary>
+        /// <summary> Perform all the work of adding the full body content to the response stream back to the web user </summary>
         /// <param name="Output"> Stream to which to write the text for this main writer </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        public override void Write_Html(TextWriter Output, Custom_Tracer Tracer)
+        /// <param name="FormAction"> Action URL for the navigation form, when this request includes one </param>
+        public override void Write_Body(TextWriter Output, Custom_Tracer Tracer, string FormAction)
         {
-            Tracer.Add_Trace("Html_MainWriter.Write_Html", String.Empty);
+            Tracer.Add_Trace("Html_MainWriter.Write_Body", String.Empty);
 
             // If the subwriter is null, this is an ERROR, but do nothing for now
             if (subwriter == null) return;
@@ -864,36 +851,38 @@ namespace SobekCM.Library.MainWriters
             catch (Exception ee)
             {
                 Email_Information("Error caught in Html_MainWriter", ee, Tracer, true, Context);
-                throw new SobekCM_Traced_Exception("Error caught in Html_MainWriter.Write_Html", ee, Tracer);
+                throw new SobekCM_Traced_Exception("Error caught in Html_MainWriter.Write_Body", ee, Tracer);
             }
+
+            if (Include_Navigation_Form)
+            {
+                string enctype = File_Upload_Possible ? " enctype=\"multipart/form-data\"" : "";
+                Output.Write($"<form id=\"itemNavForm\" action=\"{FormAction}\" method=\"post\"{enctype}>");
+
+                if ( subwriter != null )
+                {
+                    subwriter.Write_ItemNavForm_Opening(Output, Tracer);
+                }
+
+                // Write the main section
+                Write_Main_Viewer_Section(Output, Tracer);
+
+                if (subwriter != null)
+                {
+                    subwriter.Write_ItemNavForm_Closing(Output, Tracer);
+                }
+
+                Output.Write("</form>");
+            }
+
+            Write_Final_HTML(Output, Tracer);
         }
 
-        /// <summary> Writes the html to the output stream open the itemNavForm </summary>
-        /// <param name="Output"> Stream to which to write the text for this main writer </param>
-        /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
-        public void Write_ItemNavForm_Opening(TextWriter Output, Custom_Tracer Tracer)
-        {
-            if (subwriter == null) return;
-            Tracer.Add_Trace("Html_MainWriter.Write_Additional_HTML", "Allowing html subwriter to write to the page");
-
-            subwriter.Write_ItemNavForm_Opening(Output, Tracer);
-        }
-
-        /// <summary> Writes final HTML to the output stream after the placeholder and just before the itemNavForm is closed.  </summary>
-        /// <param name="Output"> Stream to which to write the text for this main writer </param>
-        /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
-        public void Write_ItemNavForm_Closing(TextWriter Output, Custom_Tracer Tracer)
-        {
-            if (subwriter == null) return;
-            Tracer.Add_Trace("Html_MainWriter.Write_Additional_HTML", "Allowing html subwriter to write to the page");
-
-            subwriter.Write_ItemNavForm_Closing(Output, Tracer);
-        }
 
         /// <summary> Writes any final HTML needed after the main place holder directly to the output stream</summary>
         /// <param name="Output"> Stream to which to write the text for this main writer </param>
         /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
-        public void Write_Final_HTML(TextWriter Output, Custom_Tracer Tracer)
+        private void Write_Final_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
             if ((RequestSpecificValues.Current_Mode.isPostBack) && (RequestSpecificValues.Current_Mode.Mode != Display_Mode_Enum.My_Sobek) && (RequestSpecificValues.Current_Mode.Mode != Display_Mode_Enum.Administrative)) return;
             if (subwriter == null) return;

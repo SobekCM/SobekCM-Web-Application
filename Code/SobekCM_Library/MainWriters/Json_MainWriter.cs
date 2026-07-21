@@ -41,7 +41,8 @@ namespace SobekCM.Library.MainWriters
         /// <summary> Perform all the work of adding text directly to the response stream back to the web user </summary>
         /// <param name="Output"> Stream to which to write the text for this main writer </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        public override void Write_Html(TextWriter Output, Custom_Tracer Tracer)
+        /// <param name="FormAction"> Unused; this writer never includes a navigation form </param>
+        public override void Write_Body(TextWriter Output, Custom_Tracer Tracer, string FormAction)
         {
             switch (RequestSpecificValues.Current_Mode.Mode)
             {

@@ -1,6 +1,8 @@
 #region Using directives
 
+using Microsoft.AspNetCore.Http;
 using SobekCM.Core.Aggregations;
+using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Tools;
@@ -128,6 +130,11 @@ namespace SobekCM.Library.HTML
         /// <remarks> This uses a <see cref="PagedResults_HtmlSubwriter"/> instance to render the items  </remarks>
         public void Add_Controls(TextWriter Output, Custom_Tracer Tracer)
         {
+            // Make sure the corresponding 'search' is the latest
+            RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Search;
+            Context.Session.SetString(SessionCache_Keys.LastSearch, UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode));
+            RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Results;
+
             if (RequestSpecificValues.Results_Statistics == null) return;
 
             if (writeResult == null)

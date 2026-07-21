@@ -281,7 +281,7 @@ namespace SobekCM
                 if (pageGlobals.mainWriter != null)
                 {
                     using var writer = new StringWriter();
-                    pageGlobals.mainWriter.Write_Html(writer, pageGlobals.tracer);
+                    pageGlobals.mainWriter.Write_Body(writer, pageGlobals.tracer, String.Empty);
                     await context.Response.WriteAsync(writer.ToString(), Encoding.UTF8);
                 }
             });
@@ -319,7 +319,7 @@ namespace SobekCM
                 if (pageGlobals.mainWriter != null)
                 {
                     using var writer = new StringWriter();
-                    pageGlobals.mainWriter.Write_Html(writer, pageGlobals.tracer);
+                    pageGlobals.mainWriter.Write_Body(writer, pageGlobals.tracer, String.Empty);
                     await context.Response.WriteAsync(writer.ToString(), Encoding.UTF8);
                 }
             });
@@ -401,28 +401,7 @@ namespace SobekCM
                     writer.Write(" id=\"itembody\"");
                 writer.Write(">");
 
-                pageGlobals.mainWriter.Write_Html(writer, pageGlobals.tracer);
-
-                if (pageGlobals.mainWriter.Include_Navigation_Form)
-                {
-                    string formAction = originalUrl;
-                    string enctype = pageGlobals.mainWriter.File_Upload_Possible ? " enctype=\"multipart/form-data\"" : "";
-                    writer.Write($"<form id=\"itemNavForm\" action=\"{formAction}\" method=\"post\"{enctype}>");
-
-                    if ((pageGlobals.mainWriter.Writer_Type == Writer_Type_Enum.HTML) || (pageGlobals.mainWriter.Writer_Type == Writer_Type_Enum.HTML_LoggedIn))
-                        ((Html_MainWriter)pageGlobals.mainWriter).Write_ItemNavForm_Opening(writer, pageGlobals.tracer);
-
-                    // Write the main section
-                    pageGlobals.mainWriter.Write_Main_Viewer_Section(writer, pageGlobals.tracer);
-
-                    if ((pageGlobals.mainWriter.Writer_Type == Writer_Type_Enum.HTML) || (pageGlobals.mainWriter.Writer_Type == Writer_Type_Enum.HTML_LoggedIn))
-                        ((Html_MainWriter)pageGlobals.mainWriter).Write_ItemNavForm_Closing(writer, pageGlobals.tracer);
-
-                    writer.Write("</form>");
-                }
-
-                if ((pageGlobals.mainWriter.Writer_Type == Writer_Type_Enum.HTML) || (pageGlobals.mainWriter.Writer_Type == Writer_Type_Enum.HTML_LoggedIn))
-                    ((Html_MainWriter)pageGlobals.mainWriter).Write_Final_HTML(writer, pageGlobals.tracer);
+                pageGlobals.mainWriter.Write_Body(writer, pageGlobals.tracer, originalUrl);
 
                 writer.Write("</body></html>");
 

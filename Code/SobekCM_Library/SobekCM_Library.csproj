@@ -30,4 +30,8 @@
     <ProjectReference Include="..\SobekCM_Tools\SobekCM_Tools.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Helpers\UploadiFive\" />
+  </ItemGroup>
+
 </Project>

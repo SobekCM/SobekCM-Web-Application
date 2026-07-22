@@ -7,7 +7,7 @@ using SobekCM.Core.Navigation;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Engine_Library.Email;
 using SobekCM.Library.AdminViewer;
-// using SobekCM.Library.Helpers.UploadiFive;
+using SobekCM.Library.Helpers.UploadiFive;
 using SobekCM.Library.HTML;
 using SobekCM.Library.UI;
 using SobekCM.Resource_Object;
@@ -684,7 +684,14 @@ namespace SobekCM.Library.MySobekViewer
             Output.WriteLine("Add a new file for this package:");
             Output.WriteLine("<blockquote>");
 
-            // Upload control removed (UploadiFive dependency removed)
+            var uploadControl = new UploadiFive();
+            uploadControl.UploadPath = digitalResourceDirectory;
+            uploadControl.UploadScript = RequestSpecificValues.Current_Mode.Base_URL + "UploadiFiveFileHandler.ashx";
+            uploadControl.SubmitWhenQueueCompletes = true;
+            uploadControl.RemoveCompleted = true;
+            uploadControl.AllowedFileExtensions = UI_ApplicationCache_Gateway.Settings.Resources.Upload_File_Types;
+
+            uploadControl.Add_To_Stream(Output, Context);
 
             Output.WriteLine("</blockquote><br />");
         }

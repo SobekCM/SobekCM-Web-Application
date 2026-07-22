@@ -5,7 +5,7 @@ using SobekCM.Core.Message;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.WebContent;
 using SobekCM.Engine_Library.Configuration;
-// using SobekCM.Library.Helpers.UploadiFive;
+using SobekCM.Library.Helpers.UploadiFive;
 using SobekCM.Library.HTML;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
@@ -1448,6 +1448,18 @@ namespace SobekCM.Library.AdminViewer
             // Ensure the directory exists
             if (!File.Exists(UploadDirectory))
                 Directory.CreateDirectory(UploadDirectory);
+
+            var uploadControl = new UploadiFive();
+            uploadControl.UploadPath = UploadDirectory;
+            uploadControl.UploadScript = RequestSpecificValues.Current_Mode.Base_URL + "UploadiFiveFileHandler.ashx";
+            uploadControl.AllowedFileExtensions = FileExtensions;
+            uploadControl.SubmitWhenQueueCompletes = true;
+            uploadControl.RemoveCompleted = true;
+            uploadControl.Multi = UploadMultiple;
+            uploadControl.ServerSideFileName = ServerSideName;
+            uploadControl.ReturnToken = ReturnToken;
+
+            uploadControl.Add_To_Stream(Output, Context);
         }
 
         #endregion

@@ -14,7 +14,7 @@ using SobekCM.Library.Citation;
 using SobekCM.Library.Citation.SectionWriter;
 using SobekCM.Library.Citation.Template;
 using SobekCM.Library.Helpers.AceEditor;
-// using SobekCM.Library.Helpers.UploadiFive;
+using SobekCM.Library.Helpers.UploadiFive;
 using SobekCM.Library.HTML;
 using SobekCM.Library.UI;
 using SobekCM.Resource_Object;
@@ -1385,6 +1385,19 @@ namespace SobekCM.Library.MySobekViewer
             {
                 Output.WriteLine(Prompt);
                 Output.WriteLine("<blockquote>");
+
+                var uploadControl = new UploadiFive();
+                uploadControl.UploadPath = userInProcessDirectory;
+                uploadControl.UploadScript = RequestSpecificValues.Current_Mode.Base_URL + "UploadiFiveFileHandler.ashx";
+                uploadControl.AllowedFileExtensions = ".xml";
+                uploadControl.SubmitWhenQueueCompletes = true;
+                uploadControl.RemoveCompleted = true;
+                uploadControl.QueueSizeLimit = 1;
+                uploadControl.ButtonText = "Select TEI File";
+                uploadControl.ButtonWidth = 175;
+
+                uploadControl.Add_To_Stream(Output, Context);
+
                 Output.WriteLine("</blockquote><br />");
             }
         }

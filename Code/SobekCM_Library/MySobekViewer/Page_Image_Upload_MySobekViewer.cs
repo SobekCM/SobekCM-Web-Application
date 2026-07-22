@@ -7,7 +7,7 @@ using SobekCM.Core.Navigation;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Engine_Library.Email;
 using SobekCM.Library.AdminViewer;
-// using SobekCM.Library.Helpers.UploadiFive;
+using SobekCM.Library.Helpers.UploadiFive;
 using SobekCM.Library.HTML;
 using SobekCM.Library.UI;
 using SobekCM.Resource_Object;
@@ -744,6 +744,16 @@ namespace SobekCM.Library.MySobekViewer
             Output.WriteLine("<script src=\"" + Static_Resources_Gateway.Sobekcm_Metadata_Js + "\" type=\"text/javascript\"></script>");
             Output.WriteLine("Add a new page image for this package:");
             Output.WriteLine("<blockquote>");
+
+            var uploadControl = new UploadiFive();
+            uploadControl.UploadPath = digitalResourceDirectory;
+            uploadControl.UploadScript = RequestSpecificValues.Current_Mode.Base_URL + "UploadiFiveFileHandler.ashx";
+            uploadControl.AllowedFileExtensions = UI_ApplicationCache_Gateway.Settings.Resources.Upload_Image_Types;
+            uploadControl.RemoveCompleted = true;
+            uploadControl.SubmitWhenQueueCompletes = true;
+
+            uploadControl.Add_To_Stream(Output, Context);
+
             Output.WriteLine("</blockquote><br />");
         }
 

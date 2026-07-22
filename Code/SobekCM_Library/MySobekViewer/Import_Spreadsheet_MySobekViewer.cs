@@ -2,7 +2,7 @@ using ClosedXML.Excel;
 using Microsoft.AspNetCore.Http;
 using SobekCM.Core.Navigation;
 using SobekCM.Engine_Library.Configuration;
-// using SobekCM.Library.Helpers.UploadiFive;
+using SobekCM.Library.Helpers.UploadiFive;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
 using System;
@@ -263,6 +263,16 @@ namespace SobekCM.Library.MySobekViewer
             Output.WriteLine("<script src=\"" + Static_Resources_Gateway.Sobekcm_Metadata_Js + "\" type=\"text/javascript\"></script>");
             Output.WriteLine("Upload an Excel spreadsheet or CSV file:");
             Output.WriteLine("<blockquote>");
+
+            var uploadControl = new UploadiFive();
+            uploadControl.UploadPath = taskDirectory;
+            uploadControl.UploadScript = RequestSpecificValues.Current_Mode.Base_URL + "UploadiFiveFileHandler.ashx";
+            uploadControl.SubmitWhenQueueCompletes = true;
+            uploadControl.RemoveCompleted = true;
+            uploadControl.AllowedFileExtensions = ".xls|.xlsx|.csv";
+
+            uploadControl.Add_To_Stream(Output, Context);
+
             Output.WriteLine("</blockquote><br />");
         }
 

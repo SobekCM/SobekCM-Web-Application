@@ -4,7 +4,7 @@ using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Engine_Library.Database;
-// using SobekCM.Library.Helpers.UploadiFive;
+using SobekCM.Library.Helpers.UploadiFive;
 using SobekCM.Library.HTML;
 using SobekCM.Library.TEI;
 using SobekCM.Library.UI;
@@ -828,6 +828,18 @@ namespace SobekCM.Library.AdminViewer
         private void add_upload_controls(string DestinationDirectory, string Extensions, string ButtonText, TextWriter Output, Custom_Tracer Tracer)
         {
             Tracer.Add_Trace("File_Managament_MySobekViewer.add_upload_controls", String.Empty);
+
+            var uploadControl = new UploadiFive();
+            uploadControl.UploadPath = DestinationDirectory;
+            uploadControl.UploadScript = RequestSpecificValues.Current_Mode.Base_URL + "UploadiFiveFileHandler.ashx";
+            uploadControl.AllowedFileExtensions = Extensions;
+            uploadControl.RemoveCompleted = true;
+            uploadControl.SubmitWhenQueueCompletes = true;
+            uploadControl.Multi = false;
+            uploadControl.ButtonText = ButtonText;
+            uploadControl.ButtonClass = "sbkTeiAv_UploadButton";
+
+            uploadControl.Add_To_Stream(Output, Context);
         }
 
         /// <summary> Returns a flag indicating whether the file upload specific holder in the itemNavForm form will be utilized 

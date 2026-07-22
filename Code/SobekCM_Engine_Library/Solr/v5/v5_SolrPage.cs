@@ -4,11 +4,11 @@ using SolrNet.Attributes;
 
 #endregion
 
-namespace SobekCM.Resource_Object.Solr
+namespace SobekCM.Engine_Library.Solr.v5
 {
     /// <summary> Object stores the basic information about a page within this digital object and makes
     /// the basic attributes and full text available for Solr indexing </summary>
-    public class Legacy_SolrPage
+    public class v5_SolrPage
     {
         private readonly string bibid;
         private readonly string pagename;
@@ -17,19 +17,19 @@ namespace SobekCM.Resource_Object.Solr
         private readonly string thumbnail;
         private readonly string vid;
 
-        /// <summary> Constructor creates a new instance of the Legacy_SolrPage class </summary>
-        public Legacy_SolrPage()
+        /// <summary> Constructor creates a new instance of the v5_SolrPage class </summary>
+        public v5_SolrPage()
         {
         }
 
-        /// <summary> Constructor creates a new instance of the Legacy_SolrPage class </summary>
+        /// <summary> Constructor creates a new instance of the v5_SolrPage class </summary>
         /// <param name="BibID"> Bibliograhpic identifier (BibID) for the parent digital object </param>
         /// <param name="VID"> Volume identifier (VID) for the parent digital object </param>
         /// <param name="PageOrder"> Order this page appears within the parent digital object ( first page = 1 )</param>
         /// <param name="PageName"> Label for this page from the METS file ( i.e., 'Page 1', 'Cover 1', etc..) </param>
         /// <param name="PageText"> Full text for this page</param>
         /// <param name="Thumbnail"> Thumbnail image to be displayed within the search results of a single-document search </param>
-        public Legacy_SolrPage(string BibID, string VID, int PageOrder, string PageName, string PageText, string Thumbnail)
+        public v5_SolrPage(string BibID, string VID, int PageOrder, string PageName, string PageText, string Thumbnail)
         {
             bibid = BibID;
             vid = VID;

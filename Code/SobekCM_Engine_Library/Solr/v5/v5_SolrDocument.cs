@@ -1,4 +1,3 @@
-using SobekCM.Resource_Object.Solr;
 using SolrNet.Attributes;
 using System;
 using System.Collections.Generic;
@@ -27,7 +26,7 @@ namespace SobekCM.Engine_Library.Solr.v5
         public string FileLocation { get; set; }
 
         /// <summary> Gets the collection of page objects for Solr indexing </summary>
-        public List<Legacy_SolrPage> Solr_Pages { get; set; }
+        public List<v5_SolrPage> Solr_Pages { get; set; }
 
         /// <summary> Returns the full text for all the pages within this document for the Solr engine to index for this document </summary>
         [SolrField("fulltext")]
@@ -43,7 +42,7 @@ namespace SobekCM.Engine_Library.Solr.v5
                 // Add the text for each page 
                 if (Solr_Pages != null)
                 {
-                    foreach (Legacy_SolrPage thisPage in Solr_Pages)
+                    foreach (v5_SolrPage thisPage in Solr_Pages)
                     {
                         builder.Append(thisPage.PageText);
                         builder.Append(" ");

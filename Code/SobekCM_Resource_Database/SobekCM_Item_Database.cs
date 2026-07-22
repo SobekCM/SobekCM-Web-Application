@@ -543,9 +543,6 @@ namespace SobekCM_Resource_Database
                 Update_Material_Received(ThisPackage.Web.ItemID, ThisPackage.Tracking.Material_Received_Date.Value, false, Username, ThisPackage.Tracking.Material_Received_Notes);
             }
 
-            // Save any additional metadat present in the item
-            Save_Item_Metadata_Information(ThisPackage);
-
             // Step through all the metadata modules and allow the modules to save to the database
             if (ThisPackage.Metadata_Modules != null)
             {
@@ -574,9 +571,6 @@ namespace SobekCM_Resource_Database
             // Save user and user group restrictions
             Save_User_Restrictions_To_Item(ThisPackage.Web.ItemID, ThisPackage.Behaviors);
             Save_User_Group_Restrictions_To_Item(ThisPackage.Web.ItemID, ThisPackage.Behaviors);
-
-            // Finally, have the database build the full citation based on each metadata element
-            Create_Full_Citation_Value(ThisPackage.Web.ItemID);
 
             return true;
 
@@ -611,9 +605,6 @@ namespace SobekCM_Resource_Database
                 Save_Serial_Hierarchy_Information(ThisPackage, ThisPackage.Web.GroupID, ThisPackage.Web.ItemID);
             }
 
-            // Save any additional metadata present in the item
-            Save_Item_Metadata_Information(ThisPackage);
-
             // Step through all the metadata modules and allow the modules to save to the database
             if (ThisPackage.Metadata_Modules != null)
             {
@@ -643,9 +634,6 @@ namespace SobekCM_Resource_Database
             Save_User_Restrictions_To_Item(ThisPackage.Web.ItemID, ThisPackage.Behaviors);
             Save_User_Group_Restrictions_To_Item(ThisPackage.Web.ItemID, ThisPackage.Behaviors);
 
-            // Finally, have the database build the full citation based on each metadata element
-            Create_Full_Citation_Value(ThisPackage.Web.ItemID);
-
             // Return the item id
             return ThisPackage.Web.ItemID;
         }
@@ -671,237 +659,6 @@ namespace SobekCM_Resource_Database
             foreach (User_Group_Permissions permissions in behaviors.User_Group_Access)
             {
                 Save_Item_User_Group_Permissions(itemid, permissions);
-            }
-        }
-
-        /// <summary> Get the list of all corporations from the database </summary>
-        /// <returns> Table of all corpoorations linked to digital resources (specifically Sanborn Maps) </returns>
-        public static DataTable Get_All_Corporations()
-        {
-            try
-            {
-                DataSet tempSet = EalDbAccess.ExecuteDataset(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Get_All_Corporations");
-                return tempSet.Tables[0];
-            }
-            catch (Exception ee)
-            {
-                exception_caught("SobekCM_Get_All_Corporations", ee);
-                return null;
-            }
-        }
-
-        /// <summary> Get the list of all regions from the database </summary>
-        /// <returns> List of all regions from the database </returns>
-        public static DataTable Get_All_Regions()
-        {
-            try
-            {
-                DataSet tempSet = EalDbAccess.ExecuteDataset(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Get_All_Regions");
-                return tempSet.Tables[0];
-            }
-            catch (Exception ee)
-            {
-                exception_caught("SobekCM_Get_All_Regions", ee);
-                return null;
-            }
-        }
-
-        private static bool Save_Corporation(string CorpAuthCode, string CorporateName)
-        {
-            try
-            {
-                // Build the parameter list
-                EalDbParameter[] param_list = new EalDbParameter[2];
-                param_list[0] = new EalDbParameter("@CorpAuthCode", CorpAuthCode);
-                param_list[1] = new EalDbParameter("@CorporateName", CorporateName);
-
-                // Execute this non-query stored procedure
-                EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Save_Corporation", param_list);
-
-                // Return the value
-                return true;
-            }
-            catch (Exception ee)
-            {
-                // Pass this exception onto the method to handle it
-                exception_caught("SobekCM_Save_Corporation", ee);
-                return false;
-            }
-        }
-
-        private static bool Clear_Features_Streets_By_Item(int ItemID)
-        {
-            try
-            {
-                // Build the parameter list
-                EalDbParameter[] param_list = new EalDbParameter[1];
-                param_list[0] = new EalDbParameter("@ItemID", ItemID);
-
-                // Execute this non-query stored procedure
-                EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Clear_Features_Streets_By_Item", param_list);
-
-                // Return the value
-                return true;
-            }
-            catch (Exception ee)
-            {
-                // Pass this exception onto the method to handle it
-                exception_caught("SobekCM_Clear_Features_Streets_By_Item", ee);
-                return false;
-            }
-        }
-
-        private static bool Clear_Region_Link_By_Item(int ItemID)
-        {
-            try
-            {
-                // Build the parameter list
-                EalDbParameter[] param_list = new EalDbParameter[1];
-                param_list[0] = new EalDbParameter("@ItemID", ItemID);
-
-                // Execute this non-query stored procedure
-                EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Clear_Region_Link_By_Item", param_list);
-
-                // Return the value
-                return true;
-            }
-            catch (Exception ee)
-            {
-                // Pass this exception onto the method to handle it
-                exception_caught("SobekCM_Clear_Region_Link_By_Item", ee);
-                return false;
-            }
-        }
-
-
-        private static bool Lock_Digital_Resource(int ItemID)
-        {
-            try
-            {
-                // Build the parameter list
-                EalDbParameter[] param_list = new EalDbParameter[1];
-                param_list[0] = new EalDbParameter("@ItemID", ItemID);
-
-                // Execute this non-query stored procedure
-                EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Lock_Item", param_list);
-
-                // Return the value
-                return true;
-            }
-            catch (Exception ee)
-            {
-                // Pass this exception onto the method to handle it
-                exception_caught("SobekCM_Lock_Item", ee);
-                return false;
-            }
-        }
-
-        private static bool Save_Region_Item_Link(int ItemID, string GeoAuthCode, string Name, string Type, string P_Code, string P_Name, string P_Type, string P2_Code, string P2_Name, string P2_Type, string P3_Code, string P3_Name, string P3_Type, string P4_Code, string P4_Name, string P4_Type, string P5_Code, string P5_Name, string P5_Type)
-        {
-            try
-            {
-                // Build the parameter list
-                EalDbParameter[] param_list = new EalDbParameter[19];
-                param_list[0] = new EalDbParameter("@GeoAuthCode", GeoAuthCode);
-                param_list[1] = new EalDbParameter("@ItemID", ItemID);
-                param_list[2] = new EalDbParameter("@RegionName", Name);
-                param_list[3] = new EalDbParameter("@RegionType", Type);
-                param_list[4] = new EalDbParameter("@P_RegionAuthCode", P_Code);
-                param_list[5] = new EalDbParameter("@P_RegionName", P_Name);
-                param_list[6] = new EalDbParameter("@P_RegionType", P_Type);
-                param_list[7] = new EalDbParameter("@P2_RegionAuthCode", P2_Code);
-                param_list[8] = new EalDbParameter("@P2_RegionName", P2_Name);
-                param_list[9] = new EalDbParameter("@P2_RegionType", P2_Type);
-                param_list[10] = new EalDbParameter("@P3_RegionAuthCode", P3_Code);
-                param_list[11] = new EalDbParameter("@P3_RegionName", P3_Name);
-                param_list[12] = new EalDbParameter("@P3_RegionType", P3_Type);
-                param_list[13] = new EalDbParameter("@P4_RegionAuthCode", P4_Code);
-                param_list[14] = new EalDbParameter("@P4_RegionName", P4_Name);
-                param_list[15] = new EalDbParameter("@P4_RegionType", P4_Type);
-                param_list[16] = new EalDbParameter("@P5_RegionAuthCode", P5_Code);
-                param_list[17] = new EalDbParameter("@P5_RegionName", P5_Name);
-                param_list[18] = new EalDbParameter("@P5_RegionType", P5_Type);
-
-                // Execute this non-query stored procedure
-                EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Save_Region_Item_Link", param_list);
-
-                // Return the value
-                return true;
-            }
-            catch (Exception ee)
-            {
-                // Pass this exception onto the method to handle it
-                exception_caught("SobekCM_Save_Region_Item_Link", ee);
-                return false;
-            }
-        }
-
-        private static bool Save_Feature(string FeatAuthCode, string FeatureName, string LocationDesc, string CorpAuthCode, bool AA_Indicated,
-            string Albers_X, string Albers_Y, string Latitude, string Longitude, string FeatureType, int FeatureTypeYear, int PageID1,
-            int PageID2, int PageID3, int PageID4, int PageID5)
-        {
-            try
-            {
-                // Build the parameter list
-                EalDbParameter[] param_list = new EalDbParameter[16];
-                param_list[0] = new EalDbParameter("@FeatAuthCode", FeatAuthCode);
-                param_list[1] = new EalDbParameter("@FeatureName", FeatureName);
-                param_list[2] = new EalDbParameter("@LocationDesc", LocationDesc);
-                param_list[3] = new EalDbParameter("@CorpAuthCode", CorpAuthCode);
-                param_list[4] = new EalDbParameter("@AA_Indicated", AA_Indicated);
-                param_list[5] = new EalDbParameter("@Albers_X", Albers_X);
-                param_list[6] = new EalDbParameter("@Albers_Y", Albers_Y);
-                param_list[7] = new EalDbParameter("@Latitude", Latitude);
-                param_list[8] = new EalDbParameter("@Longitude", Longitude);
-                param_list[9] = new EalDbParameter("@FeatureType", FeatureType);
-                param_list[10] = new EalDbParameter("@FeatureTypeYear", FeatureTypeYear);
-                param_list[11] = new EalDbParameter("@PageID1", PageID1);
-                param_list[12] = new EalDbParameter("@PageID2", PageID2);
-                param_list[13] = new EalDbParameter("@PageID3", PageID3);
-                param_list[14] = new EalDbParameter("@PageID4", PageID4);
-                param_list[15] = new EalDbParameter("@PageID5", PageID5);
-
-                // Execute this non-query stored procedure
-                EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Save_Feature", param_list);
-
-                // Return the value
-                return true;
-            }
-            catch (Exception ee)
-            {
-                // Pass this exception onto the method to handle it
-                exception_caught("SobekCM_Save_Feature", ee);
-                return false;
-            }
-        }
-
-        private static bool Save_Street(string StreetAuthCode, string StreetName, long StartAddress, long EndAddress,
-            string StreetDirection, string StreetSide, string SegmentDesc, int PageID)
-        {
-            try
-            {
-                // Build the parameter list
-                EalDbParameter[] param_list = new EalDbParameter[8];
-                param_list[0] = new EalDbParameter("@StreetAuthCode", StreetAuthCode);
-                param_list[1] = new EalDbParameter("@StreetName", StreetName);
-                param_list[2] = new EalDbParameter("@StartAddress", StartAddress);
-                param_list[3] = new EalDbParameter("@EndAddress", EndAddress);
-                param_list[4] = new EalDbParameter("@StreetDirection", StreetDirection);
-                param_list[5] = new EalDbParameter("@StreetSide", StreetSide);
-                param_list[6] = new EalDbParameter("@SegmentDesc", SegmentDesc);
-                param_list[7] = new EalDbParameter("@PageID", PageID);
-
-                // Execute this non-query stored procedure
-                EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Save_Street_Page_Link", param_list);
-
-                // Return the value
-                return true;
-            }
-            catch (Exception ee)
-            {
-                // Pass this exception onto the method to handle it
-                exception_caught("SobekCM_Save_Street_Page_Link", ee);
-                return false;
             }
         }
 
@@ -1372,26 +1129,6 @@ namespace SobekCM_Resource_Database
                         ThisPackage.Behaviors.CheckOut_Required, darkFlag, ThisPackage.Tracking.Born_Digital, ThisPackage.Tracking.Disposition_Advice, ThisPackage.Tracking.Disposition_Advice_Notes,
                         ThisPackage.Tracking.Material_Received_Date, ThisPackage.Tracking.Material_Rec_Date_Estimated, ThisPackage.Tracking.Tracking_Box, aggregationCodes[0], aggregationCodes[1], aggregationCodes[2], aggregationCodes[3], aggregationCodes[4], aggregationCodes[5], aggregationCodes[6],
                         aggregationCodes[7], holding_code, source_code, icon1_name, icon2_name, icon3_name, icon4_name, icon5_name, ThisPackage.Behaviors.Left_To_Right, ThisPackage.Behaviors.CitationSet);
-
-                    // Also, save the ticklers
-                    string tickler1 = String.Empty;
-                    string tickler2 = String.Empty;
-                    string tickler3 = String.Empty;
-                    string tickler4 = String.Empty;
-                    string tickler5 = String.Empty;
-
-                    if (ThisPackage.Behaviors.Ticklers_Count > 0)
-                        tickler1 = ThisPackage.Behaviors.Ticklers[0];
-                    if (ThisPackage.Behaviors.Ticklers_Count > 1)
-                        tickler2 = ThisPackage.Behaviors.Ticklers[1];
-                    if (ThisPackage.Behaviors.Ticklers_Count > 2)
-                        tickler3 = ThisPackage.Behaviors.Ticklers[2];
-                    if (ThisPackage.Behaviors.Ticklers_Count > 3)
-                        tickler4 = ThisPackage.Behaviors.Ticklers[3];
-                    if (ThisPackage.Behaviors.Ticklers_Count > 4)
-                        tickler5 = ThisPackage.Behaviors.Ticklers[4];
-
-                    Save_Item_Ticklers(ThisPackage.Web.ItemID, tickler1, tickler2, tickler3, tickler4, tickler5);
                 }
 
                 // If the views object is NULL then don't do anything here
@@ -1577,44 +1314,6 @@ namespace SobekCM_Resource_Database
 
             // Call the stored procedure
             Save_Serial_Hierarchy(GroupID, ItemID, level1_text, level1_index, level2_text, level2_index, level3_text, level3_index, level4_text, level4_index, level5_text, level5_index, builder.ToString());
-        }
-
-        private static bool Save_Item_Metadata_Information(SobekCM_Item ThisPackage)
-        {
-            // Clear any existing item metadata
-            Clear_Item_Metadata(ThisPackage.Web.ItemID, false);
-
-            // Build lists of the metadata now
-            List<KeyValuePair<string, string>> metadataTerms = ThisPackage.Search_Terms;
-
-            // Just add blanks in at the end to get this to an increment of ten
-            while ((metadataTerms.Count % 10) != 0)
-            {
-                metadataTerms.Add(new KeyValuePair<string, string>(String.Empty, String.Empty));
-            }
-
-            // Now, save this metadata to the database
-            int current_index = 0;
-            while ((current_index + 10) <= metadataTerms.Count)
-            {
-                // Save the next ten values
-                Save_Item_Metadata(ThisPackage.Web.ItemID,
-                    metadataTerms[current_index].Key, metadataTerms[current_index].Value,
-                    metadataTerms[current_index + 1].Key, metadataTerms[current_index + 1].Value,
-                    metadataTerms[current_index + 2].Key, metadataTerms[current_index + 2].Value,
-                    metadataTerms[current_index + 3].Key, metadataTerms[current_index + 3].Value,
-                    metadataTerms[current_index + 4].Key, metadataTerms[current_index + 4].Value,
-                    metadataTerms[current_index + 5].Key, metadataTerms[current_index + 5].Value,
-                    metadataTerms[current_index + 6].Key, metadataTerms[current_index + 6].Value,
-                    metadataTerms[current_index + 7].Key, metadataTerms[current_index + 7].Value,
-                    metadataTerms[current_index + 8].Key, metadataTerms[current_index + 8].Value,
-                    metadataTerms[current_index + 9].Key, metadataTerms[current_index + 9].Value);
-
-                // Increment curent index
-                current_index += 10;
-            }
-
-            return true;
         }
 
         #endregion
@@ -1929,128 +1628,6 @@ namespace SobekCM_Resource_Database
                 // Pass this exception onto the method to handle it
                 exception_caught("SobekCM_Save_Item", ee);
                 return new Save_Item_Args(-1, false, String.Empty);
-            }
-        }
-
-        /// <summary> Clears all the metadata associated with a particular item in the database </summary>
-        /// <param name="ItemID"> Primary key for the item to clear the searchable metadata values</param>
-        /// <param name="Clear_Non_Metadata_Values">Flag indicates if the values which are not derived from the metadata file should be cleared as well </param>
-        /// <returns> TRUE if successful, otherwise FALSE </returns>
-        /// <remarks> This calls the 'SobekCM_Metadata_Clear2' stored procedure in the SobekCM database </remarks>
-        protected static bool Clear_Item_Metadata(int ItemID, bool Clear_Non_Metadata_Values)
-        {
-            try
-            {
-                // Build the parameter list
-                EalDbParameter[] param_list = new EalDbParameter[2];
-                param_list[0] = new EalDbParameter("@itemid", ItemID);
-                param_list[1] = new EalDbParameter("@clear_non_mets_values", Clear_Non_Metadata_Values);
-
-                // Execute this non-query stored procedure
-                EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Metadata_Clear2", param_list);
-                return true;
-            }
-            catch (Exception ee)
-            {
-                // Pass this exception onto the method to handle it
-                exception_caught("SobekCM_Metadata_Clear2", ee);
-                return false;
-            }
-        }
-
-        /// <summary> Saves metadata from an item into the tables for searching metadata </summary>
-        /// <param name="ItemID"> Primary key for the item to which to tag this metadata </param>
-        /// <param name="Metadata_Type1"> Type string for the first metadata value </param>
-        /// <param name="Metadata_Value1"> Value of the first piece of metadata </param>
-        /// <param name="Metadata_Type2">Type string for the second metadata value</param>
-        /// <param name="Metadata_Value2"> Value of the second piece of metadata</param>
-        /// <param name="Metadata_Type3">Type string for the third metadata value</param>
-        /// <param name="Metadata_Value3"> Value of the third piece of metadata</param>
-        /// <param name="Metadata_Type4">Type string for the fourth metadata value</param>
-        /// <param name="Metadata_Value4"> Value of the fourth piece of metadata</param>
-        /// <param name="Metadata_Type5">Type string for the fifth metadata value</param>
-        /// <param name="Metadata_Value5"> Value of the fifth piece of metadata</param>
-        /// <param name="Metadata_Type6">Type string for the sixth metadata value</param>
-        /// <param name="Metadata_Value6"> Value of the sixth piece of metadata</param>
-        /// <param name="Metadata_Type7">Type string for the seventh metadata value</param>
-        /// <param name="Metadata_Value7"> Value of the seventh piece of metadata</param>
-        /// <param name="Metadata_Type8">Type string for the eight metadata value</param>
-        /// <param name="Metadata_Value8"> Value of the eight piece of metadata</param>
-        /// <param name="Metadata_Type9">Type string for the ninth metadata value</param>
-        /// <param name="Metadata_Value9"> Value of the ninth piece of metadata</param>
-        /// <param name="Metadata_Type10">Type string for the tenth metadata value</param>
-        /// <param name="Metadata_Value10"> Value of the tenth piece of metadata</param>
-        /// <returns> TRUE if successful, otherwise FALSE </returns>
-        /// <remarks> This calls the 'SobekCM_Metadata_Save' stored procedure in the SobekCM database </remarks>
-        protected static bool Save_Item_Metadata(int ItemID, string Metadata_Type1, string Metadata_Value1,
-            string Metadata_Type2, string Metadata_Value2, string Metadata_Type3, string Metadata_Value3,
-            string Metadata_Type4, string Metadata_Value4, string Metadata_Type5, string Metadata_Value5,
-            string Metadata_Type6, string Metadata_Value6, string Metadata_Type7, string Metadata_Value7,
-            string Metadata_Type8, string Metadata_Value8, string Metadata_Type9, string Metadata_Value9,
-            string Metadata_Type10, string Metadata_Value10)
-        {
-            try
-            {
-                // Build the parameter list
-                EalDbParameter[] param_list = new EalDbParameter[21];
-                param_list[0] = new EalDbParameter("@itemid", ItemID);
-                param_list[1] = new EalDbParameter("@metadata_type1", Metadata_Type1);
-                param_list[2] = new EalDbParameter("@metadata_value1", Metadata_Value1.Trim());
-                param_list[3] = new EalDbParameter("@metadata_type2", Metadata_Type2);
-                param_list[4] = new EalDbParameter("@metadata_value2", Metadata_Value2.Trim());
-                param_list[5] = new EalDbParameter("@metadata_type3", Metadata_Type3);
-                param_list[6] = new EalDbParameter("@metadata_value3", Metadata_Value3.Trim());
-                param_list[7] = new EalDbParameter("@metadata_type4", Metadata_Type4);
-                param_list[8] = new EalDbParameter("@metadata_value4", Metadata_Value4.Trim());
-                param_list[9] = new EalDbParameter("@metadata_type5", Metadata_Type5);
-                param_list[10] = new EalDbParameter("@metadata_value5", Metadata_Value5.Trim());
-                param_list[11] = new EalDbParameter("@metadata_type6", Metadata_Type6);
-                param_list[12] = new EalDbParameter("@metadata_value6", Metadata_Value6.Trim());
-                param_list[13] = new EalDbParameter("@metadata_type7", Metadata_Type7);
-                param_list[14] = new EalDbParameter("@metadata_value7", Metadata_Value7.Trim());
-                param_list[15] = new EalDbParameter("@metadata_type8", Metadata_Type8);
-                param_list[16] = new EalDbParameter("@metadata_value8", Metadata_Value8.Trim());
-                param_list[17] = new EalDbParameter("@metadata_type9", Metadata_Type9);
-                param_list[18] = new EalDbParameter("@metadata_value9", Metadata_Value9.Trim());
-                param_list[19] = new EalDbParameter("@metadata_type10", Metadata_Type10);
-                param_list[20] = new EalDbParameter("@metadata_value10", Metadata_Value10.Trim());
-
-                // Execute this non-query stored procedure
-                EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Metadata_Save", param_list);
-                return true;
-            }
-            catch (Exception ee)
-            {
-                // Pass this exception onto the method to handle it
-                exception_caught("SobekCM_Metadata_Save", ee);
-                return false;
-            }
-        }
-
-        /// <summary> Causes the database to build the searchable full citation cell for basic searching from
-        /// all of the discrete metadata elements stored for this item </summary>
-        /// <param name="ItemID">Item ID of the item </param>
-        /// <remarks> This method calls the stored procedure 'SobekCM_Create_Full_Citation_Value'. </remarks>
-        /// <exception cref="SobekCM_Database_Exception"> Exception is thrown if an error is caught during 
-        /// the database work and the THROW_EXCEPTIONS internal flag is set to true. </exception>
-        public static bool Create_Full_Citation_Value(int ItemID)
-        {
-            try
-            {
-                // Build the parameter list
-                EalDbParameter[] param_list = new EalDbParameter[1];
-                param_list[0] = new EalDbParameter("@ItemID", ItemID);
-
-                // Execute this non-query stored procedure
-                EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Create_Full_Citation_Value", param_list);
-
-                return true;
-            }
-            catch (Exception ee)
-            {
-                // Pass this exception onto the method to handle it
-                exception_caught("SobekCM_Create_Full_Citation_Value", ee);
-                return false;
             }
         }
 
@@ -2397,91 +1974,6 @@ namespace SobekCM_Resource_Database
             {
                 // Pass this exception onto the method to handle it
                 exception_caught("SobekCM_Remove_Item_Viewers", ee);
-                return false;
-            }
-        }
-
-        /// <summary> Saves up to five ticklers for a single item in a SobekCM digital library </summary>
-        /// <param name="ItemID"> Item ID to associate these ticklers with </param>
-        /// <param name="Tickler1"> Tickler to save for this item </param>
-        /// <param name="Tickler2"> Tickler to save for this item </param>
-        /// <param name="Tickler3"> Tickler to save for this item </param>
-        /// <param name="Tickler4"> Tickler to save for this item </param>
-        /// <param name="Tickler5"> Tickler to save for this item </param>
-        /// <remarks> This method calls the stored procedure 'SobekCM_Save_Item_Ticklers'. </remarks>
-        /// <exception cref="SobekCM_Database_Exception"> Exception is thrown if an error is caught during 
-        /// the database work and the THROW_EXCEPTIONS internal flag is set to true. </exception>
-        protected static bool Save_Item_Ticklers(int ItemID, string Tickler1, string Tickler2, string Tickler3, string Tickler4, string Tickler5)
-        {
-            try
-            {
-                // Build the parameter list
-                EalDbParameter[] param_list = new EalDbParameter[6];
-                param_list[0] = new EalDbParameter("@ItemID", ItemID);
-                param_list[1] = new EalDbParameter("@Tickler1", Tickler1);
-                param_list[2] = new EalDbParameter("@Tickler2", Tickler2);
-                param_list[3] = new EalDbParameter("@Tickler3", Tickler3);
-                param_list[4] = new EalDbParameter("@Tickler4", Tickler4);
-                param_list[5] = new EalDbParameter("@Tickler5", Tickler5);
-
-                // Execute this non-query stored procedure
-                EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Save_Item_Ticklers", param_list);
-
-                return true;
-            }
-            catch (Exception ee)
-            {
-                // Pass this exception onto the method to handle it
-                exception_caught("SobekCM_Save_Item_Ticklers", ee);
-                return false;
-            }
-        }
-
-
-        /// <summary> Adds up to three additional views for a single item in a SobekCM digital library </summary>
-        /// <param name="BibID"> Bibliographic identifier for the item to add </param>
-        /// <param name="VID"> Volume identifier for the item to add </param>
-        /// <param name="Viewer1_Type"> Primary key for the first viewer type in the SobekCM database </param>
-        /// <param name="Viewer1_Label"> Label to be displayed for the first viewer of this item </param>
-        /// <param name="Viewer1_Attributes"> Optional attributes for the first viewer of this item </param>
-        /// <param name="Viewer2_Type"> Primary key for the second viewer type in the SobekCM database </param>
-        /// <param name="Viewer2_Label"> Label to be displayed for the second viewer of this item </param>
-        /// <param name="Viewer2_Attributes"> Optional attributes for the second viewer of this item </param>
-        /// <param name="Viewer3_Type"> Primary key for the third viewer type in the SobekCM database </param>
-        /// <param name="Viewer3_Label"> Label to be displayed for the third viewer of this item </param>
-        /// <param name="Viewer3_Attributes"> Optional attributes for the third viewer of this item </param>
-        /// <remarks> This method calls the stored procedure 'SobekCM_Save_Item_Views'. </remarks>
-        /// <exception cref="SobekCM_Database_Exception"> Exception is thrown if an error is caught during 
-        /// the database work and the THROW_EXCEPTIONS internal flag is set to true. </exception>
-        public static bool Save_Item_Views(string BibID, string VID,
-            int Viewer1_Type, string Viewer1_Label, string Viewer1_Attributes, int Viewer2_Type, string Viewer2_Label, string Viewer2_Attributes,
-            int Viewer3_Type, string Viewer3_Label, string Viewer3_Attributes)
-        {
-            try
-            {
-                // Build the parameter list
-                EalDbParameter[] param_list = new EalDbParameter[11];
-                param_list[0] = new EalDbParameter("@BibID", BibID);
-                param_list[1] = new EalDbParameter("@VID", VID);
-                param_list[2] = new EalDbParameter("@Viewer1_TypeID", Viewer1_Type);
-                param_list[3] = new EalDbParameter("@Viewer1_Label", Viewer1_Label);
-                param_list[4] = new EalDbParameter("@Viewer1_Attribute", Viewer1_Attributes);
-                param_list[5] = new EalDbParameter("@Viewer2_TypeID", Viewer2_Type);
-                param_list[6] = new EalDbParameter("@Viewer2_Label", Viewer2_Label);
-                param_list[7] = new EalDbParameter("@Viewer2_Attribute", Viewer2_Attributes);
-                param_list[8] = new EalDbParameter("@Viewer3_TypeID", Viewer3_Type);
-                param_list[9] = new EalDbParameter("@Viewer3_Label", Viewer3_Label);
-                param_list[10] = new EalDbParameter("@Viewer3_Attribute", Viewer3_Attributes);
-
-                // Execute this non-query stored procedure
-                EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Save_Item_Views", param_list);
-
-                return true;
-            }
-            catch (Exception ee)
-            {
-                // Pass this exception onto the method to handle it
-                exception_caught("SobekCM_Save_Item_Views", ee);
                 return false;
             }
         }
@@ -3052,110 +2544,6 @@ namespace SobekCM_Resource_Database
             }
         }
 
-        /// <summary> Update the disposition advice on what to do when the physical material leaves the digitization location </summary>
-        /// <param name="ItemID"> ItemID for which to update the disposition advice </param>
-        /// <param name="DispositionTypeID"> Primary key to the disposition type from the database </param>
-        /// <param name="Notes"> Any associated notes included about the disposition advice </param>
-        /// <returns> TRUE if successful, otherwise FALSE </returns>
-        /// <remarks> This method calls the stored procedure 'Tracking_Update_Disposition_Advice'. </remarks>
-        /// <exception cref="SobekCM_Database_Exception"> Exception is thrown if an error is caught during 
-        /// the database work and the THROW_EXCEPTIONS internal flag is set to true. </exception>
-        public static bool Edit_Disposition_Advice(int ItemID, int DispositionTypeID, string Notes)
-        {
-            try
-            {
-                // Build the parameter list
-                EalDbParameter[] param_list = new EalDbParameter[3];
-                param_list[0] = new EalDbParameter("@Disposition_Advice", DispositionTypeID);
-                param_list[1] = new EalDbParameter("@Disposition_Advice_Notes", Notes);
-                param_list[2] = new EalDbParameter("@ItemID", ItemID);
-
-                // Execute this non-query stored procedure
-                EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "Tracking_Update_Disposition_Advice", param_list);
-
-                return true;
-            }
-            catch (Exception ee)
-            {
-                // Pass this exception onto the method to handle it
-                exception_caught("Tracking_Update_Disposition_Advice", ee);
-                return false;
-            }
-        }
-
-        /// <summary> Update the disposition information when the physical material leaves the digitization location </summary>
-        /// <param name="ItemID"> ItemID for which to update the disposition </param>
-        /// <param name="DispositionTypeID"> Primary key to the disposition type from the database </param>
-        /// <param name="Notes"> Any notes associated with the disposition </param>
-        /// <param name="DispositionDate"> Date the disposition occurred </param>
-        /// <param name="UserName"> User who added this disposition information (for the work history)</param>
-        /// <returns> TRUE if successful, otherwise FALSE </returns>
-        /// <remarks> This method calls the stored procedure 'Tracking_Update_Disposition'. </remarks>
-        /// <exception cref="SobekCM_Database_Exception"> Exception is thrown if an error is caught during 
-        /// the database work and the THROW_EXCEPTIONS internal flag is set to true. </exception>
-        public static bool Update_Disposition(int ItemID, int DispositionTypeID, string Notes, DateTime DispositionDate, string UserName)
-        {
-            try
-            {
-                // Build the parameter list
-                EalDbParameter[] param_list = new EalDbParameter[5];
-                param_list[0] = new EalDbParameter("@Disposition_Date", DispositionDate);
-                param_list[1] = new EalDbParameter("@Disposition_Type", DispositionTypeID);
-                param_list[2] = new EalDbParameter("@Disposition_Notes", Notes);
-                param_list[3] = new EalDbParameter("@ItemID", ItemID);
-                param_list[4] = new EalDbParameter("@UserName", UserName);
-
-                // Execute this non-query stored procedure
-                EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "Tracking_Update_Disposition", param_list);
-
-                return true;
-            }
-            catch (Exception ee)
-            {
-                // Pass this exception onto the method to handle it
-                exception_caught("Tracking_Update_Disposition", ee);
-                return false;
-            }
-        }
-
-        /// <summary> Add a worklog history entry for some previous datetime </summary>
-        /// <param name="ItemID"> ItemID for which to add a workflow history entry </param>
-        /// <param name="Workflow_Type"> Name of the workflow to add to this item  </param>
-        /// <param name="Notes"> Any notes associated with the workflow </param>
-        /// <param name="Date"> Date the workflow occurred </param>
-        /// <param name="UserName"> User who added this worklog enty </param>
-        /// <param name="StorageLocation"> Location this work occured on the network or detached drives </param>
-        /// <returns> TRUE if successful, otherwise FALSE </returns>
-        /// <remarks> This method calls the stored procedure 'Tracking_Add_Past_Workflow_By_ItemID'. </remarks>
-        /// <exception cref="SobekCM_Database_Exception"> Exception is thrown if an error is caught during 
-        /// the database work and the THROW_EXCEPTIONS internal flag is set to true. </exception>
-        public static bool Add_Past_Workflow(int ItemID, string Workflow_Type, string Notes, DateTime Date, string UserName, string StorageLocation)
-        {
-            try
-            {
-                // Build the parameter list
-                EalDbParameter[] param_list = new EalDbParameter[6];
-                param_list[0] = new EalDbParameter("@itemid", ItemID);
-                param_list[1] = new EalDbParameter("@user", UserName);
-                param_list[2] = new EalDbParameter("@progressnote", Notes);
-                param_list[3] = new EalDbParameter("@workflow", Workflow_Type);
-                param_list[4] = new EalDbParameter("@storagelocation", StorageLocation);
-                param_list[5] = new EalDbParameter("@date", Date);
-
-                // Execute this non-query stored procedure
-                EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "Tracking_Add_Past_Workflow_By_ItemID", param_list);
-
-                return true;
-            }
-            catch (Exception ee)
-            {
-                // Pass this exception onto the method to handle it
-                exception_caught("Tracking_Add_Past_Workflow_By_ItemID", ee);
-                return false;
-            }
-        }
-
-
         /// <summary> Add a worklog entry for a current event </summary>
         /// <param name="ItemID"> ItemID for which to add a workflow history entry </param>
         /// <param name="Workflow_Type"> Name of the workflow to add to this item  </param>
@@ -3186,7 +2574,7 @@ namespace SobekCM_Resource_Database
             catch (Exception ee)
             {
                 // Pass this exception onto the method to handle it
-                exception_caught("Tracking_Add_Past_Workflow_By_ItemID", ee);
+                exception_caught("Tracking_Add_Workflow_By_ItemID", ee);
                 return false;
             }
         }
@@ -3255,73 +2643,6 @@ namespace SobekCM_Resource_Database
             }
         }
 
-        /// <summary> Update the born digital flag for an item </summary>
-        /// <param name="ItemID"> ItemID for which to update born digital flag </param>
-        /// <param name="Born_Digital_Flag"> New value for the born digital flag on this item </param>
-        /// <returns> TRUE if successful, otherwise FALSE </returns>
-        /// <remarks> This method calls the stored procedure 'Tracking_Update_Born_Digital'. </remarks>
-        /// <exception cref="SobekCM_Database_Exception"> Exception is thrown if an error is caught during 
-        /// the database work and the THROW_EXCEPTIONS internal flag is set to true. </exception>
-        public static bool Update_Born_Digital_Flag(int ItemID, bool Born_Digital_Flag)
-        {
-            try
-            {
-                // Build the parameter list
-                EalDbParameter[] param_list = new EalDbParameter[2];
-                param_list[0] = new EalDbParameter("@Born_Digital", Born_Digital_Flag);
-                param_list[1] = new EalDbParameter("@ItemID", ItemID);
-
-                // Execute this non-query stored procedure
-                EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "Tracking_Update_Born_Digital", param_list);
-
-                return true;
-            }
-            catch (Exception ee)
-            {
-                // Pass this exception onto the method to handle it
-                exception_caught("Tracking_Update_Born_Digital", ee);
-                return false;
-            }
-        }
-
-
-        #endregion
-
-        #region Method to update the physical statistics for an item in a SobekCM library
-
-        /// <summary> Update the physical statistics ( files, pages, size ) of an item </summary>
-        /// <param name="BibID"> Bibliographic identifier for the item group to update </param>
-        /// <param name="VID"> Volume identifier for the item/volume to update </param>
-        /// <param name="PageCount"> Number of pages linked to this item in the library </param>
-        /// <param name="FileCount"> Number of page image files linked to this item in the library </param>
-        /// <param name="DiskSizeMb"> Size of the entire digital resource on the image server  </param>
-        /// <returns> TRUE if successful, otherwise FALSE </returns>
-        /// <remarks> This calls the 'SobekCM_Update_Item_Online_Statistics' stored procedure </remarks> 
-        public static bool Update_Item_Online_Statistics(string BibID, string VID, int PageCount, int FileCount, double DiskSizeMb)
-        {
-            try
-            {
-                // Build the parameter list
-                EalDbParameter[] param_list = new EalDbParameter[5];
-                param_list[0] = new EalDbParameter("@bibid", BibID);
-                param_list[1] = new EalDbParameter("@vid", VID);
-                param_list[2] = new EalDbParameter("@pagecount", PageCount);
-                param_list[3] = new EalDbParameter("@filecount", FileCount);
-                param_list[4] = new EalDbParameter("@disksize_kb", DiskSizeMb);
-
-                // Execute this query stored procedure
-                EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Update_Item_Online_Statistics", param_list);
-
-                return true;
-            }
-            catch (Exception ee)
-            {
-                // Pass this exception onto the method to handle it
-                exception_caught("SobekCM_Update_Item_Online_Statistics", ee);
-                return false;
-            }
-        }
-
         #endregion
 
         #region Method to check for existence of a record in a SobekCM library or get ItemID
@@ -3354,55 +2675,6 @@ namespace SobekCM_Resource_Database
                 exception_caught("SobekCM_Get_ItemID", ee);
                 return -1;
             }
-        }
-
-        /// <summary> Checks for similar records within the database </summary>
-        /// <param name="BibID"> Bibliographic identifier to check </param>
-        /// <param name="VID"> Volume identifier to check </param>
-        /// <param name="OCLC"> OCLC Record number to look for existence </param>
-        /// <param name="Local_Catalog_ID"> Local catalog record number to look for existence </param>
-        /// <returns> DataTable with any matching results </returns>
-        /// <remarks> This calls the 'SobekCM_Check_For_Record_Existence' stored procedure </remarks> 
-        public static DataTable Check_For_Record_Existence(string BibID, string VID, string OCLC, string Local_Catalog_ID)
-        {
-            // Get oclc and/or aleph number
-            long oclc = -999;
-            int aleph = -999;
-            if (OCLC.Length > 0)
-            {
-                long oclc_temp;
-                if (Int64.TryParse(OCLC, out oclc_temp))
-                    oclc = oclc_temp;
-            }
-            if (Local_Catalog_ID.Length > 0)
-            {
-                int catalog_temp;
-                if (Int32.TryParse(Local_Catalog_ID, out catalog_temp))
-                    aleph = catalog_temp;
-            }
-
-            try
-            {
-                // Build the parameter list
-                EalDbParameter[] param_list = new EalDbParameter[4];
-                param_list[0] = new EalDbParameter("@bibid", BibID);
-                param_list[1] = new EalDbParameter("@vid", VID);
-                param_list[2] = new EalDbParameter("@OCLC_Number", oclc);
-                param_list[3] = new EalDbParameter("@Local_Cat_Number", aleph);
-
-                // Execute this query stored procedure
-                DataSet resultSet = EalDbAccess.ExecuteDataset(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Check_For_Record_Existence", param_list);
-
-                if (resultSet != null)
-                    return resultSet.Tables[0];
-            }
-            catch (Exception ee)
-            {
-                // Pass this exception onto the method to handle it
-                exception_caught("SobekCM_Check_For_Record_Existence", ee);
-            }
-
-            return null;
         }
 
         #endregion
@@ -3600,33 +2872,6 @@ namespace SobekCM_Resource_Database
             }
         }
 
-        /// <summary> Get the list of all archived TIVOLI files by BibID and VID </summary>
-        /// <param name="BibID"> Bibliographic identifier </param>
-        /// <param name="VID"> Volume identifier </param>
-        /// <returns> List of all the files archived for a particular digital resource </returns>
-        /// <remarks> This calls the 'Tivoli_Get_File_By_Bib_VID' stored procedure in the main SobekCM database</remarks> 
-        public static DataTable Tivoli_Get_Archived_Files(string BibID, string VID)
-        {
-            try
-            {
-                // Build the parameter list
-                EalDbParameter[] param_list = new EalDbParameter[2];
-                param_list[0] = new EalDbParameter("@BibID", BibID);
-                param_list[1] = new EalDbParameter("@VID", VID);
-
-                // Define a temporary dataset
-                DataSet tempSet = EalDbAccess.ExecuteDataset(DatabaseType, connectionString, CommandType.StoredProcedure, "Tivoli_Get_File_By_Bib_VID", param_list);
-                if ((tempSet == null) || (tempSet.Tables.Count == 0) || (tempSet.Tables[0].Rows.Count == 0))
-                    return null;
-                return tempSet.Tables[0];
-            }
-            catch
-            {
-                // Pass this exception onto the method to handle it
-                return null;
-
-            }
-        }
 
         #region Quality Control related methods
         /// <summary> Get the list of all the QC Page errors for a single item </summary>

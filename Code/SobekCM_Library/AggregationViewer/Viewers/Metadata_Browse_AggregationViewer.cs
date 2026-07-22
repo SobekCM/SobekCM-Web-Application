@@ -93,7 +93,9 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                     }
                     else
                     {
-                        results = Engine_Database.Get_Item_Aggregation_Metadata_Browse(RequestSpecificValues.Current_Mode.Aggregation, RequestSpecificValues.Current_Mode.Info_Browse_Mode, RequestSpecificValues.Tracer);
+                        // TODO: Need to pull the metadata browse data from SOLR, not the db anymore
+                        // Was:  Engine_Database.Get_Item_Aggregation_Metadata_Browse(RequestSpecificValues.Current_Mode.Aggregation, RequestSpecificValues.Current_Mode.Info_Browse_Mode, RequestSpecificValues.Tracer);
+                        results = null;
                         CachedDataManager.Store_Aggregation_Metadata_Browse(RequestSpecificValues.Current_Mode.Aggregation, RequestSpecificValues.Current_Mode.Info_Browse_Mode, results, RequestSpecificValues.Tracer);
                     }
                 }

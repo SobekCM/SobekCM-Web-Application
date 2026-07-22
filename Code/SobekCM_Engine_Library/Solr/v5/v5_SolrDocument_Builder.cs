@@ -3,7 +3,6 @@ using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Divisions;
 using SobekCM.Resource_Object.Metadata_Modules;
 using SobekCM.Resource_Object.Metadata_Modules.GeoSpatial;
-using SobekCM.Resource_Object.Solr;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -737,7 +736,7 @@ namespace SobekCM.Engine_Library.Solr.v5
             }
 
             // Add the empty solr pages for now
-            returnValue.Solr_Pages = new List<Legacy_SolrPage>();
+            returnValue.Solr_Pages = new List<v5_SolrPage>();
 
             // Prepare to step through all the divisions/pages in this item
             int pageorder = 1;
@@ -791,7 +790,7 @@ namespace SobekCM.Engine_Library.Solr.v5
                                 if (thumbnail_files_existing.ContainsKey(root.ToUpper()))
                                     thumbnail = thumbnail_files_existing[root.ToUpper()];
 
-                                var newPage = new Legacy_SolrPage(Digital_Object.BibID, Digital_Object.VID, pageorder, pageNode.Label, pageText, thumbnail);
+                                var newPage = new v5_SolrPage(Digital_Object.BibID, Digital_Object.VID, pageorder, pageNode.Label, pageText, thumbnail);
                                 returnValue.Solr_Pages.Add(newPage);
                             }
                             catch

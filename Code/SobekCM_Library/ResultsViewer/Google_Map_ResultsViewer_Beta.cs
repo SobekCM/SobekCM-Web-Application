@@ -221,7 +221,7 @@ namespace SobekCM.Library.ResultsViewer
                 //search for all items in each collection (handles multiple aggregationPermissions)
                 foreach (string aggregationId in aggregationIds)
                 {
-                    temp_Tables.Add(SobekCM_Database.Get_All_Items_By_AggregationID(aggregationId, temp_FIDs, Tracer));
+                   // temp_Tables.Add(SobekCM_Database.Get_All_Items_By_AggregationID(aggregationId, temp_FIDs, Tracer));
                 }
 
                 //merge the tables if there are multiple aggregationPermissions
@@ -344,10 +344,10 @@ namespace SobekCM.Library.ResultsViewer
                         double ney = -1;
 
                         //search for all items in each collection (handles multiple aggregationPermissions)
-                        foreach (string aggregationId in aggregationIds)
-                        {
-                            temp_Tables.Add(SobekCM_Database.Get_All_Items_By_AggregationID(aggregationId, temp_FIDs, Tracer));
-                        }
+                        //foreach (string aggregationId in aggregationIds)
+                        //{
+                        //    temp_Tables.Add(SobekCM_Database.Get_All_Items_By_AggregationID(aggregationId, temp_FIDs, Tracer));
+                        //}
 
                         //merge the tables if there are multiple aggregationPermissions
                         foreach (DataTable temp_Table in temp_Tables)

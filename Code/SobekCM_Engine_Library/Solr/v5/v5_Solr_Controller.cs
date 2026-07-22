@@ -1,5 +1,4 @@
 using SobekCM.Resource_Object;
-using SobekCM.Resource_Object.Solr;
 using SolrNet;
 using System;
 using System.Collections.Generic;
@@ -30,11 +29,11 @@ namespace SobekCM.Engine_Library.Solr.v5
 
             // Create the solr workers
             var solrDocumentWorker = Solr_Operations_Cache<v5_SolrDocument>.GetSolrOperations(SolrDocumentUrl);
-            var solrPageWorker = Solr_Operations_Cache<Legacy_SolrPage>.GetSolrOperations(SolrPageUrl);
+            var solrPageWorker = Solr_Operations_Cache<v5_SolrPage>.GetSolrOperations(SolrPageUrl);
 
             // Get the list of all items in this collection
             var index_files = new List<v5_SolrDocument>();
-            var index_pages = new List<Legacy_SolrPage>();
+            var index_pages = new List<v5_SolrPage>();
 
             // Add this document to the list of documents to index
             var builder = new v5_SolrDocument_Builder();
@@ -132,7 +131,7 @@ namespace SobekCM.Engine_Library.Solr.v5
 
                 // Create the solr workers
                 var solrDocumentWorker = Solr_Operations_Cache<v5_SolrDocument>.GetSolrOperations(SolrDocumentUrl);
-                var solrPageWorker = Solr_Operations_Cache<Legacy_SolrPage>.GetSolrOperations(SolrPageUrl);
+                var solrPageWorker = Solr_Operations_Cache<v5_SolrPage>.GetSolrOperations(SolrPageUrl);
 
                 // For the object, we can use the unique identifier
                 solrDocumentWorker.Delete(BibID + ":" + VID);
@@ -201,7 +200,7 @@ namespace SobekCM.Engine_Library.Solr.v5
                 SolrPageUrl = SolrPageUrl.Substring(0, SolrPageUrl.Length - 1);
 
             // Create the solr worker
-            var solrPageWorker = Solr_Operations_Cache<Legacy_SolrPage>.GetSolrOperations(SolrPageUrl);
+            var solrPageWorker = Solr_Operations_Cache<v5_SolrPage>.GetSolrOperations(SolrPageUrl);
 
             try
             {

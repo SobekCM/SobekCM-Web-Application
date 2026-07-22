@@ -5,7 +5,6 @@ using SobekCM.Core.Navigation;
 using SobekCM.Core.Settings;
 using SobekCM.Core.Users;
 using SobekCM.Engine_Library.Configuration;
-using SobekCM.Engine_Library.Solr.Legacy;
 using SobekCM.Engine_Library.Solr.v5;
 using SobekCM.Library.ItemViewer.Menu;
 using SobekCM.Library.UI;
@@ -110,7 +109,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
     /// <see cref="iItemViewer" /> interface. </remarks>
     public class Text_Search_ItemViewer : abstractNoPaginationItemViewer
     {
-        private Legacy_Solr_Page_Results results;
+        private v5_Solr_Page_Results results;
 
         /// <summary> Constructor for a new instance of the Text_Search_ItemViewer class, which allows the full text of an 
         /// individual resource to be searched and individual matching pages are displayed with page thumbnails </summary>
@@ -145,8 +144,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 // Search differently, depending on the search type
                 if (UI_ApplicationCache_Gateway.Settings.System.Search_System == Search_System_Enum.Beta)
                     results = v5_Solr_Searcher.Search_Within_Document(BriefItem.BibID, BriefItem.VID, terms, 20, page, false);
-                else
-                    results = Legacy_Solr_Searcher.Search_Within_Document(BriefItem.BibID, BriefItem.VID, terms, 20, page, false);
 
                 Tracer.Add_Trace("Text_Search_ItemViewer.Constructor", "Completed Solr/Lucene search in " + results.QueryTime + "ms");
             }
@@ -325,7 +322,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 }
                 int current_displayed_result = ((results.Page_Number - 1) * 20) + 1;
                 bool first = true;
-                foreach (Legacy_Solr_Page_Result result in results.Results)
+                foreach (v5_Solr_Page_Result result in results.Results)
                 {
                     // If this is not the first results drawn, add a seperating line
                     if (!first)
@@ -433,7 +430,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             string complete_search = CurrentRequest.Text_Search;
             ushort subpage = CurrentRequest.SubPage.HasValue ? Math.Max(CurrentRequest.SubPage.Value, ((ushort)1)) : ((ushort)1);
             CurrentRequest.SubPage = 1;
-            Legacy_Solr_Searcher.Split_Multi_Terms(CurrentRequest.Text_Search, "ZZ", terms, fields);
+            v5_Solr_Searcher.Split_Multi_Terms(CurrentRequest.Text_Search, "ZZ", terms, fields);
 
             string your_search_language = "Your search within this document for ";
             string and_not_language = " AND NOT ";

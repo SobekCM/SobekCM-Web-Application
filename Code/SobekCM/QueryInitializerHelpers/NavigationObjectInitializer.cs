@@ -58,11 +58,6 @@ namespace SobekCM.QueryInitializerHelpers
                 return new QueryInitializerHelperResponse(false, "Exception caught while parsing the query string.", ee);
             }
 
-            // If this was for HTML, but was at the data, just convert to XML 
-            /// TODO: I think this can be removed
-            //if ((page_name == "SOBEKCM_DATA") && (currentMode.Writer_Type != Writer_Type_Enum.XML) && (currentMode.Writer_Type != Writer_Type_Enum.JSON) && (currentMode.Writer_Type != Writer_Type_Enum.DataSet) && (currentMode.Writer_Type != Writer_Type_Enum.Data_Provider))
-            //    currentMode.Writer_Type = Writer_Type_Enum.XML;
-
             tracer.Add_Trace("NavigationObjectInitializer.Initialize", "Navigation parse completed");
 
             return QueryInitializerHelperResponse.Successful;

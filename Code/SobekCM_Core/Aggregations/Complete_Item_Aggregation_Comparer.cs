@@ -22,10 +22,6 @@ namespace SobekCM.Core.Aggregations
         /// <returns> List of changes between the two aggregation objects </returns>
         public static List<string> Compare(Complete_Item_Aggregation Base, Complete_Item_Aggregation Compared)
         {
-
-            // TODO: Facet comparison below needs to look up the name of the facet,
-            // TODO: rather than just showing the primary key to the facet
-
             var changes = new List<string>();
 
             // code
@@ -520,13 +516,13 @@ namespace SobekCM.Core.Aggregations
             {
                 if (removedFacets.Count == 1)
                 {
-                    changes.Add("Removed facet " + removedFacets[0]);
+                    changes.Add("Removed facet " + removedFacets[0].DisplayTerm);
                 }
                 else
                 {
                     var builder = new StringBuilder("Removed facets " + removedFacets[0]);
                     for (int i = 1; i < removedFacets.Count; i++)
-                        builder.Append(", " + removedFacets[i]);
+                        builder.Append(", " + removedFacets[i].DisplayTerm);
                     changes.Add(builder.ToString());
                 }
             }
@@ -534,13 +530,13 @@ namespace SobekCM.Core.Aggregations
             {
                 if (addedFacets.Count == 1)
                 {
-                    changes.Add("Added facet " + addedFacets[0]);
+                    changes.Add("Added facet " + addedFacets[0].DisplayTerm);
                 }
                 else
                 {
                     var builder = new StringBuilder("Added facets " + addedFacets[0]);
                     for (int i = 1; i < addedFacets.Count; i++)
-                        builder.Append(", " + addedFacets[i]);
+                        builder.Append(", " + addedFacets[i].DisplayTerm);
                     changes.Add(builder.ToString());
                 }
             }

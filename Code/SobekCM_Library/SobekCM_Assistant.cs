@@ -15,7 +15,6 @@ using SobekCM.Core.WebContent;
 using SobekCM.Engine_Library.Aggregations;
 using SobekCM.Engine_Library.Database;
 using SobekCM.Engine_Library.SiteMap;
-using SobekCM.Engine_Library.Solr.Legacy;
 using SobekCM.Engine_Library.Solr.v5;
 using SobekCM.Library.Database;
 using SobekCM.Library.UI;
@@ -167,8 +166,10 @@ namespace SobekCM.Library
             {
                 Tracer?.Add_Trace("SobekCM_Assistant.Get_User_Folder", "Building results information");
 
+                // TODO: Use Solr to pull the public folder browse for a user's folder
+                // Was: Engine_Database.Get_User_Folder_Browse(User_ID, Folder_Name, Results_Per_Page, ResultsPage, false, new List<short>(), need_browse_statistics, Tracer);
 
-                Single_Paged_Results_Args returnArgs = Engine_Database.Get_User_Folder_Browse(User_ID, Folder_Name, Results_Per_Page, ResultsPage, false, new List<short>(), need_browse_statistics, Tracer);
+                Single_Paged_Results_Args returnArgs = new Single_Paged_Results_Args();
                 if (need_browse_statistics)
                 {
                     Complete_Result_Set_Info = returnArgs.Statistics;
@@ -251,7 +252,9 @@ namespace SobekCM.Library
             {
                 Tracer?.Add_Trace("SobekCM_Assistant.Get_User_Folder", "Building results information");
 
-                Single_Paged_Results_Args returnArgs = Engine_Database.Get_Public_Folder_Browse(UserFolderID, 20, ResultsPage, false, new List<short>(), need_browse_statistics, Tracer);
+                // TODO: Use Solr to pull the public folder browse for a user's folder
+                // Was:  Single_Paged_Results_Args returnArgs = Engine_Database.Get_Public_Folder_Browse(UserFolderID, 20, ResultsPage, false, new List<short>(), need_browse_statistics, Tracer);
+                Single_Paged_Results_Args returnArgs = new Single_Paged_Results_Args();
                 if (need_browse_statistics)
                 {
                     Complete_Result_Set_Info = returnArgs.Statistics;
@@ -286,189 +289,6 @@ namespace SobekCM.Library
         {
             string base_image_url = UI_ApplicationCache_Gateway.Settings.Servers.Base_Data_Directory + Current_Mode.Aggregation + "_all.html";
             return base_image_url;
-        }
-
-        #endregion
-
-        #region Method to get a browse or info object, table, or text
-
-        /// <summary> Gets the browse or info object and any other needed data for display ( resultset or text to display) </summary>
-        /// <param name="Current_Mode"> Mode / navigation information for the current request</param>
-        /// <param name="Aggregation_Object"> Item Aggregation object</param>
-        /// <param name="Current_User"> Current user which allows user-specific results </param>
-        /// <param name="Base_Directory"> Base directory location under which the the CMS/info source file will be found</param>
-        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        /// <param name="Browse_Object"> [OUT] Stores all the information about this browse or info </param>
-        /// <param name="Complete_Result_Set_Info"> [OUT] Information about the entire set of results </param>
-        /// <param name="Paged_Results"> [OUT] List of search results for the requested page of results </param>
-        /// <param name="Browse_Info_Display_Text"> [OUT] Static HTML-based content to be displayed if this is browing a staticly created html source file </param>
-        /// <returns> TRUE if successful, otherwise FALSE </returns>
-        /// <remarks> This attempts to pull the objects from the cache.  If unsuccessful, it builds the objects from the
-        /// database and hands off to the <see cref="CachedDataManager" /> to store in the cache </remarks>
-        public bool Get_Browse_Info(Navigation_Object Current_Mode,
-                                    Item_Aggregation Aggregation_Object,
-                                    User_Object Current_User,
-                                    string Base_Directory,
-                                    Custom_Tracer Tracer,
-                                    out Item_Aggregation_Child_Page Browse_Object,
-                                    out Search_Results_Statistics Complete_Result_Set_Info,
-                                    out List<iSearch_Title_Result> Paged_Results,
-                                    out HTML_Based_Content Browse_Info_Display_Text)
-        {
-            Tracer?.Add_Trace("SobekCM_Assistant.Get_Browse_Info", "RRB: Start of Get_Browse_Info...");
-
-            // Set output initially to null
-            Browse_Object = null;
-            Paged_Results = null;
-            Complete_Result_Set_Info = null;
-            Browse_Info_Display_Text = null;
-
-            // First, make sure the browse submode is valid
-            if ((Aggregation_Object.ID == -1) && (Current_Mode.Mode == Display_Mode_Enum.Simple_HTML_CMS))
-            {
-                string source = Base_Directory + "design\\info";
-                string[] matching_file = Directory.GetFiles(source, Current_Mode.Info_Browse_Mode + ".*");
-                if (matching_file.Length > 0)
-                {
-                    Browse_Object = new Item_Aggregation_Child_Page(Item_Aggregation_Child_Visibility_Enum.None, Item_Aggregation_Child_Source_Data_Enum.Static_HTML, Current_Mode.Info_Browse_Mode, matching_file[0], Current_Mode.Info_Browse_Mode);
-                }
-            }
-            else
-            {
-                Browse_Object = Aggregation_Object.Child_Page_By_Code(Current_Mode.Info_Browse_Mode);
-            }
-            if (Browse_Object == null)
-            {
-                Current_Mode.Error_Message = "Unable to retrieve browse/info item '" + Current_Mode.Info_Browse_Mode + "'";
-                return false;
-            }
-
-            // Is this a table result, or a string?
-            switch (Browse_Object.Source_Data_Type)
-            {
-                case Item_Aggregation_Child_Source_Data_Enum.Database_Table:
-
-                    Tracer.Add_Trace("SobekCM_Assistant.Get_Browse_Info", "Browse_Object.Source_Data_Type is Item_Aggregation_Child_Source_Data_Enum.Database_Table.");
-
-                    // Set the current sort to ZERO, if currently set to ONE and this is an ALL BROWSE.
-                    // Those two sorts are the same in this case
-                    int sort = Current_Mode.Sort.HasValue ? Math.Max(Current_Mode.Sort.Value, ((ushort)1)) : 1;
-                    if ((sort == 0) && (Browse_Object.Code == "all"))
-                        sort = 1;
-
-                    // Special code if this is a JSON browse
-                    string browse_code = Current_Mode.Info_Browse_Mode;
-                    if (Current_Mode.Writer_Type == Writer_Type_Enum.JSON)
-                    {
-                        browse_code = browse_code + "_JSON";
-                        sort = 12;
-                    }
-
-                    // Get the page count in the results
-                    int current_page_index = Current_Mode.Page.HasValue ? Math.Max(Current_Mode.Page.Value, ((ushort)1)) : 1;
-
-                    // Determine if this is a special search type which returns more rows and is not cached.
-                    // This is used to return the results as XML and DATASET
-                    bool special_search_type = false;
-                    int results_per_page = 20;
-                    if ((Current_Mode.Writer_Type == Writer_Type_Enum.XML) || (Current_Mode.Writer_Type == Writer_Type_Enum.DataSet))
-                    {
-                        results_per_page = 1000000;
-                        special_search_type = true;
-                        sort = 2; // Sort by BibID always for these
-                    }
-
-                    Tracer.Add_Trace("SobekCM_Assistant.Get_Browse_Info", "Current_Mode.Writer_Type=[" + Current_Mode.Writer_Type.ToString() + "].");
-                    Tracer.Add_Trace("SobekCM_Assistant.Get_Browse_Info", "Current_Mode.Results_Display_Type=[" + Current_Mode.Result_Display_Type + "].");
-
-                    if (String.Equals(Current_Mode.Result_Display_Type, "timeline", StringComparison.OrdinalIgnoreCase))
-                    {
-                        Tracer.Add_Trace("SobekCM_Assistant.Get_Browse_Info", "Is timeline, setting browse results_per_page and sort.");
-
-                        results_per_page = 1000;
-                        sort = 10;
-                    }
-
-                    // Set the flags for how much data is needed.  (i.e., do we need to pull ANYTHING?  or
-                    // perhaps just the next page of results ( as opposed to pulling facets again).
-                    bool need_browse_statistics = true;
-                    bool need_paged_results = true;
-                    if (!special_search_type)
-                    {
-                        // Look to see if the browse statistics are available on any cache for this browse
-                        Complete_Result_Set_Info = CachedDataManager.Retrieve_Browse_Result_Statistics(Aggregation_Object.Code, browse_code, Tracer);
-                        if (Complete_Result_Set_Info != null)
-                            need_browse_statistics = false;
-
-                        // Look to see if the paged results are available on any cache..
-                        Paged_Results = CachedDataManager.Retrieve_Browse_Results(Aggregation_Object.Code, browse_code, current_page_index, sort, (uint)results_per_page, Tracer);
-                        if (Paged_Results != null)
-                            need_paged_results = false;
-                    }
-
-                    // Was a copy found in the cache?
-                    if ((!need_browse_statistics) && (!need_paged_results))
-                    {
-                        Tracer?.Add_Trace("SobekCM_Assistant.Get_Browse_Info", "Browse statistics and paged results retrieved from cache");
-                    }
-                    else
-                    {
-                        Tracer?.Add_Trace("SobekCM_Assistant.Get_Browse_Info", "Building results information");
-
-                        // Try to pull more than one page, so we can cache the next page or so
-                        List<List<iSearch_Title_Result>> pagesOfResults;
-
-                        // Get from the hierarchy object
-                        if (Current_Mode.Writer_Type == Writer_Type_Enum.JSON)
-                        {
-                            var facetsList = new List<short>();
-                            foreach (Complete_Item_Aggregation_Metadata_Type facet in Aggregation_Object.Facets)
-                                facetsList.Add(facet.ID);
-
-                            Multiple_Paged_Results_Args returnArgs = Engine_Database.Get_Item_Aggregation_Browse_Paged(Current_Mode.Aggregation, "1900-01-01", false, 20, current_page_index, 0, need_browse_statistics, facetsList, need_browse_statistics, Tracer);
-                            if (need_browse_statistics)
-                            {
-                                Complete_Result_Set_Info = returnArgs.Statistics;
-                            }
-                            pagesOfResults = returnArgs.Paged_Results;
-                            if ((pagesOfResults != null) && (pagesOfResults.Count > 0))
-                                Paged_Results = pagesOfResults[0];
-                        }
-                        else
-                        {
-                            Multiple_Paged_Results_Args returnArgs = Item_Aggregation_Utilities.Get_Browse_Results(Aggregation_Object, Browse_Object, current_page_index, sort, results_per_page, !special_search_type, need_browse_statistics, Current_User, Tracer);
-                            if (need_browse_statistics)
-                            {
-                                Complete_Result_Set_Info = returnArgs.Statistics;
-                            }
-                            pagesOfResults = returnArgs.Paged_Results;
-                            if ((pagesOfResults != null) && (pagesOfResults.Count > 0))
-                                Paged_Results = pagesOfResults[0];
-                        }
-
-                        // Save the overall result set statistics to the cache if something was pulled
-                        if (!special_search_type)
-                        {
-                            if ((need_browse_statistics) && (Complete_Result_Set_Info != null))
-                            {
-                                CachedDataManager.Store_Browse_Result_Statistics(Aggregation_Object.Code, browse_code, Complete_Result_Set_Info, Tracer);
-                            }
-
-                            // Save the overall result set statistics to the cache if something was pulled
-                            if ((need_paged_results) && (Paged_Results != null))
-                            {
-                                CachedDataManager.Store_Browse_Results(Aggregation_Object.Code, browse_code, current_page_index, sort, (uint)results_per_page, pagesOfResults, Tracer);
-                            }
-                        }
-                    }
-                    break;
-
-                case Item_Aggregation_Child_Source_Data_Enum.Static_HTML:
-                    Tracer.Add_Trace("SobekCM_Assistant.Get_Browse_Info", "Browse_Object.Source_Data_Type is Item_Aggregation_Child_Source_Data_Enum.Static_HTML.");
-                    Browse_Info_Display_Text = SobekEngineClient.Aggregations.Get_Aggregation_HTML_Child_Page(Aggregation_Object.Code, Aggregation_Object.Language, UI_ApplicationCache_Gateway.Settings.System.Default_UI_Language, Browse_Object.Code, Tracer);
-                    break;
-            }
-            return true;
         }
 
         #endregion
@@ -575,7 +395,9 @@ namespace SobekCM.Library
                         int current_page_index = Current_Mode.Page.HasValue ? Math.Max(Current_Mode.Page.Value, ((ushort)1)) : 1;
 
                         // Try to pull more than one page, so we can cache the next page or so
-                        Multiple_Paged_Results_Args returnArgs = Engine_Database.Get_Items_By_Coordinates(Current_Mode.Aggregation, lat1, long1, lat2, long2, false, 20, current_page_index, sort, false, new List<short>(), true, Tracer);
+                        // TODO: Make searching by coordinates work in Solr
+                        // Was: Engine_Database.Get_Items_By_Coordinates(Current_Mode.Aggregation, lat1, long1, lat2, long2, false, 20, current_page_index, sort, false, new List<short>(), true, Tracer);
+                        Multiple_Paged_Results_Args returnArgs = new Multiple_Paged_Results_Args();
                         List<List<iSearch_Title_Result>> pagesOfResults = returnArgs.Paged_Results;
                         Complete_Result_Set_Info = returnArgs.Statistics;
 
@@ -606,16 +428,8 @@ namespace SobekCM.Library
                 var terms = new List<string>();
                 var web_fields = new List<string>();
 
-                // Split the terms correctly ( only use the database stop words for the split if this will go to the database ultimately)
-                if (((Current_Mode.Search_Type == Search_Type_Enum.Full_Text) || (Current_Mode.Search_Fields.IndexOf("TX") >= 0)) || (UI_ApplicationCache_Gateway.Settings.System.Search_System == Search_System_Enum.Beta))
-                {
-                    Split_Clean_Search_Terms_Fields(Current_Mode.Search_String, Current_Mode.Search_Fields, Current_Mode.Search_Type, terms, web_fields, null, Current_Mode.Search_Precision, ',');
-                }
-                else
-                {
-                    // This is a database search, so use the stop-words here
-                    Split_Clean_Search_Terms_Fields(Current_Mode.Search_String, Current_Mode.Search_Fields, Current_Mode.Search_Type, terms, web_fields, Search_Stop_Words, Current_Mode.Search_Precision, ',');
-                }
+                // Split the terms correctly 
+                Split_Clean_Search_Terms_Fields(Current_Mode.Search_String, Current_Mode.Search_Fields, Current_Mode.Search_Type, terms, web_fields, null, Current_Mode.Search_Precision, ',');
 
                 // Get the count that will be used
                 int actualCount = Math.Min(terms.Count, web_fields.Count);
@@ -718,15 +532,8 @@ namespace SobekCM.Library
                             // Get the page count in the results
                             int current_page_index = Current_Mode.Page.HasValue ? Math.Max(Current_Mode.Page.Value, ((ushort)1)) : 1;
 
-                            // Use solr or database, depending on the search type
-                            if (UI_ApplicationCache_Gateway.Settings.System.Search_System == Search_System_Enum.Beta)
-                                Perform_Solr_Search(Tracer, terms, web_fields, date_start, date_end, Aggregation_Object, current_page_index, sort, results_per_page, Current_User, out recomputed_search_statistics, out Paged_Results, need_search_statistics);
-                            else
-                            {
-                                Perform_Database_Search(Tracer, terms, web_fields, date_start, date_end, actualCount, Current_Mode, sort, Aggregation_Object, results_per_page, !special_search_type, out recomputed_search_statistics, out pagesOfResults, need_search_statistics, context);
-                                if ((pagesOfResults != null) && (pagesOfResults.Count > 0))
-                                    Paged_Results = pagesOfResults[0];
-                            }
+                            // Perform the solr search
+                            Perform_Solr_Search(Tracer, terms, web_fields, date_start, date_end, Aggregation_Object, current_page_index, sort, results_per_page, Current_User, out recomputed_search_statistics, out Paged_Results, need_search_statistics);
 
                             if (need_search_statistics)
                                 Complete_Result_Set_Info = recomputed_search_statistics;
@@ -862,7 +669,7 @@ namespace SobekCM.Library
             // If this is basic, do some other preparation
             if (Search_Type == Search_Type_Enum.Full_Text)
             {
-                Legacy_Solr_Searcher.Split_Multi_Terms(Search_String, default_index, Output_Terms, Output_Fields);
+                v5_Solr_Searcher.Split_Multi_Terms(Search_String, default_index, Output_Terms, Output_Fields);
             }
             else
             {
@@ -905,351 +712,61 @@ namespace SobekCM.Library
             }
         }
 
-        private void Perform_Database_Search(Custom_Tracer Tracer, List<string> Terms, List<string> Web_Fields, Nullable<DateTime> StartDate, Nullable<DateTime> EndDate, int ActualCount, Navigation_Object Current_Mode, int Current_Sort, Item_Aggregation Aggregation_Object, int Results_Per_Page, bool Potentially_Include_Facets, out Search_Results_Statistics Complete_Result_Set_Info, out List<List<iSearch_Title_Result>> Paged_Results, bool Need_Search_Statistics, HttpContext context = null)
-        {
-            Tracer?.Add_Trace("SobekCM_Assistant.Perform_Database_Search", "Query the database for search results");
-
-            // Convert the dates to longs
-            long Date1 = -1;
-            if (StartDate.HasValue)
-            {
-                TimeSpan timeElapsed = StartDate.Value.Subtract(new DateTime(1, 1, 1));
-                Date1 = (long)timeElapsed.TotalDays;
-            }
-            long Date2 = -1;
-            if (EndDate.HasValue)
-            {
-                TimeSpan timeElapsed = EndDate.Value.Subtract(new DateTime(1, 1, 1));
-                Date2 = (long)timeElapsed.TotalDays;
-            }
-
-            // Get the list of facets first
-            var facetsList = new List<short>();
-            foreach (Complete_Item_Aggregation_Metadata_Type facet in Aggregation_Object.Facets)
-                facetsList.Add(facet.ID);
-            if (!Potentially_Include_Facets)
-                facetsList.Clear();
-
-            // Set the return values to NULL initially
-            Complete_Result_Set_Info = null;
-
-            const bool INCLUDE_PRIVATE = false;
-
-            // Special code for searching by bibid, oclc, or aleph
-            if (ActualCount == 1)
-            {
-                // Is this a BIBID search?
-                if ((Web_Fields[0] == "BI") && (Terms[0].IndexOf("*") < 0) && (Terms[0].Length >= 10))
-                {
-                    string bibid = Terms[0].ToUpper();
-                    string vid = String.Empty;
-                    if (bibid.Length > 10)
-                    {
-                        if ((bibid.IndexOf("_") == 10) && (bibid.Length > 11))
-                        {
-                            vid = bibid.Substring(11).PadLeft(5, '0');
-                            bibid = bibid.Substring(0, 10);
-                        }
-                        else if ((bibid.IndexOf(":") == 10) && (bibid.Length > 11))
-                        {
-                            vid = bibid.Substring(11).PadLeft(5, '0');
-                            bibid = bibid.Substring(0, 10);
-                        }
-                        else if (bibid.Length == 15)
-                        {
-                            vid = bibid.Substring(10);
-                            bibid = bibid.Substring(0, 10);
-                        }
-                    }
-
-                    if (bibid.Length == 10)
-                    {
-                        if (vid.Length == 5)
-                        {
-                            string redirect_url = Current_Mode.Base_URL + bibid + "/" + vid;
-                            if (Current_Mode.Writer_Type == Writer_Type_Enum.HTML_LoggedIn)
-                                redirect_url = Current_Mode.Base_URL + "l/" + bibid + "/" + vid;
-                            context?.Response.Redirect(redirect_url);
-                            Current_Mode.Request_Completed = true;
-                            Paged_Results = null;
-                            return;
-                        }
-                        else
-                        {
-                            string redirect_url = Current_Mode.Base_URL + bibid;
-                            if (Current_Mode.Writer_Type == Writer_Type_Enum.HTML_LoggedIn)
-                                redirect_url = Current_Mode.Base_URL + "l/" + bibid;
-                            context?.Response.Redirect(redirect_url);
-                            Current_Mode.Request_Completed = true;
-                            Paged_Results = null;
-                            return;
-                        }
-                    }
-                }
-
-                // Was this a OCLC search?
-                if ((Web_Fields[0] == "OC") && (Terms[0].Length > 0))
-                {
-                    bool is_number = Terms[0].All(Char.IsNumber);
-
-                    if (is_number)
-                    {
-                        long oclc = Convert.ToInt64(Terms[0]);
-                        Multiple_Paged_Results_Args returnArgs = Engine_Database.Items_By_OCLC_Number(oclc, false, Results_Per_Page, Current_Sort, Need_Search_Statistics, Tracer);
-                        if (Need_Search_Statistics)
-                            Complete_Result_Set_Info = returnArgs.Statistics;
-                        Paged_Results = returnArgs.Paged_Results;
-                        return;
-                    }
-                }
-
-                // Was this a ALEPH search?
-                if ((Web_Fields[0] == "AL") && (Terms[0].Length > 0))
-                {
-                    bool is_number = Terms[0].All(Char.IsNumber);
-
-                    if (is_number)
-                    {
-                        int aleph = Convert.ToInt32(Terms[0]);
-                        Multiple_Paged_Results_Args returnArgs = Engine_Database.Items_By_ALEPH_Number(aleph, false, Results_Per_Page, Current_Sort, Need_Search_Statistics, Tracer);
-                        if (Need_Search_Statistics)
-                            Complete_Result_Set_Info = returnArgs.Statistics;
-                        Paged_Results = returnArgs.Paged_Results;
-                        return;
-                    }
-                }
-            }
-
-            var links = new List<short>();
-            var db_fields = new List<short>();
-            List<string> db_terms = Terms.ToList();
-
-            // Step through all the web fields and convert to db fields
-            for (int i = 0; i < ActualCount; i++)
-            {
-                if (Web_Fields[i].Length > 1)
-                {
-                    // Find the joiner
-                    if ((Web_Fields[i][0] == '+') || (Web_Fields[i][0] == '=') || (Web_Fields[i][0] == '-'))
-                    {
-                        if (Web_Fields[i][0] == '+')
-                            links.Add(0);
-                        if (Web_Fields[i][0] == '=')
-                            links.Add(1);
-                        if (Web_Fields[i][0] == '-')
-                            links.Add(2);
-
-                        Web_Fields[i] = Web_Fields[i].Substring(1);
-                    }
-                    else
-                    {
-                        links.Add(0);
-                    }
-
-                    // Find the db field number
-                    db_fields.Add(Metadata_Field_Number(Web_Fields[i]));
-                }
-
-
-
-                // Also add starting and ending quotes to all the valid searches
-                if (db_terms[i].Length > 0)
-                {
-                    if ((db_terms[i].IndexOf("\"") < 0) && (db_terms[i].IndexOf(" ") < 0))
-                    {
-                        // Since this is a single word, see what type of special codes to include
-                        switch (Current_Mode.Search_Precision)
-                        {
-                            case Search_Precision_Type_Enum.Contains:
-                                db_terms[i] = "\"" + db_terms[i] + "\"";
-                                break;
-
-                            case Search_Precision_Type_Enum.Inflectional_Form:
-                                // If there are any non-characters, don't use inflectional for this term
-                                bool inflectional = db_terms[i].All(Char.IsLetter);
-                                if (inflectional)
-                                {
-                                    db_terms[i] = "FORMSOF(inflectional," + db_terms[i] + ")";
-                                }
-                                else
-                                {
-                                    db_terms[i] = "\"" + db_terms[i] + "\"";
-                                }
-                                break;
-
-                            case Search_Precision_Type_Enum.Synonmic_Form:
-                                // If there are any non-characters, don't use thesaurus for this term
-                                bool thesaurus = db_terms[i].All(Char.IsLetter);
-                                if (thesaurus)
-                                {
-                                    db_terms[i] = "FORMSOF(thesaurus," + db_terms[i] + ")";
-                                }
-                                else
-                                {
-                                    db_terms[i] = "\"" + db_terms[i] + "\"";
-                                }
-                                break;
-                        }
-                    }
-                    else
-                    {
-                        if (Current_Mode.Search_Precision != Search_Precision_Type_Enum.Exact_Match)
-                        {
-                            db_terms[i] = "\"" + db_terms[i] + "\"";
-                        }
-                    }
-                }
-            }
-
-            // Get the page count in the results
-            int current_page_index = Current_Mode.Page.HasValue ? Math.Max(Current_Mode.Page.Value, ((ushort)1)) : 1;
-
-            // If this is an exact match, just do the search
-            if (Current_Mode.Search_Precision == Search_Precision_Type_Enum.Exact_Match)
-            {
-                Multiple_Paged_Results_Args returnArgs = Engine_Database.Perform_Metadata_Exact_Search_Paged(db_terms[0], db_fields[0], INCLUDE_PRIVATE, Current_Mode.Aggregation, Date1, Date2, Results_Per_Page, current_page_index, Current_Sort, Need_Search_Statistics, facetsList, Need_Search_Statistics, Tracer);
-                if (Need_Search_Statistics)
-                    Complete_Result_Set_Info = returnArgs.Statistics;
-                Paged_Results = returnArgs.Paged_Results;
-            }
-            else
-            {
-                // Finish filling up the fields and links
-                while (links.Count < 10)
-                    links.Add(0);
-                while (db_fields.Count < 10)
-                    db_fields.Add(-1);
-                while (db_terms.Count < 10)
-                    db_terms.Add(String.Empty);
-
-                // See if this is a simple search, which can use a more optimized search routine
-                bool simplified_search = db_fields.All(Field => (Field <= 0));
-
-                // Perform either the simpler metadata search, or the more complex
-                if (simplified_search)
-                {
-                    var searchBuilder = new StringBuilder();
-                    for (int i = 0; i < db_terms.Count; i++)
-                    {
-                        if (db_terms[i].Length > 0)
-                        {
-                            if (i > 0)
-                            {
-                                if (i > links.Count)
-                                {
-                                    searchBuilder.Append(" AND ");
-                                }
-                                else
-                                {
-                                    switch (links[i])
-                                    {
-                                        case 0:
-                                            searchBuilder.Append(" AND ");
-                                            break;
-
-                                        case 1:
-                                            searchBuilder.Append(" OR ");
-                                            break;
-
-                                        case 2:
-                                            searchBuilder.Append(" AND NOT ");
-                                            break;
-                                    }
-                                }
-                            }
-
-                            searchBuilder.Append(db_terms[i]);
-                        }
-                    }
-
-
-
-                    Multiple_Paged_Results_Args returnArgs = Engine_Database.Perform_Metadata_Search_Paged(searchBuilder.ToString(), INCLUDE_PRIVATE, Current_Mode.Aggregation, Date1, Date2, Results_Per_Page, current_page_index, Current_Sort, Need_Search_Statistics, facetsList, Need_Search_Statistics, Tracer);
-                    if (Need_Search_Statistics)
-                        Complete_Result_Set_Info = returnArgs.Statistics;
-                    Paged_Results = returnArgs.Paged_Results;
-                }
-                else
-                {
-                    // Perform search in the database
-                    Multiple_Paged_Results_Args returnArgs = Engine_Database.Perform_Metadata_Search_Paged(links[0], db_terms[0], db_fields[0], links[1], db_terms[1], db_fields[1], links[2], db_terms[2], db_fields[2], links[3], db_terms[3],
-                                                                                                            db_fields[3], links[4], db_terms[4], db_fields[4], links[5], db_terms[5], db_fields[5], links[6], db_terms[6], db_fields[6], links[7], db_terms[7], db_fields[7], links[8], db_terms[8], db_fields[8],
-                                                                                                            links[9], db_terms[9], db_fields[9], INCLUDE_PRIVATE, Current_Mode.Aggregation, Date1, Date2, Results_Per_Page, current_page_index, Current_Sort, Need_Search_Statistics, facetsList, Need_Search_Statistics, Tracer);
-                    if (Need_Search_Statistics)
-                        Complete_Result_Set_Info = returnArgs.Statistics;
-                    Paged_Results = returnArgs.Paged_Results;
-                }
-            }
-        }
-
-        private static short Metadata_Field_Number(string FieldCode)
-        {
-            Metadata_Search_Field field = UI_ApplicationCache_Gateway.Settings.Metadata_Search_Field_By_Code(FieldCode);
-            return (field == null) ? (short)-1 : field.ID;
-        }
 
         private static void Perform_Solr_Search(Custom_Tracer Tracer, List<string> Terms, List<string> Web_Fields, Nullable<DateTime> StartDate, Nullable<DateTime> EndDate, Item_Aggregation Current_Aggregation, int Current_Page, int Current_Sort, int Results_Per_Page, User_Object Current_User, out Search_Results_Statistics Complete_Result_Set_Info, out List<iSearch_Title_Result> Paged_Results, bool Need_Search_Statistics)
         {
             Tracer?.Add_Trace("SobekCM_Assistant.Perform_Solr_Search", "Build the Solr query");
 
-            // Use this built query to query against Solr
-            if (UI_ApplicationCache_Gateway.Settings.System.Search_System == Search_System_Enum.Beta)
+            // Build the user membership information
+            var userInfo = new Search_User_Membership_Info();
+            if ((Current_User == null) || (!Current_User.LoggedOn))
             {
-                // Build the user membership information
-                var userInfo = new Search_User_Membership_Info();
-                if ((Current_User == null) || (!Current_User.LoggedOn))
-                {
-                    userInfo.LoggedIn = false;
-                }
-                else
-                {
-                    userInfo.LoggedIn = true;
-                    userInfo.UserID = userInfo.UserID;
-                    if (Current_User.User_Groups != null)
-                    {
-                        foreach (Simple_User_Group_Info groupInfo in Current_User.User_Groups)
-                        {
-                            userInfo.Add_User_Group(groupInfo.UserGroupID);
-                        }
-                    }
-                    if ((Current_User.Is_Host_Admin) || (Current_User.Is_System_Admin) || (Current_User.Is_Portal_Admin))
-                        userInfo.Admin = true;
-                    else if ((Current_User.Is_Aggregation_Admin(Current_Aggregation.Code)) || (Current_User.Is_Aggregation_Curator(Current_Aggregation.Code)))
-                    {
-                        userInfo.Admin = true;
-                    }
-                }
-
-                // Build the search options
-                var searchOptions = new Search_Options_Info();
-                searchOptions.Page = Current_Page;
-                searchOptions.ResultsPerPage = Results_Per_Page;
-                searchOptions.AggregationCode = Current_Aggregation.Code;
-                searchOptions.Facets = Current_Aggregation.Facets;
-                searchOptions.Fields = Current_Aggregation.Results_Fields;
-                searchOptions.Sort = (ushort)Current_Sort;
-
-                // Should results be grouped?  Aggregation must be set and for the moment, full text
-                // must have been NOT searched
-                bool contains_full_text = false;
-                foreach (string field in Web_Fields)
-                {
-                    if (field.IndexOf("TX", StringComparison.OrdinalIgnoreCase) >= 0)
-                    {
-                        contains_full_text = true;
-                        break;
-                    }
-                }
-                searchOptions.GroupItemsByTitle = (Current_Aggregation.GroupResults && !contains_full_text);
-                searchOptions.IncludeFullTextSnippets = contains_full_text;
-
-                v5_Solr_Searcher.Search(Terms, Web_Fields, null, null, searchOptions, userInfo, Tracer, out Complete_Result_Set_Info, out Paged_Results);
+                userInfo.LoggedIn = false;
             }
             else
-                Legacy_Solr_Searcher.Search(Current_Aggregation.Code, Terms, Web_Fields, Results_Per_Page, Current_Page, (ushort)Current_Sort, Need_Search_Statistics, Tracer, out Complete_Result_Set_Info, out Paged_Results);
+            {
+                userInfo.LoggedIn = true;
+                userInfo.UserID = userInfo.UserID;
+                if (Current_User.User_Groups != null)
+                {
+                    foreach (Simple_User_Group_Info groupInfo in Current_User.User_Groups)
+                    {
+                        userInfo.Add_User_Group(groupInfo.UserGroupID);
+                    }
+                }
+                if ((Current_User.Is_Host_Admin) || (Current_User.Is_System_Admin) || (Current_User.Is_Portal_Admin))
+                    userInfo.Admin = true;
+                else if ((Current_User.Is_Aggregation_Admin(Current_Aggregation.Code)) || (Current_User.Is_Aggregation_Curator(Current_Aggregation.Code)))
+                {
+                    userInfo.Admin = true;
+                }
+            }
 
+            // Build the search options
+            var searchOptions = new Search_Options_Info();
+            searchOptions.Page = Current_Page;
+            searchOptions.ResultsPerPage = Results_Per_Page;
+            searchOptions.AggregationCode = Current_Aggregation.Code;
+            searchOptions.Facets = Current_Aggregation.Facets;
+            searchOptions.Fields = Current_Aggregation.Results_Fields;
+            searchOptions.Sort = (ushort)Current_Sort;
+
+            // Should results be grouped?  Aggregation must be set and for the moment, full text
+            // must have been NOT searched
+            bool contains_full_text = false;
+            foreach (string field in Web_Fields)
+            {
+                if (field.IndexOf("TX", StringComparison.OrdinalIgnoreCase) >= 0)
+                {
+                    contains_full_text = true;
+                    break;
+                }
+            }
+            searchOptions.GroupItemsByTitle = (Current_Aggregation.GroupResults && !contains_full_text);
+            searchOptions.IncludeFullTextSnippets = contains_full_text;
+
+            v5_Solr_Searcher.Search(Terms, Web_Fields, null, null, searchOptions, userInfo, Tracer, out Complete_Result_Set_Info, out Paged_Results);
         }
-
 
         #endregion
 

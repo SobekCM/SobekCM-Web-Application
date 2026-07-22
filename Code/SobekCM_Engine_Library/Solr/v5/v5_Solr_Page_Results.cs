@@ -6,18 +6,18 @@ using System.Collections.ObjectModel;
 
 #endregion
 
-namespace SobekCM.Engine_Library.Solr.Legacy
+namespace SobekCM.Engine_Library.Solr.v5
 {
     /// <summary> Stores a group of page results from an in-document search against a Solr full text index </summary>
     [Serializable]
-    public class Legacy_Solr_Page_Results
+    public class v5_Solr_Page_Results
     {
-        private readonly List<Legacy_Solr_Page_Result> results;
+        private readonly List<v5_Solr_Page_Result> results;
 
         /// <summary> Constructor for a new instance of the Solr_Page_Results class </summary>
-        public Legacy_Solr_Page_Results()
+        public v5_Solr_Page_Results()
         {
-            results = new List<Legacy_Solr_Page_Result>();
+            results = new List<v5_Solr_Page_Result>();
             Page_Number = -1;
             TotalResults = 0;
             QueryTime = -1;
@@ -25,11 +25,11 @@ namespace SobekCM.Engine_Library.Solr.Legacy
         }
 
         /// <summary> Gets the collection of single page search results associated with this search </summary>
-        public ReadOnlyCollection<Legacy_Solr_Page_Result> Results
+        public ReadOnlyCollection<v5_Solr_Page_Result> Results
         {
             get
             {
-                return new ReadOnlyCollection<Legacy_Solr_Page_Result>(results);
+                return new ReadOnlyCollection<v5_Solr_Page_Result>(results);
             }
         }
 
@@ -51,7 +51,7 @@ namespace SobekCM.Engine_Library.Solr.Legacy
 
         /// <summary> Add the next single page result from an in-document search against a Solr full-text index </summary>
         /// <param name="Result"></param>
-        internal void Add_Result(Legacy_Solr_Page_Result Result)
+        internal void Add_Result(v5_Solr_Page_Result Result)
         {
             results.Add(Result);
         }

@@ -112,18 +112,20 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             string aggrCode = ViewBag.Hierarchy_Object.Code.ToLower();
             string key = aggrCode + "_YearRanges";
             List<int> yearRange = SharedCache.Instance[key] as List<int>;
-            if (yearRange == null)
-            {
-                yearRange = new List<int>();
-                List<string> yearRangeString = Engine_Database.Get_Item_Aggregation_Metadata_Browse(aggrCode, "Temporal Year", Tracer);
-                foreach (string thisYear in yearRangeString)
-                {
-                    int result;
-                    if (Int32.TryParse(thisYear, out result))
-                        yearRange.Add(result);
-                }
-                SharedCache.Instance.Set(key, yearRange, new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(5) });
-            }
+
+            // TODO: Previosly 'Temporal Year' used in advanced search would give a list of the possible years apparently?
+            //if (yearRange == null)
+            //{
+            //    yearRange = new List<int>();
+            //    List<string> yearRangeString = Engine_Database.Get_Item_Aggregation_Metadata_Browse(aggrCode, "Temporal Year", Tracer);
+            //    foreach (string thisYear in yearRangeString)
+            //    {
+            //        int result;
+            //        if (Int32.TryParse(thisYear, out result))
+            //            yearRange.Add(result);
+            //    }
+            //    SharedCache.Instance.Set(key, yearRange, new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(5) });
+            //}
 
             string searchLanguage = "Search for:";
             string inLanguage = "in";

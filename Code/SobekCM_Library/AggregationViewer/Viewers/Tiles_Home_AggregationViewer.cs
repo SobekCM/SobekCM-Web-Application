@@ -131,11 +131,13 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                     while (offset < bibs.Count)
                     {
                         //Get the results from the database
-                        Database_Results_Info results = Engine_Library.Database.Engine_Database.Metadata_By_Bib_Vid(aggrCode, bibs[offset + 0], vids[offset + 0], bibs[offset + 1], vids[offset + 1],
-                            bibs[offset + 2], vids[offset + 2], bibs[offset + 3], vids[offset + 3],
-                            bibs[offset + 4], vids[offset + 4], bibs[offset + 5], vids[offset + 5],
-                            bibs[offset + 6], vids[offset + 6], bibs[offset + 7], vids[offset + 7],
-                            bibs[offset + 8], vids[offset + 8], bibs[offset + 9], vids[offset + 9], null);
+                        Database_Results_Info results = new Database_Results_Info();
+                        
+                        //Engine_Library.Database.Engine_Database.Metadata_By_Bib_Vid(aggrCode, bibs[offset + 0], vids[offset + 0], bibs[offset + 1], vids[offset + 1],
+                        //    bibs[offset + 2], vids[offset + 2], bibs[offset + 3], vids[offset + 3],
+                        //    bibs[offset + 4], vids[offset + 4], bibs[offset + 5], vids[offset + 5],
+                        //    bibs[offset + 6], vids[offset + 6], bibs[offset + 7], vids[offset + 7],
+                        //    bibs[offset + 8], vids[offset + 8], bibs[offset + 9], vids[offset + 9], null);
 
                         // Combine into full results
                         if ((results != null) && (results.Metadata_Labels != null) && (results.Metadata_Labels.Count > 0))

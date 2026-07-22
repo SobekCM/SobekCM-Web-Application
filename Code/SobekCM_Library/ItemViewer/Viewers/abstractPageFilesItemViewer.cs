@@ -104,8 +104,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
             // NOTE: The only classes that use this are:
             //           - QC viewer (should probably be a mySobek viewer)
             //           - Related Images (could probably be moved into html viewer writing spot)
-
-            // TODO: Get rid of this method
         }
 
         /// <summary> Abstract method writes the item viewer main section as HTML directly to the HTTP output stream </summary>

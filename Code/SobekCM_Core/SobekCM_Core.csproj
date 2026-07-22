@@ -20,6 +20,8 @@
     <PackageReference Include="SaxonCS" Version="12.10.0" />
     <!-- Direct reference to force resolution past SaxonCS's transitive floor of AngleSharp 1.2.0 (GHSA-pgww-w46g-26qg, fixed in 1.5.0) -->
     <PackageReference Include="AngleSharp" Version="1.5.2" />
+    <!-- Direct reference to force resolution past SaxonCS's transitive floor of System.Security.Cryptography.Xml 10.0.7 (multiple GHSA advisories, fixed in 10.0.10) -->
+    <PackageReference Include="System.Security.Cryptography.Xml" Version="10.0.10" />
   </ItemGroup>
 
   <ItemGroup>

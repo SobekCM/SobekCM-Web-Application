@@ -122,17 +122,6 @@ namespace SobekCM.Library.Database
         //}
 
 
-        ///// <summary> Gets the datatable containging all possible disposition types </summary>
-        ///// <remarks> This calls the 'Tracking_Get_All_Possible_Disposition_Types' stored procedure. </remarks>
-        //public static DataSet EPC_Export
-        //{
-        //	get
-        //	{
-        //		DataSet returnSet = EalDbAccess.ExecuteDataset(Database_Type, @"data source=lib-ufdc-cache\UFDCPROD;initial catalog=EPC;integrated security=Yes;", CommandType.StoredProcedure, "Export_DataSet");
-        //		return returnSet;
-        //	}
-        //}
-
         #endregion
 
         /// <summary> Gets the last exception caught by a database call through this gateway class  </summary>
@@ -401,72 +390,6 @@ namespace SobekCM.Library.Database
 
         #endregion
 
-        #region Method to return DATATABLE of all items from an aggregation
-
-        /// <summary> Gets the list of unique coordinate points and associated bibid and group title for a single 
-        /// item aggregation </summary>
-        /// <param name="AggregationCode"> Code for the item aggregation </param>
-        /// <param name="FIDs"> FileIDs </param>
-        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-        /// <returns> DataTable with all the coordinate values </returns>
-        /// <remarks> This calls the 'SobekCM_Coordinate_Points_By_Aggregation' stored procedure </remarks>
-        public static DataTable Get_All_Items_By_AggregationID(string AggregationCode, List<string> FIDs, Custom_Tracer Tracer)
-        {
-            Tracer?.Add_Trace("SobekCM_Database.Get_All_Items_By_AggregationID", "Pull the item list");
-
-            string HOOK_FIDDBCallPrefix = "SobekCM_Metadata_Basic_Search_Table"; //this is the correct sql syntax for searching the db table for a specific metadata type
-            int nonFIDsParamCount = 2; //how many non fids are there?
-
-            // Build the parameter list
-            EalDbParameter[] paramList = new EalDbParameter[(FIDs.Count + nonFIDsParamCount)];
-            paramList[0] = new EalDbParameter("@aggregation_code", AggregationCode);
-            //paramList[1] = new EalDbParameter("@FID1_PassIn", FIDs[0]);
-            //paramList[2] = new EalDbParameter("@FID2_PassIn", FIDs[1]);
-            //paramList[3] = new EalDbParameter("@FID3_PassIn", FIDs[2]);
-            //paramList[4] = new EalDbParameter("@FID4_PassIn", FIDs[3]);
-            //paramList[5] = new EalDbParameter("@FID5_PassIn", FIDs[4]);
-            //paramList[6] = new EalDbParameter("@FID6_PassIn", FIDs[5]);
-            //paramList[7] = new EalDbParameter("@FID7_PassIn", FIDs[6]);
-            //paramList[8] = new EalDbParameter("@FID8_PassIn", FIDs[7]);
-            int paramListIndex = 0; //set where we are at
-            int fidIndex = 0; //where do the fids start (zero)
-            foreach (string fiD in FIDs)
-            {
-                paramListIndex++;
-                fidIndex++;
-                paramList[paramListIndex] = new EalDbParameter("@FID" + fidIndex.ToString(), fiD);
-            }
-            paramList[(paramListIndex + 1)] = new EalDbParameter("FIDDBCallPrefix", HOOK_FIDDBCallPrefix);
-
-            // Define a temporary dataset
-            DataSet tempSet = EalDbAccess.ExecuteDataset(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Get_All_Items_By_AggregationID", paramList);
-            return tempSet == null ? null : tempSet.Tables[0];
-        }
-
-        #endregion
-
-        #region Method to return STIRNG of the human readable metadata code
-
-        /// <summary> Gets the human readable name of a metadate id</summary>
-        /// <param name="MetadataTypeId"> Code for the metadata</param>
-        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-        /// <returns> String with the name of the metadata </returns>
-        /// <remarks> This calls the 'SobekCM_Get_Metadata_Name_From_MetadataTypeID' stored procedure </remarks>
-        public static string Get_Metadata_Name_From_MetadataTypeID(short MetadataTypeId, Custom_Tracer Tracer)
-        {
-            Tracer?.Add_Trace("SobekCM_Database.Get_Metadata_Name_From_MetadataTypeID", "Get the metadataID name");
-
-            // Build the parameter list
-            EalDbParameter[] paramList = new EalDbParameter[1];
-            paramList[0] = new EalDbParameter("@metadataTypeID", MetadataTypeId);
-
-            // Define a temporary dataset
-            DataSet tempSet = EalDbAccess.ExecuteDataset(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Get_Metadata_Name_From_MetadataTypeID", paramList);
-            DataTable tempResult = tempSet.Tables[0];
-            return tempResult.Rows[0][0].ToString();
-        }
-
-        #endregion
 
         #region Methods to get the information about an ITEM or ITEM GROUP
 
@@ -636,22 +559,6 @@ namespace SobekCM.Library.Database
 
 
 
-
-        /// <summary> Get the list of groups, with the top item (VID) </summary>
-        /// <returns> List of groups, with the top item (VID) </returns>
-        public static DataTable Get_All_Groups_First_VID()
-        {
-            DataSet tempSet = EalDbAccess.ExecuteDataset(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Get_All_Groups_First_VID");
-
-            // If there was no data for this collection and entry point, return null (an ERROR occurred)
-            if ((tempSet.Tables.Count == 0) || (tempSet.Tables[0] == null) || (tempSet.Tables[0].Rows.Count == 0))
-            {
-                return null;
-            }
-
-            // Return the first table from the returned dataset
-            return tempSet.Tables[0];
-        }
 
 
         /// <summary> Gets the dataset of all public items and item groups </summary>
@@ -1256,96 +1163,6 @@ namespace SobekCM.Library.Database
                 Tracer?.Add_Trace("SobekCM_Database.UserName_Exists", ee.StackTrace, Custom_Trace_Type_Enum.Error);
                 UserNameExists = true;
                 EmailExists = true;
-                return false;
-            }
-        }
-
-        /// <summary> Updates the flag that indicates the user would like to receive a monthly usage statistics email </summary>
-        /// <param name="UserID"> Primary key for this user in the database </param>
-        /// <param name="NewFlag"> New value for the flag </param>
-        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-        /// <returns> TRUE if successful, otherwise FALSE</returns>
-        /// <remarks> This calls the 'mySobek_Set_Receive_Stats_Email_Flag' stored procedure</remarks> 
-        public static bool Set_User_Receive_Stats_Email(int UserID, bool NewFlag, Custom_Tracer Tracer)
-        {
-            Tracer?.Add_Trace("SobekCM_Database.Set_Receive_Stats_Email_Flag", String.Empty);
-
-            try
-            {
-                // Execute this non-query stored procedure
-                EalDbParameter[] paramList = new EalDbParameter[2];
-                paramList[0] = new EalDbParameter("@userid", UserID);
-                paramList[1] = new EalDbParameter("@newflag", NewFlag);
-
-                EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "mySobek_Set_Receive_Stats_Email_Flag", paramList);
-                return true;
-            }
-            catch (Exception ee)
-            {
-                lastException = ee;
-                Tracer?.Add_Trace("SobekCM_Database.Set_Receive_Stats_Email_Flag", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
-                Tracer?.Add_Trace("SobekCM_Database.Set_Receive_Stats_Email_Flag", ee.Message, Custom_Trace_Type_Enum.Error);
-                Tracer?.Add_Trace("SobekCM_Database.Set_Receive_Stats_Email_Flag", ee.StackTrace, Custom_Trace_Type_Enum.Error);
-                return false;
-            }
-        }
-
-
-
-        /// <summary> Add a link between a user and an existing item group (by GroupID) </summary>
-        /// <param name="UserID"> Primary key for this user in the database </param>
-        /// <param name="GroupID"> Primary key for the item group to link this user to</param>
-        /// <returns>TRUE if successful, otherwise FALSE</returns>
-        /// <remarks> This calls the 'mySobek_Link_User_To_Item' stored procedure</remarks> 
-        public static bool Add_User_BibID_Link(int UserID, int GroupID)
-        {
-            try
-            {
-                // Execute this non-query stored procedure
-                EalDbParameter[] paramList = new EalDbParameter[2];
-                paramList[0] = new EalDbParameter("@userid", UserID);
-                paramList[1] = new EalDbParameter("@groupid", GroupID);
-
-                EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "mySobek_Link_User_To_Item", paramList);
-
-                // Return the browse id
-                return true;
-
-            }
-            catch (Exception ee)
-            {
-                lastException = ee;
-                return false;
-            }
-        }
-
-        /// <summary> Add a link between a user and an existing item and include the type of relationship </summary>
-        /// <param name="UserID"> Primary key for this user in the database </param>
-        /// <param name="ItemID"> Primary key for the item to link this user to</param>
-        /// <param name="RelationshipID"> Primary key for the type of relationship to use </param>
-        /// <param name="ChangeExisting"> If a relationship already exists, should this override it? </param>
-        /// <returns>TRUE if successful, otherwise FALSE</returns>
-        /// <remarks> This calls the 'SobekCM_Link_User_To_Item' stored procedure</remarks> 
-        public static bool Add_User_Item_Link(int UserID, int ItemID, int RelationshipID, bool ChangeExisting)
-        {
-            try
-            {
-                // Execute this non-query stored procedure
-                EalDbParameter[] paramList = new EalDbParameter[4];
-                paramList[0] = new EalDbParameter("@itemid", ItemID);
-                paramList[1] = new EalDbParameter("@userid", UserID);
-                paramList[2] = new EalDbParameter("@relationshipid", RelationshipID);
-                paramList[3] = new EalDbParameter("@change_existing", ChangeExisting);
-
-                EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Link_User_To_Item", paramList);
-
-                // Return the browse id
-                return true;
-
-            }
-            catch (Exception ee)
-            {
-                lastException = ee;
                 return false;
             }
         }
@@ -2234,49 +2051,6 @@ namespace SobekCM.Library.Database
         }
 
 
-        /// <summary> Updates an existing item aggregation's data that appears in the basic edit aggregation form </summary>
-        /// <param name="Code"> Code for this item aggregation </param>
-        /// <param name="Name"> Name for this item aggregation </param>
-        /// <param name="ShortName"> Short version of this item aggregation </param>
-        /// <param name="IsActive"> Flag indicates if this item aggregation is active</param>
-        /// <param name="IsHidden"> Flag indicates if this item is hidden</param>
-        /// <param name="ExternalLink">External link for this item aggregation (usually used for institutional aggregationPermissions)</param>
-        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-        /// <returns> TRUE if successful, otherwise FALSE </returns>
-        /// <remarks> This calls the 'SobekCM_Update_Item_Aggregation' stored procedure in the SobekCM database</remarks> 
-        public static bool Update_Item_Aggregation(string Code, string Name, string ShortName, bool IsActive, bool IsHidden, string ExternalLink, Custom_Tracer Tracer)
-        {
-            Tracer?.Add_Trace("SobekCM_Database.Update_Item_Aggregation", String.Empty);
-
-            try
-            {
-                // Build the parameter list
-                EalDbParameter[] paramList = new EalDbParameter[6];
-                paramList[0] = new EalDbParameter("@code", Code);
-                paramList[1] = new EalDbParameter("@name", Name);
-                paramList[2] = new EalDbParameter("@shortname", ShortName);
-                paramList[3] = new EalDbParameter("@isActive", IsActive);
-                paramList[4] = new EalDbParameter("@hidden", IsHidden);
-                paramList[5] = new EalDbParameter("@externallink", ExternalLink);
-
-                // Execute this query stored procedure
-                EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Update_Item_Aggregation", paramList);
-
-                // Succesful, so return true
-                return true;
-            }
-            catch (Exception ee)
-            {
-                lastException = ee;
-                Tracer?.Add_Trace("SobekCM_Database.Update_Item_Aggregation", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
-                Tracer?.Add_Trace("SobekCM_Database.Update_Item_Aggregation", ee.Message, Custom_Trace_Type_Enum.Error);
-                Tracer?.Add_Trace("SobekCM_Database.Update_Item_Aggregation", ee.StackTrace, Custom_Trace_Type_Enum.Error);
-                return false;
-            }
-        }
-
-
-
         /// <summary> Delete an item aggregation from the database </summary>
         /// <param name="Code"> Aggregation code for the aggregation to delete</param>
         /// <param name="Username"> Name of the user that deleted this aggregation, for the milestones </param>
@@ -2348,29 +2122,6 @@ namespace SobekCM.Library.Database
             }
         }
 
-        /// <summary> Gets all the milestones for a single item aggregation  </summary>
-        /// <param name="AggregationCode"> Item aggregation code </param>
-        /// <returns> Table of latest updates </returns>
-        /// <remarks> This calls the 'SobekCM_Add_Item_Aggregation_Milestone' stored procedure</remarks> 
-        public static DataTable Get_Item_Aggregation_Milestone(string AggregationCode)
-        {
-            try
-            {
-                // Build the parameter list
-                EalDbParameter[] paramList = new EalDbParameter[1];
-                paramList[0] = new EalDbParameter("@AggregationCode", AggregationCode);
-
-                // Execute this query stored procedure
-                DataSet tempSet = EalDbAccess.ExecuteDataset(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Add_Item_Aggregation_Milestone", paramList);
-
-                return tempSet.Tables[0];
-            }
-            catch (Exception ee)
-            {
-                lastException = ee;
-                return null;
-            }
-        }
 
         /// <summary> Sets a user's password to the newly provided one </summary>
         /// <param name="UserID"> Primary key for this user from the database </param>
@@ -3407,33 +3158,6 @@ namespace SobekCM.Library.Database
         }
 
 
-        /// <summary> Gets the build log for a particular aggregation </summary>
-        /// <param name="AggregationID"> Primary key for this aggregation in the database </param>
-        /// <returns> Aggregation build log table </returns>
-        /// <remarks> This calls the 'SobekCM_Build_Log_Get' stored procedure </remarks> 
-        public static DataTable Get_Aggregation_Build_Log(int AggregationID)
-        {
-
-            try
-            {
-                // build the parameter list
-                EalDbParameter[] paramList = new EalDbParameter[1];
-                paramList[0] = new EalDbParameter("@aggregationid", AggregationID);
-
-                // Get the table
-                DataSet tempSet = EalDbAccess.ExecuteDataset(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Build_Log_Get", paramList);
-
-                // Return true, since no exception caught
-                return tempSet.Tables[0];
-
-            }
-            catch (Exception ee)
-            {
-                lastException = ee;
-                return null;
-            }
-        }
-
         #endregion
 
         #region Methods related to OAI-PMH
@@ -3762,68 +3486,6 @@ namespace SobekCM.Library.Database
 
         #endregion
 
-        #region Methods supporting USFLDC_Redirection_Service method in SobekCM_URL_Rewriter
-
-        /// <summary> Gets aggregation code from CID in aggregation description</summary>
-        /// <param name="Cid"> CID for the digital collection </param>
-        /// <returns> Aggregation Code </returns>
-        public static String Get_AggregationCode_From_CID(String Cid)
-        {
-            try
-            {
-                EalDbParameter[] parameters = new EalDbParameter[1];
-                parameters[0] = new EalDbParameter("@cid", Cid);
-
-                // Define a temporary dataset
-                DataSet tempSet = EalDbAccess.ExecuteDataset(DatabaseType, connectionString, CommandType.StoredProcedure, "USF_Get_AggregationCode_From_CID", parameters);
-
-                // If there was no data for this collection and entry point, return null (an ERROR occurred)
-                if ((tempSet.Tables.Count == 0) || (tempSet.Tables[0] == null) || (tempSet.Tables[0].Rows.Count == 0))
-                {
-                    return null;
-                }
-
-                // Return the aggregation code from the first table
-                return tempSet.Tables[0].Rows[0][0].ToString();
-            }
-            catch (Exception ee)
-            {
-                lastException = ee;
-                return null;
-            }
-        }
-
-        /// <summary> Pulls the BibID, VID via the Identifier </summary>
-        /// <param name="Identifier"> Identifier (PURL Handle) for the digital resource object </param>
-        /// <returns> BibID_VID </returns>
-        public static String Get_BibID_VID_From_Identifier(string Identifier)
-        {
-            try
-            {
-                EalDbParameter[] parameters = new EalDbParameter[1];
-                parameters[0] = new EalDbParameter("@identifier", Identifier);
-
-                // Define a temporary dataset
-                DataSet tempSet = EalDbAccess.ExecuteDataset(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Get_BibID_VID_From_Identifier", parameters);
-
-                // If there was no data for this collection and entry point, return null (an ERROR occurred)
-                if ((tempSet.Tables.Count == 0) || (tempSet.Tables[0] == null) || (tempSet.Tables[0].Rows.Count == 0))
-                {
-                    return null;
-                }
-
-                // return BibID and VID
-                return tempSet.Tables[0].Rows[0][0] + "/" + tempSet.Tables[0].Rows[0][1];
-            }
-            catch (Exception ee)
-            {
-                lastException = ee;
-                return null;
-            }
-        }
-
-        #endregion
-
         #region Methods used to support the SobekCM_Project Element (saving, deleting, retrieving,...)
 
         /// <summary> Save a new, or edit an existing Project in the database </summary>
@@ -4129,10 +3791,6 @@ namespace SobekCM.Library.Database
                 return null;
             }
         }
-
-        //TODO: Add methods to get the default metadata, current input template
-        //TODO: Add the method to get the list of active, inactive projects
-
 
         #endregion
 

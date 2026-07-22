@@ -2,7 +2,6 @@ using SobekCM.Core.Aggregations;
 using SobekCM.Core.Results;
 using SobekCM.Core.Search;
 using SobekCM.Engine_Library.ApplicationState;
-using SobekCM.Engine_Library.Solr.Legacy;
 using SobekCM.Tools;
 using SolrNet;
 using SolrNet.Commands.Parameters;
@@ -662,7 +661,7 @@ namespace SobekCM.Engine_Library.Solr.v5
         /// <param name="ResultsPage"> Which page of results to return ( one-based, so the first page is page number of one )</param>
         /// <param name="Sort_By_Score"> Flag indicates whether to sort the results by relevancy score, rather than the default page order </param>
         /// <returns> Page search result object with all relevant result information </returns>
-        public static Legacy_Solr_Page_Results Search_Within_Document(string BibID, string VID, List<string> Search_Terms, int ResultsPerPage, int ResultsPage, bool Sort_By_Score)
+        public static v5_Solr_Page_Results Search_Within_Document(string BibID, string VID, List<string> Search_Terms, int ResultsPerPage, int ResultsPage, bool Sort_By_Score)
         {
             // Ensure page is not erroneously set to zero or negative
             if (ResultsPage <= 0)
@@ -674,7 +673,7 @@ namespace SobekCM.Engine_Library.Solr.v5
                 solrPageUrl = solrPageUrl.Substring(0, solrPageUrl.Length - 1);
 
             // Create the solr worker to query the page index
-            var solrWorker = Solr_Operations_Cache<Legacy_Solr_Page_Result>.GetSolrOperations(solrPageUrl);
+            var solrWorker = Solr_Operations_Cache<v5_Solr_Page_Result>.GetSolrOperations(solrPageUrl);
 
             // Create the query options
             var options = new QueryOptions{
@@ -760,10 +759,10 @@ namespace SobekCM.Engine_Library.Solr.v5
 
 
             // Perform this search
-            SolrQueryResults<Legacy_Solr_Page_Result> results = solrWorker.Query(queryStringBuilder.ToString(), options);
+            SolrQueryResults<v5_Solr_Page_Result> results = solrWorker.Query(queryStringBuilder.ToString(), options);
 
             // Create the results object to pass back out
-            var searchResults = new Legacy_Solr_Page_Results
+            var searchResults = new v5_Solr_Page_Results
             {
                 QueryTime = results.Header.QTime,
                 TotalResults = (int)results.NumFound,
@@ -773,7 +772,7 @@ namespace SobekCM.Engine_Library.Solr.v5
             };
 
             // Pass all the results into the List and add the highlighted text to each result as well
-            foreach (Legacy_Solr_Page_Result thisResult in results)
+            foreach (v5_Solr_Page_Result thisResult in results)
             {
                 // Add the highlight snipper
                 if ((results.Highlights.ContainsKey(thisResult.PageID)) && (results.Highlights[thisResult.PageID].Count > 0) && (results.Highlights[thisResult.PageID].ElementAt(0).Value.Count > 0))

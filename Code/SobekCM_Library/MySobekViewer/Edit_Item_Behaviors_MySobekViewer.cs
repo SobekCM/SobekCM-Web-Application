@@ -143,12 +143,6 @@ namespace SobekCM.Library.MySobekViewer
                 // Save the serial hierarchy as well (sort of a behavior)
                 SobekCM_Item_Database.Save_Serial_Hierarchy_Information(currentItem, currentItem.Web.GroupID, currentItem.Web.ItemID);
 
-                // Did the tracking box change?
-                if (currentItem.Tracking.Tracking_Box != oldTrackingBox)
-                {
-                    SobekCM_Item_Database.Create_Full_Citation_Value(currentItem.Web.ItemID);
-                }
-
                 // Set the flag to rebuild the item
                 SobekCM_Item_Database.Update_Additional_Work_Needed_Flag(currentItem.Web.ItemID, true);
 

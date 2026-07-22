@@ -31,7 +31,7 @@ namespace SobekCM.Core.Settings
             Metadata_Help_URL_Base = String.Empty;
             Help_URL_Base = String.Empty;
 
-            Search_System = Search_System_Enum.Legacy;
+            Search_System = Search_System_Enum.Beta;
         }
 
         /// <summary> Returns the default user interface language </summary>

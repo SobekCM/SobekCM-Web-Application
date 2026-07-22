@@ -12,6 +12,7 @@ using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
 using SobekCM.Library.Database;
 using SobekCM.Library.Helpers.CKEditor;
+using SobekCM.Library.Helpers.UploadiFive;
 using SobekCM.Library.MainWriters;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
@@ -23,16 +24,6 @@ using System.Threading.Tasks;
 
 namespace SobekCM
 {
-    // Minimal token class for UploadiFive security (the library helper was removed)
-    internal sealed class UploadiFive_Security_Token
-    {
-        public string FileObjName { get; set; } = "file";
-        public string UploadPath { get; set; } = "";
-        public string ServerSideFileName { get; set; } = "";
-        public string AllowedFileExtensions { get; set; } = "";
-        public string ReturnToken { get; set; } = "";
-    }
-
     public class Program
     {
         public static void Main(string[] args)

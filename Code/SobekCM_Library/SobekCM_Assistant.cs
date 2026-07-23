@@ -389,6 +389,7 @@ namespace SobekCM.Library
                     double long1 = 1000;
                     double lat2 = 1000;
                     double long2 = 1000;
+                    double pointBufferKm = 0;
                     string[] terms = Current_Mode.Coordinates.Split(",".ToCharArray());
                     if (terms.Length < 2)
                     {
@@ -415,6 +416,11 @@ namespace SobekCM.Library
                             long2 = Convert.ToDouble(terms[3]);
                     }
 
+                    // An optional fifth term specifies a buffer (in kilometers) to search around a single
+                    // point, rather than requiring an exact coordinate match.  Ignored for a rectangle search.
+                    if ((terms.Length >= 5) && (terms[4].Length > 0))
+                        Double.TryParse(terms[4], out pointBufferKm);
+
                     // If neither point is valid, return
                     if (((lat1 == 1000) || (long1 == 1000)) && ((lat2 == 1000) || (long2 == 1000)))
                     {
@@ -437,21 +443,32 @@ namespace SobekCM.Library
                         long1 = long2;
                     }
 
-                    // Perform the coordinate search against the database
+                    // Perform the coordinate search against solr
                     try
                     {
                         // Get the page count in the results
                         int current_page_index = Current_Mode.Page.HasValue ? Math.Max(Current_Mode.Page.Value, ((ushort)1)) : 1;
 
-                        // Try to pull more than one page, so we can cache the next page or so
-                        // TODO: Make searching by coordinates work in Solr
-                        // Was: Engine_Database.Get_Items_By_Coordinates(Current_Mode.Aggregation, lat1, long1, lat2, long2, false, 20, current_page_index, sort, false, new List<short>(), true, Tracer);
-                        Multiple_Paged_Results_Args returnArgs = new Multiple_Paged_Results_Args();
-                        List<List<iSearch_Title_Result>> pagesOfResults = returnArgs.Paged_Results;
-                        Complete_Result_Set_Info = returnArgs.Statistics;
+                        Search_User_Membership_Info userInfo = Build_User_Membership_Info(Current_User, Aggregation_Object.Code);
 
-                        if ((pagesOfResults != null) && (pagesOfResults.Count > 0))
-                            Paged_Results = pagesOfResults[0];
+                        var searchOptions = new Search_Options_Info
+                        {
+                            Page = current_page_index,
+                            ResultsPerPage = 20,
+                            AggregationCode = Aggregation_Object.Code,
+                            Facets = Aggregation_Object.Facets,
+                            Fields = Aggregation_Object.Results_Fields,
+                            Sort = (ushort)sort,
+                            GroupItemsByTitle = Aggregation_Object.GroupResults
+                        };
+
+                        // A rectangle whose corners are identical is really just a point search
+                        bool isPointSearch = (lat1 == lat2) && (long1 == long2);
+                        double? lat2Param = isPointSearch ? (double?)null : lat2;
+                        double? long2Param = isPointSearch ? (double?)null : long2;
+
+                        v5_Solr_Searcher.Coordinate_Search(lat1, long1, lat2Param, long2Param, pointBufferKm, searchOptions, userInfo, Tracer, out Search_Results_Statistics recomputed_search_statistics, out Paged_Results);
+                        Complete_Result_Set_Info = recomputed_search_statistics;
                     }
                     catch (Exception ee)
                     {
@@ -762,11 +779,12 @@ namespace SobekCM.Library
         }
 
 
-        private static void Perform_Solr_Search(Custom_Tracer Tracer, List<string> Terms, List<string> Web_Fields, Nullable<DateTime> StartDate, Nullable<DateTime> EndDate, Item_Aggregation Current_Aggregation, int Current_Page, int Current_Sort, int Results_Per_Page, User_Object Current_User, out Search_Results_Statistics Complete_Result_Set_Info, out List<iSearch_Title_Result> Paged_Results, bool Need_Search_Statistics)
+        /// <summary> Builds the user membership information used to determine which items a user can discover in Solr </summary>
+        /// <param name="Current_User"> Current user, who may or may not be logged on </param>
+        /// <param name="AggregationCode"> Code for the aggregation currently being searched, used to check aggregation-level admin/curator rights </param>
+        /// <returns> Search user membership info reflecting this user's login state, groups, and admin status </returns>
+        private static Search_User_Membership_Info Build_User_Membership_Info(User_Object Current_User, string AggregationCode)
         {
-            Tracer?.Add_Trace("SobekCM_Assistant.Perform_Solr_Search", "Build the Solr query");
-
-            // Build the user membership information
             var userInfo = new Search_User_Membership_Info();
             if ((Current_User == null) || (!Current_User.LoggedOn))
             {
@@ -785,11 +803,21 @@ namespace SobekCM.Library
                 }
                 if ((Current_User.Is_Host_Admin) || (Current_User.Is_System_Admin) || (Current_User.Is_Portal_Admin))
                     userInfo.Admin = true;
-                else if ((Current_User.Is_Aggregation_Admin(Current_Aggregation.Code)) || (Current_User.Is_Aggregation_Curator(Current_Aggregation.Code)))
+                else if ((Current_User.Is_Aggregation_Admin(AggregationCode)) || (Current_User.Is_Aggregation_Curator(AggregationCode)))
                 {
                     userInfo.Admin = true;
                 }
             }
+
+            return userInfo;
+        }
+
+        private static void Perform_Solr_Search(Custom_Tracer Tracer, List<string> Terms, List<string> Web_Fields, Nullable<DateTime> StartDate, Nullable<DateTime> EndDate, Item_Aggregation Current_Aggregation, int Current_Page, int Current_Sort, int Results_Per_Page, User_Object Current_User, out Search_Results_Statistics Complete_Result_Set_Info, out List<iSearch_Title_Result> Paged_Results, bool Need_Search_Statistics)
+        {
+            Tracer?.Add_Trace("SobekCM_Assistant.Perform_Solr_Search", "Build the Solr query");
+
+            // Build the user membership information
+            Search_User_Membership_Info userInfo = Build_User_Membership_Info(Current_User, Current_Aggregation.Code);
 
             // Build the search options
             var searchOptions = new Search_Options_Info();

@@ -47,7 +47,10 @@
   <!-- Spatial footprint used to display this item in a Google map -->
   <field name="spatial_footprint_kml" type="text_general" indexed="false" stored="true" multiValued="true" />
   <field name="spatial_footprint_distance" type="int" indexed="true" stored="false" multiValued="false" />
-  
+
+  <!-- Indexed spatial footprint (points and/or rectangles as WKT) used for coordinate-based searching -->
+  <field name="spatial_footprint" type="location_rpt" indexed="true" stored="false" multiValued="true" />
+
    <!-- Some basic behavior fields related to discoverability and access -->
    <field name="hidden" type="boolean" indexed="true" stored="false" multiValued="false" />
    <field name="restricted_access" type="boolean" indexed="true" stored="true" multiValued="false" />        
@@ -924,6 +927,14 @@
       <filter class="solr.LowerCaseFilterFactory" />
     </analyzer>
   </fieldType>
+
+  <!-- Recursive Prefix Tree spatial field, used for coordinate-based searching.  Supports both single
+       points (POINT(long lat)) and axis-aligned rectangles (ENVELOPE(west, east, north, south)) in the
+       same multiValued field, queried with a relation such as Intersects(...).  distanceUnits=kilometers
+       lets a point search be buffered by a caller-specified radius (BUFFER(POINT(...), km)); a radius of
+       zero is just an exact-point Intersects check. -->
+  <fieldType name="location_rpt" class="solr.SpatialRecursivePrefixTreeFieldType"
+             geo="true" distanceUnits="kilometers" maxDistErr="0.001" distErrPct="0.025" />
   
     <!-- This is used for faceting, so the entire term is tokenized, not broken down or anything  -->
   <fieldType name="text_facets" class="solr.TextField" positionIncrementGap="100">

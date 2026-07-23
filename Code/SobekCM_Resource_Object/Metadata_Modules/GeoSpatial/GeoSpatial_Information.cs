@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data;
+using System.Globalization;
 using System.Text;
 
 #endregion
@@ -152,6 +153,38 @@ namespace SobekCM.Resource_Object.Metadata_Modules.GeoSpatial
             }
 
             return true;
+        }
+
+        /// <summary> Builds the list of WKT (point/envelope) values representing this resource's geospatial
+        /// footprint, suitable for indexing into a Solr spatial (RPT) field for coordinate-based searching </summary>
+        /// <returns> List of WKT strings -- one 'POINT(long lat)' per coordinate point, and one
+        /// 'ENVELOPE(west, east, north, south)' per polygon's bounding box </returns>
+        public List<string> Get_Solr_Spatial_Footprint_Values()
+        {
+            var wktValues = new List<string>();
+
+            foreach (Coordinate_Point thisPoint in Points)
+            {
+                wktValues.Add("POINT(" + thisPoint.Longitude.ToString(CultureInfo.InvariantCulture) + " " + thisPoint.Latitude.ToString(CultureInfo.InvariantCulture) + ")");
+            }
+
+            for (int i = 0; i < Polygon_Count; i++)
+            {
+                Coordinate_Polygon polygon = Get_Polygon(i);
+                ReadOnlyCollection<Coordinate_Point> boundingBox = polygon?.Bounding_Box;
+                if ((boundingBox == null) || (boundingBox.Count != 2))
+                    continue;
+
+                double minLatitude = Math.Min(boundingBox[0].Latitude, boundingBox[1].Latitude);
+                double maxLatitude = Math.Max(boundingBox[0].Latitude, boundingBox[1].Latitude);
+                double minLongitude = Math.Min(boundingBox[0].Longitude, boundingBox[1].Longitude);
+                double maxLongitude = Math.Max(boundingBox[0].Longitude, boundingBox[1].Longitude);
+
+                wktValues.Add("ENVELOPE(" + minLongitude.ToString(CultureInfo.InvariantCulture) + ", " + maxLongitude.ToString(CultureInfo.InvariantCulture) + ", " +
+                    maxLatitude.ToString(CultureInfo.InvariantCulture) + ", " + minLatitude.ToString(CultureInfo.InvariantCulture) + ")");
+            }
+
+            return wktValues;
         }
 
         /// <summary> Tries to convert a coordinate string into a floating point number </summary>

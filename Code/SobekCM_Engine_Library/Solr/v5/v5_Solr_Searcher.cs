@@ -9,6 +9,7 @@ using SolrNet.Commands.Parameters;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 
@@ -121,6 +122,75 @@ namespace SobekCM.Engine_Library.Solr.v5
 
             // Set output initially to null
             return Run_Query(queryString, SearchOptions, UserMembership, Tracer, out Complete_Result_Set_Info, out Paged_Results);
+        }
+
+        /// <summary> Perform a coordinate-based (point or rectangle) search against the indexed spatial footprints </summary>
+        /// <param name="Latitude1"> Latitude of the search point, or one corner of the search rectangle </param>
+        /// <param name="Longitude1"> Longitude of the search point, or one corner of the search rectangle </param>
+        /// <param name="Latitude2"> Latitude of the opposite corner of the search rectangle, or NULL for a point search </param>
+        /// <param name="Longitude2"> Longitude of the opposite corner of the search rectangle, or NULL for a point search </param>
+        /// <param name="Point_Buffer_Km"> For a point search, an optional buffer (in kilometers) around the point to search
+        /// within, rather than requiring an exact coordinate match.  Zero means an exact match.  Ignored for a rectangle search. </param>
+        /// <param name="SearchOptions"> Options related to this search, like the page, results per page, facets, fields, etc.. </param>
+        /// <param name="UserMembership"> User-specific membership information, related to a search, which can be used to determine which items this user can discover</param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        /// <param name="Complete_Result_Set_Info"> [OUT] Information about the entire set of results </param>
+        /// <param name="Paged_Results"> [OUT] List of search results for the requested page of results </param>
+        /// <returns> Page search result object with all relevant result information</returns>
+        public static bool Coordinate_Search(double Latitude1, double Longitude1, double? Latitude2, double? Longitude2, double Point_Buffer_Km, Search_Options_Info SearchOptions, Search_User_Membership_Info UserMembership, Custom_Tracer Tracer, out Search_Results_Statistics Complete_Result_Set_Info, out List<iSearch_Title_Result> Paged_Results)
+        {
+            Tracer?.Add_Trace("v5_Solr_Searcher.Coordinate_Search", String.Empty);
+
+            // Build the coordinate query clause
+            string queryString = Create_Coordinate_Query_Clause(Latitude1, Longitude1, Latitude2, Longitude2, Point_Buffer_Km);
+
+            // Exclude hidden, if not an admin (later we will deal with user/groups and IP restrictions)
+            if ((UserMembership == null) || (!UserMembership.LoggedIn) || (!UserMembership.Admin))
+                queryString = "(hidden:0) AND (discover_ips:0) AND (" + queryString + ")";
+
+            // If there was an aggregation code included, put that at the beginning of the search
+            if ((!String.IsNullOrEmpty(SearchOptions.AggregationCode)) && (SearchOptions.AggregationCode.ToUpper() != "ALL"))
+            {
+                queryString = "(aggregations:" + SearchOptions.AggregationCode + ") AND " + queryString;
+            }
+
+            return Run_Query(queryString, SearchOptions, UserMembership, Tracer, out Complete_Result_Set_Info, out Paged_Results);
+        }
+
+        /// <summary> Builds the Solr query clause for a coordinate-based (point or rectangle) search against the
+        /// indexed spatial footprint field </summary>
+        /// <param name="Latitude1"> Latitude of the search point, or one corner of the search rectangle </param>
+        /// <param name="Longitude1"> Longitude of the search point, or one corner of the search rectangle </param>
+        /// <param name="Latitude2"> Latitude of the opposite corner of the search rectangle, or NULL for a point search </param>
+        /// <param name="Longitude2"> Longitude of the opposite corner of the search rectangle, or NULL for a point search </param>
+        /// <param name="Point_Buffer_Km"> For a point search, an optional buffer (in kilometers) around the point to search
+        /// within, rather than requiring an exact coordinate match.  Zero means an exact match.  Ignored for a rectangle search. </param>
+        /// <returns> Solr query clause which can be AND'ed into the rest of a search/browse query string </returns>
+        /// <remarks> A rectangle whose two corners happen to be identical (or a NULL second corner) is treated as a
+        /// point search, mirroring the old SQL's "is this really just a point search?" check </remarks>
+        public static string Create_Coordinate_Query_Clause(double Latitude1, double Longitude1, double? Latitude2, double? Longitude2, double Point_Buffer_Km)
+        {
+            // Is this really just a point search?
+            if ((!Latitude2.HasValue) || (!Longitude2.HasValue) || ((Latitude1 == Latitude2.Value) && (Longitude1 == Longitude2.Value)))
+            {
+                string pointWkt = "POINT(" + Longitude1.ToString(CultureInfo.InvariantCulture) + " " + Latitude1.ToString(CultureInfo.InvariantCulture) + ")";
+
+                if (Point_Buffer_Km > 0)
+                    pointWkt = "BUFFER(" + pointWkt + ", " + Point_Buffer_Km.ToString(CultureInfo.InvariantCulture) + ")";
+
+                return "(spatial_footprint:\"Intersects(" + pointWkt + ")\")";
+            }
+
+            // Otherwise, this is a rectangle search -- Solr's ENVELOPE order is (west, east, north, south)
+            double west = Math.Min(Longitude1, Longitude2.Value);
+            double east = Math.Max(Longitude1, Longitude2.Value);
+            double south = Math.Min(Latitude1, Latitude2.Value);
+            double north = Math.Max(Latitude1, Latitude2.Value);
+
+            string envelopeWkt = "ENVELOPE(" + west.ToString(CultureInfo.InvariantCulture) + ", " + east.ToString(CultureInfo.InvariantCulture) + ", " +
+                north.ToString(CultureInfo.InvariantCulture) + ", " + south.ToString(CultureInfo.InvariantCulture) + ")";
+
+            return "(spatial_footprint:\"Intersects(" + envelopeWkt + ")\")";
         }
 
         /// <summary> Run a solr query against the solr document index </summary>

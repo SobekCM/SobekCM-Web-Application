@@ -170,6 +170,8 @@ namespace SobekCM.Engine_Library.Solr.v5
                 returnValue.SpatialFootprintKml.Add(geo.SobekCM_Main_Spatial_String);
 
                 returnValue.SpatialDistance = (int)geo.SobekCM_Main_Spatial_Distance;
+
+                returnValue.SpatialFootprint = geo.Get_Solr_Spatial_Footprint_Values();
             }
 
             // Get the rest of the metadata, from the item

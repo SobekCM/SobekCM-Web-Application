@@ -425,6 +425,10 @@ namespace SobekCM.Engine_Library.Solr.v5
         [SolrField("spatial_footprint_distance")]
         public int SpatialDistance { get; set; }
 
+        /// <summary> Indexed spatial footprint (points and/or rectangles, as WKT) used for coordinate-based searching </summary>
+        [SolrField("spatial_footprint")]
+        public List<string> SpatialFootprint { get; set; }
+
         /// <summary> Display version of the standard spatial subjects for this document </summary>
         [SolrField("spatial_standard.display")]
         public List<string> SpatialDisplay { get; set; }

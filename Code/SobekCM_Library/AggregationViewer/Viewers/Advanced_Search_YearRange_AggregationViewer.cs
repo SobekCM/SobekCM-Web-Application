@@ -8,6 +8,7 @@ using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Engine_Library.Database;
+using SobekCM.Engine_Library.Solr.v5;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
 using SobekCM.Library.UI;
@@ -111,21 +112,14 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             // Get the list of years for this aggregation
             string aggrCode = ViewBag.Hierarchy_Object.Code.ToLower();
             string key = aggrCode + "_YearRanges";
-            List<int> yearRange = SharedCache.Instance[key] as List<int>;
+            List<short> yearRange = SharedCache.Instance[key] as List<short>;
 
-            // TODO: Previosly 'Temporal Year' used in advanced search would give a list of the possible years apparently?
-            //if (yearRange == null)
-            //{
-            //    yearRange = new List<int>();
-            //    List<string> yearRangeString = Engine_Database.Get_Item_Aggregation_Metadata_Browse(aggrCode, "Temporal Year", Tracer);
-            //    foreach (string thisYear in yearRangeString)
-            //    {
-            //        int result;
-            //        if (Int32.TryParse(thisYear, out result))
-            //            yearRange.Add(result);
-            //    }
-            //    SharedCache.Instance.Set(key, yearRange, new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(5) });
-            //}
+            if (yearRange == null)
+            {
+                yearRange = v5_Solr_Searcher.Get_Distinct_Temporal_Years(aggrCode);
+
+                SharedCache.Instance.Set(key, yearRange, new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(5) });
+            }
 
             string searchLanguage = "Search for:";
             string inLanguage = "in";
@@ -300,7 +294,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 Output.WriteLine("        <select name=\"YearDropDown1\" id=\"YearDropDown1\" class=\"sbkAsav_YearDropDown\">");
                 //	Output.WriteLine("          <option value=\"ZZ\"> </option>");
                 int currYear1 = RequestSpecificValues.Current_Mode.DateRange_Year1.HasValue ? RequestSpecificValues.Current_Mode.DateRange_Year1.Value : -1;
-                if ((currYear1 != -1) && (!yearRange.Contains(currYear1)))
+                if ((currYear1 != -1) && (!yearRange.Contains((short)currYear1)))
                     Output.WriteLine("          <option selected=\"selected\" value=\"" + currYear1 + "\">" + currYear1 + "</option>");
                 if (currYear1 == -1)
                     currYear1 = yearRange[0];
@@ -322,7 +316,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 Output.WriteLine("        <select name=\"YearDropDown2\" id=\"YearDropDown2\" class=\"sbkAsav_YearDropDown\">");
                 //	Output.WriteLine("          <option value=\"ZZ\"> </option>");
                 int currYear2 = RequestSpecificValues.Current_Mode.DateRange_Year2.HasValue ? RequestSpecificValues.Current_Mode.DateRange_Year2.Value : -1;
-                if ((currYear2 != -1) && (!yearRange.Contains(currYear2)))
+                if ((currYear2 != -1) && (!yearRange.Contains((short)currYear2)))
                     Output.WriteLine("          <option selected=\"selected\" value=\"" + currYear2 + "\">" + currYear2 + "</option>");
                 if (currYear2 == -1)
                     currYear2 = yearRange[yearRange.Count - 1];

@@ -828,6 +828,51 @@ namespace SobekCM.Engine_Library.Solr.v5
             }
         }
 
+        // Call to pull the ordered list of distinct temporal years present for an aggregation
+        public static List<short> Get_Distinct_Temporal_Years(string aggregationCode)
+        {
+            try
+            {
+                // Get and clean the solr document url
+                string solrDocumentUrl = Engine_ApplicationCache_Gateway.Settings.Servers.Document_Solr_Index_URL;
+                if ((!String.IsNullOrEmpty(solrDocumentUrl)) && (solrDocumentUrl[solrDocumentUrl.Length - 1] == '/'))
+                    solrDocumentUrl = solrDocumentUrl.Substring(0, solrDocumentUrl.Length - 1);
+
+                // Create the solr worker to query the document index
+                var solrWorker = Solr_Operations_Cache<v5_SolrDocument>.GetSolrOperations(solrDocumentUrl);
+
+                var results = solrWorker.Query(
+                    new SolrQuery($"aggregations:\"{aggregationCode}\""),
+                    new QueryOptions
+                    {
+                        Rows = 0,
+                        Facet = new FacetParameters
+                        {
+                            Queries = new List<ISolrFacetQuery>
+                            {
+                                new SolrFacetFieldQuery("temporal_year") { MinCount = 1, Limit = -1 }
+                            }
+                        }
+                    });
+
+                // Parse each distinct facet value into a short, skipping anything that doesn't parse
+                var years = new List<short>();
+                foreach (var facet in results.FacetFields["temporal_year"])
+                {
+                    if (short.TryParse(facet.Key, out short year))
+                        years.Add(year);
+                }
+
+                years.Sort();
+                return years;
+            }
+            catch (Exception e)
+            {
+                string message = e.Message;
+
+                return null;
+            }
+        }
 
         #endregion
     }

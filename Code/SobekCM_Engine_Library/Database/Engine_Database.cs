@@ -1817,18 +1817,15 @@ namespace SobekCM.Engine_Library.Database
                 // Add the child objects from that table
                 add_children(aggrInfo, tempSet.Tables[1]);
 
-                // Add the advanced search values
-                add_advanced_terms(aggrInfo, tempSet.Tables[2]);
-
                 // Add the parents
-                add_parents(aggrInfo, tempSet.Tables[3]);
+                add_parents(aggrInfo, tempSet.Tables[2]);
 
                 // Determine the middle point and zoom for the extent of the coordinates
-                if ((tempSet.Tables[4].Rows.Count > 0) && (tempSet.Tables[4].Rows[0][0] != DBNull.Value))
+                if ((tempSet.Tables[3].Rows.Count > 0) && (tempSet.Tables[3].Rows[0][0] != DBNull.Value))
                 {
                     try
                     {
-                        DataRow coordsRow = tempSet.Tables[4].Rows[0];
+                        DataRow coordsRow = tempSet.Tables[3].Rows[0];
                         decimal min_latitude = Decimal.Parse(coordsRow["Min_Latitude"].ToString());
                         decimal max_latitude = Decimal.Parse(coordsRow["Max_Latitude"].ToString());
                         decimal min_longitude = Decimal.Parse(coordsRow["Min_Longitude"].ToString());
@@ -1856,19 +1853,19 @@ namespace SobekCM.Engine_Library.Database
                 }
 
                 // Add any setting key/value pairs from the database
-                if ((tempSet.Tables.Count > 5) && (tempSet.Tables[5].Rows.Count > 0))
+                if ((tempSet.Tables.Count > 4) && (tempSet.Tables[4].Rows.Count > 0))
                 {
-                    foreach (DataRow settingRow in tempSet.Tables[5].Rows)
+                    foreach (DataRow settingRow in tempSet.Tables[4].Rows)
                     {
                         aggrInfo.Add_Setting(settingRow["Setting_Key"].ToString(), settingRow["Setting_Value"].ToString());
                     }
                 }
 
                 // Add the results views from the database
-                if ((tempSet.Tables.Count > 6) && (tempSet.Tables[6].Rows.Count > 0))
+                if ((tempSet.Tables.Count > 5) && (tempSet.Tables[5].Rows.Count > 0))
                 {
                     aggrInfo.Result_Views.Clear();
-                    foreach (DataRow resultsViewRow in tempSet.Tables[6].Rows)
+                    foreach (DataRow resultsViewRow in tempSet.Tables[5].Rows)
                     {
                         if (bool.Parse(resultsViewRow["DefaultView"].ToString()))
                             aggrInfo.Default_Result_View = resultsViewRow["ResultType"].ToString();
@@ -1878,9 +1875,9 @@ namespace SobekCM.Engine_Library.Database
                 }
 
                 // Add the facet fields from the database
-                if ((tempSet.Tables.Count > 7) && (tempSet.Tables[7].Rows.Count > 0))
+                if ((tempSet.Tables.Count > 6) && (tempSet.Tables[6].Rows.Count > 0))
                 {
-                    add_facet_fields(aggrInfo, tempSet.Tables[7]);
+                    add_facet_fields(aggrInfo, tempSet.Tables[6]);
                 }
                 else
                 {
@@ -1888,9 +1885,9 @@ namespace SobekCM.Engine_Library.Database
                 }
 
                 // Add the results fields from the database
-                if ((tempSet.Tables.Count > 8) && (tempSet.Tables[8].Rows.Count > 0))
+                if ((tempSet.Tables.Count > 7) && (tempSet.Tables[7].Rows.Count > 0))
                 {
-                    add_result_fields(aggrInfo, tempSet.Tables[8]);
+                    add_result_fields(aggrInfo, tempSet.Tables[7]);
                 }
                 else
                 {
@@ -1938,15 +1935,12 @@ namespace SobekCM.Engine_Library.Database
                 // Build the collection group object
                 Complete_Item_Aggregation aggrInfo = create_basic_aggregation_from_datatable(tempSet.Tables[0]);
 
-                // Add the advanced search values
-                add_advanced_terms(aggrInfo, tempSet.Tables[1]);
-
                 // Determine the middle point and zoom for the extent of the coordinates
-                if ((tempSet.Tables[2].Rows.Count > 0) && (tempSet.Tables[2].Rows[0][0] != DBNull.Value))
+                if ((tempSet.Tables[1].Rows.Count > 0) && (tempSet.Tables[1].Rows[0][0] != DBNull.Value))
                 {
                     try
                     {
-                        DataRow coordsRow = tempSet.Tables[2].Rows[0];
+                        DataRow coordsRow = tempSet.Tables[1].Rows[0];
                         decimal min_latitude = Decimal.Parse(coordsRow["Min_Latitude"].ToString());
                         decimal max_latitude = Decimal.Parse(coordsRow["Max_Latitude"].ToString());
                         decimal min_longitude = Decimal.Parse(coordsRow["Min_Longitude"].ToString());
@@ -1974,19 +1968,19 @@ namespace SobekCM.Engine_Library.Database
                 }
 
                 // Add any setting key/value pairs from the database
-                if ((tempSet.Tables.Count > 3) && (tempSet.Tables[3].Rows.Count > 0))
+                if ((tempSet.Tables.Count > 2) && (tempSet.Tables[2].Rows.Count > 0))
                 {
-                    foreach (DataRow settingRow in tempSet.Tables[3].Rows)
+                    foreach (DataRow settingRow in tempSet.Tables[2].Rows)
                     {
                         aggrInfo.Add_Setting(settingRow["Setting_Key"].ToString(), settingRow["Setting_Value"].ToString());
                     }
                 }
 
                 // Add the results views from the database
-                if ((tempSet.Tables.Count > 4) && (tempSet.Tables[4].Rows.Count > 0))
+                if ((tempSet.Tables.Count > 3) && (tempSet.Tables[3].Rows.Count > 0))
                 {
                     aggrInfo.Result_Views.Clear();
-                    foreach (DataRow resultsViewRow in tempSet.Tables[4].Rows)
+                    foreach (DataRow resultsViewRow in tempSet.Tables[3].Rows)
                     {
                         if (bool.Parse(resultsViewRow["DefaultView"].ToString()))
                             aggrInfo.Default_Result_View = resultsViewRow["ResultType"].ToString();
@@ -1996,9 +1990,9 @@ namespace SobekCM.Engine_Library.Database
                 }
 
                 // Add the facet fields from the database
-                if ((tempSet.Tables.Count > 5) && (tempSet.Tables[5].Rows.Count > 0))
+                if ((tempSet.Tables.Count > 4) && (tempSet.Tables[4].Rows.Count > 0))
                 {
-                    add_facet_fields(aggrInfo, tempSet.Tables[5]);
+                    add_facet_fields(aggrInfo, tempSet.Tables[4]);
                 }
                 else
                 {
@@ -2006,9 +2000,9 @@ namespace SobekCM.Engine_Library.Database
                 }
 
                 // Add the results fields from the database
-                if ((tempSet.Tables.Count > 6) && (tempSet.Tables[6].Rows.Count > 0))
+                if ((tempSet.Tables.Count > 5) && (tempSet.Tables[5].Rows.Count > 0))
                 {
-                    add_result_fields(aggrInfo, tempSet.Tables[6]);
+                    add_result_fields(aggrInfo, tempSet.Tables[5]);
                 }
                 else
                 {
@@ -2257,41 +2251,6 @@ namespace SobekCM.Engine_Library.Database
             {
                 var parentObject = new Item_Aggregation_Related_Aggregations(parentRow[0].ToString(), parentRow[1].ToString(), parentRow[3].ToString(), Convert.ToBoolean(parentRow[4]), false);
                 AggrInfo.Add_Parent_Aggregation(parentObject);
-            }
-        }
-
-        /// <summary> Adds the search terms to display under advanced search from the datatable extracted from the database 
-        /// and also the list of browseable fields for this collection </summary>
-        /// <param name="AggrInfo">Partially built item aggregation object</param>
-        /// <param name="SearchTermsTable"> Table of all advanced search values </param>
-        private static void add_advanced_terms(Complete_Item_Aggregation AggrInfo, DataTable SearchTermsTable)
-        {
-            // Add ANYWHERE first
-            AggrInfo.Search_Fields.Add(new Complete_Item_Aggregation_Metadata_Type(-1, "Anywhere", "ZZ"));
-
-            // Add values either default values or from the table
-            if ((SearchTermsTable != null) && (SearchTermsTable.Rows.Count > 0))
-            {
-                foreach (DataRow thisRow in SearchTermsTable.Rows)
-                {
-                    short thisTypeId = Convert.ToInt16(thisRow[0]);
-                    bool canBrowse = Convert.ToBoolean(thisRow[1]);
-                    string displayTerm = thisRow[2].ToString();
-                    string sobekCode = thisRow[3].ToString();
-                    string solrCode = thisRow[4].ToString();
-
-                    var metadataType = new Complete_Item_Aggregation_Metadata_Type(thisTypeId, displayTerm, sobekCode) { SolrCode = solrCode };
-
-                    if (!AggrInfo.Search_Fields.Contains(metadataType))
-                    {
-                        AggrInfo.Search_Fields.Add(metadataType);
-                    }
-
-                    if ((canBrowse) && (!AggrInfo.Browseable_Fields.Contains(metadataType)))
-                    {
-                        AggrInfo.Browseable_Fields.Add(metadataType);
-                    }
-                }
             }
         }
 

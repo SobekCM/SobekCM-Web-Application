@@ -27,18 +27,6 @@ namespace SobekCM.Core.Settings
             Instance_Code = String.Empty;
         }
 
-        /// <summary> Legacy URL for the old-style Solr/Lucene index for the document metadata and text </summary>
-        [DataMember(Name = "documentSolrLegacyUrl", EmitDefaultValue = false)]
-        [XmlElement("documentSolrLegacyUrl")]
-        [ProtoMember(100)]
-        public string Document_Solr_Legacy_URL { get; set; }
-
-        /// <summary> Legacy URL for the old-style Solr/Lucene index for the page text </summary>
-        [DataMember(Name = "pageSolrLegacyUrl", EmitDefaultValue = false)]
-        [XmlElement("pageSolrLegacyUrl")]
-        [ProtoMember(101)]
-        public string Page_Solr_Legacy_URL { get; set; }
-
         /// <summary> Network directory for the SobekCM web application server </summary>
         [DataMember(Name = "applicationServerNetwork")]
         [XmlElement("applicationServerNetwork")]
@@ -241,7 +229,6 @@ namespace SobekCM.Core.Settings
         }
 
         #endregion
-
 
         #region Methods that controls XML serialization
 

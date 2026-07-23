@@ -10,11 +10,10 @@ namespace SobekCM.Core.Settings
     /// <summary> Eumeration of the two different search systems </summary>
     public enum Search_System_Enum : byte
     {
-        /// <summary> Legacy search system used up through verrsion 4 </summary>
-        Legacy = 0,
+        /// <summary> First migration to fully solr - no db searching </summary>
+        OpenSobek,
 
-        /// <summary> Beta of the search system that will be used version 5 </summary>
-        Beta
+        Error
     }
 
     /// <summary> Top-level settings that control basic operation and appearance of the entire SobekCM instance </summary>
@@ -31,7 +30,7 @@ namespace SobekCM.Core.Settings
             Metadata_Help_URL_Base = String.Empty;
             Help_URL_Base = String.Empty;
 
-            Search_System = Search_System_Enum.Beta;
+            Search_System = Search_System_Enum.OpenSobek;
         }
 
         /// <summary> Returns the default user interface language </summary>
@@ -113,17 +112,17 @@ namespace SobekCM.Core.Settings
         {
             set
             {
-                Search_System = String.Equals(value, "beta", StringComparison.OrdinalIgnoreCase) ? Search_System_Enum.Beta : Search_System_Enum.Legacy;
+                Search_System = String.Equals(value, "OpenSobek", StringComparison.OrdinalIgnoreCase) ? Search_System_Enum.OpenSobek : Search_System_Enum.Error;
             }
             get
             {
                 switch (Search_System)
                 {
-                    case Search_System_Enum.Beta:
-                        return "Beta";
+                    case Search_System_Enum.OpenSobek:
+                        return "OpenSobek";
 
                     default:
-                        return "Legacy";
+                        return "Error";
                 }
             }
         }

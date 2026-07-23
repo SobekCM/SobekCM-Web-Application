@@ -161,7 +161,6 @@ namespace SobekCM.Engine_Library.Settings
                 Get_Boolean_Value(settingsDictionary, "Disable Standard User Logon Flag", SettingsObject.System, X => X.Disable_Standard_User_Logon_Flag, ref error, false);
                 Get_String_Value(settingsDictionary, "Disable Standard User Logon Message", SettingsObject.System, X => X.Disable_Standard_User_Logon_Message, ref error);
                 Get_String_Value(settingsDictionary, "Document Solr Index URL", SettingsObject.Servers, X => X.Document_Solr_Index_URL, ref error);
-                Get_String_Value(settingsDictionary, "Document Solr Legacy Index", SettingsObject.Servers, X => X.Document_Solr_Legacy_URL, ref error);
                 Get_String_Value(settingsDictionary, "Email Default From Address", SettingsObject.Email.Setup, X => X.DefaultFromAddress, ref error);
                 Get_String_Value(settingsDictionary, "Email Default From Name", SettingsObject.Email.Setup, X => X.DefaultFromDisplay, ref error);
                 Get_String_Value(settingsDictionary, "Email Method", SettingsObject.Email.Setup, X => X.MethodString, "DATABASE MAIL");
@@ -193,7 +192,6 @@ namespace SobekCM.Engine_Library.Settings
                 Get_String_Value(settingsDictionary, "Mango Union Search Text", SettingsObject.Florida, X => X.Mango_Union_Search_Text, ref error);
                 Get_String_Value(settingsDictionary, "OCR Engine Command", SettingsObject.Builder, X => X.OCR_Command_Prompt, String.Empty);
                 Get_String_Value(settingsDictionary, "Page Solr Index URL", SettingsObject.Servers, X => X.Page_Solr_Index_URL, String.Empty);
-                Get_String_Value(settingsDictionary, "Page Solr Legacy Index", SettingsObject.Servers, X => X.Page_Solr_Legacy_URL, String.Empty);
                 Get_String_Value(settingsDictionary, "PostArchive Files To Delete", SettingsObject.Archive, X => X.PostArchive_Files_To_Delete, String.Empty);
                 Get_String_Value(settingsDictionary, "PreArchive Files To Delete", SettingsObject.Archive, X => X.PreArchive_Files_To_Delete, String.Empty);
                 Get_String_Value(settingsDictionary, "Privacy Email Address", SettingsObject.Email, X => X.Privacy_Email, String.Empty);

@@ -1040,3 +1040,10 @@ GO
 
 ALTER TABLE dbo.SobekCM_Item_Aggregation DROP COLUMN Browse_Results_Display_SQL;
 GO
+
+delete from SobekCM_Settings where Setting_Key='Document Solr Legacy Index';
+delete from SobekCM_Settings where Setting_Key='Page Solr Legacy Index';
+GO
+
+update SobekCM_Settings set Setting_Value='OpenSobek', Options='OpenSobek' , Help='Which system and schema to use for searching' where Setting_Key='Search System';
+GO

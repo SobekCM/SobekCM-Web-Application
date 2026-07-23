@@ -142,7 +142,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 int page = CurrentRequest.SubPage.HasValue ? Math.Max(CurrentRequest.SubPage.Value, ((ushort)1)) : 1;
 
                 // Search differently, depending on the search type
-                if (UI_ApplicationCache_Gateway.Settings.System.Search_System == Search_System_Enum.Beta)
+                if (UI_ApplicationCache_Gateway.Settings.System.Search_System == Search_System_Enum.OpenSobek)
                     results = v5_Solr_Searcher.Search_Within_Document(BriefItem.BibID, BriefItem.VID, terms, 20, page, false);
 
                 Tracer.Add_Trace("Text_Search_ItemViewer.Constructor", "Completed Solr/Lucene search in " + results.QueryTime + "ms");

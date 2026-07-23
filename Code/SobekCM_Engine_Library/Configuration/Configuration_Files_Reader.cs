@@ -578,6 +578,14 @@ namespace SobekCM.Engine_Library.Configuration
                             read_shibb_details(ReaderXml.ReadSubtree(), Config);
 
                             break;
+
+                        case "oidc":
+                            read_oidc_details(ReaderXml.ReadSubtree(), Config);
+                            break;
+
+                        case "saml":
+                            read_saml_details(ReaderXml.ReadSubtree(), Config);
+                            break;
                     }
                 }
             }
@@ -638,6 +646,115 @@ namespace SobekCM.Engine_Library.Configuration
                             if ((!String.IsNullOrEmpty(serverVariable2)) && (!String.IsNullOrEmpty(requiredValue)))
                             {
                                 Config.Authentication.Shibboleth.Add_CanSubmit_Indicator(serverVariable2, requiredValue);
+                            }
+                            break;
+                    }
+                }
+            }
+        }
+
+        private static void read_oidc_details(XmlReader ReaderXml, InstanceWide_Configuration Config)
+        {
+            while (ReaderXml.Read())
+            {
+                if ((ReaderXml.NodeType == XmlNodeType.Element) && (ReaderXml.Name.ToLower() == "provider"))
+                {
+                    Oidc_Configuration provider = new Oidc_Configuration();
+
+                    if (ReaderXml.MoveToAttribute("ProviderCode")) provider.Provider_Code = ReaderXml.Value.Trim();
+                    if (ReaderXml.MoveToAttribute("Label")) provider.Display_Label = ReaderXml.Value.Trim();
+                    if (ReaderXml.MoveToAttribute("Authority")) provider.Authority = ReaderXml.Value.Trim();
+                    if (ReaderXml.MoveToAttribute("ClientId")) provider.ClientId = ReaderXml.Value.Trim();
+                    if (ReaderXml.MoveToAttribute("ClientSecret")) provider.ClientSecret = ReaderXml.Value.Trim();
+                    if (ReaderXml.MoveToAttribute("Enabled"))
+                    {
+                        if (String.Compare(ReaderXml.Value.Trim(), "false", StringComparison.OrdinalIgnoreCase) == 0)
+                            provider.Enabled = false;
+                    }
+                    ReaderXml.MoveToElement();
+
+                    if (!String.IsNullOrEmpty(provider.Provider_Code))
+                    {
+                        read_provider_mapping_details(ReaderXml.ReadSubtree(), provider.Add_Attribute_Mapping, provider.Add_Constant);
+                        Config.Authentication.Oidc.Add(provider);
+                    }
+                }
+            }
+        }
+
+        private static void read_saml_details(XmlReader ReaderXml, InstanceWide_Configuration Config)
+        {
+            while (ReaderXml.Read())
+            {
+                if ((ReaderXml.NodeType == XmlNodeType.Element) && (ReaderXml.Name.ToLower() == "provider"))
+                {
+                    Saml_Configuration provider = new Saml_Configuration();
+
+                    if (ReaderXml.MoveToAttribute("ProviderCode")) provider.Provider_Code = ReaderXml.Value.Trim();
+                    if (ReaderXml.MoveToAttribute("Label")) provider.Display_Label = ReaderXml.Value.Trim();
+                    if (ReaderXml.MoveToAttribute("IdpMetadataUrl")) provider.IdpMetadataUrl = ReaderXml.Value.Trim();
+                    if (ReaderXml.MoveToAttribute("EntityId")) provider.EntityId = ReaderXml.Value.Trim();
+                    if (ReaderXml.MoveToAttribute("Enabled"))
+                    {
+                        if (String.Compare(ReaderXml.Value.Trim(), "false", StringComparison.OrdinalIgnoreCase) == 0)
+                            provider.Enabled = false;
+                    }
+                    ReaderXml.MoveToElement();
+
+                    if (!String.IsNullOrEmpty(provider.Provider_Code))
+                    {
+                        read_provider_mapping_details(ReaderXml.ReadSubtree(), provider.Add_Attribute_Mapping, provider.Add_Constant);
+                        Config.Authentication.Saml.Add(provider);
+                    }
+                }
+            }
+        }
+
+        /// <summary> Shared reader for the "mapping"/"constant" elements nested under an &lt;oidc&gt;/&lt;saml&gt;
+        /// &lt;provider&gt; element — same shape as <see cref="read_shibb_details"/>'s mapping/constant handling,
+        /// generalized via delegates so both provider types share one reader </summary>
+        private static void read_provider_mapping_details(XmlReader ReaderXml, Action<string, User_Object_Attribute_Mapping_Enum> AddMapping, Action<User_Object_Attribute_Mapping_Enum, string> AddConstant)
+        {
+            while (ReaderXml.Read())
+            {
+                if (ReaderXml.NodeType == XmlNodeType.Element)
+                {
+                    switch (ReaderXml.Name.ToLower())
+                    {
+                        case "mapping":
+                            string name = null;
+                            string userAttribute = null;
+                            if (ReaderXml.MoveToAttribute("Name"))
+                                name = ReaderXml.Value.Trim();
+                            if (ReaderXml.MoveToAttribute("UserAttribute"))
+                                userAttribute = ReaderXml.Value.Trim();
+                            if ((!String.IsNullOrEmpty(name)) && (!String.IsNullOrEmpty(userAttribute)))
+                            {
+                                User_Object_Attribute_Mapping_Enum userAttrEnum = User_Object_Attribute_Mapping_Enum_Converter.ToEnum(userAttribute.ToUpper());
+                                if (userAttrEnum != User_Object_Attribute_Mapping_Enum.NONE)
+                                {
+                                    AddMapping(name, userAttrEnum);
+                                }
+                            }
+                            break;
+
+                        case "constant":
+                            string userAttribute2 = null;
+                            string constantValue = null;
+                            if (ReaderXml.MoveToAttribute("UserAttribute"))
+                                userAttribute2 = ReaderXml.Value.Trim();
+                            if (!ReaderXml.IsEmptyElement)
+                            {
+                                ReaderXml.Read();
+                                constantValue = ReaderXml.Value.Trim();
+                            }
+                            if ((!String.IsNullOrEmpty(userAttribute2)) && (!String.IsNullOrEmpty(constantValue)))
+                            {
+                                User_Object_Attribute_Mapping_Enum userAttrEnum = User_Object_Attribute_Mapping_Enum_Converter.ToEnum(userAttribute2.ToUpper());
+                                if (userAttrEnum != User_Object_Attribute_Mapping_Enum.NONE)
+                                {
+                                    AddConstant(userAttrEnum, constantValue);
+                                }
                             }
                             break;
                     }

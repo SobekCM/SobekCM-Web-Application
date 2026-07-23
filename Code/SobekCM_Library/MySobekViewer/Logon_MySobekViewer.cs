@@ -7,7 +7,7 @@ using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Users;
 using SobekCM.Engine_Library.Configuration;
-using SobekCM.Engine_Library.Database;
+using SobekCM.Library.Authentication;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
 using SobekCM.Library.UI;
@@ -87,7 +87,7 @@ namespace SobekCM.Library.MySobekViewer
 
                 if ((!String.IsNullOrEmpty(possible_password)) && (!String.IsNullOrEmpty(possible_username)))
                 {
-                    User_Object user = Engine_Database.Get_User(possible_username, possible_password, RequestSpecificValues.Tracer);
+                    User_Object user = Authentication_Provider_Gateway.Get_Credential_Provider("sobek")?.Authenticate(possible_username, possible_password, RequestSpecificValues.Tracer);
                     if (user != null)
                     {
                         // If disabled for general logon,cancel
@@ -212,6 +212,23 @@ namespace SobekCM.Library.MySobekViewer
                 }
 
                 Output.WriteLine("    <li><span style=\"font-weight:bold\">If you have a valid my" + RequestSpecificValues.Current_Mode.Instance_Abbreviation + " logon</span>, <a id=\"form_logon_term\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return popup_mysobek_form('form_logon', 'logon_username');\">Sign on with my" + RequestSpecificValues.Current_Mode.Instance_Abbreviation + " authentication here</a>.</li>");
+            }
+
+            // One link per configured, enabled OIDC/SAML provider, additive to the Shibboleth link above
+            if (!generalLogonDisabled)
+            {
+                foreach (IFederated_Authentication_Provider federatedProvider in Authentication_Provider_Gateway.All_Enabled_Federated_Providers)
+                {
+                    RequestSpecificValues.Current_Mode.My_Sobek_Type = federatedProvider.Authentication_Type == User_Authentication_Type_Enum.Saml
+                        ? My_Sobek_Type_Enum.SAML_Landing
+                        : My_Sobek_Type_Enum.OIDC_Landing;
+                    RequestSpecificValues.Current_Mode.My_Sobek_SubMode = federatedProvider.Provider_Code;
+                    string signInUrl = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+
+                    Output.WriteLine("    <li><span style=\"font-weight:bold\">If you have a valid " + federatedProvider.Display_Label + " account</span>, <a href=\"" + signInUrl + "\">Sign in with " + federatedProvider.Display_Label + "</a>.</li>");
+                }
+                RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Logon;
+                RequestSpecificValues.Current_Mode.My_Sobek_SubMode = String.Empty;
             }
 
             if (!generalLogonDisabled)

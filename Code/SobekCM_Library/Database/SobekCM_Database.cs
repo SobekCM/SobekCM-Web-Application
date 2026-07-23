@@ -944,11 +944,17 @@ namespace SobekCM.Library.Database
                 auth_string = "shibboleth";
             if ((AuthenticationType == User_Authentication_Type_Enum.Windows) || (AuthenticationType == User_Authentication_Type_Enum.LDAP))
                 auth_string = "ldap";
+            if (AuthenticationType == User_Authentication_Type_Enum.OpenIdConnect)
+                auth_string = "openidconnect";
+            if (AuthenticationType == User_Authentication_Type_Enum.Saml)
+                auth_string = "saml";
 
             try
             {
-                // Execute this non-query stored procedure
-                EalDbParameter[] paramList = new EalDbParameter[24];
+                // Execute this non-query stored procedure — @external_provider_code/@external_subject_id
+                // are new params 'mySobek_Save_User' needs to be extended with (see
+                // Engine_Database.Get_User_By_External_Login remarks for the matching read-side proc)
+                EalDbParameter[] paramList = new EalDbParameter[26];
                 paramList[0] = new EalDbParameter("@userid", User.UserID);
                 paramList[1] = new EalDbParameter("@shibbid", User.ShibbID);
                 paramList[2] = new EalDbParameter("@username", User.UserName);
@@ -987,6 +993,8 @@ namespace SobekCM.Library.Database
                 paramList[21] = new EalDbParameter("@processingtechnician", User.Processing_Technician);
                 paramList[22] = new EalDbParameter("@internalnotes", User.Internal_Notes);
                 paramList[23] = new EalDbParameter("@authentication", auth_string);
+                paramList[24] = new EalDbParameter("@external_provider_code", User.External_Provider_Code);
+                paramList[25] = new EalDbParameter("@external_subject_id", User.External_Subject_Id);
 
                 EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "mySobek_Save_User", paramList);
                 return true;

@@ -299,6 +299,18 @@
         /// <summary> Page is used as the landing page when coming back from Shibboleth authentication </summary>
         Shibboleth_Landing,
 
+        /// <summary> Page begins an OpenID Connect sign-in (My_Sobek_SubMode carries the provider code) </summary>
+        /// <remarks> Only the begin leg reaches this page — the identity provider's return leg is
+        /// intercepted directly by ASP.NET Core's authentication middleware before normal page
+        /// routing ever runs; see IFederated_Authentication_Provider remarks </remarks>
+        OIDC_Landing,
+
+        /// <summary> Page begins a SAML sign-in (My_Sobek_SubMode carries the provider code) </summary>
+        /// <remarks> Only the begin leg reaches this page — the identity provider's return leg is
+        /// intercepted directly by ASP.NET Core's authentication middleware before normal page
+        /// routing ever runs; see IFederated_Authentication_Provider remarks </remarks>
+        SAML_Landing,
+
         /// <summary> Add a new volume to an existing item group  </summary>
         Group_Add_Volume,
 

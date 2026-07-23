@@ -11,6 +11,7 @@
   <ItemGroup>
     <!-- ClosedXML has NuGet support on .NET 6+ -->
     <PackageReference Include="ClosedXML" Version="0.105.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.Abstractions" Version="2.3.11" />
     <PackageReference Include="System.Drawing.Common" Version="9.0.3" Condition="'$(OS)' == 'Windows_NT'" />
     <PackageReference Include="Zen.Barcode.Core" Version="2.0.0" />
     <!-- System.Web compatibility shim for ASP.NET Core migration — provides HttpContext.Current, Request, Session, etc. -->

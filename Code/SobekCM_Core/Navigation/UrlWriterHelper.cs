@@ -306,6 +306,18 @@ namespace SobekCM.Core.Navigation
                                 return this_base_url + "my/shibboleth?return=" + System.Net.WebUtility.UrlEncode(Current_Mode.Return_URL).Replace("%2C", ",") + urlOptions2;
                             return this_base_url + "my/shibboleth" + urlOptions1;
 
+                        case My_Sobek_Type_Enum.OIDC_Landing:
+                            string oidcProviderSegment = !String.IsNullOrEmpty(Current_Mode.My_Sobek_SubMode) ? "/" + Current_Mode.My_Sobek_SubMode : "";
+                            if (!String.IsNullOrEmpty(Current_Mode.Return_URL))
+                                return this_base_url + "my/oidc" + oidcProviderSegment + "?return=" + System.Net.WebUtility.UrlEncode(Current_Mode.Return_URL).Replace("%2C", ",") + urlOptions2;
+                            return this_base_url + "my/oidc" + oidcProviderSegment + urlOptions1;
+
+                        case My_Sobek_Type_Enum.SAML_Landing:
+                            string samlProviderSegment = !String.IsNullOrEmpty(Current_Mode.My_Sobek_SubMode) ? "/" + Current_Mode.My_Sobek_SubMode : "";
+                            if (!String.IsNullOrEmpty(Current_Mode.Return_URL))
+                                return this_base_url + "my/saml" + samlProviderSegment + "?return=" + System.Net.WebUtility.UrlEncode(Current_Mode.Return_URL).Replace("%2C", ",") + urlOptions2;
+                            return this_base_url + "my/saml" + samlProviderSegment + urlOptions1;
+
                         case My_Sobek_Type_Enum.Saved_Searches:
                             return this_base_url + "my/searches" + urlOptions1;
 

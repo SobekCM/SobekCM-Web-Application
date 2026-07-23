@@ -1,4 +1,7 @@
 using DocumentFormat.OpenXml.InkML;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
@@ -7,16 +10,23 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using SobekCM.Core.Client;
+using SobekCM.Core.Configuration.Authentication;
 using SobekCM.Core.FileSystems;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
+using SobekCM.Core.Users;
 using SobekCM.Engine_Library;
+using SobekCM.Engine_Library.ApplicationState;
+using SobekCM.Library.Authentication;
 using SobekCM.Library.Database;
 using SobekCM.Library.Helpers.CKEditor;
 using SobekCM.Library.Helpers.UploadiFive;
 using SobekCM.Library.MainWriters;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
+using Sustainsys.Saml2;
+using Sustainsys.Saml2.AspNetCore2;
+using Sustainsys.Saml2.Metadata;
 using System;
 using System.IO;
 using System.Linq;
@@ -48,12 +58,145 @@ namespace SobekCM
             // Wire System.Web.HttpContext.Current.Session to ASP.NET Core ISession
             //    builder.Services.AddSystemWebAdapters().AddWrappedAspNetCoreSession();
 
-            var app = builder.Build();
+            builder.Services.AddHttpContextAccessor();
 
             // Capture the real content root once, before any request is served. AppDomain.CurrentDomain.BaseDirectory
             // no longer equals the site root under Kestrel (see ContentRoot_Gateway remarks), so library code that
-            // needs to locate on-disk site content reads this instead.
-            ContentRoot_Gateway.ContentRootPath = app.Environment.ContentRootPath + "/";
+            // needs to locate on-disk site content reads this instead. Moved up from after builder.Build() (where
+            // it used to live) because config now needs to be loadable before AddAuthentication() runs below —
+            // ASP.NET Core authentication schemes must be registered before the app is built.
+            ContentRoot_Gateway.ContentRootPath = builder.Environment.ContentRootPath + "/";
+
+            // Eagerly load configuration — including Authentication_Configuration — so one OIDC/SAML
+            // authentication scheme can be registered per configured provider before the app is built.
+            // UI_ApplicationCache_Gateway.ResetAll() also runs this lazily on first request; calling it
+            // again there is harmless (it's the same idempotent refresh).
+            Engine_ApplicationCache_Gateway.RefreshAll();
+            Authentication_Configuration authConfig = Engine_ApplicationCache_Gateway.Configuration?.Authentication;
+
+            // Used only to carry short-lived state (nonce/returnUrl) across the redirect round-trip for
+            // the OIDC/SAML providers registered below — never read anywhere else in the app as identity.
+            // Everything downstream of a successful sign-in uses the existing User_Object-in-session model
+            // (see IFederated_Authentication_Provider remarks), not this cookie or its ClaimsPrincipal.
+            const string AUTH_CORRELATION_SCHEME = "SobekCM.AuthCorrelation";
+
+            // Captured by the SAML notification closure below (which lacks direct HttpContext access,
+            // unlike the OIDC handler's events); assigned once the real value exists, after app.Build().
+            IHttpContextAccessor httpContextAccessor = null;
+
+            AuthenticationBuilder authBuilder = builder.Services.AddAuthentication();
+            authBuilder.AddCookie(AUTH_CORRELATION_SCHEME, options =>
+            {
+                options.Cookie.Name = AUTH_CORRELATION_SCHEME;
+            });
+
+            if (authConfig != null)
+            {
+                foreach (Oidc_Configuration oidcConfig in authConfig.Oidc)
+                {
+                    if ((!oidcConfig.Enabled) || (String.IsNullOrEmpty(oidcConfig.Provider_Code)))
+                        continue;
+
+                    string providerCode = oidcConfig.Provider_Code;
+                    authBuilder.AddOpenIdConnect(providerCode, options =>
+                    {
+                        options.SignInScheme = AUTH_CORRELATION_SCHEME;
+                        options.Authority = oidcConfig.Authority;
+                        options.ClientId = oidcConfig.ClientId;
+                        options.ClientSecret = oidcConfig.ClientSecret;
+                        options.ResponseType = "code";
+                        options.CallbackPath = "/my/oidc/" + providerCode + "/callback";
+                        options.SaveTokens = false;
+
+                        // Keep raw OIDC claim names (e.g. "sub", "given_name") instead of ASP.NET Core's
+                        // default long-URI claim-type remapping, matching what admins configure in
+                        // sobekcm_authentication.config's <mapping Name="..."> entries
+                        options.MapInboundClaims = false;
+
+                        options.Scope.Add("profile");
+                        options.Scope.Add("email");
+
+                        options.Events = new OpenIdConnectEvents
+                        {
+                            // Fires after the OIDC handler has already validated the token (signature,
+                            // issuer, audience, nonce). This is the ONLY place Complete_SignIn is called
+                            // for OIDC — the callback request never reaches QueryInitializer/a viewer,
+                            // since UseAuthentication() intercepts CallbackPath directly. See
+                            // IFederated_Authentication_Provider's remarks for the full explanation.
+                            OnTokenValidated = async ctx =>
+                            {
+                                var provider = Authentication_Provider_Gateway.Get_Federated_Provider(providerCode) as Oidc_Authentication_Provider;
+                                var tracer = new Custom_Tracer();
+                                User_Object user = provider != null ? await provider.Complete_SignIn(ctx.Principal, tracer) : null;
+
+                                if (user == null)
+                                {
+                                    ctx.Fail("Unable to establish a user account for this identity");
+                                    return;
+                                }
+
+                                ctx.HttpContext.Session.SetString(SessionCache_Keys.User, CachedDataManager_UserCacheServices.UserToString(user));
+
+                                string returnUrl = (ctx.Properties?.Items != null) && ctx.Properties.Items.TryGetValue("returnUrl", out string r) && (!String.IsNullOrEmpty(r))
+                                    ? r : "/";
+                                ctx.Properties.RedirectUri = returnUrl;
+                            }
+                        };
+                    });
+                }
+
+                // SAML providers, via Sustainsys.Saml2. Verified against the actual installed package
+                // (Sustainsys.Saml2.AspNetCore2 2.11.0) rather than guessed, but the returnUrl round-trip
+                // through CommandResult.RelayData specifically has not been confirmed against a real IdP —
+                // Saml2Handler doesn't derive from ASP.NET Core's RemoteAuthenticationHandler<T>, so it
+                // doesn't necessarily propagate AuthenticationProperties.Items the same way the OIDC
+                // handler does. Verify this with a real IdP before relying on it.
+                foreach (Saml_Configuration samlConfig in authConfig.Saml)
+                {
+                    if ((!samlConfig.Enabled) || (String.IsNullOrEmpty(samlConfig.Provider_Code)))
+                        continue;
+
+                    string providerCode = samlConfig.Provider_Code;
+                    authBuilder.AddSaml2(providerCode, options =>
+                    {
+                        options.SignInScheme = AUTH_CORRELATION_SCHEME;
+                        options.SPOptions.EntityId = new EntityId(samlConfig.EntityId);
+                        options.IdentityProviders.Add(new IdentityProvider(new EntityId(samlConfig.EntityId), options.SPOptions)
+                        {
+                            MetadataLocation = samlConfig.IdpMetadataUrl,
+                            LoadMetadata = true
+                        });
+
+                        // Sustainsys.Saml2's older "Notifications" delegate API doesn't hand this event an
+                        // HttpContext (unlike the OIDC handler's Events), so the ambient HttpContext is
+                        // resolved via IHttpContextAccessor instead.
+                        options.Notifications.AcsCommandResultCreated = (commandResult, samlResponse) =>
+                        {
+                            HttpContext currentContext = httpContextAccessor?.HttpContext;
+                            if ((commandResult.Principal == null) || (currentContext == null))
+                                return;
+
+                            var provider = Authentication_Provider_Gateway.Get_Federated_Provider(providerCode) as Saml_Authentication_Provider;
+                            if (provider == null)
+                                return;
+
+                            var tracer = new Custom_Tracer();
+                            User_Object user = provider.Complete_SignIn(commandResult.Principal, tracer).GetAwaiter().GetResult();
+                            if (user == null)
+                                return;
+
+                            currentContext.Session.SetString(SessionCache_Keys.User, CachedDataManager_UserCacheServices.UserToString(user));
+
+                            if ((commandResult.RelayData != null) && commandResult.RelayData.TryGetValue("returnUrl", out string returnUrl) && (!String.IsNullOrEmpty(returnUrl)))
+                                commandResult.Location = new Uri(returnUrl);
+                        };
+                    });
+                }
+            }
+
+            var app = builder.Build();
+
+            httpContextAccessor = app.Services.GetRequiredService<IHttpContextAccessor>();
 
             // Global last-resort exception log — replaces Global.asax's Application_Error.
             // Most request paths (sobekcm_data.aspx, sobekcm_oai.aspx, the SobekCM fallback route)
@@ -101,6 +244,12 @@ namespace SobekCM
 
             app.UseSession();
             //    app.UseSystemWebAdapters();
+
+            // Must run before PrettyUrl_Rewrite below, so each OIDC/SAML scheme's CallbackPath is
+            // matched against the pristine incoming request path. Handles the OIDC/SAML identity
+            // provider return leg directly and short-circuits the rest of the pipeline for it — see
+            // IFederated_Authentication_Provider's remarks.
+            app.UseAuthentication();
 
             // Static files (CSS, JS, images) served from wwwroot
             var contentTypeProvider = new FileExtensionContentTypeProvider();

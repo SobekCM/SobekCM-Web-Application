@@ -4117,13 +4117,56 @@ namespace SobekCM.Engine_Library.Database
             }
         }
 
+        /// <summary> Gets basic user information by the (provider code, external subject id) pair a
+        /// federated (OIDC/SAML) identity provider issued this user on a previous sign-in </summary>
+        /// <param name="ProviderCode"> Provider code (matches Oidc_Configuration/Saml_Configuration Provider_Code) </param>
+        /// <param name="ExternalSubjectId"> Subject identifier issued by the identity provider (OIDC 'sub', SAML NameID) </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <returns> Fully built <see cref="SobekCM.Core.Users.User_Object"/> object, or NULL if no linked user exists yet </returns>
+        /// <remarks> This calls the 'mySobek_Get_User_By_External_Login' stored procedure — this proc does not
+        /// exist yet and needs to be created directly against the database (no .sql files ship in this repo;
+        /// every other proc got there the same way). Same result shape as 'mySobek_Get_User_By_ShibbID'
+        /// (see build_user_object_from_dataset), with the addition of ExternalProviderCode/ExternalSubjectId
+        /// columns in the first result set (optional — build_user_object_from_dataset only reads them if
+        /// present, so this can layer onto the existing table rather than requiring a parallel one).
+        /// Params: @provider_code nvarchar, @external_subject_id nvarchar </remarks>
+        public static User_Object Get_User_By_External_Login(string ProviderCode, string ExternalSubjectId, Custom_Tracer Tracer)
+        {
+            Tracer?.Add_Trace("Engine_Database.Get_User_By_External_Login", String.Empty);
+
+            try
+            {
+                // Execute this non-query stored procedure
+                EalDbParameter[] paramList = new EalDbParameter[2];
+                paramList[0] = new EalDbParameter("@provider_code", ProviderCode);
+                paramList[1] = new EalDbParameter("@external_subject_id", ExternalSubjectId);
+
+                DataSet resultSet = EalDbAccess.ExecuteDataset(DatabaseType, Connection_String, CommandType.StoredProcedure, "mySobek_Get_User_By_External_Login", paramList);
+
+                if ((resultSet.Tables.Count > 0) && (resultSet.Tables[0].Rows.Count > 0))
+                {
+                    return build_user_object_from_dataset(resultSet);
+                }
+
+                return null;
+            }
+            catch (Exception ee)
+            {
+                Last_Exception = ee;
+                Tracer?.Add_Trace("Engine_Database.Get_User_By_External_Login", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("Engine_Database.Get_User_By_External_Login", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("Engine_Database.Get_User_By_External_Login", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                return null;
+            }
+        }
+
         /// <summary> Gets basic user information by Username (or email) and Password </summary>
         /// <param name="UserName"> UserName (or email address) for the user </param>
         /// <param name="Password"> Plain-text password, which is then encrypted prior to sending to database</param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
         /// <returns> Fully built <see cref="SobekCM.Core.Users.User_Object"/> object </returns>
         /// <remarks> This calls the 'mySobek_Get_User_By_UserName_Password' stored procedure<br /><br />
-        /// This is used when a user logs on through the mySobek authentication</remarks> 
+        /// This is used when a user logs on through the mySobek authentication</remarks>
         public static User_Object Get_User(string UserName, string Password, Custom_Tracer Tracer)
         {
             Tracer?.Add_Trace("Engine_Database.Get_User", String.Empty);
@@ -4166,6 +4209,16 @@ namespace SobekCM.Engine_Library.Database
 
             DataRow userRow = ResultSet.Tables[0].Rows[0];
             user.ShibbID = userRow["ShibbID"].ToString();
+
+            // Only present in result sets from procs that know about federated (OIDC/SAML) logins
+            // (mySobek_Get_User_By_External_Login, and mySobek_Get_User_By_UserID/mySobek_Save_User
+            // once those are updated) — guarded so this same builder keeps working against the older
+            // procs' result sets, which don't have these columns
+            if (ResultSet.Tables[0].Columns.Contains("ExternalProviderCode"))
+                user.External_Provider_Code = userRow["ExternalProviderCode"].ToString();
+            if (ResultSet.Tables[0].Columns.Contains("ExternalSubjectId"))
+                user.External_Subject_Id = userRow["ExternalSubjectId"].ToString();
+
             user.UserID = Convert.ToInt32(userRow["UserID"]);
             user.UserName = userRow["username"].ToString();
             user.Email = userRow["EmailAddress"].ToString();

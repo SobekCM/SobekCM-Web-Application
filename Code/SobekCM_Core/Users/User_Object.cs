@@ -35,7 +35,13 @@ namespace SobekCM.Core.Users
         Sobek,
 
         /// <summary> Authentication occurred using the basic IIS windows authentication pop-up </summary>
-        Windows
+        Windows,
+
+        /// <summary> Authentication occurred using an external OpenID Connect identity provider </summary>
+        OpenIdConnect,
+
+        /// <summary> Authentication occurred using an external SAML identity provider </summary>
+        Saml
     }
 
     #endregion
@@ -429,6 +435,22 @@ namespace SobekCM.Core.Users
         [XmlArrayItem("item", typeof(string))]
         [ProtoMember(48)]
         public List<string> Bookshelf_Items { get; private set; }
+
+        /// <summary> Code for the federated (OIDC/SAML) provider this user last authenticated through, matching
+        /// an <c>Oidc_Configuration</c>/<c>Saml_Configuration</c> Provider_Code; NULL for Sobek/LDAP/Windows users </summary>
+        /// <remarks> Generalized, multi-provider-capable sibling of <see cref="ShibbID"/> — added rather than
+        /// reusing ShibbID so the dormant Shibboleth path is left completely untouched </remarks>
+        [DataMember(EmitDefaultValue = false, Name = "externalProviderCode")]
+        [XmlAttribute("externalProviderCode")]
+        [ProtoMember(49)]
+        public string External_Provider_Code { get; set; }
+
+        /// <summary> Subject identifier (e.g. OIDC 'sub' claim, SAML NameID) this user was issued by
+        /// <see cref="External_Provider_Code"/>; NULL for Sobek/LDAP/Windows users </summary>
+        [DataMember(EmitDefaultValue = false, Name = "externalSubjectId")]
+        [XmlAttribute("externalSubjectId")]
+        [ProtoMember(50)]
+        public string External_Subject_Id { get; set; }
 
         /// <summary> Number of items this user has submitted </summary>
         [DataMember(EmitDefaultValue = false, Name = "itemsSubmittedCount")]

@@ -263,7 +263,8 @@ namespace SobekCM.QueryInitializerHelpers
             }
             else
             {
-                if ((currentMode.Mode == Display_Mode_Enum.My_Sobek) && (currentMode.My_Sobek_Type != My_Sobek_Type_Enum.Register))
+                if ((currentMode.Mode == Display_Mode_Enum.My_Sobek) && (currentMode.My_Sobek_Type != My_Sobek_Type_Enum.Register) &&
+                    (currentMode.My_Sobek_Type != My_Sobek_Type_Enum.OIDC_Landing) && (currentMode.My_Sobek_Type != My_Sobek_Type_Enum.SAML_Landing))
                 {
                     currentMode.Logon_Required = true;
                 }

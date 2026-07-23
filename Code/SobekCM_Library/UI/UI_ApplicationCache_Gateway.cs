@@ -31,6 +31,8 @@ namespace SobekCM.Library.UI
             ItemViewer_Factory.Clear();
 
             HtmlLayoutManager.Clear();
+
+            Authentication.Authentication_Provider_Gateway.RefreshAll();
         }
 
         /// <summary> Refresh the settings object by pulling the data back from the database </summary>

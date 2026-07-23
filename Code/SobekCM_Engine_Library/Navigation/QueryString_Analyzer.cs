@@ -579,6 +579,22 @@ namespace SobekCM.Engine_Library.Navigation
                                                 Navigator.Return_URL = queryParams["return"];
                                             break;
 
+                                        case "oidc":
+                                            Navigator.My_Sobek_Type = My_Sobek_Type_Enum.OIDC_Landing;
+                                            if (url_relative_list.Count > 2)
+                                                Navigator.My_Sobek_SubMode = url_relative_list[2];
+                                            if (queryParams.ContainsKey("return"))
+                                                Navigator.Return_URL = queryParams["return"];
+                                            break;
+
+                                        case "saml":
+                                            Navigator.My_Sobek_Type = My_Sobek_Type_Enum.SAML_Landing;
+                                            if (url_relative_list.Count > 2)
+                                                Navigator.My_Sobek_SubMode = url_relative_list[2];
+                                            if (queryParams.ContainsKey("return"))
+                                                Navigator.Return_URL = queryParams["return"];
+                                            break;
+
                                         case "itemtracking":
                                             Navigator.My_Sobek_Type = My_Sobek_Type_Enum.Item_Tracking;
                                             //if(url_relative_list.Count>3 && is_String_Number(url_relative_list[3]))

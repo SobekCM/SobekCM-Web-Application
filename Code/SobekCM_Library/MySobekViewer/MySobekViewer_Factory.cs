@@ -48,6 +48,12 @@ namespace SobekCM.Library.MySobekViewer
                 case My_Sobek_Type_Enum.Logon:
                     return new Logon_MySobekViewer(RequestSpecificValues, Context);
 
+                case My_Sobek_Type_Enum.OIDC_Landing:
+                    return new Oidc_Landing_MySobekViewer(RequestSpecificValues, Context);
+
+                case My_Sobek_Type_Enum.SAML_Landing:
+                    return new Saml_Landing_MySobekViewer(RequestSpecificValues, Context);
+
                 case My_Sobek_Type_Enum.New_Password:
                     return new NewPassword_MySobekViewer(RequestSpecificValues, Context);
 

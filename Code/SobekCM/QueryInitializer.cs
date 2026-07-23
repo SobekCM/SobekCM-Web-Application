@@ -338,7 +338,7 @@ namespace SobekCM
             var assistant = new SobekCM_Assistant();
             int currentPageIndex = currentMode.Page.HasValue ? currentMode.Page.Value : 1;
             int currentFolderId = currentMode.FolderID.HasValue ? currentMode.FolderID.Value : -1;
-            bool result = assistant.Get_Public_User_Folder(currentFolderId, currentPageIndex, tracer, out publicFolder, out searchResultStatistics, out pagedSearchResults);
+            bool result = assistant.Get_Public_User_Folder(currentFolderId, currentPageIndex, currentMode.Language, tracer, out publicFolder, out searchResultStatistics, out pagedSearchResults);
 
             if ((!result) || (!publicFolder.IsPublic))
             {
@@ -489,10 +489,13 @@ namespace SobekCM
 
                 // Get the folder
                 var assistant = new SobekCM_Assistant();
-                if (!assistant.Get_User_Folder(currentMode.My_Sobek_SubMode, requestSpecificValues.Current_User.UserID, results_per_page, current_page, tracer, out searchResultStatistics, out pagedSearchResults))
+                if (!assistant.Get_User_Folder(currentMode.My_Sobek_SubMode, requestSpecificValues.Current_User.UserID, results_per_page, current_page, currentMode.Language, tracer, out searchResultStatistics, out pagedSearchResults))
                 {
                     currentMode.Mode = Display_Mode_Enum.Error;
                 }
+
+                requestSpecificValues.Results_Statistics = searchResultStatistics;
+                requestSpecificValues.Paged_Results = pagedSearchResults;
             }
         }
 

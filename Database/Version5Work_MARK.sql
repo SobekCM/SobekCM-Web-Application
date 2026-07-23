@@ -1302,7 +1302,9 @@ BEGIN
 	from mySobek_User_Item A, SobekCM_Item I, SobekCM_Item_Group G
 	where ( I.ItemID = A.ItemID )
 	  and ( I.GroupID = G.GroupID )
-	  and ( A.UserFolderID = @folderid );
+	  and ( A.UserFolderID = @folderid )
+	  and ( I.Deleted = 'false' )
+	  and ( G.Deleted = 'false' );
 
 END;
 GO

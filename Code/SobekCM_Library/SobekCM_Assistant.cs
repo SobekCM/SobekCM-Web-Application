@@ -3,6 +3,7 @@
 using Microsoft.AspNetCore.Http;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.Client;
+using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Results;
@@ -11,6 +12,7 @@ using SobekCM.Core.SiteMap;
 using SobekCM.Core.Skins;
 using SobekCM.Core.Users;
 using SobekCM.Core.WebContent;
+using SobekCM.Engine_Library.Database;
 using SobekCM.Engine_Library.SiteMap;
 using SobekCM.Engine_Library.Solr.v5;
 using SobekCM.Library.Database;
@@ -18,6 +20,7 @@ using SobekCM.Library.UI;
 using SobekCM.Tools;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -132,13 +135,14 @@ namespace SobekCM.Library
         /// <param name="User_ID"> ID for the user </param>
         /// <param name="Results_Per_Page"> Number of results to display in this page (set higher if EXPORT is chosen)</param>
         /// <param name="ResultsPage">Which page of results to return ( one-based, so the first page is page number of one )</param>
+        /// <param name="Language"> Current user interface language, used to pull the display field labels in the right language </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         /// <param name="Complete_Result_Set_Info"> [OUT] Information about the entire set of results </param>
         /// <param name="Paged_Results"> [OUT] List of search results for the requested page of results </param>
         /// <returns> TRUE if successful, otherwise FALSE </returns>
         /// <remarks> This attempts to pull the objects from the cache.  If unsuccessful, it builds the objects from the
         /// database and hands off to the <see cref="CachedDataManager" /> to store in the cache </remarks>
-        public bool Get_User_Folder(string Folder_Name, int User_ID, int Results_Per_Page, int ResultsPage, Custom_Tracer Tracer, out Search_Results_Statistics Complete_Result_Set_Info, out List<iSearch_Title_Result> Paged_Results)
+        public bool Get_User_Folder(string Folder_Name, int User_ID, int Results_Per_Page, int ResultsPage, Web_Language_Enum Language, Custom_Tracer Tracer, out Search_Results_Statistics Complete_Result_Set_Info, out List<iSearch_Title_Result> Paged_Results)
         {
             Tracer?.Add_Trace("SobekCM_Assistant.Get_User_Folder", String.Empty);
 
@@ -163,15 +167,31 @@ namespace SobekCM.Library
             {
                 Tracer?.Add_Trace("SobekCM_Assistant.Get_User_Folder", "Building results information");
 
-                // TODO: Use Solr to pull the public folder browse for a user's folder
-                // Was: Engine_Database.Get_User_Folder_Browse(User_ID, Folder_Name, Results_Per_Page, ResultsPage, false, new List<short>(), need_browse_statistics, Tracer);
+                // Pull the folder's BibID/VID list (with order and notes) from the database, then look up the
+                // current display metadata for those items in Solr -- using the same display fields the special
+                // "all" aggregation uses for its own browse/search results, since folder items can span many
+                // different collections and there's no single aggregation's Results_Fields to draw from otherwise
+                List<Complete_Item_Aggregation_Metadata_Type> displayFields = Get_All_Aggregation_Display_Fields(Language, Tracer);
+                DataSet folderItemSet = Engine_Database.Get_User_Folder_Items(User_ID, Folder_Name, Tracer);
+                DataTable folderItemsTable = ((folderItemSet != null) && (folderItemSet.Tables.Count > 0)) ? folderItemSet.Tables[0] : null;
+                List<iSearch_Title_Result> allFolderResults = v5_Solr_Searcher.Get_Folder_Item_Results(folderItemsTable, displayFields, Tracer);
 
-                Single_Paged_Results_Args returnArgs = new Single_Paged_Results_Args();
                 if (need_browse_statistics)
                 {
-                    Complete_Result_Set_Info = returnArgs.Statistics;
+                    Complete_Result_Set_Info = new Search_Results_Statistics(displayFields.Select(field => field.DisplayTerm).ToList())
+                    {
+                        Total_Items = allFolderResults.Count,
+                        Total_Titles = allFolderResults.Count
+                    };
                 }
-                Paged_Results = returnArgs.Paged_Results;
+
+                // Solr returns every folder item in one pass, so page the results here rather than in the query.
+                // Only overwrite Paged_Results if this page wasn't already cached -- e.g. if we're only here because
+                // the statistics had expired, the cached page (if any) is still perfectly valid
+                if (need_paged_results)
+                {
+                    Paged_Results = allFolderResults.Skip((ResultsPage - 1) * Results_Per_Page).Take(Results_Per_Page).ToList();
+                }
 
                 // Save the overall result set statistics to the cache if something was pulled
                 if ((need_browse_statistics) && (Complete_Result_Set_Info != null))
@@ -196,6 +216,7 @@ namespace SobekCM.Library
         /// <summary> Retrieve the public user folder information and browse by user folder id </summary>
         /// <param name="UserFolderID"> Primary key for the public user folder to retrieve </param>
         /// <param name="ResultsPage">Which page of results to return ( one-based, so the first page is page number of one ) </param>
+        /// <param name="Language"> Current user interface language, used to pull the display field labels in the right language </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         /// <param name="Folder_Info"> [OUT] Information about this public user folder including name and owner</param>
         /// <param name="Complete_Result_Set_Info"> [OUT] Information about the entire set of results </param>
@@ -203,7 +224,7 @@ namespace SobekCM.Library
         /// <returns> TRUE if successful, otherwise FALSE </returns>
         /// <remarks> This attempts to pull the objects from the cache.  If unsuccessful, it builds the objects from the
         /// database and hands off to the <see cref="CachedDataManager" /> to store in the cache </remarks>
-        public bool Get_Public_User_Folder(int UserFolderID, int ResultsPage, Custom_Tracer Tracer, out Public_User_Folder Folder_Info, out Search_Results_Statistics Complete_Result_Set_Info, out List<iSearch_Title_Result> Paged_Results)
+        public bool Get_Public_User_Folder(int UserFolderID, int ResultsPage, Web_Language_Enum Language, Custom_Tracer Tracer, out Public_User_Folder Folder_Info, out Search_Results_Statistics Complete_Result_Set_Info, out List<iSearch_Title_Result> Paged_Results)
         {
             Tracer?.Add_Trace("SobekCM_Assistant.Get_Public_User_Folder", String.Empty);
 
@@ -249,14 +270,32 @@ namespace SobekCM.Library
             {
                 Tracer?.Add_Trace("SobekCM_Assistant.Get_User_Folder", "Building results information");
 
-                // TODO: Use Solr to pull the public folder browse for a user's folder
-                // Was:  Single_Paged_Results_Args returnArgs = Engine_Database.Get_Public_Folder_Browse(UserFolderID, 20, ResultsPage, false, new List<short>(), need_browse_statistics, Tracer);
-                Single_Paged_Results_Args returnArgs = new Single_Paged_Results_Args();
+                // Pull the folder's BibID/VID list (with order and notes) from the database, then look up the
+                // current display metadata for those items in Solr -- using the same display fields the special
+                // "all" aggregation uses for its own browse/search results, since folder items can span many
+                // different collections and there's no single aggregation's Results_Fields to draw from otherwise
+                const int resultsPerPage = 20;
+                List<Complete_Item_Aggregation_Metadata_Type> displayFields = Get_All_Aggregation_Display_Fields(Language, Tracer);
+                DataSet folderItemSet = Engine_Database.Get_User_Folder_Items(Folder_Info.UserID, Folder_Info.FolderName, Tracer);
+                DataTable folderItemsTable = ((folderItemSet != null) && (folderItemSet.Tables.Count > 0)) ? folderItemSet.Tables[0] : null;
+                List<iSearch_Title_Result> allFolderResults = v5_Solr_Searcher.Get_Folder_Item_Results(folderItemsTable, displayFields, Tracer);
+
                 if (need_browse_statistics)
                 {
-                    Complete_Result_Set_Info = returnArgs.Statistics;
+                    Complete_Result_Set_Info = new Search_Results_Statistics(displayFields.Select(field => field.DisplayTerm).ToList())
+                    {
+                        Total_Items = allFolderResults.Count,
+                        Total_Titles = allFolderResults.Count
+                    };
                 }
-                Paged_Results = returnArgs.Paged_Results;
+
+                // Solr returns every folder item in one pass, so page the results here rather than in the query.
+                // Only overwrite Paged_Results if this page wasn't already cached -- e.g. if we're only here because
+                // the statistics had expired, the cached page (if any) is still perfectly valid
+                if (need_paged_results)
+                {
+                    Paged_Results = allFolderResults.Skip((ResultsPage - 1) * resultsPerPage).Take(resultsPerPage).ToList();
+                }
 
                 // Save the overall result set statistics to the cache if something was pulled
                 if ((need_browse_statistics) && (Complete_Result_Set_Info != null))
@@ -274,9 +313,22 @@ namespace SobekCM.Library
             return true;
         }
 
+        /// <summary> Gets the display fields configured for the special "all" aggregation, for use when building
+        /// results that can't be tied to any one specific aggregation -- e.g., a user's bookshelf, where items can
+        /// come from many different collections </summary>
+        /// <param name="Language"> Current user interface language, used to pull the display field labels in the right language </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        /// <returns> The "all" aggregation's configured Results_Fields, or an empty list if it could not be retrieved </returns>
+        private static List<Complete_Item_Aggregation_Metadata_Type> Get_All_Aggregation_Display_Fields(Web_Language_Enum Language, Custom_Tracer Tracer)
+        {
+            Item_Aggregation allAggregation = SobekEngineClient.Aggregations.Get_Aggregation("all", Language, UI_ApplicationCache_Gateway.Settings.System.Default_UI_Language, Tracer);
+
+            return ((allAggregation != null) && (allAggregation.Results_Fields != null)) ? allAggregation.Results_Fields : new List<Complete_Item_Aggregation_Metadata_Type>();
+        }
+
         #endregion
 
-        #region Method to pull the static HTML for an all items browse 
+        #region Method to pull the static HTML for an all items browse
 
         /// <summary> Pulls the static html url for a static html browse of all items in an aggregation, used for search engine robot requests </summary>
         /// <param name="Current_Mode"> Mode / navigation information for the current request</param>

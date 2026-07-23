@@ -883,11 +883,14 @@ namespace SobekCM.Engine_Library.Solr.v5
         /// display metadata for each item now only lives in Solr </summary>
         /// <param name="FolderItems"> DataTable with (in column order) BibID, VID, ItemOrder, SortDate, and UserNotes
         /// for every item in the folder -- see <see cref="Engine_Database.Get_User_Folder_Items"/> </param>
+        /// <param name="DisplayFields"> Metadata fields to request from Solr and populate onto each result's
+        /// Metadata_Display_Values, matching whatever fields a normal search/browse would show (e.g., the special
+        /// "all" aggregation's Results_Fields, since folder items can span many different collections) </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         /// <returns> List of search results for the folder's items, ordered to match the folder's stored item order,
         /// with each item's user notes attached. Items no longer found in Solr (e.g., deleted since being added to
         /// the folder) are simply omitted. </returns>
-        public static List<iSearch_Title_Result> Get_Folder_Item_Results(DataTable FolderItems, Custom_Tracer Tracer)
+        public static List<iSearch_Title_Result> Get_Folder_Item_Results(DataTable FolderItems, List<Complete_Item_Aggregation_Metadata_Type> DisplayFields, Custom_Tracer Tracer)
         {
             var emptyResults = new List<iSearch_Title_Result>();
             if ((FolderItems == null) || (FolderItems.Rows.Count == 0))
@@ -924,10 +927,15 @@ namespace SobekCM.Engine_Library.Solr.v5
                 string didClause = String.Join(" OR ", didList.Select(did => "\"" + did + "\""));
                 var query = new SolrQuery($"did:({didClause})");
 
+                // Request the same base fields a normal search does, plus whatever display fields were asked for
+                var fields = new List<string> { "did", "mainthumb", "title", "type", "discover_ips", "hidden", "restricted_msg", "group_restrictions" };
+                if (DisplayFields != null)
+                    fields.AddRange(DisplayFields.Select(field => field.SolrCode));
+
                 var options = new QueryOptions
                 {
                     Rows = didList.Count,
-                    Fields = new List<string> { "did", "mainthumb", "title", "discover_ips", "hidden", "restricted_msg", "group_restrictions" }
+                    Fields = fields
                 };
 
                 Tracer?.Add_Trace("v5_Solr_Searcher.Get_Folder_Item_Results", "Perform the search for " + didList.Count + " folder item(s)");
@@ -936,12 +944,12 @@ namespace SobekCM.Engine_Library.Solr.v5
 
                 // Convert every matching document, then re-attach the folder-specific order and notes
                 var mapper = new v5_SolrDocument_Results_Mapper();
-                var emptyDisplayFields = new List<Complete_Item_Aggregation_Metadata_Type>();
+                List<Complete_Item_Aggregation_Metadata_Type> mapperFields = DisplayFields ?? new List<Complete_Item_Aggregation_Metadata_Type>();
                 var scoredResults = new List<(int Order, v5_Solr_Title_Result Result)>();
 
                 foreach (v5_SolrDocument solrDocument in solrResults)
                 {
-                    v5_Solr_Title_Result newResult = mapper.Map_To_Result(solrDocument, emptyDisplayFields);
+                    v5_Solr_Title_Result newResult = mapper.Map_To_Result(solrDocument, mapperFields);
 
                     if (notesByDid.TryGetValue(solrDocument.DID, out string notes))
                         newResult.UserNotes = notes;

@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 
 #endregion
 
@@ -37,12 +38,23 @@ namespace SobekCM.Engine_Library
 
         /// <summary> Processes the request </summary>
         /// <param name="Context">The ASP.NET Core HTTP context for the current request </param>
-        public void ProcessRequest(HttpContext Context)
+        public async Task ProcessRequest(HttpContext Context)
         {
             Engine_Database.Connection_String = Engine_ApplicationCache_Gateway.Settings.Database_Connection.Connection_String;
 
             var compat = new CompatHttpResponse(Context.Response);
+            try
+            {
+                await ProcessRequest_Internal(Context, compat);
+            }
+            finally
+            {
+                await compat.FlushToResponseAsync();
+            }
+        }
 
+        private static Task ProcessRequest_Internal(HttpContext Context, CompatHttpResponse compat)
+        {
             // Get the original query string
             string queryString = Context.Request.Query["urlrelative"].ToString();
             if (!String.IsNullOrEmpty(queryString))
@@ -60,7 +72,7 @@ namespace SobekCM.Engine_Library
 
                     foreach (string thisLine in Engine_ApplicationCache_Gateway.Configuration.Source.ReadingLog)
                         compat.Output.WriteLine(thisLine);
-                    return;
+                    return Task.CompletedTask;
                 }
 
                 // Collect the requested paths
@@ -91,7 +103,7 @@ namespace SobekCM.Engine_Library
                         Context.Response.ContentType = "text/plain";
                         Context.Response.StatusCode = 406;
                         compat.Write("HTTP method " + method + " is not supported by this URL");
-                        return;
+                        return Task.CompletedTask;
                     }
 
                     // Get the specific verb mapping
@@ -104,7 +116,7 @@ namespace SobekCM.Engine_Library
                         Context.Response.ContentType = "text/plain";
                         Context.Response.StatusCode = 403;
                         compat.Write("You are forbidden from accessing this endpoint ( " + requestIp + " )");
-                        return;
+                        return Task.CompletedTask;
                     }
 
                     // Set the protocol
@@ -148,7 +160,7 @@ namespace SobekCM.Engine_Library
                         Context.Response.ContentType = "text/plain";
                         compat.Output.WriteLine("No component listed or found for this valid endpoint");
                         Context.Response.StatusCode = 500;
-                        return;
+                        return Task.CompletedTask;
                     }
 
                     // Convert IQueryCollection → NameValueCollection for endpoint methods
@@ -191,7 +203,7 @@ namespace SobekCM.Engine_Library
                             compat.Output.WriteLine("Error creating the endpoint object " + verbMapping.Component.Class);
                             compat.Output.WriteLine(ee.Message);
                             Context.Response.StatusCode = 500;
-                            return;
+                            return Task.CompletedTask;
                         }
                     }
 
@@ -200,7 +212,7 @@ namespace SobekCM.Engine_Library
                         Context.Response.ContentType = "text/plain";
                         compat.Output.WriteLine("Error creating the endpoint object " + verbMapping.Component.Class);
                         Context.Response.StatusCode = 500;
-                        return;
+                        return Task.CompletedTask;
                     }
 
                     try
@@ -223,7 +235,7 @@ namespace SobekCM.Engine_Library
                             Context.Response.ContentType = "text/plain";
                             compat.Output.WriteLine("Error invoking the endpoint method: No Method Found");
                             Context.Response.StatusCode = 500;
-                            return;
+                            return Task.CompletedTask;
                         }
 
                         if (verbMapping.RequestType == Microservice_Endpoint_RequestType_Enum.GET)
@@ -254,6 +266,8 @@ namespace SobekCM.Engine_Library
                 Context.Response.StatusCode = 400;
                 compat.Write("Invalid URI - No endpoint requested");
             }
+
+            return Task.CompletedTask;
         }
     }
 }

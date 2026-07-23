@@ -506,7 +506,7 @@ namespace SobekCM
         /// <summary> Dispatches a request to the engine's MicroserviceHandler, translating the
         /// route-captured path (everything after /engine/) into the "urlrelative" query parameter
         /// it expects — the same value the old rewriter produced via appRelative.Substring(6). </summary>
-        private static Task Engine_Handler(HttpContext context, string urlrelative)
+        private static async Task Engine_Handler(HttpContext context, string urlrelative)
         {
             string existing = context.Request.QueryString.HasValue ? context.Request.QueryString.Value.TrimStart('?') : "";
             string merged = "urlrelative=" + Uri.EscapeDataString(urlrelative);
@@ -514,8 +514,7 @@ namespace SobekCM
                 merged += "&" + existing;
             context.Request.QueryString = new QueryString("?" + merged);
 
-            new MicroserviceHandler().ProcessRequest(context);
-            return Task.CompletedTask;
+            await new MicroserviceHandler().ProcessRequest(context);
         }
 
         private static async Task Files_Handler(HttpContext context, string urlrelative)

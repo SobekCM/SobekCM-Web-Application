@@ -244,11 +244,8 @@ namespace SobekCM.Engine_Library.Endpoints
                 return null;
             }
 
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("WebSkinServices.get_complete_web_skin", "Found the web skin row for code '" + SkinCode + "'");
-                Tracer.Add_Trace("WebSkinServices.get_complete_web_skin", "Building the copmlete web skin object");
-            }
+            Tracer?.Add_Trace("WebSkinServices.get_complete_web_skin", "Found the web skin row for code '" + SkinCode + "'");
+            Tracer?.Add_Trace("WebSkinServices.get_complete_web_skin", "Building the copmlete web skin object");
 
             // Build the complete web skin object
             Complete_Web_Skin_Object returnObject = Web_Skin_Utilities.Build_Skin_Complete(thisRow, Tracer);

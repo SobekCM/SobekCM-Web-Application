@@ -52,8 +52,7 @@ namespace SobekCM.Engine_Library.Navigation
             string Custom_BibID_RegEx,
             Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-                Tracer.Add_Trace("QueryString_Analyzer.Parse_Query", "Parse the query into the provided Navigation_Object");
+            Tracer?.Add_Trace("QueryString_Analyzer.Parse_Query", "Parse the query into the provided Navigation_Object");
 
             // Set default mode to error
             Navigator.Mode = Display_Mode_Enum.Error;

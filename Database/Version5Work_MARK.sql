@@ -1047,3 +1047,11 @@ GO
 
 update SobekCM_Settings set Setting_Value='OpenSobek', Options='OpenSobek' , Help='Which system and schema to use for searching' where Setting_Key='Search System';
 GO
+
+
+Update SobekCM_Metadata_Types set SolrCode='', LegacySolrCode='' where MetadataName='ZT All Taxonomy';
+Update SobekCM_Metadata_Types set SolrCode='temporal_decade', LegacySolrCode='temporal_decade' where MetadataName='Temporal Decade';
+Update SobekCM_Metadata_Types set SolrCode='temporal_subject', LegacySolrCode='temporal_subject' where MetadataName='Temporal Subject';
+Update SobekCM_Metadata_Types set SolrCode='temporal_year', LegacySolrCode='temporal_year' where MetadataName='Temporal Year';
+Update SobekCM_Metadata_Types set SolrCode='User_Description', LegacySolrCode='User_Description' where MetadataName='User Description';
+GO

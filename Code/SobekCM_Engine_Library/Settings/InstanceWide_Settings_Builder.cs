@@ -413,11 +413,11 @@ namespace SobekCM.Engine_Library.Settings
             // Add ANYWHERE
             SettingsObject.Metadata_Search_Fields.Add(new Metadata_Search_Field(-1, String.Empty, "Anywhere", "ZZ", "fullcitation", "Anywhere", String.Empty, String.Empty, "all"));
 
-            // Add OCLC
-            SettingsObject.Metadata_Search_Fields.Add(new Metadata_Search_Field(-2, String.Empty, "OCLC", "OC", "oclc", "OCLC", String.Empty, String.Empty, "oclc"));
+            //// Add OCLC
+            //SettingsObject.Metadata_Search_Fields.Add(new Metadata_Search_Field(-2, String.Empty, "OCLC", "OC", "oclc", "OCLC", String.Empty, String.Empty, "oclc"));
 
-            // Add ALEPH
-            SettingsObject.Metadata_Search_Fields.Add(new Metadata_Search_Field(-3, String.Empty, "ALEPH", "AL", "aleph", "ALEPH", String.Empty, String.Empty, "aleph"));
+            //// Add ALEPH
+            //SettingsObject.Metadata_Search_Fields.Add(new Metadata_Search_Field(-3, String.Empty, "ALEPH", "AL", "aleph", "ALEPH", String.Empty, String.Empty, "aleph"));
 
             // Add Full Text
             SettingsObject.Metadata_Search_Fields.Add(new Metadata_Search_Field(-4, String.Empty, "Full Text", "TX", "fulltext", "Full Text", String.Empty, String.Empty, "fulltext"));

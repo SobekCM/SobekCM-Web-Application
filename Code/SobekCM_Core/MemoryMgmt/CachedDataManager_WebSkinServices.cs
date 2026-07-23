@@ -51,10 +51,7 @@ namespace SobekCM.Core.MemoryMgmt
             if (settings.Disabled)
                 return 0;
 
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("CachedDataManager.Remove_Skin");
-            }
+            Tracer?.Add_Trace("CachedDataManager.Remove_Skin");
 
             string skinKey = "SKIN|" + Skin_Code.ToLower();
             string skinKeyPrefix = skinKey + "|";
@@ -91,18 +88,12 @@ namespace SobekCM.Core.MemoryMgmt
             object returnValue = SharedCache.Instance.Get(key);
             if (returnValue != null)
             {
-                if (Tracer != null)
-                {
-                    Tracer.Add_Trace("CachedDataManager.Retrieve_Skin", "Found language-specific html skin on local cache");
-                }
+                Tracer?.Add_Trace("CachedDataManager.Retrieve_Skin", "Found language-specific html skin on local cache");
 
                 return (Web_Skin_Object)returnValue;
             }
 
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("CachedDataManager.Retrieve_Skin", "Language specific skin not found in either the local cache");
-            }
+            Tracer?.Add_Trace("CachedDataManager.Retrieve_Skin", "Language specific skin not found in either the local cache");
 
             // Since everything failed, just return null
             return null;
@@ -125,10 +116,7 @@ namespace SobekCM.Core.MemoryMgmt
                 key = key + Language_Code;
 
             // Log
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("CachedDataManager.Store_Skin", "Adding object '" + key + "' to the local cache with expiration of 1 minute");
-            }
+            Tracer?.Add_Trace("CachedDataManager.Store_Skin", "Adding object '" + key + "' to the local cache with expiration of 1 minute");
 
             // Add to the cache with five minute expiration
             SharedCache.Instance.Set(key, StoreObject, new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(5) });
@@ -151,18 +139,12 @@ namespace SobekCM.Core.MemoryMgmt
             object returnValue = SharedCache.Instance.Get(key);
             if (returnValue != null)
             {
-                if (Tracer != null)
-                {
-                    Tracer.Add_Trace("CachedDataManager.Retrieve_Complete_Skin", "Found complete html skin on local cache");
-                }
+                Tracer?.Add_Trace("CachedDataManager.Retrieve_Complete_Skin", "Found complete html skin on local cache");
 
                 return (Complete_Web_Skin_Object)returnValue;
             }
 
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("CachedDataManager.Retrieve_Complete_Skin", "Complete skin not found in either the local cache");
-            }
+            Tracer?.Add_Trace("CachedDataManager.Retrieve_Complete_Skin", "Complete skin not found in either the local cache");
 
             // Since everything failed, just return null
             return null;
@@ -182,10 +164,7 @@ namespace SobekCM.Core.MemoryMgmt
             string key = "SKIN|" + Skin_Code.ToLower() + "|COMPLETE";
 
             // Log
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("CachedDataManager.Store_Complete_Skin", "Adding object '" + key + "' to the local cache with expiration of 1 minute");
-            }
+            Tracer?.Add_Trace("CachedDataManager.Store_Complete_Skin", "Adding object '" + key + "' to the local cache with expiration of 1 minute");
 
             // Stote the value with five minute expiration
             SharedCache.Instance.Set(key, StoreObject, new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(5) });

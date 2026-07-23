@@ -206,10 +206,7 @@ namespace SobekCM.Engine_Library.Endpoints
 
         protected static void Perform_Solr_Search(Custom_Tracer Tracer, List<string> Terms, List<string> Web_Fields, DateTime? StartDate, DateTime? EndDate, int ActualCount, Complete_Item_Aggregation Aggregation_Object, int Current_Page, int Current_Sort, int Results_Per_Page, out Search_Results_Statistics Complete_Result_Set_Info, out List<iSearch_Title_Result> Paged_Results)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("SobekCM_Assistant.Perform_Solr_Search", "Build the Solr query");
-            }
+            Tracer?.Add_Trace("SobekCM_Assistant.Perform_Solr_Search", "Build the Solr query");
 
             // Use this built query to query against Solr
             var searchOptions = new Search_Options_Info();

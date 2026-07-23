@@ -31,10 +31,7 @@ namespace SobekCM.Engine_Library.Solr.v5
         /// <returns> Page search result object with all relevant result information </returns>
         public static bool Search(List<string> Terms, List<string> Web_Fields, Nullable<DateTime> StartDate, Nullable<DateTime> EndDate, Search_Options_Info SearchOptions, Search_User_Membership_Info UserMembership, Custom_Tracer Tracer, out Search_Results_Statistics Complete_Result_Set_Info, out List<iSearch_Title_Result> Paged_Results)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("v5_Solr_Searcher.Search", String.Empty);
-            }
+            Tracer?.Add_Trace("v5_Solr_Searcher.Search", String.Empty);
 
             // Get the query string
             string queryString = Create_Query_String(Terms, Web_Fields, StartDate, EndDate, Tracer);
@@ -235,10 +232,7 @@ namespace SobekCM.Engine_Library.Solr.v5
                 bool grouped_results = false;
                 if ((SearchOptions.GroupItemsByTitle) && (SearchOptions.Sort < 10) && (QueryString.IndexOf("fulltext") < 0))
                 {
-                    if (Tracer != null)
-                    {
-                        Tracer.Add_Trace("v5_Solr_Searcher.Run_Query", "Grouping search request by bibid");
-                    }
+                    Tracer?.Add_Trace("v5_Solr_Searcher.Run_Query", "Grouping search request by bibid");
 
                     grouped_results = true;
 
@@ -257,24 +251,15 @@ namespace SobekCM.Engine_Library.Solr.v5
                 }
 
                 // Log the search term
-                if (Tracer != null)
-                {
-                    Tracer.Add_Trace("v5_Solr_Searcher.Run_Query", "Solr Query: " + QueryString);
-                }
+                Tracer?.Add_Trace("v5_Solr_Searcher.Run_Query", "Solr Query: " + QueryString);
 
-                if (Tracer != null)
-                {
-                    Tracer.Add_Trace("v5_Solr_Searcher.Run_Query", "Perform the search");
-                }
+                Tracer?.Add_Trace("v5_Solr_Searcher.Run_Query", "Perform the search");
 
                 // Perform this search
                 SolrQueryResults<v5_SolrDocument> results = solrWorker.Query(QueryString, options);
 
 
-                if (Tracer != null)
-                {
-                    Tracer.Add_Trace("v5_Solr_Searcher.Run_Query", "Build the results object");
-                }
+                Tracer?.Add_Trace("v5_Solr_Searcher.Run_Query", "Build the results object");
 
                 // Create the search statistcs (this part assumes no grouping, and then we fix the count shortly)
                 List<string> metadataLabels = SearchOptions.Fields.Select(MetadataType => MetadataType.DisplayTerm).ToList();
@@ -314,10 +299,7 @@ namespace SobekCM.Engine_Library.Solr.v5
                 // Build the results differently, depending on whether they were grouped or not
                 if (grouped_results)
                 {
-                    if (Tracer != null)
-                    {
-                        Tracer.Add_Trace("v5_Solr_Searcher.Run_Query", "Building list of results (grouped)");
-                    }
+                    Tracer?.Add_Trace("v5_Solr_Searcher.Run_Query", "Building list of results (grouped)");
 
                     // Get the grouped results (only grouped by bibid)
                     GroupedResults<v5_SolrDocument> title_groupings = results.Grouping["bibid"];
@@ -337,10 +319,7 @@ namespace SobekCM.Engine_Library.Solr.v5
                 }
                 else
                 {
-                    if (Tracer != null)
-                    {
-                        Tracer.Add_Trace("v5_Solr_Searcher.Run_Query", "Building list of results (not grouped)");
-                    }
+                    Tracer?.Add_Trace("v5_Solr_Searcher.Run_Query", "Building list of results (not grouped)");
 
                     // Pass all the results into the List and add the highlighted text to each result as well
                     foreach (v5_SolrDocument thisResult in results)
@@ -379,10 +358,7 @@ namespace SobekCM.Engine_Library.Solr.v5
         /// <returns> Fully built query string ( excluding user membership and aggreagtion membership checks ) </returns>
         public static string Create_Query_String(List<string> Terms, List<string> Web_Fields, Nullable<DateTime> StartDate, Nullable<DateTime> EndDate, Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("v5_Solr_Searcher.Create_Query_String", "Build the Solr query");
-            }
+            Tracer?.Add_Trace("v5_Solr_Searcher.Create_Query_String", "Build the Solr query");
 
             // Start to build the query
             var queryStringBuilder = new StringBuilder();
@@ -797,48 +773,59 @@ namespace SobekCM.Engine_Library.Solr.v5
 
 
         // Call from Item_Aggregation_Utilities.Get_Complete_Item_Aggregation
-        public static List<short> Get_SobekCodes_With_Data(string aggregationCode, InstanceWide_Settings settings)
+        public static List<short> Get_SobekCodes_With_Data(string aggregationCode, List<Metadata_Search_Field> searchFields)
         {
-            // Get and clean the solr document url
-            string solrDocumentUrl = Engine_ApplicationCache_Gateway.Settings.Servers.Document_Solr_Index_URL;
-            if ((!String.IsNullOrEmpty(solrDocumentUrl)) && (solrDocumentUrl[solrDocumentUrl.Length - 1] == '/'))
-                solrDocumentUrl = solrDocumentUrl.Substring(0, solrDocumentUrl.Length - 1);
+            try
+            {
+                // Get and clean the solr document url
+                string solrDocumentUrl = Engine_ApplicationCache_Gateway.Settings.Servers.Document_Solr_Index_URL;
+                if ((!String.IsNullOrEmpty(solrDocumentUrl)) && (solrDocumentUrl[solrDocumentUrl.Length - 1] == '/'))
+                    solrDocumentUrl = solrDocumentUrl.Substring(0, solrDocumentUrl.Length - 1);
 
-            // Create the solr worker to query the document index
-            var solrWorker = Solr_Operations_Cache<v5_SolrDocument>.GetSolrOperations(solrDocumentUrl);
+                // Create the solr worker to query the document index
+                var solrWorker = Solr_Operations_Cache<v5_SolrDocument>.GetSolrOperations(solrDocumentUrl);
 
-            // Only fields that actually map to something in the Solr index
-            var mappedFields = settings.Metadata_Search_Fields
-                .Where(f => !String.IsNullOrEmpty(f.Solr_Field))
-                .ToList();
+                // Only fields that actually map to something in the Solr index, excluding
+                // the ANYWHERE ('ZZ') and FULL TEXT ('TX') pseudo-fields
+                var mappedFields = searchFields
+                    .Where(f => !String.IsNullOrEmpty(f.Solr_Field))
+                    .Where(f => (f.Web_Code != "ZZ") && (f.Web_Code != "TX"))
+                    .ToList();
 
-            var distinctSolrFields = mappedFields
-                .Select(f => f.Solr_Field)
-                .Distinct()
-                .ToList();
+                var distinctSolrFields = mappedFields
+                    .Select(f => f.Solr_Field)
+                    .Distinct()
+                    .ToList();
 
-            var facetQueries = distinctSolrFields
-                .Select(sf => (ISolrFacetQuery)new SolrFacetQuery(new SolrQuery($"{sf}:[* TO *]")))
-                .ToList();
+                var facetQueries = distinctSolrFields
+                    .Select(sf => (ISolrFacetQuery)new SolrFacetQuery(new SolrQuery($"{sf}:[* TO *]")))
+                    .ToList();
 
-            var results = solrWorker.Query(
-                new SolrQuery($"aggregations:\"{aggregationCode}\""),
-                new QueryOptions
-                {
-                    Rows = 0,
-                    Facet = new FacetParameters { Queries = facetQueries }
-                });
+                var results = solrWorker.Query(
+                    new SolrQuery($"aggregations:\"{aggregationCode}\""),
+                    new QueryOptions
+                    {
+                        Rows = 0,
+                        Facet = new FacetParameters { Queries = facetQueries }
+                    });
 
-            // solr field name -> count of matching docs with that field populated
-            var countsBySolrField = results.FacetQueries
-                .ToDictionary(kv => kv.Key.Split(':')[0], kv => kv.Value);
+                // solr field name -> count of matching docs with that field populated
+                var countsBySolrField = results.FacetQueries
+                    .ToDictionary(kv => kv.Key.Split(':')[0], kv => kv.Value);
 
-            // Return the SobekCode for every metadata search field whose solr field had data
-            return mappedFields
-                .Where(f => countsBySolrField.TryGetValue(f.Solr_Field, out int count) && count > 0)
-                .Select(f => f.ID)
-                .Distinct()
-                .ToList();
+                // Return the SobekCode for every metadata search field whose solr field had data
+                return mappedFields
+                    .Where(f => countsBySolrField.TryGetValue(f.Solr_Field, out int count) && count > 0)
+                    .Select(f => f.ID)
+                    .Distinct()
+                    .ToList();
+            }
+            catch (Exception e)
+            {
+                string message = e.Message;
+
+                return null;
+            }
         }
 
 

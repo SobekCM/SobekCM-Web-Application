@@ -1,4 +1,4 @@
-﻿using SobekCM.Core.Configuration;
+using SobekCM.Core.Configuration;
 using SobekCM.Core.Configuration.Authentication;
 using SobekCM.Core.Configuration.Engine;
 using SobekCM.Core.Configuration.Extensions;
@@ -70,10 +70,7 @@ namespace SobekCM.Core.Client
         public InstanceWide_Configuration Get_Complete_Configuration(string Engine_URL, MicroservicesClient.Microservice_Endpoint_Protocol_Enum Engine_Protocol, Custom_Tracer Tracer)
         {
             // Add a beginning trace
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("SobekEngineClient_AdminServices.Get_Complete_Configuration");
-            }
+            Tracer?.Add_Trace("SobekEngineClient_AdminServices.Get_Complete_Configuration");
 
             // Call out to the endpoint and return the deserialized object
             return Deserialize<InstanceWide_Configuration>(Engine_URL, Engine_Protocol, Tracer);

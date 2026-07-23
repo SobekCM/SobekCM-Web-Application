@@ -34,10 +34,7 @@ namespace SobekCM.Engine_Library.Items
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
         public SobekCM_Item Build_Item_Group(string BibID, Dictionary<string, Wordmark_Icon> Icon_Dictionary, Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("SobekCM_METS_Based_ItemBuilder.Build_Item_Group", "Create the requested item group");
-            }
+            Tracer?.Add_Trace("SobekCM_METS_Based_ItemBuilder.Build_Item_Group", "Create the requested item group");
 
             // Get the basic information about this item
             DataSet itemDetails = Engine_Database.Get_Item_Group_Details(BibID, Tracer);
@@ -45,10 +42,7 @@ namespace SobekCM.Engine_Library.Items
             // If this is NULL then there was an error
             if (itemDetails == null)
             {
-                if (Tracer != null)
-                {
-                    Tracer.Add_Trace("SobekCM_METS_Based_ItemBuilder.Build_Item_Group", "Call to database for this BibID failed and returned NULL");
-                }
+                Tracer?.Add_Trace("SobekCM_METS_Based_ItemBuilder.Build_Item_Group", "Call to database for this BibID failed and returned NULL");
                 return null;
             }
 
@@ -184,10 +178,7 @@ namespace SobekCM.Engine_Library.Items
         /// <returns> Briefly built version of a digital resource </returns>
         public SobekCM_Item Build_Brief_Item(string METS_Location, Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("SobekCM_METS_Based_ItemBuilder.Build_Brief_Item", "Create the requested item");
-            }
+            Tracer?.Add_Trace("SobekCM_METS_Based_ItemBuilder.Build_Brief_Item", "Create the requested item");
 
             try
             {
@@ -198,21 +189,16 @@ namespace SobekCM.Engine_Library.Items
 
                 if (thisPackage == null)
                 {
-                    if (Tracer != null)
-                        Tracer.Add_Trace("SobekCM_METS_Based_ItemBuilder.Build_Brief_Item", "Unable to find/read either METS file", Custom_Trace_Type_Enum.Error);
+                    Tracer?.Add_Trace("SobekCM_METS_Based_ItemBuilder.Build_Brief_Item", "Unable to find/read either METS file", Custom_Trace_Type_Enum.Error);
                 }
 
-                if (Tracer != null)
-                {
-                    Tracer.Add_Trace("SobekCM_METS_Based_ItemBuilder.Build_Brief_Item", "Finished building this item");
-                }
+                Tracer?.Add_Trace("SobekCM_METS_Based_ItemBuilder.Build_Brief_Item", "Finished building this item");
 
                 return thisPackage;
             }
             catch (Exception ee)
             {
-                if (Tracer != null)
-                    Tracer.Add_Trace("SobekCM_METS_Based_ItemBuilder.Build_Brief_Item", ee.ToString().Replace("\n", "<br />"), Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_METS_Based_ItemBuilder.Build_Brief_Item", ee.ToString().Replace("\n", "<br />"), Custom_Trace_Type_Enum.Error);
                 return null;
             }
         }
@@ -225,10 +211,7 @@ namespace SobekCM.Engine_Library.Items
         /// <returns> Fully built version of a digital resource </returns>
         public Tuple<SobekCM_Item, SobekCM_Item_Error> Build_Item(string BibID, string VID, Dictionary<string, Wordmark_Icon> Icon_Dictionary, Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("SobekCM_METS_Based_ItemBuilder.Build_Item", "Create the requested item");
-            }
+            Tracer?.Add_Trace("SobekCM_METS_Based_ItemBuilder.Build_Item", "Create the requested item");
 
             try
             {
@@ -297,18 +280,12 @@ namespace SobekCM.Engine_Library.Items
 
                 if (thisPackage == null)
                 {
-                    if (Tracer != null)
-                    {
-                        Tracer.Add_Trace("SobekCM_METS_Based_ItemBuilder.Build_Item", "Unable to read the SobekCM service METS file", Custom_Trace_Type_Enum.Error);
-                    }
+                    Tracer?.Add_Trace("SobekCM_METS_Based_ItemBuilder.Build_Item", "Unable to read the SobekCM service METS file", Custom_Trace_Type_Enum.Error);
 
                     return null;
                 }
 
-                if (Tracer != null)
-                {
-                    Tracer.Add_Trace("SobekCM_METS_Based_ItemBuilder.Build_Item", "Finish building this item");
-                }
+                Tracer?.Add_Trace("SobekCM_METS_Based_ItemBuilder.Build_Item", "Finish building this item");
 
                 // Check to see if multiple sibling volumes exist
                 bool multiple_volumes_exist = Convert.ToInt32(mainItemRow["Total_Volumes"]) > 1;
@@ -320,8 +297,7 @@ namespace SobekCM.Engine_Library.Items
             }
             catch (Exception ee)
             {
-                if (Tracer != null)
-                    Tracer.Add_Trace("SobekCM_METS_Based_ItemBuilder.Build_Item", ee.ToString().Replace("\n", "<br />"), Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_METS_Based_ItemBuilder.Build_Item", ee.ToString().Replace("\n", "<br />"), Custom_Trace_Type_Enum.Error);
                 return null;
             }
         }
@@ -335,10 +311,7 @@ namespace SobekCM.Engine_Library.Items
         /// <returns> Fully built version of a digital resource </returns>
         public Tuple<SobekCM_Item, SobekCM_Item_Error> Build_Item(string METS_Location, string BibID, String VID, Dictionary<string, Wordmark_Icon> Icon_Dictionary, Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("SobekCM_METS_Based_ItemBuilder.Build_Item", "Create the requested item");
-            }
+            Tracer?.Add_Trace("SobekCM_METS_Based_ItemBuilder.Build_Item", "Create the requested item");
 
             try
             {
@@ -387,18 +360,12 @@ namespace SobekCM.Engine_Library.Items
 
                 if (thisPackage == null)
                 {
-                    if (Tracer != null)
-                    {
-                        Tracer.Add_Trace("SobekCM_METS_Based_ItemBuilder.Build_Item", "Unable to read the indicated METS file ( " + METS_Location + " )", Custom_Trace_Type_Enum.Error);
-                    }
+                    Tracer?.Add_Trace("SobekCM_METS_Based_ItemBuilder.Build_Item", "Unable to read the indicated METS file ( " + METS_Location + " )", Custom_Trace_Type_Enum.Error);
 
                     return null;
                 }
 
-                if (Tracer != null)
-                {
-                    Tracer.Add_Trace("SobekCM_METS_Based_ItemBuilder.Build_Item", "Finish building this item");
-                }
+                Tracer?.Add_Trace("SobekCM_METS_Based_ItemBuilder.Build_Item", "Finish building this item");
 
                 // Now finish building the object from the application state values
                 Finish_Building_Item(thisPackage, itemDetails, false, Tracer);
@@ -407,8 +374,7 @@ namespace SobekCM.Engine_Library.Items
             }
             catch (Exception ee)
             {
-                if (Tracer != null)
-                    Tracer.Add_Trace("SobekCM_METS_Based_ItemBuilder.Build_Item", ee.ToString().Replace("\n", "<br />"), Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("SobekCM_METS_Based_ItemBuilder.Build_Item", ee.ToString().Replace("\n", "<br />"), Custom_Trace_Type_Enum.Error);
                 return null;
             }
         }
@@ -417,10 +383,7 @@ namespace SobekCM.Engine_Library.Items
         {
             try
             {
-                if (Tracer != null)
-                {
-                    Tracer.Add_Trace("SobekCM_METS_Based_ItemBuilder.Build_Item_From_METS", "Open http web request stream to METS file ( <a href=\"" + METS_URL + "\">" + METS_Name + "</a> )");
-                }
+                Tracer?.Add_Trace("SobekCM_METS_Based_ItemBuilder.Build_Item_From_METS", "Open http web request stream to METS file ( <a href=\"" + METS_URL + "\">" + METS_Name + "</a> )");
 
                 var thisPackage = new SobekCM_Item();
                 if (METS_URL.IndexOf("http:") >= 0)
@@ -428,10 +391,7 @@ namespace SobekCM.Engine_Library.Items
                     using (var httpClient = new HttpClient { Timeout = TimeSpan.FromMilliseconds(5000) })
                     using (Stream responseStream = httpClient.GetStreamAsync(METS_URL).GetAwaiter().GetResult())
                     {
-                        if (Tracer != null)
-                        {
-                            Tracer.Add_Trace("SobekCM_METS_Based_ItemBuilder.Build_Item_From_METS", "Read the METS file from the stream");
-                        }
+                        Tracer?.Add_Trace("SobekCM_METS_Based_ItemBuilder.Build_Item_From_METS", "Read the METS file from the stream");
 
                         // Read the METS file and create the package
                         var reader = new METS_File_ReaderWriter();

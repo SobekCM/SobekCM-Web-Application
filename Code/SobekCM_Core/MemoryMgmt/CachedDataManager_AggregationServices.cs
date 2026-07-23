@@ -38,10 +38,7 @@ namespace SobekCM.Core.MemoryMgmt
             if (settings.Disabled)
                 return null;
 
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("CachedDataManager.Retrieve_Item_Aggregation", "");
-            }
+            Tracer?.Add_Trace("CachedDataManager.Retrieve_Item_Aggregation", "");
 
             // Determine the key
             string key = "AGGR|" + Aggregation_Code.ToUpper() + "|COMPLETE";
@@ -50,18 +47,12 @@ namespace SobekCM.Core.MemoryMgmt
             Complete_Item_Aggregation returnValue = SharedCache.Instance.Get(key) as Complete_Item_Aggregation;
             if (returnValue != null)
             {
-                if (Tracer != null)
-                {
-                    Tracer.Add_Trace("CachedDataManager.Retrieve_Item_Aggregation", "Found item aggregation on local cache");
-                }
+                Tracer?.Add_Trace("CachedDataManager.Retrieve_Item_Aggregation", "Found item aggregation on local cache");
 
                 return returnValue;
             }
 
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("CachedDataManager.Retrieve_Item_Aggregation", "Aggregation not found in either the local cache ");
-            }
+            Tracer?.Add_Trace("CachedDataManager.Retrieve_Item_Aggregation", "Aggregation not found in either the local cache ");
 
             // Since everything failed, just return null
             return null;
@@ -73,10 +64,7 @@ namespace SobekCM.Core.MemoryMgmt
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
         public void Store_Complete_Item_Aggregation(string Aggregation_Code, Complete_Item_Aggregation StoreObject, Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("CachedDataManager.Store_Item_Aggregation", "Entering Store_Item_Aggregation method");
-            }
+            Tracer?.Add_Trace("CachedDataManager.Store_Item_Aggregation", "Entering Store_Item_Aggregation method");
 
             // If the cache is disabled, just return before even tracing
             if (settings.Disabled)
@@ -93,10 +81,7 @@ namespace SobekCM.Core.MemoryMgmt
             const int LOCAL_EXPIRATION = 15;
 
             // Locally cache if this doesn't exceed the limit
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("CachedDataManager.Store_Item_Aggregation", "Adding object '" + key + "' to the local cache with expiration of " + LOCAL_EXPIRATION + " minute(s)");
-            }
+            Tracer?.Add_Trace("CachedDataManager.Store_Item_Aggregation", "Adding object '" + key + "' to the local cache with expiration of " + LOCAL_EXPIRATION + " minute(s)");
 
             SharedCache.Instance.Set(key, StoreObject, new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(LOCAL_EXPIRATION) });
         }
@@ -116,10 +101,7 @@ namespace SobekCM.Core.MemoryMgmt
             if (settings.Disabled)
                 return null;
 
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("CachedDataManager.Retrieve_Item_Aggregation", "");
-            }
+            Tracer?.Add_Trace("CachedDataManager.Retrieve_Item_Aggregation", "");
 
             // Determine the key
             string languageCode = Web_Language_Enum_Converter.Enum_To_Code(Language);
@@ -129,18 +111,12 @@ namespace SobekCM.Core.MemoryMgmt
             Item_Aggregation returnValue = SharedCache.Instance.Get(key) as Item_Aggregation;
             if (returnValue != null)
             {
-                if (Tracer != null)
-                {
-                    Tracer.Add_Trace("CachedDataManager.Retrieve_Item_Aggregation", "Found (" + AggregationCode + ") item aggregation on local cache for (" + languageCode + ")");
-                }
+                Tracer?.Add_Trace("CachedDataManager.Retrieve_Item_Aggregation", "Found (" + AggregationCode + ") item aggregation on local cache for (" + languageCode + ")");
 
                 return returnValue;
             }
 
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("CachedDataManager.Retrieve_Item_Aggregation", "Aggregation ( " + AggregationCode + " ) not found in the local cache for (" + languageCode + ")");
-            }
+            Tracer?.Add_Trace("CachedDataManager.Retrieve_Item_Aggregation", "Aggregation ( " + AggregationCode + " ) not found in the local cache for (" + languageCode + ")");
 
             // Since everything failed, just return null
             return null;
@@ -153,10 +129,7 @@ namespace SobekCM.Core.MemoryMgmt
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
         public void Store_Item_Aggregation(string AggregationCode, Web_Language_Enum Language, Item_Aggregation StoreObject, Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("CachedDataManager.Store_Item_Aggregation", "Entering Store_Item_Aggregation method");
-            }
+            Tracer?.Add_Trace("CachedDataManager.Store_Item_Aggregation", "Entering Store_Item_Aggregation method");
 
             // Don't store nulls
             if (StoreObject == null)
@@ -175,10 +148,7 @@ namespace SobekCM.Core.MemoryMgmt
             const int LOCAL_EXPIRATION = 15;
 
             // Locally cache if this doesn't exceed the limit
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("CachedDataManager.Store_Item_Aggregation", "Adding object '" + key + "' to the local cache with expiration of " + LOCAL_EXPIRATION + " minute(s)");
-            }
+            Tracer?.Add_Trace("CachedDataManager.Store_Item_Aggregation", "Adding object '" + key + "' to the local cache with expiration of " + LOCAL_EXPIRATION + " minute(s)");
 
             SharedCache.Instance.Set(key, StoreObject, new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(LOCAL_EXPIRATION) });
         }
@@ -196,10 +166,7 @@ namespace SobekCM.Core.MemoryMgmt
             if (settings.Disabled)
                 return null;
 
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("CachedDataManager.Retrieve_Aggregation_Hierarchy", "");
-            }
+            Tracer?.Add_Trace("CachedDataManager.Retrieve_Aggregation_Hierarchy", "");
 
             // Determine the key
             const string KEY = "AGGR_HIERARCHY";
@@ -208,18 +175,12 @@ namespace SobekCM.Core.MemoryMgmt
             Aggregation_Hierarchy returnValue = SharedCache.Instance.Get(KEY) as Aggregation_Hierarchy;
             if (returnValue != null)
             {
-                if (Tracer != null)
-                {
-                    Tracer.Add_Trace("CachedDataManager.Retrieve_Aggregation_Hierarchy", "Found item aggregation hierarchy on local cache");
-                }
+                Tracer?.Add_Trace("CachedDataManager.Retrieve_Aggregation_Hierarchy", "Found item aggregation hierarchy on local cache");
 
                 return returnValue;
             }
 
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("CachedDataManager.Retrieve_Aggregation_Hierarchy", "Aggregation hierarchy not found in either the local cache ");
-            }
+            Tracer?.Add_Trace("CachedDataManager.Retrieve_Aggregation_Hierarchy", "Aggregation hierarchy not found in either the local cache ");
 
             // Since everything failed, just return null
             return null;
@@ -230,10 +191,7 @@ namespace SobekCM.Core.MemoryMgmt
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
         public void Store_Aggregation_Hierarchy(Aggregation_Hierarchy StoreObject, Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("CachedDataManager.Store_Aggregation_Hierarchy", "Entering Store_Item_Aggregation method");
-            }
+            Tracer?.Add_Trace("CachedDataManager.Store_Aggregation_Hierarchy", "Entering Store_Item_Aggregation method");
 
             // If the cache is disabled, just return before even tracing
             if (settings.Disabled)
@@ -248,10 +206,7 @@ namespace SobekCM.Core.MemoryMgmt
             const int LOCAL_EXPIRATION = 15;
 
             // Locally cache if this doesn't exceed the limit
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("CachedDataManager.Store_Aggregation_Hierarchy", "Adding object '" + KEY + "' to the local cache with expiration of " + LOCAL_EXPIRATION + " minute(s)");
-            }
+            Tracer?.Add_Trace("CachedDataManager.Store_Aggregation_Hierarchy", "Adding object '" + KEY + "' to the local cache with expiration of " + LOCAL_EXPIRATION + " minute(s)");
 
             SharedCache.Instance.Set(KEY, StoreObject, new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(LOCAL_EXPIRATION) });
         }
@@ -301,10 +256,7 @@ namespace SobekCM.Core.MemoryMgmt
             string key_nolanguage = "AGGR|" + Aggregation_Code.ToUpper();
             string key_start = "AGGR|" + Aggregation_Code.ToUpper() + "|";
 
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("CachedDataManager.Remove_Item_Aggregation", "Removing item aggregation '" + Aggregation_Code + "' from the cache");
-            }
+            Tracer?.Add_Trace("CachedDataManager.Remove_Item_Aggregation", "Removing item aggregation '" + Aggregation_Code + "' from the cache");
 
             // Get collection of keys in the Cache
             List<string> keys = (from KeyValuePair<string, object> thisItem in SharedCache.Instance where (thisItem.Key == key_nolanguage) || (thisItem.Key.IndexOf(key_start) == 0) select thisItem.Key).ToList();
@@ -328,10 +280,7 @@ namespace SobekCM.Core.MemoryMgmt
             if (settings.Disabled)
                 return null;
 
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("CachedDataManager_AggregationServices.Retrieve_Aggregation_HTML_Based_Content", "");
-            }
+            Tracer?.Add_Trace("CachedDataManager_AggregationServices.Retrieve_Aggregation_HTML_Based_Content", "");
 
             // Determine the key
             string key = "AGGR|" + Aggregation_Code.ToUpper() + "|" + Web_Language_Enum_Converter.Enum_To_Code(Language) + "|" + ChildPageCode;
@@ -340,18 +289,12 @@ namespace SobekCM.Core.MemoryMgmt
             HTML_Based_Content returnValue = SharedCache.Instance.Get(key) as HTML_Based_Content;
             if (returnValue != null)
             {
-                if (Tracer != null)
-                {
-                    Tracer.Add_Trace("CachedDataManager_AggregationServices.Retrieve_Aggregation_HTML_Based_Content", "Found aggregation HTML based content on local cache");
-                }
+                Tracer?.Add_Trace("CachedDataManager_AggregationServices.Retrieve_Aggregation_HTML_Based_Content", "Found aggregation HTML based content on local cache");
 
                 return returnValue;
             }
 
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("CachedDataManager_AggregationServices.Retrieve_Aggregation_HTML_Based_Content", "Aggregation HTML based content not found in either the local cache");
-            }
+            Tracer?.Add_Trace("CachedDataManager_AggregationServices.Retrieve_Aggregation_HTML_Based_Content", "Aggregation HTML based content not found in either the local cache");
 
             // Since everything failed, just return null
             return null;
@@ -367,10 +310,7 @@ namespace SobekCM.Core.MemoryMgmt
         /// <param name="Tracer">The tracer.</param>
         public void Store_Aggregation_HTML_Based_Content(string Aggregation_Code, Web_Language_Enum Language, string ChildPageCode, HTML_Based_Content StoreObject, Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("CachedDataManager_AggregationServices.Store_Aggregation_HTML_Based_Content", "Entering Store_Aggregation_HTML_Based_Content method");
-            }
+            Tracer?.Add_Trace("CachedDataManager_AggregationServices.Store_Aggregation_HTML_Based_Content", "Entering Store_Aggregation_HTML_Based_Content method");
 
             // If the cache is disabled, just return before even tracing
             if (settings.Disabled)
@@ -386,10 +326,7 @@ namespace SobekCM.Core.MemoryMgmt
             const int LOCAL_EXPIRATION = 15;
 
             // Locally cache if this doesn't exceed the limit
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("CachedDataManager_AggregationServices.Store_Aggregation_HTML_Based_Content", "Adding object '" + key + "' to the local cache with expiration of " + LOCAL_EXPIRATION + " minute(s)");
-            }
+            Tracer?.Add_Trace("CachedDataManager_AggregationServices.Store_Aggregation_HTML_Based_Content", "Adding object '" + key + "' to the local cache with expiration of " + LOCAL_EXPIRATION + " minute(s)");
 
             SharedCache.Instance.Set(key, StoreObject, new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(LOCAL_EXPIRATION) });
         }

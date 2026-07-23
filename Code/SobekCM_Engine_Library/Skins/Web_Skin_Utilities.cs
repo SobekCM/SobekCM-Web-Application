@@ -27,10 +27,7 @@ namespace SobekCM.Engine_Library.Skins
         /// permanently stored in this global <see cref="Web_Skin_Collection"/> object.</remarks>
         public static bool Populate_Default_Skins(Web_Skin_Collection SkinList, Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("SobekCM_Skin_Collection_Builder.Populate_Default_Skins", "Build the standard interfaces");
-            }
+            Tracer?.Add_Trace("SobekCM_Skin_Collection_Builder.Populate_Default_Skins", "Build the standard interfaces");
 
             // Get the data from the database
             DataTable skinData = Engine_Database.Get_All_Web_Skins(Tracer);
@@ -54,10 +51,7 @@ namespace SobekCM.Engine_Library.Skins
         /// permanently stored in this global <see cref="Web_Skin_Collection"/> object.</remarks>
         public static bool Populate_Default_Skins(Web_Skin_Collection SkinList, DataTable SourceTable, Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("SobekCM_Skin_Collection_Builder.Populate_Default_Skins", "Build the standard interfaces");
-            }
+            Tracer?.Add_Trace("SobekCM_Skin_Collection_Builder.Populate_Default_Skins", "Build the standard interfaces");
 
             // Just return if the data appears bad..
             if ((SourceTable == null) || (SourceTable.Rows.Count == 0))

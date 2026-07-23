@@ -27,10 +27,7 @@ namespace SobekCM.Core.WebContent
         {
             try
             {
-                if (Tracer != null)
-                {
-                    Tracer.Add_Trace("HTML_Based_Content_Reader.Read_Web_Document", "Reading source file via web response");
-                }
+                Tracer?.Add_Trace("HTML_Based_Content_Reader.Read_Web_Document", "Reading source file via web response");
 
                 // the html retrieved from the page
                 string displayText;
@@ -41,20 +38,14 @@ namespace SobekCM.Core.WebContent
                     displayText = sr.ReadToEnd();
                 }
 
-                if (Tracer != null)
-                {
-                    Tracer.Add_Trace("HTML_Based_Content_Reader.Read_Web_Document", "Succesfully read the source via web response");
-                }
+                Tracer?.Add_Trace("HTML_Based_Content_Reader.Read_Web_Document", "Succesfully read the source via web response");
 
                 // Convert this to the object
                 return Text_To_HTML_Based_Content(displayText, Retain_Entire_Display_Text, String.Empty, Tracer);
             }
             catch (Exception ee)
             {
-                if (Tracer != null)
-                {
-                    Tracer.Add_Trace("HTML_Based_Content_Reader.Read_Web_Document", "EXCEPTION caught reading source via web response " + ee.Message);
-                }
+                Tracer?.Add_Trace("HTML_Based_Content_Reader.Read_Web_Document", "EXCEPTION caught reading source via web response " + ee.Message);
 
                 return null;
             }
@@ -71,30 +62,21 @@ namespace SobekCM.Core.WebContent
         {
             try
             {
-                if (Tracer != null)
-                {
-                    Tracer.Add_Trace("HTML_Based_Content_Reader.Read_HTML_File", "Reading source file");
-                }
+                Tracer?.Add_Trace("HTML_Based_Content_Reader.Read_HTML_File", "Reading source file");
 
                 // Read this info file 
                 var reader = new StreamReader(Source_File);
                 string displayText = reader.ReadToEnd();
                 reader.Close();
 
-                if (Tracer != null)
-                {
-                    Tracer.Add_Trace("HTML_Based_Content_Reader.Read_HTML_File", "Succesfully read the source file");
-                }
+                Tracer?.Add_Trace("HTML_Based_Content_Reader.Read_HTML_File", "Succesfully read the source file");
 
                 // Convert this to the object
                 return Text_To_HTML_Based_Content(displayText, Retain_Entire_Display_Text, Source_File, Tracer);
             }
             catch (Exception ee)
             {
-                if (Tracer != null)
-                {
-                    Tracer.Add_Trace("HTML_Based_Content_Reader.Read_HTML_File", "EXCEPTION caught reading source file " + ee.Message);
-                }
+                Tracer?.Add_Trace("HTML_Based_Content_Reader.Read_HTML_File", "EXCEPTION caught reading source file " + ee.Message);
 
                 return null;
             }
@@ -122,10 +104,7 @@ namespace SobekCM.Core.WebContent
 
             var returnValue = new HTML_Based_Content();
 
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("HTML_Based_Content_Reader.Text_To_HTML_Based_Content", "Converting source file content into object");
-            }
+            Tracer?.Add_Trace("HTML_Based_Content_Reader.Text_To_HTML_Based_Content", "Converting source file content into object");
 
             // Try to read the head using XML
             int head_start = Display_Text.IndexOf("<head>", StringComparison.OrdinalIgnoreCase);
@@ -135,10 +114,7 @@ namespace SobekCM.Core.WebContent
                 bool read_as_xml;
                 try
                 {
-                    if (Tracer != null)
-                    {
-                        Tracer.Add_Trace("HTML_Based_Content_Reader.Text_To_HTML_Based_Content", "Attempting to read the html head as XML");
-                    }
+                    Tracer?.Add_Trace("HTML_Based_Content_Reader.Text_To_HTML_Based_Content", "Attempting to read the html head as XML");
 
                     string head_xml = Display_Text.Substring(head_start, (head_end - head_start) + 7);
                     var xmlReader = new XmlTextReader(new StringReader(head_xml));
@@ -266,10 +242,7 @@ namespace SobekCM.Core.WebContent
                 }
                 catch
                 {
-                    if (Tracer != null)
-                    {
-                        Tracer.Add_Trace("HTML_Based_Content_Reader.Text_To_HTML_Based_Content", "Was unable to read the html head as XML");
-                    }
+                    Tracer?.Add_Trace("HTML_Based_Content_Reader.Text_To_HTML_Based_Content", "Was unable to read the html head as XML");
                     read_as_xml = false;
                 }
 
@@ -277,10 +250,7 @@ namespace SobekCM.Core.WebContent
                 // Read this the old way if unable to read via XML for some reason
                 if (!read_as_xml)
                 {
-                    if (Tracer != null)
-                    {
-                        Tracer.Add_Trace("HTML_Based_Content_Reader.Text_To_HTML_Based_Content", "Attempting to parse html head for title, code, and banner information");
-                    }
+                    Tracer?.Add_Trace("HTML_Based_Content_Reader.Text_To_HTML_Based_Content", "Attempting to parse html head for title, code, and banner information");
 
                     // Get the title and code
                     string header_info = Display_Text.Substring(0, Display_Text.IndexOf("<body>"));
@@ -336,19 +306,13 @@ namespace SobekCM.Core.WebContent
             }
             else
             {
-                if (Tracer != null)
-                {
-                    Tracer.Add_Trace("HTML_Based_Content_Reader.Text_To_HTML_Based_Content", "No html head found in source file");
-                }
+                Tracer?.Add_Trace("HTML_Based_Content_Reader.Text_To_HTML_Based_Content", "No html head found in source file");
             }
 
             // Should the actual display text be retained?
             if (Retain_Entire_Display_Text)
             {
-                if (Tracer != null)
-                {
-                    Tracer.Add_Trace("HTML_Based_Content_Reader.Text_To_HTML_Based_Content", "Reading the entire display text and saving in the object");
-                }
+                Tracer?.Add_Trace("HTML_Based_Content_Reader.Text_To_HTML_Based_Content", "Reading the entire display text and saving in the object");
 
                 int start_body = Display_Text.IndexOf("<body>");
                 int end_body = Display_Text.IndexOf("</body>");

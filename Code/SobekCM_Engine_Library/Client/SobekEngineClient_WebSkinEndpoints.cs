@@ -1,4 +1,4 @@
-﻿#region Using directives
+#region Using directives
 
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.MemoryMgmt;
@@ -46,10 +46,7 @@ namespace SobekCM.Core.Client
                 Web_Skin_Object htmlSkin = CachedDataManager.WebSkins.Retrieve_Skin(SkinCode, Web_Language_Enum_Converter.Enum_To_Code(RequestedLanguage), Tracer);
                 if (htmlSkin != null)
                 {
-                    if (Tracer != null)
-                    {
-                        Tracer.Add_Trace("SobekEngineClient_WebSkinEndpoints.Get_LanguageSpecific_Web_Skin", "Web skin '" + SkinCode + "' found in cache");
-                    }
+                    Tracer?.Add_Trace("SobekEngineClient_WebSkinEndpoints.Get_LanguageSpecific_Web_Skin", "Web skin '" + SkinCode + "' found in cache");
                     return htmlSkin;
                 }
             }

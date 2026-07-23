@@ -400,8 +400,7 @@ namespace SobekCM.Core.Client
         public WebContent_Hierarchy Get_Hierarchy(bool UseCache, Custom_Tracer Tracer)
         {
             // Add a beginning trace
-            if (Tracer != null)
-                Tracer.Add_Trace("SobekEngineClient_WebContentServices.Get_Hierarchy");
+            Tracer?.Add_Trace("SobekEngineClient_WebContentServices.Get_Hierarchy");
 
             // Look in the cache if that is included here
             if ((Config.UseCache) && (UseCache))

@@ -32,10 +32,7 @@ namespace SobekCM.Core.MemoryMgmt
             if (settings.Disabled)
                 return null;
 
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("CachedDataManager_BuilderServices.Retrieve_Builder_Logs", "");
-            }
+            Tracer?.Add_Trace("CachedDataManager_BuilderServices.Retrieve_Builder_Logs", "");
 
             // Determine the key
             var build_key = new StringBuilder("BUILDER|LOGS|");
@@ -54,18 +51,12 @@ namespace SobekCM.Core.MemoryMgmt
             DataSet returnValue = SharedCache.Instance.Get(key) as DataSet;
             if (returnValue != null)
             {
-                if (Tracer != null)
-                {
-                    Tracer.Add_Trace("CachedDataManager_BuilderServices.Retrieve_Builder_Logs", "Found builder logs on local cache");
-                }
+                Tracer?.Add_Trace("CachedDataManager_BuilderServices.Retrieve_Builder_Logs", "Found builder logs on local cache");
 
                 return returnValue;
             }
 
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("CachedDataManager_BuilderServices.Retrieve_Builder_Logs", "Builder logds not found in the local cache ");
-            }
+            Tracer?.Add_Trace("CachedDataManager_BuilderServices.Retrieve_Builder_Logs", "Builder logds not found in the local cache ");
 
             // Since everything failed, just return null
             return null;
@@ -80,10 +71,7 @@ namespace SobekCM.Core.MemoryMgmt
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
         public void Store_Builder_Logs(DataSet StoreObject, DateTime? StartDate, DateTime? EndDate, string BibVidFilter, bool IncludeNoWorkFlag, Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("CachedDataManager_BuilderServices.Store_Builder_Logs");
-            }
+            Tracer?.Add_Trace("CachedDataManager_BuilderServices.Store_Builder_Logs");
 
             // If the cache is disabled, just return before even tracing
             if (settings.Disabled)
@@ -106,10 +94,7 @@ namespace SobekCM.Core.MemoryMgmt
             string key = build_key.ToString();
 
             // Locally cache if this doesn't exceed the limit
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("CachedDataManager_BuilderServices.Store_Builder_Logs", "Adding object '" + key + "' to the local cache with expiration of 30 seconds");
-            }
+            Tracer?.Add_Trace("CachedDataManager_BuilderServices.Store_Builder_Logs", "Adding object '" + key + "' to the local cache with expiration of 30 seconds");
 
             SharedCache.Instance.Set(key, StoreObject, new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromSeconds(30) });
         }

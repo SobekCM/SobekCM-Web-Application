@@ -259,10 +259,7 @@ namespace SobekCM.Core.Aggregations
 
             if ((sourceFile.IndexOf("http://") < 0) && (sourceFile.IndexOf("<%BASEURL%>") < 0))
             {
-                if (Tracer != null)
-                {
-                    Tracer.Add_Trace("Item_Aggregation_Child_Page.Get_Static_Text", "Reading browse/info source file from a local directory");
-                }
+                Tracer?.Add_Trace("Item_Aggregation_Child_Page.Get_Static_Text", "Reading browse/info source file from a local directory");
 
                 sourceFile = Base_Network + sourceFile;
 
@@ -283,10 +280,7 @@ namespace SobekCM.Core.Aggregations
                 }
             }
 
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("Item_Aggregation_Child_Page.Get_Static_Text", "Reading browse/info source file via http");
-            }
+            Tracer?.Add_Trace("Item_Aggregation_Child_Page.Get_Static_Text", "Reading browse/info source file via http");
 
             string actualUrl = sourceFile.Replace("<%BASEURL%>", Base_URL);
             try
@@ -296,10 +290,7 @@ namespace SobekCM.Core.Aggregations
             }
             catch (Exception ee)
             {
-                if (Tracer != null)
-                {
-                    Tracer.Add_Trace("Item_Aggregation_Child_Page.Get_Static_Text", "Unable to read data from: " + actualUrl, Custom_Trace_Type_Enum.Error);
-                }
+                Tracer?.Add_Trace("Item_Aggregation_Child_Page.Get_Static_Text", "Unable to read data from: " + actualUrl, Custom_Trace_Type_Enum.Error);
 
                 return new HTML_Based_Content("<div class=\"error_div\">EXCEPTION CAUGHT WHILE TRYING TO READ THE BROWSE/INFO PAGE SOURCE FILE '" + actualUrl + "'.<br /><br />ERROR: " + ee.Message + "</div>", "ERROR: " + ee.Message);
             }

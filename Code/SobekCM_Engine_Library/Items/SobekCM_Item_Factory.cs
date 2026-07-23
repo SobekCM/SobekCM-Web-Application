@@ -26,10 +26,7 @@ namespace SobekCM.Engine_Library.Items
         /// read the METS files and build the items. </remarks>
         public static Tuple<SobekCM_Item, SobekCM_Item_Error> Get_Item(string BibID, string VID, Dictionary<string, Wordmark_Icon> Icon_Dictionary, Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("SobekCM_Item_Factory.Get_Item", "Build this item");
-            }
+            Tracer?.Add_Trace("SobekCM_Item_Factory.Get_Item", "Build this item");
 
             // Get the METS based item builder
             var builder = new SobekCM_METS_Based_ItemBuilder();
@@ -49,10 +46,7 @@ namespace SobekCM.Engine_Library.Items
         /// read the METS files and build the items. </remarks>
         public static Tuple<SobekCM_Item, SobekCM_Item_Error> Get_Item(string METS_Location, string BibID, string VID, Dictionary<string, Wordmark_Icon> Icon_Dictionary, Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("SobekCM_Item_Factory.Get_Item", "Build this item");
-            }
+            Tracer?.Add_Trace("SobekCM_Item_Factory.Get_Item", "Build this item");
 
             // Get the METS based item builder
             var builder = new SobekCM_METS_Based_ItemBuilder();
@@ -69,10 +63,7 @@ namespace SobekCM.Engine_Library.Items
         /// read the METS files and build the items. </remarks>
         public static SobekCM_Item Get_Item_Group(string BibID, Dictionary<string, Wordmark_Icon> Icon_Dictionary, Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("SobekCM_Item_Factory.Get_Item_Group", "Build this item group");
-            }
+            Tracer?.Add_Trace("SobekCM_Item_Factory.Get_Item_Group", "Build this item group");
 
             // Get the METS based item builder
             var builder = new SobekCM_METS_Based_ItemBuilder();
@@ -88,10 +79,7 @@ namespace SobekCM.Engine_Library.Items
         /// <returns> Page tree node object for the requested page </returns>
         public static Page_TreeNode Get_Current_Page(SobekCM_Item Current_Item, int Sequence, Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("SobekCM_Item_Factory.Get_Current_Page", "Requesting the page (by sequence) from the item");
-            }
+            Tracer?.Add_Trace("SobekCM_Item_Factory.Get_Current_Page", "Requesting the page (by sequence) from the item");
 
             Page_TreeNode returnValue = null;
 

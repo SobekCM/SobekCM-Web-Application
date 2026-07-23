@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.Navigation;
 using SobekCM.Library.HTML;
+using SobekCM.Library.Localization;
 using SobekCM.Library.MainWriters;
 using SobekCM.Tools;
 using System.IO;
@@ -58,7 +59,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         {
             Tracer?.Add_Trace("No_Search_AggregationViewer.Write_Search_Box_HTML", "Adding html for search box");
 
-            Output.WriteLine("<h1>" + ViewBag.Hierarchy_Object.Name + " Home</h1>");
+            Output.WriteLine("<h1>" + ViewBag.Hierarchy_Object.Name + " " + Localization_Gateway.Aggregation_Common.Home(RequestSpecificValues.Current_Mode.Language) + "</h1>");
 
         }
     }

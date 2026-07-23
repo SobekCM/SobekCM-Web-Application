@@ -4,6 +4,7 @@ using SobekCM.Core.FileSystems;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Users;
 using SobekCM.Library.ItemViewer.Menu;
+using SobekCM.Library.Localization;
 using SobekCM.Tools;
 using System;
 using System.Collections.Generic;
@@ -84,7 +85,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             CurrentRequest.ViewerCode = previous_code;
 
             // Add the item menu information
-            var menuItem = new Item_MenuItem("Page Images", "Standard", null, url, ViewerCode);
+            var menuItem = new Item_MenuItem("Page Images", Localization_Gateway.JPEG.Menu_Standard(CurrentRequest.Language), null, url, ViewerCode);
             MenuItems.Add(menuItem);
         }
 
@@ -328,8 +329,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 string toZoomable = UrlWriterHelper.Redirect_URL(CurrentRequest);
                 CurrentRequest.ViewerCode = currViewer;
                 Output.WriteLine("\t\t<td id=\"sbkJiv_ImageZoomable\">");
-                Output.WriteLine("Click on image below to switch to zoomable version<br />");
-                Output.WriteLine("<a href=\"" + toZoomable + "\" title=\"Click on image to switch to zoomable version\">");
+                Output.WriteLine(Localization_Gateway.JPEG.Zoomable_Switch_Prompt(CurrentRequest.Language) + "<br />");
+                Output.WriteLine("<a href=\"" + toZoomable + "\" title=\"" + Localization_Gateway.JPEG.Zoomable_Switch_Title(CurrentRequest.Language) + "\">");
 
                 Output.Write("\t\t\t<img itemprop=\"primaryImageOfPage\" ");
                 if ((height > 0) && (width > 0))

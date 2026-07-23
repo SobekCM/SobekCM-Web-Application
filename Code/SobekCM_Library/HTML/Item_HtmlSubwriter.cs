@@ -18,6 +18,7 @@ using SobekCM.Library.ItemViewer;
 using SobekCM.Library.ItemViewer.HtmlHeadWriters;
 using SobekCM.Library.ItemViewer.HtmlSectionWriters;
 using SobekCM.Library.ItemViewer.Viewers;
+using SobekCM.Library.Localization;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
 using SobekCM_Resource_Database;
@@ -1135,41 +1136,16 @@ namespace SobekCM.Library.HTML
                     Output.WriteLine("\t\t<td>");
 
                     // ADD NAVIGATION BUTTONS
-                    string go_to = "Go To:";
-                    string first_page = "First Page";
-                    string previous_page = "Previous Page";
-                    string next_page = "Next Page";
-                    string last_page = "Last Page";
-                    string first_page_text = "First";
-                    string previous_page_text = "Previous";
-                    string next_page_text = "Next";
-                    string last_page_text = "Last";
-
-                    if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.Spanish)
-                    {
-                        go_to = "Ir a:";
-                        first_page = "Primera P�gina";
-                        previous_page = "P�gina Anterior";
-                        next_page = "P�gina Siguiente";
-                        last_page = "�ltima P�gina";
-                        first_page_text = "Primero";
-                        previous_page_text = "Anterior";
-                        next_page_text = "Proximo";
-                        last_page_text = "�ltimo";
-                    }
-
-                    if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.French)
-                    {
-                        go_to = "Aller �:";
-                        first_page = "Premi�re Page";
-                        previous_page = "Page Pr�c�dente";
-                        next_page = "Page Suivante";
-                        last_page = "Derni�re Page";
-                        first_page_text = "Premi�re";
-                        previous_page_text = "Pr�c�dente";
-                        next_page_text = "Suivante";
-                        last_page_text = "Derniere";
-                    }
+                    Web_Language_Enum language = RequestSpecificValues.Current_Mode.Language;
+                    string go_to = Localization_Gateway.Common.Go_To(language);
+                    string first_page = Localization_Gateway.Common.First_Page(language);
+                    string previous_page = Localization_Gateway.Common.Previous_Page(language);
+                    string next_page = Localization_Gateway.Common.Next_Page(language);
+                    string last_page = Localization_Gateway.Common.Last_Page(language);
+                    string first_page_text = Localization_Gateway.Common.First(language);
+                    string previous_page_text = Localization_Gateway.Common.Previous(language);
+                    string next_page_text = Localization_Gateway.Common.Next(language);
+                    string last_page_text = Localization_Gateway.Common.Last(language);
 
                     Output.WriteLine("\t\t\t<div class=\"sbkIsw_PageNavBar\">");
                     var buttonsHtmlBuilder = new StringBuilder(1000);

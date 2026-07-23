@@ -1,9 +1,11 @@
 using Microsoft.AspNetCore.Http;
 using SobekCM.Core.BriefItem;
+using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.FileSystems;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Users;
 using SobekCM.Library.ItemViewer.Menu;
+using SobekCM.Library.Localization;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
 using System;
@@ -84,7 +86,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             CurrentRequest.ViewerCode = previous_code;
 
             // Add the item menu information
-            var menuItem = new Item_MenuItem("Description", "Metadata", null, url, ViewerCode);
+            var menuItem = new Item_MenuItem("Description", Localization_Gateway.Citation_Common.Menu_Metadata(CurrentRequest.Language), null, url, ViewerCode);
             MenuItems.Add(menuItem);
         }
 
@@ -154,7 +156,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             // If this is DARK and the user cannot edit and the flag is not set to show citation, show nothing here
             if ((BriefItem.Behaviors.Dark_Flag) && (!userCanEditItem) && (!UI_ApplicationCache_Gateway.Settings.Resources.Show_Citation_For_Dark_Items))
             {
-                Output.WriteLine("          <div id=\"darkItemSuppressCitationMsg\">This item is DARK and cannot be viewed at this time</div>" + Environment.NewLine + "</td>" + Environment.NewLine + "  <!-- END CITATION VIEWER OUTPUT -->");
+                Output.WriteLine("          <div id=\"darkItemSuppressCitationMsg\">" + Localization_Gateway.Citation_Common.Dark_Item_Message(CurrentRequest.Language) + "</div>" + Environment.NewLine + "</td>" + Environment.NewLine + "  <!-- END CITATION VIEWER OUTPUT -->");
                 return;
             }
 
@@ -202,10 +204,11 @@ namespace SobekCM.Library.ItemViewer.Viewers
             string marc_xml = resourceUrl("marc.xml");
 
 
+            Web_Language_Enum language = CurrentRequest.Language;
             var builder = new StringBuilder(3000);
 
             builder.AppendLine("<blockquote>");
-            builder.AppendLine("<p>The data (or metadata) about this digital resource is available in a variety of metadata formats. For more information about these formats, see the <a href=\"http://ufdc.ufl.edu/sobekcm/metadata\">Metadata Section</a> of the <a href=\"http://ufdc.ufl.edu/sobekcm/\">Technical Aspects</a> information.</p>");
+            builder.AppendLine("<p>" + Localization_Gateway.Metadata_Links.Intro_Html(language) + "</p>");
             builder.AppendLine("<br />");
 
             if (BriefItem.Type == "EAD")
@@ -227,22 +230,22 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 if (ead_file.Length > 0)
                 {
                     builder.AppendLine("<div id=\"sbkCiv_EadDownload\" class=\"sbCiv_DownloadSection\">");
-                    builder.AppendLine("  <a href=\"" + resourceUrl(ead_file) + "\" target=\"_blank\">View Finding Aid (EAD)</a>");
-                    builder.AppendLine("  <p>This archival collection is described with an electronic finding aid.   This metadata file contains all of the archival description and container list for this archival material.  This file follows the established <a href=\"http://www.loc.gov/ead/\">Encoded Archival Description</a> (EAD) standard.</p>");
+                    builder.AppendLine("  <a href=\"" + resourceUrl(ead_file) + "\" target=\"_blank\">" + Localization_Gateway.Metadata_Links.Ead_View_Link(language) + "</a>");
+                    builder.AppendLine("  <p>" + Localization_Gateway.Metadata_Links.Ead_Description(language) + "</p>");
                     builder.AppendLine("</div>");
                 }
             }
 
             builder.AppendLine("<div id=\"sbkCiv_MetsDownload\" class=\"sbCiv_DownloadSection\">");
-            builder.AppendLine("  <a href=\"" + complete_mets + "\" target=\"_blank\">View Complete METS/MODS</a>");
-            builder.AppendLine("  <p>This metadata file is the source metadata file submitted along with all the digital resource files. This contains all of the citation and processing information used to build this resource. This file follows the established <a href=\"http://www.loc.gov/standards/mets/\">Metadata Encoding and Transmission Standard</a> (METS) and <a href=\"http://www.loc.gov/standards/mods/\">Metadata Object Description Schema</a> (MODS). This METS/MODS file was just read when this item was loaded into memory and used to display all the information in the standard view and marc view within the citation.</p>");
+            builder.AppendLine("  <a href=\"" + complete_mets + "\" target=\"_blank\">" + Localization_Gateway.Metadata_Links.Mets_View_Link(language) + "</a>");
+            builder.AppendLine("  <p>" + Localization_Gateway.Metadata_Links.Mets_Description(language) + "</p>");
             builder.AppendLine("</div>");
 
             string baseLocationUrl = String.IsNullOrEmpty(UI_ApplicationCache_Gateway.Settings.Servers.Base_SobekCM_Location_Relative) ? String.Empty : UI_ApplicationCache_Gateway.Settings.Servers.Base_SobekCM_Location_Relative;
 
             builder.AppendLine("<div id=\"sbkCiv_MarcXmlDownload\" class=\"sbCiv_DownloadSection\">");
-            builder.AppendLine("  <a href=\"" + marc_xml + "\" target=\"_blank\">View MARC XML File</a>");
-            builder.AppendLine("  <p>The entered metadata is also converted to MARC XML format, for interoperability with other library catalog systems.  This represents the same data available in the <a href=\"" + baseLocationUrl + UrlWriterHelper.Redirect_URL(CurrentRequest, "FC2") + "\">MARC VIEW</a> except this is a static XML file.  This file follows the <a href=\"http://www.loc.gov/standards/marcxml/\">MarcXML Schema</a>.</p>");
+            builder.AppendLine("  <a href=\"" + marc_xml + "\" target=\"_blank\">" + Localization_Gateway.Metadata_Links.Marc_Xml_View_Link(language) + "</a>");
+            builder.AppendLine("  <p>" + String.Format(Localization_Gateway.Metadata_Links.Marc_Xml_Description(language), baseLocationUrl + UrlWriterHelper.Redirect_URL(CurrentRequest, "FC2")) + "</p>");
             builder.AppendLine("</div>");
 
             // Should the TEI be added here?
@@ -272,8 +275,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
                 // Add the HTML for this
                 builder.AppendLine("<div id=\"sbkCiv_TeiDownload\" class=\"sbCiv_DownloadSection\">");
-                builder.AppendLine("  <a href=\"" + resourceUrl(BriefItem.BibID + "_" + BriefItem.VID + ".tei.xml") + "\" target=\"_blank\">View TEI/Text File</a>");
-                builder.AppendLine("  <p>The full-text of this item is also available in the established standard <a href=\"http://www.tei-c.org/index.xml\">Text Encoding Initiative</a> (TEI) downloadable file.</p>");
+                builder.AppendLine("  <a href=\"" + resourceUrl(BriefItem.BibID + "_" + BriefItem.VID + ".tei.xml") + "\" target=\"_blank\">" + Localization_Gateway.Metadata_Links.Tei_View_Link(language) + "</a>");
+                builder.AppendLine("  <p>" + Localization_Gateway.Metadata_Links.Tei_Description(language) + "</p>");
                 builder.AppendLine("</div>");
 
             }

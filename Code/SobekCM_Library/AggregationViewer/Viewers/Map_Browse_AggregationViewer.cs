@@ -2,10 +2,12 @@
 
 using Microsoft.AspNetCore.Http;
 using SobekCM.Core.Aggregations;
+using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Navigation;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Engine_Library.Database;
 using SobekCM.Library.HTML;
+using SobekCM.Library.Localization;
 using SobekCM.Library.MainWriters;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
@@ -252,9 +254,9 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             contentBuilder.Append("</div>");
 
             if ((DatarowsInThisPoint.Count < 2) && (!String.IsNullOrEmpty(thisBibId)))
-                contentBuilder.Append("<center><a href=\"" + Current_Mode.Base_URL + thisBibId + "\">Click here for more information about this title</a></center><br/>");
+                contentBuilder.Append("<center><a href=\"" + Current_Mode.Base_URL + thisBibId + "\">" + Localization_Gateway.Map_Browse.More_Info_Single_Title(Current_Mode.Language) + "</a></center><br/>");
             else
-                contentBuilder.Append("<center><a href=\"" + Current_Mode.Base_URL + Current_Mode.Aggregation + "/results?coord=" + Latitude + "," + Longitude + ",,\">Click here for more information about these " + DatarowsInThisPoint.Count + " titles</a></center><br/>");
+                contentBuilder.Append("<center><a href=\"" + Current_Mode.Base_URL + Current_Mode.Aggregation + "/results?coord=" + Latitude + "," + Longitude + ",,\">" + String.Format(Localization_Gateway.Map_Browse.More_Info_Multiple_Titles(Current_Mode.Language), DatarowsInThisPoint.Count) + "</a></center><br/>");
 
 
             ScriptBuilder.AppendLine("    add_point( " + Latitude + ", " + Longitude + ", '" + contentBuilder + "' );");
@@ -271,12 +273,13 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 
             Output.WriteLine("<div class=\"sbkMbav_MainPanel\">");
 
+            Web_Language_Enum language = RequestSpecificValues.Current_Mode.Language;
             if (!String.IsNullOrWhiteSpace(UI_ApplicationCache_Gateway.Settings.System.Google_Map_API_Key))
             {
                 Output.WriteLine("  <table id=\"sbkMbav_MainTable\">");
                 Output.WriteLine("    <tr>");
                 Output.WriteLine("      <td>");
-                Output.WriteLine("        <blockquote>Select a point below to view the items from or about that location.<br />Press the SHIFT button, and then drag a box on the map to zoom in.</blockquote>");
+                Output.WriteLine("        <blockquote>" + Localization_Gateway.Map_Browse.Select_Point_Instructions_Html(language) + "</blockquote>");
                 Output.WriteLine("      </td>");
                 Output.WriteLine("    </tr>");
                 Output.WriteLine("    <tr>");
@@ -289,9 +292,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             else
             {
                 Output.WriteLine("  <div style=\"padding: 25px\">");
-                Output.WriteLine("    <p style=\"font-weight:bold; text-size:1.1em\">ERROR: Google Maps are not enabled on this instance of SobekCM!</p>");
-                Output.WriteLine("    <p>To enable them, please create a Google Map API key and enter it in the system-wide settings.</p>");
-                Output.WriteLine("    <p>Information on this process can be found here: <a href=\"http://sobekrepository.org/software/config/googlemaps\">http://sobekrepository.org/software/config/googlemaps</a>.</p>");
+                Output.WriteLine(Localization_Gateway.Map_Common.Google_Maps_Not_Enabled_Html(language));
                 Output.WriteLine("  </div>");
             }
             Output.WriteLine("</div>");
@@ -307,21 +308,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             Tracer?.Add_Trace("Map_Browse_AggregationViewer.Write_Main_HTML", "Adding HTML");
 
             Output.WriteLine("<div id=\"sbk_QuickTips\">");
-            Output.WriteLine("  <h1>Frequently Asked Questions</h1>");
-            Output.WriteLine("  <ul>");
-            Output.WriteLine("    <li>What are the points on the map?");
-            Output.WriteLine("      <p class=\"tagline\"> The points on the map correspond to material in this collection.  In general, the dot represents the source of the material.  For newspapers, the dot is the place of publication or the audience served by the newspaper title.  For photographs, this usually corresponds to the location the photograph was taken, which is usually the same as the subject matter.</p>");
-            Output.WriteLine("    </li>");
-            Output.WriteLine("    <li>How can I tell which titles are linked to each point?");
-            Output.WriteLine("      <p class=\"tagline\"> An informational window will appear when you select any of the points on the map.  This window includes thumbnails and links to each item.  For more information about all the titles, you can select the link at the bottom of the window.</p>");
-            Output.WriteLine("    </li>");
-            Output.WriteLine("    <li>Can I search from this map?");
-            Output.WriteLine("      <p class=\"tagline\"> To perform a search, use the MAP SEARCH function found under its own tab.</p>");
-            Output.WriteLine("    </li>");
-            Output.WriteLine("    <li>Some points do not appear to be over any particular building or location?");
-            Output.WriteLine("      <p class=\"tagline\"> Many times the center point of a city is used but many times a specific landmark may be tagged.  If the point does not appear to be over any landmark, it is probably just the town center.</p>");
-            Output.WriteLine("    </li>");
-            Output.WriteLine("  </ul>");
+            Output.WriteLine(Localization_Gateway.Map_Browse.Faq_Html(RequestSpecificValues.Current_Mode.Language));
             Output.WriteLine("</div>");
             Output.WriteLine("<br />");
             Output.WriteLine();

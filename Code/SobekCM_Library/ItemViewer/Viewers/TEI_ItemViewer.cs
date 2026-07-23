@@ -5,6 +5,7 @@ using SobekCM.Core.Navigation;
 using SobekCM.Core.Users;
 using SobekCM.Core.XSLT;
 using SobekCM.Library.ItemViewer.Menu;
+using SobekCM.Library.Localization;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
 using System;
@@ -118,7 +119,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 return;
 
             // Look for the label in the METS structure map
-            string first_label = "TEI";
+            string first_label = Localization_Gateway.TEI.Menu_Default_Label(CurrentRequest.Language);
             if (CurrentItem.Downloads != null)
             {
                 foreach (BriefItem_FileGrouping thisPage in CurrentItem.Downloads)
@@ -243,7 +244,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
             else
             {
-                tei_string_to_display = "Error during XSLT transform of TEI<br /><br />" + returnArgs.ErrorMessage;
+                tei_string_to_display = String.Format(Localization_Gateway.TEI.Transform_Error_Html(CurrentRequest.Language), returnArgs.ErrorMessage);
             }
         }
 

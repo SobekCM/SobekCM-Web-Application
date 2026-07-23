@@ -8,6 +8,7 @@ using SobekCM.Core.Users;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Engine_Library.Solr.v5;
 using SobekCM.Library.HTML;
+using SobekCM.Library.Localization;
 using SobekCM.Library.ResultsViewer;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
@@ -259,17 +260,17 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             {
                 var builder = new StringBuilder();
                 builder.AppendLine("<div id=\"Thp_ResultsDesc\" style=\"background-color:#eee; border: #ccc 1px solid;width: 100%\">");
-                builder.AppendLine("<div id=\"Thp_ResultsTitle\" style=\"width:30%;display:inline-block; font-size: 1.15em; padding: 12px; padding-left:30px\" >Collection Items</div>");
+                builder.AppendLine("<div id=\"Thp_ResultsTitle\" style=\"width:30%;display:inline-block; font-size: 1.15em; padding: 12px; padding-left:30px\" >" + Localization_Gateway.Thumbnails_Home.Collection_Items(RequestSpecificValues.Current_Mode.Language) + "</div>");
                 if (stats.Total_Items > results.Count)
                 {
-                    builder.AppendLine("<div id=\"Thp_ResultsShowing\" style=\"width:30%;display:inline-block; padding: 12px; text-align:center;\" >Showing 20 items out of " + stats.Total_Items + "</div>");
+                    builder.AppendLine("<div id=\"Thp_ResultsShowing\" style=\"width:30%;display:inline-block; padding: 12px; text-align:center;\" >" + String.Format(Localization_Gateway.Thumbnails_Home.Showing_Items_Out_Of(RequestSpecificValues.Current_Mode.Language), stats.Total_Items) + "</div>");
 
                     RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Browse_Info;
                     RequestSpecificValues.Current_Mode.Info_Browse_Mode = "all";
                     string url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
                     RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Home;
 
-                    builder.AppendLine("<div id=\"Thp_ResultsShowAll\" style=\"width:30%;display:inline-block; padding: 12px; text-align:right;\" ><a href=\"" + url + "\">View all</a></div>");
+                    builder.AppendLine("<div id=\"Thp_ResultsShowAll\" style=\"width:30%;display:inline-block; padding: 12px; text-align:right;\" ><a href=\"" + url + "\">" + Localization_Gateway.Thumbnails_Home.View_All(RequestSpecificValues.Current_Mode.Language) + "</a></div>");
                 }
                 builder.AppendLine("</div>");
                 Output.Write(builder.ToString());

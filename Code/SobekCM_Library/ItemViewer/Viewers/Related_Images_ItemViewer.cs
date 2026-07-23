@@ -7,6 +7,7 @@ using SobekCM.Core.Users;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Library.HTML;
 using SobekCM.Library.ItemViewer.Menu;
+using SobekCM.Library.Localization;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
 using System;
@@ -90,7 +91,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             CurrentRequest.ViewerCode = previous_code;
 
             // Start with the default label on the menu
-            string label = "Thumbnails";
+            string label = Localization_Gateway.Related_Images.Menu_Default_Label(CurrentRequest.Language);
 
             // Allow the label to be implemented for this viewer
             BriefItem_BehaviorViewer thisViewerInfo = CurrentItem.Behaviors.Get_Viewer(ViewerCode);
@@ -296,25 +297,11 @@ namespace SobekCM.Library.ItemViewer.Viewers
         {
             Tracer?.Add_Trace("Related_Images_ItemViewer.Write_Top_Additional_Navigation_Row", "");
 
-            string numOfThumbnails = "thumbnails per page";
-            string goToThumbnail = "Go to thumbnail";
-            const string SMALL_THUMBNAILS = "Switch to small thumbnails";
-            const string MEDIUM_THUMBNAILS = "Switch to medium thumbnails";
-            const string LARGE_THUMBNAILS = "Switch to large thumbnails";
-
-            if (currentRequest.Language == Web_Language_Enum.French)
-            {
-                numOfThumbnails = "vignettes par page";
-                //Size_Of_Thumbnail = "la taille des vignettes";
-                goToThumbnail = "Aller à l'Vignette";
-            }
-
-            if (currentRequest.Language == Web_Language_Enum.Spanish)
-            {
-                numOfThumbnails = "miniaturas por página";
-                //Size_Of_Thumbnail = "Miniatura de tamaño";
-                goToThumbnail = "Ir a la miniatura";
-            }
+            string numOfThumbnails = Localization_Gateway.Related_Images.Thumbnails_Per_Page_Suffix(currentRequest.Language);
+            string goToThumbnail = Localization_Gateway.Related_Images.Go_To_Thumbnail_Label(currentRequest.Language);
+            string SMALL_THUMBNAILS = Localization_Gateway.Related_Images.Switch_To_Small(currentRequest.Language);
+            string MEDIUM_THUMBNAILS = Localization_Gateway.Related_Images.Switch_To_Medium(currentRequest.Language);
+            string LARGE_THUMBNAILS = Localization_Gateway.Related_Images.Switch_To_Large(currentRequest.Language);
 
             //Start building the top nav bar
             Output.WriteLine("<tr>");
@@ -366,11 +353,11 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 currentRequest.Thumbnails_Per_Page = -1;
                 if (thumbnailsPerPage == int.MaxValue)
                 {
-                    Output.WriteLine("\t\t\t\t<option value=\"" + UrlWriterHelper.Redirect_URL(currentRequest) + "\" selected=\"selected\">All thumbnails</option>");
+                    Output.WriteLine("\t\t\t\t<option value=\"" + UrlWriterHelper.Redirect_URL(currentRequest) + "\" selected=\"selected\">" + Localization_Gateway.Related_Images.All_Thumbnails(currentRequest.Language) + "</option>");
                 }
                 else
                 {
-                    Output.WriteLine("\t\t\t\t<option value=\"" + UrlWriterHelper.Redirect_URL(currentRequest) + "\">All thumbnails</option>");
+                    Output.WriteLine("\t\t\t\t<option value=\"" + UrlWriterHelper.Redirect_URL(currentRequest) + "\">" + Localization_Gateway.Related_Images.All_Thumbnails(currentRequest.Language) + "</option>");
                 }
 
                 //Reset the Current Mode Thumbnails_Per_Page
@@ -388,26 +375,26 @@ namespace SobekCM.Library.ItemViewer.Viewers
             //Get the icons for the thumbnail sizes
             Output.WriteLine("\t\t<td id=\"sbkRi_Thumbnailsizeselect\">");
             if (thumbnailSize == 1)
-                Output.Write("\t\t\t<img src=\"" + Static_Resources_Gateway.Thumbs3_Selected_Gif + "\" alt=\"Small\" />");
+                Output.Write("\t\t\t<img src=\"" + Static_Resources_Gateway.Thumbs3_Selected_Gif + "\" alt=\"" + Localization_Gateway.Related_Images.Small_Alt(currentRequest.Language) + "\" />");
             else
             {
                 currentRequest.Size_Of_Thumbnails = 1;
-                Output.Write("\t\t\t<a href=\"" + UrlWriterHelper.Redirect_URL(currentRequest, "thumbs") + "\" title=\"" + SMALL_THUMBNAILS + "\"><img src=\"" + Static_Resources_Gateway.Thumbs3_Gif + "\" alt=\"Small\" /></a>");
+                Output.Write("\t\t\t<a href=\"" + UrlWriterHelper.Redirect_URL(currentRequest, "thumbs") + "\" title=\"" + SMALL_THUMBNAILS + "\"><img src=\"" + Static_Resources_Gateway.Thumbs3_Gif + "\" alt=\"" + Localization_Gateway.Related_Images.Small_Alt(currentRequest.Language) + "\" /></a>");
             }
 
             if (thumbnailSize == 2)
-                Output.Write("<img src=\"" + Static_Resources_Gateway.Thumbs2_Selected_Gif + "\" alt=\"Medium\" />");
+                Output.Write("<img src=\"" + Static_Resources_Gateway.Thumbs2_Selected_Gif + "\" alt=\"" + Localization_Gateway.Related_Images.Medium_Alt(currentRequest.Language) + "\" />");
             else
             {
                 currentRequest.Size_Of_Thumbnails = 2;
-                Output.Write("<a href=\"" + UrlWriterHelper.Redirect_URL(currentRequest, "thumbs") + "\" title=\"" + MEDIUM_THUMBNAILS + "\"><img src=\"" + Static_Resources_Gateway.Thumbs2_Gif + "\" alt=\"Medium\" /></a>");
+                Output.Write("<a href=\"" + UrlWriterHelper.Redirect_URL(currentRequest, "thumbs") + "\" title=\"" + MEDIUM_THUMBNAILS + "\"><img src=\"" + Static_Resources_Gateway.Thumbs2_Gif + "\" alt=\"" + Localization_Gateway.Related_Images.Medium_Alt(currentRequest.Language) + "\" /></a>");
             }
             if (thumbnailSize == 3)
-                Output.Write("<img src=\"" + Static_Resources_Gateway.Thumbs2_Selected_Gif + "\" alt=\"Large\" />");
+                Output.Write("<img src=\"" + Static_Resources_Gateway.Thumbs2_Selected_Gif + "\" alt=\"" + Localization_Gateway.Related_Images.Large_Alt(currentRequest.Language) + "\" />");
             else
             {
                 currentRequest.Size_Of_Thumbnails = 3;
-                Output.Write("<a href=\"" + UrlWriterHelper.Redirect_URL(currentRequest, "thumbs") + "\" title=\"" + LARGE_THUMBNAILS + "\"><img src=\"" + Static_Resources_Gateway.Thumbs1_Gif + "\" alt=\"Large\" /></a>");
+                Output.Write("<a href=\"" + UrlWriterHelper.Redirect_URL(currentRequest, "thumbs") + "\" title=\"" + LARGE_THUMBNAILS + "\"><img src=\"" + Static_Resources_Gateway.Thumbs1_Gif + "\" alt=\"" + Localization_Gateway.Related_Images.Large_Alt(currentRequest.Language) + "\" /></a>");
             }
             //Reset the current mode
             currentRequest.Size_Of_Thumbnails = -1;
@@ -429,7 +416,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
                     //  Output.WriteLine("<option value=\"" + current_Page_url1 + "#" + thisFile.Label + "\">" + thisFile.Label + "</option>");
                     if (String.IsNullOrEmpty(thisFile.Label))
-                        Output.WriteLine("\t\t\t\t<option value=\"" + currentPageURL1 + "#" + thumbnail_count + "\">" + "(page " + thumbnail_count + ")" + "</option>");
+                        Output.WriteLine("\t\t\t\t<option value=\"" + currentPageURL1 + "#" + thumbnail_count + "\">" + String.Format(Localization_Gateway.Related_Images.Page_Number_Placeholder(currentRequest.Language), thumbnail_count) + "</option>");
                     else
                     {
                         if (thisFile.Label.Length > 50)
@@ -554,9 +541,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 Output.WriteLine("      <td>");
                 Output.WriteLine("        <a id=\"" + page_index + "\" href=\"" + url + "\" title=\"" + thisPage.Label + "\">");
                 if (width > 0)
-                    Output.WriteLine("          <img src=\"" + image_url + "\" style=\"width:" + width + "px;\" alt=\"MISSING THUMBNAIL\" />");
+                    Output.WriteLine("          <img src=\"" + image_url + "\" style=\"width:" + width + "px;\" alt=\"" + Localization_Gateway.Related_Images.Missing_Thumbnail_Alt(currentRequest.Language) + "\" />");
                 else
-                    Output.WriteLine("          <img src=\"" + image_url + "\" alt=\"MISSING THUMBNAIL\" />");
+                    Output.WriteLine("          <img src=\"" + image_url + "\" alt=\"" + Localization_Gateway.Related_Images.Missing_Thumbnail_Alt(currentRequest.Language) + "\" />");
                 Output.WriteLine("        </a>");
                 Output.WriteLine("      </td>");
                 Output.WriteLine("    </tr>");

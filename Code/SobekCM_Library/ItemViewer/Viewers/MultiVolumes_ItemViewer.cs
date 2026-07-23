@@ -8,6 +8,7 @@ using SobekCM.Core.Navigation;
 using SobekCM.Core.Users;
 using SobekCM.Library.HTML;
 using SobekCM.Library.ItemViewer.Menu;
+using SobekCM.Library.Localization;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
 using System;
@@ -80,18 +81,18 @@ namespace SobekCM.Library.ItemViewer.Viewers
         {
             // Determine the label to show
             string resource_type_upper = CurrentItem.Type.ToUpper();
-            string label = "All Volumes";
+            string label = Localization_Gateway.MultiVolumes.Menu_All_Volumes(CurrentRequest.Language);
             if (resource_type_upper.IndexOf("NEWSPAPER") >= 0)
             {
-                label = "All Issues";
+                label = Localization_Gateway.MultiVolumes.Menu_All_Issues(CurrentRequest.Language);
             }
             else if (resource_type_upper.IndexOf("MAP") >= 0)
             {
-                label = "Related Maps";
+                label = Localization_Gateway.MultiVolumes.Menu_Related_Maps(CurrentRequest.Language);
             }
             else if (resource_type_upper.IndexOf("AERIAL") >= 0)
             {
-                label = "Related Flights";
+                label = Localization_Gateway.MultiVolumes.Menu_Related_Flights(CurrentRequest.Language);
             }
 
             // Get the URL for this
@@ -174,24 +175,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
                         break;
                 }
 
-            string volumes_text = "All Volumes";
-            string issues_text = "All Issues";
-            string map_text = "Related Map Sets";
-            const string AERIAL_TEXT = "Related Flights";
-
-            if (currentRequest.Language == Web_Language_Enum.French)
-            {
-                volumes_text = "Tous les Volumes";
-                issues_text = "Tous les Éditions";
-                map_text = "Définit la Carte Connexes";
-            }
-
-            if (currentRequest.Language == Web_Language_Enum.Spanish)
-            {
-                volumes_text = "Todos los Volumenes";
-                issues_text = "Todas las Ediciones";
-                map_text = "Relacionado Mapa Conjuntos";
-            }
+            string volumes_text = Localization_Gateway.MultiVolumes.All_Volumes(currentRequest.Language);
+            string issues_text = Localization_Gateway.MultiVolumes.All_Issues(currentRequest.Language);
+            string map_text = Localization_Gateway.MultiVolumes.Related_Map_Sets(currentRequest.Language);
+            string AERIAL_TEXT = Localization_Gateway.MultiVolumes.Related_Flights(currentRequest.Language);
 
             issues_type = volumes_text;
             if (BriefItem.Behaviors.GroupType.ToUpper().IndexOf("NEWSPAPER") >= 0)
@@ -343,7 +330,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
                 Output.WriteLine("<table id=\"sbkMviv_RelatedTitles\">");
                 Output.WriteLine("  <tr>");
-                Output.WriteLine("    <td colspan=\"2\"><h2>Related Titles</h2></td>");
+                Output.WriteLine("    <td colspan=\"2\"><h2>" + Localization_Gateway.MultiVolumes.Related_Titles_Heading(currentRequest.Language) + "</h2></td>");
                 Output.WriteLine("  </tr>");
                 string url_opts = UrlWriterHelper.URL_Options(currentRequest);
                 foreach (BriefItem_Related_Titles thisTitle in briefItem.Web.Related_Titles)
@@ -529,17 +516,17 @@ namespace SobekCM.Library.ItemViewer.Viewers
             // Start the table
             Output.WriteLine("<table id=\"sbkMviv_Table\">");
             Output.WriteLine("  <tr id=\"sbkMviv_TableHeaderRow\">");
-            Output.WriteLine("    <th style=\"width:50px;\">VID</th>");
-            Output.WriteLine("    <th>LEVEL 1</th>");
+            Output.WriteLine("    <th style=\"width:50px;\">" + Localization_Gateway.MultiVolumes.Vid_Header(currentRequest.Language) + "</th>");
+            Output.WriteLine("    <th>" + Localization_Gateway.MultiVolumes.Level_1_Header(currentRequest.Language) + "</th>");
             if (depth > 1)
             {
-                Output.WriteLine("    <th>LEVEL 2</th>");
+                Output.WriteLine("    <th>" + Localization_Gateway.MultiVolumes.Level_2_Header(currentRequest.Language) + "</th>");
             }
             if (depth > 2)
             {
-                Output.WriteLine("    <th>LEVEL 3</th>");
+                Output.WriteLine("    <th>" + Localization_Gateway.MultiVolumes.Level_3_Header(currentRequest.Language) + "</th>");
             }
-            Output.WriteLine("    <th style=\"width:65px;\">ACCESS</th>");
+            Output.WriteLine("    <th style=\"width:65px;\">" + Localization_Gateway.MultiVolumes.Access_Header(currentRequest.Language) + "</th>");
             Output.WriteLine("  </tr>");
 
             foreach (Item_Hierarchy_Details thisItem in allVolumes)
@@ -584,11 +571,11 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
                 if (access_int < 0)
                 {
-                    Output.WriteLine(dark ? "    <td>dark</td>" : "    <td>private</td>");
+                    Output.WriteLine(dark ? "    <td>" + Localization_Gateway.MultiVolumes.Access_Dark(currentRequest.Language) + "</td>" : "    <td>" + Localization_Gateway.MultiVolumes.Access_Private(currentRequest.Language) + "</td>");
                 }
                 else
                 {
-                    Output.WriteLine(access_int == 0 ? "    <td>public</td>" : "    <td>restricted</td>");
+                    Output.WriteLine(access_int == 0 ? "    <td>" + Localization_Gateway.MultiVolumes.Access_Public(currentRequest.Language) + "</td>" : "    <td>" + Localization_Gateway.MultiVolumes.Access_Restricted(currentRequest.Language) + "</td>");
                 }
 
                 Output.WriteLine("  </tr>");
@@ -681,7 +668,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 Output.WriteLine("    <tr>");
                 Output.WriteLine("      <td>");
                 Output.WriteLine("        <a href=\"" + url + "\" title=\"" + thumbnail_text + "\">");
-                Output.WriteLine("          <img src=\"" + SobekFileSystem.Resource_Web_Uri(briefItem.BibID, thisItem.VID, thisItem.MainThumbnail) + "\" alt=\"MISSING THUMBNAIL\" />");
+                Output.WriteLine("          <img src=\"" + SobekFileSystem.Resource_Web_Uri(briefItem.BibID, thisItem.VID, thisItem.MainThumbnail) + "\" alt=\"" + Localization_Gateway.MultiVolumes.Missing_Thumbnail_Alt(currentRequest.Language) + "\" />");
                 Output.WriteLine("        </a>");
                 Output.WriteLine("      </td>");
                 Output.WriteLine("    </tr>");
@@ -756,7 +743,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     if (dark)
                     {
                         access_span_start = "<span class=\"sbkMviv_TreeDarkNode\">";
-                        access_string = " ( dark )";
+                        access_string = Localization_Gateway.MultiVolumes.Dark_Suffix(currentRequest.Language);
                         access_span_end = "</span>";
                     }
                     else
@@ -764,13 +751,13 @@ namespace SobekCM.Library.ItemViewer.Viewers
                         if (access_int < 0)
                         {
                             access_span_start = "<span class=\"sbkMviv_TreePrivateNode\">";
-                            access_string = " ( private )";
+                            access_string = Localization_Gateway.MultiVolumes.Private_Suffix(currentRequest.Language);
                             access_span_end = "</span>";
                         }
                         else if (access_int > 0)
                         {
                             access_span_start = "<span class=\"sbkMviv_TreeRestrictedNode\">";
-                            access_string = " ( some restrictions apply )";
+                            access_string = Localization_Gateway.MultiVolumes.Restricted_Suffix(currentRequest.Language);
                             access_span_end = "</span>";
                         }
                     }
@@ -845,7 +832,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
                                 if (allPrivate)
                                 {
-                                    lastNode1.Text = "<span class=\"sbkMviv_TreePrivateNode\">" + level1_text + " ( all private or dark )</span>";
+                                    lastNode1.Text = "<span class=\"sbkMviv_TreePrivateNode\">" + level1_text + Localization_Gateway.MultiVolumes.All_Private_Or_Dark_Suffix(currentRequest.Language) + "</span>";
                                 }
 
                                 lastNodeText1 = level1_text.ToUpper();

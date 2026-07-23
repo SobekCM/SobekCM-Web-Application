@@ -4,6 +4,7 @@ using SobekCM.Core.FileSystems;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Users;
 using SobekCM.Library.ItemViewer.Menu;
+using SobekCM.Library.Localization;
 using SobekCM.Tools;
 using System;
 using System.Collections.Generic;
@@ -92,7 +93,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             if ((thisViewerInfo == null) || (String.IsNullOrWhiteSpace(thisViewerInfo.Label)))
             {
                 // Add the item menu information using the default label
-                var menuItem = new Item_MenuItem("Video", null, null, url, ViewerCode);
+                var menuItem = new Item_MenuItem(Localization_Gateway.Video.Menu_Video_Label(CurrentRequest.Language), null, null, url, ViewerCode);
                 MenuItems.Add(menuItem);
             }
             else

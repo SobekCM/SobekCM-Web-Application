@@ -7,6 +7,7 @@ using SobekCM.Core.Users;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Library.HTML;
 using SobekCM.Library.ItemViewer.Menu;
+using SobekCM.Library.Localization;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
 using System;
@@ -246,17 +247,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             if (suppressNavigator)
                 return;
 
-            string thumnbnail_text = "THUMBNAIL";
-
-            if (CurrentRequest.Language == Web_Language_Enum.French)
-            {
-                thumnbnail_text = "MINIATURE";
-            }
-
-            if (CurrentRequest.Language == Web_Language_Enum.Spanish)
-            {
-                thumnbnail_text = "MINIATURA";
-            }
+            string thumnbnail_text = Localization_Gateway.JPEG2000.Thumbnail(CurrentRequest.Language);
 
             Output.WriteLine("        <ul class=\"sbkIsw_NavBarMenu\">");
             Output.WriteLine("          <li class=\"sbkIsw_NavBarHeader\"> " + thumnbnail_text + " </li>");

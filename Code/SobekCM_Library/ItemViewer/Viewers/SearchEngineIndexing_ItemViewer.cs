@@ -6,6 +6,7 @@ using SobekCM.Core.Navigation;
 using SobekCM.Core.Users;
 using SobekCM.Library.HTML;
 using SobekCM.Library.ItemViewer.Menu;
+using SobekCM.Library.Localization;
 using SobekCM.Tools;
 using System;
 using System.Collections.Generic;
@@ -140,14 +141,14 @@ namespace SobekCM.Library.ItemViewer.Viewers
             // If this is DARK and the user cannot edit and the flag is not set to show citation, show nothing here
             if ((BriefItem.Behaviors.Dark_Flag) || (BriefItem.Behaviors.IP_Restriction_Membership != 0))
             {
-                Output.WriteLine("          <td><div id=\"darkItemSuppressCitationMsg\">This item is DARK and cannot be viewed at this time</div>" + Environment.NewLine + "</td>" + Environment.NewLine + "  <!-- END SEARCH ENGINE VIEWER OUTPUT -->");
+                Output.WriteLine("          <td><div id=\"darkItemSuppressCitationMsg\">" + Localization_Gateway.Citation_Common.Dark_Item_Message(CurrentRequest.Language) + "</div>" + Environment.NewLine + "</td>" + Environment.NewLine + "  <!-- END SEARCH ENGINE VIEWER OUTPUT -->");
                 return;
             }
 
             string viewer_code = CurrentRequest.ViewerCode;
 
-            // Add the CITATION 
-            Output.WriteLine("        <td align=\"left\"><span class=\"SobekViewerTitle\">Citation</span></td>");
+            // Add the CITATION
+            Output.WriteLine("        <td align=\"left\"><span class=\"SobekViewerTitle\">" + Localization_Gateway.SearchEngineIndexing.Citation_Label(CurrentRequest.Language) + "</span></td>");
             Output.WriteLine("      </tr>");
             Output.WriteLine("      <tr>");
             Output.WriteLine("        <td>");
@@ -201,7 +202,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 // Add the downloads
                 if ((BriefItem.Downloads != null) && (BriefItem.Downloads.Count > 0))
                 {
-                    Output.WriteLine("        <td align=\"left\"><span class=\"SobekViewerTitle\">Downloads</span></td>");
+                    Output.WriteLine("        <td align=\"left\"><span class=\"SobekViewerTitle\">" + Localization_Gateway.SearchEngineIndexing.Downloads_Label(CurrentRequest.Language) + "</span></td>");
                     Output.WriteLine("      </tr>");
                     Output.WriteLine("      <tr>");
                     Output.WriteLine("        <td id=\"sbkDiv_MainArea\">");
@@ -269,7 +270,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                                                 if (!started)
                                                 {
                                                     Output.WriteLine("       <tr>");
-                                                    Output.WriteLine("         <td align=\"left\"><span class=\"SobekViewerTitle\">Full Text</span></td>");
+                                                    Output.WriteLine("         <td align=\"left\"><span class=\"SobekViewerTitle\">" + Localization_Gateway.SearchEngineIndexing.Full_Text_Label(CurrentRequest.Language) + "</span></td>");
                                                     Output.WriteLine("       </tr>");
                                                     Output.WriteLine("       <tr>");
                                                     Output.WriteLine("          <td>");
@@ -288,7 +289,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                                                 }
                                                 catch
                                                 {
-                                                    Output.WriteLine("Unable to read file: " + text_file);
+                                                    Output.WriteLine(String.Format(Localization_Gateway.SearchEngineIndexing.Unable_To_Read_File(CurrentRequest.Language), text_file));
                                                 }
 
                                                 Output.WriteLine("<br /><br />");
@@ -343,7 +344,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                         }
                         catch
                         {
-                            Output.WriteLine("Unable to read file: " + thisTextFile);
+                            Output.WriteLine(String.Format(Localization_Gateway.SearchEngineIndexing.Unable_To_Read_File(CurrentRequest.Language), thisTextFile));
                         }
 
                         Output.WriteLine("<br /><br />");

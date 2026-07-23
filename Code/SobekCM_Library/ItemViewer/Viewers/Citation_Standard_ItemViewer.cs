@@ -7,6 +7,7 @@ using SobekCM.Core.UI_Configuration.Citation;
 using SobekCM.Core.Users;
 using SobekCM.Library.Citation.SectionWriter;
 using SobekCM.Library.ItemViewer.Menu;
+using SobekCM.Library.Localization;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
 using System;
@@ -87,7 +88,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             CurrentRequest.ViewerCode = previous_code;
 
             // Add the item menu information
-            var menuItem = new Item_MenuItem("Description", "Standard View", null, url, ViewerCode);
+            var menuItem = new Item_MenuItem("Description", Localization_Gateway.Citation_Common.Menu_Standard_View(CurrentRequest.Language), null, url, ViewerCode);
             MenuItems.Add(menuItem);
         }
 
@@ -169,7 +170,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             // If this is DARK and the user cannot edit and the flag is not set to show citation, show nothing here
             if ((BriefItem.Behaviors.Dark_Flag) && (!userCanEditItem) && (!UI_ApplicationCache_Gateway.Settings.Resources.Show_Citation_For_Dark_Items))
             {
-                Output.WriteLine("          <div id=\"darkItemSuppressCitationMsg\">This item is DARK and cannot be viewed at this time</div>" + Environment.NewLine + "</td>" + Environment.NewLine + "  <!-- END CITATION VIEWER OUTPUT -->");
+                Output.WriteLine("          <div id=\"darkItemSuppressCitationMsg\">" + Localization_Gateway.Citation_Common.Dark_Item_Message(CurrentRequest.Language) + "</div>" + Environment.NewLine + "</td>" + Environment.NewLine + "  <!-- END CITATION VIEWER OUTPUT -->");
                 return;
             }
 
@@ -217,11 +218,11 @@ namespace SobekCM.Library.ItemViewer.Viewers
             {
                 if ((CurrentUser == null) || (!CurrentUser.LoggedOn))
                 {
-                    Output.WriteLine("          <div id=\"darkItemSuppressCitationMsg\" style=\"color:red;\">" + currentFlags.RestrictionMessage + "  Please log on to access.</div>" + Environment.NewLine);
+                    Output.WriteLine("          <div id=\"darkItemSuppressCitationMsg\" style=\"color:red;\">" + currentFlags.RestrictionMessage + Localization_Gateway.Citation_Standard.Please_Log_On_Suffix(CurrentRequest.Language) + "</div>" + Environment.NewLine);
                 }
                 else
                 {
-                    Output.WriteLine("          <div id=\"darkItemSuppressCitationMsg\" style=\"color:red;\">" + currentFlags.RestrictionMessage + "  Please request access.</div>" + Environment.NewLine);
+                    Output.WriteLine("          <div id=\"darkItemSuppressCitationMsg\" style=\"color:red;\">" + currentFlags.RestrictionMessage + Localization_Gateway.Citation_Standard.Please_Request_Access_Suffix(CurrentRequest.Language) + "</div>" + Environment.NewLine);
                 }
             }
 
@@ -288,7 +289,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 if ((currentFlags != null) && (currentFlags.ItemRestrictedFromUser))
                 {
                     result.AppendLine();
-                    result.AppendLine(INDENT + "<div id=\"Sbk_CivThumbnailDiv\"><img src=\"" + CurrentRequest.Base_Design_URL + "restricted-thumb.png\" alt=\"Restricted Item\" id=\"Sbk_CivThumbnailImg\" itemprop=\"primaryImageOfPage\" /></div>");
+                    result.AppendLine(INDENT + "<div id=\"Sbk_CivThumbnailDiv\"><img src=\"" + CurrentRequest.Base_Design_URL + "restricted-thumb.png\" alt=\"" + Localization_Gateway.Citation_Standard.Restricted_Item_Alt(CurrentRequest.Language) + "\" id=\"Sbk_CivThumbnailImg\" itemprop=\"primaryImageOfPage\" /></div>");
                     result.AppendLine();
                 }
                 else if (!String.IsNullOrEmpty(BriefItem.Behaviors.Main_Thumbnail))
@@ -860,10 +861,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
         public static void Add_Citation_View_Tabs(TextWriter Output, BriefItemInfo BriefItem, Navigation_Object CurrentRequest, string CurrentType)
         {
             // Set the text
-            const string STANDARD_VIEW = "STANDARD VIEW";
-            const string MARC_VIEW = "MARC VIEW";
-            const string METADATA_VIEW = "METADATA";
-            const string STATISTICS_VIEW = "USAGE STATISTICS";
+            string STANDARD_VIEW = Localization_Gateway.Citation_Common.Standard_View(CurrentRequest.Language);
+            string MARC_VIEW = Localization_Gateway.Citation_Common.Marc_View(CurrentRequest.Language);
+            string METADATA_VIEW = Localization_Gateway.Citation_Common.Metadata_View(CurrentRequest.Language);
+            string STATISTICS_VIEW = Localization_Gateway.Citation_Common.Usage_Statistics_View(CurrentRequest.Language);
 
             // Add the tabs for the different citation information
             string orig_viewer_code = CurrentRequest.ViewerCode;

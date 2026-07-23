@@ -5,6 +5,7 @@ using SobekCM.Core.FileSystems;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Users;
 using SobekCM.Library.ItemViewer.Menu;
+using SobekCM.Library.Localization;
 using SobekCM.Tools;
 using System;
 using System.Collections.Generic;
@@ -13,7 +14,7 @@ using System.Linq;
 
 namespace SobekCM.Library.ItemViewer.Viewers
 {
-    /// <summary> Downloads viewer prototyper, which is used to check to see if there are downloads to display, 
+    /// <summary> Downloads viewer prototyper, which is used to check to see if there are downloads to display,
     /// to create the link in the main menu, and to create the viewer itself if the user selects that option </summary>
     public class Downloads_ItemViewer_Prototyper : iItemViewerPrototyper
     {
@@ -98,7 +99,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             CurrentRequest.ViewerCode = previous_code;
 
             // Start with the default label on the menu
-            string label = "Downloads";
+            string label = Localization_Gateway.Downloads.Menu_Default_Label(CurrentRequest.Language);
 
             // Allow the label to be implemented for this viewer
             BriefItem_BehaviorViewer thisViewerInfo = CurrentItem.Behaviors.Get_Viewer(ViewerCode);
@@ -179,21 +180,11 @@ namespace SobekCM.Library.ItemViewer.Viewers
         public static void Add_Download_Links(TextWriter Output, BriefItemInfo BriefItem, Navigation_Object CurrentRequest, User_Object CurrentUser, Custom_Tracer Tracer)
         {
             // Start the citation table
-            string explanation_text = "This item has the following downloads:";
-            switch (CurrentRequest.Language)
+            string explanation_text = Localization_Gateway.Downloads.Explanation_Has_Downloads(CurrentRequest.Language);
+            if ((CurrentRequest.Language != Web_Language_Enum.French) && (CurrentRequest.Language != Web_Language_Enum.Spanish))
             {
-                case Web_Language_Enum.French:
-                    explanation_text = "Ce document est la suivante téléchargements:";
-                    break;
-
-                case Web_Language_Enum.Spanish:
-                    explanation_text = "Este objeto tiene las siguientes descargas:";
-                    break;
-
-                default:
-                    if ((BriefItem.Images == null) || (BriefItem.Images.Count == 0))
-                        explanation_text = "This item is only available as the following downloads:";
-                    break;
+                if ((BriefItem.Images == null) || (BriefItem.Images.Count == 0))
+                    explanation_text = Localization_Gateway.Downloads.Explanation_Only_Downloads(CurrentRequest.Language);
             }
 
 
@@ -291,10 +282,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 if (pageDownloads.Count > 0)
                 {
 
-                    Output.WriteLine("                <h2>The following tiles are available for download:</h2>");
+                    Output.WriteLine("                <h2>" + Localization_Gateway.Downloads.Tiles_Available_Heading(CurrentRequest.Language) + "</h2>");
                     Output.WriteLine((!String.IsNullOrEmpty(CurrentRequest.Browser_Type)) && (CurrentRequest.Browser_Type.IndexOf("FIREFOX") >= 0)
-                                           ? "                <p>To download, right click on the tile name below, select 'Save Link As...' and save the JPEG2000 to your local computer.</p>"
-                                           : "                <p>To download, right click on the tile name below, select 'Save Target As...' and save the JPEG2000 to your local computer. </p>");
+                                           ? "                <p>" + Localization_Gateway.Downloads.Save_Link_As_Instructions(CurrentRequest.Language) + "</p>"
+                                           : "                <p>" + Localization_Gateway.Downloads.Save_Target_As_Instructions(CurrentRequest.Language) + "</p>");
                     Output.WriteLine("                  <table id=\"sbkDiv_Aerials\">");
 
                     int rows = pageDownloads.Count / 3;

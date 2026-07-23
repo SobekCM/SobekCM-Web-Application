@@ -33,6 +33,8 @@ namespace SobekCM.Library.UI
             HtmlLayoutManager.Clear();
 
             Authentication.Authentication_Provider_Gateway.RefreshAll();
+
+            Localization.Localization_Gateway.Clear_Cache();
         }
 
         /// <summary> Refresh the settings object by pulling the data back from the database </summary>

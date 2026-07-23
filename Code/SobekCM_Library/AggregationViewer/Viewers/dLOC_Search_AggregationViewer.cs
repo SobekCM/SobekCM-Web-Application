@@ -5,6 +5,7 @@ using SobekCM.Core.Aggregations;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Navigation;
 using SobekCM.Library.HTML;
+using SobekCM.Library.Localization;
 using SobekCM.Library.MainWriters;
 using SobekCM.Tools;
 using System;
@@ -115,27 +116,16 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         {
             Tracer?.Add_Trace("dLOC_Search_AggregationViewer.Write_Search_Box_HTML", "Adding html for search box");
 
-            string search_collection = "Search full text";
-            string include_newspaper = "Include newspapers?";
-
-            if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.Spanish)
-            {
-                search_collection = "Buscar en la colección";
-                include_newspaper = "¿Incluir periódicos?";
-            }
-
-            if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.French)
-            {
-                search_collection = "Recherche dans la collection";
-                include_newspaper = "Accès aux journaux inclus?";
-            }
+            Web_Language_Enum language = RequestSpecificValues.Current_Mode.Language;
+            string search_collection = Localization_Gateway.Full_Text_Search_Aggregation.Search_Full_Text(language);
+            string include_newspaper = Localization_Gateway.DLOC_Search.Include_Newspapers(language);
 
             Output.WriteLine("  <table id=\"sbkDsav_SearchPanel\" >");
             Output.WriteLine("    <tr>");
             Output.WriteLine("      <td style=\"text-align:right;width:27%;\" id=\"sbkBsav_SearchPrompt\"><label for=\"SobekHomeSearchBox\">" + search_collection + ":</label></td>");
             Output.WriteLine("      <td style=\"width:3%;\">&nbsp;</td>");
             Output.WriteLine("      <td style=\"width:60%;\"><input name=\"u_search\" type=\"text\" class=\"sbkBsav_SearchBox sbk_Focusable\" id=\"SobekHomeSearchBox\" value=\"" + textBoxValue + "\" onkeydown=\"return fnTrapKD(event, 'dloc', '" + arg1 + "', '" + arg2 + "','" + browse_url + "');\" /></td>");
-            Output.WriteLine("      <td style=\"width:10%;\"><button class=\"sbk_GoButton\" title=\"" + search_collection + "\" onclick=\"" + Search_Script_Action + ";return false;\">Go</button></td>");
+            Output.WriteLine("      <td style=\"width:10%;\"><button class=\"sbk_GoButton\" title=\"" + search_collection + "\" onclick=\"" + Search_Script_Action + ";return false;\">" + Localization_Gateway.Aggregation_Common.Go(language) + "</button></td>");
             Output.WriteLine("      <td><div id=\"circular_progress\" name=\"circular_progress\" class=\"hidden_progress\">&nbsp;</div></td>");
             Output.WriteLine("    </tr>");
             Output.WriteLine("    <tr style=\"vertical-align:top\">");

@@ -4,6 +4,7 @@ using SobekCM.Core.Navigation;
 using SobekCM.Core.Users;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Library.ItemViewer.Menu;
+using SobekCM.Library.Localization;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
 using System;
@@ -74,22 +75,22 @@ namespace SobekCM.Library.ItemViewer.Viewers
         public virtual void Add_Menu_Items(BriefItemInfo CurrentItem, User_Object CurrentUser, Navigation_Object CurrentRequest, List<Item_MenuItem> MenuItems, bool IsRestricted)
         {
             // Determine the label to show on the menu
-            string label = "Map It!";
+            string label = Localization_Gateway.Google_Map.Menu_Default_Label(CurrentRequest.Language);
             if (!String.IsNullOrEmpty(CurrentRequest.Coordinates))
             {
                 if (CurrentRequest.ViewerCode == "mapsearch")
                 {
-                    label = "Map Search";
+                    label = Localization_Gateway.Google_Map.Menu_Map_Search(CurrentRequest.Language);
                 }
                 else
                 {
                     if (((CurrentItem.Images != null) && (CurrentItem.Images.Count > 1)) || (String.Compare(CurrentItem.Type, "map", StringComparison.OrdinalIgnoreCase) != 0))
                     {
-                        label = "Search Results";
+                        label = Localization_Gateway.Google_Map.Menu_Search_Results(CurrentRequest.Language);
                     }
                     else
                     {
-                        label = "Map Coverage";
+                        label = Localization_Gateway.Google_Map.Menu_Map_Coverage(CurrentRequest.Language);
                     }
                 }
             }
@@ -452,20 +453,20 @@ namespace SobekCM.Library.ItemViewer.Viewers
                             redirect_stem = "l/" + redirect_stem;
 
                         // Set some constants
-                        const string SEARCH_BUTTON_TEXT = "Search";
-                        const string FIND_BUTTON_TEXT = "Find Address";
+                        string SEARCH_BUTTON_TEXT = Localization_Gateway.Google_Map.Search_Button(CurrentRequest.Language);
+                        string FIND_BUTTON_TEXT = Localization_Gateway.Google_Map.Find_Address_Button(CurrentRequest.Language);
                         string script_action_name = "map_item_search_sobekcm('" + redirect_stem + "');";
 
                         Output.WriteLine("    <td style=\"text-align:left\">");
                         Output.WriteLine("      <ol>");
                         Output.WriteLine(
-                            "        <li>Use the <i>Select Area</i> button below to draw a search box on the map or enter an address and press <i>Find Address</i>.</li>");
-                        Output.WriteLine("        <li>Press the <i>Search</i> button to see results</li>");
+                            "        <li>" + Localization_Gateway.Google_Map.Instructions_Step1_Html(CurrentRequest.Language) + "</li>");
+                        Output.WriteLine("        <li>" + Localization_Gateway.Google_Map.Instructions_Step2_Html(CurrentRequest.Language) + "</li>");
                         Output.WriteLine("      </ol>");
                         Output.WriteLine("        <div class=\"map_address_div\">");
-                        Output.WriteLine("          <label for=\"AddressTextBox\">Address:</label> &nbsp; ");
+                        Output.WriteLine("          <label for=\"AddressTextBox\">" + Localization_Gateway.Google_Map.Address_Label(CurrentRequest.Language) + "</label> &nbsp; ");
                         Output.WriteLine(
-                            "          <input name=\"AddressTextBox\" type=\"text\" id=\"AddressTextBox\" class=\"MapAddressBox_initial\" value=\"Enter address ( i.e., 12 Main Street, Gainesville Florida )\" onfocus=\"enter_address_box(this);\" onblur=\"leave_address_box(this);\" onkeypress=\"address_box_changed(this);\" onchange=\"address_box_changed(this);\" /> &nbsp; ");
+                            "          <input name=\"AddressTextBox\" type=\"text\" id=\"AddressTextBox\" class=\"MapAddressBox_initial\" value=\"" + Localization_Gateway.Google_Map.Address_Placeholder(CurrentRequest.Language) + "\" onfocus=\"enter_address_box(this);\" onblur=\"leave_address_box(this);\" onkeypress=\"address_box_changed(this);\" onchange=\"address_box_changed(this);\" /> &nbsp; ");
                         Output.WriteLine("          <input type=\"button\" name=\"findButton\" value=\"" + FIND_BUTTON_TEXT +
                                           "\" id=\"findButton\" class=\"SobekSearchButton\" onclick=\"map_address_geocode();\" /> &nbsp; ");
                         Output.WriteLine("          <input type=\"button\" name=\"searchButton\" value=\"" +
@@ -489,11 +490,11 @@ namespace SobekCM.Library.ItemViewer.Viewers
                         {
                             Output.WriteLine("          <td align=\"center\">");
                             Output.WriteLine(
-                                "            There were no matches within this item for your geographic search. &nbsp; ");
+                                "            " + Localization_Gateway.Google_Map.No_Matches_Message(CurrentRequest.Language));
                             string currentModeViewerCode = CurrentRequest.ViewerCode;
                             CurrentRequest.ViewerCode = "mapsearch";
                             Output.WriteLine("            ( <a href=\"" + UrlWriterHelper.Redirect_URL(CurrentRequest) +
-                                              "\">Modify item search</a> )");
+                                              "\">" + Localization_Gateway.Google_Map.Modify_Item_Search(CurrentRequest.Language) + "</a> )");
                             CurrentRequest.ViewerCode = currentModeViewerCode;
 
                             // If there was an aggregation included, we can assume that was the origin of the coordinate search,  
@@ -515,18 +516,18 @@ namespace SobekCM.Library.ItemViewer.Viewers
                                     CurrentRequest.Search_String = providedMaxLat.ToString() + "," + providedMaxLong;
                                 }
                                 Output.WriteLine("            <a href=\"" + UrlWriterHelper.Redirect_URL(CurrentRequest) +
-                                                  "\">Click here to search other items in the current collection</a><br />");
+                                                  "\">" + Localization_Gateway.Google_Map.Search_Other_Items_Link(CurrentRequest.Language) + "</a><br />");
                                 CurrentRequest.Mode = Display_Mode_Enum.Item_Display;
                             }
                             Output.WriteLine("          </td>" + Environment.NewLine + "        </tr>");
                         }
                         else
                         {
-                            string modify_item_search = "Modify item search";
-                            const string ZOOM_EXTENT = "Zoom to extent";
-                            const string ZOOM_MATCHES = "Zoom to matches";
+                            string modify_item_search = Localization_Gateway.Google_Map.Modify_Item_Search(CurrentRequest.Language);
+                            string ZOOM_EXTENT = Localization_Gateway.Google_Map.Zoom_To_Extent(CurrentRequest.Language);
+                            string ZOOM_MATCHES = Localization_Gateway.Google_Map.Zoom_To_Matches(CurrentRequest.Language);
                             if (BriefItem.Type.IndexOf("aerial", StringComparison.OrdinalIgnoreCase) >= 0)
-                                modify_item_search = "Modify search within flight";
+                                modify_item_search = Localization_Gateway.Google_Map.Modify_Search_Within_Flight(CurrentRequest.Language);
 
                             Output.WriteLine("          <td style=\"vertical-align: left\">");
                             Output.WriteLine("            <table id=\"sbkGmiv_ResultsTable\">");
@@ -534,7 +535,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                             Output.WriteLine("              <tr>");
                             Output.WriteLine("                <td style=\"width:50px\">&nbsp;</td>");
                             Output.WriteLine(
-                                "                <td colspan=\"4\">The following results match your geographic search:</td>"); //  and also appear on the navigation bar to the left
+                                "                <td colspan=\"4\">" + Localization_Gateway.Google_Map.Matching_Results_Intro(CurrentRequest.Language) + "</td>"); //  and also appear on the navigation bar to the left
                             Output.WriteLine("              </tr>");
 
                             int column = 0;
@@ -631,9 +632,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
                                 }
 
                                 if (CurrentRequest.Aggregation == "aerials")
-                                    Output.WriteLine("                  <a href=\"" + UrlWriterHelper.Redirect_URL(CurrentRequest) + "\">Search all flights</a><br />");
+                                    Output.WriteLine("                  <a href=\"" + UrlWriterHelper.Redirect_URL(CurrentRequest) + "\">" + Localization_Gateway.Google_Map.Search_All_Flights(CurrentRequest.Language) + "</a><br />");
                                 else
-                                    Output.WriteLine("                  <a href=\"" + UrlWriterHelper.Redirect_URL(CurrentRequest) + "\">Search entire collection</a><br />");
+                                    Output.WriteLine("                  <a href=\"" + UrlWriterHelper.Redirect_URL(CurrentRequest) + "\">" + Localization_Gateway.Google_Map.Search_Entire_Collection(CurrentRequest.Language) + "</a><br />");
 
                                 CurrentRequest.Mode = Display_Mode_Enum.Item_Display;
                             }
@@ -668,9 +669,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             else
             {
                 Output.WriteLine("            <div style=\"padding: 50px\">");
-                Output.WriteLine("              <p style=\"font-weight:bold; text-size:1.1em\">ERROR: Google Maps are not enabled on this instance of SobekCM!</p>");
-                Output.WriteLine("              <p>To enable them, please create a Google Map API key and enter it in the system-wide settings.</p>");
-                Output.WriteLine("              <p>Information on this process can be found here: <a href=\"http://sobekrepository.org/software/config/googlemaps\" style=\"color:white;\">http://sobekrepository.org/software/config/googlemaps</a>.</p>");
+                Output.WriteLine(Localization_Gateway.Google_Map.Google_Maps_Not_Enabled_Html(CurrentRequest.Language));
                 Output.WriteLine("            </div>");
             }
 

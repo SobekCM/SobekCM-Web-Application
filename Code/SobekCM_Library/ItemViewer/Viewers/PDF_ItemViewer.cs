@@ -6,6 +6,7 @@ using SobekCM.Core.Users;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Library.HTML;
 using SobekCM.Library.ItemViewer.Menu;
+using SobekCM.Library.Localization;
 using SobekCM.Tools;
 using System;
 using System.Collections.Generic;
@@ -88,7 +89,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             CurrentRequest.ViewerCode = previous_code;
 
             // Start with the default label on the menu
-            string label = "PDF";
+            string label = Localization_Gateway.PDF.Menu_Label_Default(CurrentRequest.Language);
 
             // Allow the label to be implemented for this viewer
             BriefItem_BehaviorViewer thisViewerInfo = CurrentItem.Behaviors.Get_Viewer(ViewerCode);
@@ -217,7 +218,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             if (String.IsNullOrEmpty(displayFileName))
             {
                 Output.WriteLine("\t\t<!-- PDF ITEM VIEWER OUTPUT -->");
-                Output.WriteLine("\t\t<td id=\"sbkPdf_MainArea\">ERROR: UNABLE TO FIND A PDF FILE IN THIS ITEM TO DISPLAY!</td>");
+                Output.WriteLine("\t\t<td id=\"sbkPdf_MainArea\">" + Localization_Gateway.PDF.Error_No_Pdf_Found(CurrentRequest.Language) + "</td>");
                 Output.WriteLine("\t\t<!-- END PDF VIEWER OUTPUT -->");
                 return;
             }
@@ -246,8 +247,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
             Output.WriteLine("\t\t<!-- PDF ITEM VIEWER OUTPUT -->");
             Output.WriteLine("\t\t<td id=\"sbkPdf_MainArea\">");
             Output.WriteLine("<table style=\"width:95%;\"><tr>");
-            Output.WriteLine("<td style=\"text-align:left\"><a id=\"sbkPdf_DownloadFileLink\" href=\"" + displayFileName + "\">Download this PDF</a></td>");
-            Output.WriteLine("<td style=\"text-align:right\"><a id=\"sbkPdf_DownloadAdobeReaderLink\" href=\"http://get.adobe.com/reader/\"><img src=\"" + Static_Resources_Gateway.Get_Adobe_Reader_Png + "\" alt=\"Download Adobe Reader\" /></a></td>");
+            Output.WriteLine("<td style=\"text-align:left\"><a id=\"sbkPdf_DownloadFileLink\" href=\"" + displayFileName + "\">" + Localization_Gateway.PDF.Download_This_Pdf(CurrentRequest.Language) + "</a></td>");
+            Output.WriteLine("<td style=\"text-align:right\"><a id=\"sbkPdf_DownloadAdobeReaderLink\" href=\"http://get.adobe.com/reader/\"><img src=\"" + Static_Resources_Gateway.Get_Adobe_Reader_Png + "\" alt=\"" + Localization_Gateway.PDF.Download_Adobe_Reader_Alt(CurrentRequest.Language) + "\" /></a></td>");
             Output.WriteLine("</tr></table><br />");
 
 

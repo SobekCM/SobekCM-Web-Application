@@ -1,10 +1,12 @@
 using Microsoft.AspNetCore.Http;
 using SobekCM.Core.BriefItem;
 using SobekCM.Core.Client;
+using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Items;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Users;
 using SobekCM.Library.ItemViewer.Menu;
+using SobekCM.Library.Localization;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
 using System;
@@ -86,7 +88,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             CurrentRequest.ViewerCode = previous_code;
 
             // Add the item menu information
-            var menuItem = new Item_MenuItem("Description", "Usage Statistics", null, url, ViewerCode);
+            var menuItem = new Item_MenuItem("Description", Localization_Gateway.Citation_Common.Menu_Usage_Statistics(CurrentRequest.Language), null, url, ViewerCode);
             MenuItems.Add(menuItem);
         }
 
@@ -155,7 +157,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             // If this is DARK and the user cannot edit and the flag is not set to show citation, show nothing here
             if ((BriefItem.Behaviors.Dark_Flag) && (!userCanEditItem) && (!UI_ApplicationCache_Gateway.Settings.Resources.Show_Citation_For_Dark_Items))
             {
-                Output.WriteLine("          <div id=\"darkItemSuppressCitationMsg\">This item is DARK and cannot be viewed at this time</div>" + Environment.NewLine + "</td>" + Environment.NewLine + "  <!-- END CITATION VIEWER OUTPUT -->");
+                Output.WriteLine("          <div id=\"darkItemSuppressCitationMsg\">" + Localization_Gateway.Citation_Common.Dark_Item_Message(CurrentRequest.Language) + "</div>" + Environment.NewLine + "</td>" + Environment.NewLine + "  <!-- END CITATION VIEWER OUTPUT -->");
                 return;
             }
 
@@ -191,6 +193,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         {
             Tracer?.Add_Trace("Citation_ItemViewer.Statistics_String", "Create the statistics html");
 
+            Web_Language_Enum language = CurrentRequest.Language;
             int hits = 0;
             int sessions = 0;
 
@@ -199,14 +202,14 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             var builder = new StringBuilder(2000);
 
-            builder.AppendLine("  <p>Usage statistics for items are compiled once a month from the previous month's usage logs and does not contain any personal information.</p>");
-            builder.AppendLine("  <p>This item was has been viewed <%HITS%> times within <%SESSIONS%> visits.  Below are the details for overall usage for this item within this library.<br /><br />For definitions of these terms, see the <a href=\"" + CurrentRequest.Base_URL + "stats/usage/definitions\" target=\"_BLANK\">definitions on the main statistics page</a>.</p>");
+            builder.AppendLine("  <p>" + Localization_Gateway.Item_Usage_Stats.Compiled_Monthly_Notice(language) + "</p>");
+            builder.AppendLine("  <p>" + String.Format(Localization_Gateway.Item_Usage_Stats.Viewed_Times_Sentence(language), CurrentRequest.Base_URL + "stats/usage/definitions") + "</p>");
 
             builder.AppendLine("  <table class=\"sbkCiv_StatsTable\">");
             builder.AppendLine("    <tr class=\"sbkCiv_StatsTableHeaderRow\">");
-            builder.AppendLine("      <th style=\"width:120px\">Date</th>");
-            builder.AppendLine("      <th style=\"width:90px\">Views</th>");
-            builder.AppendLine("      <th style=\"width:90px\">Visits</th>");
+            builder.AppendLine("      <th style=\"width:120px\">" + Localization_Gateway.Item_Usage_Stats.Date(language) + "</th>");
+            builder.AppendLine("      <th style=\"width:90px\">" + Localization_Gateway.Item_Usage_Stats.Views(language) + "</th>");
+            builder.AppendLine("      <th style=\"width:90px\">" + Localization_Gateway.Item_Usage_Stats.Visits(language) + "</th>");
             builder.AppendLine("    </tr>");
 
             const int COLUMNS = 3;
@@ -217,7 +220,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 {
                     if (thisRow.Year != last_year)
                     {
-                        builder.AppendLine("    <tr><td class=\"sbkCiv_StatsTableYearRow\" colspan=\"" + COLUMNS + "\">" + thisRow.Year + " STATISTICS</td></tr>");
+                        builder.AppendLine("    <tr><td class=\"sbkCiv_StatsTableYearRow\" colspan=\"" + COLUMNS + "\">" + thisRow.Year + Localization_Gateway.Item_Usage_Stats.Year_Statistics_Suffix(language) + "</td></tr>");
                         last_year = thisRow.Year;
                     }
                     else
@@ -254,7 +257,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
                 builder.AppendLine("    <tr><td class=\"sbkCiv_StatsTableFinalSeperator\" colspan=\"" + COLUMNS + "\"></td></tr>");
                 builder.AppendLine("    <tr id=\"sbkCiv_StatsTableTotalRow\" >");
-                builder.AppendLine("      <td style=\"text-align:left\">TOTAL</td>");
+                builder.AppendLine("      <td style=\"text-align:left\">" + Localization_Gateway.Item_Usage_Stats.Total(language) + "</td>");
                 builder.AppendLine("      <td>" + hits + "</td>");
                 builder.AppendLine("      <td>" + sessions + "</td>");
                 builder.AppendLine("    </tr>");
@@ -266,67 +269,16 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             if (hits == 0)
             {
-                return "<br /><br /><p>Usage statistics are accumulated monthly and have not yet been recorded for this item.</p><br /><br />";
+                return "<br /><br /><p>" + Localization_Gateway.Item_Usage_Stats.No_Stats_Yet_Message(language) + "</p><br /><br />";
             }
 
             return builder.ToString().Replace("<%HITS%>", hits.ToString()).Replace("<%SESSIONS%>", sessions.ToString());
 
         }
 
-        private static string Month_From_Int(int Month_Int)
+        private string Month_From_Int(int Month_Int)
         {
-            string monthString1 = "Invalid";
-            switch (Month_Int)
-            {
-                case 1:
-                    monthString1 = "January";
-                    break;
-
-                case 2:
-                    monthString1 = "February";
-                    break;
-
-                case 3:
-                    monthString1 = "March";
-                    break;
-
-                case 4:
-                    monthString1 = "April";
-                    break;
-
-                case 5:
-                    monthString1 = "May";
-                    break;
-
-                case 6:
-                    monthString1 = "June";
-                    break;
-
-                case 7:
-                    monthString1 = "July";
-                    break;
-
-                case 8:
-                    monthString1 = "August";
-                    break;
-
-                case 9:
-                    monthString1 = "September";
-                    break;
-
-                case 10:
-                    monthString1 = "October";
-                    break;
-
-                case 11:
-                    monthString1 = "November";
-                    break;
-
-                case 12:
-                    monthString1 = "December";
-                    break;
-            }
-            return monthString1;
+            return Localization_Gateway.Item_Usage_Stats.Month(Month_Int, CurrentRequest.Language);
         }
 
         #endregion

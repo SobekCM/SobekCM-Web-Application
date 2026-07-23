@@ -5,6 +5,7 @@ using SobekCM.Core.Aggregations;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Navigation;
 using SobekCM.Library.HTML;
+using SobekCM.Library.Localization;
 using SobekCM.Library.MainWriters;
 using SobekCM.Tools;
 using System;
@@ -112,19 +113,9 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         {
             Tracer?.Add_Trace("Newspaper_Search_AggregationViewer.Write_Search_Box_HTML", "Adding html for search box");
 
-            string search_language = "Search for:";
-            string in_language = "in";
-            if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.Spanish)
-            {
-                search_language = "Búsqueda de la:";
-                in_language = "en";
-            }
-
-            if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.French)
-            {
-                search_language = "Recherche de:";
-                in_language = "en";
-            }
+            Web_Language_Enum language = RequestSpecificValues.Current_Mode.Language;
+            string search_language = Localization_Gateway.Advanced_Search.Search_For(language);
+            string in_language = Localization_Gateway.Advanced_Search.In(language);
 
             Output.WriteLine("  <table id=\"sbkNsav_SearchPanel\" >");
             Output.WriteLine("    <tr>");
@@ -134,13 +125,13 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             Output.WriteLine("      <td style=\"width:5%;text-align:center;\">" + in_language + "</td>");
             Output.WriteLine("      <td style=\"width:8%;\">");
             Output.WriteLine("        <select name=\"Dropdownlist1\" id=\"Dropdownlist1\" class=\"sbkNsav_DropDownList\" >");
-            Output.WriteLine("          <option value=\"ZZ\" selected=\"selected\">Full Citation</option>");
-            Output.WriteLine("          <option value=\"TX\">Full Text</option>");
-            Output.WriteLine("          <option value=\"TI\">Newspaper Title</option>");
-            Output.WriteLine("          <option value=\"PP\">Location</option>");
+            Output.WriteLine("          <option value=\"ZZ\" selected=\"selected\">" + Localization_Gateway.Newspaper_Search.Full_Citation(language) + "</option>");
+            Output.WriteLine("          <option value=\"TX\">" + Localization_Gateway.Newspaper_Search.Full_Text(language) + "</option>");
+            Output.WriteLine("          <option value=\"TI\">" + Localization_Gateway.Newspaper_Search.Newspaper_Title(language) + "</option>");
+            Output.WriteLine("          <option value=\"PP\">" + Localization_Gateway.Newspaper_Search.Location(language) + "</option>");
             Output.WriteLine("        </select>");
             Output.WriteLine("      </td>");
-            Output.WriteLine("      <td> &nbsp; <button class=\"sbk_GoButton\" onclick=\"" + Search_Script_Action + ";return false;\">Go</button></td>");
+            Output.WriteLine("      <td> &nbsp; <button class=\"sbk_GoButton\" onclick=\"" + Search_Script_Action + ";return false;\">" + Localization_Gateway.Aggregation_Common.Go(language) + "</button></td>");
             Output.WriteLine("      <td><div id=\"circular_progress\" name=\"circular_progress\" class=\"hidden_progress\">&nbsp;</div></td>");
             Output.WriteLine("    </tr>");
             Output.WriteLine("  </table>");

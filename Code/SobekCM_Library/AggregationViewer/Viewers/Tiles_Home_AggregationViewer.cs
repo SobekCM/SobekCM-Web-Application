@@ -6,6 +6,7 @@ using SobekCM.Core.Search;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Engine_Library.Database;
 using SobekCM.Library.HTML;
+using SobekCM.Library.Localization;
 using SobekCM.Library.UI;
 using SobekCM.Resource_Object;
 using SobekCM.Tools;
@@ -236,7 +237,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         {
             Tracer?.Add_Trace("Tiles_Home_AggregationViewer.Write_Main_HTML", "Add the entire tiled home page");
 
-            const string VARIES_STRING = "<span style=\"color:Gray\">( varies )</span>";
+            string VARIES_STRING = "<span style=\"color:Gray\">" + Localization_Gateway.Tiles_Home.Varies(RequestSpecificValues.Current_Mode.Language) + "</span>";
 
             Output.WriteLine("<div id=\"sbkThav_TileContainer\">");
 

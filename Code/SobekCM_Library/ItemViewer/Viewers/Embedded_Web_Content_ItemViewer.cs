@@ -3,6 +3,7 @@ using SobekCM.Core.BriefItem;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Users;
 using SobekCM.Library.ItemViewer.Menu;
+using SobekCM.Library.Localization;
 using SobekCM.Tools;
 using System;
 using System.Collections.Generic;
@@ -75,7 +76,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             CurrentRequest.ViewerCode = previous_code;
 
             // Start with the default label on the menu
-            string label = "Content";
+            string label = Localization_Gateway.Embedded_Web_Content.Menu_Content_Label(CurrentRequest.Language);
 
             // Allow the label to be implemented for this viewer
             BriefItem_BehaviorViewer thisViewerInfo = CurrentItem.Behaviors.Get_Viewer(ViewerCode);
@@ -143,7 +144,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
 
             // Add the HTML for the image
-            Output.WriteLine("          <td><div id=\"sbkEwc_ViewerTitle\">Content</div></td>");
+            Output.WriteLine("          <td><div id=\"sbkEwc_ViewerTitle\">" + Localization_Gateway.Embedded_Web_Content.Viewer_Title(CurrentRequest.Language) + "</div></td>");
             Output.WriteLine("        </tr>");
             Output.WriteLine("        <tr>");
             Output.WriteLine("          <td id=\"sbkEwc_MainArea\">");

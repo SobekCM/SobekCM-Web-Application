@@ -5,6 +5,7 @@ using SobekCM.Core.Aggregations;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Navigation;
 using SobekCM.Library.HTML;
+using SobekCM.Library.Localization;
 using SobekCM.Tools;
 using System;
 using System.Collections.Generic;
@@ -115,17 +116,8 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         {
             Tracer?.Add_Trace("Banner_Search_AggregationViewer.Write_Search_Box_HTML", "Adding html for search box");
 
-            string search_collection = "Search Collection";
-            //string include_privates = "Include non-public items";
-            if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.Spanish)
-            {
-                search_collection = "Buscar en la colección";
-            }
-
-            if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.French)
-            {
-                search_collection = "Recherche dans la collection";
-            }
+            Web_Language_Enum language = RequestSpecificValues.Current_Mode.Language;
+            string search_collection = Localization_Gateway.Aggregation_Common.Search_Collection(language);
 
             string banner_image = RequestSpecificValues.Current_Mode.Base_URL + frontBannerInfo;
             string collection = RequestSpecificValues.Current_Mode.Aggregation;
@@ -134,7 +126,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 collection = "all";
 
             if (collection.ToLower() == "all")
-                search_collection = "Search All Collections";
+                search_collection = Localization_Gateway.Aggregation_Common.Search_All_Collections(language);
 
             Output.WriteLine("<div style=\"text-align:left;\">");
             Output.WriteLine("<div id=\"sbkBhs_OuterDiv_" + collection + "\" class=\"sbkBhs_OuterDiv\" style=\"background-image: url( " + banner_image + ");\">");
@@ -147,7 +139,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             Output.WriteLine("    <label for=\"SobekHomeBannerSearchBox\" id=\"sbkBhs_SearchPrompt_" + collection + "\" class=\"sbkRhav_SearchPrompt\">" + search_collection + ":</label>");
 
             Output.WriteLine("    <input name=\"u_search\" type=\"text\" id=\"SobekHomeBannerSearchBox\" class=\"sbkRhav_SearchBox sbk_Focusable\" value=\"" + textBoxValue + "\" onkeydown=\"return fnTrapKD(event, 'basic', '" + arg1 + "', '" + arg2 + "','" + browse_url + "');\" />");
-            Output.WriteLine("    <button class=\"sbk_GoButton\" title=\"" + search_collection + "\" onclick=\"" + Search_Script_Action + ";return false;\">Go</button>");
+            Output.WriteLine("    <button class=\"sbk_GoButton\" title=\"" + search_collection + "\" onclick=\"" + Search_Script_Action + ";return false;\">" + Localization_Gateway.Aggregation_Common.Go(language) + "</button>");
             Output.WriteLine("  </div>");
 
             Output.WriteLine("</div>");

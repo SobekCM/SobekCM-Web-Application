@@ -9,6 +9,7 @@ using SobekCM.Core.Navigation;
 using SobekCM.Engine_Library.Database;
 using SobekCM.Engine_Library.Solr.v5;
 using SobekCM.Library.HTML;
+using SobekCM.Library.Localization;
 using SobekCM.Library.MainWriters;
 using SobekCM.Tools;
 using System;
@@ -120,24 +121,16 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 SharedCache.Instance.Set(key, yearRange, new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(5) });
             }
 
-            string search_collection = "Search Collection";
-            const string YEAR_RANGE = "Limit by Year";
-            if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.Spanish)
-            {
-                search_collection = "Buscar en la colección";
-            }
-
-            if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.French)
-            {
-                search_collection = "Recherche dans la collection";
-            }
+            Web_Language_Enum language = RequestSpecificValues.Current_Mode.Language;
+            string search_collection = Localization_Gateway.Aggregation_Common.Search_Collection(language);
+            string YEAR_RANGE = Localization_Gateway.Aggregation_Common.Limit_By_Year(language);
 
             Output.WriteLine("  <table id=\"sbkBsav_SearchPanel_Years\" >");
             Output.WriteLine("    <tr>");
             Output.WriteLine("      <td style=\"text-align:right;width:27%;\" id=\"sbkBsav_SearchPrompt\"><label for=\"SobekHomeSearchBox\">" + search_collection + ":</label></td>");
             Output.WriteLine("      <td style=\"width:3%;\">&nbsp;</td>");
             Output.WriteLine("      <td style=\"width:60%;\"><input name=\"u_search\" type=\"text\" class=\"sbkBsav_SearchBox sbk_Focusable\" id=\"SobekHomeSearchBox\" value=\"" + textBoxValue + "\" onkeydown=\"return fnTrapKD(event, 'basicyears', '" + arg1 + "', '" + arg2 + "','" + browse_url + "');\" /></td>");
-            Output.WriteLine("      <td style=\"width:10%;\"><button class=\"sbk_GoButton\" title=\"" + search_collection + "\" onclick=\"" + Search_Script_Action + ";return false;\">Go</button></td>");
+            Output.WriteLine("      <td style=\"width:10%;\"><button class=\"sbk_GoButton\" title=\"" + search_collection + "\" onclick=\"" + Search_Script_Action + ";return false;\">" + Localization_Gateway.Aggregation_Common.Go(language) + "</button></td>");
             Output.WriteLine("      <td><div id=\"circular_progress\" name=\"circular_progress\" class=\"hidden_progress\">&nbsp;</div></td>");
             Output.WriteLine("    </tr>");
 
@@ -169,7 +162,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 }
                 Output.WriteLine("        </select>");
 
-                Output.WriteLine("&nbsp; through &nbsp;");
+                Output.WriteLine("&nbsp; " + Localization_Gateway.Aggregation_Common.Through(language) + " &nbsp;");
 
                 Output.WriteLine("        <select name=\"YearDropDown2\" id=\"YearDropDown2\" class=\"sbkBsav_YearDropDown\">");
                 //	Output.WriteLine("          <option value=\"ZZ\"> </option>");

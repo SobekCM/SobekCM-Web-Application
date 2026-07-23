@@ -5,6 +5,7 @@ using SobekCM.Core.Navigation;
 using SobekCM.Core.Users;
 using SobekCM.Library.HTML;
 using SobekCM.Library.ItemViewer.Menu;
+using SobekCM.Library.Localization;
 using SobekCM.Tools;
 using System;
 using System.Collections.Generic;
@@ -85,7 +86,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             // Finally, just default to HTML otherwise
             if (String.IsNullOrEmpty(first_label))
-                first_label = "HTML";
+                first_label = Localization_Gateway.HTML_Viewer.Menu_Default_Label(CurrentRequest.Language);
 
             // Get the URL for this
             string previous_code = CurrentRequest.ViewerCode;

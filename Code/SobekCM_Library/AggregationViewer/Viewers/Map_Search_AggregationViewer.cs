@@ -6,6 +6,7 @@ using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Navigation;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Library.HTML;
+using SobekCM.Library.Localization;
 using SobekCM.Library.MainWriters;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
@@ -220,17 +221,11 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         {
             Tracer?.Add_Trace("Map_Search_AggregationViewer.Write_Search_Box_HTML", "Adding html for search box");
 
-            string search_button_text = "Search";
-            string find_button_text = "Find Address";
-            string address_text = "Address";
-            const string LOCATE_TEXT = "Locate";
-
-            if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.Spanish)
-            {
-                search_button_text = "Buscar";
-                find_button_text = "Localizar";
-                address_text = "Dirección";
-            }
+            Web_Language_Enum language = RequestSpecificValues.Current_Mode.Language;
+            string search_button_text = Localization_Gateway.Advanced_Search.Search(language);
+            string find_button_text = Localization_Gateway.Map_Search.Find_Address(language);
+            string address_text = Localization_Gateway.Map_Search.Address(language);
+            string LOCATE_TEXT = Localization_Gateway.Map_Search.Locate(language);
 
 
             bool show_coordinates = false;
@@ -244,58 +239,16 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             Output.WriteLine("  <table id=\"sbkMsav_SearchPanel\" >");
             Output.WriteLine("  <tr>");
             Output.WriteLine("    <td colspan=\"2\">");
-            switch (RequestSpecificValues.Current_Mode.Language)
+            if (pointSearchingDisabled)
             {
-
-                case Web_Language_Enum.Spanish:
-                    if (pointSearchingDisabled)
-                    {
-                        Output.WriteLine("          <table>");
-                        Output.WriteLine("            <tr><td><span style=\"line-height:160%\"> &nbsp; &nbsp; 1. Use the <i>Select Area</i> button and click to select opposite corners to draw a search box on the map &nbsp; &nbsp; <br /> &nbsp; &nbsp; 2. Press the <i>Search</i> button to see results &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; ( <a href=\"#FAQ\">more help</a> )</span> </td>");
-                        Output.WriteLine("                <td><button name=\"searchButton\" id=\"searchButton\" class=\"SobekSearchButton\" onclick=\"" + Search_Script_Action + "\">" + search_button_text + "<img id=\"sbkMsav_ButtonArrow\" src=\"" + Static_Resources_Gateway.Button_Next_Arrow2_Png + "\" alt=\"\" /></button></td></tr>");
-                        Output.WriteLine("          </table>");
-                    }
-                    else
-                    {
-                        Output.WriteLine("        <div class=\"sbkMsav_InstructionsLink\" id=\"MapInstructionsLink\" style=\"display:block\" >");
-                        Output.WriteLine("          <a href=\"\" onclick=\"return show_map_instructions();\">Haga click aquí para ver las instrucciones para la interfase de esta búsqueda.</a>");
-                        Output.WriteLine("        </div>");
-                        Output.WriteLine("        <div class=\"sbkMsav_Instructions\" id=\"MapInstructions\" style=\"display:none\" >");
-                        Output.WriteLine("          <table>");
-                        Output.WriteLine("            <tr><td colspan=\"2\">1. Utilice uno de los siguientes métodos para definir su búsqueda geográfica:</td></tr>");
-                        Output.WriteLine("            <tr><td style=\"width:50px;\">&nbsp;</td><td>a. Escriba una dirección y haga click en el botón <i>Localizar</a> para localizarla, <i>o</i></td></tr>");
-                        Output.WriteLine("            <tr><td>&nbsp;</td><td>b. Haga click sobre el botón <i>Presione para Selecionar Area</i> para seleccionar dos esquinas opuestas, <i>o</i></td></tr>");
-                        Output.WriteLine("            <tr><td>&nbsp;</td><td>c. Haga click sobre el botón <i>Presione para Seleccionar un Punto</i> para seleccionar un punto individual</td></tr>");
-                        Output.WriteLine("            <tr><td colspan=\"2\">2. Presione el botón <i>Buscar</i> para ver los resultados. &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; ( <a href=\"#FAQ\">more help</a> )</td></tr>");
-                        Output.WriteLine("          </table>");
-                        Output.WriteLine("        </div>");
-                    }
-                    break;
-
-                default:
-                    if (pointSearchingDisabled)
-                    {
-                        Output.WriteLine("          <table>");
-                        Output.WriteLine("            <tr><td><span style=\"line-height:160%\"> &nbsp; &nbsp; 1. Use the <i>Select Area</i> button and click to select opposite corners to draw a search box on the map &nbsp; &nbsp; <br /> &nbsp; &nbsp; 2. Press the <i>Search</i> button to see results &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; ( <a href=\"#FAQ\">more help</a> )</span> </td>");
-                        Output.WriteLine("                <td><button name=\"searchButton\" id=\"searchButton\" class=\"SobekSearchButton\" onclick=\"" + Search_Script_Action + "\">" + search_button_text + "<img id=\"sbkMsav_ButtonArrow\" src=\"" + Static_Resources_Gateway.Button_Next_Arrow2_Png + "\" alt=\"\" /></button></td></tr>");
-                        Output.WriteLine("          </table>");
-                    }
-                    else
-                    {
-                        Output.WriteLine("        <div class=\"sbkMsav_InstructionsLink\" id=\"MapInstructionsLink\" style=\"display:block\" >");
-                        Output.WriteLine("          <a href=\"\" onclick=\"return show_map_instructions();\">Click here to view instructions for this search interface</a>");
-                        Output.WriteLine("        </div>");
-                        Output.WriteLine("        <div class=\"sbkMsav_Instructions\" id=\"MapInstructions\" style=\"display:none\" >");
-                        Output.WriteLine("          <table>");
-                        Output.WriteLine("            <tr><td colspan=\"2\">1. Use one of the methods below to define your geographic search:</td></tr>");
-                        Output.WriteLine("            <tr><td style=\"width:50px;\">&nbsp;</td><td>a. Enter an address and press <i>Find Address</i> to locate, <i>or</i></td></tr>");
-                        Output.WriteLine("            <tr><td>&nbsp;</td><td>b. Press the <i>Select Area</i> button and click to select two opposite corners, <i>or</i></td></tr>");
-                        Output.WriteLine("            <tr><td>&nbsp;</td><td>c. Press the <i>Select Point</i> button and click to select a single point</td></tr>");
-                        Output.WriteLine("            <tr><td colspan=\"2\">2. Press the <i>Search</i> button to see results &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; ( <a href=\"#FAQ\">more help</a> )</td></tr>");
-                        Output.WriteLine("          </table>");
-                        Output.WriteLine("        </div>");
-                    }
-                    break;
+                Output.WriteLine("          <table>");
+                Output.WriteLine("            <tr><td>" + Localization_Gateway.Map_Search.Point_Disabled_Instructions_Html(language) + "</td>");
+                Output.WriteLine("                <td><button name=\"searchButton\" id=\"searchButton\" class=\"SobekSearchButton\" onclick=\"" + Search_Script_Action + "\">" + search_button_text + "<img id=\"sbkMsav_ButtonArrow\" src=\"" + Static_Resources_Gateway.Button_Next_Arrow2_Png + "\" alt=\"\" /></button></td></tr>");
+                Output.WriteLine("          </table>");
+            }
+            else
+            {
+                Output.WriteLine(Localization_Gateway.Map_Search.Instructions_Html(language));
             }
 
             if (!pointSearchingDisabled)
@@ -334,9 +287,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             if (String.IsNullOrWhiteSpace(UI_ApplicationCache_Gateway.Settings.System.Google_Map_API_Key))
             {
                 Output.WriteLine("  <div style=\"width: " + width + "px; height: " + mapHeight + "px;padding: 25px\">");
-                Output.WriteLine("              <p style=\"font-weight:bold; text-size:1.1em\">ERROR: Google Maps are not enabled on this instance of SobekCM!</p>");
-                Output.WriteLine("              <p style=\"width: " + (width - 100) + "px;\">To enable them, please create a Google Map API key and enter it in the system-wide settings.</p>");
-                Output.WriteLine("              <p style=\"width: " + (width - 100) + "px;\">Information on this process can be found here: <a href=\"http://sobekrepository.org/software/config/googlemaps\">http://sobekrepository.org/software/config/googlemaps</a>.</p>");
+                Output.WriteLine(Localization_Gateway.Map_Common.Google_Maps_Not_Enabled_Html(language));
                 Output.WriteLine("  </div>");
             }
             else
@@ -434,49 +385,9 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             }
             else
             {
-                Output.WriteLine("  <h1>Map Search FAQ</h1>");
-                Output.WriteLine("  <ul>");
-                Output.WriteLine("    <li>How do I search?");
-                if (!pointSearchingDisabled)
-                {
-                    Output.WriteLine("      <p class=\"tagline\">To perform a search, you first need to define your area or point of interest and then perform the search.  There are several ways to define your area of interest.  You can either enter an address to search or you can draw either a region or point on the map.  Once you have defined your search, click the <i>Search</i> button to discover any matches to that location.</p>");
-                    Output.WriteLine("      <p class=\"tagline\">To search for addresses, type in an address and click on the <i>Find Address</i> button.   You may also use major landmark names, although addresses may work better.  Be sure to include the city and state in your search as well.   Once the address is located on the map, click <i>Search</i> to discover aerials which include that location. </p>");
-                    Output.WriteLine("      <p class=\"tagline\">To search by map, click either <i>Press to Select Area</i> or <i>Press to Select Point</i> on the map.  When using Select Area, click on a starting point on the map and then click on the opposite corner to create a rectangle.  By clicking on <i>Search</i> above the map, you will retrieve matches for that area.  With Select Point, choose a specific location and click on Search.</p>");
-                }
-                else
-                {
-                    Output.WriteLine("      <p class=\"tagline\">To perform a search, you first need to define your area of interest and then perform the search.  To define an area, click <i>Press to Select Area</i> on the map.  Then click on a starting point on the map and then click on the opposite corner to create a rectangle.  By clicking on <i>Search</i> above the map, you will retrieve matches for that area.</p>");
-
-                }
-                Output.WriteLine("    </li>");
-
-                Output.WriteLine("    <li>I am having difficulty selecting an area");
-                Output.WriteLine("      <p class=\"tagline\">Selecting a rectangular area to search is simple once you understand the technique.  First, select the <i>Press to Select Area</i> button on the map.  Then, move to the top left corner of the region you wish to search and click and release the left mouse button.  As you move the mouse now you will notice a rectangle is being drawn which represents your region.  When you click and release the mouse again, you define the lower right corner of the region to search.  Do not press the mouse button and drag the mouse, as this will drag the map around, and will not define a region to select.  Once your region is correctly identified, press the <i>Search</i> button to view matching results.</p>");
-                Output.WriteLine("    </li>");
-
-                if (!pointSearchingDisabled)
-                {
-                    Output.WriteLine("    <li>I am having difficulty searching by address");
-                    Output.WriteLine("      <p class=\"tagline\">Be sure to enter the complete address, including state and country.  You can also try to use the name of a major landmark, but using an address often works better.  Once you enter the address or major landmark name, press the <i>Find Address</i> button.  Look at the map and verify that the location found on the map matches your desired search.  Then, press the <i>Search</i> button to view matching results.</p>");
-                    Output.WriteLine("    </li>");
-                }
-                else
-                {
-                    Output.WriteLine("    <li>Why can't I search by address or by a point?");
-                    Output.WriteLine("      <p class=\"tagline\">This collection is composed primarily of points, so area searching is much more effective than point searching.</p>");
-                    Output.WriteLine("    </li>");
-
-                }
-
-                Output.WriteLine("    <li>What is being searched?");
-                Output.WriteLine("      <p class=\"tagline\">The data searched depends upon the material type.  For newspapers, the place of publication is searched.  For maps, the geographic coverage is searched.  And for photographs, the location the photograph was taken is searched.</p>");
-                Output.WriteLine("    </li>");
-
-                Output.WriteLine("    <li>Why so few hits?");
-                Output.WriteLine("      <p class=\"tagline\"> This interface is in beta testing, as we add more coordinate information to our database to search.  Check back often to see our progress!</p>");
-                Output.WriteLine("    </li>");
-
-                Output.WriteLine("  </ul>");
+                Output.WriteLine(!pointSearchingDisabled
+                    ? Localization_Gateway.Map_Search.Faq_Point_Enabled_Html(RequestSpecificValues.Current_Mode.Language)
+                    : Localization_Gateway.Map_Search.Faq_Point_Disabled_Html(RequestSpecificValues.Current_Mode.Language));
             }
 
             Output.WriteLine("</div>");

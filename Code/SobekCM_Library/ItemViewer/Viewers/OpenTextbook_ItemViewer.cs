@@ -8,6 +8,7 @@ using SobekCM.Core.Users;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Library.Helpers.CKEditor;
 using SobekCM.Library.ItemViewer.Menu;
+using SobekCM.Library.Localization;
 using SobekCM.Tools;
 using System;
 using System.Collections.Generic;
@@ -81,7 +82,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             CurrentRequest.ViewerCode = previous_code;
 
             // Add the item menu information
-            var menuItem = new Item_MenuItem("Open Textbook", null, null, url, ViewerCode);
+            var menuItem = new Item_MenuItem(Localization_Gateway.OpenTextbook.Menu_Default_Label(CurrentRequest.Language), null, null, url, ViewerCode);
             MenuItems.Add(menuItem);
         }
 
@@ -237,7 +238,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     }
                     else
                     {
-                        page_names[i] = "Unnumbered " + (i + 1).ToString();
+                        page_names[i] = Localization_Gateway.OpenTextbook_Common.Unnumbered_Page_Prefix(CurrentRequest.Language) + (i + 1).ToString();
                     }
                 }
 
@@ -246,7 +247,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 {
                     for (int i = 0; i < page_names.Length; i++)
                     {
-                        page_names[i] = "Page " + (i + 1).ToString();
+                        page_names[i] = Localization_Gateway.OpenTextbook_Common.Page_Prefix(CurrentRequest.Language) + (i + 1).ToString();
                     }
                 }
                 return page_names;
@@ -350,13 +351,13 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
                 // Add search box
                 Output.WriteLine("\t\t\t\t<div id=\"sbkOeriv_SearchDiv\">");
-                Output.WriteLine("\t\t\t\t\tSearch: ");
+                Output.WriteLine("\t\t\t\t\t" + Localization_Gateway.OpenTextbook_Common.Search_Label(CurrentRequest.Language));
                 Output.WriteLine("\t\t\t\t\t<input type=\"text\" id=\"oerSearchBox\" name=\"oerSearchBox\" />");
                 Output.WriteLine("\t\t\t\t</div>");
 
                 // Add zoom buttons
                 Output.WriteLine("\t\t\t\t<div id=\"sbkOeriv_ZoomDiv\">");
-                Output.WriteLine("\t\t\t\t\tZoom: ");
+                Output.WriteLine("\t\t\t\t\t" + Localization_Gateway.OpenTextbook_Common.Zoom_Label(CurrentRequest.Language));
                 Output.WriteLine("\t\t\t\t\t<a href=\"\" alt=\"small\" class=\"SbkOeriv_ZoomButtons\" id=\"sbkOeriv_SmallZoom\">T</a>&nbsp;");
                 Output.WriteLine("\t\t\t\t\t<a href=\"\" alt=\"medium\" class=\"SbkOeriv_ZoomButtons\" id=\"sbkOeriv_MediumZoom\">T</a>&nbsp;");
                 Output.WriteLine("\t\t\t\t\t<a href=\"\" alt=\"large\" class=\"SbkOeriv_ZoomButtons\" id=\"sbkOeriv_LargeZoom\">T</a>");
@@ -415,11 +416,11 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
                 if (page == 1)
                 {
-                    builder.AppendLine("<h2>Welcome to OpenPublishing</h2>");
+                    builder.AppendLine("<h2>" + Localization_Gateway.OpenTextbook.Welcome_Heading(CurrentRequest.Language) + "</h2>");
                     builder.AppendLine();
-                    builder.AppendLine("<p> You may edit your item here, by selecting <i>Edit Content</i> in the upper right corner of this page.</p>");
+                    builder.AppendLine("<p> " + Localization_Gateway.OpenTextbook.Welcome_Edit_Instructions(CurrentRequest.Language) + "</p>");
                     builder.AppendLine();
-                    builder.AppendLine("<p> To update your table of contents and create chapters, use the OpenPublishing tool, available in the internal header or through the <i>MANAGE</i> option in the item menu.</p>");
+                    builder.AppendLine("<p> " + Localization_Gateway.OpenTextbook.Welcome_Toc_Instructions(CurrentRequest.Language) + "</p>");
                 }
                 else
                 {
@@ -427,7 +428,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
                     builder.AppendLine("<h2>" + chapterLabel + "</h2>");
                     builder.AppendLine();
-                    builder.AppendLine("<p> You may edit this chapter here, by selecting <i>Edit Content</i> in the upper right corner of this page.</p>");
+                    builder.AppendLine("<p> " + Localization_Gateway.OpenTextbook.Chapter_Edit_Instructions(CurrentRequest.Language) + "</p>");
                 }
 
                 html = builder.ToString();
@@ -556,7 +557,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             else
             {
                 string url = base.Previous_Page_URL;
-                Output.WriteLine("\t\t\t<a href=\"" + url + "\" alt=\"Go to previous section\">");
+                Output.WriteLine("\t\t\t<a href=\"" + url + "\" alt=\"" + Localization_Gateway.OpenTextbook_Common.Previous_Section_Alt(CurrentRequest.Language) + "\">");
                 Output.WriteLine("\t\t\t\t<div id=\"sbkOeriv_PrevBar\">");
                 Output.WriteLine("\t\t\t\t\t<span class=\"sbkOeriv_BarSpacerSpan\"></span>");
                 Output.WriteLine("\t\t\t\t\t<img src=\"" + Static_Resources_Gateway.OpenTextBook_PrevButton_Img + "\" class=\"sbkOeriv_BarButton\" />");
@@ -572,7 +573,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             else
             {
                 string url = base.Next_Page_URL;
-                Output.WriteLine("\t\t\t<a href=\"" + url + "\" alt=\"Go to next section\">");
+                Output.WriteLine("\t\t\t<a href=\"" + url + "\" alt=\"" + Localization_Gateway.OpenTextbook_Common.Next_Section_Alt(CurrentRequest.Language) + "\">");
                 Output.WriteLine("\t\t\t\t<div id=\"sbkOeriv_NextBar\">");
                 Output.WriteLine("\t\t\t\t\t<span class=\"sbkOeriv_BarSpacerSpan\"></span>");
                 Output.WriteLine("\t\t\t\t\t<img src=\"" + Static_Resources_Gateway.OpenTextBook_NextButton_Img + "\" class=\"sbkOeriv_BarButton\" />");

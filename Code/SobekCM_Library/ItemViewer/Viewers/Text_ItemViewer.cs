@@ -4,6 +4,7 @@ using SobekCM.Core.FileSystems;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Users;
 using SobekCM.Library.ItemViewer.Menu;
+using SobekCM.Library.Localization;
 using SobekCM.Tools;
 using System;
 using System.Collections.Generic;
@@ -79,7 +80,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             CurrentRequest.ViewerCode = previous_code;
 
             // Add the item menu information
-            var menuItem = new Item_MenuItem("Page Images", "Text", null, url, ViewerCode);
+            var menuItem = new Item_MenuItem("Page Images", Localization_Gateway.Text_Viewer.Menu_Text(CurrentRequest.Language), null, url, ViewerCode);
             MenuItems.Add(menuItem);
         }
 
@@ -247,15 +248,15 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 Output.WriteLine("\t\t<td id=\"sbkTiv_ErrorArea\">");
                 if (error_occurred)
                 {
-                    Output.WriteLine("Unknown error while retrieving text");
+                    Output.WriteLine(Localization_Gateway.Text_Viewer.Unknown_Error(CurrentRequest.Language));
                 }
                 else if (file_does_not_exist)
                 {
-                    Output.WriteLine("No text file exists for this page");
+                    Output.WriteLine(Localization_Gateway.Text_Viewer.No_Text_File(CurrentRequest.Language));
                 }
                 else
                 {
-                    Output.WriteLine("No text is recorded for this page");
+                    Output.WriteLine(Localization_Gateway.Text_Viewer.No_Text_Recorded(CurrentRequest.Language));
                 }
             }
             else

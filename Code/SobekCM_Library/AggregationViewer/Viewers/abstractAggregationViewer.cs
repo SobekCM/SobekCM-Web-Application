@@ -7,6 +7,7 @@ using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
 using SobekCM.Library.HTML;
+using SobekCM.Library.Localization;
 using SobekCM.Library.MainWriters;
 using SobekCM.Tools;
 using System;
@@ -140,99 +141,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 
             // Write the quick tips
             Output.WriteLine("<!-- Add quick tips ( abstractAggregationViewer ) -->");
-
-            switch (RequestSpecificValues.Current_Mode.Language)
-            {
-                case Web_Language_Enum.French:
-                    Output.WriteLine("<div id=\"sbk_QuickTips\">");
-                    Output.WriteLine("  <h1>Conseils rapides</h1>");
-                    Output.WriteLine("  <ul>");
-                    Output.WriteLine("    <li>La Recherche Booléenne");
-                    Output.WriteLine("      <p class=\"tagline\"> Utilisez <b>+</b> ou <i><b>et</b></i> des termes et de trouver des documents avec <b>tous</b> les termes.<br />");
-                    Output.WriteLine("      Utilisez <b>-</b> ou <i><b>ou</b></i> entre les termes ou pour rechercher des enregistrements avec <b>l'un</b> des termes.<br />");
-                    Output.WriteLine("      Utilisez <b>!</b> ou <i><b>et not</b></i> entre les termes à exclure des enregistrements avec des termes.<br />");
-                    Output.WriteLine("      Si rien n'est indiqué, <i><b>et</b></i> est la valeur par défaut.<br />");
-                    Output.WriteLine("      EXEMPLE: naturelle et non histoire");
-                    Output.WriteLine("      </p>");
-                    Output.WriteLine("    </li>");
-                    Output.WriteLine("    <li>Recherche d'une Expression");
-                    Output.WriteLine("      <p class=\"tagline\"> Placer des guillemets autour d'une phrase recherchera la phrase exacte.<br />");
-                    Output.WriteLine("      EXEMPLE: &laquo;histoire naturelle&raquo;</p>");
-                    Output.WriteLine("    </li>");
-                    Output.WriteLine("    <li>Capitalisation");
-                    Output.WriteLine("      <p class=\"tagline\"> Les recherches ne sont pas la capitalisation sensible.<br />");
-                    Output.WriteLine("      EXEMPLE: La recherche de <i>NATUREL</i> rendra les mêmes résultats que la recherche de naturel <i>naturel</i></p>");
-                    Output.WriteLine("    </li>");
-                    Output.WriteLine("    <li>Les Signes Diacritiques");
-                    Output.WriteLine("      <p class=\"tagline\"> Pour rechercher des mots avec des signes diacritiques, le caractère doit être entré dans la zone de recherche.<br />");
-                    Output.WriteLine("      EXEMPLE: La recherche de <i>Précédent</i> est différente de <i>Precedent</i></p>");
-                    Output.WriteLine("    </li>");
-                    Output.WriteLine("  </ul>");
-                    Output.WriteLine("</div>");
-                    Output.WriteLine("<br />");
-                    Output.WriteLine();
-                    break;
-
-                case Web_Language_Enum.Spanish:
-                    Output.WriteLine("<div id=\"sbk_QuickTips\">");
-                    Output.WriteLine("  <h1>Consejos Rápidos:</h1>");
-                    Output.WriteLine("  <ul>");
-                    Output.WriteLine("    <li>Búsqueda Binaria");
-                    Output.WriteLine("      <p class=\"tagline\"> Utilice <b>+</b> o <i><b>y</b></i>entre los términos para encontrar registros con <b>todos</b> los términos.<br />");
-                    Output.WriteLine("      Utilice <b>-</b> o <i><b>o</b></i> entre los términos para encontrar registros con <b>cualquiera</b> de los términos.<br />");
-                    Output.WriteLine("      Utilice <b>!</b> o <i><b>y no</b></i>  entre los términos para excluir registros con los términos.<br />");
-                    Output.WriteLine("      Si no se indica nada , <i><b>y</b></i> es el predeterminado.<br />");
-                    Output.WriteLine("      EJEMPLO: natural y no historia ");
-                    Output.WriteLine("      </p>");
-                    Output.WriteLine("    </li>");
-                    Output.WriteLine("    <li>Búsqueda de Frases");
-                    Output.WriteLine("      <p class=\"tagline\"> Colocar comillas a una frase buscará la frase exacta.<br />");
-                    Output.WriteLine("      EJEMPLO: &quot;historio natural&quot;</p>");
-                    Output.WriteLine("    </li>");
-                    Output.WriteLine("    <li>Uso de Mayúsculas");
-                    Output.WriteLine("      <p class=\"tagline\"> Las búsquedas no distinguen las mayúsculas de las minúsculas.<br />");
-                    Output.WriteLine("      EJEMPLO: Buscar <i>NATURAL</i> dará el mismo resultado que buscar <i>natural</i></p>");
-                    Output.WriteLine("    </li>");
-                    Output.WriteLine("    <li>Tilde Diacrítica");
-                    Output.WriteLine("      <p class=\"tagline\"> Para buscar palabras con tilde diacrítica, el símbolo debe ser puesto en el cuadro de búsqueda.<br />");
-                    Output.WriteLine("      EJEMPLO: Buscar <i>Précédent</i> es una búsqueda diferente a <i>Precedent</i></p>");
-                    Output.WriteLine("    </li>");
-                    Output.WriteLine("  </ul>");
-                    Output.WriteLine("</div>");
-                    Output.WriteLine("  <br />");
-                    Output.WriteLine();
-                    break;
-
-                default:
-                    Output.WriteLine("<div id=\"sbk_QuickTips\">");
-                    Output.WriteLine("  <h1>Quick Tips</h1>");
-                    Output.WriteLine("  <ul>");
-                    Output.WriteLine("    <li>Boolean Searching");
-                    Output.WriteLine("      <p class=\"tagline\"> Use <b>+</b> or <i><b>and</b></i> between terms to find records with <b>all</b> the terms.<br />");
-                    Output.WriteLine("      Use <b>-</b> or <i><b>or</b></i> between terms to find records with <b>any</b> of the terms.<br />");
-                    Output.WriteLine("      Use <b>!</b> or <i><b>and not</b></i> between terms to exclude records with terms.<br />");
-                    Output.WriteLine("      If nothing is indicated, <b><i>and</i></b> is the default.<br />");
-                    Output.WriteLine("      EXAMPLE: natural and not history");
-                    Output.WriteLine("      </p>");
-                    Output.WriteLine("    </li>");
-                    Output.WriteLine("    <li>Phrase Searching");
-                    Output.WriteLine("      <p class=\"tagline\"> Placing quotes around a phrase will search for the exact phrase.<br />");
-                    Output.WriteLine("      EXAMPLE: &quot;natural history&quot;</p>");
-                    Output.WriteLine("    </li>");
-                    Output.WriteLine("    <li>Capitalization");
-                    Output.WriteLine("      <p class=\"tagline\"> Searches are not capitalization sensitive.<br />");
-                    Output.WriteLine("      EXAMPLE: Searching for <i>NATURAL</i> will return the same results as searching for <i>natural</i></p>");
-                    Output.WriteLine("    </li>");
-                    Output.WriteLine("    <li>Diacritics");
-                    Output.WriteLine("      <p class=\"tagline\"> To search for words with diacritics, the character must be entered into the search box.<br />");
-                    Output.WriteLine("      EXAMPLE: Searching <i>Précédent</i> is a different search than <i>Precedent</i></p>");
-                    Output.WriteLine("    </li>");
-                    Output.WriteLine("  </ul>");
-                    Output.WriteLine("</div>");
-                    Output.WriteLine("  <br />");
-                    Output.WriteLine();
-                    break;
-            }
+            Output.WriteLine(Localization_Gateway.Aggregation_Common.Quick_Tips_Html(RequestSpecificValues.Current_Mode.Language));
         }
 
         /// <summary> Add the HTML to be displayed in the basic search box </summary>
@@ -283,17 +192,8 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             RequestSpecificValues.Current_Mode.Info_Browse_Mode = String.Empty;
             RequestSpecificValues.Current_Mode.Aggregation_Type = aggrType;
 
-            string search_collection = "Search Collection";
-            const string INCLUDE_PRIVATES = "Include non-public items";
-            if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.Spanish)
-            {
-                search_collection = "Buscar en la colección";
-            }
-
-            if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.French)
-            {
-                search_collection = "Recherche dans la collection";
-            }
+            string search_collection = Localization_Gateway.Aggregation_Common.Search_Collection(RequestSpecificValues.Current_Mode.Language);
+            string include_privates = Localization_Gateway.Aggregation_Common.Include_Non_Public_Items(RequestSpecificValues.Current_Mode.Language);
 
             string textBoxValue = string.Empty;
             if (RequestSpecificValues.Current_Mode.Search_String.Length > 0)
@@ -305,12 +205,12 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             Output.WriteLine("  <div id=\"sbkBsav_SearchPanel\" role=\"search\" >");
             Output.WriteLine("    <label for=\"SobekHomeSearchBox\" id=\"sbkBsav_SearchPrompt\">" + search_collection + ":</label>");
             Output.WriteLine("    <input name=\"u_search\" type=\"text\" class=\"sbkBsav_SearchBox sbk_Focusable\" id=\"SobekHomeSearchBox\" value=\"" + textBoxValue + "\" onkeydown=\"return fnTrapKD(event, 'basic', '" + arg1 + "', '" + arg2 + "','" + browse_url + "');\" />");
-            Output.WriteLine("    <button id=\"sbkBsav_SearchButton\" class=\"sbk_GoButton\" title=\"" + search_collection + "\" onclick=\"" + Search_Script_Action + ";return false;\">Go</button>");
+            Output.WriteLine("    <button id=\"sbkBsav_SearchButton\" class=\"sbk_GoButton\" title=\"" + search_collection + "\" onclick=\"" + Search_Script_Action + ";return false;\">" + Localization_Gateway.Aggregation_Common.Go(RequestSpecificValues.Current_Mode.Language) + "</button>");
             Output.WriteLine("    <div id=\"circular_progress\" name=\"circular_progress\" class=\"hidden_progress\">&nbsp;</div>");
 
             if ((RequestSpecificValues.Current_User != null) && (RequestSpecificValues.Current_User.Is_System_Admin))
             {
-                Output.WriteLine("    <div id=\"sbkBsav_PrivateCheck\"><input type=\"checkbox\" value=\"PRIVATE_ITEMS\" name=\"privatecheck\" id=\"privatecheck\" unchecked onclick=\"focus_element( 'SobekHomeSearchBox');\" /><label for=\"privatecheck\">" + INCLUDE_PRIVATES + "</label></div>");
+                Output.WriteLine("    <div id=\"sbkBsav_PrivateCheck\"><input type=\"checkbox\" value=\"PRIVATE_ITEMS\" name=\"privatecheck\" id=\"privatecheck\" unchecked onclick=\"focus_element( 'SobekHomeSearchBox');\" /><label for=\"privatecheck\">" + include_privates + "</label></div>");
             }
 
             Output.WriteLine("  </div>");

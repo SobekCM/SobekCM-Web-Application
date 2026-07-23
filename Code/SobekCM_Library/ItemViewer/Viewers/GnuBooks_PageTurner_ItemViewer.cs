@@ -6,6 +6,7 @@ using SobekCM.Core.Users;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Library.HTML;
 using SobekCM.Library.ItemViewer.Menu;
+using SobekCM.Library.Localization;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
 using System;
@@ -85,7 +86,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             CurrentRequest.ViewerCode = previous_code;
 
             // Start with the default label on the menu
-            string label = "Page Turner";
+            string label = Localization_Gateway.GnuBooks_PageTurner.Menu_Default_Label(CurrentRequest.Language);
 
             // Allow the label to be implemented for this viewer
             BriefItem_BehaviorViewer thisViewerInfo = CurrentItem.Behaviors.Get_Viewer(ViewerCode);
@@ -151,7 +152,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             Tracer?.Add_Trace("GnuBooks_PageTurner_ItemViewer.Write_Main_Viewer_Section", "");
 
             // Add the division
-            Output.WriteLine("          <div id=\"GnuBook\"><p style=\"font-size: 14px;\">Book Turner presentations require a Javascript-enabled browser.</p></div>" + Environment.NewLine);
+            Output.WriteLine("          <div id=\"GnuBook\"><p style=\"font-size: 14px;\">" + Localization_Gateway.GnuBooks_PageTurner.No_Javascript_Message(CurrentRequest.Language) + "</p></div>" + Environment.NewLine);
 
 
             // Add the javascript

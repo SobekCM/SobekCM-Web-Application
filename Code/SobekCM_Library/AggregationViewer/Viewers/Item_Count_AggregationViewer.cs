@@ -3,9 +3,11 @@
 using Microsoft.AspNetCore.Http;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.Client;
+using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Navigation;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Library.HTML;
+using SobekCM.Library.Localization;
 using SobekCM.Library.MainWriters;
 using SobekCM.Tools;
 using System.Collections.Generic;
@@ -78,7 +80,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         /// <summary> Title for the page that displays this viewer, this is shown in the search box at the top of the page, just below the banner </summary>
         public override string Viewer_Title
         {
-            get { return "Resource Count in Collection"; }
+            get { return Localization_Gateway.Item_Count.Resource_Count_In_Collection(RequestSpecificValues.Current_Mode.Language); }
         }
 
         /// <summary> Gets the URL for the icon related to this aggregational viewer task </summary>
@@ -105,21 +107,22 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             Tracer?.Add_Trace("Item_Count_AggregationViewer.Write_Main_HTML", "Adding HTML");
 
             var stats = SobekEngineClient.Aggregations.Get_Item_Count(ViewBag.Hierarchy_Object.Code, Tracer);
+            Web_Language_Enum language = RequestSpecificValues.Current_Mode.Language;
 
             Output.WriteLine("<div class=\"SobekText\">");
             Output.WriteLine("<br />");
-            Output.WriteLine("<p>Below is the number of titles and items for all items within this aggregation, including currently online items as well as items in process.</p>");
+            Output.WriteLine("<p>" + Localization_Gateway.Item_Count.Description(language) + "</p>");
             Output.WriteLine("<br />");
 
             Output.WriteLine("</div>");
             // Start the table
             Output.WriteLine("<table width=\"700px\" border=\"0px\" cellspacing=\"0px\" class=\"statsTable\">");
             Output.WriteLine("  <tr align=\"left\" bgcolor=\"#0022a7\">");
-            Output.WriteLine("    <th align=\"left\"><span style=\"color: White\"><b>VISIBILITY</b></span></th>");
-            Output.WriteLine("    <th align=\"left\"><span style=\"color: White\"><b>TITLE COUNT</b></span></th>");
-            Output.WriteLine("    <th align=\"left\"><span style=\"color: White\"><b>ITEM COUNT</b></span></th>");
-            Output.WriteLine("    <th align=\"left\"><span style=\"color: White\"><b>PAGE COUNT</b></span></th>");
-            Output.WriteLine("    <th align=\"left\"><span style=\"color: White\"><b>FILE COUNT</b></span></th>");
+            Output.WriteLine("    <th align=\"left\"><span style=\"color: White\"><b>" + Localization_Gateway.Item_Count.Visibility(language) + "</b></span></th>");
+            Output.WriteLine("    <th align=\"left\"><span style=\"color: White\"><b>" + Localization_Gateway.Item_Count.Title_Count(language) + "</b></span></th>");
+            Output.WriteLine("    <th align=\"left\"><span style=\"color: White\"><b>" + Localization_Gateway.Item_Count.Items(language) + "</b></span></th>");
+            Output.WriteLine("    <th align=\"left\"><span style=\"color: White\"><b>" + Localization_Gateway.Item_Count.Page_Count(language) + "</b></span></th>");
+            Output.WriteLine("    <th align=\"left\"><span style=\"color: White\"><b>" + Localization_Gateway.Item_Count.File_Count(language) + "</b></span></th>");
             Output.WriteLine("  </tr>");
 
             foreach (Item_Aggregation_Visibility_Statistic stat in stats)

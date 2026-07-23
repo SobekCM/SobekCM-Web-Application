@@ -8,6 +8,7 @@ using SobekCM.Core.Users;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Engine_Library.Solr.v5;
 using SobekCM.Library.ItemViewer.Menu;
+using SobekCM.Library.Localization;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
 using System;
@@ -164,17 +165,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         {
             Tracer?.Add_Trace("Text_Search_ItemViewer.Write_Main_Viewer_Section", "");
 
-            string search_this_document = "Search this document";
-
-            if (CurrentRequest.Language == Web_Language_Enum.French)
-            {
-                search_this_document = "Rechercher sur ce Document";
-            }
-
-            if (CurrentRequest.Language == Web_Language_Enum.Spanish)
-            {
-                search_this_document = "Buscar en este Objeto";
-            }
+            string search_this_document = Localization_Gateway.Text_Search.Search_This_Document(CurrentRequest.Language);
 
             // Save the original search string
             string originalSearchString = CurrentRequest.Text_Search;
@@ -197,7 +188,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             Output.WriteLine("      <div style=\"padding:10px 0 10px 0;\" >");
             Output.WriteLine("        <label for=\"searchTextBox\">" + search_this_document + ":</label> &nbsp;");
             Output.WriteLine("        <input class=\"sbkTsv_SearchBox sbkIsw_Focusable\" id=\"searchTextBox\" name=\"searchTextBox\" type=\"text\" value=\"" + currentSearch.Replace(" =", " or ") + "\" onkeydown=\"item_search_keytrap(event, '" + redirect_url + "');\" /> &nbsp; ");
-            Output.WriteLine("        <button title=\"" + search_this_document + "\" class=\"sbkIsw_RoundButton\" onclick=\"item_search_sobekcm('" + redirect_url + "'); return false;\">GO<img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"roundbutton_img_right\" alt=\"\" /></button>");
+            Output.WriteLine("        <button title=\"" + search_this_document + "\" class=\"sbkIsw_RoundButton\" onclick=\"item_search_sobekcm('" + redirect_url + "'); return false;\">" + Localization_Gateway.Text_Search.Go(CurrentRequest.Language) + "<img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"roundbutton_img_right\" alt=\"\" /></button>");
             Output.WriteLine("      </div>");
             if (results != null)
             {
@@ -215,38 +206,14 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 {
                     int current_page = CurrentRequest.SubPage.HasValue ? Math.Max(CurrentRequest.SubPage.Value, ((ushort)1)) : 1;
 
-                    string first_page = "First Page";
-                    string previous_page = "Previous Page";
-                    string next_page = "Next Page";
-                    string last_page = "Last Page";
-                    string first_page_text = "First";
-                    string previous_page_text = "Previous";
-                    string next_page_text = "Next";
-                    string last_page_text = "Last";
-
-                    if (CurrentRequest.Language == Web_Language_Enum.Spanish)
-                    {
-                        first_page = "Primera Página";
-                        previous_page = "Página Anterior";
-                        next_page = "Página Siguiente";
-                        last_page = "Última Página";
-                        first_page_text = "Primero";
-                        previous_page_text = "Anterior";
-                        next_page_text = "Proximo";
-                        last_page_text = "Último";
-                    }
-
-                    if (CurrentRequest.Language == Web_Language_Enum.French)
-                    {
-                        first_page = "Première Page";
-                        previous_page = "Page Précédente";
-                        next_page = "Page Suivante";
-                        last_page = "Dernière Page";
-                        first_page_text = "Première";
-                        previous_page_text = "Précédente";
-                        next_page_text = "Suivante";
-                        last_page_text = "Derniere";
-                    }
+                    string first_page = Localization_Gateway.Common.First_Page(CurrentRequest.Language);
+                    string previous_page = Localization_Gateway.Common.Previous_Page(CurrentRequest.Language);
+                    string next_page = Localization_Gateway.Common.Next_Page(CurrentRequest.Language);
+                    string last_page = Localization_Gateway.Common.Last_Page(CurrentRequest.Language);
+                    string first_page_text = Localization_Gateway.Common.First(CurrentRequest.Language);
+                    string previous_page_text = Localization_Gateway.Common.Previous(CurrentRequest.Language);
+                    string next_page_text = Localization_Gateway.Common.Next(CurrentRequest.Language);
+                    string last_page_text = Localization_Gateway.Common.Last(CurrentRequest.Language);
 
                     // Use a stringbuilder here
                     var buttonWriter = new StringBuilder(2000);
@@ -373,35 +340,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 Output.WriteLine("  <tr>");
                 Output.WriteLine("    <td class=\"sbkTsv_ResultsArea\">");
                 Output.WriteLine("        <br />");
-                Output.WriteLine("        <h2>Quick Tips</h2>");
-                Output.WriteLine("        <div id=\"sbkTsv_QuickTips\">");
-                Output.WriteLine("          <ul>");
-                Output.WriteLine("            <li><h3>Document Searching</h3>");
-                Output.WriteLine("              <p> This option searches the full-text of the document and returns any pages which match<br />");
-                Output.WriteLine("              the conditions of your search.</p>");
-                Output.WriteLine("            </li>");
-                Output.WriteLine("            <li><h3>Boolean Searches</h3>");
-                Output.WriteLine("              <p> Use <span class=\"sbkTsv_Bold\">+</span> or <span class=\"sbkTsv_BoldItalic\">and</span> between terms to find records with <span class=\"sbkTsv_Bold\">all</span> the terms.<br />");
-                Output.WriteLine("              Use <span class=\"sbkTsv_Bold\">-</span> or <span class=\"sbkTsv_BoldItalic\">or</span> between terms to find records with <span class=\"sbkTsv_Bold\">any</span> of the terms.<br />");
-                Output.WriteLine("              Use <span class=\"sbkTsv_Bold\">!</span> or <span class=\"sbkTsv_BoldItalic\">and not</span> between terms to exclude records with terms.<br />");
-                Output.WriteLine("              If nothing is indicated, <span class=\"sbkTsv_BoldItalic\">and</span> is the default.<br />");
-                Output.WriteLine("              EXAMPLE: natural and not history");
-                Output.WriteLine("              </p>");
-                Output.WriteLine("            </li>");
-                Output.WriteLine("            <li><h3>Phrase Searching</h3>");
-                Output.WriteLine("              <p> Placing quotes around a phrase will search for the exact phrase.<br />");
-                Output.WriteLine("              EXAMPLE: &quot;natural history&quot;</p>");
-                Output.WriteLine("            </li>");
-                Output.WriteLine("            <li><h3>Capitalization</h3>");
-                Output.WriteLine("              <p> Searches are not capitalization sensitive.<br />");
-                Output.WriteLine("              EXAMPLE: Searching for <span class=\"sbkTsv_Italic\">NATURAL</span> will return the same results as searching for <span class=\"sbkTsv_Italic\">natural</span></p>");
-                Output.WriteLine("            </li>");
-                Output.WriteLine("            <li><h3>Diacritics</h3>");
-                Output.WriteLine("              <p> To search for words with diacritics, the character must be entered into the search box.<br />");
-                Output.WriteLine("              EXAMPLE: Searching <span class=\"sbkTsv_Italic\">Précédent</span> is a different search than <span class=\"sbkTsv_Italic\">Precedent</span></p>");
-                Output.WriteLine("            </li>");
-                Output.WriteLine("          </ul>");
-                Output.WriteLine("        </div>");
+                Output.WriteLine(Localization_Gateway.Text_Search.Quick_Tips_Html(CurrentRequest.Language));
                 Output.WriteLine("        <br />");
                 Output.WriteLine("    </td>");
             }
@@ -432,45 +371,16 @@ namespace SobekCM.Library.ItemViewer.Viewers
             CurrentRequest.SubPage = 1;
             v5_Solr_Searcher.Split_Multi_Terms(CurrentRequest.Text_Search, "ZZ", terms, fields);
 
-            string your_search_language = "Your search within this document for ";
-            string and_not_language = " AND NOT ";
-            string and_language = " AND ";
-            string or_language = " OR ";
-            string not_language = "not ";
-            string resulted_in_language = " resulted in ";
-            string matching_pages_language = " matching pages";
-            string no_matches_language = "no matching pages";
-            string expand_language = "You can expand your results by searching for";
-            string restrict_language = "You can restrict your results by searching for";
-
-
-            if (CurrentRequest.Language == Web_Language_Enum.French)
-            {
-                your_search_language = "Votre recherche dans les textes intégrals pour les pages contenant ";
-                and_not_language = " ET PAS ";
-                and_language = " ET ";
-                or_language = " OU ";
-                not_language = "pas ";
-                resulted_in_language = " corresponde a ";
-                matching_pages_language = " pages de résultats";
-                no_matches_language = "pas pages de résultats";
-                expand_language = "Vous pouvez elaborer votre rechereche en cherchant par";
-                restrict_language = "Vous pouvez limiter votre rechereche en cherchant par";
-            }
-
-            if (CurrentRequest.Language == Web_Language_Enum.Spanish)
-            {
-                your_search_language = "Su búsqueda dentro de el texto completo por paginas conteniendo ";
-                and_not_language = " Y NO ";
-                and_language = " Y ";
-                or_language = " O ";
-                not_language = "no ";
-                resulted_in_language = " resulto en ";
-                matching_pages_language = " paginas correspondientes";
-                no_matches_language = "no paginas correspondientes";
-                expand_language = "Usted puede ampliar sus resultados buscando por";
-                restrict_language = "Usted puede disminuir sus resultados buscando por";
-            }
+            string your_search_language = Localization_Gateway.Text_Search.Your_Search_For(CurrentRequest.Language);
+            string and_not_language = Localization_Gateway.Text_Search.And_Not(CurrentRequest.Language);
+            string and_language = Localization_Gateway.Text_Search.And(CurrentRequest.Language);
+            string or_language = Localization_Gateway.Text_Search.Or(CurrentRequest.Language);
+            string not_language = Localization_Gateway.Text_Search.Not(CurrentRequest.Language);
+            string resulted_in_language = Localization_Gateway.Text_Search.Resulted_In(CurrentRequest.Language);
+            string matching_pages_language = Localization_Gateway.Text_Search.Matching_Pages(CurrentRequest.Language);
+            string no_matches_language = Localization_Gateway.Text_Search.No_Matching_Pages(CurrentRequest.Language);
+            string expand_language = Localization_Gateway.Text_Search.Expand_Results(CurrentRequest.Language);
+            string restrict_language = Localization_Gateway.Text_Search.Restrict_Results(CurrentRequest.Language);
 
             output.Append(your_search_language);
             bool first = true;

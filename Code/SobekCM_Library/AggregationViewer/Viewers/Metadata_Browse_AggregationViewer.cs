@@ -10,6 +10,7 @@ using SobekCM.Engine_Library.Configuration;
 using SobekCM.Engine_Library.Database;
 using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library.HTML;
+using SobekCM.Library.Localization;
 using SobekCM.Library.MainWriters;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
@@ -148,7 +149,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             {
                 if ((results != null) && (RequestSpecificValues.Current_Mode.Info_Browse_Mode.Length > 0))
                 {
-                    Output.WriteLine("  <h1>Browse by " + UI_ApplicationCache_Gateway.Translation.Get_Translation(RequestSpecificValues.Current_Mode.Info_Browse_Mode, RequestSpecificValues.Current_Mode.Language) + "</h1>");
+                    Output.WriteLine("  <h1>" + Localization_Gateway.Metadata_Browse.Browse_By(RequestSpecificValues.Current_Mode.Language) + " " + UI_ApplicationCache_Gateway.Translation.Get_Translation(RequestSpecificValues.Current_Mode.Info_Browse_Mode, RequestSpecificValues.Current_Mode.Language) + "</h1>");
                 }
                 else
                 {
@@ -196,7 +197,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 Output.WriteLine("<tr style=\"vertical-align:top;\">");
                 Output.WriteLine("<td id=\"sbkMebv_FacetOuterColumn\">");
                 Output.WriteLine("<div class=\"sbkMebv_FacetColumn\">");
-                Output.WriteLine("<div class=\"sbkMebv_FacetColumnTitle\">BROWSE BY:</div>");
+                Output.WriteLine("<div class=\"sbkMebv_FacetColumnTitle\">" + Localization_Gateway.Metadata_Browse.Browse_By_Colon(RequestSpecificValues.Current_Mode.Language) + "</div>");
                 Output.WriteLine("<br />");
 
                 if (public_browses.Count > 0)
@@ -224,7 +225,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                         }
                     }
 
-                    Output.WriteLine(internal_browses.Count > 0 ? "<b> &nbsp;Public Browses</b><br />" : "<b> &nbsp;Browses</b><br />");
+                    Output.WriteLine(internal_browses.Count > 0 ? "<b> &nbsp;" + Localization_Gateway.Metadata_Browse.Public_Browses(RequestSpecificValues.Current_Mode.Language) + "</b><br />" : "<b> &nbsp;" + Localization_Gateway.Metadata_Browse.Browses(RequestSpecificValues.Current_Mode.Language) + "</b><br />");
 
                     Output.WriteLine("<div class=\"sbkMebv_FacetBox\">");
                     foreach (Item_Aggregation_Child_Page thisBrowse in sortedBrowses.Values)
@@ -753,7 +754,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 else
                 {
                     Output.WriteLine("<br /><br /><br /><br />");
-                    Output.WriteLine(RequestSpecificValues.Current_Mode.Info_Browse_Mode.Length == 0 ? "<center>Select a metadata field to browse by from the list on the left</center>" : "<center>NO MATCHING VALUES</center>");
+                    Output.WriteLine(RequestSpecificValues.Current_Mode.Info_Browse_Mode.Length == 0 ? "<center>" + Localization_Gateway.Metadata_Browse.Select_Field_Prompt(RequestSpecificValues.Current_Mode.Language) + "</center>" : "<center>" + Localization_Gateway.Metadata_Browse.No_Matching_Values(RequestSpecificValues.Current_Mode.Language) + "</center>");
                     Output.WriteLine("<br /><br />");
                 }
             }

@@ -10,6 +10,7 @@ using SobekCM.Engine_Library.Configuration;
 using SobekCM.Engine_Library.Database;
 using SobekCM.Engine_Library.Solr.v5;
 using SobekCM.Library.HTML;
+using SobekCM.Library.Localization;
 using SobekCM.Library.MainWriters;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
@@ -121,41 +122,14 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 SharedCache.Instance.Set(key, yearRange, new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(5) });
             }
 
-            string searchLanguage = "Search for:";
-            string inLanguage = "in";
-            string searchButtonText = "Search";
-            string searchOptions = "Search Options";
-            string precision = "Precision";
-            string contains_exactly = "Contains exactly the search terms";
-            string contains_any_form = "Contains any form of the search terms";
-            const string CONTAINS_MEANING = "Contains the search term or terms of similar meaning";
-
-
-            //string select_collect_groups = "Select collection groups to include in search:";
-            //string select_collect = "Select collections to include in search:";
-            //string select_subcollect = "Select subcollections to include in search:";
-
-
-            if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.Spanish)
-            {
-                searchLanguage = "Búsqueda de la:";
-                inLanguage = "en";
-                searchButtonText = "Buscar";
-                searchOptions = "Opciones de Búsqueda";
-                precision = "Precisión";
-                contains_exactly = "Contiene exactamente los términos de búsqueda";
-                contains_any_form = "Contiene todas las formas de los términos de búsqueda";
-            }
-
-            if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.French)
-            {
-                searchLanguage = "Recherche de:";
-                inLanguage = "en";
-                //select_collect_groups = "Choisir les group de collection pour inclure dans votre recherche:";
-                //select_collect = "Choisir les collections pour inclure dans votre recherche:";
-                //select_subcollect = "Choisir les souscollections pour inclure dans votre recherche:";
-                searchButtonText = "Search";
-            }
+            Web_Language_Enum language = RequestSpecificValues.Current_Mode.Language;
+            string searchLanguage = Localization_Gateway.Advanced_Search.Search_For(language);
+            string inLanguage = Localization_Gateway.Advanced_Search.In(language);
+            string searchButtonText = Localization_Gateway.Advanced_Search.Search(language);
+            string searchOptions = Localization_Gateway.Advanced_Search.Search_Options(language);
+            string precision = Localization_Gateway.Advanced_Search.Precision(language);
+            string contains_exactly = Localization_Gateway.Advanced_Search.Contains_Exactly(language);
+            string contains_any_form = Localization_Gateway.Advanced_Search.Contains_Any_Form(language);
 
             // Now, populate the search terms, if there was one or some
             string text1 = String.Empty;
@@ -283,7 +257,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             Output.WriteLine("    </tr>");
 
             // Show the year range data, if there are any years in this
-            const string YEAR_RANGE = "Limit by Year";
+            string YEAR_RANGE = Localization_Gateway.Aggregation_Common.Limit_By_Year(language);
             if (yearRange.Count > 0)
             {
                 Output.WriteLine("    <tr style=\"height:50px;\">");
@@ -311,7 +285,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 }
                 Output.WriteLine("        </select>");
 
-                Output.WriteLine("&nbsp; through &nbsp;");
+                Output.WriteLine("&nbsp; " + Localization_Gateway.Aggregation_Common.Through(language) + " &nbsp;");
 
                 Output.WriteLine("        <select name=\"YearDropDown2\" id=\"YearDropDown2\" class=\"sbkAsav_YearDropDown\">");
                 //	Output.WriteLine("          <option value=\"ZZ\"> </option>");
@@ -386,7 +360,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             Output.WriteLine("               <input type=\"radio\" name=\"precision\" id=\"precisionResults\" value=\"results\" checked=\"checked\" /> <label for=\"precisionResults\">" + contains_any_form + "</label> <br />");
             if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.English)
             {
-                Output.WriteLine("               <input type=\"radio\" name=\"precision\" id=\"precisionLike\" value=\"resultslike\" /> <label for=\"precisionLike\">" + CONTAINS_MEANING + "</label> ");
+                Output.WriteLine("               <input type=\"radio\" name=\"precision\" id=\"precisionLike\" value=\"resultslike\" /> <label for=\"precisionLike\">" + Localization_Gateway.Advanced_Search.Contains_Meaning(language) + "</label> ");
             }
             Output.WriteLine("             </td>");
             Output.WriteLine("           </tr>   ");
@@ -429,21 +403,10 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 
         private void add_and_or_not_options(TextWriter Output, string AndOrValue)
         {
-            string and_language = "and";
-            string or_language = "or";
-            string and_not_language = "and not";
-            if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.French)
-            {
-                and_language = "et";
-                or_language = "ou";
-                and_not_language = "et non";
-            }
-            if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.Spanish)
-            {
-                and_language = "y";
-                or_language = "o";
-                and_not_language = "y no";
-            }
+            Web_Language_Enum language = RequestSpecificValues.Current_Mode.Language;
+            string and_language = Localization_Gateway.Advanced_Search.And(language);
+            string or_language = Localization_Gateway.Advanced_Search.Or(language);
+            string and_not_language = Localization_Gateway.Advanced_Search.And_Not(language);
 
             if (AndOrValue == "+")
             {

@@ -4,6 +4,7 @@ using SobekCM.Core.FileSystems;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Users;
 using SobekCM.Library.ItemViewer.Menu;
+using SobekCM.Library.Localization;
 using SobekCM.Tools;
 using System;
 using System.Collections.Generic;
@@ -100,7 +101,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             // Finally, just default to HTML otherwise
             if (String.IsNullOrEmpty(first_label))
-                first_label = "HTML";
+                first_label = Localization_Gateway.HTML_Viewer.Menu_Default_Label(CurrentRequest.Language);
 
             // Get the URL for this
             string previous_code = CurrentRequest.ViewerCode;
@@ -210,11 +211,11 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 var builder = new StringBuilder();
                 builder.AppendLine("<div style=\"background-color: White; color: black;text-align:center; width:630px;\">");
                 builder.AppendLine("  <br /><br />");
-                builder.AppendLine("  <span style=\"font-weight:bold;font-size:1.4em\">Unable to pull html view for item ( <a href=\"" + sourceString + "\">source</a> )</span><br /><br />");
-                builder.AppendLine("  <span style=\"font-size:1.2em\">We apologize for the inconvenience.</span><br /><br />");
+                builder.AppendLine("  <span style=\"font-weight:bold;font-size:1.4em\">" + String.Format(Localization_Gateway.HTML_Viewer.Unable_To_Pull_Html_Sentence(CurrentRequest.Language), sourceString) + "</span><br /><br />");
+                builder.AppendLine("  <span style=\"font-size:1.2em\">" + Localization_Gateway.HTML_Viewer.Apologize_Sentence(CurrentRequest.Language) + "</span><br /><br />");
 
                 string returnurl = CurrentRequest.Base_URL + "/contact";
-                builder.AppendLine("  <span style=\"font-size:1.2em\">Click <a href=\"" + returnurl + "\">here</a> to report the problem.</span>");
+                builder.AppendLine("  <span style=\"font-size:1.2em\">" + String.Format(Localization_Gateway.HTML_Viewer.Report_Problem_Sentence(CurrentRequest.Language), returnurl) + "</span>");
                 builder.AppendLine("  <br /><br />");
                 builder.AppendLine("</div>");
                 map = builder.ToString();

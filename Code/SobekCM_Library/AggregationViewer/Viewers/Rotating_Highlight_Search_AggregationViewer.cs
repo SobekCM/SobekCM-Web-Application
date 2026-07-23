@@ -6,6 +6,7 @@ using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Navigation;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Library.HTML;
+using SobekCM.Library.Localization;
 using SobekCM.Library.MainWriters;
 using SobekCM.Tools;
 using System;
@@ -128,17 +129,8 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         {
             Tracer?.Add_Trace("Rotating_Highlight_Search_AggregationViewer.Write_Search_Box_HTML", "Adding html for search box");
 
-            string search_collection = "Search Collection";
+            string search_collection = Localization_Gateway.Aggregation_Common.Search_Collection(RequestSpecificValues.Current_Mode.Language);
             //string include_privates = "Include non-public items";
-            if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.Spanish)
-            {
-                search_collection = "Buscar en la colección";
-            }
-
-            if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.French)
-            {
-                search_collection = "Recherche dans la collection";
-            }
 
             if ((ViewBag.Hierarchy_Object.Highlights != null) && (ViewBag.Hierarchy_Object.Highlights.Count > 1))
             {
@@ -171,7 +163,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 Output.WriteLine("            </tr>");
                 Output.WriteLine("            <tr style=\"vertical-align:bottom\">");
                 Output.WriteLine("              <td><input name=\"u_search\" type=\"text\" id=\"SobekHomeBannerSearchBox\" class=\"sbkRhav_SearchBox sbk_Focusable\" value=\"" + textBoxValue + "\" onkeydown=\"return fnTrapKD(event, 'basic', '" + arg1 + "', '" + arg2 + "','" + browse_url + "');\" /></td>");
-                Output.WriteLine("              <td><button class=\"sbk_GoButton\" title=\"" + search_collection + "\" onclick=\"" + Search_Script_Action + ";return false;\">Go</button></td>");
+                Output.WriteLine("              <td><button class=\"sbk_GoButton\" title=\"" + search_collection + "\" onclick=\"" + Search_Script_Action + ";return false;\">" + Localization_Gateway.Aggregation_Common.Go(RequestSpecificValues.Current_Mode.Language) + "</button></td>");
                 Output.WriteLine("            </tr>");
                 Output.WriteLine("          </table>");
                 Output.WriteLine("        </div>");
@@ -266,7 +258,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 Output.WriteLine("            </tr>");
                 Output.WriteLine("            <tr style=\"vertical-align:bottom\">");
                 Output.WriteLine("              <td><input name=\"u_search\" type=\"text\" id=\"SobekHomeBannerSearchBox\" class=\"sbkRhav_SearchBox sbk_Focusable\" value=\"" + textBoxValue + "\" onkeydown=\"return fnTrapKD(event, 'basic', '" + arg1 + "', '" + arg2 + "','" + browse_url + "');\" /></td>");
-                Output.WriteLine("              <td><button class=\"sbk_GoButton\" title=\"" + search_collection + "\" onclick=\"" + Search_Script_Action + ";return false;\">Go</button></td>");
+                Output.WriteLine("              <td><button class=\"sbk_GoButton\" title=\"" + search_collection + "\" onclick=\"" + Search_Script_Action + ";return false;\">" + Localization_Gateway.Aggregation_Common.Go(RequestSpecificValues.Current_Mode.Language) + "</button></td>");
                 Output.WriteLine("            </tr>");
                 Output.WriteLine("          </table>");
                 Output.WriteLine("        </div>");

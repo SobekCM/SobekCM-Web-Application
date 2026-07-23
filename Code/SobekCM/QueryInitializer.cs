@@ -153,8 +153,6 @@ namespace SobekCM
                     currentMode.Internal_Type = Internal_Type_Enum.Cache;
                 }
 
-
-
                 // Always pull TOP level collection
                 SobekEngineClient.Aggregations.Get_Aggregation("all", currentMode.Language, UI_ApplicationCache_Gateway.Settings.System.Default_UI_Language, tracer);
 

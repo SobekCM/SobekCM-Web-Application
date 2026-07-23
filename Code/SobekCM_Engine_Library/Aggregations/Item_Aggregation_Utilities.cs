@@ -36,10 +36,7 @@ namespace SobekCM.Engine_Library.Aggregations
         /// Then, either the Item Aggregation XML file is read (if present) or the entire folder hierarchy is analyzed to find the browses, infos, banners, etc..</remarks>
         public static Complete_Item_Aggregation Get_Complete_Item_Aggregation(string AggregationCode, Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("Item_Aggregation_Utilities.Get_Item_Aggregation", "Creating '" + AggregationCode + "' item aggregation");
-            }
+            Tracer?.Add_Trace("Item_Aggregation_Utilities.Get_Item_Aggregation", "Creating '" + AggregationCode + "' item aggregation");
 
             // Get the information about this collection and this entry point
             Complete_Item_Aggregation hierarchyObject;
@@ -49,79 +46,76 @@ namespace SobekCM.Engine_Library.Aggregations
                 hierarchyObject = Engine_Database.Get_Main_Aggregation(Tracer);
 
             // If no value was returned, don't do anything else here
-            if (hierarchyObject != null)
+            if (hierarchyObject == null)
             {
-                // Add all the values to this object
-                string xmlDataFile = Engine_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location + hierarchyObject.ObjDirectory + "\\" + hierarchyObject.Code + ".xml";
-                if (File.Exists(xmlDataFile))
-                {
-                    if (Tracer != null)
-                    {
-                        Tracer.Add_Trace("Item_Aggregation_Utilities.Get_Item_Aggregation", "Reading aggregation XML configuration file");
-                    }
-
-                    // Add the ALL and NEW browses
-                    Add_All_New_Browses(hierarchyObject);
-
-                    // Add all the other data from the XML file
-                    var reader = new Item_Aggregation_XML_Reader();
-                    reader.Add_Info_From_XML_File(hierarchyObject, xmlDataFile);
-                }
-                else
-                {
-                    if (Tracer != null)
-                    {
-                        Tracer.Add_Trace("Item_Aggregation_Utilities.Get_Item_Aggregation", "Aggregation XML configuration file missing.. will try to build");
-
-                        Tracer.Add_Trace("Item_Aggregation_Utilities.Get_Item_Aggregation", "Adding banner, home, and all/new browse information");
-                    }
-
-                    Add_HTML(hierarchyObject);
-                    Add_All_New_Browses(hierarchyObject);
-                    Add_Browse_Files(hierarchyObject, Tracer);
-
-                    // If no HTML found, just add one
-                    if ((hierarchyObject.Home_Page_File_Dictionary == null) || (hierarchyObject.Home_Page_File_Dictionary.Count == 0))
-                    {
-                        hierarchyObject.Add_Home_Page_File("html\\home\\text.html", Web_Language_Enum.DEFAULT, false);
-                    }
-
-                    // If no banner found, just add one
-                    if ((hierarchyObject.Banner_Dictionary == null) || (hierarchyObject.Banner_Dictionary.Count == 0))
-                    {
-                        hierarchyObject.Add_Banner_Image("images/banners/coll.jpg", Web_Language_Enum.DEFAULT);
-                    }
-
-                    if (Tracer != null)
-                    {
-                        Tracer.Add_Trace("Item_Aggregation_Utilities.Get_Item_Aggregation", "Write aggregation XML configuration from built object");
-                    }
-
-                    // Since there was no configuration file, save one
-                    hierarchyObject.Write_Configuration_File(Engine_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location + hierarchyObject.ObjDirectory);
-                }
-
-                // Now, look for any satellite configuration files
-                string contactFormFile = Engine_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location + hierarchyObject.ObjDirectory + "\\config\\sobekcm_contactform.config";
-                if (File.Exists(contactFormFile))
-                {
-                    if (Tracer != null)
-                    {
-                        Tracer.Add_Trace("Item_Aggregation_Utilities.Get_Item_Aggregation", "Found aggregation-specific contact form configuration file");
-                    }
-
-                    hierarchyObject.ContactForm = ContactForm_Configuration_Reader.Read_Config(contactFormFile);
-                }
-
-                // Return this built hierarchy object
-                return hierarchyObject;
+                Tracer?.Add_Trace("Item_Aggregation_Utilities.Get_Item_Aggregation", "NULL value returned from database");
+                return null;
             }
 
-            if (Tracer != null)
+            // Add all the values to this object
+            string xmlDataFile = Engine_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location + hierarchyObject.ObjDirectory + "\\" + hierarchyObject.Code + ".xml";
+            if (File.Exists(xmlDataFile))
             {
-                Tracer.Add_Trace("Item_Aggregation_Utilities.Get_Item_Aggregation", "NULL value returned from database");
+                if (Tracer != null)
+                {
+                    Tracer.Add_Trace("Item_Aggregation_Utilities.Get_Item_Aggregation", "Reading aggregation XML configuration file");
+                }
+
+                // Add the ALL and NEW browses
+                Add_All_New_Browses(hierarchyObject);
+
+                // Add all the other data from the XML file
+                var reader = new Item_Aggregation_XML_Reader();
+                reader.Add_Info_From_XML_File(hierarchyObject, xmlDataFile);
             }
-            return null;
+            else
+            {
+                if (Tracer != null)
+                {
+                    Tracer.Add_Trace("Item_Aggregation_Utilities.Get_Item_Aggregation", "Aggregation XML configuration file missing.. will try to build");
+
+                    Tracer.Add_Trace("Item_Aggregation_Utilities.Get_Item_Aggregation", "Adding banner, home, and all/new browse information");
+                }
+
+                Add_HTML(hierarchyObject);
+                Add_All_New_Browses(hierarchyObject);
+                Add_Browse_Files(hierarchyObject, Tracer);
+
+                // If no HTML found, just add one
+                if ((hierarchyObject.Home_Page_File_Dictionary == null) || (hierarchyObject.Home_Page_File_Dictionary.Count == 0))
+                {
+                    hierarchyObject.Add_Home_Page_File("html\\home\\text.html", Web_Language_Enum.DEFAULT, false);
+                }
+
+                // If no banner found, just add one
+                if ((hierarchyObject.Banner_Dictionary == null) || (hierarchyObject.Banner_Dictionary.Count == 0))
+                {
+                    hierarchyObject.Add_Banner_Image("images/banners/coll.jpg", Web_Language_Enum.DEFAULT);
+                }
+
+                if (Tracer != null)
+                {
+                    Tracer.Add_Trace("Item_Aggregation_Utilities.Get_Item_Aggregation", "Write aggregation XML configuration from built object");
+                }
+
+                // Since there was no configuration file, save one
+                hierarchyObject.Write_Configuration_File(Engine_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location + hierarchyObject.ObjDirectory);
+            }
+
+            // Now, look for any satellite configuration files
+            string contactFormFile = Engine_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location + hierarchyObject.ObjDirectory + "\\config\\sobekcm_contactform.config";
+            if (File.Exists(contactFormFile))
+            {
+                if (Tracer != null)
+                {
+                    Tracer.Add_Trace("Item_Aggregation_Utilities.Get_Item_Aggregation", "Found aggregation-specific contact form configuration file");
+                }
+
+                hierarchyObject.ContactForm = ContactForm_Configuration_Reader.Read_Config(contactFormFile);
+            }
+
+            // Return this built hierarchy object
+            return hierarchyObject;
         }
 
         /// <summary> Adds the ALL ITEMS and NEW ITEMS browses to the item aggregation, if the display options and last added

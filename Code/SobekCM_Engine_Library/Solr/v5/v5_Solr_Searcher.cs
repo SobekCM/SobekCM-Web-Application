@@ -1,6 +1,7 @@
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.Results;
 using SobekCM.Core.Search;
+using SobekCM.Core.Settings;
 using SobekCM.Engine_Library.ApplicationState;
 using SobekCM.Tools;
 using SolrNet;
@@ -158,11 +159,12 @@ namespace SobekCM.Engine_Library.Solr.v5
                 var solrWorker = Solr_Operations_Cache<v5_SolrDocument>.GetSolrOperations(solrDocumentUrl);
 
                 // Get the list of fields
-                var fields = new List<string>{ "did", "mainthumb", "title", "discover_ips", "hidden", "restricted_msg", "group_restrictions" };
+                var fields = new List<string> { "did", "mainthumb", "title", "discover_ips", "hidden", "restricted_msg", "group_restrictions" };
                 fields.AddRange(SearchOptions.Fields.Select(MetadataField => MetadataField.SolrCode));
 
                 // Create the query options
-                var options = new QueryOptions{
+                var options = new QueryOptions
+                {
                     Rows = SearchOptions.ResultsPerPage,
                     StartOrCursor = new StartOrCursor.Start((pageNumber - 1) * SearchOptions.ResultsPerPage),
                     Fields = fields
@@ -240,7 +242,8 @@ namespace SobekCM.Engine_Library.Solr.v5
 
                     grouped_results = true;
 
-                    var groupingParams = new GroupingParameters{
+                    var groupingParams = new GroupingParameters
+                    {
                         Fields = new[] { "bibid" },
 
                         Format = GroupingFormat.Grouped,
@@ -676,7 +679,8 @@ namespace SobekCM.Engine_Library.Solr.v5
             var solrWorker = Solr_Operations_Cache<v5_Solr_Page_Result>.GetSolrOperations(solrPageUrl);
 
             // Create the query options
-            var options = new QueryOptions{
+            var options = new QueryOptions
+            {
                 Rows = ResultsPerPage,
                 StartOrCursor = new StartOrCursor.Start((ResultsPage - 1) * ResultsPerPage),
                 Fields = new[] { "pageid", "pagename", "pageorder", "score", "thumbnail" },
@@ -786,6 +790,57 @@ namespace SobekCM.Engine_Library.Solr.v5
 
             return searchResults;
         }
+
+        #endregion
+
+        #region Method to find all the fields which are linked to a collection (for advanced search drop down)
+
+
+        // Call from Item_Aggregation_Utilities.Get_Complete_Item_Aggregation
+        public static List<short> Get_SobekCodes_With_Data(string aggregationCode, InstanceWide_Settings settings)
+        {
+            // Get and clean the solr document url
+            string solrDocumentUrl = Engine_ApplicationCache_Gateway.Settings.Servers.Document_Solr_Index_URL;
+            if ((!String.IsNullOrEmpty(solrDocumentUrl)) && (solrDocumentUrl[solrDocumentUrl.Length - 1] == '/'))
+                solrDocumentUrl = solrDocumentUrl.Substring(0, solrDocumentUrl.Length - 1);
+
+            // Create the solr worker to query the document index
+            var solrWorker = Solr_Operations_Cache<v5_SolrDocument>.GetSolrOperations(solrDocumentUrl);
+
+            // Only fields that actually map to something in the Solr index
+            var mappedFields = settings.Metadata_Search_Fields
+                .Where(f => !String.IsNullOrEmpty(f.Solr_Field))
+                .ToList();
+
+            var distinctSolrFields = mappedFields
+                .Select(f => f.Solr_Field)
+                .Distinct()
+                .ToList();
+
+            var facetQueries = distinctSolrFields
+                .Select(sf => (ISolrFacetQuery)new SolrFacetQuery(new SolrQuery($"{sf}:[* TO *]")))
+                .ToList();
+
+            var results = solrWorker.Query(
+                new SolrQuery($"aggregations:\"{aggregationCode}\""),
+                new QueryOptions
+                {
+                    Rows = 0,
+                    Facet = new FacetParameters { Queries = facetQueries }
+                });
+
+            // solr field name -> count of matching docs with that field populated
+            var countsBySolrField = results.FacetQueries
+                .ToDictionary(kv => kv.Key.Split(':')[0], kv => kv.Value);
+
+            // Return the SobekCode for every metadata search field whose solr field had data
+            return mappedFields
+                .Where(f => countsBySolrField.TryGetValue(f.Solr_Field, out int count) && count > 0)
+                .Select(f => f.ID)
+                .Distinct()
+                .ToList();
+        }
+
 
         #endregion
     }

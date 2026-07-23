@@ -37,6 +37,9 @@
   <field name="bibid" type="text_single" indexed="true" stored="true" multiValued="false" />
   <field name="vid" type="text_single" indexed="true" stored="true" multiValued="false" />
   <field name="mainthumb" type="text_general" indexed="false" stored="true" multiValued="false" />
+  <field name="restrictedthumb" type="text_general" indexed="false" stored="true" multiValued="false" />
+  <field name="group_restrictions" type="text_single" indexed="true" stored="true" multiValued="false" />
+  <field name="instance" type="text_single" indexed="true" stored="true" multiValued="true" />
   
   <!-- Fied is used to pull the items added recently -->
   <field name="made_public_date" type="date" indexed="true" stored="false" multiValued="false" />
@@ -221,7 +224,7 @@
   <copyField source="temporal_subject" dest="temporal_subject_facets" />
 
   <!-- Other standard metadata fields -->
-  <field name="attribution" type="text_general" indexed="true" stored="true" multiValued="true" />
+  <field name="attribution" type="text_general" indexed="true" stored="true" multiValued="false" />
   <field name="mime_type" type="text_general" indexed="true" stored="true" multiValued="true" />
   <field name="tracking_box" type="text_general" indexed="true" stored="true" multiValued="true" />
   <field name="abstract" type="text_general" indexed="true" stored="true" multiValued="true" />

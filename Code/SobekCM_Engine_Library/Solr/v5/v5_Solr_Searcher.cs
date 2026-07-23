@@ -8,6 +8,7 @@ using SolrNet;
 using SolrNet.Commands.Parameters;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 
@@ -870,6 +871,94 @@ namespace SobekCM.Engine_Library.Solr.v5
                 string message = e.Message;
 
                 return null;
+            }
+        }
+
+        #endregion
+
+        #region Method to look up a specific set of items (e.g., a user's bookshelf) by BibID/VID
+
+        /// <summary> Looks up a specific, ordered set of items by BibID/VID in Solr -- e.g., for building the display
+        /// of a user's bookshelf/folder, where the folder membership, order, and notes live in the database but the
+        /// display metadata for each item now only lives in Solr </summary>
+        /// <param name="FolderItems"> DataTable with (in column order) BibID, VID, ItemOrder, SortDate, and UserNotes
+        /// for every item in the folder -- see <see cref="Engine_Database.Get_User_Folder_Items"/> </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        /// <returns> List of search results for the folder's items, ordered to match the folder's stored item order,
+        /// with each item's user notes attached. Items no longer found in Solr (e.g., deleted since being added to
+        /// the folder) are simply omitted. </returns>
+        public static List<iSearch_Title_Result> Get_Folder_Item_Results(DataTable FolderItems, Custom_Tracer Tracer)
+        {
+            var emptyResults = new List<iSearch_Title_Result>();
+            if ((FolderItems == null) || (FolderItems.Rows.Count == 0))
+                return emptyResults;
+
+            Tracer?.Add_Trace("v5_Solr_Searcher.Get_Folder_Item_Results", "Building the list of DIDs, order, and notes for this folder");
+
+            // Build the DID -> (order, notes) lookups from the folder's database rows
+            var orderByDid = new Dictionary<string, int>();
+            var notesByDid = new Dictionary<string, string>();
+            var didList = new List<string>();
+            foreach (DataRow row in FolderItems.Rows)
+            {
+                string bibid = row[0].ToString();
+                string vid = row[1].ToString();
+                string did = bibid + ":" + vid;
+
+                didList.Add(did);
+                orderByDid[did] = Convert.ToInt32(row[2]);
+                notesByDid[did] = row[4].ToString();
+            }
+
+            try
+            {
+                // Get and clean the solr document url
+                string solrDocumentUrl = Engine_ApplicationCache_Gateway.Settings.Servers.Document_Solr_Index_URL;
+                if ((!String.IsNullOrEmpty(solrDocumentUrl)) && (solrDocumentUrl[solrDocumentUrl.Length - 1] == '/'))
+                    solrDocumentUrl = solrDocumentUrl.Substring(0, solrDocumentUrl.Length - 1);
+
+                // Create the solr worker to query the document index
+                var solrWorker = Solr_Operations_Cache<v5_SolrDocument>.GetSolrOperations(solrDocumentUrl);
+
+                // Fetch every item in the folder in a single round trip, rather than one query per item
+                string didClause = String.Join(" OR ", didList.Select(did => "\"" + did + "\""));
+                var query = new SolrQuery($"did:({didClause})");
+
+                var options = new QueryOptions
+                {
+                    Rows = didList.Count,
+                    Fields = new List<string> { "did", "mainthumb", "title", "discover_ips", "hidden", "restricted_msg", "group_restrictions" }
+                };
+
+                Tracer?.Add_Trace("v5_Solr_Searcher.Get_Folder_Item_Results", "Perform the search for " + didList.Count + " folder item(s)");
+
+                SolrQueryResults<v5_SolrDocument> solrResults = solrWorker.Query(query, options);
+
+                // Convert every matching document, then re-attach the folder-specific order and notes
+                var mapper = new v5_SolrDocument_Results_Mapper();
+                var emptyDisplayFields = new List<Complete_Item_Aggregation_Metadata_Type>();
+                var scoredResults = new List<(int Order, v5_Solr_Title_Result Result)>();
+
+                foreach (v5_SolrDocument solrDocument in solrResults)
+                {
+                    v5_Solr_Title_Result newResult = mapper.Map_To_Result(solrDocument, emptyDisplayFields);
+
+                    if (notesByDid.TryGetValue(solrDocument.DID, out string notes))
+                        newResult.UserNotes = notes;
+
+                    int order = orderByDid.TryGetValue(solrDocument.DID, out int thisOrder) ? thisOrder : int.MaxValue;
+                    scoredResults.Add((order, newResult));
+                }
+
+                // Solr won't preserve the folder's stored item order, so re-sort into it here
+                scoredResults.Sort((a, b) => a.Order.CompareTo(b.Order));
+
+                return scoredResults.Select(r => (iSearch_Title_Result)r.Result).ToList();
+            }
+            catch (Exception ee)
+            {
+                Tracer?.Add_Trace("v5_Solr_Searcher.Get_Folder_Item_Results", "Exception caught: " + ee.Message, Custom_Trace_Type_Enum.Error);
+                return emptyResults;
             }
         }
 

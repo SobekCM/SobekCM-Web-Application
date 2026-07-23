@@ -1283,3 +1283,30 @@ GO
 
 DROP PROCEDURE SobekCM_Get_Item_Details2;
 GO
+
+
+
+-- Get list of items in a user's folder
+CREATE PROCEDURE [dbo].[mySobek_Get_User_Folder_Items]
+	@userid int,
+	@foldername varchar(255)
+AS
+BEGIN
+
+	-- Get the folder id
+	declare @folderid int
+	set @folderid = ( select ISNULL(UserFolderID,-1) from mySobek_User_Folder where UserID=@userid and FolderName=@foldername );
+	
+	-- Get the list of items in the folder
+	select G.BibID, I.VID, A.ItemOrder, isnull( I.SortDate,-1), ISNULL(A.UserNotes,'' )
+	from mySobek_User_Item A, SobekCM_Item I, SobekCM_Item_Group G
+	where ( I.ItemID = A.ItemID )
+	  and ( I.GroupID = G.GroupID )
+	  and ( A.UserFolderID = @folderid );
+
+END;
+GO
+
+GRANT EXECUTE ON mySobek_Get_User_Folder_Items to sobek_user;
+GRANT EXECUTE ON mySobek_Get_User_Folder_Items to sobek_builder;
+GO

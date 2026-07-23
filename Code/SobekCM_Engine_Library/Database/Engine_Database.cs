@@ -4283,6 +4283,38 @@ namespace SobekCM.Engine_Library.Database
 
         #endregion
 
+        #region Methods related to user folders/bookshelves
+
+        /// <summary> Gets the ordered list of items within a single user folder/bookshelf </summary>
+        /// <param name="UserID"> Primary key for the user who owns this folder </param>
+        /// <param name="FolderName"> Name of the folder/bookshelf to retrieve the items from </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <returns> DataSet with the BibID, VID, ItemOrder, SortDate, and UserNotes for every item in the folder </returns>
+        /// <remarks> This calls the 'mySobek_Get_User_Folder_Items' stored procedure </remarks>
+        public static DataSet Get_User_Folder_Items(int UserID, string FolderName, Custom_Tracer Tracer)
+        {
+            Tracer?.Add_Trace("Engine_Database.Get_User_Folder_Items", "");
+
+            try
+            {
+                EalDbParameter[] parameters = new EalDbParameter[2];
+                parameters[0] = new EalDbParameter("@userid", UserID);
+                parameters[1] = new EalDbParameter("@foldername", FolderName);
+
+                return EalDbAccess.ExecuteDataset(DatabaseType, Connection_String, CommandType.StoredProcedure, "mySobek_Get_User_Folder_Items", parameters);
+            }
+            catch (Exception ee)
+            {
+                Last_Exception = ee;
+                Tracer?.Add_Trace("Engine_Database.Get_User_Folder_Items", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("Engine_Database.Get_User_Folder_Items", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("Engine_Database.Get_User_Folder_Items", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                return null;
+            }
+        }
+
+        #endregion
+
         #region Methods related to the extensions/plug-ins ( i.e., add/remove/enable )
 
         /// <summary> Add or update information about a plug-in that exists in this system (but may not be enabled) </summary>

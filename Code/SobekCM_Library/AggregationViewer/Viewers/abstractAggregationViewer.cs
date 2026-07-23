@@ -121,7 +121,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         protected void Write_ItemNavForm_Opening(TextWriter Output)
         {
             string formAction = Context.Items[RequestCache_Keys.OriginalUrl]?.ToString() ?? Context.Request.GetDisplayUrl();
-            Output.Write($"<form id=\"itemNavForm\" action=\"{formAction}\" method=\"post\">");
+            Output.Write($"<form id=\"itemNavForm\" name=\"itemNavForm\" action=\"{formAction}\" method=\"post\">");
         }
 
         protected void Write_ItemNavForm_Closing(TextWriter Output)

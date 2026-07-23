@@ -469,11 +469,11 @@ namespace SobekCM.Library.AdminViewer
 
                 if (page == 3)
                 {
-                    Output.WriteLine("    <li id=\"tabHeader_2\" class=\"tabActiveHeader\">" + RESULTS + "</li>");
+                    Output.WriteLine("    <li id=\"tabHeader_7\" class=\"tabActiveHeader\">" + RESULTS + "</li>");
                 }
                 else
                 {
-                    Output.WriteLine("    <li id=\"tabHeader_2\" onclick=\"return new_aggr_edit_page('c');\">" + RESULTS + "</li>");
+                    Output.WriteLine("    <li id=\"tabHeader_7\" onclick=\"return new_aggr_edit_page('c');\">" + RESULTS + "</li>");
                 }
 
                 if (page == 4)
@@ -510,20 +510,20 @@ namespace SobekCM.Library.AdminViewer
                 {
                     if (page == 8)
                     {
-                        Output.WriteLine("    <li id=\"tabHeader_6\" class=\"tabActiveHeader\">" + SUBCOLLECTIONS + "</li>");
+                        Output.WriteLine("    <li id=\"tabHeader_8\" class=\"tabActiveHeader\">" + SUBCOLLECTIONS + "</li>");
                     }
                     else
                     {
-                        Output.WriteLine("    <li id=\"tabHeader_6\" onclick=\"return new_aggr_edit_page('h');\">" + SUBCOLLECTIONS + "</li>");
+                        Output.WriteLine("    <li id=\"tabHeader_8\" onclick=\"return new_aggr_edit_page('h');\">" + SUBCOLLECTIONS + "</li>");
                     }
                 }
                 if (page == 9)
                 {
-                    Output.WriteLine("    <li id=\"tabHeader_6\" class=\"tabActiveHeader\">" + UPLOADS + "</li>");
+                    Output.WriteLine("    <li id=\"tabHeader_9\" class=\"tabActiveHeader\">" + UPLOADS + "</li>");
                 }
                 else
                 {
-                    Output.WriteLine("    <li id=\"tabHeader_6\" onclick=\"return new_aggr_edit_page('i');\">" + UPLOADS + "</li>");
+                    Output.WriteLine("    <li id=\"tabHeader_9\" onclick=\"return new_aggr_edit_page('i');\">" + UPLOADS + "</li>");
                 }
 
 

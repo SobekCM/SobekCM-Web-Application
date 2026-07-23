@@ -771,7 +771,6 @@ namespace SobekCM.Engine_Library.Solr.v5
 
         #region Method to find all the fields which are linked to a collection (for advanced search drop down)
 
-
         // Call from Item_Aggregation_Utilities.Get_Complete_Item_Aggregation
         public static List<short> Get_SobekCodes_With_Data(string aggregationCode, List<Metadata_Search_Field> searchFields)
         {

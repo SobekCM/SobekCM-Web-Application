@@ -272,7 +272,7 @@ namespace SobekCM.Library.MySobekViewer
         {
             string formAction = Context.Items[RequestCache_Keys.OriginalUrl]?.ToString() ?? Context.Request.GetDisplayUrl();
             string enctype = Upload_File_Possible ? " enctype=\"multipart/form-data\"" : "";
-            Output.Write($"<form id=\"itemNavForm\" action=\"{formAction}\" method=\"post\"{enctype}>");
+            Output.Write($"<form id=\"itemNavForm\" name=\"itemNavForm\" action=\"{formAction}\" method=\"post\"{enctype}>");
         }
 
         protected void Write_ItemNavForm_Closing(TextWriter Output)

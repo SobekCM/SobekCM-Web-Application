@@ -75,19 +75,18 @@ namespace SobekCM.Engine_Library.Database
         /// <param name="BibID"> Bibliographic identifier for the item group to retrieve </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
         /// <returns> DataSet with detailed information about this item group from the database </returns>
-        /// <remarks> This calls the 'SobekCM_Get_Item_Details2' stored procedure, passing in NULL for the volume id </remarks> 
+        /// <remarks> This calls the 'SobekCM_Get_Item_Group_Details' stored procedure, passing in NULL for the volume id </remarks> 
         public static DataSet Get_Item_Group_Details(string BibID, Custom_Tracer Tracer)
         {
             Tracer?.Add_Trace("Engine_Database.Get_Item_Group_Details", "");
 
             try
             {
-                EalDbParameter[] parameters = new EalDbParameter[2];
+                EalDbParameter[] parameters = new EalDbParameter[1];
                 parameters[0] = new EalDbParameter("@BibID", BibID);
-                parameters[1] = new EalDbParameter("@VID", DBNull.Value);
 
                 // Define a temporary dataset
-                DataSet tempSet = EalDbAccess.ExecuteDataset(DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_Get_Item_Details2", parameters);
+                DataSet tempSet = EalDbAccess.ExecuteDataset(DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_Get_Item_Group_Details", parameters);
 
                 // Return the first table from the returned dataset
                 return tempSet;
@@ -107,7 +106,7 @@ namespace SobekCM.Engine_Library.Database
         /// <param name="Vid"> Volume identifier for the volume to retrieve </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
         /// <returns> DataSet with detailed information about this item from the database </returns>
-        /// <remarks> This calls the 'SobekCM_Get_Item_Details2' stored procedure </remarks> 
+        /// <remarks> This calls the 'SobekCM_Get_Item_Details' stored procedure </remarks> 
         public static DataSet Get_Item_Details(string BibID, string Vid, Custom_Tracer Tracer)
         {
             Tracer?.Add_Trace("Engine_Database.Get_Item_Details", "");
@@ -122,7 +121,7 @@ namespace SobekCM.Engine_Library.Database
 
 
                 // Define a temporary dataset
-                DataSet tempSet = EalDbAccess.ExecuteDataset(DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_Get_Item_Details2", parameters);
+                DataSet tempSet = EalDbAccess.ExecuteDataset(DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_Get_Item_Details", parameters);
 
                 // Return the first table from the returned dataset
                 return tempSet;

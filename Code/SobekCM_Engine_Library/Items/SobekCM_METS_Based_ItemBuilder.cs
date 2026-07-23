@@ -636,13 +636,6 @@ namespace SobekCM.Engine_Library.Items
                 }
             }
 
-            // Look for ticklers
-            Tracer.Add_Trace("SobekCM_METS_Based_ItemBuilder.Finish_Building_Item", "Load ticklers from the database info");
-            foreach (DataRow thisRow in DatabaseInfo.Tables[3].Rows)
-            {
-                Package_To_Finalize.Behaviors.Add_Tickler(thisRow["MetadataValue"].ToString().Trim());
-            }
-
             // Set the aggregations in the package to the aggregation links from the database
             Tracer.Add_Trace("SobekCM_METS_Based_ItemBuilder.Finish_Building_Item", "Load the aggregations from the database info");
             Package_To_Finalize.Behaviors.Clear_Aggregations();
@@ -676,7 +669,7 @@ namespace SobekCM.Engine_Library.Items
             Package_To_Finalize.Behaviors.Clear_Wordmarks();
 
             // Add the icons from the database information
-            foreach (DataRow iconRow in DatabaseInfo.Tables[5].Rows)
+            foreach (DataRow iconRow in DatabaseInfo.Tables[4].Rows)
             {
                 string image = iconRow[0].ToString();
                 string link = iconRow[1].ToString().Replace("&", "&amp;").Replace("\"", "&quot;");
@@ -711,19 +704,19 @@ namespace SobekCM.Engine_Library.Items
             Package_To_Finalize.Behaviors.Clear_Web_Skins();
 
             // Add the web skins from the database
-            foreach (DataRow skinRow in DatabaseInfo.Tables[6].Rows)
+            foreach (DataRow skinRow in DatabaseInfo.Tables[5].Rows)
             {
                 Package_To_Finalize.Behaviors.Add_Web_Skin(skinRow[0].ToString().ToUpper());
             }
 
             // Add the key/value settings
-            foreach (DataRow settingRow in DatabaseInfo.Tables[7].Rows)
+            foreach (DataRow settingRow in DatabaseInfo.Tables[6].Rows)
             {
                 Package_To_Finalize.Behaviors.Settings.Add(new Tuple<string, string>(settingRow["Setting_Key"].ToString(), settingRow["Setting_Value"].ToString()));
             }
 
             // Add any specific user group restrictions
-            foreach (DataRow userGroupRow in DatabaseInfo.Tables[8].Rows)
+            foreach (DataRow userGroupRow in DatabaseInfo.Tables[7].Rows)
             {
                 int id = Int32.Parse(userGroupRow[0].ToString());
                 string groupName = userGroupRow[1].ToString();
@@ -734,7 +727,7 @@ namespace SobekCM.Engine_Library.Items
             }
 
             // Add any specific user restrictions
-            foreach (DataRow userRow in DatabaseInfo.Tables[9].Rows)
+            foreach (DataRow userRow in DatabaseInfo.Tables[8].Rows)
             {
                 int id = Int32.Parse(userRow[0].ToString());
                 string name = userRow[1].ToString();
@@ -816,7 +809,7 @@ namespace SobekCM.Engine_Library.Items
             }
 
             // Check to see which views were present from the database, and build the list
-            foreach (DataRow viewRow in DatabaseInfo.Tables[4].Rows)
+            foreach (DataRow viewRow in DatabaseInfo.Tables[3].Rows)
             {
                 string viewType = viewRow[0].ToString();
                 string attribute = viewRow[1].ToString();

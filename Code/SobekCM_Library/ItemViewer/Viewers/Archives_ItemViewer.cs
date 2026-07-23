@@ -158,10 +158,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
             {
                 Output.WriteLine("<br />");
                 Output.WriteLine("<table border=\"1px\" cellpadding=\"1px\" cellspacing=\"0px\" rules=\"cols\" frame=\"void\" bordercolor=\"#e7e7e7\" width=\"100%\">");
-                Output.WriteLine("  <tr align=\"center\" bgcolor=\"#0022a7\" height=\"25px\"><td colspan=\"7\"><span style=\"color: White\"><b>ARCHIVED FILE INFORMATION</b></span></td></tr>");
+                Output.WriteLine("  <tr align=\"center\" bgcolor=\"#0022a7\" height=\"25px\"><td colspan=\"6\"><span style=\"color: White\"><b>ARCHIVED FILE INFORMATION</b></span></td></tr>");
                 Output.WriteLine("  <tr align=\"left\" bgcolor=\"#7d90d5\" height=\"25px\">");
                 Output.WriteLine("    <th><span style=\"color: White\">FILENAME</span></th>");
-                Output.WriteLine("    <th><span style=\"color: White\">EXTENSION</span></th>");
                 Output.WriteLine("    <th><span style=\"color: White\">SIZE</span></th>");
                 Output.WriteLine("    <th><span style=\"color: White\">ORIGINAL CREATION DATE</span></th>");
                 Output.WriteLine("    <th><span style=\"color: White\">STORED DATE</span></th>");
@@ -173,14 +172,13 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 {
                     Output.WriteLine("  <tr height=\"25px\" >");
                     Output.WriteLine("    <td>" + thisFile.FileName + "</td>");
-                    Output.WriteLine("    <td>" + thisFile.FileExtension + "</td>");
-                    Output.WriteLine("    <td>" + thisFile.FileSize + "</td>");
-                    Output.WriteLine("    <td>" + thisFile.OriginalCreationDate + "</td>");
-                    Output.WriteLine("    <td>" + thisFile.StoredDate + "</td>");
+                    Output.WriteLine("    <td>" + friendly_File_Size(thisFile.FileSize) + "</td>");
+                    Output.WriteLine("    <td>" + thisFile.OriginalCreationDate.ToShortDateString() + "</td>");
+                    Output.WriteLine("    <td>" + thisFile.StoredDate.ToShortDateString() + "</td>");
                     Output.WriteLine("    <td>" + thisFile.Status + "</td>");
                     Output.WriteLine("    <td>" + thisFile.LocationName + "</td>");
                     Output.WriteLine("  </tr>");
-                    Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\" colspan=\"7\"></td></tr>");
+                    Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\" colspan=\"6\"></td></tr>");
                 }
 
                 Output.WriteLine("</table>");
@@ -190,6 +188,27 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             Output.WriteLine("  </td>");
             Output.WriteLine("  <!-- END ARCHIVES VIEWER OUTPUT -->");
+        }
+
+        /// <summary> Formats a file size, in bytes, as a friendly string using the largest unit ( KB, MB, GB ) that keeps the value at least 1 </summary>
+        /// <param name="SizeInBytes"> File size, in bytes </param>
+        /// <returns> Friendly, human-readable file size string </returns>
+        private static string friendly_File_Size(long SizeInBytes)
+        {
+            const long KB = 1024;
+            const long MB = KB * 1024;
+            const long GB = MB * 1024;
+
+            if (SizeInBytes >= GB)
+                return (SizeInBytes / (double)GB).ToString("0.##") + " GB";
+
+            if (SizeInBytes >= MB)
+                return (SizeInBytes / (double)MB).ToString("0.##") + " MB";
+
+            if (SizeInBytes >= KB)
+                return (SizeInBytes / (double)KB).ToString("0.##") + " KB";
+
+            return SizeInBytes + " bytes";
         }
     }
 }

@@ -1312,3 +1312,196 @@ GO
 GRANT EXECUTE ON mySobek_Get_User_Folder_Items to sobek_user;
 GRANT EXECUTE ON mySobek_Get_User_Folder_Items to sobek_builder;
 GO
+
+
+-- Lookup of storage backends -- lets Glacier (or anything else) get added later with no schema change
+CREATE TABLE Archive_Location (
+    ArchiveLocationID smallint IDENTITY(1,1) NOT NULL,
+    LocationName varchar(50) NOT NULL,          -- e.g. 'GCS Cold Storage', 'AWS Glacier'
+    LocationType varchar(20) NOT NULL,          -- e.g. 'GCS', 'Glacier'
+    ContainerName varchar(255) NULL,            -- bucket/container name
+    IsActive bit NOT NULL DEFAULT(1),
+    Notes nvarchar(500) NULL,
+    CONSTRAINT PK_SobekCM_Archive_Location PRIMARY KEY CLUSTERED (ArchiveLocationID)
+);
+GO
+
+-- Stable identity: this page/file of this item has been archived, period.
+-- Exactly one row per (ItemID, FileName), no matter how many times it's re-archived later.
+CREATE TABLE Archive_Item_Archived_File (
+    ArchivedFileID   int IDENTITY(1,1) NOT NULL,
+    ItemID           int NOT NULL,
+    [FileName]         varchar(255) NOT NULL,
+    FileExtension    varchar(20) NOT NULL,          -- e.g. 'tif', 'mp3' -- denormalized off FileName for easy analysis
+    CONSTRAINT PK_Archive_Item_Archived_File PRIMARY KEY CLUSTERED (ArchivedFileID),
+    CONSTRAINT FK_Archived_File_Item FOREIGN KEY (ItemID) REFERENCES SobekCM_Item(ItemID),
+    CONSTRAINT UQ_Archived_File_Item_FileName UNIQUE (ItemID, FileName)
+);
+GO
+
+-- One row per archiving EVENT for that file -- captures size/hash/creation-date as they
+-- were at that moment. Re-archiving (correction, reprocessing) adds a new snapshot rather
+-- than overwriting, so history is preserved.
+CREATE TABLE Archive_Item_Archived_File_Snapshot (
+    SnapshotID              int IDENTITY(1,1) NOT NULL,
+    ArchivedFileID           int NOT NULL,
+    FileSize                 bigint NOT NULL,
+    OriginalCreationDate      datetime NOT NULL,
+    SHA256_Hash               char(64) NOT NULL,
+    SnapshotDate              datetime NOT NULL,     -- was ArchivedDate
+    MimeType                  varchar(100) NULL,     -- e.g. 'audio/mpeg', 'image/tiff'
+    EncodingDetails           varchar(500) NULL,     -- e.g. codec/bitrate/compression details, for format-obsolescence tracking
+    CONSTRAINT PK_Archived_File_Snapshot PRIMARY KEY CLUSTERED (SnapshotID),
+    CONSTRAINT FK_Archived_File_Snapshot_File FOREIGN KEY (ArchivedFileID) REFERENCES Archive_Item_Archived_File(ArchivedFileID)
+);
+CREATE INDEX IX_Archived_File_Snapshot_FileID ON Archive_Item_Archived_File_Snapshot(ArchivedFileID);
+GO
+
+-- One row per stored copy of a specific snapshot -- one per location, so a given
+-- snapshot can have both a GCS row and (later) a Glacier row simultaneously
+CREATE TABLE Archive_Item_Archived_File_Copy (
+    ArchivedFileCopyID int IDENTITY(1,1) NOT NULL,
+    SnapshotID int NOT NULL,                          -- FK to SobekCM_Item_Archived_File_Snapshot
+    ArchiveLocationID smallint NOT NULL,              -- FK to SobekCM_Archive_Location
+    StoragePath varchar(1000) NOT NULL,               -- full path/key, e.g. UOC\AA00008198\00001\20260214\...
+    StoredDate  datetime NOT NULL,
+    VerifiedDate datetime NULL,
+    [Status] varchar(20) NOT NULL DEFAULT('Stored'),  -- Pending / Stored / Verified / Failed / Deleted
+    CONSTRAINT PK_Archived_File_Copy PRIMARY KEY CLUSTERED (ArchivedFileCopyID),
+    CONSTRAINT FK_Archived_File_Copy_Snapshot FOREIGN KEY (SnapshotID) REFERENCES Archive_Item_Archived_File_Snapshot(SnapshotID),
+    CONSTRAINT FK_Archived_File_Copy_Location FOREIGN KEY (ArchiveLocationID) REFERENCES Archive_Location(ArchiveLocationID)
+);
+CREATE INDEX IX_Archived_File_Copy_SnapshotID ON Archive_Item_Archived_File_Copy(SnapshotID);
+GO
+
+-- Get the full archiving history (files, snapshots, and stored copies) for a single item
+CREATE PROCEDURE [dbo].[Archive_Get_Item_History]
+	@ItemID int
+AS
+BEGIN
+
+	SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED;
+
+	select F.ArchivedFileID, F.[FileName], F.FileExtension,
+	       S.SnapshotID, S.FileSize, S.OriginalCreationDate, S.SHA256_Hash, S.SnapshotDate, S.MimeType, S.EncodingDetails,
+	       C.ArchivedFileCopyID, C.StoragePath, C.StoredDate, C.VerifiedDate, C.[Status],
+	       L.ArchiveLocationID, L.LocationName, L.LocationType, L.ContainerName
+	from Archive_Item_Archived_File F left outer join
+	     Archive_Item_Archived_File_Snapshot S on S.ArchivedFileID = F.ArchivedFileID left outer join
+	     Archive_Item_Archived_File_Copy C on C.SnapshotID = S.SnapshotID left outer join
+	     Archive_Location L on L.ArchiveLocationID = C.ArchiveLocationID
+	where F.ItemID = @ItemID;
+
+END;
+GO
+
+GRANT EXECUTE ON Archive_Get_Item_History to sobek_user;
+GRANT EXECUTE ON Archive_Get_Item_History to sobek_builder;
+GO
+
+-- Save information about an archived file, creating the file/snapshot/copy rows only as needed
+CREATE PROCEDURE [dbo].[Archive_Save_File]
+	@ItemID int,
+	@FileName varchar(255),
+	@FileSize bigint,
+	@SHA256_Hash char(64),
+	@OriginalCreationDate datetime,
+	@StoragePath varchar(1000),
+	@StoredDate datetime,
+	@LocationName varchar(50),
+	@MimeType varchar(100) = null,
+	@EncodingDetails varchar(500) = null
+AS
+BEGIN
+
+	declare @ArchivedFileID int;
+	declare @SnapshotID int;
+	declare @ArchiveLocationID smallint;
+	declare @FileExtension varchar(20);
+
+	-- Pull the extension off the file name rather than taking it as a separate argument,
+	-- so it can never drift out of sync with the actual file name
+	set @FileExtension = case
+		when CHARINDEX('.', REVERSE(@FileName)) > 0
+		then RIGHT(@FileName, CHARINDEX('.', REVERSE(@FileName)) - 1)
+		else ''
+	end;
+
+	-- Find (or create) the stable file identity for this item/filename
+	select @ArchivedFileID = ArchivedFileID
+	from Archive_Item_Archived_File
+	where ItemID = @ItemID and FileName = @FileName;
+
+	if ( @ArchivedFileID is null )
+	begin
+		insert into Archive_Item_Archived_File ( ItemID, FileName, FileExtension )
+		values ( @ItemID, @FileName, @FileExtension );
+
+		set @ArchivedFileID = SCOPE_IDENTITY();
+	end;
+
+	-- Find (or create) a matching snapshot -- same size/hash/creation date means the same
+	-- archiving event, even if this procedure gets called again for it (e.g. a retry)
+	select @SnapshotID = SnapshotID
+	from Archive_Item_Archived_File_Snapshot
+	where ArchivedFileID = @ArchivedFileID
+	  and FileSize = @FileSize
+	  and SHA256_Hash = @SHA256_Hash
+	  and OriginalCreationDate = @OriginalCreationDate;
+
+	if ( @SnapshotID is null )
+	begin
+		insert into Archive_Item_Archived_File_Snapshot ( ArchivedFileID, FileSize, OriginalCreationDate, SHA256_Hash, SnapshotDate, MimeType, EncodingDetails )
+		values ( @ArchivedFileID, @FileSize, @OriginalCreationDate, @SHA256_Hash, @StoredDate, @MimeType, @EncodingDetails );
+
+		set @SnapshotID = SCOPE_IDENTITY();
+	end;
+
+	-- Resolve the storage location by name
+	select @ArchiveLocationID = ArchiveLocationID
+	from Archive_Location
+	where LocationName = @LocationName;
+
+	if ( @ArchiveLocationID is null )
+	begin
+		RAISERROR('Archive_Save_File: Unknown archive location ''%s''', 16, 1, @LocationName);
+		return;
+	end;
+
+	-- Find (or create) the copy of this snapshot at this location
+	if not exists ( select 1 from Archive_Item_Archived_File_Copy where SnapshotID = @SnapshotID and ArchiveLocationID = @ArchiveLocationID )
+	begin
+		insert into Archive_Item_Archived_File_Copy ( SnapshotID, ArchiveLocationID, StoragePath, StoredDate, Status )
+		values ( @SnapshotID, @ArchiveLocationID, @StoragePath, @StoredDate, 'Stored' );
+	end;
+
+END;
+GO
+
+GRANT EXECUTE ON Archive_Save_File to sobek_user;
+GRANT EXECUTE ON Archive_Save_File to sobek_builder;
+GO
+
+-- Get the bare necessity archiving history (files, snapshots, and stored copies) for a single item
+-- for public consumption online
+CREATE PROCEDURE [dbo].[Archive_Get_Item_History_Public]
+	@ItemID int
+AS
+BEGIN
+
+	SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED;
+
+	select F.ArchivedFileID, F.[FileName], F.FileExtension, S.FileSize, S.OriginalCreationDate, C.StoredDate, C.[Status], L.LocationName
+	from Archive_Item_Archived_File F left outer join
+	     Archive_Item_Archived_File_Snapshot S on S.ArchivedFileID = F.ArchivedFileID left outer join
+	     Archive_Item_Archived_File_Copy C on C.SnapshotID = S.SnapshotID left outer join
+	     Archive_Location L on L.ArchiveLocationID = C.ArchiveLocationID
+	where F.ItemID = @ItemID;
+
+END;
+GO
+
+
+GRANT EXECUTE ON Archive_Get_Item_History_Public to sobek_user;
+GRANT EXECUTE ON Archive_Get_Item_History_Public to sobek_builder;
+GO

@@ -4,6 +4,7 @@ using EngineAgnosticLayerDbAccess;
 using SobekCM.Core;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.ApplicationState;
+using SobekCM.Core.Archiving;
 using SobekCM.Core.Builder;
 using SobekCM.Core.Configuration.Extensions;
 using SobekCM.Core.Items;
@@ -5719,6 +5720,100 @@ namespace SobekCM.Engine_Library.Database
         }
 
 
-        #endregion  
+        #endregion
+
+        #region Methods related to archiving materials to cold storage
+
+        /// <summary> Gets the flattened archiving history (files, snapshots, and stored copies) for a single item </summary>
+        /// <param name="ItemID"> Primary key for the item to pull the archiving history for </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        /// <returns> Flattened list of archived file/snapshot/copy rows for this item, or NULL if an error occurred </returns>
+        /// <remarks> This calls the 'Archive_Get_Item_History_Public' stored procedure </remarks>
+        public static Archived_Files Get_Archived_Files(int ItemID, Custom_Tracer Tracer)
+        {
+            Tracer?.Add_Trace("Engine_Database.Get_Archived_Files", "");
+
+            try
+            {
+                EalDbParameter[] parameters = new EalDbParameter[1];
+                parameters[0] = new EalDbParameter("@ItemID", ItemID);
+
+                DataSet resultSet = EalDbAccess.ExecuteDataset(DatabaseType, Connection_String, CommandType.StoredProcedure, "Archive_Get_Item_History_Public", parameters);
+
+                var returnValue = new Archived_Files { ItemID = ItemID };
+
+                if ((resultSet != null) && (resultSet.Tables.Count > 0))
+                {
+                    foreach (DataRow thisRow in resultSet.Tables[0].Rows)
+                    {
+                        returnValue.Files.Add(new Archived_File
+                        {
+                            ArchivedFileID = Convert.ToInt32(thisRow["ArchivedFileID"]),
+                            FileName = thisRow["FileName"].ToString(),
+                            FileExtension = thisRow["FileExtension"].ToString(),
+                            FileSize = (thisRow["FileSize"] == DBNull.Value) ? 0 : Convert.ToInt64(thisRow["FileSize"]),
+                            OriginalCreationDate = (thisRow["OriginalCreationDate"] == DBNull.Value) ? DateTime.MinValue : Convert.ToDateTime(thisRow["OriginalCreationDate"]),
+                            StoredDate = (thisRow["StoredDate"] == DBNull.Value) ? DateTime.MinValue : Convert.ToDateTime(thisRow["StoredDate"]),
+                            Status = thisRow["Status"].ToString(),
+                            LocationName = thisRow["LocationName"].ToString()
+                        });
+                    }
+                }
+
+                return returnValue;
+            }
+            catch (Exception ee)
+            {
+                Last_Exception = ee;
+                Tracer?.Add_Trace("Engine_Database.Get_Archived_Files", "Error during execution: " + ee.Message);
+                return null;
+            }
+        }
+
+        /// <summary> Saves information about an archived file, creating the file/snapshot/copy rows only as needed </summary>
+        /// <param name="ItemID"> Primary key for the item this file belongs to </param>
+        /// <param name="FileName"> Name of the archived file </param>
+        /// <param name="FileSize"> Size, in bytes, of the file at the time it was archived </param>
+        /// <param name="SHA256_Hash"> SHA-256 hash of the file's contents at the time it was archived </param>
+        /// <param name="OriginalCreationDate"> Original filesystem creation date of the file, prior to archiving </param>
+        /// <param name="StoragePath"> Full path/key to this copy within the storage location </param>
+        /// <param name="StoredDate"> Date this copy was stored </param>
+        /// <param name="LocationName"> Name of the archive location this copy was stored to ( i.e., 'GCS Cold Storage', 'AWS Glacier' ) </param>
+        /// <param name="MimeType"> Mime type of the archived file, if known </param>
+        /// <param name="EncodingDetails"> Additional encoding details for the archived file, if known ( i.e., codec, bitrate ) </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        /// <returns> TRUE if successful, otherwise FALSE </returns>
+        /// <remarks> This calls the 'Archive_Save_File' stored procedure </remarks>
+        public static bool Archive_Save_File(int ItemID, string FileName, long FileSize, string SHA256_Hash, DateTime OriginalCreationDate, string StoragePath, DateTime StoredDate, string LocationName, string MimeType, string EncodingDetails, Custom_Tracer Tracer)
+        {
+            Tracer?.Add_Trace("Engine_Database.Archive_Save_File", "");
+
+            try
+            {
+                EalDbParameter[] parameters = new EalDbParameter[10];
+                parameters[0] = new EalDbParameter("@ItemID", ItemID);
+                parameters[1] = new EalDbParameter("@FileName", FileName);
+                parameters[2] = new EalDbParameter("@FileSize", DbType.Int64) { Value = FileSize };
+                parameters[3] = new EalDbParameter("@SHA256_Hash", SHA256_Hash);
+                parameters[4] = new EalDbParameter("@OriginalCreationDate", OriginalCreationDate);
+                parameters[5] = new EalDbParameter("@StoragePath", StoragePath);
+                parameters[6] = new EalDbParameter("@StoredDate", StoredDate);
+                parameters[7] = new EalDbParameter("@LocationName", LocationName);
+                parameters[8] = new EalDbParameter("@MimeType", (object)MimeType ?? DBNull.Value);
+                parameters[9] = new EalDbParameter("@EncodingDetails", (object)EncodingDetails ?? DBNull.Value);
+
+                EalDbAccess.ExecuteNonQuery(DatabaseType, Connection_String, CommandType.StoredProcedure, "Archive_Save_File", parameters);
+
+                return true;
+            }
+            catch (Exception ee)
+            {
+                Last_Exception = ee;
+                Tracer?.Add_Trace("Engine_Database.Archive_Save_File", "Error during execution: " + ee.Message);
+                return false;
+            }
+        }
+
+        #endregion
     }
 }

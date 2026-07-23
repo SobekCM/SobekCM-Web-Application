@@ -189,6 +189,9 @@ namespace SobekCM.Library.ItemViewer
                     //case "SobekCM.Library.ItemViewer.Viewers.GIF_ItemViewer_Prototyper":
                     //    return new GIF_ItemViewer_Prototyper();
 
+                    case "SobekCM.Library.ItemViewer.Viewers.Archives_ItemViewer_Prototyper":
+                        return new Archives_ItemViewer_Prototyper();
+
                     case "SobekCM.Library.ItemViewer.Viewers.Citation_MARC_ItemViewer_Prototyper":
                         return new Citation_MARC_ItemViewer_Prototyper();
 

@@ -9,7 +9,7 @@ string location = @"\\sobek-frontend\Files\ver5";
 // Name of the Archive_Location row these files were stored to (must already exist in Archive_Location)
 string locationName = "GCS Cold Storage";
 
-string db_connection_string = "data source=sobek-backend\\SQLEXPRESS;initial catalog=ver5;user id=sobekcm-sql;password=zda5hef9afx9WBA@wbe;TrustServerCertificate=True;Encrypt=False;";
+string db_connection_string = "data source=sobek-backend\\SQLEXPRESS;initial catalog=ver5;user id=XXXX;password=XXXX;TrustServerCertificate=True;Encrypt=False;";
 
 Engine_Database.DatabaseType = EalDbTypeEnum.MSSQL;
 Engine_Database.Connection_String = db_connection_string;

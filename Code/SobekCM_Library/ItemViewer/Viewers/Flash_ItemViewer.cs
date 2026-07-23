@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Http;
 using SobekCM.Core.BriefItem;
+using SobekCM.Core.FileSystems;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Users;
 using SobekCM.Library.ItemViewer.Menu;
@@ -193,7 +194,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             // If this is not already a link format, make it one
             if ((!String.IsNullOrEmpty(flash_file)) && (flash_file.IndexOf("http:") < 0))
             {
-                flash_file = BriefItem.Web.Source_URL + "/" + flash_file;
+                flash_file = SobekFileSystem.Resource_Web_Uri(BriefItem, flash_file);
             }
         }
 

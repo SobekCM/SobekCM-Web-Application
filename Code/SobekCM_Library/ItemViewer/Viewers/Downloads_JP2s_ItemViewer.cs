@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Http;
 using SobekCM.Core.BriefItem;
 using SobekCM.Core.Configuration.Localization;
+using SobekCM.Core.FileSystems;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Users;
 using SobekCM.Library.ItemViewer.Menu;
@@ -196,7 +197,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 Output.WriteLine("                  <div id=\"sbkDiv_Downloads\">");
 
                 // Step through each download in this item
-                string greenstoneLocation = BriefItem.Web.Source_URL + "/";
                 foreach (BriefItem_FileGrouping downloadGroup in BriefItem.Downloads)
                 {
                     // Step through each download in this download group/page
@@ -225,7 +225,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                         }
                         else
                         {
-                            string file_link = greenstoneLocation + download.Name;
+                            string file_link = SobekFileSystem.Resource_Web_Uri(BriefItem, download.Name);
 
                             // MAKE THIS USE THE FILES.ASPX WEB PAGE if this is restricted (or dark)
                             if ((BriefItem.Behaviors.Dark_Flag) || (BriefItem.Behaviors.IP_Restriction_Membership > 0))
@@ -270,7 +270,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                         string file_extension = Path.GetExtension(thisFile.Name);
                         if ((!String.IsNullOrEmpty(file_extension)) && (String.Equals(file_extension, ".jp2", StringComparison.OrdinalIgnoreCase)))
                         {
-                            pageDownloads.Add("<a href=\"" + (BriefItem.Web.Source_URL + "/" + thisFile.Name).Replace("\\", "/").Replace("//", "/").Replace("http:/", "http://") + "\">" + pageNode.Label + "</a>");
+                            pageDownloads.Add("<a href=\"" + SobekFileSystem.Resource_Web_Uri(BriefItem, thisFile.Name) + "\">" + pageNode.Label + "</a>");
                             break;
                         }
                     }

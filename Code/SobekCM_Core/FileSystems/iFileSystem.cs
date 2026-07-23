@@ -32,6 +32,13 @@ namespace SobekCM.Core.FileSystems
         /// <returns> URI for the web resource </returns>
         string Resource_Web_Uri(BriefItemInfo DigitalResource, string FileName);
 
+        /// <summary> Return the WEB uri for a single file in the digital resource </summary>
+        /// <param name="BibID"> Bibliographic identifier (BibID) for a title within a SobekCM instance </param>
+        /// <param name="VID"> Volume identifier (VID) for an item within a SobekCM title </param>
+        /// <param name="FileName"> Filename to get the web URI for</param>
+        /// <returns> URI for the web resource </returns>
+        string Resource_Web_Uri(string BibID, string VID, string FileName);
+
         /// <summary> Return a flag if the file specified exists within the digital resource </summary>
         /// <param name="DigitalResource"> The digital resource object </param>
         /// <param name="FileName"> Filename to check for</param>

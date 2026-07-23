@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Http;
 using SobekCM.Core.BriefItem;
+using SobekCM.Core.FileSystems;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Users;
 using SobekCM.Engine_Library.Configuration;
@@ -223,17 +224,17 @@ namespace SobekCM.Library.ItemViewer.Viewers
             Output.WriteLine();
             Output.WriteLine("    // Return the URI for a page, by index");
             Output.WriteLine("    gb.getPageURI = function(index) {");
-            Output.WriteLine("        var imgStr = (index).toString();");
+            Output.WriteLine("        var imgStr = '';");
             Output.WriteLine("        if (index < 2) return '" + CurrentRequest.Base_URL + "default/images/bookturner/emptypage.jpg';");
             for (int i = 0; i < files.Count; i++)
             {
-                Output.WriteLine("        if (index == " + (i + 2) + ") imgStr = '" + files[i] + "';");
+                // Resolve each page's full URI here (rather than handing the client a shared base
+                // URL to concatenate a bare filename onto), since per-file access -- e.g. signed
+                // GCS URLs -- can't be built by the client from a common prefix
+                Output.WriteLine("        if (index == " + (i + 2) + ") imgStr = '" + SobekFileSystem.Resource_Web_Uri(BriefItem, files[i]) + "';");
             }
             Output.WriteLine("        if (index > " + (files.Count + 1) + ") return '" + CurrentRequest.Base_URL + "default/images/bookturner/emptypage.jpg';");
-            string source_url = BriefItem.Web.Source_URL.Replace("\\", "/");
-            if (source_url[source_url.Length - 1] != '/')
-                source_url = source_url + "/";
-            Output.WriteLine("        return '" + source_url + "' + imgStr;");
+            Output.WriteLine("        return imgStr;");
             Output.WriteLine("    }");
             Output.WriteLine();
 

@@ -210,27 +210,28 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 }
                 Output.WriteLine("      </tr>");
 
-                string textLocation = SobekFileSystem.Resource_Network_Uri(BriefItem);
-                Add_Full_Text(Output, textLocation);
+                Add_Full_Text(Output);
             }
         }
 
-        private void Add_Full_Text(TextWriter Output, string TextFileLocation)
+        private void Add_Full_Text(TextWriter Output)
         {
-            // Is the text file location included, in which case any full text should be appended to the end?
-            if ((TextFileLocation.Length > 0) && (Directory.Exists(TextFileLocation)))
+            // Get the list of all TXT files associated with this item
+            List<SobekFileSystem_FileInfo> allFiles = SobekFileSystem.GetFiles(BriefItem);
+            List<SobekFileSystem_FileInfo> text_files = allFiles?.Where(ThisFile => String.Equals(ThisFile.Extension, ".txt", StringComparison.OrdinalIgnoreCase)).ToList();
+
+            // Is there any full text at all?
+            if ((text_files != null) && (text_files.Count > 0))
             {
-                // Get the list of all TXT files in this division
-                string[] text_files = Directory.GetFiles(TextFileLocation, "*.txt");
                 var text_files_existing = new Dictionary<string, string>();
-                foreach (string thisTextFile in text_files)
+                foreach (SobekFileSystem_FileInfo thisTextFile in text_files)
                 {
-                    string text_filename = (new FileInfo(thisTextFile)).Name.ToUpper();
+                    string text_filename = thisTextFile.Name.ToUpper();
                     text_files_existing[text_filename] = text_filename;
                 }
 
                 // Are there ANY text files?
-                if (text_files.Length > 0)
+                if (text_files.Count > 0)
                 {
                     // If this has page images, check for related text files 
                     var text_files_included = new List<string>();
@@ -257,7 +258,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                                         string root = Path.GetFileNameWithoutExtension(thisFile.Name);
                                         if (text_files_existing.ContainsKey(root.ToUpper() + ".TXT"))
                                         {
-                                            string text_file = TextFileLocation + "\\" + root.ToUpper() + ".txt";
+                                            string text_file = root.ToUpper() + ".txt";
 
                                             // SInce this is marked to be included, save this name
                                             text_files_included.Add(root.ToUpper() + ".TXT");
@@ -279,14 +280,11 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
                                                 try
                                                 {
-                                                    var reader = new StreamReader(text_file);
-                                                    string text_line = reader.ReadLine();
-                                                    while (text_line != null)
+                                                    string fileContent = SobekFileSystem.ReadToEnd(BriefItem, text_file);
+                                                    foreach (string text_line in fileContent.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None))
                                                     {
                                                         Output.WriteLine(text_line + "<br />");
-                                                        text_line = reader.ReadLine();
                                                     }
-                                                    reader.Close();
                                                 }
                                                 catch
                                                 {
@@ -335,24 +333,17 @@ namespace SobekCM.Library.ItemViewer.Viewers
                             started = true;
                         }
 
-                        string text_file = TextFileLocation + "\\" + thisTextFile;
-
                         try
                         {
-
-
-                            var reader = new StreamReader(text_file);
-                            string text_line = reader.ReadLine();
-                            while (text_line != null)
+                            string fileContent = SobekFileSystem.ReadToEnd(BriefItem, thisTextFile);
+                            foreach (string text_line in fileContent.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None))
                             {
                                 Output.WriteLine(text_line + "<br />");
-                                text_line = reader.ReadLine();
                             }
-                            reader.Close();
                         }
                         catch
                         {
-                            Output.WriteLine("Unable to read file: " + text_file);
+                            Output.WriteLine("Unable to read file: " + thisTextFile);
                         }
 
                         Output.WriteLine("<br /><br />");

@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Http;
 using SobekCM.Core.BriefItem;
+using SobekCM.Core.FileSystems;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Users;
 using SobekCM.Library.ItemViewer.Menu;
@@ -187,18 +188,18 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <returns> Sttring with the metadata links and basic information about the types of metadata</returns>
         protected string Metadata_String(Custom_Tracer Tracer)
         {
-            // Get the links for the METS and GSA
-            string resourceURL = BriefItem.Web.Source_URL + "/";
-            string complete_mets = resourceURL + BriefItem.BibID + "_" + BriefItem.VID + ".mets.xml";
-            string marc_xml = resourceURL + "marc.xml";
+            // Resolve the URL for a single named file, either through the SobekFileSystem directly, or
+            // (if this item is restricted/dark) through the auth-checked FILES.ASPX web page instead --
+            // each file is resolved individually rather than gluing a filename onto a cached base URL,
+            // since a GCS-backed file system would need to resolve (and potentially sign) each file on its own
+            bool isRestricted = (BriefItem.Behaviors.Dark_Flag) || (BriefItem.Behaviors.IP_Restriction_Membership > 0);
+            Func<string, string> resourceUrl = filename => isRestricted
+                ? CurrentRequest.Base_URL + "files/" + BriefItem.BibID + "/" + BriefItem.VID + "/" + filename
+                : SobekFileSystem.Resource_Web_Uri(BriefItem, filename);
 
-            // MAKE THIS USE THE FILES.ASPX WEB PAGE if this is restricted (or dark)
-            if ((BriefItem.Behaviors.Dark_Flag) || (BriefItem.Behaviors.IP_Restriction_Membership > 0))
-            {
-                resourceURL = CurrentRequest.Base_URL + "files/" + BriefItem.BibID + "/" + BriefItem.VID + "/";
-                complete_mets = resourceURL + BriefItem.BibID + "_" + BriefItem.VID + ".mets.xml";
-                marc_xml = resourceURL + "marc.xml";
-            }
+            // Get the links for the METS and GSA
+            string complete_mets = resourceUrl(BriefItem.BibID + "_" + BriefItem.VID + ".mets.xml");
+            string marc_xml = resourceUrl("marc.xml");
 
 
             var builder = new StringBuilder(3000);
@@ -226,7 +227,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 if (ead_file.Length > 0)
                 {
                     builder.AppendLine("<div id=\"sbkCiv_EadDownload\" class=\"sbCiv_DownloadSection\">");
-                    builder.AppendLine("  <a href=\"" + resourceURL + ead_file + "\" target=\"_blank\">View Finding Aid (EAD)</a>");
+                    builder.AppendLine("  <a href=\"" + resourceUrl(ead_file) + "\" target=\"_blank\">View Finding Aid (EAD)</a>");
                     builder.AppendLine("  <p>This archival collection is described with an electronic finding aid.   This metadata file contains all of the archival description and container list for this archival material.  This file follows the established <a href=\"http://www.loc.gov/ead/\">Encoded Archival Description</a> (EAD) standard.</p>");
                     builder.AppendLine("</div>");
                 }
@@ -271,7 +272,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
                 // Add the HTML for this
                 builder.AppendLine("<div id=\"sbkCiv_TeiDownload\" class=\"sbCiv_DownloadSection\">");
-                builder.AppendLine("  <a href=\"" + resourceURL + BriefItem.BibID + "_" + BriefItem.VID + ".tei.xml\" target=\"_blank\">View TEI/Text File</a>");
+                builder.AppendLine("  <a href=\"" + resourceUrl(BriefItem.BibID + "_" + BriefItem.VID + ".tei.xml") + "\" target=\"_blank\">View TEI/Text File</a>");
                 builder.AppendLine("  <p>The full-text of this item is also available in the established standard <a href=\"http://www.tei-c.org/index.xml\">Text Encoding Initiative</a> (TEI) downloadable file.</p>");
                 builder.AppendLine("</div>");
 

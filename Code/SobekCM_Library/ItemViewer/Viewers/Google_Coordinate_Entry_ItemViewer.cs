@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Http;
 using SobekCM.Core.BriefItem;
 using SobekCM.Core.Client;
+using SobekCM.Core.FileSystems;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Settings;
 using SobekCM.Core.Users;
@@ -840,7 +841,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                                 try
                                 {
                                     //get image url myway
-                                    string current_image_file = currentItem.Web.Source_URL + "/" + currentItem.VID + ".jpg";
+                                    string current_image_file = SobekFileSystem.Resource_Web_Uri(BriefItem, currentItem.VID + ".jpg");
                                     Output.WriteLine("      MAPEDITOR.GLOBAL.DEFINES.incomingPointSourceURL[" + point + "] = \"" + current_image_file + "\"; ");
                                 }
                                 catch (Exception)
@@ -995,7 +996,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                                             break;
                                         }
                                     }
-                                    string first_page_complete_url = "\"" + currentItem.Web.Source_URL + "/" + first_page_jpeg + "\"";
+                                    string first_page_complete_url = "\"" + SobekFileSystem.Resource_Web_Uri(BriefItem, first_page_jpeg) + "\"";
                                     ////polygonURL[totalAddedPolygonIndex] = first_page_complete_url;
                                     //polygonURL.Add(first_page_complete_url);
                                     Output.WriteLine("      MAPEDITOR.GLOBAL.DEFINES.incomingPolygonSourceURL[" + totalAddedPolygonIndex + "] = " + first_page_complete_url + ";");
@@ -1055,7 +1056,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                                             break;
                                         }
                                     }
-                                    string first_page_complete_url = "\"" + currentItem.Web.Source_URL + "/" + first_page_jpeg + "\"";
+                                    string first_page_complete_url = "\"" + SobekFileSystem.Resource_Web_Uri(BriefItem, first_page_jpeg) + "\"";
                                     ////polygonURL[totalAddedPolygonIndex] = first_page_complete_url;
                                     //polygonURL.Add(first_page_complete_url);
                                     Output.WriteLine("      MAPEDITOR.GLOBAL.DEFINES.incomingPolygonSourceURL[" + totalAddedPolygonIndex + "] = " + first_page_complete_url + ";");
@@ -1063,7 +1064,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                                 catch (Exception)
                                 {
                                     //my way
-                                    string current_image_file = currentItem.Web.Source_URL + "/" + currentItem.VID + ".jpg";
+                                    string current_image_file = SobekFileSystem.Resource_Web_Uri(BriefItem, currentItem.VID + ".jpg");
                                     Output.WriteLine("      MAPEDITOR.GLOBAL.DEFINES.incomingPolygonSourceURL[" + totalAddedPolygonIndex + "] = \"" + current_image_file + "\"; ");
                                     //throw;
                                 }
@@ -1144,7 +1145,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                                             break;
                                         }
                                     }
-                                    string first_page_complete_url = "\"" + currentItem.Web.Source_URL + "/" + first_page_jpeg + "\"";
+                                    string first_page_complete_url = "\"" + SobekFileSystem.Resource_Web_Uri(BriefItem, first_page_jpeg) + "\"";
                                     ////polygonURL[totalAddedPolygonIndex] = first_page_complete_url;
                                     //polygonURL.Add(first_page_complete_url);
                                     Output.WriteLine("      MAPEDITOR.GLOBAL.DEFINES.incomingPolygonSourceURL[" + totalAddedPolygonIndex + "] = " + first_page_complete_url + ";");
@@ -1152,7 +1153,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                                 catch (Exception)
                                 {
                                     //my way
-                                    string current_image_file = currentItem.Web.Source_URL + "/" + currentItem.VID + ".jpg";
+                                    string current_image_file = SobekFileSystem.Resource_Web_Uri(BriefItem, currentItem.VID + ".jpg");
                                     Output.WriteLine("      MAPEDITOR.GLOBAL.DEFINES.incomingPolygonSourceURL[" + totalAddedPolygonIndex + "] = \"" + current_image_file + "\"; ");
                                     //throw;
                                 }

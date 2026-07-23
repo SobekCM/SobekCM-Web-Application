@@ -53,6 +53,16 @@ namespace SobekCM.Core.FileSystems
             return fileSystem.Resource_Web_Uri(DigitalResource, FileName);
         }
 
+        /// <summary> Return the WEB uri for a single file in the digital resource </summary>
+        /// <param name="BibID"> Bibliographic identifier (BibID) for a title within a SobekCM instance </param>
+        /// <param name="VID"> Volume identifier (VID) for an item within a SobekCM title </param>
+        /// <param name="FileName"> Filename to get the web URI for</param>
+        /// <returns> URI for the web resource </returns>
+        public static string Resource_Web_Uri(string BibID, string VID, string FileName)
+        {
+            return fileSystem.Resource_Web_Uri(BibID, VID, FileName);
+        }
+
         /// <summary> Return the NETWORK uri for a digital resource </summary>
         /// <param name="DigitalResource"> The digital resource object </param>
         /// <returns> URI for the network resource </returns>
@@ -130,6 +140,5 @@ namespace SobekCM.Core.FileSystems
         {
             return fileSystem.GetFiles(DigitalResource);
         }
-
     }
 }

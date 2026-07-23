@@ -222,8 +222,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
 
             // Get the links for the METS
-            string greenstoneLocation = BriefItem.Web.Source_URL + "/";
-            complete_mets = greenstoneLocation + BriefItem.BibID + "_" + BriefItem.VID + ".mets.xml";
+            complete_mets = SobekFileSystem.Resource_Web_Uri(BriefItem, BriefItem.BibID + "_" + BriefItem.VID + ".mets.xml");
 
             // MAKE THIS USE THE FILES.ASPX WEB PAGE if this is restricted (or dark)
             if ((BriefItem.Behaviors.Dark_Flag) || (BriefItem.Behaviors.IP_Restriction_Membership > 0))
@@ -1821,7 +1820,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 }
 
                 // Compute the thumbnail and regular URLs
-                string thumbnail_url = (qc_item.Web.Source_URL + "/" + thumbnail_filename).Replace("\\", "/").Replace("//", "/").Replace("http:/", "http://").Replace("https:/", "https://");
+                string thumbnail_url = SobekFileSystem.Resource_Web_Uri(BriefItem, thumbnail_filename);
                 // If nothing found (but this is a page division) use the no thumbs image
                 if (thumbnail_filename.Length == 0)
                 {
@@ -1841,7 +1840,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                         }
                     }
 
-                    image_url = (qc_item.Web.Source_URL + "/" + filename).Replace("\\", "/").Replace("//", "/").Replace("http:/", "http://").Replace("https:/", "https://");
+                    image_url = SobekFileSystem.Resource_Web_Uri(BriefItem, filename);
                     if (filename.Length == 0)
                     {
                         image_url = Static_Resources_Gateway.Missingimage_Jpg;

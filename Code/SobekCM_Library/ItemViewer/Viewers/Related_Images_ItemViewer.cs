@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Http;
 using SobekCM.Core.BriefItem;
 using SobekCM.Core.Configuration.Localization;
+using SobekCM.Core.FileSystems;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Users;
 using SobekCM.Engine_Library.Configuration;
@@ -519,26 +520,26 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 string url = UrlWriterHelper.Redirect_URL(currentRequest);
 
                 // Determine the width information and the URL for the image
-                string image_url; // = (briefItem.Web.Source_URL + "/" + thumbnail).Replace("\\", "/").Replace("//", "/").Replace("http:/", "http://");
+                string image_url;
                 int width = -1;
                 switch (size_of_thumbnails)
                 {
                     case 2:
-                        image_url = (briefItem.Web.Source_URL + "/" + jpeg).Replace("\\", "/").Replace("//", "/").Replace("http:/", "http://").Replace("https:/", "https://");
+                        image_url = SobekFileSystem.Resource_Web_Uri(briefItem, jpeg);
                         width = 315;
                         break;
 
                     case 3:
-                        image_url = (briefItem.Web.Source_URL + "/" + jpeg).Replace("\\", "/").Replace("//", "/").Replace("http:/", "http://").Replace("https:/", "https://");
+                        image_url = SobekFileSystem.Resource_Web_Uri(briefItem, jpeg);
                         width = 472;
                         break;
 
                     case 4:
-                        image_url = (briefItem.Web.Source_URL + "/" + jpeg).Replace("\\", "/").Replace("//", "/").Replace("http:/", "http://").Replace("https:/", "https://");
+                        image_url = SobekFileSystem.Resource_Web_Uri(briefItem, jpeg);
                         break;
 
                     default:
-                        image_url = (briefItem.Web.Source_URL + "/" + thumbnail).Replace("\\", "/").Replace("//", "/").Replace("http:/", "http://").Replace("https:/", "https://");
+                        image_url = SobekFileSystem.Resource_Web_Uri(briefItem, thumbnail);
                         width = 150;
                         break;
 

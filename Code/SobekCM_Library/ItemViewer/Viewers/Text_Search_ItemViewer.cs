@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Http;
 using SobekCM.Core.BriefItem;
 using SobekCM.Core.Configuration.Localization;
+using SobekCM.Core.FileSystems;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Settings;
 using SobekCM.Core.Users;
@@ -310,7 +311,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 Output.WriteLine("    <td id=\"sbkTsv_ResultsArea\">");
                 Output.WriteLine("        <table id=\"sbkTsv_ResultsTable\">");
 
-                string thumbnail_root = BriefItem.Web.Source_URL;
                 string url_options = UrlWriterHelper.URL_Options(CurrentRequest);
                 if (url_options.Length > 0)
                 {
@@ -342,7 +342,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     {
                         if (result.Thumbnail.Length > 0)
                         {
-                            Output.WriteLine("            <td style=\"text-align:left; width: 150px;\"><a href=\"" + CurrentRequest.Base_URL + BriefItem.BibID + "/" + BriefItem.VID + "/" + result.PageOrder + url_options + "\"><img src=\"" + thumbnail_root + "/" + result.Thumbnail + "\" class=\"sbkTsv_Thumbnail\" /></a></td>");
+                            Output.WriteLine("            <td style=\"text-align:left; width: 150px;\"><a href=\"" + CurrentRequest.Base_URL + BriefItem.BibID + "/" + BriefItem.VID + "/" + result.PageOrder + url_options + "\"><img src=\"" + SobekFileSystem.Resource_Web_Uri(BriefItem, result.Thumbnail) + "\" class=\"sbkTsv_Thumbnail\" /></a></td>");
                         }
                         else
                         {

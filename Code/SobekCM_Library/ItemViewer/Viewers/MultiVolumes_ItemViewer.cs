@@ -623,9 +623,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
             //Outer div which contains all the thumbnails
             Output.WriteLine("<div style=\"margin:5px;text-align:center;\">");
 
-            // Find the base address for this thumbnail
-            string jpeg_base = SobekFileSystem.Resource_Web_Uri(briefItem);
-
             // Compute the base redirect URL
             string current_vid = currentRequest.VID;
             string viewercode = currentRequest.ViewerCode;
@@ -684,7 +681,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 Output.WriteLine("    <tr>");
                 Output.WriteLine("      <td>");
                 Output.WriteLine("        <a href=\"" + url + "\" title=\"" + thumbnail_text + "\">");
-                Output.WriteLine("          <img src=\"" + jpeg_base + thisItem.VID + "/" + thisItem.MainThumbnail + "\" alt=\"MISSING THUMBNAIL\" />");
+                Output.WriteLine("          <img src=\"" + SobekFileSystem.Resource_Web_Uri(briefItem.BibID, thisItem.VID, thisItem.MainThumbnail) + "\" alt=\"MISSING THUMBNAIL\" />");
                 Output.WriteLine("        </a>");
                 Output.WriteLine("      </td>");
                 Output.WriteLine("    </tr>");

@@ -124,7 +124,34 @@ DROP PROCEDURE dbo.Tracking_Items_By_ALEPH;
 DROP PROCEDURE dbo.SobekCM_Delete_Setting;
 GO
 
+-- Gets a list of items and groups which exist within this instance
+ALTER PROCEDURE [dbo].[SobekCM_Item_List]
+	@include_private bit
+as
+begin
 
+	-- No need to perform any locks here
+	SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED;
+
+	-- Set value for filtering privates
+	declare @lower_mask int;
+	set @lower_mask = 0;
+	if ( @include_private = 'true' )
+	begin
+		set @lower_mask = -256;
+	end;
+
+	-- Return the item group / item information in one large table
+	select G.BibID, I.VID, IP_Restriction_Mask, I.Title, G.[Type], I.Dark, I.ItemID
+	from SobekCM_Item I, SobekCM_Item_Group G
+	where ( I.GroupID = G.GroupID )
+	  and ( G.Deleted = CONVERT(bit,0) )
+	  and ( I.Deleted = CONVERT(bit,0) )
+	  and ( I.IP_Restriction_Mask >= @lower_mask )
+	order by BibID, VID;
+
+end;
+GO
 
 -- Deletes an item, and deletes the group if there are no additional items attached
 ALTER PROCEDURE dbo.[SobekCM_Delete_Item] 

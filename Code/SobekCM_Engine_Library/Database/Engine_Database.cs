@@ -1189,7 +1189,7 @@ namespace SobekCM.Engine_Library.Database
         /// <param name="IncludePrivate"> Flag indicates whether to include private items in this list </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
         /// <returns> DataSet </returns>
-        /// <remarks> This calls the 'SobekCM_Item_List_Web' stored procedure </remarks> 
+        /// <remarks> This calls the 'SobekCM_Item_List' stored procedure </remarks> 
         public static DataSet Item_List(bool IncludePrivate, Custom_Tracer Tracer)
         {
             Tracer?.Add_Trace("Engine_Database.Item_List", String.Empty);

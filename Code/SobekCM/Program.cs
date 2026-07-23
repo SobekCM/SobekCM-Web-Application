@@ -10,6 +10,7 @@ using SobekCM.Core.Client;
 using SobekCM.Core.FileSystems;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
+using SobekCM.Engine_Library;
 using SobekCM.Library.Database;
 using SobekCM.Library.Helpers.CKEditor;
 using SobekCM.Library.Helpers.UploadiFive;
@@ -180,6 +181,16 @@ namespace SobekCM
                 await Files_Handler(context, urlrelative ?? "");
             });
 
+            // ── Engine microservice endpoint (replaces sobekcm.svc IHttpHandler) ────
+            // In the old app, an IHttpModule rewrote /engine/... requests to
+            // ~/sobekcm.svc?urlrelative=... within this SAME application — sobekcm.svc
+            // was never a separately deployed site. MicroserviceHandler is that same
+            // handler, just invoked directly and in-process here instead of via rewrite.
+            app.Map("/engine/{**urlrelative}", async (HttpContext context, string urlrelative) =>
+            {
+                await Engine_Handler(context, urlrelative ?? "");
+            });
+
             // ── HTML editor file upload (replaces HtmlEditFileHandler.ashx) ──────────
             app.MapPost("/htmleditfilehandler.ashx", async (HttpContext context) =>
             {
@@ -318,6 +329,8 @@ namespace SobekCM
             // ── Main SobekCM catch-all (replaces SobekCM.aspx) ──────────────────────
             app.MapFallback(async (HttpContext context) =>
             {
+                var request_url = $"{context.Request.Scheme}://{context.Request.Host}{context.Request.PathBase}{context.Request.Path}{context.Request.QueryString}";
+
                 //context.Response.Redirect("/sobekcm.aspx" + context.Request.QueryString);
                 bool isPostBack = string.Equals(context.Request.Method, "POST", StringComparison.OrdinalIgnoreCase);
                 var pageGlobals = new QueryInitializer(context, "SOBEKCM");
@@ -429,7 +442,7 @@ namespace SobekCM
             // urlrelative=sobekcm_data.aspx injected into its query string.
             if (relative == "robots.txt" || relative == "htmleditfilehandler.ashx" || relative == "uploadifivefilehandler.ashx" ||
                 relative == "dashboard.aspx" || relative == "sobekcm_data.aspx" || relative == "sobekcm_oai.aspx" ||
-                relative.StartsWith("files/"))
+                relative.StartsWith("files/") || relative == "engine" || relative.StartsWith("engine/"))
             {
                 await next();
                 return;
@@ -488,6 +501,21 @@ namespace SobekCM
             if (!string.IsNullOrEmpty(existing))
                 merged += "&" + existing;
             context.Request.QueryString = new QueryString("?" + merged);
+        }
+
+        /// <summary> Dispatches a request to the engine's MicroserviceHandler, translating the
+        /// route-captured path (everything after /engine/) into the "urlrelative" query parameter
+        /// it expects — the same value the old rewriter produced via appRelative.Substring(6). </summary>
+        private static Task Engine_Handler(HttpContext context, string urlrelative)
+        {
+            string existing = context.Request.QueryString.HasValue ? context.Request.QueryString.Value.TrimStart('?') : "";
+            string merged = "urlrelative=" + Uri.EscapeDataString(urlrelative);
+            if (!string.IsNullOrEmpty(existing))
+                merged += "&" + existing;
+            context.Request.QueryString = new QueryString("?" + merged);
+
+            new MicroserviceHandler().ProcessRequest(context);
+            return Task.CompletedTask;
         }
 
         private static async Task Files_Handler(HttpContext context, string urlrelative)

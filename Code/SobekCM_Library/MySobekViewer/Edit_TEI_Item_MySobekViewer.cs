@@ -324,7 +324,7 @@ namespace SobekCM.Library.MySobekViewer
                         }
                         if (thisKey.IndexOf("xslt_select") == 0)
                         {
-                            xslt_file = Context.Request.Form[thisKey];
+                            xslt_file = PathTraversalGuard.SanitizeFileName(Context.Request.Form[thisKey]);
                             Context.SessionObject()["Edit_TEI_mySobekViewer." + bibid + "_" + vid + ".XSLT_File"] = xslt_file;
                         }
                         if (thisKey.IndexOf("css_select") == 0)
@@ -575,7 +575,7 @@ namespace SobekCM.Library.MySobekViewer
 
                 // Find the actual XSLT file
                 string xslt_directory = Path.Combine(UI_ApplicationCache_Gateway.Settings.Servers.Application_Server_Network, "plugins", "tei", "xslt");
-                string[] xslt_files = Directory.GetFiles(xslt_directory, xslt_file + ".xsl*");
+                string[] xslt_files = Directory.GetFiles(xslt_directory, PathTraversalGuard.SanitizeFileName(xslt_file) + ".xsl*");
                 SobekCM_Item_Database.Set_Item_Setting_Value(Item_To_Complete.Web.ItemID, "TEI.XSLT", Path.GetFileName(xslt_files[0]));
 
                 // Add the TEI viewer

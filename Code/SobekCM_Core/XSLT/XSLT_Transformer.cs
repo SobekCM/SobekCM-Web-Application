@@ -391,8 +391,9 @@ namespace SobekCM.Core.XSLT
 
             try
             {
-                // Create the XsltSettings object with script enabled.
-                var xslt_settings = new XsltSettings(true, true);
+                // Create the XsltSettings object with script disabled (SCS0011): embedded <msxsl:script> blocks
+                // would otherwise let an XSLT file execute arbitrary code, and the TEI plug-in doesn't rely on that
+                var xslt_settings = new XsltSettings(true, false);
 
                 // Create the transform and load the XSL indicated
                 var transform = new XslCompiledTransform();
@@ -460,8 +461,9 @@ namespace SobekCM.Core.XSLT
 
             try
             {
-                // Create the XsltSettings object with script enabled.
-                var xslt_settings = new XsltSettings(true, true);
+                // Create the XsltSettings object with script disabled (SCS0011): embedded <msxsl:script> blocks
+                // would otherwise let an XSLT file execute arbitrary code, and the TEI plug-in doesn't rely on that
+                var xslt_settings = new XsltSettings(true, false);
 
                 // Create the transform and load the XSL indicated
                 var transform = new XslCompiledTransform();

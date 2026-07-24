@@ -109,7 +109,8 @@ namespace SobekCM.Library.MySobekViewer
                             Context.Response.Cookies.Append("SobekUser", cookieValue, new CookieOptions
                             {
                                 Expires = DateTimeOffset.Now.AddDays(30),
-                                HttpOnly = true
+                                HttpOnly = true,
+                                Secure = true
                             });
                         }
 

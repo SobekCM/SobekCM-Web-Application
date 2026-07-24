@@ -171,7 +171,8 @@ namespace SobekCM.QueryInitializerHelpers
                             context.Response.Cookies.Append("SobekUser", cookieValue, new CookieOptions
                             {
                                 Expires = DateTimeOffset.Now.AddDays(30),
-                                HttpOnly = true
+                                HttpOnly = true,
+                                Secure = true
                             });
 
                             // Also add user to session

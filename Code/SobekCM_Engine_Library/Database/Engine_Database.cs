@@ -7,6 +7,7 @@ using SobekCM.Core.ApplicationState;
 using SobekCM.Core.Archiving;
 using SobekCM.Core.Builder;
 using SobekCM.Core.Configuration.Extensions;
+using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Items;
 using SobekCM.Core.OpenPublishing;
 using SobekCM.Core.Results;
@@ -895,8 +896,15 @@ namespace SobekCM.Engine_Library.Database
 
                 while (reader.Read())
                 {
-                    Translations.Add_French(reader.GetString(1), reader.GetString(2));
-                    Translations.Add_Spanish(reader.GetString(1), reader.GetString(3));
+                    string english = reader.GetString(1);
+                    Web_Language_Enum language = Web_Language_Enum_Converter.Code_To_Enum(reader.GetString(2));
+                    string translatedValue = reader.GetString(3);
+
+                    // Skip any language code that doesn't resolve to a known language, rather than storing garbage
+                    if (language == Web_Language_Enum.UNDEFINED)
+                        continue;
+
+                    Translations.Add_Translation(english, language, translatedValue);
                 }
 
                 // Close the reader (which also closes the connection)
@@ -911,6 +919,39 @@ namespace SobekCM.Engine_Library.Database
                 Tracer?.Add_Trace("Engine_Database.Populate_Translations", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
                 Tracer?.Add_Trace("Engine_Database.Populate_Translations", ee.Message, Custom_Trace_Type_Enum.Error);
                 Tracer?.Add_Trace("Engine_Database.Populate_Translations", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                return false;
+            }
+        }
+
+        /// <summary> Saves a single translated term ( one English source string, in one language ) </summary>
+        /// <param name="English"> Term in english </param>
+        /// <param name="LanguageCode"> ISO code for the language of the translated value ( see <see cref="Web_Language_Enum_Converter.Enum_To_Code"/> ) </param>
+        /// <param name="TranslatedValue"> Translated value, in the provided language </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <returns> TRUE if successful, otherwise FALSE </returns>
+        /// <remarks> This calls the 'SobekCM_Save_Translation' stored procedure, which upserts by ( English, LanguageCode ) </remarks>
+        public static bool Save_Translation(string English, string LanguageCode, string TranslatedValue, Custom_Tracer Tracer)
+        {
+            Tracer?.Add_Trace("Engine_Database.Save_Translation", String.Empty);
+
+            try
+            {
+                // Build the parameter list
+                EalDbParameter[] paramList = new EalDbParameter[3];
+                paramList[0] = new EalDbParameter("@english", English);
+                paramList[1] = new EalDbParameter("@languageCode", LanguageCode);
+                paramList[2] = new EalDbParameter("@translatedValue", TranslatedValue);
+
+                EalDbAccess.ExecuteNonQuery(DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_Save_Translation", paramList);
+
+                return true;
+            }
+            catch (Exception ee)
+            {
+                Last_Exception = ee;
+                Tracer?.Add_Trace("Engine_Database.Save_Translation", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("Engine_Database.Save_Translation", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("Engine_Database.Save_Translation", ee.StackTrace, Custom_Trace_Type_Enum.Error);
                 return false;
             }
         }

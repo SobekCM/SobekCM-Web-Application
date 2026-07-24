@@ -191,6 +191,7 @@ namespace SobekCM.Library.Localization
             public static string Browse_By(Web_Language_Enum Language) => Localization_Store.Get("aggregations", "Metadata_Browse", "Browse_By", Language);
             public static string Browse_By_Colon(Web_Language_Enum Language) => Localization_Store.Get("aggregations", "Metadata_Browse", "Browse_By_Colon", Language);
             public static string Public_Browses(Web_Language_Enum Language) => Localization_Store.Get("aggregations", "Metadata_Browse", "Public_Browses", Language);
+            public static string Internal_Browses(Web_Language_Enum Language) => Localization_Store.Get("aggregations", "Metadata_Browse", "Internal_Browses", Language);
             public static string Browses(Web_Language_Enum Language) => Localization_Store.Get("aggregations", "Metadata_Browse", "Browses", Language);
             public static string Select_Field_Prompt(Web_Language_Enum Language) => Localization_Store.Get("aggregations", "Metadata_Browse", "Select_Field_Prompt", Language);
             public static string No_Matching_Values(Web_Language_Enum Language) => Localization_Store.Get("aggregations", "Metadata_Browse", "No_Matching_Values", Language);

@@ -1,7 +1,6 @@
 #region Using directives
 
 using SobekCM.Core.Configuration.Localization;
-using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 
@@ -10,63 +9,43 @@ using System.Runtime.Serialization;
 namespace SobekCM.Core.ApplicationState
 {
     /// <summary> Class stores all the common translations used in the web interface </summary>
-    /// <remarks> This is being deprecated </remarks>
+    /// <remarks> Backed by the <see cref="SobekCM_Metadata_Translation"/> database table, one row per
+    /// (English term, language) pair, loaded via <c>Engine_Database.Populate_Translations</c>. Uses
+    /// <see cref="Web_Language_Translation_Lookup"/> so any language in <see cref="Web_Language_Enum"/>
+    /// can be stored per term, not just a fixed pair of languages. </remarks>
     [DataContract]
     public class Language_Support_Info
     {
         /// <summary> Constructor for a new instance of the Language_Support_Info class </summary>
         public Language_Support_Info()
         {
-            // Declare the hashtables
-            FrenchTable = new Dictionary<string, string>(100);
-            SpanishTable = new Dictionary<string, string>(100);
+            Translations = new Dictionary<string, Web_Language_Translation_Lookup>();
         }
 
-        /// <summary> Table of translations from english to french </summary>
+        /// <summary> Every translated term, keyed by the English source text </summary>
         [DataMember]
-        public Dictionary<string, string> FrenchTable { get; set; }
-
-        /// <summary> Table of translations from english to spanish </summary>
-        [DataMember]
-        public Dictionary<string, string> SpanishTable { get; set; }
+        public Dictionary<string, Web_Language_Translation_Lookup> Translations { get; set; }
 
         /// <summary> Clears all the data stored in this object </summary>
         public void Clear()
         {
-            FrenchTable.Clear();
-            SpanishTable.Clear();
+            Translations.Clear();
         }
 
-        /// <summary> Add a spanish translation to the translation dictionary </summary>
+        /// <summary> Add a translation to the translation dictionary </summary>
         /// <param name="English"> Term in english </param>
-        /// <param name="Spanish"> Term in spanish </param>
-        public void Add_Spanish(string English, string Spanish)
+        /// <param name="Language"> Language of the translated value </param>
+        /// <param name="Value"> Translated value, in the provided language </param>
+        public void Add_Translation(string English, Web_Language_Enum Language, string Value)
         {
-            SpanishTable[English] = Spanish;
-        }
+            Web_Language_Translation_Lookup lookup;
+            if (!Translations.TryGetValue(English, out lookup))
+            {
+                lookup = new Web_Language_Translation_Lookup { DefaultValue = English };
+                Translations[English] = lookup;
+            }
 
-        /// <summary> Add a french translation to the translation dictionary </summary>
-        /// <param name="English"> Term in english </param>
-        /// <param name="French"> Term in french </param>
-        public void Add_French(string English, string French)
-        {
-            FrenchTable[English] = French;
-        }
-
-        /// <summary> Gets the spanish translation of an english term </summary>
-        /// <param name="English"> Term in english </param>
-        /// <returns> Spanish translation from dictionary, or the same english term if the term does not exist </returns>
-        public string Get_Spanish(string English)
-        {
-            return SpanishTable.ContainsKey(English) ? SpanishTable[English] : English;
-        }
-
-        /// <summary> Gets the french translation of an english term </summary>
-        /// <param name="English"> Term in english </param>
-        /// <returns> French translation from dictionary, or the same english term if the term does not exist </returns>
-        public string Get_French(string English)
-        {
-            return FrenchTable.ContainsKey(English) ? FrenchTable[English] : English;
+            lookup.Add_Translation(Language, Value);
         }
 
         /// <summary> Generic method requests translation from the appropriate translation dictionary </summary>
@@ -75,20 +54,11 @@ namespace SobekCM.Core.ApplicationState
         /// <returns> Translation of term, if it exists, otherwise the original term </returns>
         public string Get_Translation(string English, Web_Language_Enum Language)
         {
-            if (English.Length == 0)
-                return String.Empty;
+            if (string.IsNullOrEmpty(English))
+                return string.Empty;
 
-            switch (Language)
-            {
-                case Web_Language_Enum.Spanish:
-                    return Get_Spanish(English);
-
-                case Web_Language_Enum.French:
-                    return Get_French(English);
-
-                default:
-                    return English;
-            }
+            Web_Language_Translation_Lookup lookup;
+            return Translations.TryGetValue(English, out lookup) ? lookup.Get_Value(Language) : English;
         }
     }
 }

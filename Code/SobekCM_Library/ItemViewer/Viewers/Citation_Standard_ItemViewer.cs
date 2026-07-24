@@ -765,7 +765,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             if ((CurrentUser != null) && (CurrentUser.Is_System_Admin))
             {
                 result.AppendLine(INDENT + "<div class=\"sbkCiv_CitationSection\" id=\"sbkCiv_AdminSection\" >");
-                result.AppendLine(INDENT + "<h2>System Administration Information</h2>");
+                result.AppendLine(INDENT + "<h2>" + UI_ApplicationCache_Gateway.Translation.Get_Translation("System Administration Information", CurrentRequest.Language) + "</h2>");
                 result.AppendLine(INDENT + "  <dl>");
                 result.Append(Single_Citation_HTML_Row("Item Primary Key", BriefItem.Web.ItemID.ToString(), INDENT, width, CurrentRequest));
                 result.Append(Single_Citation_HTML_Row("Group Primary Key", BriefItem.Web.GroupID.ToString(), INDENT, width, CurrentRequest));

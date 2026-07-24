@@ -249,11 +249,11 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                             if (thisBrowse.Code.ToLower().Replace("_", " ") != original_browse_mode.Replace("_", " "))
                             {
                                 RequestSpecificValues.Current_Mode.Info_Browse_Mode = thisBrowse.Code.ToLower().Replace(" ", "_");
-                                Output.WriteLine("<a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode).Replace("&", "&amp") + "\">" + facetField.Display_Term + "</a><br />");
+                                Output.WriteLine("<a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode).Replace("&", "&amp") + "\">" + UI_ApplicationCache_Gateway.Translation.Get_Translation(facetField.Display_Term, RequestSpecificValues.Current_Mode.Language) + "</a><br />");
                             }
                             else
                             {
-                                Output.WriteLine(facetField.Display_Term + "<br />");
+                                Output.WriteLine(UI_ApplicationCache_Gateway.Translation.Get_Translation(facetField.Display_Term, RequestSpecificValues.Current_Mode.Language) + "<br />");
                             }
                         }
                     }
@@ -264,7 +264,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 
                 if (internal_browses.Count > 0)
                 {
-                    Output.WriteLine("<b> &nbsp;Internal Browses</b><br />");
+                    Output.WriteLine("<b> &nbsp;" + Localization_Gateway.Metadata_Browse.Internal_Browses(RequestSpecificValues.Current_Mode.Language) + "</b><br />");
                     Output.WriteLine("<div class=\"sbkMebv_FacetBox\">");
 
                     foreach (string thisShort in internal_browses)
@@ -275,11 +275,11 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                             if (thisShort.ToLower() != original_browse_mode)
                             {
                                 RequestSpecificValues.Current_Mode.Info_Browse_Mode = thisShort.ToLower().Replace(" ", "_");
-                                Output.WriteLine("<a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode).Replace("&", "&amp") + "\">" + facetField.Display_Term + "</a><br />");
+                                Output.WriteLine("<a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode).Replace("&", "&amp") + "\">" + UI_ApplicationCache_Gateway.Translation.Get_Translation(facetField.Display_Term, RequestSpecificValues.Current_Mode.Language) + "</a><br />");
                             }
                             else
                             {
-                                Output.WriteLine(facetField.Display_Term + "<br />");
+                                Output.WriteLine(UI_ApplicationCache_Gateway.Translation.Get_Translation(facetField.Display_Term, RequestSpecificValues.Current_Mode.Language) + "<br />");
                             }
                         }
                     }

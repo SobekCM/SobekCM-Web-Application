@@ -52,7 +52,9 @@ namespace SobekCM.Library.MySobekViewer
                         SobekCM_Database.Delete_User_Search(folder_id_int, RequestSpecificValues.Tracer);
                 }
 
-                Context.Response.Redirect(Context.Items[RequestCache_Keys.OriginalUrl].ToString());
+                string original_url = Context.Items[RequestCache_Keys.OriginalUrl].ToString();
+                if (RedirectGuard.IsSafeRedirectTarget(original_url, Context.Request.Host.Host))
+                    Context.Response.Redirect(original_url);
                 RequestSpecificValues.Current_Mode.Request_Completed = true;
             }
         }

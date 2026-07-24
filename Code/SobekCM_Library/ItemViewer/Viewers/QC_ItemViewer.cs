@@ -456,8 +456,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
                         // Redirect differently depending on SAVE or COMPLETE
                         if (hidden_request == "save")
                         {
-                            // Forward back to the QC form 
-                            Context.Response.Redirect($"{Context.Request.Path}{Context.Request.QueryString}");
+                            // Forward back to the QC form
+                            string qc_save_redirect = $"{Context.Request.Path}{Context.Request.QueryString}";
+                            if (RedirectGuard.IsLocalUrl(qc_save_redirect))
+                                Context.Response.Redirect(qc_save_redirect);
                             CurrentRequest.Request_Completed = true;
                         }
                         else if (hidden_request == "complete")
@@ -479,13 +481,21 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
                 case "clear_pagination":
                     ClearPagination();
-                    Context.Response.Redirect($"{Context.Request.Path}{Context.Request.QueryString}");
+                    {
+                        string qc_redirect = $"{Context.Request.Path}{Context.Request.QueryString}";
+                        if (RedirectGuard.IsLocalUrl(qc_redirect))
+                            Context.Response.Redirect(qc_redirect);
+                    }
                     CurrentRequest.Request_Completed = true;
                     break;
 
                 case "clear_reorder":
                     Clear_Pagination_And_Reorder_Pages();
-                    Context.Response.Redirect($"{Context.Request.Path}{Context.Request.QueryString}");
+                    {
+                        string qc_redirect = $"{Context.Request.Path}{Context.Request.QueryString}";
+                        if (RedirectGuard.IsLocalUrl(qc_redirect))
+                            Context.Response.Redirect(qc_redirect);
+                    }
                     CurrentRequest.Request_Completed = true;
                     break;
 
@@ -507,7 +517,11 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     // Since we deleted a page, we need to roll out our new version
                     Move_Temp_Changes_To_Production();
 
-                    Context.Response.Redirect($"{Context.Request.Path}{Context.Request.QueryString}");
+                    {
+                        string qc_redirect = $"{Context.Request.Path}{Context.Request.QueryString}";
+                        if (RedirectGuard.IsLocalUrl(qc_redirect))
+                            Context.Response.Redirect(qc_redirect);
+                    }
                     CurrentRequest.Request_Completed = true;
                     break;
 
@@ -527,7 +541,11 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     // Since we deleted a page, we need to roll out our new version
                     Move_Temp_Changes_To_Production();
 
-                    Context.Response.Redirect($"{Context.Request.Path}{Context.Request.QueryString}");
+                    {
+                        string qc_redirect = $"{Context.Request.Path}{Context.Request.QueryString}";
+                        if (RedirectGuard.IsLocalUrl(qc_redirect))
+                            Context.Response.Redirect(qc_redirect);
+                    }
                     CurrentRequest.Request_Completed = true;
                     break;
 
@@ -536,7 +554,11 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     // update the qc_item (also updates the session and temporary files)
                     Save_From_Form_Request_To_Item(hidden_move_destination_fileName, String.Empty);
 
-                    Context.Response.Redirect($"{Context.Request.Path}{Context.Request.QueryString}");
+                    {
+                        string qc_redirect = $"{Context.Request.Path}{Context.Request.QueryString}";
+                        if (RedirectGuard.IsLocalUrl(qc_redirect))
+                            Context.Response.Redirect(qc_redirect);
+                    }
                     CurrentRequest.Request_Completed = true;
                     break;
             }

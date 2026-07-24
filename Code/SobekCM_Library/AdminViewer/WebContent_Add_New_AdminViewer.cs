@@ -166,7 +166,9 @@ namespace SobekCM.Library.AdminViewer
                                 else
                                 {
                                     RequestSpecificValues.Current_Mode.Request_Completed = true;
-                                    Context.Response.Redirect(msg.URI);
+                                    string new_content_uri = msg.URI;
+                                    if (RedirectGuard.IsSafeRedirectTarget(new_content_uri, Context.Request.Host.Host))
+                                        Context.Response.Redirect(new_content_uri);
                                     return;
                                 }
                             }

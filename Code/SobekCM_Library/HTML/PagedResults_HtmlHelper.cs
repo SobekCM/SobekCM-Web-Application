@@ -125,10 +125,13 @@ namespace SobekCM.Library.HTML
 
                             // Do this to force a return trip (cirumnavigate cacheing)
                             string original_url = Context.Items[RequestCache_Keys.OriginalUrl].ToString();
-                            if (original_url.IndexOf("?") < 0)
-                                Context.Response.Redirect(original_url + "?p=" + DateTime.Now.Millisecond);
-                            else
-                                Context.Response.Redirect(original_url + "&p=" + DateTime.Now.Millisecond);
+                            if (RedirectGuard.IsSafeRedirectTarget(original_url, Context.Request.Host.Host))
+                            {
+                                if (original_url.IndexOf("?") < 0)
+                                    Context.Response.Redirect(original_url + "?p=" + DateTime.Now.Millisecond);
+                                else
+                                    Context.Response.Redirect(original_url + "&p=" + DateTime.Now.Millisecond);
+                            }
 
                             RequestSpecificValues.Current_Mode.Request_Completed = true;
                             return;
@@ -157,13 +160,16 @@ namespace SobekCM.Library.HTML
 
                         // Do this to force a return trip (cirumnavigate cacheing)
                         RequestSpecificValues.Current_Mode.isPostBack = true;
-                        if (original_url.IndexOf("?") > 0)
+                        if (RedirectGuard.IsSafeRedirectTarget(original_url, Context.Request.Host.Host))
                         {
-                            Context.Response.Redirect(original_url + "&p=" + DateTime.Now.Millisecond);
-                        }
-                        else
-                        {
-                            Context.Response.Redirect(original_url + "?p=" + DateTime.Now.Millisecond);
+                            if (original_url.IndexOf("?") > 0)
+                            {
+                                Context.Response.Redirect(original_url + "&p=" + DateTime.Now.Millisecond);
+                            }
+                            else
+                            {
+                                Context.Response.Redirect(original_url + "?p=" + DateTime.Now.Millisecond);
+                            }
                         }
                         RequestSpecificValues.Current_Mode.Request_Completed = true;
                     }

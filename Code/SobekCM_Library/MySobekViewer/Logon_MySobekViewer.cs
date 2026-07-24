@@ -118,7 +118,8 @@ namespace SobekCM.Library.MySobekViewer
                         string raw_url = Context.Items[RequestCache_Keys.OriginalUrl].ToString();
                         if (raw_url.ToLower().IndexOf("my/logon") > 0)
                         {
-                            if (!String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.Return_URL))
+                            if ((!String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.Return_URL)) &&
+                                (RedirectGuard.IsSafeRedirectTarget(RequestSpecificValues.Current_Mode.Return_URL, Context.Request.Host.Host)))
                             {
                                 Context.Response.Redirect(RequestSpecificValues.Current_Mode.Return_URL);
                                 RequestSpecificValues.Current_Mode.Request_Completed = true;
@@ -132,7 +133,8 @@ namespace SobekCM.Library.MySobekViewer
                         }
                         else
                         {
-                            Context.Response.Redirect(raw_url);
+                            if (RedirectGuard.IsSafeRedirectTarget(raw_url, Context.Request.Host.Host))
+                                Context.Response.Redirect(raw_url);
                             RequestSpecificValues.Current_Mode.Request_Completed = true;
                         }
                     }

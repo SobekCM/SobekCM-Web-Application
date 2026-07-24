@@ -101,7 +101,8 @@ namespace SobekCM.Library.MySobekViewer
                     }
                     else
                     {
-                        Context.Response.Redirect(raw_url);
+                        if (RedirectGuard.IsLocalUrl(raw_url))
+                            Context.Response.Redirect(raw_url);
                         RequestSpecificValues.Current_Mode.Request_Completed = true;
                     }
                 }

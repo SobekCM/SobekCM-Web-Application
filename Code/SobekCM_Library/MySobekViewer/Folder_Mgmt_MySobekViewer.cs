@@ -243,7 +243,8 @@ namespace SobekCM.Library.MySobekViewer
                 }
 
                 string return_url = Context.Items[RequestCache_Keys.OriginalUrl].ToString();
-                Context.Response.Redirect(return_url);
+                if (RedirectGuard.IsSafeRedirectTarget(return_url, Context.Request.Host.Host))
+                    Context.Response.Redirect(return_url);
                 RequestSpecificValues.Current_Mode.Request_Completed = true;
             }
         }

@@ -265,13 +265,21 @@ namespace SobekCM.Library.MySobekViewer
 
                     case "complicate":
                         currentItem.Using_Complex_Template = true;
-                        Context.Response.Redirect($"{Context.Request.Path}{Context.Request.QueryString}");
+                        {
+                            string redirect_target = $"{Context.Request.Path}{Context.Request.QueryString}";
+                            if (RedirectGuard.IsLocalUrl(redirect_target))
+                                Context.Response.Redirect(redirect_target);
+                        }
                         RequestSpecificValues.Current_Mode.Request_Completed = true;
                         return;
 
                     case "simplify":
                         currentItem.Using_Complex_Template = false;
-                        Context.Response.Redirect($"{Context.Request.Path}{Context.Request.QueryString}");
+                        {
+                            string redirect_target = $"{Context.Request.Path}{Context.Request.QueryString}";
+                            if (RedirectGuard.IsLocalUrl(redirect_target))
+                                Context.Response.Redirect(redirect_target);
+                        }
                         RequestSpecificValues.Current_Mode.Request_Completed = true;
                         return;
                 }

@@ -433,7 +433,8 @@ namespace SobekCM.Library.AdminViewer
                             }
                         }
 
-                        Context.Response.Redirect(url);
+                        if (RedirectGuard.IsSafeRedirectTarget(url, Context.Request.Host.Host))
+                            Context.Response.Redirect(url);
                         RequestSpecificValues.Current_Mode.Request_Completed = true;
                     }
                 }

@@ -403,7 +403,7 @@ namespace SobekCM.Library.HTML
                                 Context.Session.SetString(SessionCache_Keys.OnLoadMessage, !Item_Email_Helper.Send_Email(address, cc_list, comments, RequestSpecificValues.Current_User.Full_Name, RequestSpecificValues.Current_Mode.Instance_Abbreviation, currentItem, is_html_format, Context.Items[RequestCache_Keys.OriginalUrl].ToString(), RequestSpecificValues.Current_User.UserID)
                                     ? "Error encountered while sending email" : "Your email has been sent");
 
-                                Context.Response.Redirect(Context.Items[RequestCache_Keys.OriginalUrl].ToString());
+                                { string original_url = Context.Items[RequestCache_Keys.OriginalUrl].ToString(); if (RedirectGuard.IsSafeRedirectTarget(original_url, Context.Request.Host.Host)) Context.Response.Redirect(original_url); }
                                 RequestSpecificValues.Current_Mode.Request_Completed = true;
                                 return;
                             }
@@ -434,7 +434,7 @@ namespace SobekCM.Library.HTML
                                 Context.Session.SetString(SessionCache_Keys.OnLoadMessage, "ERROR encountered while trying to save to your bookshelf.");
                             }
 
-                            Context.Response.Redirect(Context.Items[RequestCache_Keys.OriginalUrl].ToString());
+                            { string original_url = Context.Items[RequestCache_Keys.OriginalUrl].ToString(); if (RedirectGuard.IsSafeRedirectTarget(original_url, Context.Request.Host.Host)) Context.Response.Redirect(original_url); }
                             RequestSpecificValues.Current_Mode.Request_Completed = true;
                             return;
                         }
@@ -452,7 +452,7 @@ namespace SobekCM.Library.HTML
                                 Context.Session.SetString(SessionCache_Keys.OnLoadMessage, "ERROR encountered while trying to remove item from your bookshelves.");
                             }
 
-                            Context.Response.Redirect(Context.Items[RequestCache_Keys.OriginalUrl].ToString());
+                            { string original_url = Context.Items[RequestCache_Keys.OriginalUrl].ToString(); if (RedirectGuard.IsSafeRedirectTarget(original_url, Context.Request.Host.Host)) Context.Response.Redirect(original_url); }
                             RequestSpecificValues.Current_Mode.Request_Completed = true;
                             return;
                         }
@@ -472,7 +472,7 @@ namespace SobekCM.Library.HTML
                                 RequestSpecificValues.Current_User.Has_Descriptive_Tags = true;
                             }
 
-                            Context.Response.Redirect(Context.Items[RequestCache_Keys.OriginalUrl].ToString());
+                            { string original_url = Context.Items[RequestCache_Keys.OriginalUrl].ToString(); if (RedirectGuard.IsSafeRedirectTarget(original_url, Context.Request.Host.Host)) Context.Response.Redirect(original_url); }
                             RequestSpecificValues.Current_Mode.Request_Completed = true;
                             return;
                         }
@@ -487,7 +487,7 @@ namespace SobekCM.Library.HTML
                                     SobekCM_Database.Delete_Description_Tag(tagid, RequestSpecificValues.Tracer);
                                 }
                             }
-                            Context.Response.Redirect(Context.Items[RequestCache_Keys.OriginalUrl].ToString());
+                            { string original_url = Context.Items[RequestCache_Keys.OriginalUrl].ToString(); if (RedirectGuard.IsSafeRedirectTarget(original_url, Context.Request.Host.Host)) Context.Response.Redirect(original_url); }
                             RequestSpecificValues.Current_Mode.Request_Completed = true;
                             return;
                         }

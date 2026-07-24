@@ -11,3 +11,14 @@ Sanitizers:
       - Name: SanitizeFileName
       - Name: TryResolveContainedPath
         InOut: [{"UntrustedRelativePath": "ResolvedFullPath"}]
+
+  # Registers SobekCM.Tools.RedirectGuard.IsLocalUrl as a recognized sanitizer for SCS0027
+  # (Open Redirect) - matches the same convention SCS uses for UrlHelper.IsLocalUrl
+  - Type: SobekCM.Tools.RedirectGuard
+    TaintTypes:
+      - SCS0027
+    Methods:
+      - Name: IsLocalUrl
+        InOut: [{"url": "url"}]
+      - Name: IsSafeRedirectTarget
+        InOut: [{"url": "url"}]

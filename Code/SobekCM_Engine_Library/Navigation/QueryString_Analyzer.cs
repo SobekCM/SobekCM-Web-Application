@@ -99,6 +99,30 @@ namespace SobekCM.Engine_Library.Navigation
                         Navigator.Default_Language = Web_Language_Enum.Spanish;
                         break;
                     }
+
+                    if (thisLanguage.IndexOf("nl") == 0)
+                    {
+                        Navigator.Default_Language = Web_Language_Enum.Dutch;
+                        break;
+                    }
+
+                    if (thisLanguage.IndexOf("de") == 0)
+                    {
+                        Navigator.Default_Language = Web_Language_Enum.German;
+                        break;
+                    }
+
+                    if (thisLanguage.IndexOf("pt") == 0)
+                    {
+                        Navigator.Default_Language = Web_Language_Enum.Portuguese;
+                        break;
+                    }
+
+                    if (thisLanguage.IndexOf("it") == 0)
+                    {
+                        Navigator.Default_Language = Web_Language_Enum.Italian;
+                        break;
+                    }
                 }
             }
 

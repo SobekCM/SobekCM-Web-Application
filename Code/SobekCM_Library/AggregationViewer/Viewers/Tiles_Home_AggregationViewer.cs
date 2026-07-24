@@ -190,6 +190,8 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 selectedTiles.AddRange(allTiles);
             else
             {
+                // Cosmetic tile selection for the home page display, not security-sensitive
+#pragma warning disable SCS0005
                 var randomGen = new Random();
                 while (selectedTiles.Count < 15)
                 {
@@ -197,6 +199,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                     selectedTiles.Add(allTiles[random_index]);
                     allTiles.RemoveAt(random_index);
                 }
+#pragma warning restore SCS0005
             }
         }
 

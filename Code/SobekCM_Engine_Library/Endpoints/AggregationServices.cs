@@ -993,8 +993,11 @@ namespace SobekCM.Engine_Library.Endpoints
                                 string[] banners = Directory.GetFiles(Engine_ApplicationCache_Gateway.Settings.Servers.Application_Server_Network + "\\default\\banner_images", "*.jpg");
                                 if (banners.Length > 0)
                                 {
+                                    // Cosmetic banner-image pick, not security-sensitive
+#pragma warning disable SCS0005
                                     var randomizer = new Random();
                                     string banner_to_use = banners[randomizer.Next(0, banners.Length - 1)];
+#pragma warning restore SCS0005
 
 
                                     Bitmap bitmap = (Bitmap)(Image.FromFile(banner_to_use));

@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
+using System.Security.Cryptography;
 using System.Text;
 
 
@@ -34,26 +35,25 @@ namespace SobekCM.Library.AdminViewer.UserAdmin.SubViewers
 
                     // Create the random password
                     var passwordBuilder = new StringBuilder();
-                    var randomGenerator = new Random(DateTime.Now.Millisecond);
                     while (passwordBuilder.Length < 12)
                     {
-                        switch (randomGenerator.Next(0, 3))
+                        switch (RandomNumberGenerator.GetInt32(0, 3))
                         {
                             case 0:
-                                int randomNumber = randomGenerator.Next(65, 91);
+                                int randomNumber = RandomNumberGenerator.GetInt32(65, 91);
                                 if ((randomNumber != 79) && (randomNumber != 75)) // Omit the 'O' and the 'K', confusing
                                     passwordBuilder.Append((char)randomNumber);
                                 break;
 
                             case 1:
-                                int randomNumber2 = randomGenerator.Next(97, 123);
+                                int randomNumber2 = RandomNumberGenerator.GetInt32(97, 123);
                                 if ((randomNumber2 != 111) && (randomNumber2 != 108) && (randomNumber2 != 107))  // Omit the 'o' and the 'l' and the 'k', confusing
                                     passwordBuilder.Append((char)randomNumber2);
                                 break;
 
                             case 2:
                                 // Zero and one is omitted in this range, confusing
-                                int randomNumber3 = randomGenerator.Next(50, 58);
+                                int randomNumber3 = RandomNumberGenerator.GetInt32(50, 58);
                                 passwordBuilder.Append((char)randomNumber3);
                                 break;
                         }

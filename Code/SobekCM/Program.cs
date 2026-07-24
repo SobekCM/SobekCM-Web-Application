@@ -838,6 +838,7 @@ namespace SobekCM
                     }
                 }
 
+                filename = SobekCM.Tools.PathTraversalGuard.SanitizeFileName(filename);
                 string newPath = Path.Combine(tokenObj.UploadPath, filename);
                 if (File.Exists(newPath))
                     File.Delete(newPath);

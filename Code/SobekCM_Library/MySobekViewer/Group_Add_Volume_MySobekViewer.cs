@@ -384,7 +384,7 @@ namespace SobekCM.Library.MySobekViewer
             SobekCM_Item_Database.Save_New_Digital_Resource(Item_To_Complete, false, false, RequestSpecificValues.Current_User.UserName, String.Empty, -1);
 
             // Assign the file root and assoc file path
-            Item_To_Complete.Web.AssocFilePath = Item_To_Complete.Web.File_Root + "\\" + Item_To_Complete.VID + "\\";
+            Item_To_Complete.Web.AssocFilePath = Item_To_Complete.Web.File_Root + "\\" + PathTraversalGuard.SanitizeFileName(Item_To_Complete.VID) + "\\";
 
             // Create the static html pages
             string base_url = RequestSpecificValues.Current_Mode.Base_URL;
@@ -431,9 +431,10 @@ namespace SobekCM.Library.MySobekViewer
 
             // Copy the static HTML page over first
             string safeBibVidHtmlName = PathTraversalGuard.SanitizeFileName(currentItem.BibID + "_" + currentItem.VID + ".html");
-            if (File.Exists(user_in_process_directory + "\\" + safeBibVidHtmlName))
+            if ((File.Exists(user_in_process_directory + "\\" + safeBibVidHtmlName)) &&
+                (PathTraversalGuard.TryResolveContainedPath(UI_ApplicationCache_Gateway.Settings.Servers.Image_Server_Network, Item_To_Complete.Web.AssocFilePath + "\\" + UI_ApplicationCache_Gateway.Settings.Resources.Backup_Files_Folder_Name + "\\" + safeBibVidHtmlName, out string backupHtmlDestination)))
             {
-                File.Copy(user_in_process_directory + "\\" + safeBibVidHtmlName, serverNetworkFolder + "\\" + UI_ApplicationCache_Gateway.Settings.Resources.Backup_Files_Folder_Name + "\\" + safeBibVidHtmlName, true);
+                File.Copy(user_in_process_directory + "\\" + safeBibVidHtmlName, backupHtmlDestination, true);
                 File.Delete(user_in_process_directory + "\\" + safeBibVidHtmlName);
             }
 
@@ -441,8 +442,11 @@ namespace SobekCM.Library.MySobekViewer
             string[] allFiles = Directory.GetFiles(user_in_process_directory);
             foreach (string thisFile in allFiles)
             {
-                string destination_file = serverNetworkFolder + "\\" + PathTraversalGuard.SanitizeFileName((new FileInfo(thisFile)).Name);
-                File.Copy(thisFile, destination_file, true);
+                string safeFileName = PathTraversalGuard.SanitizeFileName((new FileInfo(thisFile)).Name);
+                if (PathTraversalGuard.TryResolveContainedPath(UI_ApplicationCache_Gateway.Settings.Servers.Image_Server_Network, Item_To_Complete.Web.AssocFilePath + "\\" + safeFileName, out string destination_file))
+                {
+                    File.Copy(thisFile, destination_file, true);
+                }
             }
 
             // Incrememnt the count of number of items submitted by this user

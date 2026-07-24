@@ -64,6 +64,60 @@ namespace SobekCM.Library
 
         #endregion
 
+        #region Method to get a standalone localized HTML help/FAQ fragment for a single language
+
+        /// <summary> Gets a single standalone HTML help/FAQ fragment ( too large to embed directly in a
+        /// localization XML config file ), in a single language </summary>
+        /// <param name="FragmentName"> Base file name for this fragment ( e.g. "quick_tips" ), matching a file
+        /// under design/extra/aggregations/ named "{FragmentName}_{LANGCODE}.html" ( e.g. "quick_tips_EN.html" ) </param>
+        /// <param name="Language"> Language to retrieve the fragment for </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        /// <returns> The fragment's raw HTML ( never NULL; empty if the file could not be found for either
+        /// the requested language or English ) </returns>
+        /// <remarks> This attempts to pull the fragment from the cache first ( <see cref="CachedDataManager.Localization"/>, a
+        /// few minutes' sliding expiration ).  If unsuccessful, it reads the file from disk under
+        /// design/extra/aggregations/, falling back to the English file if the requested language's file
+        /// doesn't exist, and hands off to the <see cref="CachedDataManager" /> to store in the cache </remarks>
+        public string Get_Localized_Html_Fragment(string FragmentName, Web_Language_Enum Language, Custom_Tracer Tracer)
+        {
+            Tracer?.Add_Trace("SobekCM_Assistant.Get_Localized_Html_Fragment", String.Empty);
+
+            string languageCode = Web_Language_Enum_Converter.Enum_To_Code(Language);
+            if (String.IsNullOrEmpty(languageCode))
+                languageCode = "en";
+
+            // Try to get this from the cache first
+            string fragment = CachedDataManager.Localization.Retrieve_Html_Fragment(FragmentName, languageCode, Tracer);
+            if (fragment != null)
+                return fragment;
+
+            // Not cached (or expired) -- read from disk and cache it
+            string directory = UI_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location + "\\extra\\aggregations";
+            fragment = Read_Html_Fragment_File(directory, FragmentName, languageCode) ?? Read_Html_Fragment_File(directory, FragmentName, "en") ?? String.Empty;
+
+            CachedDataManager.Localization.Store_Html_Fragment(FragmentName, languageCode, fragment, Tracer);
+
+            return fragment;
+        }
+
+        private static string Read_Html_Fragment_File(string DirectoryPath, string FragmentName, string LanguageCode)
+        {
+            string filePath = DirectoryPath + "\\" + FragmentName + "_" + LanguageCode.ToUpper() + ".html";
+            if (!File.Exists(filePath))
+                return null;
+
+            try
+            {
+                return File.ReadAllText(filePath);
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
+        #endregion
+
         #region Method to retrieve simple web content text to view within a skin
 
         /// <summary> Gets the simple CMS/info object and text to display </summary>

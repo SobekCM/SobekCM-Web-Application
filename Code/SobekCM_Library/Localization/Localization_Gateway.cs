@@ -56,8 +56,10 @@ namespace SobekCM.Library.Localization
 
             /// <summary> Whole quick-tips help block (heading, list, boolean/phrase/capitalization/diacritics
             /// tips) as one static HTML fragment per language — entirely static markup+text with no dynamic
-            /// data, so it's localized as a single unit rather than broken into per-sentence keys </summary>
-            public static string Quick_Tips_Html(Web_Language_Enum Language) => Localization_Store.Get("aggregations", "Aggregation_Common", "Quick_Tips_Html", Language);
+            /// data, so it's localized as a single unit rather than broken into per-sentence keys. Too large
+            /// to embed in the XML config, so it's read (and cached) from design/extra/aggregations/quick_tips_{LANG}.html
+            /// instead — see <see cref="SobekCM_Assistant.Get_Localized_Html_Fragment"/>. </summary>
+            public static string Quick_Tips_Html(Web_Language_Enum Language) => new SobekCM_Assistant().Get_Localized_Html_Fragment("quick_tips", Language, null);
         }
 
         /// <summary> Phrases for the full-text-search aggregation viewer </summary>
@@ -92,12 +94,16 @@ namespace SobekCM.Library.Localization
             /// this fragment; both languages rendered the same English text) </summary>
             public static string Point_Disabled_Instructions_Html(Web_Language_Enum Language) => Localization_Store.Get("aggregations", "Map_Search", "Point_Disabled_Instructions_Html", Language);
 
-            /// <summary> Normal (point-searching-enabled) map search instructions block </summary>
-            public static string Instructions_Html(Web_Language_Enum Language) => Localization_Store.Get("aggregations", "Map_Search", "Instructions_Html", Language);
+            /// <summary> Normal (point-searching-enabled) map search instructions block. Too large to embed in
+            /// the XML config, so it's read (and cached) from design/extra/aggregations/map_search_instructions_{LANG}.html
+            /// instead — see <see cref="SobekCM_Assistant.Get_Localized_Html_Fragment"/>. </summary>
+            public static string Instructions_Html(Web_Language_Enum Language) => new SobekCM_Assistant().Get_Localized_Html_Fragment("map_search_instructions", Language, null);
 
             /// <summary> Fallback "Map Search FAQ" block shown when no aggregation/instance-specific FAQ
-            /// file exists, point-searching-enabled variant </summary>
-            public static string Faq_Point_Enabled_Html(Web_Language_Enum Language) => Localization_Store.Get("aggregations", "Map_Search", "Faq_Point_Enabled_Html", Language);
+            /// file exists, point-searching-enabled variant. Too large to embed in the XML config, so it's read
+            /// (and cached) from design/extra/aggregations/map_search_faq_points_{LANG}.html instead — see
+            /// <see cref="SobekCM_Assistant.Get_Localized_Html_Fragment"/>. </summary>
+            public static string Faq_Point_Enabled_Html(Web_Language_Enum Language) => new SobekCM_Assistant().Get_Localized_Html_Fragment("map_search_faq_points", Language, null);
 
             /// <summary> Same fallback FAQ block, point-searching-disabled variant </summary>
             public static string Faq_Point_Disabled_Html(Web_Language_Enum Language) => Localization_Store.Get("aggregations", "Map_Search", "Faq_Point_Disabled_Html", Language);
@@ -107,7 +113,11 @@ namespace SobekCM.Library.Localization
         public static class Map_Browse
         {
             public static string Select_Point_Instructions_Html(Web_Language_Enum Language) => Localization_Store.Get("aggregations", "Map_Browse", "Select_Point_Instructions_Html", Language);
-            public static string Faq_Html(Web_Language_Enum Language) => Localization_Store.Get("aggregations", "Map_Browse", "Faq_Html", Language);
+
+            /// <summary> Fallback "Map Browse FAQ" block. Too large to embed in the XML config, so it's read
+            /// (and cached) from design/extra/aggregations/map_browse_faq_{LANG}.html instead — see
+            /// <see cref="SobekCM_Assistant.Get_Localized_Html_Fragment"/>. </summary>
+            public static string Faq_Html(Web_Language_Enum Language) => new SobekCM_Assistant().Get_Localized_Html_Fragment("map_browse_faq", Language, null);
             public static string More_Info_Single_Title(Web_Language_Enum Language) => Localization_Store.Get("aggregations", "Map_Browse", "More_Info_Single_Title", Language);
 
             /// <summary> Format string with a "{0}" placeholder for the title count — e.g.
@@ -148,8 +158,10 @@ namespace SobekCM.Library.Localization
 
             /// <summary> Whole "Quick Tips" help block (document/boolean/phrase/capitalization/diacritics
             /// searching tips) as one static HTML fragment per language, same reasoning as
-            /// Aggregation_Common.Quick_Tips_Html </summary>
-            public static string Quick_Tips_Html(Web_Language_Enum Language) => Localization_Store.Get("items", "Text_Search", "Quick_Tips_Html", Language);
+            /// Aggregation_Common.Quick_Tips_Html. Too large to embed in the XML config, so it's read (and
+            /// cached) from design/extra/aggregations/text_search_quick_tips_{LANG}.html instead — see
+            /// <see cref="SobekCM_Assistant.Get_Localized_Html_Fragment"/>. </summary>
+            public static string Quick_Tips_Html(Web_Language_Enum Language) => new SobekCM_Assistant().Get_Localized_Html_Fragment("text_search_quick_tips", Language, null);
 
             // Sentence-composition fragments used by Compute_Search_Explanation() — concatenated in
             // sequence around dynamic search terms/counts, so each connector/fragment is its own key
@@ -273,8 +285,11 @@ namespace SobekCM.Library.Localization
 
             /// <summary> Whole "Definitions of Terms" static HTML page (terms table of contents + all definitions),
             /// used as the fallback when no per-instance definitions text file exists. One static fragment per
-            /// language with three "{0}" placeholders for the instance abbreviation (same value reused). </summary>
-            public static string Definitions_Html(Web_Language_Enum Language) => Localization_Store.Get("aggregations", "Usage_Statistics", "Definitions_Html", Language);
+            /// language with three "{0}" placeholders for the instance abbreviation (same value reused). Too large
+            /// to embed in the XML config, so it's read (and cached) from
+            /// design/extra/aggregations/usage_stats_definitions_{LANG}.html instead — see
+            /// <see cref="SobekCM_Assistant.Get_Localized_Html_Fragment"/>. </summary>
+            public static string Definitions_Html(Web_Language_Enum Language) => new SobekCM_Assistant().Get_Localized_Html_Fragment("usage_stats_definitions", Language, null);
         }
 
         /// <summary> Phrases shared across the citation-family item viewers (Citation_Standard, Citation_MARC,

@@ -934,8 +934,9 @@ namespace SobekCM.Library.Database
         {
             Tracer?.Add_Trace("SobekCM_Database.save_user_basic_information", String.Empty);
 
-            const string SALT = "This is my salt to add to the password";
-            string encryptedPassword = SecurityInfo.SHA1_EncryptString(Password + SALT);
+            // Only meaningful for a brand-new user - mySobek_Save_User never updates the password of an
+            // existing user, so it's harmless that Password is often String.Empty here on profile saves
+            string encryptedPassword = PasswordHasher.HashPassword(Password);
 
             string auth_string = String.Empty;
             if (AuthenticationType == User_Authentication_Type_Enum.Sobek)
@@ -1096,33 +1097,26 @@ namespace SobekCM.Library.Database
 
         /// <summary> Change an existing user's password </summary>
         /// <param name="Username"> Username for the user </param>
-        /// <param name="CurrentPassword"> Old plain-text password, which is then encrypted prior to saving</param>
-        /// <param name="NewPassword"> New plain-text password, which is then encrypted prior to saving</param>
+        /// <param name="CurrentPassword"> Old plain-text password, verified against the stored hash before the change is accepted</param>
+        /// <param name="NewPassword"> New plain-text password, which is then hashed prior to saving</param>
         /// <param name="IsTemporary"> Flag indicates if the new password is temporary and must be changed on the next logon</param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
         /// <returns> TRUE if successful, otherwise FALSE</returns>
-        /// <remarks> This calls the 'mySobek_Change_Password' stored procedure</remarks> 
+        /// <remarks> The current-password check can no longer happen in SQL now that <see cref="PasswordHasher"/>
+        /// uses a random salt per user (see Engine_Database.Get_User remarks), so this fetches the stored hash
+        /// and verifies it here instead of calling 'mySobek_Change_Password' </remarks>
         public static bool Change_Password(string Username, string CurrentPassword, string NewPassword, bool IsTemporary, Custom_Tracer Tracer)
         {
             Tracer?.Add_Trace("SobekCM_Database.Change_Password", String.Empty);
 
-            const string SALT = "This is my salt to add to the password";
-            string encryptedCurrentPassword = SecurityInfo.SHA1_EncryptString(CurrentPassword + SALT);
-            string encryptedNewPassword = SecurityInfo.SHA1_EncryptString(NewPassword + SALT);
             try
             {
-                // Execute this non-query stored procedure
-                EalDbParameter[] paramList = new EalDbParameter[5];
-                paramList[0] = new EalDbParameter("@username", Username);
-                paramList[1] = new EalDbParameter("@current_password", encryptedCurrentPassword);
-                paramList[2] = new EalDbParameter("@new_password", encryptedNewPassword);
-                paramList[3] = new EalDbParameter("@isTemporaryPassword", IsTemporary);
-                paramList[4] = new EalDbParameter("@password_changed", false) { Direction = ParameterDirection.InputOutput };
+                (int userId, string storedHash) = Engine_Database.Get_User_Password_Hash(Username, Tracer);
+                if ((userId <= 0) || (!PasswordHasher.VerifyPassword(CurrentPassword, storedHash, out _)))
+                    return false;
 
-                EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "mySobek_Change_Password", paramList);
-
-
-                return Convert.ToBoolean(paramList[4].Value);
+                string encryptedNewPassword = PasswordHasher.HashPassword(NewPassword);
+                return Engine_Database.Update_Password_Hash(userId, encryptedNewPassword, IsTemporary, Tracer);
             }
             catch (Exception ee)
             {
@@ -2142,8 +2136,7 @@ namespace SobekCM.Library.Database
         {
             Tracer?.Add_Trace("SobekCM_Database.Reset_User_Password", String.Empty);
 
-            const string SALT = "This is my salt to add to the password";
-            string encryptedPassword = SecurityInfo.SHA1_EncryptString(NewPassword + SALT);
+            string encryptedPassword = PasswordHasher.HashPassword(NewPassword);
 
             try
             {

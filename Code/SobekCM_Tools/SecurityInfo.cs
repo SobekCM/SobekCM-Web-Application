@@ -143,13 +143,10 @@ namespace SobekCM.Tools
         /// <summary> Encrypt a string, given the string.  </summary>
         /// <param name="Source"> String to encrypt </param>
         /// <returns> The encrypted string </returns>
-        /// <remarks> KNOWN ISSUE (SCS0006): this is used as the password hashing scheme for "Sobek" accounts
-        /// (see callers of SHA1_EncryptString in SobekCM_Database.cs and Engine_Database.cs), combined with a
-        /// single hardcoded salt shared by every user - both weak by modern standards (CWE-916). A real fix
-        /// needs per-user random salts and a slow algorithm (PBKDF2/bcrypt), which requires a new stored
-        /// procedure that returns a user by username alone so the salted hash can be compared in C# instead
-        /// of matched in SQL - the current 'mySobek_Get_User_By_UserName_Password' proc filters by password
-        /// hash directly, which a per-user salt makes impossible to replicate. Deferred pending that DB change. </remarks>
+        /// <remarks> KNOWN ISSUE (SCS0006): weak by modern standards (CWE-916), kept only so
+        /// <see cref="PasswordHasher.VerifyPassword"/> can still validate "Sobek" accounts whose password
+        /// hash hasn't yet been migrated to PBKDF2 - see PasswordHasher remarks for the migration path.
+        /// Do not use this for new password hashes; call <see cref="PasswordHasher.HashPassword"/> instead. </remarks>
         public static string SHA1_EncryptString(string Source)
         {
             byte[] bytIn = Encoding.ASCII.GetBytes(Source);

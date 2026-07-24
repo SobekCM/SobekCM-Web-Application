@@ -4162,10 +4162,15 @@ namespace SobekCM.Engine_Library.Database
 
         /// <summary> Gets basic user information by Username (or email) and Password </summary>
         /// <param name="UserName"> UserName (or email address) for the user </param>
-        /// <param name="Password"> Plain-text password, which is then encrypted prior to sending to database</param>
+        /// <param name="Password"> Plain-text password, verified in-process against the stored hash</param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
         /// <returns> Fully built <see cref="SobekCM.Core.Users.User_Object"/> object </returns>
-        /// <remarks> This calls the 'mySobek_Get_User_By_UserName_Password' stored procedure<br /><br />
+        /// <remarks> This calls the 'mySobek_Get_User_By_UserName' stored procedure (NEEDS TO BE ADDED - see
+        /// PasswordHasher remarks) rather than 'mySobek_Get_User_By_UserName_Password': password verification
+        /// can no longer happen in SQL now that <see cref="PasswordHasher"/> uses a random salt per user, so
+        /// the proc must return the user by username alone (same result set shape as
+        /// mySobek_Get_User_By_UserName_Password, minus the @password filter, plus a "Password" column in
+        /// Table[0] carrying the stored hash) and the comparison happens here instead. <br /><br />
         /// This is used when a user logs on through the mySobek authentication</remarks>
         public static User_Object Get_User(string UserName, string Password, Custom_Tracer Tracer)
         {
@@ -4173,25 +4178,22 @@ namespace SobekCM.Engine_Library.Database
 
             try
             {
-                const string SALT = "This is my salt to add to the password";
-                string encryptedPassword = SecurityInfo.SHA1_EncryptString(Password + SALT);
+                DataSet resultSet = get_user_dataset_by_username(UserName, Tracer);
+                if ((resultSet == null) || (resultSet.Tables.Count == 0) || (resultSet.Tables[0].Rows.Count == 0))
+                    return null;
 
+                string storedHash = resultSet.Tables[0].Rows[0]["Password"].ToString();
+                if (!PasswordHasher.VerifyPassword(Password, storedHash, out bool needsUpgrade))
+                    return null;
 
-                // Execute this non-query stored procedure
-                EalDbParameter[] paramList = new EalDbParameter[2];
-                paramList[0] = new EalDbParameter("@username", UserName);
-                paramList[1] = new EalDbParameter("@password", encryptedPassword);
+                User_Object user = build_user_object_from_dataset(resultSet);
 
-                DataSet resultSet = EalDbAccess.ExecuteDataset(DatabaseType, Connection_String, CommandType.StoredProcedure, "mySobek_Get_User_By_UserName_Password", paramList);
+                // Transparently migrate this account off the legacy hash format now that we have the
+                // plain-text password in hand - avoids a forced reset for the whole user base
+                if (needsUpgrade)
+                    Update_Password_Hash(user.UserID, PasswordHasher.HashPassword(Password), user.Is_Temporary_Password, Tracer);
 
-                if ((resultSet.Tables.Count > 0) && (resultSet.Tables[0].Rows.Count > 0))
-                {
-                    return build_user_object_from_dataset(resultSet);
-                }
-
-                // Return the browse id
-                return null;
-
+                return user;
             }
             catch (Exception ee)
             {
@@ -4200,6 +4202,78 @@ namespace SobekCM.Engine_Library.Database
                 Tracer?.Add_Trace("Engine_Database.Get_User", ee.Message, Custom_Trace_Type_Enum.Error);
                 Tracer?.Add_Trace("Engine_Database.Get_User", ee.StackTrace, Custom_Trace_Type_Enum.Error);
                 return null;
+            }
+        }
+
+        /// <summary> Looks up a user's id and current stored password hash/format by username alone, with
+        /// no password check - used by SobekCM_Database.Change_Password to verify the current password in
+        /// C# before accepting a new one, since the match can no longer happen in SQL (see Get_User remarks) </summary>
+        /// <param name="UserName"> UserName (or email address) for the user </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <returns> UserID and stored Password value, or (-1, null) if no such user exists </returns>
+        public static (int UserId, string StoredHash) Get_User_Password_Hash(string UserName, Custom_Tracer Tracer)
+        {
+            Tracer?.Add_Trace("Engine_Database.Get_User_Password_Hash", String.Empty);
+
+            try
+            {
+                DataSet resultSet = get_user_dataset_by_username(UserName, Tracer);
+                if ((resultSet == null) || (resultSet.Tables.Count == 0) || (resultSet.Tables[0].Rows.Count == 0))
+                    return (-1, null);
+
+                DataRow userRow = resultSet.Tables[0].Rows[0];
+                return (Convert.ToInt32(userRow["UserID"]), userRow["Password"].ToString());
+            }
+            catch (Exception ee)
+            {
+                Last_Exception = ee;
+                Tracer?.Add_Trace("Engine_Database.Get_User_Password_Hash", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("Engine_Database.Get_User_Password_Hash", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("Engine_Database.Get_User_Password_Hash", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                return (-1, null);
+            }
+        }
+
+        private static DataSet get_user_dataset_by_username(string UserName, Custom_Tracer Tracer)
+        {
+            EalDbParameter[] paramList = new EalDbParameter[1];
+            paramList[0] = new EalDbParameter("@username", UserName);
+
+            return EalDbAccess.ExecuteDataset(DatabaseType, Connection_String, CommandType.StoredProcedure, "mySobek_Get_User_By_UserName", paramList);
+        }
+
+        /// <summary> Persists a freshly-computed password hash for a user, used both for explicit password
+        /// changes and for transparently upgrading a legacy-format hash the moment it's next verified </summary>
+        /// <param name="UserId"> Primary key of the user being updated </param>
+        /// <param name="NewPasswordHash"> Value produced by <see cref="PasswordHasher.HashPassword"/> </param>
+        /// <param name="IsTemporaryPassword"> Whether the new password should be flagged as temporary (must be
+        /// changed on next logon) - pass the user's existing value through unchanged for a rehash-on-login
+        /// upgrade, since only the hash format is changing, not this flag </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <remarks> This calls the existing 'mySobek_Reset_User_Password' stored procedure - same shape as
+        /// SobekCM_Database.Reset_User_Password, just invoked here too since Engine_Library can't call up
+        /// into SobekCM_Library's C# wrapper for it </remarks>
+        public static bool Update_Password_Hash(int UserId, string NewPasswordHash, bool IsTemporaryPassword, Custom_Tracer Tracer)
+        {
+            Tracer?.Add_Trace("Engine_Database.Update_Password_Hash", String.Empty);
+
+            try
+            {
+                EalDbParameter[] paramList = new EalDbParameter[3];
+                paramList[0] = new EalDbParameter("@userid", UserId);
+                paramList[1] = new EalDbParameter("@password", NewPasswordHash);
+                paramList[2] = new EalDbParameter("@is_temporary", IsTemporaryPassword);
+
+                EalDbAccess.ExecuteNonQuery(DatabaseType, Connection_String, CommandType.StoredProcedure, "mySobek_Reset_User_Password", paramList);
+                return true;
+            }
+            catch (Exception ee)
+            {
+                Last_Exception = ee;
+                Tracer?.Add_Trace("Engine_Database.Update_Password_Hash", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("Engine_Database.Update_Password_Hash", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("Engine_Database.Update_Password_Hash", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                return false;
             }
         }
 

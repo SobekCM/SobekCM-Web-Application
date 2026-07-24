@@ -12,7 +12,9 @@ using System.Xml;
 namespace SobekCM.Library.Localization
 {
     /// <summary> Loads and caches per-language localization phrase tables from the XML files under
-    /// config/default/localization/, one file per (category, language) pair. Deliberately separate from
+    /// config/default/localization/{languageCode}/, one file per (category, language) pair, grouped into
+    /// a subfolder per language code (e.g. config/default/localization/nl/sobekcm_localization_mysobek_nl.config).
+    /// Deliberately separate from
     /// <c>Configuration_Files_Reader</c> — that reader eagerly loads every config file at startup by
     /// root-element name; these files are numerous (one per language x category) and load lazily, only
     /// for languages actually requested. Internal — consumed only through <see cref="Localization_Gateway"/>. </summary>
@@ -91,7 +93,7 @@ namespace SobekCM.Library.Localization
         private static Dictionary<string, Dictionary<string, string>> Read_File(string Category, string LanguageCode)
         {
             string fileName = "sobekcm_localization_" + Category + "_" + LanguageCode + ".config";
-            string filePath = Path.Combine(ContentRoot_Gateway.ContentRootPath, "config", "default", "localization", fileName);
+            string filePath = Path.Combine(ContentRoot_Gateway.ContentRootPath, "config", "default", "localization", LanguageCode, fileName);
 
             if (!File.Exists(filePath))
                 return null;

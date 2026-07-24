@@ -2,6 +2,7 @@
 using SobekCM.Core.Configuration.Authentication;
 using SobekCM.Core.Configuration.Engine;
 using SobekCM.Core.Configuration.Extensions;
+using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Configuration.OAIPMH;
 using SobekCM.Core.UI_Configuration;
 using SobekCM.Core.UI_Configuration.MaterializeClasses;
@@ -34,6 +35,7 @@ namespace SobekCM.Core.Configuration
             Source = new Configuration_Source_Info();
 
             MaterializeClasses = new MaterializeClasses_Configuration();
+            Languages = new Language_Configuration();
 
             // Set some defaults
             HasData = false;
@@ -105,6 +107,13 @@ namespace SobekCM.Core.Configuration
         [XmlElement("materialize")]
         [ProtoMember(11)]
         public MaterializeClasses_Configuration MaterializeClasses { get; set; }
+
+        /// <summary> Configuration for all the languages this instance supports, and the default/base language,
+        /// read from sobekcm_language_support.config </summary>
+        [DataMember(Name = "languages", EmitDefaultValue = false)]
+        [XmlElement("languages")]
+        [ProtoMember(12)]
+        public Language_Configuration Languages { get; set; }
 
         /// <summary> Configuration for the user-inteface specific configurations for this instance </summary>
         /// <remarks> This property is not serialized </remarks>

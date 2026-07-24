@@ -329,6 +329,19 @@ namespace SobekCM.Engine_Library.Configuration
                                 read_engine_details(readerXml.ReadSubtree(), ConfigObj);
                                 break;
 
+                            case "languages":
+                                ConfigObj.Source.Add_Log("        Parsing LANGUAGES subtree");
+                                if (readerXml.MoveToAttribute("ClearAll"))
+                                {
+                                    if ((readerXml.Value.Trim().ToLower() == "true") && (ConfigObj.Languages != null))
+                                    {
+                                        ConfigObj.Languages.ClearAll();
+                                    }
+                                    readerXml.MoveToElement();
+                                }
+                                read_languages_details(readerXml.ReadSubtree(), ConfigObj);
+                                break;
+
                             case "qualitycontrol":
                                 ConfigObj.Source.Add_Log("        Parsing QUALITYCONTROL subtree");
                                 read_quality_control_details(readerXml.ReadSubtree(), ConfigObj);
@@ -478,6 +491,64 @@ namespace SobekCM.Engine_Library.Configuration
             catch (Exception ee)
             {
                 Config.Source.Add_Log("EXCEPTION CAUGHT in Configuration_Files_Reader.read_materialize_classes");
+                Config.Source.Add_Log(ee.Message);
+                Config.Source.Add_Log(ee.StackTrace);
+
+                Config.Source.ErrorEncountered = true;
+            }
+        }
+
+        #endregion
+
+        #region Section reads all the supported languages
+
+        /// <summary> Read the indicated configuration file for the languages this instance supports </summary>
+        private static void read_languages_details(XmlReader ReaderXml, InstanceWide_Configuration Config)
+        {
+            // Ensure the languages configuration exists
+            if (Config.Languages == null)
+                Config.Languages = new Language_Configuration();
+
+            Language_Configuration config = Config.Languages;
+
+            try
+            {
+                while (ReaderXml.Read())
+                {
+                    if (ReaderXml.NodeType == XmlNodeType.Element)
+                    {
+                        switch (ReaderXml.Name.ToLower())
+                        {
+                            case "language":
+                                string name = (ReaderXml.MoveToAttribute("name")) ? ReaderXml.Value.Trim() : null;
+                                bool isDefault = (ReaderXml.MoveToAttribute("default")) && (!String.IsNullOrEmpty(ReaderXml.Value.Trim()));
+                                ReaderXml.MoveToElement();
+                                string code = ReaderXml.IsEmptyElement ? String.Empty : ReaderXml.ReadElementContentAsString().Trim();
+
+                                Config.Source.Add_Log("Language (" + name + ")=(" + code + ")" + (isDefault ? " [DEFAULT]" : String.Empty));
+
+                                if ((!String.IsNullOrEmpty(name)) && (!String.IsNullOrEmpty(code)))
+                                {
+                                    var languageInfo = new Web_Language_Info
+                                    {
+                                        Name = name,
+                                        Code = code,
+                                        Language = Web_Language_Enum_Converter.Code_To_Enum(code)
+                                    };
+
+                                    config.Languages.Add(languageInfo);
+
+                                    if (isDefault)
+                                        config.Default_Language = languageInfo;
+                                }
+                                break;
+                        }
+                    }
+                }
+            }
+            catch (Exception ee)
+            {
+                Config.Source.Add_Log("EXCEPTION CAUGHT in Configuration_Files_Reader.read_languages_details");
                 Config.Source.Add_Log(ee.Message);
                 Config.Source.Add_Log(ee.StackTrace);
 

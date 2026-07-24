@@ -545,6 +545,10 @@ namespace SobekCM.Engine_Library.Configuration
                         }
                     }
                 }
+
+                // We need SOME default set
+                if ((config.Languages?.Count > 0) && (config.Default_Language == null))
+                    config.Default_Language = config.Languages[0];
             }
             catch (Exception ee)
             {

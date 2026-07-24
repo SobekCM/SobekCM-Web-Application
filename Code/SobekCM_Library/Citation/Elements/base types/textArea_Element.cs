@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Xml;
 
+using SobekCM.Library.UI;
 #endregion
 
 namespace SobekCM.Library.Citation.Elements

@@ -9,6 +9,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
+using SobekCM.Library.UI;
 namespace SobekCM.Library.Citation.Elements
 {
     /// <summary> Element allows entry of an accession number, which is a type of identifier </summary>

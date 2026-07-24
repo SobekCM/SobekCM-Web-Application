@@ -5,6 +5,7 @@ using SobekCM.Resource_Object;
 using System.IO;
 using System.Text;
 
+using SobekCM.Library.UI;
 namespace SobekCM.Library.Citation.Elements
 {
     /// <summary> Element allows entry of the creation date for an item </summary>

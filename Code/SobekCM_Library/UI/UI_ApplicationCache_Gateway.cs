@@ -21,6 +21,8 @@ namespace SobekCM.Library.UI
     /// <summary> Gateway to all the application-level cached data for the user interface </summary>
     public static class UI_ApplicationCache_Gateway
     {
+        private static readonly Language_Support_Info translation = new Language_Support_Info();
+
         /// <summary> Resets all the application-level data  </summary>
         public static void ResetAll()
         {
@@ -98,10 +100,12 @@ namespace SobekCM.Library.UI
             get { return Engine_ApplicationCache_Gateway.Search_History; }
         }
 
-        /// <summary> Get the translation object (or build the object and return it) </summary>
+        /// <summary> Get the translation object, used to translate common UI terms into the current
+        /// display language ( each call lazily pulls and caches that language's translation set --
+        /// see <see cref="Language_Support_Info"/> ) </summary>
         public static Language_Support_Info Translation
         {
-            get { return Engine_ApplicationCache_Gateway.Translation; }
+            get { return translation; }
         }
 
         /// <summary> Get the URL portal list object (or build the object and return it) </summary>

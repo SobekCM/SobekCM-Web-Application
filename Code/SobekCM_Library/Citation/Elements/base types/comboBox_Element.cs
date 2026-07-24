@@ -9,6 +9,7 @@ using System.IO;
 using System.Linq;
 using System.Xml;
 
+using SobekCM.Library.UI;
 #endregion
 
 namespace SobekCM.Library.Citation.Elements

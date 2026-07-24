@@ -38,6 +38,9 @@ namespace SobekCM.Core.MemoryMgmt
         /// <summary> Top-level builder services specific cached data manager services  </summary>
         public static CachedDataManager_BuilderServices Builder { get; private set; }
 
+        /// <summary> Localization/translation-specific cached data manager services  </summary>
+        public static CachedDataManager_LocalizationServices Localization { get; private set; }
+
         /// <summary> Static constructor initializes several variables </summary>
         static CachedDataManager()
         {
@@ -49,6 +52,7 @@ namespace SobekCM.Core.MemoryMgmt
             WebContent = new CachedDataManager_WebContentServices(Settings);
             Items = new CachedDataManager_ItemServices(Settings);
             Builder = new CachedDataManager_BuilderServices(Settings);
+            Localization = new CachedDataManager_LocalizationServices(Settings);
         }
 
         /// <summary> Read-only list of basic information about all the objects stored in the local cache </summary>

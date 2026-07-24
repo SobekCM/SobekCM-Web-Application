@@ -6,6 +6,7 @@ using System.IO;
 using System.Text;
 using System.Xml;
 
+using SobekCM.Library.UI;
 namespace SobekCM.Library.Citation.Elements
 {
     /// <summary> Abstract base class for all elements which have no actual display</summary>

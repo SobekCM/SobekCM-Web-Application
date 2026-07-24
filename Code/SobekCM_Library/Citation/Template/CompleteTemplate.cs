@@ -15,6 +15,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
+using SobekCM.Library.UI;
 #endregion
 
 namespace SobekCM.Library.Citation.Template

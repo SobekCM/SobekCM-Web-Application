@@ -8,6 +8,7 @@ using SobekCM.Resource_Object.Bib_Info;
 using System.IO;
 using System.Text;
 
+using SobekCM.Library.UI;
 #endregion
 
 namespace SobekCM.Library.Citation.Elements

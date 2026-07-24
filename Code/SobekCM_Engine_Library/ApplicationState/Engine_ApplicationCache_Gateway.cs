@@ -42,7 +42,6 @@ namespace SobekCM.Engine_Library.ApplicationState
             bool error = !RefreshSettings(DbInstance);
             error = error | !RefreshConfiguration(DbInstance);
             error = error | !RefreshStatsDateRange();
-            error = error | !RefreshTranslations();
             error = error | !RefreshWebSkins();
             error = error | !RefreshCodes();
             error = error | !RefreshStopWords();
@@ -69,7 +68,6 @@ namespace SobekCM.Engine_Library.ApplicationState
             bool error = !RefreshSettings();
             error = error | !RefreshConfiguration();
             error = error | !RefreshStatsDateRange();
-            error = error | !RefreshTranslations();
             error = error | !RefreshWebSkins();
             error = error | !RefreshCodes();
             error = error | !RefreshStopWords();
@@ -139,57 +137,6 @@ namespace SobekCM.Engine_Library.ApplicationState
             set
             {
                 statsDates = value;
-            }
-        }
-
-        #endregion
-
-        #region Properties and methods for the translation object 
-
-        private static Language_Support_Info translations;
-        private static readonly Object translationLock = new Object();
-
-        /// <summary> Refresh the translation object by pulling the data back from the database </summary>
-        /// <returns> TRUE if successful, otherwise FALSE </returns>
-        public static bool RefreshTranslations()
-        {
-            try
-            {
-                lock (translationLock)
-                {
-                    if (translations == null)
-                    {
-                        translations = new Language_Support_Info();
-                    }
-
-                    // Get the data from the database
-                    Engine_Database.Populate_Translations(translations, null);
-                }
-
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
-        }
-
-        /// <summary> Get the translation object (or build the object and return it) </summary>
-        public static Language_Support_Info Translation
-        {
-            get
-            {
-                lock (translationLock)
-                {
-                    if (translations == null)
-                    {
-                        translations = new Language_Support_Info();
-
-                        Engine_Database.Populate_Translations(translations, null);
-                    }
-
-                    return translations;
-                }
             }
         }
 

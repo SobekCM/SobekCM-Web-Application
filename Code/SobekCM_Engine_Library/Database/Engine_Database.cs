@@ -874,52 +874,46 @@ namespace SobekCM.Engine_Library.Database
         }
 
 
-        /// <summary> Populates the translation / language support object for translating common UI terms </summary>
-        /// <param name="Translations"> Translations object to populate from the database </param>
+        /// <summary> Gets the translation set (English term -&gt; translated value) for a single language </summary>
+        /// <param name="LanguageCode"> ISO code for the language to retrieve ( see <see cref="Web_Language_Enum_Converter.Enum_To_Code"/> ) </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-        /// <returns> TRUE if successful, otherwise FALSE </returns>
-        /// <remarks> This calls the 'SobekCM_Get_Translation' stored procedure </remarks> 
-        public static bool Populate_Translations(Language_Support_Info Translations, Custom_Tracer Tracer)
+        /// <returns> Dictionary of every English term translated into the requested language </returns>
+        /// <remarks> This calls the 'SobekCM_Get_Translation_By_Language' stored procedure </remarks>
+        public static Dictionary<string, string> Get_Translations_By_Language(string LanguageCode, Custom_Tracer Tracer)
         {
-            Tracer?.Add_Trace("Engine_Database.Populate_Translations", String.Empty);
+            Tracer?.Add_Trace("Engine_Database.Get_Translations_By_Language", String.Empty);
+
+            var translationSet = new Dictionary<string, string>();
 
             try
             {
+                // Build the parameter list
+                EalDbParameter[] paramList = new EalDbParameter[1];
+                paramList[0] = new EalDbParameter("@languageCode", LanguageCode);
+
                 // Create the database agnostic reader
-                EalDbReaderWrapper readerWrapper = EalDbAccess.ExecuteDataReader(DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_Get_Translation");
+                EalDbReaderWrapper readerWrapper = EalDbAccess.ExecuteDataReader(DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_Get_Translation_By_Language", paramList);
 
                 // Pull out the database reader
                 DbDataReader reader = readerWrapper.Reader;
 
-                // Clear the translation information
-                Translations.Clear();
-
                 while (reader.Read())
                 {
-                    string english = reader.GetString(1);
-                    Web_Language_Enum language = Web_Language_Enum_Converter.Code_To_Enum(reader.GetString(2));
-                    string translatedValue = reader.GetString(3);
-
-                    // Skip any language code that doesn't resolve to a known language, rather than storing garbage
-                    if (language == Web_Language_Enum.UNDEFINED)
-                        continue;
-
-                    Translations.Add_Translation(english, language, translatedValue);
+                    translationSet[reader.GetString(0)] = reader.GetString(1);
                 }
 
                 // Close the reader (which also closes the connection)
                 readerWrapper.Close();
 
-                // Return the first table from the returned dataset
-                return true;
+                return translationSet;
             }
             catch (Exception ee)
             {
                 Last_Exception = ee;
-                Tracer?.Add_Trace("Engine_Database.Populate_Translations", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
-                Tracer?.Add_Trace("Engine_Database.Populate_Translations", ee.Message, Custom_Trace_Type_Enum.Error);
-                Tracer?.Add_Trace("Engine_Database.Populate_Translations", ee.StackTrace, Custom_Trace_Type_Enum.Error);
-                return false;
+                Tracer?.Add_Trace("Engine_Database.Get_Translations_By_Language", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("Engine_Database.Get_Translations_By_Language", ee.Message, Custom_Trace_Type_Enum.Error);
+                Tracer?.Add_Trace("Engine_Database.Get_Translations_By_Language", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                return translationSet;
             }
         }
 

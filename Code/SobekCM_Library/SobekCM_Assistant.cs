@@ -33,6 +33,37 @@ namespace SobekCM.Library
     /// from the cache, and if the data is not there, it will then build the object and try to store on the cache  </summary>
     public class SobekCM_Assistant
     {
+        #region Method to get the translation set for a single language
+
+        /// <summary> Gets the entire translation set (English term -&gt; translated value) for a single language </summary>
+        /// <param name="Language"> Language to retrieve the translation set for </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        /// <returns> Dictionary of every English term translated into the requested language ( never NULL, may be empty ) </returns>
+        /// <remarks> This attempts to pull the translation set from the cache first ( <see cref="CachedDataManager.Localization"/>, a
+        /// few minutes' sliding expiration ).  If unsuccessful, it builds the set from the database ( <see cref="Engine_Database.Get_Translations_By_Language"/> )
+        /// and hands off to the <see cref="CachedDataManager" /> to store in the cache </remarks>
+        public Dictionary<string, string> Get_Translation_Set(Web_Language_Enum Language, Custom_Tracer Tracer)
+        {
+            Tracer?.Add_Trace("SobekCM_Assistant.Get_Translation_Set", String.Empty);
+
+            string languageCode = Web_Language_Enum_Converter.Enum_To_Code(Language);
+            if (String.IsNullOrEmpty(languageCode))
+                return new Dictionary<string, string>();
+
+            // Try to get this from the cache first
+            Dictionary<string, string> translationSet = CachedDataManager.Localization.Retrieve_Translation_Set(languageCode, Tracer);
+            if (translationSet != null)
+                return translationSet;
+
+            // Not cached (or expired) -- pull from the database and cache it
+            translationSet = Engine_Database.Get_Translations_By_Language(languageCode, Tracer);
+            CachedDataManager.Localization.Store_Translation_Set(languageCode, translationSet, Tracer);
+
+            return translationSet;
+        }
+
+        #endregion
+
         #region Method to retrieve simple web content text to view within a skin
 
         /// <summary> Gets the simple CMS/info object and text to display </summary>

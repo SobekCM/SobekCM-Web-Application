@@ -1,0 +1,13 @@
+Version: 3.1
+
+# Registers SobekCM.Tools.PathTraversalGuard as a recognized sanitizer for SCS0018
+# (Path Traversal) findings, so call sites that route untrusted input through it
+# stop being flagged once genuinely sanitized.
+Sanitizers:
+  - Type: SobekCM.Tools.PathTraversalGuard
+    TaintTypes:
+      - SCS0018
+    Methods:
+      - Name: SanitizeFileName
+      - Name: TryResolveContainedPath
+        InOut: [{"UntrustedRelativePath": "ResolvedFullPath"}]

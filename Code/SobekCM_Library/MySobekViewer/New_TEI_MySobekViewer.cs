@@ -429,7 +429,7 @@ namespace SobekCM.Library.MySobekViewer
 
                 if (action == "delete")
                 {
-                    string filename = Context.Request.Form["phase"];
+                    string filename = PathTraversalGuard.SanitizeFileName(Context.Request.Form["phase"]);
                     try
                     {
                         if (File.Exists(userInProcessDirectory + "\\" + filename))

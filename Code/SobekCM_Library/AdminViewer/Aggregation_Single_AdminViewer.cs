@@ -869,7 +869,7 @@ namespace SobekCM.Library.AdminViewer
                         break;
 
                     case "add_home":
-                        string language = Form["admin_aggr_new_home_lang"];
+                        string language = PathTraversalGuard.SanitizeFileName(Form["admin_aggr_new_home_lang"]);
                         string copyFrom = Form["admin_aggr_new_home_copy"];
                         if (language.Length > 0)
                         {
@@ -879,9 +879,8 @@ namespace SobekCM.Library.AdminViewer
                             if (!Directory.Exists(aggregationDirectory + "\\html\\home"))
                                 Directory.CreateDirectory(aggregationDirectory + "\\html\\home");
                             bool created_exists = false;
-                            if (copyFrom.Length > 0)
+                            if ((copyFrom.Length > 0) && (PathTraversalGuard.TryResolveContainedPath(aggregationDirectory, copyFrom, out string copy_file)))
                             {
-                                string copy_file = aggregationDirectory + "\\" + copyFrom;
                                 if (File.Exists(copy_file))
                                 {
                                     File.Copy(copy_file, new_file, true);
@@ -974,7 +973,7 @@ namespace SobekCM.Library.AdminViewer
                         }
                         if ((action.Length > 0) && (action.IndexOf("delete_image_") == 0))
                         {
-                            string banner_file = action.Replace("delete_image_", "");
+                            string banner_file = PathTraversalGuard.SanitizeFileName(action.Replace("delete_image_", ""));
                             string path_file = aggregationDirectory + "\\images\\banners\\" + banner_file;
                             if (File.Exists(path_file))
                             {
@@ -3608,7 +3607,7 @@ namespace SobekCM.Library.AdminViewer
             string action = Form["admin_aggr_action"];
             if ((action.Length > 0) && (action.IndexOf("delete_") == 0))
             {
-                string file = action.Substring(7);
+                string file = PathTraversalGuard.SanitizeFileName(action.Substring(7));
                 string path_file = aggregationDirectory + "\\uploads\\" + file;
                 if (File.Exists(path_file))
                 {
@@ -3957,7 +3956,7 @@ namespace SobekCM.Library.AdminViewer
             {
                 try
                 {
-                    string language = Form["admin_aggr_new_version_lang"];
+                    string language = PathTraversalGuard.SanitizeFileName(Form["admin_aggr_new_version_lang"]);
                     string title = Form["admin_aggr_new_version_label"];
                     string copyFrom = Form["admin_aggr_new_version_copy"];
 
@@ -3966,8 +3965,7 @@ namespace SobekCM.Library.AdminViewer
                     Web_Language_Enum languageEnum = Web_Language_Enum_Converter.Code_To_Enum(language);
 
                     // Create the source file FIRST
-                    string copyFromFull = aggregationDirectory + "\\" + copyFrom;
-                    if ((copyFrom.Length > 0) && (File.Exists(copyFromFull)))
+                    if ((copyFrom.Length > 0) && (PathTraversalGuard.TryResolveContainedPath(aggregationDirectory, copyFrom, out string copyFromFull)) && (File.Exists(copyFromFull)))
                     {
                         File.Copy(copyFromFull, fileDir, true);
                     }

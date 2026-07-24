@@ -1567,6 +1567,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
         private void Delete_Resource_File(string FilenameToDelete)
         {
+            FilenameToDelete = PathTraversalGuard.SanitizeFileName(FilenameToDelete);
             string resource_directory = UI_ApplicationCache_Gateway.Settings.Servers.Image_Server_Network + qc_item.Web.AssocFilePath;
             string[] files = Directory.GetFiles(resource_directory, FilenameToDelete + ".*");
             string recycle_bin = UI_ApplicationCache_Gateway.Settings.Servers.Recycle_Bin + "\\" + qc_item.METS_Header.ObjectID;

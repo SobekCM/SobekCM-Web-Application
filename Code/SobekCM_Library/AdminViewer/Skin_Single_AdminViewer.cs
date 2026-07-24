@@ -1191,7 +1191,7 @@ namespace SobekCM.Library.AdminViewer
             if (updatedSourceFiles.ContainsKey(FileName))
                 return updatedSourceFiles[FileName];
 
-            string file_in_dir = Path.Combine(skinDirectory, FileName);
+            string file_in_dir = Path.Combine(skinDirectory, PathTraversalGuard.SanitizeFileName(FileName));
             if (!File.Exists(file_in_dir))
                 return String.Empty;
 
@@ -1230,7 +1230,7 @@ namespace SobekCM.Library.AdminViewer
             string action = Form["admin_skin_action"];
             if ((action.Length > 0) && (action.IndexOf("delete_") == 0))
             {
-                string file = action.Substring(7);
+                string file = PathTraversalGuard.SanitizeFileName(action.Substring(7));
                 string path_file = skinDirectory + "\\uploads\\" + file;
                 if (File.Exists(path_file))
                     File.Delete(path_file);

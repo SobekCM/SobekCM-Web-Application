@@ -430,17 +430,18 @@ namespace SobekCM.Library.MySobekViewer
                 Directory.CreateDirectory(serverNetworkFolder + "\\" + UI_ApplicationCache_Gateway.Settings.Resources.Backup_Files_Folder_Name);
 
             // Copy the static HTML page over first
-            if (File.Exists(user_in_process_directory + "\\" + currentItem.BibID + "_" + currentItem.VID + ".html"))
+            string safeBibVidHtmlName = PathTraversalGuard.SanitizeFileName(currentItem.BibID + "_" + currentItem.VID + ".html");
+            if (File.Exists(user_in_process_directory + "\\" + safeBibVidHtmlName))
             {
-                File.Copy(user_in_process_directory + "\\" + currentItem.BibID + "_" + currentItem.VID + ".html", serverNetworkFolder + "\\" + UI_ApplicationCache_Gateway.Settings.Resources.Backup_Files_Folder_Name + "\\" + currentItem.BibID + "_" + currentItem.VID + ".html", true);
-                File.Delete(user_in_process_directory + "\\" + currentItem.BibID + "_" + currentItem.VID + ".html");
+                File.Copy(user_in_process_directory + "\\" + safeBibVidHtmlName, serverNetworkFolder + "\\" + UI_ApplicationCache_Gateway.Settings.Resources.Backup_Files_Folder_Name + "\\" + safeBibVidHtmlName, true);
+                File.Delete(user_in_process_directory + "\\" + safeBibVidHtmlName);
             }
 
-            // Copy all the files 
+            // Copy all the files
             string[] allFiles = Directory.GetFiles(user_in_process_directory);
             foreach (string thisFile in allFiles)
             {
-                string destination_file = serverNetworkFolder + "\\" + (new FileInfo(thisFile)).Name;
+                string destination_file = serverNetworkFolder + "\\" + PathTraversalGuard.SanitizeFileName((new FileInfo(thisFile)).Name);
                 File.Copy(thisFile, destination_file, true);
             }
 

@@ -774,7 +774,7 @@ namespace SobekCM
             if (upload == null)
                 return;
 
-            string file = Path.GetFileName(upload.FileName);
+            string file = SobekCM.Tools.PathTraversalGuard.SanitizeFileName(upload.FileName);
             string savePath = Path.Combine(tokenObj.UploadPath, file);
             await using var stream = File.Create(savePath);
             await upload.CopyToAsync(stream);
@@ -813,7 +813,7 @@ namespace SobekCM
                     Directory.CreateDirectory(tokenObj.UploadPath);
 
                 string extension = Path.GetExtension(postedFile.FileName).ToLower();
-                string filename = Path.GetFileName(postedFile.FileName);
+                string filename = SobekCM.Tools.PathTraversalGuard.SanitizeFileName(postedFile.FileName);
                 string filenameSansExt = Path.GetFileNameWithoutExtension(filename);
 
                 if (filenameSansExt.Contains('.'))
@@ -822,7 +822,10 @@ namespace SobekCM
                     filename = filename.Replace("&", "");
 
                 if (!string.IsNullOrEmpty(tokenObj.ServerSideFileName))
-                    filename = tokenObj.ServerSideFileName.Contains('.') ? tokenObj.ServerSideFileName : tokenObj.ServerSideFileName + extension;
+                {
+                    string serverSideFileName = SobekCM.Tools.PathTraversalGuard.SanitizeFileName(tokenObj.ServerSideFileName);
+                    filename = serverSideFileName.Contains('.') ? serverSideFileName : serverSideFileName + extension;
+                }
 
                 if (!string.IsNullOrEmpty(tokenObj.AllowedFileExtensions))
                 {

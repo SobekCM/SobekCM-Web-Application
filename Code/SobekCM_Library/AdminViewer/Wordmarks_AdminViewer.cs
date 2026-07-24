@@ -85,7 +85,7 @@ namespace SobekCM.Library.AdminViewer
                 if ((form != null) && (!String.IsNullOrEmpty(form["admin_wordmark_action"].TrimFirst())))
                 {
                     string action_value = form["admin_wordmark_action"].TrimFirst().ToUpper();
-                    string delete_value = form["admin_wordmark_code_delete"].TrimFirst().ToUpper();
+                    string delete_value = PathTraversalGuard.SanitizeFileName(form["admin_wordmark_code_delete"].TrimFirst().ToUpper());
                     string save_value = form["admin_wordmark_code_tosave"].TrimFirst().ToUpper();
 
                     string new_wordmark_code = String.Empty;

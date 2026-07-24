@@ -1177,7 +1177,7 @@ namespace SobekCM.Library.AdminViewer
             string action = Form["admin_webcontent_action"];
             if ((action.Length > 0) && (action.IndexOf("delete_") == 0))
             {
-                string file = action.Substring(7);
+                string file = PathTraversalGuard.SanitizeFileName(action.Substring(7));
                 string path_file = Path.Combine(webContentDirectory, file);
                 if (File.Exists(path_file))
                 {

@@ -67,9 +67,9 @@ namespace SobekCM.Library.AdminViewer
                     var form = Context.Request.Form;
 
                     string reset_value = form["admin_interface_reset"].TrimFirst().ToLower();
-                    string save_value = form["admin_interface_tosave"].TrimFirst().ToUpper();
+                    string save_value = PathTraversalGuard.SanitizeFileName(form["admin_interface_tosave"].TrimFirst().ToUpper());
                     string delete_value = form["admin_interface_delete"].TrimFirst().ToUpper();
-                    string new_interface_code = form["admin_interface_code"].TrimFirst().ToUpper();
+                    string new_interface_code = PathTraversalGuard.SanitizeFileName(form["admin_interface_code"].TrimFirst().ToUpper());
 
                     // Was this a reset request?
                     if (reset_value.Length > 0)

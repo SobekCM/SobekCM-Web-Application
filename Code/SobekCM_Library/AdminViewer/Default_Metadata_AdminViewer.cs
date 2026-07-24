@@ -76,8 +76,8 @@ namespace SobekCM.Library.AdminViewer
                     var form = Context.Request.Form;
 
                     string save_value = form["admin_project_tosave"].TrimFirst().ToUpper();
-                    string delete_value = form["admin_project_delete"].TrimFirst().ToUpper();
-                    string code_value = form["admin_project_code"].TrimFirst().ToUpper();
+                    string delete_value = PathTraversalGuard.SanitizeFileName(form["admin_project_delete"].TrimFirst().ToUpper());
+                    string code_value = PathTraversalGuard.SanitizeFileName(form["admin_project_code"].TrimFirst().ToUpper());
 
                     // Was this a delete request?
                     if ((RequestSpecificValues.Current_User.Is_System_Admin) && (delete_value.Length > 0))
@@ -121,7 +121,7 @@ namespace SobekCM.Library.AdminViewer
                         if (save_value == code_value)
                         {
                             entered_code = code_value;
-                            entered_base = form["admin_project_base"].TrimFirst().ToUpper();
+                            entered_base = PathTraversalGuard.SanitizeFileName(form["admin_project_base"].TrimFirst().ToUpper());
                             entered_name = form["admin_project_name"].TrimFirst().Replace("\"", "'");
                             entered_desc = form["admin_project_desc"].TrimFirst().Replace("\"", "'");
 

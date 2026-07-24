@@ -184,7 +184,12 @@ namespace SobekCM.Engine_Library
                                 string assemblyFilePath = Engine_ApplicationCache_Gateway.Configuration.Extensions.Get_Assembly(verbMapping.Component.Assembly);
                                 if (assemblyFilePath != null)
                                 {
+                                    // Get_Assembly performs a dictionary lookup against extension assemblies registered in
+                                    // server-side configuration; it never concatenates verbMapping.Component.Assembly into a
+                                    // path, so this is not attacker-influenced despite the request having selected this endpoint
+#pragma warning disable SCS0018
                                     dllAssembly = Assembly.LoadFrom(assemblyFilePath);
+#pragma warning restore SCS0018
                                 }
                             }
 

@@ -122,6 +122,248 @@ DROP PROCEDURE dbo.Tracking_Get_Aggregation_Browse;
 DROP PROCEDURE dbo.Tracking_Items_By_OCLC;
 DROP PROCEDURE dbo.Tracking_Items_By_ALEPH;
 DROP PROCEDURE dbo.SobekCM_Delete_Setting;
+DROP PROCEDURE dbo.mySobek_Change_Password;
+DROP PROCEDURE dbo.mySobek_Get_User_By_UserName_Password;
+GO
+
+ALTER TABLE mySobek_User ADD ExternalProviderCode nvarchar(50) null;
+ALTER TABLE mySobek_User ADD ExternalSubjectId nvarchar(450) null;
+GO
+
+CREATE UNIQUE NONCLUSTERED INDEX IX_mySobek_User_ExternalLogin
+ON mySobek_User (ExternalProviderCode, ExternalSubjectId)
+WHERE ExternalProviderCode IS NOT NULL AND ExternalSubjectId IS NOT NULL;
+GO
+
+-- Saves a user
+ALTER PROCEDURE [dbo].[mySobek_Save_User]
+	@userid int,
+	@shibbid char(8),
+	@username nvarchar(100),
+	@password nvarchar(100),
+	@emailaddress nvarchar(100),
+	@firstname nvarchar(100),
+	@lastname nvarchar(100),
+	@cansubmititems bit,
+	@nickname nvarchar(100),
+	@organization nvarchar(250),
+	@college nvarchar(250),
+	@department nvarchar(250),
+	@unit nvarchar(250),
+	@rights nvarchar(1000),
+	@sendemail bit,
+	@language nvarchar(50),
+	@default_template varchar(50),
+	@default_metadata varchar(50),
+	@organization_code varchar(15),
+	@receivestatsemail bit,
+	@scanningtechnician bit,
+	@processingtechnician bit,
+	@internalnotes nvarchar(500),
+	@authentication varchar(20),
+	@external_provider_code nvarchar(50),
+	@external_subject_id nvarchar(450)	
+AS
+BEGIN
+
+	if ( @userid < 0 )
+	begin
+
+		-- Add this into the user table first
+		insert into mySobek_User ( ShibbID, UserName, [Password], EmailAddress, LastName, FirstName, DateCreated, LastActivity, isActive,  Note_Length, Can_Make_Folders_Public, 
+									isTemporary_Password, Can_Submit_Items, NickName, Organization, College, Department, Unit, Default_Rights, sendEmailOnSubmission, UI_Language, 
+									Internal_User, OrganizationCode, Receive_Stats_Emails, Include_Tracking_Standard_Forms, ScanningTechnician, ProcessingTechnician, InternalNotes,
+									ExternalProviderCode, ExternalSubjectId)
+		values ( @shibbid, @username, @password, @emailaddress, @lastname, @firstname, getdate(), getDate(), 'true', 1000, 'true', 
+					'false', @cansubmititems, @nickname, @organization, @college, @department, @unit, @rights, @sendemail, @language, 
+					'false', @organization_code, @receivestatsemail, 'false', @scanningtechnician, @processingtechnician, @internalnotes,
+					@external_provider_code, @external_subject_id);
+
+		-- Get the user is
+		declare @newuserid int;
+		set @newuserid = @@identity;
+		
+		-- This is a brand new user, so we must set the default groups, according to
+		-- the authentication method
+		-- Authentticated used the built-in Sobek authentication
+		if (( @authentication='sobek' ) and (( select count(*) from mySobek_user_Group where IsSobekDefault = 'true' ) > 0 ))
+		begin
+			-- insert any groups set as default for this
+			insert into mySobek_User_Group_Link ( UserID, UserGroupID )
+			select @newuserid, UserGroupID
+			from mySobek_User_Group where IsSobekDefault='true';
+		end;
+		
+		-- Authenticated using Shibboleth authentication
+		if (( @authentication='shibboleth' ) and (( select count(*) from mySobek_user_Group where IsShibbolethDefault = 'true' ) > 0 ))
+		begin
+			-- insert any groups set as default for this
+			insert into mySobek_User_Group_Link ( UserID, UserGroupID )
+			select @newuserid, UserGroupID
+			from mySobek_User_Group where IsShibbolethDefault='true';
+		end;
+		
+		-- Authenticated using Ldap authentication
+		if (( @authentication='ldap' ) and (( select count(*) from mySobek_user_Group where IsLdapDefault = 'true' ) > 0 ))
+		begin
+			-- insert any groups set as default for this
+			insert into mySobek_User_Group_Link ( UserID, UserGroupID )
+			select @newuserid, UserGroupID
+			from mySobek_User_Group where IsLdapDefault='true';
+		end;
+	end
+	else
+	begin
+
+		-- Update this user
+		update mySobek_User
+		set ShibbID = @shibbid, UserName = @username, EmailAddress=@emailAddress,
+			Firstname = @firstname, Lastname = @lastname, Can_Submit_Items = @cansubmititems,
+			NickName = @nickname, Organization=@organization, College=@college, Department=@department,
+			Unit=@unit, Default_Rights=@rights, sendEmailOnSubmission = @sendemail, UI_Language=@language,
+			OrganizationCode=@organization_code, Receive_Stats_Emails=@receivestatsemail,
+			ScanningTechnician=@scanningtechnician, ProcessingTechnician=@processingtechnician,
+			InternalNotes=@internalnotes, ExternalProviderCode=@external_provider_code,ExternalSubjectId= @external_subject_id
+		where UserID = @userid;
+
+		-- Set the default template
+		if ( len( @default_template ) > 0 )
+		begin
+			-- Get the template id
+			declare @templateid int;
+			select @templateid = TemplateID from mySobek_Template where TemplateCode=@default_template;
+
+			-- Clear the current default template
+			update mySobek_User_Template_Link set DefaultTemplate = 'false' where UserID=@userid;
+
+			-- Does this link already exist?
+			if (( select count(*) from mySobek_User_Template_Link where UserID=@userid and TemplateID=@templateid ) > 0 )
+			begin
+				-- Update the link
+				update mySobek_User_Template_Link set DefaultTemplate = 'true' where UserID=@userid and TemplateID=@templateid;
+			end
+			else
+			begin
+				-- Just add this link
+				insert into mySobek_User_Template_Link ( UserID, TemplateID, DefaultTemplate ) values ( @userid, @templateid, 'true' );
+			end;
+		end;
+
+		-- Set the default metadata
+		if ( len( @default_metadata ) > 0 )
+		begin
+			-- Get the project id
+			declare @projectid int;
+			select @projectid = DefaultMetadataID from mySobek_DefaultMetadata where MetadataCode=@default_metadata;
+
+			-- Clear the current default project
+			update mySobek_User_DefaultMetadata_Link set CurrentlySelected = 'false' where UserID=@userid;
+
+			-- Does this link already exist?
+			if (( select count(*) from mySobek_User_DefaultMetadata_Link where UserID=@userid and DefaultMetadataID=@projectid ) > 0 )
+			begin
+				-- Update the link
+				update mySobek_User_DefaultMetadata_Link set CurrentlySelected = 'true' where UserID=@userid and DefaultMetadataID=@projectid;
+			end
+			else
+			begin
+				-- Just add this link
+				insert into mySobek_User_DefaultMetadata_Link ( UserID, DefaultMetadataID, CurrentlySelected ) values ( @userid, @projectid, 'true' );
+			end;
+		end;
+	end;
+END;
+GO
+
+
+ALTER PROCEDURE [dbo].[mySobek_Get_User_By_UserID]
+	@userid int
+AS
+BEGIN
+
+	-- No need to perform any locks here
+	SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED;
+
+	-- Get the basic user information
+	select UserID, ShibbID=coalesce(ShibbID,''), UserName=coalesce(UserName,''), EmailAddress=coalesce(EmailAddress,''), 
+	  FirstName=coalesce(FirstName,''), LastName=coalesce(LastName,''), Note_Length, 
+	  Can_Make_Folders_Public, isTemporary_Password, sendEmailOnSubmission, Can_Submit_Items, 
+	  NickName=coalesce(NickName,''), Organization=coalesce(Organization, ''), College=coalesce(College,''),
+	  Department=coalesce(Department,''), Unit=coalesce(Unit,''), Rights=coalesce(Default_Rights,''), Language=coalesce([UI_Language], ''), 
+	  Internal_User, OrganizationCode, EditTemplate, EditTemplateMarc, IsSystemAdmin, IsPortalAdmin, Include_Tracking_Standard_Forms,
+	  Descriptions=( select COUNT(*) from mySobek_User_Description_Tags T where T.UserID=U.UserID),
+	  Receive_Stats_Emails, Has_Item_Stats, Can_Delete_All_Items, ScanningTechnician, ProcessingTechnician, InternalNotes=coalesce(InternalNotes,''),
+	  IsHostAdmin, IsUserAdmin, [Password]=coalesce([Password],''), ExternalProviderCode=coalesce(ExternalProviderCode,''), ExternalSubjectId=coalesce(ExternalSubjectId,'')
+	from mySobek_User U
+	where ( UserID = @userid ) and ( isActive = 'true' );
+
+	-- Get the templates
+	select T.TemplateCode, T.TemplateName, GroupDefined='false', DefaultTemplate
+	from mySobek_Template T, mySobek_User_Template_Link L
+	where ( L.UserID = @userid ) and ( L.TemplateID = T.TemplateID )
+	union
+	select T.TemplateCode, T.TemplateName, GroupDefined='true', 'false'
+	from mySobek_Template T, mySobek_User_Group_Template_Link TL, mySobek_User_Group_Link GL
+	where ( GL.UserID = @userid ) and ( GL.UserGroupID = TL.UserGroupID ) and ( TL.TemplateID = T.TemplateID )
+	order by DefaultTemplate DESC, TemplateCode ASC;
+	
+	-- Get the default metadata
+	select P.MetadataCode, P.MetadataName, GroupDefined='false', CurrentlySelected
+	from mySobek_DefaultMetadata P, mySobek_User_DefaultMetadata_Link L
+	where ( L.UserID = @userid ) and ( L.DefaultMetadataID = P.DefaultMetadataID )
+	union
+	select P.MetadataCode, P.MetadataName, GroupDefined='true', 'false'
+	from mySobek_DefaultMetadata P, mySobek_User_Group_DefaultMetadata_Link PL, mySobek_User_Group_Link GL
+	where ( GL.UserID = @userid ) and ( GL.UserGroupID = PL.UserGroupID ) and ( PL.DefaultMetadataID = P.DefaultMetadataID )
+	order by CurrentlySelected DESC, MetadataCode ASC;
+
+	-- Get the bib id's of items submitted
+	select distinct( G.BibID )
+	from mySobek_User_Folder F, mySobek_User_Item B, SobekCM_Item I, SobekCM_Item_Group G
+	where ( F.UserID = @userid ) and ( B.UserFolderID = F.UserFolderID ) and ( F.FolderName = 'Submitted Items' ) and ( B.ItemID = I.ItemID ) and ( I.GroupID = G.GroupID );
+
+	-- Get the regular expression for editable items
+	select R.EditableRegex, GroupDefined='false', CanEditMetadata, CanEditBehaviors, CanPerformQc, CanUploadFiles, CanChangeVisibility, CanDelete
+	from mySobek_Editable_Regex R, mySobek_User_Editable_Link L
+	where ( L.UserID = @userid ) and ( L.EditableID = R.EditableID )
+	union
+	select R.EditableRegex, GroupDefined='true', CanEditMetadata, CanEditBehaviors, CanPerformQc, CanUploadFiles, CanChangeVisibility, CanDelete
+	from mySobek_Editable_Regex R, mySobek_User_Group_Editable_Link L, mySobek_User_Group_Link GL
+	where ( GL.UserID = @userid ) and ( GL.UserGroupID = L.UserGroupID ) and ( L.EditableID = R.EditableID );
+
+	-- Get the list of aggregations associated with this user
+	select A.Code, A.[Name], L.CanSelect, L.CanEditItems, L.IsAdmin AS IsAggregationAdmin, L.OnHomePage, L.IsCurator AS IsCollectionManager, GroupDefined='false', CanEditMetadata, CanEditBehaviors, CanPerformQc, CanUploadFiles, CanChangeVisibility, CanDelete
+	from SobekCM_Item_Aggregation A, mySobek_User_Edit_Aggregation L
+	where  ( L.AggregationID = A.AggregationID ) and ( L.UserID = @userid )
+	union
+	select A.Code, A.[Name], L.CanSelect, L.CanEditItems, L.IsAdmin AS IsAggregationAdmin, OnHomePage = 'false', L.IsCurator AS IsCollectionManager, GroupDefined='true', CanEditMetadata, CanEditBehaviors, CanPerformQc, CanUploadFiles, CanChangeVisibility, CanDelete
+	from SobekCM_Item_Aggregation A, mySobek_User_Group_Edit_Aggregation L, mySobek_User_Group_Link GL
+	where  ( L.AggregationID = A.AggregationID ) and ( GL.UserID = @userid ) and ( GL.UserGroupID = L.UserGroupID );
+
+	-- Return the names of all the folders
+	select F.FolderName, F.UserFolderID, ParentFolderID=isnull(F.ParentFolderID,-1), isPublic
+	from mySobek_User_Folder F
+	where ( F.UserID=@userid );
+
+	-- Get the list of all items associated with a user folder (other than submitted items)
+	select G.BibID, I.VID
+	from mySobek_User_Folder F, mySobek_User_Item B, SobekCM_Item I, SobekCM_Item_Group G
+	where ( F.UserID = @userid ) and ( B.UserFolderID = F.UserFolderID ) and ( F.FolderName != 'Submitted Items' ) and ( B.ItemID = I.ItemID ) and ( I.GroupID = G.GroupID );
+	
+	-- Get the list of all user groups associated with this user
+	select G.GroupName, Can_Submit_Items, Internal_User, IsSystemAdmin, IsPortalAdmin, Include_Tracking_Standard_Forms, G.UserGroupID
+	from mySobek_User_Group G, mySobek_User_Group_Link L
+	where ( G.UserGroupID = L.UserGroupID )
+	  and ( L.UserID = @userid );
+	  
+	-- Get the user settings
+	select * from mySobek_User_Settings where UserID=@userid order by Setting_Key;
+	  
+	-- Update the user table to include this as the last activity
+	update mySobek_User
+	set LastActivity = getdate()
+	where UserID=@userid;
+END;
 GO
 
 -- Gets a list of items and groups which exist within this instance
@@ -1531,4 +1773,69 @@ GO
 
 GRANT EXECUTE ON Archive_Get_Item_History_Public to sobek_user;
 GRANT EXECUTE ON Archive_Get_Item_History_Public to sobek_builder;
+GO
+
+
+CREATE PROCEDURE [dbo].mySobek_Get_User_By_External_Login
+	@provider_code nvarchar(50),
+	@external_subject_id nvarchar(450)
+AS
+BEGIN  
+
+	-- No need to perform any locks here.  A slightly dirty read won't hurt much
+	SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED;
+	
+	-- Look for the user by Shibboleth ID.  Does one exist?
+	if (( select COUNT(*) from mySobek_User where ExternalProviderCode=@provider_code and ExternalSubjectId=@external_subject_id and isActive = 'true' ) = 1 )
+	begin
+		-- Get the userid for this user
+		declare @userid int;
+		select @userid = UserID from mySobek_User where ExternalProviderCode=@provider_code and ExternalSubjectId=@external_subject_id and isActive = 'true';  
+  
+		-- Stored procedure used to return standard data across all user fetch stored procedures
+		exec mySobek_Get_User_By_UserID @userid; 
+	end;
+END;
+GO
+
+
+GRANT EXECUTE ON mySobek_Get_User_By_External_Login to sobek_user;
+GRANT EXECUTE ON mySobek_Get_User_By_External_Login to sobek_builder;
+GO
+
+-- Gets all the user information by the username.  Hashed password will be compared in 
+-- the database routines (and possibly flagged to be replaced with new hash)
+CREATE PROCEDURE dbo.mySobek_Get_User_By_UserName
+	@username varchar(100)
+AS
+BEGIN
+
+	-- No need to perform any locks here.  A slightly dirty read won't hurt much
+	SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED;
+
+	-- Look for the current user by username and hashed password.  Does one exist?
+	if (( select COUNT(*) from mySobek_User where UserName=@username and isActive = 'true' ) = 1 )
+	begin
+		-- Get the userid for this user
+		declare @userid int;
+		select @userid = UserID from mySobek_User where UserName=@username and isActive = 'true';
+		
+		-- Stored procedure used to return standard data across all user fetch stored procedures
+		exec mySobek_Get_User_By_UserID @userid;
+
+	end  -- Look for current user by email and hashed password...
+	else if (( select COUNT(*) from mySobek_User where EmailAddress=@username and isActive = 'true' ) = 1 )
+	begin
+		-- Get the userid for this user by email and hashed password
+		declare @userid2 int;
+		select @userid2 = UserID from mySobek_User where EmailAddress=@username and isActive = 'true';
+		
+		-- Stored procedure used to return standard data across all user fetch stored procedures
+		exec mySobek_Get_User_By_UserID @userid2;
+	end;
+END;
+GO
+
+GRANT EXECUTE ON mySobek_Get_User_By_UserName to sobek_user;
+GRANT EXECUTE ON mySobek_Get_User_By_UserName to sobek_builder;
 GO

@@ -154,7 +154,12 @@ namespace SobekCM.Resource_Object.Divisions
                 var hashFile = new FileStream(fileName, FileMode.Open, FileAccess.Read);
 
                 // Create the object necessary and compute the hash on the file stream
+                // MD5 here is a file-integrity checksum (detecting accidental corruption), compared against
+                // checksums already stored for the whole existing digital library corpus - not a security
+                // boundary, so collision resistance isn't the relevant property (SCS0006)
+#pragma warning disable SCS0006
                 MD5 md5 = MD5.Create();
+#pragma warning restore SCS0006
                 byte[] result = md5.ComputeHash(hashFile);
 
                 // Close the connection to the file

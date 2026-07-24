@@ -68,7 +68,12 @@ namespace SobekCM.Resource_Object.Divisions
             {
                 var hashFile = new FileStream(fileName, FileMode.Open, FileAccess.Read);
 
+                // SHA1 here is a file-integrity checksum (detecting accidental corruption), compared against
+                // checksums already stored for the whole existing digital library corpus - not a security
+                // boundary, so collision resistance isn't the relevant property (SCS0006)
+#pragma warning disable SCS0006
                 var sha1 = SHA1.Create();
+#pragma warning restore SCS0006
                 byte[] result = sha1.ComputeHash(hashFile);
 
                 hashFile.Close();

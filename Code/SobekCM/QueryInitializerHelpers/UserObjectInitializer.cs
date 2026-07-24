@@ -8,6 +8,8 @@ using SobekCM.Library.UI;
 using SobekCM.Tools;
 using System;
 using System.Linq;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace SobekCM.QueryInitializerHelpers
 {
@@ -167,17 +169,28 @@ namespace SobekCM.QueryInitializerHelpers
                         if (sessionUser != null)
                         {
                             string userIp = context.Connection.RemoteIpAddress?.ToString();
-                            string cookieValue = $"userid={sessionUser.UserID}&security_hash={sessionUser.Security_Hash(userIp)}";
-                            context.Response.Cookies.Append("SobekUser", cookieValue, new CookieOptions
-                            {
-                                Expires = DateTimeOffset.Now.AddDays(30),
-                                HttpOnly = true,
-                                Secure = true
-                            });
+                            string expectedHash = sessionUser.Security_Hash(userIp);
 
-                            // Also add user to session
-                            context.Session.SetString(SessionCache_Keys.User, CachedDataManager_UserCacheServices.UserToString(sessionUser));
-                            request.Current_User = sessionUser;
+                            // Verify the hash from the cookie actually matches before trusting the userid it carries -
+                            // without this check, anyone could log on as any user by setting a cookie with that userid
+                            if (FixedTimeEquals(hash, expectedHash))
+                            {
+                                string cookieValue = $"userid={sessionUser.UserID}&security_hash={expectedHash}";
+                                context.Response.Cookies.Append("SobekUser", cookieValue, new CookieOptions
+                                {
+                                    Expires = DateTimeOffset.Now.AddDays(30),
+                                    HttpOnly = true,
+                                    Secure = true
+                                });
+
+                                // Also add user to session
+                                context.Session.SetString(SessionCache_Keys.User, CachedDataManager_UserCacheServices.UserToString(sessionUser));
+                                request.Current_User = sessionUser;
+                            }
+                            else
+                            {
+                                sessionUser = null;
+                            }
                         }
                     }
                 }
@@ -275,6 +288,18 @@ namespace SobekCM.QueryInitializerHelpers
             }
 
             return null;
+        }
+
+        /// <summary> Constant-time comparison of two security hash strings, to avoid leaking
+        /// how many leading characters matched via response-timing differences </summary>
+        private static bool FixedTimeEquals(string left, string right)
+        {
+            if ((left == null) || (right == null))
+                return false;
+
+            byte[] leftBytes = Encoding.UTF8.GetBytes(left);
+            byte[] rightBytes = Encoding.UTF8.GetBytes(right);
+            return CryptographicOperations.FixedTimeEquals(leftBytes, rightBytes);
         }
 
         #endregion

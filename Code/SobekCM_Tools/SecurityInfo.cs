@@ -2,7 +2,6 @@
 
 using Microsoft.Win32;
 using System;
-using System.IO;
 using System.Security.Cryptography;
 using System.Security.Principal;
 using System.Text;
@@ -13,12 +12,9 @@ using System.Threading;
 namespace SobekCM.Tools
 {
     /// <summary> Object used to determine and ensure security.    It allows
-    /// for reading from the registry, checking local users and computer information, 
-    /// and writing and reading to encrypted files. <br /><br />
+    /// for reading from the registry and checking local users and computer information. <br /><br />
     /// </summary>
     /// <remarks> This class allows for the following actions: <ul>
-    /// <li type="circle" /> Encrypting and Decrypting strings. [ <see cref="SecurityInfo.EncryptString"/> and <see cref="SecurityInfo.DecryptString"/> ] 
-    /// <li type="circle" /> Reading and Writing to encrypted files. [ <see cref="SecurityInfo.ReadFromEncryptedFile"/> and <see cref="SecurityInfo.WriteToEncryptedFile"/> ] 
     /// <li type="circle" /> Getting the current username. [ <see cref="SecurityInfo.UserName"/> ]
     /// <li type="circle" /> Getting username and security level information from a security database.
     /// </ul> <br /> <br />
@@ -144,84 +140,16 @@ namespace SobekCM.Tools
             return "-1";
         }
 
-        /// <summary> Reads text from a file encrypted in DES encryption. (128 bit symmetric encryption) </summary>
-        /// <param name="Filename"> Path and name of file to be read from</param>
-        /// <param name="Key"> 8 character (64bit) key for decryption</param>
-        /// <param name="Iv"> 8 character (64bit) initialization vector for decryption</param>
-        /// <param name="Position"> Character position to start reading from</param>
-        /// <param name="Length"> Number of characters to read from the file</param>
-        /// <returns> Character array of data read and decrypted from file or a NULL if there was an error</returns>
-        public char[] ReadFromEncryptedFile(string Filename, string Key, string Iv, int Position, int Length)
-        {
-            char[] temp = new char[Length];
-
-            try
-            {
-                // Open the necessary file streams
-                var projectDataFile = new FileStream(Filename, FileMode.Open, FileAccess.Read);
-                DES desProvider = DES.Create();
-                desProvider.Key = Encoding.ASCII.GetBytes(Key);
-                desProvider.IV = Encoding.ASCII.GetBytes(Iv);
-                var cryptoStreamDecrypt = new CryptoStream(projectDataFile, desProvider.CreateDecryptor(), CryptoStreamMode.Read);
-                var streamInput = new StreamReader(cryptoStreamDecrypt);
-
-                // Jump to position provided and read the data requested
-                projectDataFile.Position = Position;
-                streamInput.Read(temp, 0, Length);
-
-                // Close the file stream
-                projectDataFile.Close();
-                return temp;
-            }
-            catch
-            {
-                // if there was any error, return NULL
-                return null;
-            }
-        }
-
-        /// <summary> Writes text to a file encrypted in DES encryption. (128 bit symmetric encryption) </summary>
-        /// <param name="TextToWrite"> Text which will be written to the file</param>
-        /// <param name="Filename"> Path and name of file to be written to</param>
-        /// <param name="Key"> 8 character (64bit) key for encryption</param>
-        /// <param name="Iv"> 8 character (64bit) initialization vector for encryption</param>
-        /// <param name="Position"> Character position in file to write the text</param>
-        /// <returns> TRUE if written successfully, otherwise FALSE </returns>
-        public bool WriteToEncryptedFile(string TextToWrite, string Filename, string Key, string Iv, int Position)
-        {
-            try
-            {
-                // Open file streams necessary
-                var projectDataFile = new FileStream(Filename, FileMode.OpenOrCreate, FileAccess.Write);
-                DES desProvider = DES.Create();
-                desProvider.Key = Encoding.ASCII.GetBytes(Key);
-                desProvider.IV = Encoding.ASCII.GetBytes(Iv);
-                var cryptoStreamEncrypt = new CryptoStream(projectDataFile, desProvider.CreateEncryptor(), CryptoStreamMode.Write);
-
-                // Get to the correct position in the file to write
-                projectDataFile.Position = Position;
-
-                // Break string into a byte array and write to file
-                byte[] temp = new byte[TextToWrite.Length];
-                for (int i = 0; i < TextToWrite.Length; ++i)
-                    temp[i] = Convert.ToByte(Convert.ToChar(TextToWrite.Substring(i, 1)));
-                cryptoStreamEncrypt.Write(temp, 0, TextToWrite.Length);
-
-                // Close the file stream
-                cryptoStreamEncrypt.Close();
-                projectDataFile.Close();
-                return true;
-            }
-            catch
-            {
-                // if there was any error, return false
-                return false;
-            }
-        }
-
         /// <summary> Encrypt a string, given the string.  </summary>
         /// <param name="Source"> String to encrypt </param>
         /// <returns> The encrypted string </returns>
+        /// <remarks> KNOWN ISSUE (SCS0006): this is used as the password hashing scheme for "Sobek" accounts
+        /// (see callers of SHA1_EncryptString in SobekCM_Database.cs and Engine_Database.cs), combined with a
+        /// single hardcoded salt shared by every user - both weak by modern standards (CWE-916). A real fix
+        /// needs per-user random salts and a slow algorithm (PBKDF2/bcrypt), which requires a new stored
+        /// procedure that returns a user by username alone so the salted hash can be compared in C# instead
+        /// of matched in SQL - the current 'mySobek_Get_User_By_UserName_Password' proc filters by password
+        /// hash directly, which a per-user salt makes impossible to replicate. Deferred pending that DB change. </remarks>
         public static string SHA1_EncryptString(string Source)
         {
             byte[] bytIn = Encoding.ASCII.GetBytes(Source);
@@ -234,102 +162,5 @@ namespace SobekCM.Tools
             return Convert.ToBase64String(bytOut, 0, bytOut.Length);
         }
 
-
-        /// <summary> Encrypt a string, given the string.  </summary>
-        /// <param name="Source"> String to encrypt </param>
-        /// <param name="Key"> Key for the encryption </param>
-        /// <param name="Iv"> Initialization Vector for the encryption </param>
-        /// <returns> The encrypted string </returns>
-        public static string DES_EncryptString(string Source, string Key, string Iv)
-        {
-            byte[] bytIn = Encoding.ASCII.GetBytes(Source);
-            // create a MemoryStream so that the process can be done without I/O files
-            var ms = new MemoryStream();
-
-            // set the private key
-            DES desProvider = DES.Create();
-            desProvider.Key = Encoding.ASCII.GetBytes(Key);
-            desProvider.IV = Encoding.ASCII.GetBytes(Iv)
-                                                       ;
-
-            // create an Encryptor from the Provider Service instance
-            ICryptoTransform encrypto = desProvider.CreateEncryptor();
-
-            // create Crypto Stream that transforms a stream using the encryption
-            var cs = new CryptoStream(ms, encrypto, CryptoStreamMode.Write);
-
-            // write out encrypted content into MemoryStream
-            cs.Write(bytIn, 0, bytIn.Length);
-            cs.Close();
-
-            // Write out from the Memory stream to an array of bytes
-            byte[] bytOut = ms.ToArray();
-            ms.Close();
-
-            // convert into Base64 so that the result can be used in xml
-            return Convert.ToBase64String(bytOut, 0, bytOut.Length);
-        }
-
-        /// <summary> Encrypt a string, given the string, the key, and the IV values.  </summary>
-        /// <param name="Source"> String to encrypt </param>
-        /// <param name="Key"> Key for the encryption </param>
-        /// <param name="Iv"> Initialization Vector for the encryption </param>
-        /// <returns> The encrypted string </returns>
-        public string EncryptString(string Source, string Key, string Iv)
-        {
-            byte[] bytIn = Encoding.ASCII.GetBytes(Source);
-            // create a MemoryStream so that the process can be done without I/O files
-            var ms = new MemoryStream();
-
-            // set the private key
-            DES desProvider = DES.Create();
-            desProvider.Key = Encoding.ASCII.GetBytes(Key);
-            desProvider.IV = Encoding.ASCII.GetBytes(Iv);
-
-            // create an Encryptor from the Provider Service instance
-            ICryptoTransform encrypto = desProvider.CreateEncryptor();
-
-            // create Crypto Stream that transforms a stream using the encryption
-            var cs = new CryptoStream(ms, encrypto, CryptoStreamMode.Write);
-
-            // write out encrypted content into MemoryStream
-            cs.Write(bytIn, 0, bytIn.Length);
-            cs.Close();
-
-            // Write out from the Memory stream to an array of bytes
-            byte[] bytOut = ms.ToArray();
-            ms.Close();
-
-            // convert into Base64 so that the result can be used in xml
-            return Convert.ToBase64String(bytOut, 0, bytOut.Length);
-        }
-
-        /// <summary> Decrypt a string, given the string, the key, and the IV values.  </summary>
-        /// <param name="Source"> String to decrypt </param>
-        /// <param name="Key"> Key for the encryption </param>
-        /// <param name="Iv"> Initialization Vector for the encryption </param>
-        /// <returns> The decrypted string </returns>
-        public string DecryptString(string Source, string Key, string Iv)
-        {
-            // convert from Base64 to binary
-            byte[] bytIn = Convert.FromBase64String(Source);
-            // create a MemoryStream with the input
-            var ms = new MemoryStream(bytIn, 0, bytIn.Length);
-
-            // set the private key
-            DES desProvider = DES.Create();
-            desProvider.Key = Encoding.ASCII.GetBytes(Key);
-            desProvider.IV = Encoding.ASCII.GetBytes(Iv);
-
-            // create a Decryptor from the Provider Service instance
-            ICryptoTransform encrypto = desProvider.CreateDecryptor();
-
-            // create Crypto Stream that transforms a stream using the decryption
-            var cs = new CryptoStream(ms, encrypto, CryptoStreamMode.Read);
-
-            // read out the result from the Crypto Stream
-            var sr = new StreamReader(cs);
-            return sr.ReadToEnd();
-        }
     }
 }

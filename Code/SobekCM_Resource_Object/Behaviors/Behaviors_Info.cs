@@ -1073,32 +1073,9 @@ namespace SobekCM.Resource_Object.Behaviors
         {
             if ((License.Length > 0) && (BibID.Length == 10))
             {
-                byte[] bytIn = Encoding.ASCII.GetBytes(License);
-
-                // create a MemoryStream so that the process can be done without I/O files
-                var ms = new MemoryStream();
-
-                // set the private key
-                DES desProvider = DES.Create();
-                desProvider.Key = Encoding.ASCII.GetBytes("U7+x$Swa");
-                desProvider.IV = Encoding.ASCII.GetBytes(BibID.Substring(2));
-
-                // create an Encryptor from the Provider Service instance
-                ICryptoTransform encrypto = desProvider.CreateEncryptor();
-
-                // create Crypto Stream that transforms a stream using the encryption
-                var cs = new CryptoStream(ms, encrypto, CryptoStreamMode.Write);
-
-                // write out encrypted content into MemoryStream
-                cs.Write(bytIn, 0, bytIn.Length);
-                cs.Close();
-
-                // Write out from the Memory stream to an array of bytes
-                byte[] bytOut = ms.ToArray();
-                ms.Close();
-
-                // convert into Base64 so that the result can be used in xml
-                guid = Convert.ToBase64String(bytOut, 0, bytOut.Length);
+                using HMACSHA256 hmac = new HMACSHA256(Encoding.UTF8.GetBytes("U7+x$Swa" + BibID.Substring(2)));
+                byte[] hash = hmac.ComputeHash(Encoding.UTF8.GetBytes(License));
+                guid = Convert.ToBase64String(hash);
             }
         }
     }

@@ -4,7 +4,6 @@ using ProtoBuf;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.IO;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Security.Cryptography;
@@ -1202,41 +1201,12 @@ namespace SobekCM.Core.Users
         /// <remarks>This is used to add another level of security on cookies coming in from a user request </remarks>
         public string Security_Hash(string IP)
         {
-            return DES_EncryptString(Given_Name + "sobekh" + Family_Name, IP.Replace(".", "").PadRight(8, '%').Substring(0, 8), Email.Length > 8 ? Email.Substring(0, 8) : Email.PadLeft(8, 'd'));
-        }
+            string key = IP.Replace(".", "").PadRight(8, '%').Substring(0, 8);
+            string source = Given_Name + "sobekh" + Family_Name;
 
-        /// <summary> Encrypt a string, given the string.  </summary>
-        /// <param name="Source"> String to encrypt </param>
-        /// <param name="Key"> Key for the encryption </param>
-        /// <param name="Iv"> Initialization Vector for the encryption </param>
-        /// <returns> The encrypted string </returns>
-        public static string DES_EncryptString(string Source, string Key, string Iv)
-        {
-            byte[] bytIn = Encoding.ASCII.GetBytes(Source);
-            // create a MemoryStream so that the process can be done without I/O files
-            var ms = new MemoryStream();
-
-            // set the private key
-            DES desProvider = DES.Create();
-            desProvider.Key = Encoding.ASCII.GetBytes(Key);
-            desProvider.IV = Encoding.ASCII.GetBytes(Iv);
-
-            // create an Encryptor from the Provider Service instance
-            ICryptoTransform encrypto = desProvider.CreateEncryptor();
-
-            // create Crypto Stream that transforms a stream using the encryption
-            var cs = new CryptoStream(ms, encrypto, CryptoStreamMode.Write);
-
-            // write out encrypted content into MemoryStream
-            cs.Write(bytIn, 0, bytIn.Length);
-            cs.Close();
-
-            // Write out from the Memory stream to an array of bytes
-            byte[] bytOut = ms.ToArray();
-            ms.Close();
-
-            // convert into Base64 so that the result can be used in xml
-            return Convert.ToBase64String(bytOut, 0, bytOut.Length);
+            using HMACSHA256 hmac = new HMACSHA256(Encoding.UTF8.GetBytes(key));
+            byte[] hash = hmac.ComputeHash(Encoding.UTF8.GetBytes(source));
+            return Convert.ToBase64String(hash);
         }
 
     }

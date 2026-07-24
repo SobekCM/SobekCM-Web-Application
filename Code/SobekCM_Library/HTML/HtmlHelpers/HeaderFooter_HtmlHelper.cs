@@ -7,6 +7,7 @@ using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Users;
+using SobekCM.Library.Localization;
 using SobekCM.Library.UI;
 using System;
 using System.Collections.Generic;
@@ -15,10 +16,10 @@ using System.Text;
 
 #endregion
 
-namespace SobekCM.Library.HTML
+namespace SobekCM.Library.HTML.Helpers
 {
     /// <summary> Class is a helper class used for writing the header and footers for HTML responses </summary>
-    public static class HeaderFooter_Helper
+    public static class HeaderFooter_HtmlHelper
     {
         /// <summary> Add the header to the output </summary>
         /// <param name="Output"> Stream to which to write the HTML for this header </param>
@@ -61,7 +62,7 @@ namespace SobekCM.Library.HTML
             string breadcrumbs = "&nbsp; &nbsp; ";
             if (useItemHeader)
             {
-                var breadcrumb_builder = new StringBuilder("<a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + modified_url_options + "\">" + RequestSpecificValues.Current_Mode.Instance_Abbreviation + " Home</a>");
+                var breadcrumb_builder = new StringBuilder("<a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + modified_url_options + "\">" + String.Format(Localization_Gateway.HeaderFooter.Home_Suffix_Format(RequestSpecificValues.Current_Mode.Language), RequestSpecificValues.Current_Mode.Instance_Abbreviation) + "</a>");
 
                 int codes_added = 0;
                 if ((RequestSpecificValues.Current_Mode.Aggregation.Length > 0) && (RequestSpecificValues.Current_Mode.Aggregation != "all"))
@@ -169,7 +170,7 @@ namespace SobekCM.Library.HTML
                 switch (RequestSpecificValues.Current_Mode.Mode)
                 {
                     case Display_Mode_Enum.Error:
-                        breadcrumbs = "<a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + modified_url_options + "\">" + RequestSpecificValues.Current_Mode.Instance_Abbreviation + " Home</a>";
+                        breadcrumbs = "<a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + modified_url_options + "\">" + String.Format(Localization_Gateway.HeaderFooter.Home_Suffix_Format(RequestSpecificValues.Current_Mode.Language), RequestSpecificValues.Current_Mode.Instance_Abbreviation) + "</a>";
                         break;
 
                     case Display_Mode_Enum.Aggregation:
@@ -177,12 +178,12 @@ namespace SobekCM.Library.HTML
                         {
                             if ((RequestSpecificValues.Current_Mode.Aggregation.Length > 0) && (RequestSpecificValues.Current_Mode.Aggregation != "all"))
                             {
-                                breadcrumbs = "<a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + modified_url_options + "\">" + RequestSpecificValues.Current_Mode.Instance_Abbreviation + " Home</a>";
+                                breadcrumbs = "<a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + modified_url_options + "\">" + String.Format(Localization_Gateway.HeaderFooter.Home_Suffix_Format(RequestSpecificValues.Current_Mode.Language), RequestSpecificValues.Current_Mode.Instance_Abbreviation) + "</a>";
                             }
                         }
                         else
                         {
-                            breadcrumbs = "<a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + modified_url_options + "\">" + RequestSpecificValues.Current_Mode.Instance_Abbreviation + " Home</a>";
+                            breadcrumbs = "<a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + modified_url_options + "\">" + String.Format(Localization_Gateway.HeaderFooter.Home_Suffix_Format(RequestSpecificValues.Current_Mode.Language), RequestSpecificValues.Current_Mode.Instance_Abbreviation) + "</a>";
                             if ((RequestSpecificValues.Current_Mode.Aggregation.Length > 0) && (RequestSpecificValues.Current_Mode.Aggregation != "all"))
                             {
                                 breadcrumbs = breadcrumbs + " &nbsp;|&nbsp; <a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + RequestSpecificValues.Current_Mode.Aggregation + modified_url_options + "\">" + UI_ApplicationCache_Gateway.Aggregations.Get_Collection_Short_Name(RequestSpecificValues.Current_Mode.Aggregation) + "</a>";
@@ -191,7 +192,7 @@ namespace SobekCM.Library.HTML
                         break;
 
                     default:
-                        breadcrumbs = "<a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + modified_url_options + "\">" + RequestSpecificValues.Current_Mode.Instance_Abbreviation + " Home</a>";
+                        breadcrumbs = "<a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + modified_url_options + "\">" + String.Format(Localization_Gateway.HeaderFooter.Home_Suffix_Format(RequestSpecificValues.Current_Mode.Language), RequestSpecificValues.Current_Mode.Instance_Abbreviation) + "</a>";
                         if ((RequestSpecificValues.Current_Mode.Aggregation.Length > 0) && (RequestSpecificValues.Current_Mode.Aggregation != "all"))
                         {
                             breadcrumbs = breadcrumbs + " &nbsp;|&nbsp; <a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + RequestSpecificValues.Current_Mode.Aggregation + modified_url_options + "\">" + UI_ApplicationCache_Gateway.Aggregations.Get_Collection_Short_Name(RequestSpecificValues.Current_Mode.Aggregation) + "</a>";
@@ -396,7 +397,7 @@ namespace SobekCM.Library.HTML
             }
 
             // Create the mySobek text
-            string mySobekLinks = create_mysobek_link(RequestSpecificValues, url_options, "staff login", Context);
+            string mySobekLinks = create_mysobek_link(RequestSpecificValues, url_options, Localization_Gateway.HeaderFooter.Staff_Login(RequestSpecificValues.Current_Mode.Language), Context);
 
             // Get the base url
             string base_url = RequestSpecificValues.Current_Mode.Base_URL;
@@ -530,24 +531,20 @@ namespace SobekCM.Library.HTML
                     }
                 }
 
+                Web_Language_Enum language = RequestSpecificValues.Current_Mode.Language;
+
                 if (RequestSpecificValues.Current_User == null || !RequestSpecificValues.Current_User.LoggedOn)
                 {
                     if (!String.IsNullOrEmpty(login_text))
                         mySobekLinks = "<a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "my/logon" + mySobekOptions + "\">" + login_text + "</a>";
                     else
-                        mySobekLinks = "<a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "my/logon" + mySobekOptions + "\">" + mySobekText + " Home</a>";
+                        mySobekLinks = "<a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "my/logon" + mySobekOptions + "\">" + String.Format(Localization_Gateway.HeaderFooter.Home_Suffix_Format(language), mySobekText) + "</a>";
                 }
                 else
                 {
                     User_Object tempObject = RequestSpecificValues.Current_User;
-                    if (tempObject.Nickname.Length > 0)
-                    {
-                        mySobekLinks = "<a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "my" + mySobekOptions + "\">" + tempObject.Nickname + "'s " + mySobekText + "</a>&nbsp; | &nbsp; <a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "my/logout" + mySobekLogoutOptions + "\">Log Out</a>";
-                    }
-                    else
-                    {
-                        mySobekLinks = "<a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "my" + mySobekOptions + "\">" + tempObject.Given_Name + "'s " + mySobekText + "</a>&nbsp; | &nbsp; <a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "my/logout" + mySobekLogoutOptions + "\">Log Out</a>";
-                    }
+                    string accountOwnerName = tempObject.Nickname.Length > 0 ? tempObject.Nickname : tempObject.Given_Name;
+                    mySobekLinks = "<a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "my" + mySobekOptions + "\">" + String.Format(Localization_Gateway.HeaderFooter.My_Account_Possessive_Format(language), accountOwnerName, mySobekText) + "</a>&nbsp; | &nbsp; <a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "my/logout" + mySobekLogoutOptions + "\">" + Localization_Gateway.HeaderFooter.Log_Out(language) + "</a>";
                 }
             }
 

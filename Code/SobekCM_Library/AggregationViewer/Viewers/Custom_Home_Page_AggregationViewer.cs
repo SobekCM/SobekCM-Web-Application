@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.Navigation;
 using SobekCM.Library.HTML;
+using SobekCM.Library.HTML.Helpers;
 using SobekCM.Tools;
 using System;
 using System.Collections.Generic;
@@ -94,7 +95,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             {
                 var headerBuilder = new StringBuilder();
                 var headerWriter = new StringWriter(headerBuilder);
-                HeaderFooter_Helper.Add_Header(headerWriter, RequestSpecificValues, "container-inner-custom", ViewBag.Hierarchy_Object.ShortName, null, ViewBag.Hierarchy_Object, null, Context);
+                HeaderFooter_HtmlHelper.Add_Header(headerWriter, RequestSpecificValues, "container-inner-custom", ViewBag.Hierarchy_Object.ShortName, null, ViewBag.Hierarchy_Object, null, Context);
                 string header = headerBuilder.ToString();
                 textToDisplay = textToDisplay.Replace("<%HEADER%>", header).Replace("[%HEADER%]", header);
             }
@@ -104,7 +105,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             {
                 var footerBuilder = new StringBuilder();
                 var footerWriter = new StringWriter(footerBuilder);
-                HeaderFooter_Helper.Add_Footer(footerWriter, RequestSpecificValues, null, ViewBag.Hierarchy_Object, null, Context);
+                HeaderFooter_HtmlHelper.Add_Footer(footerWriter, RequestSpecificValues, null, ViewBag.Hierarchy_Object, null, Context);
                 string footer = footerBuilder.ToString();
                 textToDisplay = textToDisplay.Replace("<%FOOTER%>", footer).Replace("[%FOOTER%]", footer);
             }
@@ -114,7 +115,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             {
                 var menuBuilder = new StringBuilder();
                 var menuWriter = new StringWriter(menuBuilder);
-                MainMenus_Helper_HtmlSubWriter.Add_Aggregation_Main_Menu(menuWriter, RequestSpecificValues, ViewBag.Hierarchy_Object);
+                MainMenus_HtmlHelper.Add_Aggregation_Main_Menu(menuWriter, RequestSpecificValues, ViewBag.Hierarchy_Object);
                 string menu = menuBuilder.ToString();
                 textToDisplay = textToDisplay.Replace("<%MAINMENU%>", menu).Replace("[%MAINMENU%]", menu);
             }

@@ -7,6 +7,7 @@ using SobekCM.Core.Navigation;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Engine_Library.Database;
 using SobekCM.Library.Database;
+using SobekCM.Library.HTML.Helpers;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
 using System;
@@ -104,7 +105,7 @@ namespace SobekCM.Library.HTML
             }
 
             // Add the banner
-            Banner_Helper.Add_Banner(Output, "sbkShs_BannerDiv", WebPage_Title.Replace("{0} ", ""), RequestSpecificValues.Current_Mode, RequestSpecificValues.HTML_Skin, RequestSpecificValues.Top_Collection);
+            Banner_HtmlHelper.Add_Banner(Output, "sbkShs_BannerDiv", WebPage_Title.Replace("{0} ", ""), RequestSpecificValues.Current_Mode, RequestSpecificValues.HTML_Skin, RequestSpecificValues.Top_Collection);
 
             #region Code to add the statistics menu
 

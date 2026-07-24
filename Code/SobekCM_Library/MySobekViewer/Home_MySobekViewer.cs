@@ -3,9 +3,11 @@
 #region Using directives
 
 using Microsoft.AspNetCore.Http;
+using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Navigation;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Library.HTML;
+using SobekCM.Library.Localization;
 using SobekCM.Library.MainWriters;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
@@ -43,12 +45,15 @@ namespace SobekCM.Library.MySobekViewer
         {
             get
             {
+                Web_Language_Enum language = RequestSpecificValues.Current_Mode.Language;
+                string name = RequestSpecificValues.Current_User.Nickname.Length > 0 ? RequestSpecificValues.Current_User.Nickname : RequestSpecificValues.Current_User.Given_Name;
+
                 if (RequestSpecificValues.Current_User.Is_Just_Registered)
                 {
-                    return (RequestSpecificValues.Current_User.Nickname.Length > 0) ? "Welcome to my" + RequestSpecificValues.Current_Mode.Instance_Abbreviation + ", " + RequestSpecificValues.Current_User.Nickname : "Welcome to my" + RequestSpecificValues.Current_Mode.Instance_Abbreviation + ", " + RequestSpecificValues.Current_User.Given_Name;
+                    return String.Format(Localization_Gateway.Home.Welcome_New_User_Format(language), RequestSpecificValues.Current_Mode.Instance_Abbreviation, name);
                 }
 
-                return (RequestSpecificValues.Current_User.Nickname.Length > 0) ? "Welcome Back, " + RequestSpecificValues.Current_User.Nickname : "Welcome Back, " + RequestSpecificValues.Current_User.Given_Name;
+                return String.Format(Localization_Gateway.Home.Welcome_Back_Format(language), name);
             }
         }
 
@@ -59,6 +64,7 @@ namespace SobekCM.Library.MySobekViewer
         {
             Tracer.Add_Trace("Home_MySobekViewer.Write_HTML");
 
+            Web_Language_Enum language = RequestSpecificValues.Current_Mode.Language;
             string sobek_text = RequestSpecificValues.Current_Mode.Instance_Abbreviation;
             string my_sobek = "my" + sobek_text;
 
@@ -66,9 +72,9 @@ namespace SobekCM.Library.MySobekViewer
             Output.WriteLine();
 
             Output.WriteLine("<div class=\"sbkMySobek_HomeText\" >");
-            Output.WriteLine("  <p>Welcome to " + my_sobek + ".  This feature allows you to add items to your bookshelves, organize your bookshelves, and email your bookshelves to friends.</p>");
+            Output.WriteLine("  <p>" + String.Format(Localization_Gateway.Home.Welcome_Intro_Format(language), my_sobek) + "</p>");
             Output.WriteLine();
-            Output.WriteLine("  <div id=\"sbkHmv_WhatWouldDiv\">What would you like to do today?</div>");
+            Output.WriteLine("  <div id=\"sbkHmv_WhatWouldDiv\">" + Localization_Gateway.Home.What_Would_You_Like(language) + "</div>");
             Output.WriteLine();
             Output.WriteLine("  <table id=\"sbkHmv_Table\">");
 
@@ -81,17 +87,17 @@ namespace SobekCM.Library.MySobekViewer
                     {
                         RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.New_Item;
                         RequestSpecificValues.Current_Mode.My_Sobek_SubMode = "1";
-                        Output.WriteLine("    <tr><td style=\"width:35px\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.New_Item_Img + "\" /></a></td><td><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" >Upload an existing OER</a></td></tr>");
+                        Output.WriteLine("    <tr><td style=\"width:35px\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.New_Item_Img + "\" /></a></td><td><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" >" + Localization_Gateway.Home.Upload_Existing_Oer(language) + "</a></td></tr>");
 
                         RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.New_Item;
                         RequestSpecificValues.Current_Mode.My_Sobek_SubMode = "1OP";
-                        Output.WriteLine("    <tr><td style=\"width:35px\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.New_Item_Img + "\" /></a></td><td><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" >Create new OER online (using Open Publishing)</a></td></tr>");
+                        Output.WriteLine("    <tr><td style=\"width:35px\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.New_Item_Img + "\" /></a></td><td><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" >" + Localization_Gateway.Home.Create_New_Oer_Online(language) + "</a></td></tr>");
                     }
                     else
                     {
                         RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.New_Item;
                         RequestSpecificValues.Current_Mode.My_Sobek_SubMode = "1";
-                        Output.WriteLine("    <tr><td style=\"width:35px\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.New_Item_Img + "\" /></a></td><td><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" >Upload a new item</a></td></tr>");
+                        Output.WriteLine("    <tr><td style=\"width:35px\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.New_Item_Img + "\" /></a></td><td><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" >" + Localization_Gateway.Home.Upload_New_Item(language) + "</a></td></tr>");
 
                     }
 
@@ -107,13 +113,13 @@ namespace SobekCM.Library.MySobekViewer
                         {
                             RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.New_TEI_Item;
                             RequestSpecificValues.Current_Mode.My_Sobek_SubMode = "1";
-                            Output.WriteLine("    <tr><td style=\"width:35px\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"http://cdn.sobekrepository.org/images/misc/add_tei.png\" /></a></td><td><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" >Add a new TEI item</a></td></tr>");
+                            Output.WriteLine("    <tr><td style=\"width:35px\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"http://cdn.sobekrepository.org/images/misc/add_tei.png\" /></a></td><td><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" >" + Localization_Gateway.Home.Add_New_Tei_Item(language) + "</a></td></tr>");
                         }
                     }
                 }
                 else
                 {
-                    Output.WriteLine("    <tr><td style=\"width:35px\"><img src=\"" + Static_Resources_Gateway.New_Item_Img + "\" /></td><td><span style=\"color:gray\"><i>Online submittals are temporarily disabled</i></span></td></tr>");
+                    Output.WriteLine("    <tr><td style=\"width:35px\"><img src=\"" + Static_Resources_Gateway.New_Item_Img + "\" /></td><td><span style=\"color:gray\"><i>" + Localization_Gateway.Home.Submittals_Disabled(language) + "</i></span></td></tr>");
                 }
             }
 
@@ -123,7 +129,7 @@ namespace SobekCM.Library.MySobekViewer
                 RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Folder_Management;
                 RequestSpecificValues.Current_Mode.Result_Display_Type = "brief";
                 RequestSpecificValues.Current_Mode.My_Sobek_SubMode = "Submitted Items";
-                Output.WriteLine("    <tr><td style=\"width:35px\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.Submitted_Items_Gif + "\" /></a></td><td><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">View all my submitted items</a></td></tr>");
+                Output.WriteLine("    <tr><td style=\"width:35px\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.Submitted_Items_Gif + "\" /></a></td><td><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + Localization_Gateway.Home.View_All_Submitted_Items(language) + "</a></td></tr>");
 
             }
             else
@@ -133,7 +139,7 @@ namespace SobekCM.Library.MySobekViewer
                     RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Folder_Management;
                     RequestSpecificValues.Current_Mode.Result_Display_Type = "brief";
                     RequestSpecificValues.Current_Mode.My_Sobek_SubMode = "Submitted Items";
-                    Output.WriteLine("    <tr><td style=\"width:35px\"><img src=\"" + Static_Resources_Gateway.Submitted_Items_Gif + "\" /></td><td><span style=\"color:Gray\">View all my submitted items</span></td></tr>");
+                    Output.WriteLine("    <tr><td style=\"width:35px\"><img src=\"" + Static_Resources_Gateway.Submitted_Items_Gif + "\" /></td><td><span style=\"color:Gray\">" + Localization_Gateway.Home.View_All_Submitted_Items(language) + "</span></td></tr>");
                 }
             }
 
@@ -143,7 +149,7 @@ namespace SobekCM.Library.MySobekViewer
                 // Add link to folder management
                 RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.User_Usage_Stats;
                 RequestSpecificValues.Current_Mode.My_Sobek_SubMode = String.Empty;
-                Output.WriteLine("    <tr><td style=\"width:35px\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.Usage_Img + "\" /></a></td><td><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">View usage for my items</a></td></tr>");
+                Output.WriteLine("    <tr><td style=\"width:35px\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.Usage_Img + "\" /></a></td><td><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + Localization_Gateway.Home.View_Usage_For_My_Items(language) + "</a></td></tr>");
             }
 
             // If the RequestSpecificValues.Current_User has submitted some descriptive tags, or has the kind of rights that let them
@@ -153,47 +159,48 @@ namespace SobekCM.Library.MySobekViewer
                 // Add link to folder management
                 RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.User_Tags;
                 RequestSpecificValues.Current_Mode.My_Sobek_SubMode = String.Empty;
-                Output.WriteLine("    <tr><td style=\"width:35px\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.Chat_Png + "\" /></a></td><td><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">View my descriptive tags</a></td></tr>");
+                Output.WriteLine("    <tr><td style=\"width:35px\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.Chat_Png + "\" /></a></td><td><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + Localization_Gateway.Home.View_My_Descriptive_Tags(language) + "</a></td></tr>");
             }
 
             // Add link to folder management
             RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Folder_Management;
             RequestSpecificValues.Current_Mode.My_Sobek_SubMode = String.Empty;
-            Output.WriteLine("    <tr><td style=\"width:35px\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.Bookshelf_Img + "\" /></a></td><td><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">View and organize my bookshelves</a></td></tr>");
+            Output.WriteLine("    <tr><td style=\"width:35px\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.Bookshelf_Img + "\" /></a></td><td><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + Localization_Gateway.Home.View_And_Organize_Bookshelves(language) + "</a></td></tr>");
 
             // Add a link to view all saved searches
             RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Saved_Searches;
-            Output.WriteLine("    <tr><td style=\"width:35px\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.Saved_Searches_Img + "\"border=\"0px\"  /></a></td><td><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">View my saved searches</a></td></tr>");
+            Output.WriteLine("    <tr><td style=\"width:35px\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.Saved_Searches_Img + "\"border=\"0px\"  /></a></td><td><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + Localization_Gateway.Home.View_My_Saved_Searches(language) + "</a></td></tr>");
 
             // Add a link to edit your preferences
             RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Preferences;
-            Output.WriteLine("    <tr><td style=\"width:35px\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.Settings_Img + "\" /></a></td><td><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">Edit my account preferences</a></td></tr>");
+            Output.WriteLine("    <tr><td style=\"width:35px\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.Settings_Img + "\" /></a></td><td><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + Localization_Gateway.Home.Edit_My_Preferences(language) + "</a></td></tr>");
 
             //If the RequestSpecificValues.Current_User is a scanning/processing technician, add a link for item tracking here
             if (UI_ApplicationCache_Gateway.Settings.Resources.Use_Tracking_Sheet)
             {
                 RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Item_Tracking;
-                Output.WriteLine("<tr><td style=\"width:35px\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.Track2_Gif + "\"/></a></td><td><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">Track Item Scanning/Processing</a></td></tr>");
+                Output.WriteLine("<tr><td style=\"width:35px\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.Track2_Gif + "\"/></a></td><td><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + Localization_Gateway.Home.Track_Item_Scanning(language) + "</a></td></tr>");
             }
 
             // If a return URL was provided, add a link to return there
             if ((!String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.Return_URL)) && (RequestSpecificValues.Current_Mode.Return_URL.IndexOf("my") < 0))
             {
-                Output.WriteLine("    <tr><td style=\"width:35px\"><a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + RequestSpecificValues.Current_Mode.Return_URL + "\"><img src=\"" + Static_Resources_Gateway.Return_Img + "\" /></a></td><td><a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + RequestSpecificValues.Current_Mode.Return_URL + "\">Return to previous " + sobek_text + " page</a></td></tr>");
+                Output.WriteLine("    <tr><td style=\"width:35px\"><a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + RequestSpecificValues.Current_Mode.Return_URL + "\"><img src=\"" + Static_Resources_Gateway.Return_Img + "\" /></a></td><td><a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + RequestSpecificValues.Current_Mode.Return_URL + "\">" + String.Format(Localization_Gateway.Home.Return_To_Previous_Page_Format(language), sobek_text) + "</a></td></tr>");
             }
 
             // Add a log out link
             RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Log_Out;
-            Output.WriteLine("    <tr><td style=\"width:35px\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.Exit_Gif + "\" /></a></td><td><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">Log Out</a></td></tr>");
+            Output.WriteLine("    <tr><td style=\"width:35px\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.Exit_Gif + "\" /></a></td><td><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + Localization_Gateway.Home.Log_Out(language) + "</a></td></tr>");
             Output.WriteLine("  </table>");
             Output.WriteLine();
             RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
 
             RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Contact;
-            Output.WriteLine("  <p>Comments or recommendations?  Please <a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">contact us</a>.</p>");
+            string contact_us_link = "<a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + Localization_Gateway.Home.Contact_Us_Link_Text(language) + "</a>";
+            Output.WriteLine("  <p>" + String.Format(Localization_Gateway.Home.Comments_Recommendations_Format(language), contact_us_link) + "</p>");
             if (!RequestSpecificValues.Current_User.Can_Submit)
             {
-                Output.WriteLine("  <p>If you would like to contribute materials through the online system, please <a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">contact us</a> as well.</p>");
+                Output.WriteLine("  <p>" + String.Format(Localization_Gateway.Home.Contribute_Materials_Format(language), contact_us_link) + "</p>");
             }
 
             Output.WriteLine("  <br />");

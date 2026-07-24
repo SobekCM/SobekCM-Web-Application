@@ -22,7 +22,7 @@ using System.Text;
 
 #endregion
 
-namespace SobekCM.Library.HTML
+namespace SobekCM.Library.HTML.Helpers
 {
     /// <summary> Accepts a result set of titles and items and renders the correct page of results in the result view the user has requested </summary>
     /// <remarks> This class extends the <see cref="abstractHtmlSubwriter"/> abstract class for its shared Context/RequestSpecificValues

@@ -16,6 +16,7 @@ using SobekCM.Library.AggregationViewer.Viewers;
 using SobekCM.Library.Database;
 using SobekCM.Library.Email;
 using SobekCM.Library.Helpers.CKEditor;
+using SobekCM.Library.HTML.Helpers;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
 using System;
@@ -869,7 +870,7 @@ namespace SobekCM.Library.HTML
         public override void Add_Header(TextWriter Output)
         {
             RequestSpecificValues.Tracer.Add_Trace("Aggregation_HtmlSubwriter.Add_Header", "Entered. WebPage_Title=[" + WebPage_Title + "].");
-            HeaderFooter_Helper.Add_Header(Output, RequestSpecificValues, Container_CssClass, WebPage_Title, Subwriter_Behaviors, hierarchyObject, null, Context);
+            HeaderFooter_HtmlHelper.Add_Header(Output, RequestSpecificValues, Container_CssClass, WebPage_Title, Subwriter_Behaviors, hierarchyObject, null, Context);
             RequestSpecificValues.Tracer.Add_Trace("Aggregation_HtmlSubwriter.Add_Header", "Leaving.");
         }
 
@@ -1046,7 +1047,7 @@ namespace SobekCM.Library.HTML
                 {
                     // Add the main aggrgeation menu here
                     if (((!RequestSpecificValues.HTML_Skin.Suppress_Top_Navigation.HasValue) || (!RequestSpecificValues.HTML_Skin.Suppress_Top_Navigation.Value)) && (!behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Suppress_MainMenu)))
-                        MainMenus_Helper_HtmlSubWriter.Add_Aggregation_Main_Menu(Output, RequestSpecificValues, hierarchyObject);
+                        MainMenus_HtmlHelper.Add_Aggregation_Main_Menu(Output, RequestSpecificValues, hierarchyObject);
 
                     // Start the page container
                     RequestSpecificValues.Tracer.Add_Trace("Aggregation_HtmlSubwriter.Write_HTML", "Start the page container div.");
@@ -1057,7 +1058,7 @@ namespace SobekCM.Library.HTML
                 {
                     // Add the main aggrgeation menu here
                     if (((!RequestSpecificValues.HTML_Skin.Suppress_Top_Navigation.HasValue) || (!RequestSpecificValues.HTML_Skin.Suppress_Top_Navigation.Value)) && (!behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Suppress_MainMenu)))
-                        MainMenus_Helper_HtmlSubWriter.Add_Aggregation_Search_Results_Menu(Output, RequestSpecificValues, hierarchyObject, false);
+                        MainMenus_HtmlHelper.Add_Aggregation_Search_Results_Menu(Output, RequestSpecificValues, hierarchyObject, false);
 
                     // Start the (optional) page container
                     Output.WriteLine("<div id=\"sbkAhs_ResultsPageContainer\">");
@@ -1186,7 +1187,7 @@ namespace SobekCM.Library.HTML
                     collectionViewer.Write_Search_Box_HTML(Output, Tracer);
 
                     Output.WriteLine("<!-- Aggregation_HtmlSubwriter.Write_HTML - MainMenus_Helper_HtmlSubWriter.Add_Aggregation_Main_menu -->");
-                    MainMenus_Helper_HtmlSubWriter.Add_Aggregation_Main_Menu(Output, RequestSpecificValues, hierarchyObject);
+                    MainMenus_HtmlHelper.Add_Aggregation_Main_Menu(Output, RequestSpecificValues, hierarchyObject);
 
                     // Start the page container
                     Output.WriteLine("<div id=\"pagecontainer\">");
@@ -1201,7 +1202,7 @@ namespace SobekCM.Library.HTML
                     collectionViewer.Write_Search_Box_HTML(Output, Tracer);
 
                     Output.WriteLine("<!-- Aggregation_HtmlSubwriter.Write_HTML - MainMenus_Helper_HtmlSubWriter.Add_Aggregation_Main_menu -->");
-                    MainMenus_Helper_HtmlSubWriter.Add_Aggregation_Main_Menu(Output, RequestSpecificValues, hierarchyObject);
+                    MainMenus_HtmlHelper.Add_Aggregation_Main_Menu(Output, RequestSpecificValues, hierarchyObject);
 
                     // Start the page container
                     Output.WriteLine("<div id=\"pagecontainer\">");
@@ -2743,7 +2744,7 @@ namespace SobekCM.Library.HTML
             RequestSpecificValues.Tracer.Add_Trace("Aggregation_HtmlSubwriter.Add_Footer", "Entered...");
 
             Output.WriteLine("<!-- Start of Aggregation_HtmlSubwriter.Add_Footer -->");
-            HeaderFooter_Helper.Add_Footer(Output, RequestSpecificValues, Subwriter_Behaviors, hierarchyObject, null, Context);
+            HeaderFooter_HtmlHelper.Add_Footer(Output, RequestSpecificValues, Subwriter_Behaviors, hierarchyObject, null, Context);
             Output.WriteLine("<!-- End of Aggregation_HtmlSubwriter.Add_Footer -->");
         }
     }

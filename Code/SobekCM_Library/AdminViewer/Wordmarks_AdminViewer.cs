@@ -13,6 +13,7 @@ using SobekCM.Library.Helpers.UploadiFive;
 
 // using SobekCM.Library.Helpers.UploadiFive;
 using SobekCM.Library.HTML;
+using SobekCM.Library.HTML.Helpers;
 using SobekCM.Library.MainWriters;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
@@ -384,7 +385,7 @@ namespace SobekCM.Library.AdminViewer
             Write_ItemNavForm_Opening(Output);
 
             // Add the banner
-            Banner_Helper.Add_Banner(Output, "sbkAhs_BannerDiv", "System Administration", RequestSpecificValues.Current_Mode, RequestSpecificValues.HTML_Skin, RequestSpecificValues.Top_Collection);
+            Banner_HtmlHelper.Add_Banner(Output, "sbkAhs_BannerDiv", "System Administration", RequestSpecificValues.Current_Mode, RequestSpecificValues.HTML_Skin, RequestSpecificValues.Top_Collection);
 
             // Add the upload controls to the file place holder
             add_upload_controls(Output, Tracer);

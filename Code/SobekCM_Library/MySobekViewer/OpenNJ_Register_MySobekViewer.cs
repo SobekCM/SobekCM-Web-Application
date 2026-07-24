@@ -1,6 +1,7 @@
 #region Using directives
 
 using Microsoft.AspNetCore.Http;
+using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Users;
@@ -8,6 +9,7 @@ using SobekCM.Engine_Library.Configuration;
 using SobekCM.Engine_Library.Database;
 using SobekCM.Engine_Library.Email;
 using SobekCM.Library.Database;
+using SobekCM.Library.Localization;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
 using System;
@@ -85,18 +87,19 @@ namespace SobekCM.Library.MySobekViewer
             mySobekText = "my" + RequestSpecificValues.Current_Mode.Instance_Abbreviation;
 
             // Get the labels to use, by language
-            accountInfoLabel = "Account Information";
-            userNameLabel = "UserName";
-            personalInfoLabel = "Personal Information";
-            familyNamesLabel = "Last/Family Name(s)";
-            givenNamesLabel = "First/Given Name(s)";
-            nicknameLabel = "Nickname";
-            emailLabel = "Email";
-            emailStatsLabel = "Send me monthly usage statistics for my items";
-            affilitionInfoLabel = "Current Affiliation Information";
-            organizationLabel = "Institution";
-            passwordLabel = "Password";
-            confirmPasswordLabel = "Confirm Password";
+            Web_Language_Enum displayLanguage = RequestSpecificValues.Current_Mode.Language;
+            accountInfoLabel = Localization_Gateway.OpenNJ_Register.Account_Info(displayLanguage);
+            userNameLabel = Localization_Gateway.OpenNJ_Register.Username_Label(displayLanguage);
+            personalInfoLabel = Localization_Gateway.OpenNJ_Register.Personal_Info(displayLanguage);
+            familyNamesLabel = Localization_Gateway.OpenNJ_Register.Family_Names_Label(displayLanguage);
+            givenNamesLabel = Localization_Gateway.OpenNJ_Register.Given_Names_Label(displayLanguage);
+            nicknameLabel = Localization_Gateway.OpenNJ_Register.Nickname_Label(displayLanguage);
+            emailLabel = Localization_Gateway.OpenNJ_Register.Email_Label(displayLanguage);
+            emailStatsLabel = Localization_Gateway.OpenNJ_Register.Email_Stats_Label(displayLanguage);
+            affilitionInfoLabel = Localization_Gateway.OpenNJ_Register.Affiliation_Info(displayLanguage);
+            organizationLabel = Localization_Gateway.OpenNJ_Register.Organization_Label(displayLanguage);
+            passwordLabel = Localization_Gateway.OpenNJ_Register.Password_Label(displayLanguage);
+            confirmPasswordLabel = Localization_Gateway.OpenNJ_Register.Confirm_Password_Label(displayLanguage);
             col1Width = "15px";
             col2Width = "100px";
             col3Width = "605px";
@@ -242,28 +245,28 @@ namespace SobekCM.Library.MySobekViewer
                 {
                     // validate user name
                     if (username.Trim().Length == 0)
-                        validationErrors.Add("Username is a required field");
+                        validationErrors.Add(Localization_Gateway.OpenNJ_Register.Username_Required(displayLanguage));
                     else if (username.Trim().Length < 8)
-                        validationErrors.Add("Username must be at least eight digits");
+                        validationErrors.Add(Localization_Gateway.OpenNJ_Register.Username_Min_Length(displayLanguage));
 
                     // validate password
                     if ((password.Trim().Length == 0) || (password2.Trim().Length == 0))
-                        validationErrors.Add("Select and confirm a password");
+                        validationErrors.Add(Localization_Gateway.OpenNJ_Register.Select_Confirm_Password(displayLanguage));
                     if (password.Trim() != password2.Trim())
-                        validationErrors.Add("Passwords do not match");
+                        validationErrors.Add(Localization_Gateway.OpenNJ_Register.Passwords_Do_Not_Match(displayLanguage));
                     else if (password.Length < 8)
-                        validationErrors.Add("Password must be at least eight digits");
+                        validationErrors.Add(Localization_Gateway.OpenNJ_Register.Password_Min_Length(displayLanguage));
 
                     // validate instructor indication
                     if (!is_instructor.HasValue)
                     {
-                        validationErrors.Add("Select whether you are an instructor or not");
+                        validationErrors.Add(Localization_Gateway.OpenNJ_Register.Select_Instructor_Status(displayLanguage));
                     }
                     else if (is_instructor.Value)
                     {
                         if (organization.Length == 0)
                         {
-                            validationErrors.Add("As an instructor, institution is a required field");
+                            validationErrors.Add(Localization_Gateway.OpenNJ_Register.Instructor_Institution_Required(displayLanguage));
                         }
                     }
 
@@ -272,27 +275,27 @@ namespace SobekCM.Library.MySobekViewer
                     {
                         if (ufid.Trim().Length != 8)
                         {
-                            validationErrors.Add("UFIDs are always eight digits");
+                            validationErrors.Add(Localization_Gateway.OpenNJ_Register.Ufid_Length(displayLanguage));
                         }
                         else
                         {
                             int ufid_convert_test;
                             if (!Int32.TryParse(ufid, out ufid_convert_test))
-                                validationErrors.Add("UFIDs are always numeric");
+                                validationErrors.Add(Localization_Gateway.OpenNJ_Register.Ufid_Numeric(displayLanguage));
                         }
                     }
                 }
 
                 // Validate the basic data is okay
                 if (family_name.Trim().Length == 0)
-                    validationErrors.Add("Family name is a required field");
+                    validationErrors.Add(Localization_Gateway.OpenNJ_Register.Family_Name_Required(displayLanguage));
                 if (given_name.Trim().Length == 0)
-                    validationErrors.Add("Given name is a required field");
+                    validationErrors.Add(Localization_Gateway.OpenNJ_Register.Given_Name_Required(displayLanguage));
                 if ((email.Trim().Length == 0) || (email.IndexOf("@") < 0))
-                    validationErrors.Add("A valid email is required");
+                    validationErrors.Add(Localization_Gateway.OpenNJ_Register.Valid_Email_Required(displayLanguage));
                 if (default_rights.Trim().Length > 1000)
                 {
-                    validationErrors.Add("Rights statement truncated to 1000 characters.");
+                    validationErrors.Add(Localization_Gateway.OpenNJ_Register.Rights_Truncated(displayLanguage));
                     default_rights = default_rights.Substring(0, 1000);
                 }
 
@@ -303,11 +306,11 @@ namespace SobekCM.Library.MySobekViewer
                     SobekCM_Database.UserName_Exists(username, email, out username_exists, out email_exists, RequestSpecificValues.Tracer);
                     if (email_exists)
                     {
-                        validationErrors.Add("An account for that email address already exists.");
+                        validationErrors.Add(Localization_Gateway.OpenNJ_Register.Email_Already_Exists(displayLanguage));
                     }
                     else if (username_exists)
                     {
-                        validationErrors.Add("That username is taken.  Please choose another.");
+                        validationErrors.Add(Localization_Gateway.OpenNJ_Register.Username_Taken(displayLanguage));
                     }
                 }
 
@@ -531,9 +534,9 @@ namespace SobekCM.Library.MySobekViewer
             {
                 if (Context.Session.GetString(SessionCache_Keys.User) == null)
                 {
-                    return "Register for My" + RequestSpecificValues.Current_Mode.Instance_Abbreviation;
+                    return String.Format(Localization_Gateway.OpenNJ_Register.Register_Page_Title_Format(RequestSpecificValues.Current_Mode.Language), RequestSpecificValues.Current_Mode.Instance_Abbreviation);
                 }
-                return "Edit Your Account Preferences";
+                return Localization_Gateway.OpenNJ_Register.Edit_Preferences_Page_Title(RequestSpecificValues.Current_Mode.Language);
             }
         }
 
@@ -545,6 +548,8 @@ namespace SobekCM.Library.MySobekViewer
         {
             Tracer.Add_Trace("OpenNJ_Register_MySobekViewer.Write_HTML");
 
+            Web_Language_Enum displayLanguage = RequestSpecificValues.Current_Mode.Language;
+
             // Open the item nav form
             Write_ItemNavForm_Opening(Output);
 
@@ -555,15 +560,16 @@ namespace SobekCM.Library.MySobekViewer
             Output.WriteLine("<blockquote>");
             if (registration)
             {
-                Output.WriteLine("Registration for " + mySobekText + " is free and open to the public.  Enter your information below to be instantly registered.<br /><br />");
-                Output.WriteLine("Account information, name, and email are required for each new account.<br /><br />");
+                Output.WriteLine(String.Format(Localization_Gateway.OpenNJ_Register.Registration_Intro_Format(displayLanguage), mySobekText) + "<br /><br />");
+                Output.WriteLine(Localization_Gateway.OpenNJ_Register.Account_Required_Note(displayLanguage) + "<br /><br />");
                 RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Logon;
-                Output.WriteLine("Already registered?  <a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">Log on</a>.<br /><br />");
+                string log_on_link = "<a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + Localization_Gateway.OpenNJ_Register.Log_On_Link_Text(displayLanguage) + "</a>";
+                Output.WriteLine(String.Format(Localization_Gateway.OpenNJ_Register.Already_Registered_Format(displayLanguage), log_on_link) + "<br /><br />");
                 RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Register;
             }
             if (validationErrors.Count > 0)
             {
-                Output.WriteLine("<span style=\"color: Red;font-weight:bold;\">The following errors were detected:");
+                Output.WriteLine("<span style=\"color: Red;font-weight:bold;\">" + Localization_Gateway.OpenNJ_Register.Errors_Detected_Header(displayLanguage));
                 Output.WriteLine("<blockquote>");
                 foreach (string thisError in validationErrors)
                 {
@@ -605,41 +611,44 @@ namespace SobekCM.Library.MySobekViewer
 
             Output.WriteLine("<table style=\"width:700px;\" cellpadding=\"5px\" class=\"sbkPmsv_InputTable\" >");
 
-            Output.WriteLine("  <tr><th colspan=\"3\">Account Type</th></tr>");
-            Output.WriteLine("  <tr><td>&nbsp;</td><td colspan=\"2\">Are you an instructor?  Let us know below to get access to restricted course materials.</td></tr>");
+            Output.WriteLine("  <tr><th colspan=\"3\">" + Localization_Gateway.OpenNJ_Register.Account_Type_Header(displayLanguage) + "</th></tr>");
+            Output.WriteLine("  <tr><td>&nbsp;</td><td colspan=\"2\">" + Localization_Gateway.OpenNJ_Register.Instructor_Question(displayLanguage) + "</td></tr>");
+
+            string instructorLabel = Localization_Gateway.OpenNJ_Register.I_Am_Instructor(displayLanguage);
+            string notInstructorLabel = Localization_Gateway.OpenNJ_Register.I_Am_Not_Instructor(displayLanguage);
 
             if (is_instructor.HasValue)
             {
                 if (is_instructor.Value)
                 {
-                    Output.WriteLine("  <tr><td colspan=\"2\">&nbsp;</td><td><input type=\"radio\" value=\"isinstructor\" name=\"prefIsInstructor\" id=\"prefIsInstructor\" onclick=\"isInstructorClick(this);\" checked=\"checked\"> /><label for=\"prefIsInstructor\">I am an instructor</label>");
-                    Output.WriteLine("                                       <input type=\"radio\" value=\"isNOTinstructor\" name=\"prefIsInstructor\" id=\"prefIsNotInstructor\" onclick=\"isNotInstructorClick(this);\"  /><label for=\"prefIsNotInstructor\">I am NOT an instructor</label></td></tr>");
+                    Output.WriteLine("  <tr><td colspan=\"2\">&nbsp;</td><td><input type=\"radio\" value=\"isinstructor\" name=\"prefIsInstructor\" id=\"prefIsInstructor\" onclick=\"isInstructorClick(this);\" checked=\"checked\"> /><label for=\"prefIsInstructor\">" + instructorLabel + "</label>");
+                    Output.WriteLine("                                       <input type=\"radio\" value=\"isNOTinstructor\" name=\"prefIsInstructor\" id=\"prefIsNotInstructor\" onclick=\"isNotInstructorClick(this);\"  /><label for=\"prefIsNotInstructor\">" + notInstructorLabel + "</label></td></tr>");
                 }
                 else
                 {
-                    Output.WriteLine("  <tr><td colspan=\"2\">&nbsp;</td><td><input type=\"radio\" value=\"isinstructor\" name=\"prefIsInstructor\" id=\"prefIsInstructor\" onclick=\"isInstructorClick(this);\" /><label for=\"prefIsInstructor\">I am an instructor</label>");
-                    Output.WriteLine("                                       <input type=\"radio\" value=\"isNOTinstructor\" name=\"prefIsInstructor\" id=\"prefIsNotInstructor\" onclick=\"isNotInstructorClick(this);\" checked=\"checked\" /><label for=\"prefIsNotInstructor\">I am NOT an instructor</label></td></tr>");
+                    Output.WriteLine("  <tr><td colspan=\"2\">&nbsp;</td><td><input type=\"radio\" value=\"isinstructor\" name=\"prefIsInstructor\" id=\"prefIsInstructor\" onclick=\"isInstructorClick(this);\" /><label for=\"prefIsInstructor\">" + instructorLabel + "</label>");
+                    Output.WriteLine("                                       <input type=\"radio\" value=\"isNOTinstructor\" name=\"prefIsInstructor\" id=\"prefIsNotInstructor\" onclick=\"isNotInstructorClick(this);\" checked=\"checked\" /><label for=\"prefIsNotInstructor\">" + notInstructorLabel + "</label></td></tr>");
 
                 }
             }
             else
             {
-                Output.WriteLine("  <tr><td colspan=\"2\">&nbsp;</td><td><input type=\"radio\" value=\"isinstructor\" name=\"prefIsInstructor\" id=\"prefIsInstructor\" onclick=\"isInstructorClick(this);\" /><label for=\"prefIsInstructor\">I am an instructor</label>");
-                Output.WriteLine("                                       <input type=\"radio\" value=\"isNOTinstructor\" name=\"prefIsInstructor\" id=\"prefIsNotInstructor\" onclick=\"isNotInstructorClick(this);\" /><label for=\"prefIsNotInstructor\">I am NOT an instructor</label></td></tr>");
+                Output.WriteLine("  <tr><td colspan=\"2\">&nbsp;</td><td><input type=\"radio\" value=\"isinstructor\" name=\"prefIsInstructor\" id=\"prefIsInstructor\" onclick=\"isInstructorClick(this);\" /><label for=\"prefIsInstructor\">" + instructorLabel + "</label>");
+                Output.WriteLine("                                       <input type=\"radio\" value=\"isNOTinstructor\" name=\"prefIsInstructor\" id=\"prefIsNotInstructor\" onclick=\"isNotInstructorClick(this);\" /><label for=\"prefIsNotInstructor\">" + notInstructorLabel + "</label></td></tr>");
             }
 
             string submitDisplay = (is_instructor.HasValue && is_instructor.Value) ? "table-row" : "none";
-            Output.WriteLine("  <tr id=\"instructSubmitRow\" style=\"display:" + submitDisplay + "\"><td>&nbsp;</td><td colspan=\"2\">Click the option below to submit materials.  To use the online open publishing tools in Open-NJ, you will need to be approved as an instructor and approved to submit materials.<br /></td></tr>");
+            Output.WriteLine("  <tr id=\"instructSubmitRow\" style=\"display:" + submitDisplay + "\"><td>&nbsp;</td><td colspan=\"2\">" + Localization_Gateway.OpenNJ_Register.Submit_Materials_Instructions(displayLanguage) + "<br /></td></tr>");
 
             if (!desire_to_upload)
             {
-                Output.WriteLine("  <tr id=\"instructSubmitRow2\" style=\"display:" + submitDisplay + "\"><td colspan=\"2\">&nbsp;</td><td><input type=\"checkbox\" value=\"allowsubmit\" name=\"prefAllowSubmit\" id=\"prefAllowSubmit\" /><label for=\"prefAllowSubmit\">I would like to be able to submit materials online.</label></td></tr>");
+                Output.WriteLine("  <tr id=\"instructSubmitRow2\" style=\"display:" + submitDisplay + "\"><td colspan=\"2\">&nbsp;</td><td><input type=\"checkbox\" value=\"allowsubmit\" name=\"prefAllowSubmit\" id=\"prefAllowSubmit\" /><label for=\"prefAllowSubmit\">" + Localization_Gateway.OpenNJ_Register.Allow_Submit_Label(displayLanguage) + "</label></td></tr>");
             }
             else
             {
-                Output.WriteLine("  <tr><td colspan=\"2\">&nbsp;</td><td><input type=\"checkbox\" value=\"allowsubmit\" name=\"prefAllowSubmit\" id=\"prefAllowSubmit\" checked=\"checked\" /><label for=\"prefAllowSubmit\">I would like to be able to submit materials online.</label></td></tr>");
+                Output.WriteLine("  <tr><td colspan=\"2\">&nbsp;</td><td><input type=\"checkbox\" value=\"allowsubmit\" name=\"prefAllowSubmit\" id=\"prefAllowSubmit\" checked=\"checked\" /><label for=\"prefAllowSubmit\">" + Localization_Gateway.OpenNJ_Register.Allow_Submit_Label(displayLanguage) + "</label></td></tr>");
             }
-            Output.WriteLine("  <tr id=\"instructSubmitRow3\" style=\"display:" + submitDisplay + "\"><td>&nbsp;</td><td colspan=\"2\">Once your application has been reviewed and approved, you will receive email notification.<br /></td></tr>");
+            Output.WriteLine("  <tr id=\"instructSubmitRow3\" style=\"display:" + submitDisplay + "\"><td>&nbsp;</td><td colspan=\"2\">" + Localization_Gateway.OpenNJ_Register.Application_Reviewed_Notice(displayLanguage) + "<br /></td></tr>");
 
 
             Output.WriteLine("  <tr><th colspan=\"3\">" + accountInfoLabel + "</th></tr>");
@@ -649,19 +658,19 @@ namespace SobekCM.Library.MySobekViewer
                 if (Context.SessionObject()["Gatorlink_UFID"] != null)
                     ufid = Context.SessionObject()["Gatorlink_UFID"].ToString();
 
-                Output.WriteLine("  <tr><td style=\"width:" + col1Width + "\">&nbsp;</td><td style=\"width:" + col2Width + "\" class=\"sbkPmsv_InputLabel\"><label for=\"prefUsername\">" + userNameLabel + ":</label></td><td width=\"" + col3Width + "\"><input id=\"prefUserName\" name=\"prefUserName\" class=\"preferences_small_input sbk_Focusable\" value=\"" + username + "\" type=\"text\" />   &nbsp; &nbsp; (minimum of eight digits)</td></tr>");
+                Output.WriteLine("  <tr><td style=\"width:" + col1Width + "\">&nbsp;</td><td style=\"width:" + col2Width + "\" class=\"sbkPmsv_InputLabel\"><label for=\"prefUsername\">" + userNameLabel + ":</label></td><td width=\"" + col3Width + "\"><input id=\"prefUserName\" name=\"prefUserName\" class=\"preferences_small_input sbk_Focusable\" value=\"" + username + "\" type=\"text\" />   &nbsp; &nbsp; " + Localization_Gateway.OpenNJ_Register.Username_Hint(displayLanguage) + "</td></tr>");
                 Output.WriteLine("  <tr><td style=\"width:" + col1Width + "\">&nbsp;</td><td class=\"sbkPmsv_InputLabel\"><label for=\"password_enter\">" + passwordLabel + ":</label></td><td>");
 
                 Output.WriteLine("    <input type=\"password\" id=\"password_enter\" name=\"password_enter\" class=\"preferences_small_input sbk_Focusable\" value=\"\" />");
 
 
 
-                Output.WriteLine("     &nbsp; &nbsp; (minimum of eight digits, different than username)</td></tr>");
+                Output.WriteLine("     &nbsp; &nbsp; " + Localization_Gateway.OpenNJ_Register.Password_Hint(displayLanguage) + "</td></tr>");
                 Output.WriteLine("  <tr><td width=\"" + col1Width + "\">&nbsp;</td><td class=\"sbkPmsv_InputLabel\"><label for=\"password_confirm\">" + confirmPasswordLabel + ":</label></td><td>");
 
                 Output.WriteLine("    <input type=\"password\" id=\"password_confirm\" name=\"password_confirm\" class=\"preferences_small_input sbk_Focusable\" value=\"\" />");
 
-                Output.WriteLine("     &nbsp; &nbsp; (minimum of eight digits, different than username)</td></tr>");
+                Output.WriteLine("     &nbsp; &nbsp; " + Localization_Gateway.OpenNJ_Register.Password_Hint(displayLanguage) + "</td></tr>");
             }
             else
             {
@@ -681,7 +690,7 @@ namespace SobekCM.Library.MySobekViewer
             // Email (may include institution prompt)
             Output.Write("  <tr><td>&nbsp;</td><td class=\"sbkPmsv_InputLabel\"><label for=\"prefEmail\">" + emailLabel + ":</label></td><td><input id=\"prefEmail\" name=\"prefEmail\" class=\"preferences_medium_input sbk_Focusable\" value=\"" + email + "\" type=\"text\" />");
             string instEmailDisplay = (is_instructor.HasValue && is_instructor.Value) ? "inline" : "none";
-            Output.Write("<span id=\"instructEmailPrompt\" style=\"display:" + instEmailDisplay + "\">&nbsp; &nbsp; (please enter institutional email address)</span>");
+            Output.Write("<span id=\"instructEmailPrompt\" style=\"display:" + instEmailDisplay + "\">&nbsp; &nbsp; " + Localization_Gateway.OpenNJ_Register.Institutional_Email_Hint(displayLanguage) + "</span>");
             Output.WriteLine("</td></tr>");
 
             if (user.Has_Item_Stats)
@@ -706,10 +715,10 @@ namespace SobekCM.Library.MySobekViewer
             Output.WriteLine("  <tr><th colspan=\"3\">&nbsp;</th></tr>");
             Output.WriteLine("  <tr style=\"text-align:right\"><td colspan=\"3\">");
             RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
-            Output.WriteLine("    <button onclick=\"window.location.href = '" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "';return false;\" class=\"sbkMySobek_BigButton\"> CANCEL </button> &nbsp; &nbsp; ");
+            Output.WriteLine("    <button onclick=\"window.location.href = '" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "';return false;\" class=\"sbkMySobek_BigButton\"> " + Localization_Gateway.OpenNJ_Register.Cancel_Button(displayLanguage) + " </button> &nbsp; &nbsp; ");
             RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Register;
 
-            Output.WriteLine("    <button type=\"submit\" class=\"sbkMySobek_BigButton\"> SUBMIT </button> ");
+            Output.WriteLine("    <button type=\"submit\" class=\"sbkMySobek_BigButton\"> " + Localization_Gateway.OpenNJ_Register.Submit_Button(displayLanguage) + " </button> ");
 
             Output.WriteLine(registration
                  ? "</td></tr></table></blockquote></div>\n\n<!-- Focus on the first registration text box -->\n<script type=\"text/javascript\">focus_element('prefUsername');</script>"

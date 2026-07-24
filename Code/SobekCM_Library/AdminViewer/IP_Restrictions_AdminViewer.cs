@@ -9,6 +9,7 @@ using SobekCM.Core.Navigation;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Library.Database;
 using SobekCM.Library.HTML;
+using SobekCM.Library.HTML.Helpers;
 using SobekCM.Library.MainWriters;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
@@ -275,7 +276,7 @@ namespace SobekCM.Library.AdminViewer
             // Open the item nav form
             Write_ItemNavForm_Opening(Output);
 
-            Banner_Helper.Add_Banner(Output, "sbkAhs_BannerDiv", "System Administration", RequestSpecificValues.Current_Mode, RequestSpecificValues.HTML_Skin, RequestSpecificValues.Top_Collection);
+            Banner_HtmlHelper.Add_Banner(Output, "sbkAhs_BannerDiv", "System Administration", RequestSpecificValues.Current_Mode, RequestSpecificValues.HTML_Skin, RequestSpecificValues.Top_Collection);
 
             Output.WriteLine("<!-- IP_Restrictions_AdminViewer.Write_HTML -->");
 

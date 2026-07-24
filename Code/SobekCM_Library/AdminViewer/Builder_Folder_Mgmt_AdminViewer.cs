@@ -4,7 +4,7 @@ using SobekCM.Core.Client;
 using SobekCM.Core.Navigation;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Library.Database;
-using SobekCM.Library.HTML;
+using SobekCM.Library.HTML.Helpers;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
 using System;
@@ -275,7 +275,7 @@ namespace SobekCM.Library.AdminViewer
             Write_ItemNavForm_Opening(Output);
 
             // Add the banner
-            Banner_Helper.Add_Banner(Output, "sbkAhs_BannerDiv", "System Administration", RequestSpecificValues.Current_Mode, RequestSpecificValues.HTML_Skin, RequestSpecificValues.Top_Collection);
+            Banner_HtmlHelper.Add_Banner(Output, "sbkAhs_BannerDiv", "System Administration", RequestSpecificValues.Current_Mode, RequestSpecificValues.HTML_Skin, RequestSpecificValues.Top_Collection);
 
             // Add the javascript
             Output.WriteLine("<script src=\"" + Static_Resources_Gateway.Sobekcm_Admin_Js + "\" type=\"text/javascript\"></script>");

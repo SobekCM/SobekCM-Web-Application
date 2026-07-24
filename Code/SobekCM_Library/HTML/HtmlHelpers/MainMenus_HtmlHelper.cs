@@ -7,6 +7,7 @@ using SobekCM.Core.Search;
 using SobekCM.Core.UI_Configuration.Viewers;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Library.AggregationViewer;
+using SobekCM.Library.Localization;
 using SobekCM.Library.UI;
 using System;
 using System.Collections.Generic;
@@ -16,13 +17,13 @@ using System.Linq;
 
 #endregion
 
-namespace SobekCM.Library.HTML
+namespace SobekCM.Library.HTML.Helpers
 {
     /// <summary> Static class is used to write the main menus used for the aggregation 
     /// pages and the top-level pages which require a logon. </summary>
     /// <remarks> This is not used to write the item-level menus.  That is done
     /// directly in the <see cref="Item_HtmlSubwriter"/> class.</remarks>
-    public static class MainMenus_Helper_HtmlSubWriter
+    public static class MainMenus_HtmlHelper
     {
         /// <summary> Add the aggregation-level main menu </summary>
         /// <param name="Output"> Stream to which to write the HTML for this menu </param>
@@ -30,49 +31,28 @@ namespace SobekCM.Library.HTML
         /// <param name="Hierarchy_Object"> Aggregation object for which to show this aggregation main menu </param>
         public static void Add_Aggregation_Main_Menu(TextWriter Output, RequestCache RequestSpecificValues, Item_Aggregation Hierarchy_Object)
         {
+            Web_Language_Enum displayLanguage = RequestSpecificValues.Current_Mode.Language;
+
             Output.WriteLine("<!-- Add the main aggregation menu -->");
-            Output.WriteLine("<nav id=\"sbkAgm_MenuBar\" class=\"sbkMenu_Bar\" role=\"navigation\" aria-label=\"Aggregation menu\">");
-            Output.WriteLine("<h2 class=\"hidden-element\">Aggregation menu</h2>");
+            Output.WriteLine("<nav id=\"sbkAgm_MenuBar\" class=\"sbkMenu_Bar\" role=\"navigation\" aria-label=\"" + Localization_Gateway.MainMenus.Aggregation_Menu_Aria(displayLanguage) + "\">");
+            Output.WriteLine("<h2 class=\"hidden-element\">" + Localization_Gateway.MainMenus.Aggregation_Menu_Aria(displayLanguage) + "</h2>");
             Output.WriteLine("  <ul class=\"sf-menu\" id=\"sbkAgm_Menu\">");
 
             // Get ready to draw the tabs
-            string home = "Home";
-            string collection_home = UI_ApplicationCache_Gateway.Translation.Get_Translation(Hierarchy_Object.ShortName, RequestSpecificValues.Current_Mode.Language) + " Home";
-            string sobek_home_text = RequestSpecificValues.Current_Mode.Instance_Abbreviation + " Home";
-            string viewItems = "View Items";
-            string allItems = "View All Items";
-            string newItems = "View Recently Added Items";
-            string myCollections = "My Collections";
-            string partners = "Browse Partners";
-            string browseBy = "Browse By";
-            const string BROWSE_MAP = "Map Browse";
-            const string list_view_text = "List View";
-            const string brief_view_text = "Brief View";
-            const string tree_view_text = "Tree View";
-            const string partners_text = "Browse Partners";
-
-            if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.Spanish)
-            {
-                home = "INICIO";
-                collection_home = "INICIO " + UI_ApplicationCache_Gateway.Translation.Get_Translation(Hierarchy_Object.ShortName, RequestSpecificValues.Current_Mode.Language);
-                sobek_home_text = "INICIO " + RequestSpecificValues.Current_Mode.Instance_Abbreviation.ToUpper();
-                allItems = "TODOS LOS ARTÍCULOS";
-                newItems = "NUEVOS ARTÍCULOS";
-                browseBy = "BÚSQUEDA POR";
-                partners = "AFILIADOS";
-                myCollections = "MIS COLECCIONES";
-                viewItems = "VER ARTÍCULOS";
-            }
-
-            if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.French)
-            {
-                home = "PAGE D'ACCUEIL";
-                sobek_home_text = "PAGE D'ACCUEIL";
-                allItems = "TOUS LES ARTICLES";
-                newItems = "NOUVEAUX ARTICLES";
-                browseBy = "PARCOURIR PAR";
-                viewItems = "VOIR ARTICLES";
-            }
+            string home = Localization_Gateway.MainMenus.Home(displayLanguage);
+            string collection_home = String.Format(Localization_Gateway.MainMenus.Collection_Home_Format(displayLanguage), UI_ApplicationCache_Gateway.Translation.Get_Translation(Hierarchy_Object.ShortName, RequestSpecificValues.Current_Mode.Language));
+            string sobek_home_text = String.Format(Localization_Gateway.MainMenus.Sobek_Home_Format(displayLanguage), RequestSpecificValues.Current_Mode.Instance_Abbreviation);
+            string viewItems = Localization_Gateway.MainMenus.View_Items(displayLanguage);
+            string allItems = Localization_Gateway.MainMenus.View_All_Items(displayLanguage);
+            string newItems = Localization_Gateway.MainMenus.View_New_Items(displayLanguage);
+            string myCollections = Localization_Gateway.MainMenus.My_Collections(displayLanguage);
+            string partners = Localization_Gateway.MainMenus.Browse_Partners(displayLanguage);
+            string browseBy = Localization_Gateway.MainMenus.Browse_By(displayLanguage);
+            string BROWSE_MAP = Localization_Gateway.MainMenus.Map_Browse(displayLanguage);
+            string list_view_text = Localization_Gateway.MainMenus.List_View(displayLanguage);
+            string brief_view_text = Localization_Gateway.MainMenus.Brief_View(displayLanguage);
+            string tree_view_text = Localization_Gateway.MainMenus.Tree_View(displayLanguage);
+            string partners_text = Localization_Gateway.MainMenus.Browse_Partners(displayLanguage);
 
             // Save the current mode and browse
             Display_Mode_Enum thisMode = RequestSpecificValues.Current_Mode.Mode;
@@ -636,53 +616,31 @@ namespace SobekCM.Library.HTML
         /// <param name="Include_Bookshelf_View"> Flag indicates if the bookshelf view should be included in the list of possible views </param>
         public static void Add_Aggregation_Search_Results_Menu(TextWriter Output, RequestCache RequestSpecificValues, Item_Aggregation Hierarchy_Object, bool Include_Bookshelf_View)
         {
+            Web_Language_Enum displayLanguage = RequestSpecificValues.Current_Mode.Language;
+
             Output.WriteLine("<!-- Add the main search results menu -->");
-            Output.WriteLine("<nav id=\"sbkAgm_MenuBar\" class=\"sbkMenu_Bar\" role=\"navigation\" aria-label=\"Search results menu\">");
-            Output.WriteLine("<h2 class=\"hidden-element\">Search results menu</h2>");
+            Output.WriteLine("<nav id=\"sbkAgm_MenuBar\" class=\"sbkMenu_Bar\" role=\"navigation\" aria-label=\"" + Localization_Gateway.MainMenus.Search_Results_Menu_Aria(displayLanguage) + "\">");
+            Output.WriteLine("<h2 class=\"hidden-element\">" + Localization_Gateway.MainMenus.Search_Results_Menu_Aria(displayLanguage) + "</h2>");
 
             // Get ready to draw the tabs
-            string home = "Home";
-            string collection_home = UI_ApplicationCache_Gateway.Translation.Get_Translation(Hierarchy_Object.ShortName, RequestSpecificValues.Current_Mode.Language) + " Home";
-            string sobek_home_text = RequestSpecificValues.Current_Mode.Instance_Abbreviation + " Home";
-            string myCollections = "My Collections";
-            string otherSearches_text = "Search Options";
-            const string list_view_text = "List View";
-            const string brief_view_text = "Brief View";
-            const string tree_view_text = "Tree View";
-            const string partners_text = "Browse Partners";
-
-            if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.Spanish)
-            {
-                home = "INICIO";
-                collection_home = "INICIO " + UI_ApplicationCache_Gateway.Translation.Get_Translation(Hierarchy_Object.ShortName, RequestSpecificValues.Current_Mode.Language);
-                sobek_home_text = "INICIO " + RequestSpecificValues.Current_Mode.Instance_Abbreviation.ToUpper();
-                myCollections = "MIS COLECCIONES";
-                //bookshelf_view = "VISTA BIBLIOTECA";
-                //map_view = "VISTA MAPA";
-                //brief_view = "VISTA BREVE";
-                //table_view = "VISTA TABLERA";
-                //thumbnail_view = "VISTA MINIATURA";
-            }
-
-            if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.French)
-            {
-                home = "PAGE D'ACCUEIL";
-                sobek_home_text = "PAGE D'ACCUEIL";
-                //bookshelf_view = "MODE MA BIBLIOTHEQUE";
-                //map_view = "MODE CARTE";
-                //brief_view = "MODE SIMPLE";
-                //table_view = "MODE DE TABLE";
-                //thumbnail_view = "MODE IMAGETTE";
-            }
+            string home = Localization_Gateway.MainMenus.Home(displayLanguage);
+            string collection_home = String.Format(Localization_Gateway.MainMenus.Collection_Home_Format(displayLanguage), UI_ApplicationCache_Gateway.Translation.Get_Translation(Hierarchy_Object.ShortName, RequestSpecificValues.Current_Mode.Language));
+            string sobek_home_text = String.Format(Localization_Gateway.MainMenus.Sobek_Home_Format(displayLanguage), RequestSpecificValues.Current_Mode.Instance_Abbreviation);
+            string myCollections = Localization_Gateway.MainMenus.My_Collections(displayLanguage);
+            string otherSearches_text = Localization_Gateway.MainMenus.Other_Searches(displayLanguage);
+            string list_view_text = Localization_Gateway.MainMenus.List_View(displayLanguage);
+            string brief_view_text = Localization_Gateway.MainMenus.Brief_View(displayLanguage);
+            string tree_view_text = Localization_Gateway.MainMenus.Tree_View(displayLanguage);
+            string partners_text = Localization_Gateway.MainMenus.Browse_Partners(displayLanguage);
 
             // Add the sharing buttons if this is not restricted by IP address or checked out
             if (!RequestSpecificValues.Current_Mode.Is_Robot)
             {
                 Output.WriteLine("  <div id=\"menu-right-actions\">");
 
-                string save_text = "Save";
-                string send_text = "Send";
-                string print_text = "Print";
+                string save_text = Localization_Gateway.MainMenus.Save_Action(displayLanguage);
+                string send_text = Localization_Gateway.MainMenus.Send_Action(displayLanguage);
+                string print_text = Localization_Gateway.MainMenus.Print_Action(displayLanguage);
 
                 Output.WriteLine("    <span id=\"printbutton\" class=\"action-sf-menu-item\" onclick=\"window.print();return false;\"><img src=\"" + Static_Resources_Gateway.Printer_Png + "\" alt=\"\" style=\"vertical-align:middle\" /><span id=\"printbuttonspan\">" + print_text + "</span></span>");
 
@@ -711,7 +669,7 @@ namespace SobekCM.Library.HTML
                         Output.WriteLine("    <span id=\"savebutton\" class=\"action-sf-menu-item\" onclick=\"window.location='" + logOnUrl + "';\"><img src=\"" + Static_Resources_Gateway.Plussign_Png + "\" alt=\"\" style=\"vertical-align:middle\" /><span id=\"addbuttonspan\">" + save_text + "</span></span>");
                     }
 
-                    Output.WriteLine("    <span id=\"sharebutton\" class=\"action-sf-menu-item\" onclick=\"return toggle_share_form2('share_button');\"><span id=\"sharebuttonspan\">Share</span></span>");
+                    Output.WriteLine("    <span id=\"sharebutton\" class=\"action-sf-menu-item\" onclick=\"return toggle_share_form2('share_button');\"><span id=\"sharebuttonspan\">" + Localization_Gateway.MainMenus.Share_Action(displayLanguage) + "</span></span>");
                 }
                 Output.WriteLine("  </div>");
                 Output.WriteLine();
@@ -1019,10 +977,12 @@ namespace SobekCM.Library.HTML
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
         public static void Add_UserSpecific_Main_Menu(TextWriter Output, RequestCache RequestSpecificValues)
         {
+            Web_Language_Enum displayLanguage = RequestSpecificValues.Current_Mode.Language;
+
             // Add the item views
             Output.WriteLine("<!-- Add the main user-specific menu -->");
-            Output.WriteLine("<nav id=\"sbkUsm_MenuBar\" class=\"sbkMenu_Bar\" role=\"navigation\" aria-label=\"User menu\">");
-            Output.WriteLine("<h2 class=\"hidden-element\">User menu</h2>");
+            Output.WriteLine("<nav id=\"sbkUsm_MenuBar\" class=\"sbkMenu_Bar\" role=\"navigation\" aria-label=\"" + Localization_Gateway.MainMenus.User_Menu_Aria(displayLanguage) + "\">");
+            Output.WriteLine("<h2 class=\"hidden-element\">" + Localization_Gateway.MainMenus.User_Menu_Aria(displayLanguage) + "</h2>");
             Output.WriteLine("  <ul class=\"sf-menu\">");
 
             // Save the current view information type
@@ -1038,45 +998,29 @@ namespace SobekCM.Library.HTML
             RequestSpecificValues.Current_Mode.Aggregation = String.Empty;
 
             // Get ready to draw the tabs
-            string sobek_home_text = RequestSpecificValues.Current_Mode.Instance_Abbreviation + " Home";
-            const string myCollections = "My Collections";
-            string my_sobek_home_text = "<span style=\"text-transform:lowercase\">my</span>" + RequestSpecificValues.Current_Mode.Instance_Abbreviation + " Home";
-            const string myLibrary = "My Library";
-            const string myPreferences = "My Account";
-            const string internal_text = "Internal";
-            string sobek_admin_text = "System Admin";
+            string sobek_home_text = String.Format(Localization_Gateway.MainMenus.Sobek_Home_Format(displayLanguage), RequestSpecificValues.Current_Mode.Instance_Abbreviation);
+            string myCollections = Localization_Gateway.MainMenus.My_Collections(displayLanguage);
+            string my_sobek_home_text = String.Format(Localization_Gateway.MainMenus.My_Sobek_Home_Format(displayLanguage), RequestSpecificValues.Current_Mode.Instance_Abbreviation);
+            string myLibrary = Localization_Gateway.MainMenus.My_Library(displayLanguage);
+            string myPreferences = Localization_Gateway.MainMenus.My_Account(displayLanguage);
+            string internal_text = Localization_Gateway.MainMenus.Internal(displayLanguage);
+            string sobek_admin_text = Localization_Gateway.MainMenus.System_Admin(displayLanguage);
             if ((RequestSpecificValues.Current_User != null) && (RequestSpecificValues.Current_User.Is_Portal_Admin) && (!RequestSpecificValues.Current_User.Is_System_Admin))
-                sobek_admin_text = "Portal Admin";
+                sobek_admin_text = Localization_Gateway.MainMenus.Portal_Admin(displayLanguage);
             if ((RequestSpecificValues.Current_User != null) && (RequestSpecificValues.Current_User.Is_User_Admin) && (!RequestSpecificValues.Current_User.Is_Portal_Admin) && (!RequestSpecificValues.Current_User.Is_System_Admin))
-                sobek_admin_text = "User Admin";
-            const string list_view_text = "List View";
-            const string brief_view_text = "Brief View";
-            const string tree_view_text = "Tree View";
-            const string partners_text = "Browse Partners";
-            const string advanced_search_text = "Advanced Search";
+                sobek_admin_text = Localization_Gateway.MainMenus.User_Admin(displayLanguage);
+            string list_view_text = Localization_Gateway.MainMenus.List_View(displayLanguage);
+            string brief_view_text = Localization_Gateway.MainMenus.Brief_View(displayLanguage);
+            string tree_view_text = Localization_Gateway.MainMenus.Tree_View(displayLanguage);
+            string partners_text = Localization_Gateway.MainMenus.Browse_Partners(displayLanguage);
+            string advanced_search_text = Localization_Gateway.MainMenus.Advanced_Search(displayLanguage);
 
-            string collection_details_text = "Collection List";
-            string collection_tree_text = "Collection Hierarchy";
-            string new_items_text = "New Items";
-            string memory_mgmt_text = "Memory Management";
-            string wordmarks_text = "Wordmarks";
-            string build_failures_text = "Build Failures";
-
-            if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.Spanish)
-            {
-                //title = "INICIO";
-                collection_details_text = "DETALLES DE LA COLECCIÓN";
-                new_items_text = "NUEVOS ARTÍCULOS";
-                memory_mgmt_text = "MEMORIA";
-            }
-
-            if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.French)
-            {
-                //title = "PAGE D'ACCUEIL";
-                collection_details_text = "DETAILS DE LA COLLECTION";
-                new_items_text = "LES NOUVEAUX DOCUMENTS";
-                memory_mgmt_text = "MÉMOIRE";
-            }
+            string collection_details_text = Localization_Gateway.MainMenus.Collection_List(displayLanguage);
+            string collection_tree_text = Localization_Gateway.MainMenus.Collection_Hierarchy(displayLanguage);
+            string new_items_text = Localization_Gateway.MainMenus.New_Items(displayLanguage);
+            string memory_mgmt_text = Localization_Gateway.MainMenus.Memory_Management(displayLanguage);
+            string wordmarks_text = Localization_Gateway.MainMenus.Wordmarks(displayLanguage);
+            string build_failures_text = Localization_Gateway.MainMenus.Build_Failures(displayLanguage);
 
             // Add the 'SOBEK HOME' first menu option and suboptions
             RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Aggregation;
@@ -1126,7 +1070,7 @@ namespace SobekCM.Library.HTML
                 {
                     RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.New_Item;
                     RequestSpecificValues.Current_Mode.My_Sobek_SubMode = "1";
-                    Output.WriteLine("      <li id=\"sbkUsm_MyStartNew\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.New_Item_Img_Small + "\" /> <div class=\"sbkUsm_TextWithImage\">Start a new item</div></a></li>");
+                    Output.WriteLine("      <li id=\"sbkUsm_MyStartNew\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.New_Item_Img_Small + "\" /> <div class=\"sbkUsm_TextWithImage\">" + Localization_Gateway.MainMenus.Start_New_Item(displayLanguage) + "</div></a></li>");
                 }
 
                 // If the user has already submitted stuff, add a link to all submitted items
@@ -1135,7 +1079,7 @@ namespace SobekCM.Library.HTML
                     RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Folder_Management;
                     RequestSpecificValues.Current_Mode.Result_Display_Type = "brief";
                     RequestSpecificValues.Current_Mode.My_Sobek_SubMode = "Submitted Items";
-                    Output.WriteLine("      <li id=\"sbkUsm_MySubmittedItems\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.Submitted_Items_Gif + "\" /> <div class=\"sbkUsm_TextWithImage\">View my submitted items</div></a></li>");
+                    Output.WriteLine("      <li id=\"sbkUsm_MySubmittedItems\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.Submitted_Items_Gif + "\" /> <div class=\"sbkUsm_TextWithImage\">" + Localization_Gateway.MainMenus.View_Submitted_Items(displayLanguage) + "</div></a></li>");
                 }
 
                 // If this user is linked to item statistics, add that link as well
@@ -1144,7 +1088,7 @@ namespace SobekCM.Library.HTML
                     // Add link to folder management
                     RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.User_Usage_Stats;
                     RequestSpecificValues.Current_Mode.My_Sobek_SubMode = String.Empty;
-                    Output.WriteLine("      <li id=\"sbkUsm_MyItemStats\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.Usage_Img + "\" /> <div class=\"sbkUsm_TextWithImage\">View usage for my items</div></a></li>");
+                    Output.WriteLine("      <li id=\"sbkUsm_MyItemStats\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.Usage_Img + "\" /> <div class=\"sbkUsm_TextWithImage\">" + Localization_Gateway.MainMenus.View_Item_Usage(displayLanguage) + "</div></a></li>");
                 }
 
                 // If the user has submitted some descriptive tags, or has the kind of rights that let them
@@ -1154,26 +1098,26 @@ namespace SobekCM.Library.HTML
                     // Add link to folder management
                     RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.User_Tags;
                     RequestSpecificValues.Current_Mode.My_Sobek_SubMode = String.Empty;
-                    Output.WriteLine("      <li id=\"sbkUsm_MyTags\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.Chat_Png + "\" /> <div class=\"sbkUsm_TextWithImage\">View my descriptive tags</div></a></li>");
+                    Output.WriteLine("      <li id=\"sbkUsm_MyTags\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.Chat_Png + "\" /> <div class=\"sbkUsm_TextWithImage\">" + Localization_Gateway.MainMenus.View_Descriptive_Tags(displayLanguage) + "</div></a></li>");
                 }
 
                 // Add link to folder management
                 RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Folder_Management;
                 RequestSpecificValues.Current_Mode.My_Sobek_SubMode = String.Empty;
                 RequestSpecificValues.Current_Mode.Result_Display_Type = "bookshelf";
-                Output.WriteLine("      <li id=\"sbkUsm_MyBookshelf\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.Bookshelf_Img + "\" /> <div class=\"sbkUsm_TextWithImage\">View my bookshelves</div></a></li>");
+                Output.WriteLine("      <li id=\"sbkUsm_MyBookshelf\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.Bookshelf_Img + "\" /> <div class=\"sbkUsm_TextWithImage\">" + Localization_Gateway.MainMenus.View_Bookshelves(displayLanguage) + "</div></a></li>");
 
                 // Add a link to view all saved searches
                 RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Saved_Searches;
-                Output.WriteLine("      <li id=\"sbkUsm_MySearches\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.Saved_Searches_Img + "\" /> <div class=\"sbkUsm_TextWithImage\">View my saved searches</div></a></li>");
+                Output.WriteLine("      <li id=\"sbkUsm_MySearches\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.Saved_Searches_Img + "\" /> <div class=\"sbkUsm_TextWithImage\">" + Localization_Gateway.MainMenus.View_Saved_Searches(displayLanguage) + "</div></a></li>");
 
                 // Add a link to edit your preferences
                 RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Preferences;
-                Output.WriteLine("      <li id=\"sbkUsm_MyAccount\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.Settings_Img + "\" /> <div class=\"sbkUsm_TextWithImage\">Account preferences</div></a></li>");
+                Output.WriteLine("      <li id=\"sbkUsm_MyAccount\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.Settings_Img + "\" /> <div class=\"sbkUsm_TextWithImage\">" + Localization_Gateway.MainMenus.Account_Preferences(displayLanguage) + "</div></a></li>");
 
                 // Add a log out link
                 RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Log_Out;
-                Output.WriteLine("      <li id=\"sbkUsm_MyLogOut\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.Exit_Gif + "\" /> <div class=\"sbkUsm_TextWithImage\">Log Out</div></a></li>");
+                Output.WriteLine("      <li id=\"sbkUsm_MyLogOut\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.Exit_Gif + "\" /> <div class=\"sbkUsm_TextWithImage\">" + Localization_Gateway.MainMenus.Log_Out(displayLanguage) + "</div></a></li>");
 
                 Output.WriteLine("    </ul></li>");
 
@@ -1237,119 +1181,119 @@ namespace SobekCM.Library.HTML
                     Output.WriteLine("    <li id=\"sbkUsm_Admin\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + sobek_admin_text + "</a><ul id=\"sbkUsm_AdminSubMenu\">");
 
                     // Common tasks menu
-                    Output.WriteLine("      <li id=\"sbkUsm_AdminCommonTasks\"><a href=\"" + current_url + "#common\"> <div class=\"sbkUsm_TextWithImage\">Common Tasks</div></a><ul>");
+                    Output.WriteLine("      <li id=\"sbkUsm_AdminCommonTasks\"><a href=\"" + current_url + "#common\"> <div class=\"sbkUsm_TextWithImage\">" + Localization_Gateway.MainMenus.Common_Tasks(displayLanguage) + "</div></a><ul>");
 
                     RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Add_Collection_Wizard;
-                    Output.WriteLine("        <li id=\"sbkUsm_AdminAggrWizard\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.Wizard_Img + "\" /> <div class=\"sbkUsm_TextWithImage\">Add Collection Wizard</div></a></li>");
+                    Output.WriteLine("        <li id=\"sbkUsm_AdminAggrWizard\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.Wizard_Img + "\" /> <div class=\"sbkUsm_TextWithImage\">" + Localization_Gateway.MainMenus.Add_Collection_Wizard(displayLanguage) + "</div></a></li>");
 
                     RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Skins_Single;
                     RequestSpecificValues.Current_Mode.My_Sobek_SubMode = RequestSpecificValues.Current_Mode.Skin;
-                    Output.WriteLine("        <li id=\"sbkUsm_AdminCurrSkin\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.Skins_Img_Small + "\" /> <div class=\"sbkUsm_TextWithImage\">Edit Current Web Skin</div></a></li>");
+                    Output.WriteLine("        <li id=\"sbkUsm_AdminCurrSkin\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.Skins_Img_Small + "\" /> <div class=\"sbkUsm_TextWithImage\">" + Localization_Gateway.MainMenus.Edit_Current_Web_Skin(displayLanguage) + "</div></a></li>");
                     RequestSpecificValues.Current_Mode.My_Sobek_SubMode = String.Empty;
 
                     if (RequestSpecificValues.Current_User.Is_System_Admin)
                     {
                         // Edit users
                         RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Users;
-                        Output.WriteLine("        <li id=\"sbkUsm_AdminUsers\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.Users_Img_Small + "\" /> <div class=\"sbkUsm_TextWithImage\">Users and Groups</div></a></li>");
+                        Output.WriteLine("        <li id=\"sbkUsm_AdminUsers\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.Users_Img_Small + "\" /> <div class=\"sbkUsm_TextWithImage\">" + Localization_Gateway.MainMenus.Users_And_Groups(displayLanguage) + "</div></a></li>");
                     }
 
                     Output.WriteLine("      </ul></li>");
 
                     // Appearance submenu
-                    Output.WriteLine("      <li id=\"sbkUsm_AdminAppearance\"><a href=\"" + current_url + "#appearance\"> <div class=\"sbkUsm_TextWithImage\">Appearance</div></a><ul>");
+                    Output.WriteLine("      <li id=\"sbkUsm_AdminAppearance\"><a href=\"" + current_url + "#appearance\"> <div class=\"sbkUsm_TextWithImage\">" + Localization_Gateway.MainMenus.Appearance(displayLanguage) + "</div></a><ul>");
 
                     RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Skins_Single;
                     RequestSpecificValues.Current_Mode.My_Sobek_SubMode = RequestSpecificValues.Current_Mode.Skin;
-                    Output.WriteLine("        <li id=\"sbkUsm_AdminCurrSkin\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.Skins_Img_Small + "\" /> <div class=\"sbkUsm_TextWithImage\">Edit Current Web Skin</div></a></li>");
+                    Output.WriteLine("        <li id=\"sbkUsm_AdminCurrSkin\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.Skins_Img_Small + "\" /> <div class=\"sbkUsm_TextWithImage\">" + Localization_Gateway.MainMenus.Edit_Current_Web_Skin(displayLanguage) + "</div></a></li>");
                     RequestSpecificValues.Current_Mode.My_Sobek_SubMode = String.Empty;
 
                     // Edit URL Portals
                     RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.URL_Portals;
-                    Output.WriteLine("        <li id=\"sbkUsm_AdminPortals\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.Portals_Img_Small + "\" /> <div class=\"sbkUsm_TextWithImage\">URL Portals</div></a></li>");
+                    Output.WriteLine("        <li id=\"sbkUsm_AdminPortals\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.Portals_Img_Small + "\" /> <div class=\"sbkUsm_TextWithImage\">" + Localization_Gateway.MainMenus.Url_Portals(displayLanguage) + "</div></a></li>");
 
                     // Edit interfaces
                     RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Skins_Mgmt;
-                    Output.WriteLine("        <li id=\"sbkUsm_AdminSkin\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.Skins_Img_Small + "\" /> <div class=\"sbkUsm_TextWithImage\">Web Skins</div></a></li>");
+                    Output.WriteLine("        <li id=\"sbkUsm_AdminSkin\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.Skins_Img_Small + "\" /> <div class=\"sbkUsm_TextWithImage\">" + Localization_Gateway.MainMenus.Web_Skins(displayLanguage) + "</div></a></li>");
 
                     Output.WriteLine("      </ul></li>");
 
                     // Collections submenu
-                    Output.WriteLine("      <li id=\"sbkUsm_AdminCollections\"><a href=\"" + current_url + "#collections\"> <div class=\"sbkUsm_TextWithImage\">Collections</div></a><ul>");
+                    Output.WriteLine("      <li id=\"sbkUsm_AdminCollections\"><a href=\"" + current_url + "#collections\"> <div class=\"sbkUsm_TextWithImage\">" + Localization_Gateway.MainMenus.Collections(displayLanguage) + "</div></a><ul>");
 
 
                     RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Add_Collection_Wizard;
-                    Output.WriteLine("        <li id=\"sbkUsm_AdminAggrWizard\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.Wizard_Img + "\" /> <div class=\"sbkUsm_TextWithImage\">Add Collection Wizard</div></a></li>");
+                    Output.WriteLine("        <li id=\"sbkUsm_AdminAggrWizard\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.Wizard_Img + "\" /> <div class=\"sbkUsm_TextWithImage\">" + Localization_Gateway.MainMenus.Add_Collection_Wizard(displayLanguage) + "</div></a></li>");
 
                     // Edit forwarding
                     RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Aliases;
-                    Output.WriteLine("        <li id=\"sbkUsm_AdminForwarding\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.Aliases_Img_Small + "\" /> <div class=\"sbkUsm_TextWithImage\">Aggregation Aliases</div></a></li>");
+                    Output.WriteLine("        <li id=\"sbkUsm_AdminForwarding\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.Aliases_Img_Small + "\" /> <div class=\"sbkUsm_TextWithImage\">" + Localization_Gateway.MainMenus.Aggregation_Aliases(displayLanguage) + "</div></a></li>");
 
                     // Edit item aggregationPermissions
                     RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Aggregations_Mgmt;
-                    Output.WriteLine("        <li id=\"sbkUsm_AdminAggr\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.Aggregations_Img + "\" /> <div class=\"sbkUsm_TextWithImage\">Aggregation Management</div></a></li>");
+                    Output.WriteLine("        <li id=\"sbkUsm_AdminAggr\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.Aggregations_Img + "\" /> <div class=\"sbkUsm_TextWithImage\">" + Localization_Gateway.MainMenus.Aggregation_Management(displayLanguage) + "</div></a></li>");
 
                     // Edit Thematic Headings
                     RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Thematic_Headings;
-                    Output.WriteLine("        <li id=\"sbkUsm_AdminThematic\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.Thematic_Heading_Img_Small + "\" /> <div class=\"sbkUsm_TextWithImage\">Thematic Headings</div></a></li>");
+                    Output.WriteLine("        <li id=\"sbkUsm_AdminThematic\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.Thematic_Heading_Img_Small + "\" /> <div class=\"sbkUsm_TextWithImage\">" + Localization_Gateway.MainMenus.Thematic_Headings(displayLanguage) + "</div></a></li>");
 
 
                     Output.WriteLine("      </ul></li>");
 
                     // Items submenu
-                    Output.WriteLine("      <li id=\"sbkUsm_AdminItems\"><a href=\"" + current_url + "#items\"> <div class=\"sbkUsm_TextWithImage\">Items</div></a><ul>");
+                    Output.WriteLine("      <li id=\"sbkUsm_AdminItems\"><a href=\"" + current_url + "#items\"> <div class=\"sbkUsm_TextWithImage\">" + Localization_Gateway.MainMenus.Items(displayLanguage) + "</div></a><ul>");
 
                     // Edit Default_Metadata
                     RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Default_Metadata;
-                    Output.WriteLine("        <li id=\"sbkUsm_AdminProjects\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.Pmets_Img + "\" /> <div class=\"sbkUsm_TextWithImage\">Default Metadata</div></a></li>");
+                    Output.WriteLine("        <li id=\"sbkUsm_AdminProjects\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.Pmets_Img + "\" /> <div class=\"sbkUsm_TextWithImage\">" + Localization_Gateway.MainMenus.Default_Metadata(displayLanguage) + "</div></a></li>");
 
                     // Edit wordmarks
                     RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Wordmarks;
-                    Output.WriteLine("        <li id=\"sbkUsm_AdminWordmarks\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.Wordmarks_Img_Small + "\" /> <div class=\"sbkUsm_TextWithImage\">Wordmarks / Icons</div></a></li>");
+                    Output.WriteLine("        <li id=\"sbkUsm_AdminWordmarks\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.Wordmarks_Img_Small + "\" /> <div class=\"sbkUsm_TextWithImage\">" + Localization_Gateway.MainMenus.Wordmarks_Icons(displayLanguage) + "</div></a></li>");
 
                     // View and set SobekCM Builder Status
                     RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Builder_Status;
-                    Output.WriteLine("        <li id=\"sbkUsm_AdminStatus\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.Gears_Img_Small + "\" /> <div class=\"sbkUsm_TextWithImage\">Builder Status</div></a></li>");
+                    Output.WriteLine("        <li id=\"sbkUsm_AdminStatus\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.Gears_Img_Small + "\" /> <div class=\"sbkUsm_TextWithImage\">" + Localization_Gateway.MainMenus.Builder_Status(displayLanguage) + "</div></a></li>");
 
                     Output.WriteLine("      </ul></li>");
 
                     // Settings submenu
-                    Output.WriteLine("      <li id=\"sbkUsm_AdminSettings\"><a href=\"" + current_url + "#settings\"> <div class=\"sbkUsm_TextWithImage\">Settings</div></a><ul>");
+                    Output.WriteLine("      <li id=\"sbkUsm_AdminSettings\"><a href=\"" + current_url + "#settings\"> <div class=\"sbkUsm_TextWithImage\">" + Localization_Gateway.MainMenus.Settings(displayLanguage) + "</div></a><ul>");
 
 
 
                     // Edit IP Restrictions
                     RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.IP_Restrictions;
-                    Output.WriteLine("        <li id=\"sbkUsm_AdminRestrictions\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.Firewall_Img_Small + "\" /> <div class=\"sbkUsm_TextWithImage\">IP Restriction Ranges</div></a></li>");
+                    Output.WriteLine("        <li id=\"sbkUsm_AdminRestrictions\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.Firewall_Img_Small + "\" /> <div class=\"sbkUsm_TextWithImage\">" + Localization_Gateway.MainMenus.Ip_Restriction_Ranges(displayLanguage) + "</div></a></li>");
 
                     // Edit Settings
                     RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Settings;
-                    Output.WriteLine("        <li id=\"sbkUsm_AdminSettings\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.Settings_Img_Small + "\" /> <div class=\"sbkUsm_TextWithImage\">System-Wide Settings</div></a></li>");
+                    Output.WriteLine("        <li id=\"sbkUsm_AdminSettings\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.Settings_Img_Small + "\" /> <div class=\"sbkUsm_TextWithImage\">" + Localization_Gateway.MainMenus.System_Wide_Settings(displayLanguage) + "</div></a></li>");
 
 
                     // Reset cache
                     RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Reset;
-                    Output.WriteLine("        <li id=\"sbkUsm_AdminReset\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.Refresh_Img_Small + "\" /> <div class=\"sbkUsm_TextWithImage\">Reset Cache</div></a></li>");
+                    Output.WriteLine("        <li id=\"sbkUsm_AdminReset\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.Refresh_Img_Small + "\" /> <div class=\"sbkUsm_TextWithImage\">" + Localization_Gateway.MainMenus.Reset_Cache(displayLanguage) + "</div></a></li>");
 
                     Output.WriteLine("      </ul></li>");
 
                     // Permissions submenu
-                    Output.WriteLine("      <li id=\"sbkUsm_AdminPermissions\"><a href=\"" + current_url + "#permissions\"> <div class=\"sbkUsm_TextWithImage\">Users & Permissions</div></a><ul>");
+                    Output.WriteLine("      <li id=\"sbkUsm_AdminPermissions\"><a href=\"" + current_url + "#permissions\"> <div class=\"sbkUsm_TextWithImage\">" + Localization_Gateway.MainMenus.Users_And_Permissions(displayLanguage) + "</div></a><ul>");
 
                     // Edit users
                     RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.User_Permissions_Reports;
-                    Output.WriteLine("        <li id=\"sbkUsm_AdminUserReport\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.User_Permission_Img + "\" /> <div class=\"sbkUsm_TextWithImage\">User Permissions Reports</div></a></li>");
+                    Output.WriteLine("        <li id=\"sbkUsm_AdminUserReport\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.User_Permission_Img + "\" /> <div class=\"sbkUsm_TextWithImage\">" + Localization_Gateway.MainMenus.User_Permissions_Reports(displayLanguage) + "</div></a></li>");
 
                     // Edit users
                     if (RequestSpecificValues.Current_User.Is_System_Admin)
                     {
                         // Edit users
                         RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Users;
-                        Output.WriteLine("        <li id=\"sbkUsm_AdminUsers\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.Users_Img_Small + "\" /> <div class=\"sbkUsm_TextWithImage\">Users and Groups</div></a></li>");
+                        Output.WriteLine("        <li id=\"sbkUsm_AdminUsers\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.Users_Img_Small + "\" /> <div class=\"sbkUsm_TextWithImage\">" + Localization_Gateway.MainMenus.Users_And_Groups(displayLanguage) + "</div></a></li>");
 
                         // View user requests
                         RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.User_Requests;
-                        Output.WriteLine("        <li id=\"sbkUsm_AdminUserRequests\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.Users_Img_Small + "\" /> <div class=\"sbkUsm_TextWithImage\">Users Requests</div></a></li>");
+                        Output.WriteLine("        <li id=\"sbkUsm_AdminUserRequests\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.Users_Img_Small + "\" /> <div class=\"sbkUsm_TextWithImage\">" + Localization_Gateway.MainMenus.Users_Requests(displayLanguage) + "</div></a></li>");
 
                     }
 
@@ -1357,19 +1301,19 @@ namespace SobekCM.Library.HTML
 
 
                     // Web content pages
-                    Output.WriteLine("      <li id=\"sbkUsm_WebContentMenu\"><a href=\"" + current_url + "#webcontent\"> <div class=\"sbkUsm_TextWithImage\">Web Content Pages</div></a><ul>");
+                    Output.WriteLine("      <li id=\"sbkUsm_WebContentMenu\"><a href=\"" + current_url + "#webcontent\"> <div class=\"sbkUsm_TextWithImage\">" + Localization_Gateway.MainMenus.Web_Content_Pages(displayLanguage) + "</div></a><ul>");
 
                     // Manage web content pages
                     RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.WebContent_Mgmt;
-                    Output.WriteLine("        <li id=\"sbkUsm_WebContentPages\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.WebContent_Img_Small + "\" /> <div class=\"sbkUsm_TextWithImage\">Manage Web Content Pages</div></a></li>");
+                    Output.WriteLine("        <li id=\"sbkUsm_WebContentPages\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.WebContent_Img_Small + "\" /> <div class=\"sbkUsm_TextWithImage\">" + Localization_Gateway.MainMenus.Manage_Web_Content_Pages(displayLanguage) + "</div></a></li>");
 
                     // Manage web content pages
                     RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.WebContent_History;
-                    Output.WriteLine("        <li id=\"sbkUsm_WebContentHistory\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.WebContent_History_Img_Small + "\" /> <div class=\"sbkUsm_TextWithImage\">Web Content Recent Updates</div></a></li>");
+                    Output.WriteLine("        <li id=\"sbkUsm_WebContentHistory\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.WebContent_History_Img_Small + "\" /> <div class=\"sbkUsm_TextWithImage\">" + Localization_Gateway.MainMenus.Web_Content_Recent_Updates(displayLanguage) + "</div></a></li>");
 
                     // Manage web content pages
                     RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.WebContent_Usage;
-                    Output.WriteLine("        <li id=\"sbkUsm_WebContentUsage\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.WebContent_Usage_Img_Small + "\" /> <div class=\"sbkUsm_TextWithImage\">Web Content Usage Reports</div></a></li>");
+                    Output.WriteLine("        <li id=\"sbkUsm_WebContentUsage\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.WebContent_Usage_Img_Small + "\" /> <div class=\"sbkUsm_TextWithImage\">" + Localization_Gateway.MainMenus.Web_Content_Usage_Reports(displayLanguage) + "</div></a></li>");
 
                     Output.WriteLine("      </ul></li>");
 
@@ -1380,11 +1324,11 @@ namespace SobekCM.Library.HTML
                         (UI_ApplicationCache_Gateway.Configuration.Extensions.Get_Extension("TEI").Enabled))
                     {
                         // Web content pages
-                        Output.WriteLine("      <li id=\"sbkUsm_ExtensionsMenu\"><a href=\"" + current_url + "#extensions\"> <div class=\"sbkUsm_TextWithImage\">Extensions</div></a><ul>");
+                        Output.WriteLine("      <li id=\"sbkUsm_ExtensionsMenu\"><a href=\"" + current_url + "#extensions\"> <div class=\"sbkUsm_TextWithImage\">" + Localization_Gateway.MainMenus.Extensions(displayLanguage) + "</div></a><ul>");
 
                         // Manage the TEI plug-in
                         RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.TEI;
-                        Output.WriteLine("        <li id=\"sbkUsm_ExtensionsMenu1\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.Settings_Img_Small + "\" /> <div class=\"sbkUsm_TextWithImage\">Manage TEI plug-in</div></a></li>");
+                        Output.WriteLine("        <li id=\"sbkUsm_ExtensionsMenu1\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.Settings_Img_Small + "\" /> <div class=\"sbkUsm_TextWithImage\">" + Localization_Gateway.MainMenus.Manage_Tei_Plugin(displayLanguage) + "</div></a></li>");
 
                         Output.WriteLine("      </ul></li>");
                     }
@@ -1401,28 +1345,28 @@ namespace SobekCM.Library.HTML
                     Output.WriteLine("    <li id=\"sbkUsm_Admin\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + sobek_admin_text + "</a><ul id=\"sbkUsm_AdminSubMenu\">");
 
                     // Common tasks menu
-                    Output.WriteLine("      <li id=\"sbkUsm_AdminCommonTasks\"><a href=\"" + current_url + "#common\"> <div class=\"sbkUsm_TextWithImage\">Common Tasks</div></a><ul>");
+                    Output.WriteLine("      <li id=\"sbkUsm_AdminCommonTasks\"><a href=\"" + current_url + "#common\"> <div class=\"sbkUsm_TextWithImage\">" + Localization_Gateway.MainMenus.Common_Tasks(displayLanguage) + "</div></a><ul>");
 
                     // Edit users
                     RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Users;
-                    Output.WriteLine("        <li id=\"sbkUsm_AdminUsers\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.Users_Img_Small + "\" /> <div class=\"sbkUsm_TextWithImage\">Users and Groups</div></a></li>");
+                    Output.WriteLine("        <li id=\"sbkUsm_AdminUsers\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.Users_Img_Small + "\" /> <div class=\"sbkUsm_TextWithImage\">" + Localization_Gateway.MainMenus.Users_And_Groups(displayLanguage) + "</div></a></li>");
 
                     Output.WriteLine("      </ul></li>");
 
                     // Permissions submenu
-                    Output.WriteLine("      <li id=\"sbkUsm_AdminPermissions\"><a href=\"" + current_url + "#permissions\"> <div class=\"sbkUsm_TextWithImage\">Users & Permissions</div></a><ul>");
+                    Output.WriteLine("      <li id=\"sbkUsm_AdminPermissions\"><a href=\"" + current_url + "#permissions\"> <div class=\"sbkUsm_TextWithImage\">" + Localization_Gateway.MainMenus.Users_And_Permissions(displayLanguage) + "</div></a><ul>");
 
                     // Edit users
                     RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.User_Permissions_Reports;
-                    Output.WriteLine("        <li id=\"sbkUsm_AdminUserReport\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.User_Permission_Img + "\" /> <div class=\"sbkUsm_TextWithImage\">User Permissions Reports</div></a></li>");
+                    Output.WriteLine("        <li id=\"sbkUsm_AdminUserReport\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.User_Permission_Img + "\" /> <div class=\"sbkUsm_TextWithImage\">" + Localization_Gateway.MainMenus.User_Permissions_Reports(displayLanguage) + "</div></a></li>");
 
                     // Edit users
                     RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Users;
-                    Output.WriteLine("        <li id=\"sbkUsm_AdminUsers\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.Users_Img_Small + "\" /> <div class=\"sbkUsm_TextWithImage\">Users and Groups</div></a></li>");
+                    Output.WriteLine("        <li id=\"sbkUsm_AdminUsers\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.Users_Img_Small + "\" /> <div class=\"sbkUsm_TextWithImage\">" + Localization_Gateway.MainMenus.Users_And_Groups(displayLanguage) + "</div></a></li>");
 
                     // View user requests
                     RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.User_Requests;
-                    Output.WriteLine("        <li id=\"sbkUsm_AdminUserRequests\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.Users_Img_Small + "\" /> <div class=\"sbkUsm_TextWithImage\">Users Requests</div></a></li>");
+                    Output.WriteLine("        <li id=\"sbkUsm_AdminUserRequests\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.Users_Img_Small + "\" /> <div class=\"sbkUsm_TextWithImage\">" + Localization_Gateway.MainMenus.Users_Requests(displayLanguage) + "</div></a></li>");
 
                     Output.WriteLine("      </ul></li>");
 

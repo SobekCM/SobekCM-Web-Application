@@ -3,12 +3,14 @@
 #region Using directives
 
 using Microsoft.AspNetCore.Http;
+using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Users;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Library.Authentication;
 using SobekCM.Library.HTML;
+using SobekCM.Library.Localization;
 using SobekCM.Library.MainWriters;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
@@ -46,7 +48,7 @@ namespace SobekCM.Library.MySobekViewer
             {
                 generalLogonDisabled = true;
                 generalLogonDisabledMsg = String.IsNullOrEmpty(UI_ApplicationCache_Gateway.Settings.System.Disable_Standard_User_Logon_Message) ?
-                    "General logon to this system is temporarily disabled." : UI_ApplicationCache_Gateway.Settings.System.Disable_Standard_User_Logon_Message;
+                    Localization_Gateway.Logon.Default_Disabled_Message(RequestSpecificValues.Current_Mode.Language) : UI_ApplicationCache_Gateway.Settings.System.Disable_Standard_User_Logon_Message;
             }
             else
             {
@@ -140,7 +142,7 @@ namespace SobekCM.Library.MySobekViewer
                     }
                     else
                     {
-                        errorMessage = "Invalid user/password entered";
+                        errorMessage = Localization_Gateway.Logon.Invalid_Credentials(RequestSpecificValues.Current_Mode.Language);
                     }
                 }
             }
@@ -164,7 +166,7 @@ namespace SobekCM.Library.MySobekViewer
         {
             get
             {
-                return "Logon to My" + RequestSpecificValues.Current_Mode.Instance_Abbreviation;
+                return String.Format(Localization_Gateway.Logon.Page_Title_Format(RequestSpecificValues.Current_Mode.Language), RequestSpecificValues.Current_Mode.Instance_Abbreviation);
             }
         }
 
@@ -174,10 +176,11 @@ namespace SobekCM.Library.MySobekViewer
         public override void Write_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
             // Get ready to draw the tabs
+            Web_Language_Enum language = RequestSpecificValues.Current_Mode.Language;
             string my_sobek = "my" + RequestSpecificValues.Current_Mode.Instance_Abbreviation;
 
             Output.WriteLine("<br />");
-            Output.WriteLine("<h1>Logon to " + my_sobek + "</h1>");
+            Output.WriteLine("<h1>" + String.Format(Localization_Gateway.Logon.Heading_Format(language), my_sobek) + "</h1>");
             Output.WriteLine();
 
             // If there was an error, show it
@@ -193,28 +196,28 @@ namespace SobekCM.Library.MySobekViewer
             {
                 Output.WriteLine("  <span id=\"sbkLomv_LogonDisabledMsg\">" + generalLogonDisabledMsg + "</span>");
             }
-            Output.WriteLine("  <p>The feature you are trying to access requires a valid logon.<p>");
-            Output.WriteLine("  <p>Please choose the appropriate logon directly below.</p>");
+            Output.WriteLine("  <p>" + Localization_Gateway.Logon.Feature_Requires_Logon(language) + "<p>");
+            Output.WriteLine("  <p>" + Localization_Gateway.Logon.Choose_Logon_Below(language) + "</p>");
             Output.WriteLine("  <ul id=\"sbkLomv_OptionsList\">");
 
             if (RequestSpecificValues.Current_Mode.Instance_Abbreviation == "dLOC")
             {
-                Output.WriteLine("    <li><span style=\"font-weight:bold\">If you have a valid myDLOC logon</span>, <a id=\"form_logon_term\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return popup_mysobek_form('form_logon', 'logon_username');\">Sign on with myDLOC authentication</a>.</li>");
+                Output.WriteLine("    <li><span style=\"font-weight:bold\">" + Localization_Gateway.Logon.Dloc_Valid_Logon_Text(language) + "</span>, <a id=\"form_logon_term\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return popup_mysobek_form('form_logon', 'logon_username');\">" + Localization_Gateway.Logon.Dloc_Sign_On_Text(language) + "</a>.</li>");
 
 
                 if ((!generalLogonDisabled) && (UI_ApplicationCache_Gateway.Configuration.Authentication.Shibboleth != null) && (UI_ApplicationCache_Gateway.Configuration.Authentication.Shibboleth.Enabled) && (UI_ApplicationCache_Gateway.Configuration.Authentication.Shibboleth.Label.Length > 0) && (UI_ApplicationCache_Gateway.Configuration.Authentication.Shibboleth.ShibbolethURL.Length > 0))
                 {
-                    Output.WriteLine("    <li><span style=\"font-weight:bold\">If you have a valid " + UI_ApplicationCache_Gateway.Configuration.Authentication.Shibboleth.Label + " ID</span>, <a href=\"" + UI_ApplicationCache_Gateway.Configuration.Authentication.Shibboleth.ShibbolethURL + "\">Sign on with your " + UI_ApplicationCache_Gateway.Configuration.Authentication.Shibboleth.Label + " here</a>.</li>");
+                    Output.WriteLine("    <li><span style=\"font-weight:bold\">" + String.Format(Localization_Gateway.Logon.Shibboleth_Valid_Id_Format(language), UI_ApplicationCache_Gateway.Configuration.Authentication.Shibboleth.Label) + "</span>, <a href=\"" + UI_ApplicationCache_Gateway.Configuration.Authentication.Shibboleth.ShibbolethURL + "\">" + String.Format(Localization_Gateway.Logon.Shibboleth_Sign_On_Format(language), UI_ApplicationCache_Gateway.Configuration.Authentication.Shibboleth.Label) + "</a>.</li>");
                 }
             }
             else
             {
                 if ((!generalLogonDisabled) && (UI_ApplicationCache_Gateway.Configuration.Authentication.Shibboleth != null) && (UI_ApplicationCache_Gateway.Configuration.Authentication.Shibboleth.Enabled) && (UI_ApplicationCache_Gateway.Configuration.Authentication.Shibboleth.Label.Length > 0) && (UI_ApplicationCache_Gateway.Configuration.Authentication.Shibboleth.ShibbolethURL.Length > 0))
                 {
-                    Output.WriteLine("    <li><span style=\"font-weight:bold\">If you have a valid " + UI_ApplicationCache_Gateway.Configuration.Authentication.Shibboleth.Label + " ID</span>, <a href=\"" + UI_ApplicationCache_Gateway.Configuration.Authentication.Shibboleth.ShibbolethURL + "\">Sign on with your " + UI_ApplicationCache_Gateway.Configuration.Authentication.Shibboleth.Label + " here</a>.</li>");
+                    Output.WriteLine("    <li><span style=\"font-weight:bold\">" + String.Format(Localization_Gateway.Logon.Shibboleth_Valid_Id_Format(language), UI_ApplicationCache_Gateway.Configuration.Authentication.Shibboleth.Label) + "</span>, <a href=\"" + UI_ApplicationCache_Gateway.Configuration.Authentication.Shibboleth.ShibbolethURL + "\">" + String.Format(Localization_Gateway.Logon.Shibboleth_Sign_On_Format(language), UI_ApplicationCache_Gateway.Configuration.Authentication.Shibboleth.Label) + "</a>.</li>");
                 }
 
-                Output.WriteLine("    <li><span style=\"font-weight:bold\">If you have a valid my" + RequestSpecificValues.Current_Mode.Instance_Abbreviation + " logon</span>, <a id=\"form_logon_term\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return popup_mysobek_form('form_logon', 'logon_username');\">Sign on with my" + RequestSpecificValues.Current_Mode.Instance_Abbreviation + " authentication here</a>.</li>");
+                Output.WriteLine("    <li><span style=\"font-weight:bold\">" + String.Format(Localization_Gateway.Logon.Instance_Valid_Logon_Format(language), RequestSpecificValues.Current_Mode.Instance_Abbreviation) + "</span>, <a id=\"form_logon_term\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return popup_mysobek_form('form_logon', 'logon_username');\">" + String.Format(Localization_Gateway.Logon.Instance_Sign_On_Format(language), RequestSpecificValues.Current_Mode.Instance_Abbreviation) + "</a>.</li>");
             }
 
             // One link per configured, enabled OIDC/SAML provider, additive to the Shibboleth link above
@@ -228,7 +231,7 @@ namespace SobekCM.Library.MySobekViewer
                     RequestSpecificValues.Current_Mode.My_Sobek_SubMode = federatedProvider.Provider_Code;
                     string signInUrl = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
 
-                    Output.WriteLine("    <li><span style=\"font-weight:bold\">If you have a valid " + federatedProvider.Display_Label + " account</span>, <a href=\"" + signInUrl + "\">Sign in with " + federatedProvider.Display_Label + "</a>.</li>");
+                    Output.WriteLine("    <li><span style=\"font-weight:bold\">" + String.Format(Localization_Gateway.Logon.Federated_Valid_Account_Format(language), federatedProvider.Display_Label) + "</span>, <a href=\"" + signInUrl + "\">" + String.Format(Localization_Gateway.Logon.Federated_Sign_In_Format(language), federatedProvider.Display_Label) + "</a>.</li>");
                 }
                 RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Logon;
                 RequestSpecificValues.Current_Mode.My_Sobek_SubMode = String.Empty;
@@ -237,10 +240,10 @@ namespace SobekCM.Library.MySobekViewer
             if (!generalLogonDisabled)
             {
                 RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Register;
-                Output.Write("    <li><span style=\"font-weight:bold\">Not registered yet?</span> <a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "register\">Register now</a> or ");
+                Output.Write("    <li><span style=\"font-weight:bold\">" + Localization_Gateway.Logon.Not_Registered_Yet(language) + "</span> <a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "register\">" + Localization_Gateway.Logon.Register_Now(language) + "</a> or ");
 
                 RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Contact;
-                Output.WriteLine(" <a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">Contact Us</a></li>");
+                Output.WriteLine(" <a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + Localization_Gateway.Logon.Contact_Us(language) + "</a></li>");
             }
 
             RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Logon;
@@ -264,28 +267,30 @@ namespace SobekCM.Library.MySobekViewer
             // Add the popup form
             Output.WriteLine("<!-- mySobek Log On Form -->");
             Output.WriteLine("<div class=\"sbkLomv_PopupDiv\" id=\"form_logon\" style=\"display:none;\">");
-            Output.WriteLine("  <div class=\"sbkMySobek_PopupTitle\"><table style=\"width:100%;\"><tr><td style=\"text-align:left;\">LOG IN</td><td style=\"text-align:right;\"><a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "logon/help\" target=\"_FORM_SIGNON_HELP\" >?</a> &nbsp; <a href=\"#template\" onclick=\"return close_mysobek_form('form_logon');\">X</a> &nbsp; </td></tr></table></div>");
+            Output.WriteLine("  <div class=\"sbkMySobek_PopupTitle\"><table style=\"width:100%;\"><tr><td style=\"text-align:left;\">" + Localization_Gateway.Logon.Popup_Title_Log_In(language) + "</td><td style=\"text-align:right;\"><a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "logon/help\" target=\"_FORM_SIGNON_HELP\" >?</a> &nbsp; <a href=\"#template\" onclick=\"return close_mysobek_form('form_logon');\">X</a> &nbsp; </td></tr></table></div>");
             Output.WriteLine("  <br />");
             Output.WriteLine("  <table class=\"sbkMySobek_PopupTable\">");
 
             // Add the rows of data
-            Output.WriteLine("    <tr><td style=\"width:140px;\">Username or email:</td><td><input class=\"sbkLomv_username_input sbkMySobek_Focusable\" name=\"logon_username\" id=\"logon_username\" type=\"text\" value=\"\" onkeydown=\"logonTrapKD(event);\" /></td></tr>");
-            Output.WriteLine("    <tr><td>Password:</td><td><input class=\"sbkLomv_password_input sbkMySobek_Focusable\" name=\"logon_password\" id=\"logon_password\" type=\"password\" value=\"\" onkeydown=\"logonTrapKD(event);\" /></td></tr>");
-            Output.WriteLine("    <tr><td>&nbsp;</td><td><input type=\"checkbox\" value=\"rememberme\" class=\"sbkMySobek_checkbox\" name=\"rememberme\" id=\"rememberme\" /> <label for=\"rememberme\">Remember me</label><br /><br /></td></tr>");
+            Output.WriteLine("    <tr><td style=\"width:140px;\">" + Localization_Gateway.Logon.Username_Or_Email_Label(language) + "</td><td><input class=\"sbkLomv_username_input sbkMySobek_Focusable\" name=\"logon_username\" id=\"logon_username\" type=\"text\" value=\"\" onkeydown=\"logonTrapKD(event);\" /></td></tr>");
+            Output.WriteLine("    <tr><td>" + Localization_Gateway.Logon.Password_Label(language) + "</td><td><input class=\"sbkLomv_password_input sbkMySobek_Focusable\" name=\"logon_password\" id=\"logon_password\" type=\"password\" value=\"\" onkeydown=\"logonTrapKD(event);\" /></td></tr>");
+            Output.WriteLine("    <tr><td>&nbsp;</td><td><input type=\"checkbox\" value=\"rememberme\" class=\"sbkMySobek_checkbox\" name=\"rememberme\" id=\"rememberme\" /> <label for=\"rememberme\">" + Localization_Gateway.Logon.Remember_Me(language) + "</label><br /><br /></td></tr>");
 
-            // Add the buttons 
+            // Add the buttons
             Output.WriteLine("    <tr style=\"height:35px; text-align: center; vertical-align: bottom;\">");
             Output.WriteLine("      <td colspan=\"2\">");
-            Output.WriteLine("        <button title=\"Close\" class=\"sbkMySobek_BigButton\" onclick=\"return close_mysobek_form('form_logon');\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"sbkMySobek_RoundButton_LeftImg\" alt=\"\" /> CANCEL &nbsp; </button> &nbsp; &nbsp; ");
-            Output.WriteLine("        <button title=\"Login\" class=\"sbkMySobek_BigButton\" type=\"submit\"> &nbsp; LOGIN <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkMySobek_RoundButton_RightImg\" alt=\"\" /></button>");
+            Output.WriteLine("        <button title=\"" + Localization_Gateway.Logon.Close_Button_Title(language) + "\" class=\"sbkMySobek_BigButton\" onclick=\"return close_mysobek_form('form_logon');\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"sbkMySobek_RoundButton_LeftImg\" alt=\"\" /> " + Localization_Gateway.Logon.Cancel_Button_Text(language) + " &nbsp; </button> &nbsp; &nbsp; ");
+            Output.WriteLine("        <button title=\"" + Localization_Gateway.Logon.Login_Button_Title(language) + "\" class=\"sbkMySobek_BigButton\" type=\"submit\"> &nbsp; " + Localization_Gateway.Logon.Login_Button_Text(language) + " <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkMySobek_RoundButton_RightImg\" alt=\"\" /></button>");
             Output.WriteLine("      </td>");
             Output.WriteLine("    </tr>");
 
             RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Register;
-            Output.WriteLine("    <tr><td colspan=\"2\"><br />Not registered yet?  <a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">Register now</a>.");
+            string register_now_link = "<a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + Localization_Gateway.Logon.Register_Now(language) + "</a>";
+            Output.WriteLine("    <tr><td colspan=\"2\"><br />" + String.Format(Localization_Gateway.Logon.Popup_Not_Registered_Format(language), register_now_link));
             RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Logon;
             RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Contact;
-            Output.WriteLine("    <br /><br />Forgot your username or password?  Please <a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">contact us</a>.</td></tr>");
+            string popup_contact_us_link = "<a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + Localization_Gateway.Logon.Popup_Contact_Us_Link_Text(language) + "</a>";
+            Output.WriteLine("    <br /><br />" + String.Format(Localization_Gateway.Logon.Popup_Forgot_Password_Format(language), popup_contact_us_link) + "</td></tr>");
             RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.My_Sobek;
 
             // Finish the popup form

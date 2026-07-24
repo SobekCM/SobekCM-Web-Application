@@ -5,6 +5,7 @@ using SobekCM.Core.Aggregations;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
 using SobekCM.Engine_Library.Configuration;
+using SobekCM.Library.HTML.Helpers;
 using SobekCM.Tools;
 using System;
 using System.Collections.Generic;
@@ -98,7 +99,7 @@ namespace SobekCM.Library.HTML
         /// <param name="Output"> Stream to which to write the HTML for this header </param>
         public override void Add_Header(TextWriter Output)
         {
-            HeaderFooter_Helper.Add_Header(Output, RequestSpecificValues, Container_CssClass, WebPage_Title, Subwriter_Behaviors, hierarchyObject, null, Context);
+            HeaderFooter_HtmlHelper.Add_Header(Output, RequestSpecificValues, Container_CssClass, WebPage_Title, Subwriter_Behaviors, hierarchyObject, null, Context);
         }
 
         /// <summary> Flag indicates if the internal header should included </summary>
@@ -146,7 +147,7 @@ namespace SobekCM.Library.HTML
             else
             {
                 // Add the main aggrgeation menu here
-                MainMenus_Helper_HtmlSubWriter.Add_Aggregation_Search_Results_Menu(Output, RequestSpecificValues, hierarchyObject, false);
+                MainMenus_HtmlHelper.Add_Aggregation_Search_Results_Menu(Output, RequestSpecificValues, hierarchyObject, false);
             }
 
             if (RequestSpecificValues.Results_Statistics == null) return true;
@@ -181,7 +182,7 @@ namespace SobekCM.Library.HTML
         /// <param name="Output"> Stream to which to write the HTML for this footer </param>
         public override void Add_Footer(TextWriter Output)
         {
-            HeaderFooter_Helper.Add_Footer(Output, RequestSpecificValues, Subwriter_Behaviors, hierarchyObject, null, Context);
+            HeaderFooter_HtmlHelper.Add_Footer(Output, RequestSpecificValues, Subwriter_Behaviors, hierarchyObject, null, Context);
         }
 
 

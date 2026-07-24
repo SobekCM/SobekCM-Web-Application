@@ -15,6 +15,7 @@ using SobekCM.Core.Users;
 using SobekCM.Core.WebContent;
 using SobekCM.Engine_Library.Aggregations;
 using SobekCM.Engine_Library.Configuration;
+using SobekCM.Library.HTML.Helpers;
 using SobekCM.Library.MainWriters;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
@@ -76,7 +77,7 @@ namespace SobekCM.Library.HTML
         /// <param name="Output"> Stream to which to write the HTML for this header </param>
 	    public virtual void Add_Header(TextWriter Output)
         {
-            HeaderFooter_Helper.Add_Header(Output, RequestSpecificValues, Container_CssClass, WebPage_Title, Subwriter_Behaviors, null, null, Context);
+            HeaderFooter_HtmlHelper.Add_Header(Output, RequestSpecificValues, Container_CssClass, WebPage_Title, Subwriter_Behaviors, null, null, Context);
         }
 
         /// <summary> Flag indicates if the internal header should included </summary>
@@ -202,7 +203,7 @@ namespace SobekCM.Library.HTML
         /// <param name="Output"> Stream to which to write the HTML for this footer </param>
         public virtual void Add_Footer(TextWriter Output)
         {
-            HeaderFooter_Helper.Add_Footer(Output, RequestSpecificValues, Subwriter_Behaviors, null, null, Context);
+            HeaderFooter_HtmlHelper.Add_Footer(Output, RequestSpecificValues, Subwriter_Behaviors, null, null, Context);
         }
 
         /// <summary> Gets the collection of special behaviors which this subwriter

@@ -9,6 +9,7 @@ using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Engine_Library.Database;
+using SobekCM.Library.HTML.Helpers;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
 using System;
@@ -71,7 +72,7 @@ namespace SobekCM.Library.HTML
             Internal_Type_Enum type = RequestSpecificValues.Current_Mode.Internal_Type;
 
             // Add the banner
-            Banner_Helper.Add_Banner(Output, "sbkAhs_BannerDiv", WebPage_Title.Replace("{0} ", ""), RequestSpecificValues.Current_Mode, RequestSpecificValues.HTML_Skin, RequestSpecificValues.Top_Collection);
+            Banner_HtmlHelper.Add_Banner(Output, "sbkAhs_BannerDiv", WebPage_Title.Replace("{0} ", ""), RequestSpecificValues.Current_Mode, RequestSpecificValues.HTML_Skin, RequestSpecificValues.Top_Collection);
 
             if (!isAuthorized)
             {
@@ -93,7 +94,7 @@ namespace SobekCM.Library.HTML
             else
             {
                 // Add the RequestSpecificValues.Current_User-specific main menu
-                MainMenus_Helper_HtmlSubWriter.Add_UserSpecific_Main_Menu(Output, RequestSpecificValues);
+                MainMenus_HtmlHelper.Add_UserSpecific_Main_Menu(Output, RequestSpecificValues);
 
                 // Start the page container
                 Output.WriteLine("<div id=\"pagecontainer\">");

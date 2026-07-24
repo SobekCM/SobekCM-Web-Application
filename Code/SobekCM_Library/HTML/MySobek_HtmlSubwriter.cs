@@ -4,6 +4,7 @@ using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Library.AdminViewer;
+using SobekCM.Library.HTML.Helpers;
 using SobekCM.Library.MainWriters;
 using SobekCM.Library.MySobekViewer;
 using SobekCM.Library.UI;
@@ -196,7 +197,7 @@ namespace SobekCM.Library.HTML
             if (mySobekViewer.Standard_Navigation_Type == MySobek_Admin_Included_Navigation_Enum.Standard)
             {
                 // Add the user-specific main menu
-                MainMenus_Helper_HtmlSubWriter.Add_UserSpecific_Main_Menu(Output, RequestSpecificValues);
+                MainMenus_HtmlHelper.Add_UserSpecific_Main_Menu(Output, RequestSpecificValues);
 
                 // Start the page container
                 Output.WriteLine("<div id=\"pagecontainer\">");

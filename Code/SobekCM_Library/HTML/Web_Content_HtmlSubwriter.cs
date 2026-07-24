@@ -9,6 +9,7 @@ using SobekCM.Core.Users;
 using SobekCM.Core.WebContent;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Library.Helpers.CKEditor;
+using SobekCM.Library.HTML.Helpers;
 using SobekCM.Library.UI;
 using SobekCM.Library.WebContentViewer;
 using SobekCM.Library.WebContentViewer.Viewers;
@@ -190,7 +191,7 @@ namespace SobekCM.Library.HTML
 
 
                 Output.WriteLine("<div id=\"sbkWchs_Panel\">");
-                Banner_Helper.Add_Banner(Output, "sbkAhs_BannerDiv", WebPage_Title.Replace("{0} ", ""), RequestSpecificValues.Current_Mode, RequestSpecificValues.HTML_Skin, RequestSpecificValues.Top_Collection);
+                Banner_HtmlHelper.Add_Banner(Output, "sbkAhs_BannerDiv", WebPage_Title.Replace("{0} ", ""), RequestSpecificValues.Current_Mode, RequestSpecificValues.HTML_Skin, RequestSpecificValues.Top_Collection);
 
                 Output.WriteLine("<div id=\"sbkWchs_InnerPanel\">");
 

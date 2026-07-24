@@ -7,6 +7,7 @@ using SobekCM.Core.Items;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Users;
 using SobekCM.Library.HTML;
+using SobekCM.Library.HTML.Helpers;
 using SobekCM.Library.ItemViewer.Menu;
 using SobekCM.Library.Localization;
 using SobekCM.Library.UI;
@@ -296,7 +297,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 Output.WriteLine("            <div id=\"sbkMviv_MainArea\">");
 
                 // Build the tree and render it directly to output
-                var treeView1 = new HtmlTreeView{ CssClass = "sbkMviv_Tree" };
+                var treeView1 = new HtmlTreeView_HtmlHelper{ CssClass = "sbkMviv_Tree" };
                 Build_Tree(treeView1);
                 var treeBuilder = new StringBuilder();
                 treeView1.Render(new StringWriter(treeBuilder));
@@ -694,7 +695,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
         /// <summary> Populates an HTML tree view with the hierarchical collection of volumes associated with the same title as a digital resource </summary>
         /// <param name="TreeView1"> HTML tree view to populate with the associated volumes </param>
-        protected internal void Build_Tree(HtmlTreeView TreeView1)
+        protected internal void Build_Tree(HtmlTreeView_HtmlHelper TreeView1)
         {
             const int LINE_TO_LONG = 100;
 

@@ -9,10 +9,10 @@ using System.IO;
 
 #endregion
 
-namespace SobekCM.Library.HTML
+namespace SobekCM.Library.HTML.Helpers
 {
     /// <summary> Class is a helper class used for writing the main collection, interface, or institution banner for HTML responses </summary>
-    public static class Banner_Helper
+    public static class Banner_HtmlHelper
     {
         /// <summary> Adds the banner to the response stream from either the html web skin
         /// or from the current item aggreagtion object, depending on flags in the web skin object </summary>

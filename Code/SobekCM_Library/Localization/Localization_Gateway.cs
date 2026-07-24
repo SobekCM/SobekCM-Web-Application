@@ -540,6 +540,428 @@ namespace SobekCM.Library.Localization
             public static string Page_Number_Placeholder(Web_Language_Enum Language) => Localization_Store.Get("items", "Related_Images", "Page_Number_Placeholder", Language);
         }
 
+        /// <summary> Phrases for the logged-on user's mySobek home page (Home_MySobekViewer) </summary>
+        public static class Home
+        {
+            /// <summary> Format string with "{0}" (instance abbreviation, immediately following "my" with no
+            /// space) and "{1}" (nickname or given name) placeholders </summary>
+            public static string Welcome_New_User_Format(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Home", "Welcome_New_User_Format", Language);
+
+            /// <summary> Format string with a "{0}" placeholder for the nickname or given name </summary>
+            public static string Welcome_Back_Format(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Home", "Welcome_Back_Format", Language);
+
+            /// <summary> Format string with a "{0}" placeholder for the "my{Instance}" text </summary>
+            public static string Welcome_Intro_Format(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Home", "Welcome_Intro_Format", Language);
+
+            public static string What_Would_You_Like(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Home", "What_Would_You_Like", Language);
+            public static string Upload_Existing_Oer(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Home", "Upload_Existing_Oer", Language);
+            public static string Create_New_Oer_Online(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Home", "Create_New_Oer_Online", Language);
+            public static string Upload_New_Item(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Home", "Upload_New_Item", Language);
+            public static string Add_New_Tei_Item(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Home", "Add_New_Tei_Item", Language);
+            public static string Submittals_Disabled(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Home", "Submittals_Disabled", Language);
+            public static string View_All_Submitted_Items(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Home", "View_All_Submitted_Items", Language);
+            public static string View_Usage_For_My_Items(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Home", "View_Usage_For_My_Items", Language);
+            public static string View_My_Descriptive_Tags(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Home", "View_My_Descriptive_Tags", Language);
+            public static string View_And_Organize_Bookshelves(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Home", "View_And_Organize_Bookshelves", Language);
+            public static string View_My_Saved_Searches(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Home", "View_My_Saved_Searches", Language);
+            public static string Edit_My_Preferences(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Home", "Edit_My_Preferences", Language);
+            public static string Track_Item_Scanning(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Home", "Track_Item_Scanning", Language);
+
+            /// <summary> Format string with a "{0}" placeholder for the instance abbreviation </summary>
+            public static string Return_To_Previous_Page_Format(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Home", "Return_To_Previous_Page_Format", Language);
+
+            public static string Log_Out(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Home", "Log_Out", Language);
+            public static string Contact_Us_Link_Text(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Home", "Contact_Us_Link_Text", Language);
+
+            /// <summary> Format string with a "{0}" placeholder for the "contact us" link HTML </summary>
+            public static string Comments_Recommendations_Format(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Home", "Comments_Recommendations_Format", Language);
+
+            /// <summary> Format string with a "{0}" placeholder for the "contact us" link HTML </summary>
+            public static string Contribute_Materials_Format(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Home", "Contribute_Materials_Format", Language);
+        }
+
+        /// <summary> Phrases for the saved-searches mySobek viewer (Saved_Searches_MySobekViewer) </summary>
+        public static class Saved_Searches
+        {
+            public static string Page_Title(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Saved_Searches", "Page_Title", Language);
+            public static string Actions_Header(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Saved_Searches", "Actions_Header", Language);
+            public static string Saved_Search_Header(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Saved_Searches", "Saved_Search_Header", Language);
+            public static string Delete_Link_Title(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Saved_Searches", "Delete_Link_Title", Language);
+            public static string Delete_Link_Text(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Saved_Searches", "Delete_Link_Text", Language);
+            public static string View_Link_Title(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Saved_Searches", "View_Link_Title", Language);
+            public static string View_Link_Text(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Saved_Searches", "View_Link_Text", Language);
+            public static string No_Saved_Searches_Html(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Saved_Searches", "No_Saved_Searches_Html", Language);
+        }
+
+        /// <summary> Phrases for the logon mySobek viewer (Logon_MySobekViewer) </summary>
+        public static class Logon
+        {
+            public static string Default_Disabled_Message(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Logon", "Default_Disabled_Message", Language);
+            public static string Invalid_Credentials(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Logon", "Invalid_Credentials", Language);
+
+            /// <summary> Format string with a "{0}" placeholder for the instance abbreviation (no "my" prefix) </summary>
+            public static string Page_Title_Format(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Logon", "Page_Title_Format", Language);
+
+            /// <summary> Format string with a "{0}" placeholder for the "my{Instance}" text </summary>
+            public static string Heading_Format(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Logon", "Heading_Format", Language);
+
+            public static string Feature_Requires_Logon(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Logon", "Feature_Requires_Logon", Language);
+            public static string Choose_Logon_Below(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Logon", "Choose_Logon_Below", Language);
+            public static string Dloc_Valid_Logon_Text(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Logon", "Dloc_Valid_Logon_Text", Language);
+            public static string Dloc_Sign_On_Text(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Logon", "Dloc_Sign_On_Text", Language);
+
+            /// <summary> Format string with a "{0}" placeholder for the Shibboleth provider label </summary>
+            public static string Shibboleth_Valid_Id_Format(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Logon", "Shibboleth_Valid_Id_Format", Language);
+
+            /// <summary> Format string with a "{0}" placeholder for the Shibboleth provider label </summary>
+            public static string Shibboleth_Sign_On_Format(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Logon", "Shibboleth_Sign_On_Format", Language);
+
+            /// <summary> Format string with a "{0}" placeholder for the instance abbreviation (no "my" prefix) </summary>
+            public static string Instance_Valid_Logon_Format(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Logon", "Instance_Valid_Logon_Format", Language);
+
+            /// <summary> Format string with a "{0}" placeholder for the instance abbreviation (no "my" prefix) </summary>
+            public static string Instance_Sign_On_Format(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Logon", "Instance_Sign_On_Format", Language);
+
+            /// <summary> Format string with a "{0}" placeholder for the federated provider's display label </summary>
+            public static string Federated_Valid_Account_Format(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Logon", "Federated_Valid_Account_Format", Language);
+
+            /// <summary> Format string with a "{0}" placeholder for the federated provider's display label </summary>
+            public static string Federated_Sign_In_Format(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Logon", "Federated_Sign_In_Format", Language);
+
+            public static string Not_Registered_Yet(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Logon", "Not_Registered_Yet", Language);
+            public static string Register_Now(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Logon", "Register_Now", Language);
+            public static string Contact_Us(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Logon", "Contact_Us", Language);
+            public static string Popup_Title_Log_In(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Logon", "Popup_Title_Log_In", Language);
+            public static string Username_Or_Email_Label(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Logon", "Username_Or_Email_Label", Language);
+            public static string Password_Label(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Logon", "Password_Label", Language);
+            public static string Remember_Me(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Logon", "Remember_Me", Language);
+            public static string Close_Button_Title(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Logon", "Close_Button_Title", Language);
+            public static string Cancel_Button_Text(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Logon", "Cancel_Button_Text", Language);
+            public static string Login_Button_Title(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Logon", "Login_Button_Title", Language);
+            public static string Login_Button_Text(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Logon", "Login_Button_Text", Language);
+
+            /// <summary> Format string with a "{0}" placeholder for the "Register now" link HTML </summary>
+            public static string Popup_Not_Registered_Format(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Logon", "Popup_Not_Registered_Format", Language);
+
+            /// <summary> Format string with a "{0}" placeholder for the "contact us" link HTML </summary>
+            public static string Popup_Forgot_Password_Format(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Logon", "Popup_Forgot_Password_Format", Language);
+
+            public static string Popup_Contact_Us_Link_Text(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Logon", "Popup_Contact_Us_Link_Text", Language);
+        }
+
+        /// <summary> Phrases for the Open-NJ registration/preferences mySobek viewer (OpenNJ_Register_MySobekViewer) </summary>
+        public static class OpenNJ_Register
+        {
+            public static string Account_Info(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "OpenNJ_Register", "Account_Info", Language);
+            public static string Username_Label(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "OpenNJ_Register", "Username_Label", Language);
+            public static string Personal_Info(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "OpenNJ_Register", "Personal_Info", Language);
+            public static string Family_Names_Label(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "OpenNJ_Register", "Family_Names_Label", Language);
+            public static string Given_Names_Label(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "OpenNJ_Register", "Given_Names_Label", Language);
+            public static string Nickname_Label(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "OpenNJ_Register", "Nickname_Label", Language);
+            public static string Email_Label(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "OpenNJ_Register", "Email_Label", Language);
+            public static string Email_Stats_Label(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "OpenNJ_Register", "Email_Stats_Label", Language);
+            public static string Affiliation_Info(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "OpenNJ_Register", "Affiliation_Info", Language);
+            public static string Organization_Label(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "OpenNJ_Register", "Organization_Label", Language);
+            public static string Password_Label(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "OpenNJ_Register", "Password_Label", Language);
+            public static string Confirm_Password_Label(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "OpenNJ_Register", "Confirm_Password_Label", Language);
+
+            public static string Username_Required(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "OpenNJ_Register", "Username_Required", Language);
+            public static string Username_Min_Length(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "OpenNJ_Register", "Username_Min_Length", Language);
+            public static string Select_Confirm_Password(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "OpenNJ_Register", "Select_Confirm_Password", Language);
+            public static string Passwords_Do_Not_Match(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "OpenNJ_Register", "Passwords_Do_Not_Match", Language);
+            public static string Password_Min_Length(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "OpenNJ_Register", "Password_Min_Length", Language);
+            public static string Select_Instructor_Status(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "OpenNJ_Register", "Select_Instructor_Status", Language);
+            public static string Instructor_Institution_Required(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "OpenNJ_Register", "Instructor_Institution_Required", Language);
+            public static string Ufid_Length(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "OpenNJ_Register", "Ufid_Length", Language);
+            public static string Ufid_Numeric(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "OpenNJ_Register", "Ufid_Numeric", Language);
+            public static string Family_Name_Required(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "OpenNJ_Register", "Family_Name_Required", Language);
+            public static string Given_Name_Required(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "OpenNJ_Register", "Given_Name_Required", Language);
+            public static string Valid_Email_Required(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "OpenNJ_Register", "Valid_Email_Required", Language);
+            public static string Rights_Truncated(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "OpenNJ_Register", "Rights_Truncated", Language);
+            public static string Email_Already_Exists(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "OpenNJ_Register", "Email_Already_Exists", Language);
+            public static string Username_Taken(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "OpenNJ_Register", "Username_Taken", Language);
+
+            /// <summary> Format string with a "{0}" placeholder for the instance abbreviation (no "my" prefix) </summary>
+            public static string Register_Page_Title_Format(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "OpenNJ_Register", "Register_Page_Title_Format", Language);
+
+            public static string Edit_Preferences_Page_Title(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "OpenNJ_Register", "Edit_Preferences_Page_Title", Language);
+
+            /// <summary> Format string with a "{0}" placeholder for the "my{Instance}" text </summary>
+            public static string Registration_Intro_Format(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "OpenNJ_Register", "Registration_Intro_Format", Language);
+
+            public static string Account_Required_Note(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "OpenNJ_Register", "Account_Required_Note", Language);
+
+            /// <summary> Format string with a "{0}" placeholder for the "Log on" link HTML </summary>
+            public static string Already_Registered_Format(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "OpenNJ_Register", "Already_Registered_Format", Language);
+
+            public static string Log_On_Link_Text(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "OpenNJ_Register", "Log_On_Link_Text", Language);
+            public static string Errors_Detected_Header(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "OpenNJ_Register", "Errors_Detected_Header", Language);
+            public static string Account_Type_Header(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "OpenNJ_Register", "Account_Type_Header", Language);
+            public static string Instructor_Question(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "OpenNJ_Register", "Instructor_Question", Language);
+            public static string I_Am_Instructor(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "OpenNJ_Register", "I_Am_Instructor", Language);
+            public static string I_Am_Not_Instructor(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "OpenNJ_Register", "I_Am_Not_Instructor", Language);
+            public static string Submit_Materials_Instructions(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "OpenNJ_Register", "Submit_Materials_Instructions", Language);
+            public static string Allow_Submit_Label(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "OpenNJ_Register", "Allow_Submit_Label", Language);
+            public static string Application_Reviewed_Notice(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "OpenNJ_Register", "Application_Reviewed_Notice", Language);
+            public static string Username_Hint(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "OpenNJ_Register", "Username_Hint", Language);
+            public static string Password_Hint(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "OpenNJ_Register", "Password_Hint", Language);
+            public static string Institutional_Email_Hint(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "OpenNJ_Register", "Institutional_Email_Hint", Language);
+            public static string Cancel_Button(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "OpenNJ_Register", "Cancel_Button", Language);
+            public static string Submit_Button(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "OpenNJ_Register", "Submit_Button", Language);
+        }
+
+        /// <summary> Phrases for the registration/preferences mySobek viewer (Preferences_MySobekViewer) </summary>
+        /// <remarks> Scoped to rendered form content - the Creative Commons license picker block and the
+        /// outbound registration/welcome emails are left as-is: the CC block mixes long English descriptions
+        /// into quoted JavaScript strings (high risk to extract safely) and the emails have no language
+        /// plumbed through today, same as OpenNJ_Register_MySobekViewer </remarks>
+        public static class Preferences
+        {
+            public static string Account_Info(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Preferences", "Account_Info", Language);
+            public static string Username_Label(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Preferences", "Username_Label", Language);
+            public static string Personal_Info(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Preferences", "Personal_Info", Language);
+            public static string Family_Names_Label(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Preferences", "Family_Names_Label", Language);
+            public static string Given_Names_Label(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Preferences", "Given_Names_Label", Language);
+            public static string Nickname_Label(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Preferences", "Nickname_Label", Language);
+            public static string Email_Label(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Preferences", "Email_Label", Language);
+
+            /// <summary> No French/Spanish translation was ever authored for this in the original code either -
+            /// falls back to English for every language, same as the original behavior </summary>
+            public static string Email_Stats_Label(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Preferences", "Email_Stats_Label", Language);
+
+            public static string Affiliation_Info(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Preferences", "Affiliation_Info", Language);
+            public static string Organization_Label(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Preferences", "Organization_Label", Language);
+            public static string College_Label(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Preferences", "College_Label", Language);
+            public static string Department_Label(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Preferences", "Department_Label", Language);
+            public static string Unit_Label(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Preferences", "Unit_Label", Language);
+            public static string Self_Submittal_Pref_Label(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Preferences", "Self_Submittal_Pref_Label", Language);
+            public static string Send_Email_Label(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Preferences", "Send_Email_Label", Language);
+            public static string Template_Label(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Preferences", "Template_Label", Language);
+            public static string Project_Label(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Preferences", "Project_Label", Language);
+            public static string Default_Rights_Label(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Preferences", "Default_Rights_Label", Language);
+            public static string Rights_Explanation_Label(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Preferences", "Rights_Explanation_Label", Language);
+
+            /// <summary> Includes an embedded Creative Commons link, matching the original inline HTML </summary>
+            public static string Rights_Instruction_Label(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Preferences", "Rights_Instruction_Label", Language);
+
+            public static string Other_Preferences_Label(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Preferences", "Other_Preferences_Label", Language);
+            public static string Language_Label(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Preferences", "Language_Label", Language);
+            public static string Password_Label(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Preferences", "Password_Label", Language);
+            public static string Confirm_Password_Label(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Preferences", "Confirm_Password_Label", Language);
+
+            public static string Username_Required(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Preferences", "Username_Required", Language);
+            public static string Username_Min_Length(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Preferences", "Username_Min_Length", Language);
+            public static string Select_Confirm_Password(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Preferences", "Select_Confirm_Password", Language);
+            public static string Passwords_Do_Not_Match(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Preferences", "Passwords_Do_Not_Match", Language);
+            public static string Password_Min_Length(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Preferences", "Password_Min_Length", Language);
+            public static string Ufid_Length(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Preferences", "Ufid_Length", Language);
+            public static string Ufid_Numeric(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Preferences", "Ufid_Numeric", Language);
+            public static string Family_Name_Required(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Preferences", "Family_Name_Required", Language);
+            public static string Given_Name_Required(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Preferences", "Given_Name_Required", Language);
+            public static string Valid_Email_Required(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Preferences", "Valid_Email_Required", Language);
+            public static string Rights_Truncated(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Preferences", "Rights_Truncated", Language);
+            public static string Email_Already_Exists(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Preferences", "Email_Already_Exists", Language);
+            public static string Username_Taken(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Preferences", "Username_Taken", Language);
+
+            /// <summary> Format string with a "{0}" placeholder for the instance abbreviation (no "my" prefix) </summary>
+            public static string Register_Page_Title_Format(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Preferences", "Register_Page_Title_Format", Language);
+
+            public static string Edit_Preferences_Page_Title(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Preferences", "Edit_Preferences_Page_Title", Language);
+
+            /// <summary> Format string with a "{0}" placeholder for the "my{Instance}" text </summary>
+            public static string Registration_Intro_Format(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Preferences", "Registration_Intro_Format", Language);
+
+            public static string Account_Required_Note(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Preferences", "Account_Required_Note", Language);
+
+            /// <summary> Format string with a "{0}" placeholder for the "Log on" link HTML </summary>
+            public static string Already_Registered_Format(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Preferences", "Already_Registered_Format", Language);
+
+            public static string Log_On_Link_Text(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Preferences", "Log_On_Link_Text", Language);
+            public static string Errors_Detected_Header(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Preferences", "Errors_Detected_Header", Language);
+            public static string Username_Hint(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Preferences", "Username_Hint", Language);
+            public static string Password_Hint(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Preferences", "Password_Hint", Language);
+            public static string Gatorlink_Hint(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Preferences", "Gatorlink_Hint", Language);
+            public static string Allow_Submit_With_Notice_Label(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Preferences", "Allow_Submit_With_Notice_Label", Language);
+            public static string Cancel_Button(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Preferences", "Cancel_Button", Language);
+            public static string Submit_Button(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Preferences", "Submit_Button", Language);
+        }
+
+        /// <summary> Phrases for the bookshelf/folder-management mySobek viewer (Folder_Mgmt_MySobekViewer) </summary>
+        public static class Folder_Mgmt
+        {
+            public static string Page_Title(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Folder_Mgmt", "Page_Title", Language);
+            public static string Manage_Library_Tooltip(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Folder_Mgmt", "Manage_Library_Tooltip", Language);
+            public static string Manage_Library_Link_Text(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Folder_Mgmt", "Manage_Library_Link_Text", Language);
+            public static string View_Collections_Home_Tooltip(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Folder_Mgmt", "View_Collections_Home_Tooltip", Language);
+            public static string My_Collections_Home_Text(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Folder_Mgmt", "My_Collections_Home_Text", Language);
+            public static string View_Saved_Searches_Tooltip(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Folder_Mgmt", "View_Saved_Searches_Tooltip", Language);
+            public static string My_Saved_Searches_Text(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Folder_Mgmt", "My_Saved_Searches_Text", Language);
+            public static string Public_Folder_Tooltip(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Folder_Mgmt", "Public_Folder_Tooltip", Language);
+            public static string Private_Folder_Tooltip(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Folder_Mgmt", "Private_Folder_Tooltip", Language);
+            public static string Bookshelf_Empty_Message(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Folder_Mgmt", "Bookshelf_Empty_Message", Language);
+            public static string Manage_Bookshelves_Heading(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Folder_Mgmt", "Manage_Bookshelves_Heading", Language);
+            public static string Add_New_Bookshelf_Tooltip(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Folder_Mgmt", "Add_New_Bookshelf_Tooltip", Language);
+            public static string Add_New_Bookshelf_Text(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Folder_Mgmt", "Add_New_Bookshelf_Text", Language);
+            public static string Refresh_Bookshelf_Tooltip(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Folder_Mgmt", "Refresh_Bookshelf_Tooltip", Language);
+            public static string Refresh_Bookshelves_Text(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Folder_Mgmt", "Refresh_Bookshelves_Text", Language);
+            public static string Actions_Header(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Folder_Mgmt", "Actions_Header", Language);
+            public static string Bookshelf_Name_Header(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Folder_Mgmt", "Bookshelf_Name_Header", Language);
+            public static string Delete_Bookshelf_Tooltip(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Folder_Mgmt", "Delete_Bookshelf_Tooltip", Language);
+            public static string Delete_Link_Text(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Folder_Mgmt", "Delete_Link_Text", Language);
+            public static string Cannot_Delete_Last_Alert(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Folder_Mgmt", "Cannot_Delete_Last_Alert", Language);
+            public static string Cannot_Delete_Nested_Alert(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Folder_Mgmt", "Cannot_Delete_Nested_Alert", Language);
+            public static string Make_Private_Tooltip(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Folder_Mgmt", "Make_Private_Tooltip", Language);
+            public static string Make_Private_Text(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Folder_Mgmt", "Make_Private_Text", Language);
+            public static string Make_Public_Tooltip(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Folder_Mgmt", "Make_Public_Tooltip", Language);
+            public static string Make_Public_Text(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Folder_Mgmt", "Make_Public_Text", Language);
+            public static string Manage_Bookshelf_Tooltip(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Folder_Mgmt", "Manage_Bookshelf_Tooltip", Language);
+            public static string Manage_Link_Text(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Folder_Mgmt", "Manage_Link_Text", Language);
+            public static string Email_Popup_Title(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Folder_Mgmt", "Email_Popup_Title", Language);
+            public static string Email_Popup_Legend(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Folder_Mgmt", "Email_Popup_Legend", Language);
+            public static string To_Label(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Folder_Mgmt", "To_Label", Language);
+            public static string Comments_Label(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Folder_Mgmt", "Comments_Label", Language);
+            public static string Format_Label(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Folder_Mgmt", "Format_Label", Language);
+            public static string Html_Format_Label(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Folder_Mgmt", "Html_Format_Label", Language);
+            public static string Plain_Text_Format_Label(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Folder_Mgmt", "Plain_Text_Format_Label", Language);
+            public static string Cancel_Button(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Folder_Mgmt", "Cancel_Button", Language);
+            public static string Send_Button(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Folder_Mgmt", "Send_Button", Language);
+            public static string Save_Button(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Folder_Mgmt", "Save_Button", Language);
+
+            /// <summary> Stylized (small-caps effect via nested spans) popup title, matching the original inline markup </summary>
+            public static string Move_Popup_Title_Html(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Folder_Mgmt", "Move_Popup_Title_Html", Language);
+
+            public static string Move_Popup_Legend(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Folder_Mgmt", "Move_Popup_Legend", Language);
+            public static string Bookshelf_Label(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Folder_Mgmt", "Bookshelf_Label", Language);
+
+            /// <summary> Stylized (small-caps effect via nested spans) popup title, matching the original inline markup </summary>
+            public static string Edit_Notes_Popup_Title_Html(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Folder_Mgmt", "Edit_Notes_Popup_Title_Html", Language);
+
+            public static string Edit_Notes_Popup_Legend(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Folder_Mgmt", "Edit_Notes_Popup_Legend", Language);
+            public static string Notes_Label(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Folder_Mgmt", "Notes_Label", Language);
+
+            /// <summary> Stylized (small-caps effect via nested spans) popup title, matching the original inline markup </summary>
+            public static string New_Bookshelf_Popup_Title_Html(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Folder_Mgmt", "New_Bookshelf_Popup_Title_Html", Language);
+
+            public static string New_Bookshelf_Popup_Legend(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Folder_Mgmt", "New_Bookshelf_Popup_Legend", Language);
+            public static string Name_Label(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Folder_Mgmt", "Name_Label", Language);
+            public static string Parent_Label(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Folder_Mgmt", "Parent_Label", Language);
+            public static string No_Parent_Option(Web_Language_Enum Language) => Localization_Store.Get("mysobek", "Folder_Mgmt", "No_Parent_Option", Language);
+        }
+
+        /// <summary> Phrases for the header/footer chrome rendered on every page (HeaderFooter_HtmlHelper) </summary>
+        public static class HeaderFooter
+        {
+            /// <summary> Format string with a "{0}" placeholder for the instance abbreviation or "my{Instance}"
+            /// text this suffix is appended to, e.g. string.Format(Home_Suffix_Format(language), "UFDC") </summary>
+            public static string Home_Suffix_Format(Web_Language_Enum Language) => Localization_Store.Get("chrome", "HeaderFooter", "Home_Suffix_Format", Language);
+
+            /// <summary> Link text used for the footer's mySobek link when logged out (distinct from the
+            /// header's own "my{Instance} Home" text) </summary>
+            public static string Staff_Login(Web_Language_Enum Language) => Localization_Store.Get("chrome", "HeaderFooter", "Staff_Login", Language);
+
+            public static string Log_Out(Web_Language_Enum Language) => Localization_Store.Get("chrome", "HeaderFooter", "Log_Out", Language);
+
+            /// <summary> Format string with "{0}" (user's nickname or given name) and "{1}" ("my{Instance}" text)
+            /// placeholders, e.g. string.Format(My_Account_Possessive_Format(language), "Jane", "myUFDC") -
+            /// kept as a whole-sentence format rather than a literal "'s" since possessive word order varies by
+            /// language (e.g. Spanish would read "myUFDC de Jane", not "Jane's myUFDC") </summary>
+            public static string My_Account_Possessive_Format(Web_Language_Enum Language) => Localization_Store.Get("chrome", "HeaderFooter", "My_Account_Possessive_Format", Language);
+        }
+
+        /// <summary> Phrases for the three collapsible top-navigation menus built by MainMenus_HtmlHelper:
+        /// the aggregation-level menu, the search-results menu, and the logged-in user/admin menu </summary>
+        public static class MainMenus
+        {
+            public static string Aggregation_Menu_Aria(Web_Language_Enum Language) => Localization_Store.Get("chrome", "MainMenus", "Aggregation_Menu_Aria", Language);
+            public static string Search_Results_Menu_Aria(Web_Language_Enum Language) => Localization_Store.Get("chrome", "MainMenus", "Search_Results_Menu_Aria", Language);
+            public static string User_Menu_Aria(Web_Language_Enum Language) => Localization_Store.Get("chrome", "MainMenus", "User_Menu_Aria", Language);
+
+            public static string Home(Web_Language_Enum Language) => Localization_Store.Get("chrome", "MainMenus", "Home", Language);
+
+            /// <summary> Format string with a "{0}" placeholder for the aggregation's translated short name,
+            /// e.g. string.Format(Collection_Home_Format(language), "Baseball"). Word order (suffix vs. prefix)
+            /// varies by language. </summary>
+            public static string Collection_Home_Format(Web_Language_Enum Language) => Localization_Store.Get("chrome", "MainMenus", "Collection_Home_Format", Language);
+
+            /// <summary> Format string with a "{0}" placeholder for the instance abbreviation,
+            /// e.g. string.Format(Sobek_Home_Format(language), "UFDC") </summary>
+            public static string Sobek_Home_Format(Web_Language_Enum Language) => Localization_Store.Get("chrome", "MainMenus", "Sobek_Home_Format", Language);
+
+            /// <summary> Format string with a "{0}" placeholder for the instance abbreviation, used for the
+            /// logged-in "my{Instance} Home" menu entry; the leading "my" keeps its own lowercase span markup
+            /// regardless of language </summary>
+            public static string My_Sobek_Home_Format(Web_Language_Enum Language) => Localization_Store.Get("chrome", "MainMenus", "My_Sobek_Home_Format", Language);
+
+            public static string View_Items(Web_Language_Enum Language) => Localization_Store.Get("chrome", "MainMenus", "View_Items", Language);
+            public static string View_All_Items(Web_Language_Enum Language) => Localization_Store.Get("chrome", "MainMenus", "View_All_Items", Language);
+            public static string View_New_Items(Web_Language_Enum Language) => Localization_Store.Get("chrome", "MainMenus", "View_New_Items", Language);
+            public static string My_Collections(Web_Language_Enum Language) => Localization_Store.Get("chrome", "MainMenus", "My_Collections", Language);
+            public static string Browse_Partners(Web_Language_Enum Language) => Localization_Store.Get("chrome", "MainMenus", "Browse_Partners", Language);
+            public static string Browse_By(Web_Language_Enum Language) => Localization_Store.Get("chrome", "MainMenus", "Browse_By", Language);
+            public static string Map_Browse(Web_Language_Enum Language) => Localization_Store.Get("chrome", "MainMenus", "Map_Browse", Language);
+            public static string List_View(Web_Language_Enum Language) => Localization_Store.Get("chrome", "MainMenus", "List_View", Language);
+            public static string Brief_View(Web_Language_Enum Language) => Localization_Store.Get("chrome", "MainMenus", "Brief_View", Language);
+            public static string Tree_View(Web_Language_Enum Language) => Localization_Store.Get("chrome", "MainMenus", "Tree_View", Language);
+
+            public static string Other_Searches(Web_Language_Enum Language) => Localization_Store.Get("chrome", "MainMenus", "Other_Searches", Language);
+            public static string Print_Action(Web_Language_Enum Language) => Localization_Store.Get("chrome", "MainMenus", "Print_Action", Language);
+            public static string Send_Action(Web_Language_Enum Language) => Localization_Store.Get("chrome", "MainMenus", "Send_Action", Language);
+            public static string Save_Action(Web_Language_Enum Language) => Localization_Store.Get("chrome", "MainMenus", "Save_Action", Language);
+            public static string Share_Action(Web_Language_Enum Language) => Localization_Store.Get("chrome", "MainMenus", "Share_Action", Language);
+
+            public static string My_Library(Web_Language_Enum Language) => Localization_Store.Get("chrome", "MainMenus", "My_Library", Language);
+            public static string My_Account(Web_Language_Enum Language) => Localization_Store.Get("chrome", "MainMenus", "My_Account", Language);
+            public static string Internal(Web_Language_Enum Language) => Localization_Store.Get("chrome", "MainMenus", "Internal", Language);
+            public static string System_Admin(Web_Language_Enum Language) => Localization_Store.Get("chrome", "MainMenus", "System_Admin", Language);
+            public static string Portal_Admin(Web_Language_Enum Language) => Localization_Store.Get("chrome", "MainMenus", "Portal_Admin", Language);
+            public static string User_Admin(Web_Language_Enum Language) => Localization_Store.Get("chrome", "MainMenus", "User_Admin", Language);
+            public static string Advanced_Search(Web_Language_Enum Language) => Localization_Store.Get("chrome", "MainMenus", "Advanced_Search", Language);
+            public static string Collection_List(Web_Language_Enum Language) => Localization_Store.Get("chrome", "MainMenus", "Collection_List", Language);
+            public static string Collection_Hierarchy(Web_Language_Enum Language) => Localization_Store.Get("chrome", "MainMenus", "Collection_Hierarchy", Language);
+            public static string New_Items(Web_Language_Enum Language) => Localization_Store.Get("chrome", "MainMenus", "New_Items", Language);
+            public static string Memory_Management(Web_Language_Enum Language) => Localization_Store.Get("chrome", "MainMenus", "Memory_Management", Language);
+            public static string Wordmarks(Web_Language_Enum Language) => Localization_Store.Get("chrome", "MainMenus", "Wordmarks", Language);
+            public static string Build_Failures(Web_Language_Enum Language) => Localization_Store.Get("chrome", "MainMenus", "Build_Failures", Language);
+
+            public static string Start_New_Item(Web_Language_Enum Language) => Localization_Store.Get("chrome", "MainMenus", "Start_New_Item", Language);
+            public static string View_Submitted_Items(Web_Language_Enum Language) => Localization_Store.Get("chrome", "MainMenus", "View_Submitted_Items", Language);
+            public static string View_Item_Usage(Web_Language_Enum Language) => Localization_Store.Get("chrome", "MainMenus", "View_Item_Usage", Language);
+            public static string View_Descriptive_Tags(Web_Language_Enum Language) => Localization_Store.Get("chrome", "MainMenus", "View_Descriptive_Tags", Language);
+            public static string View_Bookshelves(Web_Language_Enum Language) => Localization_Store.Get("chrome", "MainMenus", "View_Bookshelves", Language);
+            public static string View_Saved_Searches(Web_Language_Enum Language) => Localization_Store.Get("chrome", "MainMenus", "View_Saved_Searches", Language);
+            public static string Account_Preferences(Web_Language_Enum Language) => Localization_Store.Get("chrome", "MainMenus", "Account_Preferences", Language);
+            public static string Log_Out(Web_Language_Enum Language) => Localization_Store.Get("chrome", "MainMenus", "Log_Out", Language);
+
+            public static string Common_Tasks(Web_Language_Enum Language) => Localization_Store.Get("chrome", "MainMenus", "Common_Tasks", Language);
+            public static string Add_Collection_Wizard(Web_Language_Enum Language) => Localization_Store.Get("chrome", "MainMenus", "Add_Collection_Wizard", Language);
+            public static string Edit_Current_Web_Skin(Web_Language_Enum Language) => Localization_Store.Get("chrome", "MainMenus", "Edit_Current_Web_Skin", Language);
+            public static string Users_And_Groups(Web_Language_Enum Language) => Localization_Store.Get("chrome", "MainMenus", "Users_And_Groups", Language);
+            public static string Appearance(Web_Language_Enum Language) => Localization_Store.Get("chrome", "MainMenus", "Appearance", Language);
+            public static string Url_Portals(Web_Language_Enum Language) => Localization_Store.Get("chrome", "MainMenus", "Url_Portals", Language);
+            public static string Web_Skins(Web_Language_Enum Language) => Localization_Store.Get("chrome", "MainMenus", "Web_Skins", Language);
+            public static string Collections(Web_Language_Enum Language) => Localization_Store.Get("chrome", "MainMenus", "Collections", Language);
+            public static string Aggregation_Aliases(Web_Language_Enum Language) => Localization_Store.Get("chrome", "MainMenus", "Aggregation_Aliases", Language);
+            public static string Aggregation_Management(Web_Language_Enum Language) => Localization_Store.Get("chrome", "MainMenus", "Aggregation_Management", Language);
+            public static string Thematic_Headings(Web_Language_Enum Language) => Localization_Store.Get("chrome", "MainMenus", "Thematic_Headings", Language);
+            public static string Items(Web_Language_Enum Language) => Localization_Store.Get("chrome", "MainMenus", "Items", Language);
+            public static string Default_Metadata(Web_Language_Enum Language) => Localization_Store.Get("chrome", "MainMenus", "Default_Metadata", Language);
+            public static string Wordmarks_Icons(Web_Language_Enum Language) => Localization_Store.Get("chrome", "MainMenus", "Wordmarks_Icons", Language);
+            public static string Builder_Status(Web_Language_Enum Language) => Localization_Store.Get("chrome", "MainMenus", "Builder_Status", Language);
+            public static string Settings(Web_Language_Enum Language) => Localization_Store.Get("chrome", "MainMenus", "Settings", Language);
+            public static string Ip_Restriction_Ranges(Web_Language_Enum Language) => Localization_Store.Get("chrome", "MainMenus", "Ip_Restriction_Ranges", Language);
+            public static string System_Wide_Settings(Web_Language_Enum Language) => Localization_Store.Get("chrome", "MainMenus", "System_Wide_Settings", Language);
+            public static string Reset_Cache(Web_Language_Enum Language) => Localization_Store.Get("chrome", "MainMenus", "Reset_Cache", Language);
+            public static string Users_And_Permissions(Web_Language_Enum Language) => Localization_Store.Get("chrome", "MainMenus", "Users_And_Permissions", Language);
+            public static string User_Permissions_Reports(Web_Language_Enum Language) => Localization_Store.Get("chrome", "MainMenus", "User_Permissions_Reports", Language);
+            public static string Users_Requests(Web_Language_Enum Language) => Localization_Store.Get("chrome", "MainMenus", "Users_Requests", Language);
+            public static string Web_Content_Pages(Web_Language_Enum Language) => Localization_Store.Get("chrome", "MainMenus", "Web_Content_Pages", Language);
+            public static string Manage_Web_Content_Pages(Web_Language_Enum Language) => Localization_Store.Get("chrome", "MainMenus", "Manage_Web_Content_Pages", Language);
+            public static string Web_Content_Recent_Updates(Web_Language_Enum Language) => Localization_Store.Get("chrome", "MainMenus", "Web_Content_Recent_Updates", Language);
+            public static string Web_Content_Usage_Reports(Web_Language_Enum Language) => Localization_Store.Get("chrome", "MainMenus", "Web_Content_Usage_Reports", Language);
+            public static string Extensions(Web_Language_Enum Language) => Localization_Store.Get("chrome", "MainMenus", "Extensions", Language);
+            public static string Manage_Tei_Plugin(Web_Language_Enum Language) => Localization_Store.Get("chrome", "MainMenus", "Manage_Tei_Plugin", Language);
+        }
+
         /// <summary> Phrases shared by the Downloads and Downloads_JP2s item viewers </summary>
         public static class Downloads
         {

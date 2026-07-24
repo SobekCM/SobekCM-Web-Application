@@ -1,10 +1,12 @@
 #region Using directives
 
 using Microsoft.AspNetCore.Http;
+using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
 using SobekCM.Library.Database;
 using SobekCM.Library.HTML;
+using SobekCM.Library.Localization;
 using SobekCM.Library.MainWriters;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
@@ -63,7 +65,7 @@ namespace SobekCM.Library.MySobekViewer
         /// <value> This always returns the value 'Folder Management' </value>
         public override string Web_Title
         {
-            get { return "My Saved Searches"; }
+            get { return Localization_Gateway.Saved_Searches.Page_Title(RequestSpecificValues.Current_Mode.Language); }
         }
 
         /// <summary> Add the HTML to be displayed in the main SobekCM viewer area (outside of any form) </summary>
@@ -72,6 +74,8 @@ namespace SobekCM.Library.MySobekViewer
         public override void Write_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
             Tracer.Add_Trace("Saved_Searches_MySobekViewer.Write_HTML");
+
+            Web_Language_Enum language = RequestSpecificValues.Current_Mode.Language;
 
             // Open the item nav form
             Write_ItemNavForm_Opening(Output);
@@ -91,8 +95,8 @@ namespace SobekCM.Library.MySobekViewer
                 Output.WriteLine("  <blockquote>");
                 Output.WriteLine("  <table border=\"0px\" cellspacing=\"0px\" class=\"statsTable\">");
                 Output.WriteLine("    <tr align=\"left\" bgcolor=\"#0022a7\" >");
-                Output.WriteLine("      <th width=\"120px\" align=\"left\"><span style=\"color: White\"> &nbsp; ACTIONS</span></th>");
-                Output.WriteLine("      <th width=\"480px\" align=\"left\"><span style=\"color: White\">SAVED SEARCH</span></th>");
+                Output.WriteLine("      <th width=\"120px\" align=\"left\"><span style=\"color: White\"> &nbsp; " + Localization_Gateway.Saved_Searches.Actions_Header(language) + "</span></th>");
+                Output.WriteLine("      <th width=\"480px\" align=\"left\"><span style=\"color: White\">" + Localization_Gateway.Saved_Searches.Saved_Search_Header(language) + "</span></th>");
                 Output.WriteLine("     </tr>");
                 Output.WriteLine("    <tr><td bgcolor=\"#e7e7e7\" colspan=\"2\"></td></tr>");
 
@@ -106,8 +110,8 @@ namespace SobekCM.Library.MySobekViewer
                     // Build the action links
                     Output.WriteLine("    <tr align=\"left\" valign=\"center\" >");
                     Output.Write("      <td class=\"SobekFolderActionLink\" >( ");
-                    Output.Write("<a title=\"Click to delete this saved search\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return delete_search('" + usersearchid + "');\">delete</a> | ");
-                    Output.WriteLine("<a title=\"Click to view this search\" href=\"" + search_url + "\">view</a> )</td>");
+                    Output.Write("<a title=\"" + Localization_Gateway.Saved_Searches.Delete_Link_Title(language) + "\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return delete_search('" + usersearchid + "');\">" + Localization_Gateway.Saved_Searches.Delete_Link_Text(language) + "</a> | ");
+                    Output.WriteLine("<a title=\"" + Localization_Gateway.Saved_Searches.View_Link_Title(language) + "\" href=\"" + search_url + "\">" + Localization_Gateway.Saved_Searches.View_Link_Text(language) + "</a> )</td>");
                     Output.WriteLine("      <td><a href=\"" + search_url + "\">" + search_desc + "</a></td>");
                     Output.WriteLine("     </tr>");
                     Output.WriteLine("    <tr><td bgcolor=\"#e7e7e7\" colspan=\"2\"></td></tr>");
@@ -119,7 +123,7 @@ namespace SobekCM.Library.MySobekViewer
             }
             else
             {
-                Output.WriteLine("<blockquote>You do not have any saved searches or browses.<br /><br />To add a search or browse, use the ADD button while viewing the results of your search or browse.</blockquote><br />");
+                Output.WriteLine("<blockquote>" + Localization_Gateway.Saved_Searches.No_Saved_Searches_Html(language) + "</blockquote><br />");
             }
             Output.WriteLine("</div>");
 

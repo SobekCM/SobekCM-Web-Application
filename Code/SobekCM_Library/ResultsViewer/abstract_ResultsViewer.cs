@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Http;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Results;
-using SobekCM.Library.HTML;
+using SobekCM.Library.HTML.Helpers;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
 using System;
@@ -318,7 +318,7 @@ namespace SobekCM.Library.ResultsViewer
                     populate_issue_node_children(rootNode, itemTreeRoot, base_url);
             }
 
-            var treeView1 = new HtmlTreeView();
+            var treeView1 = new HtmlTreeView_HtmlHelper();
             treeView1.Nodes.Add(rootNode);
 
             var treeBuilder = new StringBuilder();

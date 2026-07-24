@@ -2,9 +2,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 
-namespace SobekCM.Library.HTML
+namespace SobekCM.Library.HTML.Helpers
 {
-    /// <summary> A node in an <see cref="HtmlTreeView"/>, rendered as nested HTML list elements </summary>
+    /// <summary> A node in an <see cref="HtmlTreeView_HtmlHelper"/>, rendered as nested HTML list elements </summary>
     public class HtmlTreeNode
     {
         /// <summary> HTML content to display for this node </summary>
@@ -73,7 +73,7 @@ namespace SobekCM.Library.HTML
     /// <summary> Renders a tree of <see cref="HtmlTreeNode"/> objects as nested HTML
     /// <c>&lt;ul&gt;/&lt;li&gt;</c> elements using the native <c>&lt;details&gt;/&lt;summary&gt;</c>
     /// element for expand/collapse with no JavaScript required </summary>
-    public class HtmlTreeView
+    public class HtmlTreeView_HtmlHelper
     {
         /// <summary> CSS class applied to the outermost <c>&lt;ul&gt;</c> element </summary>
         public string CssClass { get; set; } = string.Empty;

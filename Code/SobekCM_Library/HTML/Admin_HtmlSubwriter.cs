@@ -3,6 +3,7 @@
 using SobekCM.Core.Navigation;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Library.AdminViewer;
+using SobekCM.Library.HTML.Helpers;
 using SobekCM.Library.MainWriters;
 using SobekCM.Tools;
 using System;
@@ -127,7 +128,7 @@ namespace SobekCM.Library.HTML
                     // Banner drawing is now handled by each admin viewer's own Write_HTML (via Banner_Helper), not here
 
                     // Add the RequestSpecificValues.Current_User-specific main menu
-                    MainMenus_Helper_HtmlSubWriter.Add_UserSpecific_Main_Menu(Output, RequestSpecificValues);
+                    MainMenus_HtmlHelper.Add_UserSpecific_Main_Menu(Output, RequestSpecificValues);
 
                     // Start the page container
                     Output.WriteLine("<div id=\"pagecontainer\">");

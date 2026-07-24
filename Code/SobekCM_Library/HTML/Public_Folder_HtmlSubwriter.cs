@@ -3,6 +3,7 @@
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Navigation;
 using SobekCM.Engine_Library.Configuration;
+using SobekCM.Library.HTML.Helpers;
 using SobekCM.Tools;
 using System.IO;
 

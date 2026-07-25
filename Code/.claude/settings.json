@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dotnet build *)",
+      "Bash(dotnet list *)",
+      "Bash(iconv -f *)",
+      "Bash(curl -s https://api.nuget.org/*)",
+      "Bash(tasklist *)"
+    ]
+  }
+}

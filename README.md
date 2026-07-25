@@ -70,7 +70,7 @@ The web application expects institution-specific **design files** (skins, templa
 
 ## More information
 
-Historical documentation and help pages are linked from [sobek.ufl.edu](https://sobek.ufl.edu). Claude Code-oriented project context (session/cache design, migration conventions) lives in `CLAUDE.md` at the repository root.
+Historical documentation and help pages are linked from [sobekrepository.org](https://sobekrepository.org). 
 
 ## License
 

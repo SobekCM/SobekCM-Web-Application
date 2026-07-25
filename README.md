@@ -6,9 +6,9 @@ I would not download or use this code until we resolve those issues.
 
 # SobekCM
 
-SobekCM is an open-source digital library management system: a repository platform for ingesting, describing, storing, and presenting digitized items (books, images, newspapers, maps, audio/video, etc.) with full-text search, METS-based metadata, and a public/administrative web front end. It has been in production use at the University of Florida and partner institutions for over a decade.
+SobekCM is an open-source digital library management system: a repository platform for ingesting, describing, storing, and presenting digitized items (books, images, newspapers, maps, audio/video, etc.) with full-text search, METS-based metadata, and a public/administrative web front end. It has been in production use at the University of Florida and partner institutions for over two decades.
 
-This repository is in the middle of a migration from **.NET Framework 4.7.2 ASP.NET WebForms** to **.NET 10 ASP.NET Core**. Active migration work happens on the `UpgradeNet10` branch; `master` reflects the legacy .NET Framework codebase until the migration lands.
+This repository is completing a migration from **.NET Framework 4.7.2 ASP.NET WebForms** to **.NET 10 ASP.NET Core**. 
 
 ## Architecture
 

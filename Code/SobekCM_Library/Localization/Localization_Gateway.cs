@@ -23,6 +23,18 @@ namespace SobekCM.Library.Localization
             Localization_Store.Clear_Cache();
         }
 
+        public static class General
+        {
+            public static string Get(string Term, string Language)
+            {
+                var dictionary = Localization_Store.Get("general", "General", Language);
+
+                if ((dictionary == null) || (!dictionary.ContainsKey(Term))) return Term;
+
+                return dictionary[Term];
+            }
+        }
+
         /// <summary> Phrases shared across multiple item viewers — currently just the pagination bar,
         /// defined once in Item_HtmlSubwriter and reused by every paginated item viewer, deduplicated
         /// from what used to be a near-verbatim copy inside Text_Search_ItemViewer </summary>

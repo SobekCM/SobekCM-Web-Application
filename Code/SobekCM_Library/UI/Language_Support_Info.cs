@@ -1,5 +1,6 @@
 #region Using directives
 
+using SobekCM.Library.Localization;
 using SobekCM.Tools;
 using System.Collections.Generic;
 
@@ -25,10 +26,7 @@ namespace SobekCM.Library.UI
             if (string.IsNullOrEmpty(English))
                 return string.Empty;
 
-            Dictionary<string, string> translationSet = new SobekCM_Assistant().Get_Translation_Set(Language, null);
-
-            string translatedValue;
-            return translationSet.TryGetValue(English, out translatedValue) ? translatedValue : English;
+            return Localization_Gateway.General.Get(English, Language);
         }
     }
 }

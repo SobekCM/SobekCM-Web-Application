@@ -40,42 +40,6 @@ namespace SobekCM.Core.MemoryMgmt
             }
         }
 
-        /// <summary> Retrieves the entire translation set (English term -&gt; translated value) for a single language from the cache </summary>
-        /// <param name="LanguageCode"> ISO code for the language to retrieve </param>
-        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-        /// <returns> Either NULL or the translation set from the cache  </returns>
-        public Dictionary<string, string> Retrieve_Translation_Set(string LanguageCode, Custom_Tracer Tracer)
-        {
-            // If the cache is disabled, just return before even tracing
-            if (settings.Disabled)
-                return null;
-
-            Tracer?.Add_Trace("CachedDataManager.Retrieve_Translation_Set", "");
-
-            object returnValue = SharedCache.Instance.Get("TRANSLATION|" + LanguageCode.ToLower());
-            return (returnValue != null) ? (Dictionary<string, string>)returnValue : null;
-        }
-
-        /// <summary> Stores the entire translation set (English term -&gt; translated value) for a single language into the cache  </summary>
-        /// <param name="LanguageCode"> ISO code for the language being stored </param>
-        /// <param name="StoreObject"> Translation set to store </param>
-        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-        public void Store_Translation_Set(string LanguageCode, Dictionary<string, string> StoreObject, Custom_Tracer Tracer)
-        {
-            // If the cache is disabled, just return before even tracing
-            if (settings.Disabled)
-                return;
-
-            string key = "TRANSLATION|" + LanguageCode.ToLower();
-
-            Tracer?.Add_Trace("CachedDataManager.Store_Translation_Set", "Adding object '" + key + "' to the cache with expiration of 7 minutes");
-
-            if (SharedCache.Instance[key] == null)
-            {
-                SharedCache.Instance.Set(key, StoreObject, new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(7) });
-            }
-        }
-
         /// <summary> Retrieves a single standalone HTML help/FAQ fragment, in a single language, from the cache </summary>
         /// <param name="FragmentName"> Base file name for this fragment ( e.g. "quick_tips" ), matching the
         /// file name under design/extra/aggregations/ without the language suffix or extension </param>

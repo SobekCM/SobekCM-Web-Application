@@ -30,6 +30,27 @@ namespace SobekCM.Library.Localization
         private static readonly Dictionary<string, Dictionary<string, Dictionary<string, string>>> cache
             = new Dictionary<string, Dictionary<string, Dictionary<string, string>>>(StringComparer.OrdinalIgnoreCase);
 
+
+        /// <summary> Get a dictionary of values for the category/section/language </summary>
+        /// <param name="Category"> "items" or "aggregations" — matches the config file name suffix </param>
+        /// <param name="Section"> Section name (matches the <c>&lt;Section Name="..."&gt;</c> element and
+        /// the Localization_Gateway nested class name) </param>
+        /// <param name="Language"> Requested display language code for the current request </param>
+        public static Dictionary<string, string> Get(string Category, string Section, string Language)
+        {
+            string languageCode = Language;
+            if (String.IsNullOrEmpty(languageCode))
+                languageCode = ENGLISH_CODE;
+
+            Dictionary<string, Dictionary<string, string>> requestedTable = Get_Or_Load(Category, languageCode);
+            if ( requestedTable.ContainsKey(Category))
+            {
+                return requestedTable[Category];
+            }
+
+            return null;
+        }
+
         /// <summary> Get a single localized phrase, falling back from the requested language to English,
         /// and finally to a visible marker if even English is missing the key (so a missing translation
         /// is obvious in the rendered page rather than silently blank) </summary>
